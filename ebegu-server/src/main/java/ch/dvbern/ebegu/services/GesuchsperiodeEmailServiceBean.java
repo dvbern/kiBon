@@ -23,13 +23,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.Dossier;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
@@ -40,13 +40,15 @@ import ch.dvbern.ebegu.entities.GesuchsperiodeEmailCandidate_;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.GesuchsperiodeEmailCandiateStatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Stateless
 @Local(GesuchsperiodeEmailService.class)
-public class GesuchsperiodeEmailServiceBean extends AbstractBaseService implements GesuchsperiodeEmailService {
+public class GesuchsperiodeEmailServiceBean extends AbstractBaseService
+	implements
+	GesuchsperiodeEmailService {
 
 	@Inject
 	private DossierService dossierService;
@@ -64,30 +66,48 @@ public class GesuchsperiodeEmailServiceBean extends AbstractBaseService implemen
 	private GemeindeService gemeindeService;
 
 	private static final Logger LOG =
-		LoggerFactory.getLogger(GesuchsperiodeEmailCandidate.class.getSimpleName());
+		LoggerFactory.getLogger(
+			GesuchsperiodeEmailCandidate.class.getSimpleName()
+		);
 
 	@Override
 	public void getAndSaveGesuchsperiodeEmailCandidates(
 		@Nonnull Gesuchsperiode lastGesuchsperiode,
-		@Nonnull Gesuchsperiode nextGesuchsperiode) {
-		Collection<Dossier> allDossiers = dossierService.getAllDossiersForMandant(Objects.requireNonNull(
-				lastGesuchsperiode.getMandant()), true);
+		@Nonnull Gesuchsperiode nextGesuchsperiode
+	) {
+		Collection<Dossier> allDossiers = dossierService
+			.getAllDossiersForMandant(
+				Objects.requireNonNull(
+					lastGesuchsperiode.getMandant()
+				),
+				true
+			);
 		allDossiers.forEach(dossier -> {
-			GesuchsperiodeEmailCandidate candidate = new GesuchsperiodeEmailCandidate(dossier, lastGesuchsperiode, nextGesuchsperiode);
+			GesuchsperiodeEmailCandidate candidate =
+				new GesuchsperiodeEmailCandidate(
+					dossier,
+					lastGesuchsperiode,
+					nextGesuchsperiode
+				);
 			persistence.persist(candidate);
 		});
 	}
 
 	@Override
 	public void sendMailsForNCandidates(@Nonnull Integer numberOfCandidates) {
-		List<GesuchsperiodeEmailCandidate> candidates = getNCandidates(numberOfCandidates);
+		List<GesuchsperiodeEmailCandidate> candidates = getNCandidates(
+			numberOfCandidates
+		);
 		if (candidates.isEmpty()) {
 			return;
 		}
-		LOG.info("Emails für " + candidates.size() + " Dossiers werden versendet");
+		LOG.info(
+			"Emails für " + candidates.size() + " Dossiers werden versendet"
+		);
 		candidates.forEach(c -> {
 			try {
-				GesuchsperiodeEmailCandidate updatedStatusCandidate = sendMailAndChangeStatus(c);
+				GesuchsperiodeEmailCandidate updatedStatusCandidate =
+					sendMailAndChangeStatus(c);
 				persistence.persist(updatedStatusCandidate);
 			} catch (Exception e) {
 				c.setStatus(GesuchsperiodeEmailCandiateStatus.FEHLGESCHLAGEN);
@@ -98,38 +118,52 @@ public class GesuchsperiodeEmailServiceBean extends AbstractBaseService implemen
 		});
 	}
 
-	private GesuchsperiodeEmailCandidate sendMailAndChangeStatus(@Nonnull GesuchsperiodeEmailCandidate gesuchsperiodeEmailCandidate) {
-		Optional<Gesuch> gesuchOpt = gesuchService.getNeuestesGesuchForDossierAndPeriod(
-			gesuchsperiodeEmailCandidate.getDossier(),
-			gesuchsperiodeEmailCandidate.getLastGesuchsperiode()
-		);
+	private GesuchsperiodeEmailCandidate sendMailAndChangeStatus(
+		@Nonnull GesuchsperiodeEmailCandidate gesuchsperiodeEmailCandidate
+	) {
+		Optional<Gesuch> gesuchOpt = gesuchService
+			.getNeuestesGesuchForDossierAndPeriod(
+				gesuchsperiodeEmailCandidate.getDossier(),
+				gesuchsperiodeEmailCandidate.getLastGesuchsperiode()
+			);
 
 		if (gesuchOpt.isEmpty()) {
-			gesuchsperiodeEmailCandidate.setStatus(GesuchsperiodeEmailCandiateStatus.KEIN_GESUCH);
+			gesuchsperiodeEmailCandidate.setStatus(
+				GesuchsperiodeEmailCandiateStatus.KEIN_GESUCH
+			);
 			return gesuchsperiodeEmailCandidate;
 		}
 		Gesuch gesuch = gesuchOpt.get();
 
 		if (gesuch.extractAllBetreuungen().isEmpty()) {
-			gesuchsperiodeEmailCandidate.setStatus(GesuchsperiodeEmailCandiateStatus.NUR_TAGESSCHULEN);
+			gesuchsperiodeEmailCandidate.setStatus(
+				GesuchsperiodeEmailCandiateStatus.NUR_TAGESSCHULEN
+			);
 			return gesuchsperiodeEmailCandidate;
 		}
 
 		if (gesuch.getFall().getBesitzer() == null) {
-			gesuchsperiodeEmailCandidate.setStatus(GesuchsperiodeEmailCandiateStatus.KEIN_BESITZER);
+			gesuchsperiodeEmailCandidate.setStatus(
+				GesuchsperiodeEmailCandiateStatus.KEIN_BESITZER
+			);
 			return gesuchsperiodeEmailCandidate;
 		}
 
 		String gemeindeId = gesuch.getDossier().getGemeinde().getId();
 		GemeindeStammdaten gemeindeStammdaten =
-			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId).orElseThrow(() -> new EbeguEntityNotFoundException(
-				"sendMailAndChangeStatus",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				gemeindeId
-			));
+			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"sendMailAndChangeStatus",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						gemeindeId
+					)
+				);
 
 		if (!gemeindeStammdaten.getEmailBeiGesuchsperiodeOeffnung()) {
-			gesuchsperiodeEmailCandidate.setStatus(GesuchsperiodeEmailCandiateStatus.GEMEINDE_EINSTELLUNG_DEAKTIVIERT);
+			gesuchsperiodeEmailCandidate.setStatus(
+				GesuchsperiodeEmailCandiateStatus.GEMEINDE_EINSTELLUNG_DEAKTIVIERT
+			);
 			return gesuchsperiodeEmailCandidate;
 		}
 
@@ -138,17 +172,27 @@ public class GesuchsperiodeEmailServiceBean extends AbstractBaseService implemen
 			gesuch
 		);
 
-		gesuchsperiodeEmailCandidate.setStatus(GesuchsperiodeEmailCandiateStatus.VERSENDET);
-		return  gesuchsperiodeEmailCandidate;
+		gesuchsperiodeEmailCandidate.setStatus(
+			GesuchsperiodeEmailCandiateStatus.VERSENDET
+		);
+		return gesuchsperiodeEmailCandidate;
 	}
 
-	private List<GesuchsperiodeEmailCandidate> getNCandidates(@Nonnull Integer numberOfCandidates) {
+	private List<GesuchsperiodeEmailCandidate> getNCandidates(
+		@Nonnull Integer numberOfCandidates
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<GesuchsperiodeEmailCandidate> query = cb.createQuery(GesuchsperiodeEmailCandidate.class);
+		final CriteriaQuery<GesuchsperiodeEmailCandidate> query = cb
+			.createQuery(GesuchsperiodeEmailCandidate.class);
 
-		Root<GesuchsperiodeEmailCandidate> root = query.from(GesuchsperiodeEmailCandidate.class);
+		Root<GesuchsperiodeEmailCandidate> root = query.from(
+			GesuchsperiodeEmailCandidate.class
+		);
 
-		Predicate predicateOffen = cb.equal(root.get(GesuchsperiodeEmailCandidate_.status), GesuchsperiodeEmailCandiateStatus.OFFEN);
+		Predicate predicateOffen = cb.equal(
+			root.get(GesuchsperiodeEmailCandidate_.status),
+			GesuchsperiodeEmailCandiateStatus.OFFEN
+		);
 		query.where(predicateOffen);
 		return persistence.getCriteriaResults(query, numberOfCandidates);
 	}

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -23,18 +23,18 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.InstitutionStatus;
 import ch.dvbern.ebegu.util.Constants;
@@ -48,28 +48,30 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
  */
 @Audited
 @Entity
-public class Institution extends AbstractMutableEntity implements HasMandant, Displayable {
+public class Institution extends AbstractMutableEntity implements
+	HasMandant,
+	Displayable {
 
 	private static final long serialVersionUID = -8706487439884760618L;
 
 	@Column(nullable = false)
-	private @Size(min = 1, max = DB_DEFAULT_MAX_LENGTH) @NotNull String name;
+	private @Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
+	@NotNull String name;
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_traegerschaft_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_institution_traegerschaft_id"))
 	private Traegerschaft traegerschaft;
 
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_mandant_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_mandant_id"),
+		updatable = false)
 	@ManyToOne(optional = false)
 	private @NotNull Mandant mandant;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private @NotNull InstitutionStatus status = InstitutionStatus.EINGELADEN;
-
-	@Column(nullable = false)
-	private @NotNull boolean stammdatenCheckRequired = false;
 
 	/**
 	 * @deprecated used to convert all Institutionen from the database to InstitutionChangedEvents and publish them to
@@ -81,8 +83,11 @@ public class Institution extends AbstractMutableEntity implements HasMandant, Di
 
 	@Valid
 	@Nonnull
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "institution")
-	private Set<InstitutionExternalClient> institutionExternalClients = new HashSet<>();
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "institution")
+	private Set<InstitutionExternalClient> institutionExternalClients =
+		new HashSet<>();
 
 	public Institution() {
 	}
@@ -125,14 +130,6 @@ public class Institution extends AbstractMutableEntity implements HasMandant, Di
 		this.status = status;
 	}
 
-	public boolean isStammdatenCheckRequired() {
-		return stammdatenCheckRequired;
-	}
-
-	public void setStammdatenCheckRequired(boolean stammdatenCheckRequired) {
-		this.stammdatenCheckRequired = stammdatenCheckRequired;
-	}
-
 	public boolean isEventPublished() {
 		return eventPublished;
 	}
@@ -153,7 +150,9 @@ public class Institution extends AbstractMutableEntity implements HasMandant, Di
 		return institutionExternalClients;
 	}
 
-	public void setInstitutionExternalClients(@Nonnull Set<InstitutionExternalClient> institutionExternalClients) {
+	public void setInstitutionExternalClients(
+		@Nonnull Set<InstitutionExternalClient> institutionExternalClients
+	) {
 		this.institutionExternalClients = institutionExternalClients;
 	}
 
@@ -173,7 +172,8 @@ public class Institution extends AbstractMutableEntity implements HasMandant, Di
 			return false;
 		}
 		final Institution otherInstitution = (Institution) other;
-		return getStatus() == otherInstitution.getStatus() &&
+		return getStatus() == otherInstitution.getStatus()
+			&&
 			Objects.equals(getName(), otherInstitution.getName());
 	}
 

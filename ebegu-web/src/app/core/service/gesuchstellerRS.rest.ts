@@ -15,7 +15,7 @@
 
 import {IHttpService, ILogService, IPromise} from 'angular';
 import {WizardStepManager} from '../../../gesuch/service/wizardStepManager';
-import {TSSprache} from '../../../models/enums/TSSprache';
+import {TSSprache} from '@kibon/shared/model/enums';
 import {TSGesuchstellerContainer} from '../../../models/TSGesuchstellerContainer';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 
@@ -86,13 +86,12 @@ export class GesuchstellerRS {
     public initGS2ZPVNr(
         email: string,
         gs2: TSGesuchstellerContainer,
-        korrespondenzSprache: TSSprache,
-        relayPath: string
+        korrespondenzSprache: TSSprache
     ): angular.IPromise<any> {
         return this.http.get(
             `${this.serviceURL}/initZPVNr/${encodeURIComponent(gs2.id)}?email=${encodeURIComponent(
                 email
-            )}&language=${korrespondenzSprache}&relayPath=${encodeURIComponent(relayPath)}`
+            )}&language=${korrespondenzSprache}`
         );
     }
 }

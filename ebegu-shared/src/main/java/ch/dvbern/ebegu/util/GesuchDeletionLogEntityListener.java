@@ -18,31 +18,23 @@ package ch.dvbern.ebegu.util;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.inject.spi.CDI;
-import javax.persistence.PrePersist;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.inject.Inject;
+import jakarta.persistence.PrePersist;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.GesuchDeletionLog;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GesuchDeletionLogEntityListener {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GesuchDeletionLogEntityListener.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		GesuchDeletionLogEntityListener.class
+	);
 
-	private static PrincipalBean principalBean = null;
-
-	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "Auch wenn das vlt. mehrfach initialisiert wird... das macht nix, solange am Ende was Richtiges drinsteht")
-	private static PrincipalBean getPrincipalBean() {
-		if (principalBean == null) {
-			//FIXME: das ist nur ein Ugly Workaround, weil CDI-Injection (mal wieder) buggy ist.
-			//noinspection NonThreadSafeLazyInitialization
-			principalBean = CDI.current().select(PrincipalBean.class).get();
-		}
-		return principalBean;
-	}
+	@Inject
+	private PrincipalBean principalBean;
 
 	@PrePersist
 	protected void prePersist(@Nonnull GesuchDeletionLog entity) {
@@ -53,7 +45,7 @@ public class GesuchDeletionLogEntityListener {
 
 	private String getPrincipalName() {
 		try {
-			return getPrincipalBean().getPrincipal().getName();
+			return principalBean.getPrincipal().getName();
 		} catch (ContextNotActiveException e) {
 			LOGGER.error("No context when persisting entity.");
 			throw e;

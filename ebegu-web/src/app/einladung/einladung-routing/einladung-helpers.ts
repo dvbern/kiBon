@@ -9,9 +9,10 @@
  */
 
 import {RedirectToResult, TargetState, Transition} from '@uirouter/core';
-import {map, take} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSEinladungTyp} from '../../../models/enums/TSEinladungTyp';
+import {firstValueFrom} from 'rxjs';
 
 export function getEntityTargetState(transition: Transition): TargetState {
     const stateService = transition.router.stateService;
@@ -47,9 +48,8 @@ export function handleLoggedInUser(
         .get('AuthServiceRS');
     const stateService = transition.router.stateService;
 
-    return authService.principal$
-        .pipe(
-            take(1),
+    return firstValueFrom(
+        authService.principal$.pipe(
             map(principal => {
                 if (!principal) {
                     return stateService.target(
@@ -63,5 +63,5 @@ export function handleLoggedInUser(
                 return getEntityTargetState(transition);
             })
         )
-        .toPromise();
+    );
 }

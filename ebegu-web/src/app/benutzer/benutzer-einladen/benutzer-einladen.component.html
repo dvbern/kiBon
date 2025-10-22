@@ -90,8 +90,9 @@
                             id="email_ID"
                             type="email"
                             name="email"
-                            email
                             [(ngModel)]="benutzer.email"
+                            placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
+                            email
                             required
                             class="form-control"
                         />
@@ -103,12 +104,21 @@
                     </div>
                 </div>
             </div>
-            <dv-berechtigung
-                displayClass="col-sm-6"
-                [berechtigung]="benutzer.currentBerechtigung"
-                [excludedRoles]="excludedRoles"
-            >
-            </dv-berechtigung>
+            @if (applicationPropertyRS.isAngebotTSEnabled() | async) {
+                <dv-berechtigung
+                    displayClass="col-sm-6"
+                    [berechtigung]="benutzer.currentBerechtigung"
+                    [excludedRoles]="excludedRoles"
+                >
+                </dv-berechtigung>
+            } @else {
+                <dv-berechtigung
+                    displayClass="col-sm-6"
+                    [berechtigung]="benutzer.currentBerechtigung"
+                    [excludedRoles]="exludedTSRoles"
+                >
+                </dv-berechtigung>
+            }
         </div>
 
         <div class="dv-footer">

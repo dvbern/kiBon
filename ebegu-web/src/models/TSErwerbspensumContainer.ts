@@ -14,7 +14,7 @@
  */
 
 import {EbeguUtil} from '../utils/EbeguUtil';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {TSErwerbspensum} from './TSErwerbspensum';
 
 export class TSErwerbspensumContainer extends TSAbstractMutableEntity {

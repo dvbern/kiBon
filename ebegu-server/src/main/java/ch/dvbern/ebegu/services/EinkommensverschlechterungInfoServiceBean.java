@@ -22,9 +22,9 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Einkommensverschlechterung;
 import ch.dvbern.ebegu.entities.EinkommensverschlechterungContainer;
@@ -32,17 +32,18 @@ import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfoContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
-import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 /**
  * Service fuer die Einkommensverschlechterung
  */
 @Stateless
 @Local(EinkommensverschlechterungInfoService.class)
-public class EinkommensverschlechterungInfoServiceBean extends AbstractBaseService implements EinkommensverschlechterungInfoService {
+public class EinkommensverschlechterungInfoServiceBean extends
+	AbstractBaseService implements
+	EinkommensverschlechterungInfoService {
 
 	@Inject
 	private Persistence persistence;
@@ -57,132 +58,217 @@ public class EinkommensverschlechterungInfoServiceBean extends AbstractBaseServi
 
 	@Override
 	@Nonnull
-	public Optional<EinkommensverschlechterungInfoContainer> createEinkommensverschlechterungInfo(@Nonnull EinkommensverschlechterungInfoContainer
-		einkommensverschlechterungInfo) {
+	public Optional<EinkommensverschlechterungInfoContainer> createEinkommensverschlechterungInfo(
+		@Nonnull EinkommensverschlechterungInfoContainer einkommensverschlechterungInfo
+	) {
 		Objects.requireNonNull(einkommensverschlechterungInfo);
 		final Gesuch gesuch = einkommensverschlechterungInfo.getGesuch();
 		Objects.requireNonNull(gesuch);
 
-		return Optional.ofNullable(gesuchService.updateGesuch(gesuch, false, null).getEinkommensverschlechterungInfoContainer());
+		return Optional.ofNullable(
+			gesuchService.updateGesuch(gesuch, false, null)
+				.getEinkommensverschlechterungInfoContainer()
+		);
 	}
 
 	@Override
 	@Nonnull
-	public EinkommensverschlechterungInfoContainer updateEinkommensVerschlechterungInfoAndGesuch(@Nonnull Gesuch gesuch,
-			@Nullable EinkommensverschlechterungInfoContainer oldEVData, @Nonnull EinkommensverschlechterungInfoContainer convertedEkvi) {
+	public EinkommensverschlechterungInfoContainer updateEinkommensVerschlechterungInfoAndGesuch(
+		@Nonnull Gesuch gesuch,
+		@Nullable EinkommensverschlechterungInfoContainer oldEVData,
+		@Nonnull EinkommensverschlechterungInfoContainer convertedEkvi
+	) {
 
 		convertedEkvi.setGesuch(gesuch);
 		gesuch.setEinkommensverschlechterungInfoContainer(convertedEkvi);
 
 		//Alle Daten des EV loeschen wenn man kein EV mehr eingeben will
-		removeEKVContainerIfNotNeeded(gesuch.getGesuchsteller1(), oldEVData, convertedEkvi);
-		removeEKVContainerIfNotNeeded(gesuch.getGesuchsteller2(), oldEVData, convertedEkvi);
+		removeEKVContainerIfNotNeeded(
+			gesuch.getGesuchsteller1(),
+			oldEVData,
+			convertedEkvi
+		);
+		removeEKVContainerIfNotNeeded(
+			gesuch.getGesuchsteller2(),
+			oldEVData,
+			convertedEkvi
+		);
 		removeEinkommensverschlechterungFromGesuch(gesuch, convertedEkvi);
 		//All needed EKVContainer must be created if they don't exist yet
 		addEmptyEKVContainerIfNeeded(gesuch.getGesuchsteller1(), convertedEkvi);
 		addEmptyEKVContainerIfNeeded(gesuch.getGesuchsteller2(), convertedEkvi);
 
-		convertedEkvi.setGesuch(gesuchService.updateGesuch(gesuch, false, null)); // saving gesuch cascades and saves Ekvi too
+		convertedEkvi.setGesuch(
+			gesuchService.updateGesuch(gesuch, false, null)
+		); // saving gesuch cascades and saves Ekvi too
 
-		wizardStepService.updateSteps(gesuch.getId(), oldEVData,
-			convertedEkvi, wizardStepService.getEKVWizardStepNameForGesuch(gesuch));
+		wizardStepService.updateSteps(
+			gesuch.getId(),
+			oldEVData,
+			convertedEkvi,
+			wizardStepService.getEKVWizardStepNameForGesuch(gesuch)
+		);
 
 		//cannot return convertedEkvi because it hasn't been updated after the Gesuch was saved. So we need to take
 		// it from the Gesuch
-		Objects.requireNonNull(gesuch.getEinkommensverschlechterungInfoContainer());
+		Objects.requireNonNull(
+			gesuch.getEinkommensverschlechterungInfoContainer()
+		);
 		return gesuch.getEinkommensverschlechterungInfoContainer();
 	}
 
 	@Override
 	@Nonnull
-	public Optional<EinkommensverschlechterungInfoContainer> findEinkommensverschlechterungInfo(@Nonnull String key) {
+	public Optional<EinkommensverschlechterungInfoContainer> findEinkommensverschlechterungInfo(
+		@Nonnull String key
+	) {
 		Objects.requireNonNull(key, "id muss gesetzt sein");
-		EinkommensverschlechterungInfoContainer a = persistence.find(EinkommensverschlechterungInfoContainer.class, key);
+		EinkommensverschlechterungInfoContainer a = persistence.find(
+			EinkommensverschlechterungInfoContainer.class,
+			key
+		);
 		return Optional.ofNullable(a);
 	}
 
 	@Override
 	@Nonnull
 	public Collection<EinkommensverschlechterungInfoContainer> getAllEinkommensverschlechterungInfo() {
-		return new ArrayList<>(criteriaQueryHelper.getAll(EinkommensverschlechterungInfoContainer.class));
+		return new ArrayList<>(
+			criteriaQueryHelper.getAll(
+				EinkommensverschlechterungInfoContainer.class
+			)
+		);
 	}
 
 	@Override
-	public void removeEinkommensverschlechterungInfo(@Nonnull EinkommensverschlechterungInfoContainer einkommensverschlechterungInfo) {
+	public void removeEinkommensverschlechterungInfo(
+		@Nonnull EinkommensverschlechterungInfoContainer einkommensverschlechterungInfo
+	) {
 		Objects.requireNonNull(einkommensverschlechterungInfo);
-		einkommensverschlechterungInfo.getGesuch().setEinkommensverschlechterungInfoContainer(null);
+		einkommensverschlechterungInfo.getGesuch()
+			.setEinkommensverschlechterungInfoContainer(null);
 		persistence.merge(einkommensverschlechterungInfo.getGesuch());
 
-		EinkommensverschlechterungInfoContainer propertyToRemove = findEinkommensverschlechterungInfo(einkommensverschlechterungInfo.getId())
-			.orElseThrow(() -> new EbeguEntityNotFoundException("removeEinkommensverschlechterungInfo", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			einkommensverschlechterungInfo));
-		persistence.remove(EinkommensverschlechterungInfoContainer.class, propertyToRemove.getId());
+		EinkommensverschlechterungInfoContainer propertyToRemove =
+			findEinkommensverschlechterungInfo(
+				einkommensverschlechterungInfo.getId()
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"removeEinkommensverschlechterungInfo",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						einkommensverschlechterungInfo
+					)
+				);
+		persistence.remove(
+			EinkommensverschlechterungInfoContainer.class,
+			propertyToRemove.getId()
+		);
 	}
 
 	/**
 	 * Removes all EKV of the given Gesuch if the year is not set. The field EkvJABasisJahrPlusX will be
 	 * also set to null. If the year is set nothing will be done.
 	 */
-	private void removeEinkommensverschlechterungFromGesuch(Gesuch gesuch, EinkommensverschlechterungInfoContainer
-		convertedEkvi) {
-		if (!convertedEkvi.getEinkommensverschlechterungInfoJA().getEkvFuerBasisJahrPlus1()) {
+	private void removeEinkommensverschlechterungFromGesuch(
+		Gesuch gesuch,
+		EinkommensverschlechterungInfoContainer convertedEkvi
+	) {
+		if (!convertedEkvi.getEinkommensverschlechterungInfoJA()
+			.getEkvFuerBasisJahrPlus1()) {
 			einkommensverschlechterungService.removeAllEKVOfGesuch(gesuch, 1);
 		}
-		if (!convertedEkvi.getEinkommensverschlechterungInfoJA().getEkvFuerBasisJahrPlus2()) {
+		if (!convertedEkvi.getEinkommensverschlechterungInfoJA()
+			.getEkvFuerBasisJahrPlus2()) {
 			einkommensverschlechterungService.removeAllEKVOfGesuch(gesuch, 2);
 		}
 	}
 
-	private void removeEKVContainerIfNotNeeded(@Nullable GesuchstellerContainer gesuchsteller, @Nullable EinkommensverschlechterungInfoContainer oldData,
-		@Nullable EinkommensverschlechterungInfoContainer convertedEkvi) {
-		if (isNeededToRemoveEinkommensverschlechterungCont(gesuchsteller, oldData, convertedEkvi)) {
+	private void removeEKVContainerIfNotNeeded(
+		@Nullable GesuchstellerContainer gesuchsteller,
+		@Nullable EinkommensverschlechterungInfoContainer oldData,
+		@Nullable EinkommensverschlechterungInfoContainer convertedEkvi
+	) {
+		if (isNeededToRemoveEinkommensverschlechterungCont(
+			gesuchsteller,
+			oldData,
+			convertedEkvi
+		)) {
 			//noinspection ConstantConditions
-			einkommensverschlechterungService.removeEinkommensverschlechterungContainer(gesuchsteller.getEinkommensverschlechterungContainer());
+			einkommensverschlechterungService
+				.removeEinkommensverschlechterungContainer(
+					gesuchsteller
+						.getEinkommensverschlechterungContainer()
+				);
 			gesuchsteller.setEinkommensverschlechterungContainer(null);
 		}
 	}
 
 	/**
-	 * Returns true when the given GS already has an einkommensverschlechtrung and the new EVInfo says that no EV should be present
+	 * Returns true when the given GS already has an einkommensverschlechtrung and the new EVInfo says that no EV should
+	 * be present
 	 */
-	private boolean isNeededToRemoveEinkommensverschlechterungCont(@Nullable GesuchstellerContainer gesuchsteller,
-		@Nullable EinkommensverschlechterungInfoContainer oldData, @Nullable EinkommensverschlechterungInfoContainer newData) {
-		return oldData != null && newData != null && gesuchsteller != null
-			&& !newData.getEinkommensverschlechterungInfoJA().getEinkommensverschlechterung()
-			&& gesuchsteller.getEinkommensverschlechterungContainer() != null;
+	private boolean isNeededToRemoveEinkommensverschlechterungCont(
+		@Nullable GesuchstellerContainer gesuchsteller,
+		@Nullable EinkommensverschlechterungInfoContainer oldData,
+		@Nullable EinkommensverschlechterungInfoContainer newData
+	) {
+		return oldData != null
+			&& newData != null
+			&& gesuchsteller != null
+			&& !newData.getEinkommensverschlechterungInfoJA()
+				.getEinkommensverschlechterung()
+			&& gesuchsteller.getEinkommensverschlechterungContainer()
+				!= null;
 	}
 
 	/**
 	 * This method creates all required EkvContainer and EKV. It uses the information contained in the EKVInfo to
 	 * know when these EKVCont and EKV must be created. They will be created using the values by default.
 	 */
-	private void addEmptyEKVContainerIfNeeded(@Nullable GesuchstellerContainer gesuchsteller, @Nonnull EinkommensverschlechterungInfoContainer ekvInfo) {
+	private void addEmptyEKVContainerIfNeeded(
+		@Nullable GesuchstellerContainer gesuchsteller,
+		@Nonnull EinkommensverschlechterungInfoContainer ekvInfo
+	) {
 		if (gesuchsteller != null) {
 			if (gesuchsteller.getEinkommensverschlechterungContainer() == null
-				&& ekvInfo.getEinkommensverschlechterungInfoJA().getEinkommensverschlechterung()) {
+				&& ekvInfo.getEinkommensverschlechterungInfoJA()
+					.getEinkommensverschlechterung()) {
 
-				EinkommensverschlechterungContainer ekvCont = new EinkommensverschlechterungContainer();
+				EinkommensverschlechterungContainer ekvCont =
+					new EinkommensverschlechterungContainer();
 				ekvCont.setGesuchsteller(gesuchsteller);
 				gesuchsteller.setEinkommensverschlechterungContainer(ekvCont);
 			}
-			if (ekvInfo.getEinkommensverschlechterungInfoJA().getEkvFuerBasisJahrPlus1()
-				&& gesuchsteller.getEinkommensverschlechterungContainer() != null
-				&& gesuchsteller.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1() == null) {
+			if (ekvInfo.getEinkommensverschlechterungInfoJA()
+				.getEkvFuerBasisJahrPlus1()
+				&& gesuchsteller.getEinkommensverschlechterungContainer()
+					!= null
+				&& gesuchsteller.getEinkommensverschlechterungContainer()
+					.getEkvJABasisJahrPlus1()
+					== null) {
 
-				gesuchsteller.getEinkommensverschlechterungContainer().setEkvJABasisJahrPlus1(createEmptyEKV());
+				gesuchsteller.getEinkommensverschlechterungContainer()
+					.setEkvJABasisJahrPlus1(createEmptyEKV());
 			}
-			if (ekvInfo.getEinkommensverschlechterungInfoJA().getEkvFuerBasisJahrPlus2()
-				&& gesuchsteller.getEinkommensverschlechterungContainer() != null
-				&& gesuchsteller.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus2() == null) {
+			if (ekvInfo.getEinkommensverschlechterungInfoJA()
+				.getEkvFuerBasisJahrPlus2()
+				&& gesuchsteller.getEinkommensverschlechterungContainer()
+					!= null
+				&& gesuchsteller.getEinkommensverschlechterungContainer()
+					.getEkvJABasisJahrPlus2()
+					== null) {
 
-				gesuchsteller.getEinkommensverschlechterungContainer().setEkvJABasisJahrPlus2(createEmptyEKV());
+				gesuchsteller.getEinkommensverschlechterungContainer()
+					.setEkvJABasisJahrPlus2(createEmptyEKV());
 			}
 		}
 	}
 
 	@Nonnull
 	private Einkommensverschlechterung createEmptyEKV() {
-		Einkommensverschlechterung ekvBasisPlus1 = new Einkommensverschlechterung();
+		Einkommensverschlechterung ekvBasisPlus1 =
+			new Einkommensverschlechterung();
 		return ekvBasisPlus1;
 	}
 }

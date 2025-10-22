@@ -20,30 +20,29 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.JaxBaseConverter;
 import ch.dvbern.ebegu.api.dtos.JaxAdresse;
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.services.AdresseService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
@@ -59,7 +58,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("adressen")
 @Stateless
-@Api(description = "Resource zum Speichern von Adressen")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class AdresseResource {
 
@@ -67,43 +65,63 @@ public class AdresseResource {
 	private AdresseService adresseService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxBaseConverter converter;
 
-	@ApiOperation(value = "Erstellt eine neue Adresse in der Datenbank.", response = JaxAdresse.class)
+	@Operation(summary = "Erstellt eine neue Adresse in der Datenbank.")
 	@Nullable
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER, SACHBEARBEITER_TS, ADMIN_TS })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER, SACHBEARBEITER_TS,
+		ADMIN_TS })
 	public Response create(
 		@Nonnull @NotNull JaxAdresse adresseJAXP,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
-		Adresse convertedAdresse = converter.adresseToEntity(adresseJAXP, new Adresse());
-		Adresse persistedAdresse = this.adresseService.createAdresse(convertedAdresse);
+		Adresse convertedAdresse = converter.adresseToEntity(
+			adresseJAXP,
+			new Adresse()
+		);
+		Adresse persistedAdresse = this.adresseService.createAdresse(
+			convertedAdresse
+		);
 
 		URI uri = uriInfo.getBaseUriBuilder()
 			.path(AdresseResource.class)
 			.path('/' + persistedAdresse.getId())
 			.build();
 
-		return Response.created(uri).entity(converter.adresseToJAX(persistedAdresse)).build();
+		return Response.created(uri)
+			.entity(converter.adresseToJAX(persistedAdresse))
+			.build();
 	}
 
-	@ApiOperation(value = "Aktualisiert eine Adresse in der Datenbank.", response = JaxAdresse.class)
+	@Operation(summary = "Aktualisiert eine Adresse in der Datenbank.")
 	@Nullable
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER, SACHBEARBEITER_TS, ADMIN_TS })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER, SACHBEARBEITER_TS,
+		ADMIN_TS })
 	public JaxAdresse update(
 		@Nonnull @NotNull JaxAdresse adresseJAXP,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		Objects.requireNonNull(adresseJAXP.getId());
-		Adresse adrFromDB = adresseService.findAdresse(adresseJAXP.getId()).orElseThrow(() -> new EbeguEntityNotFoundException("update", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, adresseJAXP.getId()));
+		Adresse adrFromDB = adresseService.findAdresse(adresseJAXP.getId())
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"update",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					adresseJAXP.getId()
+				)
+			);
 		Adresse adrToMerge = converter.adresseToEntity(adresseJAXP, adrFromDB);
 		Adresse modifiedAdresse = this.adresseService.updateAdresse(adrToMerge);
 

@@ -1,0 +1,29 @@
+{
+    "valid": {
+        "einkommensVerschlechterung": "ja",
+        "GS1": {
+            "quellenbesteuert": "true",
+            "bruttoLohn": "34022",
+            "nettoEinkommen": "",
+            "einkaeufeVorsorge": "",
+            "abzuegeLiegenschaft": "",
+            "steuerbaresVermoegen": ""
+        },
+        "GS2": {
+            "quellenbesteuert": "false",
+            "nettoEinkommen": "70000",
+            "einkaeufeVorsorge": "10000",
+            "liegenschaftsErtraege": "0",
+            "abzuegeLiegenschaft": "5000",
+            "steuerbaresVermoegen": "300000",
+            "bruttoLohn": ""
+        },
+        "Resultate": {
+            "massgebendesEinkommenVorher": "140'218",
+            "massgebendesEinkommenGS1": "27'218",
+            "massgebendesEinkommenGS2": "95'000",
+            "massgebendesEinkommenNachher": "122'218",
+            "aenderungPercent": "-12"
+        }
+    }
+}

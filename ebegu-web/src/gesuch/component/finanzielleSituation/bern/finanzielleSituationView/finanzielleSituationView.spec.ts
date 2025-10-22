@@ -14,16 +14,17 @@
  */
 
 import {waitForAsync} from '@angular/core/testing';
+import angular from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {ngServicesMock} from '../../../../../hybridTools/ngServicesMocks';
 import {TSCreationAction} from '../../../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../../../models/enums/TSEingangsart';
-import {TSEinstellungKey} from '../../../../../models/enums/TSEinstellungKey';
-import {TSEinstellung} from '../../../../../models/TSEinstellung';
+import {TSEinstellungKey} from '../../../../../admin/einstellungen/TSEinstellungKey';
+import {TSEinstellung} from '../../../../../admin/einstellungen/TSEinstellung';
 import {TSFamiliensituation} from '../../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../../models/TSFamiliensituationContainer';
-import {TSGesuchsperiode} from '../../../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSGesuchsteller} from '../../../../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
 import {GESUCH_JS_MODULE} from '../../../../gesuch.module';

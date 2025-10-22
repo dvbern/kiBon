@@ -19,7 +19,7 @@
 import {Injectable} from '@angular/core';
 import {TSAntragStatus} from '../../models/enums/TSAntragStatus';
 import {TSSozialdienstFallStatus} from '../../models/enums/TSSozialdienstFallStatus';
-import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {GesuchModelManager} from '../service/gesuchModelManager';
 import {WizardStepManager} from '../service/wizardStepManager';
 

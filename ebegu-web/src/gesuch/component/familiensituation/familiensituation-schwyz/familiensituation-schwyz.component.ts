@@ -1,32 +1,37 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
+import {mergeMap} from 'rxjs/operators';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSEinstellungKey} from '../../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
 import {TSFamilienstatus} from '../../../../models/enums/TSFamilienstatus';
-import {TSEinstellung} from '../../../../models/TSEinstellung';
+import {TSGesuchstellerKardinalitaet} from '../../../../models/enums/TSGesuchstellerKardinalitaet';
+import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
 import {TSFamiliensituation} from '../../../../models/TSFamiliensituation';
+import {TSFamiliensituationContainer} from '../../../../models/TSFamiliensituationContainer';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {FamiliensituationRS} from '../../../service/familiensituationRS.service';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../service/wizardStepManager';
 import {AbstractFamiliensitutaionView} from '../AbstractFamiliensitutaionView';
-import {TSGesuchstellerKardinalitaet} from '../../../../models/enums/TSGesuchstellerKardinalitaet';
 import {
     DvNgGsRemovalConfirmationDialogComponent,
     GSRemovalConfirmationDialogData
 } from '../dv-ng-gs-removal-confirmation-dialog/dv-ng-gs-removal-confirmation-dialog.component';
+import {DvNgGsRemovalQuestionDialogComponent} from '../dv-ng-gs-removal-question-dialog/dv-ng-gs-removal-question-dialog.component';
 import {FamiliensituationUtil} from '../FamiliensituationUtil';
-import {MatDialog} from '@angular/material/dialog';
+import {firstValueFrom} from 'rxjs';
 
 const LOG = LogFactory.createLog('FamiliensituationSchwyzComponent');
 
 @Component({
     selector: 'dv-familiensituation-schwyz',
     templateUrl: './familiensituation-schwyz.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FamiliensituationSchwyzComponent
     extends AbstractFamiliensitutaionView
@@ -94,44 +99,123 @@ export class FamiliensituationSchwyzComponent
     }
 
     protected async confirm(onResult: (arg: any) => void): Promise<void> {
-        if (this.changeResetsGS2()) {
-            this.dialog
-                .open<
-                    DvNgGsRemovalConfirmationDialogComponent,
-                    GSRemovalConfirmationDialogData
-                >(DvNgGsRemovalConfirmationDialogComponent, {
-                    data: {
-                        gsFullName: this.getGesuch().gesuchsteller2
-                            ? this.getGesuch().gesuchsteller2.extractFullName()
-                            : ''
-                    }
-                })
-                .afterClosed()
-                .toPromise()
-                .then(async hasConfirmed => {
-                    if (hasConfirmed) {
-                        onResult(await this.save());
-                    } else {
-                        onResult(undefined);
-                    }
-                });
+        if (this.changeDirektResetsGS2()) {
+            firstValueFrom(
+                this.dialog
+                    .open<
+                        DvNgGsRemovalConfirmationDialogComponent,
+                        GSRemovalConfirmationDialogData
+                    >(DvNgGsRemovalConfirmationDialogComponent, {
+                        data: {
+                            gsFullName: this.getGesuch().gesuchsteller2
+                                ? this.getGesuch().gesuchsteller2.extractFullName()
+                                : ''
+                        }
+                    })
+                    .afterClosed()
+            ).then(async hasConfirmed => {
+                if (hasConfirmed) {
+                    onResult(await this.saveFamiliensituationAndHandleChange());
+                } else {
+                    onResult(undefined);
+                }
+            });
             return;
         }
-        onResult(await this.save());
+        if (this.changeFrageResetsGS2()) {
+            firstValueFrom(
+                this.dialog
+                    .open<
+                        DvNgGsRemovalQuestionDialogComponent,
+                        GSRemovalConfirmationDialogData
+                    >(DvNgGsRemovalQuestionDialogComponent, {
+                        data: {
+                            gsFullName: this.getGesuch().gesuchsteller2
+                                ? this.getGesuch().gesuchsteller2.extractFullName()
+                                : ''
+                        }
+                    })
+                    .afterClosed()
+            ).then(async hasConfirmed => {
+                if (hasConfirmed) {
+                    onResult(await this.saveFamiliensituation());
+                } else if (EbeguUtil.isNotNullAndFalse(hasConfirmed)) {
+                    onResult(await this.saveFamiliensituationAndHandleChange());
+                } else {
+                    onResult(undefined);
+                }
+            });
+            return;
+        }
+        onResult(await this.saveFamiliensituationAndHandleChange());
     }
 
-    private changeResetsGS2(): boolean {
-        return (
-            EbeguUtil.isNotNullOrUndefined(
-                this.gesuchModelManager.getGesuch().gesuchsteller2
-            ) &&
-            (this.isMutation() ||
-                FamiliensituationUtil.isChangeFrom2GSTo1GS(
-                    this.initialFamiliensituation,
-                    this.getFamiliensituation(),
-                    this.gesuchModelManager.getGesuchsperiode().gueltigkeit
-                        .gueltigBis
-                ))
+    protected saveFamiliensituation(): Promise<TSFamiliensituationContainer> {
+        this.errorService.clearAll();
+        return firstValueFrom(
+            this.familiensituationRS
+                .saveFamiliensituationOnly(this.model, this.getGesuch().id)
+                .pipe(
+                    mergeMap((familienContainerResponse: any) => {
+                        this.model = familienContainerResponse;
+                        this.getGesuch().familiensituationContainer =
+                            familienContainerResponse;
+                        // Gesuchsteller may changed...
+                        return this.gesuchModelManager
+                            .reloadGesuch()
+                            .then(() => this.model);
+                    })
+                )
         );
+    }
+
+    private changeDirektResetsGS2(): boolean {
+        const gesuchsteller2 =
+            this.gesuchModelManager.getGesuch().gesuchsteller2;
+        const hasGesuchsteller2 =
+            EbeguUtil.isNotNullOrUndefined(gesuchsteller2);
+
+        if (!hasGesuchsteller2) {
+            return false;
+        }
+
+        const isMutation = this.isMutation();
+        const hasNoAenderungPer = EbeguUtil.isNullOrUndefined(
+            this.initialFamiliensituation.aenderungPer
+        );
+
+        const isChangeFrom2GSTo1GS = FamiliensituationUtil.isChangeFrom2GSTo1GS(
+            this.initialFamiliensituation,
+            this.getFamiliensituation(),
+            this.gesuchModelManager.getGesuchsperiode().gueltigkeit.gueltigBis
+        );
+
+        return (isMutation && hasNoAenderungPer) || isChangeFrom2GSTo1GS;
+    }
+
+    private changeFrageResetsGS2(): boolean {
+        const gesuchsteller2 =
+            this.gesuchModelManager.getGesuch().gesuchsteller2;
+        const hasGesuchsteller2 =
+            EbeguUtil.isNotNullOrUndefined(gesuchsteller2);
+
+        if (!hasGesuchsteller2) {
+            return false;
+        }
+
+        const isMutation = this.isMutation();
+        const hasAenderungPer = EbeguUtil.isNotNullOrUndefined(
+            this.initialFamiliensituation.aenderungPer
+        );
+
+        const isNotChangeFrom2GSTo1GS =
+            !FamiliensituationUtil.isChangeFrom2GSTo1GS(
+                this.initialFamiliensituation,
+                this.getFamiliensituation(),
+                this.gesuchModelManager.getGesuchsperiode().gueltigkeit
+                    .gueltigBis
+            );
+
+        return isMutation && hasAenderungPer && isNotChangeFrom2GSTo1GS;
     }
 }

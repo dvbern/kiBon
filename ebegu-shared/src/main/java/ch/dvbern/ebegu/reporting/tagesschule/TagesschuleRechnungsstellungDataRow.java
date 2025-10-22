@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.tagesschule;
@@ -46,7 +46,8 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 /**
  * DTO fuer die TagesschuleStatistik
  */
-public class TagesschuleRechnungsstellungDataRow implements Comparable<TagesschuleRechnungsstellungDataRow> {
+public class TagesschuleRechnungsstellungDataRow implements
+	Comparable<TagesschuleRechnungsstellungDataRow> {
 
 	@Nullable
 	private String tagesschule;
@@ -145,7 +146,9 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return rechnungsadresseVorname;
 	}
 
-	public void setRechnungsadresseVorname(@Nullable String rechnungsadresseVorname) {
+	public void setRechnungsadresseVorname(
+		@Nullable String rechnungsadresseVorname
+	) {
 		this.rechnungsadresseVorname = rechnungsadresseVorname;
 	}
 
@@ -154,7 +157,9 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return rechnungsadresseNachname;
 	}
 
-	public void setRechnungsadresseNachname(@Nullable String rechnungsadresseNachname) {
+	public void setRechnungsadresseNachname(
+		@Nullable String rechnungsadresseNachname
+	) {
 		this.rechnungsadresseNachname = rechnungsadresseNachname;
 	}
 
@@ -163,7 +168,9 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return rechnungsadresseStrasse;
 	}
 
-	public void setRechnungsadresseStrasse(@Nullable String rechnungsadresseStrasse) {
+	public void setRechnungsadresseStrasse(
+		@Nullable String rechnungsadresseStrasse
+	) {
 		this.rechnungsadresseStrasse = rechnungsadresseStrasse;
 	}
 
@@ -172,7 +179,9 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return rechnungsadresseHausnummer;
 	}
 
-	public void setRechnungsadresseHausnummer(@Nullable String rechnungsadresseHausnummer) {
+	public void setRechnungsadresseHausnummer(
+		@Nullable String rechnungsadresseHausnummer
+	) {
 		this.rechnungsadresseHausnummer = rechnungsadresseHausnummer;
 	}
 
@@ -208,8 +217,11 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return massgebendesEinkommenVorFamAbzug;
 	}
 
-	public void setMassgebendesEinkommenVorFamAbzug(@Nullable BigDecimal massgebendesEinkommenVorFamAbzug) {
-		this.massgebendesEinkommenVorFamAbzug = massgebendesEinkommenVorFamAbzug;
+	public void setMassgebendesEinkommenVorFamAbzug(
+		@Nullable BigDecimal massgebendesEinkommenVorFamAbzug
+	) {
+		this.massgebendesEinkommenVorFamAbzug =
+			massgebendesEinkommenVorFamAbzug;
 	}
 
 	@Nullable
@@ -226,8 +238,11 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return massgebendesEinkommenNachFamAbzug;
 	}
 
-	public void setMassgebendesEinkommenNachFamAbzug(@Nullable BigDecimal massgebendesEinkommenNachFamAbzug) {
-		this.massgebendesEinkommenNachFamAbzug = massgebendesEinkommenNachFamAbzug;
+	public void setMassgebendesEinkommenNachFamAbzug(
+		@Nullable BigDecimal massgebendesEinkommenNachFamAbzug
+	) {
+		this.massgebendesEinkommenNachFamAbzug =
+			massgebendesEinkommenNachFamAbzug;
 	}
 
 	@Nullable
@@ -235,7 +250,9 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return erklaerungEinkommen;
 	}
 
-	public void setErklaerungEinkommen(@Nullable ErklaerungEinkommen erklaerungEinkommen) {
+	public void setErklaerungEinkommen(
+		@Nullable ErklaerungEinkommen erklaerungEinkommen
+	) {
 		this.erklaerungEinkommen = erklaerungEinkommen;
 	}
 
@@ -253,7 +270,9 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return gebuehrProStundeMitBetreuung;
 	}
 
-	public void setGebuehrProStundeMitBetreuung(@Nullable BigDecimal gebuehrProStundeMitBetreuung) {
+	public void setGebuehrProStundeMitBetreuung(
+		@Nullable BigDecimal gebuehrProStundeMitBetreuung
+	) {
 		this.gebuehrProStundeMitBetreuung = gebuehrProStundeMitBetreuung;
 	}
 
@@ -262,7 +281,9 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return gebuehrProStundeOhneBetreuung;
 	}
 
-	public void setGebuehrProStundeOhneBetreuung(@Nullable BigDecimal gebuehrProStundeOhneBetreuung) {
+	public void setGebuehrProStundeOhneBetreuung(
+		@Nullable BigDecimal gebuehrProStundeOhneBetreuung
+	) {
 		this.gebuehrProStundeOhneBetreuung = gebuehrProStundeOhneBetreuung;
 	}
 
@@ -289,7 +310,9 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		return rechnungsadresseOrganisation;
 	}
 
-	public void setRechnungsadresseOrganisation(@Nullable String rechnungsadresseOrganisation) {
+	public void setRechnungsadresseOrganisation(
+		@Nullable String rechnungsadresseOrganisation
+	) {
 		this.rechnungsadresseOrganisation = rechnungsadresseOrganisation;
 	}
 
@@ -298,7 +321,8 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
 	) {
 		// Der Zeitabschnitt einer Tagesschule-Verfuegung enthaelt mehrere Monate!
-		Collection<TagesschuleRechnungsstellungDataRow> dataRows = new ArrayList<>();
+		Collection<TagesschuleRechnungsstellungDataRow> dataRows =
+			new ArrayList<>();
 		LocalDate monatsStart = zeitabschnitt.getGueltigkeit().getGueltigAb();
 		LocalDate monatsEnd = zeitabschnitt.getGueltigkeit().getGueltigBis();
 		while (monatsStart.isBefore(monatsEnd)) {
@@ -313,10 +337,16 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
 		@Nonnull LocalDate monatsStart
 	) {
-		TagesschuleRechnungsstellungDataRow dataRow = new TagesschuleRechnungsstellungDataRow();
-		final AnmeldungTagesschule anmeldungTagesschule = zeitabschnitt.getVerfuegung().getAnmeldungTagesschule();
+		TagesschuleRechnungsstellungDataRow dataRow =
+			new TagesschuleRechnungsstellungDataRow();
+		final AnmeldungTagesschule anmeldungTagesschule = zeitabschnitt
+			.getVerfuegung()
+			.getAnmeldungTagesschule();
 		if (anmeldungTagesschule != null) {
-			dataRow.tagesschule = anmeldungTagesschule.getInstitutionStammdaten().getInstitution().getName();
+			dataRow.tagesschule = anmeldungTagesschule
+				.getInstitutionStammdaten()
+				.getInstitution()
+				.getName();
 			dataRow.referenzNummer = anmeldungTagesschule.getReferenzNummer();
 			final KindContainer kindContainer = anmeldungTagesschule.getKind();
 			final Kind kind = kindContainer.getKindJA();
@@ -325,51 +355,80 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 				dataRow.vornameKind = kind.getVorname();
 				dataRow.geburtsdatumKind = kind.getGeburtsdatum();
 			}
-			final GesuchstellerContainer gsContainer = kindContainer.getGesuch().getGesuchsteller1();
+			final GesuchstellerContainer gsContainer = kindContainer.getGesuch()
+				.getGesuchsteller1();
 			if (gsContainer != null) {
-				final Gesuchsteller gesuchsteller = gsContainer.getGesuchstellerJA();
+				final Gesuchsteller gesuchsteller = gsContainer
+					.getGesuchstellerJA();
 				if (gesuchsteller != null) {
-					dataRow.rechnungsadresseVorname = gesuchsteller.getVorname();
-					dataRow.rechnungsadresseNachname = gesuchsteller.getNachname();
+					dataRow.rechnungsadresseVorname = gesuchsteller
+						.getVorname();
+					dataRow.rechnungsadresseNachname = gesuchsteller
+						.getNachname();
 				}
-				final GesuchstellerAdresse adresse = gsContainer.extractEffectiveRechnungsAdresse(LocalDate.now());
+				final GesuchstellerAdresse adresse = gsContainer
+					.extractEffectiveRechnungsAdresse(LocalDate.now());
 				if (adresse != null) {
-					dataRow.rechnungsadresseOrganisation = adresse.getOrganisation();
+					dataRow.rechnungsadresseOrganisation = adresse
+						.getOrganisation();
 					dataRow.rechnungsadresseStrasse = adresse.getStrasse();
-					dataRow.rechnungsadresseHausnummer = adresse.getHausnummer();
+					dataRow.rechnungsadresseHausnummer = adresse
+						.getHausnummer();
 					dataRow.rechnungsadressePlz = adresse.getPlz();
 					dataRow.rechnungsadresseOrt = adresse.getOrt();
 				}
 			}
 			if (anmeldungTagesschule.getBelegungTagesschule() != null) {
-				dataRow.eintrittsdatum = anmeldungTagesschule.getBelegungTagesschule().getEintrittsdatum();
+				dataRow.eintrittsdatum = anmeldungTagesschule
+					.getBelegungTagesschule()
+					.getEintrittsdatum();
 			}
 		}
 		dataRow.datumAb = monatsStart;
-		final BGCalculationResult bgCalculationResult = zeitabschnitt.getRelevantBgCalculationResult();
-		dataRow.massgebendesEinkommenVorFamAbzug = bgCalculationResult.getMassgebendesEinkommenVorAbzugFamgr();
+		final BGCalculationResult bgCalculationResult = zeitabschnitt
+			.getRelevantBgCalculationResult();
+		dataRow.massgebendesEinkommenVorFamAbzug = bgCalculationResult
+			.getMassgebendesEinkommenVorAbzugFamgr();
 		dataRow.famGroesse = bgCalculationResult.getFamGroesse();
 
 		dataRow.massgebendesEinkommenNachFamAbzug =
-			MathUtil.minimum(bgCalculationResult.getMassgebendesEinkommen(), BigDecimal.ZERO);
-		dataRow.ekvVorhanden = getEkvVorhandenValue(anmeldungTagesschule, monatsStart);
-		dataRow.ekvAnnuliert = getEkvAnnuliertValue(anmeldungTagesschule, monatsStart);
-		dataRow.erklaerungEinkommen = getErklaerungEinkommen(anmeldungTagesschule);
+			MathUtil.minimum(
+				bgCalculationResult.getMassgebendesEinkommen(),
+				BigDecimal.ZERO
+			);
+		dataRow.ekvVorhanden = getEkvVorhandenValue(
+			anmeldungTagesschule,
+			monatsStart
+		);
+		dataRow.ekvAnnuliert = getEkvAnnuliertValue(
+			anmeldungTagesschule,
+			monatsStart
+		);
+		dataRow.erklaerungEinkommen = getErklaerungEinkommen(
+			anmeldungTagesschule
+		);
 
 		final TSCalculationResult tsMitBetreuung =
-			bgCalculationResult.getTsCalculationResultMitPaedagogischerBetreuung();
+			bgCalculationResult
+				.getTsCalculationResultMitPaedagogischerBetreuung();
 		if (tsMitBetreuung != null) {
-			dataRow.gebuehrProStundeMitBetreuung = tsMitBetreuung.getGebuehrProStunde();
+			dataRow.gebuehrProStundeMitBetreuung = tsMitBetreuung
+				.getGebuehrProStunde();
 		}
 		final TSCalculationResult tsOhneBetreuung =
-			bgCalculationResult.getTsCalculationResultOhnePaedagogischerBetreuung();
+			bgCalculationResult
+				.getTsCalculationResultOhnePaedagogischerBetreuung();
 		if (tsOhneBetreuung != null) {
-			dataRow.gebuehrProStundeOhneBetreuung = tsOhneBetreuung.getGebuehrProStunde();
+			dataRow.gebuehrProStundeOhneBetreuung = tsOhneBetreuung
+				.getGebuehrProStunde();
 		}
 		return dataRow;
 	}
 
-	private static Boolean getEkvVorhandenValue(@Nullable AnmeldungTagesschule anmeldungTagesschule, @Nonnull LocalDate monatStart) {
+	private static Boolean getEkvVorhandenValue(
+		@Nullable AnmeldungTagesschule anmeldungTagesschule,
+		@Nonnull LocalDate monatStart
+	) {
 		if (anmeldungTagesschule == null) {
 			return false;
 		}
@@ -377,7 +436,8 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		if (gesuch.getEinkommensverschlechterungInfoContainer() == null) {
 			return false;
 		}
-		if (gesuch.getGesuchsperiode().getGueltigkeit().getGueltigAb().getYear() == monatStart.getYear()){
+		if (gesuch.getGesuchsperiode().getGueltigkeit().getGueltigAb().getYear()
+			== monatStart.getYear()) {
 			return gesuch.getEinkommensverschlechterungInfoContainer()
 				.getEinkommensverschlechterungInfoJA()
 				.getEkvFuerBasisJahrPlus1();
@@ -388,7 +448,10 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 
 	}
 
-	private static Boolean getEkvAnnuliertValue(@Nullable AnmeldungTagesschule anmeldungTagesschule, @Nonnull LocalDate monatStart) {
+	private static Boolean getEkvAnnuliertValue(
+		@Nullable AnmeldungTagesschule anmeldungTagesschule,
+		@Nonnull LocalDate monatStart
+	) {
 		if (anmeldungTagesschule == null) {
 			return false;
 		}
@@ -396,7 +459,8 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		if (gesuch.getEinkommensverschlechterungInfoContainer() == null) {
 			return false;
 		}
-		if (gesuch.getGesuchsperiode().getGueltigkeit().getGueltigAb().getYear() == monatStart.getYear()){
+		if (gesuch.getGesuchsperiode().getGueltigkeit().getGueltigAb().getYear()
+			== monatStart.getYear()) {
 			return gesuch.getEinkommensverschlechterungInfoContainer()
 				.getEinkommensverschlechterungInfoJA()
 				.getEkvBasisJahrPlus1Annulliert();
@@ -412,7 +476,9 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 	// 2) Sozialhilfebezüger
 	// 3) Einkommen wurde nicht deklariert
 	// 4) Einkommen ist effektiv kleiner als Familienabzug
-	private static ErklaerungEinkommen getErklaerungEinkommen(@Nullable AnmeldungTagesschule anmeldungTagesschule) {
+	private static ErklaerungEinkommen getErklaerungEinkommen(
+		@Nullable AnmeldungTagesschule anmeldungTagesschule
+	) {
 
 		if (anmeldungTagesschule == null) {
 			return ErklaerungEinkommen.KEINE_ERKLAERUNG;
@@ -420,21 +486,25 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 		Gesuch gesuch = anmeldungTagesschule.getKind().getGesuch();
 
 		// 1)
-		if (gesuch.getFinSitStatus() != null && gesuch.getFinSitStatus() == FinSitStatus.ABGELEHNT) {
+		if (gesuch.getFinSitStatus() != null
+			&& gesuch.getFinSitStatus() == FinSitStatus.ABGELEHNT) {
 			return ErklaerungEinkommen.FINANZIELLE_SITUATION_NICHT_AKZEPTIERT;
 		}
 
-		FamiliensituationContainer familiensituationContainer = gesuch.getFamiliensituationContainer();
+		FamiliensituationContainer familiensituationContainer = gesuch
+			.getFamiliensituationContainer();
 		if (familiensituationContainer == null) {
 			return ErklaerungEinkommen.KEINE_ERKLAERUNG;
 		}
-		Familiensituation familiensituationJA = familiensituationContainer.getFamiliensituationJA();
+		Familiensituation familiensituationJA = familiensituationContainer
+			.getFamiliensituationJA();
 		if (familiensituationJA == null) {
 			return ErklaerungEinkommen.KEINE_ERKLAERUNG;
 		}
 
 		// 2)
-		if (familiensituationJA.getSozialhilfeBezueger() != null && familiensituationJA.getSozialhilfeBezueger()) {
+		if (familiensituationJA.getSozialhilfeBezueger() != null
+			&& familiensituationJA.getSozialhilfeBezueger()) {
 			return ErklaerungEinkommen.SOZIALHILFEBEZUEGER;
 		}
 		// 3)
@@ -455,7 +525,8 @@ public class TagesschuleRechnungsstellungDataRow implements Comparable<Tagesschu
 			return false;
 		}
 
-		TagesschuleRechnungsstellungDataRow that = (TagesschuleRechnungsstellungDataRow) o;
+		TagesschuleRechnungsstellungDataRow that =
+			(TagesschuleRechnungsstellungDataRow) o;
 		return Objects.equals(getReferenzNummer(), that.getReferenzNummer())
 			&& Objects.equals(getDatumAb(), that.getDatumAb());
 	}

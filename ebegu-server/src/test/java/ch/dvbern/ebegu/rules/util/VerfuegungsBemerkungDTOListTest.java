@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.util;
@@ -33,60 +33,110 @@ import ch.dvbern.ebegu.types.DateRange;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 public class VerfuegungsBemerkungDTOListTest {
 
 	private final DateRange dateRangeFullAugust =
-		new DateRange(LocalDate.of(2021, Month.AUGUST, 1), LocalDate.of(2021, Month.AUGUST, 31));
+		new DateRange(
+			LocalDate.of(2021, Month.AUGUST, 1),
+			LocalDate.of(2021, Month.AUGUST, 31)
+		);
 	private final DateRange dateRangeFirstHalfAugust =
-		new DateRange(LocalDate.of(2021, Month.AUGUST, 1), LocalDate.of(2021, Month.AUGUST, 15));
+		new DateRange(
+			LocalDate.of(2021, Month.AUGUST, 1),
+			LocalDate.of(2021, Month.AUGUST, 15)
+		);
 	private final DateRange dateRangeLastHalfAugust =
-		new DateRange(LocalDate.of(2021, Month.AUGUST, 16), LocalDate.of(2021, Month.AUGUST, 31));
+		new DateRange(
+			LocalDate.of(2021, Month.AUGUST, 16),
+			LocalDate.of(2021, Month.AUGUST, 31)
+		);
 	private final DateRange dateRangePartAugust =
-		new DateRange(LocalDate.of(2021, Month.AUGUST, 10), LocalDate.of(2021, Month.AUGUST, 20));
+		new DateRange(
+			LocalDate.of(2021, Month.AUGUST, 10),
+			LocalDate.of(2021, Month.AUGUST, 20)
+		);
 	private final DateRange dateRangeNovToEndJuly =
-		new DateRange(LocalDate.of(2021, Month.NOVEMBER, 10), LocalDate.of(2022, Month.DECEMBER, 31));
-
+		new DateRange(
+			LocalDate.of(2021, Month.NOVEMBER, 10),
+			LocalDate.of(2022, Month.DECEMBER, 31)
+		);
 
 	@Test
 	public void test_RuleValidityGemeinde_strongerThenAsiv() {
-		VerfuegungsBemerkungDTO verfuegungsBemerkungDTOAsiv = createDefaultVerfugeungsBemerkungeDto(MsgKey.ABWESENHEIT_MSG);
-		VerfuegungsBemerkungDTO verfuegungsBemerkungDTOGemeinde = new VerfuegungsBemerkungDTO(RuleValidity.GEMEINDE, MsgKey.ABWESENHEIT_MSG,
-			Locale.GERMAN);
+		VerfuegungsBemerkungDTO verfuegungsBemerkungDTOAsiv =
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.ABWESENHEIT_MSG);
+		VerfuegungsBemerkungDTO verfuegungsBemerkungDTOGemeinde =
+			new VerfuegungsBemerkungDTO(
+				RuleValidity.GEMEINDE,
+				MsgKey.ABWESENHEIT_MSG,
+				Locale.GERMAN
+			);
 		verfuegungsBemerkungDTOGemeinde.setGueltigkeit(dateRangeFullAugust);
 
 		VerfuegungsBemerkungDTOList list = new VerfuegungsBemerkungDTOList();
 		list.addBemerkung(verfuegungsBemerkungDTOAsiv);
 		list.addBemerkung(verfuegungsBemerkungDTOGemeinde);
 
-
-		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(false);
+		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(
+			false
+		);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(RuleValidity.GEMEINDE, result.get(0).getRuleValidity());
-		Assert.assertEquals(dateRangeFullAugust, result.get(0).getGueltigkeit());
+		Assert.assertEquals(
+			RuleValidity.GEMEINDE,
+			result.get(0).getRuleValidity()
+		);
+		Assert.assertEquals(
+			dateRangeFullAugust,
+			result.get(0).getGueltigkeit()
+		);
 	}
 
 	@Test
 	public void test_aussertOrdentlicherAnspruch_ueberschreibt() {
 		VerfuegungsBemerkungDTOList list = new VerfuegungsBemerkungDTOList();
-		list.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG));
-		list.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		list.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG));
+		list.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+			)
+		);
+		list.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.ERWERBSPENSUM_ANSPRUCH
+			)
+		);
+		list.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG)
+		);
 
-		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(false);
+		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(
+			false
+		);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG, result.get(0).getMsgKey());
+		Assert.assertEquals(
+			MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG,
+			result.get(0).getMsgKey()
+		);
 	}
 
 	@Test
 	public void test_fachstellen_ueberschreibt() {
 		VerfuegungsBemerkungDTOList list = new VerfuegungsBemerkungDTOList();
-		list.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG));
-		list.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.ERWERBSPENSUM_ANSPRUCH));
+		list.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG)
+		);
+		list.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.ERWERBSPENSUM_ANSPRUCH
+			)
+		);
 
-		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(false);
+		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(
+			false
+		);
 		Assert.assertEquals(1, result.size());
 		Assert.assertEquals(MsgKey.FACHSTELLE_MSG, result.get(0).getMsgKey());
 	}
@@ -94,78 +144,119 @@ public class VerfuegungsBemerkungDTOListTest {
 	@Test
 	public void test_fachstellen_ueberschreibt_FKJV() {
 		VerfuegungsBemerkungDTOList list = new VerfuegungsBemerkungDTOList();
-		list.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG));
-		list.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.ERWERBSPENSUM_ANSPRUCH));
+		list.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG)
+		);
+		list.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.ERWERBSPENSUM_ANSPRUCH
+			)
+		);
 
-		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(true);
+		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(
+			true
+		);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(MsgKey.FACHSTELLE_MSG_FKJV, result.get(0).getMsgKey());
+		Assert.assertEquals(
+			MsgKey.FACHSTELLE_MSG_FKJV,
+			result.get(0).getMsgKey()
+		);
 	}
-
-	@Test
-	public void test_keineErweitertenBeduerfnisse_ueberschreibt() {
-		VerfuegungsBemerkungDTOList list = new VerfuegungsBemerkungDTOList();
-		list.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.KEINE_ERWEITERTE_BEDUERFNISSE_MSG));
-		list.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.ERWEITERTE_BEDUERFNISSE_MSG));
-
-		List<VerfuegungsBemerkungDTO> result = list.getRequiredBemerkungen(false);
-		Assert.assertEquals(0, result.size());
-	}
-
 
 	@Test
 	public void test_Bemerkung_rangeNotFullMonth() {
-		VerfuegungsBemerkungDTO bemerkung = createDefaultVerfugeungsBemerkungeDto(MsgKey.ABWESENHEIT_MSG);
+		VerfuegungsBemerkungDTO bemerkung =
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.ABWESENHEIT_MSG);
 		bemerkung.setGueltigkeit(dateRangeFirstHalfAugust);
 
-		VerfuegungsBemerkungDTOList bemerkungList = new VerfuegungsBemerkungDTOList();
+		VerfuegungsBemerkungDTOList bemerkungList =
+			new VerfuegungsBemerkungDTOList();
 		bemerkungList.addBemerkung(bemerkung);
 
-		List<VerfuegungsBemerkungDTO> result = bemerkungList.getRequiredBemerkungen(false);
+		List<VerfuegungsBemerkungDTO> result = bemerkungList
+			.getRequiredBemerkungen(false);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(dateRangeFirstHalfAugust, result.get(0).getGueltigkeit());
+		Assert.assertEquals(
+			dateRangeFirstHalfAugust,
+			result.get(0).getGueltigkeit()
+		);
 	}
 
 	@Test
 	public void test_sameBemerkung_adjacentRange() {
-		VerfuegungsBemerkungDTO bemerkung1 = createDefaultVerfugeungsBemerkungeDto(MsgKey.ABWESENHEIT_MSG);
+		VerfuegungsBemerkungDTO bemerkung1 =
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.ABWESENHEIT_MSG);
 		bemerkung1.setGueltigkeit(dateRangeFirstHalfAugust);
 
-		VerfuegungsBemerkungDTO bemerkung2 = createDefaultVerfugeungsBemerkungeDto(MsgKey.ABWESENHEIT_MSG);
+		VerfuegungsBemerkungDTO bemerkung2 =
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.ABWESENHEIT_MSG);
 		bemerkung2.setGueltigkeit(dateRangeLastHalfAugust);
 
-		VerfuegungsBemerkungDTOList bemerkungList = new VerfuegungsBemerkungDTOList();
+		VerfuegungsBemerkungDTOList bemerkungList =
+			new VerfuegungsBemerkungDTOList();
 		bemerkungList.addBemerkung(bemerkung1);
 		bemerkungList.addBemerkung(bemerkung2);
 
-		List<VerfuegungsBemerkungDTO> result = bemerkungList.getRequiredBemerkungen(false).stream()
-			.sorted(Comparator.comparing(VerfuegungsBemerkungDTO::getGueltigkeit))
+		List<VerfuegungsBemerkungDTO> result = bemerkungList
+			.getRequiredBemerkungen(false)
+			.stream()
+			.sorted(
+				Comparator.comparing(
+					VerfuegungsBemerkungDTO::getGueltigkeit
+				)
+			)
 			.collect(Collectors.toList());
 		Assert.assertEquals(2, result.size());
 
-		Assert.assertEquals(dateRangeFirstHalfAugust, result.get(0).getGueltigkeit());
-		Assert.assertEquals(dateRangeLastHalfAugust, result.get(1).getGueltigkeit());
+		Assert.assertEquals(
+			dateRangeFirstHalfAugust,
+			result.get(0).getGueltigkeit()
+		);
+		Assert.assertEquals(
+			dateRangeLastHalfAugust,
+			result.get(1).getGueltigkeit()
+		);
 	}
 
 	@Test
 	public void test_sameBemerkung_adjacentRange_ausserorderntlicherAnspruch_fullMonth_ueberschreibt() {
-		VerfuegungsBemerkungDTO bemerkungErwerbspensumFirst = createDefaultVerfugeungsBemerkungeDto(MsgKey.ERWERBSPENSUM_ANSPRUCH);
+		VerfuegungsBemerkungDTO bemerkungErwerbspensumFirst =
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.ERWERBSPENSUM_ANSPRUCH
+			);
 		bemerkungErwerbspensumFirst.setGueltigkeit(dateRangeFirstHalfAugust);
 
-		VerfuegungsBemerkungDTO bemerkungErwerbspensumLast = createDefaultVerfugeungsBemerkungeDto(MsgKey.ERWERBSPENSUM_ANSPRUCH);
+		VerfuegungsBemerkungDTO bemerkungErwerbspensumLast =
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.ERWERBSPENSUM_ANSPRUCH
+			);
 		bemerkungErwerbspensumLast.setGueltigkeit(dateRangeLastHalfAugust);
 
-		VerfuegungsBemerkungDTOList bemerkungList = new VerfuegungsBemerkungDTOList();
+		VerfuegungsBemerkungDTOList bemerkungList =
+			new VerfuegungsBemerkungDTOList();
 
-		bemerkungList.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG));
-		bemerkungList.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG));
+		bemerkungList.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+			)
+		);
+		bemerkungList.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG)
+		);
 		bemerkungList.addBemerkung(bemerkungErwerbspensumFirst);
 		bemerkungList.addBemerkung(bemerkungErwerbspensumLast);
 
-		List<VerfuegungsBemerkungDTO> result = bemerkungList.getRequiredBemerkungen(false);
+		List<VerfuegungsBemerkungDTO> result = bemerkungList
+			.getRequiredBemerkungen(false);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG, result.get(0).getMsgKey());
-		Assert.assertEquals(dateRangeFullAugust, result.get(0).getGueltigkeit());
+		Assert.assertEquals(
+			MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG,
+			result.get(0).getMsgKey()
+		);
+		Assert.assertEquals(
+			dateRangeFullAugust,
+			result.get(0).getGueltigkeit()
+		);
 	}
 
 	@Test
@@ -177,25 +268,52 @@ public class VerfuegungsBemerkungDTOListTest {
 		//RESULT
 		//Bemerkung Ausserordentlicher Anspruch 15.08-31.08
 		//Bemerkung Fachstelle 01.08-14.08
-		VerfuegungsBemerkungDTO bemerkungAusserordernlicherAnspruch = createDefaultVerfugeungsBemerkungeDto(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG);
-		bemerkungAusserordernlicherAnspruch.setGueltigkeit(dateRangeLastHalfAugust);
+		VerfuegungsBemerkungDTO bemerkungAusserordernlicherAnspruch =
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+			);
+		bemerkungAusserordernlicherAnspruch.setGueltigkeit(
+			dateRangeLastHalfAugust
+		);
 
-		VerfuegungsBemerkungDTOList bemerkungList = new VerfuegungsBemerkungDTOList();
-		bemerkungList.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG));
+		VerfuegungsBemerkungDTOList bemerkungList =
+			new VerfuegungsBemerkungDTOList();
+		bemerkungList.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG)
+		);
 		bemerkungList.addBemerkung(bemerkungAusserordernlicherAnspruch);
 
-		List<VerfuegungsBemerkungDTO> result = bemerkungList.getRequiredBemerkungen(false);
+		List<VerfuegungsBemerkungDTO> result = bemerkungList
+			.getRequiredBemerkungen(false);
 		Assert.assertEquals(2, result.size());
 
-		Map<MsgKey, List<VerfuegungsBemerkungDTO>> bemerkungenByMessageKey = mapVerfuegungsBemerkungByMsgKey(result);
+		Map<MsgKey, List<VerfuegungsBemerkungDTO>> bemerkungenByMessageKey =
+			mapVerfuegungsBemerkungByMsgKey(result);
 
-		Assert.assertEquals(1, bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG).size());
-		Assert.assertEquals(dateRangeFirstHalfAugust, bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG).get(0).getGueltigkeit());
+		Assert.assertEquals(
+			1,
+			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG).size()
+		);
+		Assert.assertEquals(
+			dateRangeFirstHalfAugust,
+			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG)
+				.get(0)
+				.getGueltigkeit()
+		);
 
-		Assert.assertEquals(1,  bemerkungenByMessageKey.get(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG).size());
-		Assert.assertEquals(dateRangeLastHalfAugust, bemerkungenByMessageKey.get(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG).get(0).getGueltigkeit());
+		Assert.assertEquals(
+			1,
+			bemerkungenByMessageKey.get(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+			).size()
+		);
+		Assert.assertEquals(
+			dateRangeLastHalfAugust,
+			bemerkungenByMessageKey.get(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+			).get(0).getGueltigkeit()
+		);
 	}
-
 
 	@Test
 	public void test_sameBemerkung_adjacentRange_ausserorderntlicherAnspruch_notFullMonth_ueberschreibt_middle() {
@@ -206,65 +324,139 @@ public class VerfuegungsBemerkungDTOListTest {
 		//EXPECTED RESULT
 		//Bemerkung Ausserordentlicher Anspruch 10.08-20.08
 		//Bemerkung Fachstelle 01.08-09.08 und 21.08.-31.08
-		VerfuegungsBemerkungDTO bemerkungAusserordernlicherAnspruch = createDefaultVerfugeungsBemerkungeDto(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG);
+		VerfuegungsBemerkungDTO bemerkungAusserordernlicherAnspruch =
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+			);
 		bemerkungAusserordernlicherAnspruch.setGueltigkeit(dateRangePartAugust);
 
-		VerfuegungsBemerkungDTOList bemerkungList = new VerfuegungsBemerkungDTOList();
-		bemerkungList.addBemerkung(createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG));
+		VerfuegungsBemerkungDTOList bemerkungList =
+			new VerfuegungsBemerkungDTOList();
+		bemerkungList.addBemerkung(
+			createDefaultVerfugeungsBemerkungeDto(MsgKey.FACHSTELLE_MSG)
+		);
 		bemerkungList.addBemerkung(bemerkungAusserordernlicherAnspruch);
 
-		List<VerfuegungsBemerkungDTO> result = bemerkungList.getRequiredBemerkungen(false);
+		List<VerfuegungsBemerkungDTO> result = bemerkungList
+			.getRequiredBemerkungen(false);
 		Assert.assertEquals(3, result.size());
 
 		DateRange expectedFachstellenGueltigkeitPart1 =
-			new DateRange(LocalDate.of(2021, Month.AUGUST, 1), LocalDate.of(2021, Month.AUGUST, 9));
+			new DateRange(
+				LocalDate.of(2021, Month.AUGUST, 1),
+				LocalDate.of(2021, Month.AUGUST, 9)
+			);
 		DateRange expectedFachstellenGueltigkeitPart2 =
-			new DateRange(LocalDate.of(2021, Month.AUGUST, 21), LocalDate.of(2021, Month.AUGUST, 31));
+			new DateRange(
+				LocalDate.of(2021, Month.AUGUST, 21),
+				LocalDate.of(2021, Month.AUGUST, 31)
+			);
 
-		Map<MsgKey, List<VerfuegungsBemerkungDTO>> bemerkungenByMessageKey = mapVerfuegungsBemerkungByMsgKey(result);
+		Map<MsgKey, List<VerfuegungsBemerkungDTO>> bemerkungenByMessageKey =
+			mapVerfuegungsBemerkungByMsgKey(result);
 
-		Assert.assertEquals(2, bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG).size());
-		Assert.assertEquals(expectedFachstellenGueltigkeitPart1, bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG).get(0).getGueltigkeit());
-		Assert.assertEquals(expectedFachstellenGueltigkeitPart2, bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG).get(1).getGueltigkeit());
+		Assert.assertEquals(
+			2,
+			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG).size()
+		);
+		Assert.assertEquals(
+			expectedFachstellenGueltigkeitPart1,
+			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG)
+				.get(0)
+				.getGueltigkeit()
+		);
+		Assert.assertEquals(
+			expectedFachstellenGueltigkeitPart2,
+			bemerkungenByMessageKey.get(MsgKey.FACHSTELLE_MSG)
+				.get(1)
+				.getGueltigkeit()
+		);
 
-		Assert.assertEquals(1,  bemerkungenByMessageKey.get(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG).size());
-		Assert.assertEquals(dateRangePartAugust, bemerkungenByMessageKey.get(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG).get(0).getGueltigkeit());
+		Assert.assertEquals(
+			1,
+			bemerkungenByMessageKey.get(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+			).size()
+		);
+		Assert.assertEquals(
+			dateRangePartAugust,
+			bemerkungenByMessageKey.get(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+			).get(0).getGueltigkeit()
+		);
 	}
 
 	@Test
 	public void test_famsit_beenden_should_ueberschreiben_beschaeftigungspensumTooLowMessage_after_beendung() {
 		// Explicitly don't use FKJV Bemerkung for Erwerbspensum since this the way it would come from the rules
 		// and is then overwritten in the getRequiredBemerkungen
-		VerfuegungsBemerkungDTO bemerkungAntragBeendetKonkubinat = createDefaultVerfugeungsBemerkungeDto(MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG);
-		VerfuegungsBemerkungDTO bemerkungKeinAnspruchBeschaeftigungspensum = createDefaultVerfugeungsBemerkungeDto(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH);
+		VerfuegungsBemerkungDTO bemerkungAntragBeendetKonkubinat =
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG
+			);
+		VerfuegungsBemerkungDTO bemerkungKeinAnspruchBeschaeftigungspensum =
+			createDefaultVerfugeungsBemerkungeDto(
+				MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH
+			);
 		bemerkungAntragBeendetKonkubinat.setGueltigkeit(dateRangeNovToEndJuly);
-		bemerkungKeinAnspruchBeschaeftigungspensum.setGueltigkeit(dateRangeNovToEndJuly);
+		bemerkungKeinAnspruchBeschaeftigungspensum.setGueltigkeit(
+			dateRangeNovToEndJuly
+		);
 
-		VerfuegungsBemerkungDTOList bemerkungList = new VerfuegungsBemerkungDTOList();
+		VerfuegungsBemerkungDTOList bemerkungList =
+			new VerfuegungsBemerkungDTOList();
 		bemerkungList.addBemerkung(bemerkungKeinAnspruchBeschaeftigungspensum);
 		bemerkungList.addBemerkung(bemerkungAntragBeendetKonkubinat);
 
-		List<VerfuegungsBemerkungDTO> result = bemerkungList.getRequiredBemerkungen(true);
+		List<VerfuegungsBemerkungDTO> result = bemerkungList
+			.getRequiredBemerkungen(true);
 		assertThat(result.size(), is(1));
 
-		Map<MsgKey, List<VerfuegungsBemerkungDTO>> bemerkungenByMessageKey = mapVerfuegungsBemerkungByMsgKey(result);
+		Map<MsgKey, List<VerfuegungsBemerkungDTO>> bemerkungenByMessageKey =
+			mapVerfuegungsBemerkungByMsgKey(result);
 
-		assertThat(bemerkungenByMessageKey.get(MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG).size(), is(1));
-		assertThat(bemerkungenByMessageKey.get(MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG).get(0).getGueltigkeit(), is(dateRangeNovToEndJuly));
-		assertThat(bemerkungenByMessageKey.get(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH_FKJV), nullValue());
+		assertThat(
+			bemerkungenByMessageKey.get(
+				MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG
+			).size(),
+			is(1)
+		);
+		assertThat(
+			bemerkungenByMessageKey.get(
+				MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG
+			).get(0).getGueltigkeit(),
+			is(dateRangeNovToEndJuly)
+		);
+		assertThat(
+			bemerkungenByMessageKey.get(
+				MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH_FKJV
+			),
+			nullValue()
+		);
 	}
 
-	private Map<MsgKey, List<VerfuegungsBemerkungDTO>> mapVerfuegungsBemerkungByMsgKey(List<VerfuegungsBemerkungDTO> bemerkungen) {
+	private Map<MsgKey, List<VerfuegungsBemerkungDTO>> mapVerfuegungsBemerkungByMsgKey(
+		List<VerfuegungsBemerkungDTO> bemerkungen
+	) {
 		return bemerkungen.stream()
-			.collect(Collectors.groupingBy(VerfuegungsBemerkungDTO::getMsgKey));
+			.collect(
+				Collectors.groupingBy(
+					VerfuegungsBemerkungDTO::getMsgKey
+				)
+			);
 	}
 
-	private VerfuegungsBemerkungDTO createDefaultVerfugeungsBemerkungeDto(MsgKey msgKey) {
-		VerfuegungsBemerkungDTO verfuegungsBemerkungDTO = new VerfuegungsBemerkungDTO(
-			RuleValidity.ASIV,
-			msgKey,
-			Locale.GERMAN);
-		verfuegungsBemerkungDTO.setGueltigkeit(dateRangeFullAugust);;
+	private VerfuegungsBemerkungDTO createDefaultVerfugeungsBemerkungeDto(
+		MsgKey msgKey
+	) {
+		VerfuegungsBemerkungDTO verfuegungsBemerkungDTO =
+			new VerfuegungsBemerkungDTO(
+				RuleValidity.ASIV,
+				msgKey,
+				Locale.GERMAN
+			);
+		verfuegungsBemerkungDTO.setGueltigkeit(dateRangeFullAugust);
+		;
 		return verfuegungsBemerkungDTO;
 	}
 }

@@ -16,14 +16,14 @@
 package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -34,7 +34,8 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-@PrimaryKeyJoinColumn(foreignKey=@ForeignKey(name = "FK_gesuchsteller_adresse_adresse_id")) //TODO Dieser FK wird als einziger nicht generiert (https://hibernate.atlassian.net/browse/HHH-10352)
+@PrimaryKeyJoinColumn(foreignKey = @ForeignKey(
+	name = "FK_gesuchsteller_adresse_adresse_id")) //TODO Dieser FK wird als einziger nicht generiert (https://hibernate.atlassian.net/browse/HHH-10352)
 public class GesuchstellerAdresse extends Adresse {
 
 	private static final long serialVersionUID = -7687645920281069260L;
@@ -66,7 +67,8 @@ public class GesuchstellerAdresse extends Adresse {
 	}
 
 	@Override
-	@SuppressWarnings({"OverlyComplexBooleanExpression", "PMD.CompareObjectsWithEquals"})
+	@SuppressWarnings({ "OverlyComplexBooleanExpression",
+		"PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -80,7 +82,8 @@ public class GesuchstellerAdresse extends Adresse {
 			return false;
 		}
 		final GesuchstellerAdresse otherAdr = (GesuchstellerAdresse) other;
-		return getAdresseTyp() == otherAdr.getAdresseTyp() &&
+		return getAdresseTyp() == otherAdr.getAdresseTyp()
+			&&
 			isNichtInGemeinde() == otherAdr.isNichtInGemeinde();
 
 	}
@@ -96,7 +99,10 @@ public class GesuchstellerAdresse extends Adresse {
 	}
 
 	@Nonnull
-	public GesuchstellerAdresse copyGesuchstellerAdresse(@Nonnull GesuchstellerAdresse target, @Nonnull AntragCopyType copyType) {
+	public GesuchstellerAdresse copyGesuchstellerAdresse(
+		@Nonnull GesuchstellerAdresse target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAdresse(target, copyType);
 		target.setAdresseTyp(this.getAdresseTyp());
 		if (copyType.isGleichesDossier()) {

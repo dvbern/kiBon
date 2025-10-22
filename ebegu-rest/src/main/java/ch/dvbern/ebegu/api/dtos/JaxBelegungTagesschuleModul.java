@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -20,9 +20,9 @@ package ch.dvbern.ebegu.api.dtos;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.enums.BelegungTagesschuleModulIntervall;
 
@@ -34,10 +34,12 @@ public class JaxBelegungTagesschuleModul extends JaxAbstractDTO {
 
 	private static final long serialVersionUID = -841132022111944954L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private BelegungTagesschuleModulIntervall intervall;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxModulTagesschule modulTagesschule;
 
 	@Nonnull
@@ -45,7 +47,9 @@ public class JaxBelegungTagesschuleModul extends JaxAbstractDTO {
 		return intervall;
 	}
 
-	public void setIntervall(@Nonnull BelegungTagesschuleModulIntervall intervall) {
+	public void setIntervall(
+		@Nonnull BelegungTagesschuleModulIntervall intervall
+	) {
 		this.intervall = intervall;
 	}
 
@@ -54,7 +58,9 @@ public class JaxBelegungTagesschuleModul extends JaxAbstractDTO {
 		return modulTagesschule;
 	}
 
-	public void setModulTagesschule(@Nonnull JaxModulTagesschule modulTagesschule) {
+	public void setModulTagesschule(
+		@Nonnull JaxModulTagesschule modulTagesschule
+	) {
 		this.modulTagesschule = modulTagesschule;
 	}
 
@@ -71,11 +77,18 @@ public class JaxBelegungTagesschuleModul extends JaxAbstractDTO {
 		}
 		JaxBelegungTagesschuleModul that = (JaxBelegungTagesschuleModul) o;
 		return this.getIntervall() == that.getIntervall()
-			&& Objects.equals(this.getModulTagesschule(), that.getModulTagesschule());
+			&& Objects.equals(
+				this.getModulTagesschule(),
+				that.getModulTagesschule()
+			);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), getIntervall(), getModulTagesschule());
+		return Objects.hash(
+			super.hashCode(),
+			getIntervall(),
+			getModulTagesschule()
+		);
 	}
 }

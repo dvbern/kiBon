@@ -19,7 +19,8 @@ import {
     IDirectiveFactory,
     IDirectiveLinkFn,
     ILogService,
-    IScope
+    IScope,
+    element
 } from 'angular';
 
 /**
@@ -124,9 +125,9 @@ export class DVSuppressFormSubmitOnEnterController {
         }
     }
 
-    private triggerNextButton(element: IAugmentedJQuery): void {
-        const formElement: IAugmentedJQuery = angular.element(
-            this.$mdUtil.getClosest(element[0], 'form')
+    private triggerNextButton(jqElement: IAugmentedJQuery): void {
+        const formElement: IAugmentedJQuery = element(
+            this.$mdUtil.getClosest(jqElement[0], 'form')
         );
         if (!formElement) {
             return;

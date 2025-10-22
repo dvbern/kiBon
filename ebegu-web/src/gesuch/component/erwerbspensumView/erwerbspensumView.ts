@@ -14,6 +14,7 @@
  */
 
 import {
+    copy,
     IComponentOptions,
     IPromise,
     IQService,
@@ -21,22 +22,22 @@ import {
     ITimeoutService
 } from 'angular';
 import {map} from 'rxjs/operators';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {MandantService} from '@kibon/shared-util-mandant-service';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '../../../app/core/constants/CONSTANTS';
-import {KiBonMandant, MANDANTS} from '../../../app/core/constants/MANDANTS';
 import {TaetigkeitVisitor} from '../../../app/core/constants/TaetigkeitVisitor';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {MandantService} from '../../../app/shared/services/mandant.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSTaetigkeit} from '../../../models/enums/TSTaetigkeit';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
 import {TSErwerbspensum} from '../../../models/TSErwerbspensum';
 import {TSErwerbspensumContainer} from '../../../models/TSErwerbspensumContainer';
 import {TSGesuchstellerContainer} from '../../../models/TSGesuchstellerContainer';
 import {TSUnbezahlterUrlaub} from '../../../models/TSUnbezahlterUrlaub';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {IErwerbspensumStateParams} from '../../gesuch.route';
@@ -111,7 +112,7 @@ export class ErwerbspensumViewController extends AbstractGesuchViewController<TS
         if (this.gesuchsteller) {
             if ($stateParams.erwerbspensumNum) {
                 const ewpNum = parseInt($stateParams.erwerbspensumNum, 10) || 0;
-                this.model = angular.copy(
+                this.model = copy(
                     this.gesuchsteller.erwerbspensenContainer[ewpNum]
                 );
             } else {
@@ -133,7 +134,6 @@ export class ErwerbspensumViewController extends AbstractGesuchViewController<TS
                 },
                 err => LOG.error(err)
             );
-        // TODO: Replace with angularX async template pipe during ablösung
         this.mandantService.mandant$.subscribe(
             mandant => {
                 this.mandant = mandant;
@@ -143,7 +143,6 @@ export class ErwerbspensumViewController extends AbstractGesuchViewController<TS
         this.initWegzeitEinstellung();
     }
 
-    // TODO: replace with observable pipe during abloesung
     public getTaetigkeitenList(): Array<TSTaetigkeit> {
         if (EbeguUtil.isNullOrUndefined(this.mandant)) {
             return [];
@@ -248,12 +247,12 @@ export class ErwerbspensumViewController extends AbstractGesuchViewController<TS
             this.model.erwerbspensumGS.unbezahlterUrlaub
         ) {
             const urlaub = this.model.erwerbspensumGS.unbezahlterUrlaub;
-            const vonText = DateUtil.momentToLocalDateFormat(
+            const vonText = MomentUtil.momentToLocalDateFormat(
                 urlaub.gueltigkeit.gueltigAb,
                 'DD.MM.YYYY'
             );
             const bisText = urlaub.gueltigkeit.gueltigBis
-                ? DateUtil.momentToLocalDateFormat(
+                ? MomentUtil.momentToLocalDateFormat(
                       urlaub.gueltigkeit.gueltigBis,
                       'DD.MM.YYYY'
                   )

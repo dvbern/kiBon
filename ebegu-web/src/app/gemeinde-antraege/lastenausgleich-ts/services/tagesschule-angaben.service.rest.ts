@@ -20,10 +20,10 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSAnzahlEingeschriebeneKinder} from '../../../../models/gemeindeantrag/TSAnzahlEingeschriebeneKinder';
 import {TSDurchschnittKinderProTag} from '../../../../models/gemeindeantrag/TSDurchschnittKinderProTag';
+import {TSLastenausgleichTagesschuleAngabenInstitution} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenInstitution';
 import {TSLastenausgleichTagesschuleAngabenInstitutionContainer} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenInstitutionContainer';
 import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '../../../core/constants/CONSTANTS';
-
+import {CONSTANTS} from '@kibon/shared/model/constants';
 @Injectable({
     providedIn: 'root'
 })
@@ -168,6 +168,22 @@ export class TagesschuleAngabenRS {
                     this.ebeguRestUtils.parseDurchschnittKinderProTag(
                         new TSDurchschnittKinderProTag(),
                         data
+                    )
+                )
+            );
+    }
+
+    public getAllVisibleTagesschulenAngabenForTSLastenausgleich(
+        lastenausgleichId: string
+    ): Observable<TSLastenausgleichTagesschuleAngabenInstitutionContainer[]> {
+        return this.http
+            .get<
+                TSLastenausgleichTagesschuleAngabenInstitution[]
+            >(`${this.apiUrl}${lastenausgleichId}/tagesschulenantraege`)
+            .pipe(
+                map(lastenausgleichAngabenList =>
+                    this.ebeguRestUtils.parseLastenausgleichTagesschuleAngabenInstitutionContainerList(
+                        lastenausgleichAngabenList
                     )
                 )
             );

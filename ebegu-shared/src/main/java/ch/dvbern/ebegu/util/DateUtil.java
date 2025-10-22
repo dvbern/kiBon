@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.stream.Stream;
@@ -38,29 +38,28 @@ public final class DateUtil {
 	private DateUtil() {
 	}
 
+	@Nonnull
+	public static String parseDateToString(@Nonnull LocalDate date) {
+		return Constants.SQL_DATE_FORMAT.format(date);
+	}
+
 	/**
 	 * Parset den gegebenen String als LocalDate mit dem Format "yyyy-MM-dd"
-	 * Sollte der gegebene String null oder leer sein, wird now() zurueckgegeben
 	 */
 	@Nonnull
-	public static LocalDate parseStringToDate(@Nonnull String stringDate) {
+	public static LocalDate parseStringToDate(@Nonnull String stringDate)
+		throws DateTimeParseException {
 		return LocalDate.parse(stringDate, Constants.SQL_DATE_FORMAT);
 	}
 
 	/**
 	 * Parset den gegebenen String als LocalDate mit dem Format "yyyy-MM-dd"
-	 */
-	@Nonnull
-	public static LocalDate parseStringToDateNullSafe(@Nonnull String stringDate) {
-		return LocalDate.parse(stringDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-	}
-
-	/**
-	 * Parset den gegebenen String als LocalDate mit dem Format "yyyy-MM-dd"
 	 * Sollte der gegebene String null oder leer sein, wird now() zurueckgegeben
 	 */
 	@Nonnull
-	public static LocalDate parseStringToDateOrReturnNow(@Nullable String stringDate) {
+	public static LocalDate parseStringToDateOrReturnNow(
+		@Nullable String stringDate
+	) {
 		LocalDate date = LocalDate.now();
 		if (stringDate != null && !stringDate.isEmpty()) {
 			date = LocalDate.parse(stringDate, Constants.SQL_DATE_FORMAT);
@@ -69,36 +68,52 @@ public final class DateUtil {
 	}
 
 	public static boolean isWeekend(@Nonnull LocalDate date) {
-		return date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
+		return date.getDayOfWeek() == DayOfWeek.SATURDAY
+			|| date.getDayOfWeek() == DayOfWeek.SUNDAY;
 	}
 
 	public static boolean isHoliday(@Nonnull LocalDate date) {
 		return FeiertageHelper.isFeiertag_CH(Date.valueOf(date));
 	}
 
-	public static LocalDate getMax(@Nonnull LocalDate date1, @Nonnull LocalDate date2) {
+	public static LocalDate getMax(
+		@Nonnull LocalDate date1,
+		@Nonnull LocalDate date2
+	) {
 		return date1.isAfter(date2) ? date1 : date2;
 	}
 
-	public static LocalDate getMin(@Nonnull LocalDate date1, @Nonnull LocalDate date2) {
+	public static LocalDate getMin(
+		@Nonnull LocalDate date1,
+		@Nonnull LocalDate date2
+	) {
 		return date1.isBefore(date2) ? date1 : date2;
 	}
 
 	/**
 	 * Berechnet den Anteil des Zeitabschnittes am gesamten Monat als dezimalzahl von 0 bis 1
 	 */
-	public static BigDecimal calculateAnteilMonatInklWeekend(@Nonnull LocalDate von, @Nonnull LocalDate bis) {
+	public static BigDecimal calculateAnteilMonatInklWeekend(
+		@Nonnull LocalDate von,
+		@Nonnull LocalDate bis
+	) {
 		LocalDate monatsanfang = von.with(TemporalAdjusters.firstDayOfMonth());
 		LocalDate monatsende = bis.with(TemporalAdjusters.lastDayOfMonth());
 		long nettoTageMonat = daysBetween(monatsanfang, monatsende);
 		long nettoTageIntervall = daysBetween(von, bis);
-		return MathUtil.EXACT.divide(MathUtil.EXACT.from(nettoTageIntervall), MathUtil.EXACT.from(nettoTageMonat));
+		return MathUtil.EXACT.divide(
+			MathUtil.EXACT.from(nettoTageIntervall),
+			MathUtil.EXACT.from(nettoTageMonat)
+		);
 	}
 
 	/**
 	 * Berechnet die Anzahl Tage zwischen zwei Daten
 	 */
-	public static long daysBetween(@Nonnull LocalDate start, @Nonnull LocalDate end) {
+	public static long daysBetween(
+		@Nonnull LocalDate start,
+		@Nonnull LocalDate end
+	) {
 		return Stream.iterate(start, d -> d.plusDays(1))
 			.limit(start.until(end.plusDays(1), ChronoUnit.DAYS))
 			.count();
@@ -107,7 +122,10 @@ public final class DateUtil {
 	/**
 	 * Prueft, ob zwei Datum im selben Monat (desselben Jahres) liegen
 	 */
-	public static boolean isSameMonthAndYear(@Nonnull LocalDate dateOne, @Nonnull LocalDate dateTwo) {
+	public static boolean isSameMonthAndYear(
+		@Nonnull LocalDate dateOne,
+		@Nonnull LocalDate dateTwo
+	) {
 		return dateOne.getYear() == dateTwo.getYear()
 			&& dateOne.getMonth() == dateTwo.getMonth();
 	}
@@ -117,18 +135,33 @@ public final class DateUtil {
 		return date.plusYears(1).toString();
 	}
 
-	public static DateRange limitToDateRange(DateRange range, DateRange gesuchsperiode) {
+	public static DateRange limitToDateRange(
+		DateRange range,
+		DateRange gesuchsperiode
+	) {
 		// Wir nehmen das spätere VON und das frühere BIS
-		LocalDate von = DateUtil.getMax(range.getGueltigAb(), gesuchsperiode.getGueltigAb());
-		LocalDate bis = DateUtil.getMin(range.getGueltigBis(), gesuchsperiode.getGueltigBis());
+		LocalDate von = DateUtil.getMax(
+			range.getGueltigAb(),
+			gesuchsperiode.getGueltigAb()
+		);
+		LocalDate bis = DateUtil.getMin(
+			range.getGueltigBis(),
+			gesuchsperiode.getGueltigBis()
+		);
 		return new DateRange(von, bis);
 	}
 
-	public static boolean isSameDateOrBefore(LocalDate date, LocalDate compareTo) {
+	public static boolean isSameDateOrBefore(
+		LocalDate date,
+		LocalDate compareTo
+	) {
 		return !date.isAfter(compareTo);
 	}
 
-	public static boolean isSameDateOrAfter(LocalDate date, LocalDate compareTo) {
+	public static boolean isSameDateOrAfter(
+		LocalDate date,
+		LocalDate compareTo
+	) {
 		return !date.isBefore(compareTo);
 	}
 }

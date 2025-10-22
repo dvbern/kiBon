@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.converter;
@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.api.dtos.sozialdienst.JaxSozialdienst;
 import ch.dvbern.ebegu.api.dtos.sozialdienst.JaxSozialdienstFall;
@@ -39,23 +39,25 @@ import ch.dvbern.ebegu.services.SozialdienstService;
 
 import static java.util.Objects.requireNonNull;
 
-@RequestScoped
-public class JaxSozialdienstConverter extends AbstractConverter {
-
+@Dependent
+public class JaxSozialdienstConverter extends AbstractBaseConverter {
 	@Inject
 	private SozialdienstService sozialdienstService;
 
 	@Nonnull
 	public Sozialdienst sozialdienstToEntity(
 		@Nonnull final JaxSozialdienst jaxSozialdienst,
-		@Nonnull final Sozialdienst sozialdienst) {
+		@Nonnull final Sozialdienst sozialdienst
+	) {
 		convertAbstractFieldsToEntity(jaxSozialdienst, sozialdienst);
 		sozialdienst.setName(jaxSozialdienst.getName());
 		sozialdienst.setStatus(jaxSozialdienst.getStatus());
 		return sozialdienst;
 	}
 
-	public JaxSozialdienst sozialdienstToJAX(@Nonnull final Sozialdienst persistedSozialdienst) {
+	public JaxSozialdienst sozialdienstToJAX(
+		@Nonnull final Sozialdienst persistedSozialdienst
+	) {
 		final JaxSozialdienst jaxSozialdienst = new JaxSozialdienst();
 		convertAbstractFieldsToJAX(persistedSozialdienst, jaxSozialdienst);
 		jaxSozialdienst.setName(persistedSozialdienst.getName());
@@ -77,27 +79,37 @@ public class JaxSozialdienstConverter extends AbstractConverter {
 		convertAbstractFieldsToEntity(jaxStammdaten, stammdaten);
 
 		// Die Gemeinde selbst ändert nicht, nur wieder von der DB lesen
-		sozialdienstService.findSozialdienst(jaxStammdaten.getSozialdienst().getId())
+		sozialdienstService.findSozialdienst(
+			jaxStammdaten.getSozialdienst().getId()
+		)
 			.ifPresent(stammdaten::setSozialdienst);
 
 		adresseToEntity(jaxStammdaten.getAdresse(), stammdaten.getAdresse());
 
 		stammdaten.setMail(jaxStammdaten.getMail());
-		stammdaten.setTelefon(jaxStammdaten.getTelefon() != null && jaxStammdaten.getTelefon().length() > 0 ?
-			jaxStammdaten.getTelefon() :
-			null);
+		stammdaten.setTelefon(
+			jaxStammdaten.getTelefon() != null
+				&& jaxStammdaten.getTelefon().length() > 0 ?
+					jaxStammdaten.getTelefon() :
+					null
+		);
 		stammdaten.setWebseite(jaxStammdaten.getWebseite());
 
 		return stammdaten;
 	}
 
-	public JaxSozialdienstStammdaten sozialdienstStammdatenToJAX(@Nonnull final SozialdienstStammdaten stammdaten) {
+	public JaxSozialdienstStammdaten sozialdienstStammdatenToJAX(
+		@Nonnull final SozialdienstStammdaten stammdaten
+	) {
 		requireNonNull(stammdaten);
 		requireNonNull(stammdaten.getSozialdienst());
 		requireNonNull(stammdaten.getAdresse());
-		final JaxSozialdienstStammdaten jaxStammdaten = new JaxSozialdienstStammdaten();
+		final JaxSozialdienstStammdaten jaxStammdaten =
+			new JaxSozialdienstStammdaten();
 		convertAbstractFieldsToJAX(stammdaten, jaxStammdaten);
-		jaxStammdaten.setSozialdienst(sozialdienstToJAX(stammdaten.getSozialdienst()));
+		jaxStammdaten.setSozialdienst(
+			sozialdienstToJAX(stammdaten.getSozialdienst())
+		);
 		jaxStammdaten.setMail(stammdaten.getMail());
 		jaxStammdaten.setTelefon(stammdaten.getTelefon());
 		jaxStammdaten.setWebseite(stammdaten.getWebseite());
@@ -109,7 +121,8 @@ public class JaxSozialdienstConverter extends AbstractConverter {
 	@Nonnull
 	public SozialdienstFall sozialdienstFallToEntity(
 		@Nonnull final JaxSozialdienstFall jaxSozialdienstFall,
-		@Nonnull final SozialdienstFall sozialdienstFall) {
+		@Nonnull final SozialdienstFall sozialdienstFall
+	) {
 		convertAbstractFieldsToEntity(jaxSozialdienstFall, sozialdienstFall);
 		sozialdienstFall.setName(jaxSozialdienstFall.getName());
 		sozialdienstFall.setVorname(jaxSozialdienstFall.getVorname());
@@ -117,39 +130,68 @@ public class JaxSozialdienstConverter extends AbstractConverter {
 		if (sozialdienstFall.isNew()) {
 			sozialdienstFall.setAdresse(new Adresse());
 		}
-		adresseToEntity(jaxSozialdienstFall.getAdresse(), sozialdienstFall.getAdresse());
+		adresseToEntity(
+			jaxSozialdienstFall.getAdresse(),
+			sozialdienstFall.getAdresse()
+		);
 		sozialdienstFall.setGeburtsdatum(jaxSozialdienstFall.getGeburtsdatum());
 		sozialdienstFall.setNameGs2(jaxSozialdienstFall.getNameGs2());
 		sozialdienstFall.setVornameGs2(jaxSozialdienstFall.getVornameGs2());
-		sozialdienstFall.setGeburtsdatumGs2(jaxSozialdienstFall.getGeburtsdatumGs2());
+		sozialdienstFall.setGeburtsdatumGs2(
+			jaxSozialdienstFall.getGeburtsdatumGs2()
+		);
 		requireNonNull(jaxSozialdienstFall.getSozialdienst().getId());
-		Sozialdienst sozialdienst = sozialdienstService.findSozialdienst(jaxSozialdienstFall.getSozialdienst().getId())
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"sozialdienstFallToEntity",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				"sozialdienst: " + jaxSozialdienstFall.getSozialdienst().getId()));
+		Sozialdienst sozialdienst = sozialdienstService.findSozialdienst(
+			jaxSozialdienstFall.getSozialdienst().getId()
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"sozialdienstFallToEntity",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"sozialdienst: "
+						+ jaxSozialdienstFall.getSozialdienst()
+							.getId()
+				)
+			);
 		sozialdienstFall.setSozialdienst(sozialdienst);
 		return sozialdienstFall;
 	}
 
-	public JaxSozialdienstFall sozialdienstFallToJAX(@Nonnull final SozialdienstFall persistedSozialdienstFall) {
-		final JaxSozialdienstFall jaxSozialdienstFall = new JaxSozialdienstFall();
-		convertAbstractFieldsToJAX(persistedSozialdienstFall, jaxSozialdienstFall);
+	public JaxSozialdienstFall sozialdienstFallToJAX(
+		@Nonnull final SozialdienstFall persistedSozialdienstFall
+	) {
+		final JaxSozialdienstFall jaxSozialdienstFall =
+			new JaxSozialdienstFall();
+		convertAbstractFieldsToJAX(
+			persistedSozialdienstFall,
+			jaxSozialdienstFall
+		);
 		jaxSozialdienstFall.setName(persistedSozialdienstFall.getName());
 		jaxSozialdienstFall.setVorname(persistedSozialdienstFall.getVorname());
 		jaxSozialdienstFall.setStatus(persistedSozialdienstFall.getStatus());
-		jaxSozialdienstFall.setGeburtsdatum(persistedSozialdienstFall.getGeburtsdatum());
+		jaxSozialdienstFall.setGeburtsdatum(
+			persistedSozialdienstFall.getGeburtsdatum()
+		);
 		jaxSozialdienstFall.setNameGs2(persistedSozialdienstFall.getNameGs2());
-		jaxSozialdienstFall.setVornameGs2(persistedSozialdienstFall.getVornameGs2());
-		jaxSozialdienstFall.setGeburtsdatumGs2(persistedSozialdienstFall.getGeburtsdatumGs2());
-		jaxSozialdienstFall.setAdresse(adresseToJAX(persistedSozialdienstFall.getAdresse()));
-		jaxSozialdienstFall.setSozialdienst(sozialdienstToJAX(persistedSozialdienstFall.getSozialdienst()));
+		jaxSozialdienstFall.setVornameGs2(
+			persistedSozialdienstFall.getVornameGs2()
+		);
+		jaxSozialdienstFall.setGeburtsdatumGs2(
+			persistedSozialdienstFall.getGeburtsdatumGs2()
+		);
+		jaxSozialdienstFall.setAdresse(
+			adresseToJAX(persistedSozialdienstFall.getAdresse())
+		);
+		jaxSozialdienstFall.setSozialdienst(
+			sozialdienstToJAX(persistedSozialdienstFall.getSozialdienst())
+		);
 		return jaxSozialdienstFall;
 	}
 
 	@Nonnull
 	public List<JaxSozialdienstFallDokument> sozialdienstFallDokumentListToJax(
-		@Nonnull List<SozialdienstFallDokument> sozialdienstFallDokumentList) {
+		@Nonnull List<SozialdienstFallDokument> sozialdienstFallDokumentList
+	) {
 		return sozialdienstFallDokumentList.stream()
 			.map(this::sozialdienstFallDokumentToJax)
 			.collect(Collectors.toList());
@@ -157,12 +199,18 @@ public class JaxSozialdienstConverter extends AbstractConverter {
 
 	@Nonnull
 	public JaxSozialdienstFallDokument sozialdienstFallDokumentToJax(
-		@Nonnull SozialdienstFallDokument sozialdienstFallDokument) {
+		@Nonnull SozialdienstFallDokument sozialdienstFallDokument
+	) {
 		JaxSozialdienstFallDokument jaxSozialdienstFallDokument =
-			convertAbstractVorgaengerFieldsToJAX(sozialdienstFallDokument, new JaxSozialdienstFallDokument());
+			convertAbstractVorgaengerFieldsToJAX(
+				sozialdienstFallDokument,
+				new JaxSozialdienstFallDokument()
+			);
 		convertFileToJax(sozialdienstFallDokument, jaxSozialdienstFallDokument);
 
-		jaxSozialdienstFallDokument.setTimestampUpload(sozialdienstFallDokument.getTimestampUpload());
+		jaxSozialdienstFallDokument.setTimestampUpload(
+			sozialdienstFallDokument.getTimestampUpload()
+		);
 
 		return jaxSozialdienstFallDokument;
 	}

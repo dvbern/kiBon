@@ -16,22 +16,21 @@
 package ch.dvbern.ebegu.entities;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
 import ch.dvbern.ebegu.enums.Sprache;
@@ -42,28 +41,30 @@ import ch.dvbern.ebegu.util.ServerMessageUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-
-import static ch.dvbern.ebegu.util.Constants.TEN_MB;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 /**
  * Entity fuer Gesuchsperiode.
  */
 @Audited
 @Entity
-public class Gesuchsperiode extends AbstractDateRangedEntity implements HasMandant {
+public class Gesuchsperiode extends AbstractDateRangedEntity implements
+	HasMandant {
 
 	private static final long serialVersionUID = -9132257370971574570L;
 	public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private GesuchsperiodeStatus status = GesuchsperiodeStatus.ENTWURF;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gesuchsperiode_mandant_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gesuchsperiode_mandant_id"),
+		updatable = false)
 	private Mandant mandant;
 
 	// Wir merken uns, wann die Periode aktiv geschalten wurde, damit z.B. die Mails nicht 2 mal verschickt werden
@@ -71,62 +72,60 @@ public class Gesuchsperiode extends AbstractDateRangedEntity implements HasManda
 	private LocalDate datumAktiviert;
 
 	@Nullable
-	@Column(nullable = true, length = TEN_MB) // 10 megabytes
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@NotAudited
-	private byte[] verfuegungErlaeuterungenDe;
-
-
-	@Nullable
-	@Column(nullable = true, length = TEN_MB) // 10 megabytes
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@NotAudited
-	private byte[] verfuegungErlaeuterungenFr;
+	@OneToOne(fetch = FetchType.LAZY,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Vorlage verfuegungErlaeuterungenDe;
 
 	@Nullable
-	@Column(nullable = true, length = TEN_MB) // 10 megabytes
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@NotAudited
-	private byte[] vorlageMerkblattTsDe;
+	@OneToOne(fetch = FetchType.LAZY,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Vorlage verfuegungErlaeuterungenFr;
 
 	@Nullable
-	@Column(nullable = true, length = TEN_MB) // 10 megabytes
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@NotAudited
-	private byte[] vorlageMerkblattTsFr;
+	@OneToOne(fetch = FetchType.LAZY,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Vorlage vorlageMerkblattTsDe;
 
 	@Nullable
-	@Column(nullable = true, length = TEN_MB) // 10 megabytes
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@NotAudited
-	private byte[] vorlageVerfuegungLatsDe;
+	@OneToOne(fetch = FetchType.LAZY,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Vorlage vorlageMerkblattTsFr;
 
 	@Nullable
-	@Column(nullable = true, length = TEN_MB) // 10 megabytes
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@NotAudited
-	private byte[] vorlageVerfuegungLatsFr;
+	@OneToOne(fetch = FetchType.LAZY,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Vorlage vorlageVerfuegungLatsDe;
 
 	@Nullable
-	@Column(nullable = true, length = TEN_MB) // 10 megabytes
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@NotAudited
-	private byte[] vorlageVerfuegungFerienbetreuungDe;
+	@OneToOne(fetch = FetchType.LAZY,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Vorlage vorlageVerfuegungLatsFr;
 
 	@Nullable
-	@Column(nullable = true, length = TEN_MB) // 10 megabytes
-	@Lob
-	@Basic(fetch = FetchType.LAZY)
-	@NotAudited
-	private byte[] vorlageVerfuegungFerienbetreuungFr;
+	@OneToOne(fetch = FetchType.LAZY,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Vorlage vorlageVerfuegungFerienbetreuungDe;
 
+	@Nullable
+	@OneToOne(fetch = FetchType.LAZY,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
+	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+	private Vorlage vorlageVerfuegungFerienbetreuungFr;
 
 	@Nonnull
 	public GesuchsperiodeStatus getStatus() {
@@ -149,6 +148,10 @@ public class Gesuchsperiode extends AbstractDateRangedEntity implements HasManda
 		return getBasisJahr() + 2;
 	}
 
+	public String getBasisJahrPlus1AsString() {
+		return String.valueOf(getBasisJahrPlus1());
+	}
+
 	public LocalDate getDatumAktiviert() {
 		return datumAktiviert;
 	}
@@ -159,33 +162,47 @@ public class Gesuchsperiode extends AbstractDateRangedEntity implements HasManda
 
 	@Nonnull
 	public byte[] getVerfuegungErlaeuterungenDe() {
-		if (verfuegungErlaeuterungenDe == null) {
+		if (this.verfuegungErlaeuterungenDe == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return Arrays.copyOf(verfuegungErlaeuterungenDe, verfuegungErlaeuterungenDe.length);
+		return this.verfuegungErlaeuterungenDe.getVorlageDokument();
 	}
 
-	public void setVerfuegungErlaeuterungenDe(@Nullable byte[] verfuegungErlaeuterungenDe) {
+	public void setVerfuegungErlaeuterungenDe(
+		@Nullable byte[] verfuegungErlaeuterungenDe
+	) {
 		if (verfuegungErlaeuterungenDe == null) {
 			this.verfuegungErlaeuterungenDe = null;
 		} else {
-			this.verfuegungErlaeuterungenDe = Arrays.copyOf(verfuegungErlaeuterungenDe, verfuegungErlaeuterungenDe.length);
+			if (this.verfuegungErlaeuterungenDe == null) {
+				this.verfuegungErlaeuterungenDe = new Vorlage(this.mandant);
+			}
+			this.verfuegungErlaeuterungenDe.setVorlageDokument(
+				verfuegungErlaeuterungenDe
+			);
 		}
 	}
 
 	@Nonnull
 	public byte[] getVerfuegungErlaeuterungenFr() {
-		if (verfuegungErlaeuterungenFr == null) {
+		if (this.verfuegungErlaeuterungenFr == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return Arrays.copyOf(verfuegungErlaeuterungenFr, verfuegungErlaeuterungenFr.length);
+		return this.verfuegungErlaeuterungenFr.getVorlageDokument();
 	}
 
-	public void setVerfuegungErlaeuterungenFr(@Nullable byte[] verfuegungErlaeuterungenFr) {
+	public void setVerfuegungErlaeuterungenFr(
+		@Nullable byte[] verfuegungErlaeuterungenFr
+	) {
 		if (verfuegungErlaeuterungenFr == null) {
 			this.verfuegungErlaeuterungenFr = null;
 		} else {
-			this.verfuegungErlaeuterungenFr = Arrays.copyOf(verfuegungErlaeuterungenFr, verfuegungErlaeuterungenFr.length);
+			if (this.verfuegungErlaeuterungenFr == null) {
+				this.verfuegungErlaeuterungenFr = new Vorlage(this.mandant);
+			}
+			this.verfuegungErlaeuterungenFr.setVorlageDokument(
+				verfuegungErlaeuterungenFr
+			);
 		}
 	}
 
@@ -208,33 +225,39 @@ public class Gesuchsperiode extends AbstractDateRangedEntity implements HasManda
 
 	@Nonnull
 	public byte[] getVorlageMerkblattTsDe() {
-		if (vorlageMerkblattTsDe == null) {
+		if (this.vorlageMerkblattTsDe == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return Arrays.copyOf(vorlageMerkblattTsDe, vorlageMerkblattTsDe.length);
+		return this.vorlageMerkblattTsDe.getVorlageDokument();
 	}
 
 	public void setVorlageMerkblattTsDe(@Nullable byte[] vorlageMerkblattTsDe) {
 		if (vorlageMerkblattTsDe == null) {
 			this.vorlageMerkblattTsDe = null;
 		} else {
-			this.vorlageMerkblattTsDe = Arrays.copyOf(vorlageMerkblattTsDe, vorlageMerkblattTsDe.length);
+			if (this.vorlageMerkblattTsDe == null) {
+				this.vorlageMerkblattTsDe = new Vorlage(this.mandant);
+			}
+			this.vorlageMerkblattTsDe.setVorlageDokument(vorlageMerkblattTsDe);
 		}
 	}
 
 	@Nonnull
 	public byte[] getVorlageMerkblattTsFr() {
-		if (vorlageMerkblattTsFr == null) {
+		if (this.vorlageMerkblattTsFr == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return Arrays.copyOf(vorlageMerkblattTsFr, vorlageMerkblattTsFr.length);
+		return this.vorlageMerkblattTsFr.getVorlageDokument();
 	}
 
 	public void setVorlageMerkblattTsFr(@Nullable byte[] vorlageMerkblattTsFr) {
 		if (vorlageMerkblattTsFr == null) {
 			this.vorlageMerkblattTsFr = null;
 		} else {
-			this.vorlageMerkblattTsFr = Arrays.copyOf(vorlageMerkblattTsFr, vorlageMerkblattTsFr.length);
+			if (this.vorlageMerkblattTsFr == null) {
+				this.vorlageMerkblattTsFr = new Vorlage(this.mandant);
+			}
+			this.vorlageMerkblattTsFr.setVorlageDokument(vorlageMerkblattTsFr);
 		}
 	}
 
@@ -257,66 +280,97 @@ public class Gesuchsperiode extends AbstractDateRangedEntity implements HasManda
 
 	@Nonnull
 	public byte[] getVorlageVerfuegungLatsDe() {
-		if (vorlageVerfuegungLatsDe == null) {
+		if (this.vorlageVerfuegungLatsDe == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return Arrays.copyOf(vorlageVerfuegungLatsDe, vorlageVerfuegungLatsDe.length);
+		return this.vorlageVerfuegungLatsDe.getVorlageDokument();
 	}
 
-	public void setVorlageVerfuegungLatsDe(@Nullable byte[] vorlageVerfuegungLatsDe) {
+	public void setVorlageVerfuegungLatsDe(
+		@Nullable byte[] vorlageVerfuegungLatsDe
+	) {
 		if (vorlageVerfuegungLatsDe == null) {
 			this.vorlageVerfuegungLatsDe = null;
 		} else {
-			this.vorlageVerfuegungLatsDe = Arrays.copyOf(vorlageVerfuegungLatsDe, vorlageVerfuegungLatsDe.length);
+			if (this.vorlageVerfuegungLatsDe == null) {
+				this.vorlageVerfuegungLatsDe = new Vorlage(this.mandant);
+			}
+			this.vorlageVerfuegungLatsDe.setVorlageDokument(
+				vorlageVerfuegungLatsDe
+			);
 		}
 	}
 
 	@Nonnull
 	public byte[] getVorlageVerfuegungLatsFr() {
-		if (vorlageVerfuegungLatsFr == null) {
+		if (this.vorlageVerfuegungLatsFr == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return Arrays.copyOf(vorlageVerfuegungLatsFr, vorlageVerfuegungLatsFr.length);
+		return this.vorlageVerfuegungLatsFr.getVorlageDokument();
 	}
 
-	public void setVorlageVerfuegungLatsFr(@Nullable byte[] vorlageVerfuegungLatsFr) {
+	public void setVorlageVerfuegungLatsFr(
+		@Nullable byte[] vorlageVerfuegungLatsFr
+	) {
 		if (vorlageVerfuegungLatsFr == null) {
 			this.vorlageVerfuegungLatsFr = null;
 		} else {
-			this.vorlageVerfuegungLatsFr = Arrays.copyOf(vorlageVerfuegungLatsFr, vorlageVerfuegungLatsFr.length);
+			if (this.vorlageVerfuegungLatsFr == null) {
+				this.vorlageVerfuegungLatsFr = new Vorlage(this.mandant);
+			}
+			this.vorlageVerfuegungLatsFr.setVorlageDokument(
+				vorlageVerfuegungLatsFr
+			);
 		}
 	}
-
 
 	@Nonnull
 	public byte[] getVorlageVerfuegungFerienbetreuungDe() {
-		if (vorlageVerfuegungFerienbetreuungDe == null) {
+		if (this.vorlageVerfuegungFerienbetreuungDe == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return Arrays.copyOf(vorlageVerfuegungFerienbetreuungDe, vorlageVerfuegungFerienbetreuungDe.length);
+		return this.vorlageVerfuegungFerienbetreuungDe.getVorlageDokument();
 	}
 
-	public void setVorlageVerfuegungFerienbetreuungDe(@Nullable byte[] vorlageVerfuegungFerienbetreuungDe) {
+	public void setVorlageVerfuegungFerienbetreuungDe(
+		@Nullable byte[] vorlageVerfuegungFerienbetreuungDe
+	) {
 		if (vorlageVerfuegungFerienbetreuungDe == null) {
 			this.vorlageVerfuegungFerienbetreuungDe = null;
 		} else {
-			this.vorlageVerfuegungFerienbetreuungDe = Arrays.copyOf(vorlageVerfuegungFerienbetreuungDe, vorlageVerfuegungFerienbetreuungDe.length);
+			if (this.vorlageVerfuegungFerienbetreuungDe == null) {
+				this.vorlageVerfuegungFerienbetreuungDe = new Vorlage(
+					this.mandant
+				);
+			}
+			this.vorlageVerfuegungFerienbetreuungDe.setVorlageDokument(
+				vorlageVerfuegungFerienbetreuungDe
+			);
 		}
 	}
 
 	@Nonnull
 	public byte[] getVorlageVerfuegungFerienbetreuungFr() {
-		if (vorlageVerfuegungFerienbetreuungFr == null) {
+		if (this.vorlageVerfuegungFerienbetreuungFr == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return Arrays.copyOf(vorlageVerfuegungFerienbetreuungFr, vorlageVerfuegungFerienbetreuungFr.length);
+		return this.vorlageVerfuegungFerienbetreuungFr.getVorlageDokument();
 	}
 
-	public void setVorlageVerfuegungFerienbetreuungFr(@Nullable byte[] vorlageVerfuegungFerienbetreuungFr) {
+	public void setVorlageVerfuegungFerienbetreuungFr(
+		@Nullable byte[] vorlageVerfuegungFerienbetreuungFr
+	) {
 		if (vorlageVerfuegungFerienbetreuungFr == null) {
 			this.vorlageVerfuegungFerienbetreuungFr = null;
 		} else {
-			this.vorlageVerfuegungFerienbetreuungFr = Arrays.copyOf(vorlageVerfuegungFerienbetreuungFr, vorlageVerfuegungFerienbetreuungFr.length);
+			if (this.vorlageVerfuegungFerienbetreuungFr == null) {
+				this.vorlageVerfuegungFerienbetreuungFr = new Vorlage(
+					this.mandant
+				);
+			}
+			this.vorlageVerfuegungFerienbetreuungFr.setVorlageDokument(
+				vorlageVerfuegungFerienbetreuungFr
+			);
 		}
 	}
 
@@ -333,7 +387,11 @@ public class Gesuchsperiode extends AbstractDateRangedEntity implements HasManda
 		case FRANZOESISCH:
 			return this.getVorlageVerfuegungLatsFr();
 		default:
-			throw new EbeguRuntimeException("getVorlageVerfuegungLatsWithSprache", "Sprache not defined", sprache);
+			throw new EbeguRuntimeException(
+				"getVorlageVerfuegungLatsWithSprache",
+				"Sprache not defined",
+				sprache
+			);
 		}
 	}
 
@@ -350,12 +408,17 @@ public class Gesuchsperiode extends AbstractDateRangedEntity implements HasManda
 		case FRANZOESISCH:
 			return this.getVorlageVerfuegungFerienbetreuungFr();
 		default:
-			throw new EbeguRuntimeException("getVorlageVerfuegungFerienbetreuungWithSprache", "Sprache not defined", sprache);
+			throw new EbeguRuntimeException(
+				"getVorlageVerfuegungFerienbetreuungWithSprache",
+				"Sprache not defined",
+				sprache
+			);
 		}
 	}
 
 	@Override
-	@SuppressWarnings({ "OverlyComplexBooleanExpression", "PMD.CompareObjectsWithEquals" })
+	@SuppressWarnings({ "OverlyComplexBooleanExpression",
+		"PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -382,7 +445,8 @@ public class Gesuchsperiode extends AbstractDateRangedEntity implements HasManda
 
 	public String getGesuchsperiodeString() {
 		DateRange gueltigkeit = this.getGueltigkeit();
-		return gueltigkeit.getGueltigAb().getYear() + "/"
+		return gueltigkeit.getGueltigAb().getYear()
+			+ "/"
 			+ gueltigkeit.getGueltigBis().getYear();
 	}
 
@@ -392,19 +456,23 @@ public class Gesuchsperiode extends AbstractDateRangedEntity implements HasManda
 	public String getGesuchsperiodeStringShort() {
 		DateRange gueltigkeit = this.getGueltigkeit();
 		int year2000 = 2000;
-		return gueltigkeit.getGueltigAb().getYear() + "/"
-			+ (gueltigkeit.getGueltigBis().getYear()-year2000);
+		return gueltigkeit.getGueltigAb().getYear()
+			+ "/"
+			+ (gueltigkeit.getGueltigBis().getYear() - year2000);
 	}
 
 	public String getGesuchsperiodeDisplayName(@Nonnull Locale locale) {
 		DateRange gueltigkeit = this.getGueltigkeit();
 
-		return Constants.DATE_FORMATTER.format(gueltigkeit.getGueltigAb()) + " - "
+		return Constants.DATE_FORMATTER.format(gueltigkeit.getGueltigAb())
+			+ " - "
 			+ Constants.DATE_FORMATTER.format(gueltigkeit.getGueltigBis());
 	}
 
 	public String getGesuchsperiodeStatusName(@Nonnull Locale locale) {
-		return "(" + ServerMessageUtil.translateEnumValue(status, locale, mandant) + ')';
+		return "("
+			+ ServerMessageUtil.translateEnumValue(status, locale, mandant)
+			+ ')';
 	}
 
 	@Nonnull

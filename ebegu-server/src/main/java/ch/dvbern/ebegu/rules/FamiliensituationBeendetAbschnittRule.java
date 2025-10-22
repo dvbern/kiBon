@@ -1,13 +1,5 @@
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.EnumFamilienstatus;
-import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
-import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
-import ch.dvbern.ebegu.types.DateRange;
-
-import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.LinkedList;
@@ -15,43 +7,71 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class FamiliensituationBeendetAbschnittRule extends AbstractAbschnittRule {
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.entities.AbstractPlatz;
+import ch.dvbern.ebegu.entities.Familiensituation;
+import ch.dvbern.ebegu.entities.FamiliensituationContainer;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.EnumFamilienstatus;
+import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
+import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.types.DateRange;
+
+public class FamiliensituationBeendetAbschnittRule extends
+	AbstractAbschnittRule {
 	public static final int ZERO = 0;
 
 	private final boolean familiensituationBeendenActivated;
 
 	protected FamiliensituationBeendetAbschnittRule(
-			@Nonnull DateRange validityPeriod,
-			@Nonnull Locale locale,
-			@Nonnull Boolean familiensituationBeendenActivated) {
-		super(RuleKey.FAMILIENSITUATION, RuleType.REDUKTIONSREGEL, RuleValidity.ASIV, validityPeriod, locale);
-		this.familiensituationBeendenActivated = familiensituationBeendenActivated.equals(Boolean.TRUE);
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale,
+		@Nonnull Boolean familiensituationBeendenActivated
+	) {
+		super(
+			RuleKey.FAMILIENSITUATION,
+			RuleType.REDUKTIONSREGEL,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
+		this.familiensituationBeendenActivated =
+			familiensituationBeendenActivated.equals(Boolean.TRUE);
 	}
 
 	@Nonnull
 	@Override
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
-		final List<VerfuegungZeitabschnitt> neueZeitabschnitte = new LinkedList<>();
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
+		final List<VerfuegungZeitabschnitt> neueZeitabschnitte =
+			new LinkedList<>();
 
 		if (!this.familiensituationBeendenActivated) {
 			return neueZeitabschnitte;
 		}
 
 		Gesuch gesuch = platz.extractGesuch();
-		Familiensituation familiensituation = platz.extractGesuch().extractFamiliensituation();
-		if (familiensituation != null &&
-			familiensituation.getFamilienstatus() == EnumFamilienstatus.KONKUBINAT_KEIN_KIND) {
-			LocalDate startKonkubinat = familiensituation.getStartKonkubinat();
-			if (null != startKonkubinat) {
-				createZeitabschnitteNachZweiJahrenKonkubinat(neueZeitabschnitte, gesuch, startKonkubinat);
-			}
+		Familiensituation familiensituation = platz.extractGesuch()
+			.extractFamiliensituation();
+		Objects.requireNonNull(familiensituation);
+		if (familiensituation.getFamilienstatus()
+			== EnumFamilienstatus.KONKUBINAT_KEIN_KIND) {
+			createZeitabschnitteNachZweiJahrenKonkubinat(
+				neueZeitabschnitte,
+				gesuch
+			);
 
 			if (!neueZeitabschnitte.isEmpty()) {
-                return neueZeitabschnitte;
-            }
+				return neueZeitabschnitte;
+			}
 		}
 
-		LocalDate familiensituationAenderungPer = Objects.requireNonNull(familiensituation).getAenderungPer();
+		LocalDate familiensituationAenderungPer = familiensituation
+			.getAenderungPer();
 		if (null == familiensituationAenderungPer) {
 			return neueZeitabschnitte;
 		}
@@ -59,27 +79,43 @@ public class FamiliensituationBeendetAbschnittRule extends AbstractAbschnittRule
 			return neueZeitabschnitte;
 		}
 
-		if (Objects.isNull(familiensituation.getPartnerIdentischMitVorgesuch()) ||
-				Objects.equals(Boolean.TRUE, familiensituation.getPartnerIdentischMitVorgesuch())) {
+		if (Objects.isNull(familiensituation.getPartnerIdentischMitVorgesuch())
+			||
+			Objects.equals(
+				Boolean.TRUE,
+				familiensituation.getPartnerIdentischMitVorgesuch()
+			)) {
 			return neueZeitabschnitte;
 		}
-		LocalDate gueltigBis = gesuch.getGesuchsperiode().getGueltigkeit().getGueltigBis();
-		LocalDate firstDayOfNextMonth = familiensituationAenderungPer.with(TemporalAdjusters.firstDayOfNextMonth());
+		LocalDate gueltigBis = gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigBis();
+		LocalDate firstDayOfNextMonth = familiensituationAenderungPer.with(
+			TemporalAdjusters.firstDayOfNextMonth()
+		);
 
-		createZeitabschnitteNachPartnerStatusAenderung(neueZeitabschnitte, gueltigBis, firstDayOfNextMonth);
+		createZeitabschnitteNachPartnerStatusAenderung(
+			neueZeitabschnitte,
+			gueltigBis,
+			firstDayOfNextMonth
+		);
 		return neueZeitabschnitte;
 	}
 
 	private void createZeitabschnitteNachZweiJahrenKonkubinat(
-			@Nonnull List<VerfuegungZeitabschnitt> neueZeitabschnitte,
-			@Nonnull Gesuch gesuch,
-			@Nonnull LocalDate startKonkubinat) {
+		@Nonnull List<VerfuegungZeitabschnitt> neueZeitabschnitte,
+		@Nonnull Gesuch gesuch
+	) {
 
-		LocalDate konkubinatPlusMinDauerKonukubinat =
-				Objects.requireNonNull(gesuch.extractFamiliensituation())
-						.getStartKonkubinatPlusMindauer(startKonkubinat);
+		Familiensituation familiensituation = gesuch.extractFamiliensituation();
+		Objects.requireNonNull(familiensituation);
 
-		if (!gesuch.getGesuchsperiode().getGueltigkeit().contains(konkubinatPlusMinDauerKonukubinat)) {
+		LocalDate konkubinatPlusMinDauerKonukubinat = familiensituation
+			.getStartKonkubinatPlusMindauer();
+
+		if (!gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.contains(konkubinatPlusMinDauerKonukubinat)) {
 			return;
 		}
 		//Wechsel von 1 nach 2 -> nicht beenden
@@ -87,48 +123,67 @@ public class FamiliensituationBeendetAbschnittRule extends AbstractAbschnittRule
 			return;
 		}
 
-		LocalDate zweiJahreKonkubinatNextMonth = Objects.requireNonNull(gesuch.extractFamiliensituation())
-				.getStartKonkubinatPlusMindauerEndOfMonth(startKonkubinat);
+		LocalDate zweiJahreKonkubinatNextMonth =
+			konkubinatPlusMinDauerKonukubinat
+				.with(TemporalAdjusters.firstDayOfNextMonth());
 		VerfuegungZeitabschnitt abschnittNachJahrenKonkubinat =
-				createZeitabschnittWithinValidityPeriodOfRule(new DateRange(
-						zweiJahreKonkubinatNextMonth,
-						gesuch.getGesuchsperiode().getGueltigkeit().getGueltigBis()));
+			createZeitabschnittWithinValidityPeriodOfRule(
+				new DateRange(
+					zweiJahreKonkubinatNextMonth,
+					gesuch.getGesuchsperiode()
+						.getGueltigkeit()
+						.getGueltigBis()
+				)
+			);
 		abschnittNachJahrenKonkubinat.setGesuchBeendenKonkubinatMitZweiGS(true);
 		neueZeitabschnitte.add(abschnittNachJahrenKonkubinat);
 
 	}
 
 	private boolean istWechselVon1NachZwei(@Nonnull Gesuch gesuch) {
-		FamiliensituationContainer familiensituationContainer = gesuch.getFamiliensituationContainer();
-		Familiensituation familiensituationJA = Objects.requireNonNull(familiensituationContainer).getFamiliensituationJA();
-		if (null == familiensituationJA){
+		FamiliensituationContainer familiensituationContainer = gesuch
+			.getFamiliensituationContainer();
+		Familiensituation familiensituationJA = Objects.requireNonNull(
+			familiensituationContainer
+		).getFamiliensituationJA();
+		if (null == familiensituationJA) {
 			return true;
 		}
 		boolean familiensituationKonkubinatKeinKind = familiensituationJA
-				.getFamilienstatus() == EnumFamilienstatus.KONKUBINAT_KEIN_KIND;
+			.getFamilienstatus()
+			== EnumFamilienstatus.KONKUBINAT_KEIN_KIND;
 
 		if (!familiensituationKonkubinatKeinKind) {
 			return false;
 		}
 
-		boolean geteilteObhut = Boolean.TRUE.equals(familiensituationJA.getGeteilteObhut());
+		boolean geteilteObhut = Boolean.TRUE.equals(
+			familiensituationJA.getGeteilteObhut()
+		);
 		boolean antragAlleine = familiensituationJA
-				.getGesuchstellerKardinalitaet() == EnumGesuchstellerKardinalitaet.ALLEINE;
+			.getGesuchstellerKardinalitaet()
+			== EnumGesuchstellerKardinalitaet.ALLEINE;
 
 		if (geteilteObhut) {
 			return antragAlleine;
 		}
 
 		return familiensituationJA.getUnterhaltsvereinbarung()
-				!= UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG;
+			!= UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG;
 	}
 
 	private void createZeitabschnitteNachPartnerStatusAenderung(
-			List<VerfuegungZeitabschnitt> neueZeitabschnitte, @Nonnull LocalDate gueltigBis,
-			@Nonnull LocalDate firstDayOfNextMonth) {
+		List<VerfuegungZeitabschnitt> neueZeitabschnitte,
+		@Nonnull LocalDate gueltigBis,
+		@Nonnull LocalDate firstDayOfNextMonth
+	) {
 		VerfuegungZeitabschnitt abschnittNachPartnerStatusAenderung =
-				createZeitabschnittWithinValidityPeriodOfRule(new DateRange(firstDayOfNextMonth, gueltigBis));
-		abschnittNachPartnerStatusAenderung.setPartnerIdentischMitVorgesuch(Boolean.FALSE);
+			createZeitabschnittWithinValidityPeriodOfRule(
+				new DateRange(firstDayOfNextMonth, gueltigBis)
+			);
+		abschnittNachPartnerStatusAenderung.setPartnerIdentischMitVorgesuch(
+			Boolean.FALSE
+		);
 		neueZeitabschnitte.add(abschnittNachPartnerStatusAenderung);
 	}
 

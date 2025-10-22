@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
-import {TSEinstellung} from '../../../models/TSEinstellung';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGemeindeKonfiguration} from '../../../models/TSGemeindeKonfiguration';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 
 /**

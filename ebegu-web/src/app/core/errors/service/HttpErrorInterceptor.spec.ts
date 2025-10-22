@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IDeferred} from 'angular';
+import angular, {IDeferred} from 'angular';
 import {TSExceptionReport} from '../../../../models/TSExceptionReport';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {HttpErrorInterceptor} from './HttpErrorInterceptor';

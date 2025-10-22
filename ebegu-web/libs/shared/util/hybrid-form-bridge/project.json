@@ -1,0 +1,38 @@
+{
+    "name": "shared-util-hybrid-form-bridge",
+    "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/shared/util/hybrid-form-bridge/src",
+    "prefix": "lib",
+    "projectType": "library",
+    "tags": ["type:util", "feature:shared"],
+    "targets": {
+        "build": {
+            "executor": "nx:noop",
+            "options": {
+                "tsConfig": "libs/shared/util/hybrid-form-bridge/tsconfig.lib.json"
+            }
+        },
+        "test": {
+            "executor": "@angular-builders/custom-webpack:karma",
+            "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+            "options": {
+                "main": "./src/test.ts",
+                "customWebpackConfig": {
+                    "path": "./extra-webpack.config.js"
+                },
+                "karmaConfig": "./karma.conf.js",
+                "polyfills": "./src/polyfills.ts",
+                "tsConfig": "{projectRoot}/tsconfig.spec.json",
+                "fileReplacements": [
+                    {
+                        "replace": "src/environments/environment.ts",
+                        "with": "src/environments/environment.test.ts"
+                    }
+                ]
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

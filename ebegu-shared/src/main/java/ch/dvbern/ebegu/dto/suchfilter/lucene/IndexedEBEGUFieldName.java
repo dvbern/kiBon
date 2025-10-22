@@ -15,32 +15,38 @@
 
 package ch.dvbern.ebegu.dto.suchfilter.lucene;
 
-import org.hibernate.search.annotations.FieldBridge;
+import lombok.Getter;
 
 /**
  * Enum with all the indexed fields in our Lucene Index
  */
+@Getter
 public enum IndexedEBEGUFieldName {
 
-	GS_VORNAME("gesuchstellerJA.nachname"),
-	GS_NACHNAME("gesuchstellerJA.vorname"),
-	GS_GEBDATUM("gesuchstellerJA.geburtsdatum", true),
-	KIND_VORNAME("kindJA.nachname"),
-	KIND_NACHNAME("kindJA.vorname"),
-	KIND_GEBDATUM("kindJA.geburtsdatum", true),
-	KIND_FALL_MANDANT("gesuch.dossier.fall.mandant.mandantIdentifier"),
-	BETREUUNG_BGNR("bGNummer"),
-	GESUCH_FALL_NUMMER("dossier.fall.fallNummer"),
-	GESUCH_FALL_MANDANT("dossier.fall.mandant.mandantIdentifier"),
-	DOSSIER_FALLNUMMER("fall.fallNummer"),
-	DOSSIER_BESITZER_NAME("fall.besitzer.nachname"),
-	DOSSIER_BESITZER_VORNAME("fall.besitzer.vorname"),
-	DOSSIER_FALL_MANDANT("fall.mandant.mandantIdentifier");
+	GS_VORNAME("gesuchstellerJA.nachname"), GS_NACHNAME(
+		"gesuchstellerJA.vorname"
+	), GS_GEBDATUM("gesuchstellerJA.geburtsdatum", true), KIND_VORNAME(
+		"kindJA.nachname"
+	), KIND_NACHNAME("kindJA.vorname"), KIND_GEBDATUM(
+		"kindJA.geburtsdatum",
+		true
+	), KIND_FALL_MANDANT(
+		"gesuch.dossier.fall.mandant.mandantIdentifier"
+	), BETREUUNG_BGNR("referenzNummer"), GESUCH_FALL_NUMMER(
+		"dossier.fall.fallNummer"
+	), GESUCH_FALL_MANDANT(
+		"dossier.fall.mandant.mandantIdentifier"
+	), DOSSIER_FALLNUMMER("fall.fallNummer"), DOSSIER_BESITZER_NAME(
+		"fall.besitzer.nachname"
+	), DOSSIER_BESITZER_VORNAME("fall.besitzer.vorname"), DOSSIER_FALL_MANDANT(
+		"fall.mandant.mandantIdentifier"
+	);
 
 	private final String indexedFieldName;
 
 	/**
-	 * wenn hier true gesetzt wird wird das feld beim erstellen des queries nicht ueber die {@link FieldBridge} gesucht sondern
+	 * wenn hier true gesetzt wird wird das feld beim erstellen des queries nicht ueber die {@link FieldBridge} gesucht
+	 * sondern
 	 * direkt als string
 	 */
 	private final boolean ignoreFieldBridgeInQuery;
@@ -49,18 +55,13 @@ public enum IndexedEBEGUFieldName {
 		this(indexedFieldName, false);
 	}
 
-	IndexedEBEGUFieldName(String indexedFieldName, boolean ignoreFieldBridgeInQuery) {
+	IndexedEBEGUFieldName(
+		String indexedFieldName,
+		boolean ignoreFieldBridgeInQuery
+	) {
 		this.indexedFieldName = indexedFieldName;
 		this.ignoreFieldBridgeInQuery = ignoreFieldBridgeInQuery;
 
-	}
-
-	public String getIndexedFieldName() {
-		return indexedFieldName;
-	}
-
-	public boolean isIgnoreFieldBridgeInQuery() {
-		return ignoreFieldBridgeInQuery;
 	}
 
 }

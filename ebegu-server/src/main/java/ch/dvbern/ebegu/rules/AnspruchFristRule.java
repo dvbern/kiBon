@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -50,60 +50,111 @@ public final class AnspruchFristRule extends AbstractAbschlussRule {
 
 	@Override
 	@Nonnull
-	public List<VerfuegungZeitabschnitt> execute(@Nonnull AbstractPlatz platz, @Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	public List<VerfuegungZeitabschnitt> execute(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		List<VerfuegungZeitabschnitt> result = new LinkedList<>();
 		VerfuegungZeitabschnitt vorangehenderAbschnitt = null;
 		for (VerfuegungZeitabschnitt zeitabschnitt : zeitabschnitte) {
 			result.add(zeitabschnitt);
 			// Es muessen nur Abschnitte beachtet werden, die *innerhalb* des Monats anfangen!
-			if (vorangehenderAbschnitt != null && zeitabschnitt.getGueltigkeit().getGueltigAb().getDayOfMonth() > 1) {
+			if (vorangehenderAbschnitt != null
+				&& zeitabschnitt.getGueltigkeit()
+					.getGueltigAb()
+					.getDayOfMonth()
+					> 1) {
 				// Der Anspruch ist kleiner als der Anspruch von vorangehenderAbschnitt
-				int anspruchNeuAsiv = zeitabschnitt.getBgCalculationInputAsiv().getAnspruchspensumProzent();
-				int anspruchNeuGemeinde = zeitabschnitt.getBgCalculationInputGemeinde().getAnspruchspensumProzent();
-				int anspruchVorherAsiv = vorangehenderAbschnitt.getBgCalculationInputAsiv().getAnspruchspensumProzent();
-				int anspruchVorherGemeinde = vorangehenderAbschnitt.getBgCalculationInputGemeinde().getAnspruchspensumProzent();
-				boolean anspruchVerminderungAsiv = anspruchNeuAsiv < anspruchVorherAsiv;
-				boolean anspruchVerminderungGemeinde = anspruchNeuGemeinde < anspruchVorherGemeinde;
+				int anspruchNeuAsiv = zeitabschnitt.getBgCalculationInputAsiv()
+					.getAnspruchspensumProzent();
+				int anspruchNeuGemeinde = zeitabschnitt
+					.getBgCalculationInputGemeinde()
+					.getAnspruchspensumProzent();
+				int anspruchVorherAsiv = vorangehenderAbschnitt
+					.getBgCalculationInputAsiv()
+					.getAnspruchspensumProzent();
+				int anspruchVorherGemeinde = vorangehenderAbschnitt
+					.getBgCalculationInputGemeinde()
+					.getAnspruchspensumProzent();
+				boolean anspruchVerminderungAsiv = anspruchNeuAsiv
+					< anspruchVorherAsiv;
+				boolean anspruchVerminderungGemeinde = anspruchNeuGemeinde
+					< anspruchVorherGemeinde;
 				if (anspruchVerminderungAsiv || anspruchVerminderungGemeinde) {
 					// Der Anspruch darf nie innerhalb des Monats kleiner werden
 					// d.h. für diesen Abschnitt bis Ende Monat gilt weiterhin der "alte" Anspruch
-					if (zeitabschnitt.getGueltigkeit().getGueltigAb().getMonth() != zeitabschnitt.getGueltigkeit().getGueltigBis().getMonth()) {
+					if (zeitabschnitt.getGueltigkeit().getGueltigAb().getMonth()
+						!= zeitabschnitt.getGueltigkeit()
+							.getGueltigBis()
+							.getMonth()) {
 						// Der Abschnitt geht über die Monatsgrenze hinaus. Es muss ab dem Folgemonat ein neuer Abschnitt
 						// mit dem neuen Anspruch erstellt werden
-						LocalDate datumAbAlterMonat = zeitabschnitt.getGueltigkeit().getGueltigAb();
-						LocalDate datumBisAlterMonat = datumAbAlterMonat.with(TemporalAdjusters.lastDayOfMonth());
-						LocalDate datumAbNeuerAbschnitt = datumBisAlterMonat.plusDays(1);
-						LocalDate datumBisNeuerAbschnitt = zeitabschnitt.getGueltigkeit().getGueltigBis();
+						LocalDate datumAbAlterMonat = zeitabschnitt
+							.getGueltigkeit()
+							.getGueltigAb();
+						LocalDate datumBisAlterMonat = datumAbAlterMonat.with(
+							TemporalAdjusters.lastDayOfMonth()
+						);
+						LocalDate datumAbNeuerAbschnitt = datumBisAlterMonat
+							.plusDays(1);
+						LocalDate datumBisNeuerAbschnitt = zeitabschnitt
+							.getGueltigkeit()
+							.getGueltigBis();
 
-						VerfuegungZeitabschnitt zeitabschnittNaechsterMonat = new VerfuegungZeitabschnitt(zeitabschnitt);
-						zeitabschnittNaechsterMonat.getGueltigkeit().setGueltigAb(datumAbNeuerAbschnitt);
-						zeitabschnittNaechsterMonat.getGueltigkeit().setGueltigBis(datumBisNeuerAbschnitt);
+						VerfuegungZeitabschnitt zeitabschnittNaechsterMonat =
+							new VerfuegungZeitabschnitt(zeitabschnitt);
+						zeitabschnittNaechsterMonat.getGueltigkeit()
+							.setGueltigAb(datumAbNeuerAbschnitt);
+						zeitabschnittNaechsterMonat.getGueltigkeit()
+							.setGueltigBis(datumBisNeuerAbschnitt);
 						result.add(zeitabschnittNaechsterMonat);
 
 						// Den alten Abschnitt per Ende Monat beenden
-						zeitabschnitt.getGueltigkeit().setGueltigAb(datumAbAlterMonat);
-						zeitabschnitt.getGueltigkeit().setGueltigBis(datumBisAlterMonat);
+						zeitabschnitt.getGueltigkeit()
+							.setGueltigAb(datumAbAlterMonat);
+						zeitabschnitt.getGueltigkeit()
+							.setGueltigBis(datumBisAlterMonat);
 
 						// Ab dem naechsten Monat gilt der neue Anspruch
 						if (anspruchVerminderungAsiv) {
-							zeitabschnitt.getBgCalculationInputAsiv().setAnspruchspensumProzent(anspruchVorherAsiv);
+							zeitabschnitt.getBgCalculationInputAsiv()
+								.setAnspruchspensumProzent(
+									anspruchVorherAsiv
+								);
 						}
 						if (anspruchVerminderungGemeinde) {
-							zeitabschnitt.getBgCalculationInputGemeinde().setAnspruchspensumProzent(anspruchVorherGemeinde);
+							zeitabschnitt.getBgCalculationInputGemeinde()
+								.setAnspruchspensumProzent(
+									anspruchVorherGemeinde
+								);
 						}
-						zeitabschnitt.getBemerkungenDTOList().addAllBemerkungen(vorangehenderAbschnitt.getBemerkungenDTOList());
+						zeitabschnitt.getBemerkungenDTOList()
+							.addAllBemerkungen(
+								vorangehenderAbschnitt
+									.getBemerkungenDTOList()
+							);
 
 						vorangehenderAbschnitt = zeitabschnittNaechsterMonat;
 					} else {
 						// we need to set both anspruch and bemerkung so both Zeitabschnitte are the same
 						if (anspruchVerminderungAsiv) {
-							zeitabschnitt.getBgCalculationInputAsiv().setAnspruchspensumProzent(anspruchVorherAsiv);
+							zeitabschnitt.getBgCalculationInputAsiv()
+								.setAnspruchspensumProzent(
+									anspruchVorherAsiv
+								);
 						}
 						if (anspruchVerminderungGemeinde) {
-							zeitabschnitt.getBgCalculationInputGemeinde().setAnspruchspensumProzent(anspruchVorherGemeinde);
+							zeitabschnitt.getBgCalculationInputGemeinde()
+								.setAnspruchspensumProzent(
+									anspruchVorherGemeinde
+								);
 						}
 						zeitabschnitt.getBemerkungenDTOList().clear();
-						zeitabschnitt.getBemerkungenDTOList().addAllBemerkungen(vorangehenderAbschnitt.getBemerkungenDTOList());
+						zeitabschnitt.getBemerkungenDTOList()
+							.addAllBemerkungen(
+								vorangehenderAbschnitt
+									.getBemerkungenDTOList()
+							);
 						vorangehenderAbschnitt = zeitabschnitt;
 					}
 				} else {

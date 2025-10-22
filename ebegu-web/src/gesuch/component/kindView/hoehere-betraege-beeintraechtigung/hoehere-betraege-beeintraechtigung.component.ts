@@ -7,7 +7,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSKindContainer} from '../../../../models/TSKindContainer';
 import {KinderabzugExchangeService} from '../service/kinderabzug-exchange.service';
 
@@ -16,7 +16,8 @@ const LOG = LogFactory.createLog('HoehereBetraegeBeeintraechtigungComponent');
 @Component({
     selector: 'dv-hoehere-betraege-beeintraechtigung',
     templateUrl: './hoehere-betraege-beeintraechtigung.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class HoehereBetraegeBeeintraechtigungComponent
     implements AfterViewInit

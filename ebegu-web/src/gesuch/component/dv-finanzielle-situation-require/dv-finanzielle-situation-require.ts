@@ -15,9 +15,9 @@
 
 import {IComponentOptions, IController, IFormController} from 'angular';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {EbeguNumberPipe} from '../../../app/shared/pipe/ebegu-number.pipe';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSFinanzielleSituationTyp} from '../../../models/enums/TSFinanzielleSituationTyp';
 import {TSFinSitStatus} from '../../../models/enums/TSFinSitStatus';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
@@ -32,7 +32,8 @@ export class DvFinanzielleSituationRequire implements IComponentOptions {
         verguenstigungGewuenscht: '=',
         finanzielleSituationRequired: '=',
         areThereAnyBgBetreuungen: '=',
-        form: '='
+        form: '=',
+        einzeln: '='
     };
     public template = require('./dv-finanzielle-situation-require.html');
     public controller = DVFinanzielleSituationRequireController;
@@ -54,6 +55,7 @@ export class DVFinanzielleSituationRequireController implements IController {
     public verguenstigungGewuenscht: boolean;
     public areThereAnyBgBetreuungen: boolean;
     public isFinSitTypFkjv: boolean = false;
+    public einzeln: boolean;
 
     public maxMassgebendesEinkommen: number;
 

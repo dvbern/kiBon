@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.tagesschule;
@@ -33,7 +33,10 @@ public class TagesschuleRepeatColGroup {
 	private List<ModulTagesschuleGroup> modulTagesschuleList;
 	private String repeatColName;
 
-	public TagesschuleRepeatColGroup(DayOfWeek wochentag, String repeatColName) {
+	public TagesschuleRepeatColGroup(
+		DayOfWeek wochentag,
+		String repeatColName
+	) {
 		this.wochentag = wochentag;
 		this.repeatColName = repeatColName;
 		this.modulTagesschuleList = new ArrayList<>();
@@ -51,7 +54,9 @@ public class TagesschuleRepeatColGroup {
 		return modulTagesschuleList;
 	}
 
-	public void setModulTagesschuleList(List<ModulTagesschuleGroup> modulTagesschuleList) {
+	public void setModulTagesschuleList(
+		List<ModulTagesschuleGroup> modulTagesschuleList
+	) {
 		this.modulTagesschuleList = modulTagesschuleList;
 	}
 

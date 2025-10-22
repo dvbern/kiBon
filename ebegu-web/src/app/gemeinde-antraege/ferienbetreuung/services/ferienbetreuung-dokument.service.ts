@@ -2,12 +2,11 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {TSSprache} from '../../../../models/enums/TSSprache';
+import {TSSprache} from '@kibon/shared/model/enums';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {TSFerienbetreuungDokument} from '../../../../models/gemeindeantrag/TSFerienbetreuungDokument';
 import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '../../../core/constants/CONSTANTS';
-
+import {CONSTANTS} from '@kibon/shared/model/constants';
 @Injectable({
     providedIn: 'root'
 })

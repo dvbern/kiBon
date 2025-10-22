@@ -14,7 +14,12 @@
  */
 
 import {StateService} from '@uirouter/core';
-import {IHttpBackendService, IQService, IScope, ITimeoutService} from 'angular';
+import angular, {
+    IHttpBackendService,
+    IQService,
+    IScope,
+    ITimeoutService
+} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {FinanzielleSituationLuzernService} from '../../../../gesuch/component/finanzielleSituation/luzern/finanzielle-situation-luzern.service';
 import {FinanzielleSituationRS} from '../../../../gesuch/service/finanzielleSituationRS.rest';
@@ -27,14 +32,14 @@ import {translationsMock} from '../../../../hybridTools/translationsMock';
 import {TSAntragTyp} from '../../../../models/enums/TSAntragTyp';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
 import {TSFinanzielleSituationSubStepName} from '../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {TSDossier} from '../../../../models/TSDossier';
 import {TSEinkommensverschlechterungInfo} from '../../../../models/TSEinkommensverschlechterungInfo';
 import {TSFall} from '../../../../models/TSFall';
 import {TSFamiliensituation} from '../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../models/TSFamiliensituationContainer';
 import {TSGesuch} from '../../../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../../core.angularjs.module';
 import {NavigatorController} from './dv-navigation';

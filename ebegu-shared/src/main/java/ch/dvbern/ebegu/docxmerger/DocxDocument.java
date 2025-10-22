@@ -35,7 +35,8 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 public class DocxDocument {
-	@Nonnull private final byte[] template;
+	@Nonnull
+	private final byte[] template;
 	private XWPFDocument xwpfDocument;
 
 	public DocxDocument(@Nonnull byte[] template) {
@@ -45,14 +46,26 @@ public class DocxDocument {
 
 	private void createDocument() {
 		try {
-			this.xwpfDocument = new XWPFDocument(new ByteArrayInputStream(template));
+			this.xwpfDocument = new XWPFDocument(
+				new ByteArrayInputStream(template)
+			);
 		} catch (IOException e) {
-			throw new EbeguRuntimeException("createDocument", "could not create document", e);
+			throw new EbeguRuntimeException(
+				"createDocument",
+				"could not create document",
+				e
+			);
 		}
 	}
 
-	public void replacePlaceholder(@Nonnull String placeholder, @Nonnull String replacement) {
-		boolean replacedInParagraphs = replaceInParagraphs(placeholder, replacement);
+	public void replacePlaceholder(
+		@Nonnull String placeholder,
+		@Nonnull String replacement
+	) {
+		boolean replacedInParagraphs = replaceInParagraphs(
+			placeholder,
+			replacement
+		);
 		boolean replacedInTables = replaceInTables(placeholder, replacement);
 		if (!(replacedInParagraphs || replacedInTables)) {
 			throw new EbeguRuntimeException(
@@ -64,22 +77,36 @@ public class DocxDocument {
 		}
 	}
 
-	private boolean replaceInParagraphs(String placeholder, String replacement) {
+	private boolean replaceInParagraphs(
+		String placeholder,
+		String replacement
+	) {
 		boolean found = false;
 		for (XWPFParagraph paragraph : xwpfDocument.getParagraphs()) {
-			boolean foundInThisRun = replaceInRuns(placeholder, replacement, paragraph.getRuns());
+			boolean foundInThisRun = replaceInRuns(
+				placeholder,
+				replacement,
+				paragraph.getRuns()
+			);
 			found = foundInThisRun || found;
 		}
 		return found;
 	}
 
-	private boolean replaceInTables(@Nonnull String placeholder, @Nonnull String replacement) {
+	private boolean replaceInTables(
+		@Nonnull String placeholder,
+		@Nonnull String replacement
+	) {
 		boolean replaced = false;
 		for (XWPFTable tbl : xwpfDocument.getTables()) {
 			for (XWPFTableRow row : tbl.getRows()) {
 				for (XWPFTableCell cell : row.getTableCells()) {
 					for (XWPFParagraph p : cell.getParagraphs()) {
-						boolean replacedInThisParagraph = replaceInRuns(placeholder, replacement, p.getRuns());
+						boolean replacedInThisParagraph = replaceInRuns(
+							placeholder,
+							replacement,
+							p.getRuns()
+						);
 						replaced = replacedInThisParagraph || replaced;
 					}
 				}
@@ -96,10 +123,15 @@ public class DocxDocument {
 	 * * * * Runs
 	 *
 	 * Runs are like span Objects and separate text parts with different styles.
-	 * It's possible that the placeholder is separated in different runs, e.g. like this: run1: '{', run2: 'placeholder', run3: '}'.
+	 * It's possible that the placeholder is separated in different runs, e.g. like this: run1: '{', run2:
+	 * 'placeholder', run3: '}'.
 	 * To address this problem, this algorithm was created
 	 */
-	private boolean replaceInRuns(String placeholder, String replacement, List<XWPFRun> runs) {
+	private boolean replaceInRuns(
+		String placeholder,
+		String replacement,
+		List<XWPFRun> runs
+	) {
 		// concat all runs to one text to check, if placeholder exists in these runs
 		StringBuilder paragraphText = new StringBuilder();
 		for (XWPFRun run : runs) {
@@ -125,18 +157,32 @@ public class DocxDocument {
 			// check if placeholder starts in current run
 			if (currStringIndex + textOfRunLength - 1 >= placeholderIndex) {
 				// starting point could be at index 0 or somewhere in the middle
-				String textUntilPlaceholder = textOfRun.substring(0, placeholderIndex - currStringIndex);
+				String textUntilPlaceholder = textOfRun.substring(
+					0,
+					placeholderIndex - currStringIndex
+				);
 				// end point of placeholder can be in this run, but it does not have to be
-				int placeholderEndIndex = placeholderIndex - currStringIndex + placeholder.length();
-				int restOfPlaceholderSize =  placeholderEndIndex - textOfRun.length();
-				String textAfterPlaceholder = textOfRun.substring(Math.min(
-					placeholderEndIndex,
-					textOfRun.length()
-				));
-				String replaced = textUntilPlaceholder + replacement + textAfterPlaceholder;
+				int placeholderEndIndex = placeholderIndex
+					- currStringIndex
+					+ placeholder.length();
+				int restOfPlaceholderSize = placeholderEndIndex
+					- textOfRun.length();
+				String textAfterPlaceholder = textOfRun.substring(
+					Math.min(
+						placeholderEndIndex,
+						textOfRun.length()
+					)
+				);
+				String replaced = textUntilPlaceholder
+					+ replacement
+					+ textAfterPlaceholder;
 				run.setText(replaced, 0);
 
-				removeRestOfPlaceholderFromFollowingRuns(runs, i, restOfPlaceholderSize);
+				removeRestOfPlaceholderFromFollowingRuns(
+					runs,
+					i,
+					restOfPlaceholderSize
+				);
 
 				// recursive check for other placeholders of same type in this runs
 				replaceInRuns(placeholder, replacement, runs);
@@ -147,7 +193,11 @@ public class DocxDocument {
 		return false;
 	}
 
-	private void removeRestOfPlaceholderFromFollowingRuns(List<XWPFRun> runs, int i, int restOfPlaceholderSize) {
+	private void removeRestOfPlaceholderFromFollowingRuns(
+		List<XWPFRun> runs,
+		int i,
+		int restOfPlaceholderSize
+	) {
 		for (int j = i + 1; j < runs.size(); j++) {
 			if (restOfPlaceholderSize <= 0) {
 				break;
@@ -156,7 +206,10 @@ public class DocxDocument {
 			if (runText == null) {
 				continue;
 			}
-			int placeholderPartInThisRun = Math.min(restOfPlaceholderSize, runText.length());
+			int placeholderPartInThisRun = Math.min(
+				restOfPlaceholderSize,
+				runText.length()
+			);
 			runText = runText.substring(placeholderPartInThisRun);
 			restOfPlaceholderSize -= placeholderPartInThisRun;
 			runs.get(j).setText(runText, 0);
@@ -170,7 +223,11 @@ public class DocxDocument {
 			out.close();
 			xwpfDocument.close();
 		} catch (IOException e) {
-			throw new EbeguRuntimeException("getDocument", "Error while converting xwpfDocument to byte array", e);
+			throw new EbeguRuntimeException(
+				"getDocument",
+				"Error while converting xwpfDocument to byte array",
+				e
+			);
 		}
 		return out.toByteArray();
 	}

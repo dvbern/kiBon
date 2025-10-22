@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -21,14 +21,15 @@ package ch.dvbern.ebegu.gesuch.freigabe;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.validationgroups.AntragCompleteValidationGroup;
+import ch.dvbern.ebegu.validationgroups.DocumentUploadValidationGroup;
 
 @Stateless
 public class GesuchValidatorService {
@@ -44,4 +45,11 @@ public class GesuchValidatorService {
 		}
 	}
 
+	public void validateGesuchDocumentUpload(@Nonnull Gesuch gesuch) {
+		Set<ConstraintViolation<Gesuch>> constraintViolations =
+			validator.validate(gesuch, DocumentUploadValidationGroup.class);
+		if (!constraintViolations.isEmpty()) {
+			throw new ConstraintViolationException(constraintViolations);
+		}
+	}
 }

@@ -8,19 +8,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.validation;
 
 import java.util.Locale;
 
-import javax.validation.MessageInterpolator;
-import javax.validation.Validation;
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.Validation;
 
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
 
@@ -36,7 +36,9 @@ public class LocaleAwareMessageInterpolator implements MessageInterpolator {
 
 	public LocaleAwareMessageInterpolator() {
 		// CDI
-		this.delegate = Validation.byDefaultProvider().configure().getDefaultMessageInterpolator();
+		this.delegate = Validation.byDefaultProvider()
+			.configure()
+			.getDefaultMessageInterpolator();
 	}
 
 	public LocaleAwareMessageInterpolator(MessageInterpolator delegate) {
@@ -44,12 +46,19 @@ public class LocaleAwareMessageInterpolator implements MessageInterpolator {
 	}
 
 	@Override
-	public String interpolate(String message, MessageInterpolator.Context context) {
+	public String interpolate(
+		String message,
+		MessageInterpolator.Context context
+	) {
 		return delegate.interpolate(message, context, LocaleThreadLocal.get());
 	}
 
 	@Override
-	public String interpolate(String message, MessageInterpolator.Context context, Locale locale) {
+	public String interpolate(
+		String message,
+		MessageInterpolator.Context context,
+		Locale locale
+	) {
 		return delegate.interpolate(message, context, locale);
 	}
 }

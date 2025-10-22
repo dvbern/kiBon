@@ -1,0 +1,18 @@
+{
+    "name": "kind-model-entity",
+    "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/kind/model/entity/src",
+    "projectType": "library",
+    "tags": ["type:model", "feature:kind"],
+    "targets": {
+        "build": {
+            "executor": "nx:noop",
+            "options": {
+                "tsConfig": "libs/kind/model/entity/tsconfig.lib.json"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

@@ -16,16 +16,21 @@
  */
 
 import {StateService} from '@uirouter/core';
-import {IHttpBackendService, ILogService, IQService, IScope} from 'angular';
+import angular, {
+    IHttpBackendService,
+    ILogService,
+    IQService,
+    IScope
+} from 'angular';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GesuchModelManager} from '../../../gesuch/service/gesuchModelManager';
 import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
 import {WizardStepManager} from '../../../gesuch/service/wizardStepManager';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
 import {TSGesuch} from '../../../models/TSGesuch';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
@@ -147,9 +152,6 @@ describe('faelleListView', () => {
 
         const tsGesuch = new TSGesuch();
         spyOn(gesuchRS, 'findGesuch').and.returnValue($q.when(tsGesuch));
-        spyOn(gesuchRS, 'findGesuchForInstitution').and.returnValue(
-            $q.when(tsGesuch)
-        );
 
         faelleListViewController.editFall(mockAntrag, undefined);
         $scope.$apply();

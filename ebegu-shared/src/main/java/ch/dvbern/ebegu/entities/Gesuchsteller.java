@@ -15,25 +15,26 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.validators.CheckAhvFormat;
+import ch.dvbern.ebegu.validators.CheckEmail;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.util.Objects;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -51,7 +52,7 @@ public class Gesuchsteller extends AbstractPersonEntity {
 	@NotNull
 	private Geschlecht geschlecht;
 
-	@Email
+	@CheckEmail
 	@Size(max = DB_DEFAULT_MAX_LENGTH)
 	@Nullable
 	@Column(nullable = true)
@@ -59,12 +60,14 @@ public class Gesuchsteller extends AbstractPersonEntity {
 
 	@Nullable
 	@Column(nullable = true, length = Constants.DB_DEFAULT_MAX_LENGTH)
-	@Pattern(regexp = Constants.REGEX_TELEFON_MOBILE, message = "{error_invalid_mobilenummer}")
+	@Pattern(regexp = Constants.REGEX_TELEFON_MOBILE,
+		message = "{error_invalid_mobilenummer}")
 	private String mobile;
 
 	@Nullable
 	@Column(nullable = true, length = Constants.DB_DEFAULT_MAX_LENGTH)
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{error_invalid_mobilenummer}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{error_invalid_mobilenummer}")
 	private String telefon;
 
 	@Nullable
@@ -150,12 +153,17 @@ public class Gesuchsteller extends AbstractPersonEntity {
 		return korrespondenzSprache;
 	}
 
-	public void setKorrespondenzSprache(@Nullable Sprache korrespondenzSprachen) {
+	public void setKorrespondenzSprache(
+		@Nullable Sprache korrespondenzSprachen
+	) {
 		this.korrespondenzSprache = korrespondenzSprachen;
 	}
 
 	@Nonnull
-	public Gesuchsteller copyGesuchsteller(@Nonnull Gesuchsteller target, @Nonnull AntragCopyType copyType) {
+	public Gesuchsteller copyGesuchsteller(
+		@Nonnull Gesuchsteller target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractPersonEntity(target, copyType);
 		target.setMail(this.getMail());
 		target.setMobile(this.getMobile());
@@ -164,7 +172,9 @@ public class Gesuchsteller extends AbstractPersonEntity {
 		target.setDiplomatenstatus(this.isDiplomatenstatus());
 		target.setKorrespondenzSprache(this.getKorrespondenzSprache());
 		target.setZpvNummer(this.getZpvNummer());
-		target.setSozialversicherungsnummer(this.getSozialversicherungsnummer());
+		target.setSozialversicherungsnummer(
+			this.getSozialversicherungsnummer()
+		);
 		return target;
 	}
 
@@ -183,12 +193,24 @@ public class Gesuchsteller extends AbstractPersonEntity {
 			return false;
 		}
 		final Gesuchsteller otherGesuchsteller = (Gesuchsteller) other;
-		return Objects.equals(getMail(), otherGesuchsteller.getMail()) &&
-			Objects.equals(getMobile(), otherGesuchsteller.getMobile()) &&
-			Objects.equals(getTelefon(), otherGesuchsteller.getTelefon()) &&
-			Objects.equals(getTelefonAusland(), otherGesuchsteller.getTelefonAusland()) &&
-			Objects.equals(isDiplomatenstatus(), otherGesuchsteller.isDiplomatenstatus()) &&
-			getKorrespondenzSprache() == otherGesuchsteller.getKorrespondenzSprache();
+		return Objects.equals(getMail(), otherGesuchsteller.getMail())
+			&&
+			Objects.equals(getMobile(), otherGesuchsteller.getMobile())
+			&&
+			Objects.equals(getTelefon(), otherGesuchsteller.getTelefon())
+			&&
+			Objects.equals(
+				getTelefonAusland(),
+				otherGesuchsteller.getTelefonAusland()
+			)
+			&&
+			Objects.equals(
+				isDiplomatenstatus(),
+				otherGesuchsteller.isDiplomatenstatus()
+			)
+			&&
+			getKorrespondenzSprache()
+				== otherGesuchsteller.getKorrespondenzSprache();
 	}
 
 	@Nullable
@@ -205,7 +227,9 @@ public class Gesuchsteller extends AbstractPersonEntity {
 		return sozialversicherungsnummer;
 	}
 
-	public void setSozialversicherungsnummer(@Nullable String sozialversicherungsnummer) {
+	public void setSozialversicherungsnummer(
+		@Nullable String sozialversicherungsnummer
+	) {
 		this.sozialversicherungsnummer = sozialversicherungsnummer;
 	}
 }

@@ -23,29 +23,29 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.institution.JaxTraegerschaftConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxTraegerschaft;
 import ch.dvbern.ebegu.entities.Institution;
@@ -54,8 +54,7 @@ import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.services.InstitutionService;
 import ch.dvbern.ebegu.services.TraegerschaftService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_MANDANT;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TRAEGERSCHAFT;
@@ -68,7 +67,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("traegerschaften")
 @Stateless
-@Api(description = "Resource zur Verwaltung von Trägerschaften (Zusammenschluss von mehreren Institutionen)")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class TraegerschaftResource {
 
@@ -79,9 +77,9 @@ public class TraegerschaftResource {
 	private InstitutionService institutionService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxTraegerschaftConverter converter;
 
-	@ApiOperation(value = "Erstellt eine neue Traegerschaft in der Datenbank", response = JaxTraegerschaft.class)
+	@Operation(summary = "Erstellt eine neue Traegerschaft in der Datenbank")
 	@Nullable
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -91,37 +89,61 @@ public class TraegerschaftResource {
 		@Nonnull @NotNull @Valid JaxTraegerschaft jaxTraegerschaft,
 		@Nonnull @NotNull @Valid @QueryParam("adminMail") String adminMail,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
-		Traegerschaft traegerschaft = converter.traegerschaftToEntity(jaxTraegerschaft, new Traegerschaft());
-		return converter.traegerschaftToJAX(traegerschaftService.createTraegerschaft(traegerschaft, adminMail));
+		Traegerschaft traegerschaft = converter.traegerschaftToEntity(
+			jaxTraegerschaft,
+			new Traegerschaft()
+		);
+		return converter.traegerschaftToJAX(
+			traegerschaftService.createTraegerschaft(
+				traegerschaft,
+				adminMail
+			)
+		);
 	}
 
-	@ApiOperation(value = "Speichert eine bestehende Traegerschaft in der Datenbank", response = JaxTraegerschaft.class)
+	@Operation(
+		summary = "Speichert eine bestehende Traegerschaft in der Datenbank")
 	@Nullable
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT })
 	public JaxTraegerschaft saveTraegerschaft(
 		@Nonnull @NotNull @Valid JaxTraegerschaft traegerschaftJAXP,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		Objects.requireNonNull(traegerschaftJAXP);
 		Objects.requireNonNull(traegerschaftJAXP.getId());
 
 		// Diese Methode darf nur fuer eine existierende Traegerschaft verwendet werden. Zum neu Erstellen muss eine
 		// Einladung über #createTraegerschaft() erfolgen
-		Traegerschaft traegerschaft = traegerschaftService.findTraegerschaft(traegerschaftJAXP.getId())
-			.orElseThrow(() -> new EbeguEntityNotFoundException("", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				traegerschaftJAXP.getId()));
-		Traegerschaft convertedTraegerschaft = converter.traegerschaftToEntity(traegerschaftJAXP, traegerschaft);
-		Traegerschaft persistedTraegerschaft = this.traegerschaftService.saveTraegerschaft(convertedTraegerschaft);
+		Traegerschaft traegerschaft = traegerschaftService.findTraegerschaft(
+			traegerschaftJAXP.getId()
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					traegerschaftJAXP.getId()
+				)
+			);
+		Traegerschaft convertedTraegerschaft = converter.traegerschaftToEntity(
+			traegerschaftJAXP,
+			traegerschaft
+		);
+		Traegerschaft persistedTraegerschaft = this.traegerschaftService
+			.saveTraegerschaft(convertedTraegerschaft);
 		return converter.traegerschaftToJAX(persistedTraegerschaft);
 	}
 
-	@ApiOperation(value = "Gibt die Traegerschaft mit der uebergebenen id zurueck.", response = JaxTraegerschaft.class)
+	@Operation(
+		summary = "Gibt die Traegerschaft mit der uebergebenen id zurueck.")
 	@Nullable
 	@GET
 	@Path("/id/{traegerschaftId}")
@@ -129,27 +151,39 @@ public class TraegerschaftResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public JaxTraegerschaft findTraegerschaft(
-		@Nonnull @NotNull @PathParam("traegerschaftId") JaxId traegerschaftJAXPId) {
+		@Nonnull
+		@NotNull
+		@PathParam("traegerschaftId") JaxId traegerschaftJAXPId
+	) {
 
 		Objects.requireNonNull(traegerschaftJAXPId.getId());
 		String traegerschaftID = converter.toEntityId(traegerschaftJAXPId);
-		Optional<Traegerschaft> optional = traegerschaftService.findTraegerschaft(traegerschaftID);
+		Optional<Traegerschaft> optional = traegerschaftService
+			.findTraegerschaft(traegerschaftID);
 
-		return optional.map(traegerschaft -> converter.traegerschaftToJAX(traegerschaft)).orElse(null);
+		return optional.map(
+			traegerschaft -> converter.traegerschaftToJAX(traegerschaft)
+		).orElse(null);
 	}
 
-	@ApiOperation("Loescht die Traegerschaft mit der uebergebenen id aus der DB. Die dazu gehoerenden Institutionen werden nicht geloescht")
+	@Operation(
+		summary = "Loescht die Traegerschaft mit der uebergebenen id aus der DB. Die dazu gehoerenden Institutionen werden nicht geloescht")
 	@Nullable
 	@DELETE
 	@Path("/{traegerschaftId}")
 	@Consumes(MediaType.WILDCARD)
 	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public Response removeTraegerschaft(
-		@Nonnull @NotNull @PathParam("traegerschaftId") JaxId traegerschaftJAXPId,
-		@Context HttpServletResponse response) {
+		@Nonnull
+		@NotNull
+		@PathParam("traegerschaftId") JaxId traegerschaftJAXPId,
+		@Context HttpServletResponse response
+	) {
 
 		Objects.requireNonNull(traegerschaftJAXPId.getId());
-		final String traegerschaftId = converter.toEntityId(traegerschaftJAXPId);
+		final String traegerschaftId = converter.toEntityId(
+			traegerschaftJAXPId
+		);
 
 		Collection<Institution> allInstitutionen = institutionService
 			.getAllInstitutionenFromTraegerschaft(traegerschaftId);
@@ -165,22 +199,27 @@ public class TraegerschaftResource {
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Gibt alle Traegerschaften zurueck.",
-		responseContainer = "List", response = JaxTraegerschaft.class)
+	@Operation(summary = "Gibt alle Traegerschaften zurueck.")
 	@Nonnull
 	@GET
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public List<JaxTraegerschaft> getAllTraegerschaften() {
-		return traegerschaftService.getAllTraegerschaften().stream()
-			.map(traegerschaft -> converter.traegerschaftToJAX(traegerschaft))
+		return traegerschaftService.getAllTraegerschaften()
+			.stream()
+			.map(
+				traegerschaft -> converter.traegerschaftToJAX(
+					traegerschaft
+				)
+			)
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Find and return a list of all active Traegerschaften. An active Traegerschaft is a " +
-		"Traegerschaft where the active flag is true. Result will be ordered by name",
-		responseContainer = "List", response = JaxTraegerschaft.class)
+	@Operation(
+		summary = "Find and return a list of all active Traegerschaften. An active Traegerschaft is a "
+			+
+			"Traegerschaft where the active flag is true. Result will be ordered by name")
 	@Nonnull
 	@GET
 	@Path("/active")
@@ -188,8 +227,13 @@ public class TraegerschaftResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public List<JaxTraegerschaft> getAllActiveTraegerschaften() {
-		return traegerschaftService.getAllActiveTraegerschaften().stream()
-			.map(traegerschaft -> converter.traegerschaftToJAX(traegerschaft))
+		return traegerschaftService.getAllActiveTraegerschaften()
+			.stream()
+			.map(
+				traegerschaft -> converter.traegerschaftToJAX(
+					traegerschaft
+				)
+			)
 			.collect(Collectors.toList());
 	}
 }

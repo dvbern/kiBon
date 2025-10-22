@@ -16,7 +16,7 @@
  */
 
 import {TSSteuerdatenAnfrageStatus} from './enums/TSSteuerdatenAnfrageStatus';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {TSFinanzielleSituationSelbstdeklaration} from './TSFinanzielleSituationSelbstdeklaration';
 import {TSFinSitZusatzangabenAppenzell} from './TSFinSitZusatzangabenAppenzell';
 
@@ -32,6 +32,7 @@ export class TSAbstractFinanzielleSituation extends TSAbstractMutableEntity {
     private _geleisteteAlimente: number;
     private _steuerbaresEinkommen: number;
     private _steuerbaresVermoegen: number;
+    private _liegenschaftsErtraege: number;
     private _abzuegeLiegenschaft: number;
     private _geschaeftsverlust: number;
     private _einkaeufeVorsorge: number;
@@ -131,6 +132,14 @@ export class TSAbstractFinanzielleSituation extends TSAbstractMutableEntity {
 
     public set steuerbaresVermoegen(value: number) {
         this._steuerbaresVermoegen = value;
+    }
+
+    public get liegenschaftsErtraege(): number {
+        return this._liegenschaftsErtraege;
+    }
+
+    public set liegenschaftsErtraege(value: number) {
+        this._liegenschaftsErtraege = value;
     }
 
     public get abzuegeLiegenschaft(): number {

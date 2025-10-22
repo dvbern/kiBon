@@ -8,14 +8,20 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
+
+import java.io.OutputStream;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.GemeindeStammdatenKorrespondenz;
 import ch.dvbern.lib.invoicegenerator.BaseGenerator;
@@ -29,11 +35,6 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Utilities;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.OutputStream;
-import java.util.List;
-
 public class PdfGenerator extends BaseGenerator<PdfLayoutConfiguration> {
 
 	@Nonnull
@@ -45,11 +46,19 @@ public class PdfGenerator extends BaseGenerator<PdfLayoutConfiguration> {
 		boolean useAlternativeLogoIfPresent
 	) {
 		PdfLayoutConfiguration layoutConfiguration = new PdfLayoutConfiguration(
-			config, absenderHeader, isKanton, useAlternativeLogoIfPresent);
+			config,
+			absenderHeader,
+			isKanton,
+			useAlternativeLogoIfPresent
+		);
 		layoutConfiguration.setFooter(footer);
-		layoutConfiguration.getStaticComponents().stream()
+		layoutConfiguration.getStaticComponents()
+			.stream()
 			.map(ComponentRenderer::getComponentConfiguration)
-			.forEach(componenConfiguratoin -> componenConfiguratoin.setOnPage(OnPage.FIRST));
+			.forEach(
+				componenConfiguratoin -> componenConfiguratoin
+					.setOnPage(OnPage.FIRST)
+			);
 		layoutConfiguration.getEmpfaengerAdresse().setOnPage(OnPage.FIRST);
 		// Die Default-Schriften aus der Library ueberschreiben
 		layoutConfiguration.getFonts().setFont(PdfUtil.DEFAULT_FONT);
@@ -67,7 +76,13 @@ public class PdfGenerator extends BaseGenerator<PdfLayoutConfiguration> {
 		boolean isKanton,
 		boolean useAlternativeLogoIfPresent
 	) {
-		return create(config, absenderHeader, null, isKanton, useAlternativeLogoIfPresent);
+		return create(
+			config,
+			absenderHeader,
+			null,
+			isKanton,
+			useAlternativeLogoIfPresent
+		);
 	}
 
 	public PdfGenerator(@Nonnull PdfLayoutConfiguration configuration) {
@@ -76,18 +91,25 @@ public class PdfGenerator extends BaseGenerator<PdfLayoutConfiguration> {
 
 	@FunctionalInterface
 	public interface CustomGenerator {
-		void accept(@Nonnull ch.dvbern.lib.invoicegenerator.pdf.PdfGenerator pdfGenerator, @Nonnull PdfGeneratorContext ctx) throws DocumentException;
+		void accept(
+			@Nonnull ch.dvbern.lib.invoicegenerator.pdf.PdfGenerator pdfGenerator,
+			@Nonnull PdfGeneratorContext ctx
+		) throws DocumentException;
 	}
 
 	public void generate(
 		@Nonnull OutputStream outputStream,
 		@Nonnull String title,
 		@Nonnull List<String> empfaengerAdresse,
-		@Nonnull CustomGenerator customGenerator) throws InvoiceGeneratorException {
+		@Nonnull CustomGenerator customGenerator
+	) throws InvoiceGeneratorException {
 
 		List<ComponentRenderer<? extends ComponentConfiguration, ?>> componentRenderers =
 			getComponentRenderers(empfaengerAdresse);
-		OnPageHandler onPageHandler = new OnPageHandler(getPdfElementGenerator(), componentRenderers);
+		OnPageHandler onPageHandler = new OnPageHandler(
+			getPdfElementGenerator(),
+			componentRenderers
+		);
 
 		generate(outputStream, onPageHandler, pdfGenerator -> {
 			Document document = pdfGenerator.getDocument();

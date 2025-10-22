@@ -3,14 +3,14 @@ package ch.dvbern.ebegu.entities;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 @Entity
 public class VersendeteMail extends AbstractEntity {
@@ -31,10 +31,11 @@ public class VersendeteMail extends AbstractEntity {
 	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	@Field
+	@KeywordField
 	private final MandantIdentifier mandantIdentifier;
 
-	@SuppressFBWarnings(value = "NP_STORE_INTO_NONNULL_FIELD", justification = "just for JPA")
+	@SuppressFBWarnings(value = "NP_STORE_INTO_NONNULL_FIELD",
+		justification = "just for JPA")
 	protected VersendeteMail() {
 		this.zeitpunktVersand = LocalDateTime.now();
 		this.empfaengerAdresse = "";
@@ -42,8 +43,12 @@ public class VersendeteMail extends AbstractEntity {
 		this.mandantIdentifier = MandantIdentifier.BERN;
 	}
 
-	public VersendeteMail(@Nonnull LocalDateTime zeitpunktVersand, @Nonnull String empfaengerAdresse,
-			@Nonnull String betreff, @Nonnull MandantIdentifier mandant) {
+	public VersendeteMail(
+		@Nonnull LocalDateTime zeitpunktVersand,
+		@Nonnull String empfaengerAdresse,
+		@Nonnull String betreff,
+		@Nonnull MandantIdentifier mandant
+	) {
 		this.zeitpunktVersand = zeitpunktVersand;
 		this.empfaengerAdresse = empfaengerAdresse;
 		this.betreff = betreff;

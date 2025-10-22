@@ -14,12 +14,12 @@
  */
 
 import {NgModule} from '@angular/core';
+import {getTSRoleValues} from '@kibon/shared/model/enums';
 import {
     NgHybridStateDeclaration,
     UIRouterUpgradeModule
 } from '@uirouter/angular-hybrid';
 import {Transition} from '@uirouter/core';
-import {getTSRoleValues} from '../models/enums/TSRole';
 import {returnTo} from './authentication.route';
 import {LocalLoginComponent} from './local-login/local-login.component';
 import {TutorialGemeindeLoginComponent} from './tutorial/tutorial-gemeinde-login/tutorial-gemeinde-login.component';

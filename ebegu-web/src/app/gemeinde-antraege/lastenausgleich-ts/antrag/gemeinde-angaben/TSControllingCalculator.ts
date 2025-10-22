@@ -19,7 +19,7 @@ import {FormGroup} from '@angular/forms';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
-import {LogFactory} from '../../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 const LOG = LogFactory.createLog('TSControllingCalculator');
 
@@ -112,8 +112,8 @@ export class TSControllingCalculator {
                     ).value
                 )
             )
-            .subscribe(
-                value => {
+            .subscribe({
+                next: value => {
                     let veraenderung =
                         value /
                         this._previousAntrag.angabenKorrektur
@@ -126,75 +126,76 @@ export class TSControllingCalculator {
                         this.toPercent(veraenderung)
                     );
                 },
-                err => this.handleError(err)
-            );
+                error: err => this.handleError(err)
+            });
     }
 
     private calculateBesondereBeduerfnisseCurrentPeriode(): void {
+        const faktor15 = this._angabenForm.get(
+            'geleisteteBetreuungsstundenBesondereBeduerfnisse'
+        );
+        const faktor1 = this._angabenForm.get(
+            'geleisteteBetreuungsstundenOhneBesondereBeduerfnisse'
+        );
+
         combineLatest([
-            this._angabenForm
-                .get('geleisteteBetreuungsstundenBesondereBeduerfnisse')
-                .valueChanges.pipe(
-                    startWith(
-                        this._angabenForm.get(
-                            'geleisteteBetreuungsstundenBesondereBeduerfnisse'
-                        ).value
-                    ),
-                    map(parseFloat)
-                ),
-            this._angabenForm
-                .get('geleisteteBetreuungsstundenBesondereVolksschulangebot')
-                .valueChanges.pipe(
-                    startWith(
-                        this._angabenForm.get(
-                            'geleisteteBetreuungsstundenBesondereVolksschulangebot'
-                        ).value
-                    ),
-                    map(parseFloat)
-                ),
-            this._angabenForm
-                .get('lastenausgleichberechtigteBetreuungsstunden')
-                .valueChanges.pipe(
-                    startWith(
-                        this._angabenForm.get(
-                            'lastenausgleichberechtigteBetreuungsstunden'
-                        ).value
-                    ),
-                    map(parseFloat)
-                )
-        ]).subscribe(
-            values => {
-                if (values[0] + values[1] === 0) {
+            faktor15.valueChanges.pipe(
+                startWith(faktor15.value),
+                map(val => parseFloat(val))
+            ),
+            faktor1.valueChanges.pipe(
+                startWith(faktor1.value),
+                map(val => parseFloat(val))
+            )
+        ]).subscribe({
+            next: ([faktor15, faktor1]) => {
+                if (isNaN(faktor15) || isNaN(faktor1)) {
                     this._anteilStundenBesondereBeduerfnisseCurrentPeriode.next(
-                        '0'
+                        '?'
                     );
                     return;
                 }
-                const result = (values[0] + values[1]) / 3 / values[2];
+
+                const total = faktor15 + faktor1;
+
+                if (total === 0) {
+                    this._anteilStundenBesondereBeduerfnisseCurrentPeriode.next(
+                        '0%'
+                    );
+                    return;
+                }
+
+                const result = faktor15 / 3 / total;
+
                 this._anteilStundenBesondereBeduerfnisseCurrentPeriode.next(
                     this.toPercent(result)
                 );
             },
-            err => this.handleError(err)
-        );
+            error: err => this.handleError(err)
+        });
     }
 
     private calculateBesondereBeduerfnissePreviousPeriode(): void {
-        if (
-            !this._previousAntrag?.angabenKorrektur
-                ?.lastenausgleichberechtigteBetreuungsstunden
-        ) {
+        const angaben = this._previousAntrag?.angabenKorrektur;
+
+        const faktor15 =
+            angaben?.geleisteteBetreuungsstundenBesondereBeduerfnisse;
+        const faktor1 =
+            angaben?.geleisteteBetreuungsstundenOhneBesondereBeduerfnisse;
+
+        if (faktor15 == null || faktor1 == null) {
             this._anteilStundenBesondereBeduerfnissePreviousPeriode.next('?');
             return;
         }
-        const result =
-            (this._previousAntrag.angabenKorrektur
-                .geleisteteBetreuungsstundenBesondereBeduerfnisse +
-                this._previousAntrag.angabenKorrektur
-                    .geleisteteBetreuungsstundenBesondereVolksschulangebot) /
-            3 /
-            this._previousAntrag.angabenKorrektur
-                .lastenausgleichberechtigteBetreuungsstunden;
+
+        const total = faktor15 + faktor1;
+        if (total === 0) {
+            this._anteilStundenBesondereBeduerfnissePreviousPeriode.next('0%');
+            return;
+        }
+
+        const result = faktor15 / 3 / total;
+
         this._anteilStundenBesondereBeduerfnissePreviousPeriode.next(
             this.toPercent(result)
         );
@@ -220,14 +221,14 @@ export class TSControllingCalculator {
                     ),
                     map(parseFloat)
                 )
-        ]).subscribe(
-            values => {
+        ]).subscribe({
+            next: values => {
                 this._anteilElternbeitraegeCurrentPeriode.next(
                     this.toPercent(values[0] / values[1])
                 );
             },
-            err => this.handleError(err)
-        );
+            error: err => this.handleError(err)
+        });
     }
 
     private calculateAnteilElternbeitraegePreviousPeriode(): void {
@@ -260,8 +261,8 @@ export class TSControllingCalculator {
                     ),
                     map(parseFloat)
                 )
-        ]).subscribe(
-            values => {
+        ]).subscribe({
+            next: values => {
                 if (isNaN(values[0])) {
                     this._kostenanteilGemeindeGesamtkosten.next('-');
                     return;
@@ -271,8 +272,8 @@ export class TSControllingCalculator {
                     this.toPercent(result)
                 );
             },
-            err => this.handleError(err)
-        );
+            error: err => this.handleError(err)
+        });
     }
 
     private calculateUeberschussAnteil(): void {
@@ -293,8 +294,8 @@ export class TSControllingCalculator {
                     ),
                     map(parseFloat)
                 )
-        ]).subscribe(
-            values => {
+        ]).subscribe({
+            next: values => {
                 if (isNaN(values[0])) {
                     this._erstragsanteilGemeindeGesamtkosten.next('-');
                     return;
@@ -304,8 +305,8 @@ export class TSControllingCalculator {
                     this.toPercent(result)
                 );
             },
-            err => this.handleError(err)
-        );
+            error: err => this.handleError(err)
+        });
     }
 
     private toPercent(value: number): string {

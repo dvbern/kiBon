@@ -1,1 +1,0 @@
-Logfiles aus DV Bern Testumgebung hier einfügen

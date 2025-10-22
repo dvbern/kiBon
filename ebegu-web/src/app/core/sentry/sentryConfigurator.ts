@@ -17,9 +17,9 @@
 
 import {ErrorHandler} from '@angular/core';
 import * as Sentry from '@sentry/browser';
+import {Angular as AngularIntegration} from '@sentry/integrations';
 import {environment} from '../../../environments/environment';
 import {VERSION} from '../../../environments/version';
-import {Angular as AngularIntegration} from '@sentry/integrations';
 
 export function configureSentry(): void {
     const sentryDSN = environment.sentryDSN;

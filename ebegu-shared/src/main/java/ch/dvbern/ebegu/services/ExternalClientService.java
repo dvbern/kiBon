@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -35,13 +35,17 @@ public interface ExternalClientService {
 	Collection<ExternalClient> getAllForGemeinde();
 
 	@Nonnull
-	Collection<ExternalClient> getAllForInstitution(@Nonnull Institution institution);
+	Collection<ExternalClient> getAllForInstitution(
+		@Nonnull Institution institution
+	);
 
 	@Nonnull
 	Optional<ExternalClient> findExternalClient(@Nonnull String id);
 
 	@Nonnull
-	Collection<InstitutionExternalClient> getInstitutionExternalClientForInstitution(@Nonnull Institution institution);
+	Collection<InstitutionExternalClient> getInstitutionExternalClientForInstitution(
+		@Nonnull Institution institution
+	);
 
 	@Nonnull
 	Collection<ExternalClient> getAll();

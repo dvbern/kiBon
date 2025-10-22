@@ -13,20 +13,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-    IHttpPromise,
-    IHttpResponse,
-    IHttpService,
-    ILogService,
-    IPromise
-} from 'angular';
-import {TSSprache} from '../../models/enums/TSSprache';
-import {TSSozialdienstFallDokument} from '../../models/sozialdienst/TSSozialdienstFallDokument';
+import {IHttpService, ILogService, IPromise} from 'angular';
 import {TSFall} from '../../models/TSFall';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 
 export class FallRS {
-    public static $inject = ['$http', 'REST_API', 'EbeguRestUtil', '$log'];
+    public static readonly $inject = [
+        '$http',
+        'REST_API',
+        'EbeguRestUtil',
+        '$log'
+    ];
     public serviceURL: string;
 
     public constructor(
@@ -74,59 +71,6 @@ export class FallRS {
             .get(`${this.serviceURL}/id/${encodeURIComponent(fallID)}`)
             .then((response: any) => {
                 this.$log.debug('PARSING fall REST object ', response.data);
-                return this.ebeguRestUtil.parseFall(
-                    new TSFall(),
-                    response.data
-                );
-            });
-    }
-
-    public removeVollmachtDokument(
-        sozialdienstFallDokumentId: string
-    ): IHttpPromise<TSFall> {
-        return this.$http.delete(
-            `${this.serviceURL}/vollmachtDokument/${encodeURIComponent(sozialdienstFallDokumentId)}`
-        );
-    }
-
-    public getAllVollmachtDokumente(
-        sozialdienstFallId: string
-    ): IPromise<TSSozialdienstFallDokument[]> {
-        return this.$http
-            .get(
-                `${this.serviceURL}/vollmachtDokumente/${encodeURIComponent(sozialdienstFallId)}`
-            )
-            .then(restDokumente =>
-                this.ebeguRestUtil.parseSozialdienstFallDokumente(
-                    restDokumente.data
-                )
-            );
-    }
-
-    public getServiceName(): string {
-        return 'FallRS';
-    }
-
-    public getVollmachtDokumentAccessTokenGeneratedDokument(
-        fallId: string,
-        sprache: TSSprache
-    ): angular.IPromise<BlobPart> {
-        return this.$http
-            .get(
-                `${this.serviceURL}/generateVollmachtDokument/${encodeURIComponent(fallId)}/${sprache}`,
-                {responseType: 'blob'}
-            )
-            .then((response: any) => response.data);
-    }
-
-    public sozialdienstFallEntziehen(fallId: string): IPromise<TSFall> {
-        return this.$http
-            .put(
-                `${this.serviceURL}/sozialdienstFallEntziehen/${encodeURIComponent(fallId)}`,
-                {}
-            )
-            .then((response: IHttpResponse<TSFall>) => {
-                this.$log.debug('PARSING gesuch REST object ', response.data);
                 return this.ebeguRestUtil.parseFall(
                     new TSFall(),
                     response.data

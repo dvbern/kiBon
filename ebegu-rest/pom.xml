@@ -30,6 +30,20 @@
     <build>
         <plugins>
             <plugin>
+                <executions>
+                    <execution>
+                        <id>node1</id>
+                        <configuration>
+                            <port>9990</port>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>node2</id>
+                        <configuration>
+                            <port>9991</port>
+                        </configuration>
+                    </execution>
+                </executions>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>4.2.2.Final</version>
@@ -52,28 +66,21 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
+
 
         <!-- region WildFly Stack START -->
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>dom4j</groupId>
-                    <artifactId>dom4j</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-envers</artifactId>
-            <version>${version.hibernate}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -82,18 +89,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-core</artifactId>
-            <scope>provided</scope>
+            <groupId>org.wildfly.security.jakarta</groupId>
+            <artifactId>jakarta-security</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -104,7 +105,6 @@
         <dependency>
             <groupId>org.eclipse.microprofile.health</groupId>
             <artifactId>microprofile-health-api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ch.dvbern.oss.healthcheck.gc</groupId>
@@ -114,34 +114,61 @@
             <!-- Fuer DB-Skripts (TransactionTimeout) -->
             <groupId>org.jboss.ejb3</groupId>
             <artifactId>jboss-ejb3-ext-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ejb</groupId>
+            <artifactId>jakarta.ejb-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- endregion WildFly Stack END -->
+        <dependency>
+            <groupId>jakarta.batch</groupId>
+            <artifactId>jakarta.batch-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
 
-        <!-- region submodules -->
+        <!-- endregion WildFly Stack END --><!-- region submodules -->
         <dependency>
             <groupId>ch.dvbern.ebegu</groupId>
             <artifactId>ebegu-external-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.dvbern.ebegu</groupId>
             <artifactId>ebegu-server</artifactId>
+            <version>${project.version}</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ch.dvbern.ebegu</groupId>
             <artifactId>ebegu-dbschema</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.dvbern.ebegu</groupId>
             <artifactId>ebegu-testutils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.dvbern.ebegu</groupId>
+            <artifactId>ebegu-auth</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <!-- endregion -->
 
         <dependency>
-            <!-- to export jsonschemas -->
             <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jsonSchema</artifactId>
+            <artifactId>jackson-module-jsonSchema-jakarta</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -165,31 +192,16 @@
             <artifactId>openpdf</artifactId>
             <groupId>com.github.librepdf</groupId>
         </dependency>
-
         <dependency>
-            <groupId>org.omnifaces</groupId>
-            <artifactId>omnifaces-security</artifactId>
-            <version>0.6-ALPHA</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>socialauth</artifactId>
-                    <groupId>org.brickred</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
         </dependency>
-
-        <!--SWAGGER-API-->
         <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-jaxrs</artifactId>
+            <groupId>org.eclipse.microprofile.openapi</groupId>
+            <artifactId>microprofile-openapi-api</artifactId>
         </dependency>
 
         <!-- region testing -->
-        <dependency>
-            <groupId>org.needle4j</groupId>
-            <artifactId>needle4j</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
@@ -220,75 +232,114 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.wildfly.security</groupId>
+            <artifactId>wildfly-elytron</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.security.enterprise</groupId>
+            <artifactId>jakarta.security.enterprise-api</artifactId>
+        </dependency>
+
         <!--endregion-->
     </dependencies>
 
     <profiles>
-
         <profile>
-            <id>test-wildfly-managed</id>
+            <id>bootable-jar</id>
             <build>
+                <finalName>${project.artifactId}</finalName>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                    </plugin>
-                    <!--entpacke jboss-->
-                    <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>copy-wildfly-dependencies</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <version>2.10</version>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-jar-maven-plugin</artifactId>
+                        <version>10.0.0.Final</version>
+                        <configuration>
+                            <context-root>false</context-root>
+                            <feature-packs>
+                                <feature-pack>
+                                    <location>org.wildfly:wildfly-galleon-pack:${version.wildfly.container}</location>
+                                </feature-pack>
+                                <feature-pack>
+                                    <location>org.wildfly:wildfly-datasources-galleon-pack:3.0.0.Final</location>
+                                </feature-pack>
+                            </feature-packs>
+                            <layers>
+                                <layer>jaxrs-server</layer>
+                                <layer>batch-jberet</layer>
+                                <layer>elytron</layer>
+                                <layer>observability</layer>
+                                <layer>transactions</layer>
+                                <layer>web-clustering</layer>
+                                <layer>mariadb-datasource</layer>
+                                <layer>microprofile-platform</layer>
+                                <layer>elytron-oidc-client</layer>
+                                <layer>ejb</layer>
+                            </layers>
+                            <arguments>--properties=/home/mobj/projects/kibon/kibon-app/ebegu-rest/ebegu-bootable-jar.properties</arguments>
+                            <plugin-options>
+                                <jboss-maven-dist>true</jboss-maven-dist>
+                                <jboss-fork-embedded>true</jboss-fork-embedded>
+                            </plugin-options>
+                            <cli-sessions>
+                                <cli-session>
+                                    <script-files>
+                                        <script>/home/mobj/projects/kibon/kibon-app/ebegu-rest/ebegu-customization.cli</script>
+                                    </script-files>
+                                </cli-session>
+                            </cli-sessions>
+                            <debug>true</debug>
+                            <debug-suspend>true</debug-suspend>
+                            <remote>true</remote>
+                            <username>admin</username>
+                            <password>admin</password>
+                            <jvmArguments>
+                                <argument>-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</argument>
+                            </jvmArguments>
+                        </configuration>
                         <executions>
                             <execution>
-                                <id>copy ebegu-rest for docker</id>
-                                <phase>package</phase>
                                 <goals>
-                                    <goal>copy</goal>
+                                    <goal>package</goal>
                                 </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <!--Login connector artefact-->
-                                        <artifactItem>
-                                            <groupId>ch.dvbern.ebegu</groupId>
-                                            <artifactId>kibon-belogin-connector-war</artifactId>
-                                            <version>${version.kibon-belogin-connector}</version>
-                                            <type>war</type>
-                                            <destFileName>kibon-belogin-connector-war.war</destFileName>
-                                            <overWrite>false</overWrite>
-                                            <outputDirectory>${project.build.directory}/for-docker-build</outputDirectory>
-                                        </artifactItem>
-
-                                        <!--Sentry.jar for module-->
-                                        <artifactItem>
-                                            <groupId>io.sentry</groupId>
-                                            <artifactId>sentry</artifactId>
-                                            <version>${version.sentry}</version>
-                                            <type>jar</type>
-                                            <destFileName>sentry.jar</destFileName>
-                                            <overWrite>false</overWrite>
-                                            <outputDirectory>${project.build.directory}/for-docker-build</outputDirectory>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <overWriteReleases>false</overWriteReleases>
-                                    <overWriteSnapshots>true</overWriteSnapshots>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-
+        <profile>
+            <id>local-cluster-deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <executions>
+                            <execution>
+                                <id>node1</id>
+                                <configuration>
+                                    <port>9990</port>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>node2</id>
+                                <configuration>
+                                    <port>9991</port>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <version>4.2.1.Final</version>
+                        <configuration>
+                            <username>${wildfly-user}</username>
+                            <password>${wildfly-pwd}</password>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
 </project>

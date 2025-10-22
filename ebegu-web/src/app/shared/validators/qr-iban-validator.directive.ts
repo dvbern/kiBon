@@ -23,8 +23,7 @@ import {
     Validator,
     ValidatorFn
 } from '@angular/forms';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-
+import {CONSTANTS} from '@kibon/shared/model/constants';
 /*
 Die Eingabe einer QR-IBAN soll verboten werden.
 
@@ -46,7 +45,8 @@ QR-IIDs bestehen * exklusiv aus Nummern von 30000 bis 31999.
             useExisting: QrIbanValidatorDirective,
             multi: true
         }
-    ]
+    ],
+    standalone: false
 })
 export class QrIbanValidatorDirective implements Validator {
     public validate(control: AbstractControl): ValidationErrors | null {

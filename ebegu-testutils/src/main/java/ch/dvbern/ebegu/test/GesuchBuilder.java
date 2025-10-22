@@ -29,7 +29,9 @@ public class GesuchBuilder {
 	private final Gesuch gesuch;
 
 	public GesuchBuilder() {
-		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(false);
+		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(
+			false
+		);
 		gesuch = betreuung.extractGesuch();
 	}
 
@@ -42,7 +44,10 @@ public class GesuchBuilder {
 		return withGesuchsteller1("Muster", "Felix");
 	}
 
-	public GesuchBuilder withGesuchsteller1(@Nonnull String name, @Nonnull String vorname) {
+	public GesuchBuilder withGesuchsteller1(
+		@Nonnull String name,
+		@Nonnull String vorname
+	) {
 		gesuch.extractGesuchsteller1().ifPresent(gesuchsteller -> {
 			gesuchsteller.setNachname(name);
 			gesuchsteller.setVorname(vorname);
@@ -59,7 +64,10 @@ public class GesuchBuilder {
 		return withGesuchsteller2("Meier", "Anna");
 	}
 
-	public GesuchBuilder withGesuchsteller2(@Nonnull String name, @Nonnull String vorname) {
+	public GesuchBuilder withGesuchsteller2(
+		@Nonnull String name,
+		@Nonnull String vorname
+	) {
 		TestDataUtil.addSecondGesuchsteller(gesuch);
 		gesuch.extractGesuchsteller2().ifPresent(gesuchsteller -> {
 			gesuchsteller.setNachname(name);
@@ -68,10 +76,16 @@ public class GesuchBuilder {
 		return this;
 	}
 
-	public GesuchBuilder withSozialdienst(@Nonnull String nameGS1, @Nonnull String vornameGS1, @Nullable String nameGS2, @Nullable String vornameGS2) {
+	public GesuchBuilder withSozialdienst(
+		@Nonnull String nameGS1,
+		@Nonnull String vornameGS1,
+		@Nullable String nameGS2,
+		@Nullable String vornameGS2
+	) {
 		TestDataUtil.createDefaultSozialdienstStammdaten(gesuch.getFall());
 		gesuch.setStatus(AntragStatus.IN_BEARBEITUNG_SOZIALDIENST);
-		final SozialdienstFall sozialdienstFall = gesuch.getFall().getSozialdienstFall();
+		final SozialdienstFall sozialdienstFall = gesuch.getFall()
+			.getSozialdienstFall();
 		Objects.requireNonNull(sozialdienstFall);
 		sozialdienstFall.setName(nameGS1);
 		sozialdienstFall.setVorname(vornameGS1);

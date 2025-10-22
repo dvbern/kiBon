@@ -1,0 +1,21 @@
+<!--Signalwert in variable speichern und damit weiterabreiten, damit != null-->
+@if (highestPriorityMeldung() && meldungenCount() > 0) {
+    @if (
+        (this.showWarning &&
+            highestPriorityMeldung()?.status ===
+                MeldungsfensterStatus.WARNUNG) ||
+        (this.showImportant &&
+            highestPriorityMeldung()?.status ===
+                MeldungsfensterStatus.WICHTIG) ||
+        (this.showInfo &&
+            highestPriorityMeldung()?.status === MeldungsfensterStatus.INFO &&
+            meldungsfensterResourceRef.value().length > 0)
+    ) {
+        <lib-shared-ui-meldungsfenster
+            [meldungsfenster]="highestPriorityMeldung()!"
+            [currentLanguage]="(getLanguage() | async)!"
+            [maxCount]="meldungenCount()"
+            (meldungsfensterClosed)="closeMeldungsfenster($event)"
+        ></lib-shared-ui-meldungsfenster>
+    }
+}

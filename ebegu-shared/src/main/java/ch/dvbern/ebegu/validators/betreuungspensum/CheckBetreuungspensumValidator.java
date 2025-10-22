@@ -20,19 +20,19 @@ import java.text.MessageFormat;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Betreuungspensum;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.util.BetreuungUtil;
 import ch.dvbern.ebegu.util.ValidationMessageUtil;
 
@@ -40,7 +40,8 @@ import ch.dvbern.ebegu.util.ValidationMessageUtil;
  * Validator for Betreuungspensen, checks that the entered betreuungspensum is bigger than the minimum
  * that is allowed for the Betreungstyp for a given date
  */
-public class CheckBetreuungspensumValidator implements ConstraintValidator<CheckBetreuungspensum, Betreuung> {
+public class CheckBetreuungspensumValidator implements
+	ConstraintValidator<CheckBetreuungspensum, Betreuung> {
 
 	@SuppressWarnings("CdiInjectionPointsInspection")
 	@Inject
@@ -69,43 +70,56 @@ public class CheckBetreuungspensumValidator implements ConstraintValidator<Check
 	}
 
 	@Override
-	public boolean isValid(@Nonnull Betreuung betreuung, ConstraintValidatorContext context) {
+	public boolean isValid(
+		@Nonnull Betreuung betreuung,
+		ConstraintValidatorContext context
+	) {
 
 		if (betreuung.getBetreuungsstatus().isSchulamt()) {
 			// Keine Betreuungspensen
 			return true;
 		}
 
-		final EntityManager em = createEntityManager();
-		int index = 0;
-		for (BetreuungspensumContainer betPenContainer : betreuung.getBetreuungspensumContainers()) {
-			Gesuchsperiode gesuchsperiode = betPenContainer.extractGesuchsperiode();
-			Gemeinde gemeinde = betreuung.extractGesuch().getDossier().getGemeinde();
-			BigDecimal betreuungsangebotTypMinValue = BetreuungUtil.getMinValueFromBetreuungsangebotTyp(
-				gesuchsperiode, gemeinde, betreuung.getBetreuungsangebotTyp(), einstellungService, em);
+		try (EntityManager em = createEntityManager()) {
+			int index = 0;
+			for (BetreuungspensumContainer betPenContainer : betreuung
+				.getBetreuungspensumContainers()) {
+				Gesuchsperiode gesuchsperiode = betPenContainer
+					.extractGesuchsperiode();
+				Gemeinde gemeinde = betreuung.extractGesuch()
+					.getDossier()
+					.getGemeinde();
+				BigDecimal betreuungsangebotTypMinValue = BetreuungUtil
+					.getMinValueFromBetreuungsangebotTyp(
+						gesuchsperiode,
+						gemeinde,
+						betreuung.getBetreuungsangebotTyp(),
+						einstellungService,
+						em
+					);
 
-			if (validateBetreuungspensum(
-				betPenContainer.getBetreuungspensumGS(),
-				betreuungsangebotTypMinValue,
-				index,
-				"GS",
-				context)
-				&&
-				validateBetreuungspensum(
-					betPenContainer.getBetreuungspensumJA(),
+				if (validateBetreuungspensum(
+					betPenContainer.getBetreuungspensumGS(),
 					betreuungsangebotTypMinValue,
 					index,
-					"JA",
-					context)
-			) {
-				index++;
-			} else {
+					"GS",
+					context
+				)
+					&& validateBetreuungspensum(
+						betPenContainer.getBetreuungspensumJA(),
+						betreuungsangebotTypMinValue,
+						index,
+						"JA",
+						context
+					)
+				) {
+					index++;
+				} else {
 
-				closeEntityManager(em);
-				return false;
+					return false;
+				}
 			}
 		}
-		closeEntityManager(em);
 		return true;
 	}
 
@@ -115,12 +129,6 @@ public class CheckBetreuungspensumValidator implements ConstraintValidator<Check
 			return entityManagerFactory.createEntityManager(); // creates a new EntityManager
 		}
 		return null;
-	}
-
-	private void closeEntityManager(@Nullable EntityManager em) {
-		if (em != null) {
-			em.close();
-		}
 	}
 
 	/**
@@ -141,7 +149,8 @@ public class CheckBetreuungspensumValidator implements ConstraintValidator<Check
 		BigDecimal pensumMin,
 		int index,
 		String containerPostfix,
-		ConstraintValidatorContext context) {
+		ConstraintValidatorContext context
+	) {
 
 		if (betreuungspensum == null) {
 			return true;
@@ -149,17 +158,26 @@ public class CheckBetreuungspensumValidator implements ConstraintValidator<Check
 
 		// Es waere moeglich, die Messages mit der Klasse HibernateConstraintValidatorContext zu erzeugen. Das waere
 		// aber Hibernate-abhaengig. wuerde es Sinn machen??
-		if (!betreuungspensum.getNichtEingetreten() && betreuungspensum.getPensum().compareTo(pensumMin) < 0) {
-			String message = ValidationMessageUtil.getMessage("invalid_betreuungspensum");
-			message = MessageFormat.format(message, betreuungspensum.getPensum(), pensumMin);
+		if (!betreuungspensum.getNichtEingetreten()
+			&& betreuungspensum.getPensum().compareTo(pensumMin) < 0) {
+			String message = ValidationMessageUtil.getMessage(
+				"invalid_betreuungspensum"
+			);
+			message = MessageFormat.format(
+				message,
+				betreuungspensum.getPensum(),
+				pensumMin
+			);
 
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(message)
-				.addPropertyNode("betreuungspensumContainers["
-					+ index
-					+ "].betreuungspensum"
-					+ containerPostfix
-					+ ".pensum")
+				.addPropertyNode(
+					"betreuungspensumContainers["
+						+ index
+						+ "].betreuungspensum"
+						+ containerPostfix
+						+ ".pensum"
+				)
 				.addConstraintViolation();
 
 			return false;

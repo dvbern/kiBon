@@ -1,14 +1,14 @@
 import {
-    Component,
-    OnInit,
     ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
     Input,
-    Output,
-    EventEmitter
+    OnInit,
+    Output
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {ListResourceRS} from '../../app/core/service/listResourceRS.rest';
-import {TSAdresse} from '../../models/TSAdresse';
+import {TSAdresse} from '@kibon/shared/model/entity';
 import {TSZahlungsinformationen} from '../../models/TSZahlungsinformationen';
 import {TSLand} from '../../models/types/TSLand';
 import {EbeguUtil} from '../../utils/EbeguUtil';
@@ -18,7 +18,8 @@ import {GesuchModelManager} from '../service/gesuchModelManager';
     selector: 'dv-auszahlungsdaten',
     templateUrl: './auszahlungsdaten.component.html',
     changeDetection: ChangeDetectionStrategy.Default,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class AuszahlungsdatenComponent implements OnInit {
     @Input()

@@ -8,33 +8,43 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package ch.dvbern.ebegu.validators.dateranges;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.containers.BetreuungAndPensumContainer;
 import ch.dvbern.ebegu.util.GueltigkeitsUtil;
 
 /**
- * Die Betreuungspensen eines {@link BetreuungAndPensumContainer}s duerfen nicht komplett ausserhalb der Gesuchsperiode liegen
+ * Die Betreuungspensen eines {@link BetreuungAndPensumContainer}s duerfen nicht komplett ausserhalb der Gesuchsperiode
+ * liegen
  */
 public class CheckBetreuungPensumContainerZeitraumInGesuchsperiodeValidator
-	implements ConstraintValidator<CheckBetreuungPensumContainerZeitraumInGesuchsperiode, BetreuungAndPensumContainer> {
+	implements
+	ConstraintValidator<CheckBetreuungPensumContainerZeitraumInGesuchsperiode, BetreuungAndPensumContainer> {
 
 	@Override
-	public boolean isValid(BetreuungAndPensumContainer container, ConstraintValidatorContext context) {
+	public boolean isValid(
+		BetreuungAndPensumContainer container,
+		ConstraintValidatorContext context
+	) {
 		return container.findBetreuung()
 			.map(betreuung -> {
-				var gueltigkeitGesuchsperiode = betreuung.extractGesuchsperiode().getGueltigkeit();
+				var gueltigkeitGesuchsperiode = betreuung
+					.extractGesuchsperiode()
+					.getGueltigkeit();
 
-				return GueltigkeitsUtil.intersects(container.getBetreuungenJA(), gueltigkeitGesuchsperiode);
+				return GueltigkeitsUtil.intersects(
+					container.getBetreuungenJA(),
+					gueltigkeitGesuchsperiode
+				);
 			})
 			.orElse(true);
 	}

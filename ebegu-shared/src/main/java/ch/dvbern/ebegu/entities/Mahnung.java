@@ -21,15 +21,15 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.MahnungTyp;
 import ch.dvbern.ebegu.util.Constants;
@@ -47,7 +47,8 @@ public class Mahnung extends AbstractMutableEntity {
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_mahnung_gesuch_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_mahnung_gesuch_id"),
+		updatable = false)
 	private Gesuch gesuch;
 
 	@NotNull
@@ -116,7 +117,9 @@ public class Mahnung extends AbstractMutableEntity {
 		return timestampAbgeschlossen;
 	}
 
-	public void setTimestampAbgeschlossen(@Nullable LocalDateTime timestampBeendet) {
+	public void setTimestampAbgeschlossen(
+		@Nullable LocalDateTime timestampBeendet
+	) {
 		this.timestampAbgeschlossen = timestampBeendet;
 	}
 
@@ -140,9 +143,18 @@ public class Mahnung extends AbstractMutableEntity {
 			return false;
 		}
 		final Mahnung otherMahnung = (Mahnung) other;
-		return Objects.equals(getMahnungTyp(), otherMahnung.getMahnungTyp()) &&
-			Objects.equals(getDatumFristablauf(), otherMahnung.getDatumFristablauf()) &&
-			Objects.equals(getBemerkungen(), otherMahnung.getBemerkungen()) &&
-			Objects.equals(getTimestampAbgeschlossen(), otherMahnung.getTimestampAbgeschlossen());
+		return Objects.equals(getMahnungTyp(), otherMahnung.getMahnungTyp())
+			&&
+			Objects.equals(
+				getDatumFristablauf(),
+				otherMahnung.getDatumFristablauf()
+			)
+			&&
+			Objects.equals(getBemerkungen(), otherMahnung.getBemerkungen())
+			&&
+			Objects.equals(
+				getTimestampAbgeschlossen(),
+				otherMahnung.getTimestampAbgeschlossen()
+			);
 	}
 }

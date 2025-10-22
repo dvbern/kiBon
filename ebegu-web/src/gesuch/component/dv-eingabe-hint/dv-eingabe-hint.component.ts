@@ -25,7 +25,8 @@ import {EbeguUtil} from '../../../utils/EbeguUtil';
     selector: 'dv-eingabe-hint',
     templateUrl: './dv-eingabe-hint.component.html',
     styleUrls: ['./dv-eingabe-hint.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DvEingabeHintComponent {
     @Input() public neuerWert: number;

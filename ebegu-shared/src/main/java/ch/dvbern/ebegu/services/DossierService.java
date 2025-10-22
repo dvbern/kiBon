@@ -21,11 +21,10 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Dossier;
-import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.GesuchDeletionCause;
@@ -43,6 +42,7 @@ public interface DossierService {
 
 	/**
 	 * Gibt das Dossier mit der uebergebenen ID zurueck.
+	 *
 	 * @param doAuthCheck: Definiert, ob die Berechtigungen (Lesen/Schreiben) für dieses Gesuch geprüft werden muessen.
 	 */
 	@Nonnull
@@ -56,10 +56,14 @@ public interface DossierService {
 
 	/**
 	 * Gibt das Dossier mit der uebergebenen ID zurueck nur wenn es stimmt mit dem Mandant des eingeloggte Benutzende.
+	 *
 	 * @param doAuthCheck: Definiert, ob die Berechtigungen (Lesen/Schreiben) für dieses Gesuch geprüft werden muessen.
 	 */
 	@Nonnull
-	Optional<Dossier> findDossierForMandant(@Nonnull String id, boolean doAuthCheck);
+	Optional<Dossier> findDossierForMandant(
+		@Nonnull String id,
+		boolean doAuthCheck
+	);
 
 	/**
 	 * Gibt eine Liste aller Dossiers des uebergebenen Falls zurück.
@@ -68,16 +72,13 @@ public interface DossierService {
 	Collection<Dossier> findDossiersByFall(@Nonnull String fallId);
 
 	/**
-	 * Gibt eine Liste aller Dossiers der uebergebenen Gemeinde zurück.
-	 */
-	@Nonnull
-	Collection<Dossier> findDossiersByGemeinde(@Nonnull Gemeinde gemeinde);
-
-	/**
 	 * Gibt das Dossier (falls vorhanden) fuer die uebergebene Gemeinde und den uebergebenen Fall zurueck
 	 */
 	@Nonnull
-	Optional<Dossier> findDossierByGemeindeAndFall(@Nonnull String gemeindeId, @Nonnull String fallId);
+	Optional<Dossier> findDossierByGemeindeAndFall(
+		@Nonnull String gemeindeId,
+		@Nonnull String fallId
+	);
 
 	/**
 	 * Speichert ein Dossier bzw. erstellt es wenn es noch nicht existiert.
@@ -88,7 +89,10 @@ public interface DossierService {
 	/**
 	 * entfernt ein Dossier aus der Database. Es wird ein LogEintrag erstellt mit dem Grund des Löschens-
 	 */
-	void removeDossier(@Nonnull String dossierId, @Nonnull GesuchDeletionCause deletionCause);
+	void removeDossier(
+		@Nonnull String dossierId,
+		@Nonnull GesuchDeletionCause deletionCause
+	);
 
 	/**
 	 * Gibt alle existierenden Dossiers zurueck.
@@ -97,14 +101,19 @@ public interface DossierService {
 	 * @return Liste aller Dossiers aus der DB für den Mandanten des Principal
 	 */
 	@Nonnull
-	Collection<Dossier> getAllDossiersForMandant(@Nonnull Mandant mandant, boolean doAuthCheck);
+	Collection<Dossier> getAllDossiersForMandant(
+		@Nonnull Mandant mandant,
+		boolean doAuthCheck
+	);
 
 	/**
 	 * Erstellt ein Dossier und einen Fall (beides, falls noch nicht vorhanden) fuer den eingeloggten
 	 * Benutzer als GS (Besitzer) fuer die uebergebene Gemeinde
 	 */
 	@Nonnull
-	Dossier getOrCreateDossierAndFallForCurrentUserAsBesitzer(@Nonnull String gemeindeId);
+	Dossier getOrCreateDossierAndFallForCurrentUserAsBesitzer(
+		@Nonnull String gemeindeId
+	);
 
 	/**
 	 * Checks whether the given Dossier has at least one Mitteilung or not. Will throw an exception if the dossier is
@@ -116,13 +125,19 @@ public interface DossierService {
 	 * Setzt den BG-Verantwortlichen auf dem Dossier
 	 */
 	@Nonnull
-	Dossier setVerantwortlicherBG(@Nonnull String dossierId, @Nullable Benutzer benutzer);
+	Dossier setVerantwortlicherBG(
+		@Nonnull String dossierId,
+		@Nullable Benutzer benutzer
+	);
 
 	/**
 	 * Setzt den TS-Verantwortlichen auf dem Dossier
 	 */
 	@Nonnull
-	Dossier setVerantwortlicherTS(@Nonnull String dossierId, @Nullable Benutzer benutzer);
+	Dossier setVerantwortlicherTS(
+		@Nonnull String dossierId,
+		@Nullable Benutzer benutzer
+	);
 
 	/**
 	 * Gibt das früheste Einreichungsdatum (oder RegelStartDatum) zurück, welches für dieses Dossier
@@ -130,5 +145,8 @@ public interface DossierService {
 	 * Falls noch gar kein Gesuch eingereicht wurde, wird das Tagesdatum zurückgegeben
 	 */
 	@Nonnull
-	LocalDate getErstesEinreichungsdatum(@Nonnull Dossier dossier, @Nonnull Gesuchsperiode gesuchsperiode);
+	LocalDate getErstesEinreichungsdatum(
+		@Nonnull Dossier dossier,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 }

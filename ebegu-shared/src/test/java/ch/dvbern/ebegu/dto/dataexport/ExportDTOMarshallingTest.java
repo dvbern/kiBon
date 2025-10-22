@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import ch.dvbern.ebegu.dto.dataexport.v1.AdresseExportDTO;
 import ch.dvbern.ebegu.dto.dataexport.v1.BetreuungExportDTO;
@@ -39,8 +39,8 @@ import ch.dvbern.ebegu.dto.dataexport.v1.KindExportDTO;
 import ch.dvbern.ebegu.dto.dataexport.v1.VerfuegungExportDTO;
 import ch.dvbern.ebegu.dto.dataexport.v1.VerfuegungenExportDTO;
 import ch.dvbern.ebegu.dto.dataexport.v1.ZeitabschnittExportDTO;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.Land;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,7 +60,9 @@ public class ExportDTOMarshallingTest {
 		VerfuegungenExportDTO exportDTO = createTestdata();
 
 		// create JAXB context and instantiate marshaller
-		JAXBContext context = JAXBContext.newInstance(VerfuegungenExportDTO.class);
+		JAXBContext context = JAXBContext.newInstance(
+			VerfuegungenExportDTO.class
+		);
 		Marshaller marshaller = context.createMarshaller();
 
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -73,8 +75,10 @@ public class ExportDTOMarshallingTest {
 		// get variables from our xml file, created before
 
 		Unmarshaller um = context.createUnmarshaller();
-		VerfuegungenExportDTO readBeackVerfuegung = (VerfuegungenExportDTO) um.unmarshal(new FileReader(createdFile));
-		List<VerfuegungExportDTO> verfuegungen = readBeackVerfuegung.getVerfuegungen();
+		VerfuegungenExportDTO readBeackVerfuegung = (VerfuegungenExportDTO) um
+			.unmarshal(new FileReader(createdFile));
+		List<VerfuegungExportDTO> verfuegungen = readBeackVerfuegung
+			.getVerfuegungen();
 
 		for (VerfuegungExportDTO dto : verfuegungen) {
 			Assert.assertEquals("16.0000001.1.1", dto.getRefnr());
@@ -83,20 +87,26 @@ public class ExportDTOMarshallingTest {
 	}
 
 	@Test
-	public void testUnmarshallingPredefined() throws JAXBException, IOException {
+	public void testUnmarshallingPredefined() throws JAXBException,
+		IOException {
 
-		JAXBContext context = JAXBContext.newInstance(VerfuegungenExportDTO.class);
+		JAXBContext context = JAXBContext.newInstance(
+			VerfuegungenExportDTO.class
+		);
 		Marshaller marshaller = context.createMarshaller();
 
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-		InputStream fileToRead = this.getClass().getResourceAsStream("exportVerfuegungenTest.xml");
+		InputStream fileToRead = this.getClass()
+			.getResourceAsStream("exportVerfuegungenTest.xml");
 		// get variables from our xml file, created before
 
 		Unmarshaller um = context.createUnmarshaller();
-		VerfuegungenExportDTO readBeackVerfuegung = (VerfuegungenExportDTO) um.unmarshal(fileToRead);
+		VerfuegungenExportDTO readBeackVerfuegung = (VerfuegungenExportDTO) um
+			.unmarshal(fileToRead);
 		Assert.assertNotNull(readBeackVerfuegung);
-		List<VerfuegungExportDTO> verfuegungen = readBeackVerfuegung.getVerfuegungen();
+		List<VerfuegungExportDTO> verfuegungen = readBeackVerfuegung
+			.getVerfuegungen();
 
 		for (VerfuegungExportDTO dto : verfuegungen) {
 			Assert.assertEquals("16.0000001.1.1", dto.getRefnr());
@@ -120,13 +130,33 @@ public class ExportDTOMarshallingTest {
 		verfuegungExportDTO.setVon(LocalDate.of(2017, 7, 31));
 		verfuegungExportDTO.setVersion(1);
 		verfuegungExportDTO.setVerfuegtAm(LocalDateTime.of(2016, 6, 1, 0, 0));
-		verfuegungExportDTO.setKind(new KindExportDTO("Henk", "Honolulu", LocalDate.of(2016, 6, 12)));
-		verfuegungExportDTO.setGesuchsteller(new GesuchstellerExportDTO("George", "Honolulu", "somebody@somewhere.org"));
+		verfuegungExportDTO.setKind(
+			new KindExportDTO("Henk", "Honolulu", LocalDate.of(2016, 6, 12))
+		);
+		verfuegungExportDTO.setGesuchsteller(
+			new GesuchstellerExportDTO(
+				"George",
+				"Honolulu",
+				"somebody@somewhere.org"
+			)
+		);
 
 		BetreuungExportDTO betreuungExportDTO = new BetreuungExportDTO();
 		betreuungExportDTO.setBetreuungsArt(BetreuungsangebotTyp.KITA);
-		AdresseExportDTO adr = new AdresseExportDTO("Nussbaumstrasse", "21", null, "Bern", "3006", Land.CH);
-		InstitutionExportDTO inst = new InstitutionExportDTO("545b8d2d-da72-4232-b562-0ff64706feea", "Bruennen", "LeoLea", adr);
+		AdresseExportDTO adr = new AdresseExportDTO(
+			"Nussbaumstrasse",
+			"21",
+			null,
+			"Bern",
+			"3006",
+			Land.CH
+		);
+		InstitutionExportDTO inst = new InstitutionExportDTO(
+			"545b8d2d-da72-4232-b562-0ff64706feea",
+			"Bruennen",
+			"LeoLea",
+			adr
+		);
 
 		betreuungExportDTO.setInstitution(inst);
 		verfuegungExportDTO.setBetreuung(betreuungExportDTO);
@@ -151,7 +181,18 @@ public class ExportDTOMarshallingTest {
 		BigDecimal betreuungsgutschein = new BigDecimal("870.05");
 		BigDecimal minimalerElternbeitrag = new BigDecimal("50.05");
 		BigDecimal verg = new BigDecimal("690.45");
-		return new ZeitabschnittExportDTO(von, bis, 0, effBet, anspPct, vergPct, vollkosten, betreuungsgutschein, minimalerElternbeitrag, verg);
+		return new ZeitabschnittExportDTO(
+			von,
+			bis,
+			0,
+			effBet,
+			anspPct,
+			vergPct,
+			vollkosten,
+			betreuungsgutschein,
+			minimalerElternbeitrag,
+			verg
+		);
 	}
 
 }

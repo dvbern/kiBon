@@ -23,20 +23,21 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.PermitAll;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.annotation.security.PermitAll;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.gesuch.JaxWizardStepConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxWizardStep;
 import ch.dvbern.ebegu.entities.Gesuch;
@@ -45,15 +46,14 @@ import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.WizardStepService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import ch.dvbern.ebegu.services.wizardsteps.statusupdater.WizardStepStatusUpdater;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 /**
  * Resource fuer Wizardsteps
  */
 @Path("wizard-steps")
 @Stateless
-@Api(description = "Resource für die Darstellung des Antrags-Wizards")
 @PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 public class WizardStepResource {
 
@@ -62,86 +62,167 @@ public class WizardStepResource {
 	@Inject
 	private WizardStepService wizardStepService;
 	@Inject
-	private JaxBConverter converter;
+	private JaxWizardStepConverter converter;
+	@Inject
+	private WizardStepStatusUpdater wizardStepStatusUpdater;
 
-	@ApiOperation(value = "Gibt alle Wizardsteps des Gesuchs mit der uebergebenen id zurueck",
-		responseContainer = "Collection", response = JaxWizardStep.class)
+	@Operation(
+		summary = "Gibt alle Wizardsteps des Gesuchs mit der uebergebenen id zurueck")
 	@GET
 	@Path("/{gesuchId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<JaxWizardStep> findWizardStepsFromGesuch(
-		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId) {
+		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId
+	) {
 		Objects.requireNonNull(gesuchJAXPId.getId());
 
 		final String gesuchID = converter.toEntityId(gesuchJAXPId);
 
-		return wizardStepService.findWizardStepsFromGesuch(gesuchID).stream()
-			.map(wizardStep -> converter.wizardStepToJAX(wizardStep)).collect(Collectors.toList());
+		return wizardStepService.findWizardStepsFromGesuch(gesuchID)
+			.stream()
+			.map(wizardStep -> converter.wizardStepToJAX(wizardStep))
+			.collect(Collectors.toList());
 	}
 
 	/**
-	 * Creates all required WizardSteps for the given Gesuch and returns them as a List. Status for all Steps will be UNBESUCHT except for
+	 * Creates all required WizardSteps for the given Gesuch and returns them as a List. Status for all Steps will be
+	 * UNBESUCHT except for
 	 * GESUCH_ERSTELLEN, which gets OK, because this step is already done when the gesuch is created.
 	 */
-	@ApiOperation(value = "Creates all required WizardSteps for the given Gesuch and returns them as a List. Status " +
-		"for all Steps will be UNBESUCHT except for GESUCH_ERSTELLEN, which gets OK, because this step is already " +
-		"done when the gesuch is created.",
-		responseContainer = "List", response = JaxWizardStep.class)
+	@Operation(
+		summary = "Creates all required WizardSteps for the given Gesuch and returns them as a List. Status "
+			+
+			"for all Steps will be UNBESUCHT except for GESUCH_ERSTELLEN, which gets OK, because this step is already "
+			+
+			"done when the gesuch is created.")
 	@Nullable
 	@GET
 	@Path("/createWizardSteps/{gesuchId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<JaxWizardStep> createWizardStepList(
-		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId) {
+		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId
+	) {
 		Objects.requireNonNull(gesuchJAXPId.getId());
 
-		Optional<Gesuch> gesuch = gesuchService.findGesuch(gesuchJAXPId.getId());
+		Optional<Gesuch> gesuch = gesuchService.findGesuch(
+			gesuchJAXPId.getId()
+		);
 		if (gesuch.isPresent()) {
-			return wizardStepService.createWizardStepList(gesuch.get()).stream()
-				.map(wizardStep -> converter.wizardStepToJAX(wizardStep)).collect(Collectors.toList());
+			return wizardStepService.createWizardStepList(gesuch.get())
+				.stream()
+				.map(wizardStep -> converter.wizardStepToJAX(wizardStep))
+				.collect(Collectors.toList());
 		}
 		return null;
 	}
 
-	@ApiOperation(value = "Speichert den uebergebenen Wizardstep", response = JaxWizardStep.class)
+	@Operation(summary = "Speichert den uebergebenen Wizardstep")
 	@Nullable
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public JaxWizardStep saveWizardStep(
-		@Nonnull @NotNull @Valid JaxWizardStep wizardStepJAXP) {
+		@Nonnull @NotNull @Valid JaxWizardStep wizardStepJAXP
+	) {
 
-		Optional<Gesuch> gesuch = gesuchService.findGesuch(wizardStepJAXP.getGesuchId());
+		Optional<Gesuch> gesuch = gesuchService.findGesuch(
+			wizardStepJAXP.getGesuchId()
+		);
 		if (gesuch.isPresent()) {
 			WizardStep wizardStepToMerge = new WizardStep();
 			if (wizardStepJAXP.getId() != null) {
-				Optional<WizardStep> optional = wizardStepService.findWizardStep(wizardStepJAXP.getId());
+				Optional<WizardStep> optional = wizardStepService
+					.findWizardStep(wizardStepJAXP.getId());
 				wizardStepToMerge = optional.orElse(new WizardStep());
 			}
-			WizardStep convertedWizardStep = converter.wizardStepToEntity(wizardStepJAXP, wizardStepToMerge);
+			WizardStep convertedWizardStep = converter.wizardStepToEntity(
+				wizardStepJAXP,
+				wizardStepToMerge
+			);
 			convertedWizardStep.setGesuch(gesuch.get());
-			WizardStep persistedWizardStep = this.wizardStepService.saveWizardStep(convertedWizardStep);
+			WizardStep persistedWizardStep = this.wizardStepService
+				.saveWizardStep(convertedWizardStep);
 			return converter.wizardStepToJAX(persistedWizardStep);
 		}
-		throw new EbeguEntityNotFoundException("saveWizardStep", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, "GesuchId invalid: " + wizardStepJAXP.getGesuchId());
+		throw new EbeguEntityNotFoundException(
+			"saveWizardStep",
+			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+			"GesuchId invalid: " + wizardStepJAXP.getGesuchId()
+		);
 	}
 
-	@ApiOperation(value = "Setzt den Status des uebergebenen Wizardsteps auf MUTIERT", response = JaxWizardStep.class)
+	@Operation(
+		summary = "Berechnet den Status des FinSit-WizardSteps und updated ihn"
+	)
+	@Nullable
+	@PUT()
+	@Path("update-finsit-status")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public JaxWizardStep updateFinSitWizardStepStatus(
+		@Nonnull @NotNull String wizardStepId
+	) {
+		final WizardStep wizardStep = findWizardStep(wizardStepId);
+
+		wizardStepStatusUpdater.updateFinSitStep(wizardStep);
+		WizardStep persistedWizardStep = this.wizardStepService
+			.saveWizardStep(wizardStep);
+		return converter.wizardStepToJAX(persistedWizardStep);
+	}
+
+	@Operation(
+		summary = "Berechnet den Status des EKV WizardSteps und updated ihn"
+	)
+	@Nullable
+	@PUT()
+	@Path("update-ekv-status")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public JaxWizardStep updateEKVWizardStepStatus(
+		@Nonnull @NotNull String wizardStepId
+	) {
+		final WizardStep wizardStep = findWizardStep(wizardStepId);
+
+		wizardStepStatusUpdater.updateEKVStep(wizardStep);
+		WizardStep persistedWizardStep = this.wizardStepService
+			.saveWizardStep(wizardStep);
+		return converter.wizardStepToJAX(persistedWizardStep);
+	}
+
+	private WizardStep findWizardStep(String wizardStepId) {
+		return wizardStepService.findWizardStep(wizardStepId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"findWizardStep",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"WizardStepId invalid: " + wizardStepId
+				)
+			);
+	}
+
+	@Operation(
+		summary = "Setzt den Status des uebergebenen Wizardsteps auf MUTIERT"
+	)
 	@Nullable
 	@POST
 	@Path("/setWizardStepMutiert/{gesuchId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public JaxWizardStep setWizardStepMutiert(
-		@Nonnull @NotNull @PathParam("gesuchId") JaxId wizardStepJAXPId) {
+		@Nonnull @NotNull @PathParam("gesuchId") JaxId wizardStepJAXPId
+	) {
 
-		Optional<WizardStep> optional = wizardStepService.findWizardStep(wizardStepJAXPId.getId());
+		Optional<WizardStep> optional = wizardStepService.findWizardStep(
+			wizardStepJAXPId.getId()
+		);
 		final WizardStep wizardStep = optional.orElse(new WizardStep());
 
 		this.wizardStepService.setWizardStepOkOrMutiert(wizardStep);
-		WizardStep persistedWizardStep = this.wizardStepService.saveWizardStep(wizardStep);
+		WizardStep persistedWizardStep = this.wizardStepService.saveWizardStep(
+			wizardStep
+		);
 		return converter.wizardStepToJAX(persistedWizardStep);
 	}
 }

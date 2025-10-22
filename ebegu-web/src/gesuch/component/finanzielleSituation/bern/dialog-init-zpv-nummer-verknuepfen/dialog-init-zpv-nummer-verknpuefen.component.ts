@@ -16,18 +16,17 @@
  */
 
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {TranslateService} from '@ngx-translate/core';
-import {StateService} from '@uirouter/core';
-import {GesuchstellerRS} from '../../../../../app/core/service/gesuchstellerRS.rest';
-import {TSSprache} from '../../../../../models/enums/TSSprache';
-import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
-import {CONSTANTS} from '../../../../../app/core/constants/CONSTANTS';
 import {NgForm} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {GesuchstellerRS} from '../../../../../app/core/service/gesuchstellerRS.rest';
+import {TSSprache} from '@kibon/shared/model/enums';
+import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
 
 @Component({
     selector: 'dv-ng-zpv-nummmer-verknuepfen-dialog',
-    templateUrl: './dialog-init-zpv-nummer-verknpuefen.template.html'
+    templateUrl: './dialog-init-zpv-nummer-verknpuefen.template.html',
+    standalone: false
 })
 export class DialogInitZPVNummerVerknuepfenComponent {
     private readonly gs: TSGesuchstellerContainer;
@@ -38,8 +37,6 @@ export class DialogInitZPVNummerVerknuepfenComponent {
     public constructor(
         private readonly dialogRef: MatDialogRef<DialogInitZPVNummerVerknuepfenComponent>,
         private readonly gesuchstellerRS: GesuchstellerRS,
-        private readonly languageService: TranslateService,
-        private readonly $state: StateService,
         @Inject(MAT_DIALOG_DATA) private readonly data: any
     ) {
         this.gs = data.gs;
@@ -50,19 +47,8 @@ export class DialogInitZPVNummerVerknuepfenComponent {
         if (!form.valid) {
             return;
         }
-        const target = this.$state.target('onboarding.zpvgssuccess');
-        const relayPath = this.$state.href(
-            target.$state(),
-            {gesuchstellerId: this.gs.id},
-            {absolute: true}
-        );
         this.gesuchstellerRS
-            .initGS2ZPVNr(
-                this.email,
-                this.gs,
-                this.korrespondenzSprache,
-                relayPath
-            )
+            .initGS2ZPVNr(this.email, this.gs, this.korrespondenzSprache)
             .then(() => this.dialogRef.close());
     }
 

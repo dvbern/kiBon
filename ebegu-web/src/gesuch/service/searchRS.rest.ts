@@ -17,7 +17,7 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {TSAntragDTO} from '../../models/TSAntragDTO';
 import {TSAntragSearchresultDTO} from '../../models/TSAntragSearchresultDTO';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
@@ -36,14 +36,6 @@ export class SearchRS {
     ): Observable<TSAntragSearchresultDTO> {
         return this.http
             .post(`${this.serviceURL}/search/`, antragSearch)
-            .pipe(map(response => this.toAntragSearchresult(response)));
-    }
-
-    public searchAntraegeInAlleFaelleView(
-        antragSearch: any
-    ): Observable<TSAntragSearchresultDTO> {
-        return this.http
-            .post(`${this.serviceURL}/alleFaelleView/search`, antragSearch)
             .pipe(map(response => this.toAntragSearchresult(response)));
     }
 
@@ -67,12 +59,6 @@ export class SearchRS {
             `${this.serviceURL}/jugendamt/count`,
             antragSearch
         );
-    }
-
-    public recreateAlleFaelleView(): Observable<any> {
-        return this.http.get(`${this.serviceURL}/rebuild`, {
-            responseType: 'text'
-        });
     }
 
     private toAntragSearchresult(response: any): TSAntragSearchresultDTO {

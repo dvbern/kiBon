@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -40,13 +40,17 @@ import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.lib.invoicegenerator.dto.PageConfiguration;
 import ch.dvbern.lib.invoicegenerator.errors.InvoiceGeneratorException;
 
+import static ch.dvbern.lib.invoicegenerator.pdf.PdfUtilities.DEFAULT_MULTIPLIED_LEADING;
+
 public abstract class KibonPdfGenerator {
 
-	protected static final String REFERENZ_NUMMER = "PdfGeneration_Referenznummer";
+	protected static final String REFERENZ_NUMMER =
+		"PdfGeneration_Referenznummer";
 	protected static final String ABSENDER_TELEFON = "PdfGeneration_Telefon";
-	protected static final String EINSCHREIBEN = "PdfGeneration_VerfuegungEingeschrieben";
-	protected static final String BETREUUNG_INSTITUTION = "PdfGeneration_Institution";
-
+	protected static final String EINSCHREIBEN =
+		"PdfGeneration_VerfuegungEingeschrieben";
+	protected static final String BETREUUNG_INSTITUTION =
+		"PdfGeneration_Institution";
 
 	@Nonnull
 	private PdfGenerator pdfGenerator;
@@ -62,12 +66,16 @@ public abstract class KibonPdfGenerator {
 
 	protected Locale sprache;
 
-
 	@SuppressWarnings("PMD.ConstructorCallsOverridableMethod") // Stimmt nicht, die Methode ist final
-	protected KibonPdfGenerator(@Nonnull Gesuch gesuch, @Nonnull GemeindeStammdaten stammdaten) {
+	protected KibonPdfGenerator(
+		@Nonnull Gesuch gesuch,
+		@Nonnull GemeindeStammdaten stammdaten
+	) {
 		this.gesuch = gesuch;
 		this.gemeindeStammdaten = stammdaten;
-		this.mandant = Objects.requireNonNull(gemeindeStammdaten.getGemeinde().getMandant());
+		this.mandant = Objects.requireNonNull(
+			gemeindeStammdaten.getGemeinde().getMandant()
+		);
 		initLocale(stammdaten);
 		initGenerator(stammdaten);
 	}
@@ -81,9 +89,17 @@ public abstract class KibonPdfGenerator {
 	@Nonnull
 	protected abstract CustomGenerator getCustomGenerator();
 
-
-	public void generate(@Nonnull final OutputStream outputStream) throws InvoiceGeneratorException {
-		getPdfGenerator().generate(outputStream, getDocumentTitle(), getEmpfaengerAdresse(), getCustomGenerator());
+	public void generate(@Nonnull final OutputStream outputStream)
+		throws InvoiceGeneratorException {
+		getPageConfiguration().setMultipliedLeadingAddress(
+			DEFAULT_MULTIPLIED_LEADING
+		);
+		getPdfGenerator().generate(
+			outputStream,
+			getDocumentTitle(),
+			getEmpfaengerAdresse(),
+			getCustomGenerator()
+		);
 	}
 
 	@Nonnull
@@ -108,21 +124,31 @@ public abstract class KibonPdfGenerator {
 
 	private void initLocale(@Nonnull GemeindeStammdaten stammdaten) {
 		this.sprache = Locale.GERMAN; // Default, falls nichts gesetzt ist
-		Sprache[] korrespondenzsprachen = stammdaten.getKorrespondenzsprache().getSprache();
+		Sprache[] korrespondenzsprachen = stammdaten.getKorrespondenzsprache()
+			.getSprache();
 		if (korrespondenzsprachen.length == 1) {
 			sprache = korrespondenzsprachen[0].getLocale();
 		} else {
-			if (gesuch.getGesuchsteller1() != null && gesuch.getGesuchsteller1().getGesuchstellerJA().getKorrespondenzSprache() != null) {
-				sprache = gesuch.getGesuchsteller1().getGesuchstellerJA().getKorrespondenzSprache().getLocale();
+			if (gesuch.getGesuchsteller1() != null
+				&& gesuch.getGesuchsteller1()
+					.getGesuchstellerJA()
+					.getKorrespondenzSprache()
+					!= null) {
+				sprache = gesuch.getGesuchsteller1()
+					.getGesuchstellerJA()
+					.getKorrespondenzSprache()
+					.getLocale();
 			}
 		}
 	}
 
 	private void initGenerator(@Nonnull GemeindeStammdaten stammdaten) {
-		this.pdfGenerator = PdfGenerator.create(stammdaten.getGemeindeStammdatenKorrespondenz(),
+		this.pdfGenerator = PdfGenerator.create(
+			stammdaten.getGemeindeStammdatenKorrespondenz(),
 			getAbsenderAdresse(),
 			false,
-			useAlternativeLogoIfPresent());
+			useAlternativeLogoIfPresent()
+		);
 	}
 
 	protected boolean useAlternativeLogoIfPresent() {
@@ -168,11 +194,24 @@ public abstract class KibonPdfGenerator {
 		final List<String> empfaengerAdresse = new ArrayList<>();
 		getOptionalEinschreibeHeader().ifPresent(empfaengerAdresse::add);
 
-		empfaengerAdresse.add(KibonPrintUtil.getGesuchstellerNameAsString(getGesuch().getGesuchsteller1()));
-		if (hasSecondGesuchsteller() && getGesuch().getGesuchsteller2() != null) {
-			empfaengerAdresse.add(KibonPrintUtil.getGesuchstellerNameAsString(getGesuch().getGesuchsteller2()));
+		empfaengerAdresse.add(
+			KibonPrintUtil.getGesuchstellerNameAsString(
+				getGesuch().getGesuchsteller1()
+			)
+		);
+		if (hasSecondGesuchsteller()
+			&& getGesuch().getGesuchsteller2() != null) {
+			empfaengerAdresse.add(
+				KibonPrintUtil.getGesuchstellerNameAsString(
+					getGesuch().getGesuchsteller2()
+				)
+			);
 		}
-		empfaengerAdresse.add(KibonPrintUtil.getGesuchstellerAddressAsString(getGesuch().getGesuchsteller1()));
+		empfaengerAdresse.add(
+			KibonPrintUtil.getGesuchstellerAddressAsString(
+				getGesuch().getGesuchsteller1()
+			)
+		);
 		return empfaengerAdresse;
 	}
 
@@ -187,12 +226,23 @@ public abstract class KibonPdfGenerator {
 
 	@Nonnull
 	protected String translate(String key) {
-		return ServerMessageUtil.getMessage(key, sprache, mandant);
+		return ServerMessageUtil.getMessage(
+			key,
+			sprache,
+			mandant,
+			gemeindeStammdaten.getGemeinde()
+		);
 	}
 
 	@Nonnull
 	protected String translate(String key, Object... args) {
-		return ServerMessageUtil.getMessage(key, sprache, mandant, args);
+		return ServerMessageUtil.getMessage(
+			key,
+			sprache,
+			mandant,
+			gemeindeStammdaten.getGemeinde(),
+			args
+		);
 	}
 
 	protected Optional<String> getOptionalEinschreibeHeader() {

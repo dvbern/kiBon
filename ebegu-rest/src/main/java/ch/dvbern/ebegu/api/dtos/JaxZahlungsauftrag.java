@@ -22,16 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.enums.ZahlungauftragStatus;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO fuer Zahlungsauftrag
@@ -42,15 +42,16 @@ public class JaxZahlungsauftrag extends JaxAbstractDateRangedDTO {
 
 	private static final long serialVersionUID = 5908117979039694339L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private ZahlungslaufTyp zahlungslaufTyp;
 
 	@NotNull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate datumFaellig;
 
 	@NotNull
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime datumGeneriert;
 
 	@NotNull
@@ -128,9 +129,13 @@ public class JaxZahlungsauftrag extends JaxAbstractDateRangedDTO {
 		this.betragTotalAuftrag = betragTotalAuftrag;
 	}
 
-	public boolean getHasNegativeZahlungen() { return this.hasNegativeZahlungen; }
+	public boolean getHasNegativeZahlungen() {
+		return this.hasNegativeZahlungen;
+	}
 
-	public void setHasNegativeZahlungen(boolean hasNegativeZahlungen) { this.hasNegativeZahlungen = hasNegativeZahlungen; }
+	public void setHasNegativeZahlungen(boolean hasNegativeZahlungen) {
+		this.hasNegativeZahlungen = hasNegativeZahlungen;
+	}
 
 	@Nonnull
 	public JaxGemeinde getGemeinde() {

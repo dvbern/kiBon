@@ -16,13 +16,13 @@
 package ch.dvbern.ebegu.api.util.version;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Priority;
-import javax.inject.Inject;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * All responses that are sent to the client get a new header-param with the server version.
@@ -38,11 +38,19 @@ public class VersionHeaderFilter implements ContainerResponseFilter {
 	private VersionInfoBean versionInfoBean;
 
 	@Override
-	public void filter(@Nonnull ContainerRequestContext requestContext, @Nonnull ContainerResponseContext responseContext) {
+	public void filter(
+		@Nonnull ContainerRequestContext requestContext,
+		@Nonnull ContainerResponseContext responseContext
+	) {
 		versionInfoBean.getVersionInfo().ifPresent(versionInfo -> {
-			responseContext.getHeaders().add(X_EBEGU_VERSION, versionInfo.getVersion());
+			responseContext.getHeaders()
+				.add(X_EBEGU_VERSION, versionInfo.getVersion());
 			if (versionInfo.getBuildTimestamp() != null) {
-				responseContext.getHeaders().add(X_EBEGU_BUILD_TIME, versionInfo.getBuildTimestamp());
+				responseContext.getHeaders()
+					.add(
+						X_EBEGU_BUILD_TIME,
+						versionInfo.getBuildTimestamp()
+					);
 			}
 		});
 	}

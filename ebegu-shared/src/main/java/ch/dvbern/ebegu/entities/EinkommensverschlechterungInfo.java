@@ -15,16 +15,17 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
-import java.util.Objects;
 
 /**
  * Entity für die Erfassung von Einkommensverschlechterungen für das Gesuch
@@ -63,9 +64,12 @@ public class EinkommensverschlechterungInfo extends AbstractMutableEntity {
 	public EinkommensverschlechterungInfo() {
 	}
 
-	public EinkommensverschlechterungInfo(EinkommensverschlechterungInfo other) {
+	public EinkommensverschlechterungInfo(
+		EinkommensverschlechterungInfo other
+	) {
 		if (other != null) {
-			this.einkommensverschlechterung = other.getEinkommensverschlechterung();
+			this.einkommensverschlechterung = other
+				.getEinkommensverschlechterung();
 			this.ekvFuerBasisJahrPlus1 = other.getEkvFuerBasisJahrPlus1();
 			this.ekvFuerBasisJahrPlus2 = other.getEkvFuerBasisJahrPlus2();
 		}
@@ -75,7 +79,9 @@ public class EinkommensverschlechterungInfo extends AbstractMutableEntity {
 		return einkommensverschlechterung;
 	}
 
-	public void setEinkommensverschlechterung(final Boolean einkommensverschlechterung) {
+	public void setEinkommensverschlechterung(
+		final Boolean einkommensverschlechterung
+	) {
 		this.einkommensverschlechterung = einkommensverschlechterung;
 	}
 
@@ -99,7 +105,9 @@ public class EinkommensverschlechterungInfo extends AbstractMutableEntity {
 		return ekvBasisJahrPlus1Annulliert;
 	}
 
-	public void setEkvBasisJahrPlus1Annulliert(Boolean ekvBasisJahrPlus1Annulliert) {
+	public void setEkvBasisJahrPlus1Annulliert(
+		Boolean ekvBasisJahrPlus1Annulliert
+	) {
 		this.ekvBasisJahrPlus1Annulliert = ekvBasisJahrPlus1Annulliert;
 	}
 
@@ -107,22 +115,33 @@ public class EinkommensverschlechterungInfo extends AbstractMutableEntity {
 		return ekvBasisJahrPlus2Annulliert;
 	}
 
-	public void setEkvBasisJahrPlus2Annulliert(Boolean ekvBasisJahrPlus2Annulliert) {
+	public void setEkvBasisJahrPlus2Annulliert(
+		Boolean ekvBasisJahrPlus2Annulliert
+	) {
 		this.ekvBasisJahrPlus2Annulliert = ekvBasisJahrPlus2Annulliert;
 	}
 
 	@Nonnull
-	public EinkommensverschlechterungInfo copyEinkommensverschlechterungInfo(@Nonnull EinkommensverschlechterungInfo target, @Nonnull AntragCopyType copyType) {
+	public EinkommensverschlechterungInfo copyEinkommensverschlechterungInfo(
+		@Nonnull EinkommensverschlechterungInfo target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
 		case MUTATION_NEUES_DOSSIER:
 		case ERNEUERUNG_AR_2023:
-			target.setEinkommensverschlechterung(this.getEinkommensverschlechterung());
+			target.setEinkommensverschlechterung(
+				this.getEinkommensverschlechterung()
+			);
 			target.setEkvFuerBasisJahrPlus1(this.getEkvFuerBasisJahrPlus1());
 			target.setEkvFuerBasisJahrPlus2(this.getEkvFuerBasisJahrPlus2());
-			target.setEkvBasisJahrPlus1Annulliert(this.getEkvBasisJahrPlus1Annulliert());
-			target.setEkvBasisJahrPlus2Annulliert(this.getEkvBasisJahrPlus2Annulliert());
+			target.setEkvBasisJahrPlus1Annulliert(
+				this.getEkvBasisJahrPlus1Annulliert()
+			);
+			target.setEkvBasisJahrPlus2Annulliert(
+				this.getEkvBasisJahrPlus2Annulliert()
+			);
 			break;
 		case ERNEUERUNG:
 		case ERNEUERUNG_NEUES_DOSSIER:
@@ -132,7 +151,8 @@ public class EinkommensverschlechterungInfo extends AbstractMutableEntity {
 	}
 
 	@Override
-	@SuppressWarnings({ "OverlyComplexBooleanExpression", "PMD.CompareObjectsWithEquals" })
+	@SuppressWarnings({ "OverlyComplexBooleanExpression",
+		"PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -142,23 +162,44 @@ public class EinkommensverschlechterungInfo extends AbstractMutableEntity {
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final EinkommensverschlechterungInfo otherEKVInfo = (EinkommensverschlechterungInfo) other;
+		final EinkommensverschlechterungInfo otherEKVInfo =
+			(EinkommensverschlechterungInfo) other;
 		// if there is no EKV (einkommensverschlechterung==false) there is no need to compare the rest
 		//noinspection SimplifiableIfStatement -> for clarity sake
-		if (Objects.equals(getEinkommensverschlechterung(), otherEKVInfo.getEinkommensverschlechterung())
+		if (Objects.equals(
+			getEinkommensverschlechterung(),
+			otherEKVInfo.getEinkommensverschlechterung()
+		)
 			&& Boolean.FALSE.equals(getEinkommensverschlechterung())) {
 			return true;
 		}
-		return isSameBasisJahrPlus1(otherEKVInfo) && isSameBasisJahrPlus2(otherEKVInfo)
-			&& EbeguUtil.isSameOrNullBoolean(this.ekvBasisJahrPlus1Annulliert, otherEKVInfo.ekvBasisJahrPlus1Annulliert)
-			&& EbeguUtil.isSameOrNullBoolean(this.ekvBasisJahrPlus2Annulliert, otherEKVInfo.ekvBasisJahrPlus2Annulliert);
+		return isSameBasisJahrPlus1(otherEKVInfo)
+			&& isSameBasisJahrPlus2(otherEKVInfo)
+			&& EbeguUtil.isSameOrNullBoolean(
+				this.ekvBasisJahrPlus1Annulliert,
+				otherEKVInfo.ekvBasisJahrPlus1Annulliert
+			)
+			&& EbeguUtil.isSameOrNullBoolean(
+				this.ekvBasisJahrPlus2Annulliert,
+				otherEKVInfo.ekvBasisJahrPlus2Annulliert
+			);
 	}
 
-	private boolean isSameBasisJahrPlus1(EinkommensverschlechterungInfo otherEKVInfo) {
-		return EbeguUtil.isSameOrNullBoolean(getEkvFuerBasisJahrPlus1(), otherEKVInfo.getEkvFuerBasisJahrPlus1());
+	private boolean isSameBasisJahrPlus1(
+		EinkommensverschlechterungInfo otherEKVInfo
+	) {
+		return EbeguUtil.isSameOrNullBoolean(
+			getEkvFuerBasisJahrPlus1(),
+			otherEKVInfo.getEkvFuerBasisJahrPlus1()
+		);
 	}
 
-	private boolean isSameBasisJahrPlus2(EinkommensverschlechterungInfo otherEKVInfo) {
-		return EbeguUtil.isSameOrNullBoolean(getEkvFuerBasisJahrPlus2(), otherEKVInfo.getEkvFuerBasisJahrPlus2());
+	private boolean isSameBasisJahrPlus2(
+		EinkommensverschlechterungInfo otherEKVInfo
+	) {
+		return EbeguUtil.isSameOrNullBoolean(
+			getEkvFuerBasisJahrPlus2(),
+			otherEKVInfo.getEkvFuerBasisJahrPlus2()
+		);
 	}
 }

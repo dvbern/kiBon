@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.util;
@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Benutzer_;
@@ -49,10 +49,14 @@ public final class FilterFunctions {
 	public static void setGemeindeFilterForCurrentUser(
 		@Nonnull Benutzer currentBenutzer,
 		@Nonnull Join<?, Gemeinde> joinGemeinde,
-		@Nonnull List<Predicate> predicates) {
+		@Nonnull List<Predicate> predicates
+	) {
 
-		if (currentBenutzer.getCurrentBerechtigung().getRole().isRoleGemeindeabhaengig()) {
-			Collection<Gemeinde> gemeindenForBenutzer = currentBenutzer.extractGemeindenForUser();
+		if (currentBenutzer.getCurrentBerechtigung()
+			.getRole()
+			.isRoleGemeindeabhaengig()) {
+			Collection<Gemeinde> gemeindenForBenutzer = currentBenutzer
+				.extractGemeindenForUser();
 			Predicate inGemeinde = joinGemeinde.in(gemeindenForBenutzer);
 			predicates.add(inGemeinde);
 		}
@@ -61,12 +65,17 @@ public final class FilterFunctions {
 	public static void setRoleFilterForCurrentUser(
 		@Nonnull Benutzer currentBenutzer,
 		@Nonnull Join<Benutzer, Berechtigung> joinBerechtigung,
-		@Nonnull List<Predicate> predicates) {
+		@Nonnull List<Predicate> predicates
+	) {
 
-		final UserRole role = currentBenutzer.getCurrentBerechtigung().getRole();
+		final UserRole role = currentBenutzer.getCurrentBerechtigung()
+			.getRole();
 
 		if (role == UserRole.ADMIN_MANDANT) {
-			predicates.add(joinBerechtigung.get(Berechtigung_.role).in(UserRole.getMandantRoles()));
+			predicates.add(
+				joinBerechtigung.get(Berechtigung_.role)
+					.in(UserRole.getMandantRoles())
+			);
 			return;
 		}
 
@@ -74,14 +83,23 @@ public final class FilterFunctions {
 		switch (abhaengigkeit) {
 		case GEMEINDE:
 		case INSTITUTION:
-			predicates.add(joinBerechtigung.get(Berechtigung_.role)
-				.in(UserRole.getRolesByAbhaengigkeit(abhaengigkeit)));
+			predicates.add(
+				joinBerechtigung.get(Berechtigung_.role)
+					.in(UserRole.getRolesByAbhaengigkeit(abhaengigkeit))
+			);
 			return;
 		case TRAEGERSCHAFT:
-			predicates.add(joinBerechtigung.get(Berechtigung_.role)
-				.in(UserRole.getRolesByAbhaengigkeiten(
-					Arrays.asList(RollenAbhaengigkeit.INSTITUTION, RollenAbhaengigkeit.TRAEGERSCHAFT))
-				));
+			predicates.add(
+				joinBerechtigung.get(Berechtigung_.role)
+					.in(
+						UserRole.getRolesByAbhaengigkeiten(
+							Arrays.asList(
+								RollenAbhaengigkeit.INSTITUTION,
+								RollenAbhaengigkeit.TRAEGERSCHAFT
+							)
+						)
+					)
+			);
 			return;
 		default:
 			return;
@@ -92,12 +110,18 @@ public final class FilterFunctions {
 		@Nonnull Benutzer currentBenutzer,
 		@Nonnull Join<Benutzer, Berechtigung> joinCurrentBerechtigung,
 		@Nonnull CriteriaBuilder cb,
-		@Nonnull List<Predicate> predicates) {
+		@Nonnull List<Predicate> predicates
+	) {
 
-		final Institution userInstitution = currentBenutzer.getCurrentBerechtigung().getInstitution();
+		final Institution userInstitution = currentBenutzer
+			.getCurrentBerechtigung()
+			.getInstitution();
 		Objects.requireNonNull(userInstitution);
 
-		Predicate sameInstitution = cb.equal(joinCurrentBerechtigung.get(Berechtigung_.institution), userInstitution);
+		Predicate sameInstitution = cb.equal(
+			joinCurrentBerechtigung.get(Berechtigung_.institution),
+			userInstitution
+		);
 		predicates.add(sameInstitution);
 	}
 
@@ -105,10 +129,16 @@ public final class FilterFunctions {
 		@Nonnull Benutzer currentBenutzer,
 		@Nonnull Join<Benutzer, Berechtigung> joinCurrentBerechtigung,
 		@Nonnull CriteriaBuilder cb,
-		@Nonnull List<Predicate> predicates) {
+		@Nonnull List<Predicate> predicates
+	) {
 
-		Predicate isFerienbetreuungRole = joinCurrentBerechtigung.get(Berechtigung_.role)
-			.in(UserRole.ADMIN_FERIENBETREUUNG, UserRole.SACHBEARBEITER_FERIENBETREUUNG);
+		Predicate isFerienbetreuungRole = joinCurrentBerechtigung.get(
+			Berechtigung_.role
+		)
+			.in(
+				UserRole.ADMIN_FERIENBETREUUNG,
+				UserRole.SACHBEARBEITER_FERIENBETREUUNG
+			);
 
 		predicates.add(isFerienbetreuungRole);
 	}
@@ -117,15 +147,27 @@ public final class FilterFunctions {
 		@Nonnull Benutzer currentBenutzer,
 		@Nonnull Join<Benutzer, Berechtigung> joinCurrentBerechtigung,
 		@Nonnull CriteriaBuilder cb,
-		@Nonnull List<Predicate> predicates) {
+		@Nonnull List<Predicate> predicates,
+		@Nonnull Join<Berechtigung, Institution> institutionJoin
+	) {
 
-		final Traegerschaft userTraegerschaft = currentBenutzer.getCurrentBerechtigung().getTraegerschaft();
+		final Traegerschaft userTraegerschaft = currentBenutzer
+			.getCurrentBerechtigung()
+			.getTraegerschaft();
 		Objects.requireNonNull(userTraegerschaft);
 
 		Predicate sameTraegerschaft =
-			cb.equal(joinCurrentBerechtigung.get(Berechtigung_.traegerschaft), userTraegerschaft);
+			cb.equal(
+				joinCurrentBerechtigung.get(
+					Berechtigung_.traegerschaft
+				),
+				userTraegerschaft
+			);
+
 		Predicate institutionOfTraegerschaft = cb.equal(
-			joinCurrentBerechtigung.get(Berechtigung_.institution).get(Institution_.traegerschaft), userTraegerschaft);
+			institutionJoin.get(Institution_.traegerschaft),
+			userTraegerschaft
+		);
 
 		predicates.add(cb.or(sameTraegerschaft, institutionOfTraegerschaft));
 	}
@@ -136,11 +178,17 @@ public final class FilterFunctions {
 		@Nonnull CriteriaBuilder cb,
 		@Nonnull List<Predicate> predicates
 	) {
-		final UserRole role = currentBenutzer.getCurrentBerechtigung().getRole();
+		final UserRole role = currentBenutzer.getCurrentBerechtigung()
+			.getRole();
 
 		// Alle ausser Superadmin duerfen nur Benutzer ihres Mandanten sehen
 		if (role != UserRole.SUPER_ADMIN) {
-			predicates.add(cb.equal(root.get(Benutzer_.mandant), currentBenutzer.getMandant()));
+			predicates.add(
+				cb.equal(
+					root.get(Benutzer_.mandant),
+					currentBenutzer.getMandant()
+				)
+			);
 		}
 	}
 
@@ -150,12 +198,15 @@ public final class FilterFunctions {
 		@Nonnull List<Predicate> predicates
 	) {
 
-		final UserRole role = currentBenutzer.getCurrentBerechtigung().getRole();
+		final UserRole role = currentBenutzer.getCurrentBerechtigung()
+			.getRole();
 
 		// Alle ausser Superadmin duerfen keine Superadmins sehen
 		if (role != UserRole.SUPER_ADMIN) {
 			Predicate predicateRoleNotSuperadmin =
-				joinBerechtigungen.get(Berechtigung_.role).in(UserRole.SUPER_ADMIN).not();
+				joinBerechtigungen.get(Berechtigung_.role)
+					.in(UserRole.SUPER_ADMIN)
+					.not();
 			predicates.add(predicateRoleNotSuperadmin);
 		}
 	}
@@ -165,7 +216,9 @@ public final class FilterFunctions {
 		@Nonnull List<Predicate> predicates
 	) {
 		Predicate predicateRoleNotAntragsteller =
-			joinBerechtigungen.get(Berechtigung_.role).in(UserRole.GESUCHSTELLER).not();
+			joinBerechtigungen.get(Berechtigung_.role)
+				.in(UserRole.GESUCHSTELLER)
+				.not();
 		predicates.add(predicateRoleNotAntragsteller);
 
 	}
@@ -174,13 +227,19 @@ public final class FilterFunctions {
 		@Nonnull Benutzer currentBenutzer,
 		@Nonnull Join<Benutzer, Berechtigung> joinCurrentBerechtigung,
 		@Nonnull CriteriaBuilder cb,
-		@Nonnull List<Predicate> predicates) {
+		@Nonnull List<Predicate> predicates
+	) {
 
-		final Sozialdienst userSozialdienst = currentBenutzer.getCurrentBerechtigung().getSozialdienst();
+		final Sozialdienst userSozialdienst = currentBenutzer
+			.getCurrentBerechtigung()
+			.getSozialdienst();
 		Objects.requireNonNull(userSozialdienst);
 
 		Predicate sameSozialdienst =
-			cb.equal(joinCurrentBerechtigung.get(Berechtigung_.sozialdienst), userSozialdienst);
+			cb.equal(
+				joinCurrentBerechtigung.get(Berechtigung_.sozialdienst),
+				userSozialdienst
+			);
 		predicates.add(sameSozialdienst);
 	}
 }

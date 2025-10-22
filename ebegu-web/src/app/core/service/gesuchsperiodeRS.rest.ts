@@ -18,14 +18,15 @@ import {
     IHttpService,
     ILogService,
     IPromise,
-    IQService
+    IQService,
+    copy
 } from 'angular';
 import {DossierRS} from '../../../gesuch/service/dossierRS.rest';
 import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
 import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
-import {TSSprache} from '../../../models/enums/TSSprache';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSSprache} from '@kibon/shared/model/enums';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 
 export class GesuchsperiodeRS {
@@ -114,7 +115,7 @@ export class GesuchsperiodeRS {
                 const gesuchsperioden = this.ebeguRestUtil.parseGesuchsperioden(
                     response.data
                 );
-                this.activeGesuchsperiodenList = angular.copy(gesuchsperioden);
+                this.activeGesuchsperiodenList = copy(gesuchsperioden);
                 return this.activeGesuchsperiodenList;
             });
     }
@@ -190,7 +191,7 @@ export class GesuchsperiodeRS {
                     response.data
                 );
                 this.nichtAbgeschlosseneGesuchsperiodenList =
-                    angular.copy(gesuchsperioden);
+                    copy(gesuchsperioden);
                 return this.nichtAbgeschlosseneGesuchsperiodenList;
             });
     }

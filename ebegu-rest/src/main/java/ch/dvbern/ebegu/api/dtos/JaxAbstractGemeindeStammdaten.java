@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -22,9 +22,9 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JaxAbstractGemeindeStammdaten extends JaxAbstractDTO {
@@ -50,7 +50,8 @@ public class JaxAbstractGemeindeStammdaten extends JaxAbstractDTO {
 
 	// ---------- Konfiguration ----------
 	@NotNull
-	private List<JaxGemeindeKonfiguration> konfigurationsListe = new ArrayList<>();
+	private List<JaxGemeindeKonfiguration> konfigurationsListe =
+		new ArrayList<>();
 
 	public JaxAdresse getAdresse() {
 		return adresse;
@@ -106,7 +107,9 @@ public class JaxAbstractGemeindeStammdaten extends JaxAbstractDTO {
 		return konfigurationsListe;
 	}
 
-	public void setKonfigurationsListe(List<JaxGemeindeKonfiguration> konfigurationsListe) {
+	public void setKonfigurationsListe(
+		List<JaxGemeindeKonfiguration> konfigurationsListe
+	) {
 		this.konfigurationsListe = konfigurationsListe;
 	}
 
@@ -115,7 +118,9 @@ public class JaxAbstractGemeindeStammdaten extends JaxAbstractDTO {
 		return altGemeindeKontaktText;
 	}
 
-	public void setAltGemeindeKontaktText(@Nullable String altGemeindeKontaktText) {
+	public void setAltGemeindeKontaktText(
+		@Nullable String altGemeindeKontaktText
+	) {
 		this.altGemeindeKontaktText = altGemeindeKontaktText;
 	}
 
@@ -124,7 +129,9 @@ public class JaxAbstractGemeindeStammdaten extends JaxAbstractDTO {
 		return hasAltGemeindeKontakt;
 	}
 
-	public void setHasAltGemeindeKontakt(@Nonnull Boolean hasAltGemeindeKontakt) {
+	public void setHasAltGemeindeKontakt(
+		@Nonnull Boolean hasAltGemeindeKontakt
+	) {
 		this.hasAltGemeindeKontakt = hasAltGemeindeKontakt;
 	}
 }

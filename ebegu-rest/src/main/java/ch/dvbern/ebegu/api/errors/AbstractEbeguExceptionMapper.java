@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
@@ -39,11 +39,16 @@ import org.slf4j.LoggerFactory;
  * Created by imanol on 02.03.16.
  * Basis Exception Mapper
  *
- * @see <a href="https://samaxes.com/2014/04/jaxrs-beanvalidation-javaee7-wildfly/" >https://samaxes.com/2014/04/jaxrs-beanvalidation-javaee7-wildfly</a>
+ * @see <a href="https://samaxes.com/2014/04/jaxrs-beanvalidation-javaee7-wildfly/"
+ * >https://samaxes.com/2014/04/jaxrs-beanvalidation-javaee7-wildfly</a>
  */
-public abstract class AbstractEbeguExceptionMapper<E extends Throwable> implements ExceptionMapper<E> {
+public abstract class AbstractEbeguExceptionMapper<E extends Throwable>
+	implements
+	ExceptionMapper<E> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractEbeguExceptionMapper.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		AbstractEbeguExceptionMapper.class.getSimpleName()
+	);
 	private static final String EXCEPTION_OCCURED = "Exception occured: ";
 
 	@Context
@@ -57,15 +62,23 @@ public abstract class AbstractEbeguExceptionMapper<E extends Throwable> implemen
 	@SuppressWarnings("checkstyle:VisibilityModifier")
 	protected MandantService mandantService;
 
-	protected Response buildResponse(Object entity, String mediaType, Response.Status status) {
-		Response.ResponseBuilder builder = Response.status(status).entity(entity);
+	protected Response buildResponse(
+		Object entity,
+		String mediaType,
+		Response.Status status
+	) {
+		Response.ResponseBuilder builder = Response.status(status)
+			.entity(entity);
 		builder.type(mediaType);
 		builder.header(Validation.VALIDATION_HEADER, "true");
 		return builder.build();
 	}
 
 	@Nullable
-	protected abstract Response buildViolationReportResponse(E exception, Response.Status status);
+	protected abstract Response buildViolationReportResponse(
+		E exception,
+		Response.Status status
+	);
 
 	protected String unwrapException(Throwable t) {
 		StringBuffer sb = new StringBuffer();
@@ -99,24 +112,27 @@ public abstract class AbstractEbeguExceptionMapper<E extends Throwable> implemen
 	protected MediaType getAcceptMediaType(List<MediaType> accept) {
 		for (MediaType mt : accept) {
 			if (MediaType.APPLICATION_JSON_TYPE.getType().equals(mt.getType())
-				&& MediaType.APPLICATION_JSON_TYPE.getSubtype().equals(mt.getSubtype())) {
+				&& MediaType.APPLICATION_JSON_TYPE.getSubtype()
+					.equals(mt.getSubtype())) {
 				return MediaType.APPLICATION_JSON_TYPE;
 			}
 			if (MediaType.APPLICATION_XML_TYPE.getType().equals(mt.getType())
-				&& MediaType.APPLICATION_XML_TYPE.getSubtype().equals(mt.getSubtype())) {
+				&& MediaType.APPLICATION_XML_TYPE.getSubtype()
+					.equals(mt.getSubtype())) {
 				return MediaType.APPLICATION_XML_TYPE;
 			}
 		}
-		LOG.debug("Minor Warning: AcceptedMediaType list for resourcecall does not contain xml or json types");
+		LOG.debug(
+			"Minor Warning: AcceptedMediaType list for resourcecall does not contain xml or json types"
+		);
 		return null;
 	}
 
-	@SuppressWarnings("PMD.EmptyIfStmt") // Wir wollen explizit NONE behandeln und WARN als default
+	@SuppressWarnings("PMD.EmptyControlStatement") // Wir wollen explizit NONE behandeln und WARN als default
 	protected void logException(Exception exception) {
 		// Falls es eine Exception von uns ist, und wir ein Level angegeben haben, loggen wir mit diesem
 		// ansonsten defaultmässig WARN
-		if (exception instanceof EbeguRuntimeException) {
-			EbeguRuntimeException ebeguException = (EbeguRuntimeException) exception;
+		if (exception instanceof EbeguRuntimeException ebeguException) {
 			KibonLogLevel logLevel = ebeguException.getLogLevel();
 			if (logLevel == KibonLogLevel.ERROR) {
 				LOG.error(EXCEPTION_OCCURED, exception);

@@ -13,7 +13,8 @@ import {EbeguUtil} from '../../../../../utils/EbeguUtil';
     selector: 'dv-bruttolohn-schwyz',
     templateUrl: './bruttolohn-schwyz.component.html',
     changeDetection: ChangeDetectionStrategy.Default,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class BruttolohnSchwyzComponent {
     @Input()

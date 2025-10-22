@@ -19,13 +19,13 @@ import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {isNullOrUndefined} from '@uirouter/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '../../../../app/core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSEinstellungKey} from '../../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
 import {
     getTSFamilienstatusValues,
     TSFamilienstatus
@@ -38,7 +38,7 @@ import {
     getTSUnterhaltsvereinbarungAnswerValues,
     TSUnterhaltsvereinbarungAnswer
 } from '../../../../models/enums/TSUnterhaltsvereinbarungAnswer';
-import {TSEinstellung} from '../../../../models/TSEinstellung';
+import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
 import {TSFamiliensituation} from '../../../../models/TSFamiliensituation';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {BerechnungsManager} from '../../../service/berechnungsManager';
@@ -51,13 +51,15 @@ import {
     GSRemovalConfirmationDialogData
 } from '../dv-ng-gs-removal-confirmation-dialog/dv-ng-gs-removal-confirmation-dialog.component';
 import {FamiliensituationUtil} from '../FamiliensituationUtil';
+import {firstValueFrom} from 'rxjs';
 
 const LOG = LogFactory.createLog('FamiliensitutionViewComponent');
 
 @Component({
     selector: 'dv-familiensituation-view-x',
     templateUrl: './familiensituation-view-x.component.html',
-    styleUrls: ['./familiensituation-view-x.component.less']
+    styleUrls: ['./familiensituation-view-x.component.less'],
+    standalone: false
 })
 export class FamiliensituationViewXComponent
     extends AbstractFamiliensitutaionView
@@ -140,22 +142,24 @@ export class FamiliensituationViewXComponent
 
     protected async confirm(onResult: (arg: any) => void): Promise<void> {
         if (this.isConfirmationRequired()) {
-            const dialogResult = await this.dialog
-                .open<
-                    DvNgGsRemovalConfirmationDialogComponent,
-                    GSRemovalConfirmationDialogData
-                >(DvNgGsRemovalConfirmationDialogComponent, {
-                    data: {
-                        gsFullName: this.getGesuch().gesuchsteller2
-                            ? this.getGesuch().gesuchsteller2.extractFullName()
-                            : ''
-                    }
-                })
-                .afterClosed()
-                .toPromise();
+            const dialogResult = await firstValueFrom(
+                this.dialog
+                    .open<
+                        DvNgGsRemovalConfirmationDialogComponent,
+                        GSRemovalConfirmationDialogData
+                    >(DvNgGsRemovalConfirmationDialogComponent, {
+                        data: {
+                            gsFullName: this.getGesuch().gesuchsteller2
+                                ? this.getGesuch().gesuchsteller2.extractFullName()
+                                : ''
+                        }
+                    })
+                    .afterClosed()
+            );
 
             if (dialogResult) {
-                const savedContaier = await this.save();
+                const savedContaier =
+                    await this.saveFamiliensituationAndHandleChange();
                 onResult(savedContaier);
             } else {
                 onResult(undefined);
@@ -163,7 +167,7 @@ export class FamiliensituationViewXComponent
             return;
         }
 
-        const result = await this.save();
+        const result = await this.saveFamiliensituationAndHandleChange();
         onResult(result);
     }
 

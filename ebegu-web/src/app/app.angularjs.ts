@@ -13,38 +13,46 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {IAugmentedJQuery, IComponentOptions, IController} from 'angular';
-import {ApplicationPropertyRS} from './core/rest-services/applicationPropertyRS.rest';
+import {MANDANTS, MandantLogoNameVisitor} from '@kibon/shared-model-mandant';
 import {ColorService} from './shared/services/color.service';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 
 export class AppAngularjsComponent implements IController {
     public static $inject: string[] = [
         '$element',
-        'ApplicationPropertyRS',
-        'ColorService'
+        'SharedUtilApplicationPropertyRsService',
+        'MandantService'
     ];
 
     public constructor(
         private readonly $element: IAugmentedJQuery,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly mandantService: MandantService
     ) {}
 
     public $postLink(): void {
+        this.mandantService.mandant$.subscribe(mandant => {
+            if (mandant === MANDANTS.NONE) {
+                this.$element.find('.logo-bern').css('background-image', '');
+                this.$element.find('#meldungsfenster').css('display', 'none');
+                return;
+            }
+            const filename = new MandantLogoNameVisitor().process(mandant);
+            this.$element
+                .find('.logo-bern')
+                .css('background-image', this.getBackgroundImage(filename));
+        });
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then(response => {
+            .subscribe(response => {
                 this.$element
                     .find('#Intro')
                     .css('background-color', response.backgroundColor);
                 this.$element
                     .find('.environment')
                     .css('display', response.devmode ? 'inline' : 'none');
-                this.$element
-                    .find('.logo-bern')
-                    .css(
-                        'background-image',
-                        this.getBackgroundImage(response.logoFileName)
-                    );
                 // Beim Ablösen bitte mit ngIf ersetzen, das hier ist ein Workaround, weil das Template hier nicht
                 // auf den Controller zugreifen konnte
                 if (!response.frenchEnabled) {

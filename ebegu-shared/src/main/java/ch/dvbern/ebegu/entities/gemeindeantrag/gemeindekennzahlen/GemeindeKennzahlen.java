@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen;
@@ -22,13 +22,13 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -41,10 +41,10 @@ import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
-public class GemeindeKennzahlen extends AbstractEntity implements GemeindeAntrag {
+public class GemeindeKennzahlen extends AbstractEntity implements
+	GemeindeAntrag {
 
 	private static final long serialVersionUID = 8854741977608451344L;
-
 
 	@Nonnull
 	@Column(nullable = false)
@@ -53,12 +53,18 @@ public class GemeindeKennzahlen extends AbstractEntity implements GemeindeAntrag
 
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeinde_kennzahlen_gemeinde_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeinde_kennzahlen_gemeinde_id"),
+		nullable = false,
+		updatable = false)
 	private Gemeinde gemeinde;
 
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeinde_kennzahlen_gesuchsperiode_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeinde_kennzahlen_gesuchsperiode_id"),
+		nullable = false,
+		updatable = false)
 	private Gesuchsperiode gesuchsperiode;
 
 	@Nullable
@@ -175,7 +181,9 @@ public class GemeindeKennzahlen extends AbstractEntity implements GemeindeAntrag
 		return limitierungTfo;
 	}
 
-	public void setLimitierungTfo(@Nullable EinschulungTyp welcheKostenlenkungsmassnahmen) {
+	public void setLimitierungTfo(
+		@Nullable EinschulungTyp welcheKostenlenkungsmassnahmen
+	) {
 		this.limitierungTfo = welcheKostenlenkungsmassnahmen;
 	}
 
@@ -184,7 +192,9 @@ public class GemeindeKennzahlen extends AbstractEntity implements GemeindeAntrag
 		return gemeindeKontingentiert;
 	}
 
-	public void setGemeindeKontingentiert(@Nullable Boolean gemeindeKontingentiert) {
+	public void setGemeindeKontingentiert(
+		@Nullable Boolean gemeindeKontingentiert
+	) {
 		this.gemeindeKontingentiert = gemeindeKontingentiert;
 	}
 

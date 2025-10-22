@@ -2,10 +2,21 @@
    <deployment>
        <dependencies>
          <module name="org.hibernate.search.orm" slot="main" services="export"/>
+         <module name="org.hibernate.search.engine" slot="main" services="export"/>
+         <module name="org.hibernate.search.backend.elasticsearch" slot="main" services="export"/>
          <module name="io.sentry" slot="main" services="export" optional="true"/>
          <module name="org.infinispan" slot="main" services="export" />
          <module name="org.infinispan.commons" slot="main" services="export" />
          <module name="org.infinispan.persistence.jdbc" slot="main" services="export" />
+         <!-- java melody needs jdk.unsupported -->
+         <module name="jdk.unsupported" />
+
+         <module name="org.jboss.weld.core" />
+         <module name="org.jboss.weld.spi" />
+         <module name="org.jboss.weld.api" />
+
+         <!-- needed for ch.dvbern.ebegu.ws.oicd.OIDCClient -->
+         <module name="org.apache.httpcomponents" />
        </dependencies>
    </deployment>
 </jboss-deployment-structure>

@@ -15,14 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {
+    TSAdresse,
+    TSGemeinde,
+    TSInstitution,
+    TSTextRessource
+} from '@kibon/shared/model/entity';
 import {TSRoleUtil} from '../utils/TSRoleUtil';
 import {TSAbstractGemeindeStammdaten} from './TSAbstractGemeindeStammdaten';
-import {TSAdresse} from './TSAdresse';
 import {TSBenutzer} from './TSBenutzer';
-import {TSGemeinde} from './TSGemeinde';
 import {TSGemeindeStammdatenKorrespondenz} from './TSGemeindeStammdatenKorrespondenz';
-import {TSInstitution} from './TSInstitution';
-import {TSTextRessource} from './TSTextRessource';
 
 export class TSGemeindeStammdaten extends TSAbstractGemeindeStammdaten {
     public administratoren: string; // read only

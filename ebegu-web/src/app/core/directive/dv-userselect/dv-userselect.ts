@@ -19,7 +19,7 @@ import {takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
-import {LogFactory} from '../../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../service/benutzerRSX.rest';
 
 const LOG = LogFactory.createLog('UserselectController');
@@ -42,6 +42,7 @@ export class DvUserSelectConfig implements IComponentOptions {
         schulamt: '<',
         useDefaultUserLists: '<',
         sachbearbeiterGemeinde: '=',
+        bgAndTs: '=',
         angular2: '='
         // initialAll -> tritt nur ein, wenn explizit  { initial-all="true" } geschrieben ist
     };
@@ -65,6 +66,7 @@ export class UserselectController implements IController {
     public userChanged: (user: any) => void; // Callback, welche aus obiger Methode aufgerufen werden soll
     public schulamt: string;
     public sachbearbeiterGemeinde: boolean;
+    public bgAndTs: boolean;
     public useDefaultUserLists: boolean = true;
 
     public constructor(
@@ -78,12 +80,12 @@ export class UserselectController implements IController {
             // tritt nur ein, wenn explizit  { initial-all="true" } geschrieben ist
             this.authServiceRS.principal$
                 .pipe(takeUntil(this.unsubscribe$))
-                .subscribe(
-                    principal => {
+                .subscribe({
+                    next: principal => {
                         this.selectedUser = principal;
                     },
-                    err => LOG.error(err)
-                );
+                    error: err => LOG.error(err)
+                });
         }
         // initial nach aktuell eingeloggtem filtern
         if (this.smartTable && !this.initialAll && this.selectedUser) {
@@ -107,7 +109,7 @@ export class UserselectController implements IController {
             return;
         }
 
-        if (this.sachbearbeiterGemeinde) {
+        if (this.sachbearbeiterGemeinde || this.bgAndTs) {
             this.benutzerRS.getAllBenutzerBgTsOrGemeinde().then(response => {
                 this.userList = response;
             });

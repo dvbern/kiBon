@@ -17,10 +17,10 @@ package ch.dvbern.ebegu.api.errors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
 import org.jboss.resteasy.api.validation.Validation;
@@ -28,14 +28,19 @@ import org.jboss.resteasy.api.validation.ViolationReport;
 
 /**
  * Created by imanol on 25.05.16.
- * Helper to create a ViolationReport Object from a ResteasyViolationException. Returns the created Report in the Response
+ * Helper to create a ViolationReport Object from a ResteasyViolationException. Returns the created Report in the
+ * Response
  */
 public final class ViolationReportCreator {
 
 	private ViolationReportCreator() {
 	}
 
-	public static Response buildViolationReportResponse(ResteasyViolationException exception, Status status, @Nullable MediaType acceptedMedia) {
+	public static Response buildViolationReportResponse(
+		ResteasyViolationException exception,
+		Status status,
+		@Nullable MediaType acceptedMedia
+	) {
 		Response.ResponseBuilder builder = Response.status(status);
 		builder.header(Validation.VALIDATION_HEADER, "true");
 
@@ -47,14 +52,22 @@ public final class ViolationReportCreator {
 		// If the client did not specify a specific type (or rather no specific type was passed here)
 		// then we return application/json since that is what our client can understand. Returning text/plain
 		// to our client will produce unerwarteter fehler.
-		return constructResponse(exception, builder, MediaType.APPLICATION_JSON_TYPE);
+		return constructResponse(
+			exception,
+			builder,
+			MediaType.APPLICATION_JSON_TYPE
+		);
 	}
 
 	/**
 	 * sets the accepted media type and the wraps the Exception in a ValidationReport.
 	 * acceptedMedia should therefore be able to serialize an object (Json, XML)
 	 */
-	private static Response constructResponse(ResteasyViolationException exception, ResponseBuilder builder, @Nonnull MediaType acceptedMedia) {
+	private static Response constructResponse(
+		ResteasyViolationException exception,
+		ResponseBuilder builder,
+		@Nonnull MediaType acceptedMedia
+	) {
 		builder.type(acceptedMedia);
 		builder.entity(new ViolationReport(exception));
 		return builder.build();

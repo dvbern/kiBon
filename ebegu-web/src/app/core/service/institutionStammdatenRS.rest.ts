@@ -15,11 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {
+    AdminModelEinstellungTagesschuleHasAnmeldung,
+    TSModulTagesschuleGroupHasAnmeldung
+} from '@kibon/admin/model/institution-tagesschule-einstellungen';
 import {IHttpService, ILogService, IPromise} from 'angular';
 import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
-import {TSInstitutionStammdaten} from '../../../models/TSInstitutionStammdaten';
+import {
+    TSEinstellungenTagesschule,
+    TSInstitutionStammdaten
+} from '@kibon/shared/model/entity';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 
 export class InstitutionStammdatenRS {
@@ -139,10 +146,6 @@ export class InstitutionStammdatenRS {
             .then((response: any) => response.data);
     }
 
-    public getServiceName(): string {
-        return 'InstitutionStammdatenRS';
-    }
-
     public getAllTagesschulenForCurrentBenutzer(): IPromise<
         TSInstitutionStammdaten[]
     > {
@@ -153,5 +156,42 @@ export class InstitutionStammdatenRS {
                     response.data
                 )
             );
+    }
+
+    public getEinstellungenTagesschuleAngemeldet(
+        einstellungenTagesschule: Array<TSEinstellungenTagesschule>
+    ): Promise<AdminModelEinstellungTagesschuleHasAnmeldung[]> {
+        const modulIds = einstellungenTagesschule
+            .flatMap(eTS => eTS.modulTagesschuleGroups)
+            .map(modul => modul.id);
+        const dataPromise =
+            modulIds.length === 0
+                ? Promise.resolve({data: []})
+                : this.$http.post<{groupId: string; hasAnmeldung: boolean}[]>(
+                      `${this.serviceURL}/tagesschulen/einstellungen-angemeldet`,
+                      modulIds
+                  );
+        return dataPromise.then(response =>
+            einstellungenTagesschule.map(eTS =>
+                Object.assign(
+                    new AdminModelEinstellungTagesschuleHasAnmeldung(),
+                    eTS,
+                    {
+                        modulTagesschuleGroups: eTS.modulTagesschuleGroups.map(
+                            group =>
+                                Object.assign(
+                                    new TSModulTagesschuleGroupHasAnmeldung(),
+                                    group,
+                                    {
+                                        hasAnmeldung: response.data.find(
+                                            obj => obj.groupId === group.id
+                                        ).hasAnmeldung
+                                    }
+                                )
+                        )
+                    }
+                )
+            )
+        ) as Promise<AdminModelEinstellungTagesschuleHasAnmeldung[]>;
     }
 }

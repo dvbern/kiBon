@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.famsitchangehandler;
@@ -21,16 +21,17 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.FamiliensituationContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
+import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Kinderabzug;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.services.GesuchstellerService;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.testfaelle.dataprovider.AbstractTestfallDataProvider;
@@ -43,8 +44,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
 
-import static org.hamcrest.Matchers.is;
+import static ch.dvbern.ebegu.util.ObjectRequiredNonNullUtils.getFamiliensituationJA;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 
@@ -55,7 +58,10 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 	EinstellungService einstellungService;
 
 	SharedFamSitChangeDefaultHandler testee =
-		new SharedFamSitChangeDefaultHandler(gesuchstellerService, einstellungService);
+		new SharedFamSitChangeDefaultHandler(
+			gesuchstellerService,
+			einstellungService
+		);
 
 	@Nested
 	class KinderabzugResetTest {
@@ -63,12 +69,18 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 		@Test
 		void shouldNotResetIfOldFamSitIfNull() {
 			Gesuch gesuch = setupGesuch();
-			gesuch.setFamiliensituationContainer(createFamSitContainer(EnumFamilienstatus.VERHEIRATET));
+			gesuch.setFamiliensituationContainer(
+				createFamSitContainer(EnumFamilienstatus.VERHEIRATET)
+			);
 			KindContainer before = createDefaultKind();
 			KindContainer kind = createDefaultKind();
 			gesuch.getKindContainers().add(kind);
 
-			testee.handlePossibleKinderabzugFragenReset(gesuch, getFamiliensituationJA(gesuch), null);
+			testee.handlePossibleKinderabzugFragenReset(
+				gesuch,
+				getFamiliensituationJA(gesuch),
+				null
+			);
 
 			assertThat(before.getKindJA().getInPruefung(), is(false));
 			assertThat(kind.getKindJA().getInPruefung(), is(false));
@@ -76,9 +88,13 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 
 		@ParameterizedTest
 		@EnumSource(value = EnumFamilienstatus.class, mode = Mode.MATCH_ALL)
-		void shouldNotResetOnSameStatus(EnumFamilienstatus familienstatus) {
+		void shouldNotResetOnSameStatusWhenFragenNichtZusaetzlichWechseln(
+			EnumFamilienstatus familienstatus
+		) {
 			Gesuch gesuch = setupGesuch();
-			gesuch.setFamiliensituationContainer(createFamSitContainer(familienstatus));
+			gesuch.setFamiliensituationContainer(
+				createFamSitContainer(familienstatus)
+			);
 			KindContainer before = createDefaultKind();
 			KindContainer kind = createDefaultKind();
 			gesuch.getKindContainers().add(kind);
@@ -86,17 +102,100 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 			testee.handlePossibleKinderabzugFragenReset(
 				gesuch,
 				getFamiliensituationJA(gesuch),
-				getFamiliensituationJA(createFamSitContainer(familienstatus)));
+				getFamiliensituationJA(
+					createFamSitContainer(familienstatus)
+				)
+			);
 
 			assertThat(before.getKindJA().getInPruefung(), is(false));
 			assertThat(kind.getKindJA().getInPruefung(), is(false));
 		}
 
-		@ParameterizedTest
-		@EnumSource(value = EnumFamilienstatus.class, names = { "VERHEIRATET", "SCHWYZ", "APPENZELL" }, mode = Mode.EXCLUDE)
-		void shouldResetAndSetInPruefungInStatusChangeFromVerheiratetTo(EnumFamilienstatus newStatus) {
+		@Test
+		void shouldResetAndSetInPruefungWhenGSKardinalitaetChangesFromZuZweitToAlleine() {
 			Gesuch gesuch = setupGesuch();
-			gesuch.setFamiliensituationContainer(createFamSitContainer(newStatus));
+			FamiliensituationContainer familiensituationContainerMutation =
+				createFamSitContainer(EnumFamilienstatus.ALLEINERZIEHEND);
+			familiensituationContainerMutation.getFamiliensituationJA()
+				.setGeteilteObhut(true);
+			familiensituationContainerMutation.getFamiliensituationJA()
+				.setGesuchstellerKardinalitaet(
+					EnumGesuchstellerKardinalitaet.ALLEINE
+				);
+			gesuch.setFamiliensituationContainer(
+				familiensituationContainerMutation
+			);
+
+			KindContainer before = createDefaultKind();
+			KindContainer kind = createDefaultKind();
+			gesuch.getKindContainers().add(kind);
+			Familiensituation familiensituationVorgaenger =
+				getFamiliensituationJA(
+					createFamSitContainer(EnumFamilienstatus.ALLEINERZIEHEND)
+				);
+			familiensituationVorgaenger.setGeteilteObhut(true);
+			familiensituationVorgaenger.setGesuchstellerKardinalitaet(
+				EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+			);
+			testee.handlePossibleKinderabzugFragenReset(
+				gesuch,
+				getFamiliensituationJA(gesuch),
+				familiensituationVorgaenger
+			);
+
+			assertThat(before.getKindJA().getInPruefung(), is(false));
+			assertThat(kind.getKindJA().getInPruefung(), is(true));
+			assertThat(kind.getKindJA().getGemeinsamesGesuch(), nullValue());
+		}
+
+		@Test
+		void shouldResetAndSetInPruefungWhenGSKardinalitaetChangesFromAlleineToZuZweit() {
+			Gesuch gesuch = setupGesuch();
+			FamiliensituationContainer familiensituationContainerMutation =
+				createFamSitContainer(EnumFamilienstatus.ALLEINERZIEHEND);
+			familiensituationContainerMutation.getFamiliensituationJA()
+				.setGeteilteObhut(true);
+			familiensituationContainerMutation.getFamiliensituationJA()
+				.setGesuchstellerKardinalitaet(
+					EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+				);
+			gesuch.setFamiliensituationContainer(
+				familiensituationContainerMutation
+			);
+
+			KindContainer before = createDefaultKind();
+			KindContainer kind = createDefaultKind();
+			gesuch.getKindContainers().add(kind);
+			Familiensituation familiensituationVorgaenger =
+				getFamiliensituationJA(
+					createFamSitContainer(EnumFamilienstatus.ALLEINERZIEHEND)
+				);
+			familiensituationVorgaenger.setGeteilteObhut(true);
+			familiensituationVorgaenger.setGesuchstellerKardinalitaet(
+				EnumGesuchstellerKardinalitaet.ALLEINE
+			);
+			testee.handlePossibleKinderabzugFragenReset(
+				gesuch,
+				getFamiliensituationJA(gesuch),
+				familiensituationVorgaenger
+			);
+
+			assertThat(before.getKindJA().getInPruefung(), is(false));
+			assertThat(kind.getKindJA().getInPruefung(), is(true));
+			assertThat(kind.getKindJA().getGemeinsamesGesuch(), nullValue());
+		}
+
+		@ParameterizedTest
+		@EnumSource(value = EnumFamilienstatus.class,
+			names = { "VERHEIRATET", "SCHWYZ", "APPENZELL" },
+			mode = Mode.EXCLUDE)
+		void shouldResetAndSetInPruefungInStatusChangeFromVerheiratetTo(
+			EnumFamilienstatus newStatus
+		) {
+			Gesuch gesuch = setupGesuch();
+			gesuch.setFamiliensituationContainer(
+				createFamSitContainer(newStatus)
+			);
 			KindContainer before = createDefaultKind();
 			KindContainer kind = createDefaultKind();
 			gesuch.getKindContainers().add(kind);
@@ -104,18 +203,29 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 			testee.handlePossibleKinderabzugFragenReset(
 				gesuch,
 				getFamiliensituationJA(gesuch),
-				getFamiliensituationJA(createFamSitContainer(EnumFamilienstatus.VERHEIRATET)));
+				getFamiliensituationJA(
+					createFamSitContainer(
+						EnumFamilienstatus.VERHEIRATET
+					)
+				)
+			);
 
 			assertThat(before.getKindJA().getInPruefung(), is(false));
 			assertThat(kind.getKindJA().getInPruefung(), is(true));
 		}
 
 		@ParameterizedTest
-		@EnumSource(value = EnumFamilienstatus.class, names = { "KONKUBINAT", "SCHWYZ", "APPENZELL" }, mode = Mode.EXCLUDE)
-		void shouldResetAndSetInPruefungInStatusChangeFromKonkubinat(EnumFamilienstatus newStatus) {
+		@EnumSource(value = EnumFamilienstatus.class,
+			names = { "KONKUBINAT", "SCHWYZ", "APPENZELL" },
+			mode = Mode.EXCLUDE)
+		void shouldResetAndSetInPruefungInStatusChangeFromKonkubinat(
+			EnumFamilienstatus newStatus
+		) {
 
 			Gesuch gesuch = setupGesuch();
-			gesuch.setFamiliensituationContainer(createFamSitContainer(newStatus));
+			gesuch.setFamiliensituationContainer(
+				createFamSitContainer(newStatus)
+			);
 			KindContainer before = createDefaultKind();
 			KindContainer kind = createDefaultKind();
 			gesuch.getKindContainers().add(kind);
@@ -123,7 +233,10 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 			testee.handlePossibleKinderabzugFragenReset(
 				gesuch,
 				getFamiliensituationJA(gesuch),
-				getFamiliensituationJA(createFamSitContainer(EnumFamilienstatus.KONKUBINAT)));
+				getFamiliensituationJA(
+					createFamSitContainer(EnumFamilienstatus.KONKUBINAT)
+				)
+			);
 
 			assertThat(before.getKindJA().getInPruefung(), is(false));
 			assertThat(kind.getKindJA().getInPruefung(), is(true));
@@ -133,10 +246,14 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 		@EnumSource(value = EnumFamilienstatus.class,
 			names = { "KONKUBINAT_KEIN_KIND", "SCHWYZ", "APPENZELL" },
 			mode = Mode.EXCLUDE)
-		void shouldResetAndSetInPruefungInStatusChangeFromKonkubinatKeinKind(EnumFamilienstatus newStatus) {
+		void shouldResetAndSetInPruefungInStatusChangeFromKonkubinatKeinKind(
+			EnumFamilienstatus newStatus
+		) {
 
 			Gesuch gesuch = setupGesuch();
-			gesuch.setFamiliensituationContainer(createFamSitContainer(newStatus));
+			gesuch.setFamiliensituationContainer(
+				createFamSitContainer(newStatus)
+			);
 			KindContainer before = createDefaultKind();
 			KindContainer kind = createDefaultKind();
 			gesuch.getKindContainers().add(kind);
@@ -144,18 +261,29 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 			testee.handlePossibleKinderabzugFragenReset(
 				gesuch,
 				getFamiliensituationJA(gesuch),
-				getFamiliensituationJA(createFamSitContainer(EnumFamilienstatus.KONKUBINAT_KEIN_KIND)));
+				getFamiliensituationJA(
+					createFamSitContainer(
+						EnumFamilienstatus.KONKUBINAT_KEIN_KIND
+					)
+				)
+			);
 
 			assertThat(before.getKindJA().getInPruefung(), is(false));
 			assertThat(kind.getKindJA().getInPruefung(), is(true));
 		}
 
 		@ParameterizedTest
-		@EnumSource(value = EnumFamilienstatus.class, names = { "ALLEINERZIEHEND", "SCHWYZ", "APPENZELL" }, mode = Mode.EXCLUDE)
-		void shouldResetAndSetInPruefungInStatusChangeFromAlleinerziehend(EnumFamilienstatus newStatus) {
+		@EnumSource(value = EnumFamilienstatus.class,
+			names = { "ALLEINERZIEHEND", "SCHWYZ", "APPENZELL" },
+			mode = Mode.EXCLUDE)
+		void shouldResetAndSetInPruefungInStatusChangeFromAlleinerziehend(
+			EnumFamilienstatus newStatus
+		) {
 
 			Gesuch gesuch = setupGesuch();
-			gesuch.setFamiliensituationContainer(createFamSitContainer(newStatus));
+			gesuch.setFamiliensituationContainer(
+				createFamSitContainer(newStatus)
+			);
 			KindContainer before = createDefaultKind();
 			KindContainer kind = createDefaultKind();
 			gesuch.getKindContainers().add(kind);
@@ -163,7 +291,12 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 			testee.handlePossibleKinderabzugFragenReset(
 				gesuch,
 				getFamiliensituationJA(gesuch),
-				getFamiliensituationJA(createFamSitContainer(EnumFamilienstatus.ALLEINERZIEHEND)));
+				getFamiliensituationJA(
+					createFamSitContainer(
+						EnumFamilienstatus.ALLEINERZIEHEND
+					)
+				)
+			);
 
 			assertThat(before.getKindJA().getInPruefung(), is(false));
 			assertThat(kind.getKindJA().getInPruefung(), is(true));
@@ -178,11 +311,14 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 					.geschlecht(Geschlecht.WEIBLICH)
 					.name("Testkind")
 					.vorname("Lara")
-					.geburtsdatum(TestDataUtil.START_PERIODE.minusYears(5))
+					.geburtsdatum(
+						TestDataUtil.START_PERIODE.minusYears(5)
+					)
 					.betreuung(true)
 					.is18GeburtstagBeforeGPEnds(false)
 					.kinderabzug(Kinderabzug.GANZER_ABZUG)
-					.build());
+					.build()
+			);
 			kindContainer.setKindJA(kind);
 			return kindContainer;
 		}
@@ -194,19 +330,17 @@ public class FamSitChangeHandlerBernTest extends EasyMockSupport {
 		return gesuch;
 	}
 
-	private static Familiensituation getFamiliensituationJA(FamiliensituationContainer famSitContainer) {
-		return Objects.requireNonNull(famSitContainer.getFamiliensituationJA());
-	}
-
-	private static Familiensituation getFamiliensituationJA(Gesuch gesuch) {
-		return getFamiliensituationJA(Objects.requireNonNull(gesuch.getFamiliensituationContainer()));
-	}
-
 	@Nonnull
-	private static FamiliensituationContainer createFamSitContainer(EnumFamilienstatus familienstatus) {
-		final FamiliensituationContainer familiensituationContainer = TestDataUtil.createDefaultFamiliensituationContainer();
-		Objects.requireNonNull(familiensituationContainer.getFamiliensituationJA());
-		familiensituationContainer.getFamiliensituationJA().setFamilienstatus(familienstatus);
+	private static FamiliensituationContainer createFamSitContainer(
+		EnumFamilienstatus familienstatus
+	) {
+		final FamiliensituationContainer familiensituationContainer =
+			TestDataUtil.createDefaultFamiliensituationContainer();
+		Objects.requireNonNull(
+			familiensituationContainer.getFamiliensituationJA()
+		);
+		familiensituationContainer.getFamiliensituationJA()
+			.setFamilienstatus(familienstatus);
 		return familiensituationContainer;
 	}
 }

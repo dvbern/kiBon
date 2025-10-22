@@ -22,13 +22,5 @@ import ch.dvbern.ebegu.entities.Mandant;
  */
 public interface SchulungService {
 
-	void resetSchulungsdaten(Mandant mandant);
-
-	void deleteSchulungsdaten(Mandant mandant);
-
-	void createSchulungsdaten(Mandant mandant);
-
-	String[] getSchulungBenutzer();
-
 	void createTutorialdaten(Mandant mandant);
 }

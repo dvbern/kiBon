@@ -19,8 +19,7 @@ import {MatRadioChange} from '@angular/material/radio';
 import {IPromise} from 'angular';
 import {Observable} from 'rxjs';
 import {TSFinanzielleSituationResultateDTO} from '../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzielleSituation} from '../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../models/TSFinanzModel';
@@ -56,6 +55,7 @@ export abstract class AbstractFinSitsolothurnView extends AbstractGesuchViewX<TS
         this.setupForm();
         this.calculateMassgebendesEinkommen();
         this.gesuchModelManager.setGesuchstellerNumber(gesuchstellerNumber);
+        this.readonly = this.gesuchModelManager.isGesuchReadonly();
     }
 
     private setupForm(): void {
@@ -170,7 +170,7 @@ export abstract class AbstractFinSitsolothurnView extends AbstractGesuchViewX<TS
                 return this.gesuchModelManager
                     .getGesuch()
                     .gesuchsteller2.extractFullName();
-            } catch (error) {
+            } catch {
                 // Gesuchsteller has not yet filled in Form for Antragsteller 2
                 return '';
             }

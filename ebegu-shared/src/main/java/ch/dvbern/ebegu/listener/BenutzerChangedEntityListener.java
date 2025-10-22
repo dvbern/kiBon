@@ -16,32 +16,22 @@
 package ch.dvbern.ebegu.listener;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.inject.spi.CDI;
-import javax.persistence.PreUpdate;
+import jakarta.inject.Inject;
+import jakarta.persistence.PreUpdate;
 
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Berechtigung;
 import ch.dvbern.ebegu.services.BenutzerService;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class BenutzerChangedEntityListener {
 
-	private static BenutzerService benutzerService = null;
-
-	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "Auch wenn das vlt. mehrfach initialisiert wird... das macht nix, solange am Ende was Richtiges drinsteht")
-	private static BenutzerService getBenutzerService() {
-		if (benutzerService == null) {
-			//FIXME: das ist nur ein Ugly Workaround, weil CDI-Injection (mal wieder) buggy ist.
-			//noinspection NonThreadSafeLazyInitialization
-			benutzerService = CDI.current().select(BenutzerService.class).get();
-		}
-		return benutzerService;
-	}
+	@Inject
+	private BenutzerService benutzerService;
 
 	@PreUpdate
 	protected void preUpdate(@Nonnull Benutzer benutzer) {
 		for (Berechtigung berechtigung : benutzer.getBerechtigungen()) {
-			getBenutzerService().saveBerechtigungHistory(berechtigung, false);
+			benutzerService.saveBerechtigungHistory(berechtigung, false);
 		}
 	}
 }

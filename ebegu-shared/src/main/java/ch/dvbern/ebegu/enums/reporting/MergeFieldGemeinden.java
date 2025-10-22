@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.enums.reporting;
@@ -32,48 +32,105 @@ import static ch.dvbern.oss.lib.excelmerger.converters.StandardConverters.STRING
 
 public enum MergeFieldGemeinden implements MergeFieldProvider {
 
-	gemeindenTitle(new SimpleMergeField<>("gemeindenTitle", STRING_CONVERTER)),
-	gemeindenPeriodenTitle(new SimpleMergeField<>("gemeindenPeriodenTitle", STRING_CONVERTER)),
-	mandant(new SimpleMergeField<>("mandant", STRING_CONVERTER)),
+	gemeindenTitle(
+		new SimpleMergeField<>("gemeindenTitle", STRING_CONVERTER)
+	), gemeindenPeriodenTitle(
+		new SimpleMergeField<>("gemeindenPeriodenTitle", STRING_CONVERTER)
+	), mandant(new SimpleMergeField<>("mandant", STRING_CONVERTER)),
 
-	rowGemeindeInfoRepeat(new RepeatRowMergeField("rowGemeindeInfoRepeat")),
-	rowGemeindenZahlenRepeat(new RepeatRowMergeField("rowGemeindenZahlenRepeat")),
+	rowGemeindeInfoRepeat(
+		new RepeatRowMergeField("rowGemeindeInfoRepeat")
+	), rowGemeindenZahlenRepeat(
+		new RepeatRowMergeField("rowGemeindenZahlenRepeat")
+	),
 
-	bfsNummerTitle(new SimpleMergeField<>("bfsNummerTitle", STRING_CONVERTER)),
-	nameGemeindeTitle(new SimpleMergeField<>("nameGemeindeTitle", STRING_CONVERTER)),
-	gutscheinausgabestelleTitle(new SimpleMergeField<>("gutscheinausgabestelleTitle", STRING_CONVERTER)),
-	korrespondenzspracheGemeindeTitle(new SimpleMergeField<>("korrespondenzspracheGemeindeTitle", STRING_CONVERTER)),
-	angebotBGTitle(new SimpleMergeField<>("angebotBGTitle", STRING_CONVERTER)),
-	angebotTSTitle(new SimpleMergeField<>("angebotTSTitle", STRING_CONVERTER)),
-	startdatumBGTitle(new SimpleMergeField<>("startdatumBGTitle", STRING_CONVERTER)),
+	bfsNummerTitle(
+		new SimpleMergeField<>("bfsNummerTitle", STRING_CONVERTER)
+	), nameGemeindeTitle(
+		new SimpleMergeField<>("nameGemeindeTitle", STRING_CONVERTER)
+	), gutscheinausgabestelleTitle(
+		new SimpleMergeField<>(
+			"gutscheinausgabestelleTitle",
+			STRING_CONVERTER
+		)
+	), korrespondenzspracheGemeindeTitle(
+		new SimpleMergeField<>(
+			"korrespondenzspracheGemeindeTitle",
+			STRING_CONVERTER
+		)
+	), angebotBGTitle(
+		new SimpleMergeField<>("angebotBGTitle", STRING_CONVERTER)
+	), angebotTSTitle(
+		new SimpleMergeField<>("angebotTSTitle", STRING_CONVERTER)
+	), startdatumBGTitle(
+		new SimpleMergeField<>("startdatumBGTitle", STRING_CONVERTER)
+	),
 
-	gesuchsperiodeTitle(new SimpleMergeField<>("gesuchsperiodeTitle", STRING_CONVERTER)),
-	limitierungKitaTitle(new SimpleMergeField<>("limitierungKitaTitle", STRING_CONVERTER)),
-	gemeindeKennzahlenStatusTitle(new SimpleMergeField<>("gemeindeKennzahlenStatusTitle", STRING_CONVERTER)),
-	kontingentierungTitle(new SimpleMergeField<>("kontingentierungTitle", STRING_CONVERTER)),
-	nachfrageErfuelltTitle(new SimpleMergeField<>("nachfrageErfuelltTitle", STRING_CONVERTER)),
-	nachfrageAnzahlTitle(new SimpleMergeField<>("nachfrageAnzahlTitle", STRING_CONVERTER)),
-	nachfrageDauerTitle(new SimpleMergeField<>("nachfrageDauerTitle", STRING_CONVERTER)),
-	limitierungtfoTitle(new SimpleMergeField<>("limitierungTfoTitle", STRING_CONVERTER)),
-	erwerbspensumZuschlagTitle(new SimpleMergeField<>("erwerbspensumZuschlagTitle", STRING_CONVERTER)),
+	gesuchsperiodeTitle(
+		new SimpleMergeField<>("gesuchsperiodeTitle", STRING_CONVERTER)
+	), limitierungKitaTitle(
+		new SimpleMergeField<>("limitierungKitaTitle", STRING_CONVERTER)
+	), gemeindeKennzahlenStatusTitle(
+		new SimpleMergeField<>(
+			"gemeindeKennzahlenStatusTitle",
+			STRING_CONVERTER
+		)
+	), kontingentierungTitle(
+		new SimpleMergeField<>("kontingentierungTitle", STRING_CONVERTER)
+	), nachfrageErfuelltTitle(
+		new SimpleMergeField<>("nachfrageErfuelltTitle", STRING_CONVERTER)
+	), nachfrageAnzahlTitle(
+		new SimpleMergeField<>("nachfrageAnzahlTitle", STRING_CONVERTER)
+	), nachfrageDauerTitle(
+		new SimpleMergeField<>("nachfrageDauerTitle", STRING_CONVERTER)
+	), limitierungtfoTitle(
+		new SimpleMergeField<>("limitierungTfoTitle", STRING_CONVERTER)
+	), erwerbspensumZuschlagTitle(
+		new SimpleMergeField<>(
+			"erwerbspensumZuschlagTitle",
+			STRING_CONVERTER
+		)
+	),
 
-	bfsNummer(new SimpleMergeField<>("bfsNummer", LONG_CONVERTER)),
-	nameGemeinde(new SimpleMergeField<>("nameGemeinde", STRING_CONVERTER)),
-	gutscheinausgabestelle(new SimpleMergeField<>("gutscheinausgabestelle", STRING_CONVERTER)),
-	korrespondenzspracheGemeinde(new SimpleMergeField<>("korrespondenzspracheGemeinde", STRING_CONVERTER)),
-	angebotBG(new SimpleMergeField<>("angebotBG", BOOLEAN_X_CONVERTER)),
-	angebotTS(new SimpleMergeField<>("angebotTS", BOOLEAN_X_CONVERTER)),
-	startdatumBG(new SimpleMergeField<>("startdatumBG", DATE_CONVERTER)),
+	bfsNummer(
+		new SimpleMergeField<>("bfsNummer", LONG_CONVERTER)
+	), nameGemeinde(
+		new SimpleMergeField<>("nameGemeinde", STRING_CONVERTER)
+	), gutscheinausgabestelle(
+		new SimpleMergeField<>("gutscheinausgabestelle", STRING_CONVERTER)
+	), korrespondenzspracheGemeinde(
+		new SimpleMergeField<>(
+			"korrespondenzspracheGemeinde",
+			STRING_CONVERTER
+		)
+	), angebotBG(
+		new SimpleMergeField<>("angebotBG", BOOLEAN_X_CONVERTER)
+	), angebotTS(
+		new SimpleMergeField<>("angebotTS", BOOLEAN_X_CONVERTER)
+	), startdatumBG(new SimpleMergeField<>("startdatumBG", DATE_CONVERTER)),
 
-	gesuchsperiode(new SimpleMergeField<>("gesuchsperiode", STRING_CONVERTER)),
-	limitierungKita(new SimpleMergeField<>("limitierungKita", STRING_CONVERTER)),
-	kontingentierung(new SimpleMergeField<>("kontingentierung", BOOLEAN_X_CONVERTER)),
-	gemeindeKennzahlenStatus(new SimpleMergeField<>("gemeindeKennzahlenStatus", STRING_CONVERTER)),
-	nachfrageErfuellt(new SimpleMergeField<>("nachfrageErfuellt", BOOLEAN_X_CONVERTER)),
-	nachfrageAnzahl(new SimpleMergeField<>("nachfrageAnzahl", BIGDECIMAL_CONVERTER)),
-	nachfrageDauer(new SimpleMergeField<>("nachfrageDauer", BIGDECIMAL_CONVERTER)),
-	limitierungTfo(new SimpleMergeField<>("limitierungTfo", STRING_CONVERTER)),
-	erwerbspensumZuschlag(new SimpleMergeField<>("erwerbspensumZuschlag", BIGDECIMAL_CONVERTER));
+	gesuchsperiode(
+		new SimpleMergeField<>("gesuchsperiode", STRING_CONVERTER)
+	), limitierungKita(
+		new SimpleMergeField<>("limitierungKita", STRING_CONVERTER)
+	), kontingentierung(
+		new SimpleMergeField<>("kontingentierung", BOOLEAN_X_CONVERTER)
+	), gemeindeKennzahlenStatus(
+		new SimpleMergeField<>("gemeindeKennzahlenStatus", STRING_CONVERTER)
+	), nachfrageErfuellt(
+		new SimpleMergeField<>("nachfrageErfuellt", BOOLEAN_X_CONVERTER)
+	), nachfrageAnzahl(
+		new SimpleMergeField<>("nachfrageAnzahl", BIGDECIMAL_CONVERTER)
+	), nachfrageDauer(
+		new SimpleMergeField<>("nachfrageDauer", BIGDECIMAL_CONVERTER)
+	), limitierungTfo(
+		new SimpleMergeField<>("limitierungTfo", STRING_CONVERTER)
+	), erwerbspensumZuschlag(
+		new SimpleMergeField<>(
+			"erwerbspensumZuschlag",
+			BIGDECIMAL_CONVERTER
+		)
+	);
 
 	@Nonnull
 	private final MergeField<?> mergeField;

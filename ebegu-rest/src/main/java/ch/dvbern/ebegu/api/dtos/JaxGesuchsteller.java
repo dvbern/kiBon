@@ -15,17 +15,17 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
+import javax.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.util.Constants;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import ch.dvbern.ebegu.validators.CheckEmail;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -40,16 +40,18 @@ public class JaxGesuchsteller extends JaxAbstractPersonDTO {
 	@NotNull
 	private Geschlecht geschlecht;
 
-	@Email
+	@CheckEmail
 	@Size(max = DB_DEFAULT_MAX_LENGTH)
 	@Nullable
 	private String mail;
 
-	@Pattern(regexp = Constants.REGEX_TELEFON_MOBILE, message = "{error_invalid_mobilenummer}")
+	@Pattern(regexp = Constants.REGEX_TELEFON_MOBILE,
+		message = "{error_invalid_mobilenummer}")
 	@Nullable
 	private String mobile;
 
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{error_invalid_mobilenummer}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{error_invalid_mobilenummer}")
 	@Nullable
 	private String telefon;
 
@@ -113,7 +115,9 @@ public class JaxGesuchsteller extends JaxAbstractPersonDTO {
 		return korrespondenzSprache;
 	}
 
-	public void setKorrespondenzSprache(@Nullable Sprache korrespondenzSprache) {
+	public void setKorrespondenzSprache(
+		@Nullable Sprache korrespondenzSprache
+	) {
 		this.korrespondenzSprache = korrespondenzSprache;
 	}
 
@@ -132,7 +136,9 @@ public class JaxGesuchsteller extends JaxAbstractPersonDTO {
 		return sozialversicherungsnummer;
 	}
 
-	public void setSozialversicherungsnummer(@Nullable String sozialversicherungsnummer) {
+	public void setSozialversicherungsnummer(
+		@Nullable String sozialversicherungsnummer
+	) {
 		this.sozialversicherungsnummer = sozialversicherungsnummer;
 	}
 }

@@ -17,15 +17,15 @@ package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.types.DateRange;
@@ -44,18 +44,22 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gesuchstelleradresse_container_gesuchstellerContainer_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gesuchstelleradresse_container_gesuchstellerContainer_id"),
+		updatable = false)
 	private GesuchstellerContainer gesuchstellerContainer;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gesuchstelleradresse_container_gesuchstellergs_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gesuchstelleradresse_container_gesuchstellergs_id"))
 	private GesuchstellerAdresse gesuchstellerAdresseGS;
 
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gesuchstelleradresse_container_gesuchstellerja_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gesuchstelleradresse_container_gesuchstellerja_id"))
 	private GesuchstellerAdresse gesuchstellerAdresseJA;
 
 	public GesuchstellerAdresseContainer() {
@@ -65,7 +69,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 		return gesuchstellerContainer;
 	}
 
-	public void setGesuchstellerContainer(GesuchstellerContainer gesuchstellerContainer) {
+	public void setGesuchstellerContainer(
+		GesuchstellerContainer gesuchstellerContainer
+	) {
 		this.gesuchstellerContainer = gesuchstellerContainer;
 	}
 
@@ -74,7 +80,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 		return gesuchstellerAdresseGS;
 	}
 
-	public void setGesuchstellerAdresseGS(@Nullable GesuchstellerAdresse gesuchstellerAdresseGS) {
+	public void setGesuchstellerAdresseGS(
+		@Nullable GesuchstellerAdresse gesuchstellerAdresseGS
+	) {
 		this.gesuchstellerAdresseGS = gesuchstellerAdresseGS;
 	}
 
@@ -83,7 +91,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 		return gesuchstellerAdresseJA;
 	}
 
-	public void setGesuchstellerAdresseJA(@Nullable GesuchstellerAdresse gesuchstellerAdresseJA) {
+	public void setGesuchstellerAdresseJA(
+		@Nullable GesuchstellerAdresse gesuchstellerAdresseJA
+	) {
 		this.gesuchstellerAdresseJA = gesuchstellerAdresseJA;
 	}
 
@@ -92,8 +102,11 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Transient
 	public boolean extractIsKorrespondenzAdresse() {
-		return this.gesuchstellerAdresseJA != null && this.gesuchstellerAdresseJA.isKorrespondenzAdresse()
-			|| this.gesuchstellerAdresseJA == null && this.gesuchstellerAdresseGS != null && this.gesuchstellerAdresseGS.isKorrespondenzAdresse();
+		return this.gesuchstellerAdresseJA != null
+			&& this.gesuchstellerAdresseJA.isKorrespondenzAdresse()
+			|| this.gesuchstellerAdresseJA == null
+				&& this.gesuchstellerAdresseGS != null
+				&& this.gesuchstellerAdresseGS.isKorrespondenzAdresse();
 	}
 
 	/**
@@ -101,8 +114,11 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Transient
 	public boolean extractIsRechnungsAdresse() {
-		return this.gesuchstellerAdresseJA != null && this.gesuchstellerAdresseJA.isRechnungsAdresse()
-			|| this.gesuchstellerAdresseJA == null && this.gesuchstellerAdresseGS != null && this.gesuchstellerAdresseGS.isRechnungsAdresse();
+		return this.gesuchstellerAdresseJA != null
+			&& this.gesuchstellerAdresseJA.isRechnungsAdresse()
+			|| this.gesuchstellerAdresseJA == null
+				&& this.gesuchstellerAdresseGS != null
+				&& this.gesuchstellerAdresseGS.isRechnungsAdresse();
 	}
 
 	/**
@@ -110,7 +126,8 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Transient
 	public boolean extractIsNichtInGemeinde() {
-		return this.gesuchstellerAdresseJA != null && this.gesuchstellerAdresseJA.isNichtInGemeinde();
+		return this.gesuchstellerAdresseJA != null
+			&& this.gesuchstellerAdresseJA.isNichtInGemeinde();
 	}
 
 	/**
@@ -118,7 +135,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Nullable
 	public DateRange extractGueltigkeit() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getGueltigkeit() : null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getGueltigkeit() :
+			null;
 	}
 
 	/**
@@ -126,7 +145,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Nullable
 	public AdresseTyp extractAdresseTyp() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getAdresseTyp() : null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getAdresseTyp() :
+			null;
 	}
 
 	/**
@@ -134,7 +155,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Nullable
 	public String extractHausnummer() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getHausnummer() : null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getHausnummer() :
+			null;
 	}
 
 	/**
@@ -142,7 +165,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Nullable
 	public String extractStrasse() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getStrasse() : null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getStrasse() :
+			null;
 	}
 
 	/**
@@ -150,7 +175,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Nullable
 	public String extractZusatzzeile() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getZusatzzeile() : null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getZusatzzeile() :
+			null;
 	}
 
 	/**
@@ -158,7 +185,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Nullable
 	public String extractPlz() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getPlz() : null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getPlz() :
+			null;
 	}
 
 	/**
@@ -166,7 +195,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Nullable
 	public String extractOrt() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getOrt() : null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getOrt() :
+			null;
 	}
 
 	/**
@@ -174,7 +205,9 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Nullable
 	public String extractLand() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getLand().name(): null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getLand().name() :
+			null;
 	}
 
 	/**
@@ -182,22 +215,35 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 	 */
 	@Nullable
 	public String extractGemeinde() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getGemeinde(): null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getGemeinde() :
+			null;
 	}
-
 
 	@Nullable
 	public String extractOrganisation() {
-		return this.gesuchstellerAdresseJA != null ? this.gesuchstellerAdresseJA.getOrganisation() : null;
+		return this.gesuchstellerAdresseJA != null ?
+			this.gesuchstellerAdresseJA.getOrganisation() :
+			null;
 	}
 
 	@Nonnull
-	public GesuchstellerAdresseContainer copyGesuchstellerAdresseContainer(@Nonnull GesuchstellerAdresseContainer target, @Nonnull AntragCopyType copyType, @Nonnull GesuchstellerContainer gsContainer) {
+	public GesuchstellerAdresseContainer copyGesuchstellerAdresseContainer(
+		@Nonnull GesuchstellerAdresseContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull GesuchstellerContainer gsContainer
+	) {
 		super.copyAbstractEntity(target, copyType);
 		target.setGesuchstellerContainer(gsContainer);
 		target.setGesuchstellerAdresseGS(null);
 		if (this.getGesuchstellerAdresseJA() != null) {
-			target.setGesuchstellerAdresseJA(this.getGesuchstellerAdresseJA().copyGesuchstellerAdresse(new GesuchstellerAdresse(), copyType));
+			target.setGesuchstellerAdresseJA(
+				this.getGesuchstellerAdresseJA()
+					.copyGesuchstellerAdresse(
+						new GesuchstellerAdresse(),
+						copyType
+					)
+			);
 		}
 		return target;
 	}
@@ -213,7 +259,11 @@ public class GesuchstellerAdresseContainer extends AbstractMutableEntity {
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final GesuchstellerAdresseContainer otherAdresseContainer = (GesuchstellerAdresseContainer) other;
-		return EbeguUtil.isSame(getGesuchstellerAdresseJA(), otherAdresseContainer.getGesuchstellerAdresseJA());
+		final GesuchstellerAdresseContainer otherAdresseContainer =
+			(GesuchstellerAdresseContainer) other;
+		return EbeguUtil.isSame(
+			getGesuchstellerAdresseJA(),
+			otherAdresseContainer.getGesuchstellerAdresseJA()
+		);
 	}
 }

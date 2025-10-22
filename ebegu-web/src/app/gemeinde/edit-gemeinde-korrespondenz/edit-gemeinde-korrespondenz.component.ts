@@ -15,38 +15,82 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    signal
+} from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable} from 'rxjs';
+import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
+import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {TSMusterDokumentTyp} from '../../../models/enums/TSMusterDokumentTyp';
 
 @Component({
     selector: 'dv-edit-gemeinde-korrespondenz',
     templateUrl: './edit-gemeinde-korrespondenz.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
-export class EditGemeindeKorrespondenzComponent {
+export class EditGemeindeKorrespondenzComponent implements OnInit {
     @Input() public stammdaten$: Observable<TSGemeindeStammdaten>;
     @Input() public editMode: boolean;
+
+    isOnlineFreigabeDeactivatedInAtLeastOnePeriode = signal<boolean>(false);
 
     public constructor(
         public gemeindeRS: GemeindeRS,
         public downloadRS: DownloadRS,
+        public einstellungRS: EinstellungRS,
         public $translate: TranslateService
     ) {}
 
-    public downloadMusterdokument(gemeindeId: string): void {
-        this.gemeindeRS.downloadMusterDokument(gemeindeId).then(response => {
-            const file = new Blob([response], {type: 'application/pdf'});
-            const filename = this.$translate.instant(
-                'KORRESPONDENZ_MUSTERDOKUMENT'
-            );
-            this.downloadRS.openDownload(file, filename);
-        });
+    public ngOnInit(): void {
+        this.einstellungRS
+            .findEinstellungByKey(TSEinstellungKey.GESUCHFREIGABE_ONLINE)
+            .subscribe(response => {
+                const isOnlineFreigabeDeactivated = response.some(e => {
+                    return EbeguUtil.getBoolean(e.value) === false;
+                });
+                this.isOnlineFreigabeDeactivatedInAtLeastOnePeriode.set(
+                    isOnlineFreigabeDeactivated
+                );
+            });
+    }
+
+    public downloadMusterdokumentKorrespondenz(gemeindeId: string) {
+        this.downloadMusterdokument(
+            gemeindeId,
+            TSMusterDokumentTyp.KORRESPONDENZ_MUSTERDOKUMENT
+        );
+    }
+
+    public downloadMusterdokumentFreigabequittung(gemeindeId: string) {
+        this.downloadMusterdokument(
+            gemeindeId,
+            TSMusterDokumentTyp.FREIGABEQUITTUNG_MUSTERDOKUMENT
+        );
+    }
+
+    private downloadMusterdokument(
+        gemeindeId: string,
+        dokumentTyp: TSMusterDokumentTyp
+    ): void {
+        this.gemeindeRS
+            .downloadMusterDokument(gemeindeId, dokumentTyp)
+            .then(response => {
+                const file = new Blob([response], {type: 'application/pdf'});
+                const filename = this.$translate.instant(dokumentTyp);
+                this.downloadRS.openDownload(file, filename);
+            });
     }
 
     public escapeSignatur(standardSignatur: string): string {

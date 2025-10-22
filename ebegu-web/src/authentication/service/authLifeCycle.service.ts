@@ -16,7 +16,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {filter} from 'rxjs/operators';
-import {LogFactory} from '../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
 
 /**

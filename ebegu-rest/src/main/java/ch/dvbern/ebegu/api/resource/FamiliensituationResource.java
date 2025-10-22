@@ -19,22 +19,22 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.gesuch.JaxFamiliensituationConverter;
 import ch.dvbern.ebegu.api.dtos.JaxFamiliensituationContainer;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.resource.util.ResourceHelper;
@@ -45,8 +45,7 @@ import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.services.FamiliensituationService;
 import ch.dvbern.ebegu.services.GesuchService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
@@ -68,7 +67,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("familiensituation")
 @Stateless
-@Api(description = "Resource für die Familiensituation")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class FamiliensituationResource {
 
@@ -78,52 +76,141 @@ public class FamiliensituationResource {
 	private GesuchService gesuchService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxFamiliensituationConverter converter;
 
 	@Inject
 	private ResourceHelper resourceHelper;
 
-	@ApiOperation(value = "Speichert eine Familiensituation in der Datenbank", response = JaxFamiliensituationContainer.class)
+	@Operation(
+		summary = "Speichert eine Familiensituation in der Datenbank"
+	)
+	@Nullable
+	@PUT
+	@Path("/adapt-and-save/{gesuchId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed(
+		{ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+			SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+			SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST,
+			SACHBEARBEITER_SOZIALDIENST, ADMIN_INSTITUTION,
+			SACHBEARBEITER_INSTITUTION,
+			ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT }
+	)
+	public JaxFamiliensituationContainer saveFamiliensituationAndHandleChange(
+		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId,
+		@Nonnull
+		@NotNull JaxFamiliensituationContainer familiensituationContainerJAXP,
+		@Context UriInfo uriInfo,
+		@Context HttpServletResponse response
+	) {
+		Gesuch gesuch = getGesuchAndAssertStatus(gesuchJAXPId.getId());
+
+		FamiliensituationContainer familiensituationContainerToMerge =
+			getFamilienSituationToMerge(familiensituationContainerJAXP.getId());
+		Familiensituation oldFamiliensituation =
+			familiensituationContainerToMerge.isNew() ?
+				null :
+				new Familiensituation(
+					familiensituationContainerToMerge
+						.extractFamiliensituation()
+				);
+
+		FamiliensituationContainer convertedFamiliensituation = converter
+			.familiensituationContainerToEntity(
+				familiensituationContainerJAXP,
+				familiensituationContainerToMerge
+			);
+
+		return converter.familiensituationContainerToJAX(
+			familiensituationService.saveFamiliensituationAndHandleChange(
+				gesuch,
+				convertedFamiliensituation,
+				oldFamiliensituation
+			)
+		);
+	}
+
+	@Operation(
+		summary = "Speichert eine Familiensituation in der Datenbank"
+	)
 	@Nullable
 	@PUT
 	@Path("/{gesuchId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
-		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST, ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION,
-		ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT })
+	@RolesAllowed(
+		{ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+			SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+			SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST,
+			SACHBEARBEITER_SOZIALDIENST, ADMIN_INSTITUTION,
+			SACHBEARBEITER_INSTITUTION,
+			ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT }
+	)
 	public JaxFamiliensituationContainer saveFamiliensituation(
 		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId,
-		@Nonnull @NotNull JaxFamiliensituationContainer familiensituationContainerJAXP,
-		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Nonnull
+		@NotNull JaxFamiliensituationContainer familiensituationContainerJAXP
 
-		Gesuch gesuch = gesuchService.findGesuch(gesuchJAXPId.getId()).orElseThrow(()
-			-> new EbeguEntityNotFoundException("saveFamiliensituation", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gesuchJAXPId.getId()));
+	) {
+		Gesuch gesuch = getGesuchAndAssertStatus(gesuchJAXPId.getId());
 
-		// Sicherstellen, dass das dazugehoerige Gesuch ueberhaupt noch editiert werden darf fuer meine Rolle
-		resourceHelper.assertGesuchStatusForBenutzerRole(gesuch);
-
-		FamiliensituationContainer familiensituationContainerToMerge = new FamiliensituationContainer();
-		//wenn es sich um ein update handelt
-		Familiensituation oldFamiliensituation = null;
-		if (familiensituationContainerJAXP.getId() != null) {
-			Optional<FamiliensituationContainer> loadedFamiliensituation = this.familiensituationService
-				.findFamiliensituation(familiensituationContainerJAXP.getId());
-			if (loadedFamiliensituation.isPresent()) {
-				familiensituationContainerToMerge = loadedFamiliensituation.get();
-				oldFamiliensituation = new Familiensituation(familiensituationContainerToMerge.extractFamiliensituation());
-			} else {
-				familiensituationContainerToMerge = new FamiliensituationContainer();
-			}
-		}
+		FamiliensituationContainer familiensituationContainerToMerge =
+			getFamilienSituationToMerge(familiensituationContainerJAXP.getId());
+		Familiensituation oldFamiliensituation =
+			familiensituationContainerToMerge.isNew() ?
+				null :
+				new Familiensituation(
+					familiensituationContainerToMerge
+						.extractFamiliensituation()
+				);
 
 		FamiliensituationContainer convertedFamiliensituation = converter
-			.familiensituationContainerToEntity(familiensituationContainerJAXP, familiensituationContainerToMerge);
+			.familiensituationContainerToEntity(
+				familiensituationContainerJAXP,
+				familiensituationContainerToMerge
+			);
 
-		FamiliensituationContainer persistedFamiliensituation = this.familiensituationService
-			.saveFamiliensituation(gesuch, convertedFamiliensituation, oldFamiliensituation);
+		return converter.familiensituationContainerToJAX(
+			familiensituationService.saveFamiliensituation(
+				gesuch,
+				convertedFamiliensituation,
+				oldFamiliensituation
+			)
+		);
+	}
 
-		return converter.familiensituationContainerToJAX(persistedFamiliensituation);
+	private FamiliensituationContainer getFamilienSituationToMerge(
+		@Nullable String familiensituationContainerId
+	) {
+		FamiliensituationContainer familiensituationContainerToMerge =
+			new FamiliensituationContainer();
+
+		if (familiensituationContainerId != null) {
+			Optional<FamiliensituationContainer> loadedFamiliensituation =
+				this.familiensituationService
+					.findFamiliensituation(
+						familiensituationContainerId
+					);
+			if (loadedFamiliensituation.isPresent()) {
+				familiensituationContainerToMerge = loadedFamiliensituation
+					.get();
+			}
+		}
+		return familiensituationContainerToMerge;
+	}
+
+	private Gesuch getGesuchAndAssertStatus(String gesuchId) {
+		Gesuch gesuch = gesuchService.findGesuch(gesuchId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"saveFamiliensituation",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gesuchId
+				)
+			);
+
+		resourceHelper.assertGesuchStatusForBenutzerRole(gesuch);
+		return gesuch;
 	}
 }

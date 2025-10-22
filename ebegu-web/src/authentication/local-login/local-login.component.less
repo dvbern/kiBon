@@ -13,17 +13,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-.local-login {
-    .mark-hover:hover {
-        background-color: #88ddff;
-    }
+table.locallogin-table {
+    border-collapse: collapse;
+    width: 70%;
+}
 
-    .first-row {
-        margin: 5px;
-        padding: 5px;
-    }
+tr.locallogin-table-row:hover {
+    background-color: #88ddff;
+}
 
-    &-h2 {
-        margin-top: 50px;
-    }
+td.locallogin-table-cell,
+th.locallogin-table-title {
+    padding: 0.5rem 1rem;
+}
+
+td.role {
+    width: 35%;
+}
+
+td.info {
+    width: 30%;
+}
+
+td.name {
+    width: auto;
+}
+
+td.button {
+    width: 5%;
+}
+
+.container {
+    margin: 1rem auto;
 }

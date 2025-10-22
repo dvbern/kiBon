@@ -23,7 +23,7 @@ import {
     OnChanges
 } from '@angular/core';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 
 /**
@@ -37,7 +37,8 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
  * ACHTUNG! Diese Direktive darf nicht mit disable zusammen benutzt werden
  */
 @Directive({
-    selector: '[dvNgEnableElement]'
+    selector: '[dvNgEnableElement]',
+    standalone: false
 })
 export class DvNgEnableElementDirective implements AfterViewInit, OnChanges {
     @Input()

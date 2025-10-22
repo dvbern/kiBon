@@ -28,7 +28,8 @@ import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern
     templateUrl: './veranlagung.component.html',
     styleUrls: ['./veranlagung.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class VeranlagungComponent implements OnInit {
     @Input()

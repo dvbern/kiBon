@@ -1,12 +1,13 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 
 /**
  * returns next gesuchsperiode as string representation
  * e.g. for periode 2019/20 it returns '2020/21'
  */
 @Pipe({
-    name: 'previousPeriodeStr'
+    name: 'previousPeriodeStr',
+    standalone: false
 })
 export class PreviousPeriodeStrPipe implements PipeTransform {
     public transform(periode: TSGesuchsperiode): string {

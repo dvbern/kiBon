@@ -8,29 +8,35 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.gemeindeantrag;
 
-import ch.dvbern.ebegu.entities.AbstractEntity;
-import ch.dvbern.ebegu.util.Constants;
-import org.hibernate.envers.Audited;
+import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.Size;
-import java.math.BigDecimal;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.Size;
+
+import ch.dvbern.ebegu.entities.AbstractEntity;
+import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.validators.gemeindeantraege.lats.AngabenInstitutionAbschliessenGroup;
+import ch.dvbern.ebegu.validators.gemeindeantraege.lats.AngabenTagesschulePlausibilisierung;
+import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
-public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity {
+@AngabenTagesschulePlausibilisierung(
+	groups = AngabenInstitutionAbschliessenGroup.class)
+public class LastenausgleichTagesschuleAngabenInstitution extends
+	AbstractEntity {
 
 	private static final long serialVersionUID = 5750986272858969305L;
 
@@ -86,7 +92,6 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 	@Column(nullable = true)
 	private BigDecimal anzahlEingeschriebeneKinderBasisstufe;
 
-
 	@Nullable
 	@Column(nullable = true)
 	private BigDecimal betreuungsstundenEinschliesslichBesondereBeduerfnisse;
@@ -127,28 +132,46 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 	public LastenausgleichTagesschuleAngabenInstitution() {
 	}
 
-	public LastenausgleichTagesschuleAngabenInstitution(@Nonnull LastenausgleichTagesschuleAngabenInstitution source) {
+	public LastenausgleichTagesschuleAngabenInstitution(
+		@Nonnull LastenausgleichTagesschuleAngabenInstitution source
+	) {
 		// A: Informationen zur Tagesschule
 		this.isLehrbetrieb = source.isLehrbetrieb;
 		// B: Quantitative Angaben
 		this.anzahlEingeschriebeneKinder = source.anzahlEingeschriebeneKinder;
-		this.anzahlEingeschriebeneKinderKindergarten = source.anzahlEingeschriebeneKinderKindergarten;
-		this.anzahlEingeschriebeneKinderSekundarstufe = source.anzahlEingeschriebeneKinderSekundarstufe;
-		this.anzahlEingeschriebeneKinderPrimarstufe = source.anzahlEingeschriebeneKinderPrimarstufe;
-		this.anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen = source.anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen;
-		this.anzahlEingeschriebeneKinderVolksschulangebot = source.anzahlEingeschriebeneKinderVolksschulangebot;
-		this.durchschnittKinderProTagFruehbetreuung = source.durchschnittKinderProTagFruehbetreuung;
-		this.durchschnittKinderProTagMittag = source.durchschnittKinderProTagMittag;
-		this.durchschnittKinderProTagNachmittag1 = source.durchschnittKinderProTagNachmittag1;
-		this.durchschnittKinderProTagNachmittag2 = source.durchschnittKinderProTagNachmittag2;
-		this.betreuungsstundenEinschliesslichBesondereBeduerfnisse = source.betreuungsstundenEinschliesslichBesondereBeduerfnisse;
-		this.anzahlEingeschriebeneKinderBasisstufe = source.anzahlEingeschriebeneKinderBasisstufe;
+		this.anzahlEingeschriebeneKinderKindergarten =
+			source.anzahlEingeschriebeneKinderKindergarten;
+		this.anzahlEingeschriebeneKinderSekundarstufe =
+			source.anzahlEingeschriebeneKinderSekundarstufe;
+		this.anzahlEingeschriebeneKinderPrimarstufe =
+			source.anzahlEingeschriebeneKinderPrimarstufe;
+		this.anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen =
+			source.anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen;
+		this.anzahlEingeschriebeneKinderVolksschulangebot =
+			source.anzahlEingeschriebeneKinderVolksschulangebot;
+		this.durchschnittKinderProTagFruehbetreuung =
+			source.durchschnittKinderProTagFruehbetreuung;
+		this.durchschnittKinderProTagMittag =
+			source.durchschnittKinderProTagMittag;
+		this.durchschnittKinderProTagNachmittag1 =
+			source.durchschnittKinderProTagNachmittag1;
+		this.durchschnittKinderProTagNachmittag2 =
+			source.durchschnittKinderProTagNachmittag2;
+		this.betreuungsstundenEinschliesslichBesondereBeduerfnisse =
+			source.betreuungsstundenEinschliesslichBesondereBeduerfnisse;
+		this.anzahlEingeschriebeneKinderBasisstufe =
+			source.anzahlEingeschriebeneKinderBasisstufe;
 		// C: Qualitative Vorgaben der Tagesschuleverordnung
-		this.schuleAufBasisOrganisatorischesKonzept = source.schuleAufBasisOrganisatorischesKonzept;
-		this.schuleAufBasisPaedagogischesKonzept = source.schuleAufBasisPaedagogischesKonzept;
-		this.raeumlicheVoraussetzungenEingehalten = source.raeumlicheVoraussetzungenEingehalten;
-		this.betreuungsverhaeltnisEingehalten = source.betreuungsverhaeltnisEingehalten;
-		this.ernaehrungsGrundsaetzeEingehalten = source.ernaehrungsGrundsaetzeEingehalten;
+		this.schuleAufBasisOrganisatorischesKonzept =
+			source.schuleAufBasisOrganisatorischesKonzept;
+		this.schuleAufBasisPaedagogischesKonzept =
+			source.schuleAufBasisPaedagogischesKonzept;
+		this.raeumlicheVoraussetzungenEingehalten =
+			source.raeumlicheVoraussetzungenEingehalten;
+		this.betreuungsverhaeltnisEingehalten =
+			source.betreuungsverhaeltnisEingehalten;
+		this.ernaehrungsGrundsaetzeEingehalten =
+			source.ernaehrungsGrundsaetzeEingehalten;
 		// Bemerkungen
 		this.bemerkungen = source.bemerkungen;
 		// Oeffnungszeiten
@@ -156,12 +179,12 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 	}
 
 	@Nullable
-	public Boolean getLehrbetrieb() {
+	public Boolean getIsLehrbetrieb() {
 		return isLehrbetrieb;
 	}
 
-	public void setLehrbetrieb(@Nullable Boolean lehrbetrieb) {
-		isLehrbetrieb = lehrbetrieb;
+	public void setIsLehrbetrieb(@Nullable Boolean islehrbetrieb) {
+		isLehrbetrieb = islehrbetrieb;
 	}
 
 	@Nullable
@@ -169,7 +192,9 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return anzahlEingeschriebeneKinder;
 	}
 
-	public void setAnzahlEingeschriebeneKinder(@Nullable BigDecimal anzahlEingeschriebeneKinder) {
+	public void setAnzahlEingeschriebeneKinder(
+		@Nullable BigDecimal anzahlEingeschriebeneKinder
+	) {
 		this.anzahlEingeschriebeneKinder = anzahlEingeschriebeneKinder;
 	}
 
@@ -178,8 +203,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return anzahlEingeschriebeneKinderKindergarten;
 	}
 
-	public void setAnzahlEingeschriebeneKinderKindergarten(@Nullable BigDecimal anzahlEingeschriebeneKinderKindergarten) {
-		this.anzahlEingeschriebeneKinderKindergarten = anzahlEingeschriebeneKinderKindergarten;
+	public void setAnzahlEingeschriebeneKinderKindergarten(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderKindergarten
+	) {
+		this.anzahlEingeschriebeneKinderKindergarten =
+			anzahlEingeschriebeneKinderKindergarten;
 	}
 
 	@Nullable
@@ -187,8 +215,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return anzahlEingeschriebeneKinderSekundarstufe;
 	}
 
-	public void setAnzahlEingeschriebeneKinderSekundarstufe(@Nullable BigDecimal anzahlEingeschriebeneKinderBasisstufe) {
-		this.anzahlEingeschriebeneKinderSekundarstufe = anzahlEingeschriebeneKinderBasisstufe;
+	public void setAnzahlEingeschriebeneKinderSekundarstufe(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderBasisstufe
+	) {
+		this.anzahlEingeschriebeneKinderSekundarstufe =
+			anzahlEingeschriebeneKinderBasisstufe;
 	}
 
 	@Nullable
@@ -196,8 +227,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return anzahlEingeschriebeneKinderPrimarstufe;
 	}
 
-	public void setAnzahlEingeschriebeneKinderPrimarstufe(@Nullable BigDecimal anzahlEingeschriebeneKinderPrimarstufe) {
-		this.anzahlEingeschriebeneKinderPrimarstufe = anzahlEingeschriebeneKinderPrimarstufe;
+	public void setAnzahlEingeschriebeneKinderPrimarstufe(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderPrimarstufe
+	) {
+		this.anzahlEingeschriebeneKinderPrimarstufe =
+			anzahlEingeschriebeneKinderPrimarstufe;
 	}
 
 	@Nullable
@@ -205,8 +239,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen;
 	}
 
-	public void setAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen(@Nullable BigDecimal anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen) {
-		this.anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen = anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen;
+	public void setAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen
+	) {
+		this.anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen =
+			anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen;
 	}
 
 	@Nullable
@@ -214,8 +251,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return durchschnittKinderProTagFruehbetreuung;
 	}
 
-	public void setDurchschnittKinderProTagFruehbetreuung(@Nullable BigDecimal durchschnittKinderProTagFruehbetreuung) {
-		this.durchschnittKinderProTagFruehbetreuung = durchschnittKinderProTagFruehbetreuung;
+	public void setDurchschnittKinderProTagFruehbetreuung(
+		@Nullable BigDecimal durchschnittKinderProTagFruehbetreuung
+	) {
+		this.durchschnittKinderProTagFruehbetreuung =
+			durchschnittKinderProTagFruehbetreuung;
 	}
 
 	@Nullable
@@ -223,7 +263,9 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return durchschnittKinderProTagMittag;
 	}
 
-	public void setDurchschnittKinderProTagMittag(@Nullable BigDecimal durchschnittKinderProTagMittag) {
+	public void setDurchschnittKinderProTagMittag(
+		@Nullable BigDecimal durchschnittKinderProTagMittag
+	) {
 		this.durchschnittKinderProTagMittag = durchschnittKinderProTagMittag;
 	}
 
@@ -232,8 +274,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return durchschnittKinderProTagNachmittag1;
 	}
 
-	public void setDurchschnittKinderProTagNachmittag1(@Nullable BigDecimal durchschnittKinderProTagNachmittag1) {
-		this.durchschnittKinderProTagNachmittag1 = durchschnittKinderProTagNachmittag1;
+	public void setDurchschnittKinderProTagNachmittag1(
+		@Nullable BigDecimal durchschnittKinderProTagNachmittag1
+	) {
+		this.durchschnittKinderProTagNachmittag1 =
+			durchschnittKinderProTagNachmittag1;
 	}
 
 	@Nullable
@@ -241,8 +286,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return durchschnittKinderProTagNachmittag2;
 	}
 
-	public void setDurchschnittKinderProTagNachmittag2(@Nullable BigDecimal durchschnittKinderProTagNachmittag2) {
-		this.durchschnittKinderProTagNachmittag2 = durchschnittKinderProTagNachmittag2;
+	public void setDurchschnittKinderProTagNachmittag2(
+		@Nullable BigDecimal durchschnittKinderProTagNachmittag2
+	) {
+		this.durchschnittKinderProTagNachmittag2 =
+			durchschnittKinderProTagNachmittag2;
 	}
 
 	@Nullable
@@ -250,8 +298,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return schuleAufBasisOrganisatorischesKonzept;
 	}
 
-	public void setSchuleAufBasisOrganisatorischesKonzept(@Nullable Boolean schuleAufBasisOrganisatorischesKonzept) {
-		this.schuleAufBasisOrganisatorischesKonzept = schuleAufBasisOrganisatorischesKonzept;
+	public void setSchuleAufBasisOrganisatorischesKonzept(
+		@Nullable Boolean schuleAufBasisOrganisatorischesKonzept
+	) {
+		this.schuleAufBasisOrganisatorischesKonzept =
+			schuleAufBasisOrganisatorischesKonzept;
 	}
 
 	@Nullable
@@ -259,8 +310,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return schuleAufBasisPaedagogischesKonzept;
 	}
 
-	public void setSchuleAufBasisPaedagogischesKonzept(@Nullable Boolean schuleAufBasisPaedagogischesKonzept) {
-		this.schuleAufBasisPaedagogischesKonzept = schuleAufBasisPaedagogischesKonzept;
+	public void setSchuleAufBasisPaedagogischesKonzept(
+		@Nullable Boolean schuleAufBasisPaedagogischesKonzept
+	) {
+		this.schuleAufBasisPaedagogischesKonzept =
+			schuleAufBasisPaedagogischesKonzept;
 	}
 
 	@Nullable
@@ -268,8 +322,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return raeumlicheVoraussetzungenEingehalten;
 	}
 
-	public void setRaeumlicheVoraussetzungenEingehalten(@Nullable Boolean raeumlicheVoraussetzungenEingehalten) {
-		this.raeumlicheVoraussetzungenEingehalten = raeumlicheVoraussetzungenEingehalten;
+	public void setRaeumlicheVoraussetzungenEingehalten(
+		@Nullable Boolean raeumlicheVoraussetzungenEingehalten
+	) {
+		this.raeumlicheVoraussetzungenEingehalten =
+			raeumlicheVoraussetzungenEingehalten;
 	}
 
 	@Nullable
@@ -277,8 +334,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return betreuungsverhaeltnisEingehalten;
 	}
 
-	public void setBetreuungsverhaeltnisEingehalten(@Nullable Boolean betreuungsverhaeltnisEingehalten) {
-		this.betreuungsverhaeltnisEingehalten = betreuungsverhaeltnisEingehalten;
+	public void setBetreuungsverhaeltnisEingehalten(
+		@Nullable Boolean betreuungsverhaeltnisEingehalten
+	) {
+		this.betreuungsverhaeltnisEingehalten =
+			betreuungsverhaeltnisEingehalten;
 	}
 
 	@Nullable
@@ -286,8 +346,11 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return ernaehrungsGrundsaetzeEingehalten;
 	}
 
-	public void setErnaehrungsGrundsaetzeEingehalten(@Nullable Boolean ernaehrungsGrundsaetzeEingehalten) {
-		this.ernaehrungsGrundsaetzeEingehalten = ernaehrungsGrundsaetzeEingehalten;
+	public void setErnaehrungsGrundsaetzeEingehalten(
+		@Nullable Boolean ernaehrungsGrundsaetzeEingehalten
+	) {
+		this.ernaehrungsGrundsaetzeEingehalten =
+			ernaehrungsGrundsaetzeEingehalten;
 	}
 
 	@Nullable
@@ -305,7 +368,8 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 	}
 
 	public void setBetreuungsstundenEinschliesslichBesondereBeduerfnisse(
-		@Nullable BigDecimal betreuungsstundenEinschliesslichBesondereBeduerfnisse) {
+		@Nullable BigDecimal betreuungsstundenEinschliesslichBesondereBeduerfnisse
+	) {
 		this.betreuungsstundenEinschliesslichBesondereBeduerfnisse =
 			betreuungsstundenEinschliesslichBesondereBeduerfnisse;
 	}
@@ -321,8 +385,10 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 	}
 
 	public void setAnzahlEingeschriebeneKinderVolksschulangebot(
-		@Nullable BigDecimal anzahlEingeschriebeneKinderVolksschulangebot) {
-		this.anzahlEingeschriebeneKinderVolksschulangebot = anzahlEingeschriebeneKinderVolksschulangebot;
+		@Nullable BigDecimal anzahlEingeschriebeneKinderVolksschulangebot
+	) {
+		this.anzahlEingeschriebeneKinderVolksschulangebot =
+			anzahlEingeschriebeneKinderVolksschulangebot;
 	}
 
 	@Nullable
@@ -339,7 +405,10 @@ public class LastenausgleichTagesschuleAngabenInstitution extends AbstractEntity
 		return anzahlEingeschriebeneKinderBasisstufe;
 	}
 
-	public void setAnzahlEingeschriebeneKinderBasisstufe(@Nullable BigDecimal anzahlEingeschriebeneKinderBasisstufe) {
-		this.anzahlEingeschriebeneKinderBasisstufe = anzahlEingeschriebeneKinderBasisstufe;
+	public void setAnzahlEingeschriebeneKinderBasisstufe(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderBasisstufe
+	) {
+		this.anzahlEingeschriebeneKinderBasisstufe =
+			anzahlEingeschriebeneKinderBasisstufe;
 	}
 }

@@ -32,8 +32,12 @@ public class EbeguExistingAntragRuntimeException extends EbeguRuntimeException {
 
 	private final String dossierId;
 
-	public EbeguExistingAntragRuntimeException(@Nullable String methodName, @Nonnull ErrorCodeEnum code,
-		@Nullable Throwable cause, @Nonnull String dossierId, @Nonnull Serializable... args
+	public EbeguExistingAntragRuntimeException(
+		@Nullable String methodName,
+		@Nonnull ErrorCodeEnum code,
+		@Nullable Throwable cause,
+		@Nonnull String dossierId,
+		@Nonnull Serializable... args
 	) {
 		super(methodName, code, cause, args);
 		super.setLogLevel(KibonLogLevel.INFO);

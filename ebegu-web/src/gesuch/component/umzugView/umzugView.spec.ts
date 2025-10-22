@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
+import angular, {
     IHttpBackendService,
     IQService,
     IRootScopeService,
@@ -24,7 +24,7 @@ import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSAdressetyp} from '../../../models/enums/TSAdressetyp';
+import {TSAdressetyp} from '@kibon/shared/model/enums';
 import {TSGesuch} from '../../../models/TSGesuch';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {BerechnungsManager} from '../../service/berechnungsManager';

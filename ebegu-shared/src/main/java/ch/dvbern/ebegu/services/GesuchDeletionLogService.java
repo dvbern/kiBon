@@ -30,12 +30,16 @@ public interface GesuchDeletionLogService {
 	 * Speichert ein GesuchDeletionLog in der DB
 	 */
 	@Nonnull
-	GesuchDeletionLog saveGesuchDeletionLog(@Nonnull GesuchDeletionLog logEintrag);
+	GesuchDeletionLog saveGesuchDeletionLog(
+		@Nonnull GesuchDeletionLog logEintrag
+	);
 
 	/**
 	 * Sucht den Loeschen-Logeintrag fuer das uebergebene Gesuch-
 	 */
 	@Nonnull
-	Optional<GesuchDeletionLog> findGesuchDeletionLogByGesuch(@Nonnull String gesuchId);
+	Optional<GesuchDeletionLog> findGesuchDeletionLogByGesuch(
+		@Nonnull String gesuchId
+	);
 
 }

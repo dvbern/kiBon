@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.wizardx;
@@ -27,25 +27,49 @@ import org.junit.Test;
 
 public class FerienbetreuungWizardTest {
 
-	private final FerienbetreuungAngabenContainer container = new FerienbetreuungAngabenContainer();
+	private final FerienbetreuungAngabenContainer container =
+		new FerienbetreuungAngabenContainer();
 
 	@Test
 	public void testGemeindeRole() {
 		UserRole role = UserRole.ADMIN_GEMEINDE;
-		container.setStatus(FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE);
-		FerienbetreuungWizard wizard = new FerienbetreuungWizard(role, container);
+		container.setStatus(
+			FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE
+		);
+		FerienbetreuungWizard wizard = new FerienbetreuungWizard(
+			role,
+			container
+		);
 
-		Assert.assertEquals(FerienbetreuungWizardStepsEnum.STAMMDATEN_GEMEINDE.name(), wizard.getStep().getWizardStepName());
+		Assert.assertEquals(
+			FerienbetreuungWizardStepsEnum.STAMMDATEN_GEMEINDE.name(),
+			wizard.getStep().getWizardStepName()
+		);
 		wizard.nextState();
-		Assert.assertEquals(FerienbetreuungWizardStepsEnum.ANGEBOT.name(), wizard.getStep().getWizardStepName());
+		Assert.assertEquals(
+			FerienbetreuungWizardStepsEnum.ANGEBOT.name(),
+			wizard.getStep().getWizardStepName()
+		);
 		wizard.nextState();
-		Assert.assertEquals(FerienbetreuungWizardStepsEnum.NUTZUNG.name(), wizard.getStep().getWizardStepName());
+		Assert.assertEquals(
+			FerienbetreuungWizardStepsEnum.NUTZUNG.name(),
+			wizard.getStep().getWizardStepName()
+		);
 		wizard.nextState();
-		Assert.assertEquals(FerienbetreuungWizardStepsEnum.KOSTEN_EINNAHMEN.name(), wizard.getStep().getWizardStepName());
+		Assert.assertEquals(
+			FerienbetreuungWizardStepsEnum.KOSTEN_EINNAHMEN.name(),
+			wizard.getStep().getWizardStepName()
+		);
 		wizard.nextState();
-		Assert.assertEquals(FerienbetreuungWizardStepsEnum.UPLOAD.name(), wizard.getStep().getWizardStepName());
+		Assert.assertEquals(
+			FerienbetreuungWizardStepsEnum.UPLOAD.name(),
+			wizard.getStep().getWizardStepName()
+		);
 		wizard.nextState();
-		Assert.assertEquals(FerienbetreuungWizardStepsEnum.ABSCHLUSS.name(), wizard.getStep().getWizardStepName());
+		Assert.assertEquals(
+			FerienbetreuungWizardStepsEnum.ABSCHLUSS.name(),
+			wizard.getStep().getWizardStepName()
+		);
 		Assert.assertTrue(wizard.getStep().isDisabled(wizard));
 	}
 }

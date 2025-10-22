@@ -34,7 +34,7 @@ h1,
 }
 
 md-dialog .md-dialog-content h2,
-h2,
+h2:not(.ignore-kibon-legacy),
 .ebegu-h2 {
     .ebeguH2();
 }
@@ -70,12 +70,22 @@ a {
 md-input-container label:not(.md-container-ignore),
 label {
     .ebeguLabel();
-    color: @danger;
     display: block;
+    &:not(.ignore-danger-font-color) {
+        color: @danger;
+    }
+    &.ignore-danger-font-color {
+        color: @black;
+    }
     &:after {
         .ebeguLabel();
-        color: @danger;
         display: inline-block;
+        &:not(.ignore-danger-font-color) {
+            color: @danger;
+        }
+        &.ignore-danger-font-color {
+            color: @black;
+        }
     }
 }
 

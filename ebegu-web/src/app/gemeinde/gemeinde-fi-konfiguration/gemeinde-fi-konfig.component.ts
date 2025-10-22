@@ -25,24 +25,26 @@ import {
 import {ControlContainer, NgForm} from '@angular/forms';
 import {Transition} from '@uirouter/core';
 import {StateDeclaration} from '@uirouter/core/lib/state/interface';
+import moment from 'moment';
 import {Moment} from 'moment';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
-import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
-import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {
+    TSGemeindeStatus,
+    TSGesuchsperiodeStatus
+} from '@kibon/shared/model/enums';
 import {TSFerieninselStammdaten} from '../../../models/TSFerieninselStammdaten';
 import {TSFerieninselZeitraum} from '../../../models/TSFerieninselZeitraum';
 import {TSGemeindeKonfiguration} from '../../../models/TSGemeindeKonfiguration';
-import {TSDateRange} from '../../../models/types/TSDateRange';
+import {TSDateRange} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import * as moment from 'moment';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-
+import {CONSTANTS} from '@kibon/shared/model/constants';
 @Component({
     selector: 'dv-gemeinde-fi-konfiguration',
     templateUrl: './gemeinde-fi-konfig.component.html',
     styleUrls: ['./gemeinde-fi-konfig.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class GemeindeFiKonfigComponent implements OnInit {
     @ViewChild(NgForm) public form: NgForm;
@@ -60,6 +62,7 @@ export class GemeindeFiKonfigComponent implements OnInit {
     }
 
     public isKonfigurationEditable(gk: TSGemeindeKonfiguration): boolean {
+        return true;
         return (
             'gemeinde.edit' === this.navigationDest.name &&
             this.editMode &&
@@ -134,13 +137,13 @@ export class GemeindeFiKonfigComponent implements OnInit {
             return '';
         }
 
-        return date.format(CONSTANTS.DATE_FORMAT);
+        return date.format(CONSTANTS.SQL_FORMAT);
     }
 
     public ferieninselAktivierungsdatumChanged(
-        config: TSGemeindeKonfiguration
+        konfiguration: TSGemeindeKonfiguration
     ): void {
-        config.konfigurationen
+        konfiguration.konfigurationen
             .filter(
                 property =>
                     TSEinstellungKey.GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB ===
@@ -148,16 +151,37 @@ export class GemeindeFiKonfigComponent implements OnInit {
             )
             .forEach(property => {
                 property.value =
-                    this.getFerieninselAktivierungsdatumAsString(config);
+                    this.getFerieninselAktivierungsdatumAsSQLString(
+                        konfiguration
+                    );
             });
     }
 
-    public getFerieninselAktivierungsdatumAsString(
+    private getFerieninselAktivierungsdatumAsSQLString(
         konfiguration: TSGemeindeKonfiguration
+    ): string {
+        return this.getFerieninselAktivierungsdatumAsString(
+            konfiguration,
+            CONSTANTS.SQL_FORMAT
+        );
+    }
+
+    public getFerieninselAktivierungsdatumAsDisplayString(
+        konfiguration: TSGemeindeKonfiguration
+    ): string {
+        return this.getFerieninselAktivierungsdatumAsString(
+            konfiguration,
+            CONSTANTS.DATE_FORMAT
+        );
+    }
+
+    private getFerieninselAktivierungsdatumAsString(
+        konfiguration: TSGemeindeKonfiguration,
+        formattierung: string
     ): string {
         const datum = konfiguration.konfigFerieninselAktivierungsdatum;
         if (datum && datum.isValid()) {
-            return datum.format(CONSTANTS.DATE_FORMAT);
+            return datum.format(formattierung);
         }
         return '';
     }

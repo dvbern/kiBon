@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -24,19 +24,19 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.util.MathUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -48,33 +48,40 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "jahr", name = "UK_Lastenausgleich_jahr"))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = "jahr",
+	name = "UK_Lastenausgleich_jahr"))
 public class Lastenausgleich extends AbstractEntity implements HasMandant {
 
 	private static final long serialVersionUID = -5083436194821575595L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Integer jahr = 0;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private BigDecimal totalAlleGemeinden = BigDecimal.ZERO;
 
 	@Nonnull
 	@Valid
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "lastenausgleich")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		fetch = FetchType.LAZY,
+		mappedBy = "lastenausgleich")
 	@OrderBy("jahr DESC")
-	private List<LastenausgleichDetail> lastenausgleichDetails = new ArrayList<>();
+	private List<LastenausgleichDetail> lastenausgleichDetails =
+		new ArrayList<>();
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_lastenausgleich_mandant_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_lastenausgleich_mandant_id"), updatable = false)
 	private Mandant mandant;
 
 	public Lastenausgleich() {
 	}
-
 
 	@Nonnull
 	public Integer getJahr() {
@@ -99,11 +106,15 @@ public class Lastenausgleich extends AbstractEntity implements HasMandant {
 		return lastenausgleichDetails;
 	}
 
-	public void setLastenausgleichDetails(@Nonnull List<LastenausgleichDetail> lastenausgleichDetails) {
+	public void setLastenausgleichDetails(
+		@Nonnull List<LastenausgleichDetail> lastenausgleichDetails
+	) {
 		this.lastenausgleichDetails = lastenausgleichDetails;
 	}
 
-	public void addLastenausgleichDetail(@Nonnull LastenausgleichDetail detail) {
+	public void addLastenausgleichDetail(
+		@Nonnull LastenausgleichDetail detail
+	) {
 		getLastenausgleichDetails().add(detail);
 	}
 
@@ -119,8 +130,12 @@ public class Lastenausgleich extends AbstractEntity implements HasMandant {
 			return false;
 		}
 		final Lastenausgleich otherLastenausgleich = (Lastenausgleich) other;
-		return Objects.equals(getJahr(), otherLastenausgleich.getJahr()) &&
-			MathUtil.isSame(this.getTotalAlleGemeinden(), otherLastenausgleich.getTotalAlleGemeinden());
+		return Objects.equals(getJahr(), otherLastenausgleich.getJahr())
+			&&
+			MathUtil.isSame(
+				this.getTotalAlleGemeinden(),
+				otherLastenausgleich.getTotalAlleGemeinden()
+			);
 	}
 
 	@Override

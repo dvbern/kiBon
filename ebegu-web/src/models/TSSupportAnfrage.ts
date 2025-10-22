@@ -20,6 +20,14 @@ export class TSSupportAnfrage {
 
     private _beschreibung: string;
 
+    private _betroffeneFaelle: string;
+
+    private _betroffenePeriode: string;
+
+    private _institution: string;
+
+    private _gemeinde: string;
+
     public get id(): string {
         return this._id;
     }
@@ -34,5 +42,34 @@ export class TSSupportAnfrage {
 
     public set beschreibung(value: string) {
         this._beschreibung = value;
+    }
+
+    get gemeinde(): string {
+        return this._gemeinde;
+    }
+
+    set gemeinde(value: string) {
+        this._gemeinde = value;
+    }
+    get institution(): string {
+        return this._institution;
+    }
+
+    set institution(value: string) {
+        this._institution = value;
+    }
+    get betroffenePeriode(): string {
+        return this._betroffenePeriode;
+    }
+
+    set betroffenePeriode(value: string) {
+        this._betroffenePeriode = value;
+    }
+    get betroffeneFaelle(): string {
+        return this._betroffeneFaelle;
+    }
+
+    set betroffeneFaelle(value: string) {
+        this._betroffeneFaelle = value;
     }
 }

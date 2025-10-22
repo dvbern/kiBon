@@ -19,19 +19,20 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-import ch.dvbern.ebegu.dto.suchfilter.lucene.EbeguLocalDateBridge;
+import ch.dvbern.ebegu.dto.suchfilter.lucene.KibonElasticsearchAnalyzerConfigurer;
+import ch.dvbern.ebegu.dto.suchfilter.lucene.LocalDateToStringBridge;
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -47,19 +48,21 @@ public abstract class AbstractPersonEntity extends AbstractMutableEntity {
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
 	@Column(nullable = false)
 	@NotNull
-	@Field
+	@FullTextField(
+		analyzer = KibonElasticsearchAnalyzerConfigurer.KIBON_GERMAN_ANALYZER)
 	private String vorname;
 
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
 	@NotNull
 	@Column(nullable = false)
-	@Field
+	@FullTextField(
+		analyzer = KibonElasticsearchAnalyzerConfigurer.KIBON_GERMAN_ANALYZER)
 	private String nachname;
 
 	@Column(nullable = false)
 	@NotNull
-	@FieldBridge(impl = EbeguLocalDateBridge.class)   //wir indizieren dates als string
-	@Field(analyze = Analyze.NO) //datumsfelder nicht tokenizen etc
+	@GenericField(valueBridge = @ValueBridgeRef(
+		type = LocalDateToStringBridge.class))
 	private LocalDate geburtsdatum;
 
 	public AbstractPersonEntity() {
@@ -98,7 +101,10 @@ public abstract class AbstractPersonEntity extends AbstractMutableEntity {
 	}
 
 	@Nonnull
-	public AbstractPersonEntity copyAbstractPersonEntity(@Nonnull AbstractPersonEntity target, @Nonnull AntragCopyType copyType) {
+	public AbstractPersonEntity copyAbstractPersonEntity(
+		@Nonnull AbstractPersonEntity target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		target.setGeschlecht(this.getGeschlecht());
 		target.setVorname(this.getVorname());
@@ -119,9 +125,15 @@ public abstract class AbstractPersonEntity extends AbstractMutableEntity {
 			return false;
 		}
 		final AbstractPersonEntity otherPerson = (AbstractPersonEntity) other;
-		return getGeschlecht() == otherPerson.getGeschlecht() &&
-			Objects.equals(getVorname(), otherPerson.getVorname()) &&
-			Objects.equals(getNachname(), otherPerson.getNachname()) &&
-			Objects.equals(getGeburtsdatum(), otherPerson.getGeburtsdatum());
+		return getGeschlecht() == otherPerson.getGeschlecht()
+			&&
+			Objects.equals(getVorname(), otherPerson.getVorname())
+			&&
+			Objects.equals(getNachname(), otherPerson.getNachname())
+			&&
+			Objects.equals(
+				getGeburtsdatum(),
+				otherPerson.getGeburtsdatum()
+			);
 	}
 }

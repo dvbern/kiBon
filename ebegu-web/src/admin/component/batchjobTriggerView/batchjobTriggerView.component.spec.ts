@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {MatDialog} from '@angular/material/dialog';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
 import {SharedModule} from '../../../app/shared/shared.module';
@@ -37,7 +37,7 @@ describe('batchjobTriggerView', () => {
         ]);
         const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
             I18nServiceRSRest.name,
-            ['extractPreferredLanguage']
+            ['extractPreferredLanguage', 'init']
         );
 
         TestBed.configureTestingModule({

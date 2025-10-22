@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -23,27 +23,25 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.dto.suchfilter.lucene.Searchable;
 import ch.dvbern.ebegu.enums.AntragCopyType;
+import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
-import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.validators.CheckPlatzAndAngebottyp;
@@ -52,6 +50,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 /**
  * Superklasse fuer alle Betreuungen / Anmeldungen
@@ -59,23 +58,31 @@ import org.hibernate.envers.Audited;
 @MappedSuperclass
 @Audited
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Table(
-	uniqueConstraints =
-	@UniqueConstraint(columnNames = { "betreuungNummer", "kind_id" }, name = "UK_platz_kind_betreuung_nummer")
-)
 @CheckPlatzAndAngebottyp
-public abstract class AbstractPlatz extends AbstractMutableEntity implements Comparable<AbstractPlatz>, Searchable {
+public abstract class AbstractPlatz extends AbstractMutableEntity implements
+	Comparable<AbstractPlatz>,
+	Searchable {
 
 	private static final long serialVersionUID = -9037857320548372570L;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_platz_kind_id"), nullable = false)
+	@JoinColumn(
+		foreignKey = @ForeignKey(name = "FK_platz_kind_id"),
+		nullable = false,
+		updatable = false
+	)
 	private KindContainer kind;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_platz_institution_stammdaten_id"), nullable = false)
+	@JoinColumn(
+		foreignKey = @ForeignKey(
+			name = "FK_platz_institution_stammdaten_id"
+		),
+		nullable = false,
+		updatable = false
+	)
 	private InstitutionStammdaten institutionStammdaten;
 
 	@Enumerated(EnumType.STRING)
@@ -93,7 +100,12 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 
 	@NotNull
 	@Nonnull
-	@Column(nullable = false, updatable = false, length = Constants.DB_DEFAULT_SHORT_LENGTH)
+	@Column(
+		nullable = false,
+		updatable = false,
+		length = Constants.DB_DEFAULT_SHORT_LENGTH
+	)
+	@GenericField
 	private String referenzNummer = "";
 
 	/**
@@ -126,7 +138,9 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 		return institutionStammdaten;
 	}
 
-	public void setInstitutionStammdaten(@Nonnull InstitutionStammdaten institutionStammdaten) {
+	public void setInstitutionStammdaten(
+		@Nonnull InstitutionStammdaten institutionStammdaten
+	) {
 		this.institutionStammdaten = institutionStammdaten;
 	}
 
@@ -135,7 +149,9 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 		return betreuungsstatus;
 	}
 
-	public void setBetreuungsstatus(@NotNull Betreuungsstatus betreuungsstatus) {
+	public void setBetreuungsstatus(
+		@NotNull Betreuungsstatus betreuungsstatus
+	) {
 		this.betreuungsstatus = betreuungsstatus;
 	}
 
@@ -165,7 +181,6 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 	public abstract Verfuegung getVerfuegungPreview();
 
 	public abstract void setVerfuegungPreview(@Nullable Verfuegung verfuegung);
-
 
 	/**
 	 *
@@ -211,7 +226,8 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 		Preconditions.checkState(
 			vorgaengerInitialized,
 			"must initialize transient fields of %s via VerfuegungService#initializeVorgaengerVerfuegungen",
-			this);
+			this
+		);
 	}
 
 	@Nonnull
@@ -230,22 +246,36 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 	@PrePersist
 	protected void setReferenzNummer() {
 		if (StringUtils.isEmpty(referenzNummer)) {
-			String kindNumberAsString = String.valueOf(getKind().getKindNummer());
+			String kindNumberAsString = String.valueOf(
+				getKind().getKindNummer()
+			);
 			String betreuung = String.valueOf(getBetreuungNummer());
-			referenzNummer = getKind().getGesuch().getJahrFallAndGemeindenummer() + '.' + kindNumberAsString + '.' + betreuung;
+			referenzNummer = getKind().getGesuch()
+				.getJahrFallAndGemeindenummer()
+				+ '.'
+				+ kindNumberAsString
+				+ '.'
+				+ betreuung;
 		}
 	}
 
 	@Override
 	public int compareTo(@Nonnull AbstractPlatz other) {
 		CompareToBuilder compareToBuilder = new CompareToBuilder();
-		compareToBuilder.append(this.getBetreuungNummer(), other.getBetreuungNummer());
+		compareToBuilder.append(
+			this.getBetreuungNummer(),
+			other.getBetreuungNummer()
+		);
 		compareToBuilder.append(this.getId(), other.getId());
 		return compareToBuilder.toComparison();
 	}
 
 	@Nonnull
-	public AbstractPlatz copyAbstractPlatz(@Nonnull AbstractPlatz target, @Nonnull AntragCopyType copyType, @Nonnull KindContainer targetKindContainer) {
+	public AbstractPlatz copyAbstractPlatz(
+		@Nonnull AbstractPlatz target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull KindContainer targetKindContainer
+	) {
 		super.copyAbstractEntity(target, copyType);
 
 		switch (copyType) {
@@ -254,7 +284,14 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 			if (this.getBetreuungsstatus().isGeschlossenJA()) {
 				// Falls sämtliche Betreuungspensum-Container dieser Betreuung ein effektives Pensum von 0 haben, handelt es sich um die
 				// Verfügung eines stornierten Platzes. Wir übernehmen diesen als "STORNIERT"
-				if (hasAnyNonZeroPensum()) {
+				if (isBetreunungNichtAngetreten()) {
+					// nicht eingetrene Betreuungen müssen nach einer Mutation in den Status "WARTEN" gesetzt werden.
+					// Grund: Für nicht eingetretene Betreuungen werden keine Mutationsmitteilungen versendet. Da wir ja jetzt noch
+					// nicht wissen, ob die Betreuung von der Mutation betroffen ist, geben wir sie hier wieder frei.
+					// Ggf. muss sie dann in der Mutation erneut als "Nicht eingetreten" verfügt werden, wenn es dabei bleiben sollte.
+
+					target.setBetreuungsstatus(Betreuungsstatus.WARTEN);
+				} else if (hasAnyNonZeroPensum()) {
 					target.setBetreuungsstatus(Betreuungsstatus.BESTAETIGT);
 				} else {
 					target.setBetreuungsstatus(Betreuungsstatus.STORNIERT);
@@ -279,6 +316,10 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 		return true;
 	}
 
+	protected boolean isBetreunungNichtAngetreten() {
+		return false;
+	}
+
 	@Override
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
@@ -291,7 +332,8 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 			return false;
 		}
 		final AbstractPlatz otherBetreuung = (AbstractPlatz) other;
-		return this.getInstitutionStammdaten().isSame(otherBetreuung.getInstitutionStammdaten());
+		return this.getInstitutionStammdaten()
+			.isSame(otherBetreuung.getInstitutionStammdaten());
 	}
 
 	@Nonnull
@@ -302,14 +344,23 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 
 	@Transient
 	public Gesuchsperiode extractGesuchsperiode() {
-		Objects.requireNonNull(this.getKind(), "Can not extract Gesuchsperiode because Kind is null");
-		Objects.requireNonNull(this.getKind().getGesuch(), "Can not extract Gesuchsperiode because Gesuch is null");
+		Objects.requireNonNull(
+			this.getKind(),
+			"Can not extract Gesuchsperiode because Kind is null"
+		);
+		Objects.requireNonNull(
+			this.getKind().getGesuch(),
+			"Can not extract Gesuchsperiode because Gesuch is null"
+		);
 		return this.getKind().getGesuch().getGesuchsperiode();
 	}
 
 	@Transient
 	public Gesuch extractGesuch() {
-		Objects.requireNonNull(this.getKind(), "Can not extract Gesuch because Kind is null");
+		Objects.requireNonNull(
+			this.getKind(),
+			"Can not extract Gesuch because Kind is null"
+		);
 		return this.getKind().getGesuch();
 	}
 
@@ -320,11 +371,22 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 	}
 
 	@Nonnull
-	public String getInstitutionAndBetreuungsangebottyp(@Nonnull Locale locale) {
+	public String getInstitutionAndBetreuungsangebottyp(
+		@Nonnull Locale locale
+	) {
 		String angebot = ServerMessageUtil
-			.translateEnumValue(getBetreuungsangebotTyp(), locale,
-					Objects.requireNonNull(getInstitutionStammdaten().getInstitution().getMandant()));
-		return getInstitutionStammdaten().getInstitution().getName() + " (" + angebot + ')';
+			.translateEnumValue(
+				getBetreuungsangebotTyp(),
+				locale,
+				Objects.requireNonNull(
+					getInstitutionStammdaten().getInstitution()
+						.getMandant()
+				)
+			);
+		return getInstitutionStammdaten().getInstitution().getName()
+			+ " ("
+			+ angebot
+			+ ')';
 	}
 
 	@Nonnull
@@ -363,14 +425,19 @@ public abstract class AbstractPlatz extends AbstractMutableEntity implements Com
 
 	@Transient
 	public boolean isAngebotSchulamt() {
-		return BetreuungsangebotTyp.TAGESSCHULE == getBetreuungsangebotTyp() || BetreuungsangebotTyp.FERIENINSEL == getBetreuungsangebotTyp();
+		return BetreuungsangebotTyp.TAGESSCHULE == getBetreuungsangebotTyp()
+			|| BetreuungsangebotTyp.FERIENINSEL
+				== getBetreuungsangebotTyp();
 	}
 
 	public boolean isFinSitRueckwirkendKorrigiertInThisMutation() {
 		return finSitRueckwirkendKorrigiertInThisMutation;
 	}
 
-	public void setFinSitRueckwirkendKorrigiertInThisMutation(boolean finSitRueckwirkendKorrigiertInThisMutation) {
-		this.finSitRueckwirkendKorrigiertInThisMutation = finSitRueckwirkendKorrigiertInThisMutation;
+	public void setFinSitRueckwirkendKorrigiertInThisMutation(
+		boolean finSitRueckwirkendKorrigiertInThisMutation
+	) {
+		this.finSitRueckwirkendKorrigiertInThisMutation =
+			finSitRueckwirkendKorrigiertInThisMutation;
 	}
 }

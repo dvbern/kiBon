@@ -15,10 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// !! -- PAGE OBJECTS -- !!
+const getPageTitle = () => {
+    return cy.getByData('page-title');
+};
+
 const getAllFileUploads = () => {
     return cy.get('input[type="file"][tabindex=0]');
 };
 
 export const DokumentePO = {
-    getAllFileUploads
+    getAllFileUploads,
+    getPageTitle
 };

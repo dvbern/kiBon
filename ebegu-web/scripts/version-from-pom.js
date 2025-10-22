@@ -16,23 +16,19 @@
 const {resolve} = require('path');
 const {readFileSync, writeFileSync} = require('fs');
 
-const contents = readFileSync(
-    __dirname + '/../../.flattened-pom.xml'
-).toString();
+const kibonVersion = process.env.VERSION || '2023-SNAPSHOT';
 
-const re = new RegExp(
-    '<artifactId>ebegu</artifactId>[\\s\\S]*?<version>(.*?)</version>[\\s\\S]*?<packaging>pom</packaging>',
-    'im'
-);
-const myMatchArray = re.exec(contents);
-const parsedversion = myMatchArray === null ? 'unknown' : myMatchArray[1];
-console.log('Parsed Version from pom is ' + parsedversion);
+if (!kibonVersion) {
+    throw new Error('environment variable VERSION not set');
+}
+
+console.log('Kibon version is', kibonVersion);
 
 const file = resolve(__dirname, '..', 'src', 'environments', 'version.ts');
 writeFileSync(
     file,
     `// IMPORTANT: THIS FILE IS AUTO GENERATED! DO NOT MANUALLY EDIT OR CHECKIN!
-export const VERSION = '${parsedversion}';
+export const VERSION = '${kibonVersion}';
 
 export const BUILDTSTAMP = '${new Date().toISOString()}';
 `,

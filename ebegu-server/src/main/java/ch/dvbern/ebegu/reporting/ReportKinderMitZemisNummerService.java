@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting;
@@ -22,15 +22,17 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.errors.MailException;
 import ch.dvbern.ebegu.util.UploadFileInfo;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergeException;
 
 public interface ReportKinderMitZemisNummerService {
 
 	@Nonnull
-	UploadFileInfo generateZemisReport(@Nonnull Integer lastenausgleichJahr, @Nonnull Locale german
+	UploadFileInfo generateZemisReport(
+		@Nonnull Integer lastenausgleichJahr,
+		@Nonnull Locale german
 	) throws ExcelMergeException, IOException;
 
-	void setFlagAndSaveZemisExcel(@Nonnull byte[] fileContent) throws IOException, MailException;
+	void setFlagAndSaveZemisExcel(@Nonnull byte[] fileContent)
+		throws IOException;
 }

@@ -8,18 +8,26 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
 package ch.dvbern.ebegu.services;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+
 import ch.dvbern.ebegu.dto.JaxFreigabeDTO;
-import ch.dvbern.ebegu.entities.*;
+import ch.dvbern.ebegu.entities.Dossier;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.Eingangsart;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.test.TestDataUtil;
@@ -36,10 +44,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -89,19 +93,34 @@ class VerantwortlicheServiceTest extends EasyMockSupport {
 		Mandant mandant = new Mandant();
 		mandant.setMandantIdentifier(MandantIdentifier.SCHWYZ);
 
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(mandant);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(
+			mandant
+		);
 		Gemeinde gemeinde = TestDataUtil.createGemeindeLondon(mandant);
 
-		TestDataInstitutionStammdatenBuilder institution = new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
-		var testFall = new Testfall01_WaeltiDagmar(gesuchsperiode, true, gemeinde, institution);
+		TestDataInstitutionStammdatenBuilder institution =
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
+		var testFall = new Testfall01_WaeltiDagmar(
+			gesuchsperiode,
+			true,
+			gemeinde,
+			institution
+		);
 		testFall.createGesuch(gesuchsperiode.getDatumAktiviert());
 		testFall.fillInGesuch();
 		var gesuch = testFall.getGesuch();
 
-		gesuch.getKindContainers().forEach(kindContainer -> kindContainer.setKindNummer(testFall.getFall().getNextNumberKind()));
+		gesuch.getKindContainers()
+			.forEach(
+				kindContainer -> kindContainer.setKindNummer(
+					testFall.getFall().getNextNumberKind()
+				)
+			);
 
-		var kind = Optional.ofNullable(gesuch.extractKindFromKindNumber(1)).orElseThrow();
-		var anmeldungTagesschuleWithModules = TestDataUtil.createAnmeldungTagesschuleWithModules(kind, gesuchsperiode);
+		var kind = Optional.ofNullable(gesuch.extractKindFromKindNumber(1))
+			.orElseThrow();
+		var anmeldungTagesschuleWithModules = TestDataUtil
+			.createAnmeldungTagesschuleWithModules(kind, gesuchsperiode);
 		kind.setAnmeldungenTagesschule(Set.of(anmeldungTagesschuleWithModules));
 		return gesuch;
 	}
@@ -123,8 +142,10 @@ class VerantwortlicheServiceTest extends EasyMockSupport {
 		dossierMock.setVerantwortlicherTS(benutzerTs);
 		gesuch.setDossier(dossierMock);
 
-		expect(dossierService.setVerantwortlicherBG(DOSSIER_ID, benutzerBg)).andReturn(null);
-		expect(dossierService.setVerantwortlicherTS(DOSSIER_ID, benutzerTs)).andReturn(null);
+		expect(dossierService.setVerantwortlicherBG(DOSSIER_ID, benutzerBg))
+			.andReturn(null);
+		expect(dossierService.setVerantwortlicherTS(DOSSIER_ID, benutzerTs))
+			.andReturn(null);
 
 		replayAll();
 
@@ -253,21 +274,32 @@ class VerantwortlicheServiceTest extends EasyMockSupport {
 		var benutzerTs = TestDataUtil.createBenutzerSCH();
 
 		Dossier dossierMock = mock(Dossier.class);
-		expect(dossierMock.getGemeinde()).andReturn(gesuch.getDossier().getGemeinde()).times(2);
+		expect(dossierMock.getGemeinde()).andReturn(
+			gesuch.getDossier().getGemeinde()
+		).times(2);
 		expect(dossierMock.getVerantwortlicherBG()).andReturn(benutzerBg);
 		dossierMock.setVerantwortlicherBG(benutzerBg);
 		expect(dossierMock.getVerantwortlicherTS()).andReturn(benutzerTs);
 		dossierMock.setVerantwortlicherTS(benutzerTs);
 		gesuch.setDossier(dossierMock);
 		var freigabeDTO =
-			JaxFreigabeDTO.builder().usernameSCH(benutzerTs.getUsername()).usernameJA(benutzerBg.getUsername()).build();
+			JaxFreigabeDTO.builder()
+				.usernameSCH(benutzerTs.getUsername())
+				.usernameJA(benutzerBg.getUsername())
+				.build();
 
-		expect(benutzerService.findBenutzer(
-			benutzerBg.getUsername(),
-			gesuch.getGesuchsperiode().getMandant())).andReturn(Optional.of(benutzerBg));
-		expect(benutzerService.findBenutzer(
-			benutzerTs.getUsername(),
-			gesuch.getGesuchsperiode().getMandant())).andReturn(Optional.of(benutzerTs));
+		expect(
+			benutzerService.findBenutzer(
+				benutzerBg.getUsername(),
+				gesuch.getGesuchsperiode().getMandant()
+			)
+		).andReturn(Optional.of(benutzerBg));
+		expect(
+			benutzerService.findBenutzer(
+				benutzerTs.getUsername(),
+				gesuch.getGesuchsperiode().getMandant()
+			)
+		).andReturn(Optional.of(benutzerTs));
 
 		replayAll();
 
@@ -281,10 +313,19 @@ class VerantwortlicheServiceTest extends EasyMockSupport {
 	@ParameterizedTest
 	@MethodSource("updateVerantwortlicheNeededSource")
 	void testUpdateVerantwortlicheNeeded(
-		Eingangsart eingangsart, boolean isSchulamtAnmeldungAusgeloest, boolean isNew, boolean expectedResult) {
+		Eingangsart eingangsart,
+		boolean isSchulamtAnmeldungAusgeloest,
+		boolean isNew,
+		boolean expectedResult
+	) {
 		assertThat(
-			testee.updateVerantwortlicheNeeded(eingangsart, isSchulamtAnmeldungAusgeloest, isNew),
-			Matchers.is(expectedResult));
+			testee.updateVerantwortlicheNeeded(
+				eingangsart,
+				isSchulamtAnmeldungAusgeloest,
+				isNew
+			),
+			Matchers.is(expectedResult)
+		);
 	}
 
 	public static Stream<Arguments> updateVerantwortlicheNeededSource() {

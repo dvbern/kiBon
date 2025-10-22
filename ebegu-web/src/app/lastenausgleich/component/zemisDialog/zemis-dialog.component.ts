@@ -23,7 +23,8 @@ import {ZemisDialogDTO} from './zemisDialog.interface';
 @Component({
     selector: 'zemis-dialog',
     templateUrl: 'zemis-dialog.template.html',
-    styleUrls: ['zemis-dialog.component.less']
+    styleUrls: ['zemis-dialog.component.less'],
+    standalone: false
 })
 export class ZemisDialogComponent {
     public jahr: number;

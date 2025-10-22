@@ -8,33 +8,37 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.validators.iban;
 
 import javax.annotation.Nullable;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
 
-public class CheckIBANUppercaseValidator implements ConstraintValidator<CheckIBANUppercase, IBAN> {
+public class CheckIBANUppercaseValidator implements
+	ConstraintValidator<CheckIBANUppercase, IBAN> {
 
 	@Override
-	public boolean isValid(@Nullable IBAN iban, ConstraintValidatorContext constraintValidatorContext) {
+	public boolean isValid(
+		@Nullable IBAN iban,
+		ConstraintValidatorContext constraintValidatorContext
+	) {
 		// we should allow nullable iban fields
 		if (iban == null) {
 			return true;
 		}
 		String ibanString = iban.getIban();
-		for(int i = 0; i < iban.getIban().length(); i++) {
+		for (int i = 0; i < iban.getIban().length(); i++) {
 			char current = ibanString.charAt(i);
-			if(Character.isLetter(current) && Character.isLowerCase(current)) {
+			if (Character.isLetter(current) && Character.isLowerCase(current)) {
 				return false;
 			}
 		}

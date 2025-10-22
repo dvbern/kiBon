@@ -17,6 +17,5 @@ package ch.dvbern.ebegu.api.enums;
 
 public enum JaxExternalBetreuungsangebotTyp {
 
-	TAGESSCHULE,
-	FERIENINSEL;
+	TAGESSCHULE, FERIENINSEL;
 }

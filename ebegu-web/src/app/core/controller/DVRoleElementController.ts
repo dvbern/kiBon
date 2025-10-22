@@ -14,8 +14,7 @@
  */
 
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../models/enums/TSRole';
-
+import {TSRole} from '@kibon/shared/model/enums';
 export class DVRoleElementController {
     public static $inject: ReadonlyArray<string> = ['AuthServiceRS'];
 

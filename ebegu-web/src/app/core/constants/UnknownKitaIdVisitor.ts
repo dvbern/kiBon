@@ -15,8 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {KiBonMandant} from './MANDANTS';
-import {MandantVisitor} from './MandantVisitor';
+import {KiBonMandant, MandantVisitor} from '@kibon/shared-model-mandant';
 
 export class UnknownKitaIdVisitor implements MandantVisitor<string> {
     public process(mandant: KiBonMandant): string {
@@ -41,5 +40,13 @@ export class UnknownKitaIdVisitor implements MandantVisitor<string> {
 
     public visitSchwyz(): string {
         return '00000000-0000-0000-0000-000000000012';
+    }
+
+    public visitZug(): string {
+        return '00000000-0000-0000-0000-000000000016';
+    }
+
+    public visitDvb(): string {
+        return '00000000-0000-0000-0000-000000000020';
     }
 }

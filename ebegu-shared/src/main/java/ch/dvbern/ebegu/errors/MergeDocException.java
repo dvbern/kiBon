@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.ApplicationException;
+import jakarta.ejb.ApplicationException;
 
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 
@@ -36,7 +36,12 @@ public class MergeDocException extends EbeguException {
 	 * @param cause die cause
 	 * @param args die Argumente
 	 */
-	public MergeDocException(@Nullable String methodeName, @Nullable String message, @Nullable Throwable cause, @Nonnull Serializable... args) {
+	public MergeDocException(
+		@Nullable String methodeName,
+		@Nullable String message,
+		@Nullable Throwable cause,
+		@Nonnull Serializable... args
+	) {
 		super(methodeName, message, ErrorCodeEnum.ERROR_PRINT_PDF, cause, args);
 	}
 }

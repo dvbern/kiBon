@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -20,9 +20,9 @@ package ch.dvbern.ebegu.services;
 import java.time.LocalDate;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.SteuerdatenResponse;
 import ch.dvbern.ebegu.errors.KiBonAnfrageServiceException;
@@ -38,9 +38,19 @@ public class KibonAnfrageServiceBean implements KibonAnfrageService {
 
 	@Override
 	@Nonnull
-	public SteuerdatenResponse getSteuerDaten(Integer zpvNummer, LocalDate geburtsdatum, String gesuchId, Integer gesuchsperiodeBeginnJahr)
+	public SteuerdatenResponse getSteuerDaten(
+		Integer zpvNummer,
+		LocalDate geburtsdatum,
+		String gesuchId,
+		Integer gesuchsperiodeBeginnJahr
+	)
 		throws KiBonAnfrageServiceException, OIDCServiceException {
-		return kibonAnfrageWebService.getSteuerDaten(zpvNummer, geburtsdatum, gesuchId, gesuchsperiodeBeginnJahr);
+		return kibonAnfrageWebService.getSteuerDaten(
+			zpvNummer,
+			geburtsdatum,
+			gesuchId,
+			gesuchsperiodeBeginnJahr
+		);
 	}
 
 }

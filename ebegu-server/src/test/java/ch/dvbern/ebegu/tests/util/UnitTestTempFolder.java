@@ -34,7 +34,8 @@ public class UnitTestTempFolder extends TemporaryFolder {
 	 *
 	 * @return das Temp file oder <code>null</code>
 	 */
-	public File writeToTempDir(final byte[] data, final String fileName) throws IOException {
+	public File writeToTempDir(final byte[] data, final String fileName)
+		throws IOException {
 
 		String persistPfad = System.getProperty("persistTestDateienPfad");
 		File tempFile = null;

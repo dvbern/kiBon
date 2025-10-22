@@ -20,7 +20,8 @@ import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
     selector: 'dv-onboarding-help-dialog',
-    templateUrl: './onboarding-help-dialog.template.html'
+    templateUrl: './onboarding-help-dialog.template.html',
+    standalone: false
 })
 export class OnboardingHelpDialogComponent {
     public constructor(

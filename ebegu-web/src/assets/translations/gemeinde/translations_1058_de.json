@@ -1,0 +1,12 @@
+{
+    "NICHT_IN_GEMEINDE_WOHNHAFT_HELP": "Definiert, ob der zivilrechtliche Wohnsitz in der Gemeinde liegt. Durch Aktivieren dieses Häkchens entfällt der Anspruch auf einen Betreuungsgutschein gemäss Art. 2 und 3 Ziff. a) des Reglements über die Finanzierung der familienergänzenden Kinderbetreuung und der Spielgruppen",
+    "UNREGELMAESSIGE_ARBEITSZEITEN_HINT": "Bitte bestätigen Sie dies, indem Sie auf der Seite 'Dokumente' das Formular 'Bestätigung Arbeitgeber unregelmässige Arbeitszeiten' hochladen. Das Formular finden Sie auf unserer Homepage <a href='https://www.horw.ch/dienstleistungen/16789' target='_blank'> Gemeinde Horw - Betreuungsgutscheine</a> unter Online-Dienste",
+    "ERWEITERTE_BEDUERFNISSE": "Haben Sie von der Gemeinde Horw eine Bestätigung zur Finanzierung eines ausserordentlichen Betreuungsbedarfs für das Kind?",
+    "ERWEITERTE_BEDUERFNISSE_HINT": "Nicht möglich gemäss Reglement - Bitte 'Nein' anklicken.",
+    "INVOLVIERTE_FACHSTELLE": "Das Kind hat eine Empfehlung von einer Fachstelle für den Besuch einer Kita erhalten",
+    "INVOLVIERTE_FACHSTELLE_HELP": "Eine Empfehlung von einer Fachstelle erhalten Sie beispielsweise von: Logopädie, Kinder- und Jugendpsychiatrischer Dienst, Kinder- und Jugendschutz, Kinderärzte/innen, Familienberatungsstelle CONTACT, Mütter- und Väterberatung, Heilpädagogischer Früherziehungsdienst, Schulsozialarbeit. <br/> <br/> Bitte bestätigen Sie dies, indem Sie auf der Seite 'Dokumente' den 'Antrag besondere Anspruchsvoraussetzungen' hochladen. Das Formular finden Sie auf unserer Homepage <a href='https://www.horw.ch/dienstleistungen/16789' target='_blank'> Gemeinde Horw - Betreuungsgutscheine</a> unter Online-Dienste",
+    "SPRACHLICHE_INTEGRATION": "Das Kind hat nach der «Elternumfrage zu den Deutschkenntnissen von Vorschulkindern» eine Empfehlung (Brief) der Gemeinde Horw für die Sprachförderung in einer Kita erhalten",
+    "ZUSATZLEISTUNG_INTEGRATION": "Das Kind hat aus anderen Gründen eine Empfehlung von einer Fachstelle für den Besuch einer Kita erhalten (Antrag besondere Anspruchsvoraussetzungen)",
+    "PER_TELEFON_MAIL_KONTAKTIEREN": "Kontaktieren Sie uns per Telefon oder E-Mail",
+    "KEIN_VERTRAG": "Ich nutze kiBon zum Testen, ob ich einen Anspruch auf Betreuungsgutscheine habe und gebe darum noch keine Institution an."
+}

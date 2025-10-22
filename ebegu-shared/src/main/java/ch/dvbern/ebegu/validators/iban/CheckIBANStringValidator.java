@@ -8,23 +8,27 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.validators.iban;
 
 import javax.annotation.Nullable;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
-public class CheckIBANStringValidator implements ConstraintValidator<CheckIBANString, String> {
+public class CheckIBANStringValidator implements
+	ConstraintValidator<CheckIBANString, String> {
 
 	@Override
-	public boolean isValid(@Nullable String iban, ConstraintValidatorContext constraintValidatorContext) {
+	public boolean isValid(
+		@Nullable String iban,
+		ConstraintValidatorContext constraintValidatorContext
+	) {
 		// we should allow nullable iban fields
 		if (iban == null) {
 			return true;

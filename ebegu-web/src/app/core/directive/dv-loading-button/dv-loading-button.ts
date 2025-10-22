@@ -18,7 +18,7 @@ import {IComponentOptions, IController} from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {TSHTTPEvent} from '../../events/TSHTTPEvent';
-import {LogFactory} from '../../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BroadcastService} from '../../service/broadcast.service';
 import IFormController = angular.IFormController;
 import ITimeoutService = angular.ITimeoutService;
@@ -130,12 +130,12 @@ export class DVLoadingButtonController
         this.broadcastService
             .on$(TSHTTPEvent.REQUEST_FINISHED)
             .pipe(takeUntil(this._unsubscribe))
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.isDisabled = false;
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public $onDestroy(): void {

@@ -19,16 +19,16 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.dto.suchfilter.lucene.Searchable;
 import ch.dvbern.ebegu.util.Constants;
@@ -38,19 +38,22 @@ import ch.dvbern.ebegu.validators.CheckVerantwortlicherBG;
 import ch.dvbern.ebegu.validators.CheckVerantwortlicherTS;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 @Audited
 @Entity
 @Indexed
-@Analyzer(definition = "EBEGUGermanAnalyzer")
 @Table(
-	uniqueConstraints = @UniqueConstraint(columnNames = { "fall_id", "gemeinde_id" }, name = "UK_dossier_fall_gemeinde"),
+	uniqueConstraints = @UniqueConstraint(columnNames = { "fall_id",
+		"gemeinde_id" }, name = "UK_dossier_fall_gemeinde"),
 	indexes = {
-		@Index(name = "IX_dossier_verantwortlicher_bg", columnList = "verantwortlicherBG_id"),
-		@Index(name = "IX_dossier_verantwortlicher_ts", columnList = "verantwortlicherTS_id"),
+		@Index(name = "IX_dossier_verantwortlicher_bg",
+			columnList = "verantwortlicherBG_id"),
+		@Index(name = "IX_dossier_verantwortlicher_ts",
+			columnList = "verantwortlicherTS_id"),
 	}
 )
 @CheckVerantwortlicherBG(groups = ChangeVerantwortlicherBGValidationGroup.class)
@@ -61,23 +64,28 @@ public class Dossier extends AbstractMutableEntity implements Searchable {
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dossier_fall_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dossier_fall_id"),
+		updatable = false)
 	@IndexedEmbedded
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW) // automatic re-indexing requires bidirectional relationship
 	private Fall fall;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dossier_gemeinde_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dossier_gemeinde_id"),
+		updatable = false)
 	private Gemeinde gemeinde;
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dossier_verantwortlicher_bg_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_dossier_verantwortlicher_bg_id"))
 	private Benutzer verantwortlicherBG = null; // Mitarbeiter des JA
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dossier_verantwortlicher_ts_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_dossier_verantwortlicher_ts_id"))
 	private Benutzer verantwortlicherTS = null; // Mitarbeiter des SCH
 
 	@Size(max = Constants.DB_TEXTAREA_LENGTH)
@@ -136,7 +144,8 @@ public class Dossier extends AbstractMutableEntity implements Searchable {
 			return false;
 		}
 		Dossier dossier = (Dossier) other;
-		return Objects.equals(fall, dossier.fall) &&
+		return Objects.equals(fall, dossier.fall)
+			&&
 			Objects.equals(gemeinde, dossier.gemeinde);
 	}
 
@@ -179,8 +188,10 @@ public class Dossier extends AbstractMutableEntity implements Searchable {
 
 	@Override
 	public String getMessageForAccessException() {
-		return "gemeinde: " + this.getGemeinde().getName()
-			+ ", fallNummer: " + this.getFall().getPaddedFallnummer();
+		return "gemeinde: "
+			+ this.getGemeinde().getName()
+			+ ", fallNummer: "
+			+ this.getFall().getPaddedFallnummer();
 	}
 
 	@Nullable

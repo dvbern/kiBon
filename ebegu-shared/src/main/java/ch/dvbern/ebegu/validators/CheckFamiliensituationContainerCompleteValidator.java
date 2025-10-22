@@ -15,8 +15,8 @@
 
 package ch.dvbern.ebegu.validators;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.FamiliensituationContainer;
 import org.slf4j.Logger;
@@ -28,14 +28,23 @@ import org.slf4j.LoggerFactory;
 public class CheckFamiliensituationContainerCompleteValidator implements
 	ConstraintValidator<CheckFamiliensituationContainerComplete, FamiliensituationContainer> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CheckFamiliensituationContainerCompleteValidator.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		CheckFamiliensituationContainerCompleteValidator.class
+			.getSimpleName()
+	);
 
 	@SuppressWarnings("ConstantConditions")
 	@Override
-	public boolean isValid(FamiliensituationContainer famSitContainer, ConstraintValidatorContext context) {
+	public boolean isValid(
+		FamiliensituationContainer famSitContainer,
+		ConstraintValidatorContext context
+	) {
 		boolean valid = true;
 		if (famSitContainer.getFamiliensituationJA() == null) {
-			LOG.error("FamiliensituationJA is empty for FamiliensituationContainer {}", famSitContainer.getId());
+			LOG.error(
+				"FamiliensituationJA is empty for FamiliensituationContainer {}",
+				famSitContainer.getId()
+			);
 			valid = false;
 		}
 		return valid;

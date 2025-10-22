@@ -13,11 +13,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {
     getZahlungsstatusIgnorieren,
     TSVerfuegungZeitabschnittZahlungsstatus
 } from './enums/TSVerfuegungZeitabschnittZahlungsstatus';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
 import {TSVerfuegungZeitabschnitt} from './TSVerfuegungZeitabschnitt';
 
 export class TSVerfuegung extends TSAbstractMutableEntity {
@@ -220,6 +220,23 @@ export class TSVerfuegung extends TSAbstractMutableEntity {
         return false;
     }
 
+    public hasUnignoredZeitabschnitt(): boolean {
+        for (const abschnitt of this.zeitabschnitte) {
+            const datenVeraeandert = !abschnitt.sameAusbezahlteVerguenstigung;
+            const alreadyIgnored =
+                abschnitt.zahlungsstatusInstitution ===
+                    TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT ||
+                abschnitt.zahlungsstatusInstitution ===
+                    TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT_KORRIGIERT ||
+                abschnitt.zahlungsstatusInstitution ===
+                    TSVerfuegungZeitabschnittZahlungsstatus.NEU;
+            if (datenVeraeandert && !alreadyIgnored) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public isAlreadyIgnoredMahlzeiten(): boolean {
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let i = 0; i < this._zeitabschnitte.length; i++) {
@@ -231,6 +248,23 @@ export class TSVerfuegung extends TSAbstractMutableEntity {
                 abschnitt.zahlungsstatusAntragsteller ===
                     TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT_KORRIGIERT;
             if (datenVeraeandert && alreadyIgnored) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public hasUnignoredZeitabschnittMahlzeiten(): boolean {
+        for (const abschnitt of this.zeitabschnitte) {
+            const datenVeraeandert = !abschnitt.sameAusbezahlteMahlzeiten;
+            const alreadyIgnored =
+                abschnitt.zahlungsstatusAntragsteller ===
+                    TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT ||
+                abschnitt.zahlungsstatusAntragsteller ===
+                    TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT_KORRIGIERT ||
+                abschnitt.zahlungsstatusInstitution ===
+                    TSVerfuegungZeitabschnittZahlungsstatus.NEU;
+            if (datenVeraeandert && !alreadyIgnored) {
                 return true;
             }
         }

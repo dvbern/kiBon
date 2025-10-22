@@ -19,6 +19,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 import {TranslateModule} from '@ngx-translate/core';
+import angular from 'angular';
 import {of} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {DvUserSelectConfig} from '../directive/dv-userselect/dv-userselect';
@@ -28,7 +29,8 @@ import {bootstrap, html} from './test_helpers';
 
 @Component({
     selector: 'ng2',
-    template: ` <div dvNewUserSelect></div>`
+    template: ` <div dvNewUserSelect></div>`,
+    standalone: false
 })
 class TestComponent {}
 
@@ -37,7 +39,7 @@ const benutzerRSSpy = jasmine.createSpyObj<BenutzerRSX>(BenutzerRSX.name, [
     'getAllBenutzerBgOrGemeinde'
 ]);
 const authRSSpy = jasmine.createSpyObj<AuthServiceRS>(AuthServiceRS.name, [
-    'loginRequest'
+    'initLogin'
 ]);
 
 benutzerRSSpy.getAllBenutzerBgOrGemeinde.and.returnValue(Promise.resolve([]));

@@ -21,8 +21,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.Abwesenheit;
 import ch.dvbern.ebegu.entities.AbwesenheitContainer;
@@ -32,12 +32,22 @@ import ch.dvbern.ebegu.util.GueltigkeitsUtil;
 /**
  * Validator fuer Datum in Abwesenheiten. Die Zeitraeume duerfen sich nicht ueberschneiden
  */
-public class CheckAbwesenheitDatesOverlappingValidator implements ConstraintValidator<CheckAbwesenheitDatesOverlapping, Betreuung> {
+public class CheckAbwesenheitDatesOverlappingValidator implements
+	ConstraintValidator<CheckAbwesenheitDatesOverlapping, Betreuung> {
 
 	@Override
-	public boolean isValid(Betreuung instance, ConstraintValidatorContext context) {
-		return isOverlapFree(AbwesenheitContainer::getAbwesenheitJA, instance.getAbwesenheitContainers())
-			&& isOverlapFree(AbwesenheitContainer::getAbwesenheitGS, instance.getAbwesenheitContainers());
+	public boolean isValid(
+		Betreuung instance,
+		ConstraintValidatorContext context
+	) {
+		return isOverlapFree(
+			AbwesenheitContainer::getAbwesenheitJA,
+			instance.getAbwesenheitContainers()
+		)
+			&& isOverlapFree(
+				AbwesenheitContainer::getAbwesenheitGS,
+				instance.getAbwesenheitContainers()
+			);
 	}
 
 	private boolean isOverlapFree(

@@ -31,7 +31,7 @@ ${templateConfiguration.mailCss}
 	</p>
 	<p>
         <#if isSozialdienst>La demande pour ${gesuchsteller.fullName}<#else>Votre demande</#if> a été examinée et le montant du bon a été calculé. Vous pouvez consulter les résultats
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/verfuegen/${gesuch.id}">ici</a>.
+		<a href="${frontendUrl}/gesuch/verfuegen/${gesuch.id}">ici</a>.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>

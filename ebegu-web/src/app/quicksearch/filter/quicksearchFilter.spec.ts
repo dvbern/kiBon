@@ -13,14 +13,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import angular from 'angular';
+import moment from 'moment';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
+import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
+
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {TSDateRange} from '../../../models/types/TSDateRange';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSDateRange} from '@kibon/shared/model/entity';
 import {quicksearchFilter} from './quicksearchFilter';
 import IProvideService = angular.auto.IProvideService;
 

@@ -38,6 +38,9 @@
                         ng-model="vm.getModel().adresseJA.organisation"
                         dv-max-length
                         class="form-control"
+                        placeholder="c/o"
+                        ng-change="vm.updateOrganisation()"
+                        ng-blur="vm.restorePlaceholder()"
                     />
                     <dv-bisher
                         gs="vm.getModel().adresseGS.organisation"
@@ -59,7 +62,7 @@
             <div class="col-sm-12 dv-input-container-small">
                 <dv-input-container class="form-group">
                     <label
-                        class="md-no-float"
+                        class="md-no-float ignore-danger-font-color"
                         data-translate="ADRESSE_STRASSE"
                         for="{{ vm.prefix }}-strasse"
                     >
@@ -93,7 +96,7 @@
             <div class="col-sm-12 dv-input-container-small">
                 <dv-input-container class="form-group secondColumn">
                     <label
-                        class="md-no-float"
+                        class="md-no-float ignore-danger-font-color"
                         data-translate="ADRESSE_HAUSNUMMER"
                         for="{{ vm.prefix }}-hausnummer"
                     >
@@ -165,7 +168,7 @@
             <div class="col-sm-12 dv-input-container-small">
                 <dv-input-container class="form-group">
                     <label
-                        class="md-no-float"
+                        class="md-no-float ignore-danger-font-color"
                         data-translate="ADRESSE_PLZ"
                         for="{{ vm.prefix }}-plz"
                     >
@@ -198,7 +201,7 @@
             <div class="col-sm-12 dv-input-container-small">
                 <dv-input-container class="form-group secondColumn">
                     <label
-                        class="md-no-float"
+                        class="md-no-float ignore-danger-font-color"
                         data-translate="ADRESSE_ORT"
                         for="{{ vm.prefix }}-ort"
                     >
@@ -312,7 +315,7 @@
             dv-show-expression="vm.showNichtInGemeinde===true"
         >
             <div class="col-xs-12 dv-input-container-question">
-                <div class="checkbox">
+                <div class="checkbox notGemeinde">
                     <md-checkbox
                         ng-model="vm.getModel().adresseJA.nichtInGemeinde"
                         name="{{ vm.prefix }}-nichtInGemeinde"
@@ -329,23 +332,27 @@
                         dv-enable-allowed-roles="vm.TSRoleUtil.getAdministratorOrAmtRole()"
                         dv-enable-expression="vm.enableNichtInGemeinde()"
                     >
-                        <span
-                            data-translate="NICHT_IN_GEMEINDE_WOHNHAFT"
-                            data-translate-value-gemeinde="{{
-                                vm.gemeinde.name
-                            }}"
-                        ></span>
+                        <span>
+                            {{
+                                'NICHT_IN_GEMEINDE_WOHNHAFT'
+                                    | translate
+                                        : '{ gemeinde: &quot;' +
+                                              vm.gemeinde.name +
+                                              '&quot;}'
+                            }}
+                            <dv-tooltip
+                                ng-if="!vm.gesuchModelManager.isFKJVTexte"
+                                input-id="{{ vm.prefix }}-nichtInGemeinde"
+                                text="'NICHT_IN_GEMEINDE_WOHNHAFT_HELP' | translate"
+                            ></dv-tooltip>
+
+                            <dv-tooltip
+                                ng-if="vm.gesuchModelManager.isFKJVTexte"
+                                input-id="{{ vm.prefix }}-nichtInGemeinde"
+                                text="'NICHT_IN_GEMEINDE_WOHNHAFT_HELP_FKJV' | translate"
+                            ></dv-tooltip>
+                        </span>
                     </md-checkbox>
-                    <dv-tooltip
-                        ng-if="!vm.gesuchModelManager.isFKJVTexte"
-                        input-id="{{ vm.prefix }}-nichtInGemeinde"
-                        text="'NICHT_IN_GEMEINDE_WOHNHAFT_HELP' | translate"
-                    ></dv-tooltip>
-                    <dv-tooltip
-                        ng-if="vm.gesuchModelManager.isFKJVTexte"
-                        input-id="{{ vm.prefix }}-nichtInGemeinde"
-                        text="'NICHT_IN_GEMEINDE_WOHNHAFT_HELP_FKJV' | translate"
-                    ></dv-tooltip>
                 </div>
             </div>
         </div>
@@ -356,7 +363,7 @@
                 <dv-input-container class="form-group">
                     <!--suppress XmlInvalidId -->
                     <label
-                        class="md-no-float"
+                        class="md-no-float ignore-danger-font-color"
                         for="{{ vm.prefix }}-gueltigAb"
                         id="umzug-label"
                     >
@@ -414,7 +421,7 @@
                 >
                     <!--suppress XmlInvalidId -->
                     <label
-                        class="md-no-float"
+                        class="md-no-float ignore-danger-font-color"
                         data-translate="ADRESSE_GUELTIGBIS"
                         for="{{ vm.prefix }}-gueltigBis"
                     >

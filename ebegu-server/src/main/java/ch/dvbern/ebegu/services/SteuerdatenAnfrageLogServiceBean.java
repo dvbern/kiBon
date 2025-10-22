@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -20,18 +20,20 @@ package ch.dvbern.ebegu.services;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import ch.dvbern.ebegu.entities.SteuerdatenAnfrageLog;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 @Stateless
 @Local(SteuerdatenAnfrageLogService.class)
-public class SteuerdatenAnfrageLogServiceBean extends AbstractBaseService implements SteuerdatenAnfrageLogService {
+public class SteuerdatenAnfrageLogServiceBean extends AbstractBaseService
+	implements
+	SteuerdatenAnfrageLogService {
 
 	@Inject
 	private Persistence persistence;
@@ -39,8 +41,13 @@ public class SteuerdatenAnfrageLogServiceBean extends AbstractBaseService implem
 	@Nonnull
 	@Override
 	@Transactional(TxType.REQUIRES_NEW)
-	public SteuerdatenAnfrageLog saveSteuerdatenAnfrageLog(@Nonnull SteuerdatenAnfrageLog steuerdatenAnfrageLog) {
-		Objects.requireNonNull(steuerdatenAnfrageLog, "SteuerdatenAnfrageLog muss gesetzt sein");
+	public SteuerdatenAnfrageLog saveSteuerdatenAnfrageLog(
+		@Nonnull SteuerdatenAnfrageLog steuerdatenAnfrageLog
+	) {
+		Objects.requireNonNull(
+			steuerdatenAnfrageLog,
+			"SteuerdatenAnfrageLog muss gesetzt sein"
+		);
 		return persistence.persist(steuerdatenAnfrageLog);
 	}
 

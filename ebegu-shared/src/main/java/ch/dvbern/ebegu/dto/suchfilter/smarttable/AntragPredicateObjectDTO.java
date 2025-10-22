@@ -18,9 +18,9 @@ package ch.dvbern.ebegu.dto.suchfilter.smarttable;
 import java.io.Serializable;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -220,7 +220,7 @@ public class AntragPredicateObjectDTO implements Serializable {
 
 	public int readFallNummerAsNumber() {
 		if (StringUtils.isNumeric(fallNummer)) {
-			return Integer.valueOf(fallNummer);
+			return Integer.parseInt(fallNummer);
 		}
 		return -1;
 	}

@@ -19,6 +19,5 @@ package ch.dvbern.ebegu.enums;
  * Enum fuer Status der FinanziellenSituation
  */
 public enum FinSitStatus {
-	AKZEPTIERT,
-	ABGELEHNT
+	AKZEPTIERT, ABGELEHNT
 }

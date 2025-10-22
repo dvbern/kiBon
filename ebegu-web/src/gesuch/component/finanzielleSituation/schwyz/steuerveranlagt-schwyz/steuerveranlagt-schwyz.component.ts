@@ -13,7 +13,8 @@ import {EbeguUtil} from '../../../../../utils/EbeguUtil';
     selector: 'dv-steuerveranlagt-schwyz',
     templateUrl: './steuerveranlagt-schwyz.component.html',
     changeDetection: ChangeDetectionStrategy.Default,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class SteuerveranlagtSchwyzComponent {
     @Input()
@@ -27,6 +28,12 @@ export class SteuerveranlagtSchwyzComponent {
 
     @Input()
     public showHeader = true;
+
+    @Input()
+    public schwyzErweiterteFinSit = false;
+
+    @Input()
+    public ekvMode = false;
 
     @Output()
     public readonly valueChanged = new EventEmitter<void>();

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -35,8 +35,8 @@ import au.com.origin.snapshots.annotations.SnapshotName;
 import au.com.origin.snapshots.junit5.SnapshotExtension;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gemeinde;
-import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
+import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Verfuegung;
@@ -57,8 +57,8 @@ import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import ch.dvbern.lib.invoicegenerator.errors.InvoiceGeneratorException;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -70,7 +70,8 @@ import static org.hamcrest.Matchers.stringContainsInOrder;
 @ExtendWith(SnapshotExtension.class)
 class VerfuegungPdfTest {
 
-	private static final String PATH_PREFIX = FileUtils.getTempDirectoryPath() + "/kiBon/Verfuegung/";
+	private static final String PATH_PREFIX = FileUtils.getTempDirectoryPath()
+		+ "/kiBon/Verfuegung/";
 	private static final Pattern PATTERN = Pattern.compile("\\r");
 
 	@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized" })
@@ -93,22 +94,43 @@ class VerfuegungPdfTest {
 	@EnumSource(value = MandantIdentifier.class, mode = Mode.MATCH_ALL)
 	void testBruennen(MandantIdentifier identifier) {
 		Mandant mandant = MandantFactory.fromIdentifier(identifier);
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(mandant);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(
+			mandant
+		);
 		Gemeinde gemeinde = TestDataUtil.createGemeindeLondon(mandant);
 
-		TestDataInstitutionStammdatenBuilder institution = new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
-		var testFall = new Testfall01_WaeltiDagmar(gesuchsperiode, true, gemeinde, institution);
+		TestDataInstitutionStammdatenBuilder institution =
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
+		var testFall = new Testfall01_WaeltiDagmar(
+			gesuchsperiode,
+			true,
+			gemeinde,
+			institution
+		);
 		Gesuch gesuch = testFall.setupGesuch();
 		verfuegen(gesuch);
 
-		var bruennen = gesuch.getKindContainers().stream().findFirst().get().getBetreuungen().stream().findFirst().get();
-		File pdf = generatePdf(bruennen, VerfuegungPdfGeneratorKonfiguration.builder()
-			.FKJVTexte(true)
-			.betreuungspensumAnzeigeTyp(BetreuungspensumAnzeigeTyp.NUR_PROZENT)
-			.kontingentierungEnabledAndEntwurf(false)
-			.stadtBernAsivConfigured(false)
-			.isHoehereBeitraegeConfigured(false)
-			.build(), "WaeltiDagmar.pdf");
+		var bruennen = gesuch.getKindContainers()
+			.stream()
+			.findFirst()
+			.get()
+			.getBetreuungen()
+			.stream()
+			.findFirst()
+			.get();
+		File pdf = generatePdf(
+			bruennen,
+			VerfuegungPdfGeneratorKonfiguration.builder()
+				.FKJVTexte(true)
+				.betreuungspensumAnzeigeTyp(
+					BetreuungspensumAnzeigeTyp.NUR_PROZENT
+				)
+				.kontingentierungEnabledAndEntwurf(false)
+				.stadtBernAsivConfigured(false)
+				.isHoehereBeitraegeConfigured(false)
+				.build(),
+			"WaeltiDagmar.pdf"
+		);
 		String text = PdfUnitTestUtil.getText(pdf);
 
 		expect.scenario(identifier.name())
@@ -121,23 +143,46 @@ class VerfuegungPdfTest {
 	@Test
 	@SnapshotName("verfuegung-bruennen-hoeherer-beitrag")
 	void testHoehererBeitrag() {
-		Mandant mandant = MandantFactory.fromIdentifier(MandantIdentifier.SCHWYZ);
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(mandant);
+		Mandant mandant = MandantFactory.fromIdentifier(
+			MandantIdentifier.SCHWYZ
+		);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(
+			mandant
+		);
 		Gemeinde gemeinde = TestDataUtil.createGemeindeLondon(mandant);
 
-		TestDataInstitutionStammdatenBuilder institution = new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
-		var testFall = new Testfall01_WaeltiDagmar(gesuchsperiode, true, gemeinde, institution);
+		TestDataInstitutionStammdatenBuilder institution =
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
+		var testFall = new Testfall01_WaeltiDagmar(
+			gesuchsperiode,
+			true,
+			gemeinde,
+			institution
+		);
 		Gesuch gesuch = testFall.setupGesuch();
 		verfuegenWithHoehererBeitrag(gesuch);
 
-		var bruennen = gesuch.getKindContainers().stream().findFirst().get().getBetreuungen().stream().findFirst().get();
-		File pdf = generatePdf(bruennen, VerfuegungPdfGeneratorKonfiguration.builder()
-			.FKJVTexte(true)
-			.betreuungspensumAnzeigeTyp(BetreuungspensumAnzeigeTyp.NUR_PROZENT)
-			.kontingentierungEnabledAndEntwurf(false)
-			.stadtBernAsivConfigured(false)
-			.isHoehereBeitraegeConfigured(true)
-			.build(), "WaeltiDagmar_hoehererBeitrag.pdf");
+		var bruennen = gesuch.getKindContainers()
+			.stream()
+			.findFirst()
+			.get()
+			.getBetreuungen()
+			.stream()
+			.findFirst()
+			.get();
+		File pdf = generatePdf(
+			bruennen,
+			VerfuegungPdfGeneratorKonfiguration.builder()
+				.FKJVTexte(true)
+				.betreuungspensumAnzeigeTyp(
+					BetreuungspensumAnzeigeTyp.NUR_PROZENT
+				)
+				.kontingentierungEnabledAndEntwurf(false)
+				.stadtBernAsivConfigured(false)
+				.isHoehereBeitraegeConfigured(true)
+				.build(),
+			"WaeltiDagmar_hoehererBeitrag.pdf"
+		);
 		String text = PdfUnitTestUtil.getText(pdf);
 
 		expect.scenario(MandantIdentifier.SCHWYZ.name())
@@ -147,49 +192,93 @@ class VerfuegungPdfTest {
 	}
 
 	private void verfuegen(Gesuch gesuch) {
-		gesuch.getKindContainers().forEach(kindContainer -> kindContainer.getBetreuungen().forEach(betreuung -> {
-			final Verfuegung verfuegung = new Verfuegung();
-			final VerfuegungZeitabschnitt zeitabschnitt = getVerfuegtenZeitabschnitt(gesuch);
-			verfuegung.setZeitabschnitte(List.of(zeitabschnitt));
-			betreuung.setVerfuegung(verfuegung);
-			betreuung.setBetreuungsstatus(Betreuungsstatus.VERFUEGT);
-		}));
+		gesuch.getKindContainers()
+			.forEach(
+				kindContainer -> kindContainer.getBetreuungen()
+					.forEach(betreuung -> {
+						final Verfuegung verfuegung =
+							new Verfuegung();
+						final VerfuegungZeitabschnitt zeitabschnitt =
+							getVerfuegtenZeitabschnitt(gesuch);
+						verfuegung.setZeitabschnitte(
+							List.of(zeitabschnitt)
+						);
+						betreuung.setVerfuegung(verfuegung);
+						betreuung.setBetreuungsstatus(
+							Betreuungsstatus.VERFUEGT
+						);
+					})
+			);
 	}
 
 	private void verfuegenWithHoehererBeitrag(Gesuch gesuch) {
-		gesuch.getKindContainers().forEach(kindContainer -> kindContainer.getBetreuungen().forEach(betreuung -> {
-			final Verfuegung verfuegung = new Verfuegung();
-			final VerfuegungZeitabschnitt zeitabschnitt = getVerfuegtenZeitabschnitt(gesuch);
-			zeitabschnitt.getRelevantBgCalculationResult().setHoehererBeitrag(BigDecimal.valueOf(10));
-			zeitabschnitt.getRelevantBgCalculationResult().setBedarfsstufe(Bedarfsstufe.BEDARFSSTUFE_1);
-			verfuegung.setZeitabschnitte(List.of(zeitabschnitt));
-			betreuung.setVerfuegung(verfuegung);
-			betreuung.setBetreuungsstatus(Betreuungsstatus.VERFUEGT);
-		}));
+		gesuch.getKindContainers()
+			.forEach(
+				kindContainer -> kindContainer.getBetreuungen()
+					.forEach(betreuung -> {
+						final Verfuegung verfuegung =
+							new Verfuegung();
+						final VerfuegungZeitabschnitt zeitabschnitt =
+							getVerfuegtenZeitabschnitt(gesuch);
+						zeitabschnitt
+							.getRelevantBgCalculationResult()
+							.setHoehererBeitrag(
+								BigDecimal.valueOf(10)
+							);
+						zeitabschnitt
+							.getRelevantBgCalculationResult()
+							.setBedarfsstufe(
+								Bedarfsstufe.BEDARFSSTUFE_1
+							);
+						verfuegung.setZeitabschnitte(
+							List.of(zeitabschnitt)
+						);
+						betreuung.setVerfuegung(verfuegung);
+						betreuung.setBetreuungsstatus(
+							Betreuungsstatus.VERFUEGT
+						);
+					})
+			);
 	}
 
 	@Nonnull
-	private static VerfuegungZeitabschnitt getVerfuegtenZeitabschnitt(Gesuch gesuch) {
+	private static VerfuegungZeitabschnitt getVerfuegtenZeitabschnitt(
+		Gesuch gesuch
+	) {
 		final VerfuegungZeitabschnitt zeitabschnitt =
-			new VerfuegungZeitabschnitt(gesuch.getGesuchsperiode().getGueltigkeit());
-		zeitabschnitt.getRelevantBgCalculationResult().setBetreuungspensumProzent(BigDecimal.valueOf(80));
-		zeitabschnitt.getRelevantBgCalculationResult().setBeitragshoeheProzent(10);
+			new VerfuegungZeitabschnitt(
+				gesuch.getGesuchsperiode().getGueltigkeit()
+			);
+		zeitabschnitt.getRelevantBgCalculationResult()
+			.setBetreuungspensumProzent(BigDecimal.valueOf(80));
+		zeitabschnitt.getRelevantBgCalculationResult()
+			.setBeitragshoeheProzent(10);
 		return zeitabschnitt;
 	}
 
-	private File generatePdf(Betreuung betreuung, VerfuegungPdfGeneratorKonfiguration konfiguration, String fileName) {
+	private File generatePdf(
+		Betreuung betreuung,
+		VerfuegungPdfGeneratorKonfiguration konfiguration,
+		String fileName
+	) {
 		Gesuch gesuch = betreuung.extractGesuch();
 		Gesuchsperiode gesuchsperiode = gesuch.getGesuchsperiode();
 
 		// there are no easy-to-use Mandant rules for test cases, so we create our own...
 		Verfuegung verfuegung = new Verfuegung();
 		VerfuegungZeitabschnitt single =
-			new VerfuegungZeitabschnitt(new DateRange(gesuchsperiode.getGueltigkeit().getGueltigAb()).withFullMonths());
-		single.getRelevantBgCalculationResult().setEinkommensjahr(gesuchsperiode.getBasisJahr());
+			new VerfuegungZeitabschnitt(
+				new DateRange(
+					gesuchsperiode.getGueltigkeit().getGueltigAb()
+				).withFullMonths()
+			);
+		single.getRelevantBgCalculationResult()
+			.setEinkommensjahr(gesuchsperiode.getBasisJahr());
 
 		verfuegung.setZeitabschnitte(Collections.singletonList(single));
 
-		GemeindeStammdaten gemeindeStammdaten = TestDataUtil.createGemeindeStammdaten(gesuch.extractGemeinde());
+		GemeindeStammdaten gemeindeStammdaten = TestDataUtil
+			.createGemeindeStammdaten(gesuch.extractGemeinde());
 		var generator =
 			new VerfuegungPdfGeneratorVisitor(
 				betreuung,
@@ -200,8 +289,12 @@ class VerfuegungPdfTest {
 		Mandant mandant = gesuch.extractMandant();
 
 		try {
-			Path path = Path.of(getOutputPath(mandant.getMandantIdentifier()).toString(), fileName);
-			generator.getVerfuegungPdfGeneratorForMandant(mandant).generate(Files.newOutputStream(path));
+			Path path = Path.of(
+				getOutputPath(mandant.getMandantIdentifier()).toString(),
+				fileName
+			);
+			generator.getVerfuegungPdfGeneratorForMandant(mandant)
+				.generate(Files.newOutputStream(path));
 
 			return path.toFile();
 		} catch (IOException | InvoiceGeneratorException e) {
@@ -211,7 +304,12 @@ class VerfuegungPdfTest {
 
 	@Nonnull
 	private String textForSnapshot(String text) {
-		return PATTERN.matcher(text.replaceAll(Constants.DATE_FORMATTER.format(LocalDate.now()), "<TODAY>"))
+		return PATTERN.matcher(
+			text.replaceAll(
+				Constants.DATE_FORMATTER.format(LocalDate.now()),
+				"<TODAY>"
+			)
+		)
 			.replaceAll("");
 	}
 

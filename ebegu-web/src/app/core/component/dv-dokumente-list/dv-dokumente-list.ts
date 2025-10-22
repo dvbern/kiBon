@@ -15,7 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IComponentOptions, IController, ILogService} from 'angular';
+import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
+import {FileUtil} from '@kibon/shared-util-fn-file';
+import {MandantService} from '@kibon/shared-util-mandant-service';
+import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
+import {TSDokumentUploadTyp, TSRole} from '@kibon/shared/model/enums';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {copy, IComponentOptions, IController, ILogService} from 'angular';
 import {Subscription} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {FinanzielleSituationAppenzellService} from '../../../../gesuch/component/finanzielleSituation/appenzell/finanzielle-situation-appenzell.service';
@@ -23,21 +29,17 @@ import {OkHtmlDialogController} from '../../../../gesuch/dialog/OkHtmlDialogCont
 import {RemoveDialogController} from '../../../../gesuch/dialog/RemoveDialogController';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
 import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
-import {isAnyStatusOfGeprueftVerfuegenVerfuegtOrAbgeschlossen} from '../../../../models/enums/TSAntragStatus';
+import {isAnyStatusOfFreigegebenGeprueftVerfuegenVerfuegtOrAbgeschlossen} from '../../../../models/enums/TSAntragStatus';
 import {TSDokumentGrundPersonType} from '../../../../models/enums/TSDokumentGrundPersonType';
 import {TSDokumentTyp} from '../../../../models/enums/TSDokumentTyp';
-import {TSRole} from '../../../../models/enums/TSRole';
 import {TSDokument} from '../../../../models/TSDokument';
 import {TSDokumentGrund} from '../../../../models/TSDokumentGrund';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {TSGesuch} from '../../../../models/TSGesuch';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {MandantService} from '../../../shared/services/mandant.service';
-import {MAX_FILE_SIZE} from '../../constants/CONSTANTS';
-import {KiBonMandant, MANDANTS} from '../../constants/MANDANTS';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
-import {ApplicationPropertyRS} from '../../rest-services/applicationPropertyRS.rest';
+import {ErrorService} from '../../errors/service/ErrorService';
 import {DownloadRS} from '../../service/downloadRS.rest';
 import {UploadRS} from '../../service/uploadRS.rest';
 import ITranslateService = angular.translate.ITranslateService;
@@ -73,8 +75,9 @@ export class DVDokumenteListController implements IController {
         '$log',
         'AuthServiceRS',
         '$translate',
-        'ApplicationPropertyRS',
-        'MandantService'
+        'MandantService',
+        'ErrorService',
+        'SharedUtilApplicationPropertyRsService'
     ];
 
     public dokumente: TSDokumentGrund[];
@@ -98,12 +101,13 @@ export class DVDokumenteListController implements IController {
         private readonly $log: ILogService,
         private readonly authServiceRS: AuthServiceRS,
         private readonly $translate: ITranslateService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
-        private readonly mandantService: MandantService
+        private readonly mandantService: MandantService,
+        private readonly errorService: ErrorService,
+        private applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {
-        this.applicationPropertyRS.getAllowedMimetypes().then(response => {
+        this.applicationPropertyRS.getAllowedMimetypes().subscribe(response => {
             if (response !== undefined) {
                 this.allowedMimetypes = response;
             }
@@ -162,10 +166,18 @@ export class DVDokumenteListController implements IController {
             return;
         }
 
+        if (
+            !FileUtil.areAllFileEndingsMatchingTypes(filesOk, [
+                TSDokumentUploadTyp.ANY
+            ])
+        ) {
+            this.errorService.addMesageAsError('ERROR_WRONG_UPLOAD_FILETYPE');
+            return;
+        }
         this.uploadRS
             .uploadFile(filesOk, selectDokument, gesuchID)
             .then(response => {
-                const returnedDG = angular.copy(response);
+                const returnedDG = copy(response);
                 this.wizardStepManager
                     .findStepsFromGesuch(this.gesuchModelManager.getGesuch().id)
                     .then(() => this.handleUpload(returnedDG));
@@ -260,7 +272,7 @@ export class DVDokumenteListController implements IController {
             .getAccessTokenDokument(dokument.id)
             .then((downloadFile: TSDownloadFile) => {
                 this.$log.debug(`accessToken: ${downloadFile.accessToken}`);
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     attachment,
@@ -294,7 +306,7 @@ export class DVDokumenteListController implements IController {
         // in Bearbeitung Gemeinde/JA nichts mehr hochladen
         const gsAndVerfuegt =
             this.gesuchModelManager.getGesuch() &&
-            isAnyStatusOfGeprueftVerfuegenVerfuegtOrAbgeschlossen(
+            isAnyStatusOfFreigegebenGeprueftVerfuegenVerfuegtOrAbgeschlossen(
                 this.gesuchModelManager.getGesuch().status
             ) &&
             this.authServiceRS.isOneOfRoles(

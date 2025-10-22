@@ -20,8 +20,8 @@ package ch.dvbern.ebegu.dto.geoadmin;
 import java.io.Serializable;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

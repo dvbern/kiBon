@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.finanzielleSituationRechner;
@@ -49,7 +49,10 @@ public abstract class AbstractFinanzielleSituationRechner {
 	 *
 	 * @param gesuch das Gesuch dessen finazDatenDTO gesetzt werden soll
 	 */
-	public void calculateFinanzDaten(@Nonnull Gesuch gesuch, BigDecimal minimumEKV) {
+	public void calculateFinanzDaten(
+		@Nonnull Gesuch gesuch,
+		BigDecimal minimumEKV
+	) {
 		FinanzDatenDTO finanzDatenDTOAlleine = new FinanzDatenDTO(minimumEKV);
 		FinanzDatenDTO finanzDatenDTOZuZweit = new FinanzDatenDTO(minimumEKV);
 
@@ -59,22 +62,40 @@ public abstract class AbstractFinanzielleSituationRechner {
 		FinanzielleSituationResultateDTO finanzielleSituationResultateDTOZuZweit =
 			calculateResultateFinanzielleSituation(gesuch, true);
 
-		finanzDatenDTOAlleine.setMassgebendesEinkBjVorAbzFamGr(finanzielleSituationResultateDTOAlleine.getMassgebendesEinkVorAbzFamGr());
-		finanzDatenDTOZuZweit.setMassgebendesEinkBjVorAbzFamGr(finanzielleSituationResultateDTOZuZweit.getMassgebendesEinkVorAbzFamGr());
+		finanzDatenDTOAlleine.setMassgebendesEinkBjVorAbzFamGr(
+			finanzielleSituationResultateDTOAlleine
+				.getMassgebendesEinkVorAbzFamGr()
+		);
+		finanzDatenDTOZuZweit.setMassgebendesEinkBjVorAbzFamGr(
+			finanzielleSituationResultateDTOZuZweit
+				.getMassgebendesEinkVorAbzFamGr()
+		);
 
 		//Berechnung wird nur ausgefuehrt wenn Daten vorhanden, wenn es keine gibt machen wir nichts
-		EinkommensverschlechterungInfo ekvInfo = gesuch.extractEinkommensverschlechterungInfo();
+		EinkommensverschlechterungInfo ekvInfo = gesuch
+			.extractEinkommensverschlechterungInfo();
 		if (ekvInfo != null && ekvInfo.getEinkommensverschlechterung()) {
 			FinanzielleSituationResultateDTO resultateEKV1Alleine =
-				calculateResultateEinkommensverschlechterung(gesuch, 1, false);
+				calculateResultateEinkommensverschlechterung(
+					gesuch,
+					1,
+					false
+				);
 			FinanzielleSituationResultateDTO resultateEKV1ZuZweit =
-				calculateResultateEinkommensverschlechterung(gesuch, 1, true);
+				calculateResultateEinkommensverschlechterung(
+					gesuch,
+					1,
+					true
+				);
 			BigDecimal massgebendesEinkommenBasisjahrAlleine =
-				finanzielleSituationResultateDTOAlleine.getMassgebendesEinkVorAbzFamGr();
+				finanzielleSituationResultateDTOAlleine
+					.getMassgebendesEinkVorAbzFamGr();
 			BigDecimal massgebendesEinkommenBasisjahrZuZweit =
-				finanzielleSituationResultateDTOZuZweit.getMassgebendesEinkVorAbzFamGr();
+				finanzielleSituationResultateDTOZuZweit
+					.getMassgebendesEinkVorAbzFamGr();
 
-			if (ekvInfo.getEkvFuerBasisJahrPlus1() != null && ekvInfo.getEkvFuerBasisJahrPlus1()) {
+			if (ekvInfo.getEkvFuerBasisJahrPlus1() != null
+				&& ekvInfo.getEkvFuerBasisJahrPlus1()) {
 				finanzDatenDTOAlleine.setEkv1Erfasst(true);
 				finanzDatenDTOZuZweit.setEkv1Erfasst(true);
 				if (ekvInfo.getEkvBasisJahrPlus1Annulliert()) {
@@ -82,26 +103,39 @@ public abstract class AbstractFinanzielleSituationRechner {
 					finanzDatenDTOZuZweit.setEkv1Annulliert(Boolean.TRUE);
 				}
 				// In der EKV 1 vergleichen wir immer mit dem Basisjahr
-				handleEKV1(finanzDatenDTOAlleine, resultateEKV1Alleine.getMassgebendesEinkVorAbzFamGr(),
-					massgebendesEinkommenBasisjahrAlleine, minimumEKV);
-				handleEKV1(finanzDatenDTOZuZweit, resultateEKV1ZuZweit.getMassgebendesEinkVorAbzFamGr(),
-					massgebendesEinkommenBasisjahrZuZweit, minimumEKV);
+				handleEKV1(
+					finanzDatenDTOAlleine,
+					resultateEKV1Alleine.getMassgebendesEinkVorAbzFamGr(),
+					massgebendesEinkommenBasisjahrAlleine,
+					minimumEKV
+				);
+				handleEKV1(
+					finanzDatenDTOZuZweit,
+					resultateEKV1ZuZweit.getMassgebendesEinkVorAbzFamGr(),
+					massgebendesEinkommenBasisjahrZuZweit,
+					minimumEKV
+				);
 			}
 
 			BigDecimal massgebendesEinkommenVorjahrAlleine;
 			if (finanzDatenDTOAlleine.isEkv1AcceptedAndNotAnnuliert()) {
-				massgebendesEinkommenVorjahrAlleine = resultateEKV1Alleine.getMassgebendesEinkVorAbzFamGr();
+				massgebendesEinkommenVorjahrAlleine = resultateEKV1Alleine
+					.getMassgebendesEinkVorAbzFamGr();
 			} else {
-				massgebendesEinkommenVorjahrAlleine = massgebendesEinkommenBasisjahrAlleine;
+				massgebendesEinkommenVorjahrAlleine =
+					massgebendesEinkommenBasisjahrAlleine;
 			}
 			BigDecimal massgebendesEinkommenVorjahrZuZweit;
 			if (finanzDatenDTOZuZweit.isEkv1AcceptedAndNotAnnuliert()) {
-				massgebendesEinkommenVorjahrZuZweit = resultateEKV1ZuZweit.getMassgebendesEinkVorAbzFamGr();
+				massgebendesEinkommenVorjahrZuZweit = resultateEKV1ZuZweit
+					.getMassgebendesEinkVorAbzFamGr();
 			} else {
-				massgebendesEinkommenVorjahrZuZweit = massgebendesEinkommenBasisjahrZuZweit;
+				massgebendesEinkommenVorjahrZuZweit =
+					massgebendesEinkommenBasisjahrZuZweit;
 			}
 
-			if (ekvInfo.getEkvFuerBasisJahrPlus2() != null && ekvInfo.getEkvFuerBasisJahrPlus2()) {
+			if (ekvInfo.getEkvFuerBasisJahrPlus2() != null
+				&& ekvInfo.getEkvFuerBasisJahrPlus2()) {
 				finanzDatenDTOAlleine.setEkv2Erfasst(true);
 				finanzDatenDTOZuZweit.setEkv2Erfasst(true);
 				if (ekvInfo.getEkvBasisJahrPlus2Annulliert()) {
@@ -109,21 +143,37 @@ public abstract class AbstractFinanzielleSituationRechner {
 					finanzDatenDTOZuZweit.setEkv2Annulliert(Boolean.TRUE);
 				}
 				FinanzielleSituationResultateDTO resultateEKV2Alleine =
-					calculateResultateEinkommensverschlechterung(gesuch, 2, false);
+					calculateResultateEinkommensverschlechterung(
+						gesuch,
+						2,
+						false
+					);
 				FinanzielleSituationResultateDTO resultateEKV2ZuZweit =
-					calculateResultateEinkommensverschlechterung(gesuch, 2, true);
+					calculateResultateEinkommensverschlechterung(
+						gesuch,
+						2,
+						true
+					);
 				// In der EKV 2 vergleichen wir immer mit dem Basisjahr
-				handleEKV2(finanzDatenDTOAlleine,
+				handleEKV2(
+					finanzDatenDTOAlleine,
 					resultateEKV2Alleine.getMassgebendesEinkVorAbzFamGr(),
 					massgebendesEinkommenBasisjahrAlleine,
-					minimumEKV);
-				handleEKV2(finanzDatenDTOZuZweit,
+					minimumEKV
+				);
+				handleEKV2(
+					finanzDatenDTOZuZweit,
 					resultateEKV2ZuZweit.getMassgebendesEinkVorAbzFamGr(),
 					massgebendesEinkommenBasisjahrZuZweit,
-					minimumEKV);
+					minimumEKV
+				);
 			} else {
-				finanzDatenDTOAlleine.setMassgebendesEinkBjP2VorAbzFamGr(massgebendesEinkommenVorjahrAlleine);
-				finanzDatenDTOZuZweit.setMassgebendesEinkBjP2VorAbzFamGr(massgebendesEinkommenVorjahrZuZweit);
+				finanzDatenDTOAlleine.setMassgebendesEinkBjP2VorAbzFamGr(
+					massgebendesEinkommenVorjahrAlleine
+				);
+				finanzDatenDTOZuZweit.setMassgebendesEinkBjP2VorAbzFamGr(
+					massgebendesEinkommenVorjahrZuZweit
+				);
 			}
 		}
 		gesuch.setFinanzDatenDTO_alleine(finanzDatenDTOAlleine);
@@ -133,10 +183,16 @@ public abstract class AbstractFinanzielleSituationRechner {
 	@Nonnull
 	public FinanzielleSituationResultateDTO calculateResultateFinanzielleSituation(
 		@Nonnull Gesuch gesuch,
-		boolean hasSecondGesuchsteller) {
+		boolean hasSecondGesuchsteller
+	) {
 
-		final FinanzielleSituationResultateDTO finSitResultDTO = new FinanzielleSituationResultateDTO();
-		setFinanzielleSituationParameters(gesuch, finSitResultDTO, hasSecondGesuchsteller);
+		final FinanzielleSituationResultateDTO finSitResultDTO =
+			new FinanzielleSituationResultateDTO();
+		setFinanzielleSituationParameters(
+			gesuch,
+			finSitResultDTO,
+			hasSecondGesuchsteller
+		);
 
 		return finSitResultDTO;
 	}
@@ -151,11 +207,18 @@ public abstract class AbstractFinanzielleSituationRechner {
 	public FinanzielleSituationResultateDTO calculateResultateEinkommensverschlechterung(
 		@Nonnull Gesuch gesuch,
 		int basisJahrPlus,
-		boolean hasSecondGesuchsteller) {
+		boolean hasSecondGesuchsteller
+	) {
 		Objects.requireNonNull(gesuch.extractEinkommensverschlechterungInfo());
 
-		final FinanzielleSituationResultateDTO einkVerResultDTO = new FinanzielleSituationResultateDTO();
-		setEinkommensverschlechterungParameters(gesuch, basisJahrPlus, einkVerResultDTO, hasSecondGesuchsteller);
+		final FinanzielleSituationResultateDTO einkVerResultDTO =
+			new FinanzielleSituationResultateDTO();
+		setEinkommensverschlechterungParameters(
+			gesuch,
+			basisJahrPlus,
+			einkVerResultDTO,
+			hasSecondGesuchsteller
+		);
 
 		return einkVerResultDTO;
 	}
@@ -167,15 +230,19 @@ public abstract class AbstractFinanzielleSituationRechner {
 	public abstract void setFinanzielleSituationParameters(
 		@Nonnull Gesuch gesuch,
 		final FinanzielleSituationResultateDTO finSitResultDTO,
-		boolean hasSecondGesuchsteller);
+		boolean hasSecondGesuchsteller
+	);
 
 	/**
 	 * Nimmt das uebergebene FinanzielleSituationResultateDTO und mit den Daten vom Gesuch, berechnet alle im
 	 * FinanzielleSituationResultateDTO benoetigten Daten.
 	 */
 	public abstract void setEinkommensverschlechterungParameters(
-		@Nonnull Gesuch gesuch, int basisJahrPlus,
-		final FinanzielleSituationResultateDTO einkVerResultDTO, boolean hasSecondGesuchsteller);
+		@Nonnull Gesuch gesuch,
+		int basisJahrPlus,
+		final FinanzielleSituationResultateDTO einkVerResultDTO,
+		boolean hasSecondGesuchsteller
+	);
 
 	protected void handleEKV1(
 		@Nonnull FinanzDatenDTO finanzDatenDTO,
@@ -185,12 +252,20 @@ public abstract class AbstractFinanzielleSituationRechner {
 	) {
 		// In der EKV 1 vergleichen wir immer mit dem Basisjahr
 		finanzDatenDTO.setEkv1Erfasst(true);
-		boolean accepted = acceptEKV(massgebendesEinkommenBasisjahr, massgebendesEinkommenEKV1, minimumProzentFuerEKV);
+		boolean accepted = acceptEKV(
+			massgebendesEinkommenBasisjahr,
+			massgebendesEinkommenEKV1,
+			minimumProzentFuerEKV
+		);
 		finanzDatenDTO.setEkv1Accepted(accepted);
 		if (accepted) {
-			finanzDatenDTO.setMassgebendesEinkBjP1VorAbzFamGr(massgebendesEinkommenEKV1);
+			finanzDatenDTO.setMassgebendesEinkBjP1VorAbzFamGr(
+				massgebendesEinkommenEKV1
+			);
 		} else {
-			finanzDatenDTO.setMassgebendesEinkBjP1VorAbzFamGr(massgebendesEinkommenBasisjahr);
+			finanzDatenDTO.setMassgebendesEinkBjP1VorAbzFamGr(
+				massgebendesEinkommenBasisjahr
+			);
 		}
 	}
 
@@ -205,12 +280,17 @@ public abstract class AbstractFinanzielleSituationRechner {
 		boolean accepted = acceptEKV(
 			massgebendesEinkommenBasisjahr,
 			massgebendesEinkommenEKV2,
-			minimumProzentFuerEKV);
+			minimumProzentFuerEKV
+		);
 		finanzDatenDTO.setEkv2Accepted(accepted);
 		if (accepted) {
-			finanzDatenDTO.setMassgebendesEinkBjP2VorAbzFamGr(massgebendesEinkommenEKV2);
+			finanzDatenDTO.setMassgebendesEinkBjP2VorAbzFamGr(
+				massgebendesEinkommenEKV2
+			);
 		} else {
-			finanzDatenDTO.setMassgebendesEinkBjP2VorAbzFamGr(massgebendesEinkommenBasisjahr);
+			finanzDatenDTO.setMassgebendesEinkBjP2VorAbzFamGr(
+				massgebendesEinkommenBasisjahr
+			);
 		}
 	}
 
@@ -221,29 +301,47 @@ public abstract class AbstractFinanzielleSituationRechner {
 	public boolean acceptEKV(
 		BigDecimal massgebendesEinkommenBasisjahr,
 		BigDecimal massgebendesEinkommenJahr,
-		BigDecimal minimumProzentFuerEKV) {
+		BigDecimal minimumProzentFuerEKV
+	) {
 
-		boolean result = massgebendesEinkommenBasisjahr.compareTo(BigDecimal.ZERO) > 0;
+		boolean result = massgebendesEinkommenBasisjahr.compareTo(
+			BigDecimal.ZERO
+		) > 0;
 		if (result) {
-			BigDecimal differenzGerundet = getCalculatedProzentualeDifferenzRounded(massgebendesEinkommenBasisjahr, massgebendesEinkommenJahr);
+			BigDecimal differenzGerundet =
+				getCalculatedProzentualeDifferenzRounded(
+					massgebendesEinkommenBasisjahr,
+					massgebendesEinkommenJahr
+				);
 			// -19.999 => -19 (nicht akzeptiert)
 			// -20.000 => -20 (akzeptiert)
 			// -20.001 => -20 (akzeptiert)
-			return differenzGerundet.compareTo(minimumProzentFuerEKV.negate()) <= 0;
+			return differenzGerundet.compareTo(minimumProzentFuerEKV.negate())
+				<= 0;
 		}
 		return false;
 	}
 
 	@Nonnull
-	public static BigDecimal getCalculatedProzentualeDifferenzRounded(@Nullable BigDecimal einkommenJahr, @Nullable BigDecimal einkommenJahrPlus1) {
-		BigDecimal resultExact = AbstractFinanzielleSituationRechner.calculateProzentualeDifferenz(einkommenJahr, einkommenJahrPlus1);
+	public static BigDecimal getCalculatedProzentualeDifferenzRounded(
+		@Nullable BigDecimal einkommenJahr,
+		@Nullable BigDecimal einkommenJahrPlus1
+	) {
+		BigDecimal resultExact = AbstractFinanzielleSituationRechner
+			.calculateProzentualeDifferenz(
+				einkommenJahr,
+				einkommenJahrPlus1
+			);
 		double doubleValue = resultExact.doubleValue();
 		double resultFloor = Math.ceil(doubleValue);
 		return MathUtil.GANZZAHL.from(resultFloor);
 	}
 
 	@Nonnull
-	public static BigDecimal calculateProzentualeDifferenz(@Nullable BigDecimal einkommenJahr, @Nullable BigDecimal einkommenJahrPlus1) {
+	public static BigDecimal calculateProzentualeDifferenz(
+		@Nullable BigDecimal einkommenJahr,
+		@Nullable BigDecimal einkommenJahrPlus1
+	) {
 		BigDecimal HUNDERT = MathUtil.EXACT.from(100);
 		if (einkommenJahr == null && einkommenJahrPlus1 == null) {
 			return BigDecimal.ZERO;
@@ -255,7 +353,8 @@ public abstract class AbstractFinanzielleSituationRechner {
 			return HUNDERT.negate();
 		}
 		boolean jahrZero = einkommenJahr.compareTo(BigDecimal.ZERO) <= 0;
-		boolean jahrPlus1Zero = einkommenJahrPlus1.compareTo(BigDecimal.ZERO) <= 0;
+		boolean jahrPlus1Zero = einkommenJahrPlus1.compareTo(BigDecimal.ZERO)
+			<= 0;
 		if (jahrZero && jahrPlus1Zero) {
 			return BigDecimal.ZERO;
 		}
@@ -265,9 +364,12 @@ public abstract class AbstractFinanzielleSituationRechner {
 		if (jahrZero) {
 			return HUNDERT;
 		}
-		BigDecimal divide = MathUtil.EXACT.divide(einkommenJahrPlus1, einkommenJahr);
+		BigDecimal divide = MathUtil.EXACT.divide(
+			einkommenJahrPlus1,
+			einkommenJahr
+		);
 		divide = MathUtil.EXACT.multiply(divide, HUNDERT);
-		return  MathUtil.EXACT.subtract(HUNDERT, divide).negate();
+		return MathUtil.EXACT.subtract(HUNDERT, divide).negate();
 	}
 
 	protected void calculateZusammen(
@@ -275,41 +377,71 @@ public abstract class AbstractFinanzielleSituationRechner {
 		@Nullable AbstractFinanzielleSituation finanzielleSituationGS1,
 		@Nullable BigDecimal geschaeftsgewinnDurchschnitt1,
 		@Nullable AbstractFinanzielleSituation finanzielleSituationGS2,
-		@Nullable BigDecimal geschaeftsgewinnDurchschnitt2) {
+		@Nullable BigDecimal geschaeftsgewinnDurchschnitt2
+	) {
 
-		finSitResultDTO.setEinkommenBeiderGesuchsteller(calcEinkommen(
-			finanzielleSituationGS1, geschaeftsgewinnDurchschnitt1,
-			finanzielleSituationGS2, geschaeftsgewinnDurchschnitt2));
-		finSitResultDTO.setNettovermoegenXProzent(calcVermoegen5Prozent(
-			finanzielleSituationGS1,
-			finanzielleSituationGS2));
-			finSitResultDTO.setAbzuegeBeiderGesuchsteller(calcAbzuege(finanzielleSituationGS1, finanzielleSituationGS2));
+		finSitResultDTO.setEinkommenBeiderGesuchsteller(
+			calcEinkommen(
+				finanzielleSituationGS1,
+				geschaeftsgewinnDurchschnitt1,
+				finanzielleSituationGS2,
+				geschaeftsgewinnDurchschnitt2
+			)
+		);
+		finSitResultDTO.setNettovermoegenXProzent(
+			calcVermoegen5Prozent(
+				finanzielleSituationGS1,
+				finanzielleSituationGS2
+			)
+		);
+		finSitResultDTO.setAbzuegeBeiderGesuchsteller(
+			calcAbzuege(finanzielleSituationGS1, finanzielleSituationGS2)
+		);
 
-		finSitResultDTO.setAnrechenbaresEinkommen(add(
-			finSitResultDTO.getEinkommenBeiderGesuchsteller(),
-			finSitResultDTO.getNettovermoegenXProzent()));
+		finSitResultDTO.setAnrechenbaresEinkommen(
+			add(
+				finSitResultDTO.getEinkommenBeiderGesuchsteller(),
+				finSitResultDTO.getNettovermoegenXProzent()
+			)
+		);
 		finSitResultDTO.setMassgebendesEinkVorAbzFamGr(
 			MathUtil.positiveNonNullAndRound(
 				subtract(
 					finSitResultDTO.getAnrechenbaresEinkommen(),
-					finSitResultDTO.getAbzuegeBeiderGesuchsteller())));
+					finSitResultDTO.getAbzuegeBeiderGesuchsteller()
+				)
+			)
+		);
 	}
 
 	/**
 	 * Diese Methode aufrufen um den GeschaeftsgewinnDurchschnitt fuer die Finanzielle Situation zu berechnen.
 	 */
 	@Nullable
-	public static BigDecimal calcGeschaeftsgewinnDurchschnitt(@Nullable FinanzielleSituation finanzielleSituation) {
+	public static BigDecimal calcGeschaeftsgewinnDurchschnitt(
+		@Nullable FinanzielleSituation finanzielleSituation
+	) {
 		if (finanzielleSituation != null) {
-			BigDecimal gBJ = calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-				finanzielleSituation.getGeschaeftsgewinnBasisjahr(),
-				finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahr());
-			BigDecimal gBJ1 = calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-				finanzielleSituation.getGeschaeftsgewinnBasisjahrMinus1(),
-				finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1());
-			BigDecimal gBJ2 = calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-				finanzielleSituation.getGeschaeftsgewinnBasisjahrMinus2(),
-				finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2());
+			BigDecimal gBJ =
+				calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+					finanzielleSituation.getGeschaeftsgewinnBasisjahr(),
+					finanzielleSituation
+						.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+				);
+			BigDecimal gBJ1 =
+				calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+					finanzielleSituation
+						.getGeschaeftsgewinnBasisjahrMinus1(),
+					finanzielleSituation
+						.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1()
+				);
+			BigDecimal gBJ2 =
+				calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+					finanzielleSituation
+						.getGeschaeftsgewinnBasisjahrMinus2(),
+					finanzielleSituation
+						.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2()
+				);
 
 			return calcGeschaeftsgewinnDurchschnitt(gBJ, gBJ1, gBJ2);
 		}
@@ -327,44 +459,81 @@ public abstract class AbstractFinanzielleSituationRechner {
 		@Nullable Einkommensverschlechterung einkVersBjp1,
 		@Nullable Einkommensverschlechterung einkVersBjp2,
 		@Nullable EinkommensverschlechterungInfo ekvi,
-		int basisJahrPlus) {
+		int basisJahrPlus
+	) {
 		if (basisJahrPlus == 1) {
 			if (finanzielleSituation != null && einkVersBjp1 != null) {
-				BigDecimal gBJ = calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-					einkVersBjp1.getGeschaeftsgewinnBasisjahr(),
-					einkVersBjp1.getErsatzeinkommenSelbststaendigkeitBasisjahr());
-				BigDecimal gBJ1 =  calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-					finanzielleSituation.getGeschaeftsgewinnBasisjahr(),
-					finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahr());
-				BigDecimal gBJ2 =  calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-					finanzielleSituation.getGeschaeftsgewinnBasisjahrMinus1(),
-					finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1());
+				BigDecimal gBJ =
+					calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+						einkVersBjp1.getGeschaeftsgewinnBasisjahr(),
+						einkVersBjp1
+							.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+					);
+				BigDecimal gBJ1 =
+					calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+						finanzielleSituation
+							.getGeschaeftsgewinnBasisjahr(),
+						finanzielleSituation
+							.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+					);
+				BigDecimal gBJ2 =
+					calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+						finanzielleSituation
+							.getGeschaeftsgewinnBasisjahrMinus1(),
+						finanzielleSituation
+							.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1()
+					);
 
 				return calcGeschaeftsgewinnDurchschnitt(gBJ, gBJ1, gBJ2);
 			}
-		} else if (basisJahrPlus == 2 && finanzielleSituation != null && einkVersBjp2 != null) {
-			if (ekvi != null && ekvi.getEkvFuerBasisJahrPlus1() && einkVersBjp1 != null) {
-				BigDecimal gBJ =  calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-					einkVersBjp2.getGeschaeftsgewinnBasisjahr(),
-					einkVersBjp2.getErsatzeinkommenSelbststaendigkeitBasisjahr());
-				BigDecimal gBJ1 =  calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-					einkVersBjp1.getGeschaeftsgewinnBasisjahr(),
-					einkVersBjp1.getErsatzeinkommenSelbststaendigkeitBasisjahr());
-				BigDecimal gBJ2 =  calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-					finanzielleSituation.getGeschaeftsgewinnBasisjahr(),
-					finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahr());
+		} else if (basisJahrPlus == 2
+			&& finanzielleSituation != null
+			&& einkVersBjp2 != null) {
+			if (ekvi != null
+				&& ekvi.getEkvFuerBasisJahrPlus1()
+				&& einkVersBjp1 != null) {
+				BigDecimal gBJ =
+					calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+						einkVersBjp2.getGeschaeftsgewinnBasisjahr(),
+						einkVersBjp2
+							.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+					);
+				BigDecimal gBJ1 =
+					calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+						einkVersBjp1.getGeschaeftsgewinnBasisjahr(),
+						einkVersBjp1
+							.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+					);
+				BigDecimal gBJ2 =
+					calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+						finanzielleSituation
+							.getGeschaeftsgewinnBasisjahr(),
+						finanzielleSituation
+							.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+					);
 
 				return calcGeschaeftsgewinnDurchschnitt(gBJ, gBJ1, gBJ2);
 			} else {
-				BigDecimal gBJ =  calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-					einkVersBjp2.getGeschaeftsgewinnBasisjahr(),
-					einkVersBjp2.getErsatzeinkommenSelbststaendigkeitBasisjahr());
-				BigDecimal gBJ1 =  calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-					einkVersBjp2.getGeschaeftsgewinnBasisjahrMinus1(),
-					einkVersBjp2.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1());
-				BigDecimal gBJ2 =  calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
-					finanzielleSituation.getGeschaeftsgewinnBasisjahr(),
-					finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahr());
+				BigDecimal gBJ =
+					calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+						einkVersBjp2.getGeschaeftsgewinnBasisjahr(),
+						einkVersBjp2
+							.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+					);
+				BigDecimal gBJ1 =
+					calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+						einkVersBjp2
+							.getGeschaeftsgewinnBasisjahrMinus1(),
+						einkVersBjp2
+							.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1()
+					);
+				BigDecimal gBJ2 =
+					calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
+						finanzielleSituation
+							.getGeschaeftsgewinnBasisjahr(),
+						finanzielleSituation
+							.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+					);
 				return calcGeschaeftsgewinnDurchschnitt(gBJ, gBJ1, gBJ2);
 			}
 		}
@@ -379,7 +548,8 @@ public abstract class AbstractFinanzielleSituationRechner {
 	private static BigDecimal calcGeschaeftsgewinnDurchschnitt(
 		@Nullable final BigDecimal geschaeftsgewinnBasisjahr,
 		@Nullable final BigDecimal geschaeftsgewinnBasisjahrMinus1,
-		@Nullable final BigDecimal geschaeftsgewinnBasisjahrMinus2) {
+		@Nullable final BigDecimal geschaeftsgewinnBasisjahrMinus2
+	) {
 		if (geschaeftsgewinnBasisjahr == null) {
 			return BigDecimal.ZERO;
 		}
@@ -398,7 +568,10 @@ public abstract class AbstractFinanzielleSituationRechner {
 		anzahlJahre = anzahlJahre.add(BigDecimal.ONE);
 
 		if (anzahlJahre.intValue() > 0) {
-			final BigDecimal divided = total.divide(anzahlJahre, RoundingMode.HALF_UP);
+			final BigDecimal divided = total.divide(
+				anzahlJahre,
+				RoundingMode.HALF_UP
+			);
 			// Durschnitt darf NIE kleiner als 0 sein
 			return divided.intValue() >= 0 ? divided : BigDecimal.ZERO;
 		}
@@ -409,7 +582,8 @@ public abstract class AbstractFinanzielleSituationRechner {
 	@Nullable
 	private static BigDecimal calcGeschaeftsgewinnWithErsatzeinkommenAusSelbststaendigkeit(
 		@Nullable BigDecimal geschaeftsgewinn,
-		@Nullable BigDecimal ersatzeinkommenAusSelbststaendigkeit) {
+		@Nullable BigDecimal ersatzeinkommenAusSelbststaendigkeit
+	) {
 		if (geschaeftsgewinn == null) {
 			return null;
 		}
@@ -427,25 +601,40 @@ public abstract class AbstractFinanzielleSituationRechner {
 	 */
 	public static BigDecimal calcVermoegen5Prozent(
 		@Nullable AbstractFinanzielleSituation gs1,
-		@Nullable AbstractFinanzielleSituation gs2) {
+		@Nullable AbstractFinanzielleSituation gs2
+	) {
 		BigDecimal totalBruttovermoegen = BigDecimal.ZERO;
 		BigDecimal totalSchulden = BigDecimal.ZERO;
 		BigDecimal nettovermoegen = BigDecimal.ZERO;
-		if(gs1 != null && Boolean.TRUE.equals(gs1.getSteuerdatenZugriff()) &&
-			gs1.getSteuerdatenAbfrageStatus() != null && gs1.getSteuerdatenAbfrageStatus().isSteuerdatenAbfrageErfolgreich()) {
+		if (gs1 != null
+			&& Boolean.TRUE.equals(gs1.getSteuerdatenZugriff())
+			&&
+			gs1.getSteuerdatenAbfrageStatus() != null
+			&& gs1.getSteuerdatenAbfrageStatus()
+				.isSteuerdatenAbfrageErfolgreich()) {
 			nettovermoegen = gs1.getNettoVermoegen();
-		}
-		else {
-			totalBruttovermoegen = gs1 != null ? gs1.getBruttovermoegen() : BigDecimal.ZERO;
+		} else {
+			totalBruttovermoegen = gs1 != null ?
+				gs1.getBruttovermoegen() :
+				BigDecimal.ZERO;
 			totalSchulden = gs1 != null ? gs1.getSchulden() : BigDecimal.ZERO;
 		}
-		if(gs2 != null && Boolean.TRUE.equals(gs2.getSteuerdatenZugriff()) &&
-			gs2.getSteuerdatenAbfrageStatus() != null && gs2.getSteuerdatenAbfrageStatus().isSteuerdatenAbfrageErfolgreich()) {
+		if (gs2 != null
+			&& Boolean.TRUE.equals(gs2.getSteuerdatenZugriff())
+			&&
+			gs2.getSteuerdatenAbfrageStatus() != null
+			&& gs2.getSteuerdatenAbfrageStatus()
+				.isSteuerdatenAbfrageErfolgreich()) {
 			nettovermoegen = add(nettovermoegen, gs2.getNettoVermoegen());
-		}
-		else {
-			totalBruttovermoegen = add(totalBruttovermoegen, gs2 != null ? gs2.getBruttovermoegen() : BigDecimal.ZERO);
-			totalSchulden = add(totalSchulden, gs2 != null ? gs2.getSchulden() : BigDecimal.ZERO);
+		} else {
+			totalBruttovermoegen = add(
+				totalBruttovermoegen,
+				gs2 != null ? gs2.getBruttovermoegen() : BigDecimal.ZERO
+			);
+			totalSchulden = add(
+				totalSchulden,
+				gs2 != null ? gs2.getSchulden() : BigDecimal.ZERO
+			);
 		}
 
 		BigDecimal total = subtract(totalBruttovermoegen, totalSchulden);
@@ -460,72 +649,105 @@ public abstract class AbstractFinanzielleSituationRechner {
 	@Nonnull
 	public BigDecimal calcTotalEinkommen(
 		@Nullable AbstractFinanzielleSituation gs1,
-		@Nullable AbstractFinanzielleSituation gs2) {
+		@Nullable AbstractFinanzielleSituation gs2
+	) {
 
 		return MathUtil.DEFAULT.addNullSafe(
 			BigDecimal.ZERO,
 			gs1 != null ? getZwischentotalEinkommen(gs1) : BigDecimal.ZERO,
-			gs2 != null ? getZwischentotalEinkommen(gs2) : BigDecimal.ZERO);
+			gs2 != null ? getZwischentotalEinkommen(gs2) : BigDecimal.ZERO
+		);
 	}
 
 	@Nonnull
 	public BigDecimal calcTotalVermoegen(
 		@Nullable AbstractFinanzielleSituation gs1,
-		@Nullable AbstractFinanzielleSituation gs2) {
+		@Nullable AbstractFinanzielleSituation gs2
+	) {
 
 		return MathUtil.DEFAULT.addNullSafe(
 			BigDecimal.ZERO,
 			gs1 != null ? getZwischentotalVermoegen(gs1) : BigDecimal.ZERO,
-			gs2 != null ? getZwischentotalVermoegen(gs2) : BigDecimal.ZERO);
+			gs2 != null ? getZwischentotalVermoegen(gs2) : BigDecimal.ZERO
+		);
 	}
 
 	public BigDecimal calcMassgebendesEinkommenVorAbzugFamiliengroesse(
 		@Nullable AbstractFinanzielleSituation gs1,
-		@Nullable AbstractFinanzielleSituation gs2) {
+		@Nullable AbstractFinanzielleSituation gs2
+	) {
 
 		BigDecimal totalEinkommen = MathUtil.DEFAULT.addNullSafe(
 			BigDecimal.ZERO,
 			calcTotalEinkommen(gs1, gs2),
-			calcVermoegen5Prozent(gs1, gs2));
+			calcVermoegen5Prozent(gs1, gs2)
+		);
 
 		return MathUtil.DEFAULT.subtract(
 			totalEinkommen,
-			calcAbzuege(gs1, gs2));
+			calcAbzuege(gs1, gs2)
+		);
 	}
 
 	@Nonnull
-	public final BigDecimal getZwischentotalEinkommen(@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation) {
+	public final BigDecimal getZwischentotalEinkommen(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation
+	) {
 		BigDecimal einkommenZwischentotal = calcEinkommenProGS(
 			abstractFinanzielleSituation,
-			abstractFinanzielleSituation.getDurchschnittlicherGeschaeftsgewinn(),
-			BigDecimal.ZERO);
+			abstractFinanzielleSituation
+				.getDurchschnittlicherGeschaeftsgewinn(),
+			BigDecimal.ZERO
+		);
 
 		return einkommenZwischentotal;
 	}
 
 	@Nonnull
-	public BigDecimal getZwischentotalVermoegen(@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation) {
-		BigDecimal vermoegenPlus = MathUtil.DEFAULT.addNullSafe(BigDecimal.ZERO, abstractFinanzielleSituation.getBruttovermoegen());
+	public BigDecimal getZwischentotalVermoegen(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation
+	) {
+		BigDecimal vermoegenPlus = MathUtil.DEFAULT.addNullSafe(
+			BigDecimal.ZERO,
+			abstractFinanzielleSituation.getBruttovermoegen()
+		);
 
-		return MathUtil.DEFAULT.subtractNullSafe(vermoegenPlus, abstractFinanzielleSituation.getSchulden());
+		return MathUtil.DEFAULT.subtractNullSafe(
+			vermoegenPlus,
+			abstractFinanzielleSituation.getSchulden()
+		);
 	}
 
 	@Nonnull
-	public BigDecimal getZwischetotalAbzuege(@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation) {
-		return MathUtil.DEFAULT.addNullSafe(BigDecimal.ZERO, abstractFinanzielleSituation.getGeleisteteAlimente());
+	public BigDecimal getZwischetotalAbzuege(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation
+	) {
+		return MathUtil.DEFAULT.addNullSafe(
+			BigDecimal.ZERO,
+			abstractFinanzielleSituation.getGeleisteteAlimente()
+		);
 	}
 
-	protected static BigDecimal add(@Nullable BigDecimal value1, @Nullable BigDecimal value2) {
+	protected static BigDecimal add(
+		@Nullable BigDecimal value1,
+		@Nullable BigDecimal value2
+	) {
 		return requireNonNullElse(value1, BigDecimal.ZERO)
 			.add(requireNonNullElse(value2, BigDecimal.ZERO));
 	}
 
-	protected static BigDecimal subtract(@Nullable BigDecimal value1, @Nullable BigDecimal value2) {
+	protected static BigDecimal subtract(
+		@Nullable BigDecimal value1,
+		@Nullable BigDecimal value2
+	) {
 		return requireNonNullElse(value1, BigDecimal.ZERO)
 			.subtract(requireNonNullElse(value2, BigDecimal.ZERO));
 	}
 
-	protected static BigDecimal percent(@Nullable BigDecimal value, int percent) {
+	protected static BigDecimal percent(
+		@Nullable BigDecimal value,
+		int percent
+	) {
 		return requireNonNullElse(value, BigDecimal.ZERO)
 			.multiply(new BigDecimal(String.valueOf(percent)))
 			.divide(new BigDecimal("100"), RoundingMode.HALF_UP);
@@ -539,18 +761,33 @@ public abstract class AbstractFinanzielleSituationRechner {
 		@Nullable BigDecimal geschaeftsgewinnDurchschnitt2
 	) {
 		BigDecimal total = BigDecimal.ZERO;
-		total = calcEinkommenProGS(abstractFinanzielleSituation1, geschaeftsgewinnDurchschnitt1, total);
-		total = calcEinkommenProGS(abstractFinanzielleSituation2, geschaeftsgewinnDurchschnitt2, total);
+		total = calcEinkommenProGS(
+			abstractFinanzielleSituation1,
+			geschaeftsgewinnDurchschnitt1,
+			total
+		);
+		total = calcEinkommenProGS(
+			abstractFinanzielleSituation2,
+			geschaeftsgewinnDurchschnitt2,
+			total
+		);
 		return total;
 	}
 
 	@Nullable
-	public BigDecimal calcErsatzeinkommen(@Nullable AbstractFinanzielleSituation abstractFinanzielleSituation) {
+	public BigDecimal calcErsatzeinkommen(
+		@Nullable AbstractFinanzielleSituation abstractFinanzielleSituation
+	) {
 		if (abstractFinanzielleSituation == null) {
 			return null;
 		}
-		BigDecimal totalErsatzeinkommen = abstractFinanzielleSituation.getErsatzeinkommen();
-		totalErsatzeinkommen = subtract(totalErsatzeinkommen, abstractFinanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahr());
+		BigDecimal totalErsatzeinkommen = abstractFinanzielleSituation
+			.getErsatzeinkommen();
+		totalErsatzeinkommen = subtract(
+			totalErsatzeinkommen,
+			abstractFinanzielleSituation
+				.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+		);
 
 		return totalErsatzeinkommen;
 	}
@@ -564,9 +801,18 @@ public abstract class AbstractFinanzielleSituationRechner {
 	) {
 		if (abstractFinanzielleSituation != null) {
 			total = add(total, abstractFinanzielleSituation.getNettolohn());
-			total = add(total, abstractFinanzielleSituation.getFamilienzulage());
-			total = add(total, abstractFinanzielleSituation.getErsatzeinkommen());
-			total = add(total, abstractFinanzielleSituation.getErhalteneAlimente());
+			total = add(
+				total,
+				abstractFinanzielleSituation.getFamilienzulage()
+			);
+			total = add(
+				total,
+				abstractFinanzielleSituation.getErsatzeinkommen()
+			);
+			total = add(
+				total,
+				abstractFinanzielleSituation.getErhalteneAlimente()
+			);
 			total = add(total, geschaeftsgewinnDurchschnitt);
 		}
 		return total;
@@ -578,10 +824,16 @@ public abstract class AbstractFinanzielleSituationRechner {
 	) {
 		BigDecimal totalAbzuege = BigDecimal.ZERO;
 		if (finanzielleSituationGS1 != null) {
-			totalAbzuege = add(totalAbzuege, finanzielleSituationGS1.getGeleisteteAlimente());
+			totalAbzuege = add(
+				totalAbzuege,
+				finanzielleSituationGS1.getGeleisteteAlimente()
+			);
 		}
 		if (finanzielleSituationGS2 != null) {
-			totalAbzuege = add(totalAbzuege, finanzielleSituationGS2.getGeleisteteAlimente());
+			totalAbzuege = add(
+				totalAbzuege,
+				finanzielleSituationGS2.getGeleisteteAlimente()
+			);
 		}
 		return totalAbzuege;
 	}
@@ -592,16 +844,28 @@ public abstract class AbstractFinanzielleSituationRechner {
 		int basisJahrPlus
 	) {
 		return Optional.ofNullable(gesuchsteller)
-			.map(GesuchstellerContainer::getEinkommensverschlechterungContainer)
-			.map(c -> basisJahrPlus == 2 ? c.getEkvJABasisJahrPlus2() : c.getEkvJABasisJahrPlus1())
+			.map(
+				GesuchstellerContainer::getEinkommensverschlechterungContainer
+			)
+			.map(
+				c -> basisJahrPlus == 2 ?
+					c.getEkvJABasisJahrPlus2() :
+					c.getEkvJABasisJahrPlus1()
+			)
 			.orElse(null);
 	}
 
 	@Nullable
-	protected FinanzielleSituation getFinanzielleSituationGS(@Nullable GesuchstellerContainer gesuchsteller) {
-		return FinanzielleSituationUtil.findFinanzielleSituationJA(gesuchsteller)
+	protected FinanzielleSituation getFinanzielleSituationGS(
+		@Nullable GesuchstellerContainer gesuchsteller
+	) {
+		return FinanzielleSituationUtil.findFinanzielleSituationJA(
+			gesuchsteller
+		)
 			.orElse(null);
 	}
 
-	public abstract boolean calculateByVeranlagung(@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation);
+	public abstract boolean calculateByVeranlagung(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation
+	);
 }

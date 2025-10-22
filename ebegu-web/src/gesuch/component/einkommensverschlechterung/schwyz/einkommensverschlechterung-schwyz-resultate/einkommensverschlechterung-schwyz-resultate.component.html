@@ -2,7 +2,9 @@
     <h1 class="access-for-all-title" translate>AFA_GESUCHSFORMULAR</h1>
     <div class="row view-title">
         <div class="col-md-12">
-            <h2 translate>EKV_RESULTATE</h2>
+            <h2 translate data-test="einkommensverschlechterungResultat">
+                EKV_RESULTATE
+            </h2>
             <hr class="header" />
         </div>
     </div>
@@ -32,6 +34,7 @@
                                 'EKV_MASSGEBENDES_EINKOMMEN_FIN_SIT'
                             "
                             [inputDisabled]="true"
+                            data-test="massgebendesEinkommenVorher"
                         >
                         </dv-input-label-field>
                         <dv-input-label-field
@@ -41,12 +44,14 @@
                             "
                             [labelMessageKey]="'EKV_MASSGEBENDES_EINKOMMEN'"
                             [inputDisabled]="true"
+                            data-test="massgebendesEinkommenNachher"
                         >
                         </dv-input-label-field>
                         <dv-input-label-field
-                            [model]="veraenderungTotalToPercentageString()"
+                            [model]="resultate?.veraenderung?.total"
                             [labelMessageKey]="'EVK_IN_PROZENT'"
                             [inputDisabled]="true"
+                            data-test="aenderungPercent"
                         >
                         </dv-input-label-field>
                     </div>
@@ -65,6 +70,7 @@
                                 'EKV_MASSGEBENDES_EINKOMMEN_FIN_SIT'
                             "
                             [inputDisabled]="true"
+                            data-test="massgebendesEinkommenVorher"
                         >
                         </dv-input-label-field>
                     </div>
@@ -81,6 +87,7 @@
                                 namegs: extractFullNameGS1()
                             }"
                             [inputDisabled]="true"
+                            data-test="massgebendesEinkommenGS1"
                         >
                         </dv-input-label-field>
                     </div>
@@ -97,6 +104,7 @@
                                 namegs: extractFullNameGS2()
                             }"
                             [inputDisabled]="true"
+                            data-test="massgebendesEinkommenGS2"
                         >
                         </dv-input-label-field>
                     </div>
@@ -110,6 +118,7 @@
                             "
                             [labelMessageKey]="'EKV_MASSGEBENDES_EINKOMMEN'"
                             [inputDisabled]="true"
+                            data-test="massgebendesEinkommenNachher"
                         >
                         </dv-input-label-field>
                     </div>
@@ -117,9 +126,10 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <dv-input-label-field
-                            [model]="veraenderungTotalToPercentageString()"
+                            [model]="resultate?.veraenderung?.total"
                             [labelMessageKey]="'EVK_IN_PROZENT'"
                             [inputDisabled]="true"
+                            data-test="aenderungPercent"
                         >
                         </dv-input-label-field>
                     </div>

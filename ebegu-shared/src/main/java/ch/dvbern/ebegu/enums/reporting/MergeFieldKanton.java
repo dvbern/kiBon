@@ -29,63 +29,116 @@ import static ch.dvbern.oss.lib.excelmerger.converters.StandardConverters.STRING
 
 public enum MergeFieldKanton implements MergeFieldProvider {
 
-	parameterTitle(new SimpleMergeField<>("parameterTitle", STRING_CONVERTER)),
-	kantonTitle(new SimpleMergeField<>("kantonTitle", STRING_CONVERTER)),
-	vonTitle(new SimpleMergeField<>("vonTitle", STRING_CONVERTER)),
-	bisTitle(new SimpleMergeField<>("bisTitle", STRING_CONVERTER)),
-	kantonSelbstbehaltTitle(new SimpleMergeField<>("kantonSelbstbehaltTitle", STRING_CONVERTER)),
-	gemeindeTitle(new SimpleMergeField<>("gemeindeTitle", STRING_CONVERTER)),
-	fallIdTitle(new SimpleMergeField<>("fallIdTitle", STRING_CONVERTER)),
-	nachnameTitle(new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)),
-	vornameTitle(new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)),
-	geburtsdatumTitle(new SimpleMergeField<>("geburtsdatumTitle", STRING_CONVERTER)),
-	betreuungVonTitle(new SimpleMergeField<>("betreuungVonTitle", STRING_CONVERTER)),
-	betreuungBisTitle(new SimpleMergeField<>("betreuungBisTitle", STRING_CONVERTER)),
-	bgPensumKantonTitle(new SimpleMergeField<>("bgPensumKantonTitle", STRING_CONVERTER)),
-	bgPensumGemeindeTitle(new SimpleMergeField<>("bgPensumGemeindeTitle", STRING_CONVERTER)),
-	bgPensumTotalTitle(new SimpleMergeField<>("bgPensumTotalTitle", STRING_CONVERTER)),
-	monatsanfangTitle(new SimpleMergeField<>("monatsanfangTitle", STRING_CONVERTER)),
-	monatsendeTitle(new SimpleMergeField<>("monatsendeTitle", STRING_CONVERTER)),
-	tageMonatTitle(new SimpleMergeField<>("tageMonatTitle", STRING_CONVERTER)),
-	tageIntervallTitle(new SimpleMergeField<>("tageIntervallTitle", STRING_CONVERTER)),
-	anteilMonatKantonTitle(new SimpleMergeField<>("anteilMonatKantonTitle", STRING_CONVERTER)),
-	platzbelegungTageTitle(new SimpleMergeField<>("platzbelegungTageTitle", STRING_CONVERTER)),
-	kostenCHFTitle(new SimpleMergeField<>("kostenCHFTitle", STRING_CONVERTER)),
-	vollkostenTitle(new SimpleMergeField<>("vollkostenTitle", STRING_CONVERTER)),
-	elternbeitragTitle(new SimpleMergeField<>("elternbeitragTitle", STRING_CONVERTER)),
-	gutscheinKantonTitel(new SimpleMergeField<>("gutscheinKantonTitel", STRING_CONVERTER)),
-	gutscheinGemeindeTitel(new SimpleMergeField<>("gutscheinGemeindeTitel", STRING_CONVERTER)),
-	gutscheinTotalTitel(new SimpleMergeField<>("gutscheinTotalTitel", STRING_CONVERTER)),
-	babyFaktorTitle(new SimpleMergeField<>("babyFaktorTitle", STRING_CONVERTER)),
-	institutionTitle(new SimpleMergeField<>("institutionTitle", STRING_CONVERTER)),
-	totalTitle(new SimpleMergeField<>("totalTitle", STRING_CONVERTER)),
-	selbstbehaltTitle(new SimpleMergeField<>("selbstbehaltTitle", STRING_CONVERTER)),
-	anteilKalenderjahrTitle(new SimpleMergeField<>("anteilKalenderjahrTitle", STRING_CONVERTER)),
+	parameterTitle(
+		new SimpleMergeField<>("parameterTitle", STRING_CONVERTER)
+	), kantonTitle(
+		new SimpleMergeField<>("kantonTitle", STRING_CONVERTER)
+	), vonTitle(new SimpleMergeField<>("vonTitle", STRING_CONVERTER)), bisTitle(
+		new SimpleMergeField<>("bisTitle", STRING_CONVERTER)
+	), kantonSelbstbehaltTitle(
+		new SimpleMergeField<>("kantonSelbstbehaltTitle", STRING_CONVERTER)
+	), gemeindeTitle(
+		new SimpleMergeField<>("gemeindeTitle", STRING_CONVERTER)
+	), fallIdTitle(
+		new SimpleMergeField<>("fallIdTitle", STRING_CONVERTER)
+	), nachnameTitle(
+		new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)
+	), vornameTitle(
+		new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)
+	), geburtsdatumTitle(
+		new SimpleMergeField<>("geburtsdatumTitle", STRING_CONVERTER)
+	), betreuungVonTitle(
+		new SimpleMergeField<>("betreuungVonTitle", STRING_CONVERTER)
+	), betreuungBisTitle(
+		new SimpleMergeField<>("betreuungBisTitle", STRING_CONVERTER)
+	), bgPensumKantonTitle(
+		new SimpleMergeField<>("bgPensumKantonTitle", STRING_CONVERTER)
+	), bgPensumGemeindeTitle(
+		new SimpleMergeField<>("bgPensumGemeindeTitle", STRING_CONVERTER)
+	), bgPensumTotalTitle(
+		new SimpleMergeField<>("bgPensumTotalTitle", STRING_CONVERTER)
+	), monatsanfangTitle(
+		new SimpleMergeField<>("monatsanfangTitle", STRING_CONVERTER)
+	), monatsendeTitle(
+		new SimpleMergeField<>("monatsendeTitle", STRING_CONVERTER)
+	), tageMonatTitle(
+		new SimpleMergeField<>("tageMonatTitle", STRING_CONVERTER)
+	), tageIntervallTitle(
+		new SimpleMergeField<>("tageIntervallTitle", STRING_CONVERTER)
+	), anteilMonatKantonTitle(
+		new SimpleMergeField<>("anteilMonatKantonTitle", STRING_CONVERTER)
+	), platzbelegungTageTitle(
+		new SimpleMergeField<>("platzbelegungTageTitle", STRING_CONVERTER)
+	), kostenCHFTitle(
+		new SimpleMergeField<>("kostenCHFTitle", STRING_CONVERTER)
+	), vollkostenTitle(
+		new SimpleMergeField<>("vollkostenTitle", STRING_CONVERTER)
+	), elternbeitragTitle(
+		new SimpleMergeField<>("elternbeitragTitle", STRING_CONVERTER)
+	), gutscheinKantonTitel(
+		new SimpleMergeField<>("gutscheinKantonTitel", STRING_CONVERTER)
+	), gutscheinGemeindeTitel(
+		new SimpleMergeField<>("gutscheinGemeindeTitel", STRING_CONVERTER)
+	), gutscheinTotalTitel(
+		new SimpleMergeField<>("gutscheinTotalTitel", STRING_CONVERTER)
+	), babyFaktorTitle(
+		new SimpleMergeField<>("babyFaktorTitle", STRING_CONVERTER)
+	), institutionTitle(
+		new SimpleMergeField<>("institutionTitle", STRING_CONVERTER)
+	), totalTitle(
+		new SimpleMergeField<>("totalTitle", STRING_CONVERTER)
+	), selbstbehaltTitle(
+		new SimpleMergeField<>("selbstbehaltTitle", STRING_CONVERTER)
+	), anteilKalenderjahrTitle(
+		new SimpleMergeField<>("anteilKalenderjahrTitle", STRING_CONVERTER)
+	),
 
-	auswertungVon(new SimpleMergeField<>("auswertungVon", DATE_CONVERTER)),
-	auswertungBis(new SimpleMergeField<>("auswertungBis", DATE_CONVERTER)),
-	kantonSelbstbehalt(new SimpleMergeField<>("kantonSelbstbehalt", BIGDECIMAL_CONVERTER)),
+	auswertungVon(
+		new SimpleMergeField<>("auswertungVon", DATE_CONVERTER)
+	), auswertungBis(
+		new SimpleMergeField<>("auswertungBis", DATE_CONVERTER)
+	), kantonSelbstbehalt(
+		new SimpleMergeField<>("kantonSelbstbehalt", BIGDECIMAL_CONVERTER)
+	),
 
 	repeatRow(new RepeatRowMergeField("repeatRow")),
 
-	gemeinde(new SimpleMergeField<>("gemeinde", STRING_CONVERTER)),
-	referenzNummer(new SimpleMergeField<>("bgNummer", STRING_CONVERTER)),
-	gesuchId(new SimpleMergeField<>("gesuchId", STRING_CONVERTER)),
-	name(new SimpleMergeField<>("name", STRING_CONVERTER)),
-	vorname(new SimpleMergeField<>("vorname", STRING_CONVERTER)),
-	geburtsdatum(new SimpleMergeField<>("geburtsdatum", DATE_CONVERTER)),
-	zeitabschnittVon(new SimpleMergeField<>("zeitabschnittVon", DATE_CONVERTER)),
-	zeitabschnittBis(new SimpleMergeField<>("zeitabschnittBis", DATE_CONVERTER)),
-	bgPensumKanton(new SimpleMergeField<>("bgPensumKanton", PERCENT_CONVERTER)),
-	bgPensumGemeinde(new SimpleMergeField<>("bgPensumGemeinde", PERCENT_CONVERTER)),
-	bgPensumTotal(new SimpleMergeField<>("bgPensumTotal", PERCENT_CONVERTER)),
-	elternbeitrag(new SimpleMergeField<>("elternbeitrag", BIGDECIMAL_CONVERTER)),
-	verguenstigungKanton(new SimpleMergeField<>("verguenstigungKanton", BIGDECIMAL_CONVERTER)),
-	verguenstigungGemeinde(new SimpleMergeField<>("verguenstigungGemeinde", BIGDECIMAL_CONVERTER)),
-	verguenstigungTotal(new SimpleMergeField<>("verguenstigungTotal", BIGDECIMAL_CONVERTER)),
-	institution(new SimpleMergeField<>("institution", STRING_CONVERTER)),
-	betreuungsTyp(new SimpleMergeField<>("betreuungsTyp", STRING_CONVERTER)),
-	babyTarif(new SimpleMergeField<>("babyTarif", BOOLEAN_X_CONVERTER));
+	gemeinde(
+		new SimpleMergeField<>("gemeinde", STRING_CONVERTER)
+	), referenzNummer(
+		new SimpleMergeField<>("bgNummer", STRING_CONVERTER)
+	), gesuchId(new SimpleMergeField<>("gesuchId", STRING_CONVERTER)), name(
+		new SimpleMergeField<>("name", STRING_CONVERTER)
+	), vorname(
+		new SimpleMergeField<>("vorname", STRING_CONVERTER)
+	), geburtsdatum(
+		new SimpleMergeField<>("geburtsdatum", DATE_CONVERTER)
+	), zeitabschnittVon(
+		new SimpleMergeField<>("zeitabschnittVon", DATE_CONVERTER)
+	), zeitabschnittBis(
+		new SimpleMergeField<>("zeitabschnittBis", DATE_CONVERTER)
+	), bgPensumKanton(
+		new SimpleMergeField<>("bgPensumKanton", PERCENT_CONVERTER)
+	), bgPensumGemeinde(
+		new SimpleMergeField<>("bgPensumGemeinde", PERCENT_CONVERTER)
+	), bgPensumTotal(
+		new SimpleMergeField<>("bgPensumTotal", PERCENT_CONVERTER)
+	), elternbeitrag(
+		new SimpleMergeField<>("elternbeitrag", BIGDECIMAL_CONVERTER)
+	), verguenstigungKanton(
+		new SimpleMergeField<>("verguenstigungKanton", BIGDECIMAL_CONVERTER)
+	), verguenstigungGemeinde(
+		new SimpleMergeField<>(
+			"verguenstigungGemeinde",
+			BIGDECIMAL_CONVERTER
+		)
+	), verguenstigungTotal(
+		new SimpleMergeField<>("verguenstigungTotal", BIGDECIMAL_CONVERTER)
+	), institution(
+		new SimpleMergeField<>("institution", STRING_CONVERTER)
+	), betreuungsTyp(
+		new SimpleMergeField<>("betreuungsTyp", STRING_CONVERTER)
+	), babyTarif(new SimpleMergeField<>("babyTarif", BOOLEAN_X_CONVERTER));
 
 	@Nonnull
 	private final MergeField<?> mergeField;

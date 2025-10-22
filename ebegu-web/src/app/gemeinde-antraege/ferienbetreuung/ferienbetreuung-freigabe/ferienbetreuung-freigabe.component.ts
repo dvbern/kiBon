@@ -21,6 +21,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
     selector: 'dv-ferienbetreuung-freigabe',
     templateUrl: './ferienbetreuung-freigabe.component.html',
     styleUrls: ['./ferienbetreuung-freigabe.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FerienbetreuungFreigabeComponent {}

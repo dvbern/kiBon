@@ -15,19 +15,21 @@
 
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSInstitution} from '../../../models/TSInstitution';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {
+    TSInstitution,
+    TSInstitutionStammdaten
+} from '@kibon/shared/model/entity';
 import {TSInstitutionExternalClientAssignment} from '../../../models/TSInstitutionExternalClientAssignment';
 import {TSInstitutionListDTO} from '../../../models/TSInstitutionListDTO';
-import {TSInstitutionStammdaten} from '../../../models/TSInstitutionStammdaten';
 import {TSInstitutionUpdate} from '../../../models/TSInstitutionUpdate';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '../constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 
 @Injectable({
     providedIn: 'root'
@@ -87,7 +89,7 @@ export class InstitutionRS {
         gemeindeId: string
     ): Observable<TSInstitution> {
         const params: any = {
-            date: DateUtil.momentToLocalDate(startDate),
+            date: MomentUtil.momentToLocalDate(startDate),
             betreuung: betreuungsangebot,
             adminMail
         };
@@ -197,31 +199,6 @@ export class InstitutionRS {
                 )
             );
     }
-
-    public isStammdatenCheckRequired(): Observable<boolean> {
-        return this.$http.get<boolean>(
-            `${this.serviceURL}/isStammdatenCheckRequired/currentuser`
-        );
-    }
-
-    public deactivateStammdatenCheckRequired(
-        institutionId: string
-    ): Observable<TSInstitution> {
-        return this.$http
-            .put(
-                `${this.serviceURL}/deactivateStammdatenCheckRequired/${institutionId}`,
-                {}
-            )
-            .pipe(
-                map((response: any) =>
-                    this.ebeguRestUtil.parseInstitution(
-                        new TSInstitution(),
-                        response
-                    )
-                )
-            );
-    }
-
     public isCurrentUserTagesschuleUser(): Observable<boolean> {
         return this.$http
             .get(`${this.serviceURL}/istagesschulenutzende/currentuser`)

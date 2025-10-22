@@ -9,7 +9,7 @@
 <#-- @ftlvariable name="gesuchsperiode" type="ch.dvbern.ebegu.entities.Gesuchsperiode"-->
 From: ${configuration.senderAddress}
 To: <@base64Header>${senderFullName}</@base64Header> <${empfaengerMail}>
-Subject: ${fall.getPaddedFallnummer()}, ${gesuchsperiode.getGesuchsperiodeString()}, <@base64Header>kiBon <#if configuration.isDevmode>Testsystem</#if> – Anmeldung für ${betreuung.kind.kindJA.fullName} akzeptiert</@base64Header>
+Subject: ${fall.getPaddedFallnummer()}, ${gesuchsperiode.getGesuchsperiodeString()}, <@base64Header>kiBon <#if configuration.isDevmode>Système de test</#if> – L'inscription pour ${betreuung.kind.kindJA.fullName} a été acceptée</@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -30,8 +30,7 @@ Content-Type: text/html;charset=utf-8
 	<p>
 		Votre inscription pour ${betreuung.kind.kindJA.fullName} à ${betreuung.institutionStammdaten.institution
 		.name} a été acceptée. Vous recevrez la confirmation définitive de l'inscription de la part de l'institution choisie. <br/>
-		Vous pouvez consulter la liste des offres de prise en charge <a href="<#if configuration
-		.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/verfuegen/${betreuung.extractGesuch().id}">ici</a>.
+		Vous pouvez consulter la liste des offres de prise en charge <a href="${frontendUrl}/gesuch/verfuegen/${betreuung.extractGesuch().id}">ici</a>.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations. <br/>

@@ -60,7 +60,7 @@ describe('BenutzerEinladenComponent', () => {
     ]);
     const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
         I18nServiceRSRest.name,
-        ['extractPreferredLanguage']
+        ['extractPreferredLanguage', 'init']
     );
     const errorServiceSpy = jasmine.createSpyObj<ErrorService>(
         ErrorService.name,

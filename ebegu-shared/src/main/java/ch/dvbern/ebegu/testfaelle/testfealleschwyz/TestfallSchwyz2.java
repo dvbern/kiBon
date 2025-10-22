@@ -1,29 +1,44 @@
 package ch.dvbern.ebegu.testfaelle.testfealleschwyz;
 
-import ch.dvbern.ebegu.entities.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Month;
+
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
+import ch.dvbern.ebegu.entities.FinanzielleSituationContainer;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Kinderabzug;
 import ch.dvbern.ebegu.enums.Taetigkeit;
 import ch.dvbern.ebegu.testfaelle.AbstractSZTestfall;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
-
-import javax.annotation.Nonnull;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Month;
-
 
 public class TestfallSchwyz2 extends AbstractSZTestfall {
 
 	private static final String NACHNAME = "Weber";
 
-
-	public TestfallSchwyz2(@Nonnull Gesuchsperiode gesuchsperiode, boolean betreuungenBestaetigt, @Nonnull Gemeinde gemeinde, InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, gemeinde, institutionStammdatenBuilder);
+	public TestfallSchwyz2(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		@Nonnull Gemeinde gemeinde,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			gemeinde,
+			institutionStammdatenBuilder
+		);
 	}
 
 	@Override
@@ -54,15 +69,22 @@ public class TestfallSchwyz2 extends AbstractSZTestfall {
 		erstgesuch.getKindContainers().add(kind2);
 
 		// Erwerbspensum
-		ErwerbspensumContainer erwerbspensum = createErwerbspensumContainer(gs1);
+		ErwerbspensumContainer erwerbspensum = createErwerbspensumContainer(
+			gs1
+		);
 		gesuchsteller1.addErwerbspensumContainer(erwerbspensum);
-		ErwerbspensumContainer erwerbspensum2 = createErwerbspensumContainer(gs2);
+		ErwerbspensumContainer erwerbspensum2 = createErwerbspensumContainer(
+			gs2
+		);
 		gesuchsteller2.addErwerbspensumContainer(erwerbspensum2);
 
 		//FinSit
-		FinanzielleSituationContainer finanzielleSituationContainer = createFinSit(gs1);
+		FinanzielleSituationContainer finanzielleSituationContainer =
+			createFinSit(gs1);
 		finanzielleSituationContainer.setGesuchsteller(gesuchsteller1);
-		gesuchsteller1.setFinanzielleSituationContainer(finanzielleSituationContainer);
+		gesuchsteller1.setFinanzielleSituationContainer(
+			finanzielleSituationContainer
+		);
 		setAuszahlungsdaten(erstgesuch, gs1);
 
 		//EKV
@@ -86,7 +108,12 @@ public class TestfallSchwyz2 extends AbstractSZTestfall {
 			.setErwerbspensum(100)
 			.setErwerbsBezeichnung("Schneider")
 			.setTaetigkeit(Taetigkeit.ANGESTELLT)
-			.setErwerbGueltigkeit(new DateRange(LocalDate.of(2019, Month.FEBRUARY, 1), Constants.END_OF_TIME))
+			.setErwerbGueltigkeit(
+				new DateRange(
+					LocalDate.of(2019, Month.FEBRUARY, 1),
+					Constants.END_OF_TIME
+				)
+			)
 			.setReineinkommen(BigDecimal.valueOf(75482))
 			.setReinvermoegen(BigDecimal.valueOf(5600))
 			.setIban(new IBAN("CH9789144635882482971"))
@@ -105,7 +132,12 @@ public class TestfallSchwyz2 extends AbstractSZTestfall {
 			.setErwerbspensum(80)
 			.setErwerbsBezeichnung("Fleischfachverkäuferin")
 			.setTaetigkeit(Taetigkeit.ANGESTELLT)
-			.setErwerbGueltigkeit(new DateRange(LocalDate.of(2020, Month.MAY, 1), Constants.END_OF_TIME));
+			.setErwerbGueltigkeit(
+				new DateRange(
+					LocalDate.of(2020, Month.MAY, 1),
+					Constants.END_OF_TIME
+				)
+			);
 	}
 
 	private KindData createKind1Data() {
@@ -127,12 +159,27 @@ public class TestfallSchwyz2 extends AbstractSZTestfall {
 		PensumData pensum = new PensumData()
 			.setPensum(80)
 			.setMonatlicheBetreuungskosten(BigDecimal.valueOf(1600))
-			.setGueltigAb(LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.AUGUST, 1))
-			.setGueltigBis(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JULY, 31));
+			.setGueltigAb(
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus1(),
+					Month.AUGUST,
+					1
+				)
+			)
+			.setGueltigBis(
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus2(),
+					Month.JULY,
+					31
+				)
+			);
 
 		BetreuungData betreuung = new BetreuungData()
 			.setAuszahlungAnEltern(true)
-			.setInstiutionId(institutionStammdatenBuilder.getIdInstitutionStammdatenBruennen())
+			.setInstiutionId(
+				institutionStammdatenBuilder
+					.getIdInstitutionStammdatenBruennen()
+			)
 			.setBestaetigt(betreuungenBestaetigt);
 		betreuung.getBetreuungspensum().add(pensum);
 		return betreuung;

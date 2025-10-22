@@ -33,7 +33,8 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
     selector: 'dv-steuerveranlagung-gemeinsam',
     templateUrl: './steuerveranlagung-gemeinsam.component.html',
     changeDetection: ChangeDetectionStrategy.Default,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class SteuerveranlagungGemeinsamComponent {
     @Input() public model: TSFinanzModel;

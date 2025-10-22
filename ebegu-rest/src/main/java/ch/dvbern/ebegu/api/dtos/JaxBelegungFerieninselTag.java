@@ -17,13 +17,13 @@ package ch.dvbern.ebegu.api.dtos;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO for a Tag of a Ferieninsel-Belegung
@@ -35,9 +35,8 @@ public class JaxBelegungFerieninselTag extends JaxAbstractDTO {
 	private static final long serialVersionUID = -8725041975160545003L;
 
 	@NotNull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate tag = null;
-
 
 	public LocalDate getTag() {
 		return tag;

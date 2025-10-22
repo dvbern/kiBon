@@ -44,7 +44,8 @@ const states: NgHybridStateDeclaration[] = [
         url: '/:zahlungsauftragId',
         component: ZahlungviewXComponent,
         params: {
-            isMahlzeitenzahlungen: IBooleanStateParams
+            isMahlzeitenzahlungen: IBooleanStateParams,
+            zahlungAnTyp: ''
         }
     },
     {

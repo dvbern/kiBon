@@ -38,21 +38,28 @@ public class VeraenderungTagesschuleCalculatorTest {
 
 	@Test
 	public void useCorrectImplementation() {
-		Assert.assertTrue(veraenderungCalculator instanceof  VeraenderungTagesschuleTarifCalculator);
+		Assert.assertTrue(
+			veraenderungCalculator instanceof VeraenderungTagesschuleTarifCalculator
+		);
 	}
 
 	@Test
 	public void einZeitabschnitt_EinTarif_MitBetruung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = List.of(
-			createZeitabschnittMitTarif(BigDecimal.valueOf(3.5), null));
+			createZeitabschnittMitTarif(BigDecimal.valueOf(3.5), null)
+		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarif(BigDecimal.valueOf(3), null));
+			createZeitabschnittMitTarif(BigDecimal.valueOf(3), null)
+		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(0.5), veranderung);
 	}
@@ -60,15 +67,20 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void einZeitabschnitt_EinTarif_OhneBetruung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = List.of(
-			createZeitabschnittMitTarif(null, BigDecimal.valueOf(3.5)));
+			createZeitabschnittMitTarif(null, BigDecimal.valueOf(3.5))
+		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarif(null, BigDecimal.valueOf(3)));
+			createZeitabschnittMitTarif(null, BigDecimal.valueOf(3))
+		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(0.5), veranderung);
 	}
@@ -76,15 +88,20 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void einZeitabschnitt_TarifAktuell0_MitBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = List.of(
-			createZeitabschnittMitTarif(BigDecimal.ZERO, null));
+			createZeitabschnittMitTarif(BigDecimal.ZERO, null)
+		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarif(BigDecimal.valueOf(3), null));
+			createZeitabschnittMitTarif(BigDecimal.valueOf(3), null)
+		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(-3), veranderung);
 	}
@@ -92,15 +109,20 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void einZeitabschnitt_Vorgaenger0_MitBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = List.of(
-			createZeitabschnittMitTarif(BigDecimal.valueOf(2.5), null));
+			createZeitabschnittMitTarif(BigDecimal.valueOf(2.5), null)
+		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarif(BigDecimal.ZERO, null));
+			createZeitabschnittMitTarif(BigDecimal.ZERO, null)
+		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(2.5), veranderung);
 	}
@@ -108,15 +130,20 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void einZeitabschnitt_AktuellNull_MitBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = List.of(
-			createZeitabschnittMitTarif(null, null));
+			createZeitabschnittMitTarif(null, null)
+		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarif(BigDecimal.valueOf(2.5), null));
+			createZeitabschnittMitTarif(BigDecimal.valueOf(2.5), null)
+		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(-2.5), veranderung);
 	}
@@ -124,15 +151,20 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void einZeitabschnitt_VorgaengerNull_MitBetruung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = List.of(
-			createZeitabschnittMitTarif(BigDecimal.valueOf(2.5), null));
+			createZeitabschnittMitTarif(BigDecimal.valueOf(2.5), null)
+		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarif(null, null));
+			createZeitabschnittMitTarif(null, null)
+		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(2.5), veranderung);
 	}
@@ -140,15 +172,20 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void einZeitabschnitt_AktuellNull_OhneBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = List.of(
-			createZeitabschnittMitTarif(null, null));
+			createZeitabschnittMitTarif(null, null)
+		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarif(null, BigDecimal.valueOf(2.5)));
+			createZeitabschnittMitTarif(null, BigDecimal.valueOf(2.5))
+		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(-2.5), veranderung);
 	}
@@ -156,15 +193,20 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void einZeitabschnitt_VorgaengerNull_OhneBetruung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = List.of(
-			createZeitabschnittMitTarif(null, BigDecimal.valueOf(2.5)));
+			createZeitabschnittMitTarif(null, BigDecimal.valueOf(2.5))
+		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarif(null,null));
+			createZeitabschnittMitTarif(null, null)
+		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(2.5), veranderung);
 	}
@@ -172,19 +214,38 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void multipleZeitabschnitte_sameGueltigkeit_positiveVeraenderung_MitBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(1.2), null),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.7), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(1.2),
+				null
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.7),
+				null
+			)
 		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(3.3), null),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.5), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(3.3),
+				null
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.5),
+				null
+			)
 		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(-2.1), veranderung);
 	}
@@ -192,19 +253,38 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void multipleZeitabschnitte_sameGueltigkeit_positiveVeraenderung_OhneBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, null, BigDecimal.valueOf(1.2)),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, null, BigDecimal.valueOf(3.7))
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				null,
+				BigDecimal.valueOf(1.2)
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				null,
+				BigDecimal.valueOf(3.7)
+			)
 		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, null, BigDecimal.valueOf(3.3)),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, null, BigDecimal.valueOf(3.5))
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				null,
+				BigDecimal.valueOf(3.3)
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				null,
+				BigDecimal.valueOf(3.5)
+			)
 		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(-2.1), veranderung);
 	}
@@ -212,19 +292,38 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void multipleZeitabschnitte_sameGueltigkeit_negativeVeraenderung_MitBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(3.3), null),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.7), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(3.3),
+				null
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.7),
+				null
+			)
 		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(1.2), null),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.5), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(1.2),
+				null
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.5),
+				null
+			)
 		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(2.1), veranderung);
 	}
@@ -232,18 +331,33 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void multipleZeitabschnitte_differentGueltigkitenAktuell_MitBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(3.3), null),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.8), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(3.3),
+				null
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.8),
+				null
+			)
 		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeit2022, BigDecimal.valueOf(3.5), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeit2022,
+				BigDecimal.valueOf(3.5),
+				null
+			)
 		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(0.3), veranderung);
 	}
@@ -251,18 +365,33 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void multipleZeitabschnitte_differentGueltigkitenInVorganger_MitBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = List.of(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeit2022, BigDecimal.valueOf(3.5), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeit2022,
+				BigDecimal.valueOf(3.5),
+				null
+			)
 		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(3.3), null),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.8), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(3.3),
+				null
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.8),
+				null
+			)
 		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(-0.3), veranderung);
 	}
@@ -270,39 +399,79 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void multipleZeitabschnitte_differentGueltigkitenInVorganger_shouldNotBeIgnorable() {
 		List<VerfuegungZeitabschnitt> zaVorgaenger = List.of(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeit2022, BigDecimal.valueOf(3.5), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeit2022,
+				BigDecimal.valueOf(3.5),
+				null
+			)
 		);
 
 		List<VerfuegungZeitabschnitt> zaAktuell = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(3.3), null),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.8), null)
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(3.3),
+				null
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.8),
+				null
+			)
 		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(0.3), veranderung);
-		Assert.assertFalse(veraenderungCalculator.calculateIgnorable(zaAktuell, verfuegung, veranderung));
+		Assert.assertFalse(
+			veraenderungCalculator.calculateIgnorable(
+				zaAktuell,
+				verfuegung,
+				veranderung
+			)
+		);
 	}
 
 	@Test
 	public void multipleZeitabschnitte_MitBetreuung_OhneBetreuung() {
 		List<VerfuegungZeitabschnitt> zaAktuell = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(1.2), BigDecimal.valueOf(2.7)),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.7), BigDecimal.valueOf(0.5))
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(1.2),
+				BigDecimal.valueOf(2.7)
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.7),
+				BigDecimal.valueOf(0.5)
+			)
 		);
 
 		List<VerfuegungZeitabschnitt> zaVorgaenger = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(3.1), BigDecimal.valueOf(2.2)),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.5), BigDecimal.valueOf(1.6))
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(3.1),
+				BigDecimal.valueOf(2.2)
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.5),
+				BigDecimal.valueOf(1.6)
+			)
 		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(-1.9), veranderung);
 	}
@@ -310,36 +479,70 @@ public class VeraenderungTagesschuleCalculatorTest {
 	@Test
 	public void multipleZeitabschnitte_MitBetreuungAndereTarife_OhneBetreuung_shouldBeIgnorable() {
 		List<VerfuegungZeitabschnitt> zaVorgaenger = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(1.2), BigDecimal.valueOf(2.7)),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.7), BigDecimal.valueOf(0.5))
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(1.2),
+				BigDecimal.valueOf(2.7)
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.7),
+				BigDecimal.valueOf(0.5)
+			)
 		);
 
 		List<VerfuegungZeitabschnitt> zaAktuell = Arrays.asList(
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitAugust, BigDecimal.valueOf(3.1), BigDecimal.valueOf(2.2)),
-			createZeitabschnittMitTarifAndGueltigkeit(gueltigkeitSeptember, BigDecimal.valueOf(3.5), BigDecimal.valueOf(1.6))
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitAugust,
+				BigDecimal.valueOf(3.1),
+				BigDecimal.valueOf(2.2)
+			),
+			createZeitabschnittMitTarifAndGueltigkeit(
+				gueltigkeitSeptember,
+				BigDecimal.valueOf(3.5),
+				BigDecimal.valueOf(1.6)
+			)
 		);
 
 		Verfuegung verfuegung = new Verfuegung();
 		verfuegung.setZeitabschnitte(zaVorgaenger);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(zaAktuell, verfuegung);
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			zaAktuell,
+			verfuegung
+		);
 
 		Assert.assertEquals(BigDecimal.valueOf(1.9), veranderung);
-		Assert.assertTrue(veraenderungCalculator.calculateIgnorable(zaAktuell, verfuegung, veranderung));
+		Assert.assertTrue(
+			veraenderungCalculator.calculateIgnorable(
+				zaAktuell,
+				verfuegung,
+				veranderung
+			)
+		);
 	}
 
-	private VerfuegungZeitabschnitt createZeitabschnittMitTarif(@Nullable BigDecimal tarifMitBetreuung, @Nullable BigDecimal tarifOhneBetreuung) {
+	private VerfuegungZeitabschnitt createZeitabschnittMitTarif(
+		@Nullable BigDecimal tarifMitBetreuung,
+		@Nullable BigDecimal tarifOhneBetreuung
+	) {
 		BGCalculationResult bgCalculationResult = new BGCalculationResult();
 
 		if (tarifMitBetreuung != null) {
 			TSCalculationResult tsCalculationResult = new TSCalculationResult();
 			tsCalculationResult.setGebuehrProStunde(tarifMitBetreuung);
-			bgCalculationResult.setTsCalculationResultMitPaedagogischerBetreuung(tsCalculationResult);
+			bgCalculationResult
+				.setTsCalculationResultMitPaedagogischerBetreuung(
+					tsCalculationResult
+				);
 		}
 		if (tarifOhneBetreuung != null) {
 			TSCalculationResult tsCalculationResult = new TSCalculationResult();
 			tsCalculationResult.setGebuehrProStunde(tarifOhneBetreuung);
-			bgCalculationResult.setTsCalculationResultOhnePaedagogischerBetreuung(tsCalculationResult);
+			bgCalculationResult
+				.setTsCalculationResultOhnePaedagogischerBetreuung(
+					tsCalculationResult
+				);
 		}
 
 		VerfuegungZeitabschnitt zeitabschnitt = new VerfuegungZeitabschnitt();
@@ -350,8 +553,12 @@ public class VeraenderungTagesschuleCalculatorTest {
 	private VerfuegungZeitabschnitt createZeitabschnittMitTarifAndGueltigkeit(
 		DateRange gueltigkeit,
 		@Nullable BigDecimal tarifMitBetreuung,
-		@Nullable BigDecimal tarifOhneBetreuung) {
-		VerfuegungZeitabschnitt za = createZeitabschnittMitTarif(tarifMitBetreuung, tarifOhneBetreuung);
+		@Nullable BigDecimal tarifOhneBetreuung
+	) {
+		VerfuegungZeitabschnitt za = createZeitabschnittMitTarif(
+			tarifMitBetreuung,
+			tarifOhneBetreuung
+		);
 		za.setGueltigkeit(gueltigkeit);
 		return za;
 	}

@@ -17,7 +17,7 @@
 
 import {MatPaginatorIntl} from '@angular/material/paginator';
 import {TranslateService} from '@ngx-translate/core';
-import {LogFactory} from '../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 const LOG = LogFactory.createLog('PaginatorI18n');
 

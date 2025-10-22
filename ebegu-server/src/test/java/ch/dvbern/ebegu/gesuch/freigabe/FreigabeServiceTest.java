@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -24,28 +24,26 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import ch.dvbern.ebegu.dto.JaxFreigabeDTO;
-import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
-import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.AntragStatus;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.AntragStatusHistoryService;
 import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.BetreuungService;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.services.VerantwortlicheService;
 import ch.dvbern.ebegu.services.WizardStepService;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.test.util.TestDataInstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.testfaelle.Testfall01_WaeltiDagmar;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
@@ -56,10 +54,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(EasyMockExtension.class)
 class FreigabeServiceTest extends EasyMockSupport {
@@ -93,36 +89,69 @@ class FreigabeServiceTest extends EasyMockSupport {
 
 	@ParameterizedTest
 	@MethodSource("invalidOnlinefreigabeCases")
-	void mustThrowErrorIfOnlineFreigabeAndUserConfirmationIsMissing(JaxFreigabeDTO freigabeDTO) {
+	void mustThrowErrorIfOnlineFreigabeAndUserConfirmationIsMissing(
+		JaxFreigabeDTO freigabeDTO
+	) {
 		// given
 		Mandant mandant = new Mandant();
 		mandant.setMandantIdentifier(MandantIdentifier.SCHWYZ);
 
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(mandant);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(
+			mandant
+		);
 		Gemeinde gemeinde = TestDataUtil.createGemeindeLondon(mandant);
 
-		TestDataInstitutionStammdatenBuilder institution = new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
-		var testFall = new Testfall01_WaeltiDagmar(gesuchsperiode, true, gemeinde, institution);
+		TestDataInstitutionStammdatenBuilder institution =
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
+		var testFall = new Testfall01_WaeltiDagmar(
+			gesuchsperiode,
+			true,
+			gemeinde,
+			institution
+		);
 		testFall.createGesuch(gesuchsperiode.getDatumAktiviert());
 		testFall.fillInGesuch();
 
 		Gesuch gesuch = testFall.getGesuch();
-		expect(persistence.find(Gesuch.class, gesuch.getId())).andReturn(gesuch);
-		expect(einstellungService.getEinstellungByMandant(EinstellungKey.GESUCHFREIGABE_ONLINE, gesuchsperiode)).andReturn(
-			Optional.of(new Einstellung(EinstellungKey.GESUCHFREIGABE_ONLINE, "true", gesuchsperiode, mandant)));
+		expect(persistence.find(Gesuch.class, gesuch.getId())).andReturn(
+			gesuch
+		);
+		expect(
+			einstellungService.getEinstellungByMandant(
+				EinstellungKey.GESUCHFREIGABE_ONLINE,
+				gesuchsperiode
+			)
+		).andReturn(
+			Optional.of(
+				new Einstellung(
+					EinstellungKey.GESUCHFREIGABE_ONLINE,
+					"true",
+					gesuchsperiode,
+					mandant
+				)
+			)
+		);
 
 		replayAll();
 
 		// when
 		// then
-		assertThrows(EbeguRuntimeException.class, () -> testee.antragFreigeben(gesuch.getId(), freigabeDTO));
+		assertThrows(
+			EbeguRuntimeException.class,
+			() -> testee.antragFreigeben(gesuch.getId(), freigabeDTO)
+		);
 		verifyAll();
 	}
 
 	static Stream<Arguments> invalidOnlinefreigabeCases() {
 		return Stream.of(
 			Arguments.of(JaxFreigabeDTO.builder().build()),
-			Arguments.of(JaxFreigabeDTO.builder().userConfirmedCorrectness(false).build()));
+			Arguments.of(
+				JaxFreigabeDTO.builder()
+					.userConfirmedCorrectness(false)
+					.build()
+			)
+		);
 	}
 
 	@ParameterizedTest
@@ -132,19 +161,35 @@ class FreigabeServiceTest extends EasyMockSupport {
 		Mandant mandant = new Mandant();
 		mandant.setMandantIdentifier(MandantIdentifier.SCHWYZ);
 
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(mandant);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(
+			mandant
+		);
 		Gemeinde gemeinde = TestDataUtil.createGemeindeLondon(mandant);
 
-		TestDataInstitutionStammdatenBuilder institution = new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
-		var testFall = new Testfall01_WaeltiDagmar(gesuchsperiode, true, gemeinde, institution);
+		TestDataInstitutionStammdatenBuilder institution =
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
+		var testFall = new Testfall01_WaeltiDagmar(
+			gesuchsperiode,
+			true,
+			gemeinde,
+			institution
+		);
 		testFall.createGesuch(gesuchsperiode.getDatumAktiviert());
 		testFall.fillInGesuch();
 
 		Gesuch gesuch = testFall.getGesuch();
 		gesuch.setStatus(antragStatus);
-		expect(persistence.find(Gesuch.class, gesuch.getId())).andReturn(gesuch);
-		expect(einstellungService.getEinstellungByMandant(EinstellungKey.GESUCHFREIGABE_ONLINE, gesuchsperiode)).andReturn(
-			Optional.empty());
+		expect(persistence.find(Gesuch.class, gesuch.getId())).andReturn(
+			gesuch
+		);
+		expect(
+			einstellungService.getEinstellungByMandant(
+				EinstellungKey.GESUCHFREIGABE_ONLINE,
+				gesuchsperiode
+			)
+		).andReturn(
+			Optional.empty()
+		);
 		gesuchValidationService.validateGesuchComplete(gesuch);
 
 		var freigabeDTO = JaxFreigabeDTO.builder().build();
@@ -153,13 +198,22 @@ class FreigabeServiceTest extends EasyMockSupport {
 
 		// when
 		// then
-		assertThrows(EbeguRuntimeException.class, () -> testee.antragFreigeben(gesuch.getId(), freigabeDTO));
+		assertThrows(
+			EbeguRuntimeException.class,
+			() -> testee.antragFreigeben(gesuch.getId(), freigabeDTO)
+		);
 		verifyAll();
 	}
 
 	static Stream<Arguments> invalidGesuchStatusForFreigabe() {
 		var set = EnumSet.allOf(AntragStatus.class);
-		set.removeAll(EnumSet.of(AntragStatus.FREIGABEQUITTUNG, AntragStatus.IN_BEARBEITUNG_SOZIALDIENST, AntragStatus.IN_BEARBEITUNG_GS));
+		set.removeAll(
+			EnumSet.of(
+				AntragStatus.FREIGABEQUITTUNG,
+				AntragStatus.IN_BEARBEITUNG_SOZIALDIENST,
+				AntragStatus.IN_BEARBEITUNG_GS
+			)
+		);
 		return set.stream().map(Arguments::of);
 	}
 
@@ -168,31 +222,76 @@ class FreigabeServiceTest extends EasyMockSupport {
 		// given
 		Mandant mandant = new Mandant();
 		mandant.setMandantIdentifier(MandantIdentifier.SCHWYZ);
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(mandant);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(
+			mandant
+		);
 		Gemeinde gemeinde = TestDataUtil.createGemeindeLondon(mandant);
-		TestDataInstitutionStammdatenBuilder institution = new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
-		var testFall = new Testfall01_WaeltiDagmar(gesuchsperiode, true, gemeinde, institution);
+		TestDataInstitutionStammdatenBuilder institution =
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
+		var testFall = new Testfall01_WaeltiDagmar(
+			gesuchsperiode,
+			true,
+			gemeinde,
+			institution
+		);
 		testFall.createGesuch(gesuchsperiode.getDatumAktiviert());
 		testFall.fillInGesuch();
 		Gesuch gesuch = testFall.getGesuch();
-		gesuch.getKindContainers().forEach(kindContainer -> kindContainer.setKindNummer(testFall.getFall().getNextNumberKind()));		;
-		var kind = Optional.ofNullable(gesuch.extractKindFromKindNumber(1)).orElseThrow();
+		gesuch.getKindContainers()
+			.forEach(
+				kindContainer -> kindContainer.setKindNummer(
+					testFall.getFall().getNextNumberKind()
+				)
+			);
+		;
+		var kind = Optional.ofNullable(gesuch.extractKindFromKindNumber(1))
+			.orElseThrow();
 		var anmeldungTagesschuleWithModules =
-			TestDataUtil.createAnmeldungTagesschuleWithModules(kind, gesuchsperiode);
+			TestDataUtil.createAnmeldungTagesschuleWithModules(
+				kind,
+				gesuchsperiode
+			);
 		kind.setAnmeldungenTagesschule(Set.of(anmeldungTagesschuleWithModules));
 
-		var freigabeDTO = JaxFreigabeDTO.builder().userConfirmedCorrectness(true).build();
+		var freigabeDTO = JaxFreigabeDTO.builder()
+			.userConfirmedCorrectness(true)
+			.build();
 
-		expect(persistence.find(Gesuch.class, gesuch.getId())).andReturn(gesuch);
-		expect(einstellungService.getEinstellungByMandant(EinstellungKey.GESUCHFREIGABE_ONLINE, gesuchsperiode)).andReturn(
-			Optional.of(new Einstellung(EinstellungKey.GESUCHFREIGABE_ONLINE, "true", gesuchsperiode, mandant)));
+		expect(persistence.find(Gesuch.class, gesuch.getId())).andReturn(
+			gesuch
+		);
+		expect(
+			einstellungService.getEinstellungByMandant(
+				EinstellungKey.GESUCHFREIGABE_ONLINE,
+				gesuchsperiode
+			)
+		).andReturn(
+			Optional.of(
+				new Einstellung(
+					EinstellungKey.GESUCHFREIGABE_ONLINE,
+					"true",
+					gesuchsperiode,
+					mandant
+				)
+			)
+		);
 		gesuchValidationService.validateGesuchComplete(gesuch);
 		authorizer.checkWriteAuthorization(gesuch);
-		wizardStepService.setWizardStepOkay(gesuch.getId(), WizardStepName.FREIGABE);
-		verantwortlicheService.updateVerantwortliche(gesuch.getId(), freigabeDTO, gesuch);
+		wizardStepService.setWizardStepOkay(
+			gesuch.getId(),
+			WizardStepName.FREIGABE
+		);
+		verantwortlicheService.updateVerantwortliche(
+			gesuch.getId(),
+			freigabeDTO,
+			gesuch
+		);
 		expect(persistence.merge(gesuch)).andReturn(gesuch);
-		expect(antragStatusHistoryService.saveStatusChange(gesuch, null)).andReturn(null);
-		betreuungService.fireAnmeldungTagesschuleAddedEvent(anmeldungTagesschuleWithModules);
+		expect(antragStatusHistoryService.saveStatusChange(gesuch, null))
+			.andReturn(null);
+		betreuungService.fireAnmeldungTagesschuleAddedEvent(
+			anmeldungTagesschuleWithModules
+		);
 
 		replayAll();
 

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.mutationsmerger;
@@ -23,7 +23,8 @@ import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.util.FinanzielleSituationTypVisitor;
 import com.sun.istack.NotNull;
 
-public class MutationsMergerFinanzielleSituationVisitor implements FinanzielleSituationTypVisitor<AbstractMutationsMergerFinanzielleSituation> {
+public class MutationsMergerFinanzielleSituationVisitor implements
+	FinanzielleSituationTypVisitor<AbstractMutationsMergerFinanzielleSituation> {
 
 	private final Locale locale;
 
@@ -31,8 +32,9 @@ public class MutationsMergerFinanzielleSituationVisitor implements FinanzielleSi
 		this.locale = locale;
 	}
 
-	public AbstractMutationsMergerFinanzielleSituation getMutationsMergerFinanzielleSituation(@NotNull
-		FinanzielleSituationTyp finanzielleSituationTyp) {
+	public AbstractMutationsMergerFinanzielleSituation getMutationsMergerFinanzielleSituation(
+		@NotNull FinanzielleSituationTyp finanzielleSituationTyp
+	) {
 		return finanzielleSituationTyp.accept(this);
 	}
 
@@ -69,6 +71,11 @@ public class MutationsMergerFinanzielleSituationVisitor implements FinanzielleSi
 
 	@Override
 	public AbstractMutationsMergerFinanzielleSituation visitFinSitSchwyz() {
+		return new MutationsMergerFinanzielleSituationSchwyz(locale);
+	}
+
+	@Override
+	public AbstractMutationsMergerFinanzielleSituation visitFinSitSchwyzErweitert() {
 		return new MutationsMergerFinanzielleSituationSchwyz(locale);
 	}
 }

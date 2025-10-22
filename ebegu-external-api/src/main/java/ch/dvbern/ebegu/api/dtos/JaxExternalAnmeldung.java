@@ -46,14 +46,14 @@ public abstract class JaxExternalAnmeldung implements Serializable {
 	@Nonnull
 	private String kindVorname;
 
-
 	protected JaxExternalAnmeldung(
 		@Nonnull String referenznummer,
 		@Nonnull JaxExternalBetreuungsstatus betreuungsstatus,
 		@Nonnull JaxExternalBetreuungsangebotTyp betreuungsangebotTyp,
 		@Nonnull String keyInstitution,
 		@Nonnull String kindName,
-		@Nonnull String kindVorname) {
+		@Nonnull String kindVorname
+	) {
 
 		this.referenznummer = referenznummer;
 		this.betreuungsstatus = betreuungsstatus;
@@ -62,7 +62,6 @@ public abstract class JaxExternalAnmeldung implements Serializable {
 		this.kindName = kindName;
 		this.kindVorname = kindVorname;
 	}
-
 
 	@Nonnull
 	public String getReferenznummer() {
@@ -78,7 +77,9 @@ public abstract class JaxExternalAnmeldung implements Serializable {
 		return betreuungsstatus;
 	}
 
-	public void setBetreuungsstatus(@Nonnull JaxExternalBetreuungsstatus betreuungsstatus) {
+	public void setBetreuungsstatus(
+		@Nonnull JaxExternalBetreuungsstatus betreuungsstatus
+	) {
 		this.betreuungsstatus = betreuungsstatus;
 	}
 
@@ -87,7 +88,9 @@ public abstract class JaxExternalAnmeldung implements Serializable {
 		return betreuungsangebotTyp;
 	}
 
-	public void setBetreuungsangebotTyp(@Nonnull JaxExternalBetreuungsangebotTyp betreuungsangebotTyp) {
+	public void setBetreuungsangebotTyp(
+		@Nonnull JaxExternalBetreuungsangebotTyp betreuungsangebotTyp
+	) {
 		this.betreuungsangebotTyp = betreuungsangebotTyp;
 	}
 

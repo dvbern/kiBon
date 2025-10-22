@@ -1,0 +1,32 @@
+{
+    "valid": {
+        "Testgemeinde Luzern": {
+            "kita": {
+                "betreuungsangebot": "Kita",
+                "institution": "Weissenstein LU",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "60",
+                        "monatlicheBetreuungskosten": "2000",
+                        "von": "01.08.2023",
+                        "bis": "31.07.2024"
+                    }
+                ]
+            }
+        },
+        "Testgemeinde Horw": {
+            "kita": {
+                "betreuungsangebot": "Kita",
+                "institution": "Weissenstein LU",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "60",
+                        "monatlicheBetreuungskosten": "2000",
+                        "von": "01.08.2023",
+                        "bis": "31.07.2024"
+                    }
+                ]
+            }
+        }
+    }
+}

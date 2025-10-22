@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -38,10 +38,12 @@ class PlatzbestaetigungSnapshotTest {
 	 * <p>
 	 * Verify, if these properties are relevant for improt via exchange service.
 	 * <p>
-	 * If no, simply update the snapshot (manually adjusting the reference file or by adjusting the `update-snapshot` property
+	 * If no, simply update the snapshot (manually adjusting the reference file or by adjusting the `update-snapshot`
+	 * property
 	 * of `snapshot.properties`).
 	 * <p>
-	 * If yes, create a new {@link PensumMapper} for the property and add a comparator to {@link PensumMappingUtil#COMPARATOR}.
+	 * If yes, create a new {@link PensumMapper} for the property and add a comparator to
+	 * {@link PensumMappingUtil#COMPARATOR}.
 	 */
 	@SuppressWarnings("TestMethodWithoutAssertion")
 	@Test
@@ -54,7 +56,6 @@ class PlatzbestaetigungSnapshotTest {
 		BetreuungsmitteilungPensum pensum = new BetreuungsmitteilungPensum();
 		pensum.setGueltigkeit(dateRange);
 		pensum.setEingewoehnung(eingewoehnung);
-
 
 		expect.serializer("json").toMatchSnapshot(pensum);
 	}

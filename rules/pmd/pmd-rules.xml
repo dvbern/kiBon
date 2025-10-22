@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<ruleset name="DVBern Default Ruleset (Kitadmin)"
+		 xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+	<description>
+		DVBern Default Ruleset mit kleineren Modifikationen (PMD 7 migrated)
+	</description>
+	<rule ref="category/java/errorprone.xml/UnusedNullCheckInEquals"/>
+	<rule ref="category/java/performance.xml/StringInstantiation"/>
+	<rule ref="category/java/errorprone.xml/AvoidCatchingNPE"/>
+	<rule ref="category/java/design.xml/AvoidRethrowingException"/>
+	<rule ref="category/java/bestpractices.xml/ReplaceEnumerationWithIterator"/>
+	<rule ref="category/java/performance.xml/AvoidArrayLoops"/>
+	<rule ref="category/java/bestpractices.xml/UnusedFormalParameter"/>
+	<rule ref="category/java/codestyle.xml/EmptyControlStatement"/>
+	<rule ref="category/java/errorprone.xml/ClassCastExceptionWithToArray"/>
+	<rule ref="category/java/design.xml/AvoidThrowingNullPointerException"/>
+	<rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
+	<rule ref="category/java/errorprone.xml/CompareObjectsWithEquals"/>
+	<rule ref="category/java/performance.xml/UseIndexOfChar"/>
+	<rule ref="category/java/performance.xml/BigIntegerInstantiation"/>
+	<rule ref="category/java/design.xml/FinalFieldCouldBeStatic"/>
+	<rule ref="category/java/codestyle.xml/ControlStatementBraces"/>
+	<rule ref="category/java/errorprone.xml/SuspiciousEqualsMethodName"/>
+	<rule ref="category/java/errorprone.xml/InstantiationToGetClass"/>
+	<rule ref="category/java/errorprone.xml/SuspiciousHashcodeMethodName"/>
+	<rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
+	<rule ref="category/java/errorprone.xml/UnnecessaryCaseChange"/>
+	<rule ref="category/java/design.xml/SingularField"/>
+	<rule ref="category/java/errorprone.xml/CloseResource"/>
+	<rule ref="category/java/errorprone.xml/AvoidCatchingThrowable"/>
+	<rule ref="category/java/design.xml/CollapsibleIfStatements"/>
+	<rule ref="category/java/errorprone.xml/UselessOperationOnImmutable"/>
+	<rule ref="category/java/design.xml/UselessOverridingMethod"/>
+	<rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
+	<rule ref="category/java/performance.xml/UseArraysAsList"/>
+	<rule ref="category/java/design.xml/AvoidThrowingRawExceptionTypes"/>
+	<rule ref="category/java/errorprone.xml/EqualsNull"/>
+	<rule ref="category/java/errorprone.xml/BrokenNullCheck"/>
+	<rule ref="category/java/errorprone.xml/UseCorrectExceptionLogging"/>
+	<rule ref="category/java/performance.xml/InefficientStringBuffering"/>
+	<rule ref="category/java/bestpractices.xml/ArrayIsStoredDirectly"/>
+	<rule ref="category/java/errorprone.xml/FinalizeOverloaded"/>
+	<rule ref="category/java/codestyle.xml/ClassNamingConventions"/>
+	<rule ref="category/java/errorprone.xml/DontImportSun"/>
+	<rule ref="category/java/codestyle.xml/UnnecessaryImport"/>
+	<rule ref="category/java/errorprone.xml/MissingStaticMethodInNonInstantiatableClass"/>
+	<rule ref="category/java/errorprone.xml/StringBufferInstantiationWithChar"/>
+	<rule ref="category/java/performance.xml/StringToString"/>
+	<rule ref="category/java/design.xml/SimplifyConditional"/>
+	<rule ref="category/java/bestpractices.xml/ReplaceVectorWithList"/>
+	<rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
+	<rule ref="category/java/errorprone.xml/MethodWithSameNameAsEnclosingClass"/>
+	<rule ref="category/java/errorprone.xml/AvoidInstanceofChecksInCatchClause"/>
+	<rule ref="category/java/bestpractices.xml/PrimitiveWrapperInstantiation"/>
+	<rule ref="category/java/codestyle.xml/UnnecessaryBoxing"/>
+	<rule ref="category/java/codestyle.xml/AvoidDollarSigns"/>
+	<rule ref="category/java/errorprone.xml/AvoidAssertAsIdentifier"/>
+	<rule ref="category/java/errorprone.xml/AvoidCallingFinalize"/>
+	<rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
+	<rule ref="category/java/bestpractices.xml/ReplaceHashtableWithMap"/>
+	<rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor"/>
+	<rule ref="category/java/errorprone.xml/EmptyFinalizer"/>
+	<rule ref="category/java/errorprone.xml/IdempotentOperations"/>
+	<rule ref="category/java/errorprone.xml/FinalizeDoesNotCallSuperFinalize"/>
+	<rule ref="category/java/performance.xml/UseStringBufferLength"/>
+	<rule ref="category/java/errorprone.xml/AvoidEnumAsIdentifier"/>
+	<rule ref="category/java/bestpractices.xml/SystemPrintln"/>
+	<rule ref="category/java/performance.xml/UselessStringValueOf"/>
+	<rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
+		<properties>
+			<property name="skipAnnotations" value="true"/>
+		</properties>
+	</rule>
+</ruleset>

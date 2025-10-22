@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.verfuegung;
@@ -36,13 +36,17 @@ public class JacksonBigDecimalAsPlainTest {
 	 * There is a Bug in Jackson, not properly serializing BigDecimals to plainText.
 	 *
 	 * @see
-	 * <a href="https://github.com/FasterXML/jackson-databind/issues/2230">https://github.com/FasterXML/jackson-databind/issues/2230</a>
+	 * <a
+	 * href="https://github.com/FasterXML/jackson-databind/issues/2230">https://github.com/FasterXML/jackson-databind/issues/2230</a>
 	 */
 	@Ignore
 	@Test
 	public void testBigDecimal() {
 		// should use BigDecimal::toPlainString
-		ObjectMapper mapper = new ObjectMapper().configure(Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);
+		ObjectMapper mapper = new ObjectMapper().configure(
+			Feature.WRITE_BIGDECIMAL_AS_PLAIN,
+			true
+		);
 
 		Trial test = new Trial(BigDecimal.TEN);
 		JsonNode actual = mapper.valueToTree(test);
@@ -51,7 +55,10 @@ public class JacksonBigDecimalAsPlainTest {
 		assertThat(BigDecimal.TEN.toPlainString(), is("10"));
 
 		// this fails with Jackson 2.9.9. value is "1E+1"
-		assertThat(actual, jsonObject().where("value", jsonBigDecimal(BigDecimal.TEN)));
+		assertThat(
+			actual,
+			jsonObject().where("value", jsonBigDecimal(BigDecimal.TEN))
+		);
 	}
 
 	private static class Trial {

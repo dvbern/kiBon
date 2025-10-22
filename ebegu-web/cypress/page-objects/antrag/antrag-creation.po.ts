@@ -33,6 +33,10 @@ const getAntragBearbeitenButton = () => {
     return cy.getByData('container.antrag-bearbeiten');
 };
 
+const getMutationErstellenInOldPeriodeConfirmButton = () => {
+    return cy.getByData('remove-ok');
+};
+
 // TODO: this should probably be on a toolbar po
 const getVerantwortlicher = () => {
     return cy.getByData('verantwortlicher');
@@ -49,12 +53,18 @@ const getPageTitle = () => {
     return cy.getByData('page-title');
 };
 
+const getSpeichernUndWeiterButton = () => {
+    return cy.getByData('container.navigation-save', 'navigation-button');
+};
+
 export const AntragCreationPO = {
     getAntragsDaten,
     getAlternativdatum,
     getEingangsdatum,
     getVerantwortlicher,
+    getMutationErstellenInOldPeriodeConfirmButton,
     getUserOption,
     getPageTitle,
-    getAntragBearbeitenButton
+    getAntragBearbeitenButton,
+    getSpeichernUndWeiterButton
 };

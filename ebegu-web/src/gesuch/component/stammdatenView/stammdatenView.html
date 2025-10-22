@@ -90,7 +90,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="VORNAME"
                                     for="vorname_ID"
                                 ></label>
@@ -121,7 +121,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group secondColumn">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="NAME"
                                     for="name_ID"
                                 ></label>
@@ -156,7 +156,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="GEBURTSDATUM"
                                     for="geburtsdatum_ID"
                                 >
@@ -189,7 +189,9 @@
                             ng-if="vm.showKorrespondenzsprache()"
                         >
                             <div class="form-group">
-                                <label class="md-no-float required">
+                                <label
+                                    class="md-no-float required ignore-danger-font-color"
+                                >
                                     <span
                                         data-translate="KORRESPONDENZSPRACHE"
                                         for="korrespondenzSprache"
@@ -233,7 +235,9 @@
                         <!--Sozialversicherungsnummer-->
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
-                                <label class="md-no-float required">
+                                <label
+                                    class="md-no-float required ignore-danger-font-color"
+                                >
                                     <span
                                         data-translate="SOZIALVERSICHERUNGSNUMMER"
                                         for="sozialversicherungsnummer_ID"
@@ -287,6 +291,7 @@
                                 "
                                 (delete)="vm.onDeleteFile($event)"
                                 (upload-file)="vm.onUpload($event)"
+                                [file-types]="vm.ausweisFileTypes"
                                 [files]="vm.dokumentGrund.dokumente"
                                 [read-only]="vm.isGesuchReadonly()"
                                 [read-only-delete]="vm.isGesuchReadonly()"
@@ -324,7 +329,7 @@
                     <!-- Diplomatenstatus -->
                     <div class="row" ng-if="!vm.diplomatenStatusDisabled">
                         <div class="col-xs-12 dv-input-container-question">
-                            <div class="checkbox">
+                            <div class="checkbox diplomatenstatus">
                                 <md-checkbox
                                     ng-model="vm.getModelJA().diplomatenstatus"
                                     name="diplomatenstatus"
@@ -338,14 +343,17 @@
                                     dv-enable-allowed-roles="vm.TSRoleUtil.getAllRolesButTraegerschaftInstitution()"
                                     dv-enable-expression="!vm.isGesuchReadonly()"
                                 >
-                                    <span
-                                        data-translate="GESUCHSTELLER_DIPLOMATENSTATUS"
-                                    ></span>
+                                    <span>
+                                        {{
+                                            'GESUCHSTELLER_DIPLOMATENSTATUS'
+                                                | translate
+                                        }}
+                                        <dv-tooltip
+                                            input-id="diplomatenstatus"
+                                            text="'GESUCHSTELLER_DIPLOMATENSTATUS_HINT' | translate"
+                                        ></dv-tooltip>
+                                    </span>
                                 </md-checkbox>
-                                <dv-tooltip
-                                    input-id="diplomatenstatus"
-                                    text="'GESUCHSTELLER_DIPLOMATENSTATUS_HINT' | translate"
-                                ></dv-tooltip>
                                 <dv-bisher
                                     gs="vm.getModel().gesuchstellerGS.diplomatenstatus"
                                     ja="vm.getModel().gesuchstellerJA.diplomatenstatus"
@@ -398,14 +406,15 @@
                                     dv-enable-allowed-roles="vm.TSRoleUtil.getAllRolesButTraegerschaftInstitution()"
                                     dv-enable-expression="!vm.isGesuchReadonly()"
                                 >
-                                    <span
-                                        data-translate="KORRESPONDENZADR"
-                                    ></span>
+                                    <span>
+                                        {{ 'KORRESPONDENZADR' | translate }}
+                                        <dv-tooltip
+                                            input-id="korrespondenzAdr"
+                                            text="'KORRESPONDENZADR_HELP' | translate"
+                                        ></dv-tooltip>
+                                    </span>
                                 </md-checkbox>
-                                <dv-tooltip
-                                    input-id="korrespondenzAdr"
-                                    text="'KORRESPONDENZADR_HELP' | translate"
-                                ></dv-tooltip>
+
                                 <dv-bisher
                                     gs="vm.showKorrespondadrGS"
                                     class="dv-bisher-break"
@@ -428,6 +437,10 @@
                         prefix="korrespondenz"
                         show-if-bisher-none="false"
                         organisation="true"
+                        ng-class="{
+                            'stammdaten-abweichungAdresse':
+                                !vm.isGesuchStatusBearbeitungGS()
+                        }"
                     ></dv-adresse>
 
                     <!--Rechnungsadresse Checkbox-->
@@ -447,12 +460,15 @@
                                     dv-enable-allowed-roles="vm.TSRoleUtil.getAllRolesButTraegerschaftInstitution()"
                                     dv-enable-expression="!vm.isGesuchReadonly()"
                                 >
-                                    <span data-translate="RECHNUNGSADR"></span>
+                                    <span>
+                                        {{ 'RECHNUNGSADR' | translate }}
+                                        <dv-tooltip
+                                            input-id="rechnungsAdr"
+                                            text="'RECHNUNGSADR_HELP' | translate"
+                                        ></dv-tooltip>
+                                    </span>
                                 </md-checkbox>
-                                <dv-tooltip
-                                    input-id="rechnungsAdr"
-                                    text="'RECHNUNGSADR_HELP' | translate"
-                                ></dv-tooltip>
+
                                 <dv-bisher
                                     gs="vm.showRechnungsadrGS"
                                     class="dv-bisher-break"
@@ -470,6 +486,10 @@
                     </div>
 
                     <dv-adresse
+                        ng-class="{
+                            'stammdaten-abweichungAdresse':
+                                !vm.isGesuchStatusBearbeitungGS()
+                        }"
                         adresse="vm.getModel().rechnungsAdresse"
                         ng-if="vm.showRechnungsadr"
                         prefix="rechnung"
@@ -487,17 +507,16 @@
                         <div class="col-sm-12 dv-input-container-medium">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     ng-class="vm.getMailRequiredCssClass()"
                                 >
-                                    <span
-                                        data-translate="EMAIL"
-                                        for="email_ID"
-                                    ></span>
-                                    <dv-tooltip
-                                        input-id="email_ID"
-                                        text="'EMAIL_HELP' | translate"
-                                    ></dv-tooltip>
+                                    <span for="email_ID">
+                                        {{ 'EMAIL' | translate }}
+                                        <dv-tooltip
+                                            input-id="email_ID"
+                                            text="'EMAIL_HELP' | translate"
+                                        ></dv-tooltip>
+                                    </span>
                                 </label>
                                 <input
                                     aria-describedby="email_ID-error"
@@ -510,6 +529,7 @@
                                     class="form-control"
                                     ng-required="vm.isMailRequired()"
                                     placeholder="hans.muster@example.com"
+                                    ng-pattern="vm.CONSTANTS.PATTERN_EMAIL"
                                     autocomplete="email"
                                 />
                                 <dv-bisher
@@ -531,7 +551,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="MOBILE"
                                     for="mobile_ID"
                                 >
@@ -564,7 +584,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group secondColumn">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="TELEFON"
                                     for="tel_ID"
                                 >

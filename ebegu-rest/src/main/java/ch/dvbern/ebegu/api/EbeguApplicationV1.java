@@ -14,29 +14,43 @@
  */
 package ch.dvbern.ebegu.api;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.annotation.security.DeclareRoles;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.security.enterprise.authentication.mechanism.http.OpenIdAuthenticationMechanismDefinition;
+import jakarta.security.enterprise.authentication.mechanism.http.openid.ClaimsDefinition;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
-import javax.servlet.annotation.MultipartConfig;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import ch.dvbern.ebegu.oidc.AuthConstants;
+import ch.dvbern.ebegu.util.Constants;
+import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.info.Info;
 
-import io.swagger.jaxrs.config.BeanConfig;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_FERIENBETREUUNG;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_INSTITUTION;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_SOZIALDIENST;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TRAEGERSCHAFT;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.GESUCHSTELLER;
+import static ch.dvbern.ebegu.enums.UserRoleName.JURIST;
+import static ch.dvbern.ebegu.enums.UserRoleName.REVISOR;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_FERIENBETREUUNG;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_INSTITUTION;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_SOZIALDIENST;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_TRAEGERSCHAFT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.STEUERAMT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 
-import static ch.dvbern.ebegu.config.EbeguConfigurationImpl.EBEGU_DEVELOPMENT_MODE;
-
-/**
- * Entry-Point of all REST-Services. Used by JAX-RS to List all available Service implementations
- * Also defines the api root path from the context onwards ebegu/api/v1
- */
-
-/*
- * Since we're not using a jax-rs servlet mapping, we must define an Application class that is annotated with the
- * @ApplicationPath annotation. If you return any empty set for by classes and singletons, your WAR will be scanned
- * for JAX-RS annotation resource and provider classes.
- */
-@ApplicationPath(EbeguApplicationV1.API_ROOT_PATH)
+@ApplicationScoped
+@ApplicationPath(Constants.API_ROOT_PATH)
 /*
  * 20 MB ist der WildFly Default. Falls dieser erhoeht werden muss in standalone.xml im subsysten <subsystem xmlns="urn:jboss:domain:undertow:2.0">
  * der http-listener um ein Attribute max-post-size="ALLOWED_BYTE" ergaenzt werden.
@@ -44,57 +58,27 @@ import static ch.dvbern.ebegu.config.EbeguConfigurationImpl.EBEGU_DEVELOPMENT_MO
  * Beispiel 50 MB:
  * <http-listener name="default" socket-binding="http" redirect-socket="https" max-post-size="52428800" />
  */
-@MultipartConfig(location = "/tmp", maxFileSize = 1024 * 1024 * 20, maxRequestSize = 1024 * 1024 * 20, fileSizeThreshold = 1024 * 1024 * 20)
+@MultipartConfig(location = "/tmp",
+	maxFileSize = 1024 * 1024 * 20,
+	maxRequestSize = 1024 * 1024 * 20,
+	fileSizeThreshold = 1024 * 1024 * 20)
+@OpenAPIDefinition(info = @Info(title = "kibon", version = ""))
+@OpenIdAuthenticationMechanismDefinition(
+	providerURI = "${keycloakConfig.getKeycloakHost()}/realms/${realmResolver.getRealm()}",
+	clientId = "kibon-oidc",
+	redirectURI = "${baseURL}"
+		+ Constants.API_ROOT_PATH
+		+ AuthConstants.CALLBACK_PATH,
+	useSession = false, // by using cookies we can set SameSite=Strict for JSESSIONID
+	tokenAutoRefresh = true,
+	tokenMinValidity = AuthConstants.TOKEN_MIN_VALIDITY,
+	claimsDefinition = @ClaimsDefinition(callerNameClaim = "sub"))
+@DeclareRoles({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG,
+	SACHBEARBEITER_TRAEGERSCHAFT, ADMIN_TRAEGERSCHAFT, ADMIN_INSTITUTION,
+	SACHBEARBEITER_INSTITUTION, JURIST, REVISOR, STEUERAMT, ADMIN_TS,
+	ADMIN_GEMEINDE, SACHBEARBEITER_TS, SACHBEARBEITER_GEMEINDE, ADMIN_MANDANT,
+	SACHBEARBEITER_MANDANT, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST,
+	ADMIN_FERIENBETREUUNG, SACHBEARBEITER_FERIENBETREUUNG, GESUCHSTELLER })
 public class EbeguApplicationV1 extends Application {
 
-	public static final String PATH_SEPARATOR = "/";
-	public static final String API_ROOT_PATH = "/api/v1";
-
-	public EbeguApplicationV1() {
-		configureSwagger();
-	}
-
-	private void configureSwagger() {
-
-		if (Boolean.parseBoolean(System.getProperty(EBEGU_DEVELOPMENT_MODE, "false"))) {
-			BeanConfig beanConfig = new BeanConfig();
-			beanConfig.setTitle("eBEGU REST Interface");
-			beanConfig.setVersion("1.0");
-			beanConfig.setSchemes(new String[] { "http" }); //later also add https
-			beanConfig.setHost("localhost:8080");
-			beanConfig.setBasePath("/ebegu" + API_ROOT_PATH); //context ist hier auch wichtig
-			beanConfig.setResourcePackage("ch.dvbern.ebegu.api.resource");
-			beanConfig.setScan(true);
-			beanConfig.setPrettyPrint(true);
-		}
-	}
-
-	private static final Set<Class<?>> ALL_CLASSES = new HashSet<>(Arrays.asList(new Class<?>[] {
-		/* hier koennten die gewuenschten "richtigen" services eingefuegt werden, wenn leer wird gescannt
-//		HistorizationResource.class,
-//		ApplicationPropertyResource.class,
-//		io.swagger.jaxrs.listing.ApiListingResource.class,
-//      io.swagger.jaxrs.listing.SwaggerSerializers.class
-		 */
-	}));
-
-	private static final Set<Object> ALL_SINGLETONS = new HashSet<>(Arrays.asList(
-		new Object[] {
-		/* hier koennten exceptionmapper eingefuegt werden
-			new BenutzerAlreadyExistsExceptionMapper(),
-			new ForbiddenExceptionMapper(),
-			new UnauthorizedExceptionMapper(),
-		*/
-		}));
-
-	@Override
-	public Set<Class<?>> getClasses() {
-		return ALL_CLASSES;
-	}
-
-	@Override
-	public Set<Object> getSingletons() {
-		return ALL_SINGLETONS;
-	}
 }
-

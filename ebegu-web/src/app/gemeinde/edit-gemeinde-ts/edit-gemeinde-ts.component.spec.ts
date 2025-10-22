@@ -16,7 +16,7 @@
  */
 
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {UpgradeModule} from '@angular/upgrade/static';
 import {TranslateModule} from '@ngx-translate/core';
@@ -43,7 +43,7 @@ describe('EditGemeindeTSComponent', () => {
     );
     const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
         I18nServiceRSRest.name,
-        ['extractPreferredLanguage']
+        ['extractPreferredLanguage', 'init']
     );
     const gemeindeRSSpy = jasmine.createSpyObj(GemeindeRS.name, [
         'isSupportedImage'

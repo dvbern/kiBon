@@ -15,6 +15,10 @@
 
 package ch.dvbern.ebegu.ws.ewk;
 
+import java.time.LocalDate;
+
+import javax.annotation.Nonnull;
+
 import ch.dvbern.ebegu.dto.personensuche.EWKPerson;
 import ch.dvbern.ebegu.dto.personensuche.EWKResultat;
 import ch.dvbern.ebegu.entities.Gemeinde;
@@ -22,9 +26,6 @@ import ch.dvbern.ebegu.entities.Gesuchsteller;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.errors.PersonenSucheServiceBusinessException;
 import ch.dvbern.ebegu.errors.PersonenSucheServiceException;
-
-import javax.annotation.Nonnull;
-import java.time.LocalDate;
 
 /**
  * Serviceinterface welches die Methoden des EWK Service zur verfuegung stellt
@@ -35,22 +36,41 @@ public interface GeresClient {
 	 * Sucht eine Person im EWK, mit allen Angaben
 	 */
 	@Nonnull
-	EWKResultat suchePersonMitFallbackOhneVorname(@Nonnull String name, @Nonnull String vorname, @Nonnull LocalDate geburtsdatum, @Nonnull Geschlecht geschlecht, Long bfsNummer) throws PersonenSucheServiceException, PersonenSucheServiceBusinessException;
+	EWKResultat suchePersonMitFallbackOhneVorname(
+		@Nonnull String name,
+		@Nonnull String vorname,
+		@Nonnull LocalDate geburtsdatum,
+		@Nonnull Geschlecht geschlecht,
+		Long bfsNummer
+	) throws PersonenSucheServiceException,
+		PersonenSucheServiceBusinessException;
 
 	/**
 	 * Sucht eine Person im EWK, mit allen Angaben, aber ohne bfsNummer
 	 */
 	@Nonnull
-	EWKResultat suchePersonMitFallbackOhneVorname(@Nonnull String name, @Nonnull String vorname, @Nonnull LocalDate geburtsdatum, @Nonnull Geschlecht geschlecht) throws PersonenSucheServiceException, PersonenSucheServiceBusinessException;
+	EWKResultat suchePersonMitFallbackOhneVorname(
+		@Nonnull String name,
+		@Nonnull String vorname,
+		@Nonnull LocalDate geburtsdatum,
+		@Nonnull Geschlecht geschlecht
+	) throws PersonenSucheServiceException,
+		PersonenSucheServiceBusinessException;
 
 	/**
 	 * Sucht alle Personen in einem Haushalt
 	 */
 	@Nonnull
-	EWKResultat suchePersonenInHaushalt(Long wohnungsId, Long gebaeudeId) throws PersonenSucheServiceException, PersonenSucheServiceBusinessException;
+	EWKResultat suchePersonenInHaushalt(Long wohnungsId, Long gebaeudeId)
+		throws PersonenSucheServiceException,
+		PersonenSucheServiceBusinessException;
 
 	@Nonnull
-	EWKPerson suchePersonMitAhvNummerInGemeinde(Gesuchsteller gesuchsteller, Gemeinde gemeinde) throws PersonenSucheServiceException, PersonenSucheServiceBusinessException;
+	EWKPerson suchePersonMitAhvNummerInGemeinde(
+		Gesuchsteller gesuchsteller,
+		Gemeinde gemeinde
+	) throws PersonenSucheServiceException,
+		PersonenSucheServiceBusinessException;
 
 	String test() throws PersonenSucheServiceException;
 }

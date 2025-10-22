@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {IComponentOptions, IController} from 'angular';
-import {KiBonMandant, MANDANTS} from '../../../app/core/constants/MANDANTS';
-import {Log, LogFactory} from '../../../app/core/logging/LogFactory';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
+import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
 import {TSPensumUnits} from '../../../models/enums/TSPensumUnits';
 import {TSBetreuungspensumContainer} from '../../../models/TSBetreuungspensumContainer';
@@ -38,11 +38,16 @@ export class BetreuungInputConfig implements IComponentOptions {
         multiplierTfo: '<',
         betreuungInputSwitchTyp: '<',
         mandant: '<',
-        vertrag: '<'
+        vertrag: '<',
+        texteSz25Enabled: '='
     };
     public controller = BetreuungInput;
     public controllerAs = 'vm';
 }
+
+export type MahlzeitenPensumAnzeigeTyp =
+    | keyof typeof TSPensumAnzeigeTyp
+    | 'NUR_MAHLZEITEN';
 
 export class BetreuungInput implements IController {
     public static $inject = ['$translate', 'GesuchModelManager'];
@@ -55,12 +60,13 @@ export class BetreuungInput implements IController {
     public id: string;
     public index: number;
     public step: number = 0.01;
-    public betreuungInputSwitchTyp: TSPensumAnzeigeTyp =
+    public betreuungInputSwitchTyp: MahlzeitenPensumAnzeigeTyp =
         TSPensumAnzeigeTyp.ZEITEINHEIT_UND_PROZENT;
 
     public label: string = '';
     public switchOptions: TSPensumUnits[] = [];
     public betreuungspensumHelpKey: string = 'BETREUUNGSPENSUM_HELP';
+    public texteSz25Enabled: boolean = false;
     private multiplier: number = 1;
     private readonly multiplierKita: number;
     private readonly multiplierTfo: number;
@@ -111,9 +117,7 @@ export class BetreuungInput implements IController {
         if (this.betreuungInputSwitchTyp === TSPensumAnzeigeTyp.NUR_STUNDEN) {
             return this.translate.instant('STUNDEN_PLACEHOLDER');
         }
-        if (
-            this.betreuungInputSwitchTyp === TSPensumAnzeigeTyp.NUR_MAHLZEITEN
-        ) {
+        if (this.betreuungInputSwitchTyp === 'NUR_MAHLZEITEN') {
             return this.translate.instant('MAHLZEITEN_PLACEHOLDER');
         }
 
@@ -141,10 +145,20 @@ export class BetreuungInput implements IController {
                 TSPensumUnits.HOURS
             ];
             this.multiplier = this.multiplierTfo;
-            this.betreuungspensumHelpKey = 'BETREUUNGSPENSUM_TFO_HELP';
+            if (this.texteSz25Enabled) {
+                this.betreuungspensumHelpKey =
+                    'BETREUUNGSPENSUM_TFO_HELP_SZ_25';
+            } else {
+                this.betreuungspensumHelpKey = 'BETREUUNGSPENSUM_TFO_HELP';
+            }
         } else {
             this.switchOptions = [TSPensumUnits.PERCENTAGE, TSPensumUnits.DAYS];
             this.multiplier = this.multiplierKita;
+            if (this.texteSz25Enabled) {
+                this.betreuungspensumHelpKey = 'BETREUUNGSPENSUM_HELP_SZ_25';
+            } else {
+                this.betreuungspensumHelpKey = 'BETREUUNGSPENSUM_HELP';
+            }
         }
         if (this.betreuungInputSwitchTyp === TSPensumAnzeigeTyp.NUR_STUNDEN) {
             this.switchOptions = [TSPensumUnits.HOURS];

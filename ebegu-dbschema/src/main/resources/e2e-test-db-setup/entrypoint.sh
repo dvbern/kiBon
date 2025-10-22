@@ -33,6 +33,9 @@ mariadb "${mariadb_args[@]}" < ebegu-dump.sql
 echo "migrating schema"
 flyway "${flyway_args[@]}" migrate
 
+echo "import procedure"
+mariadb "${mariadb_args[@]}" < helper/testdata_procedures.sql
+
 echo "insert test data for BE"
 mariadb "${mariadb_args[@]}" < testdaten/create_testdata.sql
 
@@ -47,5 +50,8 @@ mariadb "${mariadb_args[@]}" < testdaten/create_testdata_so.sql
 
 echo "insert test data for SZ"
 mariadb "${mariadb_args[@]}" < testdaten/create_testdata_sz.sql
+
+echo "insert test data for DVB"
+mariadb "${mariadb_args[@]}" < testdaten/create_testdata_dvb.sql
 
 echo "done"

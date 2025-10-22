@@ -29,17 +29,18 @@ import {StateService} from '@uirouter/core';
 import {from, Observable} from 'rxjs';
 import {AbstractAdminViewX} from '../../../admin/abstractAdminViewX';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSTraegerschaft} from '../../../models/TSTraegerschaft';
-import {DvNgRemoveDialogComponent} from '../../core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
-import {Log, LogFactory} from '../../core/logging/LogFactory';
+import {TSRole} from '@kibon/shared/model/enums';
+import {TSTraegerschaft} from '@kibon/shared/model/entity';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
 import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
 
 @Component({
     selector: 'dv-traegerschaft-list',
     templateUrl: './traegerschaft-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TraegerschaftListComponent
     extends AbstractAdminViewX

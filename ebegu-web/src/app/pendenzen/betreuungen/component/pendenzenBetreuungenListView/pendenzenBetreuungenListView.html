@@ -33,29 +33,32 @@
                 <a ui-sref="institution.list" data-translate="ZUR_LISTE"></a>
             </p>
         </div>
-        <div
-            class="well well-status-abgewiesen"
-            ng-if="vm.isStammdatenCheckRequired"
-        >
-            <span data-translate="WARNUNG_INSTITUTIONEN_100_TAGE"></span>
-            <p>
-                <a ui-sref="institution.list" data-translate="ZUR_LISTE"></a>
-            </p>
-        </div>
 
         <div class="row">
-            <div class="col-md-10">
+            <div class="col-md-10 margin-bottom-10">
                 <div id="titleText">
-                    <h3 data-translate="PENDENZEN_LIST"></h3>
+                    <h2
+                        style="display: inline-block"
+                        data-translate="PENDENZEN_LIST"
+                    ></h2>
+                    <h2
+                        style="display: inline-block"
+                        ng-if="vm.getTotalResultCount() > 0"
+                    >
+                        ({{ vm.getTotalResultCount() }})
+                    </h2>
                 </div>
-                <div id="refreshIcon">
-                    <i class="fa fa-undo" dv-st-reset-search></i>
-                </div>
-            </div>
-            <div class="col-md-2 text-right">
-                <h3 ng-bind="vm.getTotalResultCount()"></h3>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button dv-st-reset-search class="dv-btn" id="refreshIcon">
+                    <i class="fa fa-undo"></i>
+                    {{ 'FILTER_ZURUECKSETZEN' | translate }}
+                </button>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-12 table-responsive">
                 <table class="table table-striped fixedtable">
@@ -65,54 +68,102 @@
                             <th
                                 st-sort="betreuungsNummer"
                                 class="sortable uppercase"
-                                data-translate="ID"
-                            ></th>
-                            <th
-                                st-sort="gemeinde"
-                                class="sortable uppercase"
-                                data-translate="GEMEINDE"
-                            ></th>
-                            <th
-                                st-sort="name"
-                                class="sortable uppercase"
-                                data-translate="NAME"
-                            ></th>
-                            <th
-                                st-sort="vorname"
-                                class="sortable uppercase"
-                                data-translate="VORNAME"
-                            ></th>
+                            >
+                                <span data-translate="ID"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
+                            <th st-sort="gemeinde" class="sortable uppercase">
+                                <span data-translate="GEMEINDE"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
+                            <th st-sort="name" class="sortable uppercase">
+                                <span data-translate="NAME"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
+                            <th st-sort="vorname" class="sortable uppercase">
+                                <span data-translate="VORNAME"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
                             <th
                                 st-sort="geburtsdatum"
                                 class="sortable uppercase"
-                                data-translate="GEBURTSDATUM"
-                            ></th>
-                            <th
-                                st-sort="typ"
-                                class="sortable uppercase"
-                                data-translate="TYP"
-                            ></th>
+                            >
+                                <span data-translate="GEBURTSDATUM"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
+                            <th st-sort="typ" class="sortable uppercase">
+                                <span data-translate="TYP"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
                             <th
                                 st-sort="gesuchsperiodeString"
                                 class="sortable uppercase"
-                                data-translate="PERIODE"
-                            ></th>
+                            >
+                                <span data-translate="PERIODE"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
                             <th
                                 st-sort="eingangsdatum"
                                 st-sort-default="reverse"
                                 class="sortable uppercase"
-                                data-translate="EINGANG"
-                            ></th>
+                            >
+                                <span data-translate="EINGANG"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
                             <th
                                 st-sort="betreuungsangebotTyp"
                                 class="sortable uppercase"
-                                data-translate="ANGEBOT"
-                            ></th>
+                            >
+                                <span data-translate="ANGEBOT"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
                             <th
                                 st-sort="institution"
                                 class="sortable uppercase"
-                                data-translate="INSTITUTION"
-                            ></th>
+                            >
+                                <span data-translate="INSTITUTION"></span>
+                                <svg viewBox="0 -960 960 960">
+                                    <path
+                                        d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                    ></path>
+                                </svg>
+                            </th>
                         </tr>
                         <!-- Filterspalten -->
                         <tr>
@@ -127,9 +178,9 @@
                                 <div class="dv-select-style">
                                     <select
                                         st-input-event="change"
-                                        name="gemeinde"
-                                        id="gemeinde"
-                                        st-search="gemeinde"
+                                        name="gemeindeName"
+                                        id="gemeindeName"
+                                        st-search="gemeindeName"
                                         class="form-control"
                                         ng-options="gemeinde.name for gemeinde in vm.gemeindenList | orderBy: 'name'  track by gemeinde.name"
                                         ng-model="vm.selectedGemeinde"
@@ -174,7 +225,7 @@
                                         st-input-event="change"
                                         name="gesuchsperiodeString"
                                         id="gesuchsperiodeString"
-                                        st-search="gesuchsperiode.gesuchsperiodeString"
+                                        st-search="gesuchsperiodeString"
                                         class="form-control"
                                         ng-options="periode for periode in vm.activeGesuchsperiodenList track by periode"
                                         ng-model="vm.selectedGesuchsperiode"
@@ -213,9 +264,9 @@
                                 <div class="dv-select-style">
                                     <select
                                         st-input-event="change"
-                                        name="institution"
-                                        id="institution"
-                                        st-search="institution"
+                                        name="institutionName"
+                                        id="institutionName"
+                                        st-search="institutionName"
                                         class="form-control"
                                         ng-options="institution.name for institution in vm.institutionenList | orderBy: 'name' track by institution.name"
                                         ng-model="vm.selectedInstitution"
@@ -237,23 +288,21 @@
                             ng-click="vm.editPendenzBetreuungen(row, $event)"
                         >
                             <td ng-bind="row.betreuungsNummer"></td>
-                            <td ng-bind="row.gemeinde"></td>
+                            <td ng-bind="row.gemeindeName"></td>
                             <td ng-bind="row.name"></td>
                             <td ng-bind="row.vorname"></td>
                             <td
                                 ng-bind="row.geburtsdatum | amDateFormat : 'DD.MM.YYYY'"
                             ></td>
                             <td ng-bind="row.typ | translate"></td>
-                            <td
-                                ng-bind="row.gesuchsperiode.gesuchsperiodeString"
-                            ></td>
+                            <td ng-bind="row.gesuchsperiodeString"></td>
                             <td
                                 ng-bind="row.eingangsdatum | amDateFormat : 'DD.MM.YYYY'"
                             ></td>
                             <td
                                 ng-bind="row.betreuungsangebotTyp | translate"
                             ></td>
-                            <td ng-bind="row.institution.name"></td>
+                            <td ng-bind="row.institutionName"></td>
                         </tr>
                     </tbody>
                     <tfoot>

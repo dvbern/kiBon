@@ -15,20 +15,21 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
+import java.time.LocalDate;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
 import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
 import ch.dvbern.ebegu.validators.iban.CheckIBANString;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDate;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO fuer Familiensituationen
@@ -61,11 +62,11 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 	private Boolean verguenstigungGewuenscht;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate aenderungPer = null;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate startKonkubinat = null;
 
 	private boolean keineMahlzeitenverguenstigungBeantragt;
@@ -93,7 +94,6 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 	@Nullable
 	private EnumGesuchstellerKardinalitaet gesuchstellerKardinalitaet;
 
-	@Nonnull
 	private boolean fkjvFamSit;
 
 	@Nonnull
@@ -134,7 +134,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return gemeinsameSteuererklaerung;
 	}
 
-	public void setGemeinsameSteuererklaerung(@Nullable Boolean gemeinsameSteuererklaerung) {
+	public void setGemeinsameSteuererklaerung(
+		@Nullable Boolean gemeinsameSteuererklaerung
+	) {
 		this.gemeinsameSteuererklaerung = gemeinsameSteuererklaerung;
 	}
 
@@ -165,11 +167,14 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		this.sozialhilfeBezueger = sozialhilfeBezueger;
 	}
 
-	public void setPartnerIdentischMitVorgesuch(@Nullable Boolean identischerPartner) {
+	public void setPartnerIdentischMitVorgesuch(
+		@Nullable Boolean identischerPartner
+	) {
 		this.partnerIdentischMitVorgesuch = identischerPartner;
 	}
 
-	public Boolean getPartnerIdentischMitVorgesuch(){
+	@Nullable
+	public Boolean getPartnerIdentischMitVorgesuch() {
 		return partnerIdentischMitVorgesuch;
 	}
 
@@ -178,7 +183,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return zustaendigeAmtsstelle;
 	}
 
-	public void setZustaendigeAmtsstelle(@Nullable String zustaendigeAmtsstelle) {
+	public void setZustaendigeAmtsstelle(
+		@Nullable String zustaendigeAmtsstelle
+	) {
 		this.zustaendigeAmtsstelle = zustaendigeAmtsstelle;
 	}
 
@@ -196,7 +203,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return verguenstigungGewuenscht;
 	}
 
-	public void setVerguenstigungGewuenscht(@Nullable Boolean verguenstigungGewuenscht) {
+	public void setVerguenstigungGewuenscht(
+		@Nullable Boolean verguenstigungGewuenscht
+	) {
 		this.verguenstigungGewuenscht = verguenstigungGewuenscht;
 	}
 
@@ -204,16 +213,22 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return keineMahlzeitenverguenstigungBeantragt;
 	}
 
-	public void setKeineMahlzeitenverguenstigungBeantragt(boolean keineMahlzeitenverguenstigungBeantragt) {
-		this.keineMahlzeitenverguenstigungBeantragt = keineMahlzeitenverguenstigungBeantragt;
+	public void setKeineMahlzeitenverguenstigungBeantragt(
+		boolean keineMahlzeitenverguenstigungBeantragt
+	) {
+		this.keineMahlzeitenverguenstigungBeantragt =
+			keineMahlzeitenverguenstigungBeantragt;
 	}
 
 	public boolean isKeineMahlzeitenverguenstigungBeantragtEditable() {
 		return keineMahlzeitenverguenstigungBeantragtEditable;
 	}
 
-	public void setKeineMahlzeitenverguenstigungBeantragtEditable(boolean keineMahlzeitenverguenstigungBeantragtEditable) {
-		this.keineMahlzeitenverguenstigungBeantragtEditable = keineMahlzeitenverguenstigungBeantragtEditable;
+	public void setKeineMahlzeitenverguenstigungBeantragtEditable(
+		boolean keineMahlzeitenverguenstigungBeantragtEditable
+	) {
+		this.keineMahlzeitenverguenstigungBeantragtEditable =
+			keineMahlzeitenverguenstigungBeantragtEditable;
 	}
 
 	@Nullable
@@ -238,7 +253,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return abweichendeZahlungsadresse;
 	}
 
-	public void setAbweichendeZahlungsadresse(boolean abweichendeZahlungsadresse) {
+	public void setAbweichendeZahlungsadresse(
+		boolean abweichendeZahlungsadresse
+	) {
 		this.abweichendeZahlungsadresse = abweichendeZahlungsadresse;
 	}
 
@@ -256,7 +273,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return infomaKreditorennummer;
 	}
 
-	public void setInfomaKreditorennummer(@Nullable String infomaKreditorennummer) {
+	public void setInfomaKreditorennummer(
+		@Nullable String infomaKreditorennummer
+	) {
 		this.infomaKreditorennummer = infomaKreditorennummer;
 	}
 
@@ -274,7 +293,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return gesuchstellerKardinalitaet;
 	}
 
-	public void setGesuchstellerKardinalitaet(@Nullable EnumGesuchstellerKardinalitaet gesuchstellerKardinalitaet) {
+	public void setGesuchstellerKardinalitaet(
+		@Nullable EnumGesuchstellerKardinalitaet gesuchstellerKardinalitaet
+	) {
 		this.gesuchstellerKardinalitaet = gesuchstellerKardinalitaet;
 	}
 
@@ -286,11 +307,12 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		this.fkjvFamSit = fkjvFamSit;
 	}
 
+	@Nonnull
 	public Integer getMinDauerKonkubinat() {
 		return minDauerKonkubinat;
 	}
 
-	public void setMinDauerKonkubinat(Integer minDauerKonkubinat) {
+	public void setMinDauerKonkubinat(@Nonnull Integer minDauerKonkubinat) {
 		this.minDauerKonkubinat = minDauerKonkubinat;
 	}
 
@@ -299,7 +321,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return unterhaltsvereinbarung;
 	}
 
-	public void setUnterhaltsvereinbarung(@Nullable UnterhaltsvereinbarungAnswer unterhaltsvereinbarung) {
+	public void setUnterhaltsvereinbarung(
+		@Nullable UnterhaltsvereinbarungAnswer unterhaltsvereinbarung
+	) {
 		this.unterhaltsvereinbarung = unterhaltsvereinbarung;
 	}
 
@@ -308,7 +332,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return unterhaltsvereinbarungBemerkung;
 	}
 
-	public void setUnterhaltsvereinbarungBemerkung(@Nullable String unterhaltsvereinbarungBemerkung) {
+	public void setUnterhaltsvereinbarungBemerkung(
+		@Nullable String unterhaltsvereinbarungBemerkung
+	) {
 		this.unterhaltsvereinbarungBemerkung = unterhaltsvereinbarungBemerkung;
 	}
 
@@ -327,8 +353,10 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 	}
 
 	public void setGemeinsamerHaushaltMitObhutsberechtigterPerson(
-		@Nullable Boolean gemeinsamerHaushaltMitObhutsberechtigterPerson) {
-		this.gemeinsamerHaushaltMitObhutsberechtigterPerson = gemeinsamerHaushaltMitObhutsberechtigterPerson;
+		@Nullable Boolean gemeinsamerHaushaltMitObhutsberechtigterPerson
+	) {
+		this.gemeinsamerHaushaltMitObhutsberechtigterPerson =
+			gemeinsamerHaushaltMitObhutsberechtigterPerson;
 	}
 
 	@Nullable
@@ -336,7 +364,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return gemeinsamerHaushaltMitPartner;
 	}
 
-	public void setGemeinsamerHaushaltMitPartner(@Nullable Boolean gemeinsamerHaushaltMitPartner) {
+	public void setGemeinsamerHaushaltMitPartner(
+		@Nullable Boolean gemeinsamerHaushaltMitPartner
+	) {
 		this.gemeinsamerHaushaltMitPartner = gemeinsamerHaushaltMitPartner;
 	}
 
@@ -344,7 +374,9 @@ public class JaxFamiliensituation extends JaxAbstractDTO {
 		return auszahlungAusserhalbVonKibon;
 	}
 
-	public void setAuszahlungAusserhalbVonKibon(boolean auszahlungAusserhalbVonKibon) {
+	public void setAuszahlungAusserhalbVonKibon(
+		boolean auszahlungAusserhalbVonKibon
+	) {
 		this.auszahlungAusserhalbVonKibon = auszahlungAusserhalbVonKibon;
 	}
 }

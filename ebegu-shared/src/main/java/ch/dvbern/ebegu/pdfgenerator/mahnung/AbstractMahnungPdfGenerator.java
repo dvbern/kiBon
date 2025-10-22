@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.mahnung;
@@ -34,14 +34,14 @@ import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.Paragraph;
 
-public abstract class AbstractMahnungPdfGenerator extends DokumentAnFamilieGenerator {
+public abstract class AbstractMahnungPdfGenerator extends
+	DokumentAnFamilieGenerator {
 
 	private static final String MAHNUNG_TITLE = "PdfGeneration_Mahnung_Title";
 	private static final String ANREDE_FAMILIE = "PdfGeneration_AnredeFamilie";
 	private static final String MAHNUNG_DANK = "PdfGeneration_Mahnung_Dank";
 
 	protected Mahnung mahnung;
-
 
 	protected AbstractMahnungPdfGenerator(
 		@Nonnull Mahnung mahnung,
@@ -54,7 +54,12 @@ public abstract class AbstractMahnungPdfGenerator extends DokumentAnFamilieGener
 	@Nonnull
 	@Override
 	protected String getDocumentTitle() {
-		return translate(MAHNUNG_TITLE, gesuch.extractFullnamesString(), gesuch.getGesuchsperiode().getGesuchsperiodeString(), gesuch.getJahrFallAndGemeindenummer());
+		return translate(
+			MAHNUNG_TITLE,
+			gesuch.extractFullnamesString(),
+			gesuch.getGesuchsperiode().getGesuchsperiodeString(),
+			gesuch.getJahrFallAndGemeindenummer()
+		);
 	}
 
 	@Nonnull
@@ -65,25 +70,36 @@ public abstract class AbstractMahnungPdfGenerator extends DokumentAnFamilieGener
 
 			document.add(getAnrede());
 			createSeite1(document);
-			document.add(PdfUtil.createListInParagraph(getFehlendeUnterlagen(), 1));
+			document.add(
+				PdfUtil.createListInParagraph(getFehlendeUnterlagen(), 1)
+			);
 
 			List<Element> seite2Paragraphs = Lists.newArrayList();
 			createSeite2(document, seite2Paragraphs);
-			seite2Paragraphs.add(PdfUtil.createParagraph(translate(MAHNUNG_DANK), 2));
+			seite2Paragraphs.add(
+				PdfUtil.createParagraph(translate(MAHNUNG_DANK), 2)
+			);
 			seite2Paragraphs.add(createParagraphGruss());
 			seite2Paragraphs.add(createParagraphSignatur());
-			document.add(PdfUtil.createKeepTogetherTable(seite2Paragraphs, 1, 0));
+			document.add(
+				PdfUtil.createKeepTogetherTable(seite2Paragraphs, 1, 0)
+			);
 		};
 	}
 
 	protected abstract void createSeite1(@Nonnull Document document);
 
-	protected abstract void createSeite2(@Nonnull Document document, @Nonnull List<Element> seite2Paragraphs);
+	protected abstract void createSeite2(
+		@Nonnull Document document,
+		@Nonnull List<Element> seite2Paragraphs
+	);
 
 	@Nonnull
 	protected String getFristdatum() {
 		if (mahnung.getDatumFristablauf() != null) {
-			return Constants.DATE_FORMATTER.format(mahnung.getDatumFristablauf());
+			return Constants.DATE_FORMATTER.format(
+				mahnung.getDatumFristablauf()
+			);
 		}
 		// Im Status ENTWURF ist noch kein Datum Fristablauf gesetzt
 		return "";
@@ -101,7 +117,7 @@ public abstract class AbstractMahnungPdfGenerator extends DokumentAnFamilieGener
 	}
 
 	@Nonnull
-	protected Paragraph getAnrede(){
+	protected Paragraph getAnrede() {
 		return PdfUtil.createParagraph(translate(ANREDE_FAMILIE));
 	}
 }

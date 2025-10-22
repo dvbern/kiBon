@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {of} from 'rxjs';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
@@ -52,7 +52,7 @@ describe('LastenausgleichTsBerechnungComponent', () => {
     let component: LastenausgleichTsBerechnungComponent;
     let fixture: ComponentFixture<LastenausgleichTsBerechnungComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [SharedModule],
             declarations: [LastenausgleichTsBerechnungComponent],

@@ -17,14 +17,21 @@ package ch.dvbern.ebegu.tests;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Gemeinde;
@@ -33,446 +40,1229 @@ import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
 import ch.dvbern.ebegu.entities.Mahnung;
 import ch.dvbern.ebegu.entities.Verfuegung;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 import ch.dvbern.ebegu.enums.MahnungTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
 import ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationBernRechner;
-import ch.dvbern.ebegu.mocks.ApplicationPropertyServiceMock;
-import ch.dvbern.ebegu.mocks.ConfigurationServiceMock;
-import ch.dvbern.ebegu.mocks.DokumentGrundServiceMock;
-import ch.dvbern.ebegu.mocks.DokumenteverzeichnisEvaluatorMock;
-import ch.dvbern.ebegu.mocks.DossierServiceBeanMock;
-import ch.dvbern.ebegu.mocks.EbeguVorlageServiceMock;
-import ch.dvbern.ebegu.mocks.EinstellungServiceMock;
-import ch.dvbern.ebegu.mocks.GemeindeServiceMock;
+import ch.dvbern.ebegu.pdfgenerator.verfuegung.VerfuegungPdfGeneratorKonfiguration;
 import ch.dvbern.ebegu.rechner.AbstractBGRechnerTest;
 import ch.dvbern.ebegu.rules.BetreuungsgutscheinEvaluator;
 import ch.dvbern.ebegu.rules.anlageverzeichnis.DokumentenverzeichnisEvaluator;
-import ch.dvbern.ebegu.services.ApplicationPropertyService;
+import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.ConfigurationService;
 import ch.dvbern.ebegu.services.DokumentGrundService;
-import ch.dvbern.ebegu.services.EbeguVorlageService;
-import ch.dvbern.ebegu.services.EinstellungService;
+import ch.dvbern.ebegu.services.DossierService;
 import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import ch.dvbern.ebegu.services.PDFServiceBean;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.test.util.TestDataInstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.testfaelle.Testfall01_WaeltiDagmar;
 import ch.dvbern.ebegu.testfaelle.Testfall02_FeutzYvonne;
 import ch.dvbern.ebegu.testfaelle.Testfall11_SchulamtOnly;
-import ch.dvbern.ebegu.tests.util.UnitTestTempFolder;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.needle4j.annotation.InjectIntoMany;
-import org.needle4j.annotation.ObjectUnderTest;
-import org.needle4j.junit.NeedleRule;
+import org.easymock.EasyMock;
+import org.easymock.EasyMockExtension;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
+import org.easymock.TestSubject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.anyString;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
-@SuppressWarnings("unused")
-public class PDFServiceBeanTest {
+@ExtendWith(EasyMockExtension.class)
+class PDFServiceBeanTest extends EasyMockSupport {
 
 	private static final Pattern COMPILE = Pattern.compile(" {2}");
-	@Rule
-	public final UnitTestTempFolder unitTestTempfolder = new UnitTestTempFolder();
 
-	@Rule
-	public NeedleRule needleRule = new NeedleRule();
+	@TempDir
+	protected Path unitTestTempfolder;
 
-	@ObjectUnderTest
+	@TestSubject
 	private PDFServiceBean pdfService;
+	@Mock
+	private DossierService dossierService;
+	@Mock
+	private DokumentGrundService dokumentGrundService;
+	@Mock
+	private GemeindeService gemeindeService;
+	@Mock
+	private EinstellungService einstellungService;
+	@Mock
+	private DokumentenverzeichnisEvaluator dokumentenverzeichnisEvaluator;
+	@Mock
+	private ApplicationPropertyService applicationPropertyService;
+	@Mock
+	private Authorizer authorizer;
+	@Mock
+	private ConfigurationService configurationService;
+	@Mock
+	private GesuchsperiodeService gesuchsperiodeService;
 
-	@InjectIntoMany
-	DossierServiceBeanMock dossierService = new DossierServiceBeanMock();
-
-	@InjectIntoMany
-	EbeguVorlageService vorlageService = new EbeguVorlageServiceMock();
-
-	@InjectIntoMany
-	DokumentGrundService dokumentGrundService = new DokumentGrundServiceMock();
-
-	@InjectIntoMany
-	GemeindeService gemeindeService = new GemeindeServiceMock();
-
-	@InjectIntoMany
-	EinstellungService einstellungService = new EinstellungServiceMock();
-
-	@InjectIntoMany
-	DokumentenverzeichnisEvaluator dokumentenverzeichnisEvaluator = new DokumenteverzeichnisEvaluatorMock();
-
-	@InjectIntoMany
-	ApplicationPropertyService applicationPropertyService = new ApplicationPropertyServiceMock();
-
-	@InjectIntoMany
-	ConfigurationService configurationService = new ConfigurationServiceMock();
+	private BetreuungsgutscheinEvaluator evaluator;
 
 	private Gesuch gesuch_1GS, gesuch_2GS, gesuch_Schulamt;
-
 	private final boolean writeProtectPDF = false;
 
-	protected BetreuungsgutscheinEvaluator evaluator;
+	private KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter =
+		TestDataUtil.geKitaxUebergangsloesungParameter();
 
-	private KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter = TestDataUtil.geKitaxUebergangsloesungParameter();
-
-	@Before
-	public void setupTestData() {
+	@BeforeEach
+	void setupTestData() {
 
 		Locale.setDefault(Constants.DEFAULT_LOCALE);
-		Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
+		Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+			.createGesuchsperiode1718();
 		Gemeinde bern = TestDataUtil.createGemeindeParis();
-		evaluator = AbstractBGRechnerTest.createEvaluator(gesuchsperiode1718, bern);
+		evaluator = AbstractBGRechnerTest.createEvaluator(
+			gesuchsperiode1718,
+			bern
+		);
 
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenTagesfamilien());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaBruennen());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenTagesschuleBern(gesuchsperiode1718));
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenFerieninselGuarda());
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenTagesfamilien()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaBruennen()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenTagesschuleBern(
+				gesuchsperiode1718
+			)
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenFerieninselGuarda()
+		);
 
 		//setup gesuch with one Gesuchsteller
-		Testfall01_WaeltiDagmar testfall_1GS = new Testfall01_WaeltiDagmar(gesuchsperiode1718, new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718));
+		Testfall01_WaeltiDagmar testfall_1GS =
+			new Testfall01_WaeltiDagmar(
+				gesuchsperiode1718,
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718)
+			);
 		testfall_1GS.createFall();
 		testfall_1GS.createGesuch(LocalDate.of(2016, Month.DECEMBER, 12));
 
 		gesuch_1GS = testfall_1GS.fillInGesuch();
-		TestDataUtil.calculateFinanzDaten(gesuch_1GS, new FinanzielleSituationBernRechner());
+		TestDataUtil.calculateFinanzDaten(
+			gesuch_1GS,
+			new FinanzielleSituationBernRechner()
+		);
 		gesuch_1GS.setGesuchsperiode(gesuchsperiode1718);
 
-		gesuch_1GS.addDokumentGrund(new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.STEUERERKLAERUNG));
-		gesuch_1GS.addDokumentGrund(new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.NACHWEIS_AUSBILDUNG));
-		gesuch_1GS.addDokumentGrund(new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.NACHWEIS_FAMILIENZULAGEN));
+		gesuch_1GS.addDokumentGrund(
+			new DokumentGrund(
+				DokumentGrundTyp.SONSTIGE_NACHWEISE,
+				DokumentTyp.STEUERERKLAERUNG
+			)
+		);
+		gesuch_1GS.addDokumentGrund(
+			new DokumentGrund(
+				DokumentGrundTyp.SONSTIGE_NACHWEISE,
+				DokumentTyp.NACHWEIS_AUSBILDUNG
+			)
+		);
+		gesuch_1GS.addDokumentGrund(
+			new DokumentGrund(
+				DokumentGrundTyp.SONSTIGE_NACHWEISE,
+				DokumentTyp.NACHWEIS_FAMILIENZULAGEN
+			)
+		);
 
 		//setup gesuch with two Gesuchstellers
-		Testfall02_FeutzYvonne testfall_2GS = new Testfall02_FeutzYvonne(gesuchsperiode1718, new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718));
+		Testfall02_FeutzYvonne testfall_2GS =
+			new Testfall02_FeutzYvonne(
+				gesuchsperiode1718,
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718)
+			);
 		testfall_2GS.createFall();
 		testfall_2GS.createGesuch(LocalDate.of(2016, Month.DECEMBER, 12));
 
 		gesuch_2GS = testfall_2GS.fillInGesuch();
-		TestDataUtil.calculateFinanzDaten(gesuch_2GS, new FinanzielleSituationBernRechner());
+		TestDataUtil.calculateFinanzDaten(
+			gesuch_2GS,
+			new FinanzielleSituationBernRechner()
+		);
 		gesuch_2GS.setGesuchsperiode(gesuchsperiode1718);
 
-		gesuch_2GS.addDokumentGrund(new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.STEUERERKLAERUNG));
-		gesuch_2GS.addDokumentGrund(new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.NACHWEIS_AUSBILDUNG));
-		gesuch_2GS.addDokumentGrund(new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.NACHWEIS_FAMILIENZULAGEN));
+		gesuch_2GS.addDokumentGrund(
+			new DokumentGrund(
+				DokumentGrundTyp.SONSTIGE_NACHWEISE,
+				DokumentTyp.STEUERERKLAERUNG
+			)
+		);
+		gesuch_2GS.addDokumentGrund(
+			new DokumentGrund(
+				DokumentGrundTyp.SONSTIGE_NACHWEISE,
+				DokumentTyp.NACHWEIS_AUSBILDUNG
+			)
+		);
+		gesuch_2GS.addDokumentGrund(
+			new DokumentGrund(
+				DokumentGrundTyp.SONSTIGE_NACHWEISE,
+				DokumentTyp.NACHWEIS_FAMILIENZULAGEN
+			)
+		);
 
 		//setup Schulamt only gesuch
-		Testfall11_SchulamtOnly testfall_SchulamtOnly = new Testfall11_SchulamtOnly(gesuchsperiode1718,
-				new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718));
+		Testfall11_SchulamtOnly testfall_SchulamtOnly =
+			new Testfall11_SchulamtOnly(
+				gesuchsperiode1718,
+				new TestDataInstitutionStammdatenBuilder(
+					gesuchsperiode1718
+				)
+			);
 		testfall_SchulamtOnly.createFall();
-		testfall_SchulamtOnly.createGesuch(LocalDate.of(2016, Month.DECEMBER, 12));
+		testfall_SchulamtOnly.createGesuch(
+			LocalDate.of(2016, Month.DECEMBER, 12)
+		);
 
 		gesuch_Schulamt = testfall_SchulamtOnly.fillInGesuch();
-		TestDataUtil.calculateFinanzDaten(gesuch_Schulamt, new FinanzielleSituationBernRechner());
+		TestDataUtil.calculateFinanzDaten(
+			gesuch_Schulamt,
+			new FinanzielleSituationBernRechner()
+		);
 		gesuch_Schulamt.setGesuchsperiode(gesuchsperiode1718);
 
-		gesuch_Schulamt.addDokumentGrund(new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.STEUERERKLAERUNG));
-		gesuch_Schulamt.addDokumentGrund(new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.NACHWEIS_AUSBILDUNG));
-		gesuch_Schulamt.addDokumentGrund(new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.NACHWEIS_FAMILIENZULAGEN));
+		gesuch_Schulamt.addDokumentGrund(
+			new DokumentGrund(
+				DokumentGrundTyp.SONSTIGE_NACHWEISE,
+				DokumentTyp.STEUERERKLAERUNG
+			)
+		);
+		gesuch_Schulamt.addDokumentGrund(
+			new DokumentGrund(
+				DokumentGrundTyp.SONSTIGE_NACHWEISE,
+				DokumentTyp.NACHWEIS_AUSBILDUNG
+			)
+		);
+		gesuch_Schulamt.addDokumentGrund(
+			new DokumentGrund(
+				DokumentGrundTyp.SONSTIGE_NACHWEISE,
+				DokumentTyp.NACHWEIS_FAMILIENZULAGEN
+			)
+		);
+
+		expect(gemeindeService.getGemeindeStammdatenByGemeindeId(anyString()))
+			.andReturn(
+				Optional.of(TestDataUtil.createGemeindeWithStammdaten())
+			);
+
+		expect(
+			gesuchsperiodeService.existDokument(
+				EasyMock.anyString(),
+				EasyMock.anyObject(),
+				EasyMock.anyObject()
+			)
+		).andReturn(true);
 	}
 
 	@Test
-	public void testGenerateFreigabequittungJugendamt() throws Exception {
+	void testGenerateFreigabequittungJugendamt() throws Exception {
+		// given
+		expect(
+			dokumentenverzeichnisEvaluator.calculate(
+				gesuch_2GS,
+				Constants.DEFAULT_LOCALE
+			)
+		).andReturn(Set.of());
+		expect(dokumentGrundService.findAllDokumentGrundByGesuch(gesuch_2GS))
+			.andReturn(new ArrayList<>());
+		replayAll();
 
-		byte[] bytes = pdfService.generateFreigabequittung(gesuch_2GS, writeProtectPDF, Constants.DEFAULT_LOCALE);
-		assertNotNull(bytes);
-		unitTestTempfolder.writeToTempDir(bytes, "Freigabequittung_Jugendamt(" + gesuch_2GS.getJahrFallAndGemeindenummer() + ").pdf");
+		// when
+		byte[] bytes = pdfService.generateFreigabequittung(
+			gesuch_2GS,
+			writeProtectPDF,
+			Constants.DEFAULT_LOCALE
+		);
 
-		PdfReader pdfRreader = new PdfReader(bytes);
-		PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfRreader, false);
-		assertTextInPdf(pdfTextExtractor, 1, "Jugendamt", "Zustelladresse ist nicht Jugendamt");
-	}
+		// verify
+		assertThat(bytes, notNullValue());
+		writeToFile(
+			bytes,
+			"Freigabequittung_Jugendamt("
+				+ gesuch_2GS.getJahrFallAndGemeindenummer()
+				+ ").pdf"
+		);
 
-	@Test
-	public void testPrintNichteintreten() throws Exception {
-
-		Optional<Betreuung> betreuung = gesuch_2GS.extractAllBetreuungen().stream()
-			.filter(b -> b.getBetreuungsangebotTyp() == BetreuungsangebotTyp.KITA)
-			.findFirst();
-
-		if (betreuung.isPresent()) {
-			byte[] bytes = pdfService.generateNichteintreten(betreuung.get(), writeProtectPDF, Constants.DEFAULT_LOCALE);
-			Assert.assertNotNull(bytes);
-			unitTestTempfolder.writeToTempDir(bytes, "Nichteintreten(" + betreuung.get().getReferenzNummer() + ").pdf");
-		} else {
-			throw new Exception(String.format("%s", "testPrintNichteintreten()"));
+		PdfTextExtractor pdfTextExtractor;
+		try (PdfReader pdfRreader = new PdfReader(bytes)) {
+			pdfTextExtractor = new PdfTextExtractor(
+				pdfRreader,
+				false
+			);
 		}
-
+		assertTextInPdf(
+			pdfTextExtractor,
+			1,
+			"Jugendamt",
+			"Zustelladresse ist nicht Jugendamt"
+		);
 	}
 
 	@Test
-	public void testPrintErsteMahnungSinglePageJugendamt() throws Exception {
+	void testPrintNichteintreten() throws Exception {
+		// given
+		Betreuung betreuung = gesuch_2GS.extractAllBetreuungen()
+			.stream()
+			.filter(
+				b -> b.getBetreuungsangebotTyp()
+					== BetreuungsangebotTyp.KITA
+			)
+			.findFirst()
+			.orElseThrow();
 
-		Mahnung mahnung = TestDataUtil.createMahnung(MahnungTyp.ERSTE_MAHNUNG, gesuch_2GS, LocalDate.now().plusWeeks(2), 3);
+		expect(
+			einstellungService.findEinstellung(
+				EinstellungKey.FKJV_TEXTE,
+				gesuch_2GS.extractGemeinde(),
+				gesuch_2GS.getGesuchsperiode()
+			)
+		).andReturn(
+			new Einstellung(
+				EinstellungKey.FKJV_TEXTE,
+				"true",
+				gesuch_2GS.getGesuchsperiode()
+			)
+		);
 
-		byte[] bytes = pdfService.generateMahnung(mahnung, Optional.empty(), writeProtectPDF, Constants.DEFAULT_LOCALE);
+		expect(
+			einstellungService.findEinstellung(
+				EinstellungKey.PENSUM_ANZEIGE_TYP,
+				gesuch_2GS.extractGemeinde(),
+				gesuch_2GS.getGesuchsperiode()
+			)
+		).andReturn(
+			new Einstellung(
+				EinstellungKey.PENSUM_ANZEIGE_TYP,
+				"NUR_STUNDEN",
+				gesuch_2GS.getGesuchsperiode()
+			)
+		);
 
-		assertNotNull(bytes);
+		expect(
+			configurationService
+				.getVerfuegungPdfGeneratorKonfigurationNichtEintretten(
+					betreuung
+				)
+		).andReturn(
+			VerfuegungPdfGeneratorKonfiguration.builder()
+				.kontingentierungEnabledAndEntwurf(false)
+				.stadtBernAsivConfigured(false)
+				.FKJVTexte(false)
+				.betreuungspensumAnzeigeTyp(
+					BetreuungspensumAnzeigeTyp.NUR_PROZENT
+				)
+				.isHoehereBeitraegeConfigured(false)
+				.build()
+		);
 
-		unitTestTempfolder.writeToTempDir(bytes, "1_Mahnung_Single_Page_Jugendamt.pdf");
+		replayAll();
 
-		PdfReader pdfRreader = new PdfReader(bytes);
-		assertEquals("PDF should be one page long.", 1, pdfRreader.getNumberOfPages());
+		// when
+		byte[] bytes = pdfService.generateNichteintreten(
+			betreuung,
+			writeProtectPDF,
+			Constants.DEFAULT_LOCALE
+		);
 
-		PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfRreader, false);
-		assertTextInPdf(pdfTextExtractor, 1, "Jugendamt", "Absenderadresse ist nicht Jugendamt");
-		pdfRreader.close();
+		// verify
+		assertThat(bytes, notNullValue());
+		writeToFile(
+			bytes,
+			"Nichteintreten(" + betreuung.getReferenzNummer() + ").pdf"
+		);
 	}
 
 	@Test
-	public void testPrintErsteMahnungOnePage() throws Exception {
+	void testPrintErsteMahnungSinglePageJugendamt() throws Exception {
 
-		Mahnung mahnung = TestDataUtil.createMahnung(MahnungTyp.ERSTE_MAHNUNG, gesuch_2GS, LocalDate.now().plusWeeks(2), 8);
+		Mahnung mahnung =
+			TestDataUtil.createMahnung(
+				MahnungTyp.ERSTE_MAHNUNG,
+				gesuch_2GS,
+				LocalDate.now().plusWeeks(2),
+				3
+			);
+		replayAll();
 
-		byte[] bytes = pdfService.generateMahnung(mahnung, Optional.empty(), writeProtectPDF, Constants.DEFAULT_LOCALE);
+		// when
+		byte[] bytes = pdfService.generateMahnung(
+			mahnung,
+			Optional.empty(),
+			writeProtectPDF,
+			Constants.DEFAULT_LOCALE
+		);
 
-		assertNotNull(bytes);
+		// verify
+		assertThat(bytes, notNullValue());
 
-		unitTestTempfolder.writeToTempDir(bytes, "1_Mahnung_Two_Pages.pdf");
+		writeToFile(
+			bytes,
+			"1_Mahnung_Single_Page_Jugendamt.pdf"
+		);
 
-		PdfReader pdfRreader = new PdfReader(bytes);
-		assertEquals("PDF should be one page long.", 1, pdfRreader.getNumberOfPages());
+		try (PdfReader pdfRreader = new PdfReader(bytes)) {
+			assertThat(
+				"PDF should be one page long.",
+				pdfRreader.getNumberOfPages(),
+				is(1)
+			);
 
-		PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfRreader, false);
-		assertTextInPdf(pdfTextExtractor, 1, "Jugendamt", "Absenderadresse ist nicht Jugendamt");
-		pdfRreader.close();
+			PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(
+				pdfRreader,
+				false
+			);
+			assertTextInPdf(
+				pdfTextExtractor,
+				1,
+				"Jugendamt",
+				"Absenderadresse ist nicht Jugendamt"
+			);
+		}
 	}
 
 	@Test
-	public void testPrintErsteMahnung50Dokumente() throws Exception {
+	void testPrintErsteMahnungOnePage() throws Exception {
+		// given
+		Mahnung mahnung =
+			TestDataUtil.createMahnung(
+				MahnungTyp.ERSTE_MAHNUNG,
+				gesuch_2GS,
+				LocalDate.now().plusWeeks(2),
+				8
+			);
+		replayAll();
 
-		Mahnung mahnung = TestDataUtil.createMahnung(MahnungTyp.ERSTE_MAHNUNG, gesuch_2GS, LocalDate.now().plusWeeks
-			(2), 50);
+		// when
+		byte[] bytes = pdfService.generateMahnung(
+			mahnung,
+			Optional.empty(),
+			writeProtectPDF,
+			Constants.DEFAULT_LOCALE
+		);
 
-		byte[] bytes = pdfService.generateMahnung(mahnung, Optional.empty(), writeProtectPDF, Constants.DEFAULT_LOCALE);
+		// verify
+		assertThat(
+			bytes,
+			notNullValue()
+		);
 
-		assertNotNull(bytes);
+		writeToFile(bytes, "1_Mahnung_Two_Pages.pdf");
 
-		unitTestTempfolder.writeToTempDir(bytes, "1_Mahnung_50_Dokumente.pdf");
+		try (PdfReader pdfRreader = new PdfReader(bytes)) {
+			assertThat(
+				"PDF should be one page long.",
+				pdfRreader.getNumberOfPages(),
+				is(1)
+			);
 
-		PdfReader pdfRreader = new PdfReader(bytes);
-		assertEquals("PDF should be two pages long.", 2, pdfRreader.getNumberOfPages());
-
-		PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfRreader, false);
-		assertTextInPdf(pdfTextExtractor, 1, "Jugendamt", "Absenderadresse ist nicht Jugendamt");
-		assertTextInPdf(pdfTextExtractor, 2, "Test Dokument 23", "Second page should begin with this text");
-		pdfRreader.close();
+			PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(
+				pdfRreader,
+				false
+			);
+			assertTextInPdf(
+				pdfTextExtractor,
+				1,
+				"Jugendamt",
+				"Absenderadresse ist nicht Jugendamt"
+			);
+		}
 	}
 
 	@Test
-	public void testPrintZweiteMahnungSinglePageJugendamt() throws Exception {
+	void testPrintErsteMahnung50Dokumente() throws Exception {
+		// given
+		Mahnung mahnung = TestDataUtil.createMahnung(
+			MahnungTyp.ERSTE_MAHNUNG,
+			gesuch_2GS,
+			LocalDate.now().plusWeeks(2),
+			50
+		);
+		replayAll();
 
-		Mahnung ersteMahnung = TestDataUtil.createMahnung(MahnungTyp.ERSTE_MAHNUNG, gesuch_2GS, LocalDate.now().plusWeeks(2), 3);
-		Mahnung zweiteMahnung = TestDataUtil.createMahnung(MahnungTyp.ZWEITE_MAHNUNG, gesuch_2GS, LocalDate.now().plusWeeks(2), 3);
+		// when
+		byte[] bytes = pdfService.generateMahnung(
+			mahnung,
+			Optional.empty(),
+			writeProtectPDF,
+			Constants.DEFAULT_LOCALE
+		);
+
+		// verify
+		assertThat(bytes, notNullValue());
+
+		writeToFile(bytes, "1_Mahnung_50_Dokumente.pdf");
+
+		PdfTextExtractor pdfTextExtractor;
+		try (PdfReader pdfRreader = new PdfReader(bytes)) {
+			assertThat(
+				"PDF should be two pages long.",
+				pdfRreader.getNumberOfPages(),
+				is(2)
+			);
+
+			pdfTextExtractor = new PdfTextExtractor(
+				pdfRreader,
+				false
+			);
+		}
+		assertTextInPdf(
+			pdfTextExtractor,
+			1,
+			"Jugendamt",
+			"Absenderadresse ist nicht Jugendamt"
+		);
+		assertTextInPdf(
+			pdfTextExtractor,
+			2,
+			"Test Dokument 23",
+			"Second page should begin with this text"
+		);
+	}
+
+	@Test
+	void testPrintZweiteMahnungSinglePageJugendamt() throws Exception {
+		// given
+		Mahnung ersteMahnung =
+			TestDataUtil.createMahnung(
+				MahnungTyp.ERSTE_MAHNUNG,
+				gesuch_2GS,
+				LocalDate.now().plusWeeks(2),
+				3
+			);
+		Mahnung zweiteMahnung =
+			TestDataUtil.createMahnung(
+				MahnungTyp.ZWEITE_MAHNUNG,
+				gesuch_2GS,
+				LocalDate.now().plusWeeks(2),
+				3
+			);
 		zweiteMahnung.setVorgaengerId(ersteMahnung.getId());
+		replayAll();
 
-		byte[] bytes = pdfService.generateMahnung(zweiteMahnung, Optional.of(ersteMahnung), writeProtectPDF, Constants.DEFAULT_LOCALE);
-		assertNotNull(bytes);
+		// when
+		byte[] bytes =
+			pdfService.generateMahnung(
+				zweiteMahnung,
+				Optional.of(ersteMahnung),
+				writeProtectPDF,
+				Constants.DEFAULT_LOCALE
+			);
 
-		unitTestTempfolder.writeToTempDir(bytes, "2_Mahnung_Single_Page_Jungendamt.pdf");
+		// verify
+		assertThat(
+			bytes,
+			notNullValue()
+		);
 
-		PdfReader pdfRreader = new PdfReader(bytes);
-		assertEquals(1, pdfRreader.getNumberOfPages());
+		writeToFile(bytes, "2_Mahnung_Single_Page_Jungendamt.pdf");
 
-		PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfRreader, false);
-		assertTextInPdf(pdfTextExtractor, 1, "Jugendamt", "Absenderadresse ist nicht Jugendamt");
-		pdfRreader.close();
+		try (PdfReader pdfRreader = new PdfReader(bytes)) {
+			assertThat(pdfRreader.getNumberOfPages(), is(1));
+
+			PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(
+				pdfRreader,
+				false
+			);
+			assertTextInPdf(
+				pdfTextExtractor,
+				1,
+				"Jugendamt",
+				"Absenderadresse ist nicht Jugendamt"
+			);
+		}
 	}
 
 	@Test
-	public void testPrintZweiteMahnungOnePage() throws Exception {
-
-		Mahnung ersteMahnung = TestDataUtil.createMahnung(MahnungTyp.ERSTE_MAHNUNG, gesuch_2GS, LocalDate.now().plusWeeks(2), 9);
-		Mahnung zweiteMahnung = TestDataUtil.createMahnung(MahnungTyp.ZWEITE_MAHNUNG, gesuch_2GS, LocalDate.now().plusWeeks(2), 9);
+	void testPrintZweiteMahnungOnePage() throws Exception {
+		// given
+		Mahnung ersteMahnung =
+			TestDataUtil.createMahnung(
+				MahnungTyp.ERSTE_MAHNUNG,
+				gesuch_2GS,
+				LocalDate.now().plusWeeks(2),
+				9
+			);
+		Mahnung zweiteMahnung =
+			TestDataUtil.createMahnung(
+				MahnungTyp.ZWEITE_MAHNUNG,
+				gesuch_2GS,
+				LocalDate.now().plusWeeks(2),
+				9
+			);
 		zweiteMahnung.setVorgaengerId(ersteMahnung.getId());
+		replayAll();
 
-		byte[] bytes = pdfService.generateMahnung(zweiteMahnung,  Optional.of(ersteMahnung), writeProtectPDF, Constants.DEFAULT_LOCALE);
-		assertNotNull(bytes);
+		// when
+		byte[] bytes =
+			pdfService.generateMahnung(
+				zweiteMahnung,
+				Optional.of(ersteMahnung),
+				writeProtectPDF,
+				Constants.DEFAULT_LOCALE
+			);
 
-		unitTestTempfolder.writeToTempDir(bytes, "2_Mahnung_Two_Pages.pdf");
+		// verify
+		assertThat(bytes, notNullValue());
 
-		PdfReader pdfRreader = new PdfReader(bytes);
-		assertEquals("PDF should be one page long.", 1, pdfRreader.getNumberOfPages());
+		writeToFile(bytes, "2_Mahnung_Two_Pages.pdf");
 
-		PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfRreader, false);
-		assertTextInPdf(pdfTextExtractor, 1, "Jugendamt", "Absenderadresse ist nicht Jugendamt");
-		pdfRreader.close();
+		try (PdfReader pdfRreader = new PdfReader(bytes)) {
+			assertThat(
+				"PDF should be one page long.",
+				pdfRreader.getNumberOfPages(),
+				is(1)
+			);
+
+			PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(
+				pdfRreader,
+				false
+			);
+			assertTextInPdf(
+				pdfTextExtractor,
+				1,
+				"Jugendamt",
+				"Absenderadresse ist nicht Jugendamt"
+			);
+		}
 	}
 
 	@Test
-	public void testPrintZweiteMahnung50Dokumente() throws Exception {
-
-		Mahnung ersteMahnung = TestDataUtil.createMahnung(MahnungTyp.ERSTE_MAHNUNG, gesuch_2GS, LocalDate.now()
-			.plusWeeks(2), 50);
-		Mahnung zweiteMahnung = TestDataUtil.createMahnung(MahnungTyp.ZWEITE_MAHNUNG, gesuch_2GS, LocalDate.now()
-			.plusWeeks(2), 50);
+	void testPrintZweiteMahnung50Dokumente() throws Exception {
+		// given
+		Mahnung ersteMahnung = TestDataUtil.createMahnung(
+			MahnungTyp.ERSTE_MAHNUNG,
+			gesuch_2GS,
+			LocalDate.now()
+				.plusWeeks(2),
+			50
+		);
+		Mahnung zweiteMahnung = TestDataUtil.createMahnung(
+			MahnungTyp.ZWEITE_MAHNUNG,
+			gesuch_2GS,
+			LocalDate.now()
+				.plusWeeks(2),
+			50
+		);
 		zweiteMahnung.setVorgaengerId(ersteMahnung.getId());
+		replayAll();
 
-		byte[] bytes = pdfService.generateMahnung(zweiteMahnung,  Optional.of(ersteMahnung), writeProtectPDF, Constants.DEFAULT_LOCALE);
-		assertNotNull(bytes);
+		// when
+		byte[] bytes =
+			pdfService.generateMahnung(
+				zweiteMahnung,
+				Optional.of(ersteMahnung),
+				writeProtectPDF,
+				Constants.DEFAULT_LOCALE
+			);
 
-		unitTestTempfolder.writeToTempDir(bytes, "2_Mahnung_50_Dokumente.pdf");
+		// verify
+		assertThat(bytes, notNullValue());
 
-		PdfReader pdfRreader = new PdfReader(bytes);
-		assertEquals("PDF should be two pages long.", 2, pdfRreader.getNumberOfPages());
+		writeToFile(
+			bytes,
+			"2_Mahnung_50_Dokumente.pdf"
+		);
 
-		PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfRreader, false);
-		assertTextInPdf(pdfTextExtractor, 1, "Jugendamt", "Absenderadresse ist nicht Jugendamt");
-		assertTextInPdf(pdfTextExtractor, 2, "Test Dokument 23", "Second page should begin with this text");
-		pdfRreader.close();
+		PdfTextExtractor pdfTextExtractor;
+		try (PdfReader pdfRreader = new PdfReader(bytes)) {
+			assertThat(
+				"PDF should be two pages long.",
+				pdfRreader.getNumberOfPages(),
+				is(2)
+			);
+
+			pdfTextExtractor = new PdfTextExtractor(
+				pdfRreader,
+				false
+			);
+		}
+		assertTextInPdf(
+			pdfTextExtractor,
+			1,
+			"Jugendamt",
+			"Absenderadresse ist nicht Jugendamt"
+		);
+		assertTextInPdf(
+			pdfTextExtractor,
+			2,
+			"Test Dokument 23",
+			"Second page should begin with this text"
+		);
 	}
 
 	@Test
-	public void testFinanzielleSituation_EinGesuchsteller() throws Exception {
-
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaBruennen());
-		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
-		Testfall01_WaeltiDagmar testfall = new Testfall01_WaeltiDagmar(gesuchsperiode1718, new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718) );
+	void testFinanzielleSituation_EinGesuchsteller() throws Exception {
+		// given
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaBruennen()
+		);
+		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+			.createGesuchsperiode1718();
+		Testfall01_WaeltiDagmar testfall =
+			new Testfall01_WaeltiDagmar(
+				gesuchsperiode1718,
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718)
+			);
 		testfall.createFall();
 		testfall.createGesuch(LocalDate.of(1980, Month.MARCH, 25));
 		Gesuch gesuch = testfall.fillInGesuch();
 
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
-		TestDataUtil.setEinkommensverschlechterung(gesuch, gesuch.getGesuchsteller1(), new BigDecimal("80000"), true);
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
+		assertThat(gesuch.getGesuchsteller1(), notNullValue());
+		TestDataUtil.setEinkommensverschlechterung(
+			gesuch,
+			gesuch.getGesuchsteller1(),
+			new BigDecimal("80000"),
+			true
+		);
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
 
-		final Verfuegung evaluateFamiliensituation = evaluator.evaluateFamiliensituation(gesuch, Constants.DEFAULT_LOCALE);
+		authorizer.checkReadAuthorizationFinSit(gesuch);
+		expectLastCall().andVoid();
 
-		byte[] bytes = pdfService.generateFinanzielleSituation(gesuch, evaluateFamiliensituation, writeProtectPDF, Constants.DEFAULT_LOCALE);
-		Assert.assertNotNull(bytes);
-		unitTestTempfolder.writeToTempDir(bytes, "finanzielleSituation1G.pdf");
+		final Verfuegung evaluateFamiliensituation =
+			evaluator
+				.evaluateFamiliensituation(gesuch, Constants.DEFAULT_LOCALE);
+
+		expect(
+			dossierService.getErstesEinreichungsdatum(
+				gesuch.getDossier(),
+				gesuch.getGesuchsperiode()
+			)
+		).andReturn(
+			LocalDate.now()
+		);
+
+		replayAll();
+
+		// when
+		byte[] bytes =
+			pdfService.generateFinanzielleSituation(
+				gesuch,
+				evaluateFamiliensituation,
+				writeProtectPDF,
+				Constants.DEFAULT_LOCALE
+			);
+
+		// verify
+		assertThat(bytes, notNullValue());
+		writeToFile(bytes, "finanzielleSituation1G.pdf");
 	}
 
 	@Test
-	public void testFinanzielleSituation_ZweiGesuchsteller() throws Exception {
-
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenTagesfamilien());
-		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
-		Testfall02_FeutzYvonne testfall = new Testfall02_FeutzYvonne(gesuchsperiode1718, new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718));
+	void testFinanzielleSituation_ZweiGesuchsteller() throws Exception {
+		// given
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenTagesfamilien()
+		);
+		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+			.createGesuchsperiode1718();
+		Testfall02_FeutzYvonne testfall =
+			new Testfall02_FeutzYvonne(
+				gesuchsperiode1718,
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718)
+			);
 		testfall.createFall();
 		testfall.createGesuch(LocalDate.of(1980, Month.MARCH, 25));
 		Gesuch gesuch = testfall.fillInGesuch();
 		// Hack damit Dokument mit zwei Gesuchsteller dargestellt wird
 
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
-		Assert.assertNotNull(gesuch.getGesuchsteller2());
-		TestDataUtil.setEinkommensverschlechterung(gesuch, gesuch.getGesuchsteller1(), new BigDecimal("80000"), true);
-		TestDataUtil.setEinkommensverschlechterung(gesuch, gesuch.getGesuchsteller2(), new BigDecimal("40000"), true);
-		TestDataUtil.setEinkommensverschlechterung(gesuch, gesuch.getGesuchsteller1(), new BigDecimal("50000"), false);
-		TestDataUtil.setEinkommensverschlechterung(gesuch, gesuch.getGesuchsteller2(), new BigDecimal("30000"), false);
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
+		assertThat(gesuch.getGesuchsteller1(), notNullValue());
+		assertThat(gesuch.getGesuchsteller2(), notNullValue());
+		TestDataUtil.setEinkommensverschlechterung(
+			gesuch,
+			gesuch.getGesuchsteller1(),
+			new BigDecimal("80000"),
+			true
+		);
+		TestDataUtil.setEinkommensverschlechterung(
+			gesuch,
+			gesuch.getGesuchsteller2(),
+			new BigDecimal("40000"),
+			true
+		);
+		TestDataUtil.setEinkommensverschlechterung(
+			gesuch,
+			gesuch.getGesuchsteller1(),
+			new BigDecimal("50000"),
+			false
+		);
+		TestDataUtil.setEinkommensverschlechterung(
+			gesuch,
+			gesuch.getGesuchsteller2(),
+			new BigDecimal("30000"),
+			false
+		);
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
 
-		evaluator.evaluate(gesuch, AbstractBGRechnerTest.getParameter(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
-		Verfuegung familiensituation = evaluator.evaluateFamiliensituation(gesuch, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			AbstractBGRechnerTest.getParameter(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
+		Verfuegung familiensituation = evaluator.evaluateFamiliensituation(
+			gesuch,
+			Constants.DEFAULT_LOCALE
+		);
 
-		byte[] bytes = pdfService.generateFinanzielleSituation(gesuch, familiensituation, writeProtectPDF, Constants.DEFAULT_LOCALE);
-		Assert.assertNotNull(bytes);
-		unitTestTempfolder.writeToTempDir(bytes, "finanzielleSituation1G2G.pdf");
+		authorizer.checkReadAuthorizationFinSit(gesuch);
+		expectLastCall().andVoid();
+
+		expect(
+			dossierService.getErstesEinreichungsdatum(
+				gesuch.getDossier(),
+				gesuch.getGesuchsperiode()
+			)
+		).andReturn(LocalDate.now());
+
+		replayAll();
+
+		// when
+		byte[] bytes =
+			pdfService.generateFinanzielleSituation(
+				gesuch,
+				familiensituation,
+				writeProtectPDF,
+				Constants.DEFAULT_LOCALE
+			);
+
+		// verify
+		assertThat(bytes, notNullValue());
+		writeToFile(
+			bytes,
+			"finanzielleSituation1G2G.pdf"
+		);
 	}
 
 	@Test
-	public void testPrintFamilienSituation1() throws Exception {
-
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaBruennen());
-		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
-		Testfall01_WaeltiDagmar testfall = new Testfall01_WaeltiDagmar(gesuchsperiode1718, new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718) );
+	void testPrintFamilienSituation1() throws Exception {
+		// given
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaBruennen()
+		);
+		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+			.createGesuchsperiode1718();
+		Testfall01_WaeltiDagmar testfall =
+			new Testfall01_WaeltiDagmar(
+				gesuchsperiode1718,
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718)
+			);
 		testfall.createFall();
 		testfall.createGesuch(LocalDate.of(1980, Month.MARCH, 25));
 		Gesuch gesuch = testfall.fillInGesuch();
 
-		Assert.assertNotNull(gesuch.getGesuchsteller1());
-		TestDataUtil.setEinkommensverschlechterung(gesuch, gesuch.getGesuchsteller1(), new BigDecimal("80000"), true);
-		TestDataUtil.setEinkommensverschlechterung(gesuch, gesuch.getGesuchsteller1(), new BigDecimal("50000"), false);
+		assertThat(gesuch.getGesuchsteller1(), notNullValue());
+		TestDataUtil.setEinkommensverschlechterung(
+			gesuch,
+			gesuch.getGesuchsteller1(),
+			new BigDecimal("80000"),
+			true
+		);
+		TestDataUtil.setEinkommensverschlechterung(
+			gesuch,
+			gesuch.getGesuchsteller1(),
+			new BigDecimal("50000"),
+			false
+		);
 		gesuch.setGesuchsperiode(TestDataUtil.createGesuchsperiode1718());
 
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
-		Verfuegung verfuegungFamSit = evaluator.evaluateFamiliensituation(gesuch, Constants.DEFAULT_LOCALE);
-		evaluator.evaluate(gesuch, AbstractBGRechnerTest.getParameter(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
+		Verfuegung verfuegungFamSit = evaluator.evaluateFamiliensituation(
+			gesuch,
+			Constants.DEFAULT_LOCALE
+		);
+		evaluator.evaluate(
+			gesuch,
+			AbstractBGRechnerTest.getParameter(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 
-		byte[] bytes = pdfService.generateFinanzielleSituation(gesuch, verfuegungFamSit, writeProtectPDF, Constants.DEFAULT_LOCALE);
+		authorizer.checkReadAuthorizationFinSit(gesuch);
+		expectLastCall().andVoid();
 
-		unitTestTempfolder.writeToTempDir(bytes, "TN_FamilienStituation1.pdf");
+		expect(
+			dossierService.getErstesEinreichungsdatum(
+				gesuch.getDossier(),
+				gesuch.getGesuchsperiode()
+			)
+		).andReturn(
+			LocalDate.now()
+		);
+
+		replayAll();
+
+		// when
+		byte[] bytes =
+			pdfService.generateFinanzielleSituation(
+				gesuch,
+				verfuegungFamSit,
+				writeProtectPDF,
+				Constants.DEFAULT_LOCALE
+			);
+
+		// verify
+		writeToFile(bytes, "TN_FamilienStituation1.pdf");
 	}
 
 	@Test
-	public void testPrintBegleitschreiben() throws Exception {
+	void testPrintBegleitschreiben() throws Exception {
+		// given
+		authorizer.checkReadAuthorization(gesuch_1GS);
 
-		evaluator.evaluate(gesuch_1GS, AbstractBGRechnerTest.getParameter(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
-		byte[] bytes = pdfService.generateBegleitschreiben(gesuch_1GS, writeProtectPDF, Constants.DEFAULT_LOCALE);
-		Assert.assertNotNull(bytes);
-		unitTestTempfolder.writeToTempDir(bytes, "BegleitschreibenWaelti.pdf");
+		evaluator.evaluate(
+			gesuch_1GS,
+			AbstractBGRechnerTest.getParameter(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
+
+		replayAll();
+
+		// when
+		byte[] bytes = pdfService.generateBegleitschreiben(
+			gesuch_1GS,
+			writeProtectPDF,
+			Constants.DEFAULT_LOCALE
+		);
+
+		// verify
+		assertThat(bytes, notNullValue());
+		writeToFile(bytes, "BegleitschreibenWaelti.pdf");
 	}
 
 	@Test
-	public void testPrintBegleitschreibenTwoGesuchsteller() throws Exception {
+	void testPrintBegleitschreibenTwoGesuchsteller() throws Exception {
+		// given
+		authorizer.checkReadAuthorization(gesuch_2GS);
+		expectLastCall().andVoid();
 
-		Assert.assertNotNull(gesuch_2GS.getGesuchsteller1());
-		gesuch_2GS.getGesuchsteller1().getAdressen().forEach(gesuchstellerAdresse -> {
-			Assert.assertNotNull(gesuchstellerAdresse.getGesuchstellerAdresseJA());
-			gesuchstellerAdresse.getGesuchstellerAdresseJA().setZusatzzeile("Test zusatztzeile");
-		});
-		evaluator.evaluate(gesuch_2GS, AbstractBGRechnerTest.getParameter(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
-		byte[] bytes = pdfService.generateBegleitschreiben(gesuch_2GS, writeProtectPDF, Constants.DEFAULT_LOCALE);
-		Assert.assertNotNull(bytes);
-		unitTestTempfolder.writeToTempDir(bytes, "BegleitschreibenFeutz.pdf");
+		assertThat(gesuch_2GS.getGesuchsteller1(), notNullValue());
+		gesuch_2GS.getGesuchsteller1()
+			.getAdressen()
+			.forEach(gesuchstellerAdresse -> {
+				assertThat(
+					gesuchstellerAdresse.getGesuchstellerAdresseJA(),
+					notNullValue()
+				);
+				gesuchstellerAdresse.getGesuchstellerAdresseJA()
+					.setZusatzzeile("Test zusatztzeile");
+			});
+		evaluator.evaluate(
+			gesuch_2GS,
+			AbstractBGRechnerTest.getParameter(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
+		replayAll();
+
+		// when
+		byte[] bytes = pdfService.generateBegleitschreiben(
+			gesuch_2GS,
+			writeProtectPDF,
+			Constants.DEFAULT_LOCALE
+		);
+
+		// verify
+		assertThat(bytes, notNullValue());
+		writeToFile(bytes, "BegleitschreibenFeutz.pdf");
 	}
 
 	@Test
-	public void testGeneriereVerfuegungKita() throws Exception {
+	void testGeneriereVerfuegungKita() throws Exception {
+		// given
+		gesuch_2GS.extractAllBetreuungen()
+			.get(0)
+			.getInstitutionStammdaten()
+			.setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
 
-		gesuch_2GS.extractAllBetreuungen().get(0).getInstitutionStammdaten().setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
+		evaluator.evaluate(
+			gesuch_2GS,
+			AbstractBGRechnerTest.getParameter(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 
-		evaluator.evaluate(gesuch_2GS, AbstractBGRechnerTest.getParameter(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		Betreuung testBetreuung = gesuch_2GS.getKindContainers()
+			.iterator()
+			.next()
+			.getBetreuungen()
+			.iterator()
+			.next();
+		assertThat(
+			testBetreuung.getVerfuegungOrVerfuegungPreview(),
+			notNullValue()
+		);
+		testBetreuung.getVerfuegungOrVerfuegungPreview()
+			.setManuelleBemerkungen(
+				"Test Bemerkung 1\nTest Bemerkung 2\nTest Bemerkung 3"
+			);
 
-		Betreuung testBetreuung = gesuch_2GS.getKindContainers().iterator().next().getBetreuungen().iterator().next();
-		Assert.assertNotNull(testBetreuung.getVerfuegungOrVerfuegungPreview());
-		testBetreuung.getVerfuegungOrVerfuegungPreview().setManuelleBemerkungen("Test Bemerkung 1\nTest Bemerkung 2\nTest Bemerkung 3");
+		expect(
+			einstellungService.findEinstellung(
+				EinstellungKey.GEMEINDE_KONTINGENTIERUNG_ENABLED,
+				gesuch_2GS.extractGemeinde(),
+				gesuch_2GS.getGesuchsperiode()
+			)
+		).andReturn(
+			new Einstellung(
+				EinstellungKey.GEMEINDE_KONTINGENTIERUNG_ENABLED,
+				"true",
+				gesuch_2GS.getGesuchsperiode()
+			)
+		);
 
+		expect(
+			applicationPropertyService.isStadtBernAsivConfigured(anyObject())
+		).andReturn(false);
+
+		expect(
+			einstellungService.findEinstellung(
+				EinstellungKey.FKJV_TEXTE,
+				gesuch_2GS.extractGemeinde(),
+				gesuch_2GS.getGesuchsperiode()
+			)
+		).andReturn(
+			new Einstellung(
+				EinstellungKey.FKJV_TEXTE,
+				"true",
+				gesuch_2GS.getGesuchsperiode()
+			)
+		);
+
+		expect(
+			einstellungService.findEinstellung(
+				EinstellungKey.PENSUM_ANZEIGE_TYP,
+				gesuch_2GS.extractGemeinde(),
+				gesuch_2GS.getGesuchsperiode()
+			)
+		).andReturn(
+			new Einstellung(
+				EinstellungKey.PENSUM_ANZEIGE_TYP,
+				"NUR_STUNDEN",
+				gesuch_2GS.getGesuchsperiode()
+			)
+		);
+
+		expect(
+			configurationService.getVerfuegungPdfGeneratorKonfiguration(
+				testBetreuung,
+				false
+			)
+		).andReturn(
+			VerfuegungPdfGeneratorKonfiguration.builder()
+				.kontingentierungEnabledAndEntwurf(false)
+				.stadtBernAsivConfigured(false)
+				.FKJVTexte(false)
+				.betreuungspensumAnzeigeTyp(
+					BetreuungspensumAnzeigeTyp.NUR_PROZENT
+				)
+				.isHoehereBeitraegeConfigured(false)
+				.build()
+		);
+
+		replayAll();
+
+		// when
 		byte[] verfuegungsPDF = pdfService
-			.generateVerfuegungForBetreuung(testBetreuung, LocalDate.now().minusDays(183), writeProtectPDF, Constants.DEFAULT_LOCALE);
-		Assert.assertNotNull(verfuegungsPDF);
-		unitTestTempfolder.writeToTempDir(verfuegungsPDF, "Verfuegung_KITA.pdf");
+			.generateVerfuegungForBetreuung(
+				testBetreuung,
+				LocalDate.now().minusDays(183),
+				writeProtectPDF,
+				Constants.DEFAULT_LOCALE
+			);
+
+		// verify
+		assertThat(verfuegungsPDF, notNullValue());
+		writeToFile(
+			verfuegungsPDF,
+			"Verfuegung_KITA.pdf"
+		);
 	}
 
 	@Test
-	public void testGeneriereVerfuegungTageselternKleinkinder() throws Exception {
+	void testGeneriereVerfuegungTageselternKleinkinder()
+		throws Exception {
+		// given
+		gesuch_2GS.extractAllBetreuungen()
+			.get(0)
+			.getInstitutionStammdaten()
+			.setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESFAMILIEN);
 
-		gesuch_2GS.extractAllBetreuungen().get(0).getInstitutionStammdaten().setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESFAMILIEN);
+		evaluator.evaluate(
+			gesuch_2GS,
+			AbstractBGRechnerTest.getParameter(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 
-		evaluator.evaluate(gesuch_2GS, AbstractBGRechnerTest.getParameter(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		Betreuung testBetreuung = gesuch_2GS.getKindContainers()
+			.iterator()
+			.next()
+			.getBetreuungen()
+			.iterator()
+			.next();
+		assertThat(
+			testBetreuung.getVerfuegungOrVerfuegungPreview(),
+			notNullValue()
+		);
+		testBetreuung.getVerfuegungOrVerfuegungPreview()
+			.setManuelleBemerkungen(
+				"Test Bemerkung 1\nTest Bemerkung 2\nTest Bemerkung 3"
+			);
 
-		Betreuung testBetreuung = gesuch_2GS.getKindContainers().iterator().next().getBetreuungen().iterator().next();
-		Assert.assertNotNull(testBetreuung.getVerfuegungOrVerfuegungPreview());
-		testBetreuung.getVerfuegungOrVerfuegungPreview().setManuelleBemerkungen("Test Bemerkung 1\nTest Bemerkung 2\nTest Bemerkung 3");
+		expect(
+			einstellungService.findEinstellung(
+				EinstellungKey.GEMEINDE_KONTINGENTIERUNG_ENABLED,
+				gesuch_2GS.extractGemeinde(),
+				gesuch_2GS.getGesuchsperiode()
+			)
+		).andReturn(
+			new Einstellung(
+				EinstellungKey.GEMEINDE_KONTINGENTIERUNG_ENABLED,
+				"true",
+				gesuch_2GS.getGesuchsperiode()
+			)
+		);
 
+		expect(
+			einstellungService.findEinstellung(
+				EinstellungKey.FKJV_TEXTE,
+				gesuch_2GS.extractGemeinde(),
+				gesuch_2GS.getGesuchsperiode()
+			)
+		).andReturn(
+			new Einstellung(
+				EinstellungKey.FKJV_TEXTE,
+				"true",
+				gesuch_2GS.getGesuchsperiode()
+			)
+		);
+
+		expect(
+			einstellungService.findEinstellung(
+				EinstellungKey.PENSUM_ANZEIGE_TYP,
+				gesuch_2GS.extractGemeinde(),
+				gesuch_2GS.getGesuchsperiode()
+			)
+		).andReturn(
+			new Einstellung(
+				EinstellungKey.PENSUM_ANZEIGE_TYP,
+				"NUR_STUNDEN",
+				gesuch_2GS.getGesuchsperiode()
+			)
+		);
+
+		expect(
+			applicationPropertyService.isStadtBernAsivConfigured(anyObject())
+		).andReturn(false);
+
+		expect(
+			configurationService.getVerfuegungPdfGeneratorKonfiguration(
+				testBetreuung,
+				false
+			)
+		).andReturn(
+			VerfuegungPdfGeneratorKonfiguration.builder()
+				.kontingentierungEnabledAndEntwurf(false)
+				.stadtBernAsivConfigured(false)
+				.FKJVTexte(false)
+				.betreuungspensumAnzeigeTyp(
+					BetreuungspensumAnzeigeTyp.NUR_PROZENT
+				)
+				.isHoehereBeitraegeConfigured(false)
+				.build()
+		);
+
+		replayAll();
+
+		// when
 		byte[] verfuegungsPDF = pdfService
-			.generateVerfuegungForBetreuung(testBetreuung, LocalDate.now().minusDays(183), writeProtectPDF, Constants.DEFAULT_LOCALE);
-		Assert.assertNotNull(verfuegungsPDF);
-		unitTestTempfolder.writeToTempDir(verfuegungsPDF, "Verfuegung_TageselternKleinkinder.pdf");
+			.generateVerfuegungForBetreuung(
+				testBetreuung,
+				LocalDate.now().minusDays(183),
+				writeProtectPDF,
+				Constants.DEFAULT_LOCALE
+			);
+
+		// verify
+		assertThat(verfuegungsPDF, notNullValue());
+		writeToFile(
+			verfuegungsPDF,
+			"Verfuegung_TageselternKleinkinder.pdf"
+		);
 	}
 
+	private void writeToFile(byte[] verfuegungsPDF, String s)
+		throws IOException {
+		Path resolve = unitTestTempfolder.resolve(s);
+		boolean newFile = resolve.toFile().createNewFile();
+		if (newFile) {
+			Files.write(resolve, verfuegungsPDF);
+		} else {
+			throw new IllegalStateException(resolve + " already exists");
+		}
+	}
 
-	private void assertTextInPdf(PdfTextExtractor pdfTextExtractor, int pageNumber, String expectedText, String message)
+	private void assertTextInPdf(
+		PdfTextExtractor pdfTextExtractor,
+		int pageNumber,
+		String expectedText,
+		String message
+	)
 		throws IOException {
 		// Es gibt einen Bug im PdfTextExtractor: Die Wörter werden mit zwei Spaces getrennt. Im "richtigen" PDF
 		// ist dies aber nicht der Fall!
 		// Siehe https://github.com/LibrePDF/OpenPDF/issues/119
 		String actualText = pdfTextExtractor.getTextFromPage(pageNumber);
 		actualText = COMPILE.matcher(actualText).replaceAll(" ");
-		assertTrue(message, actualText.contains(expectedText));
+		assertThat(message, actualText, containsString(expectedText));
 	}
 }

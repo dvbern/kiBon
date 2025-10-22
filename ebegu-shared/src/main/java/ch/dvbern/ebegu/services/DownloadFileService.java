@@ -35,7 +35,11 @@ public interface DownloadFileService {
 	 * Erstellt ein Downloadfile aus einem Uploadfile, Nuetzlich fuer die Statistik
 	 */
 	@Nonnull
-	DownloadFile create(@Nonnull UploadFileInfo fileInfo, @Nonnull TokenLifespan lifespan, @Nonnull String ip);
+	DownloadFile create(
+		@Nonnull UploadFileInfo fileInfo,
+		@Nonnull TokenLifespan lifespan,
+		@Nonnull String ip
+	);
 
 	/**
 	 * Sucht ein Download File aufgrund eines AccessTokens

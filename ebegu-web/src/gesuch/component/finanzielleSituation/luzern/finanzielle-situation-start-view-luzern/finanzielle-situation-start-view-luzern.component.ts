@@ -16,13 +16,12 @@
  */
 
 import {ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {IPromise} from 'angular';
-import {ApplicationPropertyRS} from '../../../../../app/core/rest-services/applicationPropertyRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFamiliensituation} from '../../../../../models/TSFamiliensituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSGesuch} from '../../../../../models/TSGesuch';
@@ -32,11 +31,13 @@ import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractFinSitLuzernView} from '../AbstractFinSitLuzernView';
 import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern.service';
 import {ResultatComponent} from '../resultat/resultat.component';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 @Component({
     selector: 'dv-finanzielle-situation-start-view-luzern',
     templateUrl: '../finanzielle-situation-luzern.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FinanzielleSituationStartViewLuzernComponent extends AbstractFinSitLuzernView {
     @ViewChild(ResultatComponent)
@@ -48,7 +49,8 @@ export class FinanzielleSituationStartViewLuzernComponent extends AbstractFinSit
         protected finSitLuService: FinanzielleSituationLuzernService,
         protected authServiceRS: AuthServiceRS,
         protected readonly translate: TranslateService,
-        protected readonly applicationPropertyRS: ApplicationPropertyRS
+        protected readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        protected readonly dvShowWarningAngabenVervollstaendigenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
     ) {
         super(
             gesuchModelManager,

@@ -15,9 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAdresse} from '../TSAdresse';
+import {TSAdresse} from '@kibon/shared/model/entity';
+import moment from 'moment';
 import {TSFerienbetreuungAbstractAngaben} from './TSFerienbetreuungAbstractAngaben';
-import * as moment from 'moment';
 
 export class TSFerienbetreuungAngabenStammdaten extends TSFerienbetreuungAbstractAngaben {
     private _amAngebotBeteiligteGemeinden: string[];

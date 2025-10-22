@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -26,19 +26,40 @@ import static ch.dvbern.ebegu.util.MathUtil.EXACT;
 
 public final class KantonBernRechnerUtil {
 
-	private KantonBernRechnerUtil() {}
+	private KantonBernRechnerUtil() {
+	}
 
 	public static BigDecimal calculateKantonalerZuschlag(
-			BigDecimal minMassgebendesEinkommen,
-			BigDecimal maxMassgebendesEinkommen,
-			BigDecimal massgebendesEinkommen,
-			BigDecimal maximaleVerguenstigung) {
+		BigDecimal minMassgebendesEinkommen,
+		BigDecimal maxMassgebendesEinkommen,
+		BigDecimal massgebendesEinkommen,
+		BigDecimal maximaleVerguenstigung
+	) {
 
-		BigDecimal beruecksichtigtesEinkommen = EXACT.subtract(massgebendesEinkommen, minMassgebendesEinkommen);
-		BigDecimal product = EXACT.multiplyNullSafe(maximaleVerguenstigung, beruecksichtigtesEinkommen);
-		BigDecimal augment = EXACT.divide(product, EXACT.subtract(minMassgebendesEinkommen, maxMassgebendesEinkommen));
-		BigDecimal verguenstigungProTag = EXACT.add(augment, maximaleVerguenstigung);
+		BigDecimal beruecksichtigtesEinkommen = EXACT.subtract(
+			massgebendesEinkommen,
+			minMassgebendesEinkommen
+		);
+		BigDecimal product = EXACT.multiplyNullSafe(
+			maximaleVerguenstigung,
+			beruecksichtigtesEinkommen
+		);
+		BigDecimal augment = EXACT.divide(
+			product,
+			EXACT.subtract(
+				minMassgebendesEinkommen,
+				maxMassgebendesEinkommen
+			)
+		);
+		BigDecimal verguenstigungProTag = EXACT.add(
+			augment,
+			maximaleVerguenstigung
+		);
 
-		return MathUtil.minimumMaximum(verguenstigungProTag, BigDecimal.ZERO, maximaleVerguenstigung);
+		return MathUtil.minimumMaximum(
+			verguenstigungProTag,
+			BigDecimal.ZERO,
+			maximaleVerguenstigung
+		);
 	}
 }

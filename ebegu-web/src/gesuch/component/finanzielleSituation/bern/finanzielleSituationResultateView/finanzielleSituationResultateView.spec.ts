@@ -14,7 +14,7 @@
  */
 
 import {waitForAsync} from '@angular/core/testing';
-import {IComponentControllerService, IScope} from 'angular';
+import angular, {IComponentControllerService, IScope} from 'angular';
 import {ngServicesMock} from '../../../../../hybridTools/ngServicesMocks';
 import {TSCreationAction} from '../../../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../../../models/enums/TSEingangsart';

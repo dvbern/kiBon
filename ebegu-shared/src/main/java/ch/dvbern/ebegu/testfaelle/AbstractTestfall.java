@@ -15,6 +15,19 @@
 
 package ch.dvbern.ebegu.testfaelle;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import ch.dvbern.ebegu.entities.AdresseTyp;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
 import ch.dvbern.ebegu.entities.BelegungTagesschule;
@@ -59,26 +72,13 @@ import ch.dvbern.ebegu.enums.Land;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.testfaelle.dataprovider.AbstractTestfallDataProvider;
 import ch.dvbern.ebegu.testfaelle.dataprovider.TestfallDataProviderVisitor;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.apache.commons.lang.StringUtils;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-
 
 /**
  * Superklasse für Testfaelle des JA
@@ -91,17 +91,26 @@ import java.util.TreeSet;
 @CanIgnoreReturnValue
 public abstract class AbstractTestfall {
 
-	public static final String ID_MANDANT_KANTON_BERN = "e3736eb8-6eef-40ef-9e52-96ab48d8f220";
-	public static final String ID_MANDANT_KANTON_LUZERN = "485d7483-30a2-11ec-a86f-b89a2ae4a038";
-	public static final String ID_MANDANT_KANTON_SCHWYZ = "08687de9-b3d0-11ee-829a-0242ac160002";
+	public static final String ID_MANDANT_KANTON_BERN =
+		"e3736eb8-6eef-40ef-9e52-96ab48d8f220";
+	public static final String ID_MANDANT_KANTON_LUZERN =
+		"485d7483-30a2-11ec-a86f-b89a2ae4a038";
+	public static final String ID_MANDANT_KANTON_SCHWYZ =
+		"08687de9-b3d0-11ee-829a-0242ac160002";
 
-	public static final String ID_INSTITUTION_STAMMDATEN_WEISSENSTEIN_KITA = "945e3eef-8f43-43d2-a684-4aa61089684b";
-	public static final String ID_INSTITUTION_STAMMDATEN_TAGESFAMILIEN = "6b7beb6e-6cf3-49d6-84c0-5818d9215ecd";
-	public static final String ID_INSTITUTION_STAMMDATEN_BRUENNEN_KITA = "9a0eb656-b6b7-4613-8f55-4e0e4720455e";
-	public static final String ID_INSTITUTION_STAMMDATEN_BERN_TAGESSCULHE = "199ac4a1-448f-4d4c-b3a6-5aee21f89613";
-	public static final String ID_INSTITUTION_STAMMDATEN_GUARDA_FERIENINSEL = "9d8ff34f-8856-4dd3-ade2-2469aadac0ed";
+	public static final String ID_INSTITUTION_STAMMDATEN_WEISSENSTEIN_KITA =
+		"945e3eef-8f43-43d2-a684-4aa61089684b";
+	public static final String ID_INSTITUTION_STAMMDATEN_TAGESFAMILIEN =
+		"6b7beb6e-6cf3-49d6-84c0-5818d9215ecd";
+	public static final String ID_INSTITUTION_STAMMDATEN_BRUENNEN_KITA =
+		"9a0eb656-b6b7-4613-8f55-4e0e4720455e";
+	public static final String ID_INSTITUTION_STAMMDATEN_BERN_TAGESSCULHE =
+		"199ac4a1-448f-4d4c-b3a6-5aee21f89613";
+	public static final String ID_INSTITUTION_STAMMDATEN_GUARDA_FERIENINSEL =
+		"9d8ff34f-8856-4dd3-ade2-2469aadac0ed";
 
-	public static final String ID_BERNER_SOZIALDIENST = "f44a68f2-dda2-4bf2-936a-68e20264b620";
+	public static final String ID_BERNER_SOZIALDIENST =
+		"f44a68f2-dda2-4bf2-936a-68e20264b620";
 
 	protected final Gesuchsperiode gesuchsperiode;
 	private final Collection<InstitutionStammdaten> institutionStammdatenList;
@@ -120,22 +129,31 @@ public abstract class AbstractTestfall {
 	protected AbstractTestfall(
 		Gesuchsperiode gesuchsperiode,
 		boolean betreuungenBestaetigt,
-		InstitutionStammdatenBuilder institutionStammdatenBuilder) {
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
 		this.gesuchsperiode = gesuchsperiode;
 		this.mandant = gesuchsperiode.getMandant();
 		this.institutionStammdatenBuilder = institutionStammdatenBuilder;
-		this.institutionStammdatenList = institutionStammdatenBuilder.buildStammdaten();
+		this.institutionStammdatenList = institutionStammdatenBuilder
+			.buildStammdaten();
 		this.betreuungenBestaetigt = betreuungenBestaetigt;
-		this.testfallDataProvider = new TestfallDataProviderVisitor(this.gesuchsperiode)
-				.getTestDataProvider(this.getMandantOrDefaultMandant());
+		this.testfallDataProvider = new TestfallDataProviderVisitor(
+			this.gesuchsperiode
+		)
+			.getTestDataProvider(this.getMandantOrDefaultMandant());
 	}
 
 	protected AbstractTestfall(
 		Gesuchsperiode gesuchsperiode,
-		boolean betreuungenBestaetigt, Gemeinde gemeinde,
+		boolean betreuungenBestaetigt,
+		Gemeinde gemeinde,
 		InstitutionStammdatenBuilder institutionStammdatenBuilder
 	) {
-		this(gesuchsperiode, betreuungenBestaetigt, institutionStammdatenBuilder);
+		this(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			institutionStammdatenBuilder
+		);
 		this.gemeinde = gemeinde;
 	}
 
@@ -173,6 +191,7 @@ public abstract class AbstractTestfall {
 
 		return mandant;
 	}
+
 	// Default for Faelle that are not persisted. Will be overwritten otherwise
 	private Mandant createDefaultMandant() {
 		this.mandant = new Mandant();
@@ -181,7 +200,10 @@ public abstract class AbstractTestfall {
 		return this.mandant;
 	}
 
-	private void createDossier(@Nonnull Fall fallParam, @Nullable Benutzer verantwortlicher) {
+	private void createDossier(
+		@Nonnull Fall fallParam,
+		@Nullable Benutzer verantwortlicher
+	) {
 		dossier = createDossier(fallParam);
 		dossier.setVerantwortlicherBG(verantwortlicher);
 		dossier.setTimestampErstellt(LocalDateTime.now().minusDays(7));
@@ -203,13 +225,22 @@ public abstract class AbstractTestfall {
 		testGemeinde.setStatus(GemeindeStatus.AKTIV);
 		testGemeinde.setName("Testgemeinde");
 		testGemeinde.setBfsNummer(1L);
-		testGemeinde.setBetreuungsgutscheineStartdatum(LocalDate.of(2016, 1, 1));
-		testGemeinde.setTagesschulanmeldungenStartdatum(LocalDate.of(2018, 8, 1));
-		testGemeinde.setFerieninselanmeldungenStartdatum(LocalDate.of(2018, 8, 1));
+		testGemeinde.setBetreuungsgutscheineStartdatum(
+			LocalDate.of(2016, 1, 1)
+		);
+		testGemeinde.setTagesschulanmeldungenStartdatum(
+			LocalDate.of(2018, 8, 1)
+		);
+		testGemeinde.setFerieninselanmeldungenStartdatum(
+			LocalDate.of(2018, 8, 1)
+		);
 		return testGemeinde;
 	}
 
-	public void createGesuch(@Nullable LocalDate eingangsdatum, AntragStatus status) {
+	public void createGesuch(
+		@Nullable LocalDate eingangsdatum,
+		AntragStatus status
+	) {
 		createGesuch(eingangsdatum);
 		gesuch.setStatus(status);
 	}
@@ -237,23 +268,31 @@ public abstract class AbstractTestfall {
 	}
 
 	protected Gesuch createAlleinerziehend() {
-		FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
-		familiensituationContainer.setFamiliensituationJA(testfallDataProvider.createAlleinerziehend());
+		FamiliensituationContainer familiensituationContainer =
+			new FamiliensituationContainer();
+		familiensituationContainer.setFamiliensituationJA(
+			testfallDataProvider.createAlleinerziehend()
+		);
 		gesuch.setFamiliensituationContainer(familiensituationContainer);
 		return gesuch;
 	}
 
 	protected Gesuch createVerheiratet() {
-		FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
-		familiensituationContainer.setFamiliensituationJA(testfallDataProvider.createVerheiratet());
+		FamiliensituationContainer familiensituationContainer =
+			new FamiliensituationContainer();
+		familiensituationContainer.setFamiliensituationJA(
+			testfallDataProvider.createVerheiratet()
+		);
 		gesuch.setFamiliensituationContainer(familiensituationContainer);
 		return gesuch;
 	}
 
 	protected Gesuch createVerheiratetMitMVZ() {
 		// Familiensituation
-		Familiensituation familiensituation = testfallDataProvider.createVerheiratet();
-		FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
+		Familiensituation familiensituation = testfallDataProvider
+			.createVerheiratet();
+		FamiliensituationContainer familiensituationContainer =
+			new FamiliensituationContainer();
 		familiensituationContainer.setFamiliensituationJA(familiensituation);
 		// re- set keineMahlzeitverguenstigungBeantragt
 		familiensituation.setKeineMahlzeitenverguenstigungBeantragt(false);
@@ -261,20 +300,40 @@ public abstract class AbstractTestfall {
 		return gesuch;
 	}
 
-	protected GesuchstellerContainer createGesuchstellerContainer(int gesuchstellerNumber) {
-		return createGesuchstellerContainer(getNachname(), getVorname(), gesuchstellerNumber);
+	protected GesuchstellerContainer createGesuchstellerContainer(
+		int gesuchstellerNumber
+	) {
+		return createGesuchstellerContainer(
+			getNachname(),
+			getVorname(),
+			gesuchstellerNumber
+		);
 	}
 
-	protected GesuchstellerContainer createGesuchstellerContainer(String name, String vorname, int gesuchstellerNumber) {
+	protected GesuchstellerContainer createGesuchstellerContainer(
+		String name,
+		String vorname,
+		int gesuchstellerNumber
+	) {
 		GesuchstellerContainer gesuchstellerCont = new GesuchstellerContainer();
 		gesuchstellerCont.setAdressen(new ArrayList<>());
-		gesuchstellerCont.setGesuchstellerJA(testfallDataProvider.createGesuchsteller(name, vorname, gesuchstellerNumber));
-		gesuchstellerCont.getAdressen().add(createWohnadresseContainer(gesuchstellerCont));
+		gesuchstellerCont.setGesuchstellerJA(
+			testfallDataProvider.createGesuchsteller(
+				name,
+				vorname,
+				gesuchstellerNumber
+			)
+		);
+		gesuchstellerCont.getAdressen()
+			.add(createWohnadresseContainer(gesuchstellerCont));
 		return gesuchstellerCont;
 	}
 
-	protected GesuchstellerAdresseContainer createWohnadresseContainer(GesuchstellerContainer gesuchstellerCont) {
-		GesuchstellerAdresseContainer wohnadresseCont = new GesuchstellerAdresseContainer();
+	protected GesuchstellerAdresseContainer createWohnadresseContainer(
+		GesuchstellerContainer gesuchstellerCont
+	) {
+		GesuchstellerAdresseContainer wohnadresseCont =
+			new GesuchstellerAdresseContainer();
 		wohnadresseCont.setGesuchstellerContainer(gesuchstellerCont);
 		wohnadresseCont.setGesuchstellerAdresseJA(createWohnadresse());
 		return wohnadresseCont;
@@ -288,13 +347,18 @@ public abstract class AbstractTestfall {
 		wohnadresse.setOrt("Bern");
 		wohnadresse.setLand(Land.CH);
 		wohnadresse.setAdresseTyp(AdresseTyp.WOHNADRESSE);
-		wohnadresse.setGueltigkeit(new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME));
+		wohnadresse.setGueltigkeit(
+			new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME)
+		);
 		return wohnadresse;
 	}
 
 	protected ErwerbspensumContainer createErwerbspensum(int prozent) {
-		ErwerbspensumContainer erwerbspensumContainer = new ErwerbspensumContainer();
-		erwerbspensumContainer.setErwerbspensumJA(testfallDataProvider.createErwerbspensum(prozent));
+		ErwerbspensumContainer erwerbspensumContainer =
+			new ErwerbspensumContainer();
+		erwerbspensumContainer.setErwerbspensumJA(
+			testfallDataProvider.createErwerbspensum(prozent)
+		);
 		return erwerbspensumContainer;
 	}
 
@@ -304,21 +368,39 @@ public abstract class AbstractTestfall {
 		String vorname,
 		LocalDate geburtsdatum,
 		Kinderabzug kinderabzug,
-		boolean betreuung) {
-		Kind kind = testfallDataProvider.createKind(geschlecht, name, vorname, geburtsdatum, is18GeburtstagBeforeGPEnds(geburtsdatum), kinderabzug, betreuung);
+		boolean betreuung
+	) {
+		Kind kind = testfallDataProvider.createKind(
+			geschlecht,
+			name,
+			vorname,
+			geburtsdatum,
+			is18GeburtstagBeforeGPEnds(geburtsdatum),
+			kinderabzug,
+			betreuung
+		);
 		KindContainer kindContainer = new KindContainer();
 		kindContainer.setKindJA(kind);
 		return kindContainer;
 	}
 
-	private boolean is18GeburtstagBeforeGPEnds(@Nonnull LocalDate geburtsdatum) {
+	private boolean is18GeburtstagBeforeGPEnds(
+		@Nonnull LocalDate geburtsdatum
+	) {
 		LocalDate dateWith18 = geburtsdatum.plusYears(18);
-		return dateWith18.isBefore(gesuchsperiode.getGueltigkeit().getGueltigBis());
+		return dateWith18.isBefore(
+			gesuchsperiode.getGueltigkeit().getGueltigBis()
+		);
 	}
 
-	protected Betreuung createBetreuung(String institutionStammdatenId, boolean bestaetigt) {
+	protected Betreuung createBetreuung(
+		String institutionStammdatenId,
+		boolean bestaetigt
+	) {
 		Betreuung betreuung = new Betreuung();
-		betreuung.setInstitutionStammdaten(createInstitutionStammdaten(institutionStammdatenId));
+		betreuung.setInstitutionStammdaten(
+			createInstitutionStammdaten(institutionStammdatenId)
+		);
 		if (!bestaetigt) {
 			betreuung.setBetreuungsstatus(Betreuungsstatus.WARTEN);
 		} else {
@@ -328,7 +410,8 @@ public abstract class AbstractTestfall {
 		betreuung.setVertrag(Boolean.TRUE);
 
 		// default ErweiterteBetreuung
-		ErweiterteBetreuungContainer erwBedContainer = new ErweiterteBetreuungContainer();
+		ErweiterteBetreuungContainer erwBedContainer =
+			new ErweiterteBetreuungContainer();
 		erwBedContainer.setBetreuung(betreuung);
 		ErweiterteBetreuung erwBed = new ErweiterteBetreuung();
 		erwBed.setErweiterteBeduerfnisse(false);
@@ -349,37 +432,60 @@ public abstract class AbstractTestfall {
 		return betreuung;
 	}
 
-	protected AnmeldungTagesschule createTagesschuleAnmeldung(String institutionStammdatenId) {
+	protected AnmeldungTagesschule createTagesschuleAnmeldung(
+		String institutionStammdatenId
+	) {
 		AnmeldungTagesschule anmeldungTagesschule = new AnmeldungTagesschule();
-		anmeldungTagesschule.setInstitutionStammdaten(createInstitutionStammdaten(institutionStammdatenId));
+		anmeldungTagesschule.setInstitutionStammdaten(
+			createInstitutionStammdaten(institutionStammdatenId)
+		);
 		anmeldungTagesschule.setBetreuungsstatus(Betreuungsstatus.BESTAETIGT);
 
 		BelegungTagesschule belegungTagesschule = new BelegungTagesschule();
-		belegungTagesschule.setEintrittsdatum(LocalDate.of(2017, Month.AUGUST, 1));
-		belegungTagesschule.setAbholungTagesschule(AbholungTagesschule.ALLEINE_NACH_HAUSE);
+		belegungTagesschule.setEintrittsdatum(
+			LocalDate.of(2017, Month.AUGUST, 1)
+		);
+		belegungTagesschule.setAbholungTagesschule(
+			AbholungTagesschule.ALLEINE_NACH_HAUSE
+		);
 		belegungTagesschule.setBemerkung("Mein Kind isst kein Fleisch");
 
-		assert anmeldungTagesschule.getInstitutionStammdaten().getInstitutionStammdatenTagesschule() != null;
+		assert anmeldungTagesschule.getInstitutionStammdaten()
+			.getInstitutionStammdatenTagesschule()
+			!= null;
 		Set<EinstellungenTagesschule> einstellungenTagesschuleSet =
 			anmeldungTagesschule.getInstitutionStammdaten()
 				.getInstitutionStammdatenTagesschule()
 				.getEinstellungenTagesschule();
 
-		EinstellungenTagesschule einstellungenTagesschule = einstellungenTagesschuleSet.iterator().next();
-		Set<ModulTagesschuleGroup> modulTagesschuleGroupSet = einstellungenTagesschule.getModulTagesschuleGroups();
+		EinstellungenTagesschule einstellungenTagesschule =
+			einstellungenTagesschuleSet.iterator().next();
+		Set<ModulTagesschuleGroup> modulTagesschuleGroupSet =
+			einstellungenTagesschule.getModulTagesschuleGroups();
 
-		Iterator<ModulTagesschuleGroup> modTSGroupIterator = modulTagesschuleGroupSet.iterator();
+		Iterator<ModulTagesschuleGroup> modTSGroupIterator =
+			modulTagesschuleGroupSet.iterator();
 
 		ModulTagesschuleGroup modulTagesschuleGroup = modTSGroupIterator.next();
-		Set<ModulTagesschule> modulTagesschuleSet = modulTagesschuleGroup.getModule();
+		Set<ModulTagesschule> modulTagesschuleSet = modulTagesschuleGroup
+			.getModule();
 
-		Set<BelegungTagesschuleModul> belegungTagesschuleModulSet = new TreeSet();
-		Iterator<ModulTagesschule> modulTagesschuleIterator = modulTagesschuleSet.iterator();
+		Set<BelegungTagesschuleModul> belegungTagesschuleModulSet =
+			new TreeSet();
+		Iterator<ModulTagesschule> modulTagesschuleIterator =
+			modulTagesschuleSet.iterator();
 		for (int i = 0; i < 3; i++) {
-			BelegungTagesschuleModul belegungTagesschuleModul = new BelegungTagesschuleModul();
-			belegungTagesschuleModul.setBelegungTagesschule(belegungTagesschule);
-			belegungTagesschuleModul.setModulTagesschule(modulTagesschuleIterator.next());
-			belegungTagesschuleModul.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+			BelegungTagesschuleModul belegungTagesschuleModul =
+				new BelegungTagesschuleModul();
+			belegungTagesschuleModul.setBelegungTagesschule(
+				belegungTagesschule
+			);
+			belegungTagesschuleModul.setModulTagesschule(
+				modulTagesschuleIterator.next()
+			);
+			belegungTagesschuleModul.setIntervall(
+				BelegungTagesschuleModulIntervall.WOECHENTLICH
+			);
 			belegungTagesschuleModulSet.add(belegungTagesschuleModul);
 		}
 
@@ -387,27 +493,42 @@ public abstract class AbstractTestfall {
 		modulTagesschuleSet = modulTagesschuleGroup.getModule();
 		modulTagesschuleIterator = modulTagesschuleSet.iterator();
 		for (int i = 0; i < 3; i++) {
-			BelegungTagesschuleModul belegungTagesschuleModul = new BelegungTagesschuleModul();
-			belegungTagesschuleModul.setBelegungTagesschule(belegungTagesschule);
-			belegungTagesschuleModul.setModulTagesschule(modulTagesschuleIterator.next());
-			belegungTagesschuleModul.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+			BelegungTagesschuleModul belegungTagesschuleModul =
+				new BelegungTagesschuleModul();
+			belegungTagesschuleModul.setBelegungTagesschule(
+				belegungTagesschule
+			);
+			belegungTagesschuleModul.setModulTagesschule(
+				modulTagesschuleIterator.next()
+			);
+			belegungTagesschuleModul.setIntervall(
+				BelegungTagesschuleModulIntervall.WOECHENTLICH
+			);
 			belegungTagesschuleModulSet.add(belegungTagesschuleModul);
 		}
 
-		belegungTagesschule.setBelegungTagesschuleModule(belegungTagesschuleModulSet);
+		belegungTagesschule.setBelegungTagesschuleModule(
+			belegungTagesschuleModulSet
+		);
 
 		anmeldungTagesschule.setBelegungTagesschule(belegungTagesschule);
 		return anmeldungTagesschule;
 	}
 
 	@Nonnull
-	protected InstitutionStammdaten createInstitutionStammdaten(String institutionsStammdatenId) {
+	protected InstitutionStammdaten createInstitutionStammdaten(
+		String institutionsStammdatenId
+	) {
 		for (InstitutionStammdaten institutionStammdaten : institutionStammdatenList) {
-			if (institutionStammdaten.getId().equals(institutionsStammdatenId)) {
+			if (institutionStammdaten.getId()
+				.equals(institutionsStammdatenId)) {
 				return institutionStammdaten;
 			}
 		}
-		throw new IllegalStateException("Institutionsstammdaten sind nicht vorhanden: " + institutionsStammdatenId);
+		throw new IllegalStateException(
+			"Institutionsstammdaten sind nicht vorhanden: "
+				+ institutionsStammdatenId
+		);
 	}
 
 	@Deprecated
@@ -415,35 +536,50 @@ public abstract class AbstractTestfall {
 		return createBetreuungspensum(BigDecimal.valueOf(pensum));
 	}
 
-	protected BetreuungspensumContainer createBetreuungspensum(BigDecimal pensum) {
-		BetreuungspensumContainer betreuungspensumContainer = new BetreuungspensumContainer();
+	protected BetreuungspensumContainer createBetreuungspensum(
+		BigDecimal pensum
+	) {
+		BetreuungspensumContainer betreuungspensumContainer =
+			new BetreuungspensumContainer();
 		Betreuungspensum betreuungspensum = new Betreuungspensum();
 		betreuungspensumContainer.setBetreuungspensumJA(betreuungspensum);
 		betreuungspensum.setGueltigkeit(gesuchsperiode.getGueltigkeit());
 		betreuungspensum.setPensum(pensum);
-		betreuungspensum.setMonatlicheBetreuungskosten(MathUtil.DEFAULT.from(2000));
+		betreuungspensum.setMonatlicheBetreuungskosten(
+			MathUtil.DEFAULT.from(2000)
+		);
 		return betreuungspensumContainer;
 	}
 
 	@Deprecated
 	protected BetreuungspensumContainer createBetreuungspensum(
-		Integer pensum, LocalDate datumVon,
-		LocalDate datumBis) {
+		Integer pensum,
+		LocalDate datumVon,
+		LocalDate datumBis
+	) {
 
-		return createBetreuungspensum(BigDecimal.valueOf(pensum), datumVon, datumBis);
+		return createBetreuungspensum(
+			BigDecimal.valueOf(pensum),
+			datumVon,
+			datumBis
+		);
 	}
 
 	protected BetreuungspensumContainer createBetreuungspensum(
 		BigDecimal pensum,
 		LocalDate datumVon,
-		LocalDate datumBis) {
+		LocalDate datumBis
+	) {
 
-		BetreuungspensumContainer betreuungspensumContainer = new BetreuungspensumContainer();
+		BetreuungspensumContainer betreuungspensumContainer =
+			new BetreuungspensumContainer();
 		Betreuungspensum betreuungspensum = new Betreuungspensum();
 		betreuungspensumContainer.setBetreuungspensumJA(betreuungspensum);
 		betreuungspensum.setGueltigkeit(new DateRange(datumVon, datumBis));
 		betreuungspensum.setPensum(pensum);
-		betreuungspensum.setMonatlicheBetreuungskosten(MathUtil.DEFAULT.from(2000));
+		betreuungspensum.setMonatlicheBetreuungskosten(
+			MathUtil.DEFAULT.from(2000)
+		);
 
 		return betreuungspensumContainer;
 	}
@@ -455,14 +591,18 @@ public abstract class AbstractTestfall {
 		BigDecimal monatlicheHauptMahlzeit,
 		BigDecimal monatlicheNebenMahlzeit,
 		BigDecimal tarifProHauptMahlzeit,
-		BigDecimal tarifProNebenMahlzeit) {
+		BigDecimal tarifProNebenMahlzeit
+	) {
 
-		BetreuungspensumContainer betreuungspensumContainer = new BetreuungspensumContainer();
+		BetreuungspensumContainer betreuungspensumContainer =
+			new BetreuungspensumContainer();
 		Betreuungspensum betreuungspensum = new Betreuungspensum();
 		betreuungspensumContainer.setBetreuungspensumJA(betreuungspensum);
 		betreuungspensum.setGueltigkeit(new DateRange(datumVon, datumBis));
 		betreuungspensum.setPensum(pensum);
-		betreuungspensum.setMonatlicheBetreuungskosten(MathUtil.DEFAULT.from(2000));
+		betreuungspensum.setMonatlicheBetreuungskosten(
+			MathUtil.DEFAULT.from(2000)
+		);
 		betreuungspensum.setMonatlicheHauptmahlzeiten(monatlicheHauptMahlzeit);
 		betreuungspensum.setMonatlicheNebenmahlzeiten(monatlicheNebenMahlzeit);
 		betreuungspensum.setTarifProHauptmahlzeit(tarifProHauptMahlzeit);
@@ -471,12 +611,21 @@ public abstract class AbstractTestfall {
 		return betreuungspensumContainer;
 	}
 
-	protected FinanzielleSituationContainer createFinanzielleSituationContainer(BigDecimal vermoegen, BigDecimal einkommen) {
-		FinanzielleSituationContainer finanzielleSituationContainer = new FinanzielleSituationContainer();
-		FinanzielleSituation finanzielleSituation = testfallDataProvider.createFinanzielleSituation(vermoegen, einkommen);
+	protected FinanzielleSituationContainer createFinanzielleSituationContainer(
+		BigDecimal vermoegen,
+		BigDecimal einkommen
+	) {
+		FinanzielleSituationContainer finanzielleSituationContainer =
+			new FinanzielleSituationContainer();
+		FinanzielleSituation finanzielleSituation = testfallDataProvider
+			.createFinanzielleSituation(vermoegen, einkommen);
 
-		finanzielleSituationContainer.setJahr(gesuchsperiode.getGueltigkeit().getGueltigAb().getYear() - 1);
-		finanzielleSituationContainer.setFinanzielleSituationJA(finanzielleSituation);
+		finanzielleSituationContainer.setJahr(
+			gesuchsperiode.getGueltigkeit().getGueltigAb().getYear() - 1
+		);
+		finanzielleSituationContainer.setFinanzielleSituationJA(
+			finanzielleSituation
+		);
 
 		return finanzielleSituationContainer;
 	}
@@ -484,9 +633,11 @@ public abstract class AbstractTestfall {
 	protected EinkommensverschlechterungContainer createEinkommensverschlechterungContainer(
 		Gesuch gesuch,
 		boolean hasEKV1,
-		boolean hasEKV2) {
+		boolean hasEKV2
+	) {
 
-		EinkommensverschlechterungContainer ekvContainer = createEinkommensverschlechterungContainer(hasEKV1, hasEKV2);
+		EinkommensverschlechterungContainer ekvContainer =
+			createEinkommensverschlechterungContainer(hasEKV1, hasEKV2);
 		EinkommensverschlechterungInfoContainer infoContainer =
 			createEinkommensverschlechterungInfoContainer(hasEKV1, hasEKV2);
 		gesuch.setEinkommensverschlechterungInfoContainer(infoContainer);
@@ -498,9 +649,11 @@ public abstract class AbstractTestfall {
 	@Nonnull
 	protected EinkommensverschlechterungContainer createEinkommensverschlechterungContainer(
 		boolean erstesJahr,
-		boolean zweitesJahr) {
+		boolean zweitesJahr
+	) {
 
-		EinkommensverschlechterungContainer ekvContainer = new EinkommensverschlechterungContainer();
+		EinkommensverschlechterungContainer ekvContainer =
+			new EinkommensverschlechterungContainer();
 
 		if (erstesJahr) {
 			Einkommensverschlechterung ekv1 = new Einkommensverschlechterung();
@@ -521,7 +674,9 @@ public abstract class AbstractTestfall {
 	 * Schreibt in alle Felder der Einkommenverschlechterung, die nicht Null sein dürfen, eine 0. Diese kann später in
 	 * den Testfällen überschrieben werden.
 	 */
-	private void setEinkommensverschlechterungDefaultValues(@Nonnull Einkommensverschlechterung ekv) {
+	private void setEinkommensverschlechterungDefaultValues(
+		@Nonnull Einkommensverschlechterung ekv
+	) {
 		ekv.setFamilienzulage(BigDecimal.ZERO);
 		ekv.setErsatzeinkommen(BigDecimal.ZERO);
 		ekv.setErhalteneAlimente(BigDecimal.ZERO);
@@ -532,10 +687,12 @@ public abstract class AbstractTestfall {
 	}
 
 	protected void createEmptyEKVInfoContainer(@Nonnull Gesuch gesuch) {
-		EinkommensverschlechterungInfoContainer ekvInfoContainer = new EinkommensverschlechterungInfoContainer();
+		EinkommensverschlechterungInfoContainer ekvInfoContainer =
+			new EinkommensverschlechterungInfoContainer();
 		ekvInfoContainer.setGesuch(gesuch);
 		gesuch.setEinkommensverschlechterungInfoContainer(ekvInfoContainer);
-		EinkommensverschlechterungInfo ekvInfoJA = new EinkommensverschlechterungInfo();
+		EinkommensverschlechterungInfo ekvInfoJA =
+			new EinkommensverschlechterungInfo();
 		ekvInfoJA.setEinkommensverschlechterung(false);
 		ekvInfoJA.setEkvFuerBasisJahrPlus1(false);
 		ekvInfoJA.setEkvFuerBasisJahrPlus2(false);
@@ -544,13 +701,19 @@ public abstract class AbstractTestfall {
 
 	protected EinkommensverschlechterungInfoContainer createEinkommensverschlechterungInfoContainer(
 		boolean ekv1,
-		boolean ekv2) {
+		boolean ekv2
+	) {
 
-		EinkommensverschlechterungInfoContainer infoContainer = new EinkommensverschlechterungInfoContainer();
-		EinkommensverschlechterungInfo info = new EinkommensverschlechterungInfo();
+		EinkommensverschlechterungInfoContainer infoContainer =
+			new EinkommensverschlechterungInfoContainer();
+		EinkommensverschlechterungInfo info =
+			new EinkommensverschlechterungInfo();
 		info.setEkvFuerBasisJahrPlus1(ekv1);
 		info.setEkvFuerBasisJahrPlus2(ekv2);
-		info.setEinkommensverschlechterung(info.getEkvFuerBasisJahrPlus1() || info.getEkvFuerBasisJahrPlus2());
+		info.setEinkommensverschlechterung(
+			info.getEkvFuerBasisJahrPlus1()
+				|| info.getEkvFuerBasisJahrPlus2()
+		);
 		infoContainer.setEinkommensverschlechterungInfoJA(info);
 
 		return infoContainer;

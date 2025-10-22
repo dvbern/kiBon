@@ -29,7 +29,8 @@ import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 
-public class LuzernBetreuungDokumente extends AbstractDokumente<Betreuung, Object> {
+public class LuzernBetreuungDokumente extends
+	AbstractDokumente<Betreuung, Object> {
 
 	@Override
 	public void getAllDokumente(
@@ -45,14 +46,32 @@ public class LuzernBetreuungDokumente extends AbstractDokumente<Betreuung, Objec
 
 		allBetreuungen
 			.forEach(betreuung -> {
-				add(getDokument(DokumentTyp.BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND, betreuung, gesuch), anlageVerzeichnis);
-				add(getDokument(DokumentTyp.BESTAETIGUNG_KITA_PLUS, betreuung, gesuch), anlageVerzeichnis);
+				add(
+					getDokument(
+						DokumentTyp.BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND,
+						betreuung,
+						gesuch
+					),
+					anlageVerzeichnis
+				);
+				add(
+					getDokument(
+						DokumentTyp.BESTAETIGUNG_KITA_PLUS,
+						betreuung,
+						gesuch
+					),
+					anlageVerzeichnis
+				);
 			}
-		);
+			);
 	}
 
 	@Nullable
-	private DokumentGrund getDokument(DokumentTyp dokumentTyp, @Nonnull Betreuung betreuung, Gesuch gesuch) {
+	private DokumentGrund getDokument(
+		DokumentTyp dokumentTyp,
+		@Nonnull Betreuung betreuung,
+		Gesuch gesuch
+	) {
 		String gpString = gesuch.getGesuchsperiode().getGesuchsperiodeString();
 
 		return getDokument(
@@ -61,22 +80,37 @@ public class LuzernBetreuungDokumente extends AbstractDokumente<Betreuung, Objec
 			gpString,
 			DokumentGrundPersonType.KIND,
 			betreuung.getKind().getKindNummer(),
-			DokumentGrundTyp.ERWEITERTE_BETREUUNG);
+			DokumentGrundTyp.ERWEITERTE_BETREUUNG
+		);
 	}
 
 	@Override
-	public boolean isDokumentNeeded(@Nonnull DokumentTyp dokumentTyp, @Nullable Betreuung betreuung) {
-		if (betreuung == null ||
-			betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA() == null) {
+	public boolean isDokumentNeeded(
+		@Nonnull DokumentTyp dokumentTyp,
+		@Nullable Betreuung betreuung
+	) {
+		if (betreuung == null
+			||
+			betreuung.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA()
+				== null) {
 			return false;
 		}
 
 		switch (dokumentTyp) {
 		case BESTAETIGUNG_KITA_PLUS:
-			return betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA().getKitaPlusZuschlag() != null &&
-				betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA().getKitaPlusZuschlag();
+			return betreuung.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA()
+				.getKitaPlusZuschlag()
+				!= null
+				&&
+				betreuung.getErweiterteBetreuungContainer()
+					.getErweiterteBetreuungJA()
+					.getKitaPlusZuschlag();
 		case BESTAETIGUNG_AUSSERORDENTLICHER_BETREUUNGSAUFWAND:
-			return betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA().getErweiterteBeduerfnisse();
+			return betreuung.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA()
+				.getErweiterteBeduerfnisse();
 		default:
 			return false;
 		}

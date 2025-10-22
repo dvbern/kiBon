@@ -14,12 +14,13 @@
  */
 
 import {waitForAsync} from '@angular/core/testing';
-import {IComponentControllerService, IScope} from 'angular';
+import angular, {IComponentControllerService, IScope} from 'angular';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {TSCreationAction} from '../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../models/enums/TSEingangsart';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {GESUCH_JS_MODULE} from '../../gesuch.module';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {ErwerbspensumViewComponentConfig} from './erwerbspensumView';

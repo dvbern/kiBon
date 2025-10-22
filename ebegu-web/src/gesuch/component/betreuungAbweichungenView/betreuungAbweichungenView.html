@@ -21,8 +21,15 @@
     <div class="row view-title">
         <div class="col-md-8">
             <h2>
-                <span>{{ vm.getKindModel().kindJA.getFullName() }} / </span
-                ><span data-translate="ABWEICHUNGEN_MELDEN"></span>
+                <span>{{ vm.getKindModel().kindJA.getFullName() }} / </span>
+                <span
+                    ng-if="vm.texteSz25Enabled"
+                    data-translate="ABWEICHUNGEN_MELDEN_SZ_25"
+                ></span>
+                <span
+                    ng-if="!vm.texteSz25Enabled"
+                    data-translate="ABWEICHUNGEN_MELDEN"
+                ></span>
             </h2>
             <dv-bisher
                 gs="vm.getKindModel().kindGS"
@@ -43,14 +50,14 @@
         </div>
     </div>
 
-    <div class="row margin-top-40">
+    <div class="row margin-top-10">
         <div class="col-md-12">
-            <span> {{ vm.getHelpText() }}</span>
+            <span ng-bind-html="vm.getHelpText()"></span>
         </div>
     </div>
 
     <form role="form" name="vm.form" class="" novalidate unsaved-warning-form>
-        <div class="row margin-top-40">
+        <div class="row margin-top-30">
             <div
                 class="col-md-12 table-responsive"
                 ng-switch="vm.getBetreuungsangebotTyp()"
@@ -132,7 +139,27 @@
                     <thead>
                         <tr>
                             <th data-translate="MONTH"></th>
-                            <th>{{ vm.getInputFormatTitle() }}</th>
+                            <th>
+                                {{ vm.getInputFormatTitle() }}
+                                <dv-tooltip
+                                    ng-if="
+                                        vm.betreuungsAngebotTypKita &&
+                                        vm.texteSz25Enabled
+                                    "
+                                    text="'TOTAL_BETREUUNGSPENSUM_TAGEN_HELP'"
+                                ></dv-tooltip>
+                            </th>
+                            <th
+                                ng-if="
+                                    vm.isAnwesenheitstageBeiTagesfamilienbetreuungenAktiviert() &&
+                                    vm.betreuungsAngebotTypTFO
+                                "
+                                data-translate="{{
+                                    vm.texteSz25Enabled
+                                        ? 'EFFEKTIVE_BETREUUNGSTAGE_MONAT'
+                                        : 'DAYS'
+                                }}"
+                            ></th>
                             <th
                                 data-translate="MONATLICHE_BETREUUNGSKOSTEN"
                             ></th>
@@ -181,6 +208,30 @@
                                     step="vm.getStepSize()"
                                     ng-attr-placeholder="{{
                                         betreuung.vertraglichesPensum
+                                    }}"
+                                />
+                            </td>
+                            <td
+                                ng-if="
+                                    vm.isAnwesenheitstageBeiTagesfamilienbetreuungenAktiviert() &&
+                                    vm.betreuungsAngebotTypTFO
+                                "
+                            >
+                                <input
+                                    aria-describedby="tage-{{ $index }}-error"
+                                    id="tage-{{ $index }}"
+                                    type="number"
+                                    name="tage-{{ $index }}"
+                                    data-test="tage"
+                                    ng-change="vm.updateStatus(betreuung)"
+                                    ng-model="betreuung.betreuteTage"
+                                    dv-max-length
+                                    class="form-control dv-input-container-medium"
+                                    ng-disabled="vm.isDisabled(betreuung)"
+                                    ng-required="vm.isRowRequired(betreuung)"
+                                    ng-pattern="vm.CONSTANTS.PATTERN_TWO_DECIMALS"
+                                    ng-attr-placeholder="{{
+                                        betreuung.vertraglicheBetreuuteTage
                                     }}"
                                 />
                             </td>
@@ -262,7 +313,7 @@
     <div class="dv-navigation dv-navigation-flex">
         <span
             dv-show-element
-            dv-show-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionRoles()"
+            dv-show-allowed-roles="vm.TSRoleUtil.getMutationsMitteilungAbweichungSendenRoles()"
             dv-show-expression="vm.isFreigabeAllowed()"
         >
             <dv-loading-button
@@ -275,7 +326,7 @@
         </span>
         <span
             dv-show-element
-            dv-show-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionRoles()"
+            dv-show-allowed-roles="vm.TSRoleUtil.getMutationsMitteilungAbweichungSendenRoles()"
             dv-show-expression="vm.isAbweichungAllowed()"
         >
             <dv-loading-button

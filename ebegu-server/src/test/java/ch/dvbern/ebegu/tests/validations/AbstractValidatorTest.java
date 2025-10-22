@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.tests.validations;
@@ -20,11 +20,11 @@ package ch.dvbern.ebegu.tests.validations;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.validation.Configuration;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.Configuration;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 import ch.dvbern.ebegu.tests.util.validation.ViolationMatchers;
 import org.junit.AfterClass;
@@ -45,7 +45,9 @@ public abstract class AbstractValidatorTest {
 		// see https://docs.jboss.org/hibernate/validator/5.2/reference/en-US/html/chapter-bootstrapping.html#_constraintvalidatorfactory
 		Configuration<?> config = Validation.byDefaultProvider().configure();
 		//wir verwenden dummy service daher geben wir hier null als em mit
-		config.constraintValidatorFactory(new ValidationTestConstraintValidatorFactory());
+		config.constraintValidatorFactory(
+			new ValidationTestConstraintValidatorFactory()
+		);
 		validatorFactory = config.buildValidatorFactory();
 		validator = validatorFactory.getValidator();
 	}
@@ -57,7 +59,10 @@ public abstract class AbstractValidatorTest {
 	}
 
 	@Nonnull
-	protected <T> Set<ConstraintViolation<T>> validate(@Nonnull T var1, @Nonnull Class... var2) {
+	protected <T> Set<ConstraintViolation<T>> validate(
+		@Nonnull T var1,
+		@Nonnull Class... var2
+	) {
 		return validator.validate(var1, var2);
 	}
 
@@ -65,7 +70,10 @@ public abstract class AbstractValidatorTest {
 		assertThat(validate(var1, var2), ViolationMatchers.succeeds());
 	}
 
-	protected <T> void assertInvalid(@Nonnull T var1, @Nonnull Class<?>... var2) {
+	protected <T> void assertInvalid(
+		@Nonnull T var1,
+		@Nonnull Class<?>... var2
+	) {
 		assertThat(validate(var1, var2), ViolationMatchers.fails());
 	}
 }

@@ -1,0 +1,105 @@
+<table class="table fixedtable table-hover" title="Title">
+    <thead>
+        <tr>
+            @if (isScolaris(modulTagesschuleGroups())) {
+                <th *ngIf="isScolaris(modulTagesschuleGroups())" translate>
+                    MODUL_NAME
+                </th>
+            }
+            <th translate>MODUL_BEZEICHNUNG</th>
+            <th translate>MODUL_ZEITRAUM</th>
+            <th translate>MODUL_VERPFLEGUNG</th>
+            <th translate>MODUL_VERFUEGBAR</th>
+            <th translate>MODUL_PAEDAGOGISCH_BETREUT_SHORT</th>
+            <th translate>MODUL_INTERVALL</th>
+            <th></th>
+        </tr>
+    </thead>
+    @if (modulTagesschuleGroups()?.length > 0) {
+        <tbody>
+            @for (group of modulTagesschuleGroups(); track group.identifier) {
+                <tr
+                    (click)="editModulTagesschuleGroup(group)"
+                    (keydown)="$event.preventDefault()"
+                >
+                    @if (isScolaris(modulTagesschuleGroups())) {
+                        <td [title]="group.modulTagesschuleName | translate">
+                            <span>{{
+                                group.modulTagesschuleName | translate
+                            }}</span>
+                        </td>
+                    }
+                    <td title="{{ getBezeichnung(group) }}">
+                        <span>{{ getBezeichnung(group) }}</span>
+                    </td>
+                    <td title="{{ group.getZeitraumString() }}">
+                        {{ group.getZeitraumString() }}
+                    </td>
+                    <td title="{{ group.verpflegungskosten }}">
+                        {{ group.verpflegungskosten }}
+                    </td>
+                    <td title="{{ getWochentageAsString(group) }}">
+                        {{ getWochentageAsString(group) }}
+                    </td>
+                    @if (group.wirdPaedagogischBetreut) {
+                        <td [title]="'JA' | translate">
+                            {{ 'LABEL_JA' | translate }}
+                        </td>
+                    } @else {
+                        <td [title]="'NEIN' | translate">
+                            {{ 'LABEL_NEIN' | translate }}
+                        </td>
+                    }
+                    <td title="{{ group.intervall | translate }}">
+                        {{ group.intervall | translate }}
+                    </td>
+                    <td
+                        (click)="$event.stopPropagation()"
+                        (keydown)="$event.stopPropagation()"
+                    >
+                        @if (editMode()) {
+                            <button
+                                type="button"
+                                class="dv-btn dv-btn-operation"
+                                [title]="getEditButtonTooltip(group)"
+                                (click)="editModulTagesschuleGroup(group)"
+                                [disabled]="!canEditModule(group)"
+                            >
+                                <i class="fa fa-lg fa-edit"></i>
+                            </button>
+                        }
+                        @if (editMode()) {
+                            <button
+                                type="button"
+                                class="dv-btn dv-btn-operation"
+                                [title]="getDeleteButtonTooltip(group, $last)"
+                                (click)="removeModulTagesschuleGroup(group)"
+                                [disabled]="!canDeleteModule(group, $last)"
+                            >
+                                <i class="fa fa-lg fa-trash-o"></i>
+                            </button>
+                        }
+                        @if (schnittstellenInfosVisible()) {
+                            <button
+                                type="button"
+                                class="dv-btn dv-btn-operation"
+                                [title]="
+                                    'SCHNITTSTELLE_INFO_TOOLTIP' | translate
+                                "
+                                (click)="showSchnittstelleInfos(group)"
+                            >
+                                <i class="fa fa-lg fa-cogs"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    } @else {
+        <tbody>
+            <tr>
+                <td colspan="6" class="empty-table" translate>KEIN_EINTRAG</td>
+            </tr>
+        </tbody>
+    }
+</table>

@@ -20,7 +20,10 @@
     <div class="row view-title">
         <div class="col-md-12">
             <h2></h2>
-            <h2 *ngIf="!hasSecondAntragstellende()">
+            <h2
+                *ngIf="!hasSecondAntragstellende()"
+                data-test="einkommensverschlechterungResultat"
+            >
                 <span
                     translate
                     [translateParams]="{
@@ -31,7 +34,10 @@
                     >EKV_RESULTATE_ANTRAGSTELLENDE</span
                 >
             </h2>
-            <h2 *ngIf="hasSecondAntragstellende()">
+            <h2
+                *ngIf="hasSecondAntragstellende()"
+                data-test="einkommensverschlechterungResultat"
+            >
                 <span
                     translate
                     [translateParams]="{
@@ -60,6 +66,7 @@
                                     this.gesuchModelManager.getBasisjahr()
                             }"
                             [inputDisabled]="true"
+                            data-test="massgebendesEinkVorAbzFamGrOld"
                         >
                         </dv-input-label-field>
                     </div>
@@ -76,6 +83,7 @@
                                     this.gesuchModelManager.getBasisjahrToWorkWith()
                             }"
                             [inputDisabled]="true"
+                            data-test="massgebendesEinkVorAbzFamGrNew"
                         >
                         </dv-input-label-field>
                     </div>
@@ -87,6 +95,7 @@
                             [labelMessageKey]="'EVK_IN_PROZENT'"
                             [labelMessageKeyArgs]=""
                             [inputDisabled]="true"
+                            data-test="aenderungPercent"
                         >
                         </dv-input-label-field>
                     </div>
@@ -104,6 +113,7 @@
                                         this.gesuchModelManager.getBasisjahrToWorkWith(),
                                     ekvGrenze: ekvGrenzWerte()
                                 }"
+                                data-test="ekvAkzeptiert"
                                 >RESULTATE_EKV_AKZEPTIERT</span
                             >
                         </div>
@@ -121,6 +131,7 @@
                                         this.gesuchModelManager.getBasisjahrToWorkWith(),
                                     ekvGrenze: ekvGrenzWerte()
                                 }"
+                                data-test="ekvNotAkzeptiert"
                                 >RESULTATE_EKV_NICHT_AKZEPTIERT</span
                             >
                         </div>

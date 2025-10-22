@@ -21,13 +21,11 @@ import ch.dvbern.ebegu.entities.Eingewoehnung;
  * Enum fuer Typ der Eingewöhung
  */
 public enum EingewoehnungTyp {
-	FKJV,
-	LUZERN,
+	FKJV, LUZERN,
 	/**
 	 * Pauschale Eingewöhnungskosten {@link Eingewoehnung}
 	 */
-	PAUSCHALE,
-	KEINE;
+	PAUSCHALE, KEINE;
 
 	public boolean isEingewoehnungTypPeriode() {
 		return this == FKJV || this == LUZERN;

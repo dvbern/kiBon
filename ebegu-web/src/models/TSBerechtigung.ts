@@ -13,14 +13,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {TSRole} from '@kibon/shared/model/enums';
+import {
+    TSAbstractDateRangedEntity,
+    TSDateRange,
+    TSGemeinde,
+    TSInstitution,
+    TSTraegerschaft
+} from '@kibon/shared/model/entity';
 import {TSRoleUtil} from '../utils/TSRoleUtil';
-import {TSRole} from './enums/TSRole';
 import {TSSozialdienst} from './sozialdienst/TSSozialdienst';
-import {TSAbstractDateRangedEntity} from './TSAbstractDateRangedEntity';
-import {TSGemeinde} from './TSGemeinde';
-import {TSInstitution} from './TSInstitution';
-import {TSTraegerschaft} from './TSTraegerschaft';
-import {TSDateRange} from './types/TSDateRange';
 
 export class TSBerechtigung extends TSAbstractDateRangedEntity {
     private _traegerschaft?: TSTraegerschaft;

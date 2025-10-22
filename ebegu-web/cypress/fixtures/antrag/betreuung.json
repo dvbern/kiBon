@@ -14,7 +14,7 @@
                 ]
             },
             "tfo": {
-                "betreuungsangebot": "Tagesfamilien",
+                "betreuungsangebot": "Tagesfamilienorganisation",
                 "institution": "Tageseltern Bern"
             }
         },
@@ -39,6 +39,110 @@
                 "betreuungsangebot": "Tagesschule",
                 "institution": "Tagesschule Paris"
             }
+        },
+        "Testgemeinde Luzern": {
+            "kita": {
+                "betreuungsangebot": "Kita",
+                "institution": "Brünnen LU",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "25",
+                        "monatlicheBetreuungskosten": "1000",
+                        "von": "01.01.2024",
+                        "bis": "31.12.2024"
+                    }
+                ]
+            },
+            "kita2": {
+                "betreuungsangebot": "Kita",
+                "institution": "Weissenstein LU",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "75",
+                        "monatlicheBetreuungskosten": "2000",
+                        "von": "01.01.2024",
+                        "bis": "31.12.2024"
+                    }
+                ]
+            }
+        },
+        "Testgemeinde Horw": {
+            "kita": {
+                "betreuungsangebot": "Kita",
+                "institution": "Brünnen LU",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "25",
+                        "monatlicheBetreuungskosten": "1000",
+                        "von": "01.01.2024",
+                        "bis": "31.12.2024"
+                    }
+                ]
+            },
+            "kita2": {
+                "betreuungsangebot": "Kita",
+                "institution": "Weissenstein LU",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "75",
+                        "monatlicheBetreuungskosten": "2000",
+                        "von": "01.01.2024",
+                        "bis": "31.12.2024"
+                    }
+                ]
+            }
+        },
+        "Testgemeinde Appenzell Ausserrhoden": {
+            "kita": {
+                "betreuungsangebot": "Kita",
+                "institution": "Brünnen AR",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "25",
+                        "monatlicheBetreuungskosten": "1000",
+                        "von": "01.08.2023",
+                        "bis": "31.07.2024"
+                    }
+                ]
+            },
+            "kita2": {
+                "betreuungsangebot": "Kita",
+                "institution": "Weissenstein AR",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "75",
+                        "monatlicheBetreuungskosten": "2000",
+                        "von": "01.08.2023",
+                        "bis": "31.07.2024"
+                    }
+                ]
+            }
+        },
+        "Testgemeinde Solothurn": {
+            "kita": {
+                "betreuungsangebot": "Kita",
+                "institution": "Brünnen SO",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "25",
+                        "monatlicheBetreuungskosten": "1000",
+                        "von": "01.01.2024",
+                        "bis": "31.12.2024"
+                    }
+                ]
+            },
+            "kita2": {
+                "betreuungsangebot": "Kita",
+                "institution": "Weissenstein SO",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "75",
+                        "monatlicheBetreuungskosten": "2000",
+                        "von": "01.01.2024",
+                        "bis": "31.12.2024"
+                    }
+                ]
+            }
         }
     },
     "schwyz": {
@@ -52,6 +156,18 @@
                         "kostenProMittagessen": "12.50",
                         "von": "01.08.2024",
                         "bis": "31.12.2025"
+                    }
+                ]
+            },
+            "kita": {
+                "betreuungsangebot": "Kita / schulische Tagesstruktur",
+                "institution": "Weissenstein SZ",
+                "betreuungspensen": [
+                    {
+                        "monatlichesBetreuungspensum": "60",
+                        "monatlicheBetreuungskosten": "2000",
+                        "von": "01.08.2024",
+                        "bis": "31.07.2025"
                     }
                 ]
             }

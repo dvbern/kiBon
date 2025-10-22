@@ -23,23 +23,25 @@ import javax.annotation.Nonnull;
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Kind;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 
 /**
  * Regel, welche den Anspruch für das Angebot Kita für die gesamte Periode auf 0 stellen kann
  * Die Regel hat einen Parameter, welcher besagt, bis wann BGs ausgestellt werden. Dabei gibt es folgende Auswahl:
- * - Kindergarten 2 (Standard respektive ASIV-Umsetzung): Bei dieser Auswahl werden BG für Kinder bis und mit Kindergarten
- * 		ausgestellt. D.h. ab der ersten Klasse wird kein Gutschein ausgestellt.
- *		Meldung auf Verfügung: Kein Anspruch für Kinder ab der ersten Klasse.
- * - Kindergarten 1: Bei dieser Auswahl werden BG für Kinder bis und mit Kindergarten 1 ausgestellt. D.h. ein Kind, welches
- * 		das zweite Jahr im Kindergarten ist hat KEINEN Anspruch
- * 		Meldung auf Verfügung: Kein Anspruch für Kinder ab dem zweiten Kindergartenjahr
+ * - Kindergarten 2 (Standard respektive ASIV-Umsetzung): Bei dieser Auswahl werden BG für Kinder bis und mit
+ * Kindergarten
+ * ausgestellt. D.h. ab der ersten Klasse wird kein Gutschein ausgestellt.
+ * Meldung auf Verfügung: Kein Anspruch für Kinder ab der ersten Klasse.
+ * - Kindergarten 1: Bei dieser Auswahl werden BG für Kinder bis und mit Kindergarten 1 ausgestellt. D.h. ein Kind,
+ * welches
+ * das zweite Jahr im Kindergarten ist hat KEINEN Anspruch
+ * Meldung auf Verfügung: Kein Anspruch für Kinder ab dem zweiten Kindergartenjahr
  * - Vorschulalter: Bei dieser Auswahl werden BG nur für Kinder im Vorschulalter ausgestellt. D.h. ein Kind, welches das
- * 		erste Jahr im Kindergarten ist hat KEINEN Anspruch
- * 		Meldung auf Verfügung: Kein Anspruch für Kinder ab dem Kindergarten
+ * erste Jahr im Kindergarten ist hat KEINEN Anspruch
+ * Meldung auf Verfügung: Kein Anspruch für Kinder ab dem Kindergarten
  */
 public class SchulstufeCalcRule extends AbstractCalcRule {
 
@@ -55,7 +57,13 @@ public class SchulstufeCalcRule extends AbstractCalcRule {
 		@Nonnull List<BetreuungsangebotTyp> betreuungsangebotTyps,
 		@Nonnull Locale locale
 	) {
-		super(RuleKey.SCHULSTUFE, RuleType.REDUKTIONSREGEL, RuleValidity.ASIV, validityPeriod, locale);
+		super(
+			RuleKey.SCHULSTUFE,
+			RuleType.REDUKTIONSREGEL,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 		this.einschulungsTypAnspruchsgrenze = einschulungsTypAnspruchsgrenze;
 		this.betreuungsangebotTyps = betreuungsangebotTyps;
 	}
@@ -68,13 +76,17 @@ public class SchulstufeCalcRule extends AbstractCalcRule {
 
 	@SuppressWarnings("PMD.CollapsibleIfStatements")
 	@Override
-	protected void executeRule(@Nonnull AbstractPlatz platz, @Nonnull BGCalculationInput inputData) {
+	protected void executeRule(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull BGCalculationInput inputData
+	) {
 		if (platz.getKind().getKindJA() != null) {
 			final Kind kindJA = platz.getKind().getKindJA();
 			EinschulungTyp einschulungTyp = kindJA.getEinschulungTyp();
 			if (einschulungTyp != null) {
-				if (einschulungTyp.getOrdinalitaet() > einschulungsTypAnspruchsgrenze.getOrdinalitaet()
-				 && !hasKeinPlatzInSchulhort(kindJA)) {
+				if (einschulungTyp.getOrdinalitaet()
+					> einschulungsTypAnspruchsgrenze.getOrdinalitaet()
+					&& !hasKeinPlatzInSchulhort(kindJA)) {
 					// Der Anspruch wird (nur fuer diese Betreuung!) auf 0 gesetzt. Dafuer wird der vorher berechnete
 					// Anspruch wieder als Restanspruch
 					// gefuehrt
@@ -86,7 +98,8 @@ public class SchulstufeCalcRule extends AbstractCalcRule {
 	}
 
 	/**
-	 * KIBON-2263: Spezialfall Luzern - Wenn die Checkbox "Mein Kind hat keine Platz im Schulhort" (default false) angewählt
+	 * KIBON-2263: Spezialfall Luzern - Wenn die Checkbox "Mein Kind hat keine Platz im Schulhort" (default false)
+	 * angewählt
 	 * ist, hat das Kind Anspruch
 	 */
 	private boolean hasKeinPlatzInSchulhort(Kind kindJA) {

@@ -18,11 +18,11 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -67,12 +67,19 @@ public class AbstractIntegerPensum extends AbstractDateRangedEntity {
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final AbstractIntegerPensum otherAbstDateRangedEntity = (AbstractIntegerPensum) other;
+		final AbstractIntegerPensum otherAbstDateRangedEntity =
+			(AbstractIntegerPensum) other;
 		return super.isSame(otherAbstDateRangedEntity)
-			&& Objects.equals(this.getPensum(), otherAbstDateRangedEntity.getPensum());
+			&& Objects.equals(
+				this.getPensum(),
+				otherAbstDateRangedEntity.getPensum()
+			);
 	}
 
-	public void copyAbstractPensumEntity(@Nonnull AbstractIntegerPensum target, @Nonnull AntragCopyType copyType) {
+	public void copyAbstractPensumEntity(
+		@Nonnull AbstractIntegerPensum target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractDateRangedEntity(target, copyType);
 		target.setPensum(this.getPensum());
 	}

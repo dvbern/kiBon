@@ -46,6 +46,7 @@
             ng-attr-data-test="container.periode.{{
                 periode.gesuchsperiodeString
             }}"
+            ng-class="{['periode-' + $index]: true, 'show-ansehen': vm.displayAnsehenButton(periode) }"
             ng-if="vm.activeGesuchsperiodenList.length > 0"
         >
             <span class="gdashboard-panel-gesuchstring">
@@ -66,7 +67,7 @@
             </span>
 
             <dv-loading-button
-                class="gdashboard-panel-button--ansehen"
+                ng-class="vm.getAnsehenButtonClass(periode)"
                 ng-if="vm.displayAnsehenButton(periode)"
                 type="button"
                 button-click="vm.openAntrag(periode, true)"
@@ -77,6 +78,7 @@
             </dv-loading-button>
 
             <dv-loading-button
+                ng-class="vm.getAnsehenButtonClass(periode)"
                 class="gdashboard-panel-button--margin"
                 ng-if="vm.getButtonText(periode)"
                 type="button"

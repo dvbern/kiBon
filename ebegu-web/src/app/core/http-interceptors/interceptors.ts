@@ -20,9 +20,9 @@ import {HttpPendingInterceptor} from '../../shared/interceptors/http-pending/htt
 import {HttpErrorInterceptorX} from '../errors/service/HttpErrorInterceptorX';
 import {HttpI18nInterceptorX} from './http-i18n-Interceptor-X';
 import {HttpAuthInterceptorX} from './HttpAuthInterceptorX';
-import {XsrfInterceptor} from './XsrfInterceptor';
 import {HttpResponseInterceptorX} from './HttpResponseInterceptorX';
 import {HttpVersionInterceptorX} from './HttpVersionInterceptorX';
+import {XsrfInterceptor} from './XsrfInterceptor';
 
 export const HTTP_INTERCEPTOR_PROVIDERS = [
     {

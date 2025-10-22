@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -23,17 +23,17 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.Sprache;
 import org.hibernate.envers.Audited;
@@ -54,13 +54,17 @@ public class GemeindeStammdatenGesuchsperiode extends AbstractEntity {
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(updatable = false, foreignKey = @ForeignKey(name = "FK_gemeinde_stammdaten_gesuchsperiode_gemeinde_id"))
+	@JoinColumn(updatable = false,
+		foreignKey = @ForeignKey(
+			name = "FK_gemeinde_stammdaten_gesuchsperiode_gemeinde_id"))
 	private Gemeinde gemeinde;
 
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(updatable = false, foreignKey = @ForeignKey(name = "FK_gemeinde_stammdaten_gesuchsperiode_gesuchsperiode_id"))
+	@JoinColumn(updatable = false,
+		foreignKey = @ForeignKey(
+			name = "FK_gemeinde_stammdaten_gesuchsperiode_gesuchsperiode_id"))
 	private Gesuchsperiode gesuchsperiode;
 
 	@Nullable
@@ -78,7 +82,9 @@ public class GemeindeStammdatenGesuchsperiode extends AbstractEntity {
 	private byte[] merkblattAnmeldungTagesschuleFr;
 
 	@Nullable
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "gemeindeStammdatenGesuchsperiode")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "gemeindeStammdatenGesuchsperiode")
 	private List<GemeindeStammdatenGesuchsperiodeFerieninsel> gemeindeStammdatenGesuchsperiodeFerieninsel;
 
 	@Override
@@ -109,39 +115,58 @@ public class GemeindeStammdatenGesuchsperiode extends AbstractEntity {
 		return gemeindeStammdatenGesuchsperiodeFerieninsel;
 	}
 
-	public void setGemeindeStammdatenGesuchsperiodeFerieninsel(@Nullable List<GemeindeStammdatenGesuchsperiodeFerieninsel> gemeindeStammdatenGesuchsperiodeFerieninsel) {
-		this.gemeindeStammdatenGesuchsperiodeFerieninsel = gemeindeStammdatenGesuchsperiodeFerieninsel;
+	public void setGemeindeStammdatenGesuchsperiodeFerieninsel(
+		@Nullable List<GemeindeStammdatenGesuchsperiodeFerieninsel> gemeindeStammdatenGesuchsperiodeFerieninsel
+	) {
+		this.gemeindeStammdatenGesuchsperiodeFerieninsel =
+			gemeindeStammdatenGesuchsperiodeFerieninsel;
 	}
 
 	@Nonnull
 	public byte[] getMerkblattAnmeldungTagesschuleDe() {
-		if(merkblattAnmeldungTagesschuleDe == null) {
+		if (merkblattAnmeldungTagesschuleDe == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return  Arrays.copyOf(merkblattAnmeldungTagesschuleDe, merkblattAnmeldungTagesschuleDe.length);
+		return Arrays.copyOf(
+			merkblattAnmeldungTagesschuleDe,
+			merkblattAnmeldungTagesschuleDe.length
+		);
 	}
 
-	public void setMerkblattAnmeldungTagesschuleDe(@Nullable byte[] merkblattAnmeldungTagesschuleDe) {
+	public void setMerkblattAnmeldungTagesschuleDe(
+		@Nullable byte[] merkblattAnmeldungTagesschuleDe
+	) {
 		if (merkblattAnmeldungTagesschuleDe == null) {
 			this.merkblattAnmeldungTagesschuleDe = null;
 		} else {
-			this.merkblattAnmeldungTagesschuleDe = Arrays.copyOf(merkblattAnmeldungTagesschuleDe, merkblattAnmeldungTagesschuleDe.length);
+			this.merkblattAnmeldungTagesschuleDe = Arrays.copyOf(
+				merkblattAnmeldungTagesschuleDe,
+				merkblattAnmeldungTagesschuleDe.length
+			);
 		}
 	}
 
 	@Nonnull
 	public byte[] getMerkblattAnmeldungTagesschuleFr() {
-		if(merkblattAnmeldungTagesschuleFr == null) {
+		if (merkblattAnmeldungTagesschuleFr == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return  Arrays.copyOf(merkblattAnmeldungTagesschuleFr, merkblattAnmeldungTagesschuleFr.length);
+		return Arrays.copyOf(
+			merkblattAnmeldungTagesschuleFr,
+			merkblattAnmeldungTagesschuleFr.length
+		);
 	}
 
-	public void setMerkblattAnmeldungTagesschuleFr(@Nullable byte[] merkblattAnmeldungTagesschuleFr) {
+	public void setMerkblattAnmeldungTagesschuleFr(
+		@Nullable byte[] merkblattAnmeldungTagesschuleFr
+	) {
 		if (merkblattAnmeldungTagesschuleFr == null) {
 			this.merkblattAnmeldungTagesschuleFr = null;
 		} else {
-			this.merkblattAnmeldungTagesschuleFr = Arrays.copyOf(merkblattAnmeldungTagesschuleFr, merkblattAnmeldungTagesschuleFr.length);
+			this.merkblattAnmeldungTagesschuleFr = Arrays.copyOf(
+				merkblattAnmeldungTagesschuleFr,
+				merkblattAnmeldungTagesschuleFr.length
+			);
 		}
 	}
 
@@ -163,18 +188,31 @@ public class GemeindeStammdatenGesuchsperiode extends AbstractEntity {
 	}
 
 	@Nonnull
-	public GemeindeStammdatenGesuchsperiode copyForGesuchsperiode(@Nonnull Gesuchsperiode gesuchsperiodeToCreate){
-		GemeindeStammdatenGesuchsperiode copy = new GemeindeStammdatenGesuchsperiode();
+	public GemeindeStammdatenGesuchsperiode copyForGesuchsperiode(
+		@Nonnull Gesuchsperiode gesuchsperiodeToCreate
+	) {
+		GemeindeStammdatenGesuchsperiode copy =
+			new GemeindeStammdatenGesuchsperiode();
 		copy.setGemeinde(this.gemeinde);
-		copy.setMerkblattAnmeldungTagesschuleDe(this.merkblattAnmeldungTagesschuleDe);
-		copy.setMerkblattAnmeldungTagesschuleFr(this.merkblattAnmeldungTagesschuleFr);
+		copy.setMerkblattAnmeldungTagesschuleDe(
+			this.merkblattAnmeldungTagesschuleDe
+		);
+		copy.setMerkblattAnmeldungTagesschuleFr(
+			this.merkblattAnmeldungTagesschuleFr
+		);
 		copy.setGesuchsperiode(gesuchsperiodeToCreate);
 		if (this.getGemeindeStammdatenGesuchsperiodeFerieninseln() != null) {
-			final List<GemeindeStammdatenGesuchsperiodeFerieninsel> gpFerieninselStammdaten = new ArrayList<>();
-			this.getGemeindeStammdatenGesuchsperiodeFerieninseln().forEach(stammdaten -> {
-				gpFerieninselStammdaten.add(stammdaten.copyForGesuchsperiode(copy));
-			});
-			copy.setGemeindeStammdatenGesuchsperiodeFerieninsel(gpFerieninselStammdaten);
+			final List<GemeindeStammdatenGesuchsperiodeFerieninsel> gpFerieninselStammdaten =
+				new ArrayList<>();
+			this.getGemeindeStammdatenGesuchsperiodeFerieninseln()
+				.forEach(stammdaten -> {
+					gpFerieninselStammdaten.add(
+						stammdaten.copyForGesuchsperiode(copy)
+					);
+				});
+			copy.setGemeindeStammdatenGesuchsperiodeFerieninsel(
+				gpFerieninselStammdaten
+			);
 		}
 		return copy;
 	}

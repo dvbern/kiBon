@@ -13,10 +13,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity, TSGemeinde} from '@kibon/shared/model/entity';
 import {TSBenutzerNoDetails} from './TSBenutzerNoDetails';
 import {TSFall} from './TSFall';
-import {TSGemeinde} from './TSGemeinde';
 
 export class TSDossier extends TSAbstractMutableEntity {
     private _fall: TSFall;

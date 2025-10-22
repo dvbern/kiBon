@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.gemeindeantrag;
@@ -34,19 +34,25 @@ import ch.dvbern.ebegu.enums.gemeindeantrag.GemeindeAntragTyp;
 public interface GemeindeAntragService {
 
 	/**
-	 * Erstellt fuer jede Gemeinde in der übergebenen Liste einen Gemeindeantrag des gewuenschten Typs fuer die gewuenschte Periode.
+	 * Erstellt fuer jede Gemeinde in der übergebenen Liste einen Gemeindeantrag des gewuenschten Typs fuer die
+	 * gewuenschte Periode.
 	 */
 	@Nonnull
 	List<GemeindeAntrag> createAllGemeindeAntraege(
-			@Nonnull Gesuchsperiode gesuchsperiode,
-			@Nonnull GemeindeAntragTyp typ,
-			@Nonnull List<Gemeinde> gemeindeList);
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull GemeindeAntragTyp typ,
+		@Nonnull List<Gemeinde> gemeindeList
+	);
 
 	/**
 	 * Erstellt für die angegebene Gemeinden einen Gemeindeantrag des gewuenschten Typs fuer die gewuenschte Periode.
 	 */
 	@Nonnull
-	GemeindeAntrag createGemeindeAntrag(@Nonnull Gemeinde gemeinde, @Nonnull Gesuchsperiode gesuchsperiode, @Nonnull GemeindeAntragTyp gemeindeAntragTyp);
+	GemeindeAntrag createGemeindeAntrag(
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull GemeindeAntragTyp gemeindeAntragTyp
+	);
 
 	/**
 	 * Gibt alle GemeindeAntraege der Benutzerin zurück. Falls gesuchsperiode und/oder antragstyp mitgegeben werden
@@ -59,12 +65,24 @@ public interface GemeindeAntragService {
 		@Nullable String typ,
 		@Nullable String status,
 		@Nullable String timestampMutiert,
-		@Nullable String usernameVerantwortlicher);
+		@Nullable String firstEinreichedatum,
+		@Nullable String usernameVerantwortlicher
+	);
 
 	@Nonnull
-	Optional<? extends GemeindeAntrag> findGemeindeAntrag(@Nonnull GemeindeAntragTyp typ, @Nonnull String gemeindeAntragId);
+	Optional<? extends GemeindeAntrag> findGemeindeAntrag(
+		@Nonnull GemeindeAntragTyp typ,
+		@Nonnull String gemeindeAntragId
+	);
 
-	void deleteGemeindeAntraege(@Nonnull Gesuchsperiode gesuchsperiode, @Nonnull GemeindeAntragTyp gemeindeAntragTyp);
+	void deleteGemeindeAntraege(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull GemeindeAntragTyp gemeindeAntragTyp
+	);
 
-	void deleteGemeindeAntragIfExists(@Nonnull Gesuchsperiode gesuchsperiode, @Nonnull GemeindeAntragTyp gemeindeAntragTyp, @Nonnull Gemeinde gemeinde);
+	void deleteGemeindeAntragIfExists(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull GemeindeAntragTyp gemeindeAntragTyp,
+		@Nonnull Gemeinde gemeinde
+	);
 }

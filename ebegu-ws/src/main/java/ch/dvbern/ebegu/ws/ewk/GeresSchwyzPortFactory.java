@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -20,15 +20,16 @@ package ch.dvbern.ebegu.ws.ewk;
 
 import java.util.Map;
 
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Service;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.Service;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 
 public class GeresSchwyzPortFactory extends AbstractGeresPortFactory {
 
 	GeresSchwyzPortFactory(
-		EbeguConfiguration config) {
+		EbeguConfiguration config
+	) {
 		super(config);
 	}
 
@@ -44,7 +45,13 @@ public class GeresSchwyzPortFactory extends AbstractGeresPortFactory {
 
 	@Override
 	protected void customizeRequestContext(Map<String, Object> requestContext) {
-		requestContext.put(BindingProvider.USERNAME_PROPERTY, getConfig().getGeresSchwyzUsername());
-		requestContext.put(BindingProvider.PASSWORD_PROPERTY, getConfig().getGeresSchwyzPassword());
+		requestContext.put(
+			BindingProvider.USERNAME_PROPERTY,
+			getConfig().getGeresSchwyzUsername()
+		);
+		requestContext.put(
+			BindingProvider.PASSWORD_PROPERTY,
+			getConfig().getGeresSchwyzPassword()
+		);
 	}
 }

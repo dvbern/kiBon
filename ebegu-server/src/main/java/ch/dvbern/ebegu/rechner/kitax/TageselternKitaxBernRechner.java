@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner.kitax;
@@ -53,11 +53,15 @@ public class TageselternKitaxBernRechner extends AbstractKitaxBernRechner {
 
 	@Nonnull
 	@Override
-	protected Optional<BGCalculationResult> calculateGemeinde(@Nonnull BGCalculationInput input, @Nonnull BGRechnerParameterDTO parameterDTO) {
+	protected Optional<BGCalculationResult> calculateGemeinde(
+		@Nonnull BGCalculationInput input,
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
 		input.getParent().setRegelwerk(Regelwerk.FEBR);
 
-		if (!input.isBetreuungInGemeinde() && input.getBetreuungspensumProzent().doubleValue() > 0) {
+		if (!input.isBetreuungInGemeinde()
+			&& input.getBetreuungspensumProzent().doubleValue() > 0) {
 			// Wenn die Betreuung zu diesem Zeitpunkt schon beendet ist, kommt hier FALSE (es gibt ja
 			// keine Betreuung in der Gemeinde zu diesem Zeitpunkt). In diesem Fall darf aber der Anspruch
 			// nicht 0 gesetzt werden, da sonst der Restanspruch falsch berechnet wird!
@@ -73,7 +77,9 @@ public class TageselternKitaxBernRechner extends AbstractKitaxBernRechner {
 		// Benoetigte Daten
 		LocalDate von = input.getParent().getGueltigkeit().getGueltigAb();
 		LocalDate bis = input.getParent().getGueltigkeit().getGueltigBis();
-		BigDecimal bgPensum = MathUtil.EXACT.pctToFraction(input.getBgPensumProzent());
+		BigDecimal bgPensum = MathUtil.EXACT.pctToFraction(
+			input.getBgPensumProzent()
+		);
 		BigDecimal massgebendesEinkommen = input.getMassgebendesEinkommen();
 
 		// Inputdaten validieren
@@ -81,20 +87,41 @@ public class TageselternKitaxBernRechner extends AbstractKitaxBernRechner {
 
 		// Zwischenresultate
 		BigDecimal anteilMonat = calculateAnteilMonat(von, bis);
-		BigDecimal anzahlTageProMonat = MathUtil.EXACT.divideNullSafe(kitaxParameter.getMaxTageKita(), ZWOELF);
-		BigDecimal betreuungsstundenProMonat = MathUtil.EXACT.multiplyNullSafe(anzahlTageProMonat, kitaxParameter.getMaxStundenProTagKita(), bgPensum);
-		BigDecimal betreuungsstundenIntervall = MathUtil.EXACT.multiply(betreuungsstundenProMonat, anteilMonat);
+		BigDecimal anzahlTageProMonat = MathUtil.EXACT.divideNullSafe(
+			kitaxParameter.getMaxTageKita(),
+			ZWOELF
+		);
+		BigDecimal betreuungsstundenProMonat = MathUtil.EXACT.multiplyNullSafe(
+			anzahlTageProMonat,
+			kitaxParameter.getMaxStundenProTagKita(),
+			bgPensum
+		);
+		BigDecimal betreuungsstundenIntervall = MathUtil.EXACT.multiply(
+			betreuungsstundenProMonat,
+			anteilMonat
+		);
 
 		// Kosten Betreuungsstunde
-		BigDecimal kostenProBetreuungsstunde = calculateKostenBetreuungsstunde(kitaxParameter.getKostenProStundeMaximalTageseltern(), massgebendesEinkommen, bgPensum, kitaxParameter);
+		BigDecimal kostenProBetreuungsstunde = calculateKostenBetreuungsstunde(
+			kitaxParameter.getKostenProStundeMaximalTageseltern(),
+			massgebendesEinkommen,
+			bgPensum,
+			kitaxParameter
+		);
 
 		// Vollkosten und Elternbeitrag
-		BigDecimal vollkosten = MathUtil.EXACT.multiply(kitaxParameter.getKostenProStundeMaximalTageseltern(), betreuungsstundenIntervall);
+		BigDecimal vollkosten = MathUtil.EXACT.multiply(
+			kitaxParameter.getKostenProStundeMaximalTageseltern(),
+			betreuungsstundenIntervall
+		);
 		BigDecimal elternbeitrag;
 		if (input.isBezahltKompletteVollkosten()) {
 			elternbeitrag = vollkosten;
 		} else {
-			elternbeitrag = MathUtil.EXACT.multiply(kostenProBetreuungsstunde, betreuungsstundenIntervall);
+			elternbeitrag = MathUtil.EXACT.multiply(
+				kostenProBetreuungsstunde,
+				betreuungsstundenIntervall
+			);
 		}
 
 		Objects.requireNonNull(elternbeitrag);
@@ -115,26 +142,58 @@ public class TageselternKitaxBernRechner extends AbstractKitaxBernRechner {
 		result.setMinimalerElternbeitragGekuerzt(BigDecimal.ZERO);
 		// In Ki-Tax wurden nicht drei "Stufen" des Gutscheins berechnet. Wir verwenden immer die berechnete Verguenstigung
 		result.setVerguenstigungOhneBeruecksichtigungVollkosten(verguenstigung);
-		result.setVerguenstigungOhneBeruecksichtigungMinimalbeitrag(verguenstigung);
+		result.setVerguenstigungOhneBeruecksichtigungMinimalbeitrag(
+			verguenstigung
+		);
 		result.setVerguenstigung(verguenstigung);
 		// Elternbeitrag
 		result.setElternbeitrag(elternbeitrag);
 		// Wir rechnen im Kitax-Rechner mit den berechneten Vollkosten, nicht mit denjenigen, die auf der Platzbestaetigung angegeben wurden.
 		result.setVollkosten(vollkosten);
 
-		BigDecimal betreuungsstundenProMonat100Prozent = MathUtil.EXACT.multiplyNullSafe(anzahlTageProMonat,
-			kitaxParameter.getMaxStundenProTagKita());
+		BigDecimal betreuungsstundenProMonat100Prozent = MathUtil.EXACT
+			.multiplyNullSafe(
+				anzahlTageProMonat,
+				kitaxParameter.getMaxStundenProTagKita()
+			);
 
-		BigDecimal multiplierPensum = MathUtil.EXACT.divide(result.getBetreuungspensumProzent(), BigDecimal.valueOf(100));
-		BigDecimal multiplierAnspruch =	MathUtil.EXACT.divide(MathUtil.EXACT.from(result.getAnspruchspensumProzent()), BigDecimal.valueOf(100));
-		BigDecimal multiplierBgPensum = MathUtil.EXACT.divide(result.getBgPensumProzent(), BigDecimal.valueOf(100));
+		BigDecimal multiplierPensum = MathUtil.EXACT.divide(
+			result.getBetreuungspensumProzent(),
+			BigDecimal.valueOf(100)
+		);
+		BigDecimal multiplierAnspruch = MathUtil.EXACT.divide(
+			MathUtil.EXACT.from(result.getAnspruchspensumProzent()),
+			BigDecimal.valueOf(100)
+		);
+		BigDecimal multiplierBgPensum = MathUtil.EXACT.divide(
+			result.getBgPensumProzent(),
+			BigDecimal.valueOf(100)
+		);
 
 		// Ki-Tax hat nur mit Prozenten gerechnet. Wir muessen die Pensen in STUNDEN berechnen
 		result.setZeiteinheit(PensumUnits.HOURS);
 		result.setZeiteinheitenRoundingStrategy(MathUtil::toTwoKommastelle);
-		result.setBetreuungspensumZeiteinheit(MathUtil.EXACT.multiplyNullSafe(multiplierPensum, betreuungsstundenProMonat100Prozent, anteilMonat));
-		result.setAnspruchspensumZeiteinheit(MathUtil.EXACT.multiplyNullSafe(multiplierAnspruch, betreuungsstundenProMonat100Prozent, anteilMonat));
-		result.setBgPensumZeiteinheit(MathUtil.EXACT.multiplyNullSafe(multiplierBgPensum, betreuungsstundenProMonat100Prozent, anteilMonat));
+		result.setBetreuungspensumZeiteinheit(
+			MathUtil.EXACT.multiplyNullSafe(
+				multiplierPensum,
+				betreuungsstundenProMonat100Prozent,
+				anteilMonat
+			)
+		);
+		result.setAnspruchspensumZeiteinheit(
+			MathUtil.EXACT.multiplyNullSafe(
+				multiplierAnspruch,
+				betreuungsstundenProMonat100Prozent,
+				anteilMonat
+			)
+		);
+		result.setBgPensumZeiteinheit(
+			MathUtil.EXACT.multiplyNullSafe(
+				multiplierBgPensum,
+				betreuungsstundenProMonat100Prozent,
+				anteilMonat
+			)
+		);
 
 		// Die Mahlzeiten werden immer fuer den ganzen Monat eingegeben und fuer das effektive
 		// Betreuungspensum. Wir muessen daher noch auf den Anteil des Monats reduzieren.

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -48,7 +48,8 @@ public abstract class DokumentAnFamilieGenerator extends KibonPdfGenerator {
 
 	protected static final String ANREDE_HERR = "PdfGeneration_AnredeHerr";
 	protected static final String ANREDE_FRAU = "PdfGeneration_AnredeFrau";
-	protected static final String SACHBEARBEITUNG = "PdfGeneration_Sachbearbeitung";
+	protected static final String SACHBEARBEITUNG =
+		"PdfGeneration_Sachbearbeitung";
 
 	protected static final String GRUSS = "PdfGeneration_Gruss";
 	protected static final String SIGNIERT = "PdfGeneration_Signiert";
@@ -81,10 +82,18 @@ public abstract class DokumentAnFamilieGenerator extends KibonPdfGenerator {
 		return PdfUtil.createParagraph(anrede.toString());
 	}
 
-	private void addAnrede(@Nonnull final StringBuilder anrede, @Nullable final GesuchstellerContainer gesuchsteller, final boolean first) {
+	private void addAnrede(
+		@Nonnull final StringBuilder anrede,
+		@Nullable final GesuchstellerContainer gesuchsteller,
+		final boolean first
+	) {
 		boolean isFrench = "fr".equalsIgnoreCase(sprache.getLanguage());
 		if (gesuchsteller != null) {
-			final String singleAnrede = gesuchsteller.getGesuchstellerJA().getGeschlecht() == Geschlecht.MAENNLICH ? translate(ANREDE_HERR) : translate(ANREDE_FRAU);
+			final String singleAnrede = gesuchsteller.getGesuchstellerJA()
+				.getGeschlecht()
+				== Geschlecht.MAENNLICH ?
+					translate(ANREDE_HERR) :
+					translate(ANREDE_FRAU);
 			if (first) {
 				anrede.append(singleAnrede);
 			} else {
@@ -94,7 +103,9 @@ public abstract class DokumentAnFamilieGenerator extends KibonPdfGenerator {
 						anrede.append(singleAnrede);
 					} else {
 						anrede.append(", ");
-						anrede.append(Character.toLowerCase(singleAnrede.charAt(0)));
+						anrede.append(
+							Character.toLowerCase(singleAnrede.charAt(0))
+						);
 						anrede.append(singleAnrede.substring(1));
 					}
 				}
@@ -112,7 +123,10 @@ public abstract class DokumentAnFamilieGenerator extends KibonPdfGenerator {
 		if (gemeindeStammdaten.getStandardDokSignature() || !isVerfuegung()) {
 			String signiert = getSachbearbeiterSigniert();
 			if (signiert != null) {
-				return PdfUtil.createParagraph('\n' + signiert + '\n' + translate(SACHBEARBEITUNG), 2);
+				return PdfUtil.createParagraph(
+					'\n' + signiert + '\n' + translate(SACHBEARBEITUNG),
+					2
+				);
 			}
 			return PdfUtil.createParagraph(translate(SACHBEARBEITUNG), 2);
 		} else {
@@ -129,9 +143,16 @@ public abstract class DokumentAnFamilieGenerator extends KibonPdfGenerator {
 		PdfPTable table = new PdfPTable(3);
 		// Init
 		PdfUtil.setTableDefaultStyles(table);
-		table.getDefaultCell().setPaddingBottom(DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE);
-		PdfPCell titelCell = new PdfPCell(new Phrase(gemeindeStammdaten.getStandardDokTitle(),
-			getPageConfiguration().getFonts().getFontBold()));
+		table.getDefaultCell()
+			.setPaddingBottom(
+				DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE
+			);
+		PdfPCell titelCell = new PdfPCell(
+			new Phrase(
+				gemeindeStammdaten.getStandardDokTitle(),
+				getPageConfiguration().getFonts().getFontBold()
+			)
+		);
 		titelCell.setPaddingBottom(2);
 		titelCell.setPaddingLeft(0);
 		titelCell.setBorder(0);
@@ -139,43 +160,81 @@ public abstract class DokumentAnFamilieGenerator extends KibonPdfGenerator {
 		final Font defaultFont = getPageConfiguration().getFonts().getFont();
 		table.addCell(new Phrase("", defaultFont));
 		table.addCell(new Phrase("", defaultFont));
-		PdfPCell unterschriftTitelCell = new PdfPCell(new Phrase(gemeindeStammdaten.getStandardDokUnterschriftTitel(),
-			defaultFont));
-		unterschriftTitelCell.setPaddingBottom(DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE * 2);
+		PdfPCell unterschriftTitelCell = new PdfPCell(
+			new Phrase(
+				gemeindeStammdaten.getStandardDokUnterschriftTitel(),
+				defaultFont
+			)
+		);
+		unterschriftTitelCell.setPaddingBottom(
+			DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE * 2
+		);
 		unterschriftTitelCell.setPaddingLeft(0);
 		unterschriftTitelCell.setBorder(0);
 		table.addCell(unterschriftTitelCell);
-		table.addCell(new Phrase(gemeindeStammdaten.getStandardDokUnterschriftTitel2(),
-			defaultFont));
+		table.addCell(
+			new Phrase(
+				gemeindeStammdaten.getStandardDokUnterschriftTitel2(),
+				defaultFont
+			)
+		);
 		table.addCell(new Phrase("", defaultFont));
-		table.addCell(new Phrase(gemeindeStammdaten.getStandardDokUnterschriftName(),
-			defaultFont));
-		table.addCell(new Phrase(gemeindeStammdaten.getStandardDokUnterschriftName2(),
-			defaultFont));
+		table.addCell(
+			new Phrase(
+				gemeindeStammdaten.getStandardDokUnterschriftName(),
+				defaultFont
+			)
+		);
+		table.addCell(
+			new Phrase(
+				gemeindeStammdaten.getStandardDokUnterschriftName2(),
+				defaultFont
+			)
+		);
 		table.addCell(new Phrase("", defaultFont));
 		return table;
 	}
 
 	@Nullable
 	protected String getSachbearbeiterSigniert() {
-		Benutzer hauptVerantwortlicher = getGesuch().getVerantwortlicherAccordingToBetreuungen();
-		return hauptVerantwortlicher != null ? translate(SIGNIERT, hauptVerantwortlicher.getFullName()) : null;
+		Benutzer hauptVerantwortlicher = getGesuch()
+			.getVerantwortlicherAccordingToBetreuungen();
+		return hauptVerantwortlicher != null ?
+			translate(SIGNIERT, hauptVerantwortlicher.getFullName()) :
+			null;
 	}
 
-	protected void createFusszeile(@Nonnull PdfContentByte dirPdfContentByte, List<String> content) throws DocumentException {
+	protected void createFusszeile(
+		@Nonnull PdfContentByte dirPdfContentByte,
+		List<String> content
+	) throws DocumentException {
 		ColumnText fz = new ColumnText(dirPdfContentByte);
 		final float height = millimetersToPoints(13);
 		final float width = millimetersToPoints(170);
-		final float loverLeftX = millimetersToPoints(PageConfiguration.LEFT_PAGE_DEFAULT_MARGIN_MM);
-		final float loverLeftY = millimetersToPoints(PdfLayoutConfiguration.LOGO_TOP_IN_MM / 4.0f);
-		fz.setSimpleColumn(loverLeftX, loverLeftY, loverLeftX + width, loverLeftY + height);
+		final int lineCount = content.size();
+		final float finalHeight = height * lineCount;
+		final float loverLeftX = millimetersToPoints(
+			PageConfiguration.LEFT_PAGE_DEFAULT_MARGIN_MM
+		);
+		final float loverLeftY = millimetersToPoints(
+			PdfLayoutConfiguration.LOGO_TOP_IN_MM / 4.0f
+		);
+		fz.setSimpleColumn(
+			loverLeftX,
+			loverLeftY,
+			loverLeftX + width,
+			loverLeftY + finalHeight
+		);
 		fz.setLeading(0, DEFAULT_MULTIPLIED_LEADING);
 		final Font defaultFont = getPageConfiguration().getFonts().getFont();
 		Font fontWithSize = PdfUtil.createFontWithSize(defaultFont, 8);
 		for (int i = 0; i < content.size(); i++) {
 			final String text = content.get(i);
 			if (StringUtils.isNotEmpty(text)) {
-				Chunk chunk = new Chunk((i + 1) + " ", PdfUtil.createFontWithSize(defaultFont, 6));
+				Chunk chunk = new Chunk(
+					(i + 1) + " ",
+					PdfUtil.createFontWithSize(defaultFont, 6)
+				);
 				chunk.setTextRise(2);
 				fz.addText(chunk);
 				fz.addText(new Phrase(text + '\n', fontWithSize));

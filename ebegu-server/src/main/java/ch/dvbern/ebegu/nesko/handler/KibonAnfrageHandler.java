@@ -18,8 +18,8 @@
 package ch.dvbern.ebegu.nesko.handler;
 
 import javax.annotation.Nullable;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Gesuch;
@@ -41,35 +41,52 @@ public class KibonAnfrageHandler {
 	@Inject
 	private PrincipalBean principalBean;
 
-	public KibonAnfrageContext handleKibonAnfrage(Gesuch gesuch, GesuchstellerTyp gesuchstellerTyp) throws OIDCServiceException {
+	public KibonAnfrageContext handleKibonAnfrage(
+		Gesuch gesuch,
+		GesuchstellerTyp gesuchstellerTyp
+	) throws OIDCServiceException {
 		String zpvBesitzer = findZpvNummerFromGesuchBesitzer(gesuch);
-		KibonAnfrageContext kibonAnfrageContext = new KibonAnfrageContext(gesuch, gesuchstellerTyp, zpvBesitzer);
+		KibonAnfrageContext kibonAnfrageContext = new KibonAnfrageContext(
+			gesuch,
+			gesuchstellerTyp,
+			zpvBesitzer
+		);
 
 		try {
 			getSteuerdatenAndHandleResponse(kibonAnfrageContext);
 		} catch (KiBonAnfrageServiceException e) {
 			if (kibonAnfrageContext.isGemeinsam()) {
-				return retryWithOtherGesuchstellersGeburtsdatum(kibonAnfrageContext);
+				return retryWithOtherGesuchstellersGeburtsdatum(
+					kibonAnfrageContext
+				);
 			}
-			kibonAnfrageContext.setSteuerdatenAnfrageStatus(SteuerdatenAnfrageStatus.FAILED);
+			kibonAnfrageContext.setSteuerdatenAnfrageStatus(
+				SteuerdatenAnfrageStatus.FAILED
+			);
 		}
 		return kibonAnfrageContext;
 	}
 
-	private KibonAnfrageContext retryWithOtherGesuchstellersGeburtsdatum(KibonAnfrageContext kibonAnfrageContext)
+	private KibonAnfrageContext retryWithOtherGesuchstellersGeburtsdatum(
+		KibonAnfrageContext kibonAnfrageContext
+	)
 		throws OIDCServiceException {
 		kibonAnfrageContext.useGeburtrsdatumFromOtherGesuchsteller();
 
 		try {
 			getSteuerdatenAndHandleResponse(kibonAnfrageContext);
 		} catch (KiBonAnfrageServiceException ex) {
-			kibonAnfrageContext.setSteuerdatenAnfrageStatus(SteuerdatenAnfrageStatus.FAILED);
+			kibonAnfrageContext.setSteuerdatenAnfrageStatus(
+				SteuerdatenAnfrageStatus.FAILED
+			);
 		}
 
 		return kibonAnfrageContext;
 	}
 
-	private void getSteuerdatenAndHandleResponse(KibonAnfrageContext kibonAnfrageContext)
+	private void getSteuerdatenAndHandleResponse(
+		KibonAnfrageContext kibonAnfrageContext
+	)
 		throws KiBonAnfrageServiceException, OIDCServiceException {
 
 		kibonAnfrageContext.setSteuerdatenAbfrageTimestampNow();
@@ -80,30 +97,42 @@ public class KibonAnfrageHandler {
 		}
 
 		if (kibonAnfrageContext.getGeburstdatumForRequest().isEmpty()) {
-			kibonAnfrageContext.setSteuerdatenAnfrageStatus(SteuerdatenAnfrageStatus.FAILED_GEBURTSDATUM);
+			kibonAnfrageContext.setSteuerdatenAnfrageStatus(
+				SteuerdatenAnfrageStatus.FAILED_GEBURTSDATUM
+			);
 			return;
 		}
 
-		SteuerdatenResponse steuerdatenResponseGS = kibonAnfrageService.getSteuerDaten(
+		SteuerdatenResponse steuerdatenResponseGS = kibonAnfrageService
+			.getSteuerDaten(
 				kibonAnfrageContext.getZpvNummerForRequest().get(),
 				kibonAnfrageContext.getGeburstdatumForRequest().get(),
 				kibonAnfrageContext.getGesuch().getId(),
-				kibonAnfrageContext.getGesuch().getGesuchsperiode().getBasisJahrPlus1());
+				kibonAnfrageContext.getGesuch()
+					.getGesuchsperiode()
+					.getBasisJahrPlus1()
+			);
 
 		kibonAnfrageContext.setSteuerdatenResponse(steuerdatenResponseGS);
 		if (kibonAnfrageContext.isGemeinsam()) {
 			KibonAnfrageHelper.handleSteuerdatenGemeinsamResponse(
 				kibonAnfrageContext,
-				steuerdatenResponseGS);
+				steuerdatenResponseGS
+			);
 			return;
 		}
-		KibonAnfrageHelper.handleSteuerdatenResponse(kibonAnfrageContext, steuerdatenResponseGS);
+		KibonAnfrageHelper.handleSteuerdatenResponse(
+			kibonAnfrageContext,
+			steuerdatenResponseGS
+		);
 	}
 
 	@Nullable
 	private String findZpvNummerFromGesuchBesitzer(Gesuch gesuch) {
-		if (principalBean.isCallerInAnyOfRole(UserRole.getSuperadminAllGemeindeRoles())
-				|| principalBean.isAnonymousSuperadmin()) {
+		if (principalBean.isCallerInAnyOfRole(
+			UserRole.getSuperadminAllGemeindeRoles()
+		)
+			|| principalBean.isKibonServiceAccount()) {
 			return KibonAnfrageUtil.getZpvFromBesitzer(gesuch);
 		}
 

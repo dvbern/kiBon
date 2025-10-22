@@ -34,9 +34,15 @@ public interface TestdataCreationService {
 
 	Gesuch createErstgesuch(@Nonnull ErstgesuchConfig config, Mandant mandant);
 
-	Gesuch createMutation(@Nonnull MutationConfig config, @Nonnull Gesuch vorgaengerAntrag);
+	Gesuch createMutation(
+		@Nonnull MutationConfig config,
+		@Nonnull Gesuch vorgaengerAntrag
+	);
 
-	Gesuch addAnmeldung(@Nonnull AnmeldungConfig config, @Nonnull Gesuch gesuchToAdd);
+	Gesuch addAnmeldung(
+		@Nonnull AnmeldungConfig config,
+		@Nonnull Gesuch gesuchToAdd
+	);
 
 	void insertParametersForTestfaelle(@Nonnull Gesuchsperiode gesuchsperiode);
 }

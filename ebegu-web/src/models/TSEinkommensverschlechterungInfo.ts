@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 
 /* eslint-disable @typescript-eslint/naming-convention, no-underscore-dangle, id-blacklist, id-match */
 export class TSEinkommensverschlechterungInfo extends TSAbstractMutableEntity {

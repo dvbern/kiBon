@@ -20,55 +20,52 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.Min;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.constraints.Min;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 import ch.dvbern.ebegu.api.dtos.JaxEnversRevision;
+import ch.dvbern.ebegu.api.property.converter.JaxConfigurationConverter;
+import ch.dvbern.ebegu.einstellung.ApplicationProperty;
 import ch.dvbern.ebegu.entities.AbstractEntity;
-import ch.dvbern.ebegu.entities.ApplicationProperty;
 import ch.dvbern.ebegu.services.HistorizationService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.NotImplementedException;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.hibernate.envers.DefaultRevisionEntity;
 import org.hibernate.envers.RevisionType;
 
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_GEMEINDE;
 import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
-import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
-import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
 
 /**
  * Resource fuer Historization
  */
 @Path("historization")
 @Stateless
-@Api(description = "Resource für (technische) Historisierung")
-@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE })
+@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+	SACHBEARBEITER_GEMEINDE })
 public class HistorizationResource {
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxConfigurationConverter converter;
 
 	@Inject
 	private HistorizationService historizationService;
 
-	@ApiOperation(value = "Sucht alle Entities, die zur uebergebenen Envers-Revision gehoeren",
-		responseContainer = "List", response = JaxAbstractDTO.class)
+	@Operation(
+		summary = "Sucht alle Entities, die zur uebergebenen Envers-Revision gehoeren")
 	@Nonnull
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
@@ -76,23 +73,32 @@ public class HistorizationResource {
 	@Path("/entity/{entityName}/rev/{revision}")
 	public Response getAllByRevision(
 		@Nonnull @PathParam("entityName") String entityName,
-		@Nonnull @Min(1) @PathParam("revision") Integer revision,
-		@Context HttpServletResponse response) {
+		@Nonnull @Min(1) @PathParam("revision") Integer revision
+	) {
 
 		if (entityName.equals(ApplicationProperty.class.getSimpleName())) {
-			List<AbstractEntity> entityList = historizationService.getAllEntitiesByRevision(entityName, revision);
+			List<AbstractEntity> entityList = historizationService
+				.getAllEntitiesByRevision(entityName, revision);
 			List<JaxAbstractDTO> resultList = new ArrayList<>();
 			if (entityList != null) {
-				resultList = entityList.stream().filter(entity -> entity instanceof ApplicationProperty)
-					.map(entity -> converter.applicationPropertyToJAX((ApplicationProperty) entity)).collect(Collectors.toList());
+				resultList = entityList.stream()
+					.filter(entity -> entity instanceof ApplicationProperty)
+					.map(
+						entity -> converter.applicationPropertyToJAX(
+							(ApplicationProperty) entity
+						)
+					)
+					.collect(Collectors.toList());
 			}
 			return Response.ok(resultList).build();
 		}
-		throw new NotImplementedException("Diese Methode ist erst fuer ApplicationProperties umgesetzt!");
+		throw new NotImplementedException(
+			"Diese Methode ist erst fuer ApplicationProperties umgesetzt!"
+		);
 	}
 
-	@ApiOperation(value = "Sucht alle Entities, die zur uebergebenen Envers-Revision gehoeren",
-		responseContainer = "List", response = JaxEnversRevision.class)
+	@Operation(
+		summary = "Sucht alle Entities, die zur uebergebenen Envers-Revision gehoeren")
 	@Nonnull
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
@@ -100,18 +106,28 @@ public class HistorizationResource {
 	@Path("/entity/{entityName}/id/{id}")
 	public Response getHistoryById(
 		@Nonnull @PathParam("entityName") String entityName,
-		@Nonnull @PathParam("id") String entityId,
-		@Context HttpServletResponse response) {
+		@Nonnull @PathParam("id") String entityId
+	) {
 
-		List<Object[]> entityList = historizationService.getAllRevisionsById(entityName, entityId);
+		List<Object[]> entityList = historizationService.getAllRevisionsById(
+			entityName,
+			entityId
+		);
 		List<JaxEnversRevision> resultList = new ArrayList<>();
 		if (entityList != null) {
 			// the result will be a list of three element arrays. The first element will be the changed entity
 			// instance. The second will be an entity containing revision data
 			// (if no custom entity is used, this will be an instance of DefaultRevisionEntity).
 			// The third will be the type of the revision (one of the values of the RevisionType enumeration: ADD, MOD, DEL).
-			resultList = entityList.stream().map(entity -> converter.enversRevisionToJAX((DefaultRevisionEntity) entity[1],
-				(AbstractEntity) entity[0], (RevisionType) entity[2])).collect(Collectors.toList());
+			resultList = entityList.stream()
+				.map(
+					entity -> converter.enversRevisionToJAX(
+						(DefaultRevisionEntity) entity[1],
+						(AbstractEntity) entity[0],
+						(RevisionType) entity[2]
+					)
+				)
+				.collect(Collectors.toList());
 		}
 		return Response.ok(resultList).build();
 	}

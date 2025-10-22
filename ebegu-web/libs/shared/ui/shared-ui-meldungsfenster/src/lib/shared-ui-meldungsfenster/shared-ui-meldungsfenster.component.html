@@ -1,0 +1,63 @@
+<div class="meldungsfenster">
+    <div
+        class="meldung-content"
+        [class.warnung]="
+            meldungsfenster().status === MeldungsfensterStatus.WARNUNG
+        "
+        [class.wichtig]="
+            meldungsfenster().status === MeldungsfensterStatus.WICHTIG
+        "
+        [class.info]="meldungsfenster().status === MeldungsfensterStatus.INFO"
+    >
+        <div class="meldung-icon">
+            @if (meldungsfenster().status === MeldungsfensterStatus.WARNUNG) {
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            } @else if (
+                meldungsfenster().status === MeldungsfensterStatus.WICHTIG
+            ) {
+                <i class="fa fa-info-circle" aria-hidden="true"></i>
+            } @else if (
+                meldungsfenster().status === MeldungsfensterStatus.INFO
+            ) {
+                <i class="fa fa-exclamation" aria-hidden="true"></i>
+            }
+        </div>
+        <div class="meldung-container">
+            <div class="meldung-header">
+                <div class="meldung-title">
+                    @if (currentLanguage().includes(TSSprache.DEUTSCH)) {
+                        <h2>{{ meldungsfenster().titleDe }}</h2>
+                    } @else {
+                        <h2>{{ meldungsfenster().titleFr }}</h2>
+                    }
+                </div>
+            </div>
+            @if (currentLanguage().includes(TSSprache.FRANZOESISCH)) {
+                <div
+                    class="meldung-inhalt"
+                    [innerHTML]="meldungsfenster().inhaltFr"
+                ></div>
+            } @else {
+                <div
+                    class="meldung-inhalt"
+                    [innerHTML]="meldungsfenster().inhaltDe"
+                ></div>
+            }
+        </div>
+
+        @if (maxCount() > 1) {
+            <span class="count-indicator">1 / {{ maxCount() }}</span>
+        }
+        <div class="meldung-container-buttons">
+            <div class="meldung-button">
+                <button
+                    class="close-message-button"
+                    data-test="remove-entry"
+                    (click)="closeMeldungsfenster(meldungsfenster())"
+                >
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

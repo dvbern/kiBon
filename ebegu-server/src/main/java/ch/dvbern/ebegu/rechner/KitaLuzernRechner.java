@@ -8,14 +8,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
@@ -23,17 +28,15 @@ import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.rechner.rules.RechnerRule;
 import ch.dvbern.ebegu.util.MathUtil;
 
-import javax.annotation.Nonnull;
-import java.math.BigDecimal;
-import java.util.List;
-
 public class KitaLuzernRechner extends AbstractLuzernRechner {
 
 	private boolean isBaby = false;
 
 	//Die Tarife werden im Moment als Konstante gespeichert. Dies wird in Zukunft evtl noch konfigurierbar gemacht.
-	private static final BigDecimal MIN_BETREUUNGSGUTSCHEIN_BABY = BigDecimal.valueOf(12.60);
-	private static final BigDecimal MIN_BETREUUNGSGUTSCHEIN_KIND = BigDecimal.valueOf(10);
+	private static final BigDecimal MIN_BETREUUNGSGUTSCHEIN_BABY = BigDecimal
+		.valueOf(12.60);
+	private static final BigDecimal MIN_BETREUUNGSGUTSCHEIN_KIND = BigDecimal
+		.valueOf(10);
 
 	private static final BigDecimal KITA_PLUS_ZUSCHLAG = BigDecimal.valueOf(32);
 
@@ -44,31 +47,44 @@ public class KitaLuzernRechner extends AbstractLuzernRechner {
 	@Override
 	public void calculate(
 		@Nonnull VerfuegungZeitabschnitt verfuegungZeitabschnitt,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
-		BGCalculationInput bgCalculationInput = verfuegungZeitabschnitt.getBgCalculationInputAsiv();
+		BGCalculationInput bgCalculationInput = verfuegungZeitabschnitt
+			.getBgCalculationInputAsiv();
 		this.isBaby = bgCalculationInput.isBabyTarif();
 
 		super.calculate(verfuegungZeitabschnitt, parameterDTO);
 	}
 
 	@Override
-	protected BigDecimal calculateVollkostenProZeitabschnitt(BigDecimal vollkostenGekuerzt) {
+	protected BigDecimal calculateVollkostenProZeitabschnitt(
+		BigDecimal vollkostenGekuerzt
+	) {
 		//Bei KITA Rechner wurden die Vollkosten bereits pro Zeitabschnitt berechnet
 		return vollkostenGekuerzt;
 	}
 
 	@Override
-	protected BigDecimal calculateGutscheinProZeitabschnitt(BigDecimal gutschein) {
+	protected BigDecimal calculateGutscheinProZeitabschnitt(
+		BigDecimal gutschein
+	) {
 		//Bei KITA Rechner wird der Gutschein schon pro Zeitabschnitt berechnet
 		return gutschein;
 	}
 
 	@Override
 	protected BigDecimal calculateGutscheinVorZuschlagUndSelbstbehalt() {
-		BigDecimal gutscheinProTagAufgrundEinkommen = calculateBGProZeiteinheitByEinkommen();
-		BigDecimal gutscheinProTagVorZuschlagUndSelbstbehalt = calculateGutscheinProZeiteinheitVorZuschlagUndSelbstbehalt(gutscheinProTagAufgrundEinkommen);
-		return EXACT.multiply(gutscheinProTagVorZuschlagUndSelbstbehalt, verfuegteZeiteinheit);
+		BigDecimal gutscheinProTagAufgrundEinkommen =
+			calculateBGProZeiteinheitByEinkommen();
+		BigDecimal gutscheinProTagVorZuschlagUndSelbstbehalt =
+			calculateGutscheinProZeiteinheitVorZuschlagUndSelbstbehalt(
+				gutscheinProTagAufgrundEinkommen
+			);
+		return EXACT.multiply(
+			gutscheinProTagVorZuschlagUndSelbstbehalt,
+			verfuegteZeiteinheit
+		);
 	}
 
 	@Override
@@ -79,13 +95,21 @@ public class KitaLuzernRechner extends AbstractLuzernRechner {
 	@Override
 	protected BigDecimal calculateVollkosten() {
 		BigDecimal betreuungspensum = input.getBetreuungspensumProzent();
-		BigDecimal anspruchsPensum = BigDecimal.valueOf(input.getAnspruchspensumProzent());
+		BigDecimal anspruchsPensum = BigDecimal.valueOf(
+			input.getAnspruchspensumProzent()
+		);
 
 		BigDecimal vollKostenProMonat = input.getMonatlicheBetreuungskosten();
 		//wenn anspruchspensum < betreuungspensum, dann anspruchspensum/betreuungspensum * monatlicheBetreuungskosten
-		if(anspruchsPensum.compareTo(betreuungspensum) < 0) {
-			BigDecimal anspruchsPensumDevidedByBetreuungspensum = EXACT.divide(anspruchsPensum, betreuungspensum);
-			vollKostenProMonat = EXACT.multiply(anspruchsPensumDevidedByBetreuungspensum, input.getMonatlicheBetreuungskosten());
+		if (anspruchsPensum.compareTo(betreuungspensum) < 0) {
+			BigDecimal anspruchsPensumDevidedByBetreuungspensum = EXACT.divide(
+				anspruchsPensum,
+				betreuungspensum
+			);
+			vollKostenProMonat = EXACT.multiply(
+				anspruchsPensumDevidedByBetreuungspensum,
+				input.getMonatlicheBetreuungskosten()
+			);
 		}
 
 		return EXACT.multiply(vollKostenProMonat, anteilMonat);
@@ -93,7 +117,10 @@ public class KitaLuzernRechner extends AbstractLuzernRechner {
 
 	@Override
 	protected BigDecimal calculateZuschlag() {
-		return EXACT.multiply(verfuegteZeiteinheit, calculateZuschlagProZeiteinheit());
+		return EXACT.multiply(
+			verfuegteZeiteinheit,
+			calculateZuschlagProZeiteinheit()
+		);
 	}
 
 	@Override
@@ -103,7 +130,9 @@ public class KitaLuzernRechner extends AbstractLuzernRechner {
 
 	@Override
 	protected BigDecimal getVollkostenTarif() {
-		return isBaby ? getInputParameter().getMaxVerguenstigungVorschuleBabyProTg(): getInputParameter().getMaxVerguenstigungVorschuleKindProTg();
+		return isBaby ?
+			getInputParameter().getMaxVerguenstigungVorschuleBabyProTg() :
+			getInputParameter().getMaxVerguenstigungVorschuleKindProTg();
 	}
 
 	@Override
@@ -113,23 +142,31 @@ public class KitaLuzernRechner extends AbstractLuzernRechner {
 
 	@Override
 	protected BigDecimal getMinBetreuungsgutschein() {
-		return isBaby ? MIN_BETREUUNGSGUTSCHEIN_BABY : MIN_BETREUUNGSGUTSCHEIN_KIND;
+		return isBaby ?
+			MIN_BETREUUNGSGUTSCHEIN_BABY :
+			MIN_BETREUUNGSGUTSCHEIN_KIND;
 	}
 
 	@Override
 	protected BigDecimal calculateSelbstbehaltElternProzent() {
-		return isBaby ? calculateSelbstbehaltElternProzentBaby() : calculateSelbstbehaltElternProzentKind();
+		return isBaby ?
+			calculateSelbstbehaltElternProzentBaby() :
+			calculateSelbstbehaltElternProzentKind();
 	}
 
 	@Override
 	protected BigDecimal calculateBGProZeiteinheitByEinkommen() {
-		BigDecimal bgProTag = isBaby ? calculateBetreuungsgutscheinProZeiteinheitAufgrundEinkommenGemaessFormel() : calculateBGProTagByEinkommenKind();
-		return MathUtil.maximum(bgProTag, getMaximalWertBGProTagAufgrundEinkommen());
+		return isBaby ?
+			calculateBetreuungsgutscheinProZeiteinheitAufgrundEinkommenGemaessFormel() :
+			calculateBGProTagByEinkommenKind();
 	}
 
 	@Override
 	protected BigDecimal getAnzahlZeiteinheitenProMonat() {
-		return EXACT.divide(getInputParameter().getOeffnungstageKita(), BigDecimal.valueOf(12));
+		return EXACT.divide(
+			getInputParameter().getOeffnungstageKita(),
+			BigDecimal.valueOf(12)
+		);
 	}
 
 	@Override
@@ -146,8 +183,11 @@ public class KitaLuzernRechner extends AbstractLuzernRechner {
 	 * returns 100, wenn selbstbehaltDerEltern (gemässFormel) > 100%:
 	 */
 	private BigDecimal calculateSelbstbehaltElternProzentKind() {
-		BigDecimal prozentuallerSelbstbehaltGemaessFormel = calculateSelbstbehaltProzentenGemaessFormel();
-		if(prozentuallerSelbstbehaltGemaessFormel.compareTo(BigDecimal.valueOf(100)) > 0) {
+		BigDecimal prozentuallerSelbstbehaltGemaessFormel =
+			calculateSelbstbehaltProzentenGemaessFormel();
+		if (prozentuallerSelbstbehaltGemaessFormel.compareTo(
+			BigDecimal.valueOf(100)
+		) > 0) {
 			return BigDecimal.valueOf(100);
 		}
 
@@ -162,8 +202,10 @@ public class KitaLuzernRechner extends AbstractLuzernRechner {
 	 *
 	 * returns 101 %, wenn MassgebendesEinkommen > MaximalMasgebendesEinkommen:
 	 */
-    private BigDecimal calculateSelbstbehaltElternProzentBaby() {
-		if(getInputMassgebendesEinkommen().compareTo(getInputParameter().getMaxMassgebendesEinkommen()) > 0) {
+	private BigDecimal calculateSelbstbehaltElternProzentBaby() {
+		if (getInputMassgebendesEinkommen().compareTo(
+			getInputParameter().getMaxMassgebendesEinkommen()
+		) > 0) {
 			return BigDecimal.valueOf(1.01);
 		}
 
@@ -180,14 +222,22 @@ public class KitaLuzernRechner extends AbstractLuzernRechner {
 	 * formel bgProTag = vollkostenTarif * (1-selbstBehaltElternProzent)
 	 */
 	private BigDecimal calculateBGProTagByEinkommenKind() {
-		BigDecimal einsMinusSelbstbehalt = EXACT.subtract(BigDecimal.ONE, getSelbstBehaltElternProzent());
-		BigDecimal bgProTag = EXACT.multiply(getVollkostenTarif(), einsMinusSelbstbehalt);
+		BigDecimal einsMinusSelbstbehalt = EXACT.subtract(
+			BigDecimal.ONE,
+			getSelbstBehaltElternProzent()
+		);
+		BigDecimal bgProTag = EXACT.multiply(
+			getVollkostenTarif(),
+			einsMinusSelbstbehalt
+		);
 
-		if(bgProTag.compareTo(getMinBetreuungsgutschein()) > 0) {
+		if (bgProTag.compareTo(getMinBetreuungsgutschein()) > 0) {
 			return bgProTag;
 		}
 
-		if(getInputMassgebendesEinkommen().compareTo(getInputParameter().getMaxMassgebendesEinkommen()) <= 0) {
+		if (getInputMassgebendesEinkommen().compareTo(
+			getInputParameter().getMaxMassgebendesEinkommen()
+		) <= 0) {
 			return getMinBetreuungsgutschein();
 		}
 
@@ -198,9 +248,22 @@ public class KitaLuzernRechner extends AbstractLuzernRechner {
 		@Nonnull BigDecimal gutschein
 	) {
 		// Zusaetzlicher Gutschein Gemeinde
-		gutschein = EXACT.addNullSafe(gutschein, MathUtil.EXACT.multiply(rechnerParameter.getZusaetzlicherGutscheinGemeindeBetrag(), this.verfuegteZeiteinheit));
+		gutschein = EXACT.addNullSafe(
+			gutschein,
+			MathUtil.EXACT.multiply(
+				rechnerParameter
+					.getZusaetzlicherGutscheinGemeindeBetrag(),
+				this.verfuegteZeiteinheit
+			)
+		);
 		// Zusaetzlicher Baby-Gutschein
-		gutschein = EXACT.addNullSafe(gutschein, MathUtil.EXACT.multiply(rechnerParameter.getZusaetzlicherBabyGutscheinBetrag(), verfuegteZeiteinheit));
+		gutschein = EXACT.addNullSafe(
+			gutschein,
+			MathUtil.EXACT.multiply(
+				rechnerParameter.getZusaetzlicherBabyGutscheinBetrag(),
+				verfuegteZeiteinheit
+			)
+		);
 
 		return gutschein;
 	}

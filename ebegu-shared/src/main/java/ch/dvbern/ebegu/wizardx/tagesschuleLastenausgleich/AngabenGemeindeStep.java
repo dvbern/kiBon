@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.wizardx.tagesschuleLastenausgleich;
@@ -29,7 +29,8 @@ public class AngabenGemeindeStep implements WizardStep<TagesschuleWizard> {
 
 	@Override
 	public void next(
-		TagesschuleWizard wizard) {
+		@Nonnull TagesschuleWizard wizard
+	) {
 		wizard.setStep(new AngabenTagesschuleStep());
 	}
 
@@ -42,9 +43,10 @@ public class AngabenGemeindeStep implements WizardStep<TagesschuleWizard> {
 	public WizardStateEnum getStatus(@Nonnull TagesschuleWizard wizard) {
 		final LastenausgleichTagesschuleAngabenGemeindeContainer container =
 			wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer();
-		final LastenausgleichTagesschuleAngabenGemeindeStatus containerStatus = container.getStatus();
+		final LastenausgleichTagesschuleAngabenGemeindeStatus containerStatus =
+			container.getStatus();
 
-			switch (containerStatus) {
+		switch (containerStatus) {
 		case NEU:
 			return WizardStateEnum.IN_BEARBEITUNG;
 		case IN_BEARBEITUNG_GEMEINDE:

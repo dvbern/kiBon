@@ -16,12 +16,12 @@
  *
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {SharedModule} from '../../../../app/shared/shared.module';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
-import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFreigabe} from '../../../../models/TSFreigabe';
-import {AbstractGesuchViewX} from '../../../component/abstractGesuchViewX';
+import {TSGesuch} from '../../../../models/TSGesuch';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../service/wizardStepManager';
 import {FreigabeService} from '../../freigabe.service';
@@ -35,32 +35,39 @@ const STEP_NAME = TSWizardStepName.FREIGABE;
 @Component({
     templateUrl: './online-freigabe.component.html',
     selector: 'dv-online-freigabe',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [SharedModule]
 })
-export class OnlineFreigabeComponent extends AbstractGesuchViewX<Model> {
-    public alreadyFreigegeben: boolean;
+export class OnlineFreigabeComponent {
+    public alreadyFreigegeben = signal<boolean>(null);
+    public model: Model;
 
     public constructor(
-        gesuchModelManager: GesuchModelManager,
-        wizardStepManager: WizardStepManager,
+        private readonly gesuchModelManager: GesuchModelManager,
+        private readonly wizardStepManager: WizardStepManager,
         protected readonly freigabeService: FreigabeService
     ) {
-        super(gesuchModelManager, wizardStepManager, STEP_NAME);
-
         const unbesucht =
             wizardStepManager.getStepByName(STEP_NAME).wizardStepStatus ===
             TSWizardStepStatus.UNBESUCHT;
-        this.alreadyFreigegeben = isAtLeastFreigegeben(
-            gesuchModelManager.getGesuch().status
+        this.wizardStepManager.setCurrentStep(STEP_NAME);
+        this.alreadyFreigegeben.set(
+            isAtLeastFreigegeben(gesuchModelManager.getGesuch().status)
         );
-        this.model = {userConfirmedCorrectness: this.alreadyFreigegeben};
+        this.model = {userConfirmedCorrectness: this.alreadyFreigegeben()};
 
-        if (!this.alreadyFreigegeben && unbesucht) {
+        this.updatedWizardStepManagerAndStep(unbesucht);
+    }
+
+    private updatedWizardStepManagerAndStep(unbesucht: boolean): void {
+        this.wizardStepManager.isTransitionInProgress = false;
+
+        if (!this.alreadyFreigegeben() && unbesucht) {
             this.wizardStepManager.updateCurrentWizardStepStatusSafe(
                 STEP_NAME,
                 TSWizardStepStatus.IN_BEARBEITUNG
             );
-        } else if (this.alreadyFreigegeben) {
+        } else if (this.alreadyFreigegeben()) {
             this.wizardStepManager.updateCurrentWizardStepStatusSafe(
                 STEP_NAME,
                 TSWizardStepStatus.OK
@@ -68,7 +75,7 @@ export class OnlineFreigabeComponent extends AbstractGesuchViewX<Model> {
         }
     }
 
-    public async freigeben(): Promise<unknown> {
+    public async freigeben(): Promise<TSGesuch | void> {
         if (!this.model.userConfirmedCorrectness) {
             return null;
         }
@@ -78,15 +85,15 @@ export class OnlineFreigabeComponent extends AbstractGesuchViewX<Model> {
             this.model.userConfirmedCorrectness
         );
         try {
-            await this.gesuchModelManager.antragFreigeben(
-                this.gesuchModelManager.getGesuch().id,
-                freigabeDto
-            );
-            return this.wizardStepManager.updateCurrentWizardStepStatusSafe(
-                STEP_NAME,
-                TSWizardStepStatus.OK
-            );
-        } catch (e) {
+            return await this.gesuchModelManager
+                .antragFreigeben(
+                    this.gesuchModelManager.getGesuch().id,
+                    freigabeDto
+                )
+                .then(() => {
+                    this.alreadyFreigegeben.set(true);
+                });
+        } catch {
             return this.wizardStepManager.updateCurrentWizardStepStatusSafe(
                 STEP_NAME,
                 TSWizardStepStatus.NOK
@@ -97,13 +104,13 @@ export class OnlineFreigabeComponent extends AbstractGesuchViewX<Model> {
     public freigebenButtonDisabled() {
         return (
             !this.model.userConfirmedCorrectness ||
-            this.alreadyFreigegeben ||
+            this.alreadyFreigegeben() ||
             this.cannotBeFreigegeben()
         );
     }
 
     public checkboxDisabled() {
-        return this.alreadyFreigegeben || this.cannotBeFreigegeben();
+        return this.alreadyFreigegeben() || this.cannotBeFreigegeben();
     }
 
     public getReason(): string {
@@ -111,7 +118,7 @@ export class OnlineFreigabeComponent extends AbstractGesuchViewX<Model> {
     }
 
     public showReason(): boolean {
-        return this.cannotBeFreigegeben() && !this.alreadyFreigegeben;
+        return this.cannotBeFreigegeben() && !this.alreadyFreigegeben();
     }
 
     public cannotBeFreigegeben(): boolean {

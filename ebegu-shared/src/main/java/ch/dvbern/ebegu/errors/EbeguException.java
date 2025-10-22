@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.ApplicationException;
+import jakarta.ejb.ApplicationException;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
@@ -44,40 +44,69 @@ public class EbeguException extends Exception {
 	@Nullable
 	private Mandant mandant;
 
-	protected EbeguException(@Nullable String methodeName, @Nullable String message, @Nonnull Serializable... args) {
+	protected EbeguException(
+		@Nullable String methodeName,
+		@Nullable String message,
+		@Nonnull Serializable... args
+	) {
 		super(message);
 		methodName = methodeName;
 		this.args = Collections.unmodifiableList(Arrays.asList(args));
 	}
 
-	protected EbeguException(@Nullable String methodeName, @Nullable String message, @Nullable Throwable cause, @Nonnull Serializable... args) {
+	protected EbeguException(
+		@Nullable String methodeName,
+		@Nullable String message,
+		@Nullable Throwable cause,
+		@Nonnull Serializable... args
+	) {
 		super(message, cause);
 		this.methodName = methodeName;
 		this.args = Collections.unmodifiableList(Arrays.asList(args));
 	}
 
-	public EbeguException(@Nullable String methodName, @Nullable String message, @Nullable ErrorCodeEnum errorCodeEnum, @Nullable Throwable cause, @Nonnull Serializable... args) {
+	public EbeguException(
+		@Nullable String methodName,
+		@Nullable String message,
+		@Nullable ErrorCodeEnum errorCodeEnum,
+		@Nullable Throwable cause,
+		@Nonnull Serializable... args
+	) {
 		super(message, cause);
 		this.errorCodeEnum = errorCodeEnum;
 		this.methodName = methodName;
 		this.args = Collections.unmodifiableList(Arrays.asList(args));
 	}
 
-	public EbeguException(@Nullable String methodName, @Nullable String message, @Nullable ErrorCodeEnum errorCodeEnum, @Nullable Serializable... args) {
+	public EbeguException(
+		@Nullable String methodName,
+		@Nullable String message,
+		@Nullable ErrorCodeEnum errorCodeEnum,
+		@Nullable Serializable... args
+	) {
 		super(message);
 		this.errorCodeEnum = errorCodeEnum;
 		this.methodName = methodName;
 		this.args = Collections.unmodifiableList(Arrays.asList(args));
 	}
 
-	public EbeguException(@Nullable String methodName, @Nullable ErrorCodeEnum errorCodeEnum, @Nullable Serializable... args) {
+	public EbeguException(
+		@Nullable String methodName,
+		@Nullable ErrorCodeEnum errorCodeEnum,
+		@Nullable Serializable... args
+	) {
 		super();
 		this.errorCodeEnum = errorCodeEnum;
 		this.methodName = methodName;
 		this.args = Collections.unmodifiableList(Arrays.asList(args));
 	}
 
-	public EbeguException(@Nullable String methodName, @Nullable ErrorCodeEnum errorCodeEnum, @Nullable Mandant mandant, @Nullable Serializable... args) {
+	public EbeguException(
+		@Nullable String methodName,
+		@Nullable ErrorCodeEnum errorCodeEnum,
+		@Nullable Mandant mandant,
+		@Nullable Serializable... args
+	) {
 		super();
 		this.errorCodeEnum = errorCodeEnum;
 		this.methodName = methodName;
@@ -103,5 +132,7 @@ public class EbeguException extends Exception {
 	}
 
 	@Nullable
-	public Mandant getMandant() { return mandant;}
+	public Mandant getMandant() {
+		return mandant;
+	}
 }

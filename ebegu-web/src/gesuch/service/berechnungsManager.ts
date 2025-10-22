@@ -14,7 +14,7 @@
  */
 
 import {IPromise} from 'angular';
-import {LogFactory} from '../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthLifeCycleService} from '../../authentication/service/authLifeCycle.service';
 import {TSDokumenteDTO} from '../../models/dto/TSDokumenteDTO';
 import {TSFinanzielleSituationResultateDTO} from '../../models/dto/TSFinanzielleSituationResultateDTO';

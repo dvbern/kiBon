@@ -20,7 +20,5 @@ package ch.dvbern.ebegu.enums;
  */
 public enum Kinderabzug {
 
-	KEIN_ABZUG,
-	HALBER_ABZUG,
-	GANZER_ABZUG
+	KEIN_ABZUG, HALBER_ABZUG, GANZER_ABZUG
 }

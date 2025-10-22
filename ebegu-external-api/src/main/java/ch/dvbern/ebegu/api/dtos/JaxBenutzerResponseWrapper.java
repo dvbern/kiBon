@@ -18,8 +18,8 @@ package ch.dvbern.ebegu.api.dtos;
 import java.io.Serializable;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 /**
  * This Transfer Object is used to transfer the external user together with messages (error)

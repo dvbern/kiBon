@@ -15,25 +15,33 @@
 
 package ch.dvbern.ebegu.batch;
 
-import ch.dvbern.ebegu.enums.UserRoleName;
-import ch.dvbern.ebegu.services.DailyBatch;
-import org.jboss.ejb3.annotation.TransactionTimeout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.security.RunAs;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
-import javax.inject.Inject;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import jakarta.annotation.security.RunAs;
+import jakarta.ejb.Schedule;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
+import jakarta.inject.Inject;
+
+import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.enums.UserRoleName;
+import ch.dvbern.ebegu.services.DailyBatch;
+import org.jboss.ejb3.annotation.RunAsPrincipal;
+import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Startup
 @Singleton
 @RunAs(UserRoleName.SUPER_ADMIN)
+@RunAsPrincipal(PrincipalBean.KIBON_SERVICE_ACCOUNT)
 public class DailyBatchScheduler {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DailyBatchScheduler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		DailyBatchScheduler.class
+	);
 
 	@Inject
 	private DailyBatch dailyBatch;
@@ -43,12 +51,21 @@ public class DailyBatchScheduler {
 		Future<Boolean> booleanFuture = dailyBatch.runBatchCleanDownloadFiles();
 		try {
 			Boolean resultat = booleanFuture.get();
-			LOGGER.info("Batchjob CleanDownloadFiles durchgefuehrt mit Resultat: {}", resultat);
+			LOGGER.info(
+				"Batchjob CleanDownloadFiles durchgefuehrt mit Resultat: {}",
+				resultat
+			);
 		} catch (ExecutionException e) {
-			LOGGER.error("Batch-Job CleanDownloadFiles konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job CleanDownloadFiles konnte nicht durchgefuehrt werden!",
+				e
+			);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			LOGGER.error("Batch-Job CleanDownloadFiles konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job CleanDownloadFiles konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 
@@ -62,12 +79,21 @@ public class DailyBatchScheduler {
 		Future<Boolean> booleanFuture = dailyBatch.runBatchMahnungFristablauf();
 		try {
 			Boolean resultat = booleanFuture.get();
-			LOGGER.info("Batchjob MahnungFristablauf durchgefuehrt mit Resultat: {}", resultat);
+			LOGGER.info(
+				"Batchjob MahnungFristablauf durchgefuehrt mit Resultat: {}",
+				resultat
+			);
 		} catch (ExecutionException e) {
-			LOGGER.error("Batch-Job Mahnung Fristablauf konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job Mahnung Fristablauf konnte nicht durchgefuehrt werden!",
+				e
+			);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			LOGGER.error("Batch-Job Mahnung Fristablauf konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job Mahnung Fristablauf konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 
@@ -86,7 +112,12 @@ public class DailyBatchScheduler {
 		dailyBatch.runBatchGesucheLoeschen();
 	}
 
-	@Schedule(second = "59", minute = "10", hour = "21", dayOfMonth = "1", month = "8", persistent = true)
+	@Schedule(second = "59",
+		minute = "10",
+		hour = "21",
+		dayOfMonth = "1",
+		month = "8",
+		persistent = true)
 	public void runBatchGesuchsperiodeLoeschen() {
 		dailyBatch.runBatchGesuchsperiodeLoeschen();
 	}
@@ -96,25 +127,10 @@ public class DailyBatchScheduler {
 		dailyBatch.runBatchAbgelaufeneRollen();
 	}
 
-	@Schedule(second = "59", minute = "00", hour = "02", persistent = true)
-	public void runBatchDeleteInvalidAuthTokens() {
-		dailyBatch.runBatchDeleteInvalidAuthTokens();
-	}
-
 	@Schedule(second = "59", minute = "00", hour = "03", persistent = true)
 	@TransactionTimeout(unit = TimeUnit.MINUTES, value = 60)
 	public void runBatchInfoOffenePendenzenNeueMitteilungInstitution() {
 		dailyBatch.runBatchInfoOffenePendenzenNeueMitteilungInstitution();
-	}
-
-	@Schedule(second = "59", minute = "00", hour = "02", dayOfMonth = "1", month = "9", persistent = true)
-	public void deleteInstitutionKennzahlenFields() {
-		dailyBatch.deleteInstitutionKennzahlenFields();
-	}
-
-	@Schedule(second = "59", minute = "30", hour = "02", dayOfMonth = "15", month = "9", persistent = true)
-	public void runBatchInstitutionCheckRequired() {
-		dailyBatch.runBatchInstitutionCheckRequired();
 	}
 
 	@Schedule(second = "59", minute = "30", hour = "04", persistent = true)

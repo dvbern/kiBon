@@ -1,13 +1,15 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import * as moment from 'moment';
+import moment from 'moment';
 import {of} from 'rxjs';
 import {SharedModule} from '../../../../app/shared/shared.module';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
-import {TSFachstelle} from '../../../../models/TSFachstelle';
-import {TSGesuchsperiode} from '../../../../models/TSGesuchsperiode';
-import {TSPensumFachstelle} from '../../../../models/TSPensumFachstelle';
-import {TSDateRange} from '../../../../models/types/TSDateRange';
+import {
+    TSDateRange,
+    TSFachstelle,
+    TSPensumFachstelle
+} from '@kibon/shared/model/entity';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
 
 import {KindFachstelleComponent} from './kind-fachstelle.component';

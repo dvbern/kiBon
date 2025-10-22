@@ -22,8 +22,8 @@ import {
     OnChanges,
     SimpleChanges
 } from '@angular/core';
+import moment from 'moment';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import * as moment from 'moment';
 
 /**
  * Eine Warnung wird angezeigt, falls das Betreuungspensum oder die Betreuungskosten eines bereits existierenden
@@ -33,7 +33,8 @@ import * as moment from 'moment';
     selector: 'betreuung-override-waring',
     templateUrl: './betreuung-override-warning.component.html',
     styleUrls: ['./betreuung-override-warning.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BetreuungOverrideWarningComponent implements OnChanges {
     @Input()

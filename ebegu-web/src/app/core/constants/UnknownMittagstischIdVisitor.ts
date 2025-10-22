@@ -15,28 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {KiBonMandant} from './MANDANTS';
-import {MandantVisitor} from './MandantVisitor';
+import {
+    KiBonMandant,
+    AbstractMandantDefaultVisitor
+} from '@kibon/shared-model-mandant';
 
-export class UnknownMittagstischIdVisitor implements MandantVisitor<string> {
+export class UnknownMittagstischIdVisitor extends AbstractMandantDefaultVisitor<string> {
     public process(mandant: KiBonMandant): string {
         return mandant.accept(this);
     }
 
-    public visitBern(): string {
-        return '00000000-0000-0000-0000-000000000016';
-    }
-
-    public visitLuzern(): string {
-        return '00000000-0000-0000-0000-000000000018';
-    }
-
-    public visitSolothurn(): string {
-        return '00000000-0000-0000-0000-000000000017';
-    }
-
-    public visitAppenzellAusserrhoden(): string {
-        return '00000000-0000-0000-0000-000000000019';
+    protected visitDefault(): string {
+        throw new Error('This Mandant has no Mittagstisch.');
     }
 
     public visitSchwyz(): string {

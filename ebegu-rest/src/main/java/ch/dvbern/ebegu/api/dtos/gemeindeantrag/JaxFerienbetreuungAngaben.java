@@ -17,11 +17,12 @@
 
 package ch.dvbern.ebegu.api.dtos.gemeindeantrag;
 
-import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
+import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.math.BigDecimal;
+
+import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 
 public class JaxFerienbetreuungAngaben extends JaxAbstractDTO {
 
@@ -53,7 +54,9 @@ public class JaxFerienbetreuungAngaben extends JaxAbstractDTO {
 		return stammdaten;
 	}
 
-	public void setStammdaten(@Nonnull JaxFerienbetreuungAngabenStammdaten stammdaten) {
+	public void setStammdaten(
+		@Nonnull JaxFerienbetreuungAngabenStammdaten stammdaten
+	) {
 		this.stammdaten = stammdaten;
 	}
 
@@ -80,7 +83,9 @@ public class JaxFerienbetreuungAngaben extends JaxAbstractDTO {
 		return kostenEinnahmen;
 	}
 
-	public void setKostenEinnahmen(@Nonnull JaxFerienbetreuungAngabenKostenEinnahmen kostenEinnahmen) {
+	public void setKostenEinnahmen(
+		@Nonnull JaxFerienbetreuungAngabenKostenEinnahmen kostenEinnahmen
+	) {
 		this.kostenEinnahmen = kostenEinnahmen;
 	}
 
@@ -107,7 +112,9 @@ public class JaxFerienbetreuungAngaben extends JaxAbstractDTO {
 		return berechnungen;
 	}
 
-	public void setBerechnungen(@Nonnull JaxFerienbetreuungBerechnungen berechnungen) {
+	public void setBerechnungen(
+		@Nonnull JaxFerienbetreuungBerechnungen berechnungen
+	) {
 		this.berechnungen = berechnungen;
 	}
 }

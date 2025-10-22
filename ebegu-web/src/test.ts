@@ -16,9 +16,15 @@
 /* eslint-disable import/no-unassigned-import */
 
 // This file is required by karma.conf.js and loads recursively all the .spec and framework files
-
 // eslint-disable-next-line import/order, import/no-unassigned-import
+import 'zone.js';
 import 'zone.js/testing';
+import {getTestBed} from '@angular/core/testing';
+import {
+    BrowserDynamicTestingModule,
+    platformBrowserDynamicTesting
+} from '@angular/platform-browser-dynamic/testing';
+
 // AngularJs nach jQuery
 // formatiert
 require('jquery');
@@ -28,11 +34,6 @@ require('rxjs');
 // AngularJS Mocks nach AngularJS
 require('angular-mocks');
 
-import {getTestBed} from '@angular/core/testing';
-import {
-    BrowserDynamicTestingModule,
-    platformBrowserDynamicTesting
-} from '@angular/platform-browser-dynamic/testing';
 /* eslint-disable import/no-unassigned-import */
 require('@uirouter/angular-hybrid');
 require('angular-animate');

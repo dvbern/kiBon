@@ -24,8 +24,10 @@ public class StatemachinePrinter {
 
 	@Test
 	public void printStatemachine() {
-		StateMachineConfigProducer stateMachineConfigProducer = new StateMachineConfigProducer();
-		StateMachineConfig<AntragStatus, AntragEvents> config = stateMachineConfigProducer.createStateMachineConfig();
+		StateMachineConfigProducer stateMachineConfigProducer =
+			new StateMachineConfigProducer();
+		StateMachineConfig<AntragStatus, AntragEvents> config =
+			stateMachineConfigProducer.createStateMachineConfig();
 		StateMachineFactory.printStateMachineDocumentation(config);
 	}
 

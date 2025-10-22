@@ -13,8 +13,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSFerienname} from './enums/TSFerienname';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSFerienname} from '@kibon/shared/model/enums';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {TSBelegungFerieninselTag} from './TSBelegungFerieninselTag';
 
 export class TSBelegungFerieninsel extends TSAbstractMutableEntity {

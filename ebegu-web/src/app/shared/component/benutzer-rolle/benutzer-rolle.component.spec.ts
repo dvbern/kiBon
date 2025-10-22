@@ -16,7 +16,7 @@
  */
 
 import {APP_BASE_HREF} from '@angular/common';
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {NgForm} from '@angular/forms';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
@@ -38,7 +38,7 @@ describe('BenutzerRolleComponent', () => {
         authServiceSpy.getVisibleRolesForPrincipal.and.returnValue([]);
         const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
             I18nServiceRSRest.name,
-            ['extractPreferredLanguage']
+            ['extractPreferredLanguage', 'init']
         );
 
         TestBed.configureTestingModule({

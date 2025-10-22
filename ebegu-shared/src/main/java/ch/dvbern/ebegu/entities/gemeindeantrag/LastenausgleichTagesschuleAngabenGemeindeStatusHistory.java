@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.gemeindeantrag;
@@ -21,14 +21,14 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -38,28 +38,35 @@ import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
-public class LastenausgleichTagesschuleAngabenGemeindeStatusHistory extends AbstractEntity {
+public class LastenausgleichTagesschuleAngabenGemeindeStatusHistory extends
+	AbstractEntity {
 
 	private static final long serialVersionUID = 7772645713958975926L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_lats_statushistory_fall_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_lats_statushistory_fall_id"), nullable = false)
 	private LastenausgleichTagesschuleAngabenGemeindeContainer angabenGemeindeContainer;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_lats_statushistory_benutzer_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_lats_statushistory_benutzer_id"), nullable = false)
 	private Benutzer benutzer;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private LocalDateTime timestampVon;
 
 	@Column(nullable = true)
 	private LocalDateTime timestampBis;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private LastenausgleichTagesschuleAngabenGemeindeStatus status;
@@ -69,7 +76,9 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistory extends Abst
 		return angabenGemeindeContainer;
 	}
 
-	public void setAngabenGemeindeContainer(@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer fall) {
+	public void setAngabenGemeindeContainer(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer fall
+	) {
 		this.angabenGemeindeContainer = fall;
 	}
 
@@ -104,7 +113,9 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistory extends Abst
 		return status;
 	}
 
-	public void setStatus(@Nonnull LastenausgleichTagesschuleAngabenGemeindeStatus status) {
+	public void setStatus(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeStatus status
+	) {
 		this.status = status;
 	}
 
@@ -122,11 +133,18 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistory extends Abst
 		if (!super.equals(other)) {
 			return false;
 		}
-		LastenausgleichTagesschuleAngabenGemeindeStatusHistory that = (LastenausgleichTagesschuleAngabenGemeindeStatusHistory) other;
-		return getAngabenGemeindeContainer().equals(that.getAngabenGemeindeContainer()) &&
-			getBenutzer().equals(that.getBenutzer()) &&
-			getTimestampVon().equals(that.getTimestampVon()) &&
-			Objects.equals(getTimestampBis(), that.getTimestampBis()) &&
+		LastenausgleichTagesschuleAngabenGemeindeStatusHistory that =
+			(LastenausgleichTagesschuleAngabenGemeindeStatusHistory) other;
+		return getAngabenGemeindeContainer().equals(
+			that.getAngabenGemeindeContainer()
+		)
+			&&
+			getBenutzer().equals(that.getBenutzer())
+			&&
+			getTimestampVon().equals(that.getTimestampVon())
+			&&
+			Objects.equals(getTimestampBis(), that.getTimestampBis())
+			&&
 			getStatus() == that.getStatus();
 	}
 }

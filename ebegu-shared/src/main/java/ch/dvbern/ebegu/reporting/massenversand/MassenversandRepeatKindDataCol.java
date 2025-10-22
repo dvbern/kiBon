@@ -71,7 +71,9 @@ public class MassenversandRepeatKindDataCol {
 		return kindInstitutionTagesfamilie;
 	}
 
-	public void setKindInstitutionTagesfamilie(String kindInstitutionTagesfamilie) {
+	public void setKindInstitutionTagesfamilie(
+		String kindInstitutionTagesfamilie
+	) {
 		this.kindInstitutionTagesfamilie = kindInstitutionTagesfamilie;
 	}
 
@@ -79,7 +81,9 @@ public class MassenversandRepeatKindDataCol {
 		return kindInstitutionTagesschule;
 	}
 
-	public void setKindInstitutionTagesschule(String kindInstitutionTagesschule) {
+	public void setKindInstitutionTagesschule(
+		String kindInstitutionTagesschule
+	) {
 		this.kindInstitutionTagesschule = kindInstitutionTagesschule;
 	}
 
@@ -87,7 +91,9 @@ public class MassenversandRepeatKindDataCol {
 		return kindInstitutionFerieninsel;
 	}
 
-	public void setKindInstitutionFerieninsel(String kindInstitutionFerieninsel) {
+	public void setKindInstitutionFerieninsel(
+		String kindInstitutionFerieninsel
+	) {
 		this.kindInstitutionFerieninsel = kindInstitutionFerieninsel;
 	}
 
@@ -101,9 +107,9 @@ public class MassenversandRepeatKindDataCol {
 
 	private void addKindInstitutionenWeitere(@Nonnull String instName) {
 		setKindInstitutionenWeitere(
-			Strings.isNullOrEmpty(getKindInstitutionenWeitere())
-				? instName
-				: getKindInstitutionenWeitere() + ", " + instName
+			Strings.isNullOrEmpty(getKindInstitutionenWeitere()) ?
+				instName :
+				getKindInstitutionenWeitere() + ", " + instName
 		);
 	}
 
@@ -115,7 +121,9 @@ public class MassenversandRepeatKindDataCol {
 		}
 	}
 
-	public void setKindInstitutionTagesfamilieOrWeitere(@Nonnull String instName) {
+	public void setKindInstitutionTagesfamilieOrWeitere(
+		@Nonnull String instName
+	) {
 		if (Strings.isNullOrEmpty(getKindInstitutionTagesfamilie())) {
 			setKindInstitutionTagesfamilie(instName);
 		} else {
@@ -123,7 +131,9 @@ public class MassenversandRepeatKindDataCol {
 		}
 	}
 
-	public void setKindInstitutionTagesschuleOrWeitere(@Nonnull String instName) {
+	public void setKindInstitutionTagesschuleOrWeitere(
+		@Nonnull String instName
+	) {
 		if (Strings.isNullOrEmpty(getKindInstitutionTagesschule())) {
 			setKindInstitutionTagesschule(instName);
 		} else {
@@ -131,7 +141,9 @@ public class MassenversandRepeatKindDataCol {
 		}
 	}
 
-	public void setKindInstitutionFerieninselOrWeitere(@Nonnull String instName) {
+	public void setKindInstitutionFerieninselOrWeitere(
+		@Nonnull String instName
+	) {
 		if (Strings.isNullOrEmpty(getKindInstitutionFerieninsel())) {
 			setKindInstitutionFerieninsel(instName);
 		} else {

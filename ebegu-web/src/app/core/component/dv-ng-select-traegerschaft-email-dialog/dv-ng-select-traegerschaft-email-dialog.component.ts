@@ -21,7 +21,8 @@ import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'dv-ng-select-tragerschaft-email-dialog',
-    templateUrl: './dv-ng-select-traegerschaft-email-dialog.template.html'
+    templateUrl: './dv-ng-select-traegerschaft-email-dialog.template.html',
+    standalone: false
 })
 export class DvNgSelectTraegerschaftEmailDialogComponent {
     public adminMails: string[];

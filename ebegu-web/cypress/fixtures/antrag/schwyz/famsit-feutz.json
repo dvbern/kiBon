@@ -1,0 +1,29 @@
+{
+    "valid": {
+        "familiensituation": {
+            "familienstand": "VERHEIRATET"
+        },
+        "GS1": {
+            "geschlecht": "WEIBLICH",
+            "vorname": "Yvonne",
+            "nachname": "Feutz",
+            "geburtsdatum": "25.03.1980",
+            "sozialversicherungsnummer": "756.1234.5678.97",
+            "adresseStrasse": "Testweg",
+            "adresseHausnummer": "10",
+            "adressePlz": "3000",
+            "adresseOrt": "Bern",
+            "email": "test@mailbucket.dvbern.ch",
+            "mobile": "079 000 00 00"
+        },
+        "GS2": {
+            "geschlecht": "MAENNLICH",
+            "vorname": "Tizian",
+            "nachname": "Feutz",
+            "geburtsdatum": "25.03.1980",
+            "sozialversicherungsnummer": "756.1238.5678.93",
+            "email": "test@mailbucket.dvbern.ch",
+            "mobile": "079 000 00 00"
+        }
+    }
+}

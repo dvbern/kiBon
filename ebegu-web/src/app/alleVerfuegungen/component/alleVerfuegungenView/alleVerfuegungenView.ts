@@ -16,19 +16,19 @@
 import IComponentOptions = angular.IComponentOptions;
 import ILogService = angular.ILogService;
 import ITimeoutService = angular.ITimeoutService;
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {IController} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {DossierRS} from '../../../../gesuch/service/dossierRS.rest';
-import {TSBetreuungsstatus} from '../../../../models/enums/betreuung/TSBetreuungsstatus';
+import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
 import {TSAntragStatusHistory} from '../../../../models/TSAntragStatusHistory';
 import {TSBetreuung} from '../../../../models/TSBetreuung';
 import {TSDossier} from '../../../../models/TSDossier';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {ApplicationPropertyRS} from '../../../core/rest-services/applicationPropertyRS.rest';
-import {BetreuungRS} from '../../../core/service/betreuungRS.rest';
+import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {IAlleVerfuegungenStateParams} from '../../alleVerfuegungen.route';
 
@@ -50,7 +50,7 @@ export class AlleVerfuegungenViewController implements IController {
         '$timeout',
         'DossierRS',
         'EbeguUtil',
-        'ApplicationPropertyRS'
+        'SharedUtilApplicationPropertyRsService'
     ];
 
     public dossier: TSDossier;
@@ -70,7 +70,7 @@ export class AlleVerfuegungenViewController implements IController {
         private readonly $timeout: ITimeoutService,
         private readonly dossierRS: DossierRS,
         private readonly ebeguUtil: EbeguUtil,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {
@@ -95,7 +95,7 @@ export class AlleVerfuegungenViewController implements IController {
             });
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then(properties => {
+            .subscribe(properties => {
                 this.isAuszahlungAnAntragstellerEnabled =
                     properties.auszahlungAnEltern;
             });
@@ -181,7 +181,7 @@ export class AlleVerfuegungenViewController implements IController {
             )
             .then((downloadFile: TSDownloadFile) => {
                 this.$log.debug(`accessToken: ${downloadFile.accessToken}`);
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -202,7 +202,7 @@ export class AlleVerfuegungenViewController implements IController {
             .getAccessTokenNichteintretenGeneratedDokument(betreuung.id, false)
             .then((downloadFile: TSDownloadFile) => {
                 this.$log.debug(`accessToken: ${downloadFile.accessToken}`);
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,

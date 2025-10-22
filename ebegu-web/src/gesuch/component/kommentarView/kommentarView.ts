@@ -13,8 +13,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {
+    copy,
     IComponentOptions,
     IController,
     IFormController,
@@ -22,9 +25,9 @@ import {
     IPromise,
     IQService
 } from 'angular';
-import {MAX_FILE_SIZE} from '../../../app/core/constants/CONSTANTS';
+import {forkJoin} from 'rxjs';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
+import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
 import {TSDokumenteDTO} from '../../../models/dto/TSDokumenteDTO';
@@ -32,25 +35,27 @@ import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
 import {TSDokumentGrundTyp} from '../../../models/enums/TSDokumentGrundTyp';
 import {TSEingangsart} from '../../../models/enums/TSEingangsart';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSDokumentUploadTyp, TSRole} from '@kibon/shared/model/enums';
 import {TSDokument} from '../../../models/TSDokument';
 import {TSDokumentGrund} from '../../../models/TSDokumentGrund';
+import {TSDossier} from '../../../models/TSDossier';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSWizardStep} from '../../../models/TSWizardStep';
+import {TSWizardStep} from '@kibon/shared/model/entity';
+
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {OkHtmlDialogController} from '../../dialog/OkHtmlDialogController';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
 import {DokumenteRS} from '../../service/dokumenteRS.rest';
+import {DossierRS} from '../../service/dossierRS.rest';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {GesuchRS} from '../../service/gesuchRS.rest';
 import {GlobalCacheService} from '../../service/globalCacheService';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import ISidenavService = angular.material.ISidenavService;
 import ITranslateService = angular.translate.ITranslateService;
-import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
-import {TSDossier} from '../../../models/TSDossier';
-import {DossierRS} from '../../service/dossierRS.rest';
+import {FileUtil} from '@kibon/shared-util-fn-file';
+import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 
 const okHtmlDialogTempl = require('../../../gesuch/dialog/okHtmlDialogTemplate.html');
 const removeDialogTempl = require('../../dialog/removeDialogTemplate.html');
@@ -81,7 +86,8 @@ export class KommentarViewController implements IController {
         '$state',
         '$mdSidenav',
         '$q',
-        'ApplicationPropertyRS'
+        'SharedUtilApplicationPropertyRsService',
+        'ErrorService'
     ];
 
     public form: IFormController;
@@ -105,15 +111,17 @@ export class KommentarViewController implements IController {
         private readonly $state: StateService,
         private readonly $mdSidenav: ISidenavService,
         private readonly $q: IQService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly errorService: ErrorService
     ) {
         if (!this.isGesuchUnsaved()) {
             this.getPapiergesuchFromServer();
         }
-        Promise.all([
+
+        forkJoin([
             this.applicationPropertyRS.isPersonensucheDisabledForSystem(),
             this.applicationPropertyRS.getGeresEnabledForMandant()
-        ]).then(([geresSytemWideDisabled, geresEnabledForMandant]) => {
+        ]).subscribe(([geresSytemWideDisabled, geresEnabledForMandant]) => {
             this.isPersonensucheDisabled =
                 geresSytemWideDisabled || !geresEnabledForMandant;
         });
@@ -219,8 +227,8 @@ export class KommentarViewController implements IController {
             this.downloadRS
                 .getAccessTokenDokument(newest.id)
                 .then(response => {
-                    const tempDokument = angular.copy(response);
-                    this.downloadRS.startDownload(
+                    const tempDokument = copy(response);
+                    this.downloadRS.startDownloadGeneratedPDF(
                         tempDokument.accessToken,
                         newest.filename,
                         false,
@@ -289,10 +297,21 @@ export class KommentarViewController implements IController {
                 return;
             }
 
+            if (
+                !FileUtil.areAllFileEndingsMatchingTypes(files, [
+                    TSDokumentUploadTyp.ANY
+                ])
+            ) {
+                this.errorService.addMesageAsError(
+                    'ERROR_WRONG_UPLOAD_FILETYPE'
+                );
+                return;
+            }
+
             this.uploadRS
                 .uploadFile(filesOk, this.dokumentePapiergesuch, gesuchID)
                 .then(response => {
-                    this.dokumentePapiergesuch = angular.copy(response);
+                    this.dokumentePapiergesuch = copy(response);
                     this.globalCacheService
                         .getCache(TSCacheTyp.EBEGU_DOCUMENT)
                         .removeAll();

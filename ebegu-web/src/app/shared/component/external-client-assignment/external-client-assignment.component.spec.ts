@@ -16,7 +16,7 @@
  */
 
 import {SimpleChange} from '@angular/core';
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {TranslateService} from '@ngx-translate/core';
 import {createClient} from '../../../../models/TSExternalClient';
 import {TSExternalClientAssignment} from '../../../../models/TSExternalClientAssignment';

@@ -27,23 +27,33 @@ import org.junit.jupiter.api.Test;
  */
 class CheckDateRangeValidatorTest {
 
-	private final CheckDateRangeValidator validator = new CheckDateRangeValidator();
+	private final CheckDateRangeValidator validator =
+		new CheckDateRangeValidator();
 
 	@Test
 	void testgueltigAbBeforeBis() {
-		DateRange dateRange = new DateRange(LocalDate.of(2015, 10, 9), LocalDate.of(2015, 10, 10));
+		DateRange dateRange = new DateRange(
+			LocalDate.of(2015, 10, 9),
+			LocalDate.of(2015, 10, 10)
+		);
 		Assertions.assertTrue(validator.isValid(dateRange, null));
 	}
 
 	@Test
 	void testgueltigAbEqualsBis() {
-		DateRange dateRange = new DateRange(LocalDate.of(2015, 10, 9), LocalDate.of(2015, 10, 9));
+		DateRange dateRange = new DateRange(
+			LocalDate.of(2015, 10, 9),
+			LocalDate.of(2015, 10, 9)
+		);
 		Assertions.assertTrue(validator.isValid(dateRange, null));
 	}
 
 	@Test
 	void testgueltigAbAfterBis() {
-		DateRange dateRange = new DateRange(LocalDate.of(2015, 10, 9), LocalDate.of(2015, 10, 8));
+		DateRange dateRange = new DateRange(
+			LocalDate.of(2015, 10, 9),
+			LocalDate.of(2015, 10, 8)
+		);
 		Assertions.assertFalse(validator.isValid(dateRange, null));
 	}
 }

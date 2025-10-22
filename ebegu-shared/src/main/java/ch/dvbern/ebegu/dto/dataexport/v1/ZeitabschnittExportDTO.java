@@ -19,26 +19,26 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * This is a DTO that is used to export the relevant Information about a {@link VerfuegungZeitabschnitt}.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class  ZeitabschnittExportDTO {
+public class ZeitabschnittExportDTO {
 
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate von;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate bis;
 
 	// Verfügungs-Version (EG=1, M1=2 etc.)
@@ -178,15 +178,33 @@ public class  ZeitabschnittExportDTO {
 			return false;
 		}
 		ZeitabschnittExportDTO that = (ZeitabschnittExportDTO) o;
-		return Objects.equals(getEffektiveBetreuungPct(), that.getEffektiveBetreuungPct()) &&
-			getAnspruchPct() == that.getAnspruchPct() &&
-			Objects.equals(getVerguenstigtPct(), that.getVerguenstigtPct()) &&
-			Objects.equals(getVon(), that.getVon()) &&
-			Objects.equals(getBis(), that.getBis()) &&
-			getVerfuegungNr() == that.getVerfuegungNr() &&
-			Objects.equals(getVollkosten(), that.getVollkosten()) &&
-			Objects.equals(getBetreuungsgutschein(), that.getBetreuungsgutschein()) &&
-			Objects.equals(getMinimalerElternbeitrag(), that.getMinimalerElternbeitrag()) &&
+		return Objects.equals(
+			getEffektiveBetreuungPct(),
+			that.getEffektiveBetreuungPct()
+		)
+			&&
+			getAnspruchPct() == that.getAnspruchPct()
+			&&
+			Objects.equals(getVerguenstigtPct(), that.getVerguenstigtPct())
+			&&
+			Objects.equals(getVon(), that.getVon())
+			&&
+			Objects.equals(getBis(), that.getBis())
+			&&
+			getVerfuegungNr() == that.getVerfuegungNr()
+			&&
+			Objects.equals(getVollkosten(), that.getVollkosten())
+			&&
+			Objects.equals(
+				getBetreuungsgutschein(),
+				that.getBetreuungsgutschein()
+			)
+			&&
+			Objects.equals(
+				getMinimalerElternbeitrag(),
+				that.getMinimalerElternbeitrag()
+			)
+			&&
 			Objects.equals(getVerguenstigung(), that.getVerguenstigung());
 	}
 

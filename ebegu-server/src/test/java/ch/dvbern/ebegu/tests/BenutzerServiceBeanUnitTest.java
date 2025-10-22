@@ -25,33 +25,43 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import ch.dvbern.ebegu.authentication.KibonJwt;
+import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Benutzer;
+import ch.dvbern.ebegu.entities.Benutzer_;
 import ch.dvbern.ebegu.entities.Berechtigung;
 import ch.dvbern.ebegu.entities.Fall;
 import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.errors.BenutzerExistException;
+import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
 import ch.dvbern.ebegu.services.BenutzerService;
 import ch.dvbern.ebegu.services.BenutzerServiceBean;
 import ch.dvbern.ebegu.services.FallService;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.types.DateRange;
+import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.easymock.EasyMock.expect;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(EasyMockExtension.class)
 public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 
 	@TestSubject
-	private final BenutzerService benutzerServiceBean = new BenutzerServiceBean();
+	private final BenutzerService benutzerServiceBean =
+		new BenutzerServiceBean();
 
 	@SuppressWarnings("InstanceVariableMayNotBeInitialized")
 	@Mock
@@ -60,10 +70,22 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 	@Mock
 	private GesuchService gesuchServiceMock;
 
+	@Mock
+	private CriteriaQueryHelper criteriaQueryHelper;
+
+	@Mock
+	private PrincipalBean principalBean;
+
+	@Mock
+	private KibonJwt kibonJwt;
+
 	@Test
 	public void testNotGesuchstellerRoleShouldReturnNull() {
 		var benutzer = createBenutzerWithRole(UserRole.ADMIN_BG);
-		var fallId = benutzerServiceBean.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(benutzer);
+		var fallId = benutzerServiceBean
+			.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
+				benutzer
+			);
 		Assertions.assertNull(fallId);
 	}
 
@@ -72,7 +94,10 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 		var benutzer = createBenutzerWithRole(UserRole.GESUCHSTELLER);
 		createFallServiceMock(benutzer, null);
 		replayAll();
-		var fallId = benutzerServiceBean.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(benutzer);
+		var fallId = benutzerServiceBean
+			.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
+				benutzer
+			);
 		Assertions.assertNull(fallId);
 	}
 
@@ -87,7 +112,10 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 		gesuch.setStatus(AntragStatus.IN_BEARBEITUNG_GS);
 		createGesuchServiceMock(fall, gesuchIds, gesuch);
 		replayAll();
-		var fallId = benutzerServiceBean.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(benutzer);
+		var fallId = benutzerServiceBean
+			.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
+				benutzer
+			);
 		Assertions.assertEquals(fall.getId(), fallId);
 	}
 
@@ -103,11 +131,17 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 		createGesuchServiceMock(fall, gesuchIds, gesuch);
 		replayAll();
 		Assertions.assertThrows(BenutzerExistException.class, () -> {
-			benutzerServiceBean.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(benutzer);
+			benutzerServiceBean
+				.findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
+					benutzer
+				);
 		});
 	}
 
-	private void createFallServiceMock(@Nonnull Benutzer benutzer, @Nullable Fall fall) {
+	private void createFallServiceMock(
+		@Nonnull Benutzer benutzer,
+		@Nullable Fall fall
+	) {
 		expect(fallServiceMock.findFallByBesitzer(benutzer))
 			.andReturn(Optional.ofNullable(fall))
 			.anyTimes();
@@ -140,5 +174,85 @@ public class BenutzerServiceBeanUnitTest extends EasyMockSupport {
 		benutzer.setBerechtigungen(berechtigungSet);
 		benutzer.setTimestampErstellt(LocalDateTime.now());
 		return benutzer;
+	}
+
+	@Nested
+	class FindBenutzer {
+		String beloginUUID = "51113a10-a035-11ef-b6b5-a3df84c8de58";
+		String keycloakUUID = "54d70486-a035-11ef-99ba-1f6159a5bc4a";
+
+		@Test
+		void mustFindUserWithExternalUUId() {
+			// given
+			expect(kibonJwt.getBeLoginPrimaryId()).andReturn(
+				Optional.of(
+					beloginUUID
+				)
+			);
+			expect(kibonJwt.getExternalUUID()).andReturn(keycloakUUID);
+			mockMandantBern();
+
+			Benutzer keycloakBenutzer = new Benutzer();
+			keycloakBenutzer.getBerechtigungen().add(new Berechtigung());
+			expect(
+				criteriaQueryHelper.getEntityByUniqueAttribute(
+					Benutzer.class,
+					keycloakUUID,
+					Benutzer_.externalUUID
+				)
+			).andReturn(Optional.of(keycloakBenutzer));
+
+			replayAll();
+
+			// when
+			var result = benutzerServiceBean.findBenutzer(kibonJwt);
+
+			// then
+			assertThat(result.get(), Is.is(keycloakBenutzer));
+		}
+
+		@Test
+		void mustFindUserWithBernPrimaryId() {
+			// given
+			expect(kibonJwt.getBeLoginPrimaryId()).andReturn(
+				Optional.of(
+					beloginUUID
+				)
+			);
+			expect(kibonJwt.getExternalUUID()).andReturn(keycloakUUID);
+			mockMandantBern();
+
+			expect(
+				criteriaQueryHelper.getEntityByUniqueAttribute(
+					Benutzer.class,
+					keycloakUUID,
+					Benutzer_.externalUUID
+				)
+			).andReturn(Optional.empty());
+
+			Benutzer beLoginBenutzer = new Benutzer();
+			beLoginBenutzer.getBerechtigungen().add(new Berechtigung());
+			expect(
+				criteriaQueryHelper.getEntityByUniqueAttribute(
+					Benutzer.class,
+					beloginUUID,
+					Benutzer_.externalUUID
+				)
+			).andReturn(Optional.of(beLoginBenutzer));
+
+			replayAll();
+
+			// when
+			var result = benutzerServiceBean.findBenutzer(kibonJwt);
+
+			// then
+			assertThat(result.get(), Is.is(beLoginBenutzer));
+		}
+
+		private void mockMandantBern() {
+			Mandant mandant = new Mandant();
+			mandant.setMandantIdentifier(MandantIdentifier.BERN);
+			expect(principalBean.getMandant()).andReturn(mandant).anyTimes();
+		}
 	}
 }

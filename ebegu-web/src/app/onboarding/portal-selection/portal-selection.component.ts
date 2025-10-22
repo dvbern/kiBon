@@ -24,17 +24,17 @@ import {
 import {UIRouterGlobals} from '@uirouter/core';
 import {fromEvent, Observable} from 'rxjs';
 import {map, startWith, throttleTime} from 'rxjs/operators';
-import {TSMandant} from '../../../models/TSMandant';
-import {LogFactory} from '../../core/logging/LogFactory';
-import {MandantService} from '../../shared/services/mandant.service';
-
+import {TSMandant} from '@kibon/shared/model/entity';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 const LOG = LogFactory.createLog('PortalSelectionComponent');
 
 @Component({
     selector: 'dv-portal-selection',
     templateUrl: './portal-selection.component.html',
     styleUrls: ['./portal-selection.component.less', './../onboarding.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PortalSelectionComponent implements OnInit {
     public mandantFilter: string;
@@ -51,13 +51,13 @@ export class PortalSelectionComponent implements OnInit {
     ) {}
 
     public ngOnInit(): void {
-        this.mandantService.getAll().subscribe(
-            mandants => {
+        this.mandantService.getAll().subscribe({
+            next: mandants => {
                 this.mandants = this.orderByTimestampErstellt(mandants);
                 this.cd.markForCheck();
             },
-            error => LOG.error(error)
-        );
+            error: error => LOG.error(error)
+        });
 
         // Checks if screen size is less than 1024 pixels
         const checkScreenSize = () =>
@@ -81,7 +81,7 @@ export class PortalSelectionComponent implements OnInit {
         const kibonMandant = this.mandantService.mandantToKibonMandant(mandant);
         this.mandantService.selectMandant(
             kibonMandant,
-            this.routerGlobals.params.path || ''
+            this.routerGlobals.params.path ?? '#/start'
         );
     }
 

@@ -24,21 +24,22 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatSort} from '@angular/material/sort';
+import {TSGemeindeStatus} from '@kibon/shared/model/enums';
 import {StateService} from '@uirouter/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AbstractAdminViewX} from '../../../admin/abstractAdminViewX';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
-import {TSGemeinde} from '../../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
 
 @Component({
     selector: 'dv-gemeinde-list',
     templateUrl: './gemeinde-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class GemeindeListComponent
     extends AbstractAdminViewX

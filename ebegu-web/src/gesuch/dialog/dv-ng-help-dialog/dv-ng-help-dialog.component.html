@@ -105,32 +105,14 @@
 
 <ng-template #blog>
     <div *ngIf="hasRoleGemeinde || hasRoleInstitution" class="margin-top-40">
-        <h2>Blog</h2>
-        <p *ngIf="hasRoleMandant">
+        <h2>{{ 'BLOG_SECTION_BLOG' | translate }}</h2>
+        <p>
             <a
-                href="{{ 'BLOG_MANDANT_LINK' | translate }}"
+                href="{{ 'BLOG_LINK' | translate }}"
                 rel="noopener noreferrer"
                 target="_blank"
             >
-                <span translate="KANTON"></span>
-            </a>
-        </p>
-        <p *ngIf="hasRoleGemeinde">
-            <a
-                href="{{ 'BLOG_GEMEINDE_LINK' | translate }}"
-                rel="noopener noreferrer"
-                target="_blank"
-            >
-                <span translate="GEMEINDE"></span>
-            </a>
-        </p>
-        <p *ngIf="hasRoleInstitution">
-            <a
-                href="{{ 'BLOG_INSTITUTION_LINK' | translate }}"
-                rel="noopener noreferrer"
-                target="_blank"
-            >
-                <span translate="INSTITUTION"></span>
+                <span>{{ 'BLOG_FOOTER_LINK' | translate }}</span>
             </a>
         </p>
     </div>
@@ -157,6 +139,7 @@
 <ng-template #lu>
     <div class="margin-top-40">
         <h2 [textContent]="'FACHLICHE_HILFE_BG' | translate"></h2>
+        <br />
         <p [innerHTML]="'MANDANT_DIREKTION_BG' | translate"></p>
         <p><a href="tel:+41 41 208 81 90">+41 41 208 81 90</a></p>
         <p>
@@ -167,6 +150,17 @@
         <p>
             <a href="https://www.kinderbetreuung.stadtluzern.ch"
                 >www.kinderbetreuung.stadtluzern.ch</a
+            >
+        </p>
+        <br />
+        <p [innerHTML]="'MANDANT_DIREKTION_BG_HORW' | translate"></p>
+        <p><a href="tel:+41 41 349 12 41">+41 41 349 12 41</a></p>
+        <p>
+            <a href="mailto:Sozial@horw.ch">Sozial&#64;horw.ch</a>
+        </p>
+        <p>
+            <a href="https://www.horw.ch/dienstleistungen/16789"
+                >Gemeinde Horw - Betreuungsgutscheine</a
             >
         </p>
     </div>

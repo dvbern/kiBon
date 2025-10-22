@@ -15,15 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Injectable} from '@angular/core';
 import {
-    HttpRequest,
-    HttpHandler,
+    HttpErrorResponse,
     HttpEvent,
+    HttpHandler,
     HttpInterceptor,
-    HttpResponse,
-    HttpErrorResponse
+    HttpRequest,
+    HttpResponse
 } from '@angular/common/http';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {catchError, filter, finalize} from 'rxjs/operators';
 import {HttpPendingService} from '../../services/http-pending.service';

@@ -13,7 +13,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IHttpBackendService, IQService, IRootScopeService} from 'angular';
+import angular, {
+    IHttpBackendService,
+    IQService,
+    IRootScopeService
+} from 'angular';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
 import {TSBetreuung} from '../../../models/TSBetreuung';

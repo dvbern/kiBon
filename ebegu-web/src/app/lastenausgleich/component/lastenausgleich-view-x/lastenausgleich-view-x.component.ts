@@ -26,19 +26,19 @@ import {
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
-import {from, Observable, Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {filter, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {TSLastenausgleich} from '../../../../models/TSLastenausgleich';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '../../../core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../../core/rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {UploadRS} from '../../../core/service/uploadRS.rest';
 import {LastenausgleichRS} from '../../services/lastenausgleichRS.rest';
@@ -51,7 +51,8 @@ const LOG = LogFactory.createLog('LastenausgleichViewXComponent');
     selector: 'dv-lastenausgleich-view-x',
     templateUrl: './lastenausgleich-view-x.component.html',
     styleUrls: ['./lastenausgleich-view-x.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
     // ab dem Jahr 2022 wird der Lastenausgleich ohne Selbstbehalt generiert
@@ -78,7 +79,7 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
         private readonly authServiceRS: AuthServiceRS,
         private readonly errorService: ErrorService,
         private readonly cd: ChangeDetectorRef,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     private static handleDownloadError(err: Error, win: Window): void {
@@ -149,9 +150,11 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
                 )
             )
             .subscribe(
-                (response: TSLastenausgleich) => {
-                    this.lastenausgleiche.push(response);
-                    this.addToDataSource(this.lastenausgleiche);
+                () => {
+                    const startmsg = this.translate.instant(
+                        'STARTED_LATS_GENERATION'
+                    );
+                    this.errorService.addMesageAsInfo(startmsg);
                 },
                 err => {
                     LOG.error(err);
@@ -187,7 +190,7 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
                         .getZemisExcel(zemisDialogData.jahr)
                         .subscribe(
                             (downloadFile: TSDownloadFile) => {
-                                this.downloadRS.startDownload(
+                                this.downloadRS.startDownloadGeneratedPDF(
                                     downloadFile.accessToken,
                                     downloadFile.filename,
                                     false,
@@ -250,7 +253,7 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
             .getLastenausgleichReportExcel(lastenausgleich.id)
             .subscribe(
                 (downloadFile: TSDownloadFile) => {
-                    this.downloadRS.startDownload(
+                    this.downloadRS.startDownloadGeneratedPDF(
                         downloadFile.accessToken,
                         downloadFile.filename,
                         false,
@@ -269,7 +272,7 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
             .getLastenausgleichReportCSV(lastenausgleich.id)
             .subscribe(
                 (downloadFile: TSDownloadFile) => {
-                    this.downloadRS.startDownload(
+                    this.downloadRS.startDownloadGeneratedPDF(
                         downloadFile.accessToken,
                         downloadFile.filename,
                         false,
@@ -283,7 +286,7 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
     }
 
     public isRemoveAllowed(): Observable<boolean> {
-        return from(this.applicationPropertyRS.isDevMode()).pipe(
+        return this.applicationPropertyRS.isDevMode().pipe(
             map(res => res && this.authServiceRS.isRole(TSRole.SUPER_ADMIN)),
             takeUntil(this.unsubscribe$)
         );
@@ -302,6 +305,7 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
             .open(DvNgRemoveDialogComponent, dialogConfig)
             .afterClosed()
             .pipe(
+                filter(result => result === true),
                 mergeMap(() =>
                     this.lastenausgleichRS.removeLastenausgleich(
                         lastenausgleich.id

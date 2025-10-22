@@ -13,7 +13,7 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class="dv-antrag-list">
+<div class="dv-table">
     <div
         st-table="displayedCollection"
         st-safe-src="vm.getQuicksearchList()"
@@ -26,12 +26,17 @@
                 <div id="titleText">
                     <h3 data-translate="{{ vm.tableTitle }}"></h3>
                 </div>
-                <div id="refreshIcon">
-                    <i class="fa fa-undo" dv-st-reset-search></i>
-                </div>
             </div>
             <div class="col-md-2 text-right">
                 <h3 ng-bind="vm.totalResultCount"></h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button dv-st-reset-search class="dv-btn" id="refreshIcon">
+                    <i class="fa fa-undo"></i>
+                    {{ 'FILTER_ZURUECKSETZEN' | translate }}
+                </button>
             </div>
         </div>
 

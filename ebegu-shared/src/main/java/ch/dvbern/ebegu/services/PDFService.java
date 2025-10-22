@@ -22,17 +22,17 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
 import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Mahnung;
-import ch.dvbern.ebegu.entities.RueckforderungFormular;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFall;
+import ch.dvbern.ebegu.enums.MusterDokumentTyp;
 import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.errors.MergeDocException;
 
@@ -92,20 +92,9 @@ public interface PDFService {
 	) throws MergeDocException;
 
 	@Nonnull
-	byte[] generateProvisorischeVerfuegungRuckforderungformular(
-		@Nonnull RueckforderungFormular rueckforderungFormular,
-		boolean writeProtected
-	) throws MergeDocException;
-
-	@Nonnull
-	byte[] generateDefinitiveVerfuegungRuckforderungformular(
-		@Nonnull RueckforderungFormular rueckforderungFormular,
-		boolean writeProtected
-	) throws MergeDocException;
-
-	@Nonnull
 	byte[] generateMusterdokument(
-		@Nonnull GemeindeStammdaten gemeindeStammdaten
+		@Nonnull GemeindeStammdaten gemeindeStammdaten,
+		@Nonnull MusterDokumentTyp musterDokumentTyp
 	) throws MergeDocException;
 
 	@Nonnull
@@ -123,8 +112,9 @@ public interface PDFService {
 
 	@Nonnull
 	byte[] generateLATSReport(
-			@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer container,
-			@Nonnull Sprache sprache,
-			Einstellung lohnnormkosten,
-			Einstellung lohnnormkostenLessThan50) throws MergeDocException;
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer container,
+		@Nonnull Sprache sprache,
+		Einstellung lohnnormkosten,
+		Einstellung lohnnormkostenLessThan50
+	) throws MergeDocException;
 }

@@ -16,6 +16,7 @@
  *
  */
 
+import {copy} from 'angular';
 import {BenutzerRSX} from '../../../app/core/service/benutzerRSX.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
@@ -83,11 +84,11 @@ export class FreigabeController {
         this.benutzerRS
             .getBenutzerBgOrGemeindeForGemeinde(dossier.gemeinde.id)
             .then((responseBG: any) => {
-                this.userBGList = angular.copy(responseBG);
+                this.userBGList = copy(responseBG);
                 this.benutzerRS
                     .getBenutzerTsOrGemeindeForGemeinde(dossier.gemeinde.id)
                     .then((responseTS: any) => {
-                        this.userTSList = angular.copy(responseTS);
+                        this.userTSList = copy(responseTS);
                         this.setVerantwortliche(dossier);
                     });
             });

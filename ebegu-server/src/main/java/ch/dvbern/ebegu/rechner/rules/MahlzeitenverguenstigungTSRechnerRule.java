@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner.rules;
@@ -24,8 +24,6 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
-import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
 import ch.dvbern.ebegu.rechner.RechnerRuleParameterDTO;
@@ -34,7 +32,8 @@ import ch.dvbern.ebegu.util.MathUtil;
 /**
  * Regel die angewendet wird um die Mahlzeitenvergünstigung zu berechnen
  */
-public final class MahlzeitenverguenstigungTSRechnerRule implements RechnerRule {
+public final class MahlzeitenverguenstigungTSRechnerRule implements
+	RechnerRule {
 
 	private final Locale locale;
 
@@ -52,39 +51,65 @@ public final class MahlzeitenverguenstigungTSRechnerRule implements RechnerRule 
 		@Nonnull BGRechnerParameterDTO parameterDTO
 	) {
 		BigDecimal verguenstigung = BigDecimal.ZERO;
-		for (Map.Entry<BigDecimal, Integer> entry : kostenUndAnzMahlzeiten.entrySet()) {
-			BigDecimal verguenstigungEffektivMitBetreuung = parameterDTO.getMahlzeitenverguenstigungParameter().getVerguenstigungEffektiv(verguenstigungGemaessEinkommen,
-				entry.getKey(),
-				parameterDTO.getMahlzeitenverguenstigungParameter().getMinimalerElternbeitragMahlzeit());
+		for (Map.Entry<BigDecimal, Integer> entry : kostenUndAnzMahlzeiten
+			.entrySet()) {
+			BigDecimal verguenstigungEffektivMitBetreuung = parameterDTO
+				.getMahlzeitenverguenstigungParameter()
+				.getVerguenstigungEffektiv(
+					verguenstigungGemaessEinkommen,
+					entry.getKey(),
+					parameterDTO.getMahlzeitenverguenstigungParameter()
+						.getMinimalerElternbeitragMahlzeit()
+				);
 
-			verguenstigung = MathUtil.DEFAULT.addNullSafe(verguenstigung,
-				verguenstigungEffektivMitBetreuung.multiply(BigDecimal.valueOf(entry.getValue())));
+			verguenstigung = MathUtil.DEFAULT.addNullSafe(
+				verguenstigung,
+				verguenstigungEffektivMitBetreuung.multiply(
+					BigDecimal.valueOf(entry.getValue())
+				)
+			);
 		}
 
-		for (Map.Entry<BigDecimal, Integer> entry : kostenUndAnzMahlzeitenZweiWochen.entrySet()) {
-			BigDecimal verguenstigungEffektivMitBetreuung = parameterDTO.getMahlzeitenverguenstigungParameter().getVerguenstigungEffektiv(verguenstigungGemaessEinkommen,
-				entry.getKey(),
-				parameterDTO.getMahlzeitenverguenstigungParameter().getMinimalerElternbeitragMahlzeit());
+		for (Map.Entry<BigDecimal, Integer> entry : kostenUndAnzMahlzeitenZweiWochen
+			.entrySet()) {
+			BigDecimal verguenstigungEffektivMitBetreuung = parameterDTO
+				.getMahlzeitenverguenstigungParameter()
+				.getVerguenstigungEffektiv(
+					verguenstigungGemaessEinkommen,
+					entry.getKey(),
+					parameterDTO.getMahlzeitenverguenstigungParameter()
+						.getMinimalerElternbeitragMahlzeit()
+				);
 
-			verguenstigungEffektivMitBetreuung = MathUtil.DEFAULT.multiply(verguenstigungEffektivMitBetreuung, BigDecimal.valueOf(0.5));
+			verguenstigungEffektivMitBetreuung = MathUtil.DEFAULT.multiply(
+				verguenstigungEffektivMitBetreuung,
+				BigDecimal.valueOf(0.5)
+			);
 
-			verguenstigung = MathUtil.DEFAULT.addNullSafe(verguenstigung,
-				verguenstigungEffektivMitBetreuung.multiply(BigDecimal.valueOf(entry.getValue())));
+			verguenstigung = MathUtil.DEFAULT.addNullSafe(
+				verguenstigung,
+				verguenstigungEffektivMitBetreuung.multiply(
+					BigDecimal.valueOf(entry.getValue())
+				)
+			);
 		}
 		return verguenstigung;
 	}
 
 	@Override
-	public boolean isConfigueredForGemeinde(@Nonnull BGRechnerParameterDTO parameterDTO) {
+	public boolean isConfigueredForGemeinde(
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 		return parameterDTO.getMahlzeitenverguenstigungEnabled();
 	}
 
 	@Override
 	public boolean isRelevantForVerfuegung(
 		@Nonnull BGCalculationInput inputGemeinde,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
-		if(!inputGemeinde.getBetreuungsangebotTyp().isTagesschule()){
+		if (!inputGemeinde.getBetreuungsangebotTyp().isTagesschule()) {
 			return false;
 		}
 
@@ -102,39 +127,70 @@ public final class MahlzeitenverguenstigungTSRechnerRule implements RechnerRule 
 	public void prepareParameter(
 		@Nonnull BGCalculationInput inputGemeinde,
 		@Nonnull BGRechnerParameterDTO parameterDTO,
-		@Nonnull RechnerRuleParameterDTO rechnerParameter) {
+		@Nonnull RechnerRuleParameterDTO rechnerParameter
+	) {
 		BigDecimal verguenstigungGemaessEinkommen =
-			parameterDTO.getMahlzeitenverguenstigungParameter().getVerguenstigungProMahlzeitWithParam(inputGemeinde.getMassgebendesEinkommen(), inputGemeinde.isSozialhilfeempfaenger());
+			parameterDTO.getMahlzeitenverguenstigungParameter()
+				.getVerguenstigungProMahlzeitWithParam(
+					inputGemeinde.getMassgebendesEinkommen(),
+					inputGemeinde.isSozialhilfeempfaenger()
+				);
 
 		// Wenn die Vergünstigung pro Hauptmahlzeit grösser 0 ist
-		if (verguenstigungGemaessEinkommen.compareTo(BigDecimal.ZERO) > 0 && inputGemeinde.getVerguenstigungMahlzeitenBeantragt()) {
+		if (verguenstigungGemaessEinkommen.compareTo(BigDecimal.ZERO) > 0
+			&& inputGemeinde.getVerguenstigungMahlzeitenBeantragt()) {
 
 			BigDecimal verguenstigungMitBetreuung = getVerguenstigung(
 				verguenstigungGemaessEinkommen,
-				inputGemeinde.getTsInputMitBetreuung().getVerpflegungskostenUndMahlzeiten(),
-				inputGemeinde.getTsInputMitBetreuung().getVerpflegungskostenUndMahlzeitenZweiWochen(),
-				parameterDTO);
+				inputGemeinde.getTsInputMitBetreuung()
+					.getVerpflegungskostenUndMahlzeiten(),
+				inputGemeinde.getTsInputMitBetreuung()
+					.getVerpflegungskostenUndMahlzeitenZweiWochen(),
+				parameterDTO
+			);
 			BigDecimal verguenstigungOhneBetreuung = getVerguenstigung(
 				verguenstigungGemaessEinkommen,
-				inputGemeinde.getTsInputOhneBetreuung().getVerpflegungskostenUndMahlzeiten(),
-				inputGemeinde.getTsInputOhneBetreuung().getVerpflegungskostenUndMahlzeitenZweiWochen(),
-				parameterDTO);
+				inputGemeinde.getTsInputOhneBetreuung()
+					.getVerpflegungskostenUndMahlzeiten(),
+				inputGemeinde.getTsInputOhneBetreuung()
+					.getVerpflegungskostenUndMahlzeitenZweiWochen(),
+				parameterDTO
+			);
 
-			if (verguenstigungMitBetreuung.compareTo(BigDecimal.ZERO) > 0 ) {
-				inputGemeinde.setTsVerpflegungskostenVerguenstigtMitBetreuung(verguenstigungMitBetreuung);
-				inputGemeinde.addBemerkung(MsgKey.MAHLZEITENVERGUENSTIGUNG_TS, locale, parameterDTO.getMahlzeitenverguenstigungParameter().getMinimalerElternbeitragMahlzeit());
+			if (verguenstigungMitBetreuung.compareTo(BigDecimal.ZERO) > 0) {
+				inputGemeinde.setTsVerpflegungskostenVerguenstigtMitBetreuung(
+					verguenstigungMitBetreuung
+				);
+				inputGemeinde.addBemerkung(
+					MsgKey.MAHLZEITENVERGUENSTIGUNG_TS,
+					locale,
+					parameterDTO.getMahlzeitenverguenstigungParameter()
+						.getMinimalerElternbeitragMahlzeit()
+				);
 			}
-			if (verguenstigungOhneBetreuung.compareTo(BigDecimal.ZERO) > 0 ) {
-				inputGemeinde.setTsVerpflegungskostenVerguenstigtOhneBetreuung(verguenstigungOhneBetreuung);
-				inputGemeinde.addBemerkung(MsgKey.MAHLZEITENVERGUENSTIGUNG_TS, locale, parameterDTO.getMahlzeitenverguenstigungParameter().getMinimalerElternbeitragMahlzeit());
+			if (verguenstigungOhneBetreuung.compareTo(BigDecimal.ZERO) > 0) {
+				inputGemeinde.setTsVerpflegungskostenVerguenstigtOhneBetreuung(
+					verguenstigungOhneBetreuung
+				);
+				inputGemeinde.addBemerkung(
+					MsgKey.MAHLZEITENVERGUENSTIGUNG_TS,
+					locale,
+					parameterDTO.getMahlzeitenverguenstigungParameter()
+						.getMinimalerElternbeitragMahlzeit()
+				);
 			}
 		} else {
 			// Bemerkung, wenn keine Verguenstigung aufgrund Einkommen
-			inputGemeinde.addBemerkung(MsgKey.MAHLZEITENVERGUENSTIGUNG_TS_NEIN, locale);
+			inputGemeinde.addBemerkung(
+				MsgKey.MAHLZEITENVERGUENSTIGUNG_TS_NEIN,
+				locale
+			);
 		}
 	}
 
 	@Override
-	public void resetParameter(@Nonnull RechnerRuleParameterDTO rechnerParameter) {
+	public void resetParameter(
+		@Nonnull RechnerRuleParameterDTO rechnerParameter
+	) {
 	}
 }

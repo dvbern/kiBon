@@ -31,23 +31,44 @@ import static ch.dvbern.oss.lib.excelmerger.converters.StandardConverters.STRING
  */
 public enum MergeFieldMitarbeiterinnen implements MergeFieldProvider {
 
-	nachnameTitle(new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)),
-	vornameTitle(new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)),
-	anzahlVerGesucheTitle(new SimpleMergeField<>("anzahlVerGesucheTitle", STRING_CONVERTER)),
-	verfuegungAusgestelltTitle(new SimpleMergeField<>("verfuegungAusgestelltTitle", STRING_CONVERTER)),
-	vonTitle(new SimpleMergeField<>("vonTitle", STRING_CONVERTER)),
-	bisTitle(new SimpleMergeField<>("bisTitle", STRING_CONVERTER)),
-	mitarbeiterinnenTitle(new SimpleMergeField<>("mitarbeiterinnenTitle", STRING_CONVERTER)),
+	nachnameTitle(
+		new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)
+	), vornameTitle(
+		new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)
+	), anzahlVerGesucheTitle(
+		new SimpleMergeField<>("anzahlVerGesucheTitle", STRING_CONVERTER)
+	), verfuegungAusgestelltTitle(
+		new SimpleMergeField<>(
+			"verfuegungAusgestelltTitle",
+			STRING_CONVERTER
+		)
+	), vonTitle(new SimpleMergeField<>("vonTitle", STRING_CONVERTER)), bisTitle(
+		new SimpleMergeField<>("bisTitle", STRING_CONVERTER)
+	), mitarbeiterinnenTitle(
+		new SimpleMergeField<>("mitarbeiterinnenTitle", STRING_CONVERTER)
+	),
 
-	auswertungVon(new SimpleMergeField<>("auswertungVon", DATE_CONVERTER)),
-	auswertungBis(new SimpleMergeField<>("auswertungBis", DATE_CONVERTER)),
+	auswertungVon(
+		new SimpleMergeField<>("auswertungVon", DATE_CONVERTER)
+	), auswertungBis(new SimpleMergeField<>("auswertungBis", DATE_CONVERTER)),
 
-	repeatMitarbeiterinnenRow(new RepeatRowMergeField("repeatMitarbeiterinnenRow")),
+	repeatMitarbeiterinnenRow(
+		new RepeatRowMergeField("repeatMitarbeiterinnenRow")
+	),
 
-	name(new SimpleMergeField<>("name", STRING_CONVERTER)),
-	vorname(new SimpleMergeField<>("vorname", STRING_CONVERTER)),
-	verantwortlicheGesuche(new SimpleMergeField<>("verantwortlicheGesuche", BIGDECIMAL_CONVERTER)),
-	verfuegungenAusgestellt(new SimpleMergeField<>("verfuegungenAusgestellt", BIGDECIMAL_CONVERTER));
+	name(new SimpleMergeField<>("name", STRING_CONVERTER)), vorname(
+		new SimpleMergeField<>("vorname", STRING_CONVERTER)
+	), verantwortlicheGesuche(
+		new SimpleMergeField<>(
+			"verantwortlicheGesuche",
+			BIGDECIMAL_CONVERTER
+		)
+	), verfuegungenAusgestellt(
+		new SimpleMergeField<>(
+			"verfuegungenAusgestellt",
+			BIGDECIMAL_CONVERTER
+		)
+	);
 
 	@Nonnull
 	private final MergeField<?> mergeField;

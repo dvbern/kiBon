@@ -16,6 +16,7 @@
 package ch.dvbern.ebegu.api.resource;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,34 +24,36 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.PermitAll;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+import jakarta.annotation.security.PermitAll;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.institution.JaxInstitutionStammdatenConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdaten;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdatenSummary;
+import ch.dvbern.ebegu.api.dtos.admin.institution.JaxModuleGroupAnmeldungDTO;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
+import ch.dvbern.ebegu.entities.ModulTagesschuleGroup;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.services.InstitutionStammdatenService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import ch.dvbern.ebegu.services.tagesschule.ModulTagesschuleGroupService;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 /**
  * REST Resource fuer InstitutionStammdaten
  */
 @Path("institutionstammdaten")
 @Stateless
-@Api(description = "Resource für InstitutionsStammdaten (Daten zu einem konkreten Betreuungsangebot einer Institution)")
 @PermitAll // Grundsaetzliche fuer alle Rollen (nur Lesend): Datenabhaengig. -> Authorizer
 public class InstitutionStammdatenResource {
 
@@ -58,24 +61,38 @@ public class InstitutionStammdatenResource {
 	private InstitutionStammdatenService institutionStammdatenService;
 
 	@Inject
-	private JaxBConverter converter;
+	private ModulTagesschuleGroupService modulTagesschuleGroupService;
 
-	@ApiOperation(value = "Sucht die InstitutionsStammdaten mit der uebergebenen Id in der Datenbank",
-		response = JaxInstitutionStammdaten.class)
+	@Inject
+	private JaxInstitutionStammdatenConverter converter;
+
+	@Operation(
+		summary = "Sucht die InstitutionsStammdaten mit der uebergebenen Id in der Datenbank")
 	@Nullable
 	@GET
 	@Path("/id/{institutionStammdatenId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	public JaxInstitutionStammdaten findInstitutionStammdaten(
-		@Nonnull @NotNull @PathParam("institutionStammdatenId") JaxId institutionStammdatenJAXPId) {
+		@Nonnull
+		@NotNull
+		@PathParam("institutionStammdatenId") JaxId institutionStammdatenJAXPId
+	) {
 
 		Objects.requireNonNull(institutionStammdatenJAXPId.getId());
-		String institutionStammdatenID = converter.toEntityId(institutionStammdatenJAXPId);
+		String institutionStammdatenID = converter.toEntityId(
+			institutionStammdatenJAXPId
+		);
 		Optional<InstitutionStammdaten> optional =
-			institutionStammdatenService.findInstitutionStammdaten(institutionStammdatenID);
+			institutionStammdatenService.findInstitutionStammdaten(
+				institutionStammdatenID
+			);
 
-		return optional.map(institutionStammdaten -> converter.institutionStammdatenToJAX(institutionStammdaten))
+		return optional.map(
+			institutionStammdaten -> converter.institutionStammdatenToJAX(
+				institutionStammdaten
+			)
+		)
 			.orElse(null);
 	}
 
@@ -86,17 +103,20 @@ public class InstitutionStammdatenResource {
 	 * @param gesuchsperiodeJaxId id der Gesuchsperiode fuer die Stammdaten gesucht werden sollen
 	 * @return Liste mit allen InstitutionStammdaten die den Bedingungen folgen
 	 */
-	@ApiOperation(value = "Gibt alle Institutionsstammdaten zurueck, welche am angegebenen Datum existieren und aktiv "
-		+ "sind und welche (falls TS oder FI oder BG mit Filterung durch Gemeinde) zur angegebenen Gemeinde gehören",
-		responseContainer = "List", response = JaxInstitutionStammdaten.class)
+	@Operation(
+		summary = "Gibt alle Institutionsstammdaten zurueck, welche am angegebenen Datum existieren und aktiv "
+			+ "sind und welche (falls TS oder FI oder BG mit Filterung durch Gemeinde) zur angegebenen Gemeinde gehören")
 	@Nonnull
 	@GET
 	@Path("/gesuchsperiode/gemeinde/active")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<JaxInstitutionStammdatenSummary> getAllActiveInstitutionStammdatenByGesuchsperiodeAndGemeinde(
-		@Nonnull @NotNull @QueryParam("gesuchsperiodeId") JaxId gesuchsperiodeJaxId,
-		@Nonnull @NotNull @QueryParam("gemeindeId") JaxId gemeindeJaxId) {
+		@Nonnull
+		@NotNull
+		@QueryParam("gesuchsperiodeId") JaxId gesuchsperiodeJaxId,
+		@Nonnull @NotNull @QueryParam("gemeindeId") JaxId gemeindeJaxId
+	) {
 
 		Objects.requireNonNull(gesuchsperiodeJaxId);
 		Objects.requireNonNull(gesuchsperiodeJaxId.getId());
@@ -106,8 +126,19 @@ public class InstitutionStammdatenResource {
 		String gesuchsperiodeId = converter.toEntityId(gesuchsperiodeJaxId);
 		String gemeindeId = converter.toEntityId(gemeindeJaxId);
 
-		return institutionStammdatenService.getAllActiveInstitutionStammdatenByGesuchsperiodeAndGemeinde(gesuchsperiodeId, gemeindeId).stream()
-			.map(institutionStammdaten -> converter.institutionStammdatenSummaryToJAX(institutionStammdaten, new JaxInstitutionStammdatenSummary()))
+		return institutionStammdatenService
+			.getAllActiveInstitutionStammdatenByGesuchsperiodeAndGemeinde(
+				gesuchsperiodeId,
+				gemeindeId
+			)
+			.stream()
+			.map(
+				institutionStammdaten -> converter
+					.institutionStammdatenSummaryToJAX(
+						institutionStammdaten,
+						new JaxInstitutionStammdatenSummary()
+					)
+			)
 			.collect(Collectors.toList());
 	}
 
@@ -118,30 +149,40 @@ public class InstitutionStammdatenResource {
 	 * @param institutionJAXPId ID der gesuchten Institution
 	 * @return Die InstitutionStammdaten dieser Institution
 	 */
-	@ApiOperation(value = "Gibt alle Institutionsstammdaten der uebergebenen Institution zurueck, null falls keine "
-		+ "vorhanden.",
-		response = JaxInstitutionStammdaten.class)
+	@Operation(
+		summary = "Gibt alle Institutionsstammdaten der uebergebenen Institution zurueck, null falls keine "
+			+ "vorhanden.")
 	@Nullable
 	@GET
 	@Path("/institutionornull/{institutionId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	public JaxInstitutionStammdaten fetchInstitutionStammdatenByInstitution(
-		@Nonnull @NotNull @PathParam("institutionId") JaxId institutionJAXPId) {
+		@Nonnull
+		@NotNull
+		@PathParam("institutionId") JaxId institutionJAXPId
+	) {
 
 		Objects.requireNonNull(institutionJAXPId.getId());
 		String institutionID = converter.toEntityId(institutionJAXPId);
 		InstitutionStammdaten stammdaten =
-			institutionStammdatenService.fetchInstitutionStammdatenByInstitution(institutionID, true);
-		return null == stammdaten ? null : converter.institutionStammdatenToJAX(stammdaten);
+			institutionStammdatenService
+				.fetchInstitutionStammdatenByInstitution(
+					institutionID,
+					true
+				);
+		return null == stammdaten ?
+			null :
+			converter.institutionStammdatenToJAX(stammdaten);
 	}
 
 	/**
 	 * Gibt alle BetreuungsangebotsTypen zurueck, welche die Institutionen des eingeloggten Benutzers anbieten
 	 */
-	@ApiOperation(value = "Gibt alle BetreuungsangebotTypen aller Institutionen zurueck, zu welchen der eingeloggte " +
-		"Benutzer zugeordnet ist",
-		responseContainer = "List", response = JaxInstitutionStammdaten.class)
+	@Operation(
+		summary = "Gibt alle BetreuungsangebotTypen aller Institutionen zurueck, zu welchen der eingeloggte "
+			+
+			"Benutzer zugeordnet ist")
 	@SuppressWarnings("InstanceMethodNamingConvention")
 	@Nonnull
 	@GET
@@ -150,20 +191,64 @@ public class InstitutionStammdatenResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<BetreuungsangebotTyp> getBetreuungsangeboteForInstitutionenOfCurrentBenutzer() {
 		List<BetreuungsangebotTyp> result =
-			new ArrayList<>(institutionStammdatenService.getBetreuungsangeboteForInstitutionenOfCurrentBenutzer());
+			new ArrayList<>(
+				institutionStammdatenService
+					.getBetreuungsangeboteForInstitutionenOfCurrentBenutzer()
+			);
 		return result;
 	}
 
-	@ApiOperation(value = "Findet alle Tagesschulinstitutionen und Stammdaten für den momentan eingeloggten Benutzer."
-		+ "Gibt alle zurück für Administratoren.", responseContainer = "List", response = JaxInstitutionStammdatenSummary.class)
+	@Operation(
+		summary = "Findet alle Tagesschulinstitutionen und Stammdaten für den momentan eingeloggten Benutzer."
+			+ "Gibt alle zurück für Administratoren.")
 	@Nonnull
 	@GET
 	@Path("/tagesschulen/currentuser")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<JaxInstitutionStammdatenSummary> getTagesschulenForCurrentBenutzer() {
-		return institutionStammdatenService.getTagesschulenForCurrentBenutzer().stream()
-			.map(stammdaten -> converter.institutionStammdatenSummaryToJAX(stammdaten, new JaxInstitutionStammdatenSummary()))
+		return institutionStammdatenService.getTagesschulenForCurrentBenutzer()
+			.stream()
+			.map(
+				stammdaten -> converter
+					.institutionStammdatenSummaryToJAX(
+						stammdaten,
+						new JaxInstitutionStammdatenSummary()
+					)
+			)
+			.collect(Collectors.toList());
+	}
+
+	@Operation(
+		summary = "Gibt die TagesschulEinstellungsmodule mit der Information, ob es Anmeldungen gibt, zurück"
+	)
+	@Nonnull
+	@POST
+	@Path("/tagesschulen/einstellungen-angemeldet")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<JaxModuleGroupAnmeldungDTO> getModulTagesschuleGroupWithAnmeldung(
+		@Nonnull List<String> modulesToSearchAnmeldungenFor
+	) {
+		final Collection<ModulTagesschuleGroup> modulTagesschuleGroupWithAnmeldung =
+			modulTagesschuleGroupService.getModulTagesschuleGroupWithAnmeldung(
+				modulesToSearchAnmeldungenFor
+			);
+
+		return modulesToSearchAnmeldungenFor
+			.stream()
+			.map(
+				idToSearchFor -> JaxModuleGroupAnmeldungDTO.builder()
+					.groupId(idToSearchFor)
+					.hasAnmeldung(
+						modulTagesschuleGroupWithAnmeldung.stream()
+							.anyMatch(
+								withAnmeldung -> withAnmeldung.getId()
+									.equals(idToSearchFor)
+							)
+					)
+					.build()
+			)
 			.collect(Collectors.toList());
 	}
 }

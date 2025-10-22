@@ -22,15 +22,15 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.MitteilungStatus;
 import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
@@ -53,9 +53,11 @@ public class Mitteilung extends AbstractMutableEntity {
 
 	private static final long serialVersionUID = 489324250198016526L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_mitteilung_dossier_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_mitteilung_dossier_id"),
+		updatable = false)
 	private Dossier dossier;
 
 	@Nullable
@@ -63,17 +65,20 @@ public class Mitteilung extends AbstractMutableEntity {
 	@JoinColumn(foreignKey = @ForeignKey(name = "FK_mitteilung_betreuung_id"))
 	private Betreuung betreuung;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private MitteilungTeilnehmerTyp senderTyp;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private MitteilungTeilnehmerTyp empfaengerTyp;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
 	@JoinColumn(foreignKey = @ForeignKey(name = "FK_Mitteilung_sender"))
 	private Benutzer sender;
@@ -93,7 +98,8 @@ public class Mitteilung extends AbstractMutableEntity {
 	@Nullable
 	private String message;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private MitteilungStatus mitteilungStatus;
@@ -144,7 +150,9 @@ public class Mitteilung extends AbstractMutableEntity {
 		return empfaengerTyp;
 	}
 
-	public void setEmpfaengerTyp(@Nonnull MitteilungTeilnehmerTyp empfaengerTyp) {
+	public void setEmpfaengerTyp(
+		@Nonnull MitteilungTeilnehmerTyp empfaengerTyp
+	) {
 		this.empfaengerTyp = empfaengerTyp;
 	}
 
@@ -189,7 +197,9 @@ public class Mitteilung extends AbstractMutableEntity {
 		return mitteilungStatus;
 	}
 
-	public void setMitteilungStatus(@Nonnull MitteilungStatus mitteilungStatus) {
+	public void setMitteilungStatus(
+		@Nonnull MitteilungStatus mitteilungStatus
+	) {
 		this.mitteilungStatus = mitteilungStatus;
 	}
 
@@ -203,7 +213,8 @@ public class Mitteilung extends AbstractMutableEntity {
 	}
 
 	@Override
-	@SuppressWarnings({"OverlyComplexBooleanExpression", "OverlyComplexMethod", "PMD.CompareObjectsWithEquals"})
+	@SuppressWarnings({ "OverlyComplexBooleanExpression", "OverlyComplexMethod",
+		"PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -214,14 +225,28 @@ public class Mitteilung extends AbstractMutableEntity {
 			return false;
 		}
 		final Mitteilung otherMitteilung = (Mitteilung) other;
-		return EbeguUtil.isSame(getBetreuung(), otherMitteilung.getBetreuung()) &&
-			Objects.equals(getSender().getId(), otherMitteilung.getSender().getId()) &&
-			getSenderTyp() == otherMitteilung.getSenderTyp() &&
-			Objects.equals(getSentDatum(), otherMitteilung.getSentDatum()) &&
-			EbeguUtil.isSame(getEmpfaenger(), otherMitteilung.getEmpfaenger()) &&
-			getEmpfaengerTyp() == otherMitteilung.getEmpfaengerTyp() &&
-			Objects.equals(getSubject(), otherMitteilung.getSubject()) &&
-			Objects.equals(getMessage(), otherMitteilung.getMessage()) &&
+		return EbeguUtil.isSame(getBetreuung(), otherMitteilung.getBetreuung())
+			&&
+			Objects.equals(
+				getSender().getId(),
+				otherMitteilung.getSender().getId()
+			)
+			&&
+			getSenderTyp() == otherMitteilung.getSenderTyp()
+			&&
+			Objects.equals(getSentDatum(), otherMitteilung.getSentDatum())
+			&&
+			EbeguUtil.isSame(
+				getEmpfaenger(),
+				otherMitteilung.getEmpfaenger()
+			)
+			&&
+			getEmpfaengerTyp() == otherMitteilung.getEmpfaengerTyp()
+			&&
+			Objects.equals(getSubject(), otherMitteilung.getSubject())
+			&&
+			Objects.equals(getMessage(), otherMitteilung.getMessage())
+			&&
 			getMitteilungStatus() == otherMitteilung.getMitteilungStatus();
 	}
 

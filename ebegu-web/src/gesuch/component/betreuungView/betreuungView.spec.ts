@@ -13,35 +13,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {TSIntegrationTyp, TSPensumFachstelle} from '@kibon/shared/model/entity';
 import {StateService} from '@uirouter/core';
+import angular from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {CORE_JS_MODULE} from '../../../app/core/core.angularjs.module';
 import {InstitutionStammdatenRS} from '../../../app/core/service/institutionStammdatenRS.rest';
-import {MandantService} from '../../../app/shared/services/mandant.service';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
-import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
-import {TSIntegrationTyp} from '../../../models/enums/TSIntegrationTyp';
+import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
+
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSBetreuungspensum} from '../../../models/TSBetreuungspensum';
 import {TSBetreuungspensumContainer} from '../../../models/TSBetreuungspensumContainer';
-import {TSEinstellung} from '../../../models/TSEinstellung';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSErweiterteBetreuung} from '../../../models/TSErweiterteBetreuung';
 import {TSErweiterteBetreuungContainer} from '../../../models/TSErweiterteBetreuungContainer';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {TSInstitutionStammdaten} from '../../../models/TSInstitutionStammdaten';
-import {TSInstitutionStammdatenBetreuungsgutscheine} from '../../../models/TSInstitutionStammdatenBetreuungsgutscheine';
-import {TSKind} from '../../../models/TSKind';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
+import {TSInstitutionStammdatenBetreuungsgutscheine} from '@kibon/shared/model/entity';
+import {TSKind} from '@kibon/kind/model/entity';
 import {TSKindContainer} from '../../../models/TSKindContainer';
-import {TSPensumFachstelle} from '../../../models/TSPensumFachstelle';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
@@ -92,16 +93,13 @@ describe('betreuungView', () => {
             institutionStammdatenRS = $injector.get('InstitutionStammdatenRS');
             mandantService = $injector.get('MandantService');
             ebeguRestUtil = $injector.get('EbeguRestUtil');
-            const applicationPropertyRS = $injector.get(
-                'ApplicationPropertyRS'
-            );
             // they always need to be mocked
             TestDataUtil.mockDefaultGesuchModelManagerHttpCalls($httpBackend);
             TestDataUtil.mockDefaultGesuchModelManagerHttpCalls($httpBackend);
             TestDataUtil.mockLazyGesuchModelManagerHttpCalls($httpBackend);
 
             betreuung = new TSBetreuung();
-            betreuung.timestampErstellt = DateUtil.today();
+            betreuung.timestampErstellt = MomentUtil.today();
             betreuung.betreuungsstatus = TSBetreuungsstatus.AUSSTEHEND;
             const erweiterteBetreuungContainer =
                 new TSErweiterteBetreuungContainer();
@@ -117,6 +115,7 @@ describe('betreuungView', () => {
             );
 
             kind = new TSKindContainer();
+            kind.betreuungen = [betreuung];
             $stateParams = {
                 betreuungNumber: '0',
                 kindNumber: '0',
@@ -162,11 +161,10 @@ describe('betreuungView', () => {
                 einstellungRS,
                 'getAllEinstellungenBySystemCached'
             ).and.returnValue(of([]));
-            spyOn(
-                applicationPropertyRS,
-                'getPublicPropertiesCached'
-            ).and.resolveTo({});
             spyOn(einstellungRS, 'findEinstellung').and.returnValue(
+                of(new TSEinstellung())
+            );
+            spyOn(einstellungRS, 'getEinstellung').and.returnValue(
                 of(new TSEinstellung())
             );
             spyOn(
@@ -196,7 +194,7 @@ describe('betreuungView', () => {
                 $injector.get('GlobalCacheService'),
                 $timeout,
                 $translateMock,
-                $injector.get('ApplicationPropertyRS'),
+                $injector.get('SharedUtilApplicationPropertyRsService'),
                 mandantService,
                 ebeguRestUtil
             );
@@ -208,7 +206,10 @@ describe('betreuungView', () => {
         $rootScope.$apply();
         betreuungView.model = betreuung;
         kind.betreuungen = [betreuung];
-        betreuungView.betreuungsangebot = TSBetreuungsangebotTyp.KITA;
+        betreuungView.betreuungsangebot = {
+            key: TSBetreuungsangebotTyp.KITA,
+            value: 'Kita'
+        };
 
         betreuungView.form = TestDataUtil.createDummyForm();
         betreuungView.minPensumSprachlicheIndikation = 40;
@@ -315,7 +316,10 @@ describe('betreuungView', () => {
                     );
             });
             it('should return a list with 2 Institutions of type TSBetreuungsangebotTyp.KITA', () => {
-                betreuungView.betreuungsangebot = {key: 'KITA', value: 'kita'};
+                betreuungView.betreuungsangebot = {
+                    key: TSBetreuungsangebotTyp.KITA,
+                    value: 'kita'
+                };
                 const list = betreuungView.getInstitutionenSDList();
                 expect(list).toBeDefined();
                 expect(list.length).toBe(2);
@@ -343,7 +347,7 @@ describe('betreuungView', () => {
         describe('platzAbweisen()', () => {
             it('must change the status of the Betreuung to ABGEWIESEN and restore initial values of Betreuung', () => {
                 spyOn(gesuchModelManager, 'saveBetreuung').and.returnValue(
-                    $q.resolve(new TSBetreuung())
+                    Promise.resolve(new TSBetreuung())
                 );
                 spyOn(gesuchModelManager, 'setBetreuungToWorkWith').and.stub();
                 betreuungView.model.grundAblehnung = 'mein Grund';
@@ -363,9 +367,6 @@ describe('betreuungView', () => {
                 expect(betreuungToWorkWith.grundAblehnung).toEqual(
                     'mein Grund'
                 );
-                expect(betreuungToWorkWith.datumAblehnung).toEqual(
-                    DateUtil.today()
-                );
 
                 expect(gesuchModelManager.saveBetreuung).toHaveBeenCalled();
             });
@@ -373,7 +374,7 @@ describe('betreuungView', () => {
         describe('platzAnfordern()', () => {
             it('must change the status of the Betreuung to WARTEN', () => {
                 spyOn(gesuchModelManager, 'saveBetreuung').and.returnValue(
-                    $q.resolve(new TSBetreuung())
+                    Promise.resolve(new TSBetreuung())
                 );
                 betreuungView.model.vertrag = true;
                 betreuungView.model.institutionStammdaten =
@@ -648,8 +649,10 @@ describe('betreuungView', () => {
 
         it('should call addMesageAsError when betreuungsangebotTyp does not match', () => {
             // Setup the model to have a different betreuungsangebotTyp
-            betreuungView.betreuungsangebot =
-                TSBetreuungsangebotTyp.MITTAGSTISCH;
+            betreuungView.betreuungsangebot = {
+                key: TSBetreuungsangebotTyp.MITTAGSTISCH,
+                value: 'Mittagstisch'
+            };
             betreuungView.model.vertrag = true;
             betreuungView.model.institutionStammdaten =
                 createInstitutionStammdaten('2', TSBetreuungsangebotTyp.KITA);

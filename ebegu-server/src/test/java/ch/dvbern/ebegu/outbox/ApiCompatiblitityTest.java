@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox;
@@ -27,12 +27,12 @@ import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.enums.AbholungTagesschule;
 import ch.dvbern.ebegu.enums.BelegungTagesschuleModulIntervall;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.enums.Regelwerk;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import ch.dvbern.kibon.exchange.commons.tagesschulen.TagesschuleAnmeldungStatus;
 import ch.dvbern.kibon.exchange.commons.types.Intervall;
@@ -53,27 +53,51 @@ class ApiCompatiblitityTest {
 
 	static Stream<Arguments> enums() {
 		return Stream.of(
-			Arguments.of(ch.dvbern.kibon.exchange.commons.types.BetreuungsangebotTyp.class, BetreuungsangebotTyp.class),
-			Arguments.of(ch.dvbern.kibon.exchange.commons.types.EinschulungTyp.class, EinschulungTyp.class),
-			Arguments.of(ch.dvbern.kibon.exchange.commons.types.Geschlecht.class, Geschlecht.class),
-			Arguments.of(Intervall.class, BelegungTagesschuleModulIntervall.class),
+			Arguments.of(
+				ch.dvbern.kibon.exchange.commons.types.BetreuungsangebotTyp.class,
+				BetreuungsangebotTyp.class
+			),
+			Arguments.of(
+				ch.dvbern.kibon.exchange.commons.types.EinschulungTyp.class,
+				EinschulungTyp.class
+			),
+			Arguments.of(
+				ch.dvbern.kibon.exchange.commons.types.Geschlecht.class,
+				Geschlecht.class
+			),
+			Arguments.of(
+				Intervall.class,
+				BelegungTagesschuleModulIntervall.class
+			),
 			Arguments.of(Mandant.class, MandantIdentifier.class),
-			Arguments.of(ch.dvbern.kibon.exchange.commons.types.Regelwerk.class, Regelwerk.class),
+			Arguments.of(
+				ch.dvbern.kibon.exchange.commons.types.Regelwerk.class,
+				Regelwerk.class
+			),
 			Arguments.of(Wochentag.class, DayOfWeek.class),
 			Arguments.of(Zeiteinheit.class, PensumUnits.class),
-			Arguments.of(ch.dvbern.kibon.exchange.commons.tagesschulen.AbholungTagesschule.class, AbholungTagesschule.class)
+			Arguments.of(
+				ch.dvbern.kibon.exchange.commons.tagesschulen.AbholungTagesschule.class,
+				AbholungTagesschule.class
+			)
 		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("enums")
-	<E extends Enum<E>> void testSetupValidation(Class<E> exchangeEnum, Class<E> kiBonEnum) {
+	<E extends Enum<E>> void testSetupValidation(
+		Class<E> exchangeEnum,
+		Class<E> kiBonEnum
+	) {
 		assertThat(exchangeEnum, is(not(kiBonEnum)));
 	}
 
 	@ParameterizedTest
 	@MethodSource("enums")
-	<E extends Enum<E>> void testEnumMapping(Class<E> exchangeEnum, Class<E> kiBonEnum) {
+	<E extends Enum<E>> void testEnumMapping(
+		Class<E> exchangeEnum,
+		Class<E> kiBonEnum
+	) {
 		Set<String> exchangeNames = names(exchangeEnum);
 		Set<String> kiBonNames = names(kiBonEnum);
 
@@ -87,7 +111,12 @@ class ApiCompatiblitityTest {
 		//noinspection FuseStreamOperations
 		Set<String> kiBonNames = names(Betreuungsstatus.class).stream()
 			.filter(name -> name.startsWith("SCHULAMT_"))
-			.filter(name -> !name.equals(Betreuungsstatus.SCHULAMT_MUTATION_IGNORIERT.name()))
+			.filter(
+				name -> !name.equals(
+					Betreuungsstatus.SCHULAMT_MUTATION_IGNORIERT
+						.name()
+				)
+			)
 			.collect(Collectors.toSet());
 
 		assertThat(exchangeNames, containsInAnyOrder(kiBonNames.toArray()));

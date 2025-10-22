@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.gemeindekennzahlen;
@@ -39,9 +39,14 @@ public abstract class AbstractGemeindeKennzahlenEvent implements ExportedEvent {
 	public AbstractGemeindeKennzahlenEvent(
 		@Nonnull String gemeindeKennzahlenId,
 		@Nonnull byte[] gemeindeKennzahlen,
-		@Nonnull Schema schema) {
+		@Nonnull Schema schema
+	) {
 		this.gemeindeKennzahlenId = gemeindeKennzahlenId;
-		this.gemeindeKennzahlen = Arrays.copyOf(gemeindeKennzahlen, gemeindeKennzahlen.length);;
+		this.gemeindeKennzahlen = Arrays.copyOf(
+			gemeindeKennzahlen,
+			gemeindeKennzahlen.length
+		);
+		;
 		this.schema = schema;
 	}
 
@@ -57,7 +62,7 @@ public abstract class AbstractGemeindeKennzahlenEvent implements ExportedEvent {
 		return gemeindeKennzahlenId;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public byte[] getPayload() {
 		return Arrays.copyOf(gemeindeKennzahlen, gemeindeKennzahlen.length);

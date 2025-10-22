@@ -15,7 +15,6 @@
 
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
 
-import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Set;
 
@@ -26,13 +25,9 @@ import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.KindContainer;
-import ch.dvbern.ebegu.entities.Mandant;
-import ch.dvbern.ebegu.entities.PensumFachstelle;
 import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
-import ch.dvbern.ebegu.util.Constants;
-import ch.dvbern.ebegu.util.ServerMessageUtil;
 
 /**
  * Dokumente für Kinder:
@@ -57,12 +52,21 @@ public class SchwyzKindDokumente extends AbstractDokumente<Kind, Object> {
 
 		for (KindContainer kindContainer : kindContainers) {
 			final Kind kindJA = kindContainer.getKindJA();
-			add(getDokumentNachweisHoehereBeitraegeBeeintraechtigung(kindContainer, kindJA), anlageVerzeichnis);
+			add(
+				getDokumentNachweisHoehereBeitraegeBeeintraechtigung(
+					kindContainer,
+					kindJA
+				),
+				anlageVerzeichnis
+			);
 		}
 	}
 
 	@Nullable
-	private DokumentGrund getDokumentNachweisHoehereBeitraegeBeeintraechtigung(KindContainer kindContainer, @Nonnull Kind kindJA) {
+	private DokumentGrund getDokumentNachweisHoehereBeitraegeBeeintraechtigung(
+		KindContainer kindContainer,
+		@Nonnull Kind kindJA
+	) {
 		return getDokument(
 			DokumentTyp.NACHWEIS_HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG,
 			kindJA,
@@ -71,16 +75,25 @@ public class SchwyzKindDokumente extends AbstractDokumente<Kind, Object> {
 			DokumentGrundPersonType.KIND,
 			kindContainer.getKindNummer(),
 			DokumentGrundTyp.KINDER,
-			null);
+			null
+		);
 	}
 
 	@SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
 	@Override
-	public boolean isDokumentNeeded(@Nonnull DokumentTyp dokumentTyp, @Nullable Kind kind) {
-		if (dokumentTyp == DokumentTyp.NACHWEIS_HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG) {
+	public boolean isDokumentNeeded(
+		@Nonnull DokumentTyp dokumentTyp,
+		@Nullable Kind kind
+	) {
+		if (dokumentTyp
+			== DokumentTyp.NACHWEIS_HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG) {
 			return kind != null
-				&& Boolean.TRUE.equals(kind.getHoehereBeitraegeWegenBeeintraechtigungBeantragen())
-				&& Boolean.TRUE.equals(kind.getHoehereBeitraegeUnterlagenDigital());
+				&& Boolean.TRUE.equals(
+					kind.getHoehereBeitraegeWegenBeeintraechtigungBeantragen()
+				)
+				&& Boolean.TRUE.equals(
+					kind.getHoehereBeitraegeUnterlagenDigital()
+				);
 		}
 		return false;
 	}

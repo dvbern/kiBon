@@ -17,37 +17,34 @@ package ch.dvbern.ebegu.api.resource;
 
 import java.io.IOException;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Stateless;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.annotation.security.PermitAll;
+import jakarta.ejb.Stateless;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 import ch.dvbern.ebegu.api.resource.util.EbeguSchemaOutputResolver;
 import ch.dvbern.ebegu.dto.dataexport.v1.VerfuegungenExportDTO;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import com.fasterxml.jackson.module.jsonSchema.jakarta.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.jakarta.JsonSchemaGenerator;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 /**
  * Resource for Exporting data
  */
 @Path("export")
 @Stateless
-@Api(description = "This service provides methods to download verfuegungen in an export format for use by external "
-	+ "applications")
 @PermitAll
 public class ExportResource {
 
-	@ApiOperation("Exports a json Schema of the ExportDTOs")
+	@Operation(summary = "Exports a json Schema of the ExportDTOs")
 	@Path("/meta/jsonschema")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -57,17 +54,21 @@ public class ExportResource {
 		mapper.registerModule(new JavaTimeModule());
 		// configure mapper, if necessary, then create schema generator
 		JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(mapper);
-		JsonSchema schema = schemaGen.generateSchema(VerfuegungenExportDTO.class);
+		JsonSchema schema = schemaGen.generateSchema(
+			VerfuegungenExportDTO.class
+		);
 		return Response.ok(schema).build();
 
 	}
 
-	@ApiOperation(value = "Exports an xsd of the ExportDTOs", response = String.class)
+	@Operation(summary = "Exports an xsd of the ExportDTOs")
 	@Path("/meta/xsd")
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	public Response getXmlSchemaString() throws JAXBException, IOException {
-		JAXBContext jaxbContext = JAXBContext.newInstance(VerfuegungenExportDTO.class);
+		JAXBContext jaxbContext = JAXBContext.newInstance(
+			VerfuegungenExportDTO.class
+		);
 		EbeguSchemaOutputResolver sor = new EbeguSchemaOutputResolver();
 		jaxbContext.generateSchema(sor);
 		String schema = sor.getSchema();

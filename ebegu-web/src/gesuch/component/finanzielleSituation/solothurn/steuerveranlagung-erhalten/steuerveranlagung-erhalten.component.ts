@@ -14,7 +14,8 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
     selector: 'dv-steuerveranlagung-erhalten',
     templateUrl: './steuerveranlagung-erhalten.component.html',
     changeDetection: ChangeDetectionStrategy.Default,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class SteuerveranlagungErhaltenComponent {
     @Input() public model: TSFinanzielleSituationContainer;

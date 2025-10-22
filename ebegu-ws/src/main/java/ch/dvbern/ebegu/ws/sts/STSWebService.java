@@ -8,13 +8,38 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package ch.dvbern.ebegu.ws.sts;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStore.PrivateKeyEntry;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.SignatureException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Objects;
+
+import javax.xml.namespace.QName;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.Holder;
+import jakarta.xml.ws.Service;
 
 import ch.be.fin.sv.schemas.a7s.securityservice._20071010.zertstsservice.AuthenticationFault;
 import ch.be.fin.sv.schemas.a7s.securityservice._20071010.zertstsservice.BusinessFault;
@@ -27,24 +52,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.xml.namespace.QName;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Holder;
-import javax.xml.ws.Service;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.*;
-import java.security.KeyStore.PrivateKeyEntry;
-import java.security.cert.CertificateException;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Objects;
-
 /**
  * Service zum aufrufen des WebService Batch-STS welcher eine SAML Assertion fuer den
  * Batchuser der durch den mitgeschickten privateKey identifiziert wird abholt
@@ -56,15 +63,18 @@ public class STSWebService {
 		"http://sv.fin.be.ch/schemas/A7S/securityService/20071010/ZertSTSService";
 	private static final String SERVICE_NAME = "ZertSTSWebService";
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(STSWebService.class.getSimpleName());
-	public static final String METHOD_NAME_INIT_STS_WEB_SERVICE_PORT = "initSTSWebServicePort";
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		STSWebService.class.getSimpleName()
+	);
+	public static final String METHOD_NAME_INIT_STS_WEB_SERVICE_PORT =
+		"initSTSWebServicePort";
 
 	/**
 	 * Fixed text expected as the prefix and algorithm of the signed security test string.
 	 */
 	public static final String SECURITY_PREFIX_FOR_SIGNATURE = "ZertSTSRequest";
 	public static final String DATE_SIGNATURE_PATTERN = "yyyy.MM.dd HH:mm:ss";
-		// the Signature MUST be constructed using this pattern
+	// the Signature MUST be constructed using this pattern
 
 	@Inject
 	private STSConfigManager stsConfigManager;
@@ -98,33 +108,51 @@ public class STSWebService {
 			);
 
 		} catch (AuthenticationFault | BusinessFault fault) {
-			throw new STSZertifikatServiceException("getSamlAssertionForBatchuser",
-				"Could not get a Saml Assertion from STS because of " + fault.getMessage(), fault);
+			throw new STSZertifikatServiceException(
+				"getSamlAssertionForBatchuser",
+				"Could not get a Saml Assertion from STS because of "
+					+ fault.getMessage(),
+				fault
+			);
 		}
 
-		return new STSWebServiceResult(assertionHolder.value, renewalTokenHolder.value);
+		return new STSWebServiceResult(
+			assertionHolder.value,
+			renewalTokenHolder.value
+		);
 
 	}
 
-	private byte[] getSignatureValue(String applicationName, LocalDateTime requestTime)
+	private byte[] getSignatureValue(
+		String applicationName,
+		LocalDateTime requestTime
+	)
 		throws STSZertifikatServiceException {
 
 		PrivateKey privateSTSKey = getSTSPrivateKeyLazy();
 
 		STSWebServiceSignatureGenerator sigGenerator =
-			new STSWebServiceSignatureGenerator(SECURITY_PREFIX_FOR_SIGNATURE,
-				DATE_SIGNATURE_PATTERN, privateSTSKey);
+			new STSWebServiceSignatureGenerator(
+				SECURITY_PREFIX_FOR_SIGNATURE,
+				DATE_SIGNATURE_PATTERN,
+				privateSTSKey
+			);
 		try {
-			return sigGenerator.getSignatureValue(sigGenerator.getRequestProof(applicationName, requestTime));
-		} catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+			return sigGenerator.getSignatureValue(
+				sigGenerator.getRequestProof(applicationName, requestTime)
+			);
+		} catch (NoSuchAlgorithmException | InvalidKeyException |
+				 SignatureException e) {
 			throw new STSZertifikatServiceException(
 				"getSignatureValue",
 				"Could not sign message for STS-Webservice call",
-				e);
+				e
+			);
 		}
 	}
 
-	private PrivateKey getSTSPrivateKeyLazy() throws STSZertifikatServiceException {
+	private PrivateKey getSTSPrivateKeyLazy()
+		throws STSZertifikatServiceException {
 		if (this.privateKey == null) {
 			this.privateKey = loadSTSPrivateKeyFromFile();
 
@@ -132,37 +160,55 @@ public class STSWebService {
 		return this.privateKey;
 	}
 
-	private PrivateKey loadSTSPrivateKeyFromFile() throws STSZertifikatServiceException {
+	private PrivateKey loadSTSPrivateKeyFromFile()
+		throws STSZertifikatServiceException {
 		String keyStorePW = stsConfigManager.getEbeguSTSKeystorePW();
 		if (keyStorePW == null) {
 			LOGGER.error(
 				"Password for STS KeyStore was not set. Please set it using the {} property ",
-				EbeguConfigurationImpl.EBEGU_PERSONENSUCHE_STS_KEYSTORE_PW);
+				EbeguConfigurationImpl.EBEGU_PERSONENSUCHE_STS_KEYSTORE_PW
+			);
 		}
 		final KeyStore keyStore =
-			readKeystoreFromFile(stsConfigManager.getEbeguSTSKeystorePath(), keyStorePW);
+			readKeystoreFromFile(
+				stsConfigManager.getEbeguSTSKeystorePath(),
+				keyStorePW
+			);
 
 		try {
-			final String pkAlias = stsConfigManager.getEbeguSTSPrivateKeyAlias();
-			final boolean pkExists = keyStore.entryInstanceOf(pkAlias, PrivateKeyEntry.class);
+			final String pkAlias = stsConfigManager
+				.getEbeguSTSPrivateKeyAlias();
+			final boolean pkExists = keyStore.entryInstanceOf(
+				pkAlias,
+				PrivateKeyEntry.class
+			);
 			if (!pkExists) {
-				String msg = String.format("keystore does not contain privateKey entry for alias %s", pkAlias);
+				String msg = String.format(
+					"keystore does not contain privateKey entry for alias %s",
+					pkAlias
+				);
 				LOGGER.error(msg);
 				throw new IllegalArgumentException(msg);
 			}
 
 			return (PrivateKey) keyStore.getKey(
 				pkAlias,
-				stsConfigManager.getEbeguSTSPrivateKeyPW().toCharArray());
-		} catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+				stsConfigManager.getEbeguSTSPrivateKeyPW().toCharArray()
+			);
+		} catch (KeyStoreException | NoSuchAlgorithmException |
+				 UnrecoverableKeyException e) {
 			throw new STSZertifikatServiceException(
 				"getSTSPrivateKeyLazy",
 				"Problem beim lesen des PrivateKey fuer den STS Webservice zur GERES Abfrage",
-				e);
+				e
+			);
 		}
 	}
 
-	private static KeyStore readKeystoreFromFile(String pathToKeyStore, String keyStorePassword)
+	private static KeyStore readKeystoreFromFile(
+		String pathToKeyStore,
+		String keyStorePassword
+	)
 		throws STSZertifikatServiceException {
 		InputStream inputStream = null;
 		try {
@@ -170,17 +216,21 @@ public class STSWebService {
 			if (!Files.exists(Paths.get(pathToKeyStore))) {
 				LOGGER.warn(
 					"Keystore for GERES seems does not exists, did you set the relevant System Property correctly? "
-						+ "ebegu.personensuche.sts.keystore.path ");
+						+ "ebegu.personensuche.sts.keystore.path "
+				);
 			}
 			inputStream = Files.newInputStream(Paths.get(pathToKeyStore));
 			keystore.load(inputStream, keyStorePassword.toCharArray());
 			inputStream.close();
 			return keystore;
-		} catch (IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException | RuntimeException e) {
+		} catch (IOException | KeyStoreException | NoSuchAlgorithmException |
+				 CertificateException | RuntimeException e) {
 			throw new STSZertifikatServiceException(
 				"readKeyStoreFromFile",
-				"Something went wrong reading keystore from " + pathToKeyStore,
-				e);
+				"Something went wrong reading keystore from "
+					+ pathToKeyStore,
+				e
+			);
 		} finally {
 			if (inputStream != null) {
 				try {
@@ -203,7 +253,6 @@ public class STSWebService {
 		return port;
 	}
 
-	@SuppressWarnings("PMD.NcssMethodCount")
 	private void initSTSWebServicePort() throws STSZertifikatServiceException {
 		LOGGER.info("Initialising ZertSTSService:");
 		if (port == null) {
@@ -213,7 +262,8 @@ public class STSWebService {
 				throw new STSZertifikatServiceException(
 					METHOD_NAME_INIT_STS_WEB_SERVICE_PORT,
 					"Es wurde keine Endpunkt URL definiert fuer den "
-						+ "ZertSTSService");
+						+ "ZertSTSService"
+				);
 			}
 
 			LOGGER.info("PersonenSucheSTSService Endpoint: {}", endpointURL);
@@ -225,10 +275,17 @@ public class STSWebService {
 					url = new URL(wsdlURL);
 					LOGGER.info("PersonenSucheSTSService WSDL: {}", url);
 					Object content = url.getContent();
-					LOGGER.info("PersonenSucheSTSService WSDL-Content: {}", content);
+					LOGGER.info(
+						"PersonenSucheSTSService WSDL-Content: {}",
+						content
+					);
 				} catch (IOException e) {
 					url = null;
-					LOGGER.error("PersonenSucheSTSService WSDL not found at url : {}", wsdlURL, e);
+					LOGGER.error(
+						"PersonenSucheSTSService WSDL not found at url : {}",
+						wsdlURL,
+						e
+					);
 				}
 			}
 
@@ -236,31 +293,54 @@ public class STSWebService {
 				if (url == null) {
 					// WSDL url wurde nicht  mitgeliefert. Die EndpointURL?wsdl geht also nicht und wir nehmen ein
 					// fixes.
-					url = STSWebService.class.getResource("/wsdl/sts/ZertSTSWebservice.wsdl");
+					url = STSWebService.class.getResource(
+						"/wsdl/sts/ZertSTSWebservice.wsdl"
+					);
 					Objects.requireNonNull(
 						url,
 						"WSDL konnte unter der angegebenen URI nicht gefunden werden. Kann Service-Port nicht "
-							+ "erstellen");
+							+ "erstellen"
+					);
 					LOGGER.info("PersonenSucheService WSDL URL: {}", url);
 				}
-				LOGGER.info("PersonenSucheSTSService TargetNameSpace: " + TARGET_NAME_SPACE);
-				LOGGER.info("PersonenSucheSTSService ServiceName: " + SERVICE_NAME);
+				LOGGER.info(
+					"PersonenSucheSTSService TargetNameSpace: "
+						+ TARGET_NAME_SPACE
+				);
+				LOGGER.info(
+					"PersonenSucheSTSService ServiceName: " + SERVICE_NAME
+				);
 				final QName qname = new QName(TARGET_NAME_SPACE, SERVICE_NAME);
 				LOGGER.info("PersonenSucheSTSService QName: {}", qname);
 				final Service service = Service.create(url, qname);
-				service.setHandlerResolver(portInfo -> Collections.singletonList(wssSecurityGeresAssertionExtractionHandler));
+				service.setHandlerResolver(
+					portInfo -> Collections.singletonList(
+						wssSecurityGeresAssertionExtractionHandler
+					)
+				);
 
-				LOGGER.info("PersonenSucheSTSService Service created: {}", service);
+				LOGGER.info(
+					"PersonenSucheSTSService Service created: {}",
+					service
+				);
 				port = service.getPort(ZertSTSService.class);
 				LOGGER.info("PersonenSucheSTSService Port created: {}", port);
 				final BindingProvider bp = (BindingProvider) port;
 
-				bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointURL);
+				bp.getRequestContext()
+					.put(
+						BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+						endpointURL
+					);
 
 			} catch (RuntimeException e) {
 				port = null;
-				throw new STSZertifikatServiceException(METHOD_NAME_INIT_STS_WEB_SERVICE_PORT,
-					"Could not create service-port ZertSTSService for endpoint " + endpointURL, e);
+				throw new STSZertifikatServiceException(
+					METHOD_NAME_INIT_STS_WEB_SERVICE_PORT,
+					"Could not create service-port ZertSTSService for endpoint "
+						+ endpointURL,
+					e
+				);
 			}
 		}
 		LOGGER.info("ZertSTSService erfolgreich initialisiert");

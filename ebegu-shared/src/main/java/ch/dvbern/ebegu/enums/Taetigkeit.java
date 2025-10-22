@@ -24,17 +24,12 @@ import java.util.stream.Collectors;
  */
 public enum Taetigkeit {
 
-	ANGESTELLT,
-	SELBSTAENDIG,
-	AUSBILDUNG,
-	RAV,
-	GESUNDHEITLICHE_EINSCHRAENKUNGEN,
-	INTEGRATION_BESCHAEFTIGUNSPROGRAMM,
-	FREIWILLIGENARBEIT;
-
+	ANGESTELLT, SELBSTAENDIG, AUSBILDUNG, RAV, GESUNDHEITLICHE_EINSCHRAENKUNGEN, INTEGRATION_BESCHAEFTIGUNSPROGRAMM, FREIWILLIGENARBEIT;
 
 	public static List<Taetigkeit> getTaetigkeitenForAsiv() {
 		List<Taetigkeit> list = Arrays.asList(Taetigkeit.values());
-		return list.stream().filter(taetigkeit -> taetigkeit != FREIWILLIGENARBEIT).collect(Collectors.toList());
+		return list.stream()
+			.filter(taetigkeit -> taetigkeit != FREIWILLIGENARBEIT)
+			.collect(Collectors.toList());
 	}
 }

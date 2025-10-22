@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.kafka;
@@ -24,8 +24,8 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.ReceivedEvent;
 import ch.dvbern.ebegu.persistence.TransactionHelper;
@@ -40,7 +40,9 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class MessageProcessor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MessageProcessor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		MessageProcessor.class
+	);
 
 	@Inject
 	private ReceivedEventService receivedEventService;
@@ -50,58 +52,105 @@ public class MessageProcessor {
 
 	public <T, H extends BaseEventHandler<T>> void process(
 		@Nonnull ConsumerRecord<String, T> record,
-		@Nonnull H handler) {
+		@Nonnull H handler
+	) {
 
 		try {
 			String key = record.key();
 			Headers headers = record.headers();
 
-			Optional<String> eventIdOpt = getHeaderValue(headers, EventUtil.MESSAGE_HEADER_EVENT_ID);
+			Optional<String> eventIdOpt = getHeaderValue(
+				headers,
+				EventUtil.MESSAGE_HEADER_EVENT_ID
+			);
 			if (eventIdOpt.isEmpty()) {
-				LOG.warn("Skipping Kafka message with key = {}, eventId header was missing", key);
+				LOG.warn(
+					"Skipping Kafka message with key = {}, eventId header was missing",
+					key
+				);
 
 				return;
 			}
 
 			String eventId = eventIdOpt.get();
 			if (receivedEventService.isSuccessfullyProcessed(eventId)) {
-				LOG.warn("Skipping Kafka message with key = {}, id = {}, event was already processed", key, eventId);
+				LOG.warn(
+					"Skipping Kafka message with key = {}, id = {}, event was already processed",
+					key,
+					eventId
+				);
 
 				return;
 			}
 
-			Optional<String> eventTypeOpt = getHeaderValue(headers, EventUtil.MESSAGE_HEADER_EVENT_TYPE);
+			Optional<String> eventTypeOpt = getHeaderValue(
+				headers,
+				EventUtil.MESSAGE_HEADER_EVENT_TYPE
+			);
 			if (eventTypeOpt.isEmpty()) {
-				LOG.warn("Skipping Kafka message with key = {}, eventType header was missing", key);
+				LOG.warn(
+					"Skipping Kafka message with key = {}, eventType header was missing",
+					key
+				);
 
 				return;
 			}
 
-			Optional<String> clientNameOpt = getHeaderValue(headers, EventUtil.MESSAGE_HEADER_CLIENT_NAME);
+			Optional<String> clientNameOpt = getHeaderValue(
+				headers,
+				EventUtil.MESSAGE_HEADER_CLIENT_NAME
+			);
 			if (clientNameOpt.isEmpty()) {
-				LOG.warn("Skipping Kafka message with key = {}, clientName header was missing", key);
+				LOG.warn(
+					"Skipping Kafka message with key = {}, clientName header was missing",
+					key
+				);
 				return;
 			}
 
 			LocalDateTime eventTime =
-				LocalDateTime.ofInstant(Instant.ofEpochMilli(record.timestamp()), ZoneId.systemDefault());
+				LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(record.timestamp()),
+					ZoneId.systemDefault()
+				);
 
 			T eventDTO = record.value();
 			String eventType = eventTypeOpt.get();
-			ReceivedEvent receivedEvent = new ReceivedEvent(eventId, key, eventType, eventTime, eventDTO.toString());
+			ReceivedEvent receivedEvent = new ReceivedEvent(
+				eventId,
+				key,
+				eventType,
+				eventTime,
+				eventDTO.toString()
+			);
 			if (receivedEventService.isObsolete(receivedEvent)) {
-				LOG.warn("Skipping Kafka message with key = {}, event is obsolete: {}", key, receivedEvent);
+				LOG.warn(
+					"Skipping Kafka message with key = {}, event is obsolete: {}",
+					key,
+					receivedEvent
+				);
 				return;
 			}
 
 			try {
 				transactionHelper.runInNewTransaction(() -> {
-					handler.onEvent(key, eventTime, eventType, eventDTO, clientNameOpt.get(), eventId);
+					handler.onEvent(
+						key,
+						eventTime,
+						eventType,
+						eventDTO,
+						clientNameOpt.get(),
+						eventId
+					);
 					receivedEventService.processingSuccess(receivedEvent);
 				});
 			} catch (Exception e) {
 				receivedEventService.processingFailure(receivedEvent, e);
-				LOG.error("Message processing failure. Persisting ReceivedEvent " + record, e);
+				LOG.error(
+					"Message processing failure. Persisting ReceivedEvent "
+						+ record,
+					e
+				);
 			}
 		} catch (Exception e) {
 			LOG.error("Error in message processing of " + record, e);
@@ -109,7 +158,10 @@ public class MessageProcessor {
 	}
 
 	@Nonnull
-	private Optional<String> getHeaderValue(@Nonnull Headers headers, @Nonnull String key) {
+	private Optional<String> getHeaderValue(
+		@Nonnull Headers headers,
+		@Nonnull String key
+	) {
 		return Optional.ofNullable(headers.lastHeader(key))
 			.map(Header::value)
 			.map(value -> new String(value, StandardCharsets.UTF_8));

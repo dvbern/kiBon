@@ -13,11 +13,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {TSAbholungTagesschule} from './enums/TSAbholungTagesschule';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
-import {TSBelegungTagesschuleModul} from './TSBelegungTagesschuleModul';
 import {TSFleischOption} from './enums/TSFleischOption';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {TSBelegungTagesschuleModul} from './TSBelegungTagesschuleModul';
 
 export class TSBelegungTagesschule extends TSAbstractMutableEntity {
     public belegungTagesschuleModule: Array<TSBelegungTagesschuleModul> = [];

@@ -26,8 +26,17 @@ public class InfomaStammdatenFinanzbuchhaltung extends InfomaStammdaten {
 	}
 
 	@Nonnull
-	public static String with(@NonNull Zahlung zahlung, long belegnummer, Locale locale) {
-		InfomaStammdatenFinanzbuchhaltung stammdaten = new InfomaStammdatenFinanzbuchhaltung(zahlung, belegnummer, locale);
+	public static String with(
+		@NonNull Zahlung zahlung,
+		long belegnummer,
+		Locale locale
+	) {
+		InfomaStammdatenFinanzbuchhaltung stammdaten =
+			new InfomaStammdatenFinanzbuchhaltung(
+				zahlung,
+				belegnummer,
+				locale
+			);
 		return stammdaten.toString();
 	}
 
@@ -40,7 +49,8 @@ public class InfomaStammdatenFinanzbuchhaltung extends InfomaStammdaten {
 	@Override
 	@Nonnull
 	protected String getKontonummer(@Nonnull Zahlung zahlung) {
-		if (zahlung.getZahlungsauftrag().getZahlungslaufTyp() == ZahlungslaufTyp.GEMEINDE_INSTITUTION) {
+		if (zahlung.getZahlungsauftrag().getZahlungslaufTyp()
+			== ZahlungslaufTyp.GEMEINDE_INSTITUTION) {
 			return KONTONUMMER_FINANZBUCHHALTUNG_INSTITUTION;
 		}
 		return KONTONUMMER_FINANZBUCHHALTUNG_ELTERN;

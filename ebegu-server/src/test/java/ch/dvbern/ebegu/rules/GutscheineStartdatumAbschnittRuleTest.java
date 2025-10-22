@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -38,7 +38,10 @@ public class GutscheineStartdatumAbschnittRuleTest {
 	private Betreuung betreuung = TestDataUtil.createDefaultBetreuung();
 
 	private final GutscheineStartdatumAbschnittRule rule =
-		new GutscheineStartdatumAbschnittRule(Constants.DEFAULT_GUELTIGKEIT, Constants.DEFAULT_LOCALE);
+		new GutscheineStartdatumAbschnittRule(
+			Constants.DEFAULT_GUELTIGKEIT,
+			Constants.DEFAULT_LOCALE
+		);
 
 	@Before
 	public void setUp() {
@@ -49,62 +52,110 @@ public class GutscheineStartdatumAbschnittRuleTest {
 
 	@Test
 	public void testStartdatumVorPeriode() {
-		List<VerfuegungZeitabschnitt> results = rule.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
+		List<VerfuegungZeitabschnitt> results = rule
+			.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
 
 		Assert.assertEquals(1, results.size());
 		VerfuegungZeitabschnitt result = results.get(0);
 
-		Assert.assertTrue(result.getBgCalculationInputAsiv().isAbschnittLiegtNachBEGUStartdatum());
-		Assert.assertEquals(Constants.GESUCHSPERIODE_17_18, result.getGueltigkeit());
+		Assert.assertTrue(
+			result.getBgCalculationInputAsiv()
+				.isAbschnittLiegtNachBEGUStartdatum()
+		);
+		Assert.assertEquals(
+			Constants.GESUCHSPERIODE_17_18,
+			result.getGueltigkeit()
+		);
 	}
 
 	@Test
 	public void testStartdatumNachPeriode() {
 		LocalDate startdatum = LocalDate.of(2050, 8, 1);
-		betreuung.getKind().getGesuch().getDossier().getGemeinde().setBetreuungsgutscheineStartdatum(startdatum);
+		betreuung.getKind()
+			.getGesuch()
+			.getDossier()
+			.getGemeinde()
+			.setBetreuungsgutscheineStartdatum(startdatum);
 
-		List<VerfuegungZeitabschnitt> results = rule.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
+		List<VerfuegungZeitabschnitt> results = rule
+			.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
 
 		Assert.assertEquals(1, results.size());
 		VerfuegungZeitabschnitt result = results.get(0);
-		Assert.assertFalse(result.getBgCalculationInputAsiv().isAbschnittLiegtNachBEGUStartdatum());
-		Assert.assertEquals(Constants.GESUCHSPERIODE_17_18, result.getGueltigkeit());
+		Assert.assertFalse(
+			result.getBgCalculationInputAsiv()
+				.isAbschnittLiegtNachBEGUStartdatum()
+		);
+		Assert.assertEquals(
+			Constants.GESUCHSPERIODE_17_18,
+			result.getGueltigkeit()
+		);
 	}
 
 	@Test
 	public void testSameStartdatum() {
 		LocalDate startdatum = Constants.GESUCHSPERIODE_17_18.getGueltigAb();
-		betreuung.getKind().getGesuch().getDossier().getGemeinde().setBetreuungsgutscheineStartdatum(startdatum);
+		betreuung.getKind()
+			.getGesuch()
+			.getDossier()
+			.getGemeinde()
+			.setBetreuungsgutscheineStartdatum(startdatum);
 
-		List<VerfuegungZeitabschnitt> results = rule.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
+		List<VerfuegungZeitabschnitt> results = rule
+			.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
 
 		Assert.assertEquals(1, results.size());
 		VerfuegungZeitabschnitt result = results.get(0);
-		Assert.assertTrue(result.getBgCalculationInputAsiv().isAbschnittLiegtNachBEGUStartdatum());
-		Assert.assertEquals(Constants.GESUCHSPERIODE_17_18, result.getGueltigkeit());
+		Assert.assertTrue(
+			result.getBgCalculationInputAsiv()
+				.isAbschnittLiegtNachBEGUStartdatum()
+		);
+		Assert.assertEquals(
+			Constants.GESUCHSPERIODE_17_18,
+			result.getGueltigkeit()
+		);
 	}
 
 	@Test
 	public void testStartdatumEqualsPeriodeEnddatum() {
 		LocalDate startdatum = Constants.GESUCHSPERIODE_17_18_BIS;
-		betreuung.getKind().getGesuch().getDossier().getGemeinde().setBetreuungsgutscheineStartdatum(startdatum);
+		betreuung.getKind()
+			.getGesuch()
+			.getDossier()
+			.getGemeinde()
+			.setBetreuungsgutscheineStartdatum(startdatum);
 
-		List<VerfuegungZeitabschnitt> results = rule.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
+		List<VerfuegungZeitabschnitt> results = rule
+			.createVerfuegungsZeitabschnitteIfApplicable(betreuung);
 
 		Assert.assertEquals(2, results.size());
 
 		VerfuegungZeitabschnitt beforeStartdatumResult = results.get(0);
-		Assert.assertFalse(beforeStartdatumResult.getBgCalculationInputAsiv().isAbschnittLiegtNachBEGUStartdatum());
+		Assert.assertFalse(
+			beforeStartdatumResult.getBgCalculationInputAsiv()
+				.isAbschnittLiegtNachBEGUStartdatum()
+		);
 		DateRange rangeBeforeStartdatum = new DateRange(
 			Constants.GESUCHSPERIODE_17_18_AB,
-			Constants.GESUCHSPERIODE_17_18_BIS.minusDays(1));
-		Assert.assertEquals(rangeBeforeStartdatum, beforeStartdatumResult.getGueltigkeit());
+			Constants.GESUCHSPERIODE_17_18_BIS.minusDays(1)
+		);
+		Assert.assertEquals(
+			rangeBeforeStartdatum,
+			beforeStartdatumResult.getGueltigkeit()
+		);
 
 		VerfuegungZeitabschnitt afterStartdatumResult = results.get(1);
-		Assert.assertTrue(afterStartdatumResult.getBgCalculationInputAsiv().isAbschnittLiegtNachBEGUStartdatum());
+		Assert.assertTrue(
+			afterStartdatumResult.getBgCalculationInputAsiv()
+				.isAbschnittLiegtNachBEGUStartdatum()
+		);
 		DateRange rangeAfterStartdatum = new DateRange(
 			Constants.GESUCHSPERIODE_17_18_BIS,
-			Constants.GESUCHSPERIODE_17_18_BIS);
-		Assert.assertEquals(rangeAfterStartdatum, afterStartdatumResult.getGueltigkeit());
+			Constants.GESUCHSPERIODE_17_18_BIS
+		);
+		Assert.assertEquals(
+			rangeAfterStartdatum,
+			afterStartdatumResult.getGueltigkeit()
+		);
 	}
 }

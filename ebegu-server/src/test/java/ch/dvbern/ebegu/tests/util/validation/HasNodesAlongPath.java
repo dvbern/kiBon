@@ -13,8 +13,8 @@ package ch.dvbern.ebegu.tests.util.validation;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.validation.Path;
-import javax.validation.Path.Node;
+import jakarta.validation.Path;
+import jakarta.validation.Path.Node;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Description;
@@ -27,14 +27,17 @@ import static org.hamcrest.CoreMatchers.equalTo;
 
 /**
  * @see
- * <a href="https://github.com/testinfected/hamcrest-matchers/tree/master/validation-matchers/src/main/java/org/testinfected/hamcrest/validation">source</a>
+ * <a
+ * href="https://github.com/testinfected/hamcrest-matchers/tree/master/validation-matchers/src/main/java/org/testinfected/hamcrest/validation">source</a>
  */
 public class HasNodesAlongPath extends TypeSafeMatcher<Path> {
 
 	@Nonnull
 	private final List<Matcher<? super Node>> nodeMatchers;
 
-	public HasNodesAlongPath(@Nonnull List<Matcher<? super Node>> nodeMatchers) {
+	public HasNodesAlongPath(
+		@Nonnull List<Matcher<? super Node>> nodeMatchers
+	) {
 		this.nodeMatchers = nodeMatchers;
 	}
 
@@ -45,7 +48,12 @@ public class HasNodesAlongPath extends TypeSafeMatcher<Path> {
 
 	@Override
 	public void describeTo(@Nonnull Description description) {
-		description.appendList(StringUtils.EMPTY, "->", StringUtils.EMPTY, nodeMatchers);
+		description.appendList(
+			StringUtils.EMPTY,
+			"->",
+			StringUtils.EMPTY,
+			nodeMatchers
+		);
 	}
 
 	@Nonnull
@@ -59,8 +67,14 @@ public class HasNodesAlongPath extends TypeSafeMatcher<Path> {
 	}
 
 	@Nonnull
-	public static Matcher<? super Node> nodeWithName(@Nonnull Matcher<? super String> nameMatcher) {
-		return new FeatureMatcher<Node, String>(nameMatcher, StringUtils.EMPTY, StringUtils.EMPTY) {
+	public static Matcher<? super Node> nodeWithName(
+		@Nonnull Matcher<? super String> nameMatcher
+	) {
+		return new FeatureMatcher<Node, String>(
+			nameMatcher,
+			StringUtils.EMPTY,
+			StringUtils.EMPTY
+		) {
 			@Override
 			protected String featureValueOf(Node actual) {
 				return actual.getName();

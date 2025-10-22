@@ -89,9 +89,11 @@ const getGesuchsperiodeTab = (gesuchsperiodeIndex: number) => {
 };
 
 const getGesuchsperiodeModulTable = (gesuchsperiodeIndex: number) => {
-    return cy.getByData(
-        'institution.gesuchsperiode.module.table-' + gesuchsperiodeIndex
-    );
+    return cy
+        .getByData(
+            'institution.gesuchsperiode.module.table-' + gesuchsperiodeIndex
+        )
+        .find('table');
 };
 
 const getAddModuleButton = (moduleIndex: number) => {

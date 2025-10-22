@@ -13,13 +13,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IComponentOptions, ILogService, IPromise, IQService} from 'angular';
+import {
+    copy,
+    IComponentOptions,
+    ILogService,
+    IPromise,
+    IQService
+} from 'angular';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSEinstellungKey} from '../../../../../models/enums/TSEinstellungKey';
-import {TSRole} from '../../../../../models/enums/TSRole';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSEinstellungKey} from '../../../../../admin/einstellungen/TSEinstellungKey';
+import {TSRole} from '@kibon/shared/model/enums';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {TSEinkommensverschlechterung} from '../../../../../models/TSEinkommensverschlechterung';
 import {TSEinkommensverschlechterungContainer} from '../../../../../models/TSEinkommensverschlechterungContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
@@ -32,6 +38,7 @@ import {AbstractGesuchViewController} from '../../../abstractGesuchView';
 import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;
+import {firstValueFrom} from 'rxjs';
 
 export class EinkommensverschlechterungViewComponentConfig
     implements IComponentOptions
@@ -113,7 +120,7 @@ export class EinkommensverschlechterungViewController extends AbstractGesuchView
             parsedBasisJahrPlusNum,
             parsedGesuchstelllerNum
         );
-        this.initialModel = angular.copy(this.model);
+        this.initialModel = copy(this.model);
         this.allowedRoles =
             this.TSRoleUtil.getAllRolesButTraegerschaftInstitution();
         this.initViewModel();
@@ -126,57 +133,56 @@ export class EinkommensverschlechterungViewController extends AbstractGesuchView
         const fiSiConToWorkWith = this.model.getFiSiConToWorkWith();
 
         this.showSelbstaendig =
-            fiSiConToWorkWith.finanzielleSituationJA.isSelbstaendig() ||
+            fiSiConToWorkWith.finanzielleSituationJA?.isSelbstaendig() ||
             EbeguUtil.isNotNullOrUndefined(
                 this.model.getEkvToWorkWith().geschaeftsgewinnBasisjahr
             );
 
         this.showErsatzeinkommenSelbststaendigkeit =
-            fiSiConToWorkWith.finanzielleSituationJA.hasErsatzeinkommenSelbststaendigkeit() ||
+            fiSiConToWorkWith.finanzielleSituationJA?.hasErsatzeinkommenSelbststaendigkeit() ||
             EbeguUtil.isNotNullOrUndefined(
                 this.model.getEkvToWorkWith()
                     .ersatzeinkommenSelbststaendigkeitBasisjahr
             );
 
         if (
-            !fiSiConToWorkWith.finanzielleSituationGS ||
+            !fiSiConToWorkWith?.finanzielleSituationGS ||
             !this.model.getEkvToWorkWith_GS()
         ) {
             return;
         }
 
         this.showSelbstaendigGS =
-            fiSiConToWorkWith.finanzielleSituationGS.isSelbstaendig() ||
+            fiSiConToWorkWith.finanzielleSituationGS?.isSelbstaendig() ||
             EbeguUtil.isNotNullOrUndefined(
                 this.model.getEkvToWorkWith_GS().geschaeftsgewinnBasisjahr
             );
 
         this.showErsatzeinkommenSelbststaendigkeitGS =
-            fiSiConToWorkWith.finanzielleSituationGS.isSelbstaendig() ||
+            fiSiConToWorkWith.finanzielleSituationGS?.isSelbstaendig() ||
             EbeguUtil.isNotNullOrUndefined(
                 this.model.getEkvToWorkWith_GS().geschaeftsgewinnBasisjahr
             );
     }
 
     private initEinstellungen(): Promise<void> {
-        return this.einstellungRS
-            .getAllEinstellungenBySystemCached(
+        return firstValueFrom(
+            this.einstellungRS.getAllEinstellungenBySystemCached(
                 this.gesuchModelManager.getGesuchsperiode().id
             )
-            .toPromise()
-            .then(einstellungen => {
-                const showErsatzeinkommen = einstellungen.find(
-                    einstellung =>
-                        einstellung.key ===
-                        TSEinstellungKey.ZUSATZLICHE_FELDER_ERSATZEINKOMMEN
-                );
-                if (showErsatzeinkommen === undefined) {
-                    this.ersatzeinkommenSelbststaendigkeitActivated = false;
-                    return;
-                }
-                this.ersatzeinkommenSelbststaendigkeitActivated =
-                    showErsatzeinkommen.getValueAsBoolean();
-            });
+        ).then(einstellungen => {
+            const showErsatzeinkommen = einstellungen.find(
+                einstellung =>
+                    einstellung.key ===
+                    TSEinstellungKey.ZUSATZLICHE_FELDER_ERSATZEINKOMMEN
+            );
+            if (showErsatzeinkommen === undefined) {
+                this.ersatzeinkommenSelbststaendigkeitActivated = false;
+                return;
+            }
+            this.ersatzeinkommenSelbststaendigkeitActivated =
+                showErsatzeinkommen.getValueAsBoolean();
+        });
     }
 
     public showSelbstaendigClicked(): void {

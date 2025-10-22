@@ -18,7 +18,7 @@ package ch.dvbern.ebegu.services;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
@@ -35,11 +35,14 @@ public interface ErwerbspensumService {
 	 * @param erwerbspensumContainer Das Erwerbspensum das gespeichert werden soll
 	 */
 	@Nonnull
-	ErwerbspensumContainer saveErwerbspensum(@Valid @Nonnull ErwerbspensumContainer erwerbspensumContainer, Gesuch gesuch);
+	ErwerbspensumContainer saveErwerbspensum(
+		@Valid @Nonnull ErwerbspensumContainer erwerbspensumContainer,
+		Gesuch gesuch
+	);
 
 	/**
 	 * @param key PK (id) des ErwerbspensumContainers
-	 * @return Optional mit dem  ErwerbspensumContainers mit fuer den gegebenen Key
+	 * @return Optional mit dem ErwerbspensumContainers mit fuer den gegebenen Key
 	 */
 	@Nonnull
 	Optional<ErwerbspensumContainer> findErwerbspensum(@Nonnull String key);
@@ -49,7 +52,10 @@ public interface ErwerbspensumService {
 	 *
 	 * @param erwerbspensumContainerID der Entfernt werden soll
 	 */
-	void removeErwerbspensum(@Nonnull String erwerbspensumContainerID, Gesuch gesuch);
+	void removeErwerbspensum(
+		@Nonnull String erwerbspensumContainerID,
+		Gesuch gesuch
+	);
 
 	/**
 	 * Gibt zurück, ob fuer das uebergebene Gesuch ein Erwerbspensum erfasst werden muss.
@@ -59,5 +65,7 @@ public interface ErwerbspensumService {
 	boolean isErwerbspensumRequired(@Nonnull Gesuch gesuch);
 
 	@Nonnull
-	Optional<UnbezahlterUrlaub> findUnbezahlterUrlaub(@Nonnull String unbezahlterUrlaubId);
+	Optional<UnbezahlterUrlaub> findUnbezahlterUrlaub(
+		@Nonnull String unbezahlterUrlaubId
+	);
 }

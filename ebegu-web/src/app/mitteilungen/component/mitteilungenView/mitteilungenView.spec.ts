@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
 import * as angular from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {DossierRS} from '../../../../gesuch/service/dossierRS.rest';
@@ -23,17 +24,17 @@ import {GesuchRS} from '../../../../gesuch/service/gesuchRS.rest';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
 import {TSMitteilungStatus} from '../../../../models/enums/TSMitteilungStatus';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
 import {TSDossier} from '../../../../models/TSDossier';
 import {TSFall} from '../../../../models/TSFall';
-import {TSGemeinde} from '../../../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
 import {TSGemeindeStammdaten} from '../../../../models/TSGemeindeStammdaten';
 import {TSMitteilung} from '../../../../models/TSMitteilung';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {DVMitteilungListController} from '../../../core/component/dv-mitteilung-list/dv-mitteilung-list';
-import {BetreuungRS} from '../../../core/service/betreuungRS.rest';
 import {InstitutionRS} from '../../../core/service/institutionRS.rest';
 import {MitteilungRS} from '../../../core/service/mitteilungRS.rest';
 import {MITTEILUNGEN_JS_MODULE} from '../../mitteilungen.module';

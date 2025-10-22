@@ -52,7 +52,8 @@ import {
                 })
             )
         ])
-    ]
+    ],
+    standalone: false
 })
 export class DvSwitchComponent<T> implements OnChanges {
     // It is allowed to set any values as switchOption. switchValue will then have the select (<any>) option

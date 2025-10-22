@@ -11,7 +11,10 @@ public final class InfomaUtil {
 	}
 
 	@Nonnull
-	public static String normalizeAndAbbreviate(@Nullable String text, int maxLength) {
+	public static String normalizeAndAbbreviate(
+		@Nullable String text,
+		int maxLength
+	) {
 		text = normalize(text);
 		// Kuerzen auf die maximal zugelassene Laenge
 		text = StringUtils.abbreviate(text, maxLength);

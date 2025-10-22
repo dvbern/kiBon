@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -28,8 +28,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
@@ -40,8 +40,8 @@ import ch.dvbern.ebegu.entities.ModulTagesschuleGroup;
 import ch.dvbern.ebegu.enums.AbholungTagesschule;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.BelegungTagesschuleModulIntervall;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.inbox.services.BetreuungEventHelper;
 import ch.dvbern.ebegu.kafka.BaseEventHandler;
 import ch.dvbern.ebegu.kafka.EventType;
@@ -60,9 +60,12 @@ import org.slf4j.LoggerFactory;
 import static ch.dvbern.ebegu.outbox.institution.InstitutionEventConverter.toErlaubteIntervalle;
 
 @ApplicationScoped
-public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<TagesschuleBestaetigungEventDTO> {
+public class AnmeldungBestaetigungEventHandler extends
+	BaseEventHandler<TagesschuleBestaetigungEventDTO> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AnmeldungBestaetigungEventHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		AnmeldungBestaetigungEventHandler.class
+	);
 
 	@Inject
 	private BetreuungService betreuungService;
@@ -85,10 +88,16 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 		@Nonnull EventType eventType,
 		@Nonnull String key,
 		@Nonnull TagesschuleBestaetigungEventDTO dto,
-		@Nonnull String clientName) {
+		@Nonnull String clientName
+	) {
 
 		String refnr = dto.getRefnr();
-		EventMonitor eventMonitor = new EventMonitor(betreuungMonitoringService, eventTime, refnr, clientName);
+		EventMonitor eventMonitor = new EventMonitor(
+			betreuungMonitoringService,
+			eventTime,
+			refnr,
+			clientName
+		);
 		Processing processing = attemptProcessing(eventMonitor, dto);
 
 		if (!processing.isProcessingSuccess()) {
@@ -96,39 +105,76 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 			LOG.warn(
 				"AnmeldungBestaetigung Event für Tagesschule Anmeldung mit RefNr: {} nicht verarbeitet: {}",
 				refnr,
-				message);
-			eventMonitor.record("Eine Anmeldungbestaetigung Event wurde nicht verarbeitet: " + message);
+				message
+			);
+			eventMonitor.record(
+				"Eine Anmeldungbestaetigung Event wurde nicht verarbeitet: "
+					+ message
+			);
 		}
 	}
 
 	@Nonnull
-	protected Processing attemptProcessing(@Nonnull EventMonitor eventMonitor, @Nonnull TagesschuleBestaetigungEventDTO dto) {
-		return betreuungService.findAnmeldungenTagesschuleByReferenzNummer(dto.getRefnr())
-			.map(anmeldung -> processEventForAnmeldungBestaetigung(eventMonitor, dto, anmeldung))
-			.orElseGet(() -> Processing.failure("AnmeldungTagesschule nicht gefunden."));
+	protected Processing attemptProcessing(
+		@Nonnull EventMonitor eventMonitor,
+		@Nonnull TagesschuleBestaetigungEventDTO dto
+	) {
+		return betreuungService.findAnmeldungenTagesschuleByReferenzNummer(
+			dto.getRefnr()
+		)
+			.map(
+				anmeldung -> processEventForAnmeldungBestaetigung(
+					eventMonitor,
+					dto,
+					anmeldung
+				)
+			)
+			.orElseGet(
+				() -> Processing.failure(
+					"AnmeldungTagesschule nicht gefunden."
+				)
+			);
 	}
 
 	@Nonnull
 	private Processing processEventForAnmeldungBestaetigung(
 		@Nonnull EventMonitor eventMonitor,
 		@Nonnull TagesschuleBestaetigungEventDTO dto,
-		@Nonnull AnmeldungTagesschule anmeldung) {
+		@Nonnull AnmeldungTagesschule anmeldung
+	) {
 
-		if (anmeldung.extractGesuchsperiode().getStatus() != GesuchsperiodeStatus.AKTIV) {
+		if (anmeldung.extractGesuchsperiode().getStatus()
+			!= GesuchsperiodeStatus.AKTIV) {
 			return Processing.failure("Die Gesuchsperiode ist nicht aktiv.");
 		}
 
 		if (eventMonitor.isTooLate(anmeldung.getTimestampMutiert())) {
 			return Processing.failure(
-				"Die AnmeldungTagesschule wurde verändert, nachdem das AnmeldungTagesschuleEvent generiert wurde.");
+				"Die AnmeldungTagesschule wurde verändert, nachdem das AnmeldungTagesschuleEvent generiert wurde."
+			);
 		}
 
 		InstitutionExternalClients clients =
-			betreuungEventHelper.getExternalClients(eventMonitor.getClientName(), anmeldung);
+			betreuungEventHelper.getExternalClients(
+				eventMonitor.getClientName(),
+				anmeldung
+			);
 
 		return clients.getRelevantClient()
-			.map(client -> processEventForExternalClient(eventMonitor, dto, anmeldung, client.getGueltigkeit()))
-			.orElseGet(() -> betreuungEventHelper.clientNotFoundFailure(eventMonitor.getClientName(), anmeldung));
+			.map(
+				client -> processEventForExternalClient(
+					eventMonitor,
+					dto,
+					anmeldung,
+					client.getGueltigkeit()
+				)
+			)
+			.orElseGet(
+				() -> betreuungEventHelper.clientNotFoundFailure(
+					eventMonitor.getClientName(),
+					anmeldung
+				)
+			);
 	}
 
 	@Nonnull
@@ -136,41 +182,57 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 		@Nonnull EventMonitor eventMonitor,
 		@Nonnull TagesschuleBestaetigungEventDTO dto,
 		@Nonnull AnmeldungTagesschule anmeldung,
-		@Nonnull DateRange clientGueltigkeit) {
+		@Nonnull DateRange clientGueltigkeit
+	) {
 
-		DateRange gesuchsperiode = anmeldung.extractGesuchsperiode().getGueltigkeit();
-		Optional<DateRange> overlap = gesuchsperiode.getOverlap(clientGueltigkeit);
+		DateRange gesuchsperiode = anmeldung.extractGesuchsperiode()
+			.getGueltigkeit();
+		Optional<DateRange> overlap = gesuchsperiode.getOverlap(
+			clientGueltigkeit
+		);
 		if (overlap.isEmpty()) {
-			return Processing.failure("Der Client hat innerhalb der Periode keine Berechtigung.");
+			return Processing.failure(
+				"Der Client hat innerhalb der Periode keine Berechtigung."
+			);
 		}
 
-		if (anmeldung.getBetreuungsstatus() == Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST) {
+		if (anmeldung.getBetreuungsstatus()
+			== Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST) {
 			return handleBestaetigung(eventMonitor, dto, anmeldung);
 		}
 
-		return Processing.failure("Die AnmeldungTagesschule hat einen ungültigen Status: "
-			+ anmeldung.getBetreuungsstatus());
+		return Processing.failure(
+			"Die AnmeldungTagesschule hat einen ungültigen Status: "
+				+ anmeldung.getBetreuungsstatus()
+		);
 	}
 
 	@Nonnull
 	private Processing handleBestaetigung(
 		@Nonnull EventMonitor eventMonitor,
 		@Nonnull TagesschuleBestaetigungEventDTO dto,
-		@Nonnull AnmeldungTagesschule anmeldung) {
+		@Nonnull AnmeldungTagesschule anmeldung
+	) {
 
 		if (anmeldung.getBelegungTagesschule() == null) {
-			return Processing.failure("Anmeldung hat einen Datenproblem, keine BelegungTagesschule");
+			return Processing.failure(
+				"Anmeldung hat einen Datenproblem, keine BelegungTagesschule"
+			);
 		}
 
 		for (var modul : dto.getModule()) {
-			if (StringUtils.isBlank(modul.getModulId()) && StringUtils.isBlank(modul.getFremdId())) {
+			if (StringUtils.isBlank(modul.getModulId())
+				&& StringUtils.isBlank(modul.getFremdId())) {
 				return Processing.failure(
-					"Anmeldung kann nicht behandelt werden: Ein Modul hat weder fremdId noch modulId");
+					"Anmeldung kann nicht behandelt werden: Ein Modul hat weder fremdId noch modulId"
+				);
 			}
 		}
 
 		if (dto.getModule().isEmpty()) {
-			return Processing.failure("TagesschuleBestaetigungEventDTO hat keine Module");
+			return Processing.failure(
+				"TagesschuleBestaetigungEventDTO hat keine Module"
+			);
 		}
 
 		updateAnmeldung(eventMonitor, dto, anmeldung);
@@ -178,11 +240,15 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 		if (anmeldungDirektUebernehmen(anmeldung.extractGesuch().getStatus())) {
 			//noinspection ResultOfMethodCallIgnored
 			verfuegungService.anmeldungTagesschuleUebernehmen(anmeldung);
-			eventMonitor.record("Tagesschuleanmeldung wurde automatisch uebergenommen");
+			eventMonitor.record(
+				"Tagesschuleanmeldung wurde automatisch uebergenommen"
+			);
 		} else {
 			//noinspection ResultOfMethodCallIgnored
 			betreuungService.anmeldungSchulamtModuleAkzeptieren(anmeldung);
-			eventMonitor.record("Tagesschuleanmeldung wurde automatisch akzeptiert");
+			eventMonitor.record(
+				"Tagesschuleanmeldung wurde automatisch akzeptiert"
+			);
 		}
 
 		return Processing.success();
@@ -198,9 +264,12 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 	private void updateAnmeldung(
 		@Nonnull EventMonitor eventMonitor,
 		@Nonnull TagesschuleBestaetigungEventDTO dto,
-		@Nonnull AnmeldungTagesschule anmeldung) {
+		@Nonnull AnmeldungTagesschule anmeldung
+	) {
 
-		BelegungTagesschule belegung = getOrCreateBelegungTagesschule(anmeldung);
+		BelegungTagesschule belegung = getOrCreateBelegungTagesschule(
+			anmeldung
+		);
 
 		if (dto.getEintrittsdatum() != null) {
 			belegung.setEintrittsdatum(dto.getEintrittsdatum());
@@ -209,10 +278,14 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 			belegung.setPlanKlasse(dto.getPlanKlasse());
 		}
 		if (dto.getAbholung() != null) {
-			belegung.setAbholungTagesschule(AbholungTagesschule.valueOf(dto.getAbholung().name()));
+			belegung.setAbholungTagesschule(
+				AbholungTagesschule.valueOf(dto.getAbholung().name())
+			);
 		}
 		if (dto.getAbweichungZweitesSemester() != null) {
-			belegung.setAbweichungZweitesSemester(dto.getAbweichungZweitesSemester());
+			belegung.setAbweichungZweitesSemester(
+				dto.getAbweichungZweitesSemester()
+			);
 		}
 		if (dto.getBemerkung() != null) {
 			belegung.setBemerkung(dto.getBemerkung());
@@ -222,8 +295,12 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 	}
 
 	@Nonnull
-	private BelegungTagesschule getOrCreateBelegungTagesschule(@Nonnull AnmeldungTagesschule anmeldung) {
-		BelegungTagesschule belegungTagesschule = Optional.ofNullable(anmeldung.getBelegungTagesschule())
+	private BelegungTagesschule getOrCreateBelegungTagesschule(
+		@Nonnull AnmeldungTagesschule anmeldung
+	) {
+		BelegungTagesschule belegungTagesschule = Optional.ofNullable(
+			anmeldung.getBelegungTagesschule()
+		)
 			.orElseGet(BelegungTagesschule::new);
 
 		anmeldung.setBelegungTagesschule(belegungTagesschule);
@@ -235,29 +312,58 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 		@Nonnull EventMonitor eventMonitor,
 		@Nonnull TagesschuleBestaetigungEventDTO dto,
 		@Nonnull BelegungTagesschule belegung,
-		@Nonnull AnmeldungTagesschule anmeldung) {
+		@Nonnull AnmeldungTagesschule anmeldung
+	) {
 
-		Set<ModulTagesschuleGroup> available = modulTagesschuleService.findModulTagesschuleGroup(anmeldung);
+		Set<ModulTagesschuleGroup> available = modulTagesschuleService
+			.findModulTagesschuleGroup(anmeldung);
 
-		Map<String, ModulTagesschuleGroup> moduleById = dto.getModule().stream()
+		Map<String, ModulTagesschuleGroup> moduleById = dto.getModule()
+			.stream()
 			.map(ModulAuswahlDTO::getModulId)
 			.filter(Objects::nonNull)
 			.distinct()
-			.flatMap(id -> available.stream().filter(m -> id.equals(m.getId())).findAny().stream())
+			.flatMap(
+				id -> available.stream()
+					.filter(m -> id.equals(m.getId()))
+					.findAny()
+					.stream()
+			)
 			.collect(Collectors.toMap(AbstractEntity::getId, m -> m));
 
-		Map<String, ModulTagesschuleGroup> moduleByFremdId = dto.getModule().stream()
+		Map<String, ModulTagesschuleGroup> moduleByFremdId = dto.getModule()
+			.stream()
 			.map(ModulAuswahlDTO::getFremdId)
 			.filter(Objects::nonNull)
 			.distinct()
-			.flatMap(id -> available.stream().filter(m -> id.equals(m.getFremdId())).findAny().stream())
-			.collect(Collectors.toMap(ModulTagesschuleGroup::getFremdId, m -> m));
+			.flatMap(
+				id -> available.stream()
+					.filter(m -> id.equals(m.getFremdId()))
+					.findAny()
+					.stream()
+			)
+			.collect(
+				Collectors.toMap(
+					ModulTagesschuleGroup::getFremdId,
+					m -> m
+				)
+			);
 
-		Set<BelegungTagesschuleModul> existingModule = Sets.newHashSet(belegung.getBelegungTagesschuleModule());
+		Set<BelegungTagesschuleModul> existingModule = Sets.newHashSet(
+			belegung.getBelegungTagesschuleModule()
+		);
 		belegung.getBelegungTagesschuleModule().clear();
 
-		List<BelegungTagesschuleModul> module = dto.getModule().stream()
-			.flatMap(toBelegungTagesschuleModul(eventMonitor, moduleById, moduleByFremdId, existingModule))
+		List<BelegungTagesschuleModul> module = dto.getModule()
+			.stream()
+			.flatMap(
+				toBelegungTagesschuleModul(
+					eventMonitor,
+					moduleById,
+					moduleByFremdId,
+					existingModule
+				)
+			)
 			.collect(Collectors.toList());
 
 		module.forEach(m -> {
@@ -271,14 +377,31 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 		@Nonnull EventMonitor eventMonitor,
 		@Nonnull Map<String, ModulTagesschuleGroup> moduleById,
 		@Nonnull Map<String, ModulTagesschuleGroup> moduleByFremdId,
-		@Nonnull Set<BelegungTagesschuleModul> existingModule) {
+		@Nonnull Set<BelegungTagesschuleModul> existingModule
+	) {
 
-		return modulAuswahlDTO -> findModulTagesschule(eventMonitor, modulAuswahlDTO, moduleById, moduleByFremdId)
+		return modulAuswahlDTO -> findModulTagesschule(
+			eventMonitor,
+			modulAuswahlDTO,
+			moduleById,
+			moduleByFremdId
+		)
 			.map(modulTagesschule -> {
-				BelegungTagesschuleModulIntervall intervall = getIntervall(modulAuswahlDTO);
+				BelegungTagesschuleModulIntervall intervall = getIntervall(
+					modulAuswahlDTO
+				);
 
-				return findExistingBelegungTagesschuleModul(existingModule, modulTagesschule, intervall)
-					.orElseGet(() -> createNewBelegungTagesschuleModul(modulTagesschule, intervall));
+				return findExistingBelegungTagesschuleModul(
+					existingModule,
+					modulTagesschule,
+					intervall
+				)
+					.orElseGet(
+						() -> createNewBelegungTagesschuleModul(
+							modulTagesschule,
+							intervall
+						)
+					);
 			})
 			.stream();
 	}
@@ -288,19 +411,31 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 		@Nonnull EventMonitor eventMonitor,
 		@Nonnull ModulAuswahlDTO dto,
 		@Nonnull Map<String, ModulTagesschuleGroup> moduleById,
-		@Nonnull Map<String, ModulTagesschuleGroup> moduleByFremdId) {
+		@Nonnull Map<String, ModulTagesschuleGroup> moduleByFremdId
+	) {
 
 		String fremdId = dto.getFremdId();
 		if (fremdId != null && moduleByFremdId.containsKey(fremdId)) {
-			return verifyModulTagesschule(eventMonitor, dto, moduleByFremdId.get(fremdId));
+			return verifyModulTagesschule(
+				eventMonitor,
+				dto,
+				moduleByFremdId.get(fremdId)
+			);
 		}
 
 		String id = dto.getModulId();
 		if (id != null && moduleById.containsKey(id)) {
-			return verifyModulTagesschule(eventMonitor, dto, moduleById.get(id));
+			return verifyModulTagesschule(
+				eventMonitor,
+				dto,
+				moduleById.get(id)
+			);
 		}
 
-		eventMonitor.record("Es wurde eine ungültige ModulTagesschuleGroup ID übergeben: %s", id);
+		eventMonitor.record(
+			"Es wurde eine ungültige ModulTagesschuleGroup ID übergeben: %s",
+			id
+		);
 		return Optional.empty();
 	}
 
@@ -308,22 +443,38 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 	private Optional<ModulTagesschule> verifyModulTagesschule(
 		@Nonnull EventMonitor eventMonitor,
 		@Nonnull ModulAuswahlDTO dto,
-		@Nonnull ModulTagesschuleGroup group) {
+		@Nonnull ModulTagesschuleGroup group
+	) {
 
 		String id = group.getId();
 
-		if (!toErlaubteIntervalle(group.getIntervall()).contains(dto.getIntervall())) {
-			eventMonitor.record("ModulTagesschuleGroup %s gestattet das Intervall %s nicht.", id, dto.getIntervall());
+		if (!toErlaubteIntervalle(group.getIntervall()).contains(
+			dto.getIntervall()
+		)) {
+			eventMonitor.record(
+				"ModulTagesschuleGroup %s gestattet das Intervall %s nicht.",
+				id,
+				dto.getIntervall()
+			);
 
 			return Optional.empty();
 		}
 
-		Optional<ModulTagesschule> match = group.getModule().stream()
-			.filter(m -> m.getWochentag().name().equals(dto.getWochentag().name()))
+		Optional<ModulTagesschule> match = group.getModule()
+			.stream()
+			.filter(
+				m -> m.getWochentag()
+					.name()
+					.equals(dto.getWochentag().name())
+			)
 			.findAny();
 
 		if (match.isEmpty()) {
-			eventMonitor.record("ModulTagesschuleGroup %s ist an %s nicht definiert.", id, dto.getWochentag());
+			eventMonitor.record(
+				"ModulTagesschuleGroup %s ist an %s nicht definiert.",
+				id,
+				dto.getWochentag()
+			);
 
 			return Optional.empty();
 		}
@@ -332,27 +483,37 @@ public class AnmeldungBestaetigungEventHandler extends BaseEventHandler<Tagessch
 	}
 
 	@Nonnull
-	private BelegungTagesschuleModulIntervall getIntervall(@Nonnull ModulAuswahlDTO modulAuswahlDTO) {
-		return BelegungTagesschuleModulIntervall.valueOf(modulAuswahlDTO.getIntervall().name());
+	private BelegungTagesschuleModulIntervall getIntervall(
+		@Nonnull ModulAuswahlDTO modulAuswahlDTO
+	) {
+		return BelegungTagesschuleModulIntervall.valueOf(
+			modulAuswahlDTO.getIntervall().name()
+		);
 	}
 
 	@Nonnull
 	private Optional<BelegungTagesschuleModul> findExistingBelegungTagesschuleModul(
 		@Nonnull Set<BelegungTagesschuleModul> existingModule,
 		@Nonnull ModulTagesschule modulTagesschule,
-		@Nonnull BelegungTagesschuleModulIntervall intervall) {
+		@Nonnull BelegungTagesschuleModulIntervall intervall
+	) {
 
 		return existingModule.stream()
-			.filter(e -> e.getModulTagesschule().equals(modulTagesschule) && e.getIntervall() == intervall)
+			.filter(
+				e -> e.getModulTagesschule().equals(modulTagesschule)
+					&& e.getIntervall() == intervall
+			)
 			.findAny();
 	}
 
 	@Nonnull
 	private BelegungTagesschuleModul createNewBelegungTagesschuleModul(
 		@Nonnull ModulTagesschule modulTagesschule,
-		@Nonnull BelegungTagesschuleModulIntervall intervall) {
+		@Nonnull BelegungTagesschuleModulIntervall intervall
+	) {
 
-		BelegungTagesschuleModul belegungTagesschuleModul = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul.setIntervall(intervall);
 		belegungTagesschuleModul.setModulTagesschule(modulTagesschule);
 

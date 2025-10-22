@@ -20,7 +20,8 @@ public class EbeguExistingAntragException extends EbeguException {
 		@NotNull ErrorCodeEnum errorCodeEnum,
 		@NotNull String dossierId,
 		@NotNull String gesuchperiodeId,
-		@Nullable Serializable... args) {
+		@Nullable Serializable... args
+	) {
 		super(methodName, null, errorCodeEnum, args);
 
 		this.dossierId = dossierId;
@@ -33,7 +34,8 @@ public class EbeguExistingAntragException extends EbeguException {
 		@NotNull String dossierId,
 		@NotNull String gesuchperiodeId,
 		@Nullable Throwable cause,
-		@Nullable Serializable... args) {
+		@Nullable Serializable... args
+	) {
 		super(methodName, null, errorCodeEnum, cause, args);
 
 		this.dossierId = dossierId;

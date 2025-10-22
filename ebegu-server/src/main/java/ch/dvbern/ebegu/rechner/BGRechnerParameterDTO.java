@@ -20,45 +20,53 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.rules.util.MahlzeitenverguenstigungParameter;
+import lombok.Getter;
+import lombok.Setter;
 
-import static ch.dvbern.ebegu.enums.EinstellungKey.FKJV_TEXTE;
-import static ch.dvbern.ebegu.enums.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN;
-import static ch.dvbern.ebegu.enums.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT;
-import static ch.dvbern.ebegu.enums.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN;
-import static ch.dvbern.ebegu.enums.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT;
-import static ch.dvbern.ebegu.enums.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT;
-import static ch.dvbern.ebegu.enums.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_MASSGEBENDES_EINKOMMEN;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_TARIF_OHNE_PAEDAGOGISCHER_BETREUUNG;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_VERGUENSTIGUNG_PRIMAR_PRO_STD;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_STD;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_TG;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_STD;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_TG;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_STD;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_TG;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MIN_MASSGEBENDES_EINKOMMEN;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MIN_TARIF;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MIN_VERGUENSTIGUNG_PRO_STD;
-import static ch.dvbern.ebegu.enums.EinstellungKey.MIN_VERGUENSTIGUNG_PRO_TG;
-import static ch.dvbern.ebegu.enums.EinstellungKey.OEFFNUNGSSTUNDEN_TFO;
-import static ch.dvbern.ebegu.enums.EinstellungKey.OEFFNUNGSTAGE_KITA;
-import static ch.dvbern.ebegu.enums.EinstellungKey.OEFFNUNGSTAGE_TFO;
-import static ch.dvbern.ebegu.enums.EinstellungKey.ZUSCHLAG_BEHINDERUNG_PRO_STD;
-import static ch.dvbern.ebegu.enums.EinstellungKey.ZUSCHLAG_BEHINDERUNG_PRO_TG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_PAUSCHALE_BEI_ANSPRUCH;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_TEXTE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GESCHWISTERNBONUS_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_MASSGEBENDES_EINKOMMEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_TARIF_OHNE_PAEDAGOGISCHER_BETREUUNG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_TG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_PRIMAR_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_TG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_TG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_MASSGEBENDES_EINKOMMEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_TARIF;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_VERGUENSTIGUNG_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_VERGUENSTIGUNG_PRO_TG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSSTUNDEN_TFO;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_KITA;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_TFO;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SCHULERGAENZENDE_BETREUUNGEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ZUSCHLAG_BEHINDERUNG_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ZUSCHLAG_BEHINDERUNG_PRO_TG;
 
 /**
  * Kapselung aller Parameter, welche für die BG-Berechnung aller Angebote benötigt werden.
  * Diese müssen aus den Einstellungen gelesen werden.
  */
+@Getter
+@Setter
 public final class BGRechnerParameterDTO {
 
 	private BigDecimal maxVerguenstigungVorschuleBabyProTg;
@@ -89,42 +97,251 @@ public final class BGRechnerParameterDTO {
 
 	private boolean texteForFKJV = false;
 
-	private MahlzeitenverguenstigungParameter mahlzeitenverguenstigungParameter = new MahlzeitenverguenstigungParameter();
+	private boolean schulergaenzendeBetreuung;
 
-	private BGRechnerParameterGemeindeDTO gemeindeParameter = new BGRechnerParameterGemeindeDTO();
+	private boolean besondereBeduerfnisseOnlyWhenAnspruch;
 
-	public BGRechnerParameterDTO(Map<EinstellungKey, Einstellung> paramMap, Gesuchsperiode gesuchsperiode, Gemeinde gemeinde) {
-		this.setMaxVerguenstigungVorschuleBabyProTg(asBigDecimal(paramMap, MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_TG, gesuchsperiode, gemeinde));
-		this.setMaxVerguenstigungVorschuleKindProTg(asBigDecimal(paramMap, MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_TG, gesuchsperiode, gemeinde));
-		this.setMaxVerguenstigungKindergartenKindProTg(asBigDecimal(paramMap, MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_TG, gesuchsperiode, gemeinde));
-		this.setMaxVerguenstigungVorschuleBabyProStd(asBigDecimal(paramMap, MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_STD, gesuchsperiode, gemeinde));
-		this.setMaxVerguenstigungVorschuleKindProStd(asBigDecimal(paramMap, MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_STD, gesuchsperiode, gemeinde));
-		this.setMaxVerguenstigungKindergartenKindProStd(asBigDecimal(paramMap, MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_STD, gesuchsperiode, gemeinde));
-		this.setMaxVerguenstigungPrimarschuleKindProStd(asBigDecimal(paramMap, MAX_VERGUENSTIGUNG_PRIMAR_PRO_STD, gesuchsperiode, gemeinde));
-		this.setMaxMassgebendesEinkommen(asBigDecimal(paramMap, MAX_MASSGEBENDES_EINKOMMEN, gesuchsperiode, gemeinde));
-		this.setMinMassgebendesEinkommen(asBigDecimal(paramMap, MIN_MASSGEBENDES_EINKOMMEN, gesuchsperiode, gemeinde));
-		this.setOeffnungstageKita(asBigDecimal(paramMap, OEFFNUNGSTAGE_KITA, gesuchsperiode, gemeinde));
-		this.setOeffnungstageTFO(asBigDecimal(paramMap, OEFFNUNGSTAGE_TFO, gesuchsperiode, gemeinde));
-		this.setOeffnungsstundenTFO(asBigDecimal(paramMap, OEFFNUNGSSTUNDEN_TFO, gesuchsperiode, gemeinde));
-		this.setZuschlagBehinderungProTg(asBigDecimal(paramMap, ZUSCHLAG_BEHINDERUNG_PRO_TG, gesuchsperiode, gemeinde));
-		this.setZuschlagBehinderungProStd(asBigDecimal(paramMap, ZUSCHLAG_BEHINDERUNG_PRO_STD, gesuchsperiode, gemeinde));
-		this.setMinVerguenstigungProTg(asBigDecimal(paramMap, MIN_VERGUENSTIGUNG_PRO_TG, gesuchsperiode, gemeinde));
-		this.setMinVerguenstigungProStd(asBigDecimal(paramMap, MIN_VERGUENSTIGUNG_PRO_STD, gesuchsperiode, gemeinde));
-		this.setMaxTarifTagesschuleMitPaedagogischerBetreuung(asBigDecimal(paramMap, MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG, gesuchsperiode, gemeinde));
-		this.setMaxTarifTagesschuleOhnePaedagogischerBetreuung(asBigDecimal(paramMap, MAX_TARIF_OHNE_PAEDAGOGISCHER_BETREUUNG, gesuchsperiode, gemeinde));
-		this.setMinTarifTagesschule(asBigDecimal(paramMap, MIN_TARIF, gesuchsperiode, gemeinde));
-		mahlzeitenverguenstigungParameter = new MahlzeitenverguenstigungParameter(
-			asBoolean(paramMap, EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED, gesuchsperiode, gemeinde),
-			asBoolean(paramMap, EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_FUER_SOZIALHILFEBEZUEGER_ENABLED, gesuchsperiode, gemeinde),
-			asBigDecimal(paramMap, GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN, gesuchsperiode, gemeinde),
-			asBigDecimal(paramMap, GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN, gesuchsperiode, gemeinde),
-			asBigDecimal(paramMap, GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT, gesuchsperiode, gemeinde),
-			asBigDecimal(paramMap, GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT, gesuchsperiode, gemeinde),
-			asBigDecimal(paramMap, GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT, gesuchsperiode, gemeinde),
-			asBigDecimal(paramMap, GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT, gesuchsperiode, gemeinde)
+	private GeschwisterbonusTyp geschwisterbonusTyp;
+
+	private MahlzeitenverguenstigungParameter mahlzeitenverguenstigungParameter =
+		new MahlzeitenverguenstigungParameter();
+
+	private BGRechnerParameterGemeindeDTO gemeindeParameter =
+		new BGRechnerParameterGemeindeDTO();
+
+	public BGRechnerParameterDTO(
+		Map<EinstellungKey, Einstellung> paramMap,
+		Gesuchsperiode gesuchsperiode,
+		Gemeinde gemeinde
+	) {
+		this.setSchulergaenzendeBetreuung(
+			asBoolean(
+				paramMap,
+				SCHULERGAENZENDE_BETREUUNGEN,
+				gesuchsperiode,
+				gemeinde
+			)
 		);
-		this.setGemeindeParameter(new BGRechnerParameterGemeindeDTO(paramMap, gesuchsperiode, gemeinde));
-		this.texteForFKJV = asBoolean(paramMap, FKJV_TEXTE, gesuchsperiode, gemeinde);
+		this.setMaxVerguenstigungVorschuleBabyProTg(
+			asBigDecimal(
+				paramMap,
+				MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_TG,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMaxVerguenstigungVorschuleKindProTg(
+			asBigDecimal(
+				paramMap,
+				MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_TG,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMaxVerguenstigungKindergartenKindProTg(
+			asBigDecimal(
+				paramMap,
+				MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_TG,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMaxVerguenstigungVorschuleBabyProStd(
+			asBigDecimal(
+				paramMap,
+				MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_STD,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMaxVerguenstigungVorschuleKindProStd(
+			asBigDecimal(
+				paramMap,
+				MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_STD,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMaxVerguenstigungKindergartenKindProStd(
+			asBigDecimal(
+				paramMap,
+				MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_STD,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMaxVerguenstigungPrimarschuleKindProStd(
+			asBigDecimal(
+				paramMap,
+				MAX_VERGUENSTIGUNG_PRIMAR_PRO_STD,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMaxMassgebendesEinkommen(
+			asBigDecimal(
+				paramMap,
+				MAX_MASSGEBENDES_EINKOMMEN,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMinMassgebendesEinkommen(
+			asBigDecimal(
+				paramMap,
+				MIN_MASSGEBENDES_EINKOMMEN,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setOeffnungstageKita(
+			asBigDecimal(
+				paramMap,
+				OEFFNUNGSTAGE_KITA,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setOeffnungstageTFO(
+			asBigDecimal(
+				paramMap,
+				OEFFNUNGSTAGE_TFO,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setOeffnungsstundenTFO(
+			asBigDecimal(
+				paramMap,
+				OEFFNUNGSSTUNDEN_TFO,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setZuschlagBehinderungProTg(
+			asBigDecimal(
+				paramMap,
+				ZUSCHLAG_BEHINDERUNG_PRO_TG,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setZuschlagBehinderungProStd(
+			asBigDecimal(
+				paramMap,
+				ZUSCHLAG_BEHINDERUNG_PRO_STD,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMinVerguenstigungProTg(
+			asBigDecimal(
+				paramMap,
+				MIN_VERGUENSTIGUNG_PRO_TG,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMinVerguenstigungProStd(
+			asBigDecimal(
+				paramMap,
+				MIN_VERGUENSTIGUNG_PRO_STD,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMaxTarifTagesschuleMitPaedagogischerBetreuung(
+			asBigDecimal(
+				paramMap,
+				MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMaxTarifTagesschuleOhnePaedagogischerBetreuung(
+			asBigDecimal(
+				paramMap,
+				MAX_TARIF_OHNE_PAEDAGOGISCHER_BETREUUNG,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.setMinTarifTagesschule(
+			asBigDecimal(paramMap, MIN_TARIF, gesuchsperiode, gemeinde)
+		);
+		mahlzeitenverguenstigungParameter =
+			new MahlzeitenverguenstigungParameter(
+				asBoolean(
+					paramMap,
+					EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED,
+					gesuchsperiode,
+					gemeinde
+				),
+				asBoolean(
+					paramMap,
+					EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_FUER_SOZIALHILFEBEZUEGER_ENABLED,
+					gesuchsperiode,
+					gemeinde
+				),
+				asBigDecimal(
+					paramMap,
+					GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN,
+					gesuchsperiode,
+					gemeinde
+				),
+				asBigDecimal(
+					paramMap,
+					GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN,
+					gesuchsperiode,
+					gemeinde
+				),
+				asBigDecimal(
+					paramMap,
+					GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT,
+					gesuchsperiode,
+					gemeinde
+				),
+				asBigDecimal(
+					paramMap,
+					GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT,
+					gesuchsperiode,
+					gemeinde
+				),
+				asBigDecimal(
+					paramMap,
+					GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT,
+					gesuchsperiode,
+					gemeinde
+				),
+				asBigDecimal(
+					paramMap,
+					GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT,
+					gesuchsperiode,
+					gemeinde
+				)
+			);
+		this.setGemeindeParameter(
+			new BGRechnerParameterGemeindeDTO(
+				paramMap,
+				gesuchsperiode,
+				gemeinde
+			)
+		);
+		this.texteForFKJV = asBoolean(
+			paramMap,
+			FKJV_TEXTE,
+			gesuchsperiode,
+			gemeinde
+		);
+		this.besondereBeduerfnisseOnlyWhenAnspruch = asBoolean(
+			paramMap,
+			FKJV_PAUSCHALE_BEI_ANSPRUCH,
+			gesuchsperiode,
+			gemeinde
+		);
+		this.geschwisterbonusTyp = GeschwisterbonusTyp.getEnumValue(
+			paramMap.get(GESCHWISTERNBONUS_TYP)
+		);
 	}
 
 	public BGRechnerParameterDTO() {
@@ -135,13 +352,25 @@ public final class BGRechnerParameterDTO {
 		@Nonnull Map<EinstellungKey, Einstellung> paramMap,
 		@Nonnull EinstellungKey paramKey,
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull Gemeinde gemeinde) {
+		@Nonnull Gemeinde gemeinde
+	) {
 
 		Einstellung param = paramMap.get(paramKey);
 		if (param == null) {
-			String message = "Required calculator parameter '" + paramKey + "' could not be loaded for the given Gemeinde '" + gemeinde.getName() + "', Gesuchsperiode "
-				+ '\'' + gesuchsperiode + '\'';
-			throw new EbeguEntityNotFoundException("loadCalculatorParameters", message, ErrorCodeEnum.ERROR_PARAMETER_NOT_FOUND, paramKey);
+			String message = "Required calculator parameter '"
+				+ paramKey
+				+ "' could not be loaded for the given Gemeinde '"
+				+ gemeinde.getName()
+				+ "', Gesuchsperiode "
+				+ '\''
+				+ gesuchsperiode
+				+ '\'';
+			throw new EbeguEntityNotFoundException(
+				"loadCalculatorParameters",
+				message,
+				ErrorCodeEnum.ERROR_PARAMETER_NOT_FOUND,
+				paramKey
+			);
 		}
 		return param.getValueAsBigDecimal();
 	}
@@ -150,198 +379,39 @@ public final class BGRechnerParameterDTO {
 		@Nonnull Map<EinstellungKey, Einstellung> paramMap,
 		@Nonnull EinstellungKey paramKey,
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull Gemeinde gemeinde) {
+		@Nonnull Gemeinde gemeinde
+	) {
 
 		Einstellung param = paramMap.get(paramKey);
 		if (param == null) {
-			String message = "Required calculator parameter '" + paramKey + "' could not be loaded for the given Gemeinde '" + gemeinde.getName() + "', Gesuchsperiode "
-				+ '\'' + gesuchsperiode + '\'';
-			throw new EbeguEntityNotFoundException("loadCalculatorParameters", message, ErrorCodeEnum.ERROR_PARAMETER_NOT_FOUND, paramKey);
+			String message = "Required calculator parameter '"
+				+ paramKey
+				+ "' could not be loaded for the given Gemeinde '"
+				+ gemeinde.getName()
+				+ "', Gesuchsperiode "
+				+ '\''
+				+ gesuchsperiode
+				+ '\'';
+			throw new EbeguEntityNotFoundException(
+				"loadCalculatorParameters",
+				message,
+				ErrorCodeEnum.ERROR_PARAMETER_NOT_FOUND,
+				paramKey
+			);
 		}
 		return param.getValueAsBoolean();
 	}
 
-	public BigDecimal getMaxVerguenstigungVorschuleBabyProTg() {
-		return maxVerguenstigungVorschuleBabyProTg;
-	}
-
-	public void setMaxVerguenstigungVorschuleBabyProTg(BigDecimal maxVerguenstigungVorschuleBabyProTg) {
-		this.maxVerguenstigungVorschuleBabyProTg = maxVerguenstigungVorschuleBabyProTg;
-	}
-
-	public BigDecimal getMaxVerguenstigungVorschuleKindProTg() {
-		return maxVerguenstigungVorschuleKindProTg;
-	}
-
-	public void setMaxVerguenstigungVorschuleKindProTg(BigDecimal maxVerguenstigungVorschuleKindProTg) {
-		this.maxVerguenstigungVorschuleKindProTg = maxVerguenstigungVorschuleKindProTg;
-	}
-
-	public BigDecimal getMaxVerguenstigungKindergartenKindProTg() {
-		return maxVerguenstigungKindergartenKindProTg;
-	}
-
-	public void setMaxVerguenstigungKindergartenKindProTg(BigDecimal maxVerguenstigungKindergartenKindProTg) {
-		this.maxVerguenstigungKindergartenKindProTg = maxVerguenstigungKindergartenKindProTg;
-	}
-
-	public BigDecimal getMaxVerguenstigungVorschuleBabyProStd() {
-		return maxVerguenstigungVorschuleBabyProStd;
-	}
-
-	public void setMaxVerguenstigungVorschuleBabyProStd(BigDecimal maxVerguenstigungVorschuleBabyProStd) {
-		this.maxVerguenstigungVorschuleBabyProStd = maxVerguenstigungVorschuleBabyProStd;
-	}
-
-	public BigDecimal getMaxVerguenstigungVorschuleKindProStd() {
-		return maxVerguenstigungVorschuleKindProStd;
-	}
-
-	public void setMaxVerguenstigungVorschuleKindProStd(BigDecimal maxVerguenstigungVorschuleKindProStd) {
-		this.maxVerguenstigungVorschuleKindProStd = maxVerguenstigungVorschuleKindProStd;
-	}
-
-	public BigDecimal getMaxVerguenstigungKindergartenKindProStd() {
-		return maxVerguenstigungKindergartenKindProStd;
-	}
-
-	public void setMaxVerguenstigungKindergartenKindProStd(BigDecimal maxVerguenstigungKindergartenKindProStd) {
-		this.maxVerguenstigungKindergartenKindProStd = maxVerguenstigungKindergartenKindProStd;
-	}
-
-	public BigDecimal getMaxMassgebendesEinkommen() {
-		return maxMassgebendesEinkommen;
-	}
-
-	public void setMaxMassgebendesEinkommen(BigDecimal maxMassgebendesEinkommen) {
-		this.maxMassgebendesEinkommen = maxMassgebendesEinkommen;
-	}
-
 	public BigDecimal getMaxMassgebendesEinkommenZurBerechnungDesGutscheinsProZeiteinheit() {
 		if (this.gemeindeParameter.getGemeindePauschalbetragEnabled()) {
-			return this.gemeindeParameter.getGemeindePauschalbetragMaxMassgebendenEinkommenFuerBerechnung();
+			return this.gemeindeParameter
+				.getGemeindePauschalbetragMaxMassgebendenEinkommenFuerBerechnung();
 		}
 
 		return maxMassgebendesEinkommen;
 	}
 
-	public BigDecimal getMinMassgebendesEinkommen() {
-		return minMassgebendesEinkommen;
-	}
-
-	public void setMinMassgebendesEinkommen(BigDecimal minMassgebendesEinkommen) {
-		this.minMassgebendesEinkommen = minMassgebendesEinkommen;
-	}
-
-	public BigDecimal getOeffnungstageKita() {
-		return oeffnungstageKita;
-	}
-
-	public void setOeffnungstageKita(BigDecimal oeffnungstageKita) {
-		this.oeffnungstageKita = oeffnungstageKita;
-	}
-
-	public BigDecimal getOeffnungstageTFO() {
-		return oeffnungstageTFO;
-	}
-
-	public void setOeffnungstageTFO(BigDecimal oeffnungstageTFO) {
-		this.oeffnungstageTFO = oeffnungstageTFO;
-	}
-
-	public BigDecimal getOeffnungsstundenTFO() {
-		return oeffnungsstundenTFO;
-	}
-
-	public void setOeffnungsstundenTFO(BigDecimal oeffnungsstundenTFO) {
-		this.oeffnungsstundenTFO = oeffnungsstundenTFO;
-	}
-
-	public BigDecimal getZuschlagBehinderungProTg() {
-		return zuschlagBehinderungProTg;
-	}
-
-	public void setZuschlagBehinderungProTg(BigDecimal zuschlagBehinderungProTg) {
-		this.zuschlagBehinderungProTg = zuschlagBehinderungProTg;
-	}
-
-	public BigDecimal getZuschlagBehinderungProStd() {
-		return zuschlagBehinderungProStd;
-	}
-
-	public void setZuschlagBehinderungProStd(BigDecimal zuschlagBehinderungProStd) {
-		this.zuschlagBehinderungProStd = zuschlagBehinderungProStd;
-	}
-
-	public BigDecimal getMinVerguenstigungProTg() {
-		return minVerguenstigungProTg;
-	}
-
-	public void setMinVerguenstigungProTg(BigDecimal minVerguenstigungProTg) {
-		this.minVerguenstigungProTg = minVerguenstigungProTg;
-	}
-
-	public BigDecimal getMinVerguenstigungProStd() {
-		return minVerguenstigungProStd;
-	}
-
-	public void setMinVerguenstigungProStd(BigDecimal minVerguenstigungProStd) {
-		this.minVerguenstigungProStd = minVerguenstigungProStd;
-	}
-
-	public BigDecimal getMaxTarifTagesschuleMitPaedagogischerBetreuung() {
-		return maxTarifTagesschuleMitPaedagogischerBetreuung;
-	}
-
-	public void setMaxTarifTagesschuleMitPaedagogischerBetreuung(BigDecimal maxTarifTagesschuleMitPaedagogischerBetreuung) {
-		this.maxTarifTagesschuleMitPaedagogischerBetreuung = maxTarifTagesschuleMitPaedagogischerBetreuung;
-	}
-
-	public BigDecimal getMaxTarifTagesschuleOhnePaedagogischerBetreuung() {
-		return maxTarifTagesschuleOhnePaedagogischerBetreuung;
-	}
-
-	public void setMaxTarifTagesschuleOhnePaedagogischerBetreuung(BigDecimal maxTarifTagesschuleOhnePaedagogischerBetreuung) {
-		this.maxTarifTagesschuleOhnePaedagogischerBetreuung = maxTarifTagesschuleOhnePaedagogischerBetreuung;
-	}
-
-	public BigDecimal getMinTarifTagesschule() {
-		return minTarifTagesschule;
-	}
-
-	public void setMinTarifTagesschule(BigDecimal minTarifTagesschule) {
-		this.minTarifTagesschule = minTarifTagesschule;
-	}
-
 	public Boolean getMahlzeitenverguenstigungEnabled() {
 		return mahlzeitenverguenstigungParameter.isEnabled();
-	}
-
-	public MahlzeitenverguenstigungParameter getMahlzeitenverguenstigungParameter() {
-		return mahlzeitenverguenstigungParameter;
-	}
-
-	public void setMahlzeitenverguenstigungParameter(MahlzeitenverguenstigungParameter mahlzeitenverguenstigungParameter) {
-		this.mahlzeitenverguenstigungParameter = mahlzeitenverguenstigungParameter;
-	}
-
-	public BGRechnerParameterGemeindeDTO getGemeindeParameter() {
-		return gemeindeParameter;
-	}
-
-	public void setGemeindeParameter(BGRechnerParameterGemeindeDTO gemeindeParameter) {
-		this.gemeindeParameter = gemeindeParameter;
-	}
-
-	public boolean isTexteForFKJV() {
-		return texteForFKJV;
-	}
-
-	public BigDecimal getMaxVerguenstigungPrimarschuleKindProStd() {
-		return maxVerguenstigungPrimarschuleKindProStd;
-	}
-
-	public void setMaxVerguenstigungPrimarschuleKindProStd(BigDecimal maxVerguenstigungPrimarschuleKindProStd) {
-		this.maxVerguenstigungPrimarschuleKindProStd = maxVerguenstigungPrimarschuleKindProStd;
 	}
 }

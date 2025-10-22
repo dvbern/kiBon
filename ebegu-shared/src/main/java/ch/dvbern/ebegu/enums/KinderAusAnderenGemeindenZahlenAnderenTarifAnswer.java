@@ -18,7 +18,5 @@
 package ch.dvbern.ebegu.enums;
 
 public enum KinderAusAnderenGemeindenZahlenAnderenTarifAnswer {
-	JA,
-	NEIN,
-	KEINE_KINDER_AUS_ANDEREN_GEMEINDEN
+	JA, NEIN, KEINE_KINDER_AUS_ANDEREN_GEMEINDEN
 }

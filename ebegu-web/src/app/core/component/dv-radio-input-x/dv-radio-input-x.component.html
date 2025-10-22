@@ -15,8 +15,9 @@
   ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<div>
+<div class="form-group">
     <label
+        *ngIf="label"
         [for]="uniqueName + '_id'"
         class="ebegu-h1"
         [class.required]="required"
@@ -41,23 +42,21 @@
         [required]="required"
     >
         <mat-radio-button [value]="true" data-test="radio-value.ja">{{
-            'LABEL_JA' | translate
+            labelYes | translate
         }}</mat-radio-button>
         <mat-radio-button [value]="false" data-test="radio-value.nein">{{
-            'LABEL_NEIN' | translate
+            labelNo | translate
         }}</mat-radio-button>
     </mat-radio-group>
-    <div class="margin-bottom-20">
-        <dv-bisher-x
-            [korrektur]="model"
-            [deklaration]="dvBisherValue"
-            [showBisher]="showBisher()"
-        ></dv-bisher-x>
-        <dv-error-messages
-            *ngIf="form?.submitted"
-            [errorObject]="radio.errors"
-            [inputId]="uniqueName + '_id'"
-        >
-        </dv-error-messages>
-    </div>
+    <dv-bisher-x
+        [korrektur]="model"
+        [deklaration]="dvBisherValue"
+        [showBisher]="showBisher()"
+    ></dv-bisher-x>
+    <dv-error-messages
+        *ngIf="form?.submitted"
+        [errorObject]="radio.errors"
+        [inputId]="uniqueName + '_id'"
+    >
+    </dv-error-messages>
 </div>

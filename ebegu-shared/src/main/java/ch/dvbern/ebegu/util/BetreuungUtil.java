@@ -21,15 +21,15 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractMahlzeitenPensum;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
-import ch.dvbern.ebegu.services.EinstellungService;
 
 /**
  * Allgemeine Utils fuer Betreuung
@@ -48,7 +48,8 @@ public final class BetreuungUtil {
 	 *
 	 * @param betreuungsangebotTyp betreuungsangebotTyp
 	 * @param gesuchsperiode defines which parameter to load. We only look for params that are valid on this day
-	 * @return The minimum value for the betreuungsangebotTyp. Default value is -1: This means if the given betreuungsangebotTyp doesn't match any
+	 * @return The minimum value for the betreuungsangebotTyp. Default value is -1: This means if the given
+	 * betreuungsangebotTyp doesn't match any
 	 * recorded type, the min value will be 0 and any positive value will be then accepted
 	 */
 	public static BigDecimal getMinValueFromBetreuungsangebotTyp(
@@ -56,12 +57,19 @@ public final class BetreuungUtil {
 		@Nonnull Gemeinde gemeinde,
 		@Nullable BetreuungsangebotTyp betreuungsangebotTyp,
 		@Nonnull EinstellungService einstellungService,
-		@Nonnull final EntityManager em) {
+		@Nonnull final EntityManager em
+	) {
 
-		EinstellungKey key = new MinPensumEinstellungKeyBetreuungsTypVisitor().getEinstellungenKey(betreuungsangebotTyp);
+		EinstellungKey key = new MinPensumEinstellungKeyBetreuungsTypVisitor()
+			.getEinstellungenKey(betreuungsangebotTyp);
 
 		if (key != null) {
-			Einstellung parameter = einstellungService.findEinstellung(key, gemeinde, gesuchsperiode, em);
+			Einstellung parameter = einstellungService.findEinstellung(
+				key,
+				gemeinde,
+				gesuchsperiode,
+				em
+			);
 			return parameter.getValueAsBigDecimal();
 		}
 		return BigDecimal.ZERO;
@@ -69,27 +77,31 @@ public final class BetreuungUtil {
 
 	public static Long getFallnummerFromReferenzNummer(String referenzNummer) {
 		// 17.000120.003.1.2 -> 120 (long)
-		return Long.valueOf(COMPILE.matcher(referenzNummer.substring(3, 9)).replaceFirst(""));
+		return Long.valueOf(
+			COMPILE.matcher(referenzNummer.substring(3, 9)).replaceFirst("")
+		);
 	}
 
 	public static int getYearFromReferenzNummer(String referenzNummer) {
 		// 17.000120.003.1.2 -> 17 (int)
-		return Integer.valueOf(referenzNummer.substring(0, 2)) + 2000;
+		return Integer.parseInt(referenzNummer.substring(0, 2)) + 2000;
 	}
 
 	public static int getGemeindeFromReferenzNummer(String referenzNummer) {
 		// 17.000120.003.1.2 -> 3 (int)
-		return Integer.valueOf(referenzNummer.split("\\.", -1)[2]);
+		return Integer.parseInt(referenzNummer.split("\\.", -1)[2]);
 	}
 
 	public static int getKindNummerFromReferenzNummer(String referenzNummer) {
 		// 17.000120.003.1.2 -> 1 (int) can have more than 9 Kind
-		return Integer.valueOf(referenzNummer.split("\\.", -1)[3]);
+		return Integer.parseInt(referenzNummer.split("\\.", -1)[3]);
 	}
 
-	public static int getBetreuungNummerFromReferenzNummer(String referenzNummer) {
+	public static int getBetreuungNummerFromReferenzNummer(
+		String referenzNummer
+	) {
 		// 17.000120.003.1.2 -> 2 (int)
-		return Integer.valueOf(referenzNummer.split("\\.", -1)[4]);
+		return Integer.parseInt(referenzNummer.split("\\.", -1)[4]);
 	}
 
 	public static boolean validateReferenzNummer(String referenzNummer) {
@@ -97,27 +109,69 @@ public final class BetreuungUtil {
 	}
 
 	@Nonnull
-	public static BigDecimal calculateOeffnungszeitPerMonthProcentual(@Nonnull BigDecimal oeffnungszeitProJahr) {
+	public static BigDecimal calculateOeffnungszeitPerMonthProcentual(
+		@Nonnull BigDecimal oeffnungszeitProJahr
+	) {
 		return MathUtil.EXACT.divide(
-			MathUtil.EXACT.divide(oeffnungszeitProJahr, MathUtil.EXACT.from(12)),
-			MathUtil.EXACT.from(100));
+			MathUtil.EXACT.divide(
+				oeffnungszeitProJahr,
+				MathUtil.EXACT.from(12)
+			),
+			MathUtil.EXACT.from(100)
+		);
 	}
 
-	public static BigDecimal getMittagstischMultiplier() {
+	public static BigDecimal getMittagstischMultiplier(
+		@Nonnull BigDecimal oeffnungstagMittagstisch
+	) {
+		var mittagstischProWoche = BigDecimal.valueOf(100)
+			.divide(BigDecimal.valueOf(6), 10, RoundingMode.HALF_UP);
+		var mittagstischWochenProMonat = oeffnungstagMittagstisch
+			.divide(BigDecimal.valueOf(5), 10, RoundingMode.HALF_UP)
+			.divide(BigDecimal.valueOf(12), 10, RoundingMode.HALF_UP);
+
+		return MathUtil.EXACT.divide(
+			mittagstischProWoche.multiply(mittagstischWochenProMonat),
+			BigDecimal.valueOf(100)
+		);
+	}
+
+	public static BigDecimal getMittagstischMultiplierOld() {
 		var mittagstischTageProWoche = BigDecimal.valueOf(5);
 		var mittagstischWochenProMonat = BigDecimal.valueOf(4.1);
 
-		return mittagstischTageProWoche.multiply(mittagstischWochenProMonat).divide(BigDecimal.valueOf(100), 3, RoundingMode.HALF_UP);
+		return mittagstischTageProWoche.multiply(mittagstischWochenProMonat)
+			.divide(BigDecimal.valueOf(100), 3, RoundingMode.HALF_UP);
 	}
 
 	@Nonnull
-	public static BigDecimal derivePensumMittagstisch(@Nonnull AbstractMahlzeitenPensum pensum) {
-		return MathUtil.EXACT.divide(pensum.getMonatlicheHauptmahlzeiten(), BetreuungUtil.getMittagstischMultiplier());
+	public static BigDecimal derivePensumMittagstisch(
+		@Nonnull AbstractMahlzeitenPensum pensum,
+		@Nonnull BigDecimal oeffnungstagMittagstisch
+	) {
+		return MathUtil.EXACT.divide(
+			pensum.getMonatlicheHauptmahlzeiten(),
+			BetreuungUtil.getMittagstischMultiplier(oeffnungstagMittagstisch)
+		);
 	}
 
 	@Nonnull
-	public static BigDecimal deriveKostenMittagstisch(@Nonnull AbstractMahlzeitenPensum pensum) {
-		return MathUtil.toTwoKommastelle(pensum.getTarifProHauptmahlzeit()
-			.multiply(pensum.getMonatlicheHauptmahlzeiten()));
+	public static BigDecimal derivePensumMittagtischOld(
+		@Nonnull AbstractMahlzeitenPensum pensum
+	) {
+		return MathUtil.EXACT.divide(
+			pensum.getMonatlicheHauptmahlzeiten(),
+			BetreuungUtil.getMittagstischMultiplierOld()
+		);
+	}
+
+	@Nonnull
+	public static BigDecimal deriveKostenMittagstisch(
+		@Nonnull AbstractMahlzeitenPensum pensum
+	) {
+		return MathUtil.toTwoKommastelle(
+			pensum.getTarifProHauptmahlzeit()
+				.multiply(pensum.getMonatlicheHauptmahlzeiten())
+		);
 	}
 }

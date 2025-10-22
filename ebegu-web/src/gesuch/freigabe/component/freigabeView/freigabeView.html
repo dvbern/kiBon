@@ -39,37 +39,46 @@
                                 vm.getFreigabeDatum()
                             }}"
                         ></span>
+                    </p>
 
-                        <span
+                    <div class="margin-2">
+                        <button
                             ng-if="vm.isFreigabequittungAusstehend()"
-                            data-translate="FREIGABEQUITTUNG_AUSSTEHEND_ZURUECKZIEHEN"
+                            class="dv-btn"
                             ng-click="vm.freigabeZurueckziehen()"
-                        ></span>
-                    </p>
+                        >
+                            {{
+                                'FREIGABEQUITTUNG_AUSSTEHEND_ZURUECKZIEHEN'
+                                    | translate
+                            }}
+                        </button>
+                    </div>
                 </div>
                 <div
-                    class="col-md-12"
+                    class="col-md-12 margin-top-20"
                     ng-if="
-                        vm.isFreigabequittungAusstehend() && !vm.isVolksschule
+                        vm.isFreigabequittungAusstehend() &&
+                        !vm.isVolksschule &&
+                        !vm.showFreigabeWarning()
                     "
                 >
-                    <p>
-                        <span
-                            data-translate="FREIGABEQUITTUNG_AUSSTEHEND_TEXT"
-                        ></span>
-                    </p>
+                    <div class="well well-status-warten">
+                        <span translate>FREIGABEQUITTUNG_AUSSTEHEND_TEXT</span>
+                    </div>
                 </div>
                 <div
-                    class="col-md-12"
+                    class="col-md-12 margin-top-20"
                     ng-if="
-                        vm.isFreigabequittungAusstehend() && vm.isVolksschule
+                        vm.isFreigabequittungAusstehend() &&
+                        vm.isVolksschule &&
+                        !vm.showFreigabeWarning()
                     "
                 >
-                    <p>
-                        <span
-                            data-translate="FREIGABEQUITTUNG_AUSSTEHEND_TEXT_VOLKSSCHULE"
-                        ></span>
-                    </p>
+                    <div class="well well-status-warten">
+                        <span translate
+                            >FREIGABEQUITTUNG_AUSSTEHEND_TEXT_VOLKSSCHULE</span
+                        >
+                    </div>
                 </div>
             </div>
             <div class="row margin-top-20" ng-if="vm.showFreigabeWarning()">
@@ -107,6 +116,7 @@
                     <dv-loading-button
                         type="button"
                         button-click="vm.gesuchFreigeben()"
+                        data-test="freigebenSimulationButton"
                     >
                         <span
                             data-translate="ANTRAG_FREIGEBEN_SIMULIEREN"

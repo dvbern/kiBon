@@ -29,7 +29,7 @@ import {ReplaySubject, Subscription} from 'rxjs';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../../core/service/benutzerRSX.rest';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
 
@@ -39,7 +39,8 @@ const LOG = LogFactory.createLog('FerienbetreuungKommantarComponent');
     selector: 'dv-ferienbetreuung-kommantar',
     templateUrl: './ferienbetreuung-kommantar.component.html',
     styleUrls: ['./ferienbetreuung-kommantar.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FerienbetreuungKommantarComponent implements OnInit, OnDestroy {
     public form = this.fb.group({

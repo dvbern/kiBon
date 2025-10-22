@@ -24,7 +24,7 @@ import {
     OnInit
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../models/dto/TSFinanzielleSituationResultateDTO';
 
 const LOG = LogFactory.createLog('ResultatComponent');
@@ -33,7 +33,8 @@ const LOG = LogFactory.createLog('ResultatComponent');
     selector: ' dv-massgebendes-einkommen',
     templateUrl: './massgebendes-einkommen.component.html',
     styleUrls: ['./massgebendes-einkommen.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MassgebendesEinkommenComponent implements OnInit, OnDestroy {
     @Input()

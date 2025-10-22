@@ -27,12 +27,13 @@ import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import {combineLatest, Observable, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {TSFerienbetreuungAngabenNutzung} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenNutzung';
+import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {
     numberValidator,
@@ -41,7 +42,7 @@ import {
 import {UnsavedChangesService} from '../../services/unsaved-changes.service';
 import {AbstractFerienbetreuungFormular} from '../abstract.ferienbetreuung-formular';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
-import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {FerienbetreuungPermissionUtil} from '../util/FerienbetreuungPermissionUtil';
 
 const LOG = LogFactory.createLog('FerienbetreuungNutzungComponent');
 
@@ -49,7 +50,8 @@ const LOG = LogFactory.createLog('FerienbetreuungNutzungComponent');
     selector: 'dv-ferienbetreuung-nutzung',
     templateUrl: './ferienbetreuung-nutzung.component.html',
     styleUrls: ['./ferienbetreuung-nutzung.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FerienbetreuungNutzungComponent
     extends AbstractFerienbetreuungFormular
@@ -57,7 +59,7 @@ export class FerienbetreuungNutzungComponent
 {
     private nutzung: TSFerienbetreuungAngabenNutzung;
     public vorgaenger$: Observable<TSFerienbetreuungAngabenContainer>;
-    private readonly unsubscribe$ = new Subject();
+    private readonly unsubscribe$ = new Subject<void>();
     public abweichungenAnzahlKinder = 0;
 
     public form = this.fb.group({
@@ -93,11 +95,12 @@ export class FerienbetreuungNutzungComponent
     public ngOnInit(): void {
         combineLatest([
             this.ferienbetreuungService.getFerienbetreuungContainer(),
-            this.authService.principal$
+            this.authService.principal$,
+            this.ferienbetreuungService.getFerienbetreuungHistory()
         ])
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                ([container, principal]) => {
+            .subscribe({
+                next: ([container, principal, history]) => {
                     this.container = container;
                     this.nutzung =
                         container.isAtLeastInPruefungKantonOrZurueckgegeben()
@@ -107,14 +110,15 @@ export class FerienbetreuungNutzungComponent
                     this.setupFormAndPermissions(
                         container,
                         this.nutzung,
-                        principal
+                        principal,
+                        history
                     );
                     this.unsavedChangesService.registerForm(this.form);
                 },
-                error => {
+                error: error => {
                     LOG.error(error);
                 }
-            );
+            });
         this.vorgaenger$ = this.ferienbetreuungService
             .getFerienbetreuungVorgaengerContainer()
             .pipe(takeUntil(this.unsubscribe$));
@@ -125,14 +129,18 @@ export class FerienbetreuungNutzungComponent
     }
 
     public async onAbschliessen(): Promise<void> {
+        if (this.abweichungenAnzahlKinder !== 0) {
+            this.showValidierungFehlgeschlagenErrorMessage();
+            return;
+        }
         if (await this.checkReadyForAbschliessen()) {
             this.writeBackFormValues();
             this.ferienbetreuungService
                 .nutzungAbschliessen(this.container.id, this.nutzung)
-                .subscribe(
-                    () => this.handleSaveSuccess(),
-                    error => this.handleSaveErrors(error)
-                );
+                .subscribe({
+                    next: () => this.handleSaveSuccess(),
+                    error: error => this.handleSaveErrors(error)
+                });
         }
     }
 
@@ -175,7 +183,7 @@ export class FerienbetreuungNutzungComponent
 
     private enableSpecialBetreuungstageFormValidation(): void {
         // betreuungstage
-        this.form.controls.anzahlBetreuungstageKinderBern.setValidators(
+        this.form.controls.anzahlBetreuungstageKinderBern.setValidators([
             control => {
                 const diff =
                     this.form.value.anzahlBetreuungstageKinderBern -
@@ -187,8 +195,9 @@ export class FerienbetreuungNutzungComponent
                     };
                 }
                 return null;
-            }
-        );
+            },
+            Validators.required
+        ]);
         // sonderschueler 1
         this.form.controls.betreuungstageKinderDieserGemeindeSonderschueler.setValidators(
             control => {
@@ -292,8 +301,8 @@ export class FerienbetreuungNutzungComponent
         this.writeBackFormValues();
         this.ferienbetreuungService
             .saveNutzung(this.container.id, this.nutzung)
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.ferienbetreuungService.updateFerienbetreuungContainerStores(
                         this.container.id
                     );
@@ -302,8 +311,8 @@ export class FerienbetreuungNutzungComponent
                         this.translate.instant('SPEICHERN_ERFOLGREICH')
                     );
                 },
-                err => this.handleSaveErrors(err)
-            );
+                error: err => this.handleSaveErrors(err)
+            });
     }
 
     private writeBackFormValues(): void {
@@ -332,21 +341,10 @@ export class FerienbetreuungNutzungComponent
     public onFalscheAngaben(): void {
         this.ferienbetreuungService
             .falscheAngabenNutzung(this.container.id, this.nutzung)
-            .subscribe(
-                () => this.handleSaveSuccess(),
-                error => this.handleSaveErrors(error)
-            );
-    }
-
-    public allAnzahlFieldsFilledOut(): boolean {
-        return (
-            this.form.value.anzahlBetreuteKinder?.toString().length > 0 &&
-            this.form.value.anzahlBetreuteKinder1Zyklus?.toString().length >
-                0 &&
-            this.form.value.anzahlBetreuteKinder2Zyklus?.toString().length >
-                0 &&
-            this.form.value.anzahlBetreuteKinder3Zyklus?.toString().length > 0
-        );
+            .subscribe({
+                next: () => this.handleSaveSuccess(),
+                error: error => this.handleSaveErrors(error)
+            });
     }
 
     public allAnzahlFieldsEmpty(): boolean {
@@ -372,15 +370,30 @@ export class FerienbetreuungNutzungComponent
             this.form.controls.anzahlBetreuteKinder1Zyklus.valueChanges,
             this.form.controls.anzahlBetreuteKinder2Zyklus.valueChanges,
             this.form.controls.anzahlBetreuteKinder3Zyklus.valueChanges
-        ]).subscribe(
-            values => {
+        ]).subscribe({
+            next: values => {
                 this.abweichungenAnzahlKinder =
                     values[0] - values[1] - values[2] - values[3];
                 this.cd.markForCheck();
             },
-            () => {
+            error: () => {
                 this.errorService.addMesageAsError('BAD_NUMBER_ERROR');
             }
+        });
+    }
+
+    public isZweitPruefungAndSameUserAsPruefung() {
+        return combineLatest([
+            this.authService.principal$,
+            this.ferienbetreuungService.getFerienbetreuungHistory()
+        ]).pipe(
+            map(([principal, history]) =>
+                FerienbetreuungPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    this.container,
+                    history
+                )
+            )
         );
     }
 }

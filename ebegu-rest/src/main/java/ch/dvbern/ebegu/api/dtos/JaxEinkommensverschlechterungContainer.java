@@ -16,10 +16,10 @@
 package ch.dvbern.ebegu.api.dtos;
 
 import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.Valid;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer Finanzielle Situation
@@ -51,7 +51,9 @@ public class JaxEinkommensverschlechterungContainer extends JaxAbstractDTO {
 		return ekvGSBasisJahrPlus1;
 	}
 
-	public void setEkvGSBasisJahrPlus1(@Nullable final JaxEinkommensverschlechterung ekvGSBasisJahrPlus1) {
+	public void setEkvGSBasisJahrPlus1(
+		@Nullable final JaxEinkommensverschlechterung ekvGSBasisJahrPlus1
+	) {
 		this.ekvGSBasisJahrPlus1 = ekvGSBasisJahrPlus1;
 	}
 
@@ -60,7 +62,9 @@ public class JaxEinkommensverschlechterungContainer extends JaxAbstractDTO {
 		return ekvGSBasisJahrPlus2;
 	}
 
-	public void setEkvGSBasisJahrPlus2(@Nullable final JaxEinkommensverschlechterung ekvGSBasisJahrPlus2) {
+	public void setEkvGSBasisJahrPlus2(
+		@Nullable final JaxEinkommensverschlechterung ekvGSBasisJahrPlus2
+	) {
 		this.ekvGSBasisJahrPlus2 = ekvGSBasisJahrPlus2;
 	}
 
@@ -69,7 +73,9 @@ public class JaxEinkommensverschlechterungContainer extends JaxAbstractDTO {
 		return ekvJABasisJahrPlus1;
 	}
 
-	public void setEkvJABasisJahrPlus1(@Nullable final JaxEinkommensverschlechterung ekvJABasisJahrPlus1) {
+	public void setEkvJABasisJahrPlus1(
+		@Nullable final JaxEinkommensverschlechterung ekvJABasisJahrPlus1
+	) {
 		this.ekvJABasisJahrPlus1 = ekvJABasisJahrPlus1;
 	}
 
@@ -78,7 +84,9 @@ public class JaxEinkommensverschlechterungContainer extends JaxAbstractDTO {
 		return ekvJABasisJahrPlus2;
 	}
 
-	public void setEkvJABasisJahrPlus2(@Nullable final JaxEinkommensverschlechterung ekvJABasisJahrPlus2) {
+	public void setEkvJABasisJahrPlus2(
+		@Nullable final JaxEinkommensverschlechterung ekvJABasisJahrPlus2
+	) {
 		this.ekvJABasisJahrPlus2 = ekvJABasisJahrPlus2;
 	}
 }

@@ -35,7 +35,10 @@ public class BenutzerTableMandantFilterDTO extends BenutzerTableFilterDTO {
 		this.mandant = mandant;
 	}
 
-	public BenutzerTableMandantFilterDTO(BenutzerTableFilterDTO benutzerSearch, @Nonnull Mandant mandant) {
+	public BenutzerTableMandantFilterDTO(
+		BenutzerTableFilterDTO benutzerSearch,
+		@Nonnull Mandant mandant
+	) {
 		super();
 		this.setPagination(benutzerSearch.getPagination());
 		this.setSearch(benutzerSearch.getSearch());
@@ -52,6 +55,8 @@ public class BenutzerTableMandantFilterDTO extends BenutzerTableFilterDTO {
 			.append("mandant", getMandant())
 			.toString();
 	}
+
+	@Nonnull
 	public Mandant getMandant() {
 		return mandant;
 	}

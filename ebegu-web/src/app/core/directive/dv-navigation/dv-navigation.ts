@@ -22,6 +22,7 @@ import {
     IQService,
     ITimeoutService
 } from 'angular';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {FinanzielleSituationRS} from '../../../../gesuch/service/finanzielleSituationRS.rest';
 import {FinanzielleSituationSubStepManager} from '../../../../gesuch/service/finanzielleSituationSubStepManager';
 import {FinanzielleSituationSubStepManagerAppenzell} from '../../../../gesuch/service/finanzielleSituationSubStepManagerAppenzell';
@@ -34,11 +35,9 @@ import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
 import {TSFinanzielleSituationSubStepName} from '../../../../models/enums/TSFinanzielleSituationSubStepName';
 import {TSFinanzielleSituationTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
-import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {ErrorService} from '../../errors/service/ErrorService';
-import {LogFactory} from '../../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import ITranslateService = angular.translate.ITranslateService;
 
 /**
@@ -139,8 +138,8 @@ export class NavigatorController implements IController {
                 this.gesuchModelManager.getGesuchsperiode(),
                 this.gesuchModelManager.getGemeinde()
             )
-            .subscribe(
-                typ => {
+            .subscribe({
+                next: typ => {
                     switch (typ) {
                         case TSFinanzielleSituationTyp.BERN:
                         case TSFinanzielleSituationTyp.BERN_FKJV:
@@ -169,6 +168,7 @@ export class NavigatorController implements IController {
                                 );
                             break;
                         case TSFinanzielleSituationTyp.SCHWYZ:
+                        case TSFinanzielleSituationTyp.SCHWYZ_ERWEITERT:
                             this.finSitWizardSubStepManager =
                                 new FinanzielleSituationSubStepManagerSchwyz(
                                     this.gesuchModelManager
@@ -180,8 +180,8 @@ export class NavigatorController implements IController {
                             );
                     }
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public doesCancelExist(): boolean {

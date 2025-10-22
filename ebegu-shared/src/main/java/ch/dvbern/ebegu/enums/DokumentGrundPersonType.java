@@ -17,10 +17,9 @@ package ch.dvbern.ebegu.enums;
 
 /**
  * Enum for DokumentGrundPersonType
- * KIND       --> The DokumentGrund is linked with a Kind
- * GESUCHSTELLER  --> The DokumentGrund is linked with a Gesuchsteller
+ * KIND --> The DokumentGrund is linked with a Kind
+ * GESUCHSTELLER --> The DokumentGrund is linked with a Gesuchsteller
  */
 public enum DokumentGrundPersonType {
-	KIND,
-	GESUCHSTELLER,
+	KIND, GESUCHSTELLER,
 }

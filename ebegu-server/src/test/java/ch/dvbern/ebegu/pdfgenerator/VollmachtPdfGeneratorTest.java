@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -46,22 +46,34 @@ public class VollmachtPdfGeneratorTest {
 		initFallDaten();
 	}
 
-
 	@Test
-	public void createVollmacht() throws IOException, InvoiceGeneratorException {
+	public void createVollmacht() throws IOException,
+		InvoiceGeneratorException {
 		FileUtils.forceMkdir(new File(pfad));
 		generateVollmacht(Sprache.DEUTSCH, "Vollmacht_de.pdf");
 		generateVollmacht(Sprache.FRANZOESISCH, "Vollmacht_fr.pdf");
 		assert this.fall.getSozialdienstFall() != null;
 		addSecondAntragsteller(this.fall.getSozialdienstFall());
-		generateVollmacht(Sprache.DEUTSCH, "Vollmacht_de_zweiAntragstellende.pdf");
-		generateVollmacht(Sprache.FRANZOESISCH, "Vollmacht_fr_zweiAntragstellende.pdf");
+		generateVollmacht(
+			Sprache.DEUTSCH,
+			"Vollmacht_de_zweiAntragstellende.pdf"
+		);
+		generateVollmacht(
+			Sprache.FRANZOESISCH,
+			"Vollmacht_fr_zweiAntragstellende.pdf"
+		);
 	}
 
-	private void generateVollmacht(@Nonnull Sprache locale, @Nonnull String dokumentname) throws FileNotFoundException,
+	private void generateVollmacht(
+		@Nonnull Sprache locale,
+		@Nonnull String dokumentname
+	) throws FileNotFoundException,
 		InvoiceGeneratorException {
 		assert this.fall.getSozialdienstFall() != null;
-		final VollmachtPdfGenerator generator = new VollmachtPdfGenerator(locale, this.fall.getSozialdienstFall());
+		final VollmachtPdfGenerator generator = new VollmachtPdfGenerator(
+			locale,
+			this.fall.getSozialdienstFall()
+		);
 		generator.generate(new FileOutputStream(pfad + dokumentname));
 	}
 
@@ -94,7 +106,7 @@ public class VollmachtPdfGeneratorTest {
 		this.fall.setSozialdienstFall(sozialdienstFall);
 	}
 
-	private void addSecondAntragsteller(SozialdienstFall sozialdienstFall){
+	private void addSecondAntragsteller(SozialdienstFall sozialdienstFall) {
 		sozialdienstFall.setNameGs2("NameGs2");
 		sozialdienstFall.setVornameGs2("VornameGs2");
 		sozialdienstFall.setGeburtsdatum(LocalDate.now().minusYears(19));

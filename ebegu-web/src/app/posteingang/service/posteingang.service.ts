@@ -17,8 +17,7 @@ import {Injectable} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {TSPostEingangEvent} from '../../../models/enums/TSPostEingangEvent';
-import {Log, LogFactory} from '../../core/logging/LogFactory';
-
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 @Injectable({
     providedIn: 'root'
 })

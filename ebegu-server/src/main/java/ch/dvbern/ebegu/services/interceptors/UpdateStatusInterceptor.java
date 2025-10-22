@@ -15,9 +15,9 @@
 
 package ch.dvbern.ebegu.services.interceptors;
 
-import javax.inject.Inject;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import jakarta.inject.Inject;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.InvocationContext;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
@@ -25,8 +25,8 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.Eingangsart;
 import ch.dvbern.ebegu.enums.UserRole;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.GesuchService;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +48,13 @@ import static ch.dvbern.ebegu.enums.UserRole.SUPER_ADMIN;
  */
 public class UpdateStatusInterceptor {
 
-	private static final Logger LOG = LoggerFactory.getLogger(UpdateStatusInterceptor.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		UpdateStatusInterceptor.class.getSimpleName()
+	);
 
-	private static final UserRole[] JA_OR_SCH_OR_ADM = { SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS, ADMIN_TS };
+	private static final UserRole[] JA_OR_SCH_OR_ADM = { SUPER_ADMIN, ADMIN_BG,
+		SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE,
+		SACHBEARBEITER_TS, ADMIN_TS };
 
 	@Inject
 	private PrincipalBean principalBean;
@@ -66,20 +70,35 @@ public class UpdateStatusInterceptor {
 
 	@SuppressWarnings("PMD.SignatureDeclareThrowsException")
 	@AroundInvoke
-	public Object maybeChangeGesuchstatusToInBearbeitung(InvocationContext ctx) throws Exception {
+	public Object maybeChangeGesuchstatusToInBearbeitung(InvocationContext ctx)
+		throws Exception {
 
 		if (ctx.getParameters() != null && ctx.getParameters().length != 0) {
-			String gesuchID = ctx.getParameters()[0] instanceof String ? (String) ctx.getParameters()[0] : null;
+			String gesuchID = ctx.getParameters()[0] instanceof String ?
+				(String) ctx.getParameters()[0] :
+				null;
 			if (gesuchID != null) {
 				Gesuch gesuch = persistence.find(Gesuch.class, gesuchID);
 				if (gesuch == null) {
-					LOG.info("Gesuch mit ID {} wurde nicht in der DB gefunden", gesuchID);
+					LOG.info(
+						"Gesuch mit ID {} wurde nicht in der DB gefunden",
+						gesuchID
+					);
 				} else {
-					if (principalBean.isCallerInAnyOfRole(JA_OR_SCH_OR_ADM) && Eingangsart.ONLINE == gesuch.getEingangsart()
+					if (principalBean.isCallerInAnyOfRole(JA_OR_SCH_OR_ADM)
+						&& Eingangsart.ONLINE == gesuch.getEingangsart()
 						&& AntragStatus.FREIGEGEBEN == gesuch.getStatus()) {
-						changeGesuchStatus(gesuch, AntragStatus.IN_BEARBEITUNG_JA);
-					} else if (principalBean.isCallerInRole(STEUERAMT) && AntragStatus.PRUEFUNG_STV == gesuch.getStatus()) {
-						changeGesuchStatus(gesuch, AntragStatus.IN_BEARBEITUNG_STV);
+						changeGesuchStatus(
+							gesuch,
+							AntragStatus.IN_BEARBEITUNG_JA
+						);
+					} else if (principalBean.isCallerInRole(STEUERAMT)
+						&& AntragStatus.PRUEFUNG_STV
+							== gesuch.getStatus()) {
+						changeGesuchStatus(
+							gesuch,
+							AntragStatus.IN_BEARBEITUNG_STV
+						);
 					}
 				}
 			}
@@ -92,7 +111,11 @@ public class UpdateStatusInterceptor {
 		gesuchService.updateGesuch(gesuch, true, null);
 
 		if (configuration.getIsDevmode() || LOG.isDebugEnabled()) {
-			LOG.info("Antrag wurde in den Status {} gesetzt. ID {}", newStatus, gesuch.getId());
+			LOG.info(
+				"Antrag wurde in den Status {} gesetzt. ID {}",
+				newStatus,
+				gesuch.getId()
+			);
 		}
 	}
 

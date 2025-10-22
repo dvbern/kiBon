@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -27,8 +27,8 @@ import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.KITA;
@@ -36,22 +36,29 @@ import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESFAMILIEN
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESSCHULE;
 
 /**
- * Sonderregel die nach der MonatsRule ausgeführt wird. Die Regel sorgt dafür, dass es für jeden Monat genau einen Zeitabschnitt gibt.
+ * Sonderregel die nach der MonatsRule ausgeführt wird. Die Regel sorgt dafür, dass es für jeden Monat genau einen
+ * Zeitabschnitt gibt.
  */
 public class MonatsMergerRule extends AbstractAbschlussRule {
 
 	private final boolean anspruchsBerchtigungMontasweise;
 
-	public MonatsMergerRule(boolean isDebug, boolean anspruchsBerchtigungMontasweise) {
+	public MonatsMergerRule(
+		boolean isDebug,
+		boolean anspruchsBerchtigungMontasweise
+	) {
 		super(isDebug);
 		this.anspruchsBerchtigungMontasweise = anspruchsBerchtigungMontasweise;
 	}
 
 	@Override
 	@Nonnull
-	public List<VerfuegungZeitabschnitt> executeIfApplicable(@Nonnull AbstractPlatz platz, @Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	public List<VerfuegungZeitabschnitt> executeIfApplicable(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		//Rule ist nur anwendbar, wenn AnspruchsberechtigungMonatsweise=true konfiguriert ist
-		if(anspruchsBerchtigungMontasweise) {
+		if (anspruchsBerchtigungMontasweise) {
 			return super.executeIfApplicable(platz, zeitabschnitte);
 		}
 
@@ -67,41 +74,61 @@ public class MonatsMergerRule extends AbstractAbschlussRule {
 	@Override
 	protected List<VerfuegungZeitabschnitt> execute(
 		@Nonnull AbstractPlatz platz,
-		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 
-		Map<Month, List<VerfuegungZeitabschnitt>> monthVerfuegungZeitabschnittMap = mapZeitabschnitteByMonth(zeitabschnitte);
+		Map<Month, List<VerfuegungZeitabschnitt>> monthVerfuegungZeitabschnittMap =
+			mapZeitabschnitteByMonth(zeitabschnitte);
 		return getZeitabschnitteFullMonth(monthVerfuegungZeitabschnittMap);
 	}
 
-
-	private Map<Month, List<VerfuegungZeitabschnitt>> mapZeitabschnitteByMonth(List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	private Map<Month, List<VerfuegungZeitabschnitt>> mapZeitabschnitteByMonth(
+		List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		return zeitabschnitte.stream()
-			.collect(Collectors.groupingBy(zeitabschnitt -> zeitabschnitt.getGueltigkeit().getGueltigAb().getMonth()));
+			.collect(
+				Collectors.groupingBy(
+					zeitabschnitt -> zeitabschnitt.getGueltigkeit()
+						.getGueltigAb()
+						.getMonth()
+				)
+			);
 	}
 
-	private List<VerfuegungZeitabschnitt> getZeitabschnitteFullMonth(Map<Month, List<VerfuegungZeitabschnitt>> monthVerfuegungZeitabschnittMap) {
+	private List<VerfuegungZeitabschnitt> getZeitabschnitteFullMonth(
+		Map<Month, List<VerfuegungZeitabschnitt>> monthVerfuegungZeitabschnittMap
+	) {
 		return Arrays.stream(Month.values())
-			.map(month -> getZeitabschnittFullMonth(monthVerfuegungZeitabschnittMap.get(month)))
+			.map(
+				month -> getZeitabschnittFullMonth(
+					monthVerfuegungZeitabschnittMap.get(month)
+				)
+			)
 			.sorted()
 			.collect(Collectors.toList());
 	}
 
-	private VerfuegungZeitabschnitt getZeitabschnittFullMonth(List<VerfuegungZeitabschnitt> monthlyZeitabschnitte) {
-		if(monthlyZeitabschnitte.size() == 1) {
+	private VerfuegungZeitabschnitt getZeitabschnittFullMonth(
+		List<VerfuegungZeitabschnitt> monthlyZeitabschnitte
+	) {
+		if (monthlyZeitabschnitte.size() == 1) {
 			return monthlyZeitabschnitte.get(0);
 		}
 
 		//Die Zeitabschnitte sollen auf den ganzen Monat erweitert werden. Danach haben alle Zeitabschnitte eine Gültigkeit
 		//vom ersten bis zum letzten Tag es Monats, die Calculation Input Werte werden dabei Prozentual zu den anzahl Tagen ausgerechnet
-		List<VerfuegungZeitabschnitt> strechedZeitabschnitte = strechZeitabschnitteToFullMonth(monthlyZeitabschnitte);
+		List<VerfuegungZeitabschnitt> strechedZeitabschnitte =
+			strechZeitabschnitteToFullMonth(monthlyZeitabschnitte);
 		return calculateZeitabschnitte(strechedZeitabschnitte);
 	}
 
-	private VerfuegungZeitabschnitt calculateZeitabschnitte(List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	private VerfuegungZeitabschnitt calculateZeitabschnitte(
+		List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		VerfuegungZeitabschnitt zeitabschnittMerged = null;
 
-		for(VerfuegungZeitabschnitt zeitabschnitt : zeitabschnitte) {
-			if(zeitabschnittMerged == null) {
+		for (VerfuegungZeitabschnitt zeitabschnitt : zeitabschnitte) {
+			if (zeitabschnittMerged == null) {
 				zeitabschnittMerged = zeitabschnitt;
 				continue;
 			}
@@ -113,61 +140,108 @@ public class MonatsMergerRule extends AbstractAbschlussRule {
 		return zeitabschnittMerged;
 	}
 
-	private List<VerfuegungZeitabschnitt> strechZeitabschnitteToFullMonth(List<VerfuegungZeitabschnitt> zeitabschnitteList) {
+	private List<VerfuegungZeitabschnitt> strechZeitabschnitteToFullMonth(
+		List<VerfuegungZeitabschnitt> zeitabschnitteList
+	) {
 		return zeitabschnitteList.stream()
 			.map(this::strechZeitabschnittToFullMonth)
 			.collect(Collectors.toList());
 	}
 
-	private VerfuegungZeitabschnitt strechZeitabschnittToFullMonth(VerfuegungZeitabschnitt zeitabschnittBeforeStretching) {
-		VerfuegungZeitabschnitt zeitabschnittFullMonth = createZeitabschnittGueltigFullMonth(zeitabschnittBeforeStretching);
+	private VerfuegungZeitabschnitt strechZeitabschnittToFullMonth(
+		VerfuegungZeitabschnitt zeitabschnittBeforeStretching
+	) {
+		VerfuegungZeitabschnitt zeitabschnittFullMonth =
+			createZeitabschnittGueltigFullMonth(
+				zeitabschnittBeforeStretching
+			);
 
-		handleCalculationOfInputValues(zeitabschnittFullMonth, zeitabschnittBeforeStretching);
-		handleGueltigkeitOfBemerkungen(zeitabschnittFullMonth, zeitabschnittBeforeStretching.getGueltigkeit());
+		handleCalculationOfInputValues(
+			zeitabschnittFullMonth,
+			zeitabschnittBeforeStretching
+		);
+		handleGueltigkeitOfBemerkungen(
+			zeitabschnittFullMonth,
+			zeitabschnittBeforeStretching.getGueltigkeit()
+		);
 		return zeitabschnittFullMonth;
 	}
 
-	private void handleCalculationOfInputValues(VerfuegungZeitabschnitt zeitabschnittStreched, VerfuegungZeitabschnitt zeitabschnittBeforeStretching) {
-		final int lengthOfMonth = zeitabschnittBeforeStretching.getGueltigkeit().getGueltigAb().lengthOfMonth();
-		final long numberOfDaysBeforeStreching = zeitabschnittBeforeStretching.getGueltigkeit().getDays();
+	private void handleCalculationOfInputValues(
+		VerfuegungZeitabschnitt zeitabschnittStreched,
+		VerfuegungZeitabschnitt zeitabschnittBeforeStretching
+	) {
+		final int lengthOfMonth = zeitabschnittBeforeStretching.getGueltigkeit()
+			.getGueltigAb()
+			.lengthOfMonth();
+		final long numberOfDaysBeforeStreching = zeitabschnittBeforeStretching
+			.getGueltigkeit()
+			.getDays();
 
-		double percentageOfDays = 100.0 / lengthOfMonth * numberOfDaysBeforeStreching;
-		zeitabschnittStreched.calculateInputValuesProportionaly(percentageOfDays);
+		double percentageOfDays = 100.0
+			/ lengthOfMonth
+			* numberOfDaysBeforeStreching;
+		zeitabschnittStreched.calculateInputValuesProportionaly(
+			percentageOfDays
+		);
 	}
 
-	private VerfuegungZeitabschnitt createZeitabschnittGueltigFullMonth(VerfuegungZeitabschnitt zeitabschnitt) {
-		VerfuegungZeitabschnitt zeitabschnittFullMonth = new VerfuegungZeitabschnitt(zeitabschnitt);
-		zeitabschnittFullMonth.setGueltigkeit(zeitabschnitt.getGueltigkeit().withFullMonths());
+	private VerfuegungZeitabschnitt createZeitabschnittGueltigFullMonth(
+		VerfuegungZeitabschnitt zeitabschnitt
+	) {
+		VerfuegungZeitabschnitt zeitabschnittFullMonth =
+			new VerfuegungZeitabschnitt(zeitabschnitt);
+		zeitabschnittFullMonth.setGueltigkeit(
+			zeitabschnitt.getGueltigkeit().withFullMonths()
+		);
 		return zeitabschnittFullMonth;
 	}
 
 	private void handleGueltigkeitOfBemerkungen(
 		VerfuegungZeitabschnitt zeitabschnittFullMonth,
-		DateRange gueltigkeitBeforeStrechting) {
+		DateRange gueltigkeitBeforeStrechting
+	) {
 
 		//Alle Bemerkungen sollen nur solange gültig sein, wie der Zeitabschnitt vor dem Strecken
-		setGueltigkeitBeforeStrechtingToAllBemerkungen(zeitabschnittFullMonth, gueltigkeitBeforeStrechting);
+		setGueltigkeitBeforeStrechtingToAllBemerkungen(
+			zeitabschnittFullMonth,
+			gueltigkeitBeforeStrechting
+		);
 
 		//Ausser die Bemerkgung Verfuegung_mit_anspruch, die soll so lange gültig sein wie der gestreckte Zeitabschnitt
-		setGueltigkeitOfZeitabschnittToBemerkung(zeitabschnittFullMonth, MsgKey.VERFUEGUNG_MIT_ANSPRUCH);
+		setGueltigkeitOfZeitabschnittToBemerkung(
+			zeitabschnittFullMonth,
+			MsgKey.VERFUEGUNG_MIT_ANSPRUCH
+		);
 	}
 
 	private void setGueltigkeitOfZeitabschnittToBemerkung(
 		VerfuegungZeitabschnitt zeitabschnittFullMonth,
-		MsgKey msgKey) {
-		zeitabschnittFullMonth.getBemerkungenDTOList().getBemerkungenStream()
+		MsgKey msgKey
+	) {
+		zeitabschnittFullMonth.getBemerkungenDTOList()
+			.getBemerkungenStream()
 			.filter(bemerkung -> bemerkung.getMsgKey() == msgKey)
-			.forEach(verfuegungsBemerkungDTO -> verfuegungsBemerkungDTO.setGueltigkeit(zeitabschnittFullMonth.getGueltigkeit()));
+			.forEach(
+				verfuegungsBemerkungDTO -> verfuegungsBemerkungDTO
+					.setGueltigkeit(
+						zeitabschnittFullMonth.getGueltigkeit()
+					)
+			);
 	}
 
 	private void setGueltigkeitBeforeStrechtingToAllBemerkungen(
 		VerfuegungZeitabschnitt zeitabschnittFullMonth,
-		DateRange gueltigkeitBeforeStrechting) {
+		DateRange gueltigkeitBeforeStrechting
+	) {
 
 		zeitabschnittFullMonth.getBemerkungenDTOList()
 			.getBemerkungenStream()
-			.forEach(bemerkung -> bemerkung.setGueltigkeit(gueltigkeitBeforeStrechting));
+			.forEach(
+				bemerkung -> bemerkung.setGueltigkeit(
+					gueltigkeitBeforeStrechting
+				)
+			);
 	}
-
 
 }

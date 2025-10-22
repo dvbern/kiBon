@@ -20,11 +20,10 @@ import {ControlContainer, NgForm} from '@angular/forms';
 import {from, Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
 import {TSBerechtigung} from '../../../../models/TSBerechtigung';
-import {TSInstitution} from '../../../../models/TSInstitution';
-import {TSTraegerschaft} from '../../../../models/TSTraegerschaft';
+import {TSInstitution, TSTraegerschaft} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {InstitutionRS} from '../../../core/service/institutionRS.rest';
@@ -39,7 +38,8 @@ let nextId = 0;
     templateUrl: './berechtigung.component.html',
     styleUrls: ['./berechtigung.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class BerechtigungComponent {
     @Input() public berechtigung: TSBerechtigung;

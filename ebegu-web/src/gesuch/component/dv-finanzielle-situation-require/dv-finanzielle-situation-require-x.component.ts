@@ -23,12 +23,12 @@ import {
 import {ControlContainer, NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {EbeguNumberPipe} from '../../../app/shared/pipe/ebegu-number.pipe';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSFinanzielleSituationTyp} from '../../../models/enums/TSFinanzielleSituationTyp';
 import {TSFinSitStatus} from '../../../models/enums/TSFinSitStatus';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {FinanzielleSituationRS} from '../../service/finanzielleSituationRS.rest';
@@ -39,7 +39,9 @@ const LOG = LogFactory.createLog('DvFinanzielleSituationRequireXComponent');
 @Component({
     selector: 'dv-finanzielle-situation-require-x',
     templateUrl: './dv-finanzielle-situation-require-x.component.html',
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    styleUrl: './dv-finanzielle-situation-require-x.component.less',
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class DvFinanzielleSituationRequireXComponent implements OnInit {
     @Input()

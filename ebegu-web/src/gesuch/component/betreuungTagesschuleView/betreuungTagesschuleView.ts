@@ -13,18 +13,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {IComponentOptions} from 'angular';
-import * as moment from 'moment';
+import moment from 'moment';
+import {
+    TSEinstellungenTagesschule,
+    TSMandant,
+    TSModulTagesschuleGroup
+} from '@kibon/shared/model/entity';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {
+    getWeekdaysValues,
+    TSBetreuungsstatus,
+    TSDayOfWeek,
+    TSModulTagesschuleIntervall,
+    TSModulTagesschuleTyp,
+    TSBrowserLanguage
+} from '@kibon/shared/model/enums';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '../../../app/core/constants/CONSTANTS';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
-import {MandantService} from '../../../app/shared/services/mandant.service';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {
     getTSAbholungTagesschuleValues,
@@ -35,27 +48,16 @@ import {
     getTSBelegungTagesschuleModulIntervallValues,
     TSBelegungTagesschuleModulIntervall
 } from '../../../models/enums/TSBelegungTagesschuleModulIntervall';
-import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
-import {TSBrowserLanguage} from '../../../models/enums/TSBrowserLanguage';
-import {
-    getWeekdaysValues,
-    TSDayOfWeek
-} from '../../../models/enums/TSDayOfWeek';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {
     getTSFleischOptionValues,
     TSFleischOption
 } from '../../../models/enums/TSFleischOption';
-import {TSModulTagesschuleIntervall} from '../../../models/enums/TSModulTagesschuleIntervall';
-import {TSModulTagesschuleTyp} from '../../../models/enums/TSModulTagesschuleTyp';
 import {TSBelegungTagesschuleModul} from '../../../models/TSBelegungTagesschuleModul';
 import {TSBelegungTagesschuleModulGroup} from '../../../models/TSBelegungTagesschuleModulGroup';
 import {TSBetreuung} from '../../../models/TSBetreuung';
-import {TSEinstellungenTagesschule} from '../../../models/TSEinstellungenTagesschule';
-import {TSMandant} from '../../../models/TSMandant';
-import {TSModulTagesschuleGroup} from '../../../models/TSModulTagesschuleGroup';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TagesschuleUtil} from '../../../utils/TagesschuleUtil';
@@ -117,7 +119,7 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         'GlobalCacheService',
         '$timeout',
         '$translate',
-        'ApplicationPropertyRS',
+        'SharedUtilApplicationPropertyRsService',
         'DownloadRS',
         'GemeindeRS',
         'I18nServiceRSRest',
@@ -162,7 +164,7 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         globalCacheService: GlobalCacheService,
         $timeout: ITimeoutService,
         $translate: ITranslateService,
-        applicationPropertyRS: ApplicationPropertyRS,
+        applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly downloadRS: DownloadRS,
         private readonly gemeindeRS: GemeindeRS,
         private readonly i18nServiceRS: I18nServiceRSRest,
@@ -262,7 +264,7 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         if (
             this.gesuchModelManager.gemeindeKonfiguration.isTagesschulAnmeldungBeforePeriode()
         ) {
-            const terminValue = DateUtil.momentToLocalDateFormat(
+            const terminValue = MomentUtil.momentToLocalDateFormat(
                 this.gesuchModelManager.gemeindeKonfiguration
                     .konfigTagesschuleAktivierungsdatum,
                 'DD.MM.YYYY'
@@ -371,6 +373,7 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
      * die Betreuung zurueckgeschrieben werden
      */
     private preSave(): void {
+        this.checkPlanKlasseEmpty();
         const anmeldungen: TSBelegungTagesschuleModul[] = [];
         for (const group of this.modulGroups) {
             for (const belegungModul of group.module) {
@@ -381,6 +384,14 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         }
         this.getBetreuungModel().belegungTagesschule.belegungTagesschuleModule =
             anmeldungen;
+    }
+
+    private checkPlanKlasseEmpty() {
+        // set empty string to null for planKlasse
+        if (this.form.planKlasse?.$modelValue === '') {
+            this.form.planKlasse?.$setViewValue(null);
+            this.form.planKlasse?.$render(); // update ui
+        }
     }
 
     /**

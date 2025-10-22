@@ -28,7 +28,7 @@ ${templateConfiguration.mailCss}
 		Chère famille,
 	</p>
 	<p>
-		Votre inscription pour ${betreuung.kind.kindJA.fullName} à l'EJC (${betreuung.institutionStammdaten.institution.name}) a été acceptée. Vous pouvez consulter la liste des offres de prise en charge <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/verfuegenView/${betreuung.extractGesuch().id}/${betreuung.betreuungNummer}/${betreuung.kind.kindNummer}">ici</a>.
+		Votre inscription pour ${betreuung.kind.kindJA.fullName} à l'EJC (${betreuung.institutionStammdaten.institution.name}) a été acceptée. Vous pouvez consulter la liste des offres de prise en charge <a href="${frontendUrl}/gesuch/verfuegenView/${betreuung.extractGesuch().id}/${betreuung.betreuungNummer}/${betreuung.kind.kindNummer}">ici</a>.
 	</p>
 	<p>
 		Nous vous présentons nos salutations les meilleures.<br/>

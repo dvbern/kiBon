@@ -1,0 +1,44 @@
+{
+    "valid": {
+        "Start": {
+            "veranlagt": "nein"
+        },
+        "GS1": {
+            "Eckdaten": {
+                "steuerbaresEinkommen": "20000",
+                "steuerbaresVermoegen": "10000"
+            },
+            "PhaseEins": {
+                "saeule3aBvgVersichert": "1",
+                "saeule3aBvgAngehoerig": "1",
+                "einkaufsBeitraege": "1",
+                "liegenschaftsaufwand": "1",
+                "einkuenfteBGSA": "1",
+                "vorjahresverluste": "1",
+                "mitgliederbeitraegeZuwendungen": "1",
+                "leistungenJuristischePersonen": "1"
+            }
+        },
+        "GS2": {
+            "Eckdaten": {
+                "steuerbaresEinkommen": "70000",
+                "steuerbaresVermoegen": "20000"
+            },
+            "PhaseEins": {
+                "saeule3aBvgVersichert": "1",
+                "saeule3aBvgAngehoerig": "1",
+                "einkaufsBeitraege": "1",
+                "liegenschaftsaufwand": "1",
+                "einkuenfteBGSA": "1",
+                "vorjahresverluste": "1",
+                "mitgliederbeitraegeZuwendungen": "1",
+                "leistungenJuristischePersonen": "1"
+            }
+        },
+        "Resultate": {
+            "massgebendesEinkommenTotal": "94'515",
+            "massgebendesEinkommenGS1": "21'508",
+            "massgebendesEinkommenGS2": "73'007"
+        }
+    }
+}

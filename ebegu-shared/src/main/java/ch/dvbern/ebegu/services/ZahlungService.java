@@ -23,6 +23,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.dto.ZahlungenSearchParamsDTO;
+import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Zahlung;
@@ -47,7 +48,8 @@ public interface ZahlungService {
 		@Nonnull LocalDate datumFaelligkeit,
 		@Nonnull String beschreibung,
 		@Nonnull Boolean auszahlungInZukunft,
-		@Nonnull Mandant mandant);
+		@Nonnull Mandant mandant
+	);
 
 	/**
 	 * Ermittelt alle im aktuellen Monat gueltigen Verfuegungen, sowie aller seit dem letzten Auftrag eingeganegenen
@@ -62,7 +64,8 @@ public interface ZahlungService {
 		@Nonnull String beschreibung,
 		@Nonnull Boolean auszahlungInZukunft,
 		@Nonnull LocalDateTime datumGeneriert,
-		@Nonnull Mandant mandant);
+		@Nonnull Mandant mandant
+	);
 
 	/**
 	 * Aktualisiert das Fälligkeitsdatum und die Beschreibung im übergebenen Auftrag. Die Zahlungspositionen werden
@@ -72,7 +75,17 @@ public interface ZahlungService {
 	Zahlungsauftrag zahlungsauftragAktualisieren(
 		@Nonnull String auftragId,
 		@Nonnull LocalDate datumFaelligkeit,
-		@Nonnull String beschreibung);
+		@Nonnull String beschreibung
+	);
+
+	/**
+	 * Ermittelt den zuletzt durchgefuehrten Zahlungsauftrag des entsprechenden Typs
+	 */
+	@Nonnull
+	Optional<Zahlungsauftrag> findLastZahlungsauftrag(
+		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
+		@Nonnull Gemeinde gemeinde
+	);
 
 	/**
 	 * Nachdem alle Daten kontrolliert wurden, wird der Zahlungsauftrag ausgeloest. Danach kann er nicht mehr
@@ -97,13 +110,17 @@ public interface ZahlungService {
 	 * Gibt alle Zahlungsauftraege zurueck
 	 */
 	@Nonnull
-	Collection<Zahlungsauftrag> getAllZahlungsauftraege(ZahlungenSearchParamsDTO zahlungenSearchParamsDTO);
+	Collection<Zahlungsauftrag> getAllZahlungsauftraege(
+		ZahlungenSearchParamsDTO zahlungenSearchParamsDTO
+	);
 
 	/**
 	 *
 	 */
 	@Nonnull
-	Long countAllZahlungsauftraege(ZahlungenSearchParamsDTO zahlungenSearchParamsDTO);
+	Long countAllZahlungsauftraege(
+		ZahlungenSearchParamsDTO zahlungenSearchParamsDTO
+	);
 
 	/**
 	 * Eine Kita kann/muss den Zahlungseingang bestaetigen
@@ -112,20 +129,18 @@ public interface ZahlungService {
 	Zahlung zahlungBestaetigen(@Nonnull String zahlungId);
 
 	/**
-	 * Gibt alle Zahlungsaufträge des übergebenen Zeitraums zurück. Es werden nur Zahlungsaufträge aufgefuehrt, fuer die der eingeloggte Benutzer berechtigt
+	 * Gibt alle Zahlungsaufträge des übergebenen Zeitraums zurück. Es werden nur Zahlungsaufträge aufgefuehrt, fuer die
+	 * der eingeloggte Benutzer berechtigt
 	 * ist (d.h. für die Gemeinde).
 	 */
 	@Nonnull
-	Collection<Zahlungsauftrag> getZahlungsauftraegeInPeriode(@Nonnull LocalDate von, @Nonnull LocalDate bis);
+	Collection<Zahlungsauftrag> getZahlungsauftraegeInPeriode(
+		@Nonnull LocalDate von,
+		@Nonnull LocalDate bis
+	);
 
 	/**
 	 * Entfernt alle Zahlungspositionen des übergebenen Gesuchs
 	 */
 	void deleteZahlungspositionenOfGesuch(@Nonnull Gesuch gesuch);
-
-	/**
-	 * Kontrolliert die Zahlungen Stand heute: Es werden die Zahlen aus der letzt gueltigen Verfuegung jedes Falls
-	 * verglichen mit den tatsaechlich erfolgten Zahlungen.
-	 */
-	void zahlungenKontrollieren(@Nonnull ZahlungslaufTyp zahlungslaufTyp, @Nonnull String gemeindeId, @Nonnull Boolean auszahlungInZukunft);
 }

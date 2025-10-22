@@ -20,13 +20,15 @@ import {Ng1StateDeclaration, StateParams} from '@uirouter/angularjs';
 import {StateService} from '@uirouter/core';
 import {ILogService} from 'angular';
 import {first} from 'rxjs/operators';
+import {TSEinstellung} from '../../admin/einstellungen/TSEinstellung';
+import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
-import {TSEinstellungKey} from '../../models/enums/TSEinstellungKey';
-import {TSEinstellung} from '../../models/TSEinstellung';
+import {TSEingangsart} from '../../models/enums/TSEingangsart';
 import {TSGesuch} from '../../models/TSGesuch';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
-import {getGesuchModelManager} from '../gesuch.route';
+import {getGesuchPromise} from '../gesuch.route';
 import {OnlineFreigabeComponent} from './component/onlineFreigabe/online-freigabe.component';
+import {firstValueFrom} from 'rxjs';
 
 const kommentarView = '<kommentar-view>';
 
@@ -34,7 +36,7 @@ class EbeguFreigabeState implements Ng1StateDeclaration {
     public name = 'gesuch.freigabe';
     public url = '/freigabe/:gesuchId';
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
     public onEnter = redirectToConfiguredFreigabeView;
 }
@@ -57,12 +59,14 @@ const redirectToConfiguredFreigabeView = (
                 const route = onlineFreigabe.getValueAsBoolean()
                     ? freigabeOnlineState.name
                     : freigabeMitQuittungState.name;
-                // ohne reload funktioniert navigation über sidenav nur einmal
-                $state.go(
-                    route,
-                    {gesuchId: $stateParams.gesuchId},
-                    {reload: true}
-                );
+
+                if (checkEingangsArtOnline(gesuch)) {
+                    $state.go(
+                        route,
+                        {gesuchId: $stateParams.gesuchId},
+                        {reload: true}
+                    );
+                }
             },
             (error: any) => $log.error(error)
         );
@@ -77,20 +81,25 @@ redirectToConfiguredFreigabeView.$inject = [
 
 const assertOnlinefreigabeEinstellungIs = (onlineFreigabeAktiv: boolean) => {
     const fn = (einstellungRS: EinstellungRS, gesuch: TSGesuch) =>
-        einstellungRS
-            .getEinstellung(
+        firstValueFrom(
+            einstellungRS.getEinstellung(
                 gesuch.gesuchsperiode.id,
                 TSEinstellungKey.GESUCHFREIGABE_ONLINE
             )
-            .pipe(first())
-            .toPromise()
-            .then(
-                einstellung =>
-                    einstellung.getValueAsBoolean() === onlineFreigabeAktiv
+        ).then(async einstellung => {
+            return (
+                einstellung.getValueAsBoolean() === onlineFreigabeAktiv &&
+                checkEingangsArtOnline(gesuch)
             );
+        });
     fn.$inject = ['EinstellungRS', 'gesuch'];
     return fn;
 };
+
+const checkEingangsArtOnline = (gesuch: TSGesuch) => {
+    return gesuch.eingangsart === TSEingangsart.ONLINE;
+};
+checkEingangsArtOnline.$inject = ['gesuch'];
 
 export const freigabeRedirectState = new EbeguFreigabeState();
 
@@ -108,7 +117,7 @@ class EbeguFreigabeMitQuittungState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -134,12 +143,14 @@ class EbeguFreigabeOnlineState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
         roles: TSRoleUtil.getAllRolesButTraegerschaftInstitutionSteueramt()
     };
+
+    public onEnter = assertOnlinefreigabeEinstellungIs(true);
 }
 
 export const freigabeOnlineState = new EbeguFreigabeOnlineState();

@@ -43,44 +43,226 @@ import static org.hamcrest.Matchers.is;
 public class TageselternBernRechnerTest extends AbstractBGRechnerTest {
 
 	private final BGRechnerParameterDTO parameterDTO = getParameter();
-	private final TageselternBernRechner tageselternRechner = new TageselternBernRechner(Collections.emptyList());
+	private final TageselternRechner tageselternRechner =
+		new TageselternRechner(Collections.emptyList());
 
-	private final LocalDate geburtstagBaby = LocalDate.of(2018, Month.OCTOBER, 15);
-	private final LocalDate geburtstagKind = LocalDate.of(2016, Month.OCTOBER, 15);
+	private final LocalDate geburtstagBaby = LocalDate.of(
+		2018,
+		Month.OCTOBER,
+		15
+	);
+	private final LocalDate geburtstagKind = LocalDate.of(
+		2016,
+		Month.OCTOBER,
+		15
+	);
 
 	private final DateRange intervall = new DateRange(
 		LocalDate.of(2019, Month.FEBRUARY, 10),
-		LocalDate.of(2019, Month.FEBRUARY, 20));
+		LocalDate.of(2019, Month.FEBRUARY, 20)
+	);
 
 	private final DateRange intervallTag = new DateRange(
 		LocalDate.of(2019, Month.FEBRUARY, 10),
-		LocalDate.of(2019, Month.FEBRUARY, 10));
+		LocalDate.of(2019, Month.FEBRUARY, 10)
+	);
 
 	@Test
 	public void test() {
-		testWithParams(geburtstagBaby, EinschulungTyp.VORSCHULALTER, false, false, intervall, 20, 100000, 113.022);
-		testWithParams(geburtstagKind, EinschulungTyp.KINDERGARTEN1, false, false, intervall, 20, 100000, 75.348);
-		testWithParams(geburtstagKind, EinschulungTyp.VORSCHULALTER, false, false, intervall, 20, 50000, 138.138);
+		testWithParams(
+			geburtstagBaby,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			intervall,
+			20,
+			100000,
+			113.022
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.KINDERGARTEN1,
+			false,
+			false,
+			intervall,
+			20,
+			100000,
+			75.348
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			intervall,
+			20,
+			50000,
+			138.138
+		);
 
-		testWithParams(geburtstagKind, EinschulungTyp.VORSCHULALTER, false, false, intervallTag, 20, 100000, 6.850);
-		testWithParams(geburtstagKind, EinschulungTyp.KINDERGARTEN1, false, false, intervallTag, 20, 100000, 6.850);
-		testWithParams(geburtstagKind, EinschulungTyp.VORSCHULALTER, true, true, intervallTag, 20, 100000, 13.528);
-		testWithParams(geburtstagKind, EinschulungTyp.KINDERGARTEN1, true, true, intervallTag, 20, 100000, 13.528);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			intervallTag,
+			20,
+			100000,
+			6.850
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.KINDERGARTEN1,
+			false,
+			false,
+			intervallTag,
+			20,
+			100000,
+			6.850
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.VORSCHULALTER,
+			true,
+			true,
+			intervallTag,
+			20,
+			100000,
+			13.528
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.KINDERGARTEN1,
+			true,
+			true,
+			intervallTag,
+			20,
+			100000,
+			13.528
+		);
 
-		testWithParams(geburtstagKind, EinschulungTyp.VORSCHULALTER, false, false, intervall, 20, 150000, 12.558);
-		testWithParams(geburtstagKind, EinschulungTyp.KINDERGARTEN1, false, false, intervall, 20, 150000, 12.558);
-		testWithParams(geburtstagKind, EinschulungTyp.VORSCHULALTER, true, true, intervall, 20, 150000, 86.022);
-		testWithParams(geburtstagKind, EinschulungTyp.KINDERGARTEN1, true, true, intervall, 20, 150000, 86.022);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			intervall,
+			20,
+			150000,
+			12.558
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.KINDERGARTEN1,
+			false,
+			false,
+			intervall,
+			20,
+			150000,
+			12.558
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.VORSCHULALTER,
+			true,
+			true,
+			intervall,
+			20,
+			150000,
+			86.022
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.KINDERGARTEN1,
+			true,
+			true,
+			intervall,
+			20,
+			150000,
+			86.022
+		);
 
-		testWithParams(geburtstagBaby, EinschulungTyp.VORSCHULALTER, false, false, intervall, 20, 100000, 113.022);
-		testWithParams(geburtstagBaby, EinschulungTyp.KINDERGARTEN1, false, false, intervall, 20, 100000, 113.022);
-		testWithParams(geburtstagBaby, EinschulungTyp.VORSCHULALTER, true, true, intervall, 20, 100000, 186.486);
-		testWithParams(geburtstagBaby, EinschulungTyp.KINDERGARTEN1, true, true, intervall, 20, 100000, 186.486);
+		testWithParams(
+			geburtstagBaby,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			intervall,
+			20,
+			100000,
+			113.022
+		);
+		testWithParams(
+			geburtstagBaby,
+			EinschulungTyp.KINDERGARTEN1,
+			false,
+			false,
+			intervall,
+			20,
+			100000,
+			113.022
+		);
+		testWithParams(
+			geburtstagBaby,
+			EinschulungTyp.VORSCHULALTER,
+			true,
+			true,
+			intervall,
+			20,
+			100000,
+			186.486
+		);
+		testWithParams(
+			geburtstagBaby,
+			EinschulungTyp.KINDERGARTEN1,
+			true,
+			true,
+			intervall,
+			20,
+			100000,
+			186.486
+		);
 
-		testWithParams(geburtstagKind, EinschulungTyp.VORSCHULALTER, false, false, intervall, 20, 100000, 75.348);
-		testWithParams(geburtstagKind, EinschulungTyp.KINDERGARTEN1, false, false, intervall, 20, 100000, 75.348);
-		testWithParams(geburtstagKind, EinschulungTyp.VORSCHULALTER, true, true, intervall, 20, 100000, 148.812);
-		testWithParams(geburtstagKind, EinschulungTyp.KINDERGARTEN1, true, true, intervall, 20, 100000, 148.812);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			intervall,
+			20,
+			100000,
+			75.348
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.KINDERGARTEN1,
+			false,
+			false,
+			intervall,
+			20,
+			100000,
+			75.348
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.VORSCHULALTER,
+			true,
+			true,
+			intervall,
+			20,
+			100000,
+			148.812
+		);
+		testWithParams(
+			geburtstagKind,
+			EinschulungTyp.KINDERGARTEN1,
+			true,
+			true,
+			intervall,
+			20,
+			100000,
+			148.812
+		);
 	}
 
 	@Test
@@ -89,26 +271,136 @@ public class TageselternBernRechnerTest extends AbstractBGRechnerTest {
 		LocalDate kind = LocalDate.of(2014, Month.APRIL, 13);
 		DateRange halberAugust = new DateRange(
 			LocalDate.of(2018, Month.AUGUST, 18),
-			LocalDate.of(2018, Month.AUGUST, 31));
+			LocalDate.of(2018, Month.AUGUST, 31)
+		);
 		DateRange ganzerSeptember = new DateRange(
 			LocalDate.of(2018, Month.SEPTEMBER, 1),
-			LocalDate.of(2018, Month.SEPTEMBER, 30));
+			LocalDate.of(2018, Month.SEPTEMBER, 30)
+		);
 
-		testWithParams(kind, EinschulungTyp.VORSCHULALTER, false, false, halberAugust, 50, 68712, 329.462);
-		testWithParams(kind, EinschulungTyp.VORSCHULALTER, false, false, ganzerSeptember, 50, 68712, 729.524);
-		testWithParams(baby, EinschulungTyp.VORSCHULALTER, false, false, halberAugust, 50, 68712, 494.194);
-		testWithParams(baby, EinschulungTyp.VORSCHULALTER, false, false, ganzerSeptember, 50, 68712, 1094.286);
+		testWithParams(
+			kind,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			halberAugust,
+			50,
+			68712,
+			329.462
+		);
+		testWithParams(
+			kind,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			ganzerSeptember,
+			50,
+			68712,
+			729.524
+		);
+		testWithParams(
+			baby,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			halberAugust,
+			50,
+			68712,
+			494.194
+		);
+		testWithParams(
+			baby,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			ganzerSeptember,
+			50,
+			68712,
+			1094.286
+		);
 
-		testWithParams(baby, EinschulungTyp.VORSCHULALTER, false, false, halberAugust, 50, 185447, 0.000);
-		testWithParams(baby, EinschulungTyp.VORSCHULALTER, false, false, ganzerSeptember, 50, 185447, 0.000);
-		testWithParams(baby, EinschulungTyp.VORSCHULALTER, true, true, halberAugust, 50, 185447, 211.129);
-		testWithParams(baby, EinschulungTyp.VORSCHULALTER, true, true, ganzerSeptember, 50, 185447, 467.500);
+		testWithParams(
+			baby,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			halberAugust,
+			50,
+			185447,
+			0.000
+		);
+		testWithParams(
+			baby,
+			EinschulungTyp.VORSCHULALTER,
+			false,
+			false,
+			ganzerSeptember,
+			50,
+			185447,
+			0.000
+		);
+		testWithParams(
+			baby,
+			EinschulungTyp.VORSCHULALTER,
+			true,
+			true,
+			halberAugust,
+			50,
+			185447,
+			211.129
+		);
+		testWithParams(
+			baby,
+			EinschulungTyp.VORSCHULALTER,
+			true,
+			true,
+			ganzerSeptember,
+			50,
+			185447,
+			467.500
+		);
 
-		testWithParams(baby, EinschulungTyp.VORSCHULALTER, true, true, halberAugust, 50, 35447, 844.516);
-		testWithParams(baby, EinschulungTyp.VORSCHULALTER, true, true, ganzerSeptember, 50, 35447, 1870.000);
+		testWithParams(
+			baby,
+			EinschulungTyp.VORSCHULALTER,
+			true,
+			true,
+			halberAugust,
+			50,
+			35447,
+			844.516
+		);
+		testWithParams(
+			baby,
+			EinschulungTyp.VORSCHULALTER,
+			true,
+			true,
+			ganzerSeptember,
+			50,
+			35447,
+			1870.000
+		);
 
-		testWithParams(kind, EinschulungTyp.KINDERGARTEN1, false, false, halberAugust, 50, 68712, 329.462);
-		testWithParams(kind, EinschulungTyp.KINDERGARTEN1, false, false, ganzerSeptember, 50, 68712, 729.524);
+		testWithParams(
+			kind,
+			EinschulungTyp.KINDERGARTEN1,
+			false,
+			false,
+			halberAugust,
+			50,
+			68712,
+			329.462
+		);
+		testWithParams(
+			kind,
+			EinschulungTyp.KINDERGARTEN1,
+			false,
+			false,
+			ganzerSeptember,
+			50,
+			68712,
+			729.524
+		);
 	}
 
 	private void testWithParams(
@@ -128,26 +420,52 @@ public class TageselternBernRechnerTest extends AbstractBGRechnerTest {
 			einschulungTyp,
 			besondereBeduerfnisse,
 			MathUtil.DEFAULT.fromNullSafe(einkommen),
-			MathUtil.DEFAULT.fromNullSafe(2000));
+			MathUtil.DEFAULT.fromNullSafe(2000)
+		);
 
-		VerfuegungZeitabschnitt verfuegungZeitabschnitt = verfuegung.getZeitabschnitte().get(0);
-		BGCalculationInput inputAsiv = verfuegungZeitabschnitt.getBgCalculationInputAsiv();
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt = verfuegung
+			.getZeitabschnitte()
+			.get(0);
+		BGCalculationInput inputAsiv = verfuegungZeitabschnitt
+			.getBgCalculationInputAsiv();
 		inputAsiv.setAnspruchspensumProzent(anspruch);
 		inputAsiv.setBetreuungspensumProzent(MathUtil.DEFAULT.from(anspruch));
-		inputAsiv.setBabyTarif(geburtstag.plusYears(1)
-			.isAfter(verfuegungZeitabschnitt.getGueltigkeit().getGueltigBis()));
+		inputAsiv.setBabyTarif(
+			geburtstag.plusYears(1)
+				.isAfter(
+					verfuegungZeitabschnitt.getGueltigkeit()
+						.getGueltigBis()
+				)
+		);
 		inputAsiv.setEinschulungTyp(einschulungTyp);
-		inputAsiv.setBesondereBeduerfnisseBestaetigt(besondereBeduerfnisseBestaetigt);
+		inputAsiv.setBesondereBeduerfnisseBestaetigt(
+			besondereBeduerfnisseBestaetigt
+		);
 
-		BGCalculationResult result = tageselternRechner.calculateAsiv(inputAsiv, parameterDTO);
+		BGCalculationResult result = tageselternRechner.calculateAsiv(
+			inputAsiv,
+			parameterDTO
+		);
 
-		assertThat(result, pojo(BGCalculationResult.class)
-			.withProperty(
-				"verguenstigung",
-				BigDecimalCloseTo.closeTo(BigDecimal.valueOf(expected), BigDecimal.valueOf(0.0005)))
-			.withProperty("bgPensumZeiteinheit", IsBigDecimal.greaterZeroWithScale10())
-			.withProperty("anspruchspensumZeiteinheit", IsBigDecimal.greaterZeroWithScale10())
-			.withProperty("zeiteinheit", is(PensumUnits.HOURS))
+		assertThat(
+			result,
+			pojo(BGCalculationResult.class)
+				.withProperty(
+					"verguenstigung",
+					BigDecimalCloseTo.closeTo(
+						BigDecimal.valueOf(expected),
+						BigDecimal.valueOf(0.0005)
+					)
+				)
+				.withProperty(
+					"bgPensumZeiteinheit",
+					IsBigDecimal.greaterZeroWithScale10()
+				)
+				.withProperty(
+					"anspruchspensumZeiteinheit",
+					IsBigDecimal.greaterZeroWithScale10()
+				)
+				.withProperty("zeiteinheit", is(PensumUnits.HOURS))
 		);
 	}
 }

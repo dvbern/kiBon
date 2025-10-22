@@ -16,28 +16,18 @@
 package ch.dvbern.ebegu.listener;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.inject.spi.CDI;
-import javax.persistence.PrePersist;
-import javax.persistence.PreRemove;
-import javax.persistence.PreUpdate;
+import jakarta.inject.Inject;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreRemove;
+import jakarta.persistence.PreUpdate;
 
 import ch.dvbern.ebegu.entities.Berechtigung;
 import ch.dvbern.ebegu.services.BenutzerService;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class BerechtigungChangedEntityListener {
 
-	private static BenutzerService benutzerService = null;
-
-	@SuppressFBWarnings(value = "LI_LAZY_INIT_STATIC", justification = "Auch wenn das vlt. mehrfach initialisiert wird... das macht nix, solange am Ende was Richtiges drinsteht")
-	private static BenutzerService getBenutzerService() {
-		if (benutzerService == null) {
-			//FIXME: das ist nur ein Ugly Workaround, weil CDI-Injection (mal wieder) buggy ist.
-			//noinspection NonThreadSafeLazyInitialization
-			benutzerService = CDI.current().select(BenutzerService.class).get();
-		}
-		return benutzerService;
-	}
+	@Inject
+	private BenutzerService benutzerService;
 
 	@PrePersist
 	@PreUpdate
@@ -47,10 +37,12 @@ public class BerechtigungChangedEntityListener {
 
 	@PreRemove
 	protected void preDelete(@Nonnull Berechtigung berechtigung) {
-		save(berechtigung, true);
+		if (!berechtigung.getBenutzer().isMarkedForDeletion()) {
+			save(berechtigung, true);
+		}
 	}
 
 	private void save(@Nonnull Berechtigung berechtigung, boolean deleted) {
-		getBenutzerService().saveBerechtigungHistory(berechtigung, deleted);
+		benutzerService.saveBerechtigungHistory(berechtigung, deleted);
 	}
 }

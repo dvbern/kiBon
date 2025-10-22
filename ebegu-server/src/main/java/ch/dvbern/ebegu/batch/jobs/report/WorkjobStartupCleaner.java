@@ -17,15 +17,14 @@ package ch.dvbern.ebegu.batch.jobs.report;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.annotation.security.RunAs;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.ejb.Timeout;
-import javax.ejb.TimerService;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
+import jakarta.annotation.security.RunAs;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Timeout;
+import jakarta.ejb.TimerService;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Workjob;
 import ch.dvbern.ebegu.enums.UserRoleName;
@@ -37,7 +36,6 @@ import ch.dvbern.ebegu.services.WorkjobService;
  * Benutzer nicht blockieren beim generieren von Statistiken, loeschen wir die mal alle
  * siehe auch EBEGU-1775
  */
-@Startup
 @Singleton
 @RunAs(UserRoleName.SUPER_ADMIN)
 public class WorkjobStartupCleaner {
@@ -53,15 +51,19 @@ public class WorkjobStartupCleaner {
 	 */
 	@PostConstruct
 	public void startControlBeans() {
-		timerService.createTimer(7 * 1000, "Wir muessen warten bis alle Services verfuegbar sind");
+		timerService.createTimer(
+			7 * 1000,
+			"Wir muessen warten bis alle Services verfuegbar sind"
+		);
 	}
-
 
 	@Timeout
 	public void startCleanupOfWorkjobs() {
-		final List<Workjob> unfinishedWorkjobs = workjobService.get().findAllWorkjobs();
-		unfinishedWorkjobs.forEach(workjob ->  workjobService.get().removeWorkjob(workjob));
+		final List<Workjob> unfinishedWorkjobs = workjobService.get()
+			.findAllWorkjobs();
+		unfinishedWorkjobs.forEach(
+			workjob -> workjobService.get().removeWorkjob(workjob)
+		);
 	}
-
 
 }

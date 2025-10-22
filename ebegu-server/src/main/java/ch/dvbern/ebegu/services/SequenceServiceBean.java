@@ -16,24 +16,24 @@
 package ch.dvbern.ebegu.services;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.LockModeType;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Sequence;
 import ch.dvbern.ebegu.entities.Sequence_;
 import ch.dvbern.ebegu.enums.SequenceType;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,22 +51,38 @@ public class SequenceServiceBean implements SequenceService {
 	// Damit die Nummer bei wiederholtem aufruf in derselben (parent-) Transaktion nicht immer dieselbe ist,
 	// muss dieser Aufruf in einer neuen Transaktion ausgeführt werden.
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public Long createNumberTransactional(@Nonnull SequenceType seq, @Nonnull Mandant mandant) {
+	public Long createNumberTransactional(
+		@Nonnull SequenceType seq,
+		@Nonnull Mandant mandant
+	) {
 		checkNotNull(seq);
 
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		CriteriaQuery<Sequence> query = cb.createQuery(Sequence.class);
 		Root<Sequence> root = query.from(Sequence.class);
 
-		ParameterExpression<Mandant> mandantParam = cb.parameter(Mandant.class, Mandant.MANDANT_PARAMETER);
-		Predicate mandantPredicate = cb.equal(root.get(Sequence_.mandant), mandantParam);
+		ParameterExpression<Mandant> mandantParam = cb.parameter(
+			Mandant.class,
+			Mandant.MANDANT_PARAMETER
+		);
+		Predicate mandantPredicate = cb.equal(
+			root.get(Sequence_.mandant),
+			mandantParam
+		);
 
-		ParameterExpression<SequenceType> typeParam = cb.parameter(SequenceType.class, SEQUENCE_TYPE);
-		Predicate typePredicate = cb.equal(root.get(Sequence_.sequenceType), typeParam);
+		ParameterExpression<SequenceType> typeParam = cb.parameter(
+			SequenceType.class,
+			SEQUENCE_TYPE
+		);
+		Predicate typePredicate = cb.equal(
+			root.get(Sequence_.sequenceType),
+			typeParam
+		);
 
 		query.where(mandantPredicate, typePredicate);
 
-		TypedQuery<Sequence> q = persistence.getEntityManager().createQuery(query)
+		TypedQuery<Sequence> q = persistence.getEntityManager()
+			.createQuery(query)
 			.setParameter(mandantParam, mandant)
 			.setParameter(typeParam, seq)
 			.setLockMode(LockModeType.PESSIMISTIC_WRITE);

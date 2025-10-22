@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.finanzielleSituationRechner;
@@ -27,7 +27,9 @@ import lombok.experimental.UtilityClass;
 public final class FinanzielleSituationRechnerFactory {
 
 	@Nonnull
-	public static AbstractFinanzielleSituationRechner getRechner(@Nonnull Gesuch gesuch) {
+	public static AbstractFinanzielleSituationRechner getRechner(
+		@Nonnull Gesuch gesuch
+	) {
 		if (gesuch.getFinSitTyp() == FinanzielleSituationTyp.LUZERN) {
 			return new FinanzielleSituationLuzernRechner();
 		}
@@ -38,11 +40,15 @@ public final class FinanzielleSituationRechnerFactory {
 			return new FinanzielleSituationSolothurnRechner();
 		}
 		if (gesuch.getFinSitTyp() == FinanzielleSituationTyp.APPENZELL
-			|| gesuch.getFinSitTyp() == FinanzielleSituationTyp.APPENZELL_FOLGEMONAT) {
+			|| gesuch.getFinSitTyp()
+				== FinanzielleSituationTyp.APPENZELL_FOLGEMONAT) {
 			return new FinanzielleSituationAppenzellRechner();
 		}
 		if (gesuch.getFinSitTyp() == FinanzielleSituationTyp.SCHWYZ) {
 			return new FinanzielleSituationSchwyzRechner();
+		}
+		if (gesuch.getFinSitTyp() == FinanzielleSituationTyp.SCHWYZ_ERWEITERT) {
+			return new FinanzielleSituationSchwyzErweiterteRechner();
 		}
 		// per default ist der Berner Rechner genommen
 		return new FinanzielleSituationBernRechner();

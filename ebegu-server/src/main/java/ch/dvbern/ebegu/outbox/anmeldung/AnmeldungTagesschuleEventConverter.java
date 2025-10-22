@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.anmeldung;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.entities.AdresseTyp;
@@ -59,95 +59,170 @@ import static java.util.Objects.requireNonNull;
 public class AnmeldungTagesschuleEventConverter {
 
 	@Nonnull
-	public AnmeldungTagesschuleEvent of(@Nonnull AnmeldungTagesschule anmeldung) {
-		TagesschuleAnmeldungEventDTO dto = toTagesschuleAnmeldungEventDTO(anmeldung);
+	public AnmeldungTagesschuleEvent of(
+		@Nonnull AnmeldungTagesschule anmeldung
+	) {
+		TagesschuleAnmeldungEventDTO dto = toTagesschuleAnmeldungEventDTO(
+			anmeldung
+		);
 		byte[] payload = AvroConverter.toAvroBinary(dto);
 
-		return new AnmeldungTagesschuleEvent(anmeldung.getReferenzNummer(), payload, dto.getSchema());
+		return new AnmeldungTagesschuleEvent(
+			anmeldung.getReferenzNummer(),
+			payload,
+			dto.getSchema()
+		);
 	}
 
 	@Nonnull
-	private TagesschuleAnmeldungEventDTO toTagesschuleAnmeldungEventDTO(@Nonnull AnmeldungTagesschule anmeldung) {
+	private TagesschuleAnmeldungEventDTO toTagesschuleAnmeldungEventDTO(
+		@Nonnull AnmeldungTagesschule anmeldung
+	) {
 		Gesuch gesuch = anmeldung.extractGesuch();
 
 		//noinspection ConstantConditions
 		return TagesschuleAnmeldungEventDTO.newBuilder()
-			.setInstitutionId(anmeldung.getInstitutionStammdaten().getInstitution().getId())
+			.setInstitutionId(
+				anmeldung.getInstitutionStammdaten()
+					.getInstitution()
+					.getId()
+			)
 			.setVersion(gesuch.getLaufnummer())
 			// bei Papiergesuch gibt es kein Freigabedatum
-			.setFreigegebenAm(gesuch.getFreigabeDatum() != null ?
-				gesuch.getFreigabeDatum() :
-				requireNonNull(gesuch.getEingangsdatum()))
+			.setFreigegebenAm(
+				gesuch.getFreigabeDatum() != null ?
+					gesuch.getFreigabeDatum() :
+					requireNonNull(gesuch.getEingangsdatum())
+			)
 
-			.setPeriodeVon(gesuch.getGesuchsperiode().getGueltigkeit().getGueltigAb())
-			.setPeriodeBis(gesuch.getGesuchsperiode().getGueltigkeit().getGueltigBis())
+			.setPeriodeVon(
+				gesuch.getGesuchsperiode()
+					.getGueltigkeit()
+					.getGueltigAb()
+			)
+			.setPeriodeBis(
+				gesuch.getGesuchsperiode()
+					.getGueltigkeit()
+					.getGueltigBis()
+			)
 			.setKind(toKindDTO(anmeldung.getKind().getKindJA()))
-			.setGesuchsteller(toGesuchstellerDTO(requireNonNull(gesuch.getGesuchsteller1())))
-			.setGesuchsteller2(gesuch.getGesuchsteller2() != null ?
-				toGesuchstellerDTO(gesuch.getGesuchsteller2()) :
-				null)
-			.setAnmeldungsDetails(toTagesschuleAnmeldungDetailsDTO(anmeldung))
-			.setStatus(TagesschuleAnmeldungStatus.valueOf(anmeldung.getBetreuungsstatus().name()))
-			.setAnmeldungZurueckgezogen(anmeldung.getBetreuungsstatus() == Betreuungsstatus.SCHULAMT_ANMELDUNG_STORNIERT)
+			.setGesuchsteller(
+				toGesuchstellerDTO(
+					requireNonNull(gesuch.getGesuchsteller1())
+				)
+			)
+			.setGesuchsteller2(
+				gesuch.getGesuchsteller2() != null ?
+					toGesuchstellerDTO(gesuch.getGesuchsteller2()) :
+					null
+			)
+			.setAnmeldungsDetails(
+				toTagesschuleAnmeldungDetailsDTO(anmeldung)
+			)
+			.setStatus(
+				TagesschuleAnmeldungStatus.valueOf(
+					anmeldung.getBetreuungsstatus().name()
+				)
+			)
+			.setAnmeldungZurueckgezogen(
+				anmeldung.getBetreuungsstatus()
+					== Betreuungsstatus.SCHULAMT_ANMELDUNG_STORNIERT
+			)
 			.setTarife(toTagesschuleAnmeldungTarifeDTO(anmeldung))
 			.build();
 	}
 
 	@Nullable
 	private TagesschuleAnmeldungTarifeDTO toTagesschuleAnmeldungTarifeDTO(
-		@Nonnull AnmeldungTagesschule anmeldungTagesschule) {
-		if (anmeldungTagesschule.getBetreuungsstatus().isSchulamtAnmeldungUebernommen()) {
+		@Nonnull AnmeldungTagesschule anmeldungTagesschule
+	) {
+		if (anmeldungTagesschule.getBetreuungsstatus()
+			.isSchulamtAnmeldungUebernommen()) {
 			return TagesschuleAnmeldungTarifeDTO.newBuilder()
 				.setTarifeDefinitivAkzeptiert(true)
-				.setTarifZeitabschnitte(toTarifZeitabschnittDTO(anmeldungTagesschule))
+				.setTarifZeitabschnitte(
+					toTarifZeitabschnittDTO(anmeldungTagesschule)
+				)
 				.build();
 		}
 		return null;
 	}
 
 	@Nonnull
-	private List<TarifZeitabschnittDTO> toTarifZeitabschnittDTO(@Nonnull AnmeldungTagesschule anmeldungTagesschule) {
+	private List<TarifZeitabschnittDTO> toTarifZeitabschnittDTO(
+		@Nonnull AnmeldungTagesschule anmeldungTagesschule
+	) {
 		if (anmeldungTagesschule.getVerfuegung() == null) {
 			return Collections.emptyList();
 		}
 
 		//noinspection ConstantConditions
-		return anmeldungTagesschule.getVerfuegung().getZeitabschnitte().stream()
-			.map(z -> TarifZeitabschnittDTO.newBuilder()
-				.setVon(z.getGueltigkeit().getGueltigAb())
-				.setBis(z.getGueltigkeit().getGueltigBis())
-				.setMassgebendesEinkommen(z.getMassgebendesEinkommen())
-				.setFamilienGroesse(z.getFamGroesse())
-				.setTarifPaedagogisch(toTarifDTO(z.getTsCalculationResultMitPaedagogischerBetreuung()))
-				.setTarifNichtPaedagogisch(toTarifDTO(z.getTsCalculationResultOhnePaedagogischerBetreuung()))
-				.build())
+		return anmeldungTagesschule.getVerfuegung()
+			.getZeitabschnitte()
+			.stream()
+			.map(
+				z -> TarifZeitabschnittDTO.newBuilder()
+					.setVon(z.getGueltigkeit().getGueltigAb())
+					.setBis(z.getGueltigkeit().getGueltigBis())
+					.setMassgebendesEinkommen(
+						z.getMassgebendesEinkommen()
+					)
+					.setFamilienGroesse(z.getFamGroesse())
+					.setTarifPaedagogisch(
+						toTarifDTO(
+							z.getTsCalculationResultMitPaedagogischerBetreuung()
+						)
+					)
+					.setTarifNichtPaedagogisch(
+						toTarifDTO(
+							z.getTsCalculationResultOhnePaedagogischerBetreuung()
+						)
+					)
+					.build()
+			)
 			.collect(Collectors.toList());
 	}
 
 	@Nullable
-	private TarifDTO toTarifDTO(@Nullable TSCalculationResult tsCalculationResult) {
+	private TarifDTO toTarifDTO(
+		@Nullable TSCalculationResult tsCalculationResult
+	) {
 		if (tsCalculationResult == null) {
 			return null;
 		}
 
 		return TarifDTO.newBuilder()
-			.setBetreuungsKostenProStunde(tsCalculationResult.getGebuehrProStunde())
-			.setBetreuungsMinutenProWoche(tsCalculationResult.getBetreuungszeitProWoche())
-			.setTotalKostenProWoche(tsCalculationResult.getTotalKostenProWoche())
-			.setVerpflegungsKostenProWoche(tsCalculationResult.getVerpflegungskosten())
-			.setVerpflegungsKostenVerguenstigung(tsCalculationResult.getVerpflegungskostenVerguenstigt())
+			.setBetreuungsKostenProStunde(
+				tsCalculationResult.getGebuehrProStunde()
+			)
+			.setBetreuungsMinutenProWoche(
+				tsCalculationResult.getBetreuungszeitProWoche()
+			)
+			.setTotalKostenProWoche(
+				tsCalculationResult.getTotalKostenProWoche()
+			)
+			.setVerpflegungsKostenProWoche(
+				tsCalculationResult.getVerpflegungskosten()
+			)
+			.setVerpflegungsKostenVerguenstigung(
+				tsCalculationResult.getVerpflegungskostenVerguenstigt()
+			)
 			.build();
 	}
 
 	@Nonnull
-	private GesuchstellerDTO toGesuchstellerDTO(@Nonnull GesuchstellerContainer gesuchstellerContainer) {
-		AdresseDTO adresse = gesuchstellerContainer.getAdressen().stream()
+	private GesuchstellerDTO toGesuchstellerDTO(
+		@Nonnull GesuchstellerContainer gesuchstellerContainer
+	) {
+		AdresseDTO adresse = gesuchstellerContainer.getAdressen()
+			.stream()
 			.filter(a -> a.extractAdresseTyp() == AdresseTyp.WOHNADRESSE)
 			.findFirst()
 			.map(GesuchstellerAdresseContainer::getGesuchstellerAdresseJA)
 			.map(this::toAdresseDTO)
 			.orElse(null);
-		Gesuchsteller gesuchsteller = gesuchstellerContainer.getGesuchstellerJA();
+		Gesuchsteller gesuchsteller = gesuchstellerContainer
+			.getGesuchstellerJA();
 
 		//noinspection ConstantConditions
 		return GesuchstellerDTO.newBuilder()
@@ -156,7 +231,9 @@ public class AnmeldungTagesschuleEventConverter {
 			.setEmail(gesuchsteller.getMail())
 			.setGeburtsdatum(gesuchsteller.getGeburtsdatum())
 			.setAdresse(adresse)
-			.setGeschlecht(Geschlecht.valueOf(gesuchsteller.getGeschlecht().name()))
+			.setGeschlecht(
+				Geschlecht.valueOf(gesuchsteller.getGeschlecht().name())
+			)
 			.setMobile(gesuchsteller.getMobile())
 			.setTelefon(gesuchsteller.getTelefon())
 			.setTelefonAusland(gesuchsteller.getTelefonAusland())
@@ -188,13 +265,19 @@ public class AnmeldungTagesschuleEventConverter {
 
 	@Nonnull
 	private TagesschuleAnmeldungDetailsDTO toTagesschuleAnmeldungDetailsDTO(
-		@Nonnull AnmeldungTagesschule anmeldungTagesschule) {
+		@Nonnull AnmeldungTagesschule anmeldungTagesschule
+	) {
 
-		BelegungTagesschule belegung = requireNonNull(anmeldungTagesschule.getBelegungTagesschule());
+		BelegungTagesschule belegung = requireNonNull(
+			anmeldungTagesschule.getBelegungTagesschule()
+		);
 
-		AbholungTagesschule abholung = belegung.getAbholungTagesschule() != null ?
-			AbholungTagesschule.valueOf(belegung.getAbholungTagesschule().name()) :
-			null;
+		AbholungTagesschule abholung = belegung.getAbholungTagesschule()
+			!= null ?
+				AbholungTagesschule.valueOf(
+					belegung.getAbholungTagesschule().name()
+				) :
+				null;
 
 		//noinspection ConstantConditions
 		return TagesschuleAnmeldungDetailsDTO.newBuilder()
@@ -202,26 +285,51 @@ public class AnmeldungTagesschuleEventConverter {
 			.setEintrittsdatum(belegung.getEintrittsdatum())
 			.setPlanKlasse(belegung.getPlanKlasse())
 			.setAbholung(abholung)
-			.setAbweichungZweitesSemester(belegung.isAbweichungZweitesSemester())
+			.setAbweichungZweitesSemester(
+				belegung.isAbweichungZweitesSemester()
+			)
 			.setBemerkung(belegung.getBemerkung())
 			.setModule(toModulAuswahlDTOList(belegung))
 			.build();
 	}
 
 	@Nonnull
-	private List<ModulAuswahlDTO> toModulAuswahlDTOList(@Nonnull BelegungTagesschule belegungTagesschule) {
-		return belegungTagesschule.getBelegungTagesschuleModule().stream()
+	private List<ModulAuswahlDTO> toModulAuswahlDTOList(
+		@Nonnull BelegungTagesschule belegungTagesschule
+	) {
+		return belegungTagesschule.getBelegungTagesschuleModule()
+			.stream()
 			.map(this::toModulAuswahlDTO)
 			.collect(Collectors.toList());
 	}
 
 	@Nonnull
-	private ModulAuswahlDTO toModulAuswahlDTO(@Nonnull BelegungTagesschuleModul belegungTagesschuleModul) {
+	private ModulAuswahlDTO toModulAuswahlDTO(
+		@Nonnull BelegungTagesschuleModul belegungTagesschuleModul
+	) {
 		return ModulAuswahlDTO.newBuilder()
-			.setModulId(belegungTagesschuleModul.getModulTagesschule().getModulTagesschuleGroup().getId())
-			.setIntervall(Intervall.valueOf(belegungTagesschuleModul.getIntervall().name()))
-			.setFremdId(belegungTagesschuleModul.getModulTagesschule().getModulTagesschuleGroup().getFremdId())
-			.setWochentag(Wochentag.valueOf(belegungTagesschuleModul.getModulTagesschule().getWochentag().name()))
+			.setModulId(
+				belegungTagesschuleModul.getModulTagesschule()
+					.getModulTagesschuleGroup()
+					.getId()
+			)
+			.setIntervall(
+				Intervall.valueOf(
+					belegungTagesschuleModul.getIntervall().name()
+				)
+			)
+			.setFremdId(
+				belegungTagesschuleModul.getModulTagesschule()
+					.getModulTagesschuleGroup()
+					.getFremdId()
+			)
+			.setWochentag(
+				Wochentag.valueOf(
+					belegungTagesschuleModul.getModulTagesschule()
+						.getWochentag()
+						.name()
+				)
+			)
 			.build();
 	}
 }

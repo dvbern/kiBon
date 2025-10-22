@@ -19,7 +19,5 @@ package ch.dvbern.ebegu.enums;
  * Enum fuer Status der FinanziellenSituation
  */
 public enum FachstellenTyp {
-	BERN ,
-	LUZERN,
-	KEINE
+	BERN, LUZERN, KEINE
 }

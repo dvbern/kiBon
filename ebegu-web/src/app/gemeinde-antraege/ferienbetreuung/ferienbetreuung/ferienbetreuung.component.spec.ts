@@ -35,7 +35,7 @@ const downloadRSSpy = jasmine.createSpyObj<DownloadRS>(DownloadRS.name, [
     'getAccessTokenDokument'
 ]);
 
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
@@ -43,7 +43,7 @@ import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.re
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
-import {WindowRef} from '../../../core/service/windowRef.service';
+import {WindowRef} from '@kibon/shared-util-window-ref';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {SharedModule} from '../../../shared/shared.module';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
@@ -57,6 +57,8 @@ describe('FerienbetreuungComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [FerienbetreuungComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            imports: [SharedModule],
             providers: [
                 WindowRef,
                 {provide: AuthServiceRS, useValue: authServiceRSSpy},
@@ -65,10 +67,9 @@ describe('FerienbetreuungComponent', () => {
                     provide: FerienbetreuungService,
                     useValue: ferienbetreuungServiceSpy
                 },
-                {provide: DownloadRS, useValue: downloadRSSpy}
-            ],
-            imports: [HttpClientModule, SharedModule],
-            schemas: [CUSTOM_ELEMENTS_SCHEMA]
+                {provide: DownloadRS, useValue: downloadRSSpy},
+                provideHttpClient(withInterceptorsFromDi())
+            ]
         })
             .overrideModule(SharedModule, SHARED_MODULE_OVERRIDES)
             .compileComponents();

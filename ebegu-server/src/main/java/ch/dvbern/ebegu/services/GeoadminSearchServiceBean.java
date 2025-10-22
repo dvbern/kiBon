@@ -26,16 +26,16 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.ServiceUnavailableException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ServiceUnavailableException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.dto.geoadmin.JaxGeoadminFeature;
@@ -58,15 +58,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Stateless
 @Local(GeoadminSearchService.class)
-public class GeoadminSearchServiceBean extends AbstractBaseService implements GeoadminSearchService {
+public class GeoadminSearchServiceBean extends AbstractBaseService implements
+	GeoadminSearchService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GeoadminSearchServiceBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		GeoadminSearchServiceBean.class
+	);
 
 	@Nonnull
-	private static final Comparator<JaxGeoadminSearchResultEntry> RESULTS_COMPARATOR = Comparator
-		.comparing(JaxGeoadminSearchResultEntry::getWeight);
+	private static final Comparator<JaxGeoadminSearchResultEntry> RESULTS_COMPARATOR =
+		Comparator
+			.comparing(JaxGeoadminSearchResultEntry::getWeight);
 
-	private static final String API_LAYERBODID_WOHNUNGSREGISTER = "ch.bfs.gebaeude_wohnungs_register";
+	private static final String API_LAYERBODID_WOHNUNGSREGISTER =
+		"ch.bfs.gebaeude_wohnungs_register";
 
 	// Seit dem Release vom 24.02.21 gibt die GeoAdmin API einem exact match die weight 100
 	private static final Long EXACT_MATCH = (long) 100;    // highest weight
@@ -97,39 +102,63 @@ public class GeoadminSearchServiceBean extends AbstractBaseService implements Ge
 	 */
 	@Override
 	@Nonnull
-	public List<JaxWohnadresse> findWohnadressenByStrasseAndPlz(
+	public List<JaxWohnadresse> findWohnadressenByStrasseAndPlzAndOrt(
 		@Nonnull String strasse,
 		@Nullable String nr,
-		@Nonnull String plz) {
+		@Nonnull String plz,
+		@Nonnull String ort
+	) {
 		String nrStr = "";
 		if (nr != null) {
 			nrStr = nr + " ";
 		}
-		return this.findWohnadressenBySearchText(strasse + " " + nrStr + plz);
+		return this.findWohnadressenBySearchText(
+			strasse + " " + nrStr + " " + plz + " " + ort
+		);
 	}
 
 	@Override
 	@Nonnull
-	public List<JaxWohnadresse> findWohnadressenBySearchText(@Nonnull String searchText) {
+	public List<JaxWohnadresse> findWohnadressenBySearchText(
+		@Nonnull String searchText
+	) {
 		checkNotNull(searchText);
 
-		JaxGeoadminSearchResult searchResult = searchAddress(searchText, SEARCHSERVICE_MAX_RESULTS);
+		JaxGeoadminSearchResult searchResult = searchAddress(
+			searchText,
+			SEARCHSERVICE_MAX_RESULTS
+		);
 		boolean fuzzy = searchResult.isFuzzy();
 
-		Optional<JaxGeoadminSearchResultEntry> exactGeoadminAddress = searchResult.getResults().stream()
-			.filter(a -> EXACT_MATCH.equals(a.getWeight()) || EXACT_MATCH_LEGACY.equals(a.getWeight()))
-			.findFirst();
+		Optional<JaxGeoadminSearchResultEntry> exactGeoadminAddress =
+			searchResult.getResults()
+				.stream()
+				.filter(
+					a -> EXACT_MATCH.equals(a.getWeight())
+						|| EXACT_MATCH_LEGACY.equals(
+							a.getWeight()
+						)
+				)
+				.findFirst();
 
 		if (exactGeoadminAddress.isPresent()) {
-			String featureId = exactGeoadminAddress.get().getAttrs().getFeatureId();
+			String featureId = exactGeoadminAddress.get()
+				.getAttrs()
+				.getFeatureId();
 
 			return searchAdressFromFeature(fuzzy, featureId)
 				.map(Collections::singletonList)
 				.orElseGet(Collections::emptyList);
 		}
 
-		return searchResult.getResults().stream()
-			.map(a -> searchAdressFromFeature(fuzzy, a.getAttrs().getFeatureId()))
+		return searchResult.getResults()
+			.stream()
+			.map(
+				a -> searchAdressFromFeature(
+					fuzzy,
+					a.getAttrs().getFeatureId()
+				)
+			)
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 			.collect(Collectors.toList());
@@ -144,12 +173,18 @@ public class GeoadminSearchServiceBean extends AbstractBaseService implements Ge
 	@Nonnull
 	private WebTarget getLocationsSearchTarget(
 		@Nonnull String escapedSearchString,
-		int limit) {
+		int limit
+	) {
 
 		if (limit > SEARCHSERVICE_MAX_RESULTS) {
 			throw new EbeguRuntimeException(
 				"getLocationsSearchTarget",
-				"limit " + limit + "higher than SEARCH_SERVICE_MAX_RESULTS (" + SEARCHSERVICE_MAX_RESULTS + ")");
+				"limit "
+					+ limit
+					+ "higher than SEARCH_SERVICE_MAX_RESULTS ("
+					+ SEARCHSERVICE_MAX_RESULTS
+					+ ")"
+			);
 		}
 
 		String searchserverURI = config.getEbeguGeoadminSearchServerUrl();
@@ -166,12 +201,18 @@ public class GeoadminSearchServiceBean extends AbstractBaseService implements Ge
 	 * Liefert alle Results aus dem Wohnungsregister
 	 */
 	@Nonnull
-	private JaxGeoadminSearchResult searchAddress(@Nonnull String searchText, int limit) {
+	private JaxGeoadminSearchResult searchAddress(
+		@Nonnull String searchText,
+		int limit
+	) {
 		checkNotNull(searchText);
 
 		// Die GeoAdmin API vergleicht case sensitive für den exakten match
 		String escapedSearchString =
-			ILLEGAL_SEARCH_CHARS.matcher(searchText).replaceAll(EMPTY_STRING).trim().toLowerCase(Locale.GERMAN);
+			ILLEGAL_SEARCH_CHARS.matcher(searchText)
+				.replaceAll(EMPTY_STRING)
+				.trim()
+				.toLowerCase(Locale.GERMAN);
 
 		if (escapedSearchString.isEmpty()) {
 			return new JaxGeoadminSearchResult();
@@ -184,13 +225,20 @@ public class GeoadminSearchServiceBean extends AbstractBaseService implements Ge
 				.request(MediaType.APPLICATION_JSON)
 				.get(JaxGeoadminSearchResult.class);
 
-			geoadminSearchResult.getResults().sort(RESULTS_COMPARATOR.reversed());
+			geoadminSearchResult.getResults()
+				.sort(RESULTS_COMPARATOR.reversed());
 
 			return geoadminSearchResult;
 
 		} catch (ServiceUnavailableException ex) {
 			// web service is unavailable, return empty result
-			LOG.error(String.format("Error while requesting the URI: %s", target.getUri()), ex);
+			LOG.error(
+				String.format(
+					"Error while requesting the URI: %s",
+					target.getUri()
+				),
+				ex
+			);
 
 			return new JaxGeoadminSearchResult();
 		}
@@ -214,7 +262,8 @@ public class GeoadminSearchServiceBean extends AbstractBaseService implements Ge
 	@Nonnull
 	private Optional<JaxWohnadresse> searchAdressFromFeature(
 		boolean fuzzy,
-		@Nonnull String featureId) {
+		@Nonnull String featureId
+	) {
 		checkNotNull(featureId);
 
 		WebTarget target = getFeatureTarget(featureId);
@@ -228,14 +277,23 @@ public class GeoadminSearchServiceBean extends AbstractBaseService implements Ge
 
 		} catch (ServiceUnavailableException ex) {
 			// web service is unavailable, return empty result
-			LOG.error(String.format("Error while requesting the URI: %s", target.getUri()), ex);
+			LOG.error(
+				String.format(
+					"Error while requesting the URI: %s",
+					target.getUri()
+				),
+				ex
+			);
 
 			return Optional.empty();
 		}
 	}
 
 	@Nonnull
-	private Optional<JaxWohnadresse> fromFeature(@Nonnull JaxGeoadminFeature feature, boolean fuzzy) {
+	private Optional<JaxWohnadresse> fromFeature(
+		@Nonnull JaxGeoadminFeature feature,
+		boolean fuzzy
+	) {
 		JaxGeoadminFeatureAttributes attributes = feature.getAttributes();
 
 		if (StringUtils.isEmpty(attributes.getGgdename())) {
@@ -253,7 +311,8 @@ public class GeoadminSearchServiceBean extends AbstractBaseService implements Ge
 			attributes.getDplz4(),
 			attributes.getDplzname(),
 			attributes.getGgdenr(),
-			attributes.getGgdename());
+			attributes.getGgdename()
+		);
 
 		return Optional.of(adresse);
 	}

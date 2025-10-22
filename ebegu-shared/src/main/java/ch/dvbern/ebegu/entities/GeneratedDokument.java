@@ -15,14 +15,14 @@
 
 package ch.dvbern.ebegu.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.envers.Audited;
@@ -34,8 +34,8 @@ import org.hibernate.envers.Audited;
 @Entity
 @EntityListeners({ WriteProtectedDokumentListener.class })
 @Table(
-	uniqueConstraints =
-	@UniqueConstraint(columnNames = { "gesuch_id", "filename" }, name = "UK_generated_dokument_gesuch_filename")
+	uniqueConstraints = @UniqueConstraint(columnNames = { "gesuch_id",
+		"filename" }, name = "UK_generated_dokument_gesuch_filename")
 )
 public class GeneratedDokument extends WriteProtectedDokument {
 
@@ -43,7 +43,10 @@ public class GeneratedDokument extends WriteProtectedDokument {
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_generated_dokument_gesuch_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_generated_dokument_gesuch_id"),
+		nullable = false,
+		updatable = false)
 	private Gesuch gesuch;
 
 	public GeneratedDokument() {

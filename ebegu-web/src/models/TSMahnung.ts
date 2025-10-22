@@ -13,9 +13,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {TSMahnungTyp} from './enums/TSMahnungTyp';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {TSGesuch} from './TSGesuch';
 
 export class TSMahnung extends TSAbstractMutableEntity {

@@ -17,8 +17,8 @@ package ch.dvbern.ebegu.validators;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.AnmeldungFerieninsel;
@@ -28,10 +28,14 @@ import ch.dvbern.ebegu.entities.Betreuung;
 /**
  * Stellt sicher, dass ein Platz das richtige Angebot gesetzt hat.
  */
-public class CheckPlatzAndAngebottypValidator implements ConstraintValidator<CheckPlatzAndAngebottyp, AbstractPlatz> {
+public class CheckPlatzAndAngebottypValidator implements
+	ConstraintValidator<CheckPlatzAndAngebottyp, AbstractPlatz> {
 
 	@Override
-	public boolean isValid(@Nonnull AbstractPlatz platz, @Nullable ConstraintValidatorContext context) {
+	public boolean isValid(
+		@Nonnull AbstractPlatz platz,
+		@Nullable ConstraintValidatorContext context
+	) {
 		if (platz.getBetreuungsangebotTyp().isTagesschule()) {
 			return platz instanceof AnmeldungTagesschule;
 		} else if (platz.getBetreuungsangebotTyp().isFerieninsel()) {

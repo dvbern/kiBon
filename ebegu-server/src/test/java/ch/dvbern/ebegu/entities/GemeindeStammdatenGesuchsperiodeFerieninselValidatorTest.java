@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -32,7 +32,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static ch.dvbern.ebegu.tests.util.validation.ViolationMatchers.violatesAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class GemeindeStammdatenGesuchsperiodeFerieninselValidatorTest extends AbstractValidatorTest {
+class GemeindeStammdatenGesuchsperiodeFerieninselValidatorTest extends
+	AbstractValidatorTest {
 
 	@Test
 	void valid() {
@@ -47,12 +48,22 @@ class GemeindeStammdatenGesuchsperiodeFerieninselValidatorTest extends AbstractV
 		"2024-01-01, 2024-01-01, 2024-01-01, 2024-01-02",
 		"2024-01-01, 2024-01-10, 2024-01-05, 2024-01-20",
 	})
-	void failsWhenDateRangesOverlap(LocalDate firstStart, LocalDate firstEnd, LocalDate secondStart, LocalDate secondEnd) {
+	void failsWhenDateRangesOverlap(
+		LocalDate firstStart,
+		LocalDate firstEnd,
+		LocalDate secondStart,
+		LocalDate secondEnd
+	) {
 		var entity = createValid();
-		entity.getZeitraumList().add(createZeitraum(new DateRange(firstStart, firstEnd)));
-		entity.getZeitraumList().add(createZeitraum(new DateRange(secondStart, secondEnd)));
+		entity.getZeitraumList()
+			.add(createZeitraum(new DateRange(firstStart, firstEnd)));
+		entity.getZeitraumList()
+			.add(createZeitraum(new DateRange(secondStart, secondEnd)));
 
-		assertThat(validate(entity), violatesAnnotation(CheckGueltigkeiten.class));
+		assertThat(
+			validate(entity),
+			violatesAnnotation(CheckGueltigkeiten.class)
+		);
 	}
 
 	@ParameterizedTest
@@ -60,10 +71,17 @@ class GemeindeStammdatenGesuchsperiodeFerieninselValidatorTest extends AbstractV
 		"2024-01-01, 2024-01-01, 2024-01-02, 2024-01-02",
 		"2024-01-01, 2024-01-01, 2024-01-10, 2024-01-20",
 	})
-	void passesWithOverlappFreeDateRanges(LocalDate firstStart, LocalDate firstEnd, LocalDate secondStart, LocalDate secondEnd) {
+	void passesWithOverlappFreeDateRanges(
+		LocalDate firstStart,
+		LocalDate firstEnd,
+		LocalDate secondStart,
+		LocalDate secondEnd
+	) {
 		var entity = createValid();
-		entity.getZeitraumList().add(createZeitraum(new DateRange(firstStart, firstEnd)));
-		entity.getZeitraumList().add(createZeitraum(new DateRange(secondStart, secondEnd)));
+		entity.getZeitraumList()
+			.add(createZeitraum(new DateRange(firstStart, firstEnd)));
+		entity.getZeitraumList()
+			.add(createZeitraum(new DateRange(secondStart, secondEnd)));
 
 		assertValid(entity);
 	}
@@ -72,14 +90,19 @@ class GemeindeStammdatenGesuchsperiodeFerieninselValidatorTest extends AbstractV
 	private GemeindeStammdatenGesuchsperiodeFerieninsel createValid() {
 		var entity = new GemeindeStammdatenGesuchsperiodeFerieninsel();
 		entity.setFerienname(Ferienname.FRUEHLINGSFERIEN);
-		entity.setGemeindeStammdatenGesuchsperiode(new GemeindeStammdatenGesuchsperiode());
+		entity.setGemeindeStammdatenGesuchsperiode(
+			new GemeindeStammdatenGesuchsperiode()
+		);
 
 		return entity;
 	}
 
 	@Nonnull
-	private GemeindeStammdatenGesuchsperiodeFerieninselZeitraum createZeitraum(@Nonnull DateRange dateRange) {
-		var zeitraum = new GemeindeStammdatenGesuchsperiodeFerieninselZeitraum();
+	private GemeindeStammdatenGesuchsperiodeFerieninselZeitraum createZeitraum(
+		@Nonnull DateRange dateRange
+	) {
+		var zeitraum =
+			new GemeindeStammdatenGesuchsperiodeFerieninselZeitraum();
 		zeitraum.setGueltigkeit(dateRange);
 
 		return zeitraum;

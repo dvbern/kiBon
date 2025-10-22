@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -22,9 +22,9 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.util.MathUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -37,26 +37,30 @@ public class TSCalculationResult extends AbstractEntity {
 
 	private static final long serialVersionUID = 1351117672006189102L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Integer betreuungszeitProWoche = 0;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private BigDecimal verpflegungskosten = BigDecimal.ZERO;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private BigDecimal gebuehrProStunde = BigDecimal.ZERO;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private BigDecimal totalKostenProWoche = BigDecimal.ZERO;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private BigDecimal verpflegungskostenVerguenstigt = BigDecimal.ZERO;
-
 
 	public TSCalculationResult() {
 	}
@@ -73,7 +77,9 @@ public class TSCalculationResult extends AbstractEntity {
 		return betreuungszeitProWoche;
 	}
 
-	public void setBetreuungszeitProWoche(@Nonnull Integer betreuungszeitProWoche) {
+	public void setBetreuungszeitProWoche(
+		@Nonnull Integer betreuungszeitProWoche
+	) {
 		this.betreuungszeitProWoche = betreuungszeitProWoche;
 	}
 
@@ -100,7 +106,9 @@ public class TSCalculationResult extends AbstractEntity {
 		return totalKostenProWoche;
 	}
 
-	public void setTotalKostenProWoche(@Nonnull BigDecimal totalKostenProWoche) {
+	public void setTotalKostenProWoche(
+		@Nonnull BigDecimal totalKostenProWoche
+	) {
 		this.totalKostenProWoche = totalKostenProWoche;
 	}
 
@@ -109,16 +117,22 @@ public class TSCalculationResult extends AbstractEntity {
 		return verpflegungskostenVerguenstigt;
 	}
 
-	public void setVerpflegungskostenVerguenstigt(@Nonnull BigDecimal verpflegungskostenVerguenstigt) {
+	public void setVerpflegungskostenVerguenstigt(
+		@Nonnull BigDecimal verpflegungskostenVerguenstigt
+	) {
 		this.verpflegungskostenVerguenstigt = verpflegungskostenVerguenstigt;
 	}
 
 	@Override
 	public String toString() {
-		String sb = "betreuungszeitProWoche=" + getBetreuungszeitProWocheFormatted()
-			+ ", verpflegungskosten=" + verpflegungskosten
-			+ ", gebuehrProStunde=" + gebuehrProStunde
-			+ ", totalKostenProWoche=" + totalKostenProWoche;
+		String sb = "betreuungszeitProWoche="
+			+ getBetreuungszeitProWocheFormatted()
+			+ ", verpflegungskosten="
+			+ verpflegungskosten
+			+ ", gebuehrProStunde="
+			+ gebuehrProStunde
+			+ ", totalKostenProWoche="
+			+ totalKostenProWoche;
 		return sb;
 	}
 
@@ -134,46 +148,80 @@ public class TSCalculationResult extends AbstractEntity {
 		}
 
 		TSCalculationResult that = (TSCalculationResult) other;
-		return Objects.equals(betreuungszeitProWoche, that.betreuungszeitProWoche) &&
-			MathUtil.isSame(verpflegungskosten, that.verpflegungskosten) &&
-			MathUtil.isSame(gebuehrProStunde, that.gebuehrProStunde) &&
+		return Objects.equals(
+			betreuungszeitProWoche,
+			that.betreuungszeitProWoche
+		)
+			&&
+			MathUtil.isSame(verpflegungskosten, that.verpflegungskosten)
+			&&
+			MathUtil.isSame(gebuehrProStunde, that.gebuehrProStunde)
+			&&
 			MathUtil.isSame(totalKostenProWoche, that.totalKostenProWoche);
 	}
 
 	/**
 	 * Im unterschied zu is same wird hier super equals nicht aufgerufen.
+	 *
 	 * @param thisEntity
 	 * @param otherEntity
 	 * @return
 	 */
-	public static boolean isSameSichtbareDaten(@Nullable TSCalculationResult thisEntity, @Nullable TSCalculationResult otherEntity) {
+	public static boolean isSameSichtbareDaten(
+		@Nullable TSCalculationResult thisEntity,
+		@Nullable TSCalculationResult otherEntity
+	) {
 		return (thisEntity == null && otherEntity == null)
-			|| (thisEntity != null && otherEntity != null && (
-				Objects.equals(thisEntity.betreuungszeitProWoche, otherEntity.betreuungszeitProWoche) &&
-				MathUtil.isSame(thisEntity.verpflegungskosten, otherEntity.verpflegungskosten) &&
-				MathUtil.isSame(thisEntity.gebuehrProStunde, otherEntity.gebuehrProStunde) &&
-				MathUtil.isSame(thisEntity.totalKostenProWoche, otherEntity.totalKostenProWoche)
-		));
+			|| (thisEntity != null
+				&& otherEntity != null
+				&& (Objects.equals(
+					thisEntity.betreuungszeitProWoche,
+					otherEntity.betreuungszeitProWoche
+				)
+					&&
+					MathUtil.isSame(
+						thisEntity.verpflegungskosten,
+						otherEntity.verpflegungskosten
+					)
+					&&
+					MathUtil.isSame(
+						thisEntity.gebuehrProStunde,
+						otherEntity.gebuehrProStunde
+					)
+					&&
+					MathUtil.isSame(
+						thisEntity.totalKostenProWoche,
+						otherEntity.totalKostenProWoche
+					)));
 	}
 
 	@Nonnull
 	public String getBetreuungszeitProWocheFormatted() {
-		long hours = betreuungszeitProWoche.longValue() / 60;   // integer division gibt stunden
-		long minutes = betreuungszeitProWoche.longValue() % 60; // rest minuten
+		long hours = betreuungszeitProWoche / 60;   // integer division gibt stunden
+		long minutes = betreuungszeitProWoche % 60; // rest minuten
 		return StringUtils.leftPad(Long.toString(hours), 2, '0')
-			+ ':' + StringUtils.leftPad(Long.toString(minutes), 2, '0');
+			+ ':'
+			+ StringUtils.leftPad(Long.toString(minutes), 2, '0');
 	}
 
 	public void add(@Nonnull TSCalculationResult other) {
-		betreuungszeitProWoche = this.betreuungszeitProWoche + other.betreuungszeitProWoche;
-		verpflegungskosten = MathUtil.DEFAULT.addNullSafe(this.verpflegungskosten, other.verpflegungskosten);
+		betreuungszeitProWoche = this.betreuungszeitProWoche
+			+ other.betreuungszeitProWoche;
+		verpflegungskosten = MathUtil.DEFAULT.addNullSafe(
+			this.verpflegungskosten,
+			other.verpflegungskosten
+		);
 	}
 
 	public boolean differsIgnorableFrom(@Nullable TSCalculationResult that) {
 		if (that == null) {
 			return false;
 		}
-		return Objects.equals(betreuungszeitProWoche, that.betreuungszeitProWoche) &&
-				MathUtil.isSame(verpflegungskosten, that.verpflegungskosten);
+		return Objects.equals(
+			betreuungszeitProWoche,
+			that.betreuungszeitProWoche
+		)
+			&&
+			MathUtil.isSame(verpflegungskosten, that.verpflegungskosten);
 	}
 }

@@ -16,6 +16,6 @@
  */
 
 export enum TSFerienbetreuungFormularStatus {
-    IN_BEARBEITUNG_GEMEINDE = 'IN_BEARBEITUNG_GEMEINDE',
+    IN_BEARBEITUNG = 'IN_BEARBEITUNG',
     ABGESCHLOSSEN = 'ABGESCHLOSSEN'
 }

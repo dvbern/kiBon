@@ -18,7 +18,8 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-    name: 'ebeguNumber'
+    name: 'ebeguNumber',
+    standalone: false
 })
 export class EbeguNumberPipe implements PipeTransform {
     public static stringToNumber(str: string): number | undefined | null {

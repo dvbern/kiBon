@@ -19,10 +19,10 @@ import {Ng1StateDeclaration, StateParams} from '@uirouter/angularjs';
 import {StateService} from '@uirouter/core';
 import {delay, take} from 'rxjs/operators';
 import {FamiliensituationVisitor} from '../../../app/core/constants/FamiliensituationVisitor';
-import {MandantService} from '../../../app/shared/services/mandant.service';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {RouterHelper} from '../../../dvbModules/router/route-helper-provider';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {getGesuchModelManager} from '../../gesuch.route';
+import {getGesuchPromise} from '../../gesuch.route';
 import {FamiliensituationAppenzellViewXComponent} from './familiensituation-appenzell-view-x/familiensituation-appenzell-view-x.component';
 import {FamiliensituationSchwyzComponent} from './familiensituation-schwyz/familiensituation-schwyz.component';
 import {FamiliensituationViewXComponent} from './familiensituation-view-x/familiensituation-view-x.component';
@@ -37,7 +37,7 @@ export function familiensituationRun(routerHelper: RouterHelper): void {
     ]);
 }
 
-const kommentarView = '<kommentar-view';
+const kommentarView = '<kommentar-view>';
 
 class EbeguFamiliensituationState implements Ng1StateDeclaration {
     public name = 'gesuch.familiensituation';
@@ -75,7 +75,7 @@ class EbeguFamiliensituationDefaultState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -97,7 +97,7 @@ class EbeguFamiliensituationAppenzellState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -119,7 +119,7 @@ class EbeguFamiliensituationSchwyzState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {

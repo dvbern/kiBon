@@ -21,14 +21,14 @@ import java.util.Properties;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.batch.api.AbstractBatchlet;
-import javax.batch.operations.JobOperator;
-import javax.batch.runtime.BatchRuntime;
-import javax.batch.runtime.BatchStatus;
-import javax.batch.runtime.context.JobContext;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.batch.api.AbstractBatchlet;
+import jakarta.batch.operations.JobOperator;
+import jakarta.batch.runtime.BatchRuntime;
+import jakarta.batch.runtime.BatchStatus;
+import jakarta.batch.runtime.context.JobContext;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.entities.DownloadFile;
@@ -48,7 +48,9 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class SendEmailBatchlet extends AbstractBatchlet {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SendEmailBatchlet.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		SendEmailBatchlet.class
+	);
 
 	@Inject
 	private WorkjobService workJobService;
@@ -73,18 +75,38 @@ public class SendEmailBatchlet extends AbstractBatchlet {
 
 	@Override
 	public String process() {
-		final String receiverEmail = getParameters().getProperty(WorkJobConstants.EMAIL_OF_USER);
-		final String receiverLanguage = getParameters().getProperty(WorkJobConstants.LANGUAGE);
-		final String mandantId = getParameters().getProperty(WorkJobConstants.REPORT_MANDANT_ID);
-		Mandant mandant = mandantService.findMandant(mandantId).orElseThrow();
+		final String receiverEmail = getParameters().getProperty(
+			WorkJobConstants.EMAIL_OF_USER
+		);
+		final String receiverLanguage = getParameters().getProperty(
+			WorkJobConstants.LANGUAGE
+		);
+		final String mandantId = getParameters().getProperty(
+			WorkJobConstants.REPORT_MANDANT_ID
+		);
+		Mandant mandant = mandantService.getMandant(mandantId);
 		LOG.debug("Sending mail with file for user to {}", receiverEmail);
-		Objects.requireNonNull(receiverEmail, " Email muss gesetzt sein damit der Fertige Report an den Empfaenger geschickt werden kann");
+		Objects.requireNonNull(
+			receiverEmail,
+			" Email muss gesetzt sein damit der Fertige Report an den Empfaenger geschickt werden kann"
+		);
 		final Workjob workJob = readWorkjobFromDatabase();
 		final UploadFileInfo fileMetadata = jobDataContainer.getResult();
-		final DownloadFile downloadFile = createDownloadfile(workJob, fileMetadata);
-		workJobService.addResultToWorkjob(workJob.getId(), downloadFile.getAccessToken()); // add the actual generated doc to the workjob
+		final DownloadFile downloadFile = createDownloadfile(
+			workJob,
+			fileMetadata
+		);
+		workJobService.addResultToWorkjob(
+			workJob.getId(),
+			downloadFile.getAccessToken()
+		); // add the actual generated doc to the workjob
 		try {
-			mailService.sendInfoStatistikGeneriert(receiverEmail, createStatistikPageLink(mandant), Locale.forLanguageTag(receiverLanguage), mandant);
+			mailService.sendInfoStatistikGeneriert(
+				receiverEmail,
+				createStatistikPageLink(mandant),
+				Locale.forLanguageTag(receiverLanguage),
+				mandant
+			);
 			return BatchStatus.COMPLETED.toString();
 		} catch (Exception ignore) {
 			return BatchStatus.FAILED.toString();
@@ -92,23 +114,42 @@ public class SendEmailBatchlet extends AbstractBatchlet {
 	}
 
 	private String createStatistikPageLink(Mandant mandant) {
-		return configuration.isClientUsingHTTPS() ? "https://" : "http://" + configuration.getHostname(mandant.getMandantIdentifier())  + "/statistik";
+		return configuration.getFrontendBaseUrl(
+			mandant.getMandantIdentifier()
+		)
+			+ "/statistik";
 	}
 
 	@Nullable
-	private DownloadFile createDownloadfile(@Nonnull Workjob workJob, @Nullable UploadFileInfo uploadFile) {
+	private DownloadFile createDownloadfile(
+		@Nonnull Workjob workJob,
+		@Nullable UploadFileInfo uploadFile
+	) {
 		if (uploadFile != null) {
 			// create an authorization token (downloadFile) for the generated document
-			return downloadFileService.create(uploadFile, TokenLifespan.LONG, workJob.getTriggeringIp());
+			return downloadFileService.create(
+				uploadFile,
+				TokenLifespan.LONG,
+				workJob.getTriggeringIp()
+			);
 		}
-		LOG.error("UploadFileInfo muss uebergeben werden vom vorherigen Step fuer workJob " + workJob.getExecutionId());
+		LOG.error(
+			"UploadFileInfo muss uebergeben werden vom vorherigen Step fuer workJob "
+				+ workJob.getExecutionId()
+		);
 		return null;
 	}
 
 	@Nonnull
 	private Workjob readWorkjobFromDatabase() {
-		final Workjob workJob = workJobService.findWorkjobByExecutionId(jobCtx.getExecutionId());
-		Objects.requireNonNull(workJob, "Workjob mit dieser execution id muss existieren  " + jobCtx.getExecutionId());
+		final Workjob workJob = workJobService.findWorkjobByExecutionId(
+			jobCtx.getExecutionId()
+		);
+		Objects.requireNonNull(
+			workJob,
+			"Workjob mit dieser execution id muss existieren  "
+				+ jobCtx.getExecutionId()
+		);
 		return workJob;
 	}
 

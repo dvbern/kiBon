@@ -14,10 +14,10 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
 			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
-			 version="2.1">
+			 xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+			 version="3.0">
 	<persistence-unit name="ebeguPersistenceUnit" transaction-type="JTA">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<jta-data-source>java:/jdbc/ebegu</jta-data-source>
@@ -25,7 +25,9 @@
 		<!--<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>-->
 
 		<properties>
-			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>
+			<!-- BenutzerServiceBean#searchBenutzer requires subqueries in FROM-clause, which is not JPA-compliant -->
+			<property name="hibernate.jpa.compliance.query" value="false"/>
+
 			<property name="hibernate.cache.use_second_level_cache" value="true"/>
 			<property name="hibernate.physical_naming_strategy" value="ch.dvbern.ebegu.persistence.EbeguPhysicalNamingStrategyImpl"/>
 
@@ -33,7 +35,6 @@
 			<property name="hibernate.show_sql" value="false"/>
 			<!--<property name="hibernate.hbm2ddl.auto" value="validate"/>-->
 
-			<property name="hibernate.search.lucene_version" value="LUCENE_CURRENT"/> <!-- Default-Value, verhindert aber eine Warning im Logfile -->
 			<!--fuer lokale tests ist es praktischer den indem im FS zu haben, in in startproperties ebegu.properties auf hosts ueberschrieben-->
 			<!--<property name="hibernate.search.default.directory_provider" value="filesystem"/>-->
 			<!--nur ein prozess benutzt unseren index (?)-->

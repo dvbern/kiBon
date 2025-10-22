@@ -19,23 +19,22 @@ public class JaxPublicAppConfig {
 	private boolean personenSucheDisabled;
 	private String kitaxHost;
 	private String kitaxEndpoint;
-	private String notverordnungDefaultEinreichefristOeffentlich;
-	private String notverordnungDefaultEinreichefristPrivat;
 	private boolean lastenausgleichAktiv;
 	private boolean ferienbetreuungAktiv;
-	private final boolean angebotMittagstischEnabled;
 	private boolean lastenausgleichTagesschulenAktiv;
 	private boolean gemeindeKennzahlenAktiv;
 	private BigDecimal lastenausgleichTagesschulenAnteilZweitpruefungDe;
 	private BigDecimal lastenausgleichTagesschulenAnteilZweitpruefungFr;
 	private BigDecimal lastenausgleichTagesschulenAutoZweitpruefungDe;
 	private BigDecimal lastenausgleichTagesschulenAutoZweitpruefungFr;
+	private BigDecimal ferienbetreuungAnteilZweitpruefungDe;
+	private BigDecimal ferienbetreuungAnteilZweitpruefungFr;
+	private BigDecimal ferienbetreuungAutoZweitpruefungDe;
+	private BigDecimal ferienbetreuungAutoZweitpruefungFr;
 	private String primaryColor;
 	private String primaryColorDark;
 	private String primaryColorLight;
-	private String logoFileName;
-	private String logoFileNameWhite;
-	private boolean multimandantAktiviert;
+	private boolean multimandantAktiv;
 	private final boolean infomaZahlungen;
 	private boolean frenchEnabled;
 	private boolean geresEnabledForMandant;
@@ -49,9 +48,11 @@ public class JaxPublicAppConfig {
 	private boolean angebotTSActivated;
 	private boolean angebotFIActivated;
 	private boolean angebotTFOActivated;
+	private final boolean angebotMittagstischActivated;
 	private boolean auszahlungAnEltern;
 	private boolean abweichungenEnabled;
 	private boolean gemeindeVereinfachteKonfigAktiv;
 	private boolean testfaelleEnabled;
-
+	private boolean abgeloesteViewEnabled;
+	private boolean gemeindeKennzahlenReminderActivated;
 }

@@ -15,9 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractEntity} from './TSAbstractEntity';
+import {
+    TSAbstractEntity,
+    TSModulTagesschuleGroup
+} from '@kibon/shared/model/entity';
 import {TSBelegungTagesschuleModul} from './TSBelegungTagesschuleModul';
-import {TSModulTagesschuleGroup} from './TSModulTagesschuleGroup';
 
 /**
  * Dieses Objekt wird nur client-seitig gebraucht für die Darstellung des Stundenplans für die Tagesschule Anmeldung.

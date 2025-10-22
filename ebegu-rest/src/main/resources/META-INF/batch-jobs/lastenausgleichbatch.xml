@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Ki-Tax: System for the management of external childcare subsidies
+  ~ Copyright (C) 2018 City of Bern Switzerland
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU Affero General Public License for more details.
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<job id="lastenausgleichbatch" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/jobXML_1_0.xsd"
+	 version="1.0">
+	<listeners>
+		<listener ref="lastenausgleichJobListener"/>
+	</listeners>
+	<!-- Erstellt die Basis Lastenausgleich-Objekte -->
+	<step id="createLastenausgleich" next="calculateLastenausgleich">
+		<batchlet ref="createLastenausgleichBatchlet"/>
+	</step>
+	<!-- Berechnet Lastenaugleich pro Gemeinde -->
+	<step id="calculateLastenausgleich" next="calculateTotals">
+		<properties>
+			<!-- timeout wie timeout max (360 minuten) -->
+			<property name="jakarta.transaction.global.timeout" value="21600"/>
+		</properties>
+		<chunk item-count="10">
+			<!-- read all Gemeinden for which Lastenausgleich should be calculated -->
+			<reader ref="lastenausgleichGemeindeReader"/>
+			<!-- calculate Lastenausgleich Basisjahr and Korrektur for Gemeinde -->
+			<processor ref="lastenausgleichGemeindeCalculator"/>
+			<!-- save Lastenausgleich -->
+			<writer ref="lastenausgleichGemeindeWriter"/>
+		</chunk>
+	</step>
+
+	<!-- calculate total of Lastenausgleich -->
+	<step id="calculateTotals" next="sendMails">
+		<batchlet ref="lastenausgleichTotalCalculationBatchlet"/>
+	</step>
+
+	<!-- send Mail to Gemeinde -->
+	<step id="sendMails">
+		<batchlet ref="lastenausgleichMailBatchlet"/>
+	</step>
+</job>

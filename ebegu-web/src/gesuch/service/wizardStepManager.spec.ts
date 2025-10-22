@@ -13,6 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {WizardStepRS} from '@kibon/shared/util/wizard-step-manager';
 import * as angular from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
@@ -20,28 +21,25 @@ import {CORE_JS_MODULE} from '../../app/core/core.angularjs.module';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../hybridTools/translationsMock';
-import {TSAdressetyp} from '../../models/enums/TSAdressetyp';
+import {TSAdressetyp} from '@kibon/shared/model/enums';
 import {TSAntragStatus} from '../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../models/enums/TSAntragTyp';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
-import {TSRole} from '../../models/enums/TSRole';
-import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../models/enums/TSWizardStepStatus';
-import {TSAdresse} from '../../models/TSAdresse';
+import {TSRole} from '@kibon/shared/model/enums';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSAdresse} from '@kibon/shared/model/entity';
 import {TSAdresseContainer} from '../../models/TSAdresseContainer';
 import {TSDossier} from '../../models/TSDossier';
-import {TSEinstellung} from '../../models/TSEinstellung';
+import {TSEinstellung} from '../../admin/einstellungen/TSEinstellung';
 import {TSFall} from '../../models/TSFall';
-import {TSGemeinde} from '../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
 import {TSGesuch} from '../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSGesuchstellerContainer} from '../../models/TSGesuchstellerContainer';
-import {TSWizardStep} from '../../models/TSWizardStep';
-import {TSDateRange} from '../../models/types/TSDateRange';
-import {DateUtil} from '../../utils/DateUtil';
+import {TSDateRange, TSWizardStep} from '@kibon/shared/model/entity';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {TestDataUtil} from '../../utils/TestDataUtil.spec';
 import {WizardStepManager} from './wizardStepManager';
-import {WizardStepRS} from './WizardStepRS.rest';
 
 /* eslint-disable */
 describe('wizardStepManager', () => {
@@ -506,8 +504,8 @@ describe('wizardStepManager', () => {
             umzugsAdresse.adresseJA = new TSAdresse();
             umzugsAdresse.adresseJA.adresseTyp = TSAdressetyp.WOHNADRESSE;
             umzugsAdresse.adresseJA.gueltigkeit = new TSDateRange(
-                DateUtil.today().add(1, 'months'),
-                DateUtil.today().add(7, 'months')
+                MomentUtil.today().add(1, 'months'),
+                MomentUtil.today().add(7, 'months')
             );
             gesuch.gesuchsteller1.adressen = [umzugsAdresse, umzugsAdresse]; // for an umzugAdresse we just need more
             // than one Wohnadressen

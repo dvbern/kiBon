@@ -195,8 +195,11 @@
                                         name="email_ts_id"
                                         #nameEmailTS="ngModel"
                                         [(ngModel)]="stammdaten.tsEmail"
-                                        class="form-control"
                                         email
+                                        placeholder="{{
+                                            'BEISPIEL_EMAIL' | translate
+                                        }}"
+                                        class="form-control"
                                     />
                                     <dv-error-messages
                                         [errorObject]="nameEmailTS.errors"
@@ -225,6 +228,10 @@
                                         #nameTelefonnummerTS="ngModel"
                                         [(ngModel)]="stammdaten.tsTelefon"
                                         [pattern]="CONSTANTS.PATTERN_PHONE"
+                                        placeholder="{{
+                                            'BEISPIEL_TELEFON_NUMMER'
+                                                | translate
+                                        }}"
                                         class="form-control"
                                     />
                                     <dv-error-messages
@@ -332,15 +339,16 @@
                                         'ANMELDEBESTAETIGUNGEN_EMAIL_SENDEN'
                                             | translate
                                     }}
+
+                                    <dv-tooltip
+                                        id="benachrichtigungTsEmailAuto_tooltip"
+                                        [text]="
+                                            'ANMELDEBESTAETIGUNGEN_EMAIL_SENDEN_HELP'
+                                                | translate
+                                        "
+                                    ></dv-tooltip>
                                 </mat-checkbox>
                             </div>
-                            <dv-tooltip
-                                id="benachrichtigungTsEmailAuto_tooltip"
-                                [text]="
-                                    'ANMELDEBESTAETIGUNGEN_EMAIL_SENDEN_HELP'
-                                        | translate
-                                "
-                            ></dv-tooltip>
                         </div>
                     </div>
                     <div class="col-sm-6">
@@ -385,7 +393,6 @@
                     [gemeindeStatus]="stammdaten.gemeinde.status"
                     [editMode]="editMode"
                     [tsAnmeldungenStartDatum]="tsAnmeldungenStartDatum"
-                    [editMode]="editMode"
                     [gemeindeId]="stammdaten.gemeinde.id"
                     [korrespondenzspracheDe]="stammdaten.korrespondenzspracheDe"
                     [korrespondenzspracheFr]="stammdaten.korrespondenzspracheFr"
@@ -480,12 +487,13 @@
                     <div class="col-sm-6">
                         <h3 *ngIf="stammdaten.benachrichtigungTsEmailAuto">
                             {{
-                                'BENACHRICHTIGUNGEN_EMAIL_SENDEN_JA' | translate
+                                'BENACHRICHTIGUNGEN_EMAIL_SENDEN_TS_JA'
+                                    | translate
                             }}
                         </h3>
                         <h3 *ngIf="!stammdaten.benachrichtigungTsEmailAuto">
                             {{
-                                'BENACHRICHTIGUNGEN_EMAIL_SENDEN_NEIN'
+                                'BENACHRICHTIGUNGEN_EMAIL_SENDEN_TS_NEIN'
                                     | translate
                             }}
                         </h3>
@@ -552,7 +560,6 @@
                     <dv-gemeinde-ts-konfiguration
                         [konfigurationsListe]="stammdaten.konfigurationsListe"
                         [gemeindeStatus]="stammdaten.gemeinde.status"
-                        [editMode]="editMode"
                         [gemeindeId]="stammdaten.gemeinde.id"
                         [korrespondenzspracheDe]="
                             stammdaten.korrespondenzspracheDe

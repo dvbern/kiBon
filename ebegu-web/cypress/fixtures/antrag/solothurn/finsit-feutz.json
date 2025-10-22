@@ -1,0 +1,27 @@
+{
+    "valid": {
+        "Start": {
+            "sozialhilfebeziehende": "nein",
+            "steuererklaerungGemeinsam": "false"
+        },
+        "GS1": {
+            "selbststaendig": "nein",
+            "steuerveranlagungErhalten": "ja",
+            "nettoEinkommen": "50000",
+            "unterhaltsBeitraege": "0",
+            "abzuegeKinderAusbildung": "500",
+            "steuerbaresVermoegen": "0"
+        },
+        "GS2": {
+            "selbststaendig": "nein",
+            "steuerveranlagungErhalten": "nein",
+            "bruttoLohn": "50000",
+            "steuerbaresVermoegen": "0"
+        },
+        "Resultate": {
+            "massgebendesEinkommenGS1": "49'500",
+            "massgebendesEinkommenGS2": "37'500",
+            "massgebendesEinkommenTotal": "87'000"
+        }
+    }
+}

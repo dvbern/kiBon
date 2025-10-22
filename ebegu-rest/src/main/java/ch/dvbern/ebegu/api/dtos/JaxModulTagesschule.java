@@ -19,10 +19,9 @@ import java.time.DayOfWeek;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 /**
  * DTO fuer Module fuer die Tagesschulen
@@ -32,9 +31,9 @@ public class JaxModulTagesschule extends JaxAbstractDTO {
 
 	private static final long serialVersionUID = -1893537808325618626L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private DayOfWeek wochentag;
-
 
 	@Nonnull
 	public DayOfWeek getWochentag() {

@@ -25,26 +25,26 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.gesuch.JaxFallDossierConverter;
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 import ch.dvbern.ebegu.api.dtos.JaxDossier;
 import ch.dvbern.ebegu.api.dtos.JaxId;
@@ -59,8 +59,7 @@ import ch.dvbern.ebegu.services.BenutzerService;
 import ch.dvbern.ebegu.services.DossierService;
 import ch.dvbern.ebegu.services.FallService;
 import com.google.common.base.Strings;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
@@ -78,7 +77,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("dossier")
 @Stateless
-@Api(description = "Resource für Dossier (Fall in einer Gemeinde)")
 @PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 public class DossierResource {
 
@@ -92,20 +90,22 @@ public class DossierResource {
 	private FallService fallService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxFallDossierConverter converter;
 
-
-	@ApiOperation(value = "Erstellt ein Dossier in der Datenbank", response = JaxDossier.class)
+	@Operation(summary = "Erstellt ein Dossier in der Datenbank")
 	@Nonnull
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
-		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST,
+		SACHBEARBEITER_SOZIALDIENST })
 	public Response create(
 		@Nonnull @NotNull JaxDossier dossierJax,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		Dossier dossierToMerge = new Dossier();
 		if (dossierJax.getTimestampErstellt() != null) {
@@ -113,14 +113,22 @@ public class DossierResource {
 			Objects.requireNonNull(dossierJax.getGemeinde().getId());
 			Objects.requireNonNull(dossierJax.getFall());
 			Objects.requireNonNull(dossierJax.getFall().getId());
-			Optional<Dossier> dossierByGemeindeAndFall = dossierService.findDossierByGemeindeAndFall(
-				dossierJax.getGemeinde().getId(), dossierJax.getFall().getId());
+			Optional<Dossier> dossierByGemeindeAndFall = dossierService
+				.findDossierByGemeindeAndFall(
+					dossierJax.getGemeinde().getId(),
+					dossierJax.getFall().getId()
+				);
 			if (dossierByGemeindeAndFall.isPresent()) {
 				dossierToMerge = dossierByGemeindeAndFall.get();
 			}
 		}
-		Dossier convertedDossier = converter.dossierToEntity(dossierJax, dossierToMerge);
-		Dossier persistedDossier = this.dossierService.saveDossier(convertedDossier);
+		Dossier convertedDossier = converter.dossierToEntity(
+			dossierJax,
+			dossierToMerge
+		);
+		Dossier persistedDossier = this.dossierService.saveDossier(
+			convertedDossier
+		);
 
 		URI uri = uriInfo.getBaseUriBuilder()
 			.path(DossierResource.class)
@@ -131,7 +139,7 @@ public class DossierResource {
 		return Response.created(uri).entity(jaxDossier).build();
 	}
 
-	@ApiOperation(value = "Returns the Dossier with the given Id.", response = JaxDossier.class)
+	@Operation(summary = "Returns the Dossier with the given Id.")
 	@Nullable
 	@GET
 	@Path("/id/{dossierId}")
@@ -139,16 +147,20 @@ public class DossierResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public JaxDossier findDossier(
-		@Nonnull @NotNull @PathParam("dossierId") JaxId dossierJAXPId) {
+		@Nonnull @NotNull @PathParam("dossierId") JaxId dossierJAXPId
+	) {
 		Objects.requireNonNull(dossierJAXPId.getId());
 		String dossierId = converter.toEntityId(dossierJAXPId);
-		Optional<Dossier> dossierOptional = dossierService.findDossier(dossierId);
+		Optional<Dossier> dossierOptional = dossierService.findDossier(
+			dossierId
+		);
 
-		return dossierOptional.map(dossier -> converter.dossierToJAX(dossier)).orElse(null);
+		return dossierOptional.map(dossier -> converter.dossierToJAX(dossier))
+			.orElse(null);
 	}
 
-	@ApiOperation(value = "Returns all Dossiers of the given Fall that are visible for the current user",
-		responseContainer = "List", response = JaxDossier.class)
+	@Operation(
+		summary = "Returns all Dossiers of the given Fall that are visible for the current user")
 	@Nullable
 	@GET
 	@Path("/fall/{fallId}")
@@ -156,22 +168,29 @@ public class DossierResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public List<JaxDossier> findDossiersByFall(
-		@Nonnull @NotNull @Valid @PathParam("fallId") JaxId fallJaxId) {
+		@Nonnull @NotNull @Valid @PathParam("fallId") JaxId fallJaxId
+	) {
 
 		Objects.requireNonNull(fallJaxId.getId());
 
 		String fallId = converter.toEntityId(fallJaxId);
-		Collection<Dossier> dossierList = dossierService.findDossiersByFall(fallId);
+		Collection<Dossier> dossierList = dossierService.findDossiersByFall(
+			fallId
+		);
 
 		//noinspection ConstantConditions -> here JaxAbstractDTO::getTimestampErstellt cannot be null
 		return dossierList.stream()
 			.map(dossier -> converter.dossierToJAX(dossier))
-			.sorted(Comparator.comparing(JaxAbstractDTO::getTimestampErstellt))
+			.sorted(
+				Comparator.comparing(
+					JaxAbstractDTO::getTimestampErstellt
+				)
+			)
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Returns all Dossiers of the given Fall that are visible for the current user",
-		responseContainer = "List", response = JaxDossier.class)
+	@Operation(
+		summary = "Returns all Dossiers of the given Fall that are visible for the current user")
 	@Nullable
 	@GET
 	@Path("/newestCurrentBesitzer")
@@ -179,15 +198,21 @@ public class DossierResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public JaxDossier findNewestDossierByCurrentBenutzerAsBesitzer() {
-		Optional<Fall> optFall = fallService.findFallByCurrentBenutzerAsBesitzer();
+		Optional<Fall> optFall = fallService
+			.findFallByCurrentBenutzerAsBesitzer();
 		// Beim ersten Einloggen ist der Fall nie vorhanden, dies ist also ein erwarteter Fehler. Wir loggen es nicht.
 		String fallId = optFall
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				KibonLogLevel.NONE,
-				"findNewestDossierByCurrentBenutzerAsBesitzer",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND))
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					KibonLogLevel.NONE,
+					"findNewestDossierByCurrentBenutzerAsBesitzer",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
+				)
+			)
 			.getId();
-		Collection<Dossier> dossierList = dossierService.findDossiersByFall(fallId);
+		Collection<Dossier> dossierList = dossierService.findDossiersByFall(
+			fallId
+		);
 
 		//noinspection ConstantConditions -> here JaxAbstractDTO::getTimestampErstellt cannot be null
 		return dossierList.stream()
@@ -196,105 +221,160 @@ public class DossierResource {
 			.orElse(null);
 	}
 
-	@ApiOperation(value = "Creates a new Dossier in the database if it doesnt exist with the current user as owner.", response = JaxDossier.class)
+	@Operation(
+		summary = "Creates a new Dossier in the database if it doesnt exist with the current user as owner.")
 	@Nullable
 	@PUT
 	@Path("/createforcurrentbenutzer/{gemeindeId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
-		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST,
+		SACHBEARBEITER_SOZIALDIENST })
 	public JaxDossier getOrCreateDossierAndFallForCurrentUserAsBesitzer(
 		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJaxId,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		Objects.requireNonNull(gemeindeJaxId.getId());
 		String gemeindeId = converter.toEntityId(gemeindeJaxId);
 
-		Dossier dossier = dossierService.getOrCreateDossierAndFallForCurrentUserAsBesitzer(gemeindeId);
+		Dossier dossier = dossierService
+			.getOrCreateDossierAndFallForCurrentUserAsBesitzer(gemeindeId);
 		return converter.dossierToJAX(dossier);
 	}
 
-	@ApiOperation("Setzt den Verantwortlichen BG fuer dieses Dossier")
+	@Operation(summary = "Setzt den Verantwortlichen BG fuer dieses Dossier")
 	@Nullable
 	@PUT
 	@Path("/verantwortlicherBG/{dossierId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.WILDCARD)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
 		SACHBEARBEITER_TS, ADMIN_TS })
 	public Response setVerantwortlicherBG(
 		@Nonnull @NotNull @PathParam("dossierId") JaxId jaxDossierId,
 		@Nullable String username,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 		// TODO Wieso hier ist der Gesuchsteller erlaubt???? ist da nicht eine alte Sicherheitlücke?
 		Objects.requireNonNull(jaxDossierId.getId());
 
-		Dossier dossier = dossierService.findDossier(jaxDossierId.getId()).orElseThrow(() -> new EbeguEntityNotFoundException("setVerantwortlicherBG",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, jaxDossierId.getId()));
+		Dossier dossier = dossierService.findDossier(jaxDossierId.getId())
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"setVerantwortlicherBG",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					jaxDossierId.getId()
+				)
+			);
 
 		if (Strings.isNullOrEmpty(username)) {
 			this.dossierService.setVerantwortlicherBG(dossier.getId(), null);
 
 		} else {
-			Benutzer benutzer = benutzerService.findBenutzer(username, dossier.getFall().getMandant()).orElseThrow(() -> new EbeguEntityNotFoundException("setVerantwortlicherBG",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, username));
+			Benutzer benutzer = benutzerService.findBenutzer(
+				username,
+				dossier.getFall().getMandant()
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"setVerantwortlicherBG",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						username
+					)
+				);
 
-			this.dossierService.setVerantwortlicherBG(dossier.getId(), benutzer);
+			this.dossierService.setVerantwortlicherBG(
+				dossier.getId(),
+				benutzer
+			);
 		}
 		return Response.ok().build();
 	}
 
-	@ApiOperation("Setzt den Verantwortlichen TS fuer dieses Dossier")
+	@Operation(summary = "Setzt den Verantwortlichen TS fuer dieses Dossier")
 	@Nullable
 	@PUT
 	@Path("/verantwortlicherTS/{dossierId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.WILDCARD)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
 		SACHBEARBEITER_TS, ADMIN_TS })
 	public Response setVerantwortlicherTS(
 		@Nonnull @NotNull @PathParam("dossierId") JaxId jaxDossierId,
 		@Nullable String username,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 		// TODO Wieso hier ist der Gesuchsteller erlaubt???? ist da nicht eine alte Sicherheitlücke?
 		Objects.requireNonNull(jaxDossierId.getId());
 
-		Dossier dossier = dossierService.findDossier(jaxDossierId.getId()).orElseThrow(() -> new EbeguEntityNotFoundException("setVerantwortlicherTS",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, jaxDossierId.getId()));
+		Dossier dossier = dossierService.findDossier(jaxDossierId.getId())
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"setVerantwortlicherTS",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					jaxDossierId.getId()
+				)
+			);
 
 		if (Strings.isNullOrEmpty(username)) {
 			this.dossierService.setVerantwortlicherTS(dossier.getId(), null);
 
 		} else {
-			final Benutzer benutzer = benutzerService.findBenutzer(username, dossier.getFall().getMandant()).orElseThrow(() -> new EbeguEntityNotFoundException("setVerantwortlicherTS",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, username));
+			final Benutzer benutzer = benutzerService.findBenutzer(
+				username,
+				dossier.getFall().getMandant()
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"setVerantwortlicherTS",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						username
+					)
+				);
 
-			this.dossierService.setVerantwortlicherTS(dossier.getId(), benutzer);
+			this.dossierService.setVerantwortlicherTS(
+				dossier.getId(),
+				benutzer
+			);
 
 		}
 		return Response.ok().build();
 	}
 
-	@ApiOperation("Bemerkung auf dem Dossier Speichern")
+	@Operation(summary = "Bemerkung auf dem Dossier Speichern")
 	@Nullable
 	@PUT
 	@Path("/bemerkungen/{dossierId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_TS, SACHBEARBEITER_TS})
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE,
+		ADMIN_BG, SACHBEARBEITER_BG, ADMIN_TS, SACHBEARBEITER_TS })
 	public Response updateBemerkungen(
 		@Nonnull @NotNull @PathParam("dossierId") JaxId dossierJAXPId,
 		@Nonnull @NotNull String bemerkungen,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		Objects.requireNonNull(dossierJAXPId.getId());
-		Dossier dossier = dossierService.findDossier(converter.toEntityId(dossierJAXPId)).orElseThrow(() -> new EbeguEntityNotFoundException("updateBemerkungen",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, dossierJAXPId.getId()));
+		Dossier dossier = dossierService.findDossier(
+			converter.toEntityId(dossierJAXPId)
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"updateBemerkungen",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					dossierJAXPId.getId()
+				)
+			);
 
 		dossier.setBemerkungen(bemerkungen);
 

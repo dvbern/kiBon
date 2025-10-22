@@ -31,10 +31,10 @@ import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
 import ch.dvbern.ebegu.entities.ErweiterteBetreuung;
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
-import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import ch.dvbern.ebegu.util.KitaxUtil;
@@ -48,8 +48,18 @@ public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 
 	private final KitaxUebergangsloesungParameter kitaxParameter;
 
-	public BetreuungspensumAbschnittRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale, KitaxUebergangsloesungParameter kitaxParameter) {
-		super(RuleKey.BETREUUNGSPENSUM, RuleType.GRUNDREGEL_DATA, RuleValidity.ASIV, validityPeriod, locale);
+	public BetreuungspensumAbschnittRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale,
+		KitaxUebergangsloesungParameter kitaxParameter
+	) {
+		super(
+			RuleKey.BETREUUNGSPENSUM,
+			RuleType.GRUNDREGEL_DATA,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 
 		this.kitaxParameter = kitaxParameter;
 	}
@@ -61,23 +71,35 @@ public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 
 	@Nonnull
 	@Override
-	@SuppressWarnings("PMD.NcssMethodCount")
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
 		Betreuung betreuung = (Betreuung) platz;
-		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte = new ArrayList<>();
-		Set<BetreuungspensumContainer> betreuungspensen = betreuung.getBetreuungspensumContainers();
+		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte =
+			new ArrayList<>();
+		Set<BetreuungspensumContainer> betreuungspensen = betreuung
+			.getBetreuungspensumContainers();
 
-		final boolean possibleKitaxRechner = KitaxUtil.isGemeindeWithKitaxUebergangsloesung(betreuung.extractGemeinde())
+		final boolean possibleKitaxRechner = KitaxUtil
+			.isGemeindeWithKitaxUebergangsloesung(
+				betreuung.extractGemeinde()
+			)
 			&& betreuung.getBetreuungsangebotTyp().isJugendamt();
-
 
 		// es handelt sich um FEBR und wir müssen die Pensen gemäss dem alten System umrechnen.
 		if (possibleKitaxRechner) {
-			handleKitaxRechner(betreuungspensen, betreuung, betreuungspensumAbschnitte);
+			handleKitaxRechner(
+				betreuungspensen,
+				betreuung,
+				betreuungspensumAbschnitte
+			);
 		} else {
 			for (BetreuungspensumContainer betreuungspensumContainer : betreuungspensen) {
-				Betreuungspensum betreuungspensum = betreuungspensumContainer.getBetreuungspensumJA();
-				betreuungspensumAbschnitte.add(toVerfuegungZeitabschnitt(betreuungspensum, betreuung));
+				Betreuungspensum betreuungspensum = betreuungspensumContainer
+					.getBetreuungspensumJA();
+				betreuungspensumAbschnitte.add(
+					toVerfuegungZeitabschnitt(betreuungspensum, betreuung)
+				);
 			}
 		}
 
@@ -87,13 +109,18 @@ public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 	private void handleKitaxRechner(
 		Set<BetreuungspensumContainer> betreuungspensen,
 		Betreuung betreuung,
-		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte) {
+		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte
+	) {
 		List<Betreuungspensum> pensenToUse = new ArrayList<>();
 		for (BetreuungspensumContainer betreuungspensumContainer : betreuungspensen) {
 
-			Betreuungspensum betreuungspensum = betreuungspensumContainer.getBetreuungspensumJA();
+			Betreuungspensum betreuungspensum = betreuungspensumContainer
+				.getBetreuungspensumJA();
 
-			if (KitaxUtil.isCompletePensumASIV(kitaxParameter, betreuungspensum)) {
+			if (KitaxUtil.isCompletePensumASIV(
+				kitaxParameter,
+				betreuungspensum
+			)) {
 				pensenToUse.add(betreuungspensum);
 				continue;
 			}
@@ -104,17 +131,36 @@ public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 			Betreuungspensum copy = initBetreuungspensumCopy(betreuungspensum);
 
 			// das komplette Pensum liegt innerhalb von FEBR
-			if (kitaxParameter.getStadtBernAsivStartDate().isAfter(betreuungspensum.getGueltigkeit().getGueltigBis())) {
+			if (kitaxParameter.getStadtBernAsivStartDate()
+				.isAfter(
+					betreuungspensum.getGueltigkeit().getGueltigBis()
+				)) {
 				recalculationNecessary = true;
 			}
 
-			if (KitaxUtil.isPensumMixedFEBRandASIV(kitaxParameter, betreuungspensum)) {
+			if (KitaxUtil.isPensumMixedFEBRandASIV(
+				kitaxParameter,
+				betreuungspensum
+			)) {
 				recalculationNecessary = true;
-				copy.getGueltigkeit().setGueltigBis(kitaxParameter.getStadtBernAsivStartDate().minusDays(1l));
+				copy.getGueltigkeit()
+					.setGueltigBis(
+						kitaxParameter.getStadtBernAsivStartDate()
+							.minusDays(1l)
+					);
 
-				Betreuungspensum restPensumAsiv = initBetreuungspensumCopy(betreuungspensum);
-				restPensumAsiv.getGueltigkeit().setGueltigAb(kitaxParameter.getStadtBernAsivStartDate());
-				restPensumAsiv.getGueltigkeit().setGueltigBis(betreuungspensum.getGueltigkeit().getGueltigBis());
+				Betreuungspensum restPensumAsiv = initBetreuungspensumCopy(
+					betreuungspensum
+				);
+				restPensumAsiv.getGueltigkeit()
+					.setGueltigAb(
+						kitaxParameter.getStadtBernAsivStartDate()
+					);
+				restPensumAsiv.getGueltigkeit()
+					.setGueltigBis(
+						betreuungspensum.getGueltigkeit()
+							.getGueltigBis()
+					);
 				restPensumAsiv.setPensum(betreuungspensum.getPensum());
 				pensenToUse.add(restPensumAsiv);
 			}
@@ -123,25 +169,42 @@ public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 			// wenn das Flag betreuungInGemeinde nicht aktiviert ist, ist der BG beim Ki-Tax Rechner immer 0.
 			// dann muss auch nichts umgerechnet werden. Dies verhindert spätere Nullpointer, wenn die Öffnungszeiten
 			// abgefragt werden.
-			if (betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA() != null) {
-				betreuungInGemeinde = betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA().getBetreuungInGemeinde();
+			if (betreuung.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA()
+				!= null) {
+				betreuungInGemeinde = betreuung
+					.getErweiterteBetreuungContainer()
+					.getErweiterteBetreuungJA()
+					.getBetreuungInGemeinde();
 			} else {
-				betreuungInGemeinde = betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungGS().getBetreuungInGemeinde();
+				betreuungInGemeinde = betreuung
+					.getErweiterteBetreuungContainer()
+					.getErweiterteBetreuungGS()
+					.getBetreuungInGemeinde();
 			}
 			if (!betreuungInGemeinde) {
 				recalculationNecessary = false;
 			}
 
 			if (recalculationNecessary) {
-				String kitaName = betreuung.getInstitutionStammdaten().getInstitution().getName();
-				final BigDecimal convertedPensum = KitaxUtil.recalculatePensumKonvertierung(kitaName, kitaxParameter, betreuungspensum);
+				String kitaName = betreuung.getInstitutionStammdaten()
+					.getInstitution()
+					.getName();
+				final BigDecimal convertedPensum = KitaxUtil
+					.recalculatePensumKonvertierung(
+						kitaName,
+						kitaxParameter,
+						betreuungspensum
+					);
 				copy.setPensum(convertedPensum);
 				pensenToUse.add(copy);
 			}
 		}
 
 		for (Betreuungspensum pensum : pensenToUse) {
-			betreuungspensumAbschnitte.add(toVerfuegungZeitabschnitt(pensum, betreuung));
+			betreuungspensumAbschnitte.add(
+				toVerfuegungZeitabschnitt(pensum, betreuung)
+			);
 		}
 
 		pensenToUse.clear();
@@ -156,27 +219,55 @@ public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 		@Nonnull Betreuungspensum betreuungspensum,
 		@Nonnull Betreuung betreuung
 	) {
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(betreuungspensum.getGueltigkeit());
+		VerfuegungZeitabschnitt zeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(
+				betreuungspensum.getGueltigkeit()
+			);
 
 		// Eigentliches Betreuungspensum
-		zeitabschnitt.setBetreuungspensumProzentForAsivAndGemeinde(betreuungspensum.getPensum());
-		zeitabschnitt.setMonatlicheBetreuungskostenForAsivAndGemeinde(betreuungspensum.getMonatlicheBetreuungskosten());
-		zeitabschnitt.setPensumUnitForAsivAndGemeinde(betreuungspensum.getUnitForDisplay());
+		zeitabschnitt.setBetreuungspensumProzentForAsivAndGemeinde(
+			betreuungspensum.getPensum()
+		);
+		if (betreuung.isAngebotMittagstisch()) {
+			begrenztBetreuungspensumFuerMittagstisch(zeitabschnitt);
+		}
+		zeitabschnitt.setMonatlicheBetreuungskostenForAsivAndGemeinde(
+			betreuungspensum.getMonatlicheBetreuungskosten()
+		);
+		zeitabschnitt.setPensumUnitForAsivAndGemeinde(
+			betreuungspensum.getUnitForDisplay()
+		);
 		if (betreuungspensum.getBetreuteTage() != null) {
-			zeitabschnitt.setAnwesenheitsTageProMonat(betreuungspensum.getBetreuteTage());
+			zeitabschnitt.setAnwesenheitsTageProMonat(
+				betreuungspensum.getBetreuteTage()
+			);
 		}
 		// Anzahl Haupt und Nebenmahlzeiten übernehmen
-		zeitabschnitt.setMonatlicheHauptmahlzeitenForAsivAndGemeinde(betreuungspensum.getMonatlicheHauptmahlzeiten());
-		zeitabschnitt.setMonatlicheNebenmahlzeitenForAsivAndGemeinde(betreuungspensum.getMonatlicheNebenmahlzeiten());
+		zeitabschnitt.setMonatlicheHauptmahlzeitenForAsivAndGemeinde(
+			betreuungspensum.getMonatlicheHauptmahlzeiten()
+		);
+		zeitabschnitt.setMonatlicheNebenmahlzeitenForAsivAndGemeinde(
+			betreuungspensum.getMonatlicheNebenmahlzeiten()
+		);
 		// Tarife der Mahlzeiten übernehmen
-		zeitabschnitt.setTarifHauptmahlzeitForAsivAndGemeinde(betreuungspensum.getTarifProHauptmahlzeit());
-		zeitabschnitt.setTarifNebenmahlzeitForAsivAndGemeinde(betreuungspensum.getTarifProNebenmahlzeit());
-		Familiensituation famSit = betreuung.extractGesuch().extractFamiliensituation();
-		boolean verguenstigungBeantrag = famSit != null && !famSit.isKeineMahlzeitenverguenstigungBeantragt();
-		zeitabschnitt.setVerguenstigungMahlzeitenBeantragtForAsivAndGemeinde(verguenstigungBeantrag);
+		zeitabschnitt.setTarifHauptmahlzeitForAsivAndGemeinde(
+			betreuungspensum.getTarifProHauptmahlzeit()
+		);
+		zeitabschnitt.setTarifNebenmahlzeitForAsivAndGemeinde(
+			betreuungspensum.getTarifProNebenmahlzeit()
+		);
+		Familiensituation famSit = betreuung.extractGesuch()
+			.extractFamiliensituation();
+		boolean verguenstigungBeantrag = famSit != null
+			&& !famSit.isKeineMahlzeitenverguenstigungBeantragt();
+		zeitabschnitt.setVerguenstigungMahlzeitenBeantragtForAsivAndGemeinde(
+			verguenstigungBeantrag
+		);
 		//TFO Stuendliche Vollkosten übernehmen
 		if (betreuungspensum.getStuendlicheVollkosten() != null) {
-			zeitabschnitt.setStuendlicheVollkosten(betreuungspensum.getStuendlicheVollkosten());
+			zeitabschnitt.setStuendlicheVollkosten(
+				betreuungspensum.getStuendlicheVollkosten()
+			);
 		}
 
 		// ErweiterteBetreuung-Flag gesetzt?
@@ -185,67 +276,129 @@ public class BetreuungspensumAbschnittRule extends AbstractAbschnittRule {
 		// Falls die Betreuung im Status UNBEKANNTE_INSTITUTION ist, soll die Pauschale immer berechnet werden
 		boolean besondereBeduerfnisseBestaetigt =
 			besondereBeduerfnisse
-			&& (betreuung.isErweiterteBeduerfnisseBestaetigt()
-				|| betreuung.getBetreuungsstatus() == Betreuungsstatus.UNBEKANNTE_INSTITUTION);
+				&& (betreuung.isErweiterteBeduerfnisseBestaetigt()
+					|| betreuung.getBetreuungsstatus()
+						== Betreuungsstatus.UNBEKANNTE_INSTITUTION);
 
-		zeitabschnitt.setBesondereBeduerfnisseBestaetigtForAsivAndGemeinde(besondereBeduerfnisseBestaetigt);
+		zeitabschnitt.setBesondereBeduerfnisseBestaetigtForAsivAndGemeinde(
+			besondereBeduerfnisseBestaetigt
+		);
 
 		// Betreuung in Gemeinde?
-		ErweiterteBetreuung erweiterteBetreuung = betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA();
-		if (erweiterteBetreuung != null && erweiterteBetreuung.getBetreuungInGemeinde() != null) {
-			zeitabschnitt.setBetreuungInGemeindeForAsivAndGemeinde(erweiterteBetreuung.getBetreuungInGemeinde());
+		ErweiterteBetreuung erweiterteBetreuung = betreuung
+			.getErweiterteBetreuungContainer()
+			.getErweiterteBetreuungJA();
+		if (erweiterteBetreuung != null
+			&& erweiterteBetreuung.getBetreuungInGemeinde() != null) {
+			zeitabschnitt.setBetreuungInGemeindeForAsivAndGemeinde(
+				erweiterteBetreuung.getBetreuungInGemeinde()
+			);
 		}
 
 		// Besondere Beduerfnisse Betrag konfigurierbar?
-		if (besondereBeduerfnisseBestaetigt && betreuung.hasErweiterteBeduerfnisseBetrag()) {
-			BigDecimal erweitereteBeduerfnisseBetrag = betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA().getErweitereteBeduerfnisseBetrag();
-			zeitabschnitt.setBesondereBeduerfnisseBetragForAsivAndGemeinde(erweitereteBeduerfnisseBetrag);
+		if (besondereBeduerfnisseBestaetigt
+			&& betreuung.hasErweiterteBeduerfnisseBetrag()) {
+			BigDecimal erweitereteBeduerfnisseBetrag = betreuung
+				.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA()
+				.getErweitereteBeduerfnisseBetrag();
+			zeitabschnitt.setBesondereBeduerfnisseBetragForAsivAndGemeinde(
+				erweitereteBeduerfnisseBetrag
+			);
 		}
 
 		// Die Institution muss die besonderen Bedürfnisse bestätigt haben
 		if (besondereBeduerfnisseBestaetigt) {
-			zeitabschnitt.getBgCalculationInputAsiv().addBemerkung(
-				MsgKey.ERWEITERTE_BEDUERFNISSE_MSG,
-				getLocale());
+			zeitabschnitt.getBgCalculationInputAsiv()
+				.addBemerkung(
+					MsgKey.ERWEITERTE_BEDUERFNISSE_MSG,
+					getLocale()
+				);
 		}
 
-		zeitabschnitt.setBetreuungInFerienzeit(Boolean.TRUE.equals(betreuungspensum.getBetreuungInFerienzeit()));
+		zeitabschnitt.setBetreuungInFerienzeit(
+			Boolean.TRUE.equals(betreuungspensum.getBetreuungInFerienzeit())
+		);
 
 		handleHoehereBeitraege(betreuung, zeitabschnitt);
 
 		return zeitabschnitt;
 	}
 
-	private void handleHoehereBeitraege(Betreuung betreuung, VerfuegungZeitabschnitt zeitabschnitt) {
+	private void handleHoehereBeitraege(
+		Betreuung betreuung,
+		VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		// hier kind hoehereBeitraegeWegenBeeintraechtigungBeantragen pruefen
 		// dazu auch die gegebene Wert im Drop down beruchsichtigen wenn gesetzt und checkbox dann Wert im Input schreiben
-		if (Boolean.TRUE.equals(betreuung.getKind().getKindJA().getHoehereBeitraegeWegenBeeintraechtigungBeantragen()) && betreuung.getBedarfsstufe() != null) {
-			if (Objects.requireNonNull(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA()).isErweiterteBeduerfnisseBestaetigt()) {
-				zeitabschnitt.setBedarfsstufeForAsivAndGemeinde(betreuung.getBedarfsstufe());
-				zeitabschnitt.getBgCalculationInputAsiv().addBemerkung(
-					betreuung.getBedarfsstufe() == Bedarfsstufe.KEINE ?
-						MsgKey.BEDARFSSTUFE_NICHT_GEWAEHRT_MSG :
-						MsgKey.BEDARFSSTUFE_MSG,
-					getLocale(),
-					ServerMessageUtil.translateEnumValue(betreuung.getBedarfsstufe(), getLocale(), betreuung.extractGesuch().extractMandant()));
+		if (Boolean.TRUE.equals(
+			betreuung.getKind()
+				.getKindJA()
+				.getHoehereBeitraegeWegenBeeintraechtigungBeantragen()
+		) && betreuung.getBedarfsstufe() != null) {
+			if (Objects.requireNonNull(
+				betreuung.getErweiterteBetreuungContainer()
+					.getErweiterteBetreuungJA()
+			).isErweiterteBeduerfnisseBestaetigt()) {
+				zeitabschnitt.setBedarfsstufeForAsivAndGemeinde(
+					betreuung.getBedarfsstufe()
+				);
+				zeitabschnitt.getBgCalculationInputAsiv()
+					.addBemerkung(
+						betreuung.getBedarfsstufe()
+							== Bedarfsstufe.KEINE ?
+								MsgKey.BEDARFSSTUFE_NICHT_GEWAEHRT_MSG :
+								MsgKey.BEDARFSSTUFE_MSG,
+						getLocale(),
+						ServerMessageUtil.translateEnumValue(
+							betreuung.getBedarfsstufe(),
+							getLocale(),
+							betreuung.extractGesuch()
+								.extractMandant()
+						)
+					);
 			} else {
-				zeitabschnitt.getBgCalculationInputAsiv().addBemerkung(
-					MsgKey.BEDARFSSTUFE_NICHT_VERRECHNET_MSG,
-					getLocale());
+				zeitabschnitt.getBgCalculationInputAsiv()
+					.addBemerkung(
+						MsgKey.BEDARFSSTUFE_NICHT_VERRECHNET_MSG,
+						getLocale()
+					);
 			}
 		}
 	}
 
-	private Betreuungspensum initBetreuungspensumCopy(Betreuungspensum original) {
+	private Betreuungspensum initBetreuungspensumCopy(
+		Betreuungspensum original
+	) {
 		// das pensum muss kopiert werden, ansonsten wird es in der DB überschrieben
 		Betreuungspensum copy = new Betreuungspensum();
-		copy.setMonatlicheBetreuungskosten(original.getMonatlicheBetreuungskosten());
-		copy.setMonatlicheHauptmahlzeiten(original.getMonatlicheHauptmahlzeiten());
-		copy.setMonatlicheNebenmahlzeiten(original.getMonatlicheNebenmahlzeiten());
+		copy.setMonatlicheBetreuungskosten(
+			original.getMonatlicheBetreuungskosten()
+		);
+		copy.setMonatlicheHauptmahlzeiten(
+			original.getMonatlicheHauptmahlzeiten()
+		);
+		copy.setMonatlicheNebenmahlzeiten(
+			original.getMonatlicheNebenmahlzeiten()
+		);
 		copy.setTarifProHauptmahlzeit(original.getTarifProHauptmahlzeit());
 		copy.setTarifProNebenmahlzeit(original.getTarifProNebenmahlzeit());
 		copy.setGueltigkeit(original.getGueltigkeit());
 
 		return copy;
+	}
+
+	private void begrenztBetreuungspensumFuerMittagstisch(
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt
+	) {
+		if (verfuegungZeitabschnitt.getBgCalculationInputAsiv()
+			.getBetreuungspensumProzent()
+			.compareTo(new BigDecimal(30))
+			> 0) {
+			verfuegungZeitabschnitt
+				.setBetreuungspensumProzentForAsivAndGemeinde(
+					new BigDecimal(30)
+				);
+		}
 	}
 }

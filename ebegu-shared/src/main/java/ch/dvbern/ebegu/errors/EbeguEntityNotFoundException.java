@@ -30,39 +30,79 @@ public class EbeguEntityNotFoundException extends EbeguRuntimeException {
 
 	private static final long serialVersionUID = 7990458569130165438L;
 
-	public EbeguEntityNotFoundException(@Nullable String methodName, @Nonnull String id) {
+	public EbeguEntityNotFoundException(
+		@Nullable String methodName,
+		@Nonnull String id
+	) {
 		super(methodName, ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, id);
 	}
 
-	public EbeguEntityNotFoundException(@Nullable String methodName, @Nonnull Serializable... args) {
+	public EbeguEntityNotFoundException(
+		@Nullable String methodName,
+		@Nonnull Serializable... args
+	) {
 		super(methodName, ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, args);
 	}
 
-	public EbeguEntityNotFoundException(@Nullable String methodeName, @Nonnull String message, @Nonnull Serializable... args) {
+	public EbeguEntityNotFoundException(
+		@Nullable String methodeName,
+		@Nonnull String message,
+		@Nonnull Serializable... args
+	) {
 		super(methodeName, message, args);
 	}
 
-	public EbeguEntityNotFoundException(@Nullable String methodeName, @Nonnull String message, @Nullable Throwable cause, @Nonnull Serializable... args) {
+	public EbeguEntityNotFoundException(
+		@Nullable String methodeName,
+		@Nonnull String message,
+		@Nullable Throwable cause,
+		@Nonnull Serializable... args
+	) {
 		super(methodeName, message, cause, args);
 	}
 
-	public EbeguEntityNotFoundException(@Nullable String methodName, @Nonnull String message, @Nullable ErrorCodeEnum errorCodeEnum, @Nullable Throwable cause, @Nonnull Serializable... args) {
+	public EbeguEntityNotFoundException(
+		@Nullable String methodName,
+		@Nonnull String message,
+		@Nullable ErrorCodeEnum errorCodeEnum,
+		@Nullable Throwable cause,
+		@Nonnull Serializable... args
+	) {
 		super(methodName, message, errorCodeEnum, cause, args);
 	}
 
-	public EbeguEntityNotFoundException(@Nullable String methodName, @Nonnull String message, @Nullable ErrorCodeEnum errorCodeEnum, @Nonnull Serializable... args) {
+	public EbeguEntityNotFoundException(
+		@Nullable String methodName,
+		@Nonnull String message,
+		@Nullable ErrorCodeEnum errorCodeEnum,
+		@Nonnull Serializable... args
+	) {
 		super(methodName, message, errorCodeEnum, args);
 	}
 
-	public EbeguEntityNotFoundException(@Nonnull KibonLogLevel logLevel, @Nullable String methodName, @Nullable ErrorCodeEnum errorCodeEnum, @Nonnull Serializable... args) {
+	public EbeguEntityNotFoundException(
+		@Nonnull KibonLogLevel logLevel,
+		@Nullable String methodName,
+		@Nullable ErrorCodeEnum errorCodeEnum,
+		@Nonnull Serializable... args
+	) {
 		super(logLevel, methodName, errorCodeEnum, args);
 	}
 
-	public EbeguEntityNotFoundException(@Nullable String methodName, @Nullable ErrorCodeEnum errorCodeEnum, @Nonnull Serializable... args) {
+	public EbeguEntityNotFoundException(
+		@Nullable String methodName,
+		@Nullable ErrorCodeEnum errorCodeEnum,
+		@Nonnull Serializable... args
+	) {
 		super(methodName, errorCodeEnum, args);
 	}
 
-	public EbeguEntityNotFoundException(@Nullable String methodName, @Nullable ErrorCodeEnum errorCodeEnum, @Nullable Throwable cause, @Nonnull Serializable... args) {
+	public EbeguEntityNotFoundException(
+		@Nullable String methodName,
+		@Nullable ErrorCodeEnum errorCodeEnum,
+		@Nullable Throwable cause,
+		@Nonnull Serializable... args
+	) {
 		super(methodName, errorCodeEnum, cause, args);
 	}
 }

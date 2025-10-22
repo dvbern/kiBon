@@ -14,7 +14,6 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
   -->
-
 <div class="gemeinde-angaben">
     <h1 class="access-for-all-title" translate>LATS_GEMEINDE_ANGABEN</h1>
     <div class="row view-title">
@@ -23,6 +22,13 @@
             <hr class="header" />
         </div>
     </div>
+
+    @if (
+        lATSAngabenGemeindeContainer && isZweitPruefungAndSameUserAsPruefung()
+            | async
+    ) {
+        <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
+    }
 
     <form
         *ngIf="lATSAngabenGemeindeContainer"
@@ -54,12 +60,21 @@
                                 horizontal
                                 formControlName="alleAngabenInKibonErfasst"
                             >
-                                <mat-radio-button [value]="true">{{
-                                    'LABEL_JA' | translate
-                                }}</mat-radio-button>
-                                <mat-radio-button [value]="false">{{
-                                    'LABEL_NEIN' | translate
-                                }}</mat-radio-button>
+                                <mat-radio-button
+                                    data-test="tagesschulanmeldungen-erfassen"
+                                    [value]="true"
+                                    >{{
+                                        'LABEL_JA' | translate
+                                    }}</mat-radio-button
+                                >
+                                <mat-radio-button
+                                    data-test="tagesschulanmeldungen-erfassen"
+                                    [value]="false"
+                                    data-test="angaben-gemeinde-nein"
+                                    >{{
+                                        'LABEL_NEIN' | translate
+                                    }}</mat-radio-button
+                                >
                             </mat-radio-group>
                         </dv-radio-container-x>
                     </dv-input-container-x>
@@ -73,7 +88,11 @@
                     [buttonDisabled]="!formularInitForm?.valid"
                     (buttonClick)="onInitFormSubmit()"
                 >
-                    <span translate>LATS_ANTRAG_ERSTELLEN</span>
+                    <span
+                        translate
+                        data-test="gemeinde-antraege-antrag-erstellen"
+                        >LATS_ANTRAG_ERSTELLEN</span
+                    >
                 </dv-loading-button>
             </div>
         </div>
@@ -117,12 +136,16 @@
                         "
                         formControlName="bedarfBeiElternAbgeklaert"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="bedarf-tagesschulangebot-abeklaert"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="bedarf-tagesschulangebot-abeklaert"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -174,12 +197,16 @@
                         "
                         formControlName="angebotFuerFerienbetreuungVorhanden"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="angebot-schullkinder-betreuung-ferien"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="angebot-schullkinder-betreuung-ferien"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -225,12 +252,16 @@
                         formControlName="angebotVerfuegbarFuerAlleSchulstufen"
                         (change)="deleteBegruendung($event)"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="tagesschulangebot-steht-allen-offen"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="tagesschulangebot-steht-allen-offen"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -349,6 +380,7 @@
                             matInput
                             formControlName="geleisteteBetreuungsstundenOhneBesondereBeduerfnisse"
                             class="form-control dv-input"
+                            data-test="geleistete-betreuungsstunden"
                         />
                         <mat-error
                             *ngIf="
@@ -424,6 +456,7 @@
                             matInput
                             formControlName="geleisteteBetreuungsstundenBesondereBeduerfnisse"
                             class="form-control dv-input"
+                            data-test="geleistete-betreuungsstunden-besondere-betreuungsanforderungen"
                         />
                         <mat-error
                             *ngIf="
@@ -499,6 +532,7 @@
                             matInput
                             formControlName="geleisteteBetreuungsstundenBesondereVolksschulangebot"
                             class="form-control dv-input"
+                            data-test="geleistete-betreuungsstunden-besondere-volksschulangebot"
                         />
                         <mat-error
                             *ngIf="
@@ -677,6 +711,7 @@
                             matInput
                             formControlName="davonStundenZuNormlohnMehrAls50ProzentAusgebildete"
                             class="form-control dv-input"
+                            data-test="normlohnkosten-sozialpaedagogisch-ueber-50-prozent"
                         />
                         <mat-error
                             *ngIf="
@@ -753,6 +788,7 @@
                             matInput
                             formControlName="davonStundenZuNormlohnWenigerAls50ProzentAusgebildete"
                             class="form-control dv-input"
+                            data-test="normlohnkosten-sozialpaedagogisch-unter-50-prozent"
                         />
                         <mat-error
                             *ngIf="
@@ -853,6 +889,7 @@
                             matInput
                             formControlName="einnahmenElterngebuehren"
                             class="form-control dv-input"
+                            data-test="einnahmen-elterngebuehren-ohne-verpflegung"
                         />
                         <mat-error
                             *ngIf="
@@ -895,6 +932,7 @@
                             [specificBisherLabel]="
                                 'LATS_BISHER_LABEL' | translate
                             "
+                            data-test="einnahmen-elterngebuehren-ohne-verpflegung-bisher"
                         >
                         </dv-bisher-x>
                     </mat-form-field>
@@ -1322,6 +1360,7 @@
                         matInput
                         formControlName="ersteRateAusbezahlt"
                         class="form-control dv-input"
+                        data-test="erste-rate-dezember"
                     />
                     <mat-error
                         *ngIf="
@@ -1411,6 +1450,7 @@
                             matInput
                             formControlName="gesamtKostenTagesschule"
                             class="form-control dv-input"
+                            data-test="gesamtkosten-tagesschule-jahressrechnung"
                         />
                         <mat-error
                             *ngIf="
@@ -1477,11 +1517,13 @@
                 </dv-input-container-x>
 
                 <dv-input-container-x>
-                    <label>
+                    <label for="einnahmenElterngebuehrenRO">
                         {{ 'LATS_EINNAHMEN_ELTERNGEBUEHREN' | translate }}
                     </label>
+                    <div class="flex-whitespace-item"></div>
                     <mat-form-field floatLabel="always">
                         <input
+                            id="einnahmenElterngebuehrenRO"
                             matInput
                             formControlName="einnahmenElterngebuehrenRO"
                             [readonly]="true"
@@ -1492,6 +1534,7 @@
 
                 <dv-input-container-x>
                     <label
+                        for="einnnahmenVerpflegung"
                         required
                         [ngClass]="{
                             'label-required-error':
@@ -1504,9 +1547,11 @@
                     </label>
                     <mat-form-field floatLabel="always">
                         <input
+                            id="einnnahmenVerpflegung"
                             matInput
                             formControlName="einnnahmenVerpflegung"
                             class="form-control dv-input"
+                            data-test="einnahmen-verpflegung"
                         />
                         <mat-error
                             *ngIf="
@@ -1570,6 +1615,7 @@
                             matInput
                             formControlName="einnahmenSubventionenDritter"
                             class="form-control dv-input"
+                            data-test="einnahmen-subventionen-dritter"
                         />
                         <mat-error
                             *ngIf="
@@ -1695,12 +1741,18 @@
                             "
                             formControlName="ueberschussErzielt"
                         >
-                            <mat-radio-button [value]="true">{{
-                                'LABEL_JA' | translate
-                            }}</mat-radio-button>
-                            <mat-radio-button [value]="false">{{
-                                'LABEL_NEIN' | translate
-                            }}</mat-radio-button>
+                            <mat-radio-button
+                                data-test="vorangehendes-schuljahr-ueberschuesse"
+                                [value]="true"
+                                >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                            >
+                            <mat-radio-button
+                                data-test="vorangehendes-schuljahr-ueberschuesse"
+                                [value]="false"
+                                >{{
+                                    'LABEL_NEIN' | translate
+                                }}</mat-radio-button
+                            >
                         </mat-radio-group>
                         <dv-bisher-x
                             [deklaration]="
@@ -1910,12 +1962,16 @@
                         "
                         formControlName="betreuungsstundenDokumentiertUndUeberprueft"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="betreuungstunden-dokumentiert-ueberprueft"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="betreuungstunden-dokumentiert-ueberprueft"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -2004,12 +2060,16 @@
                         "
                         formControlName="elterngebuehrenGemaessVerordnungBerechnet"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="elterngebuehren-tagesschulverordnung-berechnet"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="elterngebuehren-tagesschulverordnung-berechnet"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -2100,12 +2160,16 @@
                         "
                         formControlName="einkommenElternBelegt"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="belege-erlaubnis-einsicht-steuerdaten"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="belege-erlaubnis-einsicht-steuerdaten"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -2171,12 +2235,16 @@
                         [disabled]="angabenForm.controls.maximalTarif.disabled"
                         formControlName="maximalTarif"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="maximaltarif-angewendet"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="maximaltarif-angewendet"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -2261,12 +2329,16 @@
                         "
                         formControlName="mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="halbe-betreuungszeit-sozialpaedagogisch"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="halbe-betreuungszeit-sozialpaedagogisch"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -2352,12 +2424,16 @@
                         "
                         formControlName="ausbildungenMitarbeitendeBelegt"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="sozialpaedagogische-mitarbeitende-zertifiziert"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="sozialpaedagogische-mitarbeitende-zertifiziert"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -2488,6 +2564,7 @@
                 type="button"
                 *ngIf="falscheAngabenVisible | async"
                 (click)="onFalscheAngaben()"
+                data-test="gemeinde-antrag-angaben-korrigieren"
             >
                 <span translate>FERIENBETREUUNG_ANGABEN_KORRIGIEREN</span>
             </button>
@@ -2498,6 +2575,7 @@
                 [ngClass]="{secondary: !formularNotEditable()}"
                 [buttonDisabled]="formularNotEditable()"
                 (buttonClick)="onAngabenFormSubmit()"
+                data-test="angaben-gemeindeantrag-speichern"
             >
                 <span translate>SAVE</span>
             </dv-loading-button>
@@ -2507,6 +2585,7 @@
                 *ngIf="abschliessenVisible | async"
                 [buttonDisabled]="formularNotEditable()"
                 (buttonClick)="onAbschliessen()"
+                data-test="angaben-gemeinde-abschliessen"
             >
                 <span
                     *ngIf="

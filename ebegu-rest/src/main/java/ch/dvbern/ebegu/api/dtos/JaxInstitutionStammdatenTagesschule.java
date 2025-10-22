@@ -19,10 +19,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer InstitutionStammdatenTagesschule
@@ -33,12 +33,14 @@ public class JaxInstitutionStammdatenTagesschule extends JaxAbstractDTO {
 
 	private static final long serialVersionUID = 6958211446966611467L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxGemeinde gemeinde;
 
-	@NotNull @Nonnull
-	private Set<JaxEinstellungenTagesschule> einstellungenTagesschule = new HashSet<>();
-
+	@NotNull
+	@Nonnull
+	private Set<JaxEinstellungenTagesschule> einstellungenTagesschule =
+		new HashSet<>();
 
 	@Nonnull
 	public JaxGemeinde getGemeinde() {
@@ -49,11 +51,14 @@ public class JaxInstitutionStammdatenTagesschule extends JaxAbstractDTO {
 		this.gemeinde = gemeinde;
 	}
 
+	@Nonnull
 	public Set<JaxEinstellungenTagesschule> getEinstellungenTagesschule() {
 		return einstellungenTagesschule;
 	}
 
-	public void setEinstellungenTagesschule(Set<JaxEinstellungenTagesschule> einstellungenTagesschule) {
+	public void setEinstellungenTagesschule(
+		@Nonnull Set<JaxEinstellungenTagesschule> einstellungenTagesschule
+	) {
 		this.einstellungenTagesschule = einstellungenTagesschule;
 	}
 }

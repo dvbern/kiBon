@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.gemeindeantrag;
@@ -24,9 +24,9 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -53,7 +53,8 @@ import static ch.dvbern.ebegu.enums.gemeindeantrag.GemeindeAntragTyp.LASTENAUSGL
  */
 @Stateless
 @Local(GemeindeAntragService.class)
-public class GemeindeAntragServiceBean extends AbstractBaseService implements GemeindeAntragService {
+public class GemeindeAntragServiceBean extends AbstractBaseService implements
+	GemeindeAntragService {
 
 	@Inject
 	private LastenausgleichTagesschuleAngabenGemeindeService lastenausgleichTagesschuleAngabenGemeindeService;
@@ -73,17 +74,30 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements Ge
 	@Override
 	@Nonnull
 	public List<GemeindeAntrag> createAllGemeindeAntraege(
-			@Nonnull Gesuchsperiode gesuchsperiode,
-			@Nonnull GemeindeAntragTyp typ,
-			@Nonnull List<Gemeinde> gemeindeList) {
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull GemeindeAntragTyp typ,
+		@Nonnull List<Gemeinde> gemeindeList
+	) {
 		switch (typ) {
 		case LASTENAUSGLEICH_TAGESSCHULEN:
-			return new ArrayList<>(lastenausgleichTagesschuleAngabenGemeindeService.createLastenausgleichTagesschuleGemeinde(
-				gesuchsperiode, gemeindeList));
+			return new ArrayList<>(
+				lastenausgleichTagesschuleAngabenGemeindeService
+					.createLastenausgleichTagesschuleGemeinde(
+						gesuchsperiode,
+						gemeindeList
+					)
+			);
 		case FERIENBETREUUNG:
-			throw new NotImplementedException("Masseninitialisierung für Ferienbetreuungen wird nicht umgesetzt");
+			throw new NotImplementedException(
+				"Masseninitialisierung für Ferienbetreuungen wird nicht umgesetzt"
+			);
 		case GEMEINDE_KENNZAHLEN:
-			return new ArrayList<>(gemeindeKennzahlenService.createGemeindeKennzahlen(gesuchsperiode, gemeindeList));
+			return new ArrayList<>(
+				gemeindeKennzahlenService.createGemeindeKennzahlen(
+					gesuchsperiode,
+					gemeindeList
+				)
+			);
 		}
 		return Collections.emptyList();
 	}
@@ -97,9 +111,14 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements Ge
 	) {
 		switch (gemeindeAntragTyp) {
 		case FERIENBETREUUNG:
-			return ferienbetreuungService.createFerienbetreuungAntrag(gemeinde, gesuchsperiode);
+			return ferienbetreuungService.createFerienbetreuungAntrag(
+				gemeinde,
+				gesuchsperiode
+			);
 		default:
-			throw new NotImplementedException("createGemeindeAntrag für andere Antragtypen noch nicht implementiert");
+			throw new NotImplementedException(
+				"createGemeindeAntrag für andere Antragtypen noch nicht implementiert"
+			);
 		}
 	}
 
@@ -111,48 +130,86 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements Ge
 		@Nullable String typ,
 		@Nullable String status,
 		@Nullable String timestampMutiert,
+		@Nullable String einreichedatum,
 		@Nullable String usernameVerantwortlicher
 	) {
 
-		Benutzer verantwortlicher = getVerantwortlicherBenutzerIfPresent(usernameVerantwortlicher);
+		Benutzer verantwortlicher = getVerantwortlicherBenutzerIfPresent(
+			usernameVerantwortlicher
+		);
 
 		if (typ != null) {
 			switch (typ) {
 			case "LASTENAUSGLEICH_TAGESSCHULEN": {
-				return lastenausgleichTagesschuleAngabenGemeindeService.getLastenausgleicheTagesschulen(
-					gemeinde, periode, status, timestampMutiert, verantwortlicher
-				);
+				return lastenausgleichTagesschuleAngabenGemeindeService
+					.getLastenausgleicheTagesschulen(
+						gemeinde,
+						periode,
+						status,
+						timestampMutiert,
+						einreichedatum,
+						verantwortlicher
+					);
 			}
 			case "FERIENBETREUUNG": {
-				return ferienbetreuungService.getFerienbetreuungAntraege(gemeinde, periode, status, timestampMutiert, verantwortlicher);
+				return ferienbetreuungService.getFerienbetreuungAntraege(
+					gemeinde,
+					periode,
+					status,
+					timestampMutiert,
+					einreichedatum,
+					verantwortlicher
+				);
 			}
 			case "GEMEINDE_KENNZAHLEN": {
-				if (verantwortlicher != null) {
+				if (verantwortlicher != null || einreichedatum != null) {
 					return List.of();
 				}
-				return gemeindeKennzahlenService.getGemeindeKennzahlen(gemeinde, periode, status, timestampMutiert);
+				return gemeindeKennzahlenService.getGemeindeKennzahlen(
+					gemeinde,
+					periode,
+					status,
+					timestampMutiert
+				);
 			}
 			default:
-				throw new NotImplementedException("getGemeindeAntraege Typ: "
-					+ typ
-					+ " wurde noch nicht implementiert");
+				throw new NotImplementedException(
+					"getGemeindeAntraege Typ: "
+						+ typ
+						+ " wurde noch nicht implementiert"
+				);
 			}
 		}
-		return getGemeindeAntraege(gemeinde, periode, status, timestampMutiert, verantwortlicher);
+		return getGemeindeAntraege(
+			gemeinde,
+			periode,
+			status,
+			timestampMutiert,
+			einreichedatum,
+			verantwortlicher
+		);
 
 	}
 
 	@Nullable
-	private Benutzer getVerantwortlicherBenutzerIfPresent(@Nullable String usernameVerantwortlicher) {
+	private Benutzer getVerantwortlicherBenutzerIfPresent(
+		@Nullable String usernameVerantwortlicher
+	) {
 		if (usernameVerantwortlicher == null) {
 			return null;
 		}
 
-		return benutzerService.findBenutzer(usernameVerantwortlicher, principal.getMandant())
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"getVerantwortlicherBenutzerIfPresent",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				usernameVerantwortlicher));
+		return benutzerService.findBenutzer(
+			usernameVerantwortlicher,
+			principal.getMandant()
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getVerantwortlicherBenutzerIfPresent",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					usernameVerantwortlicher
+				)
+			);
 	}
 
 	@Nonnull
@@ -161,39 +218,63 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements Ge
 		@Nullable String periodeId,
 		@Nullable String status,
 		@Nullable String timestampMutiert,
+		@Nullable String firstEinreichedatum,
 		@Nullable Benutzer verantworlicher
 	) {
 
 		List<GemeindeAntrag> antraege = new ArrayList<>();
 
-		if (principal.isCallerInAnyOfRole(UserRole.getAllGemeindeFerienbetreuungMandantSuperadminRoles())) {
+		if (principal.isCallerInAnyOfRole(
+			UserRole.getAllGemeindeFerienbetreuungMandantSuperadminRoles()
+		)) {
 			List<FerienbetreuungAngabenContainer> ferienbetreuungAntraege =
 				ferienbetreuungService.getFerienbetreuungAntraege(
-					gemeindeId, periodeId, status, timestampMutiert, verantworlicher
+					gemeindeId,
+					periodeId,
+					status,
+					timestampMutiert,
+					firstEinreichedatum,
+					verantworlicher
 				);
 			antraege.addAll(ferienbetreuungAntraege);
 		}
 
 		if (principal.isCallerInAnyOfRole(
-				UserRole.ADMIN_FERIENBETREUUNG,
-				UserRole.SACHBEARBEITER_FERIENBETREUUNG)) {
+			UserRole.ADMIN_FERIENBETREUUNG,
+			UserRole.SACHBEARBEITER_FERIENBETREUUNG
+		)) {
 			return antraege;
 		}
 
-		if (principal.isCallerInAnyOfRole(UserRole.getMandantBgGemeindeRoles()) && verantworlicher == null) {
+		if (principal.isCallerInAnyOfRole(UserRole.getMandantBgGemeindeRoles())
+			&& verantworlicher == null) {
 			List<GemeindeKennzahlen> gemeindeKennzahlenAntraege =
-					gemeindeKennzahlenService.getGemeindeKennzahlen(gemeindeId, periodeId, status, timestampMutiert);
+				gemeindeKennzahlenService.getGemeindeKennzahlen(
+					gemeindeId,
+					periodeId,
+					status,
+					timestampMutiert
+				);
 			antraege.addAll(gemeindeKennzahlenAntraege);
 		}
 
-		if (principal.isCallerInAnyOfRole(UserRole.ADMIN_BG, UserRole.SACHBEARBEITER_BG)) {
+		if (principal.isCallerInAnyOfRole(
+			UserRole.ADMIN_BG,
+			UserRole.SACHBEARBEITER_BG
+		)) {
 			return antraege;
 		}
 
 		List<LastenausgleichTagesschuleAngabenGemeindeContainer> latsAntraege =
-			lastenausgleichTagesschuleAngabenGemeindeService.getLastenausgleicheTagesschulen(
-				gemeindeId, periodeId, status, timestampMutiert, verantworlicher
-			);
+			lastenausgleichTagesschuleAngabenGemeindeService
+				.getLastenausgleicheTagesschulen(
+					gemeindeId,
+					periodeId,
+					status,
+					timestampMutiert,
+					firstEinreichedatum,
+					verantworlicher
+				);
 		antraege.addAll(latsAntraege);
 
 		return antraege;
@@ -202,13 +283,18 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements Ge
 	@Nonnull
 	public Optional<? extends GemeindeAntrag> findGemeindeAntrag(
 		@Nonnull GemeindeAntragTyp typ,
-		@Nonnull String gemeindeAntragId) {
+		@Nonnull String gemeindeAntragId
+	) {
 		if (typ == LASTENAUSGLEICH_TAGESSCHULEN) {
-			return lastenausgleichTagesschuleAngabenGemeindeService.findLastenausgleichTagesschuleAngabenGemeindeContainer(
-				gemeindeAntragId);
+			return lastenausgleichTagesschuleAngabenGemeindeService
+				.findLastenausgleichTagesschuleAngabenGemeindeContainer(
+					gemeindeAntragId
+				);
 		}
 		if (typ == FERIENBETREUUNG) {
-			return ferienbetreuungService.findFerienbetreuungAngabenContainer(gemeindeAntragId);
+			return ferienbetreuungService.findFerienbetreuungAngabenContainer(
+				gemeindeAntragId
+			);
 		}
 
 		return Optional.empty();
@@ -217,42 +303,61 @@ public class GemeindeAntragServiceBean extends AbstractBaseService implements Ge
 	@Override
 	public void deleteGemeindeAntraege(
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull GemeindeAntragTyp gemeindeAntragTyp) {
+		@Nonnull GemeindeAntragTyp gemeindeAntragTyp
+	) {
 		if (gemeindeAntragTyp == LASTENAUSGLEICH_TAGESSCHULEN) {
-			lastenausgleichTagesschuleAngabenGemeindeService.deleteLastenausgleicheTagesschuleForGesuchsperiode(gesuchsperiode);
+			lastenausgleichTagesschuleAngabenGemeindeService
+				.deleteLastenausgleicheTagesschuleForGesuchsperiode(
+					gesuchsperiode
+				);
 			return;
 		}
 		if (gemeindeAntragTyp == GEMEINDE_KENNZAHLEN) {
-			gemeindeKennzahlenService.deleteGemeindeKennzahlenForGesuchsperiode(gesuchsperiode);
+			gemeindeKennzahlenService.deleteGemeindeKennzahlenForGesuchsperiode(
+				gesuchsperiode
+			);
 			return;
 		}
-		throw new NotImplementedException("DeleteGemeindeAntraege für typ "
-			+ gemeindeAntragTyp
-			+ " nicht implementiert");
+		throw new NotImplementedException(
+			"DeleteGemeindeAntraege für typ "
+				+ gemeindeAntragTyp
+				+ " nicht implementiert"
+		);
 	}
 
 	@Override
 	public void deleteGemeindeAntragIfExists(
-			@Nonnull Gesuchsperiode gesuchsperiode,
-			@Nonnull GemeindeAntragTyp gemeindeAntragTyp,
-			@Nonnull Gemeinde gemeinde) {
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull GemeindeAntragTyp gemeindeAntragTyp,
+		@Nonnull Gemeinde gemeinde
+	) {
 		if (gemeindeAntragTyp == LASTENAUSGLEICH_TAGESSCHULEN) {
-			lastenausgleichTagesschuleAngabenGemeindeService.deleteAntragIfExistsAndIsNotAbgeschlossen(
+			lastenausgleichTagesschuleAngabenGemeindeService
+				.deleteAntragIfExistsAndIsNotAbgeschlossen(
 					gemeinde,
-					gesuchsperiode);
+					gesuchsperiode
+				);
 			return;
 		}
 		if (gemeindeAntragTyp == GEMEINDE_KENNZAHLEN) {
-			gemeindeKennzahlenService.deleteAntragIfExistsAndIsNotAbgeschlossen(gesuchsperiode, gemeinde);
+			gemeindeKennzahlenService.deleteAntragIfExistsAndIsNotAbgeschlossen(
+				gesuchsperiode,
+				gemeinde
+			);
 			return;
 		}
 		if (gemeindeAntragTyp == FERIENBETREUUNG) {
-			ferienbetreuungService.deleteAntragIfExistsAndIsNotAbgeschlossen(gemeinde, gesuchsperiode);
+			ferienbetreuungService.deleteAntragIfExistsAndIsNotAbgeschlossen(
+				gemeinde,
+				gesuchsperiode
+			);
 			return;
 		}
 
-		throw new NotImplementedException("DeleteGemeindeAntrag für typ " + gemeindeAntragTyp + " nicht iplementiert");
+		throw new NotImplementedException(
+			"DeleteGemeindeAntrag für typ "
+				+ gemeindeAntragTyp
+				+ " nicht iplementiert"
+		);
 	}
 }
-
-

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -22,7 +22,6 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFall;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFallDokument;
 
 public interface SozialdienstFallDokumentService {
@@ -31,12 +30,16 @@ public interface SozialdienstFallDokumentService {
 	Optional<SozialdienstFallDokument> findDokument(@Nonnull String key);
 
 	@Nonnull
-	List<SozialdienstFallDokument> findDokumente(@Nonnull String sozialdienstFallId);
+	List<SozialdienstFallDokument> findDokumente(
+		@Nonnull String sozialdienstFallId
+	);
 
 	void removeDokument(@Nonnull SozialdienstFallDokument dokument);
 
 	@Nonnull
-	SozialdienstFallDokument saveVollmachtDokument(@Nonnull SozialdienstFallDokument sozialdienstFallDokument);
+	SozialdienstFallDokument saveVollmachtDokument(
+		@Nonnull SozialdienstFallDokument sozialdienstFallDokument
+	);
 
 	void removeDokumenteForSozialdienstFall(@Nonnull String sozialdienstFallId);
 }

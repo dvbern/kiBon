@@ -8,29 +8,34 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.gemeindekennzahlen;
 
-import javax.annotation.security.RunAs;
-import javax.ejb.Schedule;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.annotation.security.RunAs;
+import jakarta.ejb.Schedule;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
+import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.enums.UserRoleName;
 import ch.dvbern.ebegu.outbox.EventGeneratorServiceBean;
+import org.jboss.ejb3.annotation.RunAsPrincipal;
 
 @Stateless
 @RunAs(UserRoleName.SUPER_ADMIN)
+@RunAsPrincipal(PrincipalBean.KIBON_SERVICE_ACCOUNT)
 public class GemeindeKennzahlenEventGenerator {
 	@Inject
 	private EventGeneratorServiceBean eventGeneratorServiceBean;
-	@Schedule(info = "Migration-aid, pushes already existing Gemeinden to outbox",
+
+	@Schedule(
+		info = "Migration-aid, pushes already existing Gemeinden to outbox",
 		hour = "5",
 		minute = "15",
 		persistent = true)

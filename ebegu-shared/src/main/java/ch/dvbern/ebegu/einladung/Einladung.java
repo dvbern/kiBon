@@ -8,23 +8,28 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.einladung;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
-import ch.dvbern.ebegu.enums.EinladungTyp;
+import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.LocalDate;
-import java.util.Optional;
+
+import ch.dvbern.ebegu.entities.Benutzer;
+import ch.dvbern.ebegu.entities.Displayable;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Institution;
+import ch.dvbern.ebegu.entities.Traegerschaft;
+import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
+import ch.dvbern.ebegu.enums.EinladungTyp;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -45,7 +50,10 @@ public class Einladung {
 	@Nullable
 	private final LocalDate institutionGueltigAb;
 
-	private Einladung(@Nonnull EinladungTyp einladungTyp, @Nonnull Benutzer eingeladener) {
+	private Einladung(
+		@Nonnull EinladungTyp einladungTyp,
+		@Nonnull Benutzer eingeladener
+	) {
 		this.einladungTyp = einladungTyp;
 		this.eingeladener = eingeladener;
 		this.associatedEntity = null;
@@ -55,10 +63,12 @@ public class Einladung {
 	private Einladung(
 		@Nonnull EinladungTyp einladungTyp,
 		@Nonnull Benutzer eingeladener,
-		@Nullable Displayable associatedEntity) {
-		checkArgument(einladungTyp.getAssociatedEntityClass()
-			.map(clazz -> clazz.isInstance(associatedEntity))
-			.orElseGet(() -> associatedEntity == null)
+		@Nullable Displayable associatedEntity
+	) {
+		checkArgument(
+			einladungTyp.getAssociatedEntityClass()
+				.map(clazz -> clazz.isInstance(associatedEntity))
+				.orElseGet(() -> associatedEntity == null)
 		);
 		this.einladungTyp = einladungTyp;
 		this.eingeladener = eingeladener;
@@ -70,7 +80,8 @@ public class Einladung {
 		@Nonnull EinladungTyp einladungTyp,
 		@Nonnull Benutzer eingeladener,
 		@Nonnull Institution associatedEntity,
-		@Nonnull LocalDate institutionGueltigAb) {
+		@Nonnull LocalDate institutionGueltigAb
+	) {
 		this.einladungTyp = einladungTyp;
 		this.eingeladener = eingeladener;
 		this.associatedEntity = associatedEntity;
@@ -100,17 +111,32 @@ public class Einladung {
 			return new Einladung(
 				EinladungTyp.GEMEINDE,
 				eingeladener,
-				eingeladener.getCurrentBerechtigung().getGemeindeList().iterator().next());
+				eingeladener.getCurrentBerechtigung()
+					.getGemeindeList()
+					.iterator()
+					.next()
+			);
 		case ADMIN_TRAEGERSCHAFT:
-			return new Einladung(EinladungTyp.TRAEGERSCHAFT, eingeladener, eingeladener.getTraegerschaft());
+			return new Einladung(
+				EinladungTyp.TRAEGERSCHAFT,
+				eingeladener,
+				eingeladener.getTraegerschaft()
+			);
 		case ADMIN_INSTITUTION:
-			return new Einladung(EinladungTyp.INSTITUTION, eingeladener, eingeladener.getInstitution());
+			return new Einladung(
+				EinladungTyp.INSTITUTION,
+				eingeladener,
+				eingeladener.getInstitution()
+			);
 		case SACHBEARBEITER_SOZIALDIENST:
 		case ADMIN_SOZIALDIENST:
-			if(eingeladener.getSozialdienst() == null) {
+			if (eingeladener.getSozialdienst() == null) {
 				throw new IllegalArgumentException();
 			}
-			return forSozialdienst(eingeladener, eingeladener.getSozialdienst());
+			return forSozialdienst(
+				eingeladener,
+				eingeladener.getSozialdienst()
+			);
 		case GESUCHSTELLER:
 			throw new IllegalArgumentException();
 		default:
@@ -124,23 +150,49 @@ public class Einladung {
 	}
 
 	@Nonnull
-	public static Einladung forGemeinde(@Nonnull Benutzer eingeladener, @Nonnull Gemeinde gemeinde) {
+	public static Einladung forGemeinde(
+		@Nonnull Benutzer eingeladener,
+		@Nonnull Gemeinde gemeinde
+	) {
 		return new Einladung(EinladungTyp.GEMEINDE, eingeladener, gemeinde);
 	}
 
 	@Nonnull
-	public static Einladung forInstitution(@Nonnull Benutzer eingeladener, @Nonnull Institution institution, @Nonnull LocalDate institutionGueltigAb) {
-		return new Einladung(EinladungTyp.INSTITUTION, eingeladener, institution, institutionGueltigAb);
+	public static Einladung forInstitution(
+		@Nonnull Benutzer eingeladener,
+		@Nonnull Institution institution,
+		@Nonnull LocalDate institutionGueltigAb
+	) {
+		return new Einladung(
+			EinladungTyp.INSTITUTION,
+			eingeladener,
+			institution,
+			institutionGueltigAb
+		);
 	}
 
 	@Nonnull
-	public static Einladung forTraegerschaft(@Nonnull Benutzer eingeladener, @Nonnull Traegerschaft traegerschaft) {
-		return new Einladung(EinladungTyp.TRAEGERSCHAFT, eingeladener, traegerschaft);
+	public static Einladung forTraegerschaft(
+		@Nonnull Benutzer eingeladener,
+		@Nonnull Traegerschaft traegerschaft
+	) {
+		return new Einladung(
+			EinladungTyp.TRAEGERSCHAFT,
+			eingeladener,
+			traegerschaft
+		);
 	}
 
 	@Nonnull
-	public static Einladung forSozialdienst(@Nonnull Benutzer eingeladener, @Nonnull Sozialdienst sozialdienst) {
-		return new Einladung(EinladungTyp.SOZIALDIENST, eingeladener, sozialdienst);
+	public static Einladung forSozialdienst(
+		@Nonnull Benutzer eingeladener,
+		@Nonnull Sozialdienst sozialdienst
+	) {
+		return new Einladung(
+			EinladungTyp.SOZIALDIENST,
+			eingeladener,
+			sozialdienst
+		);
 	}
 
 	@Nonnull
@@ -173,7 +225,9 @@ public class Einladung {
 	@Nonnull
 	public Optional<String> getOptionalTraegerschaftNameForInstitution() {
 		if (associatedEntity instanceof Institution) {
-			return Optional.ofNullable(((Institution) associatedEntity).getTraegerschaft())
+			return Optional.ofNullable(
+				((Institution) associatedEntity).getTraegerschaft()
+			)
 				.map(Displayable::getName);
 		}
 

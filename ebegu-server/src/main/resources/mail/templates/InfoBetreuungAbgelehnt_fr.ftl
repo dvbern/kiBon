@@ -31,7 +31,7 @@ ${templateConfiguration.mailCss}
 		Nous avons le regret de vous informer que l'offre de prise en charge pour
 		${betreuung.kind.kindJA.fullName} / ${betreuung.institutionStammdaten.institution.name} a été rejetée.
 		Vous pouvez consulter la liste des structures
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/betreuungen/${betreuung.extractGesuch().id}">ici</a>.
+		<a href="${frontendUrl}/gesuch/betreuungen/${betreuung.extractGesuch().id}">ici</a>.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>

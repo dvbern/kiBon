@@ -18,9 +18,12 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
+import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.reporting.MergeFieldGesuchZeitraum;
+import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.oss.lib.excelmerger.ExcelConverter;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergerDTO;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -39,41 +42,139 @@ public class GesuchZeitraumExcelConverter implements ExcelConverter {
 	}
 
 	@Nonnull
-	public ExcelMergerDTO toExcelMergerDTO(@Nonnull List<GesuchZeitraumDataRow> data, @Nonnull Locale locale) {
+	public ExcelMergerDTO toExcelMergerDTO(
+		@Nonnull List<GesuchZeitraumDataRow> data,
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	) {
 		checkNotNull(data);
 
 		ExcelMergerDTO excelMerger = new ExcelMergerDTO();
 
 		data.forEach(dataRow -> {
-			ExcelMergerDTO excelRowGroup = excelMerger.createGroup(MergeFieldGesuchZeitraum.repeatGesuchZeitraumRow);
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.referenzNummer, dataRow.getReferenzNummer());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.gemeinde, dataRow.getGemeinde());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.gesuchLaufNr, dataRow.getGesuchLaufNr());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.institution, dataRow.getInstitution());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.betreuungsTyp, dataRow.getBetreuungsTyp());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.periode, dataRow.getPeriode());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlGesuchOnline, dataRow.getAnzahlGesuchOnline());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlGesuchPapier, dataRow.getAnzahlGesuchPapier());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationOnline, dataRow.getAnzahlMutationOnline());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationPapier, dataRow.getAnzahlMutationPapier());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationAbwesenheit, dataRow.getAnzahlMutationAbwesenheit());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationBetreuung, dataRow.getAnzahlMutationBetreuung());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationEV, dataRow.getAnzahlMutationEV());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationEwerbspensum, dataRow.getAnzahlMutationEwerbspensum());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationFamilienSitutation, dataRow.getAnzahlMutationFamilienSitutation());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationFinanzielleSituation, dataRow.getAnzahlMutationFinanzielleSituation());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationGesuchsteller, dataRow.getAnzahlMutationGesuchsteller());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationKinder, dataRow.getAnzahlMutationKinder());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMutationUmzug, dataRow.getAnzahlMutationUmzug());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlMahnungen, dataRow.getAnzahlMahnungen());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlSteueramtAusgeloest, dataRow.getAnzahlSteueramtAusgeloest());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlSteueramtGeprueft, dataRow.getAnzahlSteueramtGeprueft());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlBeschwerde, dataRow.getAnzahlBeschwerde());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlVerfuegungen, dataRow.getAnzahlVerfuegungen());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlVerfuegungenNormal, dataRow.getAnzahlVerfuegungenNormal());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlVerfuegungenMaxEinkommen, dataRow.getAnzahlVerfuegungenMaxEinkommen());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlVerfuegungenKeinPensum, dataRow.getAnzahlVerfuegungenKeinPensum());
-			excelRowGroup.addValue(MergeFieldGesuchZeitraum.anzahlVerfuegungenNichtEintreten, dataRow.getAnzahlVerfuegungenNichtEintreten());
+			ExcelMergerDTO excelRowGroup = excelMerger.createGroup(
+				MergeFieldGesuchZeitraum.repeatGesuchZeitraumRow
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.referenzNummer,
+				dataRow.getReferenzNummer()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.gemeinde,
+				dataRow.getGemeinde()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.gesuchLaufNr,
+				dataRow.getGesuchLaufNr()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.institution,
+				dataRow.getInstitution()
+			);
+
+			String betreuungsTyp = dataRow.getBetreuungsTyp() != null ?
+				ServerMessageUtil.translateEnumValue(
+					BetreuungsangebotTyp.valueOf(dataRow.getBetreuungsTyp()),
+					locale,
+					mandant
+				) :
+				"";
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.betreuungsTyp,
+				betreuungsTyp
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.periode,
+				dataRow.getPeriode()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlGesuchOnline,
+				dataRow.getAnzahlGesuchOnline()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlGesuchPapier,
+				dataRow.getAnzahlGesuchPapier()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationOnline,
+				dataRow.getAnzahlMutationOnline()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationPapier,
+				dataRow.getAnzahlMutationPapier()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationAbwesenheit,
+				dataRow.getAnzahlMutationAbwesenheit()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationBetreuung,
+				dataRow.getAnzahlMutationBetreuung()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationEV,
+				dataRow.getAnzahlMutationEV()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationEwerbspensum,
+				dataRow.getAnzahlMutationEwerbspensum()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationFamilienSitutation,
+				dataRow.getAnzahlMutationFamilienSitutation()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationFinanzielleSituation,
+				dataRow.getAnzahlMutationFinanzielleSituation()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationGesuchsteller,
+				dataRow.getAnzahlMutationGesuchsteller()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationKinder,
+				dataRow.getAnzahlMutationKinder()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMutationUmzug,
+				dataRow.getAnzahlMutationUmzug()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlMahnungen,
+				dataRow.getAnzahlMahnungen()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlSteueramtAusgeloest,
+				dataRow.getAnzahlSteueramtAusgeloest()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlSteueramtGeprueft,
+				dataRow.getAnzahlSteueramtGeprueft()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlBeschwerde,
+				dataRow.getAnzahlBeschwerde()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlVerfuegungen,
+				dataRow.getAnzahlVerfuegungen()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlVerfuegungenNormal,
+				dataRow.getAnzahlVerfuegungenNormal()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlVerfuegungenMaxEinkommen,
+				dataRow.getAnzahlVerfuegungenMaxEinkommen()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlVerfuegungenKeinPensum,
+				dataRow.getAnzahlVerfuegungenKeinPensum()
+			);
+			excelRowGroup.addValue(
+				MergeFieldGesuchZeitraum.anzahlVerfuegungenNichtEintreten,
+				dataRow.getAnzahlVerfuegungenNichtEintreten()
+			);
 		});
 
 		return excelMerger;

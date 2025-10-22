@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -21,8 +21,8 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAbweichungStatus;
 
@@ -30,7 +30,8 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAbweichungStatus;
  * DTO fuer Daten des Betreuungspensum
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JaxBetreuungspensumAbweichung extends JaxAbstractMahlzeitenPensumDTO {
+public class JaxBetreuungspensumAbweichung extends
+	JaxAbstractMahlzeitenPensumDTO {
 
 	private static final long serialVersionUID = 4496021781469239269L;
 
@@ -56,6 +57,9 @@ public class JaxBetreuungspensumAbweichung extends JaxAbstractMahlzeitenPensumDT
 	private BigDecimal vertraglicherTarifNeben;
 
 	@Nullable
+	private BigDecimal vertraglicheBetreuuteTage;
+
+	@Nullable
 	private BigDecimal multiplier;
 
 	@Nonnull
@@ -72,7 +76,9 @@ public class JaxBetreuungspensumAbweichung extends JaxAbstractMahlzeitenPensumDT
 		return vertraglichesPensum;
 	}
 
-	public void setVertraglichesPensum(@Nullable BigDecimal vertraglichesPensum) {
+	public void setVertraglichesPensum(
+		@Nullable BigDecimal vertraglichesPensum
+	) {
 		this.vertraglichesPensum = vertraglichesPensum;
 	}
 
@@ -90,7 +96,9 @@ public class JaxBetreuungspensumAbweichung extends JaxAbstractMahlzeitenPensumDT
 		return vertraglicheHauptmahlzeiten;
 	}
 
-	public void setVertraglicheHauptmahlzeiten(@Nullable BigDecimal vertraglicheHauptmahlzeiten) {
+	public void setVertraglicheHauptmahlzeiten(
+		@Nullable BigDecimal vertraglicheHauptmahlzeiten
+	) {
 		this.vertraglicheHauptmahlzeiten = vertraglicheHauptmahlzeiten;
 	}
 
@@ -99,7 +107,9 @@ public class JaxBetreuungspensumAbweichung extends JaxAbstractMahlzeitenPensumDT
 		return vertraglicheNebenmahlzeiten;
 	}
 
-	public void setVertraglicheNebenmahlzeiten(@Nullable BigDecimal vertraglicheNebenmahlzeiten) {
+	public void setVertraglicheNebenmahlzeiten(
+		@Nullable BigDecimal vertraglicheNebenmahlzeiten
+	) {
 		this.vertraglicheNebenmahlzeiten = vertraglicheNebenmahlzeiten;
 	}
 
@@ -108,7 +118,9 @@ public class JaxBetreuungspensumAbweichung extends JaxAbstractMahlzeitenPensumDT
 		return vertraglicherTarifHaupt;
 	}
 
-	public void setVertraglicherTarifHaupt(@Nullable BigDecimal vertraglicherTarifHaupt) {
+	public void setVertraglicherTarifHaupt(
+		@Nullable BigDecimal vertraglicherTarifHaupt
+	) {
 		this.vertraglicherTarifHaupt = vertraglicherTarifHaupt;
 	}
 
@@ -117,7 +129,9 @@ public class JaxBetreuungspensumAbweichung extends JaxAbstractMahlzeitenPensumDT
 		return vertraglicherTarifNeben;
 	}
 
-	public void setVertraglicherTarifNeben(@Nullable BigDecimal vertraglicherTarifNeben) {
+	public void setVertraglicherTarifNeben(
+		@Nullable BigDecimal vertraglicherTarifNeben
+	) {
 		this.vertraglicherTarifNeben = vertraglicherTarifNeben;
 	}
 
@@ -128,5 +142,16 @@ public class JaxBetreuungspensumAbweichung extends JaxAbstractMahlzeitenPensumDT
 
 	public void setMultiplier(@Nullable BigDecimal multiplier) {
 		this.multiplier = multiplier;
+	}
+
+	@Nullable
+	public BigDecimal getVertraglicheBetreuuteTage() {
+		return vertraglicheBetreuuteTage;
+	}
+
+	public void setVertraglicheBetreuuteTage(
+		@Nullable BigDecimal vertraglicheBetreuuteTage
+	) {
+		this.vertraglicheBetreuuteTage = vertraglicheBetreuuteTage;
 	}
 }

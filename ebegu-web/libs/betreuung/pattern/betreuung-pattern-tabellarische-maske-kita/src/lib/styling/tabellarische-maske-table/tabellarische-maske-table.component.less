@@ -1,0 +1,25 @@
+.tabellarische-maske-table {
+    width: 100%;
+    margin-top: 2rem;
+
+    & > thead {
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+
+        th {
+            padding: 0.5rem;
+        }
+    }
+
+    & > tbody > tr > td {
+        padding: 1rem;
+
+        &:first-of-type {
+            font-weight: 600;
+        }
+
+        & > input {
+            &:extend(.form-control);
+        }
+    }
+}

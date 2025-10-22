@@ -23,12 +23,13 @@ import {
     OnInit
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSInternePendenz} from '../../../models/TSInternePendenz';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {InternePendenzDialogComponent} from './interne-pendenz-dialog/interne-pendenz-dialog.component';
 import {InternePendenzenRS} from './internePendenzenRS.rest';
+import {firstValueFrom} from 'rxjs';
 
 const LOG = LogFactory.createLog('InternePendenzenComponent');
 
@@ -36,7 +37,8 @@ const LOG = LogFactory.createLog('InternePendenzenComponent');
     selector: 'interne-pendenzen-view',
     templateUrl: './interne-pendenzen.component.html',
     styleUrls: ['./interne-pendenzen.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class InternePendenzenComponent implements OnInit {
     public internePendenzen: TSInternePendenz[] = [];
@@ -127,10 +129,11 @@ export class InternePendenzenComponent implements OnInit {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = {internePendenz};
         dialogConfig.panelClass = 'interne-pendenzen-dialog';
-        return this.dialog
-            .open(InternePendenzDialogComponent, dialogConfig)
-            .afterClosed()
-            .toPromise();
+        return firstValueFrom(
+            this.dialog
+                .open(InternePendenzDialogComponent, dialogConfig)
+                .afterClosed()
+        );
     }
 
     private handleError(error: Error): void {

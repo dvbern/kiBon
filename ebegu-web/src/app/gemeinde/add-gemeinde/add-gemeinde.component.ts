@@ -24,30 +24,31 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {TSGemeindeStatus} from '@kibon/shared/model/enums';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
 import {TSBfsGemeinde} from '../../../models/TSBfsGemeinde';
 import {TSExceptionReport} from '../../../models/TSExceptionReport';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {DvNgGesuchstellerDialogComponent} from '../../core/component/dv-ng-gesuchsteller-dialog/dv-ng-gesuchsteller-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {Log, LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 
 @Component({
     selector: 'dv-add-gemeinde',
     templateUrl: './add-gemeinde.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    styleUrls: ['./add-gemeinde.component.less']
+    styleUrls: ['./add-gemeinde.component.less'],
+    standalone: false
 })
 export class AddGemeindeComponent implements OnInit {
     private readonly log: Log = LogFactory.createLog('AddGemeindeComponent');
@@ -77,7 +78,7 @@ export class AddGemeindeComponent implements OnInit {
         private readonly benutzerRS: BenutzerRSX,
         private readonly dialog: MatDialog,
         private readonly cd: ChangeDetectorRef,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public ngOnInit(): void {
@@ -112,9 +113,11 @@ export class AddGemeindeComponent implements OnInit {
             '20200801',
             'YYYYMMDD'
         );
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.tageschuleEnabledForMandant = res.angebotTSActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.tageschuleEnabledForMandant = res.angebotTSActivated;
+            });
 
         this.initializeFlags();
     }
@@ -187,8 +190,8 @@ export class AddGemeindeComponent implements OnInit {
                     this.dialog
                         .open(DvNgGesuchstellerDialogComponent, dialogConfig)
                         .afterClosed()
-                        .subscribe(
-                            answer => {
+                        .subscribe({
+                            next: answer => {
                                 if (answer !== true) {
                                     return;
                                 }
@@ -204,8 +207,8 @@ export class AddGemeindeComponent implements OnInit {
                                         this.persistGemeinde();
                                     });
                             },
-                            () => {}
-                        );
+                            error: () => {}
+                        });
                 } else if (
                     exception[0].errorCodeEnum ===
                     'ERROR_GESUCHSTELLER_EXIST_NO_GESUCH'
@@ -287,4 +290,6 @@ export class AddGemeindeComponent implements OnInit {
         }
         return '';
     }
+
+    protected readonly CONSTANTS = CONSTANTS;
 }

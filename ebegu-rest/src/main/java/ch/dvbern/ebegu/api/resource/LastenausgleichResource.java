@@ -8,17 +8,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.resource;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -28,48 +27,45 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.transaction.RollbackException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.RollbackException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
-import ch.dvbern.ebegu.api.dtos.JaxDownloadFile;
+import ch.dvbern.ebegu.api.converter.JaxLastenausgleichConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxLastenausgleich;
+import ch.dvbern.ebegu.api.dtos.parameter.JaxLastenausgleichCreateDTO;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.DownloadFile;
 import ch.dvbern.ebegu.entities.Gemeinde;
-import ch.dvbern.ebegu.entities.Lastenausgleich;
-import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
+import ch.dvbern.ebegu.lastenausgleich.WorkjobLastenausgleichService;
 import ch.dvbern.ebegu.reporting.ReportKinderMitZemisNummerService;
 import ch.dvbern.ebegu.reporting.ReportLastenausgleichBerechnungService;
-import ch.dvbern.ebegu.services.LastenausgleichService;
+import ch.dvbern.ebegu.services.lastenausgleich.LastenausgleichServiceBean;
 import ch.dvbern.ebegu.util.Constants;
-import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.UploadFileInfo;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergeException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
@@ -85,12 +81,11 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("lastenausgleich")
 @Stateless
-@Api(description = "Resource zum Verwalten von Lastenausgleichen")
 @RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 public class LastenausgleichResource {
 
 	@Inject
-	private LastenausgleichService lastenausgleichService;
+	private LastenausgleichServiceBean lastenausgleichService;
 
 	@Inject
 	private ReportLastenausgleichBerechnungService reportService;
@@ -102,83 +97,98 @@ public class LastenausgleichResource {
 	private DownloadResource downloadResource;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxLastenausgleichConverter converter;
 
 	@Inject
 	private PrincipalBean principalBean;
 
-	@ApiOperation(value = "Gibt alle Lastenausgleiche zurueck.",
-		responseContainer = "List",
-		response = JaxLastenausgleich.class)
+	@Inject
+	private WorkjobLastenausgleichService workjobLastenausgleichService;
+
+	@Operation(summary = "Gibt alle Lastenausgleiche zurueck.")
 	@Nullable
 	@GET
 	@Path("/all")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE,
 		SACHBEARBEITER_BG, ADMIN_BG })
 	public List<JaxLastenausgleich> getAllLastenausgleiche() {
-		if (principalBean.isCallerInAnyOfRole(SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE, SACHBEARBEITER_BG, ADMIN_BG)) {
-			Set<Gemeinde> gemeindeList = principalBean.getBenutzer().getCurrentBerechtigung().getGemeindeList();
+		if (principalBean.isCallerInAnyOfRole(
+			SACHBEARBEITER_GEMEINDE,
+			ADMIN_GEMEINDE,
+			SACHBEARBEITER_BG,
+			ADMIN_BG
+		)) {
+			Set<Gemeinde> gemeindeList = principalBean.getBenutzer()
+				.getCurrentBerechtigung()
+				.getGemeindeList();
 
-			return lastenausgleichService.getLastenausgleicheForGemeinden(gemeindeList, principalBean.getMandant()).stream()
-				.map(lastenausgleich -> converter.lastenausgleichToJAX(lastenausgleich))
+			return lastenausgleichService.getLastenausgleicheForGemeinden(
+				gemeindeList,
+				principalBean.getMandant()
+			)
+				.stream()
+				.map(
+					lastenausgleich -> converter.lastenausgleichToJAX(
+						lastenausgleich
+					)
+				)
 				.collect(Collectors.toList());
 		}
-		return lastenausgleichService.getAllLastenausgleiche(principalBean.getMandant()).stream()
-			.map(lastenausgleich -> converter.lastenausgleichToJAX(lastenausgleich))
+		return lastenausgleichService.getAllLastenausgleiche(
+			principalBean.getMandant()
+		)
+			.stream()
+			.map(
+				lastenausgleich -> converter.lastenausgleichToJAX(
+					lastenausgleich
+				)
+			)
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Erstellt einen neuen Lastenausgleich und speichert die Grundlagen",
-		response = JaxLastenausgleich.class)
+	@Operation(summary = "Erstellt einen neuen Workjob für den Lastenausgleich")
 	@Nullable
-	@GET
+	@POST
 	@Path("/create")
-	@Consumes(MediaType.WILDCARD)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
-	public JaxLastenausgleich createLastenausgleich(
-		@QueryParam("jahr") @Nonnull String sJahr,
-		@QueryParam("selbstbehaltPro100ProzentPlatz") @Nullable String sSelbstbehaltPro100ProzentPlatz
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	public Response createLastenausgleich(
+		@Valid @Nonnull JaxLastenausgleichCreateDTO lastenausgleichCreateDTO
 	) throws EbeguRuntimeException {
-
-		Objects.requireNonNull(sJahr);
-		int jahr = Integer.parseInt(sJahr);
-
-		BigDecimal selbstbehaltPro100ProzentPlatz;
-		Lastenausgleich lastenausgleich;
-		Mandant mandant = Objects.requireNonNull(principalBean.getMandant());
-
-		if (jahr < Constants.FIRST_YEAR_LASTENAUSGLEICH_WITHOUT_SELBSTBEHALT) {
-			Objects.requireNonNull(sSelbstbehaltPro100ProzentPlatz);
-			selbstbehaltPro100ProzentPlatz = MathUtil.DEFAULT.from(sSelbstbehaltPro100ProzentPlatz);
-			lastenausgleich = lastenausgleichService.createLastenausgleichOld(jahr, selbstbehaltPro100ProzentPlatz, mandant);
-		} else {
-			lastenausgleich = lastenausgleichService.createLastenausgleichNew(jahr, mandant);
-		}
-		lastenausgleich = lastenausgleichService.findLastenausgleich(lastenausgleich.getId());
-
-		lastenausgleichService.sendEmailsToGemeinden(lastenausgleich);
-
-		return converter.lastenausgleichToJAX(lastenausgleich);
+		lastenausgleichService.assertLastenausgleichNotExistingForYear(
+			lastenausgleichCreateDTO.getJahr()
+		);
+		workjobLastenausgleichService.startLastenausgleichWorkjob(
+			lastenausgleichCreateDTO.getJahr(),
+			lastenausgleichCreateDTO.getSelbstbehaltPro100ProzentPlatz()
+		);
+		return Response.ok().build();
 	}
 
 	@SuppressWarnings("PMD.PreserveStackTrace")
-	@ApiOperation(value = "Erstellt ein Excel mit der Statistik 'Zahlung'", response = JaxDownloadFile.class)
+	@Operation(summary = "Erstellt ein Excel mit der Statistik 'Zahlung'")
 	@Nonnull
 	@GET
 	@Path("/excel/")
-	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE,
 		SACHBEARBEITER_BG, ADMIN_BG })
 	public Response getLastenausgleichReportExcel(
 		@QueryParam("lastenausgleichId") @Nonnull @Valid JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo)
-		throws ExcelMergeException, EbeguRuntimeException, RollbackException, IOException {
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	)
+		throws ExcelMergeException, EbeguRuntimeException,
+		RollbackException, IOException {
 
 		Objects.requireNonNull(jaxId);
 		String ip = downloadResource.getIP(request);
@@ -186,75 +196,110 @@ public class LastenausgleichResource {
 
 		try {
 			UploadFileInfo uploadFileInfo =
-				reportService.generateExcelReportLastenausgleichKibon(lastenausgleichId, LocaleThreadLocal.get());
-			DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
-			return downloadResource.getFileDownloadResponse(uriInfo, ip, downloadFileInfo);
+				reportService.generateExcelReportLastenausgleichKibon(
+					lastenausgleichId,
+					LocaleThreadLocal.get()
+				);
+			DownloadFile downloadFileInfo = new DownloadFile(
+				uploadFileInfo,
+				ip
+			);
+			return downloadResource.getFileDownloadResponse(
+				uriInfo,
+				ip,
+				downloadFileInfo
+			);
 		} catch (RollbackException rollbackException) {
-			RollbackException exceptionWithoutSuppressed = new RollbackException(rollbackException.getMessage());
-			exceptionWithoutSuppressed.setStackTrace(rollbackException.getStackTrace());
+			RollbackException exceptionWithoutSuppressed =
+				new RollbackException(rollbackException.getMessage());
+			exceptionWithoutSuppressed.setStackTrace(
+				rollbackException.getStackTrace()
+			);
 			throw exceptionWithoutSuppressed;
 		}
 	}
 
-	@ApiOperation(value = "Erstellt ein CSV Textdokument für den Lastenausgleich", response = JaxDownloadFile.class)
+	@Operation(
+		summary = "Erstellt ein CSV Textdokument für den Lastenausgleich")
 	@Nonnull
 	@GET
 	@Path("/csv/")
-	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getLastenausgleichReportCSV(
 		@QueryParam("lastenausgleichId") @Nonnull @Valid JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo)
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	)
 		throws EbeguRuntimeException {
 
 		Objects.requireNonNull(jaxId);
 		String ip = downloadResource.getIP(request);
 		String lastenausgleichId = converter.toEntityId(jaxId);
 
-		UploadFileInfo uploadFileInfo = reportService.generateCSVReportLastenausgleichKibon(lastenausgleichId);
+		UploadFileInfo uploadFileInfo = reportService
+			.generateCSVReportLastenausgleichKibon(lastenausgleichId);
 		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
 
-		return downloadResource.getFileDownloadResponse(uriInfo, ip, downloadFileInfo);
+		return downloadResource.getFileDownloadResponse(
+			uriInfo,
+			ip,
+			downloadFileInfo
+		);
 	}
 
-
-	@ApiOperation(value = "Erstellt ein Excel mit allen Kinder des angegebenen Jahres mit einer ZEMIS-Nummer",
-		response = JaxDownloadFile.class)
+	@Operation(
+		summary = "Erstellt ein Excel mit allen Kinder des angegebenen Jahres mit einer ZEMIS-Nummer")
 	@Nonnull
 	@GET
 	@Path("/zemisexcel/")
-	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getZemisExcel(
 		@QueryParam("jahr") @Nonnull @Valid Integer lastenausgleichJahr,
 		@Context HttpServletRequest request,
-		@Context UriInfo uriInfo)
+		@Context UriInfo uriInfo
+	)
 		throws ExcelMergeException, EbeguRuntimeException, IOException {
 
 		Objects.requireNonNull(lastenausgleichJahr);
 		String ip = downloadResource.getIP(request);
 
-		UploadFileInfo uploadFileInfo = zemisNummerService.generateZemisReport(lastenausgleichJahr, Locale.GERMAN);
+		UploadFileInfo uploadFileInfo = zemisNummerService.generateZemisReport(
+			lastenausgleichJahr,
+			Locale.GERMAN
+		);
 		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
 
-		return downloadResource.getFileDownloadResponse(uriInfo, ip, downloadFileInfo);
+		return downloadResource.getFileDownloadResponse(
+			uriInfo,
+			ip,
+			downloadFileInfo
+		);
 	}
 
-	@ApiOperation("Loescht den Lastenausgleich mit der uebergebenen id aus der DB")
+	@Operation(
+		summary = "Loescht den Lastenausgleich mit der uebergebenen id aus der DB")
 	@Nullable
 	@DELETE
 	@Path("/{lastenausgleichId}")
 	@Consumes(MediaType.WILDCARD)
 	public Response removeLastenausgleich(
-		@Nonnull @NotNull @PathParam("lastenausgleichId") JaxId lastenausgleichJAXPId,
-		@Context HttpServletResponse response) {
+		@Nonnull
+		@NotNull
+		@PathParam("lastenausgleichId") JaxId lastenausgleichJAXPId
+	) {
 
 		Objects.requireNonNull(lastenausgleichJAXPId.getId());
-		final String lastenausgleichId = converter.toEntityId(lastenausgleichJAXPId);
+		final String lastenausgleichId = converter.toEntityId(
+			lastenausgleichJAXPId
+		);
 		lastenausgleichService.removeLastenausgleich(lastenausgleichId);
 		return Response.ok().build();
 	}

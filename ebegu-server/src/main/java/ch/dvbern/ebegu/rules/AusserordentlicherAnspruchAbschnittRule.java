@@ -8,14 +8,20 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.PensumAusserordentlicherAnspruch;
@@ -23,19 +29,24 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 /**
  * Regel für einen ausserordentlichen Anspruch. Sucht das PensumAusserordentlicherAnspruch falls vorhanden und wenn
  * ja wird ein entsprechender Zeitabschnitt generiert
  */
-public class AusserordentlicherAnspruchAbschnittRule extends AbstractAbschnittRule {
+public class AusserordentlicherAnspruchAbschnittRule extends
+	AbstractAbschnittRule {
 
-	public AusserordentlicherAnspruchAbschnittRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.AUSSERORDENTLICHER_ANSPRUCH, RuleType.GRUNDREGEL_DATA, RuleValidity.ASIV, validityPeriod, locale);
+	public AusserordentlicherAnspruchAbschnittRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.AUSSERORDENTLICHER_ANSPRUCH,
+			RuleType.GRUNDREGEL_DATA,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -45,9 +56,14 @@ public class AusserordentlicherAnspruchAbschnittRule extends AbstractAbschnittRu
 
 	@Nonnull
 	@Override
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
-		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte = new ArrayList<>();
-		PensumAusserordentlicherAnspruch anspruch = platz.getKind().getKindJA().getPensumAusserordentlicherAnspruch();
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
+		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte =
+			new ArrayList<>();
+		PensumAusserordentlicherAnspruch anspruch = platz.getKind()
+			.getKindJA()
+			.getPensumAusserordentlicherAnspruch();
 		if (anspruch != null) {
 			betreuungspensumAbschnitte.add(toVerfuegungZeitabschnitt(anspruch));
 		}
@@ -55,9 +71,16 @@ public class AusserordentlicherAnspruchAbschnittRule extends AbstractAbschnittRu
 	}
 
 	@Nonnull
-	private VerfuegungZeitabschnitt toVerfuegungZeitabschnitt(@Nonnull PensumAusserordentlicherAnspruch anspruch) {
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(anspruch.getGueltigkeit());
-		zeitabschnitt.setAusserordentlicherAnspruchForAsivAndGemeinde(anspruch.getPensum());
+	private VerfuegungZeitabschnitt toVerfuegungZeitabschnitt(
+		@Nonnull PensumAusserordentlicherAnspruch anspruch
+	) {
+		VerfuegungZeitabschnitt zeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(
+				anspruch.getGueltigkeit()
+			);
+		zeitabschnitt.setAusserordentlicherAnspruchForAsivAndGemeinde(
+			anspruch.getPensum()
+		);
 		return zeitabschnitt;
 	}
 }

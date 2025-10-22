@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.gemeindekennzahlen;
@@ -20,7 +20,7 @@ package ch.dvbern.ebegu.outbox.gemeindekennzahlen;
 import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlen;
 import ch.dvbern.kibon.exchange.commons.gemeindekennzahlen.GemeindeKennzahlenEventDTO;
@@ -33,40 +33,93 @@ import ch.dvbern.kibon.exchange.commons.util.AvroConverter;
 public class GemeindeKennzahlenEventConverter {
 
 	@Nonnull
-	public GemeindeKennzahlenChangedEvent of(@Nonnull GemeindeKennzahlen gemeindeKennzahlen, @Nonnull
-		ch.dvbern.ebegu.enums.EinschulungTyp bgAusstellenBisUndMitStufe, @Nonnull BigDecimal erwerbspensumZuschlag) {
-		GemeindeKennzahlenEventDTO dto = toGemeindeKennzahlenEventDTO(gemeindeKennzahlen);
+	public GemeindeKennzahlenChangedEvent of(
+		@Nonnull GemeindeKennzahlen gemeindeKennzahlen,
+		@Nonnull ch.dvbern.ebegu.enums.EinschulungTyp bgAusstellenBisUndMitStufe,
+		@Nonnull BigDecimal erwerbspensumZuschlag
+	) {
+		GemeindeKennzahlenEventDTO dto = toGemeindeKennzahlenEventDTO(
+			gemeindeKennzahlen
+		);
 		dto.setErwerbspensumZuschlag(erwerbspensumZuschlag);
-		dto.setLimitierungKita(EinschulungTyp.valueOf(bgAusstellenBisUndMitStufe.name()));
+		dto.setLimitierungKita(
+			EinschulungTyp.valueOf(bgAusstellenBisUndMitStufe.name())
+		);
 
 		byte[] payload = AvroConverter.toAvroBinary(dto);
 
-		return new GemeindeKennzahlenChangedEvent(gemeindeKennzahlen.getId(), payload, dto.getSchema());
+		return new GemeindeKennzahlenChangedEvent(
+			gemeindeKennzahlen.getId(),
+			payload,
+			dto.getSchema()
+		);
 	}
 
 	@Nonnull
-	public GemeindeKennzahlenRemovedEvent removeEventOf(@Nonnull GemeindeKennzahlen gemeindeKennzahlen) {
-		GemeindeKennzahlenEventDTO dto = toGemeindeKennzahlenEventDTO(gemeindeKennzahlen);
+	public GemeindeKennzahlenRemovedEvent removeEventOf(
+		@Nonnull GemeindeKennzahlen gemeindeKennzahlen
+	) {
+		GemeindeKennzahlenEventDTO dto = toGemeindeKennzahlenEventDTO(
+			gemeindeKennzahlen
+		);
 
 		byte[] payload = AvroConverter.toAvroBinary(dto);
 
-		return new GemeindeKennzahlenRemovedEvent(gemeindeKennzahlen.getId(), payload, dto.getSchema());
+		return new GemeindeKennzahlenRemovedEvent(
+			gemeindeKennzahlen.getId(),
+			payload,
+			dto.getSchema()
+		);
 	}
 
 	@Nonnull
-	private GemeindeKennzahlenEventDTO toGemeindeKennzahlenEventDTO(@Nonnull GemeindeKennzahlen gemeindeKennzahlen) {
+	private GemeindeKennzahlenEventDTO toGemeindeKennzahlenEventDTO(
+		@Nonnull GemeindeKennzahlen gemeindeKennzahlen
+	) {
 		//noinspection ConstantConditions
 		Builder builder = GemeindeKennzahlenEventDTO.newBuilder()
 			.setGemeindeUUID(gemeindeKennzahlen.getGemeinde().getId())
 			.setBfsNummer(gemeindeKennzahlen.getGemeinde().getBfsNummer())
-			.setGesuchsperiodeStart(gemeindeKennzahlen.getGesuchsperiode().getGueltigkeit().getGueltigAb())
-			.setGesuchsperiodeStop(gemeindeKennzahlen.getGesuchsperiode().getGueltigkeit().getGueltigBis())
-			.setKontingentierung(gemeindeKennzahlen.getGemeindeKontingentiert())
-			.setKontingentierungAusgeschoepft(gemeindeKennzahlen.getNachfrageErfuellt())
-			.setAnzahlKinderWarteliste(gemeindeKennzahlen.getNachfrageAnzahl() != null ? new BigDecimal(gemeindeKennzahlen.getNachfrageAnzahl()) : null)
+			.setGesuchsperiodeStart(
+				gemeindeKennzahlen.getGesuchsperiode()
+					.getGueltigkeit()
+					.getGueltigAb()
+			)
+			.setGesuchsperiodeStop(
+				gemeindeKennzahlen.getGesuchsperiode()
+					.getGueltigkeit()
+					.getGueltigBis()
+			)
+			.setKontingentierung(
+				gemeindeKennzahlen.getGemeindeKontingentiert()
+			)
+			.setKontingentierungAusgeschoepft(
+				gemeindeKennzahlen.getNachfrageErfuellt()
+			)
+			.setAnzahlKinderWarteliste(
+				gemeindeKennzahlen.getNachfrageAnzahl() != null ?
+					new BigDecimal(
+						gemeindeKennzahlen.getNachfrageAnzahl()
+					) :
+					null
+			)
 			.setDauerWarteliste(gemeindeKennzahlen.getNachfrageDauer())
-			.setLimitierungTfo(gemeindeKennzahlen.getLimitierungTfo() != null ? EinschulungTyp.valueOf(gemeindeKennzahlen.getLimitierungTfo().name()) : null)
-			.setMandant(Mandant.valueOf(gemeindeKennzahlen.getGemeinde().getMandant().getMandantIdentifier().name()));
+			.setLimitierungTfo(
+				gemeindeKennzahlen.getLimitierungTfo() != null ?
+					EinschulungTyp.valueOf(
+						gemeindeKennzahlen.getLimitierungTfo()
+							.name()
+					) :
+					null
+			)
+			.setMandant(
+				Mandant.valueOf(
+					gemeindeKennzahlen.getGemeinde()
+						.getMandant()
+						.getMandantIdentifier()
+						.name()
+				)
+			);
 
 		return builder.build();
 	}

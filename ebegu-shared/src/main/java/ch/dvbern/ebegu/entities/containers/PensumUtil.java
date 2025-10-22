@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.containers;
@@ -30,21 +30,46 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class PensumUtil {
 
-	public static void transformBetreuungsPensumContainers(@Nonnull BetreuungAndPensumContainer container) {
+	public static void transformBetreuungsPensumContainers(
+		@Nonnull BetreuungAndPensumContainer container,
+		@Nonnull BigDecimal oeffnungstagMittagstisch
+	) {
 		container.findBetreuung()
 			.filter(Betreuung::isAngebotMittagstisch)
 			.ifPresent(b -> {
-				container.getBetreuungenGS().forEach(PensumUtil::transformMittagstischPensum);
-				container.getBetreuungenJA().forEach(PensumUtil::transformMittagstischPensum);
+				container.getBetreuungenGS()
+					.forEach(
+						abstractMahlzeitenPensum -> transformMittagstischPensum(
+							abstractMahlzeitenPensum,
+							oeffnungstagMittagstisch
+						)
+					);
+				container.getBetreuungenJA()
+					.forEach(
+						abstractMahlzeitenPensum -> transformMittagstischPensum(
+							abstractMahlzeitenPensum,
+							oeffnungstagMittagstisch
+						)
+					);
 			});
 	}
 
-	public static void transformMittagstischPensum(@Nonnull AbstractMahlzeitenPensum pensum) {
+	public static void transformMittagstischPensum(
+		@Nonnull AbstractMahlzeitenPensum pensum,
+		@Nonnull BigDecimal oeffnungstagMittagstisch
+	) {
 		pensum.setTarifProNebenmahlzeit(BigDecimal.ZERO);
 		pensum.setMonatlicheNebenmahlzeiten(BigDecimal.ZERO);
 		pensum.setUnitForDisplay(PensumUnits.PERCENTAGE);
 		pensum.setStuendlicheVollkosten(null);
-		pensum.setPensum(BetreuungUtil.derivePensumMittagstisch(pensum));
-		pensum.setMonatlicheBetreuungskosten(BetreuungUtil.deriveKostenMittagstisch(pensum));
+		pensum.setPensum(
+			BetreuungUtil.derivePensumMittagstisch(
+				pensum,
+				oeffnungstagMittagstisch
+			)
+		);
+		pensum.setMonatlicheBetreuungskosten(
+			BetreuungUtil.deriveKostenMittagstisch(pensum)
+		);
 	}
 }

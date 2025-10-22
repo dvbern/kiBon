@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractEntity} from '../TSAbstractEntity';
-import {TSAdresse} from '../TSAdresse';
+import {TSAbstractEntity, TSAdresse} from '@kibon/shared/model/entity';
 import {TSSozialdienst} from './TSSozialdienst';
 
 export class TSSozialdienstStammdaten extends TSAbstractEntity {

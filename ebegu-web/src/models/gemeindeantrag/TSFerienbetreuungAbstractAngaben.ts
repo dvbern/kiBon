@@ -16,8 +16,7 @@
  */
 
 import {TSFerienbetreuungFormularStatus} from '../enums/TSFerienbetreuungFormularStatus';
-import {TSAbstractEntity} from '../TSAbstractEntity';
-
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 export class TSFerienbetreuungAbstractAngaben extends TSAbstractEntity {
     protected _status: TSFerienbetreuungFormularStatus;
 
@@ -30,10 +29,7 @@ export class TSFerienbetreuungAbstractAngaben extends TSAbstractEntity {
     }
 
     public isInBearbeitung(): boolean {
-        return (
-            this.status ===
-            TSFerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE
-        );
+        return this.status === TSFerienbetreuungFormularStatus.IN_BEARBEITUNG;
     }
 
     public isAbgeschlossen(): boolean {

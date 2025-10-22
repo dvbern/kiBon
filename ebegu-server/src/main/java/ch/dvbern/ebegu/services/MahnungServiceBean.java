@@ -26,17 +26,17 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.activation.MimeTypeParseException;
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.activation.MimeTypeParseException;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -52,10 +52,10 @@ import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.MergeDocException;
 import ch.dvbern.ebegu.pdfgenerator.KibonPrintUtil;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.rules.anlageverzeichnis.DokumentenverzeichnisEvaluator;
 import ch.dvbern.ebegu.util.DokumenteUtil;
 import ch.dvbern.ebegu.util.EbeguUtil;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,9 +66,12 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("OverlyBroadCatchBlock")
 @Stateless
 @Local(MahnungService.class)
-public class MahnungServiceBean extends AbstractBaseService implements MahnungService {
+public class MahnungServiceBean extends AbstractBaseService implements
+	MahnungService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MahnungServiceBean.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		MahnungServiceBean.class.getSimpleName()
+	);
 
 	@Inject
 	private Persistence persistence;
@@ -102,11 +105,18 @@ public class MahnungServiceBean extends AbstractBaseService implements MahnungSe
 		assertNoOpenMahnungOfType(mahnung.getGesuch(), mahnung.getMahnungTyp());
 		if (MahnungTyp.ZWEITE_MAHNUNG == mahnung.getMahnungTyp()) {
 			// Die Erst-Mahnung suchen und verknuepfen, wird im Dokument gebraucht
-			Optional<Mahnung> erstMahnung = findAktiveErstMahnung(mahnung.getGesuch());
+			Optional<Mahnung> erstMahnung = findAktiveErstMahnung(
+				mahnung.getGesuch()
+			);
 			if (erstMahnung.isPresent()) {
 				mahnung.setVorgaengerId(erstMahnung.get().getId());
 			} else {
-				throw new EbeguRuntimeException("createMahnung", "Zweitmahnung erstellt ohne aktive Erstmahnung! " + mahnung.getId(), mahnung.getId());
+				throw new EbeguRuntimeException(
+					"createMahnung",
+					"Zweitmahnung erstellt ohne aktive Erstmahnung! "
+						+ mahnung.getId(),
+					mahnung.getId()
+				);
 			}
 		}
 		Mahnung persistedMahnung = persistence.persist(mahnung);
@@ -114,16 +124,30 @@ public class MahnungServiceBean extends AbstractBaseService implements MahnungSe
 		gesuch.setDokumenteHochgeladen(Boolean.FALSE);
 		// Das Mahnungsdokument drucken
 		try {
-			generatedDokumentService.getMahnungDokumentAccessTokenGeneratedDokument(mahnung, true);
+			generatedDokumentService
+				.getMahnungDokumentAccessTokenGeneratedDokument(
+					mahnung,
+					true
+				);
 		} catch (MimeTypeParseException | IOException | MergeDocException e) {
-			throw new EbeguRuntimeException("createMahnung", "Mahnung-Dokument konnte nicht erstellt werden " +
-				mahnung.getId(), e, mahnung.getId());
+			throw new EbeguRuntimeException(
+				"createMahnung",
+				"Mahnung-Dokument konnte nicht erstellt werden "
+					+
+					mahnung.getId(),
+				e,
+				mahnung.getId()
+			);
 		}
 		// Mail senden
 		try {
 			mailService.sendInfoMahnung(gesuch);
 		} catch (Exception e) {
-			LOG.error("Mail InfoMahnung konnte nicht verschickt werden fuer Gesuch {}", gesuch.getId(), e);
+			LOG.error(
+				"Mail InfoMahnung konnte nicht verschickt werden fuer Gesuch {}",
+				gesuch.getId(),
+				e
+			);
 		}
 		return persistedMahnung;
 	}
@@ -150,7 +174,9 @@ public class MahnungServiceBean extends AbstractBaseService implements MahnungSe
 		query.where(prediateGesuch);
 		query.orderBy(cb.asc(root.get(AbstractEntity_.timestampErstellt)));
 		final List<Mahnung> mahnungen = persistence.getCriteriaResults(query);
-		mahnungen.forEach(mahnung -> authorizer.checkReadAuthorization(mahnung));
+		mahnungen.forEach(
+			mahnung -> authorizer.checkReadAuthorization(mahnung)
+		);
 		return mahnungen;
 	}
 
@@ -175,22 +201,31 @@ public class MahnungServiceBean extends AbstractBaseService implements MahnungSe
 		@Nonnull Gesuch gesuch
 	) {
 		authorizer.checkReadAuthorization(gesuch);
-		final Locale locale = EbeguUtil.extractKorrespondenzsprache(gesuch, gemeindeService).getLocale();
+		final Locale locale = EbeguUtil.extractKorrespondenzsprache(
+			gesuch,
+			gemeindeService
+		).getLocale();
 
-		List<DokumentGrund> dokumentGrundsMerged = new ArrayList<>(DokumenteUtil
-			.mergeNeededAndPersisted(
-				dokumentenverzeichnisEvaluator.calculate(
-					gesuch,
-					locale
-				),
-				dokumentGrundService.findAllDokumentGrundByGesuch(gesuch)
-			)
+		List<DokumentGrund> dokumentGrundsMerged = new ArrayList<>(
+			DokumenteUtil
+				.mergeNeededAndPersisted(
+					dokumentenverzeichnisEvaluator.calculate(
+						gesuch,
+						locale
+					),
+					dokumentGrundService
+						.findAllDokumentGrundByGesuch(gesuch)
+				)
 		);
 		Collections.sort(dokumentGrundsMerged);
 
 		StringBuilder bemerkungenBuilder = new StringBuilder();
 		for (DokumentGrund dokumentGrund : dokumentGrundsMerged) {
-			String dokumentData = KibonPrintUtil.getDokumentAsTextIfNeeded(dokumentGrund, gesuch, locale);
+			String dokumentData = KibonPrintUtil.getDokumentAsTextIfNeeded(
+				dokumentGrund,
+				gesuch,
+				locale
+			);
 			if (StringUtils.isNotEmpty(dokumentData)) {
 				bemerkungenBuilder.append(dokumentData);
 				bemerkungenBuilder.append('\n');
@@ -208,12 +243,24 @@ public class MahnungServiceBean extends AbstractBaseService implements MahnungSe
 		Root<Mahnung> root = query.from(Mahnung.class);
 		query.distinct(true);
 
-		Predicate predicateAktiv = cb.isNull(root.get(Mahnung_.timestampAbgeschlossen));
-		Predicate predicateNochNichtAbgelaufenMarkiert = cb.isFalse(root.get(Mahnung_.abgelaufen));
-		Predicate predicateAbgelaufen = cb.lessThan(root.get(Mahnung_.datumFristablauf), LocalDate.now());
-		query.where(predicateAktiv, predicateNochNichtAbgelaufenMarkiert, predicateAbgelaufen);
+		Predicate predicateAktiv = cb.isNull(
+			root.get(Mahnung_.timestampAbgeschlossen)
+		);
+		Predicate predicateNochNichtAbgelaufenMarkiert = cb.isFalse(
+			root.get(Mahnung_.abgelaufen)
+		);
+		Predicate predicateAbgelaufen = cb.lessThan(
+			root.get(Mahnung_.datumFristablauf),
+			LocalDate.now()
+		);
+		query.where(
+			predicateAktiv,
+			predicateNochNichtAbgelaufenMarkiert,
+			predicateAbgelaufen
+		);
 
-		List<Mahnung> gesucheMitAbgelaufenenMahnungen = persistence.getCriteriaResults(query);
+		List<Mahnung> gesucheMitAbgelaufenenMahnungen = persistence
+			.getCriteriaResults(query);
 		for (Mahnung mahnung : gesucheMitAbgelaufenenMahnungen) {
 			final Gesuch gesuch = mahnung.getGesuch();
 			// Der Batchjob hat keinen eingeloggten Benutzer. Darum speichern wir den Statuswechsel auf den Verantwortlichen des Dossiers.
@@ -232,23 +279,35 @@ public class MahnungServiceBean extends AbstractBaseService implements MahnungSe
 
 	@Nonnull
 	private Benutzer getVerantwortlicher(@Nonnull Gesuch gesuch) {
-		final Benutzer dossierVerantwortlicher = gesuch.getVerantwortlicherAccordingToBetreuungen();
+		final Benutzer dossierVerantwortlicher = gesuch
+			.getVerantwortlicherAccordingToBetreuungen();
 		if (dossierVerantwortlicher != null) {
 			return dossierVerantwortlicher;
 		}
 
 		final GemeindeStammdaten gemeindeStammdaten =
-			gemeindeService.getGemeindeStammdatenByGemeindeId(gesuch.getDossier().getGemeinde().getId())
-				.orElseThrow(() -> new EbeguEntityNotFoundException(
-					"getVerantwortlicher",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					gesuch.getDossier().getGemeinde().getId()));
+			gemeindeService.getGemeindeStammdatenByGemeindeId(
+				gesuch.getDossier().getGemeinde().getId()
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"getVerantwortlicher",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						gesuch.getDossier()
+							.getGemeinde()
+							.getId()
+					)
+				);
 
-		Benutzer defaultBenutzerForGesuch = gemeindeStammdaten.getDefaultBenutzerForGesuch(gesuch)
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"getVerantwortlicher",
-				ErrorCodeEnum.ERROR_VERANTWORTLICHER_NOT_FOUND,
-				gemeindeStammdaten));
+		Benutzer defaultBenutzerForGesuch = gemeindeStammdaten
+			.getDefaultBenutzerForGesuch(gesuch)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getVerantwortlicher",
+					ErrorCodeEnum.ERROR_VERANTWORTLICHER_NOT_FOUND,
+					gemeindeStammdaten
+				)
+			);
 		return defaultBenutzerForGesuch;
 	}
 
@@ -256,7 +315,11 @@ public class MahnungServiceBean extends AbstractBaseService implements MahnungSe
 	@Nonnull
 	public Optional<Mahnung> findAktiveErstMahnung(Gesuch gesuch) {
 		authorizer.checkReadAuthorization(gesuch);
-		final CriteriaQuery<Mahnung> query = createQueryNotAbgeschlosseneMahnung(gesuch, MahnungTyp.ERSTE_MAHNUNG);
+		final CriteriaQuery<Mahnung> query =
+			createQueryNotAbgeschlosseneMahnung(
+				gesuch,
+				MahnungTyp.ERSTE_MAHNUNG
+			);
 		// Wirft eine NonUnique-Exception, falls mehrere aktive ErstMahnungen!
 		Mahnung aktiveErstMahnung = persistence.getCriteriaSingleResult(query);
 		return Optional.ofNullable(aktiveErstMahnung);
@@ -264,31 +327,48 @@ public class MahnungServiceBean extends AbstractBaseService implements MahnungSe
 
 	@Override
 	public void removeAllMahnungenFromGesuch(Gesuch gesuch) {
-		Collection<Mahnung> mahnungenFromGesuch = findMahnungenForGesuch(gesuch);
+		Collection<Mahnung> mahnungenFromGesuch = findMahnungenForGesuch(
+			gesuch
+		);
 		for (Mahnung mahnung : mahnungenFromGesuch) {
 			authorizer.checkWriteAuthorization(mahnung);
 			persistence.remove(Mahnung.class, mahnung.getId());
 		}
 	}
 
-	private void assertNoOpenMahnungOfType(@Nonnull Gesuch gesuch, @Nonnull MahnungTyp mahnungTyp) {
+	private void assertNoOpenMahnungOfType(
+		@Nonnull Gesuch gesuch,
+		@Nonnull MahnungTyp mahnungTyp
+	) {
 		authorizer.checkReadAuthorization(gesuch);
-		final CriteriaQuery<Mahnung> query = createQueryNotAbgeschlosseneMahnung(gesuch, mahnungTyp);
+		final CriteriaQuery<Mahnung> query =
+			createQueryNotAbgeschlosseneMahnung(gesuch, mahnungTyp);
 		// Wirft eine NonUnique-Exception, falls mehrere aktive ErstMahnungen!
 		List<Mahnung> criteriaResults = persistence.getCriteriaResults(query);
 		if (!criteriaResults.isEmpty()) {
-			throw new EbeguRuntimeException("assertNoOpenMahnungOfType", ErrorCodeEnum.ERROR_EXISTING_MAHNUNG);
+			throw new EbeguRuntimeException(
+				"assertNoOpenMahnungOfType",
+				ErrorCodeEnum.ERROR_EXISTING_MAHNUNG
+			);
 		}
 	}
 
 	@Nonnull
-	private CriteriaQuery<Mahnung> createQueryNotAbgeschlosseneMahnung(@Nonnull Gesuch gesuch, @Nonnull MahnungTyp mahnungTyp) {
+	private CriteriaQuery<Mahnung> createQueryNotAbgeschlosseneMahnung(
+		@Nonnull Gesuch gesuch,
+		@Nonnull MahnungTyp mahnungTyp
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Mahnung> query = cb.createQuery(Mahnung.class);
 		Root<Mahnung> root = query.from(Mahnung.class);
 		query.select(root);
-		Predicate predicateTyp = cb.equal(root.get(Mahnung_.mahnungTyp), mahnungTyp);
-		Predicate predicateAktiv = cb.isNull(root.get(Mahnung_.timestampAbgeschlossen));
+		Predicate predicateTyp = cb.equal(
+			root.get(Mahnung_.mahnungTyp),
+			mahnungTyp
+		);
+		Predicate predicateAktiv = cb.isNull(
+			root.get(Mahnung_.timestampAbgeschlossen)
+		);
 		Predicate predicateGesuch = cb.equal(root.get(Mahnung_.gesuch), gesuch);
 		query.where(predicateTyp, predicateAktiv, predicateGesuch);
 		return query;

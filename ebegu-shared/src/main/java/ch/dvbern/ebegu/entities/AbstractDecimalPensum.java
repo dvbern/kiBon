@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -21,28 +21,30 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import ch.dvbern.ebegu.util.MathUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.hibernate.envers.Audited;
 
 /**
  * Abstrakte Entitaet. Muss von Entitaeten erweitert werden, die ein Pensum (Prozent) als BigDecimal,
  * ein DateRange und ein PensumUnits beeinhalten.
  */
+@Audited
 @MappedSuperclass
 public abstract class AbstractDecimalPensum extends AbstractDateRangedEntity {
 
@@ -80,7 +82,8 @@ public abstract class AbstractDecimalPensum extends AbstractDateRangedEntity {
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "eingewoehnung"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(name = "eingewoehnung"),
+		nullable = true)
 	private Eingewoehnung eingewoehnung;
 
 	@Override
@@ -94,39 +97,77 @@ public abstract class AbstractDecimalPensum extends AbstractDateRangedEntity {
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final AbstractDecimalPensum otherAbstDateRangedEntity = (AbstractDecimalPensum) other;
+		final AbstractDecimalPensum otherAbstDateRangedEntity =
+			(AbstractDecimalPensum) other;
 		return super.isSame(otherAbstDateRangedEntity)
-			&& this.getPensum().compareTo(otherAbstDateRangedEntity.getPensum()) == 0
-			&& this.getUnitForDisplay() == otherAbstDateRangedEntity.getUnitForDisplay()
-			&& this.getMonatlicheBetreuungskosten().compareTo(otherAbstDateRangedEntity.getMonatlicheBetreuungskosten()) == 0
-			&& MathUtil.isSame(this.getStuendlicheVollkosten(), otherAbstDateRangedEntity.getStuendlicheVollkosten())
-			&& MathUtil.isSame(this.getBetreuteTage(), otherAbstDateRangedEntity.getBetreuteTage())
-			&& EbeguUtil.isSame(this.getEingewoehnung(), otherAbstDateRangedEntity.getEingewoehnung());
+			&& this.getPensum()
+				.compareTo(otherAbstDateRangedEntity.getPensum())
+				== 0
+			&& this.getUnitForDisplay()
+				== otherAbstDateRangedEntity.getUnitForDisplay()
+			&& this.getMonatlicheBetreuungskosten()
+				.compareTo(
+					otherAbstDateRangedEntity
+						.getMonatlicheBetreuungskosten()
+				)
+				== 0
+			&& MathUtil.isSame(
+				this.getStuendlicheVollkosten(),
+				otherAbstDateRangedEntity.getStuendlicheVollkosten()
+			)
+			&& MathUtil.isSame(
+				this.getBetreuteTage(),
+				otherAbstDateRangedEntity.getBetreuteTage()
+			)
+			&& EbeguUtil.isSame(
+				this.getEingewoehnung(),
+				otherAbstDateRangedEntity.getEingewoehnung()
+			);
 	}
 
 	public void copyAbstractBetreuungspensumEntity(
 		@Nonnull AbstractDecimalPensum target,
-		@Nonnull AntragCopyType copyType) {
+		@Nonnull AntragCopyType copyType
+	) {
 
 		super.copyAbstractDateRangedEntity(target, copyType);
 		target.setPensum(this.getPensum());
-		target.setMonatlicheBetreuungskosten(this.getMonatlicheBetreuungskosten());
+		target.setMonatlicheBetreuungskosten(
+			this.getMonatlicheBetreuungskosten()
+		);
 		target.setUnitForDisplay(this.getUnitForDisplay());
 		target.setStuendlicheVollkosten(this.getStuendlicheVollkosten());
 		target.setBetreuteTage(this.getBetreuteTage());
 		if (this.getEingewoehnung() != null) {
-			target.setEingewoehnung(this.getEingewoehnung()
-				.copyEingewohnungEntity(new Eingewoehnung(), copyType));
+			target.setEingewoehnung(
+				this.getEingewoehnung()
+					.copyEingewohnungEntity(
+						new Eingewoehnung(),
+						copyType
+					)
+			);
 		}
 	}
 
-	public void applyPensumFromDays(@Nonnull BigDecimal days, @Nonnull BigDecimal maxTageProMonat) {
-		pensum = MathUtil.EXACT.divide(MathUtil.HUNDRED.multiply(days), maxTageProMonat);
+	public void applyPensumFromDays(
+		@Nonnull BigDecimal days,
+		@Nonnull BigDecimal maxTageProMonat
+	) {
+		pensum = MathUtil.EXACT.divide(
+			MathUtil.HUNDRED.multiply(days),
+			maxTageProMonat
+		);
 		unitForDisplay = PensumUnits.DAYS;
 	}
 
-	public void applyPensumFromHours(@Nonnull BigDecimal hours, @Nonnull BigDecimal maxStundenProMonat) {
-		pensum = MathUtil.EXACT.divide(MathUtil.HUNDRED.multiply(hours), maxStundenProMonat);
+	public void applyPensumFromHours(
+		@Nonnull BigDecimal hours,
+		@Nonnull BigDecimal maxStundenProMonat
+	) {
+		pensum = MathUtil.EXACT.divide(
+			MathUtil.HUNDRED.multiply(hours),
+			maxStundenProMonat
+		);
 		unitForDisplay = PensumUnits.HOURS;
 	}
 
@@ -158,7 +199,9 @@ public abstract class AbstractDecimalPensum extends AbstractDateRangedEntity {
 		return monatlicheBetreuungskosten;
 	}
 
-	public void setMonatlicheBetreuungskosten(@Nonnull BigDecimal monatlicheBetreuungskosten) {
+	public void setMonatlicheBetreuungskosten(
+		@Nonnull BigDecimal monatlicheBetreuungskosten
+	) {
 		this.monatlicheBetreuungskosten = monatlicheBetreuungskosten;
 	}
 
@@ -167,7 +210,7 @@ public abstract class AbstractDecimalPensum extends AbstractDateRangedEntity {
 	 * dem Benutzer soll es auf 2 Stellen gerunden angezeigt werden
 	 */
 	@Nonnull
-	public BigDecimal getPensumRounded(){
+	public BigDecimal getPensumRounded() {
 		return MathUtil.DEFAULT.from(pensum);
 	}
 
@@ -176,7 +219,9 @@ public abstract class AbstractDecimalPensum extends AbstractDateRangedEntity {
 		return stuendlicheVollkosten;
 	}
 
-	public void setStuendlicheVollkosten(@Nullable BigDecimal tfoStuendlichVollkosten) {
+	public void setStuendlicheVollkosten(
+		@Nullable BigDecimal tfoStuendlichVollkosten
+	) {
 		this.stuendlicheVollkosten = tfoStuendlichVollkosten;
 	}
 

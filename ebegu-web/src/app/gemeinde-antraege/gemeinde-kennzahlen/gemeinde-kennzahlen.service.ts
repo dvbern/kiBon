@@ -21,8 +21,8 @@ import {Observable, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {TSGemeindeKennzahlen} from '../../../models/gemeindeantrag/gemeindekennzahlen/TSGemeindeKennzahlen';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-import {LogFactory} from '../../core/logging/LogFactory';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 const LOG = LogFactory.createLog('GemeindeKennzahlenService');
 

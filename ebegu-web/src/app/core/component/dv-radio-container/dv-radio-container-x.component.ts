@@ -1,6 +1,7 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    Input,
     ViewEncapsulation
 } from '@angular/core';
 
@@ -9,6 +10,9 @@ import {
     templateUrl: './dv-radio-container-x.component.html',
     styleUrls: ['./dv-radio-container-x.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
-export class DvRadioContainerXComponent {}
+export class DvRadioContainerXComponent {
+    @Input() horizontal: boolean = false;
+}

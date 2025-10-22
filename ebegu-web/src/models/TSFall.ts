@@ -14,7 +14,7 @@
  */
 import {EbeguUtil} from '../utils/EbeguUtil';
 import {TSSozialdienstFall} from './sozialdienst/TSSozialdienstFall';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {TSBenutzer} from './TSBenutzer';
 
 export class TSFall extends TSAbstractMutableEntity {

@@ -24,11 +24,13 @@ import {
     SimpleChanges
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
+import {
+    TSEinstellungenFerieninsel,
+    TSGemeinde,
+    TSInstitutionStammdaten,
+    TSDateRange
+} from '@kibon/shared/model/entity';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSEinstellungenFerieninsel} from '../../../models/TSEinstellungenFerieninsel';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSInstitutionStammdaten} from '../../../models/TSInstitutionStammdaten';
-import {TSDateRange} from '../../../models/types/TSDateRange';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 
 @Component({
@@ -36,7 +38,8 @@ import {EbeguUtil} from '../../../utils/EbeguUtil';
     templateUrl: './edit-institution-ferieninsel.component.html',
     styleUrls: ['./edit-institution-ferieninsel.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class EditInstitutionFerieninselComponent implements OnInit, OnChanges {
     @Input() public stammdaten: TSInstitutionStammdaten;

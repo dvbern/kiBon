@@ -15,13 +15,13 @@
 
 package ch.dvbern.ebegu.util;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import javax.activation.MimeType;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.util.Arrays;
+
+import javax.annotation.Nonnull;
+import jakarta.activation.MimeType;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("EI_EXPOSE_REP")
 public class UploadFileInfo {
@@ -38,7 +38,10 @@ public class UploadFileInfo {
 
 	private Long size;
 
-	public UploadFileInfo(@Nonnull String filename, @Nullable MimeType contentType) {
+	public UploadFileInfo(
+		@Nonnull String filename,
+		@Nonnull MimeType contentType
+	) {
 		this.filename = filename;
 		this.contentType = contentType;
 	}
@@ -59,7 +62,7 @@ public class UploadFileInfo {
 		this.actualFilename = actualFilename;
 	}
 
-	@Nullable
+	@Nonnull
 	public MimeType getContentType() {
 		return contentType;
 	}
@@ -81,7 +84,8 @@ public class UploadFileInfo {
 	}
 
 	public String getPathWithoutFileName() {
-		return this.getPathAsString().substring(0, this.getPathAsString().lastIndexOf("/"));
+		return this.getPathAsString()
+			.substring(0, this.getPathAsString().indexOf('/'));
 	}
 
 	public void setPath(Path path) {

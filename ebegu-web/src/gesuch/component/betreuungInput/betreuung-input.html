@@ -17,7 +17,10 @@
 <div ng-form="pensumForm">
     <div class="pensum-input">
         <dv-input-container class="form-group col-md-12">
-            <label class="md-no-float" for="betreuungspensum-{{ vm.index }}">
+            <label
+                class="md-no-float ignore-danger-font-color"
+                for="betreuungspensum-{{ vm.index }}"
+            >
                 <span>{{ vm.getBetreuungspensumLabel(vm.index + 1) }}</span>
                 <dv-tooltip
                     ng-if="
@@ -25,7 +28,7 @@
                         (!vm.isSchwyz() || vm.vertrag)
                     "
                     input-id="betreuungspensum-{{ vm.index }}"
-                    text="vm.betreuungspensumHelpKey | translate"
+                    text="vm.betreuungspensumHelpKey"
                 ></dv-tooltip>
                 <dv-tooltip
                     ng-if="

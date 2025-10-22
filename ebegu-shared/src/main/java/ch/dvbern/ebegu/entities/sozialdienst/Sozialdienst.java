@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.sozialdienst;
@@ -20,17 +20,17 @@ package ch.dvbern.ebegu.entities.sozialdienst;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Displayable;
@@ -46,24 +46,31 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 @Entity
 @Table(
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "name", name = "UK_sozialdienst_name"),
+		@UniqueConstraint(columnNames = "name",
+			name = "UK_sozialdienst_name"),
 	}
 )
-public class Sozialdienst extends AbstractEntity implements Displayable, HasMandant {
+public class Sozialdienst extends AbstractEntity implements
+	Displayable,
+	HasMandant {
 
 	private static final long serialVersionUID = 3613740962178552103L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_sozialdienst_mandant_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_sozialdienst_mandant_id"),
+		updatable = false)
 	private Mandant mandant;
 
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
 	@Column(nullable = false)
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private String name;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private SozialdienstStatus status = SozialdienstStatus.EINGELADEN;

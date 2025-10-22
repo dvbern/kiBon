@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -20,38 +20,42 @@ package ch.dvbern.ebegu.entities;
 import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Kapselung fuer die Oeffnungs-Parameter einer Kita
  */
 @Entity
-public final class KitaxUebergangsloesungInstitutionOeffnungszeiten extends AbstractEntity {
+public final class KitaxUebergangsloesungInstitutionOeffnungszeiten extends
+	AbstractEntity {
 
 	private static final long serialVersionUID = 6906112225260019153L;
 
 	@Transient
 	private boolean dummyParams = false;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private BigDecimal oeffnungstage = BigDecimal.ZERO;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private BigDecimal oeffnungsstunden = BigDecimal.ZERO;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private String nameKitax;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false, unique = true)
 	private String nameKibon;
-
 
 	@Nonnull
 	public BigDecimal getOeffnungstage() {

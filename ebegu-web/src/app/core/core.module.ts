@@ -18,16 +18,18 @@
 import {registerLocaleData} from '@angular/common';
 import deCH from '@angular/common/locales/de-CH';
 import {
-    APP_INITIALIZER,
     ErrorHandler,
     LOCALE_ID,
     ModuleWithProviders,
     NgModule,
     Optional,
-    SkipSelf
+    SkipSelf,
+    inject,
+    provideAppInitializer
 } from '@angular/core';
 import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatPaginatorIntl} from '@angular/material/paginator';
+import {DEFAULT_LOCALE} from '@kibon/shared/model/constants';
 import {
     TranslateModule,
     TranslatePipe,
@@ -40,15 +42,14 @@ import {KinderabzugExchangeService} from '../../gesuch/component/kindView/servic
 import {SearchRS} from '../../gesuch/service/searchRS.rest';
 import {PaginatorI18n} from '../i18n/PaginatorI18n';
 import {ColorService} from '../shared/services/color.service';
-import {MandantService} from '../shared/services/mandant.service';
-import {DEFAULT_LOCALE} from './constants/CONSTANTS';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {HTTP_INTERCEPTOR_PROVIDERS} from './http-interceptors/interceptors';
 import {UPGRADED_HTTP_INTERCEPTOR_PROVIDERS} from './httpInterceptorProviders';
 import {configureSentry, SentryErrorHandler} from './sentry/sentryConfigurator';
 import {BroadcastService} from './service/broadcast.service';
 import {InstitutionRS} from './service/institutionRS.rest';
 import {VersionService} from './service/version/version.service';
-import {WindowRef} from './service/windowRef.service';
+import {WindowRef} from '@kibon/shared-util-window-ref';
 import {UPGRADED_PROVIDERS} from './upgraded-providers';
 
 configureSentry();
@@ -76,12 +77,10 @@ export function initMandantCookie(
     ],
     providers: [
         // Insert global singleton services here that have no configuration (ExceptionService, LoggerService etc.)
-        {
-            provide: APP_INITIALIZER,
-            useFactory: initMandantCookie,
-            deps: [MandantService],
-            multi: true
-        },
+        provideAppInitializer(() => {
+            const initializerFn = initMandantCookie(inject(MandantService));
+            return initializerFn();
+        }),
         ...UPGRADED_PROVIDERS,
         ...UPGRADED_HTTP_INTERCEPTOR_PROVIDERS,
         HTTP_INTERCEPTOR_PROVIDERS,
@@ -89,7 +88,6 @@ export function initMandantCookie(
         WindowRef,
         VersionService,
         BroadcastService,
-        MandantService,
         CookieService,
         ColorService,
         SearchRS,

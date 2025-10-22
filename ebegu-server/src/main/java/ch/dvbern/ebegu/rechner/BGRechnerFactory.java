@@ -15,12 +15,20 @@
 
 package ch.dvbern.ebegu.rechner;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.KitaxUebergangsloesungInstitutionOeffnungszeiten;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.rechner.kitax.EmptyKitaxBernRechner;
 import ch.dvbern.ebegu.rechner.kitax.KitaKitaxBernRechner;
@@ -28,14 +36,6 @@ import ch.dvbern.ebegu.rechner.kitax.TageselternKitaxBernRechner;
 import ch.dvbern.ebegu.rechner.rules.RechnerRule;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import ch.dvbern.ebegu.util.KitaxUtil;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Factory, welche für eine Betreuung den richtigen BG-Rechner ermittelt
@@ -54,19 +54,31 @@ public final class BGRechnerFactory {
 		@Nonnull AbstractPlatz platz,
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
 	) {
-		Mandant mandant = platz.getInstitutionStammdaten().getInstitution().getMandant();
+		Mandant mandant = platz.getInstitutionStammdaten()
+			.getInstitution()
+			.getMandant();
 		assert mandant != null;
-		AbstractRechner
-			asivRechner = BGRechnerFactory.getRechner(platz.getBetreuungsangebotTyp(), rechnerRulesForGemeinde, mandant);
-		final boolean possibleKitaxRechner = KitaxUtil.isGemeindeWithKitaxUebergangsloesung(platz.extractGemeinde())
+		AbstractRechner asivRechner = BGRechnerFactory.getRechner(
+			platz.getBetreuungsangebotTyp(),
+			rechnerRulesForGemeinde,
+			mandant
+		);
+		final boolean possibleKitaxRechner = KitaxUtil
+			.isGemeindeWithKitaxUebergangsloesung(platz.extractGemeinde())
 			&& platz.getBetreuungsangebotTyp().isJugendamt();
 		// Den richtigen Rechner anwerfen
 		// Es kann erst jetzt entschieden werden, welcher Rechner zum Einsatz kommt,
 		// da fuer Stadt Bern bis zum Zeitpunkt X der alte Ki-Tax Rechner verwendet werden soll.
 		AbstractRechner rechnerToUse = null;
 		if (possibleKitaxRechner) {
-			if (zeitabschnitt.getGueltigkeit().endsBefore(kitaxParameter.getStadtBernAsivStartDate())) {
-				rechnerToUse = getPreAsivRechner(kitaxParameter, locale, platz, zeitabschnitt);
+			if (zeitabschnitt.getGueltigkeit()
+				.endsBefore(kitaxParameter.getStadtBernAsivStartDate())) {
+				rechnerToUse = getPreAsivRechner(
+					kitaxParameter,
+					locale,
+					platz,
+					zeitabschnitt
+				);
 			} else if (kitaxParameter.isStadtBernAsivConfiguered()) {
 				// Es ist Bern, und der Abschnitt liegt nach dem Stichtag. Falls ASIV schon konfiguriert ist,
 				// koennen wir den normalen ASIV Rechner verwenden.
@@ -74,7 +86,10 @@ public final class BGRechnerFactory {
 			} else {
 				// Auch in diesem Fall muss zumindest ein leeres Objekt erstellt werden. Evtl. braucht es hier einen
 				// NullRechner? Wegen Bemerkungen?
-				rechnerToUse = new EmptyKitaxBernRechner(locale, MsgKey.FEBR_INFO_ASIV_NOT_CONFIGUERD);
+				rechnerToUse = new EmptyKitaxBernRechner(
+					locale,
+					MsgKey.FEBR_INFO_ASIV_NOT_CONFIGUERD
+				);
 			}
 		} else {
 			// Alle anderen rechnen normal mit dem Asiv-Rechner
@@ -82,7 +97,10 @@ public final class BGRechnerFactory {
 		}
 
 		if (rechnerToUse == null) {
-			throw new EbeguRuntimeException("getRechner", "could not determine Rechner");
+			throw new EbeguRuntimeException(
+				"getRechner",
+				"could not determine Rechner"
+			);
 		}
 
 		return rechnerToUse;
@@ -92,19 +110,34 @@ public final class BGRechnerFactory {
 		KitaxUebergangsloesungParameter kitaxParameter,
 		Locale locale,
 		AbstractPlatz platz,
-		VerfuegungZeitabschnitt zeitabschnitt) {
+		VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		AbstractRechner rechnerToUse;
-		if (zeitabschnitt.getBgCalculationInputGemeinde().isBetreuungInGemeinde()) {
-			String kitaName = platz.getInstitutionStammdaten().getInstitution().getName();
-			KitaxUebergangsloesungInstitutionOeffnungszeiten oeffnungszeiten = null;
-			if (platz.getInstitutionStammdaten().getBetreuungsangebotTyp().isKita()) {
+		if (zeitabschnitt.getBgCalculationInputGemeinde()
+			.isBetreuungInGemeinde()) {
+			String kitaName = platz.getInstitutionStammdaten()
+				.getInstitution()
+				.getName();
+			KitaxUebergangsloesungInstitutionOeffnungszeiten oeffnungszeiten =
+				null;
+			if (platz.getInstitutionStammdaten()
+				.getBetreuungsangebotTyp()
+				.isKita()) {
 				// Die Oeffnungszeiten sind nur fuer Kitas relevant
 				oeffnungszeiten = kitaxParameter.getOeffnungszeiten(kitaName);
 			}
-			rechnerToUse = BGRechnerFactory.getKitaxRechner(platz, kitaxParameter, oeffnungszeiten, locale);
+			rechnerToUse = BGRechnerFactory.getKitaxRechner(
+				platz,
+				kitaxParameter,
+				oeffnungszeiten,
+				locale
+			);
 		} else {
 			// Betreuung findet nicht in Gemeinde statt
-			rechnerToUse = new EmptyKitaxBernRechner(locale, MsgKey.ZUSATZGUTSCHEIN_NEIN_NICHT_IN_GEMEINDE);
+			rechnerToUse = new EmptyKitaxBernRechner(
+				locale,
+				MsgKey.ZUSATZGUTSCHEIN_NEIN_NICHT_IN_GEMEINDE
+			);
 		}
 		return rechnerToUse;
 	}
@@ -113,8 +146,12 @@ public final class BGRechnerFactory {
 	public static AbstractRechner getRechner(
 		@Nonnull BetreuungsangebotTyp betreuungsangebotTyp,
 		@Nonnull List<RechnerRule> rechnerRulesForGemeinde,
-		@Nonnull Mandant mandant) {
-		return new BetreuungsangebotRechnerVisitor(mandant, rechnerRulesForGemeinde)
+		@Nonnull Mandant mandant
+	) {
+		return new BetreuungsangebotRechnerVisitor(
+			mandant,
+			rechnerRulesForGemeinde
+		)
 			.getRechnerForBetreuungsTyp(betreuungsangebotTyp);
 	}
 
@@ -125,13 +162,22 @@ public final class BGRechnerFactory {
 		@Nullable KitaxUebergangsloesungInstitutionOeffnungszeiten oeffnungszeiten,
 		@Nonnull Locale locale
 	) {
-		BetreuungsangebotTyp betreuungsangebotTyp = betreuung.getBetreuungsangebotTyp();
+		BetreuungsangebotTyp betreuungsangebotTyp = betreuung
+			.getBetreuungsangebotTyp();
 		if (BetreuungsangebotTyp.KITA == betreuungsangebotTyp) {
 			Objects.requireNonNull(oeffnungszeiten);
-			return new KitaKitaxBernRechner(kitaxParameterDTO, oeffnungszeiten, locale);
+			return new KitaKitaxBernRechner(
+				kitaxParameterDTO,
+				oeffnungszeiten,
+				locale
+			);
 		}
 		if (BetreuungsangebotTyp.TAGESFAMILIEN == betreuungsangebotTyp) {
-			return new TageselternKitaxBernRechner(kitaxParameterDTO, oeffnungszeiten, locale);
+			return new TageselternKitaxBernRechner(
+				kitaxParameterDTO,
+				oeffnungszeiten,
+				locale
+			);
 		}
 		if (BetreuungsangebotTyp.TAGESSCHULE == betreuungsangebotTyp) {
 			// Tagesschulen werden von Anfang an mit dem ASIV-Rechner berechnet

@@ -16,19 +16,19 @@
  */
 
 import {
-    Component,
     ChangeDetectionStrategy,
-    ChangeDetectorRef
+    ChangeDetectorRef,
+    Component
 } from '@angular/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
+import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractEinkommensverschlechterungResultat} from '../../AbstractEinkommensverschlechterungResultat';
-import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 
 @Component({
     selector: 'dv-einkommensverschlechterung-solothurn-resultate-view',
@@ -37,7 +37,8 @@ import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
     styleUrls: [
         './einkommensverschlechterung-solothurn-resultate-view.component.less'
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EinkommensverschlechterungSolothurnResultateViewComponent extends AbstractEinkommensverschlechterungResultat {
     public resultatBasisjahr?: TSFinanzielleSituationResultateDTO;
@@ -64,7 +65,7 @@ export class EinkommensverschlechterungSolothurnResultateViewComponent extends A
 
     public save(onResult: (arg: any) => any): IPromise<any> {
         //hier müssen wir nur den WizardStep Updaten. Die EKV ist schon gespeichert.
-        this.updateStatus(true);
+        this.updateStatus();
         return onResult(true);
     }
 }

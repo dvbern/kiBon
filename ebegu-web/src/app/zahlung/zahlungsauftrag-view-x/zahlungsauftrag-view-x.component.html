@@ -25,186 +25,59 @@
         ></dv-switch>
     </div>
 
-    <form
-        role="form"
-        #form="ngForm"
-        name="form"
-        [ngClass]="{'ng-submitted': form.submitted}"
-        unsaved-warning-form=""
-        novalidate
-        *ngIf="showForm()"
-    >
-        <div class="row actions">
-            <div>
-                <div class="row zahlungen-form flex-row-start-center">
-                    <!-- Gemeinde -->
-                    <div
-                        [ngClass]="{
-                            'col-md-3': !testMode,
-                            'col-md-2': testMode
-                        }"
-                    >
-                        <div class="form-group">
-                            <label class="md-no-float" for="gemeinde" translate
-                                >GEMEINDE</label
-                            >
-                            <div class="dv-select-style">
-                                <select
-                                    [(ngModel)]="gemeinde"
-                                    class="form-control"
-                                    id="gemeinde"
-                                    name="gemeinde"
-                                    required
-                                >
-                                    <option [ngValue]="null"></option>
-                                    <option
-                                        *ngFor="
-                                            let gemeindeEntry of gemeindenList
-                                        "
-                                        [ngValue]="gemeindeEntry"
-                                    >
-                                        {{ gemeindeEntry.name }}
-                                    </option>
-                                </select>
-                                <dv-error-messages
-                                    [errorObject]="
-                                        form?.form.get('gemeinde')?.errors
-                                    "
-                                    class="error"
-                                ></dv-error-messages>
-                            </div>
-                        </div>
-                    </div>
+    @if (showForm()) {
+        <lib-zahlung-ui-zahlungslauf-erstellen
+            [settings]="{
+                testMode: testMode,
+                checkboxAuszahlungInZukunft: checkboxAuszahlungInZukunft,
+                hasMahlzeitenZahlungslaeufe: hasMahlzeitenZahlungslaeufe
+            }"
+            [gemeindenList]="gemeindenList"
+            [zahlungslaufTyp]="zahlungslaufTyp"
+            (zahlungslaufErstellen)="updateZahlungsauftrag$.next()"
+        ></lib-zahlung-ui-zahlungslauf-erstellen>
+    }
 
-                    <div
-                        [ngClass]="{
-                            'col-md-3': !testMode,
-                            'col-md-2': testMode
-                        }"
-                    >
-                        <div class="form-group">
-                            <label
-                                class="md-no-float"
-                                for="faelligkeitsdatumPicker"
-                                translate
-                                >ZAHLUNG_FAELLIGKEITSDATUM</label
-                            >
-                            <input
-                                class="dv-mat-datepicker"
-                                type="text"
-                                name="faelligkeitsdatumPicker"
-                                id="faelligkeitsdatumPicker"
-                                [(ngModel)]="faelligkeitsdatum"
-                                [matDatepicker]="faelligkeitsdatumPicker"
-                                placeholder="{{
-                                    'DATE_PLACEHOLDER' | translate
-                                }}"
-                                required
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="faelligkeitsdatumPicker"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker
-                                #faelligkeitsdatumPicker
-                            ></mat-datepicker>
-                            <dv-error-messages
-                                [errorObject]="
-                                    (form?.form.get('faelligkeitsdatumPicker')
-                                        ?.dirty ||
-                                        form?.submitted) &&
-                                    form?.form.get('faelligkeitsdatumPicker')
-                                        ?.errors
-                                "
-                                class="error"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                    <div class="col-md-2" *ngIf="testMode">
-                        <div class="form-group">
-                            <label
-                                class="md-no-float"
-                                for="datumGeneriertPicker"
-                                translate
-                                >ZAHLUNG_GENERIERT</label
-                            >
-                            <input
-                                class="dv-mat-datepicker"
-                                type="text"
-                                name="datumGeneriertPicker"
-                                id="datumGeneriertPicker"
-                                [(ngModel)]="datumGeneriert"
-                                [matDatepicker]="datumGeneriertPicker"
-                                placeholder="{{
-                                    'DATE_PLACEHOLDER' | translate
-                                }}"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="datumGeneriertPicker"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker
-                                #datumGeneriertPicker
-                            ></mat-datepicker>
-                            <dv-error-messages
-                                [errorObject]="
-                                    form?.form.get('datumGeneriertPicker')
-                                        ?.errors
-                                "
-                                class="error"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                    <div
-                        [ngClass]="{
-                            'col-md-4': !testMode,
-                            'col-md-3': testMode
-                        }"
-                    >
-                        <div class="form-group">
-                            <label class="md-no-float" translate for="beschrieb"
-                                >ZAHLUNG_BESCHRIEB</label
-                            >
-                            <input
-                                id="beschrieb"
-                                name="beschrieb"
-                                [(ngModel)]="beschrieb"
-                                class="form-control input-dv input-element"
-                                required
-                            />
-                            <dv-error-messages
-                                [errorObject]="
-                                    form?.form.get('beschrieb')?.errors
-                                "
-                                class="error"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                    <div flex layout="row" layout-align="center center">
-                        <dv-loading-button
-                            (buttonClick)="createZahlungsauftrag()"
-                            [ariaLabel]="getLabelZahlungslaufErstellen()"
-                            type="submit"
-                        >
-                            <span class="uppercase">{{
-                                getLabelZahlungslaufErstellen()
-                            }}</span>
-                        </dv-loading-button>
-                    </div>
-                    <div class="col-md-3" *ngIf="checkboxAuszahlungInZukunft">
-                        <dv-checkbox-x
-                            [label]="'CHECKBOX_AUSZAHLUNG_IN_ZUKUNFT'"
-                            [(model)]="auszahlungInZukunft"
-                        ></dv-checkbox-x>
-                    </div>
-                </div>
-            </div>
+    <div class="row">
+        <div
+            class="col-md-12"
+            *ngIf="zahlungslaufTyp === TSZahlungslaufTyp.GEMEINDE_INSTITUTION"
+        >
+            <h2 translate>GEMEINDE_INSTITUTION</h2>
         </div>
-    </form>
+    </div>
 
-    <div class="col-md-12" ng-show="showInfotext()">
-        <p translate>ZAHLUNGSLAUF_INFO_1</p>
-        <p translate>ZAHLUNGSLAUF_INFO_2</p>
+    <div class="row">
+        <div
+            class="col-md-12"
+            *ngIf="
+                !hasMahlzeitenZahlungslaeufe &&
+                this.zahlungslaufTyp ===
+                    TSZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER
+            "
+        >
+            <h2 translate>GEMEINDE_ANTRAGSTELLER</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div
+            class="col-md-12"
+            *ngIf="
+                hasMahlzeitenZahlungslaeufe &&
+                this.zahlungslaufTyp ===
+                    TSZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER
+            "
+        >
+            <h2 translate>GEMEINDE_MAHLZEITENVERGUENSTIGUNGEN</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" ng-show="showInfotext()">
+            <p translate>ZAHLUNGSLAUF_INFO_1</p>
+            <p translate>ZAHLUNGSLAUF_INFO_2</p>
+        </div>
     </div>
 
     <div class="row">
@@ -226,7 +99,7 @@
                             <select
                                 name="gemeindeFilter"
                                 [(ngModel)]="filterGemeinde"
-                                (ngModelChange)="updateZahlungsauftrag()"
+                                (ngModelChange)="updateZahlungsauftrag$.next()"
                             >
                                 <option [ngValue]="null" selected>
                                     {{ 'ALLE' | translate }}
@@ -256,6 +129,8 @@
             <mat-table
                 matSort
                 (matSortChange)="sortData($event)"
+                [matSortActive]="'datumFaellig'"
+                [matSortDirection]="'asc'"
                 [dataSource]="datasource"
             >
                 <ng-container
@@ -293,7 +168,13 @@
                         <i
                             class="fa fa-exclamation-triangle warning-negative-zahlungen"
                             *ngIf="element.hasNegativeZahlungen"
-                            [title]="'TOOLTIP_NEGATIVE_WERTE' | translate"
+                            [title]="
+                                zahlungslaufTyp === 'GEMEINDE_INSTITUTION'
+                                    ? ('TOOLTIP_NEGATIVE_WERTE_INSTITUTIONEN'
+                                      | translate)
+                                    : ('TOOLTIP_NEGATIVE_WERTE_ANTRAGSSTELLENDE'
+                                      | translate)
+                            "
                         ></i>
                         <span [title]="element.betragTotalAuftrag">{{
                             element.betragTotalAuftrag | currency: '' : ''

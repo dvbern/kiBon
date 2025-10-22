@@ -26,7 +26,7 @@ ${templateConfiguration.mailCss}
 	</p>
 	<p>
 		Votre commune vous a envoyé un
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/mitteilungen/${mitteilung.dossier.fall.id}/${mitteilung.dossier.id}/">message</a>.
+		<a href="${frontendUrl}/mitteilungen/${mitteilung.dossier.fall.id}/${mitteilung.dossier.id}/">message</a>.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>

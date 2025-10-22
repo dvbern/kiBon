@@ -22,12 +22,14 @@ import {
     OnInit
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
 import {GuidedTourService} from 'ngx-guided-tour';
 import {
     BehaviorSubject,
-    from as fromPromise,
+    firstValueFrom,
+    from,
     Observable,
     of,
     Subject
@@ -45,11 +47,12 @@ import {INewFallStateParams} from '../../../../gesuch/gesuch.route';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {TSCreationAction} from '../../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSSozialdienstStatus} from '../../../../models/enums/TSSozialdienstStatus';
 import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
 import {TSSozialdienstStammdaten} from '../../../../models/sozialdienst/TSSozialdienstStammdaten';
-import {TSGemeinde} from '../../../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {PERMISSIONS} from '../../../authorisation/Permissions';
@@ -58,8 +61,7 @@ import {
     GUIDED_TOUR_SUPPORTED_ROLES,
     GuidedTourByRole
 } from '../../../kibonTour/shared/KiBonGuidedTour';
-import {LogFactory} from '../../logging/LogFactory';
-import {ApplicationPropertyRS} from '../../rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {GesuchsperiodeRS} from '../../service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../../service/institutionRS.rest';
 import {SozialdienstRS} from '../../service/SozialdienstRS.rest';
@@ -73,7 +75,8 @@ const LOG = LogFactory.createLog('NavbarComponent');
     selector: 'dv-navbar',
     templateUrl: './navbar.component.html',
     styleUrls: ['./navbar.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
     public readonly TSRoleUtil = TSRoleUtil;
@@ -97,7 +100,7 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
         private readonly kibonGuidedTourService: KiBonGuidedTourService,
         private readonly sozialdienstRS: SozialdienstRS,
         private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly institutionService: InstitutionRS
     ) {}
 
@@ -112,8 +115,8 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
                 ),
                 takeUntil(this.unsubscribe$)
             )
-            .subscribe(
-                (isTSUser: boolean) => {
+            .subscribe({
+                next: (isTSUser: boolean) => {
                     this.changeDetectorRef.markForCheck();
                     this.gemeindeAntragVisible.next(
                         // Has LATS permission and is not a Insti-user without Tagesschule
@@ -133,22 +136,22 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
                             )
                     );
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
 
         this.kibonGuidedTourService.guidedTour$
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                next => {
+            .subscribe({
+                next: next => {
                     this.tourStart(next);
                     this.changeDetectorRef.markForCheck();
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
 
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then(properties => {
+            .subscribe(properties => {
                 this.gemeindeAntraegeActive =
                     properties.ferienbetreuungAktiv ||
                     properties.lastenausgleichTagesschulenAktiv;
@@ -179,28 +182,29 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
                 take(1),
                 filter(sozialdienstId => !!sozialdienstId)
             )
-            .subscribe(
-                sozialdienstId => {
-                    this.sozialdienstRS
-                        .getSozialdienstStammdaten(sozialdienstId)
-                        .toPromise()
-                        .then((response: TSSozialdienstStammdaten) => {
-                            if (
-                                response.sozialdienst.status ===
-                                TSSozialdienstStatus.EINGELADEN
-                            ) {
-                                this.createAndOpenOkDialog(
-                                    this.translate.instant(
-                                        'SOZIALDIENST_NOCH_EINGELADEN'
-                                    )
-                                );
-                                return;
-                            }
-                            this.createNewFall(sozialdienstId);
-                        });
+            .subscribe({
+                next: sozialdienstId => {
+                    firstValueFrom(
+                        this.sozialdienstRS.getSozialdienstStammdaten(
+                            sozialdienstId
+                        )
+                    ).then((response: TSSozialdienstStammdaten) => {
+                        if (
+                            response.sozialdienst.status ===
+                            TSSozialdienstStatus.EINGELADEN
+                        ) {
+                            this.createAndOpenOkDialog(
+                                this.translate.instant(
+                                    'SOZIALDIENST_NOCH_EINGELADEN'
+                                )
+                            );
+                            return;
+                        }
+                        this.createNewFall(sozialdienstId);
+                    });
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     private createAndOpenOkDialog(title: string): void {
@@ -219,8 +223,8 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
                 filter(result => !!result),
                 filter(result => !!result.gemeindeId)
             )
-            .subscribe(
-                result => {
+            .subscribe({
+                next: result => {
                     if (
                         EbeguUtil.isNullOrUndefined(result) ||
                         EbeguUtil.isNullOrUndefined(result.gemeindeId)
@@ -247,8 +251,8 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
                         this.$state.go('gesuch.fallcreation', params);
                     }
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public ngAfterViewInit(): void {
@@ -283,7 +287,7 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
                     switchMap(gemeindeList => {
                         const dialogConfig = new MatDialogConfig();
                         if (withGesuchsperiode) {
-                            return fromPromise(
+                            return from(
                                 this.gesuchsperiodeRS.getAllActiveGesuchsperioden()
                             ).pipe(
                                 switchMap(gesuchsperiodeList => {
@@ -341,7 +345,7 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
                 TSRoleUtil.getAdministratorOrSozialdienstRolle()
             )
         ) {
-            return fromPromise(this.gemeindeRS.getAktiveGemeinden());
+            return from(this.gemeindeRS.getAktiveGemeinden());
         }
 
         return this.authServiceRS.principal$.pipe(

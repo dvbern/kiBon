@@ -19,19 +19,21 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
-import {BehaviorSubject, combineLatest, from, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {YoutubeLinkVisitor} from '../../core/constants/YoutubeLinkVisitor';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
-import {MandantService} from '../../shared/services/mandant.service';
 import {OnboardingHelpDialogComponent} from '../onboarding-help-dialog/onboarding-help-dialog.component';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
 
 @Component({
     selector: 'dv-onboarding',
     templateUrl: './onboarding.component.html',
-    styleUrls: ['./onboarding.component.less', '../onboarding.less']
+    styleUrls: ['./onboarding.component.less', '../onboarding.less'],
+    standalone: false
 })
 export class OnboardingComponent implements OnInit, OnDestroy {
     @Input() public showLogin: boolean = true;
@@ -48,17 +50,17 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     public youtubeLink$: Observable<SafeResourceUrl | null>;
 
     public constructor(
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly onboardingPlaceholderService: OnboardingPlaceholderService,
         private readonly translate: TranslateService,
         private readonly dialog: MatDialog,
         private readonly mandantService: MandantService,
         private readonly sanitizer: DomSanitizer
     ) {
-        this.isDummyMode$ = from(this.applicationPropertyRS.isDummyMode());
-        this.isMultimandantEnabled$ = from(
-            this.applicationPropertyRS.isMultimandantEnabled()
-        );
+        this.isDummyMode$ = this.applicationPropertyRS.isDummyMode();
+
+        this.isMultimandantEnabled$ =
+            this.applicationPropertyRS.isMultimandantEnabled();
     }
 
     public ngOnInit(): void {
@@ -93,11 +95,21 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     }
 
     private currLangIsGerman(): boolean {
-        return this.translate.currentLang === 'de';
+        const splittedCurrentLang = this.translate.currentLang.split('_');
+        return splittedCurrentLang[0] === 'de';
     }
 
     public isGerman$(): Observable<boolean> {
         return this.currentLangDe$.asObservable();
+    }
+
+    public switchToDifferentPortal(): void {
+        Promise.all([
+            this.mandantService.setMandantCookie(MANDANTS.NONE),
+            this.mandantService.setMandantRedirectCookie(MANDANTS.NONE)
+        ]).then(() => {
+            this.mandantService.selectMandant(MANDANTS.NONE, '');
+        });
     }
 
     public openHelp($event: MouseEvent): void {

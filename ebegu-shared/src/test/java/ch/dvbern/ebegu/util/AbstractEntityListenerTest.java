@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util;
@@ -20,17 +20,15 @@ package ch.dvbern.ebegu.util;
 import java.security.Principal;
 import java.util.stream.Stream;
 
-import javax.ejb.EJBAccessException;
+import jakarta.ejb.EJBAccessException;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.einstellung.ApplicationProperty;
+import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.entities.AbstractEntity;
-import ch.dvbern.ebegu.entities.ApplicationProperty;
 import ch.dvbern.ebegu.entities.Benutzer;
-import ch.dvbern.ebegu.entities.Einstellung;
-import ch.dvbern.ebegu.entities.Fall;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
-import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Mandant;
 import org.easymock.EasyMock;
 import org.easymock.EasyMockExtension;
@@ -57,65 +55,115 @@ class AbstractEntityListenerTest extends EasyMockSupport {
 
 	@Test
 	void isWriteAllowedIfAnonymousTest() {
-		EasyMock.expect(principalBeanMock.getPrincipal()).andReturn(principalMock);
-		EasyMock.expect(principalMock.getName()).andReturn(ANONYMOUS_USER_USERNAME);
-		EasyMock.expect(principalBeanMock.isAnonymousSuperadmin()).andReturn(false);
+		EasyMock.expect(principalBeanMock.getPrincipal())
+			.andReturn(principalMock);
+		EasyMock.expect(principalMock.getName())
+			.andReturn(ANONYMOUS_USER_USERNAME);
+		EasyMock.expect(principalBeanMock.isKibonServiceAccount())
+			.andReturn(false);
 		EasyMock.replay(principalMock, principalBeanMock);
-		assertEquals(true, AbstractEntityListener.checkWriteAccessAllowedIfAnonymous(new Benutzer(), principalBeanMock));
+		assertEquals(
+			true,
+			AbstractEntityListener.checkWriteAccessAllowedIfAnonymous(
+				new Benutzer(),
+				principalBeanMock
+			)
+		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("anonymousNotAllowedClassProvider")
 	void isWriteAllowedIfAnonymousSuperadminTest(AbstractEntity entity) {
-		EasyMock.expect(principalBeanMock.getPrincipal()).andReturn(principalMock);
-		EasyMock.expect(principalMock.getName()).andReturn(ANONYMOUS_USER_USERNAME);
-		EasyMock.expect(principalBeanMock.isAnonymousSuperadmin()).andReturn(true);
+		EasyMock.expect(principalBeanMock.getPrincipal())
+			.andReturn(principalMock);
+		EasyMock.expect(principalMock.getName())
+			.andReturn(ANONYMOUS_USER_USERNAME);
+		EasyMock.expect(principalBeanMock.isKibonServiceAccount())
+			.andReturn(true);
 		EasyMock.replay(principalMock, principalBeanMock);
-		assertEquals(false, AbstractEntityListener.checkWriteAccessAllowedIfAnonymous(entity, principalBeanMock));
+		assertEquals(
+			false,
+			AbstractEntityListener.checkWriteAccessAllowedIfAnonymous(
+				entity,
+				principalBeanMock
+			)
+		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("anonymousNotAllowedClassProvider")
 	void isWriteNotAllowedIfAnonymousTest(AbstractEntity entity) {
-		EasyMock.expect(principalBeanMock.getPrincipal()).andReturn(principalMock);
-		EasyMock.expect(principalMock.getName()).andReturn(ANONYMOUS_USER_USERNAME);
-		EasyMock.expect(principalBeanMock.isAnonymousSuperadmin()).andReturn(false);
+		EasyMock.expect(principalBeanMock.getPrincipal())
+			.andReturn(principalMock);
+		EasyMock.expect(principalMock.getName())
+			.andReturn(ANONYMOUS_USER_USERNAME);
+		EasyMock.expect(principalBeanMock.isKibonServiceAccount())
+			.andReturn(false);
 		EasyMock.replay(principalMock, principalBeanMock);
 		assertThrows(
 			EJBAccessException.class,
-			() -> AbstractEntityListener.checkWriteAccessAllowedIfAnonymous(entity, principalBeanMock));
+			() -> AbstractEntityListener.checkWriteAccessAllowedIfAnonymous(
+				entity,
+				principalBeanMock
+			)
+		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("anonymousAllowedClassProvider")
 	void isAccessAllowedIfAnonymousTest(AbstractEntity entity) {
-		EasyMock.expect(principalBeanMock.getPrincipal()).andReturn(principalMock);
-		EasyMock.expect(principalMock.getName()).andReturn(ANONYMOUS_USER_USERNAME);
-		EasyMock.expect(principalBeanMock.isAnonymousSuperadmin()).andReturn(false);
+		EasyMock.expect(principalBeanMock.getPrincipal())
+			.andReturn(principalMock);
+		EasyMock.expect(principalMock.getName())
+			.andReturn(ANONYMOUS_USER_USERNAME);
+		EasyMock.expect(principalBeanMock.isKibonServiceAccount())
+			.andReturn(false);
 		EasyMock.replay(principalMock, principalBeanMock);
-		assertEquals(true, AbstractEntityListener.checkAccessAllowedIfAnonymous(entity, principalBeanMock));
+		assertEquals(
+			true,
+			AbstractEntityListener.checkAccessAllowedIfAnonymous(
+				entity,
+				principalBeanMock
+			)
+		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("anonymousNotAllowedClassProvider")
 	void isAccessAllowedIfAnonymousSuperadminTest(AbstractEntity entity) {
-		EasyMock.expect(principalBeanMock.getPrincipal()).andReturn(principalMock);
-		EasyMock.expect(principalMock.getName()).andReturn(ANONYMOUS_USER_USERNAME);
-		EasyMock.expect(principalBeanMock.isAnonymousSuperadmin()).andReturn(true);
+		EasyMock.expect(principalBeanMock.getPrincipal())
+			.andReturn(principalMock);
+		EasyMock.expect(principalMock.getName())
+			.andReturn(ANONYMOUS_USER_USERNAME);
+		EasyMock.expect(principalBeanMock.isKibonServiceAccount())
+			.andReturn(true);
 		EasyMock.replay(principalMock, principalBeanMock);
-		assertEquals(false, AbstractEntityListener.checkAccessAllowedIfAnonymous(entity, principalBeanMock));
+		assertEquals(
+			false,
+			AbstractEntityListener.checkAccessAllowedIfAnonymous(
+				entity,
+				principalBeanMock
+			)
+		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("anonymousNotAllowedClassProvider")
 	void isAccessNotAllowedIfAnonymousTest(AbstractEntity entity) {
-		EasyMock.expect(principalBeanMock.getPrincipal()).andReturn(principalMock);
-		EasyMock.expect(principalMock.getName()).andReturn(ANONYMOUS_USER_USERNAME);
-		EasyMock.expect(principalBeanMock.isAnonymousSuperadmin()).andReturn(false);
+		EasyMock.expect(principalBeanMock.getPrincipal())
+			.andReturn(principalMock);
+		EasyMock.expect(principalMock.getName())
+			.andReturn(ANONYMOUS_USER_USERNAME);
+		EasyMock.expect(principalBeanMock.isKibonServiceAccount())
+			.andReturn(false);
 		EasyMock.replay(principalMock, principalBeanMock);
 		assertThrows(
 			EJBAccessException.class,
-			() -> AbstractEntityListener.checkAccessAllowedIfAnonymous(entity, principalBeanMock));
+			() -> AbstractEntityListener.checkAccessAllowedIfAnonymous(
+				entity,
+				principalBeanMock
+			)
+		);
 	}
 
 	private static Stream<Arguments> anonymousAllowedClassProvider() {

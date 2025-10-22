@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle.testantraege;
@@ -31,7 +31,9 @@ public class Testantrag_FerienbetreuungAngabenStammdaten {
 
 	private FerienbetreuungAngabenStammdaten stammdaten;
 
-	public Testantrag_FerienbetreuungAngabenStammdaten(FerienbetreuungAngabenStatus status) {
+	public Testantrag_FerienbetreuungAngabenStammdaten(
+		FerienbetreuungAngabenStatus status
+	) {
 		this.stammdaten = new FerienbetreuungAngabenStammdaten();
 
 		this.stammdaten.setSeitWannFerienbetreuungen(LocalDate.now());
@@ -45,7 +47,9 @@ public class Testantrag_FerienbetreuungAngabenStammdaten {
 		this.stammdaten.setStammdatenKontaktpersonNachname("Mmoh");
 		this.stammdaten.setStammdatenKontaktpersonFunktion("Vorstehende");
 		this.stammdaten.setStammdatenKontaktpersonTelefon("0799999999");
-		this.stammdaten.setStammdatenKontaktpersonEmail("testdaten-fb@mailbucket.dvbern.ch");
+		this.stammdaten.setStammdatenKontaktpersonEmail(
+			"testdaten-fb@mailbucket.dvbern.ch"
+		);
 
 		Auszahlungsdaten auszahlungsdaten = new Auszahlungsdaten();
 		auszahlungsdaten.setIban(new IBAN("CH93 0076 2011 6238 5295 7"));
@@ -57,10 +61,14 @@ public class Testantrag_FerienbetreuungAngabenStammdaten {
 		auszahlungsdaten.setAdresseKontoinhaber(kontoinhabendeAdresse);
 		this.stammdaten.setAuszahlungsdaten(auszahlungsdaten);
 
-		if(status == FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE) {
-			this.stammdaten.setStatus(FerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE);
+		if (status == FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE) {
+			this.stammdaten.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
 		} else {
-			this.stammdaten.setStatus(FerienbetreuungFormularStatus.ABGESCHLOSSEN);
+			this.stammdaten.setStatus(
+				FerienbetreuungFormularStatus.ABGESCHLOSSEN
+			);
 		}
 
 	}

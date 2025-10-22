@@ -31,7 +31,7 @@ ${templateConfiguration.mailCss}
 	</p>
 	<p>
         Le ${gesuch.getEingangsdatumFormated()}, un changement<#if isSozialdienst> pour ${gesuchsteller.fullName}<#else></#if> a été saisi dans votre demande. Nous l’avons traité.
-		Veuillez cliquer <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/verfuegen/${gesuch.id}">ici</a> pour consulter le résultat.
+		Veuillez cliquer <a href="${frontendUrl}/gesuch/verfuegen/${gesuch.id}">ici</a> pour consulter le résultat.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>

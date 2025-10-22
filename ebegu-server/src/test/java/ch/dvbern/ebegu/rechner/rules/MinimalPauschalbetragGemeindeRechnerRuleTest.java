@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner.rules;
@@ -38,20 +38,26 @@ import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESSCHULE;
 
 public class MinimalPauschalbetragGemeindeRechnerRuleTest {
 
-	private MinimalPauschalbetragGemeindeRechnerRule rule = new MinimalPauschalbetragGemeindeRechnerRule(Locale.GERMAN);
+	private MinimalPauschalbetragGemeindeRechnerRule rule =
+		new MinimalPauschalbetragGemeindeRechnerRule(Locale.GERMAN);
 	private BGRechnerParameterDTO unaktivRule = new BGRechnerParameterDTO();
 	private BGRechnerParameterDTO aktivRule = new BGRechnerParameterDTO();
 
 	@Before
 	public void init() {
-		BGRechnerParameterGemeindeDTO unaktivRuleGemeinde = new BGRechnerParameterGemeindeDTO();
+		BGRechnerParameterGemeindeDTO unaktivRuleGemeinde =
+			new BGRechnerParameterGemeindeDTO();
 		unaktivRuleGemeinde.setGemeindePauschalbetragEnabled(false);
 		this.unaktivRule.setGemeindeParameter(unaktivRuleGemeinde);
 
-		BGRechnerParameterGemeindeDTO aktivRuleGemeinde = new BGRechnerParameterGemeindeDTO();
+		BGRechnerParameterGemeindeDTO aktivRuleGemeinde =
+			new BGRechnerParameterGemeindeDTO();
 		aktivRuleGemeinde.setGemeindePauschalbetragEnabled(true);
 		aktivRuleGemeinde.setGemeindePauschalbetragKita(BigDecimal.TEN);
-		aktivRuleGemeinde.setGemeindePauschalbetragMaxMassgebendenEinkommenFuerBerechnung(new BigDecimal(200000));
+		aktivRuleGemeinde
+			.setGemeindePauschalbetragMaxMassgebendenEinkommenFuerBerechnung(
+				new BigDecimal(200000)
+			);
 
 		aktivRule.setGemeindeParameter(aktivRuleGemeinde);
 	}
@@ -64,36 +70,69 @@ public class MinimalPauschalbetragGemeindeRechnerRuleTest {
 
 	@Test
 	public void isRelevantForVerfuegung() {
-		Assert.assertFalse(rule.isRelevantForVerfuegung(prepareInput(KITA, new BigDecimal(260000), 0), aktivRule));
-		Assert.assertTrue(rule.isRelevantForVerfuegung(prepareInput(KITA, new BigDecimal(100000), 50), aktivRule));
+		Assert.assertFalse(
+			rule.isRelevantForVerfuegung(
+				prepareInput(KITA, new BigDecimal(260000), 0),
+				aktivRule
+			)
+		);
+		Assert.assertTrue(
+			rule.isRelevantForVerfuegung(
+				prepareInput(KITA, new BigDecimal(100000), 50),
+				aktivRule
+			)
+		);
 	}
 
 	@Test
 	public void isRelevantForZeroBetruungspensum() {
-		BGCalculationInput input = prepareInput(KITA, new BigDecimal(100000), 80);
+		BGCalculationInput input = prepareInput(
+			KITA,
+			new BigDecimal(100000),
+			80
+		);
 		input.setBetreuungspensumProzent(BigDecimal.ZERO);
 		Assert.assertFalse(rule.isRelevantForVerfuegung(input, aktivRule));
 	}
 
 	@Test
 	public void isRelevantForVerfuegungUngueltigesAngebot() {
-		Assert.assertFalse(rule.isRelevantForVerfuegung(prepareInput(TAGESSCHULE, BigDecimal.ZERO, 80), aktivRule));
+		Assert.assertFalse(
+			rule.isRelevantForVerfuegung(
+				prepareInput(TAGESSCHULE, BigDecimal.ZERO, 80),
+				aktivRule
+			)
+		);
 	}
 
 	@Test
 	public void prepareParameter() {
 		RechnerRuleParameterDTO result = new RechnerRuleParameterDTO();
 		// Rule inaktiv: Nichts gesetzt
-		rule.prepareParameter(prepareInput(KITA, BigDecimal.ZERO, 0), unaktivRule, result);
+		rule.prepareParameter(
+			prepareInput(KITA, BigDecimal.ZERO, 0),
+			unaktivRule,
+			result
+		);
 		Assert.assertNull(result.getMinimalPauschalBetrag());
 		// Rule Aktiv: 10
-		rule.prepareParameter(prepareInput(KITA,BigDecimal.ZERO, 10), aktivRule, result);
+		rule.prepareParameter(
+			prepareInput(KITA, BigDecimal.ZERO, 10),
+			aktivRule,
+			result
+		);
 		Assert.assertEquals(BigDecimal.TEN, result.getMinimalPauschalBetrag());
 	}
 
-	private BGCalculationInput prepareInput(@Nonnull
-		BetreuungsangebotTyp betreuungsangebotTyp, @Nonnull BigDecimal massgebendenEinkommen, @Nonnull int anspruchspensum) {
-		BGCalculationInput input = new BGCalculationInput(new VerfuegungZeitabschnitt(), RuleValidity.ASIV);
+	private BGCalculationInput prepareInput(
+		@Nonnull BetreuungsangebotTyp betreuungsangebotTyp,
+		@Nonnull BigDecimal massgebendenEinkommen,
+		int anspruchspensum
+	) {
+		BGCalculationInput input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.ASIV
+		);
 		input.setBetreuungsangebotTyp(betreuungsangebotTyp);
 		input.setMassgebendesEinkommenVorAbzugFamgr(massgebendenEinkommen);
 		input.setBetreuungInGemeinde(true);

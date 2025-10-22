@@ -21,25 +21,31 @@
                 <h2 class="ng-scope">{{ 'POSTEINGANG' | translate }}</h2>
             </div>
         </div>
-        <div class="row margin-top-20">
+        <div class="row margin-top-10">
             <div class="col-md-8 col-md-offset-1">
                 <div class="dv-table-actions">
-                    <a (click)="resetFilter()" class="pointer-cursor">
-                        <i class="fa fa-undo"></i>
-                        {{ 'NEU_LADEN' | translate }}
-                    </a>
-                    <a
-                        class="ng-scope pointer-cursor"
-                        (click)="alleMutationsmeldungVerfuegen()"
-                        [dvDemoFeature]="mutationsMeldungDemoFeature"
-                        data-test="mutationsmeldungen-automatisch-bearbeiten"
+                    <button
+                        class="dv-btn posteingang-reset"
+                        (click)="resetFilter()"
                     >
-                        <i class="fa fa-flash fa-lg"></i>
-                        {{
-                            'ALLE_MUTATIONSMELDUNG_AUTOMATISCH_BEARBEITEN'
-                                | translate
-                        }}
-                    </a>
+                        <i class="fa fa-undo"></i>
+                        {{ 'FILTER_ZURUECKSETZEN' | translate }}
+                    </button>
+
+                    @if (showAlleMutationenBearbeitenButton()) {
+                        <button
+                            class="dv-btn posteingang-muta-bearbeiten"
+                            (click)="alleMutationsmeldungVerfuegen()"
+                            [dvDemoFeature]="mutationsMeldungDemoFeature"
+                            data-test="mutationsmeldungen-automatisch-bearbeiten"
+                        >
+                            <i class="fa fa-flash fa-lg"></i>
+                            {{
+                                'ALLE_MUTATIONSMELDUNG_AUTOMATISCH_BEARBEITEN'
+                                    | translate
+                            }}
+                        </button>
+                    }
                 </div>
             </div>
             <div
@@ -51,6 +57,7 @@
                     [marginClass]="'no-margin-bottom'"
                     (modelChange)="clickedIncludeClosed($event)"
                     [label]="'POSTEINGANG_INCLUDE_CLOSED' | translate"
+                    [displayBisher]="false"
                 >
                 </dv-checkbox-x>
                 <h3 class="dv-table-resultcount">{{ totalResultCount }}</h3>
@@ -192,8 +199,7 @@
                             *matHeaderCellDef
                             translate
                         >
-                            <i class="fa fa-graduation-cap"></i
-                            ><span translate
+                            <span translate
                                 >POSTEINGANG_AN</span
                             ></mat-header-cell
                         >
@@ -215,8 +221,7 @@
                             *matHeaderCellDef
                             translate
                         >
-                            <i class="fa fa-graduation-cap"></i
-                            ><span translate>POSTEINGANG_VERANTWORTUNG</span>
+                            <span translate>POSTEINGANG_VERANTWORTUNG</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let element">
                             <dv-benutzer-entry
@@ -424,6 +429,7 @@
                                 [showSelectionAll]="true"
                                 [angular2]="true"
                                 [initialAll]="true"
+                                [bgAndTs]="true"
                                 (userChanged)="filterEmpfaenger($event.user)"
                             ></div>
                         </mat-header-cell>

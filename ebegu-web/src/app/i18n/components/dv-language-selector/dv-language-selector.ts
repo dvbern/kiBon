@@ -17,8 +17,8 @@
 
 import {IComponentOptions, IController} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSBrowserLanguage} from '../../../../models/enums/TSBrowserLanguage';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {TSBrowserLanguage} from '@kibon/shared/model/enums';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {I18nServiceRSRest} from '../../services/i18nServiceRS.rest';
 import ITranslateService = angular.translate.ITranslateService;
 

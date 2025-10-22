@@ -1,0 +1,48 @@
+{
+    "$schema": "./node_modules/nx/schemas/nx-schema.json",
+    "targetDefaults": {
+        "build": {
+            "cache": true,
+            "dependsOn": ["^build"],
+            "inputs": ["production", "^production"]
+        },
+        "test": {
+            "cache": true,
+            "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/karma.conf.js"
+            ]
+        },
+        "lint": {
+            "cache": true,
+            "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+        },
+        "@nx/js:tsc": {
+            "cache": true,
+            "dependsOn": ["^build"],
+            "inputs": ["production", "^production"]
+        }
+    },
+    "defaultBase": "dev",
+    "namedInputs": {
+        "sharedGlobals": [],
+        "default": ["{projectRoot}/**/*", "sharedGlobals"],
+        "production": [
+            "default",
+            "!{projectRoot}/.eslintrc.json",
+            "!{projectRoot}/eslint.config.js",
+            "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+            "!{projectRoot}/tsconfig.spec.json"
+        ]
+    },
+    "generators": {
+        "@nx/angular:library": {
+            "linter": "eslint",
+            "unitTestRunner": "karma"
+        },
+        "@nx/angular:component": {
+            "style": "scss"
+        }
+    }
+}

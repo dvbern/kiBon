@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -30,7 +30,8 @@ import com.lowagie.text.Paragraph;
 
 public class MusterPdfGenerator extends DokumentAnFamilieGenerator {
 
-	private static final String BEGLEITSCHREIBEN_TITLE = "PdfGeneration_Muster_Title";
+	private static final String BEGLEITSCHREIBEN_TITLE =
+		"PdfGeneration_Muster_Title";
 
 	public MusterPdfGenerator(
 		@Nonnull GemeindeStammdaten stammdaten
@@ -54,7 +55,14 @@ public class MusterPdfGenerator extends DokumentAnFamilieGenerator {
 			document.add(createAnrede());
 			document.add(PdfUtil.createParagraph(getSampleText(), 2));
 			document.add(createParagraphGruss());
-			document.add(PdfUtil.createParagraph(translate(DokumentAnFamilieGenerator.SACHBEARBEITUNG), 2));
+			document.add(
+				PdfUtil.createParagraph(
+					translate(
+						DokumentAnFamilieGenerator.SACHBEARBEITUNG
+					),
+					2
+				)
+			);
 		};
 	}
 
@@ -68,7 +76,9 @@ public class MusterPdfGenerator extends DokumentAnFamilieGenerator {
 	@Nonnull
 	@Override
 	protected List<String> getEmpfaengerAdresse() {
-		String plzAndOrt = gemeindeStammdaten.getAdresse().getPlz() + ' ' + gemeindeStammdaten.getAdresse().getOrt();
+		String plzAndOrt = gemeindeStammdaten.getAdresse().getPlz()
+			+ ' '
+			+ gemeindeStammdaten.getAdresse().getOrt();
 		List<String> empfaengerAdresse = new ArrayList<>();
 		empfaengerAdresse.add("Thomas Muster");
 		empfaengerAdresse.add("Testweg 10");

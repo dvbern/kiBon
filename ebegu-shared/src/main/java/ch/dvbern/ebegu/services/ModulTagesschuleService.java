@@ -56,7 +56,9 @@ public interface ModulTagesschuleService {
 	 * @param modulTagesschuleGroupId PK der Group
 	 * @return Modul mit der gegebenen id
 	 */
-	Optional<ModulTagesschuleGroup> findModulTagesschuleGroup(@Nonnull String modulTagesschuleGroupId);
+	Optional<ModulTagesschuleGroup> findModulTagesschuleGroup(
+		@Nonnull String modulTagesschuleGroupId
+	);
 
 	/**
 	 * entfernt ein Modul aus der Database
@@ -69,15 +71,19 @@ public interface ModulTagesschuleService {
 	 * Gibt die Tagesschule Einstellungen fuer die uebergebene GP zuruedk
 	 */
 	Collection<EinstellungenTagesschule> findEinstellungenTagesschuleByGesuchsperiode(
-		@Nonnull Gesuchsperiode gesuchsperiode);
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
 	 * Kopiert alle vorhandenen ModulTagesschule zur neuen Gesuchsperiode
 	 */
 	void copyModuleTagesschuleToNewGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiodeToCreate,
-		@Nonnull Gesuchsperiode lastGesuchsperiode);
+		@Nonnull Gesuchsperiode lastGesuchsperiode
+	);
 
 	@Nonnull
-	Set<ModulTagesschuleGroup> findModulTagesschuleGroup(@Nonnull AnmeldungTagesschule anmeldung);
+	Set<ModulTagesschuleGroup> findModulTagesschuleGroup(
+		@Nonnull AnmeldungTagesschule anmeldung
+	);
 }

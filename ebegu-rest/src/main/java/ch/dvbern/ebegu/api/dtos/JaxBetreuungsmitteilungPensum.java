@@ -15,16 +15,17 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer Daten des BetreuungsmitteilungPensum
  */
 @XmlRootElement(name = "betreuungsmitteilungPensum")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JaxBetreuungsmitteilungPensum extends JaxAbstractMahlzeitenPensumDTO {
+public class JaxBetreuungsmitteilungPensum extends
+	JaxAbstractMahlzeitenPensumDTO {
 
 	private boolean nichtEingetreten = false;
 

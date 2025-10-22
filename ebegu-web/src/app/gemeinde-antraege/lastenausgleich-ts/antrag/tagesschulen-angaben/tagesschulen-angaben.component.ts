@@ -27,12 +27,19 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
-import * as moment from 'moment';
-import {BehaviorSubject, combineLatest, Subject, Subscription} from 'rxjs';
-import {startWith} from 'rxjs/operators';
+import moment from 'moment';
+import {
+    BehaviorSubject,
+    combineLatest,
+    firstValueFrom,
+    mergeMap,
+    Observable,
+    Subject
+} from 'rxjs';
+import {filter, map, startWith} from 'rxjs/operators';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
-import {TSEinstellungKey} from '../../../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../../../admin/einstellungen/TSEinstellungKey';
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../../../../../models/enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
 import {TSLastenausgleichTagesschuleAngabenInstitutionStatus} from '../../../../../models/enums/TSLastenausgleichTagesschuleAngabenInstitutionStatus';
 import {TSWizardStepXTyp} from '../../../../../models/enums/TSWizardStepXTyp';
@@ -45,13 +52,13 @@ import {TSOeffnungszeitenTagesschule} from '../../../../../models/gemeindeantrag
 import {TSOeffnungszeitenTagesschuleTyp} from '../../../../../models/gemeindeantrag/TSOeffnungszeitenTagesschuleTyp';
 import {TSBenutzer} from '../../../../../models/TSBenutzer';
 import {TSExceptionReport} from '../../../../../models/TSExceptionReport';
-import {TSGesuchsperiode} from '../../../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
-import {CONSTANTS} from '../../../../core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {ErrorService} from '../../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {WizardStepXRS} from '../../../../core/service/wizardStepXRS.rest';
 import {
     numberValidator,
@@ -60,6 +67,9 @@ import {
 import {UnsavedChangesService} from '../../../services/unsaved-changes.service';
 import {LastenausgleichTSService} from '../../services/lastenausgleich-ts.service';
 import {TagesschuleAngabenRS} from '../../services/tagesschule-angaben.service.rest';
+import {TSLastenausgleichTagesschulenStatusHistory} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschulenStatusHistory';
+import {LATSPermissionUtil} from '../../util/LATSPermissionUtil';
+import {PERMISSION_LATS} from '../../lastenausgleich-tagesschulen.permissions';
 
 const LOG = LogFactory.createLog('TagesschulenAngabenComponent');
 
@@ -68,7 +78,8 @@ const LOG = LogFactory.createLog('TagesschulenAngabenComponent');
     templateUrl: './tagesschulen-angaben.component.html',
     styleUrls: ['./tagesschulen-angaben.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TagesschulenAngabenComponent implements OnInit {
     @Input() public lastenausgleichID: string;
@@ -147,7 +158,6 @@ export class TagesschulenAngabenComponent implements OnInit {
         // Bemerkungen
         bemerkungen: <null | string>null
     });
-    private subscription: Subscription;
     // TODO: refactor this to store
     public latsAngabenInstitutionContainer: TSLastenausgleichTagesschuleAngabenInstitutionContainer;
     public angabenAusKibon: boolean;
@@ -158,6 +168,7 @@ export class TagesschulenAngabenComponent implements OnInit {
     public abweichungenAnzahlKinder: number;
     public stichtag: Subject<string> = new Subject<string>();
     public gemeindeAntragContainer: TSLastenausgleichTagesschuleAngabenGemeindeContainer;
+    public latsHistory: TSLastenausgleichTagesschulenStatusHistory[];
 
     public autoFilled: boolean = false;
     public isInstiUser: boolean = false;
@@ -196,12 +207,14 @@ export class TagesschulenAngabenComponent implements OnInit {
     ) {}
 
     public ngOnInit(): void {
-        this.subscription = combineLatest([
+        combineLatest([
             this.lastenausgleichTSService.getLATSAngabenGemeindeContainer(),
-            this.authService.principal$
-        ]).subscribe(
-            ([container, principal]) => {
+            this.authService.principal$,
+            this.getVerlauf()
+        ]).subscribe({
+            next: ([container, principal, history]) => {
                 this.gemeindeAntragContainer = container;
+                this.latsHistory = history;
                 this.latsAngabenInstitutionContainer =
                     container.angabenInstitutionContainers?.find(
                         institutionContainer =>
@@ -221,7 +234,12 @@ export class TagesschulenAngabenComponent implements OnInit {
                 if (
                     container.status ===
                         TSLastenausgleichTagesschuleAngabenGemeindeStatus.NEU ||
-                    !this.canEditForm()
+                    LATSPermissionUtil.isInZweitpruefungAndSameUser(
+                        principal,
+                        container,
+                        history
+                    ) ||
+                    !this.canEditFormBasedOn(principal)
                 ) {
                     this.form.disable();
                 }
@@ -271,12 +289,12 @@ export class TagesschulenAngabenComponent implements OnInit {
                 this.initOeffnungszeiten();
                 this.cd.markForCheck();
             },
-            () => {
+            error: () => {
                 this.errorService.addMesageAsError(
                     this.translate.instant('DATA_RETRIEVAL_ERROR')
                 );
             }
-        );
+        });
     }
 
     private initOeffnungszeiten(): void {
@@ -359,6 +377,15 @@ export class TagesschulenAngabenComponent implements OnInit {
         }
 
         if (container.isinPruefungKanton()) {
+            if (
+                LATSPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    container,
+                    this.latsHistory
+                )
+            ) {
+                return;
+            }
             if (angaben.isInPruefungGemeinde()) {
                 canSeeSave = principal.hasOneOfRoles(
                     TSRoleUtil.getMandantRoles()
@@ -381,7 +408,24 @@ export class TagesschulenAngabenComponent implements OnInit {
         this.canSeeFalscheAngaben.next(canSeeFalscheAngaben);
     }
 
-    public canEditForm(): boolean {
+    public canEditForm(): Observable<boolean> {
+        return this.authService.principal$.pipe(
+            map(principal => {
+                return this.canEditFormBasedOn(principal);
+            })
+        );
+    }
+
+    private canEditFormBasedOn(principal: TSBenutzer) {
+        if (
+            LATSPermissionUtil.isInZweitpruefungAndSameUser(
+                principal,
+                this.gemeindeAntragContainer,
+                this.latsHistory
+            )
+        ) {
+            return false;
+        }
         const angaben = this.latsAngabenInstitutionContainer;
         if (EbeguUtil.isNullOrUndefined(angaben)) {
             return false;
@@ -422,16 +466,16 @@ export class TagesschulenAngabenComponent implements OnInit {
             this.form.controls.anzahlEingeschriebeneKinderBasisstufe.valueChanges.pipe(
                 startWith(angaben?.anzahlEingeschriebeneKinderBasisstufe || 0)
             )
-        ]).subscribe(
-            values => {
+        ]).subscribe({
+            next: values => {
                 this.abweichungenAnzahlKinder =
                     values[0] - values[1] - values[2] - values[3] - values[4];
                 this.cd.markForCheck();
             },
-            () => {
+            error: () => {
                 this.errorService.addMesageAsError('BAD_NUMBER_ERROR');
             }
-        );
+        });
     }
 
     public onFormSubmit(): void {
@@ -448,8 +492,8 @@ export class TagesschulenAngabenComponent implements OnInit {
         this.errorService.clearAll();
         this.tagesschulenAngabenRS
             .saveTagesschuleAngaben(this.latsAngabenInstitutionContainer)
-            .subscribe(
-                result => {
+            .subscribe({
+                next: result => {
                     this.latsAngabenInstitutionContainer = result;
                     this.form.patchValue(
                         result?.status ===
@@ -463,10 +507,10 @@ export class TagesschulenAngabenComponent implements OnInit {
                     this.form.markAsPristine();
                     this.unsavedChangesService.registerForm(this.form);
                 },
-                error => {
+                error: error => {
                     this.manageSaveErrorCodes(error);
                 }
-            );
+            });
     }
 
     private setFormValuesToAngaben(): void {
@@ -508,7 +552,7 @@ export class TagesschulenAngabenComponent implements OnInit {
         this.formFreigebenTriggered = true;
         this.enableFormValidation();
         this.errorService.clearAll();
-        if (!this.form.valid) {
+        if (!this.form.valid || this.abweichungenAnzahlKinder !== 0) {
             this.errorService.addMesageAsError(
                 this.translate.instant(
                     'LATS_GEMEINDE_VALIDIERUNG_FEHLGESCHLAGEN'
@@ -525,26 +569,29 @@ export class TagesschulenAngabenComponent implements OnInit {
         }
         this.setFormValuesToAngabenDeklaration();
 
-        this.tagesschulenAngabenRS
-            .tagesschuleAngabenFreigeben(this.latsAngabenInstitutionContainer)
-            .subscribe(
-                freigegeben => {
-                    this.latsAngabenInstitutionContainer = freigegeben;
-                    this.lastenausgleichTSService.updateLATSAngabenGemeindeContainerStore(
-                        this.routerGlobals.params.id
-                    );
-                    if (!this.canEditForm()) {
-                        this.form.disable();
-                    }
-                    this.errorService.clearAll();
-                    this.cd.markForCheck();
-                    this.form.markAsPristine();
-                    this.unsavedChangesService.registerForm(this.form);
-                },
-                error => {
-                    this.manageSaveErrorCodes(error);
+        combineLatest([
+            this.authService.principal$,
+            this.tagesschulenAngabenRS.tagesschuleAngabenFreigeben(
+                this.latsAngabenInstitutionContainer
+            )
+        ]).subscribe({
+            next: ([principal, freigegeben]) => {
+                this.latsAngabenInstitutionContainer = freigegeben;
+                this.lastenausgleichTSService.updateLATSAngabenGemeindeContainerStore(
+                    this.routerGlobals.params.id
+                );
+                if (!this.canEditFormBasedOn(principal)) {
+                    this.form.disable();
                 }
-            );
+                this.errorService.clearAll();
+                this.cd.markForCheck();
+                this.form.markAsPristine();
+                this.unsavedChangesService.registerForm(this.form);
+            },
+            error: error => {
+                this.manageSaveErrorCodes(error);
+            }
+        });
     }
 
     private confirmDialog(frageKey: string): Promise<boolean> {
@@ -552,17 +599,18 @@ export class TagesschulenAngabenComponent implements OnInit {
         dialogConfig.data = {
             frage: this.translate.instant(frageKey)
         };
-        return this.dialog
-            .open(DvNgConfirmDialogComponent, dialogConfig)
-            .afterClosed()
-            .toPromise();
+        return firstValueFrom(
+            this.dialog
+                .open(DvNgConfirmDialogComponent, dialogConfig)
+                .afterClosed()
+        );
     }
 
     public async onGeprueft(): Promise<void> {
         this.formFreigebenTriggered = true;
         this.enableFormValidation();
 
-        if (!this.form.valid) {
+        if (!this.form.valid || this.abweichungenAnzahlKinder !== 0) {
             this.errorService.addMesageAsError(
                 this.translate.instant(
                     'LATS_GEMEINDE_VALIDIERUNG_FEHLGESCHLAGEN'
@@ -583,8 +631,8 @@ export class TagesschulenAngabenComponent implements OnInit {
 
         this.tagesschulenAngabenRS
             .tagesschuleAngabenGeprueft(this.latsAngabenInstitutionContainer)
-            .subscribe(
-                geprueft => {
+            .subscribe({
+                next: geprueft => {
                     this.latsAngabenInstitutionContainer = geprueft;
                     this.lastenausgleichTSService.updateLATSAngabenGemeindeContainerStore(
                         this.routerGlobals.params.id
@@ -596,10 +644,10 @@ export class TagesschulenAngabenComponent implements OnInit {
                     this.unsavedChangesService.registerForm(this.form);
                     this.navigateBack();
                 },
-                error => {
+                error: error => {
                     this.manageSaveErrorCodes(error);
                 }
-            );
+            });
     }
 
     private enableFormValidation(): void {
@@ -702,6 +750,7 @@ export class TagesschulenAngabenComponent implements OnInit {
         }
         this.form.updateValueAndValidity();
     }
+
     public async onFalscheAngaben(): Promise<void> {
         const gemeindeMustBeReopenedCheckRequired =
             !this.isInstiUser &&
@@ -725,8 +774,8 @@ export class TagesschulenAngabenComponent implements OnInit {
                       this.latsAngabenInstitutionContainer
                   );
 
-        falscheAngabenObs$.subscribe(
-            () => {
+        falscheAngabenObs$.subscribe({
+            next: () => {
                 this.errorService.clearAll();
                 this.wizardRS.updateSteps(
                     TSWizardStepXTyp.LASTENAUSGLEICH_TAGESSCHULEN,
@@ -738,7 +787,7 @@ export class TagesschulenAngabenComponent implements OnInit {
                 this.form.enable();
                 this.cd.markForCheck();
             },
-            error => {
+            error: error => {
                 if (
                     error.error.includes(
                         'LastenausgleichTagesschuleAngabenGemeindeContainer muss in Bearbeitung Gemeinde sein'
@@ -750,9 +799,10 @@ export class TagesschulenAngabenComponent implements OnInit {
                         )
                     );
                 }
+
                 this.manageSaveErrorCodes(error);
             }
-        );
+        });
     }
 
     public navigateBack($event?: MouseEvent): void {
@@ -861,34 +911,34 @@ export class TagesschulenAngabenComponent implements OnInit {
             .getAnzahlEingeschriebeneKinder(
                 this.latsAngabenInstitutionContainer
             )
-            .subscribe(
-                anzahlEingeschriebeneKinder => {
+            .subscribe({
+                next: anzahlEingeschriebeneKinder => {
                     this.anzahlEingeschriebeneKinder =
                         anzahlEingeschriebeneKinder;
                 },
-                error => {
+                error: error => {
                     LOG.error(error);
                     this.errorService.addMesageAsError(
                         this.translate.instant('DATA_RETRIEVAL_ERROR')
                     );
                 }
-            );
+            });
     }
 
     private queryDurchschnittKinderProTag(): void {
         this.tagesschulenAngabenRS
             .getDurchschnittKinderProTag(this.latsAngabenInstitutionContainer)
-            .subscribe(
-                durchschnittKinderProTag => {
+            .subscribe({
+                next: durchschnittKinderProTag => {
                     this.durchschnittKinderProTag = durchschnittKinderProTag;
                 },
-                error => {
+                error: error => {
                     LOG.error(error);
                     this.errorService.addMesageAsError(
                         this.translate.instant('DATA_RETRIEVAL_ERROR')
                     );
                 }
-            );
+            });
     }
 
     private getStichtag(): void {
@@ -898,15 +948,15 @@ export class TagesschulenAngabenComponent implements OnInit {
                 this.gemeindeAntragContainer.gemeinde?.id,
                 this.gemeindeAntragContainer.gesuchsperiode?.id
             )
-            .subscribe(
-                setting => {
+            .subscribe({
+                next: setting => {
                     const date = moment(setting.value).format(
                         CONSTANTS.DATE_FORMAT
                     );
                     this.stichtag.next(date);
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public manageSaveErrorCodes(errors: TSExceptionReport[]): void {
@@ -991,5 +1041,32 @@ export class TagesschulenAngabenComponent implements OnInit {
             values.ernaehrungsGrundsaetzeEingehalten;
         // Bemerkungen
         angabenKorrektur.bemerkungen = values.bemerkungen;
+    }
+
+    private getVerlauf() {
+        return this.authService.principal$.pipe(
+            filter(principal =>
+                principal.hasOneOfRoles(PERMISSION_LATS.LOAD_VERLAUF)
+            ),
+            mergeMap(() =>
+                this.lastenausgleichTSService.getLATSAngabenGemeindeContainer()
+            ),
+            mergeMap(container =>
+                this.lastenausgleichTSService.getVerlauf(container.id)
+            ),
+            startWith([])
+        );
+    }
+
+    public isZweitPruefungAndSameUserAsPruefung() {
+        return combineLatest([this.authService.principal$]).pipe(
+            map(([principal]) =>
+                LATSPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    this.gemeindeAntragContainer,
+                    this.latsHistory
+                )
+            )
+        );
     }
 }

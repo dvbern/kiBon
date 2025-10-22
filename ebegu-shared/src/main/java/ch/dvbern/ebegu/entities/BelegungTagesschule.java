@@ -21,15 +21,15 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.AbholungTagesschule;
 import ch.dvbern.ebegu.enums.AntragCopyType;
@@ -51,10 +51,13 @@ public class BelegungTagesschule extends AbstractMutableEntity {
 
 	private static final long serialVersionUID = -8403435739182708718L;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "belegungTagesschule")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "belegungTagesschule")
 	@SortNatural
 	@Nonnull
-	private Set<BelegungTagesschuleModul> belegungTagesschuleModule = new TreeSet<>();
+	private Set<BelegungTagesschuleModul> belegungTagesschuleModule =
+		new TreeSet<>();
 
 	@NotNull
 	@Column(nullable = false)
@@ -77,7 +80,8 @@ public class BelegungTagesschule extends AbstractMutableEntity {
 
 	@Nullable
 	@Column(nullable = true, length = Constants.DB_DEFAULT_MAX_LENGTH)
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{error_invalid_notfallnummer}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{error_invalid_notfallnummer}")
 	private String notfallnummer;
 
 	@Enumerated(EnumType.STRING)
@@ -115,7 +119,9 @@ public class BelegungTagesschule extends AbstractMutableEntity {
 		return belegungTagesschuleModule;
 	}
 
-	public void setBelegungTagesschuleModule(@Nonnull Set<BelegungTagesschuleModul> belegungTagesschuleModule) {
+	public void setBelegungTagesschuleModule(
+		@Nonnull Set<BelegungTagesschuleModul> belegungTagesschuleModule
+	) {
 		this.belegungTagesschuleModule = belegungTagesschuleModule;
 	}
 
@@ -142,8 +148,11 @@ public class BelegungTagesschule extends AbstractMutableEntity {
 		return allergienUndUnvertraeglichkeiten;
 	}
 
-	public void setAllergienUndUnvertraeglichkeiten(@Nullable final String allergienUndUnvertraeglichkeiten) {
-		this.allergienUndUnvertraeglichkeiten = allergienUndUnvertraeglichkeiten;
+	public void setAllergienUndUnvertraeglichkeiten(
+		@Nullable final String allergienUndUnvertraeglichkeiten
+	) {
+		this.allergienUndUnvertraeglichkeiten =
+			allergienUndUnvertraeglichkeiten;
 	}
 
 	@Nullable
@@ -151,7 +160,9 @@ public class BelegungTagesschule extends AbstractMutableEntity {
 		return abholungTagesschule;
 	}
 
-	public void setAbholungTagesschule(@Nullable AbholungTagesschule abholungTagesschule) {
+	public void setAbholungTagesschule(
+		@Nullable AbholungTagesschule abholungTagesschule
+	) {
 		this.abholungTagesschule = abholungTagesschule;
 	}
 
@@ -168,7 +179,9 @@ public class BelegungTagesschule extends AbstractMutableEntity {
 		return abweichungZweitesSemester;
 	}
 
-	public void setAbweichungZweitesSemester(boolean abweichungZweitesSemester) {
+	public void setAbweichungZweitesSemester(
+		boolean abweichungZweitesSemester
+	) {
 		this.abweichungZweitesSemester = abweichungZweitesSemester;
 	}
 
@@ -180,19 +193,27 @@ public class BelegungTagesschule extends AbstractMutableEntity {
 		this.keineKesbPlatzierung = keineKesbPlatzierung;
 	}
 
-	public boolean addBelegungTagesschuleModul(final BelegungTagesschuleModul modulToAdd) {
-		return !belegungTagesschuleModule.contains(modulToAdd) &&
+	public boolean addBelegungTagesschuleModul(
+		final BelegungTagesschuleModul modulToAdd
+	) {
+		return !belegungTagesschuleModule.contains(modulToAdd)
+			&&
 			belegungTagesschuleModule.add(modulToAdd);
 	}
 
 	@Nonnull
-	public BelegungTagesschule copyBelegungTagesschule(@Nonnull BelegungTagesschule target, @Nonnull AntragCopyType copyType) {
+	public BelegungTagesschule copyBelegungTagesschule(
+		@Nonnull BelegungTagesschule target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
 			target.setEintrittsdatum(LocalDate.from(eintrittsdatum));
 			target.setPlanKlasse(this.getPlanKlasse());
-			target.setAllergienUndUnvertraeglichkeiten(this.getAllergienUndUnvertraeglichkeiten());
+			target.setAllergienUndUnvertraeglichkeiten(
+				this.getAllergienUndUnvertraeglichkeiten()
+			);
 			target.setAbholungTagesschule(this.getAbholungTagesschule());
 			target.setBemerkung(this.getBemerkung());
 			target.setAbweichungZweitesSemester(this.abweichungZweitesSemester);
@@ -210,10 +231,17 @@ public class BelegungTagesschule extends AbstractMutableEntity {
 		return target;
 	}
 
-	private void copyBelegungTagesschuleModul(@Nonnull BelegungTagesschule target, @Nonnull AntragCopyType copyType) {
-		for (BelegungTagesschuleModul belegungTagesschuleModul : this.getBelegungTagesschuleModule()) {
+	private void copyBelegungTagesschuleModul(
+		@Nonnull BelegungTagesschule target,
+		@Nonnull AntragCopyType copyType
+	) {
+		for (BelegungTagesschuleModul belegungTagesschuleModul : this
+			.getBelegungTagesschuleModule()) {
 			BelegungTagesschuleModul belegungTagesschuleModulCopy =
-				belegungTagesschuleModul.copyBelegungTagesschuleModul(new BelegungTagesschuleModul(), copyType);
+				belegungTagesschuleModul.copyBelegungTagesschuleModul(
+					new BelegungTagesschuleModul(),
+					copyType
+				);
 			belegungTagesschuleModulCopy.setBelegungTagesschule(target);
 			target.addBelegungTagesschuleModul(belegungTagesschuleModulCopy);
 		}

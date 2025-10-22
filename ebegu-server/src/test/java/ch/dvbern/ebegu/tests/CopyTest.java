@@ -15,8 +15,27 @@
 
 package ch.dvbern.ebegu.tests;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.*;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+
+import ch.dvbern.ebegu.entities.Dossier;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.GesuchstellerAdresseContainer;
+import ch.dvbern.ebegu.entities.InstitutionStammdaten;
+import ch.dvbern.ebegu.entities.Kind;
+import ch.dvbern.ebegu.entities.KindContainer;
+import ch.dvbern.ebegu.entities.PensumFachstelle;
+import ch.dvbern.ebegu.enums.AntragStatus;
+import ch.dvbern.ebegu.enums.AntragTyp;
+import ch.dvbern.ebegu.enums.Eingangsart;
+import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.test.util.TestDataInstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.testfaelle.Testfall01_WaeltiDagmar;
@@ -24,13 +43,12 @@ import ch.dvbern.ebegu.util.MathUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.*;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test copy entities for Mutation, Erneuerung, neues Dossier
@@ -48,56 +66,125 @@ public class CopyTest {
 	public void setUp() {
 		// Komplettes Gesuch aufsetzen
 		Collection<InstitutionStammdaten> instStammdaten = new ArrayList<>();
-		instStammdaten.add(TestDataUtil.createInstitutionStammdatenKitaBruennen());
-		instStammdaten.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		instStammdaten.add(TestDataUtil.createInstitutionStammdatenTagesfamilien());
+		instStammdaten.add(
+			TestDataUtil.createInstitutionStammdatenKitaBruennen()
+		);
+		instStammdaten.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		instStammdaten.add(
+			TestDataUtil.createInstitutionStammdatenTagesfamilien()
+		);
 		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1617();
-		Testfall01_WaeltiDagmar testfall01_waeltiDagmar = new Testfall01_WaeltiDagmar(gesuchsperiode,  new TestDataInstitutionStammdatenBuilder(gesuchsperiode));
+		Testfall01_WaeltiDagmar testfall01_waeltiDagmar =
+			new Testfall01_WaeltiDagmar(
+				gesuchsperiode,
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode)
+			);
 		testfall01_waeltiDagmar.createGesuch(LocalDate.now());
 		testfall01_waeltiDagmar.fillInGesuch();
 		erstgesuch = testfall01_waeltiDagmar.getGesuch();
-		Objects.requireNonNull(erstgesuch.getFamiliensituationContainer()).setFamiliensituationErstgesuch(erstgesuch.getFamiliensituationContainer().getFamiliensituationJA());
-		TestDataUtil.createDefaultEinkommensverschlechterungsInfoContainer(erstgesuch);
+		Objects.requireNonNull(erstgesuch.getFamiliensituationContainer())
+			.setFamiliensituationErstgesuch(
+				erstgesuch.getFamiliensituationContainer()
+					.getFamiliensituationJA()
+			);
+		TestDataUtil.createDefaultEinkommensverschlechterungsInfoContainer(
+			erstgesuch
+		);
 		assert erstgesuch.getGesuchsteller1() != null;
-		erstgesuch.getGesuchsteller1().setEinkommensverschlechterungContainer(TestDataUtil.createDefaultEinkommensverschlechterungsContainer());
+		erstgesuch.getGesuchsteller1()
+			.setEinkommensverschlechterungContainer(
+				TestDataUtil
+					.createDefaultEinkommensverschlechterungsContainer()
+			);
 		erstgesuch.setDokumentGrunds(new TreeSet<>());
 		assert erstgesuch.getDokumentGrunds() != null;
-		erstgesuch.getDokumentGrunds().add(TestDataUtil.createDefaultDokumentGrund());
+		erstgesuch.getDokumentGrunds()
+			.add(TestDataUtil.createDefaultDokumentGrund());
 
 		// Sonderfälle: Ablaufende Adressen und Fachstellen
 		LocalDate datumAblauf = LocalDate.of(2017, Month.JANUARY, 15);
 		// 2 Adressen, eine davon läuft während Gesuchsperiode ab
-		GesuchstellerAdresseContainer adresseAblaufend = TestDataUtil.createDefaultGesuchstellerAdresseContainer(erstgesuch.getGesuchsteller1());
-		Objects.requireNonNull(adresseAblaufend.extractGueltigkeit()).setGueltigBis(datumAblauf.minusDays(1));
-		GesuchstellerAdresseContainer adresseZukuenftig = TestDataUtil.createDefaultGesuchstellerAdresseContainer(erstgesuch.getGesuchsteller1());
-		Objects.requireNonNull(adresseZukuenftig.extractGueltigkeit()).setGueltigAb(datumAblauf);
+		GesuchstellerAdresseContainer adresseAblaufend = TestDataUtil
+			.createDefaultGesuchstellerAdresseContainer(
+				erstgesuch.getGesuchsteller1()
+			);
+		Objects.requireNonNull(adresseAblaufend.extractGueltigkeit())
+			.setGueltigBis(datumAblauf.minusDays(1));
+		GesuchstellerAdresseContainer adresseZukuenftig = TestDataUtil
+			.createDefaultGesuchstellerAdresseContainer(
+				erstgesuch.getGesuchsteller1()
+			);
+		Objects.requireNonNull(adresseZukuenftig.extractGueltigkeit())
+			.setGueltigAb(datumAblauf);
 		erstgesuch.getGesuchsteller1().getAdressen().clear();
 		erstgesuch.getGesuchsteller1().getAdressen().add(adresseAblaufend);
 		erstgesuch.getGesuchsteller1().getAdressen().add(adresseZukuenftig);
 		// Fachstelle, welche während der Gesuchsperiode abläuft
-		Kind kind = erstgesuch.getKindContainers().iterator().next().getKindJA();
-		final PensumFachstelle defaultPensumFachstelle = TestDataUtil.createDefaultPensumFachstelle(kind);
+		Kind kind = erstgesuch.getKindContainers()
+			.iterator()
+			.next()
+			.getKindJA();
+		final PensumFachstelle defaultPensumFachstelle = TestDataUtil
+			.createDefaultPensumFachstelle(kind);
 		defaultPensumFachstelle.getGueltigkeit().setGueltigBis(datumAblauf);
 		kind.setPensumFachstelle(Set.of(defaultPensumFachstelle));
 
 		assertNotNull(erstgesuch);
 		assertNotNull(erstgesuch.getEingangsdatum());
 		assertNotNull(erstgesuch.getFamiliensituationContainer());
-		assertNotNull(erstgesuch.getFamiliensituationContainer().getFamiliensituationJA());
+		assertNotNull(
+			erstgesuch.getFamiliensituationContainer()
+				.getFamiliensituationJA()
+		);
 		assertNotNull(erstgesuch.getKindContainers());
 		assertEquals(1, erstgesuch.getKindContainers().size());
 		assertNotNull(erstgesuch.extractAllBetreuungen());
 		assertEquals(2, erstgesuch.extractAllBetreuungen().size());
 		assertNotNull(erstgesuch.getGesuchsteller1());
-		assertNotNull(erstgesuch.getGesuchsteller1().getFinanzielleSituationContainer());
-		assertNotNull(erstgesuch.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA());
-		assertEquals(MathUtil.DEFAULT.from(53265), erstgesuch.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA().getNettolohn());
+		assertNotNull(
+			erstgesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+		);
+		assertNotNull(
+			erstgesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA()
+		);
+		assertEquals(
+			MathUtil.DEFAULT.from(53265),
+			erstgesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA()
+				.getNettolohn()
+		);
 		assertNotNull(erstgesuch.getEinkommensverschlechterungInfoContainer());
-		assertNotNull(erstgesuch.getEinkommensverschlechterungInfoContainer().getEinkommensverschlechterungInfoJA());
-		assertNotNull(erstgesuch.getGesuchsteller1().getEinkommensverschlechterungContainer());
-		assertNotNull(erstgesuch.getGesuchsteller1().getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1());
-		assertNotNull(erstgesuch.getGesuchsteller1().getEinkommensverschlechterungContainer().getEkvGSBasisJahrPlus1());
-		assertEquals(MathUtil.DEFAULT.from(1), erstgesuch.getGesuchsteller1().getEinkommensverschlechterungContainer().getEkvGSBasisJahrPlus1().getNettolohn());
+		assertNotNull(
+			erstgesuch.getEinkommensverschlechterungInfoContainer()
+				.getEinkommensverschlechterungInfoJA()
+		);
+		assertNotNull(
+			erstgesuch.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+		);
+		assertNotNull(
+			erstgesuch.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+				.getEkvJABasisJahrPlus1()
+		);
+		assertNotNull(
+			erstgesuch.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+				.getEkvGSBasisJahrPlus1()
+		);
+		assertEquals(
+			MathUtil.DEFAULT.from(1),
+			erstgesuch.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+				.getEkvGSBasisJahrPlus1()
+				.getNettolohn()
+		);
 		assertNotNull(erstgesuch.getDokumentGrunds());
 		assertEquals(1, erstgesuch.getDokumentGrunds().size());
 
@@ -105,10 +192,30 @@ public class CopyTest {
 		Dossier folgeDossier = TestDataUtil.createDefaultDossier();
 		folgeDossier.setFall(erstgesuch.getFall());
 
-		mutation = erstgesuch.copyForMutation(new Gesuch(), Eingangsart.ONLINE, erstgesuch.getEingangsdatum());
-		erneuerung = erstgesuch.copyForErneuerung(new Gesuch(), folgeperiode, Eingangsart.ONLINE, erstgesuch.getEingangsdatum());
-		mutationNeuesDossier = erstgesuch.copyForMutationNeuesDossier(new Gesuch(), Eingangsart.ONLINE, folgeDossier);
-		erneuerungNeuesDossier = erstgesuch.copyForErneuerungsgesuchNeuesDossier(new Gesuch(), Eingangsart.ONLINE, folgeDossier, folgeperiode, erstgesuch.getEingangsdatum());
+		mutation = erstgesuch.copyForMutation(
+			new Gesuch(),
+			Eingangsart.ONLINE,
+			erstgesuch.getEingangsdatum()
+		);
+		erneuerung = erstgesuch.copyForErneuerung(
+			new Gesuch(),
+			folgeperiode,
+			Eingangsart.ONLINE,
+			erstgesuch.getEingangsdatum()
+		);
+		mutationNeuesDossier = erstgesuch.copyForMutationNeuesDossier(
+			new Gesuch(),
+			Eingangsart.ONLINE,
+			folgeDossier
+		);
+		erneuerungNeuesDossier = erstgesuch
+			.copyForErneuerungsgesuchNeuesDossier(
+				new Gesuch(),
+				Eingangsart.ONLINE,
+				folgeDossier,
+				folgeperiode,
+				erstgesuch.getEingangsdatum()
+			);
 	}
 
 	@Test
@@ -123,19 +230,40 @@ public class CopyTest {
 		assertEquals(Eingangsart.ONLINE, mutation.getEingangsart());
 		assertEquals(Eingangsart.ONLINE, erneuerung.getEingangsart());
 		assertEquals(Eingangsart.ONLINE, mutationNeuesDossier.getEingangsart());
-		assertEquals(Eingangsart.ONLINE, erneuerungNeuesDossier.getEingangsart());
+		assertEquals(
+			Eingangsart.ONLINE,
+			erneuerungNeuesDossier.getEingangsart()
+		);
 
 		// Dossier
-		assertEquals(erstgesuch.getDossier().getId(), mutation.getDossier().getId());
-		assertEquals(erstgesuch.getDossier().getId(), erneuerung.getDossier().getId());
-		assertNotEquals(erstgesuch.getDossier().getId(), mutationNeuesDossier.getDossier().getId());
-		assertNotEquals(erstgesuch.getDossier().getId(), erneuerungNeuesDossier.getDossier().getId());
+		assertEquals(
+			erstgesuch.getDossier().getId(),
+			mutation.getDossier().getId()
+		);
+		assertEquals(
+			erstgesuch.getDossier().getId(),
+			erneuerung.getDossier().getId()
+		);
+		assertNotEquals(
+			erstgesuch.getDossier().getId(),
+			mutationNeuesDossier.getDossier().getId()
+		);
+		assertNotEquals(
+			erstgesuch.getDossier().getId(),
+			erneuerungNeuesDossier.getDossier().getId()
+		);
 
 		// Status
 		assertEquals(AntragStatus.IN_BEARBEITUNG_GS, mutation.getStatus());
 		assertEquals(AntragStatus.IN_BEARBEITUNG_GS, erneuerung.getStatus());
-		assertEquals(AntragStatus.IN_BEARBEITUNG_GS, mutationNeuesDossier.getStatus());
-		assertEquals(AntragStatus.IN_BEARBEITUNG_GS, erneuerungNeuesDossier.getStatus());
+		assertEquals(
+			AntragStatus.IN_BEARBEITUNG_GS,
+			mutationNeuesDossier.getStatus()
+		);
+		assertEquals(
+			AntragStatus.IN_BEARBEITUNG_GS,
+			erneuerungNeuesDossier.getStatus()
+		);
 
 		// Eingangsdatum / RegelnAbDatum: notnull because it is an online gesuch
 		assertNull(mutation.getEingangsdatum());
@@ -161,92 +289,210 @@ public class CopyTest {
 		assertNotNull(mutationNeuesDossier.extractFamiliensituation());
 		assertNotNull(erneuerungNeuesDossier.extractFamiliensituation());
 
-		assertEquals(EnumFamilienstatus.ALLEINERZIEHEND, Objects.requireNonNull(mutation.extractFamiliensituation()).getFamilienstatus());
-		assertEquals(EnumFamilienstatus.ALLEINERZIEHEND, Objects.requireNonNull(erneuerung.extractFamiliensituation()).getFamilienstatus());
-		assertEquals(EnumFamilienstatus.ALLEINERZIEHEND, Objects.requireNonNull(mutationNeuesDossier.extractFamiliensituation()).getFamilienstatus());
-		assertEquals(EnumFamilienstatus.ALLEINERZIEHEND, Objects.requireNonNull(erneuerungNeuesDossier.extractFamiliensituation()).getFamilienstatus());
+		assertEquals(
+			EnumFamilienstatus.ALLEINERZIEHEND,
+			Objects.requireNonNull(mutation.extractFamiliensituation())
+				.getFamilienstatus()
+		);
+		assertEquals(
+			EnumFamilienstatus.ALLEINERZIEHEND,
+			Objects.requireNonNull(erneuerung.extractFamiliensituation())
+				.getFamilienstatus()
+		);
+		assertEquals(
+			EnumFamilienstatus.ALLEINERZIEHEND,
+			Objects.requireNonNull(
+				mutationNeuesDossier.extractFamiliensituation()
+			).getFamilienstatus()
+		);
+		assertEquals(
+			EnumFamilienstatus.ALLEINERZIEHEND,
+			Objects.requireNonNull(
+				erneuerungNeuesDossier.extractFamiliensituation()
+			).getFamilienstatus()
+		);
 	}
 
 	@Test
 	public void copyGesuchsteller() {
 		assertNotNull(mutation.getGesuchsteller1());
 		assertNotNull(mutation.getGesuchsteller1().getGesuchstellerJA());
-		assertEquals("Dagmar Wälti", mutation.getGesuchsteller1().getGesuchstellerJA().getFullName());
+		assertEquals(
+			"Dagmar Wälti",
+			mutation.getGesuchsteller1().getGesuchstellerJA().getFullName()
+		);
 
 		assertNotNull(erneuerung.getGesuchsteller1());
 		assertNotNull(erneuerung.getGesuchsteller1().getGesuchstellerJA());
-		assertEquals("Dagmar Wälti", erneuerung.getGesuchsteller1().getGesuchstellerJA().getFullName());
+		assertEquals(
+			"Dagmar Wälti",
+			erneuerung.getGesuchsteller1()
+				.getGesuchstellerJA()
+				.getFullName()
+		);
 
 		assertNotNull(mutationNeuesDossier.getGesuchsteller1());
-		assertNotNull(mutationNeuesDossier.getGesuchsteller1().getGesuchstellerJA());
-		assertEquals("Dagmar Wälti", mutationNeuesDossier.getGesuchsteller1().getGesuchstellerJA().getFullName());
+		assertNotNull(
+			mutationNeuesDossier.getGesuchsteller1().getGesuchstellerJA()
+		);
+		assertEquals(
+			"Dagmar Wälti",
+			mutationNeuesDossier.getGesuchsteller1()
+				.getGesuchstellerJA()
+				.getFullName()
+		);
 
 		assertNotNull(erneuerungNeuesDossier.getGesuchsteller1());
-		assertNotNull(erneuerungNeuesDossier.getGesuchsteller1().getGesuchstellerJA());
-		assertEquals("Dagmar Wälti", erneuerungNeuesDossier.getGesuchsteller1().getGesuchstellerJA().getFullName());
+		assertNotNull(
+			erneuerungNeuesDossier.getGesuchsteller1().getGesuchstellerJA()
+		);
+		assertEquals(
+			"Dagmar Wälti",
+			erneuerungNeuesDossier.getGesuchsteller1()
+				.getGesuchstellerJA()
+				.getFullName()
+		);
 	}
 
 	@Test
 	public void copyEinkommensverschlechterung() {
 		// Mutation: Wird kopiert
 		assertNotNull(mutation.getEinkommensverschlechterungInfoContainer());
-		assertNotNull(mutation.getEinkommensverschlechterungInfoContainer().getEinkommensverschlechterungInfoJA());
-		assertEquals(Boolean.TRUE,
-			mutation.getEinkommensverschlechterungInfoContainer().getEinkommensverschlechterungInfoJA().getEkvFuerBasisJahrPlus1());
+		assertNotNull(
+			mutation.getEinkommensverschlechterungInfoContainer()
+				.getEinkommensverschlechterungInfoJA()
+		);
+		assertEquals(
+			Boolean.TRUE,
+			mutation.getEinkommensverschlechterungInfoContainer()
+				.getEinkommensverschlechterungInfoJA()
+				.getEkvFuerBasisJahrPlus1()
+		);
 		assertNotNull(mutation.getGesuchsteller1());
-		assertNotNull(mutation.getGesuchsteller1().getEinkommensverschlechterungContainer());
-		assertNotNull(mutation.getGesuchsteller1().getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1());
-		assertNotNull(mutation.getGesuchsteller1().getFinanzielleSituationContainer());
-		assertEquals(MathUtil.DEFAULT.from(53265), mutation.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA().getNettolohn());
+		assertNotNull(
+			mutation.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+		);
+		assertNotNull(
+			mutation.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+				.getEkvJABasisJahrPlus1()
+		);
+		assertNotNull(
+			mutation.getGesuchsteller1().getFinanzielleSituationContainer()
+		);
+		assertEquals(
+			MathUtil.DEFAULT.from(53265),
+			mutation.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA()
+				.getNettolohn()
+		);
 
 		// Erneuerung: Wird nicht kopiert
 		assertNull(erneuerung.getEinkommensverschlechterungInfoContainer());
 		assertNotNull(erneuerung.getGesuchsteller1());
-		assertNull(erneuerung.getGesuchsteller1().getEinkommensverschlechterungContainer());
+		assertNull(
+			erneuerung.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+		);
 
 		// Neues Dossier im selben Jahr: Wird kopiert
-		assertNotNull(mutationNeuesDossier.getEinkommensverschlechterungInfoContainer());
-		assertNotNull(mutationNeuesDossier.getEinkommensverschlechterungInfoContainer().getEinkommensverschlechterungInfoJA());
-		assertEquals(Boolean.TRUE,
-			mutationNeuesDossier.getEinkommensverschlechterungInfoContainer().getEinkommensverschlechterungInfoJA().getEkvFuerBasisJahrPlus1());
+		assertNotNull(
+			mutationNeuesDossier
+				.getEinkommensverschlechterungInfoContainer()
+		);
+		assertNotNull(
+			mutationNeuesDossier
+				.getEinkommensverschlechterungInfoContainer()
+				.getEinkommensverschlechterungInfoJA()
+		);
+		assertEquals(
+			Boolean.TRUE,
+			mutationNeuesDossier
+				.getEinkommensverschlechterungInfoContainer()
+				.getEinkommensverschlechterungInfoJA()
+				.getEkvFuerBasisJahrPlus1()
+		);
 		assertNotNull(mutationNeuesDossier.getGesuchsteller1());
-		assertNotNull(mutationNeuesDossier.getGesuchsteller1().getEinkommensverschlechterungContainer());
-		assertNotNull(mutationNeuesDossier.getGesuchsteller1().getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1());
-		assertNotNull(mutationNeuesDossier.getGesuchsteller1().getFinanzielleSituationContainer());
-		assertEquals(MathUtil.DEFAULT.from(53265), mutationNeuesDossier.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA().getNettolohn());
+		assertNotNull(
+			mutationNeuesDossier.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+		);
+		assertNotNull(
+			mutationNeuesDossier.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+				.getEkvJABasisJahrPlus1()
+		);
+		assertNotNull(
+			mutationNeuesDossier.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+		);
+		assertEquals(
+			MathUtil.DEFAULT.from(53265),
+			mutationNeuesDossier.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA()
+				.getNettolohn()
+		);
 
 		// Neues Dossier im neuen Jahr: Wird nicht kopiert
-		assertNull(erneuerungNeuesDossier.getEinkommensverschlechterungInfoContainer());
+		assertNull(
+			erneuerungNeuesDossier
+				.getEinkommensverschlechterungInfoContainer()
+		);
 		assertNotNull(erneuerungNeuesDossier.getGesuchsteller1());
-		assertNull(erneuerungNeuesDossier.getGesuchsteller1().getEinkommensverschlechterungContainer());
+		assertNull(
+			erneuerungNeuesDossier.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+		);
 	}
 
 	@Test
 	public void copyKinder() {
 		assertNotNull(mutation.getKindContainers());
 		assertEquals(1, mutation.getKindContainers().size());
-		Kind kindMutation = mutation.getKindContainers().iterator().next().getKindJA();
+		Kind kindMutation = mutation.getKindContainers()
+			.iterator()
+			.next()
+			.getKindJA();
 		assertNotNull(kindMutation);
 		assertEquals("Simon Wälti", kindMutation.getFullName());
-		assertEquals(EinschulungTyp.VORSCHULALTER, kindMutation.getEinschulungTyp());
+		assertEquals(
+			EinschulungTyp.VORSCHULALTER,
+			kindMutation.getEinschulungTyp()
+		);
 
 		assertNotNull(erneuerung.getKindContainers());
 		assertEquals(1, erneuerung.getKindContainers().size());
-		Kind kindErneuerung = erneuerung.getKindContainers().iterator().next().getKindJA();
+		Kind kindErneuerung = erneuerung.getKindContainers()
+			.iterator()
+			.next()
+			.getKindJA();
 		assertNotNull(kindErneuerung);
 		assertEquals("Simon Wälti", kindErneuerung.getFullName());
 		assertNull(kindErneuerung.getEinschulungTyp()); // Wird nicht kopiert!
 
 		assertNotNull(mutationNeuesDossier.getKindContainers());
 		assertEquals(1, mutationNeuesDossier.getKindContainers().size());
-		Kind kindMutationNeuesDossier = mutationNeuesDossier.getKindContainers().iterator().next().getKindJA();
+		Kind kindMutationNeuesDossier = mutationNeuesDossier.getKindContainers()
+			.iterator()
+			.next()
+			.getKindJA();
 		assertNotNull(kindMutationNeuesDossier);
 		assertEquals("Simon Wälti", kindMutationNeuesDossier.getFullName());
-		assertEquals(EinschulungTyp.VORSCHULALTER, kindMutationNeuesDossier.getEinschulungTyp());
+		assertEquals(
+			EinschulungTyp.VORSCHULALTER,
+			kindMutationNeuesDossier.getEinschulungTyp()
+		);
 
 		assertNotNull(erneuerungNeuesDossier.getKindContainers());
 		assertEquals(1, erneuerungNeuesDossier.getKindContainers().size());
-		Kind kindErneuerungNeuesDossier = erneuerungNeuesDossier.getKindContainers().iterator().next().getKindJA();
+		Kind kindErneuerungNeuesDossier = erneuerungNeuesDossier
+			.getKindContainers()
+			.iterator()
+			.next()
+			.getKindJA();
 		assertNotNull(kindErneuerungNeuesDossier);
 		assertEquals("Simon Wälti", kindErneuerungNeuesDossier.getFullName());
 		assertNull(kindErneuerungNeuesDossier.getEinschulungTyp());
@@ -297,34 +543,60 @@ public class CopyTest {
 		// Neue Gemeinde: Es werden nur aktive Adressen kopiert (egal welche GP)
 		assertNotNull(mutationNeuesDossier.getGesuchsteller1());
 		assertNotNull(mutationNeuesDossier.getGesuchsteller1().getAdressen());
-		assertEquals(1, mutationNeuesDossier.getGesuchsteller1().getAdressen().size());
+		assertEquals(
+			1,
+			mutationNeuesDossier.getGesuchsteller1().getAdressen().size()
+		);
 
 		assertNotNull(erneuerungNeuesDossier.getGesuchsteller1());
 		assertNotNull(erneuerungNeuesDossier.getGesuchsteller1().getAdressen());
-		assertEquals(1, erneuerungNeuesDossier.getGesuchsteller1().getAdressen().size());
+		assertEquals(
+			1,
+			erneuerungNeuesDossier.getGesuchsteller1().getAdressen().size()
+		);
 	}
 
 	@Test
 	public void copyFachstellen() {
 		// Fachstellen werden im gleichen Jahr immer kopiert, im neuen Jahr nur wenn noch aktuell (unabhängig von Gemeinde)
-		KindContainer kindMutation = mutation.getKindContainers().iterator().next();
+		KindContainer kindMutation = mutation.getKindContainers()
+			.iterator()
+			.next();
 		assertNotNull(kindMutation);
 		assertNotNull(kindMutation.getKindJA());
 		assertNotNull(kindMutation.getKindJA().getPensumFachstelle());
 
-		KindContainer kindErneuerung = erneuerung.getKindContainers().iterator().next();
+		KindContainer kindErneuerung = erneuerung.getKindContainers()
+			.iterator()
+			.next();
 		assertNotNull(kindErneuerung);
 		assertNotNull(kindErneuerung.getKindJA());
-		assertThat(kindErneuerung.getKindJA().getPensumFachstelle().size(), is(0));
+		assertThat(
+			kindErneuerung.getKindJA().getPensumFachstelle().size(),
+			is(0)
+		);
 
-		KindContainer kindMutationNeuesDossier = mutationNeuesDossier.getKindContainers().iterator().next();
+		KindContainer kindMutationNeuesDossier = mutationNeuesDossier
+			.getKindContainers()
+			.iterator()
+			.next();
 		assertNotNull(kindMutationNeuesDossier);
 		assertNotNull(kindMutationNeuesDossier.getKindJA());
-		assertNotNull(kindMutationNeuesDossier.getKindJA().getPensumFachstelle());
+		assertNotNull(
+			kindMutationNeuesDossier.getKindJA().getPensumFachstelle()
+		);
 
-		KindContainer kindErneuerungNeuesDossier = erneuerungNeuesDossier.getKindContainers().iterator().next();
+		KindContainer kindErneuerungNeuesDossier = erneuerungNeuesDossier
+			.getKindContainers()
+			.iterator()
+			.next();
 		assertNotNull(kindErneuerungNeuesDossier);
 		assertNotNull(kindErneuerungNeuesDossier.getKindJA());
-		assertThat(kindErneuerungNeuesDossier.getKindJA().getPensumFachstelle().size(), is(0));
+		assertThat(
+			kindErneuerungNeuesDossier.getKindJA()
+				.getPensumFachstelle()
+				.size(),
+			is(0)
+		);
 	}
 }

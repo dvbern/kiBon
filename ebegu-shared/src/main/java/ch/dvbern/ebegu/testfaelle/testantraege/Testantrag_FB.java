@@ -8,14 +8,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle.testantraege;
+
+import java.time.LocalDate;
 
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
@@ -30,20 +32,26 @@ public class Testantrag_FB {
 	public Testantrag_FB(
 		Gesuchsperiode gesuchsperiode,
 		Gemeinde gemeinde,
-		FerienbetreuungAngabenStatus status) {
+		FerienbetreuungAngabenStatus status
+	) {
 		this.container = new FerienbetreuungAngabenContainer();
 
 		this.container.setGemeinde(gemeinde);
 		this.container.setGesuchsperiode(gesuchsperiode);
-		this.container.setStatus(FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE);
+		this.container.setStatus(
+			FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE
+		);
 
 		this.container.setAngabenDeklaration(
 			(new Testantrag_FerienbetreuungAngaben(status)).getAngaben()
 		);
 
-		if(status == FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON) {
+		if (status == FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON) {
 			this.container.copyForFreigabe();
-			this.container.setStatus(FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON);
+			this.container.setStatus(
+				FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON
+			);
+			this.container.setEinreichedatum(LocalDate.now());
 		}
 
 	}

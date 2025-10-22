@@ -18,12 +18,15 @@
 <div class="row">
     <div class="col-xs-12 dv-input-container-question">
         <div class="form-group">
-            <span class="ebegu-h1 required">{{ this.getLabel() }}</span>
+            <span class="ebegu-h1 margin-bottom-20 required">{{
+                this.getLabel()
+            }}</span>
             <dv-input-container-x [verticalAlign]="true">
                 <dv-radio-container-x>
                     <mat-radio-group
                         aria-labelledby="steuerveranlagungGemeinsam_id"
                         name="steuerveranlagungGemeinsam"
+                        data-test="steuerveranlagungGemeinsam.radio-group"
                         #steuerveranlagungGemeinsam="ngModel"
                         required
                         [(ngModel)]="
@@ -36,12 +39,16 @@
                             !gesuchModelManager.isKorrekturModusJugendamt()
                         "
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="radio-value.true"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="radio-value.false"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-error-messages
                         *ngIf="steuerveranlagungGemeinsam.touched"

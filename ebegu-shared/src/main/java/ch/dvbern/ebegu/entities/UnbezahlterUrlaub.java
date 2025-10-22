@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -20,7 +20,7 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -39,7 +39,10 @@ public class UnbezahlterUrlaub extends AbstractDateRangedEntity {
 	}
 
 	@Nonnull
-	public UnbezahlterUrlaub copyUnbezahlterUrlaub(@Nonnull UnbezahlterUrlaub target, @Nonnull AntragCopyType copyType) {
+	public UnbezahlterUrlaub copyUnbezahlterUrlaub(
+		@Nonnull UnbezahlterUrlaub target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractDateRangedEntity(target, copyType);
 		return target;
 	}
@@ -60,6 +63,9 @@ public class UnbezahlterUrlaub extends AbstractDateRangedEntity {
 			return false;
 		}
 		final UnbezahlterUrlaub otherUrlaub = (UnbezahlterUrlaub) other;
-		return Objects.equals(this.getGueltigkeit(), otherUrlaub.getGueltigkeit());
+		return Objects.equals(
+			this.getGueltigkeit(),
+			otherUrlaub.getGueltigkeit()
+		);
 	}
 }

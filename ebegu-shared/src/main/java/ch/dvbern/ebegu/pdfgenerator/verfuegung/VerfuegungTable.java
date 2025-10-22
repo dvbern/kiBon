@@ -8,14 +8,23 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.verfuegung;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.pdfgenerator.PdfUtil;
@@ -32,14 +41,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import static ch.dvbern.lib.invoicegenerator.pdf.PdfUtilities.DEFAULT_MULTIPLIED_LEADING;
 
 @RequiredArgsConstructor
@@ -53,8 +54,9 @@ public class VerfuegungTable {
 	private Font fontTabelle = null;
 	private Font fontTabelleBold = null;
 
-
-	private static final Logger LOG = LoggerFactory.getLogger(VerfuegungTable.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		VerfuegungTable.class
+	);
 
 	VerfuegungTable add(VerfuegungTableColumn column) {
 		this.groups.add(
@@ -72,12 +74,18 @@ public class VerfuegungTable {
 	}
 
 	private float[] calculateVerfuegungColumnWidths() {
-		return ArrayUtils.toPrimitive(getColumnsOfGroups().stream().map(column -> column.width).toArray(Float[]::new));
+		return ArrayUtils.toPrimitive(
+			getColumnsOfGroups().stream()
+				.map(column -> column.width)
+				.toArray(Float[]::new)
+		);
 	}
 
 	@Nonnull
 	private List<VerfuegungTableColumn> getColumnsOfGroups() {
-		return groups.stream().flatMap(g -> g.columns.stream()).collect(Collectors.toList());
+		return groups.stream()
+			.flatMap(g -> g.columns.stream())
+			.collect(Collectors.toList());
 	}
 
 	public PdfPTable build() {
@@ -88,7 +96,9 @@ public class VerfuegungTable {
 			LOG.error("Failed to set the width: {}", e.getMessage(), e);
 		}
 		table.setWidthPercentage(PdfElementGenerator.FULL_WIDTH);
-		table.setSpacingAfter(DEFAULT_MULTIPLIED_LEADING * getFontTabelle().getSize() * 2);
+		table.setSpacingAfter(
+			DEFAULT_MULTIPLIED_LEADING * getFontTabelle().getSize() * 2
+		);
 
 		if (hasRomanNumberTitel && hasAnyRomanNumber()) {
 			buildRomanNumberRow(table);
@@ -101,7 +111,8 @@ public class VerfuegungTable {
 	}
 
 	private boolean hasAnyRomanNumber() {
-		return getColumnsOfGroups().stream().anyMatch(col -> !Objects.equals(col.romanNumber, ""));
+		return getColumnsOfGroups().stream()
+			.anyMatch(col -> !Objects.equals(col.romanNumber, ""));
 
 	}
 
@@ -109,12 +120,18 @@ public class VerfuegungTable {
 		for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : zeitabschnitte) {
 			for (VerfuegungTableColumnGroup group : groups) {
 				for (VerfuegungTableColumn column : group.columns) {
-					table.addCell(createCell(
-						column.contentAlignment,
-						column.dataExtractor.apply(verfuegungZeitabschnitt),
-						column.bgColor,
-						column.boldContent ? getBoldFontTabelle() : getFontTabelle()
-					));
+					table.addCell(
+						createCell(
+							column.contentAlignment,
+							column.dataExtractor.apply(
+								verfuegungZeitabschnitt
+							),
+							column.bgColor,
+							column.boldContent ?
+								getBoldFontTabelle() :
+								getFontTabelle()
+						)
+					);
 				}
 			}
 		}
@@ -122,14 +139,20 @@ public class VerfuegungTable {
 
 	private Font getFontTabelle() {
 		if (fontTabelle == null) {
-			fontTabelle = PdfUtil.createFontWithSize(pageConfiguration.getFonts().getFont(), 8.0f);
+			fontTabelle = PdfUtil.createFontWithSize(
+				pageConfiguration.getFonts().getFont(),
+				8.0f
+			);
 		}
 		return fontTabelle;
 	}
 
 	private Font getBoldFontTabelle() {
 		if (fontTabelleBold == null) {
-			fontTabelleBold = PdfUtil.createFontWithSize(pageConfiguration.getFonts().getFontBold(), 8.0f);
+			fontTabelleBold = PdfUtil.createFontWithSize(
+				pageConfiguration.getFonts().getFontBold(),
+				8.0f
+			);
 		}
 		return fontTabelleBold;
 	}
@@ -137,13 +160,16 @@ public class VerfuegungTable {
 	private void buildRomanNumberRow(PdfPTable table) {
 		for (VerfuegungTableColumnGroup group : groups) {
 			for (VerfuegungTableColumn column : group.columns) {
-				table.addCell(createHeaderCell(
-					Element.ALIGN_CENTER,
-					column.romanNumber,
-					column.bgColor,
-					getFontTabelle(),
-					1,
-					1));
+				table.addCell(
+					createHeaderCell(
+						Element.ALIGN_CENTER,
+						column.romanNumber,
+						column.bgColor,
+						getFontTabelle(),
+						1,
+						1
+					)
+				);
 			}
 		}
 	}
@@ -152,27 +178,30 @@ public class VerfuegungTable {
 		for (VerfuegungTableColumnGroup group : groups) {
 			if (group.columns.size() == 1) {
 				var column = group.columns.get(0);
-				table.addCell(createHeaderCell(
-					column.headerAlignment,
-					column.title,
-					column.bgColor,
-					getFontTabelle(),
-					1,
-					2)
+				table.addCell(
+					createHeaderCell(
+						column.headerAlignment,
+						column.title,
+						column.bgColor,
+						getFontTabelle(),
+						1,
+						2
+					)
 				);
 			} else {
-				table.addCell(createHeaderCell(
-					group.headerAlignment,
-					group.title,
-					group.bgColor,
-					getFontTabelle(),
-					group.columns.size(),
-					1
-				));
+				table.addCell(
+					createHeaderCell(
+						group.headerAlignment,
+						group.title,
+						group.bgColor,
+						getFontTabelle(),
+						group.columns.size(),
+						1
+					)
+				);
 			}
 		}
 	}
-
 
 	private void buildSecondHeaderRow(PdfPTable table) {
 		for (VerfuegungTableColumnGroup group : groups) {
@@ -180,13 +209,16 @@ public class VerfuegungTable {
 				continue;
 			}
 			for (VerfuegungTableColumn column : group.columns) {
-					table.addCell(createHeaderCell(
+				table.addCell(
+					createHeaderCell(
 						column.headerAlignment,
 						column.title,
 						column.bgColor,
 						getFontTabelle(),
 						1,
-						1));
+						1
+					)
+				);
 			}
 		}
 	}
@@ -199,7 +231,14 @@ public class VerfuegungTable {
 		int colspan,
 		int rowspan
 	) {
-		PdfPCell cell = createDefaultCell(alignment, value, bgColor, font, rowspan, colspan);
+		PdfPCell cell = createDefaultCell(
+			alignment,
+			value,
+			bgColor,
+			font,
+			rowspan,
+			colspan
+		);
 		cell.setBorderWidthTop(0.0f);
 		return cell;
 	}
@@ -210,7 +249,14 @@ public class VerfuegungTable {
 		@Nullable Color bgColor,
 		@Nullable Font font
 	) {
-		final PdfPCell cell = createDefaultCell(alignment, value, bgColor, font, 1, 1);
+		final PdfPCell cell = createDefaultCell(
+			alignment,
+			value,
+			bgColor,
+			font,
+			1,
+			1
+		);
 		cell.setBorderWidthTop(0.5f);
 		return cell;
 	}
@@ -222,7 +268,8 @@ public class VerfuegungTable {
 		@Nullable Color bgColor,
 		@Nullable Font font,
 		int rowspan,
-		int colspan) {
+		int colspan
+	) {
 		PdfPCell cell;
 		cell = new PdfPCell(new Phrase(value, font));
 		cell.setHorizontalAlignment(alignment);

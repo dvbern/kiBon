@@ -16,8 +16,8 @@
 package ch.dvbern.ebegu.validators;
 
 import javax.annotation.Nullable;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.Berechtigung;
 import ch.dvbern.ebegu.util.ValidationMessageUtil;
@@ -40,30 +40,43 @@ import ch.dvbern.ebegu.util.ValidationMessageUtil;
  * - UserRole.SACHBEARBEITER_TRAEGERSCHAFT
  * - UserRole.SACHBEARBEITER_INSTITUTION
  */
-public class CheckBerechtigungGemeindeValidator implements ConstraintValidator<CheckBerechtigungGemeinde, Berechtigung> {
+public class CheckBerechtigungGemeindeValidator implements
+	ConstraintValidator<CheckBerechtigungGemeinde, Berechtigung> {
 
 	/**
 	 * Prueft ob die Berechtigung gueltig ist
 	 */
 	@Override
-	public boolean isValid(Berechtigung berechtigung, @Nullable ConstraintValidatorContext context) {
-		if (berechtigung.getRole().isRoleGemeindeabhaengig() && berechtigung.getGemeindeList().isEmpty()) {
+	public boolean isValid(
+		Berechtigung berechtigung,
+		@Nullable ConstraintValidatorContext context
+	) {
+		if (berechtigung.getRole().isRoleGemeindeabhaengig()
+			&& berechtigung.getGemeindeList().isEmpty()) {
 			setConstraintViolationMessage(context, true);
 			return false;
 
 		}
-		if (!berechtigung.getRole().isRoleGemeindeabhaengig() && !berechtigung.getGemeindeList().isEmpty()) {
+		if (!berechtigung.getRole().isRoleGemeindeabhaengig()
+			&& !berechtigung.getGemeindeList().isEmpty()) {
 			setConstraintViolationMessage(context, false);
 			return false;
 		}
 		return true;
 	}
 
-	private void setConstraintViolationMessage(@Nullable ConstraintValidatorContext context, boolean isGemeindeAbhaengig) {
+	private void setConstraintViolationMessage(
+		@Nullable ConstraintValidatorContext context,
+		boolean isGemeindeAbhaengig
+	) {
 		if (context != null) {
-			String message = ValidationMessageUtil.getMessage("invalid_berechtigung_gemeinde_rules"); //by default gemeinde not allowed
+			String message = ValidationMessageUtil.getMessage(
+				"invalid_berechtigung_gemeinde_rules"
+			); //by default gemeinde not allowed
 			if (isGemeindeAbhaengig) {
-				message = ValidationMessageUtil.getMessage("invalid_berechtigung_keine_gemeinde_rules");
+				message = ValidationMessageUtil.getMessage(
+					"invalid_berechtigung_keine_gemeinde_rules"
+				);
 			}
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(message)

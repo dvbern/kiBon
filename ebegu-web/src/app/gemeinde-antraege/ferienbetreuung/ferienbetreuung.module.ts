@@ -18,6 +18,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
+import {NgxIbanModule} from 'ngx-iban';
 import {SharedModule} from '../../shared/shared.module';
 import {WizardstepXModule} from '../../wizardstepX/wizardstep-x.module';
 import {FerienbetreuungAbschlussComponent} from './ferienbetreuung-abschluss/ferienbetreuung-abschluss.component';
@@ -26,6 +27,7 @@ import {FerienbetreuungFreigabeComponent} from './ferienbetreuung-freigabe/ferie
 import {FerienbetreuungKommantarComponent} from './ferienbetreuung-kommantar/ferienbetreuung-kommantar.component';
 import {FerienbetreuungBerechnungComponent} from './ferienbetreuung-kosten-einnahmen/ferienbetreuung-berechnung/ferienbetreuung-berechnung.component';
 import {FerienbetreuungKostenEinnahmenComponent} from './ferienbetreuung-kosten-einnahmen/ferienbetreuung-kosten-einnahmen.component';
+import {FerienbetreuungLastYearValueComponent} from './ferienbetreuung-last-year-value/ferienbetreuung-last-year-value.component';
 import {FerienbetreuungNutzungComponent} from './ferienbetreuung-nutzung/ferienbetreuung-nutzung.component';
 import {FerienbetreuungRoutingModule} from './ferienbetreuung-routing/ferienbetreuung-routing.module';
 import {FerienbetreuungStammdatenGemeindeComponent} from './ferienbetreuung-stammdaten-gemeinde/ferienbetreuung-stammdaten-gemeinde.component';
@@ -33,7 +35,7 @@ import {FerienbetreuungUploadComponent} from './ferienbetreuung-upload/ferienbet
 import {FerienbetreuungComponent} from './ferienbetreuung/ferienbetreuung.component';
 import {FerienbetreuungDokumentService} from './services/ferienbetreuung-dokument.service';
 import {FerienbetreuungService} from './services/ferienbetreuung.service';
-import {FerienbetreuungLastYearValueComponent} from './ferienbetreuung-last-year-value/ferienbetreuung-last-year-value.component';
+import {WarningComponent} from '../../shared/component/warning/warning.component';
 
 @NgModule({
     declarations: [
@@ -54,7 +56,9 @@ import {FerienbetreuungLastYearValueComponent} from './ferienbetreuung-last-year
         FerienbetreuungRoutingModule,
         WizardstepXModule,
         SharedModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        NgxIbanModule,
+        WarningComponent
     ],
     providers: [FerienbetreuungService, FerienbetreuungDokumentService]
 })

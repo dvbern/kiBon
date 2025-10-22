@@ -13,24 +13,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IComponentOptions, IPromise} from 'angular';
+import {IComponentOptions, IPromise, copy} from 'angular';
 import {combineLatest, from, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
-import {TSEinstellungKey} from '../../../../models/enums/TSEinstellungKey';
-import {TSFinanzielleSituationTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
-import {TSRole} from '../../../../models/enums/TSRole';
-import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
+import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
+import {getSchwyzFinSitTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
+import {TSRole} from '@kibon/shared/model/enums';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSEinkommensverschlechterungContainer} from '../../../../models/TSEinkommensverschlechterungContainer';
 import {TSEinkommensverschlechterungInfo} from '../../../../models/TSEinkommensverschlechterungInfo';
 import {TSEinkommensverschlechterungInfoContainer} from '../../../../models/TSEinkommensverschlechterungInfoContainer';
-import {TSEinstellung} from '../../../../models/TSEinstellung';
+import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
 import {TSGesuchstellerContainer} from '../../../../models/TSGesuchstellerContainer';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
@@ -45,6 +44,7 @@ import IQService = angular.IQService;
 import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 const removeDialogTemplate = require('../../../dialog/removeDialogTemplate.html');
 const LOG = LogFactory.createLog(
@@ -75,7 +75,8 @@ export class EinkommensverschlechterungInfoViewController extends AbstractGesuch
         'EinkommensverschlechterungContainerRS',
         '$timeout',
         '$translate',
-        'EinstellungRS'
+        'EinstellungRS',
+        'SharedUtilDvShowWarningAngabenVervollstaendingenService'
     ];
 
     public initialEinkVersInfo: TSEinkommensverschlechterungInfoContainer;
@@ -98,7 +99,8 @@ export class EinkommensverschlechterungInfoViewController extends AbstractGesuch
         private readonly ekvContainerRS: EinkommensverschlechterungContainerRS,
         $timeout: ITimeoutService,
         private readonly $translate: ITranslateService,
-        private readonly einstellungRS: EinstellungRS
+        private readonly einstellungRS: EinstellungRS,
+        private readonly sharedUtilDvShowWarningAngabenVervollstaendingenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
     ) {
         super(
             gesuchModelManager,
@@ -108,11 +110,11 @@ export class EinkommensverschlechterungInfoViewController extends AbstractGesuch
             wizardStepManager.getEKVStepName(gesuchModelManager.getGesuch()),
             $timeout
         );
-        this.initialEinkVersInfo = angular.copy(
+        this.initialEinkVersInfo = copy(
             this.gesuchModelManager.getGesuch()
                 .einkommensverschlechterungInfoContainer
         );
-        this.model = angular.copy(this.initialEinkVersInfo);
+        this.model = copy(this.initialEinkVersInfo);
         this.initViewModel();
         this.allowedRoles =
             this.TSRoleUtil.getAllRolesButTraegerschaftInstitution();
@@ -138,6 +140,10 @@ export class EinkommensverschlechterungInfoViewController extends AbstractGesuch
             this.model = new TSEinkommensverschlechterungInfoContainer();
             this.model.init();
         }
+    }
+
+    public showWarningAngabenVervollstaendigen(): boolean {
+        return this.sharedUtilDvShowWarningAngabenVervollstaendingenService.showWarningAngabenVervollstaendigen();
     }
 
     public getEinkommensverschlechterungsInfoContainer(): TSEinkommensverschlechterungInfoContainer {
@@ -176,9 +182,8 @@ export class EinkommensverschlechterungInfoViewController extends AbstractGesuch
     }
 
     private hasMandantOnlyEKVBasisJahr(): boolean {
-        return (
-            this.gesuchModelManager.getGesuch().finSitTyp ===
-            TSFinanzielleSituationTyp.SCHWYZ
+        return getSchwyzFinSitTyp().includes(
+            this.gesuchModelManager.getGesuch().finSitTyp
         );
     }
 
@@ -597,5 +602,13 @@ export class EinkommensverschlechterungInfoViewController extends AbstractGesuch
             this.model.einkommensverschlechterungInfoJA.ekvFuerBasisJahrPlus1 =
                 true;
         }
+    }
+
+    public showYearsErrorMessage(): boolean {
+        return (
+            (this.form.ekvFuerBasisJahrPlus1?.$touched ||
+                this.form.ekvFuerBasisJahrPlus2?.$touched) &&
+            this.form.ekvFuerBasisJahrPlus1?.$error.required
+        );
     }
 }

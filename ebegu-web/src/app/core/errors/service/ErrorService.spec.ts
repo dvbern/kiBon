@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IRootScopeService} from 'angular';
+import angular, {IRootScopeService} from 'angular';
 import {TSMessageEvent} from '../../../../models/enums/TSErrorEvent';
 import {TSErrorLevel} from '../../../../models/enums/TSErrorLevel';
 import {TSErrorType} from '../../../../models/enums/TSErrorType';

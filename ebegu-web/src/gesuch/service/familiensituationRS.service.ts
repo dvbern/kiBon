@@ -17,8 +17,8 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
-import {LogFactory} from '../../app/core/logging/LogFactory';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFamiliensituationContainer} from '../../models/TSFamiliensituationContainer';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {WizardStepManager} from './wizardStepManager';
@@ -37,9 +37,32 @@ export class FamiliensituationRS {
         private readonly wizardStepManager: WizardStepManager
     ) {}
 
-    public saveFamiliensituation(
+    public saveFamiliensituationAndHandleChange(
         familiensituation: TSFamiliensituationContainer,
         gesuchId: string
+    ): Observable<TSFamiliensituationContainer> {
+        return this.saveFamiliensituation(
+            familiensituation,
+            gesuchId,
+            `${this.serviceURL}/adapt-and-save/${encodeURIComponent(gesuchId)}`
+        );
+    }
+
+    public saveFamiliensituationOnly(
+        familiensituation: TSFamiliensituationContainer,
+        gesuchId: string
+    ): Observable<TSFamiliensituationContainer> {
+        return this.saveFamiliensituation(
+            familiensituation,
+            gesuchId,
+            `${this.serviceURL}/${encodeURIComponent(gesuchId)}`
+        );
+    }
+
+    private saveFamiliensituation(
+        familiensituation: TSFamiliensituationContainer,
+        gesuchId: string,
+        url: string
     ): Observable<TSFamiliensituationContainer> {
         let returnedFamiliensituation = {};
         returnedFamiliensituation =
@@ -48,15 +71,11 @@ export class FamiliensituationRS {
                 familiensituation
             );
         return this.$http
-            .put(
-                `${this.serviceURL}/${encodeURIComponent(gesuchId)}`,
-                returnedFamiliensituation,
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+            .put(url, returnedFamiliensituation, {
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            )
+            })
             .pipe(
                 mergeMap((response: any) =>
                     this.wizardStepManager

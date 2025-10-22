@@ -19,7 +19,7 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
-
+import {MandantService} from '@kibon/shared-util-mandant-service';
 @Component({
     selector: 'dv-onboarding-info-institution',
     templateUrl: './onboarding-info-institution.component.html',
@@ -27,7 +27,8 @@ import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.se
         './onboarding-info-institution.component.less',
         '../onboarding.less'
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class OnboardingInfoInstitutionComponent implements OnInit {
     private readonly description1: string = 'ONBOARDING_INSTITUTION_DESC1';
@@ -43,6 +44,7 @@ export class OnboardingInfoInstitutionComponent implements OnInit {
 
     public constructor(
         private readonly onboardingPlaceholderService: OnboardingPlaceholderService,
+        private readonly mandantService: MandantService,
         private readonly translate: TranslateService
     ) {}
 
@@ -70,11 +72,24 @@ export class OnboardingInfoInstitutionComponent implements OnInit {
         const emailBody = '&body=';
         const zeilenUmbruch = '%0D%0A%0D%0A';
         const body: string = this.translate.instant(this.emailBody, {
-            institution: this.institutionName
+            institutionName: this.institutionName,
+            mandantName: this.getMandantName()
         });
         const subject: string = this.translate.instant(this.subjectText);
         const endBody: string = this.translate.instant(this.emailEnd);
         window.location.href =
             mailto + subject + emailBody + body + zeilenUmbruch + endBody;
+    }
+
+    private getMandantName(): string {
+        let mandantName = this.mandantService
+            .parseHostnameForMandant()
+            .fullName.replace(/^\w+/, 'Mandant');
+
+        if (this.translate.currentLang === 'fr_be') {
+            mandantName = mandantName.replace(/\bBern\b/, 'Berne');
+        }
+
+        return mandantName;
     }
 }

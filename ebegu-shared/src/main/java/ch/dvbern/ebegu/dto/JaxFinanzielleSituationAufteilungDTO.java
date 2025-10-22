@@ -21,9 +21,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 @XmlTransient
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -61,7 +61,9 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return bruttoertraegeVermoegenGS1;
 	}
 
-	public void setBruttoertraegeVermoegenGS1(@Nullable BigDecimal bruttoertraegeVermoegenGS1) {
+	public void setBruttoertraegeVermoegenGS1(
+		@Nullable BigDecimal bruttoertraegeVermoegenGS1
+	) {
 		this.bruttoertraegeVermoegenGS1 = bruttoertraegeVermoegenGS1;
 	}
 
@@ -70,7 +72,9 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return abzugSchuldzinsenGS1;
 	}
 
-	public void setAbzugSchuldzinsenGS1(@Nullable BigDecimal abzugSchuldzinsenGS1) {
+	public void setAbzugSchuldzinsenGS1(
+		@Nullable BigDecimal abzugSchuldzinsenGS1
+	) {
 		this.abzugSchuldzinsenGS1 = abzugSchuldzinsenGS1;
 	}
 
@@ -79,7 +83,9 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return gewinnungskostenGS1;
 	}
 
-	public void setGewinnungskostenGS1(@Nullable BigDecimal gewinnungskostenGS1) {
+	public void setGewinnungskostenGS1(
+		@Nullable BigDecimal gewinnungskostenGS1
+	) {
 		this.gewinnungskostenGS1 = gewinnungskostenGS1;
 	}
 
@@ -88,7 +94,9 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return geleisteteAlimenteGS1;
 	}
 
-	public void setGeleisteteAlimenteGS1(@Nullable BigDecimal geleisteteAlimenteGS1) {
+	public void setGeleisteteAlimenteGS1(
+		@Nullable BigDecimal geleisteteAlimenteGS1
+	) {
 		this.geleisteteAlimenteGS1 = geleisteteAlimenteGS1;
 	}
 
@@ -106,8 +114,11 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return nettoertraegeErbengemeinschaftGS1;
 	}
 
-	public void setNettoertraegeErbengemeinschaftGS1(@Nullable BigDecimal nettoertraegeErbengemeinschaftGS1) {
-		this.nettoertraegeErbengemeinschaftGS1 = nettoertraegeErbengemeinschaftGS1;
+	public void setNettoertraegeErbengemeinschaftGS1(
+		@Nullable BigDecimal nettoertraegeErbengemeinschaftGS1
+	) {
+		this.nettoertraegeErbengemeinschaftGS1 =
+			nettoertraegeErbengemeinschaftGS1;
 	}
 
 	@Nullable
@@ -115,7 +126,9 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return bruttoertraegeVermoegenGS2;
 	}
 
-	public void setBruttoertraegeVermoegenGS2(@Nullable BigDecimal bruttoertraegeVermoegenGS2) {
+	public void setBruttoertraegeVermoegenGS2(
+		@Nullable BigDecimal bruttoertraegeVermoegenGS2
+	) {
 		this.bruttoertraegeVermoegenGS2 = bruttoertraegeVermoegenGS2;
 	}
 
@@ -124,7 +137,9 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return abzugSchuldzinsenGS2;
 	}
 
-	public void setAbzugSchuldzinsenGS2(@Nullable BigDecimal abzugSchuldzinsenGS2) {
+	public void setAbzugSchuldzinsenGS2(
+		@Nullable BigDecimal abzugSchuldzinsenGS2
+	) {
 		this.abzugSchuldzinsenGS2 = abzugSchuldzinsenGS2;
 	}
 
@@ -133,7 +148,9 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return gewinnungskostenGS2;
 	}
 
-	public void setGewinnungskostenGS2(@Nullable BigDecimal gewinnungskostenGS2) {
+	public void setGewinnungskostenGS2(
+		@Nullable BigDecimal gewinnungskostenGS2
+	) {
 		this.gewinnungskostenGS2 = gewinnungskostenGS2;
 	}
 
@@ -142,7 +159,9 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return geleisteteAlimenteGS2;
 	}
 
-	public void setGeleisteteAlimenteGS2(@Nullable BigDecimal geleisteteAlimenteGS2) {
+	public void setGeleisteteAlimenteGS2(
+		@Nullable BigDecimal geleisteteAlimenteGS2
+	) {
 		this.geleisteteAlimenteGS2 = geleisteteAlimenteGS2;
 	}
 
@@ -160,7 +179,10 @@ public class JaxFinanzielleSituationAufteilungDTO implements Serializable {
 		return nettoertraegeErbengemeinschaftGS2;
 	}
 
-	public void setNettoertraegeErbengemeinschaftGS2(@Nullable BigDecimal nettoertraegeErbengemeinschaftGS2) {
-		this.nettoertraegeErbengemeinschaftGS2 = nettoertraegeErbengemeinschaftGS2;
+	public void setNettoertraegeErbengemeinschaftGS2(
+		@Nullable BigDecimal nettoertraegeErbengemeinschaftGS2
+	) {
+		this.nettoertraegeErbengemeinschaftGS2 =
+			nettoertraegeErbengemeinschaftGS2;
 	}
 }

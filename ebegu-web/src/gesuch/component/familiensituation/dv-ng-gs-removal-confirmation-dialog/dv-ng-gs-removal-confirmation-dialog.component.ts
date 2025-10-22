@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
-import {DvNgRemoveDialogComponent} from '../../../../app/core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 
 export interface GSRemovalConfirmationDialogData {
@@ -11,14 +10,15 @@ export interface GSRemovalConfirmationDialogData {
 @Component({
     selector: 'dv-dv-ng-gs-removal-confirmation-dialog',
     templateUrl: './dv-ng-gs-removal-confirmation-dialog.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DvNgGsRemovalConfirmationDialogComponent {
     public readonly text: string;
 
     public constructor(
         private readonly $translate: TranslateService,
-        private readonly dialogRef: MatDialogRef<DvNgRemoveDialogComponent>,
+        private readonly dialogRef: MatDialogRef<DvNgGsRemovalConfirmationDialogComponent>,
         @Inject(MAT_DIALOG_DATA)
         private readonly data: GSRemovalConfirmationDialogData
     ) {

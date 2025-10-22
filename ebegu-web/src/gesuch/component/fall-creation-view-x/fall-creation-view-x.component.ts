@@ -21,30 +21,34 @@ import {
     Component,
     OnInit
 } from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
+import {GesuchUiMutationDialogComponent} from '@kibon/gesuch/ui/mutation-dialog';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {
+    TSWizardStepName,
+    TSWizardStepStatus,
+    TSRole,
+    TSGesuchsperiodeStatus
+} from '@kibon/shared/model/enums';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
-import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
-import {TSGemeinde} from '../../../models/TSGemeinde';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {GesuchRS} from '../../service/gesuchRS.rest';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewX} from '../abstractGesuchViewX';
+import {firstValueFrom} from 'rxjs';
 
 const LOG = LogFactory.createLog('FallCreationViewXComponent');
 
@@ -52,7 +56,8 @@ const LOG = LogFactory.createLog('FallCreationViewXComponent');
     selector: 'dv-fall-creation-view-x',
     templateUrl: './fall-creation-view-x.component.html',
     styleUrls: ['./fall-creation-view-x.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FallCreationViewXComponent
     extends AbstractGesuchViewX<TSGesuch>
@@ -79,7 +84,8 @@ export class FallCreationViewXComponent
         private readonly einstellungService: EinstellungRS,
         private readonly $state: StateService,
         private readonly gesuchRS: GesuchRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly dialog: MatDialog
     ) {
         super(
             gesuchModelManager,
@@ -128,9 +134,11 @@ export class FallCreationViewXComponent
                 this.gesuchModelManager.getGesuchsperiode().id;
         }
 
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.isTagesschuleEnabledForMandant = res.angebotTSActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.isTagesschuleEnabledForMandant = res.angebotTSActivated;
+            });
 
         const dossier = this.gesuchModelManager.getDossier();
         if (!dossier) {
@@ -180,6 +188,36 @@ export class FallCreationViewXComponent
             return;
         }
         this.errorService.clearAll();
+        if (
+            this.authServiceRS.isRole(TSRole.GESUCHSTELLER) &&
+            this.gesuchModelManager.isNewMutation() &&
+            this.getGesuchModel().gesuchsperiode.isBefore(MomentUtil.now())
+        ) {
+            firstValueFrom(
+                this.dialog
+                    .open(GesuchUiMutationDialogComponent, {
+                        data: {
+                            periode:
+                                this.gesuchModelManager.getGesuch()
+                                    .gesuchsperiode
+                        }
+                    })
+                    .afterClosed()
+            ).then(async hasConfirmed => {
+                if (hasConfirmed) {
+                    this.saveGesuchAndFall(navigateFunction);
+                } else {
+                    this.$state.go('gesuchsteller.dashboard');
+                }
+            });
+        } else {
+            this.saveGesuchAndFall(navigateFunction);
+        }
+    }
+
+    private saveGesuchAndFall(
+        navigateFunction: (gesuch: TSGesuch | undefined | void) => void
+    ): void {
         this.gesuchModelManager
             .saveGesuchAndFall()
             .then(gesuch => {
@@ -337,7 +375,7 @@ export class FallCreationViewXComponent
 
     public getPeriodString(): string {
         if (this.getGemeinde()) {
-            return DateUtil.calculatePeriodenStartdatumString(
+            return MomentUtil.calculatePeriodenStartdatumString(
                 this.getGemeinde().betreuungsgutscheineStartdatum
             );
         }

@@ -15,20 +15,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {TSBetreuungsangebotTyp} from '../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSBetreuungsstatus} from '../models/enums/betreuung/TSBetreuungsstatus';
-import {TSAdressetyp} from '../models/enums/TSAdressetyp';
+import angular from 'angular';
+import moment from 'moment';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
+import {TSAdressetyp} from '@kibon/shared/model/enums';
 import {TSAntragTyp} from '../models/enums/TSAntragTyp';
-import {TSFachstelleName} from '../models/enums/TSFachstelleName';
 import {TSFinanzielleSituationTyp} from '../models/enums/TSFinanzielleSituationTyp';
-import {TSGeschlecht} from '../models/enums/TSGeschlecht';
-import {TSGesuchsperiodeStatus} from '../models/enums/TSGesuchsperiodeStatus';
+import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
+
 import {TSPensumUnits} from '../models/enums/TSPensumUnits';
 import {TSVerfuegungZeitabschnittZahlungsstatus} from '../models/enums/TSVerfuegungZeitabschnittZahlungsstatus';
 import {TSAbwesenheit} from '../models/TSAbwesenheit';
 import {TSAbwesenheitContainer} from '../models/TSAbwesenheitContainer';
-import {TSAdresse} from '../models/TSAdresse';
+import {TSAdresse} from '@kibon/shared/model/entity';
 import {TSAntragDTO} from '../models/TSAntragDTO';
 import {TSBetreuung} from '../models/TSBetreuung';
 import {TSBetreuungspensum} from '../models/TSBetreuungspensum';
@@ -36,23 +36,27 @@ import {TSBetreuungspensumContainer} from '../models/TSBetreuungspensumContainer
 import {TSDossier} from '../models/TSDossier';
 import {TSErweiterteBetreuungContainer} from '../models/TSErweiterteBetreuungContainer';
 import {TSErwerbspensum} from '../models/TSErwerbspensum';
-import {TSFachstelle} from '../models/TSFachstelle';
+import {
+    TSDateRange,
+    TSFachstelle,
+    TSFachstelleName,
+    TSGeschlecht
+} from '@kibon/shared/model/entity';
 import {TSFall} from '../models/TSFall';
 import {TSFamiliensituation} from '../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../models/TSFamiliensituationContainer';
 import {TSGesuch} from '../models/TSGesuch';
-import {TSGesuchsperiode} from '../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSGesuchsteller} from '../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../models/TSGesuchstellerContainer';
-import {TSInstitution} from '../models/TSInstitution';
-import {TSInstitutionStammdaten} from '../models/TSInstitutionStammdaten';
-import {TSInstitutionStammdatenBetreuungsgutscheine} from '../models/TSInstitutionStammdatenBetreuungsgutscheine';
-import {TSMandant} from '../models/TSMandant';
-import {TSTraegerschaft} from '../models/TSTraegerschaft';
+import {TSInstitution} from '@kibon/shared/model/entity';
+import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
+import {TSInstitutionStammdatenBetreuungsgutscheine} from '@kibon/shared/model/entity';
+import {TSMandant} from '@kibon/shared/model/entity';
+import {TSTraegerschaft} from '@kibon/shared/model/entity';
 import {TSVerfuegung} from '../models/TSVerfuegung';
 import {TSVerfuegungZeitabschnitt} from '../models/TSVerfuegungZeitabschnitt';
-import {TSDateRange} from '../models/types/TSDateRange';
-import {DateUtil} from './DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from './EbeguRestUtil';
 import {TestDataUtil} from './TestDataUtil.spec';
 
@@ -69,7 +73,7 @@ describe('EbeguRestUtil', () => {
     beforeEach(
         angular.mock.inject(() => {
             ebeguRestUtil = new EbeguRestUtil();
-            today = DateUtil.today();
+            today = MomentUtil.today();
         })
     );
 
@@ -326,8 +330,8 @@ describe('EbeguRestUtil', () => {
                 instStam.mail = 'mail@example.com';
                 instStam.telefon = 'telefon';
                 instStam.gueltigkeit = new TSDateRange(
-                    DateUtil.today(),
-                    DateUtil.today()
+                    MomentUtil.today(),
+                    MomentUtil.today()
                 );
 
                 TestDataUtil.setAbstractMutableFieldsUndefined(instStam);
@@ -341,7 +345,7 @@ describe('EbeguRestUtil', () => {
                     0,
                     0,
                     0,
-                    new TSDateRange(DateUtil.today(), DateUtil.today()),
+                    new TSDateRange(MomentUtil.today(), MomentUtil.today()),
                     0
                 );
                 TestDataUtil.setAbstractMutableFieldsUndefined(
@@ -357,7 +361,7 @@ describe('EbeguRestUtil', () => {
                     0,
                     0,
                     0,
-                    new TSDateRange(DateUtil.today(), DateUtil.today()),
+                    new TSDateRange(MomentUtil.today(), MomentUtil.today()),
                     0
                 );
                 TestDataUtil.setAbstractMutableFieldsUndefined(
@@ -500,7 +504,7 @@ describe('EbeguRestUtil', () => {
                     0,
                     0,
                     0,
-                    new TSDateRange(DateUtil.today(), DateUtil.today()),
+                    new TSDateRange(MomentUtil.today(), MomentUtil.today()),
                     0
                 );
                 TestDataUtil.setAbstractMutableFieldsUndefined(
@@ -565,8 +569,8 @@ describe('EbeguRestUtil', () => {
                 myInstitutionStammdaten.mail = 'my-mail';
                 myInstitutionStammdaten.telefon = 'my-phone';
                 myInstitutionStammdaten.gueltigkeit = new TSDateRange(
-                    DateUtil.today(),
-                    DateUtil.today()
+                    MomentUtil.today(),
+                    MomentUtil.today()
                 );
                 myInstitutionStammdaten.erinnerungMail = 'my-erinnerung-mail';
                 myInstitutionStammdaten.grundSchliessung = 'my ground';
@@ -599,12 +603,12 @@ describe('EbeguRestUtil', () => {
                     myInstitutionStammdaten.telefon
                 );
                 expect(restInstitutionStammdaten.gueltigAb).toEqual(
-                    DateUtil.momentToLocalDate(
+                    MomentUtil.momentToLocalDate(
                         myInstitutionStammdaten.gueltigkeit.gueltigAb
                     )
                 );
                 expect(restInstitutionStammdaten.gueltigBis).toEqual(
-                    DateUtil.momentToLocalDate(
+                    MomentUtil.momentToLocalDate(
                         myInstitutionStammdaten.gueltigkeit.gueltigBis
                     )
                 );
@@ -664,12 +668,12 @@ describe('EbeguRestUtil', () => {
                     erwerbspensumJA.pensum
                 );
                 expect(restErwerbspensum.gueltigAb).toEqual(
-                    DateUtil.momentToLocalDate(
+                    MomentUtil.momentToLocalDate(
                         erwerbspensumJA.gueltigkeit.gueltigAb
                     )
                 );
                 expect(restErwerbspensum.gueltigBis).toEqual(
-                    DateUtil.momentToLocalDate(
+                    MomentUtil.momentToLocalDate(
                         erwerbspensumJA.gueltigkeit.gueltigBis
                     )
                 );
@@ -738,8 +742,8 @@ describe('EbeguRestUtil', () => {
                 myPendenz.fallNummer = 1;
                 myPendenz.familienName = 'name';
                 myPendenz.antragTyp = TSAntragTyp.ERSTGESUCH;
-                myPendenz.eingangsdatum = DateUtil.today();
-                myPendenz.aenderungsdatum = DateUtil.today();
+                myPendenz.eingangsdatum = MomentUtil.today();
+                myPendenz.aenderungsdatum = MomentUtil.today();
                 myPendenz.angebote = [TSBetreuungsangebotTyp.KITA];
                 myPendenz.institutionen = ['Inst1, Inst2'];
                 myPendenz.verantwortlicherBG = 'Juan Arbolado';

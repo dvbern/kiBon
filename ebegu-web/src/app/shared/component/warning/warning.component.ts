@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
@@ -6,8 +6,7 @@ import {TranslateModule} from '@ngx-translate/core';
     templateUrl: './warning.component.html',
     styleUrls: ['./warning.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [TranslateModule],
-    standalone: true
+    imports: [TranslateModule]
 })
 export class WarningComponent {
     @Input() public text: string;

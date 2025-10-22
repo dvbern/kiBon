@@ -15,6 +15,11 @@
 
 package ch.dvbern.ebegu.ws.ewk;
 
+import java.security.SecureRandom;
+import java.time.LocalDate;
+
+import javax.annotation.Nonnull;
+
 import ch.dvbern.ebegu.dto.personensuche.EWKAdresse;
 import ch.dvbern.ebegu.dto.personensuche.EWKBeziehung;
 import ch.dvbern.ebegu.dto.personensuche.EWKPerson;
@@ -25,41 +30,62 @@ import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.errors.PersonenSucheServiceBusinessException;
 import ch.dvbern.ebegu.errors.PersonenSucheServiceException;
 
-import javax.annotation.Nonnull;
-import java.security.SecureRandom;
-import java.time.LocalDate;
-
 public class GeresDummyClient implements GeresClient {
 
 	private final SecureRandom secureRandom = new SecureRandom();
 
 	@Nonnull
 	@Override
-	public EWKResultat suchePersonMitFallbackOhneVorname(@Nonnull String name, @Nonnull String vorname, @Nonnull LocalDate geburtsdatum, @Nonnull Geschlecht geschlecht, Long bfsNummer) {
+	public EWKResultat suchePersonMitFallbackOhneVorname(
+		@Nonnull String name,
+		@Nonnull String vorname,
+		@Nonnull LocalDate geburtsdatum,
+		@Nonnull Geschlecht geschlecht,
+		Long bfsNummer
+	) {
 		return suchePerson(name, vorname, geburtsdatum, geschlecht, bfsNummer);
 	}
 
 	@Nonnull
 	@Override
-	public EWKResultat suchePersonMitFallbackOhneVorname(@Nonnull String name, @Nonnull String vorname, @Nonnull LocalDate geburtsdatum, @Nonnull Geschlecht geschlecht) {
+	public EWKResultat suchePersonMitFallbackOhneVorname(
+		@Nonnull String name,
+		@Nonnull String vorname,
+		@Nonnull LocalDate geburtsdatum,
+		@Nonnull Geschlecht geschlecht
+	) {
 		return suchePerson(name, vorname, geburtsdatum, geschlecht, null);
 	}
 
-	private EWKResultat suchePerson(String name, String vorname, LocalDate geburtsdatum, Geschlecht geschlecht, Long bfsNummer) {
+	private EWKResultat suchePerson(
+		String name,
+		String vorname,
+		LocalDate geburtsdatum,
+		Geschlecht geschlecht,
+		Long bfsNummer
+	) {
 		EWKResultat ewkResultat = new EWKResultat();
 		EWKPerson person = new EWKPerson();
 		person.setPersonID(String.valueOf(secureRandom.nextInt(1000)));
 		person.setNachname(name == null ? "Muster" : name + ("-Muster"));
 		person.setVorname(vorname == null ? "Max" : vorname);
-		person.setGeburtsdatum(geburtsdatum == null ? LocalDate.now().minusYears(secureRandom.nextInt(50)) : geburtsdatum);
-		person.setGeschlecht(geschlecht == null ? Geschlecht.MAENNLICH : geschlecht);
+		person.setGeburtsdatum(
+			geburtsdatum == null ?
+				LocalDate.now().minusYears(secureRandom.nextInt(50)) :
+				geburtsdatum
+		);
+		person.setGeschlecht(
+			geschlecht == null ? Geschlecht.MAENNLICH : geschlecht
+		);
 		EWKAdresse adresse = new EWKAdresse();
 		adresse.setWohnungsId(2L);
 		adresse.setGebaeudeId(2L);
 		adresse.setPostleitzahl("3006");
 		adresse.setStrasse("Musterstrasse");
 		adresse.setOrt("Bern");
-		adresse.setGebiet("Bern ( " + (bfsNummer != null ? bfsNummer : "") + ')');
+		adresse.setGebiet(
+			"Bern ( " + (bfsNummer != null ? bfsNummer : "") + ')'
+		);
 		person.setAdresse(adresse);
 		person.setGesuchsteller(secureRandom.nextInt(100) % 3 == 0);
 		person.setHaushalt(secureRandom.nextInt(100) % 2 == 0);
@@ -82,14 +108,31 @@ public class GeresDummyClient implements GeresClient {
 
 	@Nonnull
 	@Override
-	public EWKResultat suchePersonenInHaushalt(Long wohnungsId, Long gebaeudeId) throws PersonenSucheServiceException, PersonenSucheServiceBusinessException {
-		return suchePerson("Chambre", "Max", LocalDate.parse("2021-12-11"), Geschlecht.WEIBLICH, 351L);
+	public EWKResultat suchePersonenInHaushalt(Long wohnungsId, Long gebaeudeId)
+		throws PersonenSucheServiceException,
+		PersonenSucheServiceBusinessException {
+		return suchePerson(
+			"Chambre",
+			"Max",
+			LocalDate.parse("2021-12-11"),
+			Geschlecht.WEIBLICH,
+			351L
+		);
 	}
 
 	@Nonnull
 	@Override
-	public EWKPerson suchePersonMitAhvNummerInGemeinde(Gesuchsteller gesuchsteller, Gemeinde gemeinde) {
-		return suchePerson(gesuchsteller.getNachname(), gesuchsteller.getVorname(), LocalDate.now(), Geschlecht.MAENNLICH, gemeinde.getBfsNummer()).getPersonen().get(0);
+	public EWKPerson suchePersonMitAhvNummerInGemeinde(
+		Gesuchsteller gesuchsteller,
+		Gemeinde gemeinde
+	) {
+		return suchePerson(
+			gesuchsteller.getNachname(),
+			gesuchsteller.getVorname(),
+			LocalDate.now(),
+			Geschlecht.MAENNLICH,
+			gemeinde.getBfsNummer()
+		).getPersonen().get(0);
 	}
 
 	@Override

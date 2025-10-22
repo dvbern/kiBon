@@ -8,14 +8,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.verfuegung;
+
+import java.awt.Color;
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
@@ -26,13 +31,11 @@ import com.lowagie.text.Document;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfPTable;
 
-import javax.annotation.Nonnull;
-import java.awt.Color;
-import java.util.List;
+public class VerfuegungPdfGeneratorLuzern extends
+	AbstractVerfuegungPdfGenerator {
 
-public class VerfuegungPdfGeneratorLuzern extends AbstractVerfuegungPdfGenerator {
-
-	private static final String GUTSCHEIN_PRO_STUNDE = "PdfGeneration_Verfuegung_GutscheinProStunde";
+	private static final String GUTSCHEIN_PRO_STUNDE =
+		"PdfGeneration_Verfuegung_GutscheinProStunde";
 
 	private boolean isBetreuungTagesfamilie = false;
 
@@ -58,16 +61,17 @@ public class VerfuegungPdfGeneratorLuzern extends AbstractVerfuegungPdfGenerator
 	@Override
 	protected void createDokumentNichtEintretten(
 		@Nonnull Document document,
-		@Nonnull PdfGenerator generator) {
+		@Nonnull PdfGenerator generator
+	) {
 
 		createDokumentNichtEintrettenDefault(document, generator);
 	}
 
-
 	@Nonnull
 	@Override
 	protected PdfPTable createVerfuegungTable() {
-		final List<VerfuegungZeitabschnitt> zeitabschnitte = getVerfuegungZeitabschnitt();
+		final List<VerfuegungZeitabschnitt> zeitabschnitte =
+			getVerfuegungZeitabschnitt();
 		VerfuegungTable verfuegungTable = new VerfuegungTable(
 			zeitabschnitte,
 			getPageConfiguration(),
@@ -84,7 +88,6 @@ public class VerfuegungPdfGeneratorLuzern extends AbstractVerfuegungPdfGenerator
 			verfuegungTable.add(createGutscheinProStundeColumn());
 		}
 
-
 		addEinstellungDependingColumns(verfuegungTable, zeitabschnitte);
 
 		return verfuegungTable.build();
@@ -96,7 +99,11 @@ public class VerfuegungPdfGeneratorLuzern extends AbstractVerfuegungPdfGenerator
 			.width(100)
 			.title(translate(GUTSCHEIN_PRO_STUNDE))
 			.bgColor(Color.LIGHT_GRAY)
-			.dataExtractor(abschnitt -> PdfUtil.printBigDecimal(abschnitt.getVerguenstigungProZeiteinheit()))
+			.dataExtractor(
+				abschnitt -> PdfUtil.printBigDecimal(
+					abschnitt.getVerguenstigungProZeiteinheit()
+				)
+			)
 			.build();
 	}
 
@@ -108,7 +115,11 @@ public class VerfuegungPdfGeneratorLuzern extends AbstractVerfuegungPdfGenerator
 			.bgColor(Color.LIGHT_GRAY)
 			.width(108)
 			.boldContent(true)
-			.dataExtractor(abschnitt -> PdfUtil.printBigDecimal(getVerguenstigungAnEltern(abschnitt)))
+			.dataExtractor(
+				abschnitt -> PdfUtil.printBigDecimal(
+					getVerguenstigungAnEltern(abschnitt)
+				)
+			)
 			.build();
 	}
 
@@ -120,7 +131,11 @@ public class VerfuegungPdfGeneratorLuzern extends AbstractVerfuegungPdfGenerator
 			.bgColor(Color.LIGHT_GRAY)
 			.boldContent(true)
 			.width(108)
-			.dataExtractor(abschnitt -> PdfUtil.printBigDecimal(getVerguenstigungAnInstitution(abschnitt)))
+			.dataExtractor(
+				abschnitt -> PdfUtil.printBigDecimal(
+					getVerguenstigungAnInstitution(abschnitt)
+				)
+			)
 			.build();
 	}
 
@@ -136,7 +151,10 @@ public class VerfuegungPdfGeneratorLuzern extends AbstractVerfuegungPdfGenerator
 	}
 
 	@Override
-	protected void createDokumentKeinAnspruchTFO(Document document, PdfGenerator generator) {
+	protected void createDokumentKeinAnspruchTFO(
+		Document document,
+		PdfGenerator generator
+	) {
 		super.createDokumentNormal(document, generator);
 	}
 

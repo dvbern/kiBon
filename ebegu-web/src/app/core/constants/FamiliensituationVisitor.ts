@@ -1,25 +1,19 @@
-import {KiBonMandant} from './MANDANTS';
-import {MandantVisitor} from './MandantVisitor';
+import {
+    AbstractMandantDefaultVisitor,
+    KiBonMandant
+} from '@kibon/shared-model-mandant';
 
-export class FamiliensituationVisitor implements MandantVisitor<any> {
+export class FamiliensituationVisitor extends AbstractMandantDefaultVisitor<any> {
     public process(mandant: KiBonMandant): any {
         return mandant.accept(this);
     }
 
+    protected visitDefault() {
+        return 'gesuch.familiensituation-default';
+    }
+
     public visitAppenzellAusserrhoden(): any {
         return 'gesuch.familiensituation-appenzell';
-    }
-
-    public visitBern(): any {
-        return 'gesuch.familiensituation-default';
-    }
-
-    public visitLuzern(): any {
-        return 'gesuch.familiensituation-default';
-    }
-
-    public visitSolothurn(): any {
-        return 'gesuch.familiensituation-default';
     }
 
     public visitSchwyz(): any {

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.mahlzeiten;
@@ -26,39 +26,62 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 
 public class MahlzeitenverguenstigungDataRow {
 
-	@Nullable private String referenzNummer;
-	@Nullable private Long fallNummer;
-	@Nullable private BetreuungsangebotTyp betreuungsTyp;
-	@Nullable private String institution;
-	@Nullable private String traegerschaft;
+	@Nullable
+	private String referenzNummer;
+	@Nullable
+	private Long fallNummer;
+	@Nullable
+	private BetreuungsangebotTyp betreuungsTyp;
+	@Nullable
+	private String institution;
+	@Nullable
+	private String traegerschaft;
 
-	@Nullable private String gs1Name;
-	@Nullable private String gs1Vorname;
+	@Nullable
+	private String gs1Name;
+	@Nullable
+	private String gs1Vorname;
 
-	@Nullable private String gs2Name;
-	@Nullable private String gs2Vorname;
+	@Nullable
+	private String gs2Name;
+	@Nullable
+	private String gs2Vorname;
 
-	@Nullable private Boolean sozialhilfeBezueger;
+	@Nullable
+	private Boolean sozialhilfeBezueger;
 
-	@Nullable private String iban;
+	@Nullable
+	private String iban;
 
-	@Nullable private BigDecimal massgebendesEinkommenVorFamAbzug;
-	@Nullable private BigDecimal famGroesse;
-	@Nullable private BigDecimal massgebendesEinkommenNachFamAbzug;
+	@Nullable
+	private BigDecimal massgebendesEinkommenVorFamAbzug;
+	@Nullable
+	private BigDecimal famGroesse;
+	@Nullable
+	private BigDecimal massgebendesEinkommenNachFamAbzug;
 
-	@Nullable private String kindName;
-	@Nullable private String kindVorname;
-	@Nullable private LocalDate kindGeburtsdatum;
+	@Nullable
+	private String kindName;
+	@Nullable
+	private String kindVorname;
+	@Nullable
+	private LocalDate kindGeburtsdatum;
 
-	@Nullable private LocalDate zeitabschnittVon;
-	@Nullable private LocalDate zeitabschnittBis;
+	@Nullable
+	private LocalDate zeitabschnittVon;
+	@Nullable
+	private LocalDate zeitabschnittBis;
 
-	@Nullable private BigDecimal anzahlHauptmahlzeiten;
-	@Nullable private BigDecimal anzahlNebenmahlzeiten;
-	@Nullable private BigDecimal kostenHauptmahlzeiten;
-	@Nullable private BigDecimal kostenNebenmahlzeiten;
-	@Nullable private BigDecimal berechneteMahlzeitenverguenstigung;
-
+	@Nullable
+	private BigDecimal anzahlHauptmahlzeiten;
+	@Nullable
+	private BigDecimal anzahlNebenmahlzeiten;
+	@Nullable
+	private BigDecimal kostenHauptmahlzeiten;
+	@Nullable
+	private BigDecimal kostenNebenmahlzeiten;
+	@Nullable
+	private BigDecimal berechneteMahlzeitenverguenstigung;
 
 	public MahlzeitenverguenstigungDataRow() {
 	}
@@ -158,8 +181,11 @@ public class MahlzeitenverguenstigungDataRow {
 		return massgebendesEinkommenVorFamAbzug;
 	}
 
-	public void setMassgebendesEinkommenVorFamAbzug(@Nullable BigDecimal massgebendesEinkommenVorFamAbzug) {
-		this.massgebendesEinkommenVorFamAbzug = massgebendesEinkommenVorFamAbzug;
+	public void setMassgebendesEinkommenVorFamAbzug(
+		@Nullable BigDecimal massgebendesEinkommenVorFamAbzug
+	) {
+		this.massgebendesEinkommenVorFamAbzug =
+			massgebendesEinkommenVorFamAbzug;
 	}
 
 	@Nullable
@@ -176,8 +202,11 @@ public class MahlzeitenverguenstigungDataRow {
 		return massgebendesEinkommenNachFamAbzug;
 	}
 
-	public void setMassgebendesEinkommenNachFamAbzug(@Nullable BigDecimal massgebendesEinkommenNachFamAbzug) {
-		this.massgebendesEinkommenNachFamAbzug = massgebendesEinkommenNachFamAbzug;
+	public void setMassgebendesEinkommenNachFamAbzug(
+		@Nullable BigDecimal massgebendesEinkommenNachFamAbzug
+	) {
+		this.massgebendesEinkommenNachFamAbzug =
+			massgebendesEinkommenNachFamAbzug;
 	}
 
 	@Nullable
@@ -230,7 +259,9 @@ public class MahlzeitenverguenstigungDataRow {
 		return anzahlHauptmahlzeiten;
 	}
 
-	public void setAnzahlHauptmahlzeiten(@Nullable BigDecimal anzahlHauptmahlzeiten) {
+	public void setAnzahlHauptmahlzeiten(
+		@Nullable BigDecimal anzahlHauptmahlzeiten
+	) {
 		this.anzahlHauptmahlzeiten = anzahlHauptmahlzeiten;
 	}
 
@@ -239,7 +270,9 @@ public class MahlzeitenverguenstigungDataRow {
 		return anzahlNebenmahlzeiten;
 	}
 
-	public void setAnzahlNebenmahlzeiten(@Nullable BigDecimal anzahlNebenmahlzeiten) {
+	public void setAnzahlNebenmahlzeiten(
+		@Nullable BigDecimal anzahlNebenmahlzeiten
+	) {
 		this.anzahlNebenmahlzeiten = anzahlNebenmahlzeiten;
 	}
 
@@ -248,7 +281,9 @@ public class MahlzeitenverguenstigungDataRow {
 		return kostenHauptmahlzeiten;
 	}
 
-	public void setKostenHauptmahlzeiten(@Nullable BigDecimal kostenHauptmahlzeiten) {
+	public void setKostenHauptmahlzeiten(
+		@Nullable BigDecimal kostenHauptmahlzeiten
+	) {
 		this.kostenHauptmahlzeiten = kostenHauptmahlzeiten;
 	}
 
@@ -257,7 +292,9 @@ public class MahlzeitenverguenstigungDataRow {
 		return kostenNebenmahlzeiten;
 	}
 
-	public void setKostenNebenmahlzeiten(@Nullable BigDecimal kostenNebenmahlzeiten) {
+	public void setKostenNebenmahlzeiten(
+		@Nullable BigDecimal kostenNebenmahlzeiten
+	) {
 		this.kostenNebenmahlzeiten = kostenNebenmahlzeiten;
 	}
 
@@ -266,8 +303,11 @@ public class MahlzeitenverguenstigungDataRow {
 		return berechneteMahlzeitenverguenstigung;
 	}
 
-	public void setBerechneteMahlzeitenverguenstigung(@Nullable BigDecimal berechneteMahlzeitenverguenstigung) {
-		this.berechneteMahlzeitenverguenstigung = berechneteMahlzeitenverguenstigung;
+	public void setBerechneteMahlzeitenverguenstigung(
+		@Nullable BigDecimal berechneteMahlzeitenverguenstigung
+	) {
+		this.berechneteMahlzeitenverguenstigung =
+			berechneteMahlzeitenverguenstigung;
 	}
 
 	@Nullable

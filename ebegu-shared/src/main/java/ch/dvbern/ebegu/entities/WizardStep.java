@@ -18,17 +18,17 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.enums.WizardStepStatus;
@@ -43,7 +43,8 @@ import org.hibernate.envers.Audited;
 @Entity
 @Audited
 @Table(
-	uniqueConstraints = @UniqueConstraint(columnNames = { "wizardStepName", "gesuch_id" }, name = "UK_wizardstep_gesuch_stepname")
+	uniqueConstraints = @UniqueConstraint(columnNames = { "wizardStepName",
+		"gesuch_id" }, name = "UK_wizardstep_gesuch_stepname")
 )
 public class WizardStep extends AbstractMutableEntity {
 
@@ -51,7 +52,9 @@ public class WizardStep extends AbstractMutableEntity {
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_wizardstep_gesuch_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_wizardstep_gesuch_id"),
+		nullable = false,
+		updatable = false)
 	private Gesuch gesuch;
 
 	@NotNull
@@ -126,9 +129,24 @@ public class WizardStep extends AbstractMutableEntity {
 			return false;
 		}
 		final WizardStep otherWizardStep = (WizardStep) other;
-		return Objects.equals(getWizardStepName(), otherWizardStep.getWizardStepName()) &&
-			Objects.equals(getWizardStepStatus(), otherWizardStep.getWizardStepStatus()) &&
-			Objects.equals(getBemerkungen(), otherWizardStep.getBemerkungen()) &&
-			Objects.equals(getVerfuegbar(), otherWizardStep.getVerfuegbar());
+		return Objects.equals(
+			getWizardStepName(),
+			otherWizardStep.getWizardStepName()
+		)
+			&&
+			Objects.equals(
+				getWizardStepStatus(),
+				otherWizardStep.getWizardStepStatus()
+			)
+			&&
+			Objects.equals(
+				getBemerkungen(),
+				otherWizardStep.getBemerkungen()
+			)
+			&&
+			Objects.equals(
+				getVerfuegbar(),
+				otherWizardStep.getVerfuegbar()
+			);
 	}
 }

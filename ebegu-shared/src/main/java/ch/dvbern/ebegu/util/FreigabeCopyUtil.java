@@ -17,11 +17,43 @@
 
 package ch.dvbern.ebegu.util;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.types.DateRange;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import ch.dvbern.ebegu.entities.AbstractFinanzielleSituation;
+import ch.dvbern.ebegu.entities.Abwesenheit;
+import ch.dvbern.ebegu.entities.AbwesenheitContainer;
+import ch.dvbern.ebegu.entities.Adresse;
+import ch.dvbern.ebegu.entities.Auszahlungsdaten;
+import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.Betreuungspensum;
+import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
+import ch.dvbern.ebegu.entities.Einkommensverschlechterung;
+import ch.dvbern.ebegu.entities.EinkommensverschlechterungContainer;
+import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfo;
+import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfoContainer;
+import ch.dvbern.ebegu.entities.ErweiterteBetreuung;
+import ch.dvbern.ebegu.entities.ErweiterteBetreuungContainer;
+import ch.dvbern.ebegu.entities.Erwerbspensum;
+import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
+import ch.dvbern.ebegu.entities.Familiensituation;
+import ch.dvbern.ebegu.entities.FamiliensituationContainer;
+import ch.dvbern.ebegu.entities.FinSitZusatzangabenAppenzell;
+import ch.dvbern.ebegu.entities.FinanzielleSituation;
+import ch.dvbern.ebegu.entities.FinanzielleSituationContainer;
+import ch.dvbern.ebegu.entities.FinanzielleSituationSelbstdeklaration;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Gesuchsteller;
+import ch.dvbern.ebegu.entities.GesuchstellerAdresse;
+import ch.dvbern.ebegu.entities.GesuchstellerAdresseContainer;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.entities.Kind;
+import ch.dvbern.ebegu.entities.KindContainer;
+import ch.dvbern.ebegu.entities.PensumFachstelle;
+import ch.dvbern.ebegu.entities.SozialhilfeZeitraum;
+import ch.dvbern.ebegu.entities.SozialhilfeZeitraumContainer;
+import ch.dvbern.ebegu.entities.UnbezahlterUrlaub;
+import ch.dvbern.ebegu.types.DateRange;
 
 /**
  * Utils fuer das Kopieren der Daten von den JA-Containern in die GS-Container bei der Freigabe des Gesuchs.
@@ -46,70 +78,116 @@ public final class FreigabeCopyUtil {
 			}
 		}
 		// EinkommensverschlechterungsInfo
-		copyEinkommensverschlechterungInfoContainer(gesuch.getEinkommensverschlechterungInfoContainer());
+		copyEinkommensverschlechterungInfoContainer(
+			gesuch.getEinkommensverschlechterungInfoContainer()
+		);
 		// Gesuchsteller 1
 		copyGesuchstellerContainer(gesuch.getGesuchsteller1());
 		// Gesuchsteller 2
 		copyGesuchstellerContainer(gesuch.getGesuchsteller2());
 	}
 
-	private static void copyFamiliensituationContainer(@Nullable FamiliensituationContainer container) {
+	private static void copyFamiliensituationContainer(
+		@Nullable FamiliensituationContainer container
+	) {
 		if (container != null) {
 			if (container.getFamiliensituationJA() != null) {
 				if (container.getFamiliensituationGS() == null) {
 					container.setFamiliensituationGS(new Familiensituation());  //init
 				}
 				//noinspection ConstantConditions
-				copyFamiliensituation(container.getFamiliensituationGS(), container.getFamiliensituationJA());
+				copyFamiliensituation(
+					container.getFamiliensituationGS(),
+					container.getFamiliensituationJA()
+				);
 			} else {
 				container.setFamiliensituationGS(null);
 			}
 
 			// Sozialhilfe
-			for (SozialhilfeZeitraumContainer sozialhilfeContainer : container.getSozialhilfeZeitraumContainers()) {
+			for (SozialhilfeZeitraumContainer sozialhilfeContainer : container
+				.getSozialhilfeZeitraumContainers()) {
 				copySozialhilfeZeitraumContainer(sozialhilfeContainer);
 			}
 		}
 	}
 
-
-	private static void copySozialhilfeZeitraumContainer(@Nullable SozialhilfeZeitraumContainer container) {
+	private static void copySozialhilfeZeitraumContainer(
+		@Nullable SozialhilfeZeitraumContainer container
+	) {
 		if (container != null) {
 			if (container.getSozialhilfeZeitraumJA() != null) {
 				if (container.getSozialhilfeZeitraumGS() == null) {
-					container.setSozialhilfeZeitraumGS(new SozialhilfeZeitraum());  //init
+					container.setSozialhilfeZeitraumGS(
+						new SozialhilfeZeitraum()
+					);  //init
 				}
 				//noinspection ConstantConditions
-				copySozialhilfeZeitraum(container.getSozialhilfeZeitraumGS(), container.getSozialhilfeZeitraumJA());
+				copySozialhilfeZeitraum(
+					container.getSozialhilfeZeitraumGS(),
+					container.getSozialhilfeZeitraumJA()
+				);
 			} else {
 				container.setSozialhilfeZeitraumGS(null);
 			}
 		}
 	}
 
-	private static void copySozialhilfeZeitraum(@Nonnull SozialhilfeZeitraum sozialhilfeGS, @Nonnull SozialhilfeZeitraum sozialhilfeJA) {
+	private static void copySozialhilfeZeitraum(
+		@Nonnull SozialhilfeZeitraum sozialhilfeGS,
+		@Nonnull SozialhilfeZeitraum sozialhilfeJA
+	) {
 		sozialhilfeGS.setGueltigkeit(sozialhilfeJA.getGueltigkeit());
 	}
 
 	private static void copyFamiliensituation(
 		@Nonnull Familiensituation familiensituationGS,
-		@Nonnull Familiensituation familiensituationJA) {
-		familiensituationGS.setFamilienstatus(familiensituationJA.getFamilienstatus());
-		familiensituationGS.setGemeinsameSteuererklaerung(familiensituationJA.getGemeinsameSteuererklaerung());
-		familiensituationGS.setStartKonkubinat(familiensituationJA.getStartKonkubinat());
-		familiensituationGS.setAenderungPer(familiensituationJA.getAenderungPer());
-		familiensituationGS.setSozialhilfeBezueger(familiensituationJA.getSozialhilfeBezueger());
-		familiensituationGS.setZustaendigeAmtsstelle(familiensituationJA.getZustaendigeAmtsstelle());
-		familiensituationGS.setNameBetreuer(familiensituationJA.getNameBetreuer());
-		familiensituationGS.setVerguenstigungGewuenscht(familiensituationJA.getVerguenstigungGewuenscht());
-		familiensituationGS.setKeineMahlzeitenverguenstigungBeantragt(familiensituationJA.isKeineMahlzeitenverguenstigungBeantragt());
-		familiensituationGS.setKeineMahlzeitenverguenstigungBeantragtEditable(familiensituationJA.isKeineMahlzeitenverguenstigungBeantragtEditable());
-		familiensituationGS.setAbweichendeZahlungsadresse(familiensituationJA.isAbweichendeZahlungsadresse());
+		@Nonnull Familiensituation familiensituationJA
+	) {
+		familiensituationGS.setFamilienstatus(
+			familiensituationJA.getFamilienstatus()
+		);
+		familiensituationGS.setGemeinsameSteuererklaerung(
+			familiensituationJA.getGemeinsameSteuererklaerung()
+		);
+		familiensituationGS.setStartKonkubinat(
+			familiensituationJA.getStartKonkubinat()
+		);
+		familiensituationGS.setAenderungPer(
+			familiensituationJA.getAenderungPer()
+		);
+		familiensituationGS.setSozialhilfeBezueger(
+			familiensituationJA.getSozialhilfeBezueger()
+		);
+		familiensituationGS.setZustaendigeAmtsstelle(
+			familiensituationJA.getZustaendigeAmtsstelle()
+		);
+		familiensituationGS.setNameBetreuer(
+			familiensituationJA.getNameBetreuer()
+		);
+		familiensituationGS.setVerguenstigungGewuenscht(
+			familiensituationJA.getVerguenstigungGewuenscht()
+		);
+		familiensituationGS.setKeineMahlzeitenverguenstigungBeantragt(
+			familiensituationJA.isKeineMahlzeitenverguenstigungBeantragt()
+		);
+		familiensituationGS.setKeineMahlzeitenverguenstigungBeantragtEditable(
+			familiensituationJA
+				.isKeineMahlzeitenverguenstigungBeantragtEditable()
+		);
+		familiensituationGS.setAbweichendeZahlungsadresse(
+			familiensituationJA.isAbweichendeZahlungsadresse()
+		);
 		familiensituationGS.setFkjvFamSit(familiensituationJA.isFkjvFamSit());
-		familiensituationGS.setMinDauerKonkubinat(familiensituationJA.getMinDauerKonkubinat());
-		familiensituationGS.setGesuchstellerKardinalitaet(familiensituationJA.getGesuchstellerKardinalitaet());
+		familiensituationGS.setMinDauerKonkubinat(
+			familiensituationJA.getMinDauerKonkubinat()
+		);
+		familiensituationGS.setGesuchstellerKardinalitaet(
+			familiensituationJA.getGesuchstellerKardinalitaet()
+		);
 
-		Auszahlungsdaten auszahlungsdatenJA = familiensituationJA.getAuszahlungsdaten();
+		Auszahlungsdaten auszahlungsdatenJA = familiensituationJA
+			.getAuszahlungsdaten();
 		Auszahlungsdaten auszahlungsdatenGS = null;
 		if (auszahlungsdatenJA != null) {
 			auszahlungsdatenGS = new Auszahlungsdaten();
@@ -117,20 +195,44 @@ public final class FreigabeCopyUtil {
 		}
 		familiensituationGS.setAuszahlungsdaten(auszahlungsdatenGS);
 
-		familiensituationGS.setUnterhaltsvereinbarung(familiensituationJA.getUnterhaltsvereinbarung());
-		familiensituationGS.setUnterhaltsvereinbarungBemerkung(familiensituationJA.getUnterhaltsvereinbarungBemerkung());
-		familiensituationGS.setGeteilteObhut(familiensituationJA.getGeteilteObhut());
-		familiensituationGS.setPartnerIdentischMitVorgesuch(familiensituationGS.getPartnerIdentischMitVorgesuch());
-		familiensituationGS.setAuszahlungAusserhalbVonKibon(familiensituationJA.isAuszahlungAusserhalbVonKibon());
-		familiensituationGS.setGemeinsamerHaushaltMitPartner(familiensituationJA.getGemeinsamerHaushaltMitPartner());
-		familiensituationGS.setGemeinsamerHaushaltMitObhutsberechtigterPerson(familiensituationJA.getGemeinsamerHaushaltMitObhutsberechtigterPerson());
+		familiensituationGS.setUnterhaltsvereinbarung(
+			familiensituationJA.getUnterhaltsvereinbarung()
+		);
+		familiensituationGS.setUnterhaltsvereinbarungBemerkung(
+			familiensituationJA.getUnterhaltsvereinbarungBemerkung()
+		);
+		familiensituationGS.setGeteilteObhut(
+			familiensituationJA.getGeteilteObhut()
+		);
+		familiensituationGS.setPartnerIdentischMitVorgesuch(
+			familiensituationGS.getPartnerIdentischMitVorgesuch()
+		);
+		familiensituationGS.setAuszahlungAusserhalbVonKibon(
+			familiensituationJA.isAuszahlungAusserhalbVonKibon()
+		);
+		familiensituationGS.setGemeinsamerHaushaltMitPartner(
+			familiensituationJA.getGemeinsamerHaushaltMitPartner()
+		);
+		familiensituationGS.setGemeinsamerHaushaltMitObhutsberechtigterPerson(
+			familiensituationJA
+				.getGemeinsamerHaushaltMitObhutsberechtigterPerson()
+		);
 	}
 
-	private static void copyAuszahlungsdaten(Auszahlungsdaten auszahlungsdatenGS, Auszahlungsdaten auszahlungsdatenJA) {
+	private static void copyAuszahlungsdaten(
+		Auszahlungsdaten auszahlungsdatenGS,
+		Auszahlungsdaten auszahlungsdatenJA
+	) {
 		auszahlungsdatenGS.setIban(auszahlungsdatenJA.getIban());
-		auszahlungsdatenGS.setKontoinhaber(auszahlungsdatenJA.getKontoinhaber());
-		auszahlungsdatenGS.setInfomaKreditorennummer(auszahlungsdatenJA.getInfomaKreditorennummer());
-		auszahlungsdatenGS.setInfomaBankcode(auszahlungsdatenJA.getInfomaBankcode());
+		auszahlungsdatenGS.setKontoinhaber(
+			auszahlungsdatenJA.getKontoinhaber()
+		);
+		auszahlungsdatenGS.setInfomaKreditorennummer(
+			auszahlungsdatenJA.getInfomaKreditorennummer()
+		);
+		auszahlungsdatenGS.setInfomaBankcode(
+			auszahlungsdatenJA.getInfomaBankcode()
+		);
 		Adresse zahlungsadresseJA = auszahlungsdatenJA.getAdresseKontoinhaber();
 		Adresse zahlungsadresseGS = null;
 		if (zahlungsadresseJA != null) {
@@ -159,24 +261,35 @@ public final class FreigabeCopyUtil {
 		for (Betreuung betreuung : container.getBetreuungen()) {
 			// Betreuung
 			if (betreuung.getBetreuungspensumContainers() != null) {
-				betreuung.getBetreuungspensumContainers().forEach(FreigabeCopyUtil::copyBetreuungspensumContainer);
+				betreuung.getBetreuungspensumContainers()
+					.forEach(
+						FreigabeCopyUtil::copyBetreuungspensumContainer
+					);
 			}
 			// Abwesenheiten pro Betreuung
 			if (betreuung.getAbwesenheitContainers() != null) {
-				betreuung.getAbwesenheitContainers().forEach(FreigabeCopyUtil::copyAbwesenheitContainer);
+				betreuung.getAbwesenheitContainers()
+					.forEach(FreigabeCopyUtil::copyAbwesenheitContainer);
 			}
 			// ErweiterteBetreuung
-			copyErweiterteBetreuungContainer(betreuung.getErweiterteBetreuungContainer());
+			copyErweiterteBetreuungContainer(
+				betreuung.getErweiterteBetreuungContainer()
+			);
 		}
 	}
 
-	private static void copyErweiterteBetreuungContainer(@Nonnull ErweiterteBetreuungContainer container) {
+	private static void copyErweiterteBetreuungContainer(
+		@Nonnull ErweiterteBetreuungContainer container
+	) {
 		if (container.getErweiterteBetreuungJA() != null) {
 			if (container.getErweiterteBetreuungGS() == null) {
 				container.setErweiterteBetreuungGS(new ErweiterteBetreuung());
 			}
 			//noinspection ConstantConditions
-			copyErweiterteBetreuung(container.getErweiterteBetreuungGS(), container.getErweiterteBetreuungJA());
+			copyErweiterteBetreuung(
+				container.getErweiterteBetreuungGS(),
+				container.getErweiterteBetreuungJA()
+			);
 		} else {
 			container.setErweiterteBetreuungGS(null);
 		}
@@ -186,13 +299,22 @@ public final class FreigabeCopyUtil {
 		@Nonnull ErweiterteBetreuung erweiterteBetreuungGS,
 		@Nonnull ErweiterteBetreuung erweiterteBetreuungJA
 	) {
-		erweiterteBetreuungGS.setErweiterteBeduerfnisse(erweiterteBetreuungJA.getErweiterteBeduerfnisse());
-		erweiterteBetreuungGS.setFachstelle(erweiterteBetreuungJA.getFachstelle());
-		erweiterteBetreuungGS.setKeineKesbPlatzierung(erweiterteBetreuungJA.getKeineKesbPlatzierung());
-		erweiterteBetreuungGS.setAnspruchFachstelleWennPensumUnterschritten(
-				erweiterteBetreuungJA.isAnspruchFachstelleWennPensumUnterschritten()
+		erweiterteBetreuungGS.setErweiterteBeduerfnisse(
+			erweiterteBetreuungJA.getErweiterteBeduerfnisse()
 		);
-		erweiterteBetreuungGS.setSprachfoerderungBestaetigt(erweiterteBetreuungJA.isSprachfoerderungBestaetigt());
+		erweiterteBetreuungGS.setFachstelle(
+			erweiterteBetreuungJA.getFachstelle()
+		);
+		erweiterteBetreuungGS.setKeineKesbPlatzierung(
+			erweiterteBetreuungJA.getKeineKesbPlatzierung()
+		);
+		erweiterteBetreuungGS.setAnspruchFachstelleWennPensumUnterschritten(
+			erweiterteBetreuungJA
+				.isAnspruchFachstelleWennPensumUnterschritten()
+		);
+		erweiterteBetreuungGS.setSprachfoerderungBestaetigt(
+			erweiterteBetreuungJA.isSprachfoerderungBestaetigt()
+		);
 	}
 
 	private static void copyKind(@Nonnull Kind kindGS, @Nonnull Kind kindJA) {
@@ -203,39 +325,64 @@ public final class FreigabeCopyUtil {
 
 		for (PensumFachstelle pensumFachstelle : kindJA.getPensumFachstelle()) {
 			PensumFachstelle copiedPensumFachstelle = new PensumFachstelle();
-			copiedPensumFachstelle.setIntegrationTyp(pensumFachstelle.getIntegrationTyp());
+			copiedPensumFachstelle.setIntegrationTyp(
+				pensumFachstelle.getIntegrationTyp()
+			);
 			copiedPensumFachstelle.setPensum(pensumFachstelle.getPensum());
-			copiedPensumFachstelle.setFachstelle(pensumFachstelle.getFachstelle());
-			copiedPensumFachstelle.setGueltigkeit(pensumFachstelle.getGueltigkeit());
+			copiedPensumFachstelle.setFachstelle(
+				pensumFachstelle.getFachstelle()
+			);
+			copiedPensumFachstelle.setGueltigkeit(
+				pensumFachstelle.getGueltigkeit()
+			);
 			copiedPensumFachstelle.setKind(kindGS);
 			kindGS.getPensumFachstelle().add(copiedPensumFachstelle);
 		}
-		kindGS.setKinderabzugErstesHalbjahr(kindJA.getKinderabzugErstesHalbjahr());
-		kindGS.setKinderabzugZweitesHalbjahr(kindJA.getKinderabzugZweitesHalbjahr());
+		kindGS.setKinderabzugErstesHalbjahr(
+			kindJA.getKinderabzugErstesHalbjahr()
+		);
+		kindGS.setKinderabzugZweitesHalbjahr(
+			kindJA.getKinderabzugZweitesHalbjahr()
+		);
 		kindGS.setPflegekind(kindJA.getPflegekind());
-		kindGS.setPflegeEntschaedigungErhalten(kindJA.getPflegeEntschaedigungErhalten());
-		kindGS.setObhutAlternierendAusueben(kindJA.getObhutAlternierendAusueben());
+		kindGS.setPflegeEntschaedigungErhalten(
+			kindJA.getPflegeEntschaedigungErhalten()
+		);
+		kindGS.setObhutAlternierendAusueben(
+			kindJA.getObhutAlternierendAusueben()
+		);
 		kindGS.setGemeinsamesGesuch(kindJA.getGemeinsamesGesuch());
 		kindGS.setInErstausbildung(kindJA.getInErstausbildung());
 		kindGS.setLebtKindAlternierend(kindJA.getLebtKindAlternierend());
 		kindGS.setAlimenteErhalten(kindJA.getAlimenteErhalten());
 		kindGS.setAlimenteBezahlen(kindJA.getAlimenteBezahlen());
-		kindGS.setFamilienErgaenzendeBetreuung(kindJA.getFamilienErgaenzendeBetreuung());
+		kindGS.setFamilienErgaenzendeBetreuung(
+			kindJA.getFamilienErgaenzendeBetreuung()
+		);
 		kindGS.setUnterhaltspflichtig(kindJA.getUnterhaltspflichtig());
 		kindGS.setSprichtAmtssprache(kindJA.getSprichtAmtssprache());
 		kindGS.setEinschulungTyp(kindJA.getEinschulungTyp());
-		kindGS.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(kindJA.getHoehereBeitraegeWegenBeeintraechtigungBeantragen());
-		kindGS.setHoehereBeitraegeUnterlagenDigital(kindJA.getHoehereBeitraegeUnterlagenDigital());
+		kindGS.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(
+			kindJA.getHoehereBeitraegeWegenBeeintraechtigungBeantragen()
+		);
+		kindGS.setHoehereBeitraegeUnterlagenDigital(
+			kindJA.getHoehereBeitraegeUnterlagenDigital()
+		);
 	}
 
-	private static void copyBetreuungspensumContainer(@Nullable BetreuungspensumContainer container) {
+	private static void copyBetreuungspensumContainer(
+		@Nullable BetreuungspensumContainer container
+	) {
 		if (container != null) {
 			if (container.getBetreuungspensumJA() != null) {
 				if (container.getBetreuungspensumGS() == null) {
 					container.setBetreuungspensumGS(new Betreuungspensum());
 				}
 				//noinspection ConstantConditions
-				copyBetreuungspensum(container.getBetreuungspensumGS(), container.getBetreuungspensumJA());
+				copyBetreuungspensum(
+					container.getBetreuungspensumGS(),
+					container.getBetreuungspensumJA()
+				);
 			} else {
 				container.setBetreuungspensumGS(null);
 			}
@@ -244,31 +391,46 @@ public final class FreigabeCopyUtil {
 
 	private static void copyBetreuungspensum(
 		@Nonnull Betreuungspensum betreuungspensumGS,
-		@Nonnull Betreuungspensum betreuungspensumJA) {
+		@Nonnull Betreuungspensum betreuungspensumJA
+	) {
 		betreuungspensumGS.setGueltigkeit(betreuungspensumJA.getGueltigkeit());
 		betreuungspensumGS.setPensum(betreuungspensumJA.getPensum());
-		betreuungspensumGS.setNichtEingetreten(betreuungspensumJA.getNichtEingetreten());
+		betreuungspensumGS.setNichtEingetreten(
+			betreuungspensumJA.getNichtEingetreten()
+		);
 	}
 
-	private static void copyAbwesenheitContainer(@Nullable AbwesenheitContainer container) {
+	private static void copyAbwesenheitContainer(
+		@Nullable AbwesenheitContainer container
+	) {
 		if (container != null) {
 			if (container.getAbwesenheitJA() != null) {
 				if (container.getAbwesenheitGS() == null) {
 					container.setAbwesenheitGS(new Abwesenheit());
 				}
 				//noinspection ConstantConditions
-				copyAbwesenheit(container.getAbwesenheitGS(), container.getAbwesenheitJA());
+				copyAbwesenheit(
+					container.getAbwesenheitGS(),
+					container.getAbwesenheitJA()
+				);
 			} else {
 				container.setAbwesenheitGS(null);
 			}
 		}
 	}
 
-	private static void copyAbwesenheit(@Nonnull Abwesenheit abwesenheitGS, @Nonnull Abwesenheit abwesenheitJA) {
-		abwesenheitGS.setGueltigkeit(new DateRange(abwesenheitJA.getGueltigkeit()));
+	private static void copyAbwesenheit(
+		@Nonnull Abwesenheit abwesenheitGS,
+		@Nonnull Abwesenheit abwesenheitJA
+	) {
+		abwesenheitGS.setGueltigkeit(
+			new DateRange(abwesenheitJA.getGueltigkeit())
+		);
 	}
 
-	private static void copyGesuchstellerContainer(@Nullable GesuchstellerContainer container) {
+	private static void copyGesuchstellerContainer(
+		@Nullable GesuchstellerContainer container
+	) {
 		if (container != null) {
 			// Stammdaten
 			if (container.getGesuchstellerJA() != null) {
@@ -276,20 +438,29 @@ public final class FreigabeCopyUtil {
 					container.setGesuchstellerGS(new Gesuchsteller());
 				}
 				//noinspection ConstantConditions
-				copyGesuchsteller(container.getGesuchstellerGS(), container.getGesuchstellerJA());
+				copyGesuchsteller(
+					container.getGesuchstellerGS(),
+					container.getGesuchstellerJA()
+				);
 			} else {
 				container.setGesuchstellerGS(null);
 			}
 			// Adressen
-			for (GesuchstellerAdresseContainer betreuung : container.getAdressen()) {
+			for (GesuchstellerAdresseContainer betreuung : container
+				.getAdressen()) {
 				copyGesuchstellerAdresseContainer(betreuung);
 			}
 			// Finanzielle Situation
-			copyFinanzielleSituationContainer(container.getFinanzielleSituationContainer());
+			copyFinanzielleSituationContainer(
+				container.getFinanzielleSituationContainer()
+			);
 			// Einkommensverschlechterung
-			copyEinkommensverschlechterungContainer(container.getEinkommensverschlechterungContainer());
+			copyEinkommensverschlechterungContainer(
+				container.getEinkommensverschlechterungContainer()
+			);
 			// Erwerbspensum
-			for (ErwerbspensumContainer erwerbspensumContainer : container.getErwerbspensenContainers()) {
+			for (ErwerbspensumContainer erwerbspensumContainer : container
+				.getErwerbspensenContainers()) {
 				copyErwerbspensumContainer(erwerbspensumContainer);
 			}
 		}
@@ -297,7 +468,8 @@ public final class FreigabeCopyUtil {
 
 	private static void copyGesuchsteller(
 		@Nonnull Gesuchsteller gesuchstellerGS,
-		@Nonnull Gesuchsteller gesuchstellerJA) {
+		@Nonnull Gesuchsteller gesuchstellerJA
+	) {
 		gesuchstellerGS.setGeschlecht(gesuchstellerJA.getGeschlecht());
 		gesuchstellerGS.setVorname(gesuchstellerJA.getVorname());
 		gesuchstellerGS.setNachname(gesuchstellerJA.getNachname());
@@ -306,32 +478,48 @@ public final class FreigabeCopyUtil {
 		gesuchstellerGS.setMobile(gesuchstellerJA.getMobile());
 		gesuchstellerGS.setTelefon(gesuchstellerJA.getTelefon());
 		gesuchstellerGS.setTelefonAusland(gesuchstellerJA.getTelefonAusland());
-		gesuchstellerGS.setDiplomatenstatus(gesuchstellerJA.isDiplomatenstatus());
-		gesuchstellerGS.setKorrespondenzSprache(gesuchstellerJA.getKorrespondenzSprache());
-		gesuchstellerGS.setSozialversicherungsnummer(gesuchstellerJA.getSozialversicherungsnummer());
+		gesuchstellerGS.setDiplomatenstatus(
+			gesuchstellerJA.isDiplomatenstatus()
+		);
+		gesuchstellerGS.setKorrespondenzSprache(
+			gesuchstellerJA.getKorrespondenzSprache()
+		);
+		gesuchstellerGS.setSozialversicherungsnummer(
+			gesuchstellerJA.getSozialversicherungsnummer()
+		);
 	}
 
-	private static void copyGesuchstellerAdresseContainer(@Nullable GesuchstellerAdresseContainer container) {
+	private static void copyGesuchstellerAdresseContainer(
+		@Nullable GesuchstellerAdresseContainer container
+	) {
 		if (container != null) {
 			if (container.getGesuchstellerAdresseJA() != null) {
 				if (container.getGesuchstellerAdresseGS() == null) {
-					container.setGesuchstellerAdresseGS(new GesuchstellerAdresse());
+					container.setGesuchstellerAdresseGS(
+						new GesuchstellerAdresse()
+					);
 				}
 				//noinspection ConstantConditions
-				copyGesuchstellerAdresse(container.getGesuchstellerAdresseGS(), container.getGesuchstellerAdresseJA());
+				copyGesuchstellerAdresse(
+					container.getGesuchstellerAdresseGS(),
+					container.getGesuchstellerAdresseJA()
+				);
 			} else {
 				container.setGesuchstellerAdresseGS(null);
 			}
 		}
 	}
 
-	private static void copyGesuchstellerAdresse(@Nonnull GesuchstellerAdresse gs, @Nonnull GesuchstellerAdresse ja) {
+	private static void copyGesuchstellerAdresse(
+		@Nonnull GesuchstellerAdresse gs,
+		@Nonnull GesuchstellerAdresse ja
+	) {
 		copyAdresse(gs, ja);
 		gs.setAdresseTyp(ja.getAdresseTyp());
 		gs.setNichtInGemeinde(ja.isNichtInGemeinde());
 	}
 
-	private static void copyAdresse (Adresse gs, Adresse ja) {
+	private static void copyAdresse(Adresse gs, Adresse ja) {
 		gs.setGueltigkeit(new DateRange(ja.getGueltigkeit()));
 		gs.setStrasse(ja.getStrasse());
 		gs.setHausnummer(ja.getHausnummer());
@@ -346,7 +534,8 @@ public final class FreigabeCopyUtil {
 	@SuppressWarnings("PMD.UnusedPrivateMethod") // FalsePositive: Die Methode ist benutzt
 	private static void copyAbstractFinanzielleSituation(
 		@Nonnull AbstractFinanzielleSituation gs,
-		@Nonnull AbstractFinanzielleSituation ja) {
+		@Nonnull AbstractFinanzielleSituation ja
+	) {
 		gs.setNettolohn(ja.getNettolohn());
 		gs.setFamilienzulage(ja.getFamilienzulage());
 		gs.setErsatzeinkommen(ja.getErsatzeinkommen());
@@ -355,7 +544,9 @@ public final class FreigabeCopyUtil {
 		gs.setBruttoLohn(ja.getBruttoLohn());
 		gs.setSchulden(ja.getSchulden());
 		gs.setGeschaeftsgewinnBasisjahr(ja.getGeschaeftsgewinnBasisjahr());
-		gs.setGeschaeftsgewinnBasisjahrMinus1(ja.getGeschaeftsgewinnBasisjahrMinus1());
+		gs.setGeschaeftsgewinnBasisjahrMinus1(
+			ja.getGeschaeftsgewinnBasisjahrMinus1()
+		);
 		gs.setGeleisteteAlimente(ja.getGeleisteteAlimente());
 
 		gs.setSteuerbaresEinkommen(ja.getSteuerbaresEinkommen());
@@ -364,87 +555,185 @@ public final class FreigabeCopyUtil {
 		gs.setGeschaeftsverlust(ja.getGeschaeftsverlust());
 		gs.setEinkaeufeVorsorge(ja.getEinkaeufeVorsorge());
 		gs.setBruttoertraegeVermoegen(ja.getBruttoertraegeVermoegen());
-		gs.setNettoertraegeErbengemeinschaft(ja.getNettoertraegeErbengemeinschaft());
+		gs.setNettoertraegeErbengemeinschaft(
+			ja.getNettoertraegeErbengemeinschaft()
+		);
 		gs.setNettoVermoegen(ja.getNettoVermoegen());
-		gs.setEinkommenInVereinfachtemVerfahrenAbgerechnet(ja.getEinkommenInVereinfachtemVerfahrenAbgerechnet());
-		gs.setAmountEinkommenInVereinfachtemVerfahrenAbgerechnet(ja.getAmountEinkommenInVereinfachtemVerfahrenAbgerechnet());
+		gs.setEinkommenInVereinfachtemVerfahrenAbgerechnet(
+			ja.getEinkommenInVereinfachtemVerfahrenAbgerechnet()
+		);
+		gs.setAmountEinkommenInVereinfachtemVerfahrenAbgerechnet(
+			ja.getAmountEinkommenInVereinfachtemVerfahrenAbgerechnet()
+		);
 		gs.setGewinnungskosten(ja.getGewinnungskosten());
 		gs.setAbzugSchuldzinsen(ja.getAbzugSchuldzinsen());
-		gs.setErsatzeinkommenSelbststaendigkeitBasisjahr(ja.getErsatzeinkommenSelbststaendigkeitBasisjahr());
-		gs.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus1(ja.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1());
+		gs.setErsatzeinkommenSelbststaendigkeitBasisjahr(
+			ja.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+		);
+		gs.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus1(
+			ja.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1()
+		);
 		copyFinanzielleSituationSelbstdeklaration(gs, ja);
 	}
 
-	private static void copyFinanzielleSituationSelbstdeklaration(@Nonnull AbstractFinanzielleSituation gs, @Nonnull AbstractFinanzielleSituation ja) {
-		if(ja.getSelbstdeklaration() == null) {
+	private static void copyFinanzielleSituationSelbstdeklaration(
+		@Nonnull AbstractFinanzielleSituation gs,
+		@Nonnull AbstractFinanzielleSituation ja
+	) {
+		if (ja.getSelbstdeklaration() == null) {
 			gs.setSelbstdeklaration(null);
 			return;
 		}
-		if (gs.getSelbstdeklaration() == null){
-				gs.setSelbstdeklaration(new FinanzielleSituationSelbstdeklaration());
+		if (gs.getSelbstdeklaration() == null) {
+			gs.setSelbstdeklaration(
+				new FinanzielleSituationSelbstdeklaration()
+			);
 		}
-		gs.getSelbstdeklaration().setEinkunftErwerb(ja.getSelbstdeklaration().getEinkunftErwerb());
-		gs.getSelbstdeklaration().setEinkunftVersicherung(ja.getSelbstdeklaration().getEinkunftVersicherung());
-		gs.getSelbstdeklaration().setEinkunftWertschriften(ja.getSelbstdeklaration().getEinkunftWertschriften());
-		gs.getSelbstdeklaration().setEinkunftUnterhaltsbeitragKinder(ja.getSelbstdeklaration().getEinkunftUnterhaltsbeitragKinder());
-		gs.getSelbstdeklaration().setEinkunftUeberige(ja.getSelbstdeklaration().getEinkunftUeberige());
-		gs.getSelbstdeklaration().setEinkunftLiegenschaften(ja.getSelbstdeklaration().getEinkunftLiegenschaften());
-		gs.getSelbstdeklaration().setAbzugBerufsauslagen(ja.getSelbstdeklaration().getAbzugBerufsauslagen());
-		gs.getSelbstdeklaration().setAbzugSchuldzinsen(ja.getSelbstdeklaration().getAbzugSchuldzinsen());
-		gs.getSelbstdeklaration().setAbzugUnterhaltsbeitragKinder(ja.getSelbstdeklaration().getAbzugUnterhaltsbeitragKinder());
-		gs.getSelbstdeklaration().setAbzugSaeule3A(ja.getSelbstdeklaration().getAbzugSaeule3A());
-		gs.getSelbstdeklaration().setAbzugVersicherungspraemien(ja.getSelbstdeklaration().getAbzugVersicherungspraemien());
-		gs.getSelbstdeklaration().setAbzugKrankheitsUnfallKosten(ja.getSelbstdeklaration().getAbzugKrankheitsUnfallKosten());
-		gs.getSelbstdeklaration().setSonderabzugErwerbstaetigkeitEhegatten(ja.getSelbstdeklaration().getSonderabzugErwerbstaetigkeitEhegatten());
-		gs.getSelbstdeklaration().setAbzugKinderVorschule(ja.getSelbstdeklaration().getAbzugKinderVorschule());
-		gs.getSelbstdeklaration().setAbzugKinderSchule(ja.getSelbstdeklaration().getAbzugKinderSchule());
-		gs.getSelbstdeklaration().setAbzugEigenbetreuung(ja.getSelbstdeklaration().getAbzugEigenbetreuung());
-		gs.getSelbstdeklaration().setAbzugFremdbetreuung(ja.getSelbstdeklaration().getAbzugFremdbetreuung());
-		gs.getSelbstdeklaration().setAbzugErwerbsunfaehigePersonen(ja.getSelbstdeklaration().getAbzugErwerbsunfaehigePersonen());
-		gs.getSelbstdeklaration().setVermoegen(ja.getSelbstdeklaration().getVermoegen());
-		gs.getSelbstdeklaration().setAbzugSteuerfreierBetragErwachsene(ja.getSelbstdeklaration().getAbzugSteuerfreierBetragErwachsene());
-		gs.getSelbstdeklaration().setAbzugSteuerfreierBetragKinder(ja.getSelbstdeklaration().getAbzugSteuerfreierBetragKinder());
+		gs.getSelbstdeklaration()
+			.setEinkunftErwerb(
+				ja.getSelbstdeklaration().getEinkunftErwerb()
+			);
+		gs.getSelbstdeklaration()
+			.setEinkunftVersicherung(
+				ja.getSelbstdeklaration().getEinkunftVersicherung()
+			);
+		gs.getSelbstdeklaration()
+			.setEinkunftWertschriften(
+				ja.getSelbstdeklaration().getEinkunftWertschriften()
+			);
+		gs.getSelbstdeklaration()
+			.setEinkunftUnterhaltsbeitragKinder(
+				ja.getSelbstdeklaration()
+					.getEinkunftUnterhaltsbeitragKinder()
+			);
+		gs.getSelbstdeklaration()
+			.setEinkunftUeberige(
+				ja.getSelbstdeklaration().getEinkunftUeberige()
+			);
+		gs.getSelbstdeklaration()
+			.setEinkunftLiegenschaften(
+				ja.getSelbstdeklaration().getEinkunftLiegenschaften()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugBerufsauslagen(
+				ja.getSelbstdeklaration().getAbzugBerufsauslagen()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugSchuldzinsen(
+				ja.getSelbstdeklaration().getAbzugSchuldzinsen()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugUnterhaltsbeitragKinder(
+				ja.getSelbstdeklaration()
+					.getAbzugUnterhaltsbeitragKinder()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugSaeule3A(ja.getSelbstdeklaration().getAbzugSaeule3A());
+		gs.getSelbstdeklaration()
+			.setAbzugVersicherungspraemien(
+				ja.getSelbstdeklaration()
+					.getAbzugVersicherungspraemien()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugKrankheitsUnfallKosten(
+				ja.getSelbstdeklaration()
+					.getAbzugKrankheitsUnfallKosten()
+			);
+		gs.getSelbstdeklaration()
+			.setSonderabzugErwerbstaetigkeitEhegatten(
+				ja.getSelbstdeklaration()
+					.getSonderabzugErwerbstaetigkeitEhegatten()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugKinderVorschule(
+				ja.getSelbstdeklaration().getAbzugKinderVorschule()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugKinderSchule(
+				ja.getSelbstdeklaration().getAbzugKinderSchule()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugEigenbetreuung(
+				ja.getSelbstdeklaration().getAbzugEigenbetreuung()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugFremdbetreuung(
+				ja.getSelbstdeklaration().getAbzugFremdbetreuung()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugErwerbsunfaehigePersonen(
+				ja.getSelbstdeklaration()
+					.getAbzugErwerbsunfaehigePersonen()
+			);
+		gs.getSelbstdeklaration()
+			.setVermoegen(ja.getSelbstdeklaration().getVermoegen());
+		gs.getSelbstdeklaration()
+			.setAbzugSteuerfreierBetragErwachsene(
+				ja.getSelbstdeklaration()
+					.getAbzugSteuerfreierBetragErwachsene()
+			);
+		gs.getSelbstdeklaration()
+			.setAbzugSteuerfreierBetragKinder(
+				ja.getSelbstdeklaration()
+					.getAbzugSteuerfreierBetragKinder()
+			);
 	}
 
 	private static void copyEinkommensverschlechterungInfoContainer(
-		@Nullable EinkommensverschlechterungInfoContainer container) {
+		@Nullable EinkommensverschlechterungInfoContainer container
+	) {
 		if (container != null) {
 			if (container.getEinkommensverschlechterungInfoGS() == null) {
-				container.setEinkommensverschlechterungInfoGS(new EinkommensverschlechterungInfo());
+				container.setEinkommensverschlechterungInfoGS(
+					new EinkommensverschlechterungInfo()
+				);
 			}
 			//noinspection ConstantConditions
 			copyEinkommensverschlechterungInfo(
 				container.getEinkommensverschlechterungInfoGS(),
-				container.getEinkommensverschlechterungInfoJA());
+				container.getEinkommensverschlechterungInfoJA()
+			);
 		}
 	}
 
 	private static void copyEinkommensverschlechterungInfo(
 		@Nonnull EinkommensverschlechterungInfo gs,
-		@Nonnull EinkommensverschlechterungInfo ja) {
+		@Nonnull EinkommensverschlechterungInfo ja
+	) {
 		gs.setEinkommensverschlechterung(ja.getEinkommensverschlechterung());
 		gs.setEkvFuerBasisJahrPlus1(ja.getEkvFuerBasisJahrPlus1());
 		gs.setEkvFuerBasisJahrPlus2(ja.getEkvFuerBasisJahrPlus2());
 	}
 
 	private static void copyEinkommensverschlechterungContainer(
-		@Nullable EinkommensverschlechterungContainer container) {
+		@Nullable EinkommensverschlechterungContainer container
+	) {
 		if (container != null) {
 			if (container.getEkvJABasisJahrPlus1() != null) {
 				if (container.getEkvGSBasisJahrPlus1() == null) {
-					container.setEkvGSBasisJahrPlus1(new Einkommensverschlechterung());
+					container.setEkvGSBasisJahrPlus1(
+						new Einkommensverschlechterung()
+					);
 				}
 				//noinspection ConstantConditions
-				copyEinkommensverschlechterung(container.getEkvGSBasisJahrPlus1(), container.getEkvJABasisJahrPlus1());
+				copyEinkommensverschlechterung(
+					container.getEkvGSBasisJahrPlus1(),
+					container.getEkvJABasisJahrPlus1()
+				);
 			} else {
 				container.setEkvGSBasisJahrPlus1(null);
 			}
 			if (container.getEkvJABasisJahrPlus2() != null) {
 				if (container.getEkvGSBasisJahrPlus2() == null) {
-					container.setEkvGSBasisJahrPlus2(new Einkommensverschlechterung());
+					container.setEkvGSBasisJahrPlus2(
+						new Einkommensverschlechterung()
+					);
 				}
 				//noinspection ConstantConditions
-				copyEinkommensverschlechterung(container.getEkvGSBasisJahrPlus2(), container.getEkvJABasisJahrPlus2());
+				copyEinkommensverschlechterung(
+					container.getEkvGSBasisJahrPlus2(),
+					container.getEkvJABasisJahrPlus2()
+				);
 			} else {
 				container.setEkvGSBasisJahrPlus2(null);
 			}
@@ -453,7 +742,8 @@ public final class FreigabeCopyUtil {
 
 	private static void copyEinkommensverschlechterung(
 		@Nonnull Einkommensverschlechterung gs,
-		@Nonnull Einkommensverschlechterung ja) {
+		@Nonnull Einkommensverschlechterung ja
+	) {
 		copyAbstractFinanzielleSituation(gs, ja);
 		gs.setBruttolohnAbrechnung1(ja.getBruttolohnAbrechnung1());
 		gs.setBruttolohnAbrechnung2(ja.getBruttolohnAbrechnung2());
@@ -462,7 +752,9 @@ public final class FreigabeCopyUtil {
 		copyFinSitZusatzangabenAppenzell(gs, ja);
 	}
 
-	private static void copyFinanzielleSituationContainer(@Nullable FinanzielleSituationContainer container) {
+	private static void copyFinanzielleSituationContainer(
+		@Nullable FinanzielleSituationContainer container
+	) {
 		if (container == null) {
 			return;
 		}
@@ -473,15 +765,23 @@ public final class FreigabeCopyUtil {
 			if (container.getFinanzielleSituationGS() == null) {
 				container.setFinanzielleSituationGS(new FinanzielleSituation());
 			}
-			copyFinanzielleSituation(container.getFinanzielleSituationGS(), container.getFinanzielleSituationJA());
+			copyFinanzielleSituation(
+				container.getFinanzielleSituationGS(),
+				container.getFinanzielleSituationJA()
+			);
 		}
 	}
 
-	private static void copyFinanzielleSituation(@Nonnull FinanzielleSituation gs, @Nonnull FinanzielleSituation ja) {
+	private static void copyFinanzielleSituation(
+		@Nonnull FinanzielleSituation gs,
+		@Nonnull FinanzielleSituation ja
+	) {
 		copyAbstractFinanzielleSituation(gs, ja);
 		gs.setSteuerveranlagungErhalten(ja.getSteuerveranlagungErhalten());
 		gs.setSteuererklaerungAusgefuellt(ja.getSteuererklaerungAusgefuellt());
-		gs.setGeschaeftsgewinnBasisjahrMinus2(ja.getGeschaeftsgewinnBasisjahrMinus2());
+		gs.setGeschaeftsgewinnBasisjahrMinus2(
+			ja.getGeschaeftsgewinnBasisjahrMinus2()
+		);
 		gs.setSteuerdatenZugriff(ja.getSteuerdatenZugriff());
 		gs.setAutomatischePruefungErlaubt(ja.getAutomatischePruefungErlaubt());
 		gs.setSteuerdatenAbfrageStatus(ja.getSteuerdatenAbfrageStatus());
@@ -494,19 +794,29 @@ public final class FreigabeCopyUtil {
 		gs.setUnterhaltsBeitraege(ja.getUnterhaltsBeitraege());
 		gs.setAbzuegeKinderAusbildung(ja.getAbzuegeKinderAusbildung());
 		gs.setMomentanSelbststaendig(ja.getMomentanSelbststaendig());
-		gs.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(ja.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2());
+		gs.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(
+			ja.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2()
+		);
 		copyFinSitZusatzangabenAppenzell(gs, ja);
 	}
 
 	// disable false-positive
 	@SuppressWarnings("PMD.UnusedPrivateMethod")
-	private static void copyFinSitZusatzangabenAppenzell(AbstractFinanzielleSituation gs, AbstractFinanzielleSituation ja) {
+	private static void copyFinSitZusatzangabenAppenzell(
+		AbstractFinanzielleSituation gs,
+		AbstractFinanzielleSituation ja
+	) {
 		if (ja.getFinSitZusatzangabenAppenzell() != null) {
-			gs.setFinSitZusatzangabenAppenzell(ja.getFinSitZusatzangabenAppenzell().copyAllValues(new FinSitZusatzangabenAppenzell()));
+			gs.setFinSitZusatzangabenAppenzell(
+				ja.getFinSitZusatzangabenAppenzell()
+					.copyAllValues(new FinSitZusatzangabenAppenzell())
+			);
 		}
 	}
 
-	private static void copyErwerbspensumContainer(@Nullable ErwerbspensumContainer container) {
+	private static void copyErwerbspensumContainer(
+		@Nullable ErwerbspensumContainer container
+	) {
 		if (container == null) {
 			return;
 		}
@@ -517,18 +827,26 @@ public final class FreigabeCopyUtil {
 				container.setErwerbspensumGS(new Erwerbspensum());
 			}
 			//noinspection ConstantConditions
-			copyErwerbspensum(container.getErwerbspensumGS(), container.getErwerbspensumJA());
+			copyErwerbspensum(
+				container.getErwerbspensumGS(),
+				container.getErwerbspensumJA()
+			);
 		}
 	}
 
 	private static void copyErwerbspensum(
 		@Nonnull Erwerbspensum erwerbspensumGS,
-		@Nonnull Erwerbspensum erwerbspensumJA) {
-		erwerbspensumGS.setGueltigkeit(new DateRange(erwerbspensumJA.getGueltigkeit()));
+		@Nonnull Erwerbspensum erwerbspensumJA
+	) {
+		erwerbspensumGS.setGueltigkeit(
+			new DateRange(erwerbspensumJA.getGueltigkeit())
+		);
 		erwerbspensumGS.setPensum(erwerbspensumJA.getPensum());
 		erwerbspensumGS.setTaetigkeit(erwerbspensumJA.getTaetigkeit());
 		erwerbspensumGS.setBezeichnung(erwerbspensumJA.getBezeichnung());
-		erwerbspensumGS.setErwerbspensumInstitution(erwerbspensumJA.getErwerbspensumInstitution());
+		erwerbspensumGS.setErwerbspensumInstitution(
+			erwerbspensumJA.getErwerbspensumInstitution()
+		);
 		erwerbspensumGS.setWegzeit(erwerbspensumJA.getWegzeit());
 
 		if (erwerbspensumJA.getUnbezahlterUrlaub() == null) {
@@ -539,13 +857,17 @@ public final class FreigabeCopyUtil {
 				erwerbspensumGS.setUnbezahlterUrlaub(new UnbezahlterUrlaub());
 			}
 			//noinspection ConstantConditions
-			copyUnbezahlterUrlaub(erwerbspensumGS.getUnbezahlterUrlaub(), erwerbspensumJA.getUnbezahlterUrlaub());
+			copyUnbezahlterUrlaub(
+				erwerbspensumGS.getUnbezahlterUrlaub(),
+				erwerbspensumJA.getUnbezahlterUrlaub()
+			);
 		}
 	}
 
 	private static void copyUnbezahlterUrlaub(
 		@Nonnull UnbezahlterUrlaub urlaubGS,
-		@Nonnull UnbezahlterUrlaub urlaubJA) {
+		@Nonnull UnbezahlterUrlaub urlaubJA
+	) {
 		urlaubGS.setGueltigkeit(new DateRange(urlaubJA.getGueltigkeit()));
 	}
 }

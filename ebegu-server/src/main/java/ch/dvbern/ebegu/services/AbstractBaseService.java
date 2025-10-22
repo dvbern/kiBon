@@ -21,20 +21,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
-import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
-import ch.dvbern.lib.cdipersistence.Persistence;
-import org.hibernate.Session;
-import org.hibernate.search.FullTextSession;
-import org.hibernate.search.Search;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.util.logging.LogUtil;
 
 /**
  * Uebergeordneter Service. Alle Services sollten von diesem Service erben. Wird verwendet um Interceptors einzuschalten
@@ -47,25 +40,14 @@ public abstract class AbstractBaseService {
 	@Inject
 	private EbeguConfiguration ebeguConfiguration;
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseService.class.getSimpleName());
-
-	@SuppressWarnings("PMD.CloseResource")
-	@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-	public void updateLuceneIndex(Class<? extends AbstractEntity> clazz, String id) {
-		// Den Lucene-Index manuell nachführen, da es bei unidirektionalen Relationen nicht automatisch geschieht!
-		Session session = persistence.getEntityManager().unwrap(Session.class);
-		FullTextSession fullTextSession = Search.getFullTextSession(session);
-		// Den Index loeschen...
-		fullTextSession.purge(clazz, id);
-		// ... und neu erstellen
-		Object customer = fullTextSession.load(clazz, id);
-		fullTextSession.index(customer);
-	}
-
-	public void updateGueltigFlagOnPlatzAndVorgaenger(@Nonnull AbstractPlatz platz) {
+	public void updateGueltigFlagOnPlatzAndVorgaenger(
+		@Nonnull AbstractPlatz platz
+	) {
 		// Gueltigkeit auf dem neuen setzen, auf der bisherigen entfernen
 		platz.setGueltig(true);
-		Optional<AbstractPlatz> vorgaengerPlatzOptional = findVorgaengerPlatz(platz);
+		Optional<AbstractPlatz> vorgaengerPlatzOptional = findVorgaengerPlatz(
+			platz
+		);
 		if (vorgaengerPlatzOptional.isPresent()) {
 			AbstractPlatz vorgaengerPlatz = vorgaengerPlatzOptional.get();
 			vorgaengerPlatz.setGueltig(false);
@@ -77,14 +59,19 @@ public abstract class AbstractBaseService {
 	}
 
 	/**
-	Setzt rekursiv die Vorgängerplätze von plätzen im Status SCHULAMT_MUTATION_IGNORIERT
-	zurück
+	 * Setzt rekursiv die Vorgängerplätze von plätzen im Status SCHULAMT_MUTATION_IGNORIERT
+	 * zurück
 	 */
-	private void updateVorgaengerPlatzOfSchulamtIgnoriert(@Nonnull AbstractPlatz platz) {
-		if (platz.getBetreuungsstatus() != Betreuungsstatus.SCHULAMT_MUTATION_IGNORIERT) {
+	private void updateVorgaengerPlatzOfSchulamtIgnoriert(
+		@Nonnull AbstractPlatz platz
+	) {
+		if (platz.getBetreuungsstatus()
+			!= Betreuungsstatus.SCHULAMT_MUTATION_IGNORIERT) {
 			return;
 		}
-		Optional<AbstractPlatz> vorgaengerPlatzOptional = findVorgaengerPlatz(platz);
+		Optional<AbstractPlatz> vorgaengerPlatzOptional = findVorgaengerPlatz(
+			platz
+		);
 		if (vorgaengerPlatzOptional.isEmpty()) {
 			return;
 		}
@@ -97,18 +84,29 @@ public abstract class AbstractBaseService {
 	 * @return gibt die Betreuung/Anmeldunbg der vorherigen verfuegten Betreuung zurueck.
 	 */
 	@Nonnull
-	protected Optional<AbstractPlatz> findVorgaengerPlatz(@Nonnull AbstractPlatz abstractPlatz) {
-		Objects.requireNonNull(abstractPlatz, "abstractPlatz darf nicht null sein");
+	protected Optional<AbstractPlatz> findVorgaengerPlatz(
+		@Nonnull AbstractPlatz abstractPlatz
+	) {
+		Objects.requireNonNull(
+			abstractPlatz,
+			"abstractPlatz darf nicht null sein"
+		);
 		if (abstractPlatz.getVorgaengerId() == null) {
 			return Optional.empty();
 		}
 
 		// Achtung, hier wird persistence.find() verwendet, da ich fuer das Vorgaengergesuch evt. nicht
 		// Leseberechtigt bin, fuer die Mutation aber schon!
-		AbstractPlatz vorgaengerPlatz = persistence.find(abstractPlatz.getClass(), abstractPlatz.getVorgaengerId());
+		AbstractPlatz vorgaengerPlatz = persistence.find(
+			abstractPlatz.getClass(),
+			abstractPlatz.getVorgaengerId()
+		);
 		if (vorgaengerPlatz != null) {
-			if (vorgaengerPlatz.getBetreuungsstatus() != Betreuungsstatus.GESCHLOSSEN_OHNE_VERFUEGUNG &&
-				vorgaengerPlatz.getBetreuungsstatus() != Betreuungsstatus.SCHULAMT_MUTATION_IGNORIERT) {
+			if (vorgaengerPlatz.getBetreuungsstatus()
+				!= Betreuungsstatus.GESCHLOSSEN_OHNE_VERFUEGUNG
+				&&
+				vorgaengerPlatz.getBetreuungsstatus()
+					!= Betreuungsstatus.SCHULAMT_MUTATION_IGNORIERT) {
 				// Hier kann aus demselben Grund die Berechtigung fuer die Vorgaengerverfuegung nicht geprueft werden
 				return Optional.of(vorgaengerPlatz);
 			}
@@ -120,11 +118,13 @@ public abstract class AbstractBaseService {
 	protected void logExceptionAccordingToEnvironment(
 		@Nonnull Exception e,
 		@Nonnull String message,
-		@Nonnull String arg) {
-		if (ebeguConfiguration.getIsDevmode()) {
-			LOG.info("{} {}", message, arg, e);
-		} else {
-			LOG.error("{} {}", message, arg, e);
-		}
+		@Nonnull String arg
+	) {
+		LogUtil.logExceptionAccordingToEnvironment(
+			e,
+			message,
+			ebeguConfiguration.getIsDevmode(),
+			arg
+		);
 	}
 }

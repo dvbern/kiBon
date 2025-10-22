@@ -8,22 +8,25 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 
+import org.hibernate.envers.Audited;
 
+@Audited
 @MappedSuperclass
-public abstract class AbstractBetreuungsPensum extends AbstractMahlzeitenPensum {
+public abstract class AbstractBetreuungsPensum extends
+	AbstractMahlzeitenPensum {
 
 	private static final long serialVersionUID = 571961095549058797L;
 
@@ -36,7 +39,9 @@ public abstract class AbstractBetreuungsPensum extends AbstractMahlzeitenPensum 
 		return betreuungInFerienzeit;
 	}
 
-	public void setBetreuungInFerienzeit(@Nullable Boolean betreuungInFerienzeit) {
+	public void setBetreuungInFerienzeit(
+		@Nullable Boolean betreuungInFerienzeit
+	) {
 		this.betreuungInFerienzeit = betreuungInFerienzeit;
 	}
 }

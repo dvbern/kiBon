@@ -25,32 +25,32 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.AuthConstants;
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.JaxGesuchsperiodeConverter;
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDateRangedDTO;
 import ch.dvbern.ebegu.api.dtos.JaxGesuchsperiode;
 import ch.dvbern.ebegu.api.dtos.JaxId;
@@ -66,8 +66,9 @@ import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import ch.dvbern.ebegu.services.MandantService;
 import ch.dvbern.ebegu.util.Constants;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
+import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import static ch.dvbern.ebegu.api.resource.util.ResourceConstants.DOCX_FILE_EXTENSION;
@@ -75,6 +76,7 @@ import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_MANDANT;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.GESUCHSTELLER;
 import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_GEMEINDE;
 import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_MANDANT;
@@ -88,11 +90,11 @@ import static java.util.Objects.requireNonNull;
 @SuppressWarnings("NonBooleanMethodNameMayNotStartWithQuestion")
 @Path("gesuchsperioden")
 @Stateless
-@Api(description = "Resource welche zum bearbeiten der Gesuchsperiode dient")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class GesuchsperiodeResource {
 
-	public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+	public static final String APPLICATION_OCTET_STREAM =
+		"application/octet-stream";
 
 	@Inject
 	private GesuchsperiodeService gesuchsperiodeService;
@@ -105,40 +107,48 @@ public class GesuchsperiodeResource {
 
 	@SuppressWarnings("CdiInjectionPointsInspection")
 	@Inject
-	private JaxBConverter converter;
+	private JaxGesuchsperiodeConverter converter;
 
 	@Inject
 	private PrincipalBean principalBean;
 
-	@ApiOperation(value = "Erstellt eine neue Gesuchsperiode in der Datenbank", response = JaxGesuchsperiode.class)
+	@Operation(summary = "Erstellt eine neue Gesuchsperiode in der Datenbank")
 	@Nonnull
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_GEMEINDE })
-	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	public JaxGesuchsperiode saveGesuchsperiode(
 		@Nonnull @NotNull @Valid JaxGesuchsperiode gesuchsperiodeJAXP,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
 		if (gesuchsperiodeJAXP.getId() != null) {
-			Optional<Gesuchsperiode> optional = gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeJAXP.getId());
+			Optional<Gesuchsperiode> optional = gesuchsperiodeService
+				.findGesuchsperiode(gesuchsperiodeJAXP.getId());
 			gesuchsperiode = optional.orElseGet(Gesuchsperiode::new);
 		}
 		// Überprüfen, ob der Statusübergang zulässig ist
-		GesuchsperiodeStatus gesuchsperiodeStatusBisher = gesuchsperiode.getStatus();
+		GesuchsperiodeStatus gesuchsperiodeStatusBisher = gesuchsperiode
+			.getStatus();
 
-		Gesuchsperiode convertedGesuchsperiode = converter.gesuchsperiodeToEntity(gesuchsperiodeJAXP, gesuchsperiode);
+		Gesuchsperiode convertedGesuchsperiode = converter
+			.gesuchsperiodeToEntity(gesuchsperiodeJAXP, gesuchsperiode);
 		Gesuchsperiode persistedGesuchsperiode =
-			this.gesuchsperiodeService.saveGesuchsperiode(convertedGesuchsperiode, gesuchsperiodeStatusBisher);
+			this.gesuchsperiodeService.saveGesuchsperiode(
+				convertedGesuchsperiode,
+				gesuchsperiodeStatusBisher
+			);
 
 		return converter.gesuchsperiodeToJAX(persistedGesuchsperiode);
 	}
 
-	@ApiOperation(value = "Sucht die Gesuchsperiode mit der uebergebenen Id in der Datenbank",
-		response = JaxGesuchsperiode.class)
+	@Operation(
+		summary = "Sucht die Gesuchsperiode mit der uebergebenen Id in der Datenbank")
 	@Nullable
 	@GET
 	@Path("/gesuchsperiode/{gesuchsperiodeId}")
@@ -146,17 +156,23 @@ public class GesuchsperiodeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public JaxGesuchsperiode findGesuchsperiode(
-		@Nonnull @NotNull @PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId) {
+		@Nonnull
+		@NotNull
+		@PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId
+	) {
 
 		requireNonNull(gesuchsperiodeJAXPId.getId());
 		String gesuchsperiodeID = converter.toEntityId(gesuchsperiodeJAXPId);
-		Optional<Gesuchsperiode> optional = gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeID);
+		Optional<Gesuchsperiode> optional = gesuchsperiodeService
+			.findGesuchsperiode(gesuchsperiodeID);
 
-		return optional.map(gesuchsperiode -> converter.gesuchsperiodeToJAX(gesuchsperiode)).orElse(null);
+		return optional.map(
+			gesuchsperiode -> converter.gesuchsperiodeToJAX(gesuchsperiode)
+		).orElse(null);
 	}
 
-	@ApiOperation(value = "Gibt die neuste Gesuchsperiode zurueck anhand des Datums gueltigBis",
-		response = JaxGesuchsperiode.class)
+	@Operation(
+		summary = "Gibt die neuste Gesuchsperiode zurueck anhand des Datums gueltigBis")
 	@Nullable
 	@GET
 	@Path("/newestGesuchsperiode/")
@@ -164,47 +180,70 @@ public class GesuchsperiodeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten für eingeloggte User
 	public JaxGesuchsperiode findNewestGesuchsperiode() {
-		Optional<Gesuchsperiode> optional = gesuchsperiodeService.findNewestGesuchsperiode(requireNonNull(principalBean.getMandant()));
-		return optional.map(gesuchsperiode -> converter.gesuchsperiodeToJAX(gesuchsperiode)).orElse(null);
+		Optional<Gesuchsperiode> optional = gesuchsperiodeService
+			.findNewestGesuchsperiode(
+				requireNonNull(principalBean.getMandant())
+			);
+		return optional.map(
+			gesuchsperiode -> converter.gesuchsperiodeToJAX(gesuchsperiode)
+		).orElse(null);
 	}
 
-	@ApiOperation("Loescht die Gesuchsperiode mit der uebergebenen Id in der Datenbank")
+	@Operation(
+		summary = "Loescht die Gesuchsperiode mit der uebergebenen Id in der Datenbank")
 	@Nullable
 	@DELETE
 	@Path("/{gesuchsperiodeId}")
 	@Consumes(MediaType.WILDCARD)
 	@RolesAllowed(SUPER_ADMIN)
 	public Response removeGesuchsperiode(
-		@Nonnull @NotNull @PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId,
-		@Context HttpServletResponse response) {
+		@Nonnull
+		@NotNull
+		@PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId,
+		@Context HttpServletResponse response
+	) {
 
 		requireNonNull(gesuchsperiodeJAXPId.getId());
-		gesuchsperiodeService.removeGesuchsperiode(converter.toEntityId(gesuchsperiodeJAXPId));
+		gesuchsperiodeService.removeGesuchsperiode(
+			converter.toEntityId(gesuchsperiodeJAXPId)
+		);
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Gibt alle in der Datenbank vorhandenen Gesuchsperioden zurueck.",
-		responseContainer = "List", response = JaxGesuchsperiode.class)
+	@Operation(
+		summary = "Gibt alle in der Datenbank vorhandenen Gesuchsperioden zurueck.")
 	@Nonnull
 	@GET
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxGesuchsperiode> getAllGesuchsperioden(
-			@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie
+		@Context HttpServletRequest request
 	) {
-		var mandant = mandantService.findMandantByCookie(mandantCookie);
+		MandantIdentifier mandantIdentifier =
+			MandantCookieUtil.getMandantFromCookie(request);
+		var mandant = mandantService.findMandantByIdentifier(mandantIdentifier)
+			.orElseThrow();
 
-		return gesuchsperiodeService.getAllGesuchsperioden(mandant).stream()
-				.map(gesuchsperiode -> converter.gesuchsperiodeToJAX(gesuchsperiode))
-				.filter(periode -> periode.getGueltigAb() != null)
-				.sorted(Comparator.comparing(JaxAbstractDateRangedDTO::getGueltigAb).reversed())
-				.collect(Collectors.toList());
+		return gesuchsperiodeService.getAllGesuchsperioden(mandant)
+			.stream()
+			.map(
+				gesuchsperiode -> converter.gesuchsperiodeToJAX(
+					gesuchsperiode
+				)
+			)
+			.filter(periode -> periode.getGueltigAb() != null)
+			.sorted(
+				Comparator.comparing(
+					JaxAbstractDateRangedDTO::getGueltigAb
+				).reversed()
+			)
+			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Gibt alle in der Datenbank vorhandenen Gesuchsperioden zurueck, welche im Status AKTIV "
-		+ "sind",
-		responseContainer = "List", response = JaxGesuchsperiode.class)
+	@Operation(
+		summary = "Gibt alle in der Datenbank vorhandenen Gesuchsperioden zurueck, welche im Status AKTIV "
+			+ "sind")
 	@Nonnull
 	@GET
 	@Path("/active")
@@ -212,15 +251,20 @@ public class GesuchsperiodeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxGesuchsperiode> getAllActiveGesuchsperioden(
-			@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
 	) {
-		return gesuchsperiodeService.getAllActiveGesuchsperioden().stream()
-				.map(gesuchsperiode -> converter.gesuchsperiodeToJAX(gesuchsperiode))
-				.collect(Collectors.toList());
+		return gesuchsperiodeService.getAllActiveGesuchsperioden()
+			.stream()
+			.map(
+				gesuchsperiode -> converter.gesuchsperiodeToJAX(gesuchsperiode)
+			)
+			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Gibt alle in der Datenbank vorhandenen Gesuchsperioden zurueck, welche im Status AKTIV " +
-		"oder INAKTIV sind", responseContainer = "List", response = JaxGesuchsperiode.class)
+	@Operation(
+		summary = "Gibt alle in der Datenbank vorhandenen Gesuchsperioden zurueck, welche im Status AKTIV "
+			+
+			"oder INAKTIV sind")
 	@Nonnull
 	@GET
 	@Path("/unclosed")
@@ -228,16 +272,26 @@ public class GesuchsperiodeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxGesuchsperiode> getAllAktivUndInaktivGesuchsperioden() {
-		return gesuchsperiodeService.getAllAktivUndInaktivGesuchsperioden().stream()
-			.map(gesuchsperiode -> converter.gesuchsperiodeToJAX(gesuchsperiode))
+		return gesuchsperiodeService.getAllAktivUndInaktivGesuchsperioden()
+			.stream()
+			.map(
+				gesuchsperiode -> converter.gesuchsperiodeToJAX(
+					gesuchsperiode
+				)
+			)
 			.filter(periode -> periode.getGueltigAb() != null)
-			.sorted(Comparator.comparing(JaxAbstractDateRangedDTO::getGueltigAb).reversed())
+			.sorted(
+				Comparator.comparing(
+					JaxAbstractDateRangedDTO::getGueltigAb
+				).reversed()
+			)
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Gibt alle Gesuchsperioden zurueck, die im Status AKTIV oder INAKTIV sind und für die der " +
-		"angegebene Fall noch kein Gesuch freigegeben hat.",
-		responseContainer = "List", response = JaxGesuchsperiode.class)
+	@Operation(
+		summary = "Gibt alle Gesuchsperioden zurueck, die im Status AKTIV oder INAKTIV sind und für die der "
+			+
+			"angegebene Fall noch kein Gesuch freigegeben hat.")
 	@SuppressWarnings("InstanceMethodNamingConvention")
 	@Nonnull
 	@GET
@@ -248,17 +302,27 @@ public class GesuchsperiodeResource {
 	public List<JaxGesuchsperiode> getAllAktivInaktivNichtVerwendeteGesuchsperioden(
 		@Nonnull @PathParam("dossierId") String dossierId
 	) {
-		return gesuchsperiodeService.getAllAktivInaktivNichtVerwendeteGesuchsperioden(dossierId).stream()
-				.map(gesuchsperiode -> converter.gesuchsperiodeToJAX(gesuchsperiode))
-				.filter(periode -> periode.getGueltigAb() != null)
-				.sorted(Comparator.comparing(JaxAbstractDateRangedDTO::getGueltigAb).reversed())
-				.collect(Collectors.toList());
+		return gesuchsperiodeService
+			.getAllAktivInaktivNichtVerwendeteGesuchsperioden(dossierId)
+			.stream()
+			.map(
+				gesuchsperiode -> converter.gesuchsperiodeToJAX(
+					gesuchsperiode
+				)
+			)
+			.filter(periode -> periode.getGueltigAb() != null)
+			.sorted(
+				Comparator.comparing(
+					JaxAbstractDateRangedDTO::getGueltigAb
+				).reversed()
+			)
+			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Gibt alle Gesuchsperioden zurück, welche AKTIV oder INAKTIV sind und nach dem " +
-		"BetreuungsgutscheineStartdatum und vor Ende der Gültigkeit der Gemeinde liegen.",
-		responseContainer = "List",
-		response = JaxGesuchsperiode.class)
+	@Operation(
+		summary = "Gibt alle Gesuchsperioden zurück, welche AKTIV oder INAKTIV sind und nach dem "
+			+
+			"BetreuungsgutscheineStartdatum und vor Ende der Gültigkeit der Gemeinde liegen.")
 	@Nonnull
 	@GET
 	@Path("/gemeinde/{gemeindeId}")
@@ -266,21 +330,25 @@ public class GesuchsperiodeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxGesuchsperiode> getAllPeriodenForGemeinde(
-			@Nonnull @PathParam("gemeindeId") String gemeindeId,
-			@Nullable @QueryParam("dossierId") String dossierId,
-			@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie) {
+		@Nonnull @PathParam("gemeindeId") String gemeindeId,
+		@Nullable @QueryParam("dossierId") String dossierId,
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
+	) {
 
-		Collection<Gesuchsperiode> perioden = dossierId == null
-				? gesuchsperiodeService.getAllAktivUndInaktivGesuchsperioden()
-				: gesuchsperiodeService.getAllAktivInaktivNichtVerwendeteGesuchsperioden(dossierId);
+		Collection<Gesuchsperiode> perioden = dossierId == null ?
+			gesuchsperiodeService.getAllAktivUndInaktivGesuchsperioden() :
+			gesuchsperiodeService
+				.getAllAktivInaktivNichtVerwendeteGesuchsperioden(
+					dossierId
+				);
 
 		return extractValidGesuchsperiodenForGemeinde(gemeindeId, perioden);
 	}
 
-	@ApiOperation(value = "Gibt alle Gesuchsperioden zurück, welche AKTIV sind und nach dem " +
-		"BetreuungsgutscheineStartdatum und vor Ende der Gültigkeit der Gemeinde liegen.",
-		responseContainer = "List",
-		response = JaxGesuchsperiode.class)
+	@Operation(
+		summary = "Gibt alle Gesuchsperioden zurück, welche AKTIV sind und nach dem "
+			+
+			"BetreuungsgutscheineStartdatum und vor Ende der Gültigkeit der Gemeinde liegen.")
 	@Nonnull
 	@GET
 	@Path("/aktive/gemeinde/{gemeindeId}")
@@ -288,13 +356,15 @@ public class GesuchsperiodeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxGesuchsperiode> getAllAktivePeriodenForGemeinde(
-			@Nonnull @PathParam("gemeindeId") String gemeindeId,
-			@Nullable @QueryParam("dossierId") String dossierId,
-			@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie) {
+		@Nonnull @PathParam("gemeindeId") String gemeindeId,
+		@Nullable @QueryParam("dossierId") String dossierId,
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
+	) {
 
-		Collection<Gesuchsperiode> perioden = dossierId == null
-				? gesuchsperiodeService.getAllActiveGesuchsperioden()
-				: gesuchsperiodeService.getAllAktiveNichtVerwendeteGesuchsperioden(dossierId);
+		Collection<Gesuchsperiode> perioden = dossierId == null ?
+			gesuchsperiodeService.getAllActiveGesuchsperioden() :
+			gesuchsperiodeService
+				.getAllAktiveNichtVerwendeteGesuchsperioden(dossierId);
 
 		return extractValidGesuchsperiodenForGemeinde(gemeindeId, perioden);
 	}
@@ -308,22 +378,29 @@ public class GesuchsperiodeResource {
 		@Nonnull @PathParam("gesuchsperiodeId") String gesuchsperiodeId,
 		@Nonnull @PathParam("sprache") Sprache sprache,
 		@Nonnull @PathParam("dokumentTyp") DokumentTyp dokumentTyp,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		requireNonNull(gesuchsperiodeId);
-		gesuchsperiodeService.removeGesuchsperiodeDokument(gesuchsperiodeId, sprache, dokumentTyp);
+		gesuchsperiodeService.removeGesuchsperiodeDokument(
+			gesuchsperiodeId,
+			sprache,
+			dokumentTyp
+		);
 		return Response.ok().build();
 
 	}
 
-	@ApiOperation(value = "retuns true id the VerfuegungErlaeuterung exists for the given language",
-		response = boolean.class)
+	@Operation(
+		summary = "retuns true id the VerfuegungErlaeuterung exists for the given language")
 	@GET
 	@Path("/existDokument/{gesuchsperiodeId}/{sprache}/{dokumentTyp}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_TS, ADMIN_GEMEINDE, SACHBEARBEITER_BG, SACHBEARBEITER_TS,
-		SACHBEARBEITER_GEMEINDE, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_TS, ADMIN_GEMEINDE,
+		SACHBEARBEITER_BG, SACHBEARBEITER_TS,
+		SACHBEARBEITER_GEMEINDE, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		GESUCHSTELLER })
 	public boolean existDokument(
 		@Nonnull @PathParam("gesuchsperiodeId") String gesuchsperiodeId,
 		@Nonnull @PathParam("sprache") Sprache sprache,
@@ -333,10 +410,15 @@ public class GesuchsperiodeResource {
 		requireNonNull(gesuchsperiodeId);
 		requireNonNull(sprache);
 		requireNonNull(dokumentTyp);
-		return gesuchsperiodeService.existDokument(gesuchsperiodeId, sprache, dokumentTyp);
+		return gesuchsperiodeService.existDokument(
+			gesuchsperiodeId,
+			sprache,
+			dokumentTyp
+		);
 	}
 
-	@ApiOperation("return the VerfuegungErlaeuterung for the given language")
+	@Operation(
+		summary = "return the VerfuegungErlaeuterung for the given language")
 	@GET
 	@Path("/downloadGesuchsperiodeDokument/{gesuchsperiodeId}/{sprache}/{dokumentTyp}")
 	@Consumes(MediaType.WILDCARD)
@@ -352,33 +434,62 @@ public class GesuchsperiodeResource {
 		requireNonNull(sprache);
 		requireNonNull(dokumentTyp);
 
-		final byte[] content = gesuchsperiodeService.downloadGesuchsperiodeDokument(gesuchsperiodeId, sprache, dokumentTyp);
+		final byte[] content = gesuchsperiodeService
+			.downloadGesuchsperiodeDokument(
+				gesuchsperiodeId,
+				sprache,
+				dokumentTyp
+			);
 
 		if (content != null && content.length > 0) {
 			try {
-				if(dokumentTyp == DokumentTyp.ERLAUTERUNG_ZUR_VERFUEGUNG) {
+				if (dokumentTyp == DokumentTyp.ERLAUTERUNG_ZUR_VERFUEGUNG) {
 					//noinspection StringConcatenationMissingWhitespace
-					return RestUtil.buildDownloadResponse(true, "erlaeuterung" + sprache + ".pdf",
-						APPLICATION_OCTET_STREAM, content);
-				}
-				else if (dokumentTyp == DokumentTyp.VORLAGE_MERKBLATT_TS){
+					return RestUtil.buildDownloadResponse(
+						true,
+						"erlaeuterung" + sprache + ".pdf",
+						APPLICATION_OCTET_STREAM,
+						content
+					);
+				} else if (dokumentTyp == DokumentTyp.VORLAGE_MERKBLATT_TS) {
 					//noinspection StringConcatenationMissingWhitespace
-					return RestUtil.buildDownloadResponse(true, "vorlageMerkblattTS" + sprache + DOCX_FILE_EXTENSION,
-						APPLICATION_OCTET_STREAM, content);
-				}
-				else if (dokumentTyp == DokumentTyp.VORLAGE_VERFUEGUNG_LATS){
+					return RestUtil.buildDownloadResponse(
+						true,
+						"vorlageMerkblattTS"
+							+ sprache
+							+ DOCX_FILE_EXTENSION,
+						APPLICATION_OCTET_STREAM,
+						content
+					);
+				} else if (dokumentTyp == DokumentTyp.VORLAGE_VERFUEGUNG_LATS) {
 					//noinspection StringConcatenationMissingWhitespace
-					return RestUtil.buildDownloadResponse(true, "vorlageVerfuegungLats" + sprache + DOCX_FILE_EXTENSION,
-						APPLICATION_OCTET_STREAM, content);
-				}
-				else if (dokumentTyp == DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG){
+					return RestUtil.buildDownloadResponse(
+						true,
+						"vorlageVerfuegungLats"
+							+ sprache
+							+ DOCX_FILE_EXTENSION,
+						APPLICATION_OCTET_STREAM,
+						content
+					);
+				} else if (dokumentTyp
+					== DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG) {
 					//noinspection StringConcatenationMissingWhitespace
-					return RestUtil.buildDownloadResponse(true, "vorlageVerfuegungFerienbetreuung" + sprache + DOCX_FILE_EXTENSION,
-						APPLICATION_OCTET_STREAM, content);
+					return RestUtil.buildDownloadResponse(
+						true,
+						"vorlageVerfuegungFerienbetreuung"
+							+ sprache
+							+ DOCX_FILE_EXTENSION,
+						APPLICATION_OCTET_STREAM,
+						content
+					);
 				}
 			} catch (IOException e) {
 				return Response.status(Status.NOT_FOUND)
-					.entity("Gesuchsperiode Dokument: " + dokumentTyp.toString() + " kann nicht gelesen werden")
+					.entity(
+						"Gesuchsperiode Dokument: "
+							+ dokumentTyp
+							+ " kann nicht gelesen werden"
+					)
 					.build();
 			}
 		}
@@ -391,15 +502,25 @@ public class GesuchsperiodeResource {
 		@Nonnull Collection<Gesuchsperiode> perioden
 	) {
 		Gemeinde gemeinde = gemeindeService.findGemeinde(gemeindeId)
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"extractValidGesuchsperiodenForGemeinde",
-				String.format("Keine Gemeinde für ID %s", gemeindeId)));
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"extractValidGesuchsperiodenForGemeinde",
+					String.format(
+						"Keine Gemeinde für ID %s",
+						gemeindeId
+					)
+				)
+			);
 
 		return perioden.stream()
 			.filter(gemeinde::isGesuchsperiodeRelevantForGemeinde)
 			.map(periode -> converter.gesuchsperiodeToJAX(periode))
 			.filter(periode -> periode.getGueltigAb() != null)
-			.sorted(Comparator.comparing(JaxAbstractDateRangedDTO::getGueltigAb).reversed())
+			.sorted(
+				Comparator.comparing(
+					JaxAbstractDateRangedDTO::getGueltigAb
+				).reversed()
+			)
 			.collect(Collectors.toList());
 	}
 

@@ -1,0 +1,122 @@
+.dv-date-time-picker {
+    width: 100%;
+
+    & > legend {
+        border-bottom: none;
+    }
+
+    & > .input-row {
+        display: flex;
+        width: 100%;
+
+        & > * {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+
+    ::ng-deep [matformfieldlineripple] {
+        display: none;
+    }
+
+    --mat-form-field-container-vertical-padding: 0px;
+    --mat-form-field-container-height: 4rem;
+    --mdc-filled-text-field-container-color: white;
+    --mat-form-field-state-layer-color: transparent;
+    --mdc-filled-text-field-active-indicator-color: transparent;
+    --mdc-filled-text-field-focus-active-indicator-color: transparent;
+    --mdc-outlined-text-field-focus-outline-color: transparent;
+    --mat-slider-ripple-color: transparent;
+    --mdc-filled-text-field-active-indicator-height: 0;
+
+    ::ng-deep
+        .mdc-text-field--no-label:not(.mdc-text-field--textarea)
+        .mat-mdc-form-field-input-control.mdc-text-field__input,
+    .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control {
+        height: calc(4rem - 4px);
+    }
+
+    ::ng-deep .mdc-text-field {
+        padding-left: 0;
+    }
+
+    input {
+        display: inline-block;
+        font-size: 1.6rem;
+        font-style: normal;
+        font-weight: 700;
+        letter-spacing: 0.1rem;
+        margin-left: 2px;
+        margin-top: 2px;
+        min-width: 0;
+        padding-left: 1rem;
+
+        &:focus {
+            outline: 2px black solid;
+        }
+
+        &.ng-invalid:not(.mdc-text-field--disabled) {
+            caret-color: black;
+            --mdc-filled-text-field-error-active-indicator-color: transparent;
+        }
+    }
+
+    legend {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 1.4rem;
+        height: auto;
+        letter-spacing: 0.1rem;
+        line-height: normal;
+        margin: 0;
+        min-height: 3rem;
+        padding: 0;
+        position: static;
+        text-align: left;
+        white-space: normal;
+        color: #000000;
+        display: block;
+
+        &.required:after {
+            content: '\00a0*';
+            display: inline;
+        }
+    }
+
+    .margin-r-2 {
+        margin-right: 2rem;
+    }
+
+    ::ng-deep .mat-mdc-icon-button.mat-mdc-button-base {
+        --mdc-icon-button-state-layer-size: 4rem;
+    }
+
+    ::ng-deep .mat-mdc-form-field-infix {
+        width: auto;
+    }
+
+    ::ng-deep .mat-datepicker-toggle {
+        background-color: transparent;
+    }
+
+    ::ng-deep mat-form-field.mat-form-field-disabled {
+        background: #cccccc;
+        color: black;
+
+        input {
+            color: black;
+        }
+    }
+
+    ::ng-deep
+        mat-form-field.ng-touched.mat-form-field-invalid
+        > .mat-mdc-text-field-wrapper {
+        background: #ffe6e6;
+        color: black;
+
+        input {
+            color: black;
+            background: #ffe6e6;
+        }
+    }
+}

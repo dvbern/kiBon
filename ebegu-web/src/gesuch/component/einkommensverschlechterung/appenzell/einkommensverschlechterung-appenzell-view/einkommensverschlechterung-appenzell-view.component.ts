@@ -23,8 +23,7 @@ import {
 import {TranslateService} from '@ngx-translate/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSEinkommensverschlechterung} from '../../../../../models/TSEinkommensverschlechterung';
 import {TSEinkommensverschlechterungContainer} from '../../../../../models/TSEinkommensverschlechterungContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
@@ -42,7 +41,8 @@ import {FinanzielleSituationAppenzellService} from '../../../finanzielleSituatio
     selector: 'dv-einkommensverschlechterung-appenzell-view',
     templateUrl: './einkommensverschlechterung-appenzell-view.component.html',
     styleUrls: ['./einkommensverschlechterung-appenzell-view.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EinkommensverschlechterungAppenzellViewComponent extends AbstractGesuchViewX<TSFinanzModel> {
     public readOnly: boolean = false;

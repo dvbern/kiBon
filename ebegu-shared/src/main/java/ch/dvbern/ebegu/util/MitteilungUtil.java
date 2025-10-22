@@ -8,15 +8,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
@@ -38,15 +39,30 @@ public final class MitteilungUtil {
 		@Nonnull Betreuungsmitteilung betreuungsmitteilung,
 		@Nonnull Betreuung betreuung,
 		@Nonnull Benutzer currentBenutzer,
+		@Nonnull BigDecimal oeffnungstageMittagstisch,
 		Locale locale
 	) {
-		PensumUtil.transformBetreuungsPensumContainers(betreuungsmitteilung);
+		PensumUtil.transformBetreuungsPensumContainers(
+			betreuungsmitteilung,
+			oeffnungstageMittagstisch
+		);
 		betreuungsmitteilung.setDossier(betreuung.extractGesuch().getDossier());
 		betreuungsmitteilung.setSenderTyp(MitteilungTeilnehmerTyp.INSTITUTION);
-		betreuungsmitteilung.setEmpfaengerTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
+		betreuungsmitteilung.setEmpfaengerTyp(
+			MitteilungTeilnehmerTyp.JUGENDAMT
+		);
 		betreuungsmitteilung.setSender(currentBenutzer);
-		betreuungsmitteilung.setEmpfaenger(betreuung.extractGesuch().getDossier().getFall().getBesitzer());
+		betreuungsmitteilung.setEmpfaenger(
+			betreuung.extractGesuch().getDossier().getFall().getBesitzer()
+		);
 		betreuungsmitteilung.setMitteilungStatus(MitteilungStatus.NEU);
-		betreuungsmitteilung.setSubject(ServerMessageUtil.getMessage("mutationsmeldung_betreff", locale, currentBenutzer.getMandant()));
+		betreuungsmitteilung.setSubject(
+			ServerMessageUtil.getMessage(
+				"mutationsmeldung_betreff",
+				locale,
+				currentBenutzer.getMandant(),
+				betreuung.extractGemeinde()
+			)
+		);
 	}
 }

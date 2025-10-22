@@ -24,11 +24,37 @@ public class PersonenSucheServiceBusinessException extends EbeguException {
 
 	private static final long serialVersionUID = 5438097529958118878L;
 
-	public PersonenSucheServiceBusinessException(final String methodname, final String code, final String text) {
-		super(methodname, "Code=" + code + ", Text=" + text, ErrorCodeEnum.ERROR_PERSONENSUCHE_BUSINESS, code, text);
+	public PersonenSucheServiceBusinessException(
+		final String methodname,
+		final String code,
+		final String text
+	) {
+		super(
+			methodname,
+			"Code=" + code + ", Text=" + text,
+			ErrorCodeEnum.ERROR_PERSONENSUCHE_BUSINESS,
+			code,
+			text
+		);
 	}
 
-	public PersonenSucheServiceBusinessException(final String methodname, final String code, final String text, final String description) {
-		super(methodname, "Code=" + code + ", Text=" + text + ", Description=" + description, ErrorCodeEnum.ERROR_PERSONENSUCHE_BUSINESS, code, text);
+	public PersonenSucheServiceBusinessException(
+		final String methodname,
+		final String code,
+		final String text,
+		final String description
+	) {
+		super(
+			methodname,
+			"Code="
+				+ code
+				+ ", Text="
+				+ text
+				+ ", Description="
+				+ description,
+			ErrorCodeEnum.ERROR_PERSONENSUCHE_BUSINESS,
+			code,
+			text
+		);
 	}
 }

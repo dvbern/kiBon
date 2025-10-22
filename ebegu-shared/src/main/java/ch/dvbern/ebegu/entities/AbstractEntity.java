@@ -22,99 +22,129 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
-import javax.persistence.EntityListeners;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.SqlResultSetMappings;
-import javax.persistence.Transient;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.ConstructorResult;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-import ch.dvbern.ebegu.hibernate.StringUUIDType;
 import ch.dvbern.ebegu.reporting.gesuchstichtag.GesuchStichtagDataRow;
 import ch.dvbern.ebegu.reporting.gesuchzeitraum.GesuchZeitraumDataRow;
 import ch.dvbern.ebegu.util.AbstractEntityListener;
 import ch.dvbern.ebegu.util.Constants;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.de.GermanNormalizationFilterFactory;
-import org.apache.lucene.analysis.standard.StandardFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.AnalyzerDef;
-import org.hibernate.search.annotations.TokenFilterDef;
-import org.hibernate.search.annotations.TokenizerDef;
+import org.hibernate.usertype.UserTypeLegacyBridge;
 
 @MappedSuperclass
 @Audited
 @EntityListeners(AbstractEntityListener.class)
 //Mappings for the native quries used by the report
 @SqlResultSetMappings({
-	@SqlResultSetMapping(name = "GesuchStichtagDataRowMapping", classes = @ConstructorResult(targetClass = GesuchStichtagDataRow.class,
-		columns = {
-			@ColumnResult(name = "bgNummer", type = String.class),
-			@ColumnResult(name = "gemeinde", type = String.class),
-			@ColumnResult(name = "gesuchLaufNr", type = Integer.class),
-			@ColumnResult(name = "institution", type = String.class),
-			@ColumnResult(name = "betreuungsTyp", type = String.class),
-			@ColumnResult(name = "periode", type = String.class),
-			@ColumnResult(name = "nichtFreigegeben", type = Integer.class),
-			@ColumnResult(name = "mahnungen", type = Integer.class),
-			@ColumnResult(name = "beschwerde", type = Integer.class) }
-	)),
-	@SqlResultSetMapping(name = "GesuchZeitraumDataRowMapping", classes = @ConstructorResult(targetClass = GesuchZeitraumDataRow.class,
-		columns = {
-			@ColumnResult(name = "bgNummer", type = String.class),
-			@ColumnResult(name = "gemeinde", type = String.class),
-			@ColumnResult(name = "gesuchLaufNr", type = Integer.class),
-			@ColumnResult(name = "institution", type = String.class),
-			@ColumnResult(name = "betreuungsTyp", type = String.class),
-			@ColumnResult(name = "periode", type = String.class),
-			@ColumnResult(name = "anzahlGesuchOnline", type = Integer.class),
-			@ColumnResult(name = "anzahlGesuchPapier", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationOnline", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationPapier", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationAbwesenheit", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationBetreuung", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationEV", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationEwerbspensum", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationFamilienSitutation", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationFinanzielleSituation", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationGesuchsteller", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationKinder", type = Integer.class),
-			@ColumnResult(name = "anzahlMutationUmzug", type = Integer.class),
-			@ColumnResult(name = "anzahlMahnungen", type = Integer.class),
-			@ColumnResult(name = "anzahlSteueramtAusgeloest", type = Integer.class),
-			@ColumnResult(name = "anzahlSteueramtGeprueft", type = Integer.class),
-			@ColumnResult(name = "anzahlBeschwerde", type = Integer.class),
-			@ColumnResult(name = "anzahlVerfuegungen", type = Integer.class),
-			@ColumnResult(name = "anzahlVerfuegungenNormal", type = Integer.class),
-			@ColumnResult(name = "anzahlVerfuegungenMaxEinkommen", type = Integer.class),
-			@ColumnResult(name = "anzahlVerfuegungenKeinPensum", type = Integer.class),
-			@ColumnResult(name = "anzahlVerfuegungenNichtEintreten", type = Integer.class) }
-	))
+	@SqlResultSetMapping(name = "GesuchStichtagDataRowMapping",
+		classes = @ConstructorResult(
+			targetClass = GesuchStichtagDataRow.class,
+			columns = {
+				@ColumnResult(name = "bgNummer",
+					type = String.class),
+				@ColumnResult(name = "gemeinde",
+					type = String.class),
+				@ColumnResult(name = "gesuchLaufNr",
+					type = Integer.class),
+				@ColumnResult(name = "institution",
+					type = String.class),
+				@ColumnResult(name = "betreuungsTyp",
+					type = String.class),
+				@ColumnResult(name = "periode",
+					type = String.class),
+				@ColumnResult(name = "nichtFreigegeben",
+					type = Integer.class),
+				@ColumnResult(name = "mahnungen",
+					type = Integer.class),
+				@ColumnResult(name = "beschwerde",
+					type = Integer.class) }
+		)),
+	@SqlResultSetMapping(name = "GesuchZeitraumDataRowMapping",
+		classes = @ConstructorResult(
+			targetClass = GesuchZeitraumDataRow.class,
+			columns = {
+				@ColumnResult(name = "bgNummer",
+					type = String.class),
+				@ColumnResult(name = "gemeinde",
+					type = String.class),
+				@ColumnResult(name = "gesuchLaufNr",
+					type = Integer.class),
+				@ColumnResult(name = "institution",
+					type = String.class),
+				@ColumnResult(name = "betreuungsTyp",
+					type = String.class),
+				@ColumnResult(name = "periode",
+					type = String.class),
+				@ColumnResult(name = "anzahlGesuchOnline",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlGesuchPapier",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlMutationOnline",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlMutationPapier",
+					type = Integer.class),
+				@ColumnResult(
+					name = "anzahlMutationAbwesenheit",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlMutationBetreuung",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlMutationEV",
+					type = Integer.class),
+				@ColumnResult(
+					name = "anzahlMutationEwerbspensum",
+					type = Integer.class),
+				@ColumnResult(
+					name = "anzahlMutationFamilienSitutation",
+					type = Integer.class),
+				@ColumnResult(
+					name = "anzahlMutationFinanzielleSituation",
+					type = Integer.class),
+				@ColumnResult(
+					name = "anzahlMutationGesuchsteller",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlMutationKinder",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlMutationUmzug",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlMahnungen",
+					type = Integer.class),
+				@ColumnResult(
+					name = "anzahlSteueramtAusgeloest",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlSteueramtGeprueft",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlBeschwerde",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlVerfuegungen",
+					type = Integer.class),
+				@ColumnResult(name = "anzahlVerfuegungenNormal",
+					type = Integer.class),
+				@ColumnResult(
+					name = "anzahlVerfuegungenMaxEinkommen",
+					type = Integer.class),
+				@ColumnResult(
+					name = "anzahlVerfuegungenKeinPensum",
+					type = Integer.class),
+				@ColumnResult(
+					name = "anzahlVerfuegungenNichtEintreten",
+					type = Integer.class) }
+		))
 })
-@TypeDef(
-	name = "string-uuid-binary",
-	typeClass = StringUUIDType.class
-)
-@AnalyzerDef(
-	name = "EBEGUGermanAnalyzer",
-	tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
-	filters = {
-		@TokenFilterDef(factory = StandardFilterFactory.class),
-		@TokenFilterDef(factory = LowerCaseFilterFactory.class),
-		@TokenFilterDef(factory = GermanNormalizationFilterFactory.class)
-	}
-)
 public abstract class AbstractEntity implements Serializable {
 
 	private static final long serialVersionUID = -979317154050183445L;
@@ -122,7 +152,10 @@ public abstract class AbstractEntity implements Serializable {
 	@Id
 	@Column(unique = true, nullable = false, updatable = false, length = 16)
 	@Size(min = Constants.UUID_LENGTH, max = Constants.UUID_LENGTH)
-	@Type( type = "string-uuid-binary" )
+	@Type(
+		value = UserTypeLegacyBridge.class,
+		parameters = @Parameter(name = UserTypeLegacyBridge.TYPE_NAME_PARAM_KEY,
+			value = "string-uuid-binary"))
 	private String id;
 
 	@Version
@@ -269,6 +302,7 @@ public abstract class AbstractEntity implements Serializable {
 	public abstract boolean isSame(AbstractEntity other);
 
 	public String getMessageForAccessException() {
-		return "No specific message set for this object type: " + this.getClass().getSimpleName();
+		return "No specific message set for this object type: "
+			+ this.getClass().getSimpleName();
 	}
 }

@@ -1,26 +1,28 @@
 package ch.dvbern.ebegu.testfaelle.testfealleschwyz;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class BetreuungData {
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private boolean auszahlungAnEltern;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private String begruendung;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private String instiutionId;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private boolean bestaetigt;
-
-
 
 	@Getter
 	List<PensumData> betreuungspensum = new ArrayList<>();

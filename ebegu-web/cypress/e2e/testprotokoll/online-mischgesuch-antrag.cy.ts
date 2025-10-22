@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {getUser, User} from '@dv-e2e/types';
 import {
     AntragBetreuungPO,
     AntragCreationPO,
@@ -27,12 +26,14 @@ import {
     VerfuegenPO,
     VerfuegungPO
 } from '@dv-e2e/page-objects';
+import {getUser, User} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 
 describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
-    const userSuperadmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const userSuperadmin = getUser('[1-Superadmin] Super User');
     const userGS: User = '[5-GS] Emma Gerber';
-    const userTS = getUser('[3-SB-TS-Paris] Charlotte Gainsbourg');
+    const userTS = getUser('[6-P-Admin-TS] Adrian Schuler');
     const userGemeindeBGTS = getUser(
         '[6-P-Admin-Gemeinde] Gerlinde Hofstetter'
     );
@@ -44,12 +45,13 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
     let antragIdAlias: string;
 
     before(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
         cy.login(userSuperadmin);
         cy.visit('/');
         TestFaellePO.createOnlineTestfall({
             testFall: 'testfall-2',
-            periode: '2023/24',
+            periode: '2024/25',
             gemeinde: 'Paris',
             besitzerin: userGS,
             betreuungsstatus: 'warten'
@@ -87,8 +89,9 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
         freigabequittungEinlesen();
 
         // TAGESSCHULE
-        changeUserAndOpenBetreuung(userTS, antragIdAlias);
-        tsAkzeptieren(0, 0);
+        cy.wait(2000);
+        changeUserAndOpenBetreuung(userGemeindeBGTS, antragIdAlias);
+        tsAkzeptieren(0, 1);
         //TODO Überprüfen, ob einen Email versendet wurde => 1. Bestätigung ohne FinSit
 
         // GEMEINDE
@@ -104,7 +107,7 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
         // TAGESSCHULE
         // Gesuch ist verfügt und wir übernehmen nun statt zu akzeptieren
         changeUserAndOpenBetreuung(userTS, antragIdAlias);
-        tsUebernehmen(1, 0);
+        tsUebernehmen(1, 1);
         //TODO Überprüfen, ob ein weiteres Email versendet wurde (Anmeldung zweites Kind mit Tarif)
 
         // GEMEINDE
@@ -154,7 +157,7 @@ describe('Kibon - Online TS-Anmeldung (Mischgesuch) [Gesuchsteller]', () => {
 
     const tsAkzeptieren = (kindIndex: number, betreuungsIndex: number) => {
         AntragBetreuungPO.getBetreuung(kindIndex, betreuungsIndex).click();
-        cy.waitForRequest('PUT', '**/betreuungen/schulamt/akzeptieren', () => {
+        cy.waitForRequest('PUT', '**/anmeldung/akzeptieren', () => {
             AntragBetreuungPO.getPlatzAkzeptierenButton().click();
             cy.wait(1500);
             ConfirmDialogPO.getDvLoadingConfirmButton().click();

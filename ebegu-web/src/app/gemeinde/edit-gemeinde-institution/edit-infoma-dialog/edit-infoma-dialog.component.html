@@ -1,0 +1,120 @@
+<!--
+  ~ Ki-Tax: System for the management of external childcare subsidies
+  ~ Copyright (C) 2018 City of Bern Switzerland
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU Affero General Public License for more details.
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<h2 mat-dialog-title>
+    {{ infomaData.institution.name }} - {{ infomaData.institutionArt }}
+</h2>
+
+<form
+    role="form"
+    #form="ngForm"
+    [ngClass]="{'ng-submitted': form.submitted}"
+    (ngSubmit)="save()"
+    novalidate
+>
+    <mat-dialog-content>
+        <div *ngIf="infomaData">
+            <div class="dv-content">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="iban">{{
+                            'IBAN_NUMMER' | translate
+                        }}</label>
+                        <input
+                            id="iban"
+                            type="text"
+                            name="iban"
+                            class="form-control"
+                            disabled
+                            [ngModel]="infomaData.iban"
+                        />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="kontoInhaber">{{
+                            'INSTITUTION_KONTOINHABER' | translate
+                        }}</label>
+                        <input
+                            id="kontoInhaber"
+                            type="text"
+                            name="kontoInhaber"
+                            class="form-control"
+                            [ngModel]="infomaData.kontoinhaber"
+                            disabled
+                        />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="infomaKreditorenNr" class="required">{{
+                            'INFOMA_KREDITORENNUMMER' | translate
+                        }}</label>
+                        <input
+                            id="infomaKreditorenNr"
+                            type="text"
+                            name="infomaKreditorenNr"
+                            class="form-control"
+                            [(ngModel)]="infomaData.infomaKreditorenNr"
+                            required
+                        />
+                        <dv-error-messages
+                            [errorObject]="
+                                form.controls.infomaKreditorenNr?.errors
+                            "
+                            inputId="infomaKreditorenNr"
+                        ></dv-error-messages>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="infomaBankCode" class="required">{{
+                            'INFOMA_BANKCODE' | translate
+                        }}</label>
+                        <input
+                            id="infomaBankCode"
+                            type="text"
+                            name="infomaBankCode"
+                            class="form-control"
+                            [(ngModel)]="infomaData.infomaBankCode"
+                            required
+                        />
+                        <dv-error-messages
+                            [errorObject]="form.controls.infomaBankCode?.errors"
+                            inputId="infomaBankCode"
+                        ></dv-error-messages>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions>
+        <div class="dv-dialog-actions">
+            <button
+                type="submit"
+                class="dv-btn"
+                [textContent]="'SPEICHERN' | translate"
+                (click)="save()"
+            ></button>
+            <button
+                type="button"
+                class="dv-btn cancel-button"
+                (click)="close()"
+                [textContent]="'CANCEL' | translate"
+            ></button>
+        </div>
+    </mat-dialog-actions>
+</form>

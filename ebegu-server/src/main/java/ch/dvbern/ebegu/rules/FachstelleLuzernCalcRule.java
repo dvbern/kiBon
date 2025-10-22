@@ -15,27 +15,37 @@
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.dto.BGCalculationInput;
-import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.Einstellung;
-import ch.dvbern.ebegu.entities.PensumFachstelle;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
-import ch.dvbern.ebegu.enums.FachstellenTyp;
-import ch.dvbern.ebegu.enums.MsgKey;
-import ch.dvbern.ebegu.types.DateRange;
-import ch.dvbern.ebegu.util.MathUtil;
-
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.entities.AbstractPlatz;
+import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.PensumFachstelle;
+import ch.dvbern.ebegu.enums.FachstellenTyp;
+import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.types.DateRange;
+import ch.dvbern.ebegu.util.MathUtil;
+
 public class FachstelleLuzernCalcRule extends AbstractFachstellenCalcRule {
 
-	public FachstelleLuzernCalcRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.FACHSTELLE, RuleType.GRUNDREGEL_CALC, RuleValidity.ASIV, validityPeriod, locale);
+	public FachstelleLuzernCalcRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.FACHSTELLE,
+			RuleType.GRUNDREGEL_CALC,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -51,9 +61,14 @@ public class FachstelleLuzernCalcRule extends AbstractFachstellenCalcRule {
 		int pensum = inputData.getFachstellenpensum();
 		Betreuung betreuung = (Betreuung) platz;
 
-		if(pensum > 0) {
-			int beteruungspensumIntValue = MathUtil.GANZZAHL.from(pensum).intValue();
-			PensumFachstelle pensumFachstelle = findPensumFachstelleForGueltigkeit(platz.getKind().getKindJA(), inputData.getParent().getGueltigkeit());
+		if (pensum > 0) {
+			int beteruungspensumIntValue = MathUtil.GANZZAHL.from(pensum)
+				.intValue();
+			PensumFachstelle pensumFachstelle =
+				findPensumFachstelleForGueltigkeit(
+					platz.getKind().getKindJA(),
+					inputData.getParent().getGueltigkeit()
+				);
 			inputData.setAnspruchspensumProzent(beteruungspensumIntValue);
 			inputData.addBemerkung(
 				MsgKey.FACHSTELLE_MSG,
@@ -65,7 +80,10 @@ public class FachstelleLuzernCalcRule extends AbstractFachstellenCalcRule {
 	}
 
 	@Override
-	public boolean isRelevantForGemeinde(@Nonnull Map<EinstellungKey, Einstellung> einstellungMap) {
-		return getFachstellenTypFromEinstellungen(einstellungMap) == FachstellenTyp.LUZERN;
+	public boolean isRelevantForGemeinde(
+		@Nonnull Map<EinstellungKey, Einstellung> einstellungMap
+	) {
+		return getFachstellenTypFromEinstellungen(einstellungMap)
+			== FachstellenTyp.LUZERN;
 	}
 }

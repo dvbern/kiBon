@@ -10,7 +10,8 @@ import {FinanzielleSituationSolothurnService} from '../../finanzielle-situation-
 @Component({
     selector: 'dv-angaben-gs1',
     templateUrl: '../angaben-gs.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AngabenGs1Component extends AbstractFinSitsolothurnView {
     public constructor(

@@ -15,22 +15,28 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
-import ch.dvbern.ebegu.enums.*;
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import ch.dvbern.ebegu.enums.AntragStatusDTO;
+import ch.dvbern.ebegu.enums.AntragTyp;
+import ch.dvbern.ebegu.enums.Eingangsart;
+import ch.dvbern.ebegu.enums.FinSitStatus;
+import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
+import ch.dvbern.ebegu.enums.GesuchBetreuungenStatus;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO fuer Faelle
@@ -48,19 +54,19 @@ public class JaxGesuch extends JaxAbstractDTO {
 	private JaxGesuchsperiode gesuchsperiode;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate eingangsdatum = null;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate regelnGueltigAb = null;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate eingangsdatumSTV = null;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate freigabeDatum = null;
 
 	@NotNull
@@ -113,21 +119,21 @@ public class JaxGesuch extends JaxAbstractDTO {
 	private FinanzielleSituationTyp finSitTyp;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate finSitAenderungGueltigAbDatum;
 
 	private boolean gesperrtWegenBeschwerde;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate datumGewarntNichtFreigegeben;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate datumGewarntFehlendeQuittung;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime timestampVerfuegt;
 
 	private boolean gueltig;
@@ -136,11 +142,11 @@ public class JaxGesuch extends JaxAbstractDTO {
 
 	private boolean markiertFuerKontroll;
 
-
 	private boolean finSitRueckwirkendKorrigiertInThisMutation;
 
 	@NotNull
-	private GesuchBetreuungenStatus gesuchBetreuungenStatus = GesuchBetreuungenStatus.ALLE_BESTAETIGT;
+	private GesuchBetreuungenStatus gesuchBetreuungenStatus =
+		GesuchBetreuungenStatus.ALLE_BESTAETIGT;
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
@@ -151,7 +157,9 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return gesuchsteller1;
 	}
 
-	public void setGesuchsteller1(@Nullable final JaxGesuchstellerContainer gesuchsteller1) {
+	public void setGesuchsteller1(
+		@Nullable final JaxGesuchstellerContainer gesuchsteller1
+	) {
 		this.gesuchsteller1 = gesuchsteller1;
 	}
 
@@ -160,7 +168,9 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return gesuchsteller2;
 	}
 
-	public void setGesuchsteller2(@Nullable final JaxGesuchstellerContainer gesuchsteller2) {
+	public void setGesuchsteller2(
+		@Nullable final JaxGesuchstellerContainer gesuchsteller2
+	) {
 		this.gesuchsteller2 = gesuchsteller2;
 	}
 
@@ -177,7 +187,9 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return familiensituationContainer;
 	}
 
-	public void setFamiliensituationContainer(@Nullable JaxFamiliensituationContainer familiensituationContainer) {
+	public void setFamiliensituationContainer(
+		@Nullable JaxFamiliensituationContainer familiensituationContainer
+	) {
 		this.familiensituationContainer = familiensituationContainer;
 	}
 
@@ -186,8 +198,11 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return einkommensverschlechterungInfoContainer;
 	}
 
-	public void setEinkommensverschlechterungInfoContainer(@Nullable final JaxEinkommensverschlechterungInfoContainer einkommensverschlechterungInfoContainer) {
-		this.einkommensverschlechterungInfoContainer = einkommensverschlechterungInfoContainer;
+	public void setEinkommensverschlechterungInfoContainer(
+		@Nullable final JaxEinkommensverschlechterungInfoContainer einkommensverschlechterungInfoContainer
+	) {
+		this.einkommensverschlechterungInfoContainer =
+			einkommensverschlechterungInfoContainer;
 	}
 
 	@Nullable
@@ -213,7 +228,9 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return bemerkungenPruefungSTV;
 	}
 
-	public void setBemerkungenPruefungSTV(@Nullable String bemerkungenPruefungSTV) {
+	public void setBemerkungenPruefungSTV(
+		@Nullable String bemerkungenPruefungSTV
+	) {
 		this.bemerkungenPruefungSTV = bemerkungenPruefungSTV;
 	}
 
@@ -254,7 +271,9 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return datumGewarntNichtFreigegeben;
 	}
 
-	public void setDatumGewarntNichtFreigegeben(@Nullable LocalDate datumGewarntNichtFreigegeben) {
+	public void setDatumGewarntNichtFreigegeben(
+		@Nullable LocalDate datumGewarntNichtFreigegeben
+	) {
 		this.datumGewarntNichtFreigegeben = datumGewarntNichtFreigegeben;
 	}
 
@@ -263,7 +282,9 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return datumGewarntFehlendeQuittung;
 	}
 
-	public void setDatumGewarntFehlendeQuittung(@Nullable LocalDate datumGewarntFehlendeQuittung) {
+	public void setDatumGewarntFehlendeQuittung(
+		@Nullable LocalDate datumGewarntFehlendeQuittung
+	) {
 		this.datumGewarntFehlendeQuittung = datumGewarntFehlendeQuittung;
 	}
 
@@ -272,7 +293,9 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return timestampVerfuegt;
 	}
 
-	public void setTimestampVerfuegt(@Nullable LocalDateTime timestampVerfuegt) {
+	public void setTimestampVerfuegt(
+		@Nullable LocalDateTime timestampVerfuegt
+	) {
 		this.timestampVerfuegt = timestampVerfuegt;
 	}
 
@@ -288,7 +311,9 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return gesuchBetreuungenStatus;
 	}
 
-	public void setGesuchBetreuungenStatus(GesuchBetreuungenStatus gesuchBetreuungenStatus) {
+	public void setGesuchBetreuungenStatus(
+		GesuchBetreuungenStatus gesuchBetreuungenStatus
+	) {
 		this.gesuchBetreuungenStatus = gesuchBetreuungenStatus;
 	}
 
@@ -399,7 +424,9 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return finSitAenderungGueltigAbDatum;
 	}
 
-	public void setFinSitAenderungGueltigAbDatum(@Nullable LocalDate finSitAenderungGueltigAbDatum) {
+	public void setFinSitAenderungGueltigAbDatum(
+		@Nullable LocalDate finSitAenderungGueltigAbDatum
+	) {
 		this.finSitAenderungGueltigAbDatum = finSitAenderungGueltigAbDatum;
 	}
 
@@ -424,9 +451,10 @@ public class JaxGesuch extends JaxAbstractDTO {
 		return finSitRueckwirkendKorrigiertInThisMutation;
 	}
 
-	public void setFinSitRueckwirkendKorrigiertInThisMutation(boolean finSitRueckwirkendKorrigiertInThisMutation) {
+	public void setFinSitRueckwirkendKorrigiertInThisMutation(
+		boolean finSitRueckwirkendKorrigiertInThisMutation
+	) {
 		this.finSitRueckwirkendKorrigiertInThisMutation =
 			finSitRueckwirkendKorrigiertInThisMutation;
 	}
 }
-

@@ -17,9 +17,8 @@
 
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSWizardStepX} from '../../../models/TSWizardStepX';
 import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
 
@@ -27,7 +26,8 @@ import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
     selector: 'dv-wizard-side-nav',
     templateUrl: './wizard-side-nav.component.html',
     styleUrls: ['./wizard-side-nav.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class WizardSideNavComponent implements OnInit {
     @Input() public readonly id: string;

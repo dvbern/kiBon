@@ -25,8 +25,10 @@ public abstract class AbstractMergeField<T> {
 	private static final String STARTING_TAG = "{";
 	private static final String CLOSING_TAG = "}";
 
-	@Nonnull private String name;
-	@Nullable private T value;
+	@Nonnull
+	private String name;
+	@Nullable
+	private T value;
 
 	public AbstractMergeField(@Nonnull String name, @Nullable T value) {
 		this.name = name;

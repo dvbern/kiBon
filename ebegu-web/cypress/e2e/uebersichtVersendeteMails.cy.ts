@@ -21,14 +21,20 @@ import {
     TestFaellePO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '../../libs/shared/model/shared-model-mandant/src/lib/MANDANTS';
 import {UebersichtVersendeteMailsPO} from '../page-objects/admin/uebersichtVersendeteMails.po';
 
-const adminUser = getUser('[1-Superadmin] E-BEGU Superuser');
+const adminUser = getUser('[1-Superadmin] Super User');
 
 describe('Kibon - generate Tests for uebersichts Versendete Mails calls', () => {
     const userAdminBern = getUser(
         '[2-Admin-Kanton-Bern] Bernhard Röthlisberger'
     );
+
+    before(() => {
+        cy.changeMandant(MANDANTS.BERN);
+        cy.intercept({resourceType: 'xhr'}, {log: true}); // don't log XHRs
+    });
 
     it('should access the Uebersicht View as Superadmin', () => {
         cy.login(adminUser);

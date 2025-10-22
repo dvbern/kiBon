@@ -14,14 +14,15 @@
  */
 
 import {waitForAsync} from '@angular/core/testing';
-import {IQService, IScope, ITimeoutService} from 'angular';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import angular, {IQService, IScope, ITimeoutService} from 'angular';
+import moment from 'moment/moment';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {DemoFeatureRS} from '../../../app/core/service/demoFeatureRS.rest';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {EwkRS} from '../../../app/core/service/ewkRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
-import {MandantService} from '../../../app/shared/services/mandant.service';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
 import {TSCreationAction} from '../../../models/enums/TSCreationAction';
@@ -31,17 +32,16 @@ import {TSGesuchstellerKardinalitaet} from '../../../models/enums/TSGesuchstelle
 import {TSUnterhaltsvereinbarungAnswer} from '../../../models/enums/TSUnterhaltsvereinbarungAnswer';
 import {TSFamiliensituation} from '../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../models/TSFamiliensituationContainer';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSGesuchsteller} from '../../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../../models/TSGesuchstellerContainer';
+import {TSDateRange} from '@kibon/shared/model/entity';
 import {GESUCH_JS_MODULE} from '../../gesuch.module';
 import {IStammdatenStateParams} from '../../gesuch.route';
 import {DokumenteRS} from '../../service/dokumenteRS.rest';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {StammdatenViewController} from './stammdatenView';
-import {TSDateRange} from '../../../models/types/TSDateRange';
-import * as moment from 'moment/moment';
 import ITranslateService = angular.translate.ITranslateService;
 
 describe('stammdatenView', () => {
@@ -54,7 +54,7 @@ describe('stammdatenView', () => {
     let ewkRS: EwkRS;
     let $timeout: ITimeoutService;
     let einstellungRS: EinstellungRS;
-    let applicationPropertyRS: ApplicationPropertyRS;
+    let applicationPropertyRS: SharedUtilApplicationPropertyRsService;
     let uploadRS: UploadRS;
     let downloadRS: DownloadRS;
     let dokumentRS: DokumenteRS;
@@ -84,7 +84,9 @@ describe('stammdatenView', () => {
             $scope = $rootScope.$new();
             $timeout = $injector.get('$timeout');
             einstellungRS = $injector.get('EinstellungRS');
-            applicationPropertyRS = $injector.get('ApplicationPropertyRS');
+            applicationPropertyRS = $injector.get(
+                'SharedUtilApplicationPropertyRsService'
+            );
             uploadRS = $injector.get('UploadRS');
             downloadRS = $injector.get('DownloadRS');
             dokumentRS = $injector.get('DokumenteRS');

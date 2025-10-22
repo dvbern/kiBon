@@ -1,13 +1,14 @@
 import {NgModule} from '@angular/core';
+import {MatMomentDateModule} from '@angular/material-moment-adapter';
 
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatDividerModule} from '@angular/material/divider';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatPaginatorModule} from '@angular/material/paginator';
@@ -19,7 +20,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatMomentDateModule} from '@angular/material-moment-adapter';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -31,7 +32,7 @@ const MATERIAL_MODULES = [
     MatDatepickerModule,
     MatDialogModule,
     MatDividerModule,
-    // MatExpansionModule,
+    MatExpansionModule,
     // MatGridListModule,
     // MatIconModule,
     MatInputModule,

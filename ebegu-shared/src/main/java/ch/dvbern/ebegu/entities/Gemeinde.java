@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -21,18 +21,18 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.GemeindeStatus;
 import ch.dvbern.ebegu.util.Constants;
@@ -43,9 +43,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.bridge.builtin.LongBridge;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 import static ch.dvbern.ebegu.util.Constants.END_OF_TIME;
@@ -54,31 +52,38 @@ import static ch.dvbern.ebegu.util.Constants.END_OF_TIME;
 @Entity
 @Table(
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "name", name = "UK_gemeinde_name"),
-		@UniqueConstraint(columnNames = "bfsNummer", name = "UK_gemeinde_bfsnummer"),
-		@UniqueConstraint(columnNames = "gemeindeNummer", name = "UK_gemeinde_gemeindeNummer")
+		@UniqueConstraint(columnNames = "name",
+			name = "UK_gemeinde_name"),
+		@UniqueConstraint(columnNames = "bfsNummer",
+			name = "UK_gemeinde_bfsnummer"),
+		@UniqueConstraint(columnNames = "gemeindeNummer",
+			name = "UK_gemeinde_gemeindeNummer")
 	}
 )
 @CheckGemeindeAtLeastOneAngebot
 @Getter
 @Setter
-public class Gemeinde extends AbstractEntity implements Comparable<Gemeinde>, Displayable, HasMandant {
+public class Gemeinde extends AbstractEntity implements
+	Comparable<Gemeinde>,
+	Displayable,
+	HasMandant {
 
 	private static final long serialVersionUID = -6976259296646006855L;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeinde_mandant_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeinde_mandant_id"),
+		updatable = false)
 	private Mandant mandant;
 
 	@NotNull
 	@Column(nullable = false, updatable = false)
-	@Field(bridge = @FieldBridge(impl = LongBridge.class))
+	@GenericField
 	private long gemeindeNummer = 0;
 
 	@NotNull
 	@Column(nullable = false)
-	@Field(bridge = @FieldBridge(impl = LongBridge.class))
+	@GenericField
 	private Long bfsNummer;
 
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
@@ -131,6 +136,10 @@ public class Gemeinde extends AbstractEntity implements Comparable<Gemeinde>, Di
 	@NotNull
 	@Column(nullable = false)
 	private Boolean infomaZahlungen = false;
+
+	@NotNull
+	@Column(nullable = false)
+	private Boolean adminMutationAbweichungMeldungEnabled = false;
 
 	@Nonnull
 	@NotNull
@@ -188,7 +197,9 @@ public class Gemeinde extends AbstractEntity implements Comparable<Gemeinde>, Di
 		return betreuungsgutscheineStartdatum;
 	}
 
-	public void setBetreuungsgutscheineStartdatum(@Nonnull LocalDate betreuungsgutscheineStartdatum) {
+	public void setBetreuungsgutscheineStartdatum(
+		@Nonnull LocalDate betreuungsgutscheineStartdatum
+	) {
 		this.betreuungsgutscheineStartdatum = betreuungsgutscheineStartdatum;
 	}
 
@@ -249,6 +260,17 @@ public class Gemeinde extends AbstractEntity implements Comparable<Gemeinde>, Di
 		this.infomaZahlungen = infomaZahlungen;
 	}
 
+	public Boolean getAdminMutationAbweichungMeldungEnabled() {
+		return adminMutationAbweichungMeldungEnabled;
+	}
+
+	public void setAdminMutationAbweichungMeldungEnabled(
+		Boolean adminMutationAbweichungMeldungEnabled
+	) {
+		this.adminMutationAbweichungMeldungEnabled =
+			adminMutationAbweichungMeldungEnabled;
+	}
+
 	@Override
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
@@ -265,7 +287,10 @@ public class Gemeinde extends AbstractEntity implements Comparable<Gemeinde>, Di
 		}
 		Gemeinde gemeinde = (Gemeinde) other;
 		return Objects.equals(this.getName(), gemeinde.getName())
-			&& Objects.equals(this.getGemeindeNummer(), gemeinde.getGemeindeNummer())
+			&& Objects.equals(
+				this.getGemeindeNummer(),
+				gemeinde.getGemeindeNummer()
+			)
 			&& Objects.equals(this.getMandant(), gemeinde.getMandant());
 	}
 
@@ -282,7 +307,11 @@ public class Gemeinde extends AbstractEntity implements Comparable<Gemeinde>, Di
 
 	@Transient
 	public String getPaddedGemeindeNummer() {
-		return Strings.padStart(Long.toString(getGemeindeNummer()), Constants.GEMEINDENUMMER_LENGTH, '0');
+		return Strings.padStart(
+			Long.toString(getGemeindeNummer()),
+			Constants.GEMEINDENUMMER_LENGTH,
+			'0'
+		);
 	}
 
 	@Nonnull
@@ -290,7 +319,9 @@ public class Gemeinde extends AbstractEntity implements Comparable<Gemeinde>, Di
 		return tagesschulanmeldungenStartdatum;
 	}
 
-	public void setTagesschulanmeldungenStartdatum(@Nonnull LocalDate tagesschulanmeldungenStartdatum) {
+	public void setTagesschulanmeldungenStartdatum(
+		@Nonnull LocalDate tagesschulanmeldungenStartdatum
+	) {
 		this.tagesschulanmeldungenStartdatum = tagesschulanmeldungenStartdatum;
 	}
 
@@ -299,8 +330,11 @@ public class Gemeinde extends AbstractEntity implements Comparable<Gemeinde>, Di
 		return ferieninselanmeldungenStartdatum;
 	}
 
-	public void setFerieninselanmeldungenStartdatum(@Nonnull LocalDate ferieninselanmeldungenStartdatum) {
-		this.ferieninselanmeldungenStartdatum = ferieninselanmeldungenStartdatum;
+	public void setFerieninselanmeldungenStartdatum(
+		@Nonnull LocalDate ferieninselanmeldungenStartdatum
+	) {
+		this.ferieninselanmeldungenStartdatum =
+			ferieninselanmeldungenStartdatum;
 	}
 
 	public boolean isEventPublished() {
@@ -311,28 +345,45 @@ public class Gemeinde extends AbstractEntity implements Comparable<Gemeinde>, Di
 		this.eventPublished = eventPublished;
 	}
 
-	public boolean isGesuchsperiodeRelevantForGemeinde(@Nonnull Gesuchsperiode gesuchsperiode) {
+	public boolean isGesuchsperiodeRelevantForGemeinde(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		// Pruefen, ob irgendein Angebot waehrend dieser Gesuchsperiode vorhanden war
-		LocalDate endeGesuchperiode = gesuchsperiode.getGueltigkeit().getGueltigBis();
-		LocalDate startGesuchperiode = gesuchsperiode.getGueltigkeit().getGueltigAb();
+		LocalDate endeGesuchperiode = gesuchsperiode.getGueltigkeit()
+			.getGueltigBis();
+		LocalDate startGesuchperiode = gesuchsperiode.getGueltigkeit()
+			.getGueltigAb();
 		if (getGueltigBis().isBefore(startGesuchperiode)) {
 			return false;
 		}
-		if (angebotBG && betreuungsgutscheineStartdatum.isBefore(endeGesuchperiode)) {
+		if (angebotBG
+			&& betreuungsgutscheineStartdatum.isBefore(endeGesuchperiode)) {
 			return true;
 		}
-		if (angebotTS && tagesschulanmeldungenStartdatum.isBefore(endeGesuchperiode)) {
+		if (angebotTS
+			&& tagesschulanmeldungenStartdatum.isBefore(
+				endeGesuchperiode
+			)) {
 			return true;
 		}
-		if (angebotFI && ferieninselanmeldungenStartdatum.isBefore(endeGesuchperiode)) {
+		if (angebotFI
+			&& ferieninselanmeldungenStartdatum.isBefore(
+				endeGesuchperiode
+			)) {
 			return true;
 		}
 		return false;
 	}
 
-	public boolean isTagesschuleActiveForGesuchsperiode(@Nonnull Gesuchsperiode gesuchsperiode) {
+	public boolean isTagesschuleActiveForGesuchsperiode(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		return this.angebotTS
-			&& this.tagesschulanmeldungenStartdatum.isBefore(gesuchsperiode.getGueltigkeit().getGueltigBis())
-			&& gesuchsperiode.getGueltigkeit().getGueltigAb().isBefore(this.gueltigBis);
+			&& this.tagesschulanmeldungenStartdatum.isBefore(
+				gesuchsperiode.getGueltigkeit().getGueltigBis()
+			)
+			&& gesuchsperiode.getGueltigkeit()
+				.getGueltigAb()
+				.isBefore(this.gueltigBis);
 	}
 }

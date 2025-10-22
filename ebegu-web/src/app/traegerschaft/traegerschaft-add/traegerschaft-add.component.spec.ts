@@ -51,7 +51,7 @@ describe('TraegerschaftAddComponent', () => {
     );
     const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
         I18nServiceRSRest.name,
-        ['extractPreferredLanguage']
+        ['extractPreferredLanguage', 'init']
     );
     const benutzerServiceSpy = jasmine.createSpyObj<BenutzerRSX>(
         BenutzerRSX.name,

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
@@ -34,18 +34,22 @@ import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 
-public class LuzernFinanzielleSituationDokumente extends AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> {
+public class LuzernFinanzielleSituationDokumente extends
+	AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> {
 
 	@Override
 	public void getAllDokumente(
 		@Nonnull Gesuch gesuch,
 		@Nonnull Set<DokumentGrund> anlageVerzeichnis,
-		@Nonnull Locale locale) {
+		@Nonnull Locale locale
+	) {
 
-		final GesuchstellerContainer gesuchsteller1 = gesuch.getGesuchsteller1();
-		final GesuchstellerContainer gesuchsteller2 = gesuch.getGesuchsteller2();
+		final GesuchstellerContainer gesuchsteller1 = gesuch
+			.getGesuchsteller1();
+		final GesuchstellerContainer gesuchsteller2 = gesuch
+			.getGesuchsteller2();
 
-		if(isVerheiratet(gesuch.extractFamiliensituation())) {
+		if (isVerheiratet(gesuch.extractFamiliensituation())) {
 			addDokument(gesuch, gesuchsteller1, 0, anlageVerzeichnis);
 		} else {
 			addDokument(gesuch, gesuchsteller1, 1, anlageVerzeichnis);
@@ -57,38 +61,52 @@ public class LuzernFinanzielleSituationDokumente extends AbstractDokumente<Abstr
 		Gesuch gesuch,
 		GesuchstellerContainer gesuchsteller,
 		int gesuchstellerNumber,
-		Set<DokumentGrund> anlageVerzeichnis) {
-		if(gesuchsteller == null || gesuchsteller.getFinanzielleSituationContainer() == null) {
+		Set<DokumentGrund> anlageVerzeichnis
+	) {
+		if (gesuchsteller == null
+			|| gesuchsteller.getFinanzielleSituationContainer() == null) {
 			return;
 		}
 
-		final int basisJahr = gesuch.getGesuchsperiode().getGueltigkeit().calculateEndOfPreviousYear().getYear();
+		final int basisJahr = gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.calculateEndOfPreviousYear()
+			.getYear();
 
-		add(getDokument(
+		add(
+			getDokument(
 				DokumentTyp.NACHWEIS_BRUTTOLOHN,
-				gesuchsteller.getFinanzielleSituationContainer().getFinanzielleSituationJA(),
+				gesuchsteller.getFinanzielleSituationContainer()
+					.getFinanzielleSituationJA(),
 				String.valueOf(basisJahr),
 				DokumentGrundPersonType.GESUCHSTELLER,
 				gesuchstellerNumber,
-				DokumentGrundTyp.FINANZIELLESITUATION),
-			anlageVerzeichnis);
+				DokumentGrundTyp.FINANZIELLESITUATION
+			),
+			anlageVerzeichnis
+		);
 	}
 
 	protected boolean isVerheiratet(Familiensituation familiensituation) {
-		return familiensituation != null &&
-			familiensituation.getFamilienstatus() == EnumFamilienstatus.VERHEIRATET;
+		return familiensituation != null
+			&&
+			familiensituation.getFamilienstatus()
+				== EnumFamilienstatus.VERHEIRATET;
 	}
 
 	@Override
 	public boolean isDokumentNeeded(
 		@Nonnull DokumentTyp dokumentTyp,
-		@Nullable AbstractFinanzielleSituation abstractFinanzielleSituation) {
+		@Nullable AbstractFinanzielleSituation abstractFinanzielleSituation
+	) {
 
-		if(!(abstractFinanzielleSituation instanceof FinanzielleSituation)) {
+		if (!(abstractFinanzielleSituation instanceof FinanzielleSituation)) {
 			return false;
 		}
 
-		FinanzielleSituation finanzielleSituation = (FinanzielleSituation) abstractFinanzielleSituation;
-		return finanzielleSituation.getQuellenbesteuert() != null && finanzielleSituation.getQuellenbesteuert();
+		FinanzielleSituation finanzielleSituation =
+			(FinanzielleSituation) abstractFinanzielleSituation;
+		return finanzielleSituation.getQuellenbesteuert() != null
+			&& finanzielleSituation.getQuellenbesteuert();
 	}
 }

@@ -24,36 +24,42 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {take} from 'rxjs/operators';
+import {
+    TSInstitutionStatus,
+    TSRole,
+    TSBetreuungsangebotTyp
+} from '@kibon/shared/model/enums';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {
+    TSGemeinde,
+    TSInstitution,
+    TSMandant,
+    TSTraegerschaft
+} from '@kibon/shared/model/entity';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSInstitutionStatus} from '../../../models/enums/TSInstitutionStatus';
-import {TSRole} from '../../../models/enums/TSRole';
 import {TSExceptionReport} from '../../../models/TSExceptionReport';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSInstitution} from '../../../models/TSInstitution';
-import {TSMandant} from '../../../models/TSMandant';
-import {TSTraegerschaft} from '../../../models/TSTraegerschaft';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DvNgGesuchstellerDialogComponent} from '../../core/component/dv-ng-gesuchsteller-dialog/dv-ng-gesuchsteller-dialog.component';
+import {DvNgSelectTraegerschaftEmailDialogComponent} from '../../core/component/dv-ng-select-traegerschaft-email-dialog/dv-ng-select-traegerschaft-email-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {Log, LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
-import {DvNgSelectTraegerschaftEmailDialogComponent} from '../../core/component/dv-ng-select-traegerschaft-email-dialog/dv-ng-select-traegerschaft-email-dialog.component';
 
 const LOG = LogFactory.createLog('AddInstitutionComponent');
 
 @Component({
     selector: 'dv-add-institution',
     templateUrl: './add-institution.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AddInstitutionComponent implements OnInit {
     private readonly log: Log = LogFactory.createLog('AddInstitutionComponent');
@@ -83,33 +89,35 @@ export class AddInstitutionComponent implements OnInit {
         private readonly gemeindeRS: GemeindeRS,
         private readonly benutzerRS: BenutzerRSX,
         private readonly dialog: MatDialog,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly authServiceRS: AuthServiceRS,
         private readonly cd: ChangeDetectorRef
     ) {}
 
     public ngOnInit(): void {
         this.betreuungsangebot = this.$transition$.params().betreuungsangebot;
-        this.applicationPropertyRS.getPublicPropertiesCached().then(props => {
-            this.betreuungsangebote = this.$transition$
-                .params()
-                .betreuungsangebote.filter(
-                    (angebotTyp: TSBetreuungsangebotTyp) => {
-                        switch (angebotTyp) {
-                            case TSBetreuungsangebotTyp.TAGESFAMILIEN:
-                                return props.angebotTFOActivated;
-                            case TSBetreuungsangebotTyp.FERIENINSEL:
-                                return props.angebotFIActivated;
-                            case TSBetreuungsangebotTyp.TAGESSCHULE:
-                                return props.angebotTSActivated;
-                            case TSBetreuungsangebotTyp.MITTAGSTISCH:
-                                return props.angebotMittagstischActivated;
-                            default:
-                                return true;
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(props => {
+                this.betreuungsangebote = this.$transition$
+                    .params()
+                    .betreuungsangebote.filter(
+                        (angebotTyp: TSBetreuungsangebotTyp) => {
+                            switch (angebotTyp) {
+                                case TSBetreuungsangebotTyp.TAGESFAMILIEN:
+                                    return props.angebotTFOActivated;
+                                case TSBetreuungsangebotTyp.FERIENINSEL:
+                                    return props.angebotFIActivated;
+                                case TSBetreuungsangebotTyp.TAGESSCHULE:
+                                    return props.angebotTSActivated;
+                                case TSBetreuungsangebotTyp.MITTAGSTISCH:
+                                    return props.angebotMittagstischActivated;
+                                default:
+                                    return true;
+                            }
                         }
-                    }
-                );
-        });
+                    );
+            });
         this.isLatsInstitution = this.$transition$.params().latsOnly;
 
         // initally we think it is a Betreuungsgutschein Institution
@@ -130,7 +138,7 @@ export class AddInstitutionComponent implements OnInit {
         // if it is not a Betreuungsgutschein Institution we have to load the Gemeinden
         this.applicationPropertyRS
             .getInstitutionenDurchGemeindenEinladen()
-            .then(result => {
+            .subscribe(result => {
                 this.institutionenDurchGemeindenEinladen = result;
                 if (
                     this.institutionenDurchGemeindenEinladen ||
@@ -358,4 +366,6 @@ export class AddInstitutionComponent implements OnInit {
                     });
             });
     }
+
+    protected readonly CONSTANTS = CONSTANTS;
 }

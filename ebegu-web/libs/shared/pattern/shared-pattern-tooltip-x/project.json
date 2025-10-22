@@ -1,0 +1,19 @@
+{
+    "name": "shared-pattern-tooltip-x",
+    "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/shared/pattern/shared-pattern-tooltip-x/src",
+    "prefix": "lib",
+    "projectType": "library",
+    "tags": ["type:pattern", "feature:shared"],
+    "targets": {
+        "build": {
+            "executor": "nx:noop",
+            "options": {
+                "tsConfig": "libs/shared/pattern/shared-pattern-tooltip-x/tsconfig.lib.json"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

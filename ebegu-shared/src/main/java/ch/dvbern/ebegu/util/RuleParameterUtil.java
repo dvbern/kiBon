@@ -8,9 +8,9 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.enums.DemoFeatureTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 
 public class RuleParameterUtil {
 
@@ -24,7 +24,8 @@ public class RuleParameterUtil {
 
 	public RuleParameterUtil(
 		Map<EinstellungKey, Einstellung> einstellungen,
-		KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter) {
+		KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter
+	) {
 		this.einstellungen = einstellungen;
 		this.activatedDemoFeatures = Collections.emptyList();
 		this.kitaxUebergangsloesungParameter = kitaxUebergangsloesungParameter;
@@ -35,7 +36,8 @@ public class RuleParameterUtil {
 		Map<EinstellungKey, Einstellung> einstellungen,
 		List<DemoFeatureTyp> activatedDemoFeatures,
 		KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter,
-		Locale locale) {
+		Locale locale
+	) {
 		this.einstellungen = einstellungen;
 		this.activatedDemoFeatures = activatedDemoFeatures;
 		this.kitaxUebergangsloesungParameter = kitaxUebergangsloesungParameter;
@@ -53,7 +55,10 @@ public class RuleParameterUtil {
 	@Nonnull
 	public Einstellung getEinstellung(EinstellungKey einstellungKey) {
 		Einstellung einstellung = einstellungen.get(einstellungKey);
-		Objects.requireNonNull(einstellung, "Parameter " + einstellungKey + " muss gesetzt sein");
+		Objects.requireNonNull(
+			einstellung,
+			"Parameter " + einstellungKey + " muss gesetzt sein"
+		);
 		return einstellung;
 	}
 

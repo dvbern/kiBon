@@ -16,15 +16,16 @@
 package ch.dvbern.ebegu.api.dtos;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.enums.GruendeZusatzleistung;
 import ch.dvbern.ebegu.enums.IntegrationTyp;
 
 /**
- * DTO fuer Stammdaten der PensumFachstelle. Definiert ein bestimmtes Pensum und eine bestimmte Fachstelle und wird einem
+ * DTO fuer Stammdaten der PensumFachstelle. Definiert ein bestimmtes Pensum und eine bestimmte Fachstelle und wird
+ * einem
  * Kind zugewiesen
  */
 @XmlRootElement(name = "pensumFachstellen")
@@ -63,7 +64,9 @@ public class JaxPensumFachstelle extends JaxAbstractIntegerPensumDTO {
 		return gruendeZusatzleistung;
 	}
 
-	public void setGruendeZusatzleistung(@Nullable GruendeZusatzleistung gruendeZusatzleistung) {
+	public void setGruendeZusatzleistung(
+		@Nullable GruendeZusatzleistung gruendeZusatzleistung
+	) {
 		this.gruendeZusatzleistung = gruendeZusatzleistung;
 	}
 }

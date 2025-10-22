@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -48,9 +48,10 @@ public final class KibonPrintUtil {
 	private KibonPrintUtil() {
 	}
 
-
 	@Nonnull
-	public static String getGesuchstellerNameAsString(@Nullable GesuchstellerContainer gesuchstellerContainer) {
+	public static String getGesuchstellerNameAsString(
+		@Nullable GesuchstellerContainer gesuchstellerContainer
+	) {
 		if (gesuchstellerContainer == null) {
 			return "";
 		}
@@ -59,7 +60,9 @@ public final class KibonPrintUtil {
 	}
 
 	@Nonnull
-	public static String getGesuchstellerAddressAsString(@Nullable GesuchstellerContainer gesuchstellerContainer) {
+	public static String getGesuchstellerAddressAsString(
+		@Nullable GesuchstellerContainer gesuchstellerContainer
+	) {
 		if (gesuchstellerContainer == null) {
 			return "";
 		}
@@ -67,7 +70,8 @@ public final class KibonPrintUtil {
 		Optional<GesuchstellerAdresseContainer> adresseOptional =
 			KibonPrintUtil.getGesuchstellerAdresse(gesuchstellerContainer);
 		if (adresseOptional.isPresent()) {
-			GesuchstellerAdresse adresse = adresseOptional.get().getGesuchstellerAdresseJA();
+			GesuchstellerAdresse adresse = adresseOptional.get()
+				.getGesuchstellerAdresseJA();
 			Objects.requireNonNull(adresse);
 			sb.append(adresse.getAddressAsString());
 		}
@@ -75,7 +79,9 @@ public final class KibonPrintUtil {
 	}
 
 	@Nonnull
-	public static String getGesuchstellerWithAddressAsString(@Nullable GesuchstellerContainer gesuchstellerContainer) {
+	public static String getGesuchstellerWithAddressAsString(
+		@Nullable GesuchstellerContainer gesuchstellerContainer
+	) {
 		if (gesuchstellerContainer == null) {
 			return "";
 		}
@@ -92,16 +98,27 @@ public final class KibonPrintUtil {
 	 */
 	@Nonnull
 	public static Optional<GesuchstellerAdresseContainer> getGesuchstellerAdresse(
-		@Nullable GesuchstellerContainer gesuchsteller) {
+		@Nullable GesuchstellerContainer gesuchsteller
+	) {
 
 		if (gesuchsteller != null) {
-			List<GesuchstellerAdresseContainer> adressen = gesuchsteller.getAdressen();
+			List<GesuchstellerAdresseContainer> adressen = gesuchsteller
+				.getAdressen();
 
 			// Zuerst suchen wir die Korrespondenzadresse wenn vorhanden
-			final Optional<GesuchstellerAdresseContainer> korrespondenzadresse = adressen.stream()
-				.filter(GesuchstellerAdresseContainer::extractIsKorrespondenzAdresse)
-				.reduce(throwExceptionIfMoreThanOneAdresse(gesuchsteller));
-			if (korrespondenzadresse.isPresent() && korrespondenzadresse.get().getGesuchstellerAdresseJA() != null) {
+			final Optional<GesuchstellerAdresseContainer> korrespondenzadresse =
+				adressen.stream()
+					.filter(
+						GesuchstellerAdresseContainer::extractIsKorrespondenzAdresse
+					)
+					.reduce(
+						throwExceptionIfMoreThanOneAdresse(
+							gesuchsteller
+						)
+					);
+			if (korrespondenzadresse.isPresent()
+				&& korrespondenzadresse.get().getGesuchstellerAdresseJA()
+					!= null) {
 				return korrespondenzadresse;
 			}
 
@@ -109,10 +126,12 @@ public final class KibonPrintUtil {
 			// liegt innerhalb ihrer Gueltigkeit
 			final LocalDate now = LocalDate.now();
 			for (GesuchstellerAdresseContainer gesuchstellerAdresse : adressen) {
-				DateRange gueltigkeit = gesuchstellerAdresse.extractGueltigkeit();
+				DateRange gueltigkeit = gesuchstellerAdresse
+					.extractGueltigkeit();
 				if (!gesuchstellerAdresse.extractIsKorrespondenzAdresse()
 					// Adressen aus dem GS-Container interessieren uns nicht
-					&& gesuchstellerAdresse.getGesuchstellerAdresseJA() != null
+					&& gesuchstellerAdresse.getGesuchstellerAdresseJA()
+						!= null
 					&& gueltigkeit != null
 					&& !gueltigkeit.getGueltigAb().isAfter(now)
 					&& !gueltigkeit.getGueltigBis().isBefore(now)) {
@@ -125,12 +144,15 @@ public final class KibonPrintUtil {
 
 	@Nonnull
 	private static BinaryOperator<GesuchstellerAdresseContainer> throwExceptionIfMoreThanOneAdresse(
-		@Nonnull GesuchstellerContainer gesuchsteller) {
+		@Nonnull GesuchstellerContainer gesuchsteller
+	) {
 
 		return (element, otherElement) -> {
-			throw new EbeguRuntimeException("getGesuchstellerAdresse_Korrespondenzadresse",
+			throw new EbeguRuntimeException(
+				"getGesuchstellerAdresse_Korrespondenzadresse",
 				ErrorCodeEnum.ERROR_TOO_MANY_RESULTS,
-				gesuchsteller.getId());
+				gesuchsteller.getId()
+			);
 		};
 	}
 
@@ -142,7 +164,11 @@ public final class KibonPrintUtil {
 	) {
 		List<String> dokumenteList = new ArrayList<>();
 		for (DokumentGrund dokumentGrund : benoetigteUnterlagen) {
-			String text = KibonPrintUtil.getDokumentAsTextIfNeeded(dokumentGrund, gesuch, locale);
+			String text = KibonPrintUtil.getDokumentAsTextIfNeeded(
+				dokumentGrund,
+				gesuch,
+				locale
+			);
 			if (StringUtils.isNotEmpty(text)) {
 				dokumenteList.add(text);
 			}
@@ -157,9 +183,18 @@ public final class KibonPrintUtil {
 		@Nonnull Locale locale
 	) {
 		if (dokumentGrund.isNeeded() && dokumentGrund.isEmpty()) {
-			final String additionalInformation = extractAdditionalInformation(dokumentGrund, gesuch);
-			String key = dokumentGrund.getDokumentGrundTyp() + "_" + dokumentGrund.getDokumentTyp();
-			return ServerMessageUtil.getMessage(key, locale, Objects.requireNonNull(gesuch.getFall().getMandant())) + additionalInformation;
+			final String additionalInformation = extractAdditionalInformation(
+				dokumentGrund,
+				gesuch
+			);
+			String key = dokumentGrund.getDokumentGrundTyp()
+				+ "_"
+				+ dokumentGrund.getDokumentTyp();
+			return ServerMessageUtil.getMessage(
+				key,
+				locale,
+				Objects.requireNonNull(gesuch.getFall().getMandant())
+			) + additionalInformation;
 		}
 		return "";
 	}
@@ -167,28 +202,46 @@ public final class KibonPrintUtil {
 	/**
 	 * Gets the Tag or the LinkedPerson and returns it between parenthesis
 	 */
-	private static String extractAdditionalInformation(@Nonnull DokumentGrund dokumentGrund, @Nonnull Gesuch gesuch) {
+	private static String extractAdditionalInformation(
+		@Nonnull DokumentGrund dokumentGrund,
+		@Nonnull Gesuch gesuch
+	) {
 		List<String> additionalText = new ArrayList<>();
 
 		if (dokumentGrund.getTag() != null) {
 			additionalText.add(dokumentGrund.getTag());
 		}
 
-		if (dokumentGrund.getPersonType() != null && dokumentGrund.getPersonNumber() != null) {
-			if (dokumentGrund.getPersonType() == DokumentGrundPersonType.GESUCHSTELLER) {
-				if (dokumentGrund.getPersonNumber() == 2 && gesuch.getGesuchsteller2() != null) {
-					additionalText.add(gesuch.getGesuchsteller2().extractFullName());
+		if (dokumentGrund.getPersonType() != null
+			&& dokumentGrund.getPersonNumber() != null) {
+			if (dokumentGrund.getPersonType()
+				== DokumentGrundPersonType.GESUCHSTELLER) {
+				if (dokumentGrund.getPersonNumber() == 2
+					&& gesuch.getGesuchsteller2() != null) {
+					additionalText.add(
+						gesuch.getGesuchsteller2().extractFullName()
+					);
 				}
-				if (dokumentGrund.getPersonNumber() == 1 && gesuch.getGesuchsteller1() != null) {
-					additionalText.add(gesuch.getGesuchsteller1().extractFullName());
+				if (dokumentGrund.getPersonNumber() == 1
+					&& gesuch.getGesuchsteller1() != null) {
+					additionalText.add(
+						gesuch.getGesuchsteller1().extractFullName()
+					);
 				}
-			} else if (dokumentGrund.getPersonType() == DokumentGrundPersonType.KIND) {
-				final KindContainer kindContainer = gesuch.extractKindFromKindNumber(dokumentGrund.getPersonNumber());
-				if (kindContainer != null && kindContainer.getKindJA() != null) {
+			} else if (dokumentGrund.getPersonType()
+				== DokumentGrundPersonType.KIND) {
+				final KindContainer kindContainer = gesuch
+					.extractKindFromKindNumber(
+						dokumentGrund.getPersonNumber()
+					);
+				if (kindContainer != null
+					&& kindContainer.getKindJA() != null) {
 					additionalText.add(kindContainer.getKindJA().getFullName());
 				}
 			}
 		}
-		return additionalText.isEmpty() ? "" : " (" + StringUtils.join(additionalText, ", ") + ')';
+		return additionalText.isEmpty() ?
+			"" :
+			" (" + StringUtils.join(additionalText, ", ") + ')';
 	}
 }

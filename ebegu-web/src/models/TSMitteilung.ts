@@ -15,16 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {TSMitteilungStatus} from './enums/TSMitteilungStatus';
 import {TSMitteilungTeilnehmerTyp} from './enums/TSMitteilungTeilnehmerTyp';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSMitteilungTyp} from './enums/TSMitteilungTyp';
+import {
+    TSAbstractMutableEntity,
+    TSInstitution
+} from '@kibon/shared/model/entity';
 import {TSBenutzer} from './TSBenutzer';
 import {TSBetreuung} from './TSBetreuung';
 import {TSDossier} from './TSDossier';
 import {TSFinanzielleSituation} from './TSFinanzielleSituation';
-import {TSInstitution} from './TSInstitution';
-import {TSMitteilungTyp} from './enums/TSMitteilungTyp';
 
 export class TSMitteilung extends TSAbstractMutableEntity {
     private _dossier: TSDossier;

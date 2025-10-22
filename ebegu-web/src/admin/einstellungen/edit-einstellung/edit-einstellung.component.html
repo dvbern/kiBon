@@ -1,0 +1,76 @@
+@switch (type()) {
+    @case (String) {
+        <input
+            id="propertyValue_{{ einstellung().key }}"
+            type="text"
+            [name]="'propertyValue_' + einstellung().key"
+            [ngModel]="einstellung().value"
+            (ngModelChange)="update({value: $event})"
+            dv-max-length
+            class="input-element"
+            required
+            [disabled]="readOnly()"
+        />
+    }
+    @case (Boolean) {
+        <dv-radio-container-x [horizontal]="true">
+            <mat-radio-group
+                [ngModel]="einstellung().value"
+                (ngModelChange)="update({value: $event})"
+            >
+                <mat-radio-button [value]="'true'">JA</mat-radio-button>
+                <mat-radio-button [value]="'false'">NEIN</mat-radio-button>
+            </mat-radio-group>
+        </dv-radio-container-x>
+    }
+    @case (Number) {
+        <input
+            id="propertyValue_{{ einstellung().key }}"
+            type="number"
+            [name]="'propertyValue_' + einstellung().key"
+            [ngModel]="einstellung().value"
+            (ngModelChange)="update({value: $event})"
+            dv-max-length
+            class="input-element"
+            required
+            (keydown)="blockInvalidChars($event)"
+            [disabled]="readOnly()"
+        />
+    }
+    @case (Date) {
+        <dv-date-picker-x
+            [date]="einstellungAsDate()"
+            (dateChange)="changeDate($event)"
+        ></dv-date-picker-x>
+    }
+    @default {
+        @if (isEnumEinstellung(einstellung().key)) {
+            @if (options().multiple) {
+                <mat-select
+                    [ngModel]="enumAsArray()"
+                    (ngModelChange)="updateMultiValue($event)"
+                    [multiple]="true"
+                >
+                    @for (option of enumValues(); track $index) {
+                        <mat-option [value]="option"
+                            >{{ option | translate }}
+                        </mat-option>
+                    }
+                </mat-select>
+            } @else {
+                <mat-select
+                    [ngModel]="einstellung().value"
+                    (ngModelChange)="update({value: $event})"
+                >
+                    @for (option of enumValues(); track $index) {
+                        <mat-option [value]="option"
+                            >{{ option | translate }}
+                        </mat-option>
+                    }
+                </mat-select>
+            }
+        } @else {
+            {{ throwNotImplementedError(type()) }}
+        }
+    }
+}

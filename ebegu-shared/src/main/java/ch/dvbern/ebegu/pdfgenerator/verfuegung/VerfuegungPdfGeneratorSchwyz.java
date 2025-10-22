@@ -8,14 +8,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.verfuegung;
+
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.entities.Betreuung;
@@ -33,17 +37,17 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
-public class VerfuegungPdfGeneratorSchwyz extends AbstractVerfuegungPdfGenerator {
-	private static final String NICHT_EINTRETEN_CONTENT_9 = "PdfGeneration_NichtEintreten_Content_9";
+public class VerfuegungPdfGeneratorSchwyz extends
+	AbstractVerfuegungPdfGenerator {
+	private static final String NICHT_EINTRETEN_CONTENT_9 =
+		"PdfGeneration_NichtEintreten_Content_9";
 
 	public VerfuegungPdfGeneratorSchwyz(
 		@Nonnull Betreuung betreuung,
 		@Nonnull GemeindeStammdaten stammdaten,
 		@Nonnull Art art,
-		VerfuegungPdfGeneratorKonfiguration verfuegungPdfGeneratorKonfiguration) {
+		VerfuegungPdfGeneratorKonfiguration verfuegungPdfGeneratorKonfiguration
+	) {
 		super(betreuung, stammdaten, art, verfuegungPdfGeneratorKonfiguration);
 	}
 
@@ -59,17 +63,24 @@ public class VerfuegungPdfGeneratorSchwyz extends AbstractVerfuegungPdfGenerator
 	@Override
 	protected void createDokumentNichtEintretten(
 		@Nonnull Document document,
-		@Nonnull PdfGenerator generator) {
+		@Nonnull PdfGenerator generator
+	) {
 
 		document.add(createAnrede());
 		document.add(createNichtEingetretenParagraph1());
 
 		document.add(createNichtEintretenUnterlagenUnvollstaendigParagraph());
-		document.add(PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_4)));
+		document.add(
+			PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_4))
+		);
 
-		document.add(PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_5)));
+		document.add(
+			PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_5))
+		);
 		document.newPage();
-		document.add(PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_9)));
+		document.add(
+			PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_9))
+		);
 		document.add(createAntragNichtEintreten());
 		addZusatzTextIfAvailable(document);
 	}
@@ -78,17 +89,21 @@ public class VerfuegungPdfGeneratorSchwyz extends AbstractVerfuegungPdfGenerator
 	protected Element createNichtEingetretenParagraph1() {
 		DateRange gp = gesuch.getGesuchsperiode().getGueltigkeit();
 
-		return PdfUtil.createParagraph(translate(
-			NICHT_EINTRETEN_CONTENT_1,
-			Constants.DATE_FORMATTER.format(getEingangsdatum()),
-			Constants.DATE_FORMATTER.format(gp.getGueltigAb()),
-			Constants.DATE_FORMATTER.format(gp.getGueltigBis())));
+		return PdfUtil.createParagraph(
+			translate(
+				NICHT_EINTRETEN_CONTENT_1,
+				Constants.DATE_FORMATTER.format(getEingangsdatum()),
+				Constants.DATE_FORMATTER.format(gp.getGueltigAb()),
+				Constants.DATE_FORMATTER.format(gp.getGueltigBis())
+			)
+		);
 	}
 
 	@Nonnull
 	@Override
 	protected PdfPTable createVerfuegungTable() {
-		final List<VerfuegungZeitabschnitt> zeitabschnitte = getVerfuegungZeitabschnitt();
+		final List<VerfuegungZeitabschnitt> zeitabschnitte =
+			getVerfuegungZeitabschnitt();
 		VerfuegungTable verfuegungTable = new VerfuegungTable(
 			zeitabschnitte,
 			getPageConfiguration(),
@@ -114,35 +129,53 @@ public class VerfuegungPdfGeneratorSchwyz extends AbstractVerfuegungPdfGenerator
 		return VerfuegungTableColumn.builder()
 			.title(translate(VOLLKOSTEN))
 			.width(100)
-			.dataExtractor(abschnitt -> PdfUtil.printBigDecimal(abschnitt.getVollkosten()))
+			.dataExtractor(
+				abschnitt -> PdfUtil.printBigDecimal(
+					abschnitt.getVollkosten()
+				)
+			)
 			.build();
 	}
 
 	@Override
 	@Nonnull
 	protected Paragraph createFirstParagraph(Kind kind) {
-		return PdfUtil.createParagraph(translate(
-			VERFUEGUNG_CONTENT_1,
-			kind.getFullName(),
-			Constants.DATE_FORMATTER.format(kind.getGeburtsdatum())), 2);
+		return PdfUtil.createParagraph(
+			translate(
+				VERFUEGUNG_CONTENT_1,
+				kind.getFullName(),
+				Constants.DATE_FORMATTER.format(kind.getGeburtsdatum())
+			),
+			2
+		);
 	}
 
 	@Override
-	protected String getRechtsmittelbelehrungContent(@Nonnull GemeindeStammdaten stammdaten) {
+	protected String getRechtsmittelbelehrungContent(
+		@Nonnull GemeindeStammdaten stammdaten
+	) {
 		Adresse beschwerdeAdresse = stammdaten.getBeschwerdeAdresse();
 		if (beschwerdeAdresse == null) {
 			beschwerdeAdresse = stammdaten.getAdresseForGesuch(getGesuch());
 		}
-		return translate(RECHTSMITTELBELEHRUNG_CONTENT, beschwerdeAdresse.getAddressAsStringInOneLine(), stammdaten.getGemeinde().getName());
+		return translate(
+			RECHTSMITTELBELEHRUNG_CONTENT,
+			beschwerdeAdresse.getAddressAsStringInOneLine(),
+			stammdaten.getGemeinde().getName()
+		);
 	}
 
 	@Override
-	protected void createFusszeileNormaleVerfuegung(@Nonnull PdfContentByte dirPdfContentByte) throws DocumentException {
+	protected void createFusszeileNormaleVerfuegung(
+		@Nonnull PdfContentByte dirPdfContentByte
+	) throws DocumentException {
 		// no-op: wird nicht in Schwyz verwendet
 	}
 
 	@Override
-	protected void createFusszeileKeinAnspruch(@Nonnull PdfContentByte dirPdfContentByte) throws DocumentException {
+	protected void createFusszeileKeinAnspruch(
+		@Nonnull PdfContentByte dirPdfContentByte
+	) throws DocumentException {
 		// no-op: wird nicht in Schwyz verwendet
 	}
 

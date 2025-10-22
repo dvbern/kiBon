@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.resource;
@@ -23,29 +23,28 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.AuthConstants;
 import ch.dvbern.ebegu.api.converter.JaxSozialdienstConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.sozialdienst.JaxSozialdienst;
@@ -57,8 +56,8 @@ import ch.dvbern.ebegu.enums.SozialdienstStatus;
 import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.MandantService;
 import ch.dvbern.ebegu.services.SozialdienstService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_MANDANT;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_SOZIALDIENST;
@@ -67,7 +66,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 
 @Path("sozialdienst")
 @Stateless
-@Api(description = "Resource fuer Sozialhilfe Zeitraeume")
 @DenyAll
 public class SozialdienstResource {
 
@@ -83,7 +81,7 @@ public class SozialdienstResource {
 	@Inject
 	private MandantService mandantService;
 
-	@ApiOperation(value = "Erstellt eine neue Sozialdienst in der Datenbank", response = JaxSozialdienst.class)
+	@Operation(summary = "Erstellt eine neue Sozialdienst in der Datenbank")
 	@Nullable
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -93,35 +91,46 @@ public class SozialdienstResource {
 		@Nonnull @NotNull @Valid JaxSozialdienst sozialdienstJAXP,
 		@Nonnull @NotNull @Valid @QueryParam("adminMail") String adminMail,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		Sozialdienst convertedSozialdienst =
-			jaxSozialdienstConverter.sozialdienstToEntity(sozialdienstJAXP, new Sozialdienst());
+			jaxSozialdienstConverter.sozialdienstToEntity(
+				sozialdienstJAXP,
+				new Sozialdienst()
+			);
 
-		Sozialdienst persistedSozialdienst = this.sozialdienstService.createSozialdienst(adminMail, convertedSozialdienst);
+		Sozialdienst persistedSozialdienst = this.sozialdienstService
+			.createSozialdienst(adminMail, convertedSozialdienst);
 
-		return jaxSozialdienstConverter.sozialdienstToJAX(persistedSozialdienst);
+		return jaxSozialdienstConverter.sozialdienstToJAX(
+			persistedSozialdienst
+		);
 	}
 
-	@ApiOperation(value = "Returns all Sozialdienst",
-		responseContainer = "Collection",
-		response = JaxSozialdienst.class)
+	@Operation(summary = "Returns all Sozialdienst")
 	@Nullable
 	@GET
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
-	public List<JaxSozialdienst> getAllSozialdienst(@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie) {
+	public List<JaxSozialdienst> getAllSozialdienst(
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
+	) {
 
 		var mandant = mandantService.findMandantByCookie(mandantCookie);
 
-		return sozialdienstService.getAllSozialdienste(mandant).stream()
-			.map(sozialdienst -> jaxSozialdienstConverter.sozialdienstToJAX(sozialdienst))
+		return sozialdienstService.getAllSozialdienste(mandant)
+			.stream()
+			.map(
+				sozialdienst -> jaxSozialdienstConverter
+					.sozialdienstToJAX(sozialdienst)
+			)
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Returns the SozialdienstStammdaten with the given SozialdienstId.",
-		response = JaxSozialdienstStammdaten.class)
+	@Operation(
+		summary = "Returns the SozialdienstStammdaten with the given SozialdienstId.")
 	@Nullable
 	@GET
 	@Path("/stammdaten/{sozialdienstId}")
@@ -129,32 +138,47 @@ public class SozialdienstResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public JaxSozialdienstStammdaten getSozialdienstStammdaten(
-		@Nonnull @NotNull @PathParam("sozialdienstId") JaxId sozialdienstJaxId) {
+		@Nonnull
+		@NotNull
+		@PathParam("sozialdienstId") JaxId sozialdienstJaxId
+	) {
 
-		String sozialdienstId = jaxSozialdienstConverter.toEntityId(sozialdienstJaxId);
+		String sozialdienstId = jaxSozialdienstConverter.toEntityId(
+			sozialdienstJaxId
+		);
 
 		Optional<SozialdienstStammdaten> stammdatenFromDB =
-			sozialdienstService.getSozialdienstStammdatenBySozialdienstId(sozialdienstId);
+			sozialdienstService.getSozialdienstStammdatenBySozialdienstId(
+				sozialdienstId
+			);
 		if (!stammdatenFromDB.isPresent()) {
 			stammdatenFromDB = initSozialdienstStammdaten(sozialdienstId);
 		}
 
-		authorizer.checkReadAuthorization(stammdatenFromDB.get().getSozialdienst());
+		authorizer.checkReadAuthorization(
+			stammdatenFromDB.get().getSozialdienst()
+		);
 
 		return stammdatenFromDB
-			.map(stammdaten -> jaxSozialdienstConverter.sozialdienstStammdatenToJAX(stammdaten))
+			.map(
+				stammdaten -> jaxSozialdienstConverter
+					.sozialdienstStammdatenToJAX(stammdaten)
+			)
 			.orElse(null);
 	}
 
-	private Optional<SozialdienstStammdaten> initSozialdienstStammdaten(String sozialdienstId) {
+	private Optional<SozialdienstStammdaten> initSozialdienstStammdaten(
+		String sozialdienstId
+	) {
 		SozialdienstStammdaten stammdaten = new SozialdienstStammdaten();
-		Optional<Sozialdienst> sozialdienst = sozialdienstService.findSozialdienst(sozialdienstId);
+		Optional<Sozialdienst> sozialdienst = sozialdienstService
+			.findSozialdienst(sozialdienstId);
 		stammdaten.setSozialdienst(sozialdienst.orElse(new Sozialdienst()));
 		stammdaten.setAdresse(new Adresse());
 		return Optional.of(stammdaten);
 	}
 
-	@ApiOperation(value = "Speichert die SozialdienstStammdaten", response = JaxSozialdienstStammdaten.class)
+	@Operation(summary = "Speichert die SozialdienstStammdaten")
 	@Nullable
 	@PUT
 	@Path("/stammdaten")
@@ -164,12 +188,15 @@ public class SozialdienstResource {
 	public JaxSozialdienstStammdaten saveSozialdienstStammdaten(
 		@Nonnull @NotNull @Valid JaxSozialdienstStammdaten jaxStammdaten,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		SozialdienstStammdaten stammdaten;
 		if (jaxStammdaten.getId() != null) {
 			Optional<SozialdienstStammdaten> optional =
-				sozialdienstService.getSozialdienstStammdaten(jaxStammdaten.getId());
+				sozialdienstService.getSozialdienstStammdaten(
+					jaxStammdaten.getId()
+				);
 			stammdaten = optional.orElse(new SozialdienstStammdaten());
 		} else {
 			stammdaten = new SozialdienstStammdaten();
@@ -178,20 +205,32 @@ public class SozialdienstResource {
 			stammdaten.setAdresse(new Adresse());
 		}
 		SozialdienstStammdaten convertedStammdaten =
-			jaxSozialdienstConverter.sozialdienstStammdatenToEntity(jaxStammdaten, stammdaten);
+			jaxSozialdienstConverter.sozialdienstStammdatenToEntity(
+				jaxStammdaten,
+				stammdaten
+			);
 
 		// Statuswechsel
-		if (convertedStammdaten.getSozialdienst().getStatus() == SozialdienstStatus.EINGELADEN) {
-			convertedStammdaten.getSozialdienst().setStatus(SozialdienstStatus.AKTIV);
+		if (convertedStammdaten.getSozialdienst().getStatus()
+			== SozialdienstStatus.EINGELADEN) {
+			convertedStammdaten.getSozialdienst()
+				.setStatus(SozialdienstStatus.AKTIV);
 		}
 		// Name ist editierbar in die Stammdaten
-		convertedStammdaten.getSozialdienst().setName(jaxStammdaten.getSozialdienst().getName());
+		convertedStammdaten.getSozialdienst()
+			.setName(jaxStammdaten.getSozialdienst().getName());
 
-		authorizer.checkWriteAuthorization(convertedStammdaten.getSozialdienst());
+		authorizer.checkWriteAuthorization(
+			convertedStammdaten.getSozialdienst()
+		);
 
 		SozialdienstStammdaten persistedStammdaten =
-			sozialdienstService.saveSozialdienstStammdaten(convertedStammdaten);
+			sozialdienstService.saveSozialdienstStammdaten(
+				convertedStammdaten
+			);
 
-		return jaxSozialdienstConverter.sozialdienstStammdatenToJAX(persistedStammdaten);
+		return jaxSozialdienstConverter.sozialdienstStammdatenToJAX(
+			persistedStammdaten
+		);
 	}
 }

@@ -36,6 +36,9 @@
                         isNotQrIbanN
                         [disabled]="readonly"
                         required
+                        ngxIban
+                        placeholder="CHXX XXXX XXXX XXXX XXXX X"
+                        data-test="iban"
                     />
                     <dv-error-messages
                         [errorObject]="iban.errors"
@@ -68,6 +71,7 @@
                         class="form-control"
                         [disabled]="readonly"
                         required
+                        data-test="kontoinhaber"
                     />
                     <dv-error-messages
                         [errorObject]="kontoinhaber.errors"
@@ -355,6 +359,7 @@
                             class="form-control"
                             [disabled]="readonly"
                             required
+                            data-test="infoma_kred"
                         />
                         <dv-error-messages
                             [errorObject]="infoma_kred.errors"
@@ -385,6 +390,7 @@
                             class="form-control"
                             [disabled]="readonly"
                             required
+                            data-test="infoma_bankcode"
                         />
                         <dv-error-messages
                             [errorObject]="infoma_bankcode.errors"

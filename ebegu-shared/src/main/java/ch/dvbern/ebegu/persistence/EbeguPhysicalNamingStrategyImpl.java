@@ -28,26 +28,35 @@ import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
  * Check http://stackoverflow.com/questions/32437202/improvednamingstrategy-no-longer-working-in-hibernate-5
  * Diese Strategie macht fuer die Tabellennamen CamelCase zu snake_case
  */
-public class EbeguPhysicalNamingStrategyImpl extends PhysicalNamingStrategyStandardImpl {
+public class EbeguPhysicalNamingStrategyImpl extends
+	PhysicalNamingStrategyStandardImpl {
 
 	private static final long serialVersionUID = 7069586216789441113L;
 
-	public static final EbeguPhysicalNamingStrategyImpl INSTANCE = new EbeguPhysicalNamingStrategyImpl();
+	public static final EbeguPhysicalNamingStrategyImpl INSTANCE =
+		new EbeguPhysicalNamingStrategyImpl();
 
 	@Override
-	public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment context) {
+	public Identifier toPhysicalTableName(
+		Identifier name,
+		JdbcEnvironment context
+	) {
 		return new Identifier(addUnderscores(name.getText()), name.isQuoted());
 	}
 
 	@Override
-	public Identifier toPhysicalColumnName(Identifier name, JdbcEnvironment context) {
+	public Identifier toPhysicalColumnName(
+		Identifier name,
+		JdbcEnvironment context
+	) {
 		return new Identifier(addUnderscores(name.getText()), name.isQuoted());
 	}
 
 	protected static String addUnderscores(String name) {
 		final StringBuilder buf = new StringBuilder(name.replace('.', '_'));
 		for (int i = 1; i < buf.length() - 1; i++) {
-			if (Character.isLowerCase(buf.charAt(i - 1)) && Character.isUpperCase(buf.charAt(i))
+			if (Character.isLowerCase(buf.charAt(i - 1))
+				&& Character.isUpperCase(buf.charAt(i))
 				&& Character.isLowerCase(buf.charAt(i + 1))) {
 				buf.insert(i++, '_');
 			}

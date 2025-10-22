@@ -20,6 +20,5 @@ package ch.dvbern.ebegu.enums;
  */
 public enum MahnungTyp {
 
-	ERSTE_MAHNUNG,
-	ZWEITE_MAHNUNG,
+	ERSTE_MAHNUNG, ZWEITE_MAHNUNG,
 }

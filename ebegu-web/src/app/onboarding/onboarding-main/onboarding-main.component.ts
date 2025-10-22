@@ -15,9 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component} from '@angular/core';
-import {LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
+import {Component, inject, OnInit} from '@angular/core';
+import {map} from 'rxjs/operators';
+import {MandantLogoWhiteNameVisitor} from '@kibon/shared-model-mandant';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
 
 const LOG = LogFactory.createLog('OnboardingMainComponent');
@@ -25,56 +28,57 @@ const LOG = LogFactory.createLog('OnboardingMainComponent');
 @Component({
     selector: 'dv-onboarding-main',
     templateUrl: './onboarding-main.component.html',
-    styleUrls: ['./onboarding-main.component.less', '../onboarding.less']
+    styleUrls: ['./onboarding-main.component.less', '../onboarding.less'],
+    standalone: false
 })
-export class OnboardingMainComponent {
+export class OnboardingMainComponent implements OnInit {
     public description1: string = 'ONBOARDING_MAIN_DESC1';
     public description2: string = 'ONBOARDING_MAIN_DESC2';
     public description3: string = 'ONBOARDING_MAIN_DESC3';
     public description4: string = 'ONBOARDING_MAIN_DESC4';
     public splittedScreen: boolean = true;
-    public logoFileNameWhite: string;
 
-    public constructor(
-        private readonly onboardingPlaceholderService: OnboardingPlaceholderService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
-    ) {
-        this.onboardingPlaceholderService.description1$.subscribe(
-            updatedDescription1 => {
+    mandantService = inject(MandantService);
+    applicationPropertyRS = inject(SharedUtilApplicationPropertyRsService);
+    onboardingPlaceholderService = inject(OnboardingPlaceholderService);
+
+    logoFileNameWhite$ = this.mandantService.mandant$.pipe(
+        map(mandant => {
+            const fileName = new MandantLogoWhiteNameVisitor().process(mandant);
+            return `url('assets/images/${fileName}')`;
+        })
+    );
+
+    public ngOnInit() {
+        this.onboardingPlaceholderService.description1$.subscribe({
+            next: updatedDescription1 => {
                 this.description1 = updatedDescription1;
             },
-            err => LOG.error(err)
-        );
-        this.onboardingPlaceholderService.description2$.subscribe(
-            updatedDescription2 => {
+            error: err => LOG.error(err)
+        });
+        this.onboardingPlaceholderService.description2$.subscribe({
+            next: updatedDescription2 => {
                 this.description2 = updatedDescription2;
             },
-            err => LOG.error(err)
-        );
-        this.onboardingPlaceholderService.description3$.subscribe(
-            updatedDescription3 => {
+            error: err => LOG.error(err)
+        });
+        this.onboardingPlaceholderService.description3$.subscribe({
+            next: updatedDescription3 => {
                 this.description3 = updatedDescription3;
             },
-            err => LOG.error(err)
-        );
-        this.onboardingPlaceholderService.description4$.subscribe(
-            updatedDescription4 => {
+            error: err => LOG.error(err)
+        });
+        this.onboardingPlaceholderService.description4$.subscribe({
+            next: updatedDescription4 => {
                 this.description4 = updatedDescription4;
             },
-            err => LOG.error(err)
-        );
-        this.onboardingPlaceholderService.splittedScreen$.subscribe(
-            updatedSplittedScreen => {
+            error: err => LOG.error(err)
+        });
+        this.onboardingPlaceholderService.splittedScreen$.subscribe({
+            next: updatedSplittedScreen => {
                 this.splittedScreen = updatedSplittedScreen;
             },
-            err => LOG.error(err)
-        );
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.logoFileNameWhite = res.logoFileNameWhite;
+            error: err => LOG.error(err)
         });
-    }
-
-    public getLogoWhiteUrl(): string {
-        return `url(\'assets/images/${this.logoFileNameWhite}\')`;
     }
 }

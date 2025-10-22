@@ -15,112 +15,141 @@
 
 package ch.dvbern.ebegu.config;
 
-import ch.dvbern.ebegu.entities.Mandant;
-import ch.dvbern.ebegu.enums.ApplicationPropertyKey;
-import ch.dvbern.ebegu.errors.KibonLogLevel;
-import ch.dvbern.ebegu.services.ApplicationPropertyService;
-import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.apache.commons.configuration.SystemConfiguration;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Locale;
 import java.util.Optional;
 
+import javax.annotation.Nonnull;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.errors.KibonLogLevel;
+import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
+import org.apache.commons.configuration.SystemConfiguration;
+
 /**
- * Konfiguration von kiBon. Liest system Properties aus
- * Mandantspezfische Konfigurationen müssen ein %s enthalten. Dieses wird durch den MANDANT_IDENTIFIER ersetzt
+ * Konfiguration von kiBon. Liest system Properties aus Mandantspezfische Konfigurationen müssen ein %s enthalten.
+ * Dieses wird
+ * durch den MANDANT_IDENTIFIER ersetzt
  */
 @Dependent
-public class EbeguConfigurationImpl extends SystemConfiguration implements EbeguConfiguration, Serializable {
-
-	private static final Logger LOG = LoggerFactory.getLogger(EbeguConfigurationImpl.class.getSimpleName());
+public class EbeguConfigurationImpl extends SystemConfiguration implements
+	EbeguConfiguration,
+	Serializable {
 
 	private static final long serialVersionUID = 463057263479503486L;
-	public static final String EBEGU_DEVELOPMENT_MODE = "ebegu.development.mode";
-	private static final String EBEGU_DOCUMENT_FILE_PATH = "ebegu.document.file.path";
-	private static final String EBEGU_CLIENT_USING_HTTPS = "ebegu.client.using.https";
+	public static final String EBEGU_DEVELOPMENT_MODE =
+		"ebegu.development.mode";
+	private static final String EBEGU_DOCUMENT_FILE_PATH =
+		"ebegu.document.file.path";
 	private static final String EBEGU_MAIL_DISABLED = "ebegu.mail.disabled";
 	private static final String EBEGU_MAIL_SMTP_FROM = "ebegu.mail.smtp.from";
 	private static final String EBEGU_MAIL_SMTP_HOST = "ebegu.mail.smtp.host";
 	private static final String EBEGU_MAIL_SMTP_PORT = "ebegu.mail.smtp.port";
-	private static final String EBEGU_HOSTNAME = "ebegu.hostname";
+	private static final String EBEGU_FRONTEND_URL = "ebegu.frontendurl";
+	private static final String EBEGU_BASE_URL = "ebegu.baseurl";
 	private static final String EBEGU_HOSTDOMAIN = "ebegu.hostdomain";
-	private static final String EBEGU_DUMMY_LOGIN_ENABLED = "ebegu.dummy.login.enabled";
-	private static final String EBEGU_ZAHLUNGEN_TEST_MODE = "ebegu.zahlungen.test.mode";
-	private static final String EBEGU_ZAHLUNGEN_UEBERPRUEFUNG_WHITELIST = "ebegu.zahlungen.ueberpruefung.whitelist";
-	private static final String EBEGU_PERSONENSUCHE_DISABLED = "ebegu.personensuche.disabled";
-	private static final String EBEGU_PERSONENSUCHE_USE_DUMMY_SERVICE = "ebegu.personensuche.use.dummyservice";
-	private static final String EBEGU_PERSONENSUCHE_ENDPOINT = "ebegu.personensuche.endpoint";
-	private static final String EBEGU_PERSONENSUCHE_WSDL = "ebegu.personensuche.wsdl";
-	private static final String EBEGU_PERSONENSUCHE_USERNAME = "ebegu.personensuche.username";
-	private static final String EBEGU_PERSONENSUCHE_PASSWORD = "ebegu.personensuche.password";
-	public static final String EBEGU_PERSONENSUCHE_STS_KEYSTORE_PATH = "ebegu.personensuche.sts.keystore.path";
-	public static final String EBEGU_PERSONENSUCHE_STS_KEYSTORE_PW = "ebegu.personensuche.sts.keystore.pw";
-	public static final String EBEGU_PERSONENSUCHE_STS_PRIVATE_KEY_ALIAS = "ebegu.personensuche.sts.private.key.alias";
+	private static final String EBEGU_DUMMY_LOGIN_ENABLED =
+		"ebegu.dummy.login.enabled";
+	private static final String EBEGU_ZAHLUNGEN_TEST_MODE =
+		"ebegu.zahlungen.test.mode";
+	private static final String EBEGU_ZAHLUNGEN_UEBERPRUEFUNG_WHITELIST =
+		"ebegu.zahlungen.ueberpruefung.whitelist";
+	private static final String EBEGU_PERSONENSUCHE_DISABLED =
+		"ebegu.personensuche.disabled";
+	private static final String EBEGU_PERSONENSUCHE_USE_DUMMY_SERVICE =
+		"ebegu.personensuche.use.dummyservice";
+	private static final String EBEGU_PERSONENSUCHE_ENDPOINT =
+		"ebegu.personensuche.endpoint";
+	private static final String EBEGU_PERSONENSUCHE_WSDL =
+		"ebegu.personensuche.wsdl";
+	private static final String EBEGU_PERSONENSUCHE_USERNAME =
+		"ebegu.personensuche.username";
+	private static final String EBEGU_PERSONENSUCHE_PASSWORD =
+		"ebegu.personensuche.password";
+	public static final String EBEGU_PERSONENSUCHE_STS_KEYSTORE_PATH =
+		"ebegu.personensuche.sts.keystore.path";
+	public static final String EBEGU_PERSONENSUCHE_STS_KEYSTORE_PW =
+		"ebegu.personensuche.sts.keystore.pw";
+	public static final String EBEGU_PERSONENSUCHE_STS_PRIVATE_KEY_ALIAS =
+		"ebegu.personensuche.sts.private.key.alias";
 
-	public static final String EBEGU_PERSONENSUCHE_STS_BASE_PATH = "ebegu.personensuche.sts.base.path";
-	public static final String EBEGU_PERSONENSUCHE_STS_WSDL = "ebegu.personensuche.sts.wsdl";
-	public static final String EBEGU_PERSONENSUCHE_STS_ENDPOINT = "ebegu.personensuche.sts.endpoint";
-	public static final String EBEGU_PERSONENSUCHE_STS_RENEWAL_ASSERTION_WSDL = "ebegu.personensuche.sts.renewal.assertion.wsdl";
-	public static final String EBEGU_PERSONENSUCHE_STS_RENEWAL_ASSERTION_ENDPOINT = "ebegu.personensuche.sts.renewal.assertion.endpoint";
-	public static final String EBEGU_PERSONENSUCHE_GERES_ENDPOINT = "ebegu.personensuche.geres.endpoint";
-	public static final String EBEGU_PERSONENSUCHE_GERES_WSDL = "ebegu.personensuche.geres.wsdl";
-	public static final String EBEGU_GEOADMIN_SEARCHSERVER_URL = "ebegu.geoadmin.searchserver.url";
-	public static final String EBEGU_GEOADMIN_MAPSERVER_URL = "ebegu.geoadmin.mapserver.url";
+	public static final String EBEGU_PERSONENSUCHE_STS_BASE_PATH =
+		"ebegu.personensuche.sts.base.path";
+	public static final String EBEGU_PERSONENSUCHE_STS_WSDL =
+		"ebegu.personensuche.sts.wsdl";
+	public static final String EBEGU_PERSONENSUCHE_STS_ENDPOINT =
+		"ebegu.personensuche.sts.endpoint";
+	public static final String EBEGU_PERSONENSUCHE_STS_RENEWAL_ASSERTION_WSDL =
+		"ebegu.personensuche.sts.renewal.assertion.wsdl";
+	public static final String EBEGU_PERSONENSUCHE_STS_RENEWAL_ASSERTION_ENDPOINT =
+		"ebegu.personensuche.sts.renewal.assertion.endpoint";
+	public static final String EBEGU_PERSONENSUCHE_GERES_ENDPOINT =
+		"ebegu.personensuche.geres.endpoint";
+	public static final String EBEGU_PERSONENSUCHE_GERES_WSDL =
+		"ebegu.personensuche.geres.wsdl";
+	public static final String EBEGU_GEOADMIN_SEARCHSERVER_URL =
+		"ebegu.geoadmin.searchserver.url";
+	public static final String EBEGU_GEOADMIN_MAPSERVER_URL =
+		"ebegu.geoadmin.mapserver.url";
 
-	public static final String EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_ID = "ebegu.kibonanfrage.oidc.client.id";
-	public static final String EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_SECRET = "ebegu.kibonanfrage.oidc.client.secret";
-	public static final String EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_ENDPOINT = "ebegu.kibonanfrage.oidc.endpoint";
+	public static final String EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_ID =
+		"ebegu.kibonanfrage.oidc.client.id";
+	public static final String EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_SECRET =
+		"ebegu.kibonanfrage.oidc.client.secret";
+	public static final String EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_ENDPOINT =
+		"ebegu.kibonanfrage.oidc.endpoint";
 
 	public static final String EBEGU_KITAX_HOST = "ebegu.kitax.host";
 	public static final String EBEGU_KITAX_ENDPOINT = "ebegu.kitax.endpoint";
-
-	public static final String EBEGU_LOGIN_PROVIDER_API_URL = "ebegu.login.provider.api.url";
-	private static final String EBEGU_LOGIN_API_ALLOW_REMOTE = "ebegu.login.api.allow.remote";
-	private static final String EBEGU_LOGIN_API_INTERNAL_USER = "ebegu.login.api.internal.user";
-	private static final String EBEGU_LOGIN_API_INTERNAL_PASSWORD = "ebegu.login.api.internal.password";
-	private static final String EBEGU_FORCE_COOKIE_SECURE_FLAG = "ebegu.force.cookie.secure.flag";
-	private static final String EBEGU_LOGIN_API_KEYCLOACK_CLIENT = "ebegu.login.api.keycloack.client";
-	private static final String EBEGU_LOGIN_API_KEYCLOACK_PASSWORD = "ebegu.login.api.keycloack.password";
-	private static final String EBEGU_LOGIN_API_KEYCLOACK_AUTHSERVER = "ebegu.login.api.keycloack.authserver";
-	private static final String EBEGU_TESTFAELLE_ENABLED = "ebegu.testfaelle.enabled";
+	private static final String EBEGU_FORCE_COOKIE_SECURE_FLAG =
+		"ebegu.force.cookie.secure.flag";
+	private static final String EBEGU_LOGIN_API_KEYCLOACK_CLIENT =
+		"ebegu.login.api.keycloack.client";
+	private static final String EBEGU_LOGIN_API_KEYCLOACK_PASSWORD =
+		"ebegu.login.api.keycloack.password";
+	private static final String EBEGU_LOGIN_API_KEYCLOACK_AUTHSERVER =
+		"ebegu.login.api.keycloack.authserver";
+	private static final String EBEGU_TESTFAELLE_ENABLED =
+		"ebegu.testfaelle.enabled";
 	private static final String EBEGU_ADMINISTRATOR_MAIL = "ebegu.admin.mail";
-	private static final String EBEGU_PORTAL_ACCOUNT_CREATION_LINK = "ebegu.%s.portal.account.creation.link";
 	private static final String SENTRY_ENVIRONMENT = "sentry.environment"; //use same property as sentry logger
 	private static final String EBEGU_SUPERUSER_MAIL = "ebegu.superuser.mail";
 	private static final String EBEGU_SUPPORT_MAIL = "ebegu.support.mail";
 
 	private static final String KIBON_KAFKA_URL = "kibon.kafka.url";
-	private static final String KIBON_SCHEMA_REGISTRY_URL = "kibon.schemaregistry.url";
-	private static final String KIBON_EXCHANGE_BETREUUNGANFRAGE_ENABLED = "kibon.exchange.betreuunganfrage.enabled";
-	private static final String KIBON_EXCHANGE_TAGESSCHULE_ANMELDUNG_ENABLED = "kibon.exchange.tagesschuleanmeldung.enabled";
-	private static final String KIBON_KAFKA_CONSUMER_ENABLED = "kibon.kafka.consumer.enabled";
-	private static final String KIBON_KAFKA_CONSUMER_GROUP_ID = "kibon.kafka.consumer.group.id";
+	private static final String KIBON_SCHEMA_REGISTRY_URL =
+		"kibon.schemaregistry.url";
+	private static final String KIBON_EXCHANGE_BETREUUNGANFRAGE_ENABLED =
+		"kibon.exchange.betreuunganfrage.enabled";
+	private static final String KIBON_EXCHANGE_TAGESSCHULE_ANMELDUNG_ENABLED =
+		"kibon.exchange.tagesschuleanmeldung.enabled";
+	private static final String KIBON_KAFKA_CONSUMER_ENABLED =
+		"kibon.kafka.consumer.enabled";
+	private static final String KIBON_KAFKA_CONSUMER_GROUP_ID =
+		"kibon.kafka.consumer.group.id";
+
+	private static final String KIBON_STATISTIK_KAFKA_URL =
+		"kibon.statistik.kafka.url";
 
 	private static final String CLAMAV_HOST = "ebegu.clamav.host";
 	private static final String CLAMAV_PORT = "ebegu.clamav.port";
 	private static final String CLAMAV_DISABLED = "ebegu.clamav.disabled";
 
-	private static final String NOTVERORDNUNG_UNTERSCHRIFT_PATH = "ebegu.notverordnung.unterschrift.path";
-	private static final String NOTVERORDNUNG_UNTERSCHRIFT_NAME = "ebegu.notverordnung.unterschrift.name";
-	private static final String NOTVERORDNUNG_EMPFAENGER_MAIL = "ebegu.notverordnung.empfaenger.mail";
+	private static final String MULTIMANDANT_ENABLED =
+		"ebegu.multimandant.enabled";
 
-	private static final String MASSENMUTATION_EMPFAENGER_MAIL = "ebegu.massenmutation.empfaenger.mail";
+	private static final String EBEGU_KIBON_STEUER_ANFRAGE_ENDPOINT =
+		"ebegu.kibonanfrage.endpoint";
 
-	private static final String MULTIMANDANT_ENABLED = "ebegu.multimandant.enabled";
-
-	private static final String EBEGU_KIBON_STEUER_ANFRAGE_ENDPOINT = "ebegu.kibonanfrage.endpoint";
-
-	private static final String EBEGU_KIBON_STEUER_ANFRAGE_TEST_UUID = "ebegu.kibonanfrage.testuuid";
-	private static final String EBEGU_KIBON_STEUER_ANFRAGE_TEST_GUI_ENABLED = "ebegu.kibonanfrage.testgui.enabled";
-	private static final String KIBON_EXCHANGE_NEU_VERANLAGUNG_ENABLED = "kibon.exchange.neuveranlagung.enabled";
+	private static final String EBEGU_KIBON_STEUER_ANFRAGE_TEST_UUID =
+		"ebegu.kibonanfrage.testuuid";
+	private static final String EBEGU_KIBON_STEUER_ANFRAGE_TEST_GUI_ENABLED =
+		"ebegu.kibonanfrage.testgui.enabled";
+	private static final String KIBON_EXCHANGE_NEU_VERANLAGUNG_ENABLED =
+		"kibon.exchange.neuveranlagung.enabled";
 
 	@Inject
 	private ApplicationPropertyService applicationPropertyService;
@@ -132,12 +161,10 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 
 	@Override
 	public String getDocumentFilePath() {
-		return getString(EBEGU_DOCUMENT_FILE_PATH, getString("jboss.server.data.dir"));
-	}
-
-	@Override
-	public boolean isClientUsingHTTPS() {
-		return getBoolean(EBEGU_CLIENT_USING_HTTPS, false);
+		return getString(
+			EBEGU_DOCUMENT_FILE_PATH,
+			getString("jboss.server.data.dir")
+		);
 	}
 
 	@Override
@@ -147,7 +174,7 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 
 	@Override
 	public String getSMTPHost() {
-		return getString(EBEGU_MAIL_SMTP_HOST, null);
+		return getEnvOrString(EBEGU_MAIL_SMTP_HOST, null);
 	}
 
 	@Override
@@ -157,18 +184,37 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 
 	@Override
 	public String getSenderAddress() {
-		return getString(EBEGU_MAIL_SMTP_FROM, null);
+		return getEnvOrString(EBEGU_MAIL_SMTP_FROM, null);
 	}
 
 	@Override
-	public String getHostname(MandantIdentifier mandantIdentifier) {
-		String hostnameWithPlaceHolder =  getString(EBEGU_HOSTNAME, null);
-		return hostnameWithPlaceHolder.replace("{mandantUrlCode}", mandantIdentifier.getUrlCode());
+	public String getFrontendBaseUrl(MandantIdentifier mandantIdentifier) {
+		String hostnameWithPlaceHolder = getEnvOrString(
+			EBEGU_FRONTEND_URL,
+			null
+		);
+		return hostnameWithPlaceHolder != null ?
+			hostnameWithPlaceHolder.replace(
+				"{mandantUrlCode}",
+				mandantIdentifier.getUrlCode()
+			) :
+			null;
+	}
+
+	@Override
+	public String getBaseUrl(MandantIdentifier mandantIdentifier) {
+		String hostnameWithPlaceHolder = getEnvOrString(EBEGU_BASE_URL, null);
+		return hostnameWithPlaceHolder != null ?
+			hostnameWithPlaceHolder.replace(
+				"{mandantUrlCode}",
+				mandantIdentifier.getUrlCode()
+			) :
+			null;
 	}
 
 	@Override
 	public String getHostdomain() {
-		return getString(EBEGU_HOSTDOMAIN, null);
+		return getEnvOrString(EBEGU_HOSTDOMAIN, null);
 	}
 
 	@Override
@@ -176,8 +222,16 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 		// Um das Dummy Login einzuschalten, muss sowohl das DB Property wie auch das System Property gesetzt sein. Damit
 		// ist eine zusätzliche Sicherheit eingebaut, dass nicht aus Versehen z.B. mit einem Produktionsdump das Dummy Login
 		// automatisch ausgeschaltet ist.
-		Boolean flagFromDB = applicationPropertyService.findApplicationPropertyAsBoolean(ApplicationPropertyKey.DUMMY_LOGIN_ENABLED, mandant,false);
-		Boolean flagFromServerConfig = getBoolean(EBEGU_DUMMY_LOGIN_ENABLED, false);
+		Boolean flagFromDB = applicationPropertyService
+			.findApplicationPropertyAsBoolean(
+				ApplicationPropertyKey.DUMMY_LOGIN_ENABLED,
+				mandant,
+				false
+			);
+		Boolean flagFromServerConfig = getBoolean(
+			EBEGU_DUMMY_LOGIN_ENABLED,
+			false
+		);
 		return flagFromDB && flagFromServerConfig;
 	}
 
@@ -188,7 +242,7 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 
 	@Override
 	public String getEbeguZahlungenUeberpruefungWhitelist() {
-		return getString(EBEGU_ZAHLUNGEN_UEBERPRUEFUNG_WHITELIST);
+		return getEnvOrString(EBEGU_ZAHLUNGEN_UEBERPRUEFUNG_WHITELIST);
 	}
 
 	@Override
@@ -203,68 +257,37 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 
 	@Override
 	public String getPersonenSucheEndpoint() {
-		return getString(EBEGU_PERSONENSUCHE_ENDPOINT);
+		return getEnvOrString(EBEGU_PERSONENSUCHE_ENDPOINT);
 	}
 
 	@Override
 	public String getPersonenSucheWsdl() {
-		return getString(EBEGU_PERSONENSUCHE_WSDL);
+		return getEnvOrString(EBEGU_PERSONENSUCHE_WSDL);
 	}
 
 	@Override
 	public String getPersonenSucheUsername() {
-		return getString(EBEGU_PERSONENSUCHE_USERNAME);
+		return getEnvOrString(EBEGU_PERSONENSUCHE_USERNAME);
 	}
 
 	@Override
 	public String getPersonenSuchePassword() {
-		return getString(EBEGU_PERSONENSUCHE_PASSWORD);
-	}
-
-	@Override
-	public String getLoginProviderAPIUrl() {
-		return getString(EBEGU_LOGIN_PROVIDER_API_URL);
-	}
-
-	@Override
-	public boolean isRemoteLoginConnectorAllowed() {
-		return getBoolean(EBEGU_LOGIN_API_ALLOW_REMOTE, false);
-	}
-
-	@Override
-	public String getInternalAPIUser() {
-		String user = getString(EBEGU_LOGIN_API_INTERNAL_USER);
-		if (StringUtils.isEmpty(user)) {
-			LOG.warn("Internal API User  must be set in the properties (key: {}) to use the LoginConnector API ",
-				EBEGU_LOGIN_API_INTERNAL_USER);
-
-		}
-		return user;
-	}
-
-	@Override
-	public String getInternalAPIPassword() {
-		String internalUserPW = getString(EBEGU_LOGIN_API_INTERNAL_PASSWORD);
-		if (StringUtils.isEmpty(internalUserPW)) {
-			LOG.warn("Internal API password must be set in the properties (key: {}) to use the LoginConnector API ",
-				EBEGU_LOGIN_API_INTERNAL_PASSWORD);
-		}
-		return internalUserPW;
+		return getEnvOrString(EBEGU_PERSONENSUCHE_PASSWORD);
 	}
 
 	@Override
 	public String getKeycloackClient() {
-		return getString(EBEGU_LOGIN_API_KEYCLOACK_CLIENT);
+		return getEnvOrString(EBEGU_LOGIN_API_KEYCLOACK_CLIENT);
 	}
 
 	@Override
 	public String getKeycloackPassword() {
-		return getString(EBEGU_LOGIN_API_KEYCLOACK_PASSWORD);
+		return getEnvOrString(EBEGU_LOGIN_API_KEYCLOACK_PASSWORD);
 	}
 
 	@Override
 	public String getKeycloackAuthServer() {
-		return getString(EBEGU_LOGIN_API_KEYCLOACK_AUTHSERVER);
+		return getEnvOrString(EBEGU_LOGIN_API_KEYCLOACK_AUTHSERVER);
 	}
 
 	@Override
@@ -279,21 +302,12 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 
 	@Override
 	public String getAdministratorMail() {
-		return getString(EBEGU_ADMINISTRATOR_MAIL);
-	}
-
-	@Nullable
-	@Override
-	public String getPortalAccountCreationPageLink(@Nullable Mandant mandant) {
-		return getMandantConfiguration(
-			EBEGU_PORTAL_ACCOUNT_CREATION_LINK,
-			mandant,
-			null);
+		return getEnvOrString(EBEGU_ADMINISTRATOR_MAIL);
 	}
 
 	@Override
 	public String getSentryEnv() {
-		return getString(SENTRY_ENVIRONMENT, "unspecified");
+		return getEnvOrString(SENTRY_ENVIRONMENT, "unspecified");
 	}
 
 	@Override
@@ -303,24 +317,23 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 
 	@Override
 	public String getSuperuserMail() {
-		return getString(EBEGU_SUPERUSER_MAIL);
+		return getEnvOrString(EBEGU_SUPERUSER_MAIL);
 	}
 
 	@Override
 	public String getSupportMail() {
-		return getString(EBEGU_SUPPORT_MAIL, "support@kibon.ch");
+		return getEnvOrString(EBEGU_SUPPORT_MAIL, "support@kibon.ch");
 	}
 
 	@Nonnull
 	@Override
 	public Optional<String> getKafkaURL() {
-		return Optional.ofNullable(getString(KIBON_KAFKA_URL));
+		return Optional.ofNullable(getEnvOrString(KIBON_KAFKA_URL));
 	}
 
-	@Nonnull
 	@Override
 	public String getSchemaRegistryURL() {
-		return getString(KIBON_SCHEMA_REGISTRY_URL, "");
+		return getEnvOrString(KIBON_SCHEMA_REGISTRY_URL, "");
 	}
 
 	@Override
@@ -338,24 +351,36 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 		return getBoolean(KIBON_KAFKA_CONSUMER_ENABLED, false);
 	}
 
+	@Nonnull
+	@Override
+	public Optional<String> getKafkaStatistikURL() {
+		return Optional.ofNullable(getEnvOrString(KIBON_STATISTIK_KAFKA_URL));
+	}
+
 	@Override
 	public String getEbeguPersonensucheSTSKeystorePath() {
 
-		String jbossHome =  System.getProperty("jboss.home.dir");
-		String defaultPathToJKS =  jbossHome + "/rkb1-svbern-sts-ks-u.jks";
+		String jbossHome = System.getProperty("jboss.home.dir");
+		String defaultPathToJKS = jbossHome + "/rkb1-svbern-sts-ks-u.jks";
 
-		return getString(EBEGU_PERSONENSUCHE_STS_KEYSTORE_PATH, defaultPathToJKS);
+		return getEnvOrString(
+			EBEGU_PERSONENSUCHE_STS_KEYSTORE_PATH,
+			defaultPathToJKS
+		);
 
 	}
 
 	@Override
 	public String getEbeguPersonensucheSTSKeystorePW() {
-		return getString(EBEGU_PERSONENSUCHE_STS_KEYSTORE_PW);
+		return getEnvOrString(EBEGU_PERSONENSUCHE_STS_KEYSTORE_PW);
 	}
 
 	@Override
 	public String getEbeguPersonensucheSTSPrivateKeyAlias() {
-		return getString(EBEGU_PERSONENSUCHE_STS_PRIVATE_KEY_ALIAS, "rkb1");
+		return getEnvOrString(
+			EBEGU_PERSONENSUCHE_STS_PRIVATE_KEY_ALIAS,
+			"rkb1"
+		);
 	}
 
 	@Override
@@ -363,70 +388,89 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 		return getEbeguPersonensucheSTSKeystorePW();
 	}
 
-
 	@Override
-	public String getEbeguPersonensucheSTSBasePath(){
-		return getString(EBEGU_PERSONENSUCHE_STS_BASE_PATH, "https://a6hu-www-sts-b.be.ch/securityService"); //test
-//		return getString(EBEGU_PERSONENSUCHE_STS_BASE_PATH, "https://a6ha-www-sts-b.be.ch/securityService"); //prod
+	public String getEbeguPersonensucheSTSBasePath() {
+		return getEnvOrString(
+			EBEGU_PERSONENSUCHE_STS_BASE_PATH,
+			"https://a6hu-www-sts-b.be.ch/securityService"
+		); //test
+																												 //		return getEnvOrString(EBEGU_PERSONENSUCHE_STS_BASE_PATH, "https://a6ha-www-sts-b.be.ch/securityService"); //prod
 	}
 
 	@Override
 	public String getEbeguPersonensucheSTSWsdl() {
-		return getString(EBEGU_PERSONENSUCHE_STS_WSDL);
+		return getEnvOrString(EBEGU_PERSONENSUCHE_STS_WSDL);
 	}
 
 	@Override
 	public String getEbeguPersonensucheSTSEndpoint() {
-		return getString(EBEGU_PERSONENSUCHE_STS_ENDPOINT, getEbeguPersonensucheSTSBasePath() +  "/zertsts/services/ZertSTSWebservice");
+		return getEnvOrString(
+			EBEGU_PERSONENSUCHE_STS_ENDPOINT,
+			getEbeguPersonensucheSTSBasePath()
+				+ "/zertsts/services/ZertSTSWebservice"
+		);
 	}
 
 	//unused ?
 	@Override
 	public String getEbeguPersonensucheSTSRenewalAssertionWsdl() {
-		return getString(EBEGU_PERSONENSUCHE_STS_RENEWAL_ASSERTION_WSDL);
+		return getEnvOrString(EBEGU_PERSONENSUCHE_STS_RENEWAL_ASSERTION_WSDL);
 	}
 
 	@Override
 	public String getEbeguPersonensucheSTSRenewalAssertionEndpoint() {
-		return getString(EBEGU_PERSONENSUCHE_STS_RENEWAL_ASSERTION_ENDPOINT, getEbeguPersonensucheSTSBasePath() +  "/samlrenew/services/RenewAssertionWebService");
+		return getEnvOrString(
+			EBEGU_PERSONENSUCHE_STS_RENEWAL_ASSERTION_ENDPOINT,
+			getEbeguPersonensucheSTSBasePath()
+				+ "/samlrenew/services/RenewAssertionWebService"
+		);
 	}
 
 	@Override
 	public String getEbeguPersonensucheGERESEndpoint() {
-		return getString(EBEGU_PERSONENSUCHE_GERES_ENDPOINT, "https://testv3-geres.be.ch/ech/services/GeresResidentInfoService_v1801");
-//		return getString(EBEGU_PERSONENSUCHE_GERES_ENDPOINT, "https://geres.be.ch/ech/services/GeresResidentInfoService_v1801");     // produktion
-
-
+		return getEnvOrString(
+			EBEGU_PERSONENSUCHE_GERES_ENDPOINT,
+			"https://testv3-geres.be.ch/ech/services/GeresResidentInfoService_v1801"
+		);
 	}
 
 	@Override
 	public String getEbeguPersonensucheGERESWsdl() {
-		return getString(EBEGU_PERSONENSUCHE_GERES_WSDL);
+		return getEnvOrString(EBEGU_PERSONENSUCHE_GERES_WSDL);
 	}
 
 	@Override
 	public String getEbeguGeoadminSearchServerUrl() {
-		return getString(EBEGU_GEOADMIN_SEARCHSERVER_URL, "https://api3.geo.admin.ch/rest/services/api/SearchServer");
+		return getEnvOrString(
+			EBEGU_GEOADMIN_SEARCHSERVER_URL,
+			"https://api3.geo.admin.ch/rest/services/api/SearchServer"
+		);
 	}
 
 	@Override
 	public String getEbeguGeoadminMapServerUrl() {
-		return getString(EBEGU_GEOADMIN_MAPSERVER_URL, "https://api3.geo.admin.ch/rest/services/api/MapServer");
+		return getEnvOrString(
+			EBEGU_GEOADMIN_MAPSERVER_URL,
+			"https://api3.geo.admin.ch/rest/services/api/MapServer"
+		);
 	}
 
 	@Override
 	public String getKitaxHost() {
-		return getString(EBEGU_KITAX_HOST, "https://ebegu.dvbern.ch");
+		return getEnvOrString(EBEGU_KITAX_HOST, "https://ebegu.dvbern.ch");
 	}
 
 	@Override
 	public String getKitaxEndpoint() {
-		return getString(EBEGU_KITAX_ENDPOINT, "/ebegu/api/v1/kibon/lookup");
+		return getEnvOrString(
+			EBEGU_KITAX_ENDPOINT,
+			"/ebegu/api/v1/kibon/lookup"
+		);
 	}
 
 	@Override
 	public String getClamavHost() {
-		return getString(CLAMAV_HOST, "localhost");
+		return getEnvOrString(CLAMAV_HOST, "localhost");
 	}
 
 	@Override
@@ -440,28 +484,8 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 	}
 
 	@Override
-	public String getNotverordnungUnterschriftName() {
-		return getString(NOTVERORDNUNG_UNTERSCHRIFT_NAME);
-	}
-
-	@Override
-	public String getNotverordnungUnterschriftPath() {
-		return getString(NOTVERORDNUNG_UNTERSCHRIFT_PATH);
-	}
-
-	@Override
-	public String getNotverordnungEmpfaengerMail() {
-		return getString(NOTVERORDNUNG_EMPFAENGER_MAIL);
-	}
-
-	@Override
-	public String getMassenmutationEmpfaengerMail() {
-		return getString(MASSENMUTATION_EMPFAENGER_MAIL);
-	}
-
-	@Override
 	public String getKafkaConsumerGroupId() {
-		return getString(KIBON_KAFKA_CONSUMER_GROUP_ID, "dev");
+		return getEnvOrString(KIBON_KAFKA_CONSUMER_GROUP_ID, "dev");
 	}
 
 	@Override
@@ -471,12 +495,12 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 
 	@Override
 	public String getKibonAnfrageEndpoint() {
-		return getString(EBEGU_KIBON_STEUER_ANFRAGE_ENDPOINT);
+		return getEnvOrString(EBEGU_KIBON_STEUER_ANFRAGE_ENDPOINT);
 	}
 
 	@Override
 	public String getKibonAnfrageTestUuid() {
-		return getString(EBEGU_KIBON_STEUER_ANFRAGE_TEST_UUID);
+		return getEnvOrString(EBEGU_KIBON_STEUER_ANFRAGE_TEST_UUID);
 	}
 
 	@Override
@@ -486,17 +510,17 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 
 	@Override
 	public String getEbeguKibonAnfrageOIDCClientId() {
-		return getString(EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_ID);
+		return getEnvOrString(EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_ID);
 	}
 
 	@Override
 	public String getEbeguKibonAnfrageOIDCSecret() {
-		return getString(EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_SECRET);
+		return getEnvOrString(EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_SECRET);
 	}
 
 	@Override
 	public String getEbeguKibonAnfrageOIDCEndpoint() {
-		return getString(EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_ENDPOINT);
+		return getEnvOrString(EBEGU_KIBON_ANFRAGE_OIDC_CLIENT_ENDPOINT);
 	}
 
 	@Override
@@ -504,28 +528,38 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements Ebegu
 		return getBoolean(KIBON_EXCHANGE_NEU_VERANLAGUNG_ENABLED, false);
 	}
 
-	@Nullable
-	private String getMandantConfiguration(String configKey, @Nullable Mandant mandant, @Nullable String defaultValue) {
-		if (mandant == null) {
-			LOG.warn("Required mandant for mandant configuration was not provided, using null as config value");
-			return null;
-		}
-		String mandantKey = String.format(configKey, mandant.getMandantIdentifier().name().toLowerCase(Locale.ROOT));
-		return getString(mandantKey, defaultValue);
-	}
-
 	@Override
 	public String getGeresSchwyzEndpointUrl() {
-		return getString("ebegu.personensuche.geres.schwyz.endpoint.url");
+		return getEnvOrString("ebegu.personensuche.geres.schwyz.endpoint.url");
 	}
 
 	@Override
 	public String getGeresSchwyzUsername() {
-		return getString("ebegu.personensuche.geres.schwyz.username");
+		return getEnvOrString("ebegu.personensuche.geres.schwyz.username");
 	}
 
 	@Override
 	public String getGeresSchwyzPassword() {
-		return getString("ebegu.personensuche.geres.schwyz.password");
+		return getEnvOrString("ebegu.personensuche.geres.schwyz.password");
+	}
+
+	private String getEnvOrString(String property) {
+		String value = getString(property);
+		if (value != null && value.contains("${")) {
+			String envVarName = value.substring(2, value.length() - 1);
+			String envVarValue = System.getenv(envVarName);
+			if (envVarValue != null) {
+				return envVarValue;
+			}
+		}
+		return value;
+	}
+
+	private String getEnvOrString(
+		String propertyValue,
+		String defaultValue
+	) {
+		String result = getEnvOrString(propertyValue);
+		return (result != null) ? result : defaultValue;
 	}
 }

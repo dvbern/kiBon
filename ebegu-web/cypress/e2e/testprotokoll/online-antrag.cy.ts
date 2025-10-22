@@ -16,39 +16,40 @@
  */
 
 import {
-    EinkommensverschlechterungPO,
-    AntragBeschaeftigungspensumPO,
-    AntragBetreuungPO,
-    AntragKindPO,
-    AntragFamSitPO,
-    NavigationPO,
-    TestFaellePO,
-    RegistrationAbschliessenPO,
-    GesuchstellendeDashboardPO,
-    FinanzielleSituationStartPO,
-    FinanzielleSituationPO,
-    FinanzielleSituationResultatePO,
-    EinkommensverschlechterungResultatePO,
-    DokumentePO,
-    FallToolbarPO,
-    ConfirmDialogPO,
-    FreigabePO,
-    AntragCreationPO,
-    VerfuegungPO,
-    VerfuegenPO,
-    EinkommensverschlechterungInfoPO
-} from '@dv-e2e/page-objects';
-import {
     FixtureEinkommensverschlechterung,
     FixtureFamSit,
     FixtureFinSit
 } from '@dv-e2e/fixtures';
+import {
+    AntragBeschaeftigungspensumPO,
+    AntragBetreuungPO,
+    AntragCreationPO,
+    AntragFamSitPO,
+    AntragKindPO,
+    ConfirmDialogPO,
+    DokumentePO,
+    EinkommensverschlechterungInfoPO,
+    EinkommensverschlechterungPO,
+    EinkommensverschlechterungResultatePO,
+    FallToolbarPO,
+    FinanzielleSituationPO,
+    FinanzielleSituationResultatePO,
+    FinanzielleSituationStartPO,
+    FreigabePO,
+    GesuchstellendeDashboardPO,
+    NavigationPO,
+    RegistrationAbschliessenPO,
+    TestFaellePO,
+    VerfuegenPO,
+    VerfuegungPO
+} from '@dv-e2e/page-objects';
 import {getUser, TestPeriode} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 
 describe('Kibon - generate Testfälle [Online-Antrag]', () => {
-    const userSuperadmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const userSuperadmin = getUser('[1-Superadmin] Super User');
     const userGemeinde = getUser('[6-L-SB-Gemeinde] Stefan Weibel');
     const userKita = getUser('[3-SB-Institution-Kita-Brünnen] Sophie Bergmann');
     const userTraegerschaft = getUser(
@@ -62,12 +63,14 @@ describe('Kibon - generate Testfälle [Online-Antrag]', () => {
     };
 
     before(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
         cy.login(userSuperadmin);
         cy.intercept('GET', '**/benutzer/gesuchsteller').as(
             'loadingGesuchsteller'
         );
         cy.visit('#/testdaten');
+        cy.ignoreUncaughtException();
         cy.wait('@loadingGesuchsteller');
         TestFaellePO.getGesuchstellerFaelleLoeschen().click();
         TestFaellePO.getGesuchstellerInToRemoveFaelle(userGS).click();
@@ -154,6 +157,7 @@ describe('Kibon - generate Testfälle [Online-Antrag]', () => {
         AntragBetreuungPO.fillKeinePlatzierung();
         AntragBetreuungPO.fillErweiterteBeduerfnisse();
         AntragBetreuungPO.platzBestaetigungAnfordern();
+        cy.wait(1500);
 
         //TFO
 

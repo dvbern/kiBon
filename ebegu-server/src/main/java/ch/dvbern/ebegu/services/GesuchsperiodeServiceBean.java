@@ -22,18 +22,19 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.Dossier;
 import ch.dvbern.ebegu.entities.EinstellungenFerieninsel;
@@ -57,9 +58,9 @@ import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.types.DateRange_;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +71,12 @@ import static java.util.Objects.requireNonNull;
  */
 @Stateless
 @Local(GesuchsperiodeService.class)
-public class GesuchsperiodeServiceBean extends AbstractBaseService implements GesuchsperiodeService {
+public class GesuchsperiodeServiceBean extends AbstractBaseService implements
+	GesuchsperiodeService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GesuchsperiodeServiceBean.class.getSimpleName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		GesuchsperiodeServiceBean.class.getSimpleName()
+	);
 	public static final String MANDANT_NOT_DEFINED = "Mandant not defined";
 
 	@Inject
@@ -110,7 +114,9 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 
 	@Nonnull
 	@Override
-	public Gesuchsperiode saveGesuchsperiode(@Nonnull Gesuchsperiode gesuchsperiode) {
+	public Gesuchsperiode saveGesuchsperiode(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		requireNonNull(gesuchsperiode);
 		return persistence.merge(gesuchsperiode);
 	}
@@ -120,14 +126,17 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 	@SuppressWarnings("PMD.CollapsibleIfStatements")
 	public Gesuchsperiode saveGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull GesuchsperiodeStatus statusBisher) {
-		if (gesuchsperiode.isNew() && GesuchsperiodeStatus.ENTWURF != gesuchsperiode.getStatus()) {
+		@Nonnull GesuchsperiodeStatus statusBisher
+	) {
+		if (gesuchsperiode.isNew()
+			&& GesuchsperiodeStatus.ENTWURF != gesuchsperiode.getStatus()) {
 			// Gesuchsperiode muss im Status ENTWURF erstellt werden
 			throw new EbeguRuntimeException(
 				"saveGesuchsperiode",
 				ErrorCodeEnum.ERROR_GESUCHSPERIODE_INVALID_STATUSUEBERGANG,
 				"Neu",
-				gesuchsperiode.getStatus());
+				gesuchsperiode.getStatus()
+			);
 		}
 		// Überprüfen, ob der Statusübergang zulässig ist
 		if (gesuchsperiode.getStatus() != statusBisher) {
@@ -135,36 +144,75 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 		}
 		if (gesuchsperiode.isNew()) {
 			gesuchsperiode = saveGesuchsperiode(gesuchsperiode);
-			LocalDate stichtagInVorperiode = gesuchsperiode.getGueltigkeit().getGueltigAb().minusDays(1);
-			Optional<Gesuchsperiode> lastGesuchsperiodeOptional = getGesuchsperiodeAm(stichtagInVorperiode, gesuchsperiode.getMandant());
+			LocalDate stichtagInVorperiode = gesuchsperiode.getGueltigkeit()
+				.getGueltigAb()
+				.minusDays(1);
+			Optional<Gesuchsperiode> lastGesuchsperiodeOptional =
+				getGesuchsperiodeAm(
+					stichtagInVorperiode,
+					gesuchsperiode.getMandant()
+				);
 			if (lastGesuchsperiodeOptional.isPresent()) {
-				Gesuchsperiode lastGesuchsperiode = lastGesuchsperiodeOptional.get();
+				Gesuchsperiode lastGesuchsperiode = lastGesuchsperiodeOptional
+					.get();
 				// we only copy the einstellung when there is a lastGesuchsperiode. In some cases, among others in
 				// some tests we won't have a lastGesuchsperiode so we cannot copy the Einstellungen. In production
 				// if there is no lastGesuchsperiode there is also nothing to copy
-				einstellungService.copyEinstellungenToNewGesuchsperiode(gesuchsperiode, lastGesuchsperiode);
+				einstellungService.copyEinstellungenToNewGesuchsperiode(
+					gesuchsperiode,
+					lastGesuchsperiode
+				);
 
 				// Die Module der Tagesschulen sollen ebenfalls für die neue Gesuchsperiode übernommen werden
-				modulTagesschuleService.copyModuleTagesschuleToNewGesuchsperiode(gesuchsperiode, lastGesuchsperiode);
+				modulTagesschuleService
+					.copyModuleTagesschuleToNewGesuchsperiode(
+						gesuchsperiode,
+						lastGesuchsperiode
+					);
 
 				// Die Einstellungen der Ferieninseln sollen ebenfalls für die neue Gesuchsperiode übernommen werden
-				ferieninselStammdatenService.copyEinstellungenFerieninselToNewGesuchsperiode(gesuchsperiode, lastGesuchsperiode);
+				ferieninselStammdatenService
+					.copyEinstellungenFerieninselToNewGesuchsperiode(
+						gesuchsperiode,
+						lastGesuchsperiode
+					);
 
 				//Die Gemeinde Gesuchsperiode Stammdaten sollen auch für die neue Gesuchsperiode übernommen werden
-				gemeindeService.copyGesuchsperiodeGemeindeStammdaten(gesuchsperiode, lastGesuchsperiode);
+				gemeindeService.copyGesuchsperiodeGemeindeStammdaten(
+					gesuchsperiode,
+					lastGesuchsperiode
+				);
 
 				//copy erlaeuterung verfuegung from previos Gesuchperiode
-				gesuchsperiode.setVerfuegungErlaeuterungenDe(lastGesuchsperiode.getVerfuegungErlaeuterungenDe());
-				gesuchsperiode.setVerfuegungErlaeuterungenFr(lastGesuchsperiode.getVerfuegungErlaeuterungenFr());
+				gesuchsperiode.setVerfuegungErlaeuterungenDe(
+					lastGesuchsperiode.getVerfuegungErlaeuterungenDe()
+				);
+				gesuchsperiode.setVerfuegungErlaeuterungenFr(
+					lastGesuchsperiode.getVerfuegungErlaeuterungenFr()
+				);
 				// Merkblatt Tagesschulen kopieren
-				gesuchsperiode.setVorlageMerkblattTsDe(lastGesuchsperiode.getVorlageMerkblattTsDe());
-				gesuchsperiode.setVorlageMerkblattTsFr(lastGesuchsperiode.getVorlageMerkblattTsFr());
+				gesuchsperiode.setVorlageMerkblattTsDe(
+					lastGesuchsperiode.getVorlageMerkblattTsDe()
+				);
+				gesuchsperiode.setVorlageMerkblattTsFr(
+					lastGesuchsperiode.getVorlageMerkblattTsFr()
+				);
 				// Vorlage Verfügung Lats kopieren
-				gesuchsperiode.setVorlageVerfuegungLatsDe(lastGesuchsperiode.getVorlageVerfuegungLatsDe());
-				gesuchsperiode.setVorlageVerfuegungLatsFr(lastGesuchsperiode.getVorlageVerfuegungLatsFr());
+				gesuchsperiode.setVorlageVerfuegungLatsDe(
+					lastGesuchsperiode.getVorlageVerfuegungLatsDe()
+				);
+				gesuchsperiode.setVorlageVerfuegungLatsFr(
+					lastGesuchsperiode.getVorlageVerfuegungLatsFr()
+				);
 				// Vorlage Verfügung Ferienbetreuung kopieren
-				gesuchsperiode.setVorlageVerfuegungFerienbetreuungDe(lastGesuchsperiode.getVorlageVerfuegungFerienbetreuungDe());
-				gesuchsperiode.setVorlageVerfuegungFerienbetreuungFr(lastGesuchsperiode.getVorlageVerfuegungFerienbetreuungFr());
+				gesuchsperiode.setVorlageVerfuegungFerienbetreuungDe(
+					lastGesuchsperiode
+						.getVorlageVerfuegungFerienbetreuungDe()
+				);
+				gesuchsperiode.setVorlageVerfuegungFerienbetreuungFr(
+					lastGesuchsperiode
+						.getVorlageVerfuegungFerienbetreuungFr()
+				);
 			}
 		}
 		return saveGesuchsperiode(gesuchsperiode);
@@ -178,23 +226,34 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 		logStatusChange(gesuchsperiode, statusBisher);
 		// Superadmin darf alles
 		if (!principalBean.isCallerInRole(UserRole.SUPER_ADMIN)
-			&& !isStatusUebergangValid(statusBisher, gesuchsperiode.getStatus())) {
+			&& !isStatusUebergangValid(
+				statusBisher,
+				gesuchsperiode.getStatus()
+			)) {
 			throw new EbeguRuntimeException(
 				"saveGesuchsperiode",
 				ErrorCodeEnum.ERROR_GESUCHSPERIODE_INVALID_STATUSUEBERGANG,
 				statusBisher,
-				gesuchsperiode.getStatus());
+				gesuchsperiode.getStatus()
+			);
 		}
 		// Falls es ein Statuswechsel war, und der neue Status ist AKTIV -> Mail an alle Gesuchsteller schicken
 		// Nur, wenn die Gesuchsperiode noch nie auf aktiv geschaltet war.
 		if (GesuchsperiodeStatus.AKTIV == gesuchsperiode.getStatus()
 			&& gesuchsperiode.getDatumAktiviert() == null) {
 			Optional<Gesuchsperiode> lastGesuchsperiodeOptional =
-				getGesuchsperiodeAm(gesuchsperiode.getGueltigkeit().getGueltigAb().minusDays(1), gesuchsperiode.getMandant());
+				getGesuchsperiodeAm(
+					gesuchsperiode.getGueltigkeit()
+						.getGueltigAb()
+						.minusDays(1),
+					gesuchsperiode.getMandant()
+				);
 			if (lastGesuchsperiodeOptional.isPresent()) {
-				gesuchsperiodeEmailService.getAndSaveGesuchsperiodeEmailCandidates(
-					lastGesuchsperiodeOptional.get(),
-					gesuchsperiode);
+				gesuchsperiodeEmailService
+					.getAndSaveGesuchsperiodeEmailCandidates(
+						lastGesuchsperiodeOptional.get(),
+						gesuchsperiode
+					);
 				gesuchsperiode.setDatumAktiviert(LocalDate.now());
 			}
 		}
@@ -204,7 +263,8 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 			&& !gesuchService.canGesuchsperiodeBeClosed(gesuchsperiode)) {
 			throw new EbeguRuntimeException(
 				"saveGesuchsperiode",
-				ErrorCodeEnum.ERROR_GESUCHSPERIODE_CANNOT_BE_CLOSED);
+				ErrorCodeEnum.ERROR_GESUCHSPERIODE_CANNOT_BE_CLOSED
+			);
 		}
 	}
 
@@ -212,7 +272,10 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 	@Override
 	public Optional<Gesuchsperiode> findGesuchsperiode(@Nonnull String key) {
 		requireNonNull(key, "id muss gesetzt sein");
-		Gesuchsperiode gesuchsperiode = persistence.find(Gesuchsperiode.class, key);
+		Gesuchsperiode gesuchsperiode = persistence.find(
+			Gesuchsperiode.class,
+			key
+		);
 		return Optional.ofNullable(gesuchsperiode);
 	}
 
@@ -225,33 +288,64 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 
 	@Nonnull
 	@Override
-	public Collection<Gesuchsperiode> getAllGesuchsperioden(@Nonnull Mandant mandant) {
+	public Collection<Gesuchsperiode> getAllGesuchsperioden(
+		@Nonnull Mandant mandant
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(Gesuchsperiode.class);
+		final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(
+			Gesuchsperiode.class
+		);
 		Root<Gesuchsperiode> root = query.from(Gesuchsperiode.class);
-		Predicate mandantPredicate = cb.equal(root.get(Gesuchsperiode_.mandant), mandant);
+		Predicate mandantPredicate = cb.equal(
+			root.get(Gesuchsperiode_.mandant),
+			mandant
+		);
 		query.where(mandantPredicate);
 		query.select(root);
-		query.orderBy(cb.desc(root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb)));
+		query.orderBy(
+			cb.desc(
+				root.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigAb)
+			)
+		);
 		return persistence.getCriteriaResults(query);
 
 	}
 
 	@Nullable
 	@Override
-	public Collection<Gesuchsperiode> findThisAndFutureGesuchsperioden(@Nonnull String key) {
+	public Collection<Gesuchsperiode> findThisAndFutureGesuchsperioden(
+		@Nonnull String key
+	) {
 		List<Gesuchsperiode> gesuchsperioden = null;
 		Optional<Gesuchsperiode> gesuchsperiode = findGesuchsperiode(key);
 		if (gesuchsperiode.isPresent()) {
-			LocalDate datumVon = gesuchsperiode.get().getGueltigkeit().getGueltigAb();
+			LocalDate datumVon = gesuchsperiode.get()
+				.getGueltigkeit()
+				.getGueltigAb();
 			final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-			final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(Gesuchsperiode.class);
+			final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(
+				Gesuchsperiode.class
+			);
 			Root<Gesuchsperiode> root = query.from(Gesuchsperiode.class);
-			Path<DateRange> dateRangePath = root.get(AbstractDateRangedEntity_.gueltigkeit);
-			Predicate predicateVon = cb.greaterThanOrEqualTo(dateRangePath.get(DateRange_.gueltigAb), datumVon);
-			Predicate predicateMandant = cb.equal(root.get(Gesuchsperiode_.mandant), principalBean.getMandant());
+			Path<DateRange> dateRangePath = root.get(
+				AbstractDateRangedEntity_.gueltigkeit
+			);
+			Predicate predicateVon = cb.greaterThanOrEqualTo(
+				dateRangePath.get(DateRange_.gueltigAb),
+				datumVon
+			);
+			Predicate predicateMandant = cb.equal(
+				root.get(Gesuchsperiode_.mandant),
+				principalBean.getMandant()
+			);
 			query.where(predicateVon, predicateMandant);
-			query.orderBy(cb.desc(root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb)));
+			query.orderBy(
+				cb.desc(
+					root.get(AbstractDateRangedEntity_.gueltigkeit)
+						.get(DateRange_.gueltigAb)
+				)
+			);
 			gesuchsperioden = persistence.getCriteriaResults(query);
 		}
 		return gesuchsperioden;
@@ -260,84 +354,140 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void removeGesuchsperiode(@Nonnull String gesuchsPeriodeId) {
-		Optional<Gesuchsperiode> gesuchsperiodeOptional = findGesuchsperiode(gesuchsPeriodeId);
-		Gesuchsperiode gesuchsperiode = gesuchsperiodeOptional.orElseThrow(() -> new EbeguEntityNotFoundException(
-			"deleteGesuchsperiodeAndGesuche",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			gesuchsPeriodeId));
-		LOGGER.info("Handling deleton of Gesuchsperiode {}", gesuchsperiode.getGesuchsperiodeString());
+		Optional<Gesuchsperiode> gesuchsperiodeOptional = findGesuchsperiode(
+			gesuchsPeriodeId
+		);
+		Gesuchsperiode gesuchsperiode = gesuchsperiodeOptional.orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"deleteGesuchsperiodeAndGesuche",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				gesuchsPeriodeId
+			)
+		);
+		LOGGER.info(
+			"Handling deleton of Gesuchsperiode {}",
+			gesuchsperiode.getGesuchsperiodeString()
+		);
 		if (gesuchsperiode.getStatus() == GesuchsperiodeStatus.GESCHLOSSEN) {
 			// Gesuche der Periode loeschen
 			Collection<Gesuch> gesucheOfPeriode =
-				criteriaQueryHelper.getEntitiesByAttribute(Gesuch.class, gesuchsperiode, Gesuch_.gesuchsperiode);
+				criteriaQueryHelper.getEntitiesByAttribute(
+					Gesuch.class,
+					gesuchsperiode,
+					Gesuch_.gesuchsperiode
+				);
 			for (Gesuch gesuch : gesucheOfPeriode) {
 				Fall fall = gesuch.getFall();
 				Dossier dossier = gesuch.getDossier();
 
 				// Gesuch, WizardSteps, Mahnungen, Dokumente, AntragstatusHistory, Zahlungspositionen
-				LOGGER.info("Deleting Gesuch of Fall {}", gesuch.getFall().getFallNummer());
-				gesuchService.removeGesuch(gesuch.getId(), GesuchDeletionCause.BATCHJOB_DATENSCHUTZVERORDNUNG);
+				LOGGER.info(
+					"Deleting Gesuch of Fall {}",
+					gesuch.getFall().getFallNummer()
+				);
+				gesuchService.removeGesuch(
+					gesuch.getId(),
+					GesuchDeletionCause.BATCHJOB_DATENSCHUTZVERORDNUNG
+				);
 
-				removeDossierIfEmpty(dossier, GesuchDeletionCause.BATCHJOB_DATENSCHUTZVERORDNUNG);
-				removeFallIfEmpty(fall, GesuchDeletionCause.BATCHJOB_DATENSCHUTZVERORDNUNG);
+				removeDossierIfEmpty(
+					dossier,
+					GesuchDeletionCause.BATCHJOB_DATENSCHUTZVERORDNUNG
+				);
+				removeFallIfEmpty(
+					fall,
+					GesuchDeletionCause.BATCHJOB_DATENSCHUTZVERORDNUNG
+				);
 			}
 			// FerieninselStammdaten dieser Gesuchsperiode loeschen
 			Collection<GemeindeStammdatenGesuchsperiodeFerieninsel> ferieninselStammdatenList =
-				ferieninselStammdatenService.findGesuchsperiodeFerieninselByGemeindeAndPeriode(null, gesuchsPeriodeId);
+				ferieninselStammdatenService
+					.findGesuchsperiodeFerieninselByGemeindeAndPeriode(
+						null,
+						gesuchsPeriodeId
+					);
 			for (GemeindeStammdatenGesuchsperiodeFerieninsel ferieninselStammdaten : ferieninselStammdatenList) {
-				ferieninselStammdatenService.removeFerieninselStammdaten(ferieninselStammdaten.getId());
+				ferieninselStammdatenService.removeFerieninselStammdaten(
+					ferieninselStammdaten.getId()
+				);
 			}
 
 			// EinstellungenFerieninsel dieser Gesuchsperiode loeschen
 			Collection<EinstellungenFerieninsel> einstellungenFerieninselList =
-				ferieninselStammdatenService.findEinstellungenFerieninselByGesuchsperiode(gesuchsperiode);
+				ferieninselStammdatenService
+					.findEinstellungenFerieninselByGesuchsperiode(
+						gesuchsperiode
+					);
 			for (EinstellungenFerieninsel einstellungenFerieninsel : einstellungenFerieninselList) {
 				persistence.remove(einstellungenFerieninsel);
 			}
 
 			// EinstellungenTagesschule dieser Gesuchsperiode loeschen
 			Collection<EinstellungenTagesschule> einstellungenTagesschuleList =
-				modulTagesschuleService.findEinstellungenTagesschuleByGesuchsperiode(gesuchsperiode);
+				modulTagesschuleService
+					.findEinstellungenTagesschuleByGesuchsperiode(
+						gesuchsperiode
+					);
 			for (EinstellungenTagesschule einstellungenTagesschule : einstellungenTagesschuleList) {
 				persistence.remove(einstellungenTagesschule);
 			}
 
 			// GemeindeGesuchsperiodeStammdaten dieser Gesuchsperiode loeschen
 			Collection<GemeindeStammdatenGesuchsperiode> gemeindeStammdatenGesuchsperiodeList =
-				gemeindeService.findGemeindeStammdatenGesuchsperiode(gesuchsperiode);
-			for (GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode :
-				gemeindeStammdatenGesuchsperiodeList) {
+				gemeindeService.findGemeindeStammdatenGesuchsperiode(
+					gesuchsperiode
+				);
+			for (GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode : gemeindeStammdatenGesuchsperiodeList) {
 				persistence.remove(gemeindeStammdatenGesuchsperiode);
 			}
 
 			// Einstellungen dieser Gesuchsperiode loeschen
-			einstellungService.deleteEinstellungenOfGesuchsperiode(gesuchsperiode);
+			einstellungService.deleteEinstellungenOfGesuchsperiode(
+				gesuchsperiode
+			);
 			// Gesuchsperiode
-			LOGGER.info("Deleting Gesuchsperiode {}", gesuchsperiode.getGesuchsperiodeString());
+			LOGGER.info(
+				"Deleting Gesuchsperiode {}",
+				gesuchsperiode.getGesuchsperiodeString()
+			);
 			persistence.remove(gesuchsperiode);
 		} else {
 			throw new EbeguRuntimeException(
 				KibonLogLevel.NONE,
 				"removeGesuchsperiode",
-				ErrorCodeEnum.ERROR_GESUCHSPERIODE_CANNOT_BE_REMOVED);
+				ErrorCodeEnum.ERROR_GESUCHSPERIODE_CANNOT_BE_REMOVED
+			);
 		}
 	}
 
-	private void removeFallIfEmpty(@Nonnull Fall fall, @Nonnull GesuchDeletionCause cause) {
-		Collection<Dossier> dossiersByFall = dossierService.findDossiersByFall(fall.getId());
+	private void removeFallIfEmpty(
+		@Nonnull Fall fall,
+		@Nonnull GesuchDeletionCause cause
+	) {
+		Collection<Dossier> dossiersByFall = dossierService.findDossiersByFall(
+			fall.getId()
+		);
 		if (dossiersByFall.isEmpty()) {
-			LOGGER.info("This was the last Gesuch/Dossier of Fall, deleting Fall {}", fall.getFallNummer());
+			LOGGER.info(
+				"This was the last Gesuch/Dossier of Fall, deleting Fall {}",
+				fall.getFallNummer()
+			);
 			fallService.removeFall(fall, cause);
 		}
 	}
 
-	private void removeDossierIfEmpty(@Nonnull Dossier dossier, @Nonnull GesuchDeletionCause cause) {
-		List<String> allGesuchIDsForDossier = gesuchService.getAllGesuchIDsForDossier(dossier.getId());
+	private void removeDossierIfEmpty(
+		@Nonnull Dossier dossier,
+		@Nonnull GesuchDeletionCause cause
+	) {
+		List<String> allGesuchIDsForDossier = gesuchService
+			.getAllGesuchIDsForDossier(dossier.getId());
 		if (allGesuchIDsForDossier.isEmpty()) {
 			LOGGER.info(
 				"This was the last Gesuch of Dossier, deleting Dossier of Fall {} and Gemeinde {}",
 				dossier.getFall(),
-				dossier.getGemeinde());
+				dossier.getGemeinde()
+			);
 			dossierService.removeDossier(dossier.getId(), cause);
 		}
 	}
@@ -351,8 +501,11 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 	@Override
 	@Nonnull
 	public Collection<Gesuchsperiode> getAllNichtAbgeschlosseneGesuchsperioden() {
-		return getGesuchsperiodenImStatus(GesuchsperiodeStatus.AKTIV, GesuchsperiodeStatus.INAKTIV,
-			GesuchsperiodeStatus.ENTWURF);
+		return getGesuchsperiodenImStatus(
+			GesuchsperiodeStatus.AKTIV,
+			GesuchsperiodeStatus.INAKTIV,
+			GesuchsperiodeStatus.ENTWURF
+		);
 	}
 
 	/**
@@ -361,7 +514,10 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 	@Override
 	@Nonnull
 	public Collection<Gesuchsperiode> getAllAktivUndInaktivGesuchsperioden() {
-		return getGesuchsperiodenImStatus(GesuchsperiodeStatus.AKTIV, GesuchsperiodeStatus.INAKTIV);
+		return getGesuchsperiodenImStatus(
+			GesuchsperiodeStatus.AKTIV,
+			GesuchsperiodeStatus.INAKTIV
+		);
 	}
 
 	@Override
@@ -369,11 +525,16 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 	public Collection<Gesuchsperiode> getAllAktivInaktivNichtVerwendeteGesuchsperioden(
 		@Nonnull String dossierId
 	) {
-		Dossier dossier = dossierService.findDossier(dossierId).orElseThrow(() ->
-			new EbeguEntityNotFoundException("getAllAktivInaktivNichtVerwendeteGesuchsperioden",
-				ErrorCodeEnum.ERROR_PARAMETER_NOT_FOUND, dossierId)
-		);
-		final Collection<Gesuchsperiode> nichtAbgeschlossenePerioden = getAllAktivUndInaktivGesuchsperioden();
+		Dossier dossier = dossierService.findDossier(dossierId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getAllAktivInaktivNichtVerwendeteGesuchsperioden",
+					ErrorCodeEnum.ERROR_PARAMETER_NOT_FOUND,
+					dossierId
+				)
+			);
+		final Collection<Gesuchsperiode> nichtAbgeschlossenePerioden =
+			getAllAktivUndInaktivGesuchsperioden();
 
 		filterAllGesuchperiodenForDossier(dossier, nichtAbgeschlossenePerioden);
 		return nichtAbgeschlossenePerioden;
@@ -381,12 +542,19 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 
 	@Nonnull
 	@Override
-	public Collection<Gesuchsperiode> getAllAktiveNichtVerwendeteGesuchsperioden(@Nonnull String dossierId) {
-		Dossier dossier = dossierService.findDossier(dossierId).orElseThrow(() ->
-			new EbeguEntityNotFoundException("getAllAktiveNichtVerwendeteGesuchsperioden",
-				ErrorCodeEnum.ERROR_PARAMETER_NOT_FOUND, dossierId)
-		);
-		final Collection<Gesuchsperiode> aktivePerioden = getAllActiveGesuchsperioden();
+	public Collection<Gesuchsperiode> getAllAktiveNichtVerwendeteGesuchsperioden(
+		@Nonnull String dossierId
+	) {
+		Dossier dossier = dossierService.findDossier(dossierId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getAllAktiveNichtVerwendeteGesuchsperioden",
+					ErrorCodeEnum.ERROR_PARAMETER_NOT_FOUND,
+					dossierId
+				)
+			);
+		final Collection<Gesuchsperiode> aktivePerioden =
+			getAllActiveGesuchsperioden();
 
 		filterAllGesuchperiodenForDossier(dossier, aktivePerioden);
 		return aktivePerioden;
@@ -394,21 +562,34 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 
 	private void filterAllGesuchperiodenForDossier(
 		@Nonnull Dossier dossier,
-		@Nonnull Collection<Gesuchsperiode> perioden) {
+		@Nonnull Collection<Gesuchsperiode> perioden
+	) {
 		if (!perioden.isEmpty()) {
 			final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 			final CriteriaQuery<Gesuch> query = cb.createQuery(Gesuch.class);
 
 			Root<Gesuch> root = query.from(Gesuch.class);
-			Predicate dossierPredicate = cb.equal(root.get(Gesuch_.dossier), dossier);
-			Predicate gesuchsperiodePredicate = root.get(Gesuch_.gesuchsperiode).in(perioden);
+			Predicate dossierPredicate = cb.equal(
+				root.get(Gesuch_.dossier),
+				dossier
+			);
+			Predicate gesuchsperiodePredicate = root.get(Gesuch_.gesuchsperiode)
+				.in(perioden);
 			// Es interessieren nur die Gesuche, die entweder Papier oder Online und freigegeben sind, also keine, die
 			// in Bearbeitung GS sind.
 
-			Predicate gesuchStatus = root.get(Gesuch_.status).in(AntragStatus.getInBearbeitungGSStates()).not();
+			Predicate gesuchStatus = root.get(Gesuch_.status)
+				.in(AntragStatus.getInBearbeitungGSStates())
+				.not();
 
-			query.where(dossierPredicate, gesuchsperiodePredicate, gesuchStatus);
-			List<Gesuch> criteriaResults = persistence.getCriteriaResults(query);
+			query.where(
+				dossierPredicate,
+				gesuchsperiodePredicate,
+				gesuchStatus
+			);
+			List<Gesuch> criteriaResults = persistence.getCriteriaResults(
+				query
+			);
 			// Die Gesuchsperioden, die jetzt in der Liste sind, sind sicher besetzt (eventuell noch weitere, sprich
 			// Online-Gesuche)
 			for (Gesuch criteriaResult : criteriaResults) {
@@ -417,34 +598,58 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 		}
 	}
 
-	private Collection<Gesuchsperiode> getGesuchsperiodenImStatus(GesuchsperiodeStatus... status) {
+	private Collection<Gesuchsperiode> getGesuchsperiodenImStatus(
+		GesuchsperiodeStatus... status
+	) {
 		final CriteriaBuilder builder = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Gesuchsperiode> query = builder.createQuery(Gesuchsperiode.class);
+		final CriteriaQuery<Gesuchsperiode> query = builder.createQuery(
+			Gesuchsperiode.class
+		);
 		final Root<Gesuchsperiode> root = query.from(Gesuchsperiode.class);
 		Predicate predicateStatus = root.get(Gesuchsperiode_.status).in(status);
-		Predicate predicateMandant = builder.equal(root.get(Gesuchsperiode_.mandant), principalBean.getMandant());
+		Predicate predicateMandant = builder.equal(
+			root.get(Gesuchsperiode_.mandant),
+			principalBean.getMandant()
+		);
 		query.where(predicateStatus, predicateMandant);
-		query.orderBy(builder.desc(root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb)));
+		query.orderBy(
+			builder.desc(
+				root.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigAb)
+			)
+		);
 		return persistence.getCriteriaResults(query);
 	}
 
 	@Override
 	@Nonnull
-	public Optional<Gesuchsperiode> getGesuchsperiodeAm(@Nonnull LocalDate stichtag, @Nonnull Mandant mandant) {
+	public Optional<Gesuchsperiode> getGesuchsperiodeAm(
+		@Nonnull LocalDate stichtag,
+		@Nonnull Mandant mandant
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(Gesuchsperiode.class);
+		final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(
+			Gesuchsperiode.class
+		);
 		Root<Gesuchsperiode> root = query.from(Gesuchsperiode.class);
 
 		Predicate predicateStart =
-			cb.lessThanOrEqualTo(root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb), stichtag);
+			cb.lessThanOrEqualTo(
+				root.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigAb),
+				stichtag
+			);
 		Predicate predicateEnd = cb.greaterThanOrEqualTo(
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis),
-			stichtag);
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigBis),
+			stichtag
+		);
 		Predicate mandantPredicate =
-				cb.equal(root.get(Gesuchsperiode_.mandant), mandant);
+			cb.equal(root.get(Gesuchsperiode_.mandant), mandant);
 
 		query.where(predicateStart, predicateEnd, mandantPredicate);
-		Gesuchsperiode criteriaSingleResult = persistence.getCriteriaSingleResult(query);
+		Gesuchsperiode criteriaSingleResult = persistence
+			.getCriteriaSingleResult(query);
 		return Optional.ofNullable(criteriaSingleResult);
 	}
 
@@ -455,15 +660,26 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 		@Nonnull LocalDate datumBis
 	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(Gesuchsperiode.class);
+		final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(
+			Gesuchsperiode.class
+		);
 		Root<Gesuchsperiode> root = query.from(Gesuchsperiode.class);
 
 		Predicate predicateStart =
-			cb.lessThanOrEqualTo(root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb), datumBis);
+			cb.lessThanOrEqualTo(
+				root.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigAb),
+				datumBis
+			);
 		Predicate predicateEnd = cb.greaterThanOrEqualTo(
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis),
-			datumVon);
-		Predicate predicateMandant = cb.equal(root.get(Gesuchsperiode_.mandant), principalBean.getMandant());
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigBis),
+			datumVon
+		);
+		Predicate predicateMandant = cb.equal(
+			root.get(Gesuchsperiode_.mandant),
+			principalBean.getMandant()
+		);
 
 		query.where(predicateStart, predicateEnd, predicateMandant);
 		return persistence.getCriteriaResults(query);
@@ -473,12 +689,25 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 	@Override
 	public Optional<Gesuchsperiode> findNewestGesuchsperiode(Mandant mandant) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(Gesuchsperiode.class);
+		final CriteriaQuery<Gesuchsperiode> query = cb.createQuery(
+			Gesuchsperiode.class
+		);
 		Root<Gesuchsperiode> root = query.from(Gesuchsperiode.class);
-		Predicate predicateMandant = cb.equal(root.get(Gesuchsperiode_.mandant), mandant);
+		Predicate predicateMandant = cb.equal(
+			root.get(Gesuchsperiode_.mandant),
+			mandant
+		);
 		query.where(predicateMandant);
-		query.orderBy(cb.desc(root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis)));
-		final List<Gesuchsperiode> results = persistence.getCriteriaResults(query, 1);
+		query.orderBy(
+			cb.desc(
+				root.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigBis)
+			)
+		);
+		final List<Gesuchsperiode> results = persistence.getCriteriaResults(
+			query,
+			1
+		);
 		if (results.isEmpty()) {
 			return Optional.empty();
 		}
@@ -491,16 +720,20 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 		@Nonnull String gesuchsperiodeId,
 		@Nonnull Sprache sprache,
 		@Nonnull DokumentTyp dokumentTyp,
-		@Nonnull byte[] content) {
+		@Nonnull byte[] content
+	) {
 		requireNonNull(gesuchsperiodeId);
 		requireNonNull(sprache);
 		requireNonNull(content);
 
-		final Gesuchsperiode gesuchsperiode = findGesuchsperiode(gesuchsperiodeId).orElseThrow(
+		final Gesuchsperiode gesuchsperiode = findGesuchsperiode(
+			gesuchsperiodeId
+		).orElseThrow(
 			() -> new EbeguEntityNotFoundException(
 				"uploadErlaeuterungenVerfuegung",
 				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				gesuchsperiodeId)
+				gesuchsperiodeId
+			)
 		);
 
 		if (dokumentTyp.equals(DokumentTyp.ERLAUTERUNG_ZUR_VERFUEGUNG)) {
@@ -530,7 +763,9 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 				// in case we don't recognize the language we don't do anything, so we don't overwrite accidentaly
 				return gesuchsperiode;
 			}
-		} else if (dokumentTyp.equals(DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG)) {
+		} else if (dokumentTyp.equals(
+			DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG
+		)) {
 			if (sprache == Sprache.DEUTSCH) {
 				gesuchsperiode.setVorlageVerfuegungFerienbetreuungDe(content);
 			} else if (sprache == Sprache.FRANZOESISCH) {
@@ -545,17 +780,24 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 		return saveGesuchsperiode(gesuchsperiode);
 	}
 
+	@Nonnull
 	@Override
-	public Gesuchsperiode removeGesuchsperiodeDokument(@Nonnull String gesuchsperiodeId, @Nonnull Sprache sprache,
-		@Nonnull DokumentTyp dokumentTyp) {
+	public Gesuchsperiode removeGesuchsperiodeDokument(
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	) {
 		requireNonNull(gesuchsperiodeId);
 		requireNonNull(sprache);
 
-		final Gesuchsperiode gesuchsperiode = findGesuchsperiode(gesuchsperiodeId).orElseThrow(
+		final Gesuchsperiode gesuchsperiode = findGesuchsperiode(
+			gesuchsperiodeId
+		).orElseThrow(
 			() -> new EbeguEntityNotFoundException(
 				"uploadErlaeuterungenVerfuegung",
 				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				gesuchsperiodeId)
+				gesuchsperiodeId
+			)
 		);
 		if (dokumentTyp.equals(DokumentTyp.ERLAUTERUNG_ZUR_VERFUEGUNG)) {
 			if (sprache == Sprache.DEUTSCH) {
@@ -584,7 +826,9 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 				// in case we don't recognize the language we don't do anything, so we don't remove accidentaly
 				return gesuchsperiode;
 			}
-		} else if (dokumentTyp.equals(DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG)) {
+		} else if (dokumentTyp.equals(
+			DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG
+		)) {
 			if (sprache == Sprache.DEUTSCH) {
 				gesuchsperiode.setVorlageVerfuegungFerienbetreuungDe(null);
 			} else if (sprache == Sprache.FRANZOESISCH) {
@@ -601,25 +845,43 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 	}
 
 	@Override
-	public boolean existDokument(@Nonnull String gesuchsperiodeId, @Nonnull Sprache sprache,
-		@Nonnull DokumentTyp dokumentTyp) {
+	public boolean existDokument(
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	) {
 		requireNonNull(gesuchsperiodeId);
 		requireNonNull(sprache);
 
-		final Gesuchsperiode gesuchsperiode = findGesuchsperiode(gesuchsperiodeId).orElseThrow(
+		final Gesuchsperiode gesuchsperiode = findGesuchsperiode(
+			gesuchsperiodeId
+		).orElseThrow(
 			() -> new EbeguEntityNotFoundException(
 				"existDokument",
 				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				gesuchsperiodeId)
+				gesuchsperiodeId
+			)
 		);
 		if (dokumentTyp.equals(DokumentTyp.ERLAUTERUNG_ZUR_VERFUEGUNG)) {
-			return gesuchsperiode.getVerfuegungErlaeuterungWithSprache(sprache).length != 0;
+			return gesuchsperiode.getVerfuegungErlaeuterungWithSprache(
+				sprache
+			).length != 0;
 		} else if (dokumentTyp.equals(DokumentTyp.VORLAGE_MERKBLATT_TS)) {
-			return gesuchsperiode.getVorlageMerkblattTsWithSprache(sprache).length != 0;
+			return gesuchsperiode.getVorlageMerkblattTsWithSprache(
+				sprache
+			).length != 0;
 		} else if (dokumentTyp.equals(DokumentTyp.VORLAGE_VERFUEGUNG_LATS)) {
-			return gesuchsperiode.getVorlageVerfuegungLatsWithSprache(sprache).length != 0;
-		} else if (dokumentTyp.equals(DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG)) {
-			return gesuchsperiode.getVorlageVerfuegungFerienbetreuungWithSprache(sprache).length != 0;
+			return gesuchsperiode.getVorlageVerfuegungLatsWithSprache(
+				sprache
+			).length != 0;
+		} else if (dokumentTyp.equals(
+			DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG
+		)) {
+			return gesuchsperiode
+				.getVorlageVerfuegungFerienbetreuungWithSprache(
+					sprache
+				).length
+				!= 0;
 		}
 
 		return false;
@@ -627,44 +889,78 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 
 	@Nullable
 	@Override
-	public byte[] downloadGesuchsperiodeDokument(@Nonnull String gesuchsperiodeId, @Nonnull Sprache sprache,
-		@Nonnull DokumentTyp dokumentTyp) {
-		final Optional<Gesuchsperiode> gesuchsperiode = findGesuchsperiode(gesuchsperiodeId);
+	public byte[] downloadGesuchsperiodeDokument(
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	) {
+		final Optional<Gesuchsperiode> gesuchsperiode = findGesuchsperiode(
+			gesuchsperiodeId
+		);
 		if (dokumentTyp.equals(DokumentTyp.ERLAUTERUNG_ZUR_VERFUEGUNG)) {
 			return gesuchsperiode
-				.map(gesuchsperiode1 -> gesuchsperiode1.getVerfuegungErlaeuterungWithSprache(sprache))
+				.map(
+					gesuchsperiode1 -> gesuchsperiode1
+						.getVerfuegungErlaeuterungWithSprache(
+							sprache
+						)
+				)
 				.orElse(null);
 		} else if (dokumentTyp.equals(DokumentTyp.VORLAGE_MERKBLATT_TS)) {
 			return gesuchsperiode
-				.map(gesuchsperiode1 -> gesuchsperiode1.getVorlageMerkblattTsWithSprache(sprache))
+				.map(
+					gesuchsperiode1 -> gesuchsperiode1
+						.getVorlageMerkblattTsWithSprache(sprache)
+				)
 				.orElse(null);
 		} else if (dokumentTyp.equals(DokumentTyp.VORLAGE_VERFUEGUNG_LATS)) {
 			return gesuchsperiode
-				.map(gesuchsperiode1 -> gesuchsperiode1.getVorlageVerfuegungLatsWithSprache(sprache))
+				.map(
+					gesuchsperiode1 -> gesuchsperiode1
+						.getVorlageVerfuegungLatsWithSprache(
+							sprache
+						)
+				)
 				.orElse(null);
-		} else if (dokumentTyp.equals(DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG)) {
+		} else if (dokumentTyp.equals(
+			DokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG
+		)) {
 			return gesuchsperiode
-				.map(gesuchsperiode1 -> gesuchsperiode1.getVorlageVerfuegungFerienbetreuungWithSprache(sprache))
+				.map(
+					gesuchsperiode1 -> gesuchsperiode1
+						.getVorlageVerfuegungFerienbetreuungWithSprache(
+							sprache
+						)
+				)
 				.orElse(null);
 		}
 		return new byte[0];
 	}
 
 	@Override
-	public Optional<Gesuchsperiode> getVorjahrGesuchsperiode(Gesuchsperiode gesuchsperiode) {
+	public Optional<Gesuchsperiode> getVorjahrGesuchsperiode(
+		Gesuchsperiode gesuchsperiode
+	) {
 		return getGesuchsperiodeAm(
-				gesuchsperiode.getGueltigkeit().getGueltigAb().minusYears(1),
-				gesuchsperiode.getMandant());
+			gesuchsperiode.getGueltigkeit().getGueltigAb().minusYears(1),
+			gesuchsperiode.getMandant()
+		);
 	}
 
 	@Override
-	public Optional<Gesuchsperiode> getNachfolgendeGesuchsperiode(Gesuchsperiode gesuchsperiode) {
+	public Optional<Gesuchsperiode> getNachfolgendeGesuchsperiode(
+		Gesuchsperiode gesuchsperiode
+	) {
 		return getGesuchsperiodeAm(
-				gesuchsperiode.getGueltigkeit().getGueltigAb().plusYears(1),
-				gesuchsperiode.getMandant());
+			gesuchsperiode.getGueltigkeit().getGueltigAb().plusYears(1),
+			gesuchsperiode.getMandant()
+		);
 	}
 
-	private boolean isStatusUebergangValid(GesuchsperiodeStatus statusBefore, GesuchsperiodeStatus statusAfter) {
+	private boolean isStatusUebergangValid(
+		GesuchsperiodeStatus statusBefore,
+		GesuchsperiodeStatus statusAfter
+	) {
 		if (GesuchsperiodeStatus.ENTWURF == statusBefore) {
 			return GesuchsperiodeStatus.AKTIV == statusAfter;
 		}
@@ -677,11 +973,18 @@ public class GesuchsperiodeServiceBean extends AbstractBaseService implements Ge
 		return false;
 	}
 
-	private void logStatusChange(@Nonnull Gesuchsperiode gesuchsperiode, @Nonnull GesuchsperiodeStatus statusBisher) {
+	private void logStatusChange(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull GesuchsperiodeStatus statusBisher
+	) {
 		LOGGER.info("****************************************************");
 		LOGGER.info("Status Gesuchsperiode wurde geändert:");
 		LOGGER.info("Benutzer: {}", principalBean.getBenutzer().getUsername());
-		LOGGER.info("Gesuchsperiode: {} ({}" + ')', gesuchsperiode.getGesuchsperiodeString(), gesuchsperiode.getId());
+		LOGGER.info(
+			"Gesuchsperiode: {} ({}" + ')',
+			gesuchsperiode.getGesuchsperiodeString(),
+			gesuchsperiode.getId()
+		);
 		LOGGER.info("Neuer Status: {}", gesuchsperiode.getStatus());
 		LOGGER.info("Bisheriger Status: {}", statusBisher);
 		LOGGER.info("****************************************************");

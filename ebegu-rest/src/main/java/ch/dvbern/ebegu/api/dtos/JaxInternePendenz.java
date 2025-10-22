@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -20,11 +20,11 @@ package ch.dvbern.ebegu.api.dtos;
 import java.time.LocalDate;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JaxInternePendenz extends JaxAbstractDTO {
@@ -35,7 +35,7 @@ public class JaxInternePendenz extends JaxAbstractDTO {
 	private JaxGesuch gesuch;
 
 	@Nonnull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate termin;
 
 	@Nonnull

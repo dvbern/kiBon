@@ -16,7 +16,6 @@
 package ch.dvbern.ebegu.services.reporting;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,26 +27,28 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule_;
 import ch.dvbern.ebegu.entities.BelegungTagesschule;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.EinstellungenTagesschule;
 import ch.dvbern.ebegu.entities.Gesuch_;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
@@ -62,18 +63,17 @@ import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt_;
 import ch.dvbern.ebegu.entities.Verfuegung_;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.reporting.ReportVorlage;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.reporting.ReportTagesschuleService;
 import ch.dvbern.ebegu.reporting.tagesschule.TagesschuleAnmeldungenDataRow;
 import ch.dvbern.ebegu.reporting.tagesschule.TagesschuleAnmeldungenExcelConverter;
 import ch.dvbern.ebegu.reporting.tagesschule.TagesschuleRechnungsstellungDataRow;
 import ch.dvbern.ebegu.reporting.tagesschule.TagesschuleRechnungsstellungExcelConverter;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.services.FileSaverService;
 import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import ch.dvbern.ebegu.services.InstitutionStammdatenService;
@@ -81,21 +81,24 @@ import ch.dvbern.ebegu.types.DateRange_;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.UploadFileInfo;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergeException;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergerDTO;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
+import static ch.dvbern.ebegu.services.reporting.ReportUtil.createWorkbook;
+import static ch.dvbern.ebegu.services.reporting.ReportUtil.getContentTypeForExport;
 import static java.util.Objects.requireNonNull;
 
-@SuppressWarnings("PMD.NcssTypeCount")
 @Stateless
 @Local(ReportTagesschuleService.class)
-public class ReportTagesschuleServiceBean extends AbstractReportServiceBean implements ReportTagesschuleService {
+public class ReportTagesschuleServiceBean extends AbstractReportServiceBean
+	implements
+	ReportTagesschuleService {
 
-	private static final String NO_STAMMDATEN_FOUND = "Keine Stammdaten gefunden";
+	private static final String NO_STAMMDATEN_FOUND =
+		"Keine Stammdaten gefunden";
 
 	@Inject
 	private TagesschuleAnmeldungenExcelConverter tagesschuleAnmeldungenExcelConverter;
@@ -122,7 +125,8 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 	private PrincipalBean principalBean;
 
 	@Override
-	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@Nonnull
 	public UploadFileInfo generateExcelReportTagesschuleAnmeldungen(
@@ -131,56 +135,103 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 		@Nonnull Locale locale
 	) throws ExcelMergeException, IOException {
 
-		requireNonNull(stammdatenID, "stammdatenID" + VALIDIERUNG_DARF_NICHT_NULL_SEIN);
-		requireNonNull(gesuchsperiodeID, "gesuchsperiodeID" + VALIDIERUNG_DARF_NICHT_NULL_SEIN);
+		requireNonNull(
+			stammdatenID,
+			"stammdatenID" + VALIDIERUNG_DARF_NICHT_NULL_SEIN
+		);
+		requireNonNull(
+			gesuchsperiodeID,
+			"gesuchsperiodeID" + VALIDIERUNG_DARF_NICHT_NULL_SEIN
+		);
 
-		ReportVorlage reportVorlage = ReportVorlage.VORLAGE_REPORT_TAGESSCHULE_ANMELDUNGEN;
+		ReportVorlage reportVorlage =
+			ReportVorlage.VORLAGE_REPORT_TAGESSCHULE_ANMELDUNGEN;
 
 		try (
-			InputStream is = ReportServiceBean.class.getResourceAsStream(reportVorlage.getTemplatePath());
-			Workbook workbook = createWorkbook(is, reportVorlage);
+			Workbook workbook = createWorkbook(reportVorlage);
 		) {
 			Sheet sheet = workbook.getSheet(reportVorlage.getDataSheetName());
 
-			Gesuchsperiode gesuchsperiode = gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeID)
-				.orElseThrow(() -> new EbeguEntityNotFoundException(
-					"generateExcelReportTagesschuleAnmeldungen",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					gesuchsperiodeID));
+			Gesuchsperiode gesuchsperiode = gesuchsperiodeService
+				.findGesuchsperiode(gesuchsperiodeID)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"generateExcelReportTagesschuleAnmeldungen",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						gesuchsperiodeID
+					)
+				);
 
 			InstitutionStammdaten institutionStammdaten =
-				institutionStammdatenService.findInstitutionStammdaten(stammdatenID)
-					.orElseThrow(() -> new EbeguRuntimeException(
-						"generateExcelReportTagesschuleAnmeldungen", NO_STAMMDATEN_FOUND));
+				institutionStammdatenService.findInstitutionStammdaten(
+					stammdatenID
+				)
+					.orElseThrow(
+						() -> new EbeguRuntimeException(
+							"generateExcelReportTagesschuleAnmeldungen",
+							NO_STAMMDATEN_FOUND
+						)
+					);
 
 			EinstellungenTagesschule einstellungenTagesschule =
-				findEinstellungenTagesschuleByPeriode(institutionStammdaten, gesuchsperiode.getId());
-			requireNonNull(einstellungenTagesschule, "EinstellungenTagesschule" + VALIDIERUNG_DARF_NICHT_NULL_SEIN);
+				findEinstellungenTagesschuleByPeriode(
+					institutionStammdaten,
+					gesuchsperiode.getId()
+				);
+			requireNonNull(
+				einstellungenTagesschule,
+				"EinstellungenTagesschule"
+					+ VALIDIERUNG_DARF_NICHT_NULL_SEIN
+			);
 
 			List<TagesschuleAnmeldungenDataRow> reportData =
-				getReportDataTagesschuleAnmeldungen(stammdatenID, gesuchsperiodeID);
+				getReportDataTagesschuleAnmeldungen(
+					stammdatenID,
+					gesuchsperiodeID
+				);
 
 			ExcelMergerDTO excelMergerDTO =
-				tagesschuleAnmeldungenExcelConverter.toExcelMergerDTO(reportData, locale, gesuchsperiode,
-					einstellungenTagesschule, institutionStammdaten.getInstitution().getName());
+				tagesschuleAnmeldungenExcelConverter.toExcelMergerDTO(
+					reportData,
+					locale,
+					gesuchsperiode,
+					einstellungenTagesschule,
+					institutionStammdaten.getInstitution().getName()
+				);
 
 			mergeData(sheet, excelMergerDTO, reportVorlage.getMergeFields());
 			tagesschuleAnmeldungenExcelConverter.applyAutoSize(sheet);
 
-			if (institutionStammdaten.getInstitutionStammdatenTagesschule() != null) {
+			if (institutionStammdaten.getInstitutionStammdatenTagesschule()
+				!= null) {
 				Einstellung einstellungExtraTagesschuleFelder =
-					einstellungService.findEinstellung(EinstellungKey.GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG,
-						institutionStammdaten.getInstitutionStammdatenTagesschule().getGemeinde(), gesuchsperiode);
+					einstellungService.findEinstellung(
+						EinstellungKey.GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG,
+						institutionStammdaten
+							.getInstitutionStammdatenTagesschule()
+							.getGemeinde(),
+						gesuchsperiode
+					);
 
-				tagesschuleAnmeldungenExcelConverter.hideExtraFieldsColumnsIfNecessary(sheet, einstellungExtraTagesschuleFelder.getValueAsBoolean());
+				tagesschuleAnmeldungenExcelConverter
+					.hideExtraFieldsColumnsIfNecessary(
+						sheet,
+						einstellungExtraTagesschuleFelder
+							.getValueAsBoolean()
+					);
 			}
 			byte[] bytes = createWorkbook(workbook);
 
 			return fileSaverService.save(
 				bytes,
-				getFileName(reportVorlage, locale, institutionStammdaten.getInstitution().getName()),
+				getFileName(
+					reportVorlage,
+					locale,
+					institutionStammdaten.getInstitution().getName()
+				),
 				Constants.TEMP_REPORT_FOLDERNAME,
-				getContentTypeForExport());
+				getContentTypeForExport()
+			);
 		}
 	}
 
@@ -188,12 +239,18 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 	@Override
 	public List<TagesschuleAnmeldungenDataRow> getReportDataTagesschuleAnmeldungen(
 		@Nonnull String stammdatenID,
-		@Nonnull String gesuchsperiodeID) {
+		@Nonnull String gesuchsperiodeID
+	) {
 
-		requireNonNull(stammdatenID, "Das Argument 'stammdatenID' darf nicht leer sein");
+		requireNonNull(
+			stammdatenID,
+			"Das Argument 'stammdatenID' darf nicht leer sein"
+		);
 
 		final CriteriaBuilder builder = persistence.getCriteriaBuilder();
-		final CriteriaQuery<KindContainer> query = builder.createQuery(KindContainer.class);
+		final CriteriaQuery<KindContainer> query = builder.createQuery(
+			KindContainer.class
+		);
 
 		Root<KindContainer> root = query.from(KindContainer.class);
 		query.distinct(true);
@@ -201,20 +258,37 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 			root.join(KindContainer_.anmeldungenTagesschule);
 
 		final Predicate predicateGesuch = builder.equal(
-			root.get(KindContainer_.gesuch).get(Gesuch_.gesuchsperiode).get(Gesuchsperiode_.id),
-			gesuchsperiodeID);
+			root.get(KindContainer_.gesuch)
+				.get(Gesuch_.gesuchsperiode)
+				.get(Gesuchsperiode_.id),
+			gesuchsperiodeID
+		);
 		final Predicate predicateStammdaten = builder.equal(
-			joinAnmeldungTagesschule.get(AnmeldungTagesschule_.institutionStammdaten).get(InstitutionStammdaten_.id),
-			stammdatenID);
+			joinAnmeldungTagesschule.get(
+				AnmeldungTagesschule_.institutionStammdaten
+			).get(InstitutionStammdaten_.id),
+			stammdatenID
+		);
 		final Predicate predicateGueltig = builder.equal(
 			joinAnmeldungTagesschule.get(AnmeldungTagesschule_.gueltig),
-			Boolean.TRUE);
+			Boolean.TRUE
+		);
 		Predicate predicateAnmeldungStatus = builder.notEqual(
-			joinAnmeldungTagesschule.get(AnmeldungTagesschule_.betreuungsstatus),
-			Betreuungsstatus.SCHULAMT_ANMELDUNG_STORNIERT);
+			joinAnmeldungTagesschule.get(
+				AnmeldungTagesschule_.betreuungsstatus
+			),
+			Betreuungsstatus.SCHULAMT_ANMELDUNG_STORNIERT
+		);
 
-		query.where(predicateGesuch, predicateStammdaten, predicateGueltig, predicateAnmeldungStatus);
-		List<KindContainer> kindContainerList = persistence.getCriteriaResults(query);
+		query.where(
+			predicateGesuch,
+			predicateStammdaten,
+			predicateGueltig,
+			predicateAnmeldungStatus
+		);
+		List<KindContainer> kindContainerList = persistence.getCriteriaResults(
+			query
+		);
 		requireNonNull(kindContainerList);
 
 		return convertToTagesschuleDataRows(kindContainerList, stammdatenID);
@@ -222,10 +296,17 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 
 	@Nonnull
 	private List<TagesschuleAnmeldungenDataRow> convertToTagesschuleDataRows(
-		@Nonnull List<KindContainer> kindContainerList, String stammdatenID) {
+		@Nonnull List<KindContainer> kindContainerList,
+		String stammdatenID
+	) {
 		var kindRows = new ArrayList<TagesschuleAnmeldungenDataRow>();
 		for (var container : kindContainerList) {
-			kindRows.addAll(kindContainerToTagesschuleDataRowList(container, stammdatenID));
+			kindRows.addAll(
+				kindContainerToTagesschuleDataRowList(
+					container,
+					stammdatenID
+				)
+			);
 		}
 		return kindRows;
 	}
@@ -233,15 +314,26 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 	@Nonnull
 	private List<TagesschuleAnmeldungenDataRow> kindContainerToTagesschuleDataRowList(
 		@Nonnull KindContainer kindContainer,
-		String stammdatenID) {
+		String stammdatenID
+	) {
 
 		return kindContainer.getAnmeldungenTagesschule()
 			.stream()
-			.filter(anmeldungTagesschule -> anmeldungTagesschule.getInstitutionStammdaten()
-				.getId()
-				.equals(stammdatenID) &&
-				anmeldungTagesschule.getBetreuungsstatus() != Betreuungsstatus.SCHULAMT_ANMELDUNG_STORNIERT)
-			.map(anmeldungTagesschule -> anmeldungToTagesschuleDataRow(anmeldungTagesschule, kindContainer))
+			.filter(
+				anmeldungTagesschule -> anmeldungTagesschule
+					.getInstitutionStammdaten()
+					.getId()
+					.equals(stammdatenID)
+					&&
+					anmeldungTagesschule.getBetreuungsstatus()
+						!= Betreuungsstatus.SCHULAMT_ANMELDUNG_STORNIERT
+			)
+			.map(
+				anmeldungTagesschule -> anmeldungToTagesschuleDataRow(
+					anmeldungTagesschule,
+					kindContainer
+				)
+			)
 			.collect(Collectors.toList());
 	}
 
@@ -256,9 +348,12 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 		tdr.setNachnameKind(kindContainer.getKindJA().getNachname());
 		tdr.setGeburtsdatum(kindContainer.getKindJA().getGeburtsdatum());
 
-		GesuchstellerContainer gesuchsteller1 = kindContainer.getGesuch().getGesuchsteller1();
-		if (gesuchsteller1 != null && gesuchsteller1.getGesuchstellerJA() != null) {
-			Gesuchsteller gesuchsteller1JA = gesuchsteller1.getGesuchstellerJA();
+		GesuchstellerContainer gesuchsteller1 = kindContainer.getGesuch()
+			.getGesuchsteller1();
+		if (gesuchsteller1 != null
+			&& gesuchsteller1.getGesuchstellerJA() != null) {
+			Gesuchsteller gesuchsteller1JA = gesuchsteller1
+				.getGesuchstellerJA();
 			tdr.setVornameAntragsteller1(gesuchsteller1JA.getVorname());
 			tdr.setNachnameAntragsteller1(gesuchsteller1JA.getNachname());
 			tdr.setEmailAntragsteller1(gesuchsteller1JA.getMail());
@@ -266,9 +361,12 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 			tdr.setTelefonAntragsteller1(gesuchsteller1JA.getTelefon());
 		}
 
-		GesuchstellerContainer gesuchsteller2 = kindContainer.getGesuch().getGesuchsteller2();
-		if (gesuchsteller2 != null && gesuchsteller2.getGesuchstellerJA() != null) {
-			Gesuchsteller gesuchsteller2JA = gesuchsteller2.getGesuchstellerJA();
+		GesuchstellerContainer gesuchsteller2 = kindContainer.getGesuch()
+			.getGesuchsteller2();
+		if (gesuchsteller2 != null
+			&& gesuchsteller2.getGesuchstellerJA() != null) {
+			Gesuchsteller gesuchsteller2JA = gesuchsteller2
+				.getGesuchstellerJA();
 			tdr.setVornameAntragsteller2(gesuchsteller2JA.getVorname());
 			tdr.setNachnameAntragsteller2(gesuchsteller2JA.getNachname());
 			tdr.setEmailAntragsteller2(gesuchsteller2JA.getMail());
@@ -280,13 +378,24 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 		tdr.setReferenzNummer(anmeldungTagesschule.getReferenzNummer());
 		tdr.setAnmeldungTagesschule(anmeldungTagesschule);
 
-		BelegungTagesschule belegung = anmeldungTagesschule.getBelegungTagesschule();
+		BelegungTagesschule belegung = anmeldungTagesschule
+			.getBelegungTagesschule();
 		if (belegung != null) {
-			tdr.setAbweichung(anmeldungTagesschule.getBelegungTagesschule().isAbweichungZweitesSemester());
-			tdr.setEintrittsdatum(anmeldungTagesschule.getBelegungTagesschule().getEintrittsdatum());
-			tdr.setBemerkung(anmeldungTagesschule.getBelegungTagesschule().getBemerkung());
+			tdr.setAbweichung(
+				anmeldungTagesschule.getBelegungTagesschule()
+					.isAbweichungZweitesSemester()
+			);
+			tdr.setEintrittsdatum(
+				anmeldungTagesschule.getBelegungTagesschule()
+					.getEintrittsdatum()
+			);
+			tdr.setBemerkung(
+				anmeldungTagesschule.getBelegungTagesschule().getBemerkung()
+			);
 			tdr.setFleischOption(belegung.getFleischOption());
-			tdr.setAllergienUndUnvertraeglichkeiten(belegung.getAllergienUndUnvertraeglichkeiten());
+			tdr.setAllergienUndUnvertraeglichkeiten(
+				belegung.getAllergienUndUnvertraeglichkeiten()
+			);
 			tdr.setNotfallnummer(belegung.getNotfallnummer());
 			tdr.setAbholungTagesschule(belegung.getAbholungTagesschule());
 		}
@@ -297,14 +406,22 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 	@Nonnull
 	private EinstellungenTagesschule findEinstellungenTagesschuleByPeriode(
 		@Nonnull InstitutionStammdaten stammdaten,
-		@Nonnull String gesuchsperiodeId) {
+		@Nonnull String gesuchsperiodeId
+	) {
 
-		requireNonNull(stammdaten, "Das Argument 'stammdatenID' darf nicht leer sein");
-		requireNonNull(gesuchsperiodeId, "Das Argument 'gesuchsperiodeId' darf nicht leer sein");
+		requireNonNull(
+			stammdaten,
+			"Das Argument 'stammdatenID' darf nicht leer sein"
+		);
+		requireNonNull(
+			gesuchsperiodeId,
+			"Das Argument 'gesuchsperiodeId' darf nicht leer sein"
+		);
 
 		if (stammdaten.getInstitutionStammdatenTagesschule() != null) {
-			for (EinstellungenTagesschule e :
-				stammdaten.getInstitutionStammdatenTagesschule().getEinstellungenTagesschule()) {
+			for (EinstellungenTagesschule e : stammdaten
+				.getInstitutionStammdatenTagesschule()
+				.getEinstellungenTagesschule()) {
 				if (e.getGesuchsperiode().getId().equals(gesuchsperiodeId)) {
 					return e;
 				}
@@ -312,11 +429,16 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 		}
 		throw new EbeguEntityNotFoundException(
 			"findEinstellungenTagesschuleByPeriode",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND);
+			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
+		);
 	}
 
 	@Nonnull
-	private String getFileName(ReportVorlage reportVorlage, @Nonnull Locale locale, String... args) {
+	private String getFileName(
+		ReportVorlage reportVorlage,
+		@Nonnull Locale locale,
+		String... args
+	) {
 		return ServerMessageUtil.translateEnumValue(
 			reportVorlage.getDefaultExportFilename(),
 			locale,
@@ -326,32 +448,40 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 	}
 
 	@Override
-	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@Nonnull
 	public UploadFileInfo generateExcelReportTagesschuleRechnungsstellung(
 		@Nonnull Locale locale,
 		@Nonnull String gesuchsperiodeID
 	) throws ExcelMergeException, IOException {
-		ReportVorlage reportVorlage = ReportVorlage.VORLAGE_REPORT_TAGESSCHULE_RECHNUNGSSTELLUNG;
+		ReportVorlage reportVorlage =
+			ReportVorlage.VORLAGE_REPORT_TAGESSCHULE_RECHNUNGSSTELLUNG;
 		try (
-			InputStream is = ReportServiceBean.class.getResourceAsStream(reportVorlage.getTemplatePath());
-			Workbook workbook = createWorkbook(is, reportVorlage);
+			Workbook workbook = createWorkbook(reportVorlage);
 		) {
 			Sheet sheet = workbook.getSheet(reportVorlage.getDataSheetName());
 
 			Gesuchsperiode gesuchsperiode =
-				gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeID).orElseThrow(() -> new EbeguEntityNotFoundException(
-					"generateExcelReportTagesschuleRechnungsstellung",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					gesuchsperiodeID));
+				gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeID)
+					.orElseThrow(
+						() -> new EbeguEntityNotFoundException(
+							"generateExcelReportTagesschuleRechnungsstellung",
+							ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+							gesuchsperiodeID
+						)
+					);
 
 			final List<TagesschuleRechnungsstellungDataRow> reportData =
 				getReportDataTagesschuleRechnungsstellung(gesuchsperiode);
 
 			ExcelMergerDTO excelMergerDTO =
-				tagesschuleRechnungsstellungExcelConverter.toExcelMergerDTO(reportData, locale,
-									requireNonNull(principalBean.getMandant()));
+				tagesschuleRechnungsstellungExcelConverter.toExcelMergerDTO(
+					reportData,
+					locale,
+					requireNonNull(principalBean.getMandant())
+				);
 
 			mergeData(sheet, excelMergerDTO, reportVorlage.getMergeFields());
 			tagesschuleRechnungsstellungExcelConverter.applyAutoSize(sheet);
@@ -362,63 +492,100 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean impl
 				bytes,
 				getFileName(reportVorlage, locale),
 				Constants.TEMP_REPORT_FOLDERNAME,
-				getContentTypeForExport());
+				getContentTypeForExport()
+			);
 		}
 	}
 
 	@Nonnull
 	private List<TagesschuleRechnungsstellungDataRow> getReportDataTagesschuleRechnungsstellung(
-		Gesuchsperiode gesuchsperiode) {
+		Gesuchsperiode gesuchsperiode
+	) {
 
 		// Wir suchen alle vergangenen Monate im Sinne von "in der aktuellen Gesuchsperiode vergangen"
 		var mandant = principalBean.getMandant();
 		Objects.requireNonNull(mandant);
 		final Collection<InstitutionStammdaten> allowedTagesschulen =
-			institutionStammdatenService.getTagesschulenForCurrentBenutzer();
+			institutionStammdatenService
+				.getTagesschulenForCurrentBenutzer();
 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<VerfuegungZeitabschnitt> query = cb.createQuery(VerfuegungZeitabschnitt.class);
-		final Root<VerfuegungZeitabschnitt> root = query.from(VerfuegungZeitabschnitt.class);
+		final CriteriaQuery<VerfuegungZeitabschnitt> query = cb.createQuery(
+			VerfuegungZeitabschnitt.class
+		);
+		final Root<VerfuegungZeitabschnitt> root = query.from(
+			VerfuegungZeitabschnitt.class
+		);
 		final Join<VerfuegungZeitabschnitt, Verfuegung> joinVerfuegung =
 			root.join(VerfuegungZeitabschnitt_.verfuegung, JoinType.LEFT);
 		final Join<Verfuegung, AnmeldungTagesschule> joinAnmeldungTagesschule =
-			joinVerfuegung.join(Verfuegung_.anmeldungTagesschule, JoinType.LEFT);
+			joinVerfuegung.join(
+				Verfuegung_.anmeldungTagesschule,
+				JoinType.LEFT
+			);
 
-		ParameterExpression<LocalDate> datumVonParam = cb.parameter(LocalDate.class, "datumVon");
-		ParameterExpression<LocalDate> datumBisParam = cb.parameter(LocalDate.class, "datumBis");
+		ParameterExpression<LocalDate> datumVonParam = cb.parameter(
+			LocalDate.class,
+			"datumVon"
+		);
+		ParameterExpression<LocalDate> datumBisParam = cb.parameter(
+			LocalDate.class,
+			"datumBis"
+		);
 		ParameterExpression<Collection> allowedTagesschulenParam =
 			cb.parameter(Collection.class, "allowedTagesschulen");
 
 		// Eingeloggter Benutzer ist berechtigt fuer die Institution
 		Predicate predicateBerechtigt =
-			joinAnmeldungTagesschule.get(AnmeldungTagesschule_.institutionStammdaten).in(allowedTagesschulenParam);
+			joinAnmeldungTagesschule.get(
+				AnmeldungTagesschule_.institutionStammdaten
+			).in(allowedTagesschulenParam);
 
 		Predicate predicateAnmeldungStatus = cb.equal(
-			joinAnmeldungTagesschule.get(AnmeldungTagesschule_.betreuungsstatus),
-			Betreuungsstatus.SCHULAMT_ANMELDUNG_UEBERNOMMEN);
+			joinAnmeldungTagesschule.get(
+				AnmeldungTagesschule_.betreuungsstatus
+			),
+			Betreuungsstatus.SCHULAMT_ANMELDUNG_UEBERNOMMEN
+		);
 
 		// Datum ab Zeitabschnitt muss groesse/gleich GP Start sein
 		// Datum bis Zeitabschnitt muss kleiner/gleich GP Start sein
 		final Predicate predicateAktuelleGesuchsperiode = cb.between(
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb),
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigAb),
 			datumVonParam,
 			datumBisParam
 		);
 		// Nur der letzte Abschnitt
 		final Predicate predicateGueltig =
-			cb.equal(joinAnmeldungTagesschule.get(AnmeldungTagesschule_.gueltig), Boolean.TRUE);
+			cb.equal(
+				joinAnmeldungTagesschule.get(
+					AnmeldungTagesschule_.gueltig
+				),
+				Boolean.TRUE
+			);
 
 		query.where(
 			predicateBerechtigt,
 			predicateAnmeldungStatus,
 			predicateAktuelleGesuchsperiode,
-			predicateGueltig);
+			predicateGueltig
+		);
 
-		TypedQuery<VerfuegungZeitabschnitt> typedQuery = persistence.getEntityManager().createQuery(query);
-		typedQuery.setParameter(datumVonParam, gesuchsperiode.getGueltigkeit().getGueltigAb());
-		typedQuery.setParameter(datumBisParam, gesuchsperiode.getGueltigkeit().getGueltigBis());
+		TypedQuery<VerfuegungZeitabschnitt> typedQuery = persistence
+			.getEntityManager()
+			.createQuery(query);
+		typedQuery.setParameter(
+			datumVonParam,
+			gesuchsperiode.getGueltigkeit().getGueltigAb()
+		);
+		typedQuery.setParameter(
+			datumBisParam,
+			gesuchsperiode.getGueltigkeit().getGueltigBis()
+		);
 		typedQuery.setParameter(allowedTagesschulenParam, allowedTagesschulen);
-		final List<VerfuegungZeitabschnitt> zeitabschnitteList = typedQuery.getResultList();
+		final List<VerfuegungZeitabschnitt> zeitabschnitteList = typedQuery
+			.getResultList();
 		List<TagesschuleRechnungsstellungDataRow> dataRows = new ArrayList<>();
 		zeitabschnitteList
 			.stream()

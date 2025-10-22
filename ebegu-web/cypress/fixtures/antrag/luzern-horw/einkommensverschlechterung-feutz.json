@@ -1,0 +1,39 @@
+{
+    "valid": {
+        "einkommensVerschlechterung": "ja",
+        "ekvFuerBasisJahrPlus1": "ja",
+        "ekvFuerBasisJahrPlus2": "ja",
+        "Selbstdeklaration": {
+            "einkunftErwerb": "70000",
+            "einkunftVersicherung": "0",
+            "einkunftWertschriften": "0",
+            "einkunftUnterhaltsbeitragKinder": "0",
+            "einkunftUeberige": "0",
+            "einkunftLiegenschaften": "0"
+        },
+        "Abzuege": {
+            "abzugBerufsauslagen": "0",
+            "abzugSchuldzinsen": "0",
+            "abzugUnterhaltsbeitragKinder": "0",
+            "abzugSaeule3A": "0",
+            "abzugVersicherungspraemien": "0",
+            "abzugKrankheitsUnfallKosten": "0",
+            "sonderabzugErwerbstaetigkeitEhegatten": "0",
+            "abzugKinderVorschule": "0",
+            "abzugKinderSchule": "0",
+            "abzugEigenbetreuung": "0",
+            "abzugFremdbetreuung": "0",
+            "abzugErwerbsunfaehigePersonen": "0"
+        },
+        "Vermoegen": {
+            "vermoegen": "100000",
+            "abzugSteuerfreierBetragErwachsene": "62500",
+            "abzugSteuerfreierBetragKinder": "12500"
+        },
+        "Resultate": {
+            "massgebendesEinkommenVorher": "117'500",
+            "massgebendesEinkommenNachher": "72'500",
+            "aenderungPercent": "-38"
+        }
+    }
+}

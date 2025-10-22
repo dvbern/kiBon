@@ -39,82 +39,157 @@ class CheckBerechtigungInstitutionTraegerschaftValidatorTest {
 
 	@Test
 	void testCheckBenutzerRoleInstitutionWithoutInstitution() {
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.SACHBEARBEITER_INSTITUTION,
-			Constants.ANONYMOUS_USER_USERNAME, null, null, mandant, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.SACHBEARBEITER_INSTITUTION,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertFalse(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleInstitutionWithInstitution() {
 		final Institution institution = new Institution();
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.SACHBEARBEITER_INSTITUTION, Constants.ANONYMOUS_USER_USERNAME,
-			null, institution, mandant,
-			null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.SACHBEARBEITER_INSTITUTION,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			institution,
+			mandant,
+			null,
+			null
+		);
 		assertTrue(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleTraegerschaftWithoutTraegerschaft() {
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.SACHBEARBEITER_TRAEGERSCHAFT, Constants.ANONYMOUS_USER_USERNAME,
-			null, null, mandant, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.SACHBEARBEITER_TRAEGERSCHAFT,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertFalse(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleTraegerschaftWithTraegerschaft() {
 		final Traegerschaft traegerschaft = new Traegerschaft();
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.SACHBEARBEITER_TRAEGERSCHAFT, Constants.ANONYMOUS_USER_USERNAME,
-			traegerschaft, null, mandant
-			, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.SACHBEARBEITER_TRAEGERSCHAFT,
+			Constants.ANONYMOUS_USER_USERNAME,
+			traegerschaft,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertTrue(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleAdminNoInstitutionTraegerschaft() {
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.ADMIN_BG, Constants.ANONYMOUS_USER_USERNAME, null,
-			null, mandant, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.ADMIN_BG,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertTrue(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleGesuchstellerNoInstitutionTraegerschaft() {
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.GESUCHSTELLER, Constants.ANONYMOUS_USER_USERNAME,
-			null, null, mandant, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.GESUCHSTELLER,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertTrue(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleJuristNoInstitutionTraegerschaft() {
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.JURIST, Constants.ANONYMOUS_USER_USERNAME,
-			null, null, mandant, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.JURIST,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertTrue(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleSchulamtNoInstitutionTraegerschaft() {
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.SACHBEARBEITER_TS, Constants.ANONYMOUS_USER_USERNAME,
-			null, null, mandant, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.SACHBEARBEITER_TS,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertTrue(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleRevisorNoInstitutionTraegerschaft() {
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.REVISOR, Constants.ANONYMOUS_USER_USERNAME,
-			null, null, mandant, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.REVISOR,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertTrue(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleJANoInstitutionTraegerschaft() {
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.SACHBEARBEITER_BG, Constants.ANONYMOUS_USER_USERNAME,
-			null, null, mandant, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.SACHBEARBEITER_BG,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertTrue(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 
 	@Test
 	void testCheckBenutzerRoleSteueramtNoInstitutionTraegerschaft() {
-		Benutzer benutzer = TestDataUtil.createBenutzer(UserRole.STEUERAMT, Constants.ANONYMOUS_USER_USERNAME,
-			null, null, mandant, null, null);
+		Benutzer benutzer = TestDataUtil.createBenutzer(
+			UserRole.STEUERAMT,
+			Constants.ANONYMOUS_USER_USERNAME,
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 		assertTrue(validator.isValid(benutzer.getCurrentBerechtigung(), null));
 	}
 }

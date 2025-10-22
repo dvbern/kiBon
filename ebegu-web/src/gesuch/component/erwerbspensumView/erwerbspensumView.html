@@ -49,7 +49,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="TAETIGKEIT"
                                     for="bezeichnung"
                                 ></label>
@@ -86,7 +86,7 @@
                         <div class="col-sm-12 dv-input-container-medium">
                             <div class="form-group">
                                 <label
-                                    class="md-no-float required"
+                                    class="md-no-float ignore-danger-font-color required"
                                     for="taetigkeit"
                                 >
                                     <span
@@ -151,6 +151,15 @@
                                     ></dv-error-messages>
                                 </div>
                             </div>
+                            <div class="margin-bottom-3rem">
+                                <span
+                                    ng-if="
+                                        vm.model.erwerbspensumJA.taetigkeit ===
+                                        'SELBSTAENDIG'
+                                    "
+                                    ng-bind-html="'ERWERBSPENSUM_SELBSTSTAENDIG_SELBSTDEKLARATION' | translate"
+                                ></span>
+                            </div>
                         </div>
                     </div>
 
@@ -162,14 +171,14 @@
                         <div class="col-sm-12 dv-input-container-medium">
                             <div class="form-group">
                                 <label
-                                    class="md-no-float required"
+                                    class="md-no-float ignore-danger-font-color required"
                                     ng-if="vm.isAngestellt()"
                                     for="taetigkeit"
                                 >
                                     <span data-translate="ARBEITGEBER"></span>
                                 </label>
                                 <label
-                                    class="md-no-float required"
+                                    class="md-no-float ignore-danger-font-color required"
                                     ng-if="vm.isInAusildungWeiterbildung()"
                                     for="taetigkeit"
                                 >
@@ -178,7 +187,7 @@
                                     ></span>
                                 </label>
                                 <label
-                                    class="md-no-float required"
+                                    class="md-no-float ignore-danger-font-color required"
                                     ng-if="vm.isInIntegrationBeschaeftigung()"
                                     for="taetigkeit"
                                 >
@@ -217,7 +226,9 @@
                     <div class="row">
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
-                                <label class="md-no-float">
+                                <label
+                                    class="md-no-float ignore-danger-font-color"
+                                >
                                     <span
                                         data-translate="PENSUM"
                                         for="taetigkeitPensum"
@@ -261,7 +272,9 @@
                             ng-if="vm.wegzeitRequiredEinstellung"
                         >
                             <dv-input-container class="form-group">
-                                <label class="md-no-float">
+                                <label
+                                    class="md-no-float ignore-danger-font-color"
+                                >
                                     <span
                                         data-translate="WEGZEIT"
                                         for="wegzeit"
@@ -295,7 +308,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="AB"
                                     for="taetigkeitAbID"
                                 >
@@ -329,7 +342,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="BIS"
                                     for="taetigkeitBisID"
                                 >
@@ -405,7 +418,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="VON"
                                     for="urlaubDatumAb"
                                 ></label>
@@ -438,7 +451,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="BIS"
                                     for="urlaubDatumBis"
                                 ></label>
@@ -484,13 +497,16 @@
                                     }}"
                                     ng-disabled="vm.isGesuchReadonly()"
                                 >
-                                    <span
-                                        data-translate="UNREGELMAESSIGE_ARBEITSZEITEN"
-                                    ></span>
+                                    <span>
+                                        {{
+                                            'UNREGELMAESSIGE_ARBEITSZEITEN'
+                                                | translate
+                                        }}
+                                        <dv-tooltip
+                                            text="'UNREGELMAESSIGE_ARBEITSZEITEN_HINT' | translate"
+                                        ></dv-tooltip>
+                                    </span>
                                 </md-checkbox>
-                                <dv-tooltip
-                                    text="'UNREGELMAESSIGE_ARBEITSZEITEN_HINT' | translate"
-                                ></dv-tooltip>
                                 <dv-bisher
                                     gs="vm.model.erwerbspensumGS.unregelmaessigeArbeitszeiten"
                                     ja="vm.model.erwerbspensumJA.unregelmaessigeArbeitszeiten"

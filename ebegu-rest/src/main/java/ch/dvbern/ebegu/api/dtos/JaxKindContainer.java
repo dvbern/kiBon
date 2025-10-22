@@ -19,12 +19,12 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer Kind Container
@@ -93,7 +93,9 @@ public class JaxKindContainer extends JaxAbstractDTO {
 		return keinSelbstbehaltDurchGemeinde;
 	}
 
-	public void setKeinSelbstbehaltDurchGemeinde(@Nullable Boolean keinSelbstbehaltDurchGemeinde) {
+	public void setKeinSelbstbehaltDurchGemeinde(
+		@Nullable Boolean keinSelbstbehaltDurchGemeinde
+	) {
 		this.keinSelbstbehaltDurchGemeinde = keinSelbstbehaltDurchGemeinde;
 	}
 
@@ -105,11 +107,12 @@ public class JaxKindContainer extends JaxAbstractDTO {
 		this.nextNumberBetreuung = nextNumberBetreuung;
 	}
 
+	@Nullable
 	public Boolean isKindMutiert() {
 		return kindMutiert;
 	}
 
-	public void setKindMutiert(Boolean kindMutiert) {
+	public void setKindMutiert(@Nullable Boolean kindMutiert) {
 		this.kindMutiert = kindMutiert;
 	}
 }

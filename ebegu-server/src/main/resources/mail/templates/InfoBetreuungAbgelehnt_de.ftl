@@ -30,7 +30,7 @@ ${templateConfiguration.mailCss}
 	<p>
 		Die Platzbestätigung für ${betreuung.kind.kindJA.fullName} / ${betreuung.institutionStammdaten.institution.name} wurde abgelehnt.
 		Sie können
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/betreuungen/${betreuung.extractGesuch().id}">hier</a>
+		<a href="${frontendUrl}/gesuch/betreuungen/${betreuung.extractGesuch().id}">hier</a>
 		den Grund der Ablehnung einsehen und Ihr Antrag bearbeiten.
 	</p>
 	<p>

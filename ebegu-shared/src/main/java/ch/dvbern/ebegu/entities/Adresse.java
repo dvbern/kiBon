@@ -19,14 +19,14 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.Land;
@@ -37,7 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 
 /**
- * Entitaet zum Speichern von Adressen  in der Datenbank.
+ * Entitaet zum Speichern von Adressen in der Datenbank.
  */
 @Audited
 @Entity
@@ -176,7 +176,7 @@ public class Adresse extends AbstractDateRangedEntity {
 	}
 
 	@Override
-	@SuppressWarnings({"OverlyComplexMethod", "PMD.CompareObjectsWithEquals"})
+	@SuppressWarnings({ "OverlyComplexMethod", "PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -190,18 +190,37 @@ public class Adresse extends AbstractDateRangedEntity {
 			return false;
 		}
 		final Adresse otherAdr = (Adresse) other;
-		return Objects.equals(getStrasse(), otherAdr.getStrasse()) &&
-			EbeguUtil.isSameOrNullStrings(getHausnummer(), otherAdr.getHausnummer()) &&
-			EbeguUtil.isSameOrNullStrings(getZusatzzeile(), otherAdr.getZusatzzeile()) &&
-			Objects.equals(getPlz(), otherAdr.getPlz()) &&
-			Objects.equals(getOrt(), otherAdr.getOrt()) &&
-			getLand() == otherAdr.getLand() &&
-			Objects.equals(getGemeinde(), otherAdr.getGemeinde()) &&
-			EbeguUtil.isSameOrNullStrings(getOrganisation(), otherAdr.getOrganisation());
+		return Objects.equals(getStrasse(), otherAdr.getStrasse())
+			&&
+			EbeguUtil.isSameOrNullStrings(
+				getHausnummer(),
+				otherAdr.getHausnummer()
+			)
+			&&
+			EbeguUtil.isSameOrNullStrings(
+				getZusatzzeile(),
+				otherAdr.getZusatzzeile()
+			)
+			&&
+			Objects.equals(getPlz(), otherAdr.getPlz())
+			&&
+			Objects.equals(getOrt(), otherAdr.getOrt())
+			&&
+			getLand() == otherAdr.getLand()
+			&&
+			Objects.equals(getGemeinde(), otherAdr.getGemeinde())
+			&&
+			EbeguUtil.isSameOrNullStrings(
+				getOrganisation(),
+				otherAdr.getOrganisation()
+			);
 	}
 
 	@Nonnull
-	public Adresse copyAdresse(@Nonnull Adresse target, @Nonnull AntragCopyType copyType) {
+	public Adresse copyAdresse(
+		@Nonnull Adresse target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractDateRangedEntity(target, copyType);
 		target.setStrasse(this.getStrasse());
 		target.setHausnummer(this.getHausnummer());
@@ -245,9 +264,10 @@ public class Adresse extends AbstractDateRangedEntity {
 	public String getAddressAsStringInOneLine() {
 		return getStrasseAndHausnummer()
 			+ ", "
-			+ getPlz() + ' ' + getOrt();
+			+ getPlz()
+			+ ' '
+			+ getOrt();
 	}
-
 
 	@Nonnull
 	public String getStrasseAndHausnummer() {

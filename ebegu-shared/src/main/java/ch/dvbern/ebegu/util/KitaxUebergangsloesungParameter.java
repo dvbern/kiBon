@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util;
@@ -38,7 +38,8 @@ public final class KitaxUebergangsloesungParameter {
 
 	private static final MathUtil MATH = MathUtil.DEFAULT;
 
-	private final @Nonnull Map<String, KitaxUebergangsloesungInstitutionOeffnungszeiten> oeffnungszeitenMap = new HashMap<>();
+	private final @Nonnull Map<String, KitaxUebergangsloesungInstitutionOeffnungszeiten> oeffnungszeitenMap =
+		new HashMap<>();
 
 	private final @Nonnull BigDecimal beitragKantonProTag = MATH.from(111.15);
 	private final @Nonnull BigDecimal beitragStadtProTagJahr = MATH.from(8.00);
@@ -46,20 +47,25 @@ public final class KitaxUebergangsloesungParameter {
 	private final @Nonnull BigDecimal maxTageKita = MATH.from(244);
 	private final @Nonnull BigDecimal maxStundenProTagKita = MATH.from(11.5);
 
-	private final @Nonnull BigDecimal kostenProStundeMaximalKitaTagi = MATH.from(12.35);
-	private final @Nonnull BigDecimal kostenProStundeMaximalTageseltern = MATH.from(9.49);
+	private final @Nonnull BigDecimal kostenProStundeMaximalKitaTagi = MATH
+		.from(12.35);
+	private final @Nonnull BigDecimal kostenProStundeMaximalTageseltern = MATH
+		.from(9.49);
 	private final @Nonnull BigDecimal kostenProStundeMinimal = MATH.from(0.79);
 
 	private int minEWP = 0; // Gilt fuer alle Schulstufen. Zuschlaege/Rundungen werden im Korrekturmodus gemacht
 
 	private BigDecimal babyFaktor = MathUtil.DEFAULT.from(1.5);
 
-	private final @Nonnull BigDecimal maxMassgebendesEinkommen = MATH.from(160000);
-	private final @Nonnull BigDecimal minMassgebendesEinkommen = MATH.from(43000);
+	private final @Nonnull BigDecimal maxMassgebendesEinkommen = MATH.from(
+		160000
+	);
+	private final @Nonnull BigDecimal minMassgebendesEinkommen = MATH.from(
+		43000
+	);
 
 	private LocalDate stadtBernAsivStartDate = null;
 	private boolean isStadtBernAsivConfiguered = false;
-
 
 	public KitaxUebergangsloesungParameter(
 		@Nonnull LocalDate stadtBernAsivStartDate,
@@ -69,17 +75,30 @@ public final class KitaxUebergangsloesungParameter {
 		this.stadtBernAsivStartDate = stadtBernAsivStartDate;
 		this.isStadtBernAsivConfiguered = isStadtBernAsivConfiguered;
 		for (KitaxUebergangsloesungInstitutionOeffnungszeiten oeffnungszeit : oeffnungszeiten) {
-			oeffnungszeitenMap.put(oeffnungszeit.getNameKibon().toLowerCase(Locale.GERMAN).trim(), oeffnungszeit);
+			oeffnungszeitenMap.put(
+				oeffnungszeit.getNameKibon()
+					.toLowerCase(Locale.GERMAN)
+					.trim(),
+				oeffnungszeit
+			);
 		}
 	}
 
 	@Nonnull
-	public KitaxUebergangsloesungInstitutionOeffnungszeiten getOeffnungszeiten(@Nonnull String kitaName) {
+	public KitaxUebergangsloesungInstitutionOeffnungszeiten getOeffnungszeiten(
+		@Nonnull String kitaName
+	) {
 		KitaxUebergangsloesungInstitutionOeffnungszeiten dto =
-			oeffnungszeitenMap.get(kitaName.toLowerCase(Locale.GERMAN).trim());
+			oeffnungszeitenMap.get(
+				kitaName.toLowerCase(Locale.GERMAN).trim()
+			);
 
 		if (dto == null) {
-			throw new EbeguRuntimeException("getOeffnungszeiten", ErrorCodeEnum.ERROR_OEFFNUNGSZEITEN_NOT_FOUND, kitaName);
+			throw new EbeguRuntimeException(
+				"getOeffnungszeiten",
+				ErrorCodeEnum.ERROR_OEFFNUNGSZEITEN_NOT_FOUND,
+				kitaName
+			);
 		}
 		return dto;
 	}

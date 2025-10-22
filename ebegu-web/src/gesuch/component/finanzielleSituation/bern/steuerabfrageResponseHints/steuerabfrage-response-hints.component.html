@@ -126,6 +126,23 @@
 </div>
 
 <div
+    *ngIf="showWarningNeueVeranlagung()"
+    class="well well-status-warten minus-margin"
+>
+    <p class="ebegu-h3" translate>
+        FINANZIELLE_SITUATION_STEUERDATEN_NEUE_VERANLAGUNG_VORHANDEN
+    </p>
+</div>
+<div
+    *ngIf="showWarningNeueVeranlagungInStatusFreigegeben()"
+    class="well well-status-warten minus-margin"
+>
+    <p class="ebegu-h3" translate>
+        FINANZIELLE_SITUATION_STEUERDATEN_NEUE_VERANLAGUNG_VORHANDEN_FREIGABEQUITTUNG_PENDING
+    </p>
+</div>
+
+<div
     *ngIf="geburtstagNotMatching$ | async"
     class="well well-status-warten minus-margin"
 >

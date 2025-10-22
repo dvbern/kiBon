@@ -34,11 +34,18 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     templateUrl: './dv-radio-input-x.component.html',
     changeDetection: ChangeDetectionStrategy.Default,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
-    styleUrls: ['./dv-radio-input-x.component.less']
+    styleUrls: ['./dv-radio-input-x.component.less'],
+    standalone: false
 })
 export class DvRadioInputXComponent {
     @Input()
     public label: string;
+
+    @Input()
+    public labelYes: string = 'LABEL_JA';
+
+    @Input()
+    public labelNo: string = 'LABEL_NEIN';
 
     @Input()
     public readonly: boolean = false;

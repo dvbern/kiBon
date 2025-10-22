@@ -41,7 +41,11 @@ class SchwyzKindDokumenteTest {
 		kind.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(false);
 
 		Set<DokumentGrund> dokumentGrundSet = new HashSet<>();
-		schwyzKindDokumente.getAllDokumente(gesuch, dokumentGrundSet, Locale.GERMAN);
+		schwyzKindDokumente.getAllDokumente(
+			gesuch,
+			dokumentGrundSet,
+			Locale.GERMAN
+		);
 
 		assertThat(dokumentGrundSet.isEmpty(), is(true));
 	}
@@ -61,7 +65,11 @@ class SchwyzKindDokumenteTest {
 		kind.setHoehereBeitraegeUnterlagenDigital(false);
 
 		Set<DokumentGrund> dokumentGrundSet = new HashSet<>();
-		schwyzKindDokumente.getAllDokumente(gesuch, dokumentGrundSet, Locale.GERMAN);
+		schwyzKindDokumente.getAllDokumente(
+			gesuch,
+			dokumentGrundSet,
+			Locale.GERMAN
+		);
 
 		assertThat(dokumentGrundSet.isEmpty(), is(true));
 	}
@@ -83,16 +91,31 @@ class SchwyzKindDokumenteTest {
 			kind.setHoehereBeitraegeUnterlagenDigital(true);
 
 			Set<DokumentGrund> dokumentGrundSet = new HashSet<>();
-			schwyzKindDokumente.getAllDokumente(gesuch, dokumentGrundSet, Locale.GERMAN);
+			schwyzKindDokumente.getAllDokumente(
+				gesuch,
+				dokumentGrundSet,
+				Locale.GERMAN
+			);
 
 			assertThat(dokumentGrundSet.size(), is(1));
-			assertThat(dokumentGrundSet.stream().findFirst().orElseThrow().getDokumentGrundTyp(), is(DokumentGrundTyp.KINDER));
 			assertThat(
-				dokumentGrundSet.stream().findFirst().orElseThrow().getDokumentTyp(),
-				is(DokumentTyp.NACHWEIS_HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG));
+				dokumentGrundSet.stream()
+					.findFirst()
+					.orElseThrow()
+					.getDokumentGrundTyp(),
+				is(DokumentGrundTyp.KINDER)
+			);
+			assertThat(
+				dokumentGrundSet.stream()
+					.findFirst()
+					.orElseThrow()
+					.getDokumentTyp(),
+				is(DokumentTyp.NACHWEIS_HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG)
+			);
 		}
 
 	}
+
 	@Nonnull
 	private static Gesuch setupGesuch() {
 		Gesuch gesuch = TestDataUtil.createDefaultGesuch();
@@ -109,7 +132,10 @@ class SchwyzKindDokumenteTest {
 
 	private static void setSchwyzMandant(Gesuch gesuch) {
 		gesuch.getDossier().getFall().setMandant(new Mandant());
-		gesuch.getDossier().getFall().getMandant().setMandantIdentifier(MandantIdentifier.SCHWYZ);
+		gesuch.getDossier()
+			.getFall()
+			.getMandant()
+			.setMandantIdentifier(MandantIdentifier.SCHWYZ);
 	}
 
 }

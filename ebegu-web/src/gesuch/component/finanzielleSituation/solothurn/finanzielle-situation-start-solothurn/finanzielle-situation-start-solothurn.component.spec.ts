@@ -8,26 +8,36 @@ import {FinanzielleSituationSolothurnService} from '../finanzielle-situation-sol
 import {SolothurnFinSitTestHelpers} from '../SolothurnFinSitTestHelpers';
 
 import {FinanzielleSituationStartSolothurnComponent} from './finanzielle-situation-start-solothurn.component';
+import {TSWizardStep} from '@kibon/shared/model/entity';
+import {TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {By} from '@angular/platform-browser';
+import {WizardStepManager} from '../../../../service/wizardStepManager';
 
 describe('FinanzielleSituationStartSolothurnComponent', () => {
-    let component: FinanzielleSituationStartSolothurnComponent;
     let fixture: ComponentFixture<FinanzielleSituationStartSolothurnComponent>;
     const gesuchModelManagerSpy =
         SolothurnFinSitTestHelpers.createGesuchModelManagerMock();
     const finSitSolothurnServiceMock =
         SolothurnFinSitTestHelpers.createFinSitSolothurnServiceMock();
+    const mockProvidersExceptGesuchModelManager =
+        SolothurnFinSitTestHelpers.getMockProvidersExceptGesuchModelManager();
+
+    const wizardStepManagerSpy = SolothurnFinSitTestHelpers.extractMockProvider(
+        mockProvidersExceptGesuchModelManager,
+        WizardStepManager
+    ).useValue;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [FinanzielleSituationStartSolothurnComponent],
             providers: [
                 {provide: GesuchModelManager, useValue: gesuchModelManagerSpy},
-                ...SolothurnFinSitTestHelpers.getMockProvidersExceptGesuchModelManager(),
+                ...mockProvidersExceptGesuchModelManager,
                 {
                     provide: FinanzielleSituationSolothurnService,
                     useValue: finSitSolothurnServiceMock
                 },
-                ...SolothurnFinSitTestHelpers.getMockProvidersExceptFinSitSolothurnServiceMock()
+                SolothurnFinSitTestHelpers.getMockProviderBerechnungsManager()
             ],
             imports: [SharedModule]
         })
@@ -45,11 +55,37 @@ describe('FinanzielleSituationStartSolothurnComponent', () => {
         fixture = TestBed.createComponent(
             FinanzielleSituationStartSolothurnComponent
         );
-        component = fixture.componentInstance;
-        fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('should show warning fill data 2nd gesuchsteller if wizardstep gesuchsteller is invalid', () => {
+        const tsWizardStepCurrent = new TSWizardStep();
+        const tsWizardStep = new TSWizardStep();
+        tsWizardStepCurrent.wizardStepStatus = TSWizardStepStatus.NOK;
+        tsWizardStep.wizardStepStatus = TSWizardStepStatus.NOK;
+        wizardStepManagerSpy.getCurrentStep.and.returnValue(
+            tsWizardStepCurrent
+        );
+        wizardStepManagerSpy.getStepByName.and.returnValue(tsWizardStep);
+        fixture.detectChanges();
+        const warningBanner = fixture.debugElement.query(
+            By.css('.fa.fa-exclamation-triangle')
+        );
+        expect(warningBanner).toBeTruthy();
+    });
+
+    it('should not show warning fill data 2nd gesuchsteller if wizardstep gesuchsteller is valid', () => {
+        const tsWizardStepCurrent = new TSWizardStep();
+        const tsWizardStep = new TSWizardStep();
+        tsWizardStepCurrent.wizardStepStatus = TSWizardStepStatus.NOK;
+        tsWizardStep.wizardStepStatus = TSWizardStepStatus.OK;
+        wizardStepManagerSpy.getCurrentStep.and.returnValue(
+            tsWizardStepCurrent
+        );
+        wizardStepManagerSpy.getStepByName.and.returnValue(tsWizardStep);
+        fixture.detectChanges();
+        const warningBanner = fixture.debugElement.query(
+            By.css('.fa.fa-exclamation-triangle')
+        );
+        expect(warningBanner).toBeFalsy();
     });
 });

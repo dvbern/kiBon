@@ -13,10 +13,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import * as Sentry from '@sentry/browser';
 import {StateService} from '@uirouter/core';
+import {element} from 'angular';
 import * as angular from 'angular';
-import * as moment from 'moment';
+import moment from 'moment';
 import {take} from 'rxjs/operators';
 import {AuthLifeCycleService} from '../../authentication/service/authLifeCycle.service';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
@@ -25,9 +27,8 @@ import {GemeindeRS} from '../../gesuch/service/gemeindeRS.rest';
 import {GlobalCacheService} from '../../gesuch/service/globalCacheService';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
 import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
-import {MandantService} from '../shared/services/mandant.service';
-import {LogFactory} from './logging/LogFactory';
-import {ApplicationPropertyRS} from './rest-services/applicationPropertyRS.rest';
+import {MandantService} from '@kibon/shared-util-mandant-service';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {GesuchsperiodeRS} from './service/gesuchsperiodeRS.rest';
 import {ListResourceRS} from './service/listResourceRS.rest';
 import IInjectorService = angular.auto.IInjectorService;
@@ -67,43 +68,53 @@ export function appRun(
     gemeindeRS: GemeindeRS,
     LOCALE_ID: string
 ): void {
-    const applicationPropertyRS = $injector.get<ApplicationPropertyRS>(
-        'ApplicationPropertyRS'
-    );
+    const applicationPropertyRS =
+        $injector.get<SharedUtilApplicationPropertyRsService>(
+            'SharedUtilApplicationPropertyRsService'
+        );
     const mandantService = $injector.get<MandantService>('MandantService');
-    mandantService.mandant$.pipe(take(1)).subscribe(
-        () => {
-            applicationPropertyRS.getPublicPropertiesCached().then(response => {
-                if (environment.test) {
-                    return;
-                }
+    mandantService.mandant$.pipe(take(1)).subscribe({
+        next: () => {
+            applicationPropertyRS
+                .getPublicPropertiesCached()
+                .subscribe(response => {
+                    if (environment.test) {
+                        return;
+                    }
 
-                Sentry.configureScope(scope => {
-                    scope.addEventProcessor(event => {
-                        event.environment = response.sentryEnvName;
-                        return event;
+                    Sentry.configureScope(scope => {
+                        scope.addEventProcessor(event => {
+                            event.environment = response.sentryEnvName;
+                            return event;
+                        });
                     });
                 });
-            });
         },
-        error => LOG.error(error)
-    );
+        error: error => LOG.error(error)
+    });
 
     function onNotAuthenticated(): void {
         authServiceRS.clearPrincipal();
-        const currentPath = angular.copy($location.absUrl());
-
-        const loginConnectorPaths = [
-            'fedletSSOInit',
-            'sendRedirectForValidation',
-            'locallogin',
-            'tutorial'
+        const hash = window.location.hash;
+        const pathsExemptFromRedirect = [
+            '#/locallogin',
+            '#/tutorial/gemeinde',
+            '#/tutorial/institution',
+            '#/anmeldung',
+            '#/mandant',
+            '#/',
+            '#/neu-benutzer'
         ];
 
-        if (loginConnectorPaths.some(path => currentPath.includes(path))) {
-            LOG.debug('supressing redirect to ', currentPath);
+        const startsWithPathExemptFromRedirect = ['#/zpv-gs-success/'];
+
+        if (
+            pathsExemptFromRedirect.some(path => hash === path) ||
+            startsWithPathExemptFromRedirect.some(path => hash.startsWith(path))
+        ) {
+            LOG.debug('supressing redirect to ', hash);
         } else {
-            $state.go('authentication.login');
+            authServiceRS.initLogin();
         }
     }
 
@@ -125,11 +136,11 @@ export function appRun(
 
     authLifeCycleService
         .get$(TSAuthEvent.LOGIN_SUCCESS)
-        .subscribe(onLoginSuccess, err => LOG.error(err));
+        .subscribe({next: onLoginSuccess, error: err => LOG.error(err)});
 
     authLifeCycleService
         .get$(TSAuthEvent.NOT_AUTHENTICATED)
-        .subscribe(onNotAuthenticated, err => LOG.error(err));
+        .subscribe({next: onNotAuthenticated, error: err => LOG.error(err)});
 
     angularMomentConfig.format = 'DD.MM.YYYY';
 
@@ -143,7 +154,6 @@ export function appRun(
     hotkeys.add({
         combo: 'ctrl+shift+x',
         description: 'Press the last button with style class .next',
-        callback: () =>
-            $timeout(() => angular.element('.next').last().trigger('click'))
+        callback: () => $timeout(() => element('.next').last().trigger('click'))
     });
 }

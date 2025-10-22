@@ -16,10 +16,12 @@
  */
 
 import {FerienbetreuungAngabenStatus} from '../enums/FerienbetreuungAngabenStatus';
-import {TSAbstractEntity} from '../TSAbstractEntity';
+import {
+    TSAbstractEntity,
+    TSGemeinde,
+    TSGesuchsperiode
+} from '@kibon/shared/model/entity';
 import {TSBenutzerNoDetails} from '../TSBenutzerNoDetails';
-import {TSGemeinde} from '../TSGemeinde';
-import {TSGesuchsperiode} from '../TSGesuchsperiode';
 import {TSFerienbetreuungAngaben} from './TSFerienbetreuungAngaben';
 
 export class TSFerienbetreuungAngabenContainer extends TSAbstractEntity {
@@ -90,10 +92,18 @@ export class TSFerienbetreuungAngabenContainer extends TSAbstractEntity {
     public isAtLeastInPruefungKanton(): boolean {
         return [
             FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON,
+            FerienbetreuungAngabenStatus.ZWEITPRUEFUNG,
             FerienbetreuungAngabenStatus.GEPRUEFT,
             FerienbetreuungAngabenStatus.ABGESCHLOSSEN,
             FerienbetreuungAngabenStatus.ABGELEHNT
         ].includes(this.status);
+    }
+
+    /**
+     * @return Ob der Antrag im Status geprüft ist.
+     */
+    public isGeprueft(): boolean {
+        return FerienbetreuungAngabenStatus.GEPRUEFT === this.status;
     }
 
     public isAtLeastInPruefungKantonOrZurueckgegeben(): boolean {
@@ -104,7 +114,10 @@ export class TSFerienbetreuungAngabenContainer extends TSAbstractEntity {
     }
 
     public isInPruefungKanton(): boolean {
-        return this.status === FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON;
+        return (
+            this.status === FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON ||
+            this.status === FerienbetreuungAngabenStatus.ZWEITPRUEFUNG
+        );
     }
 
     public isInBearbeitungGemeinde(): boolean {
@@ -115,7 +128,11 @@ export class TSFerienbetreuungAngabenContainer extends TSAbstractEntity {
         );
     }
 
-    public isGeprueft(): boolean {
+    public isInZweitPruefung(): boolean {
+        return this.status === FerienbetreuungAngabenStatus.ZWEITPRUEFUNG;
+    }
+
+    public isGeprueftOrAbgeschlossenOrAbgelehnt(): boolean {
         return [
             FerienbetreuungAngabenStatus.GEPRUEFT,
             FerienbetreuungAngabenStatus.ABGESCHLOSSEN,

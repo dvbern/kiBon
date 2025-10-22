@@ -19,9 +19,9 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -33,14 +33,14 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class BelegungFerieninselTag extends AbstractMutableEntity implements Comparable<BelegungFerieninselTag> {
+public class BelegungFerieninselTag extends AbstractMutableEntity implements
+	Comparable<BelegungFerieninselTag> {
 
 	private static final long serialVersionUID = 6815485579662587990L;
 
 	@NotNull
 	@Column(nullable = false)
 	private LocalDate tag;
-
 
 	public LocalDate getTag() {
 		return tag;
@@ -73,7 +73,10 @@ public class BelegungFerieninselTag extends AbstractMutableEntity implements Com
 	}
 
 	@Nonnull
-	public BelegungFerieninselTag copyBelegungFerieninselTag(@Nonnull BelegungFerieninselTag target, @Nonnull AntragCopyType copyType) {
+	public BelegungFerieninselTag copyBelegungFerieninselTag(
+		@Nonnull BelegungFerieninselTag target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:

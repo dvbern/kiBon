@@ -9,7 +9,8 @@ import {
 import {UpgradeComponent} from '@angular/upgrade/static';
 
 @Directive({
-    selector: '[dvLoadingButtonX]'
+    selector: '[dvLoadingButtonX]',
+    standalone: false
 })
 export class DvLoadingButtonXDirective extends UpgradeComponent {
     @Input() public type: any;

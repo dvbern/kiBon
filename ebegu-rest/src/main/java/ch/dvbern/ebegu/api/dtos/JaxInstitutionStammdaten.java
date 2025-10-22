@@ -16,9 +16,9 @@
 package ch.dvbern.ebegu.api.dtos;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by imanol on 17.03.16.
@@ -33,7 +33,6 @@ public class JaxInstitutionStammdaten extends JaxAbstractInstitutionStammdaten {
 	private String administratoren;
 	@Nullable
 	private String sachbearbeiter;
-
 
 	@Nullable
 	public String getAdministratoren() {

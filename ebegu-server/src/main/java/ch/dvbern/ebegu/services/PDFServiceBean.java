@@ -27,54 +27,50 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
-import ch.dvbern.ebegu.config.EbeguConfiguration;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.DokumentGrund;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Mahnung;
 import ch.dvbern.ebegu.entities.Mandant;
-import ch.dvbern.ebegu.entities.RueckforderungFormular;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFall;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
-import ch.dvbern.ebegu.enums.RueckforderungInstitutionTyp;
+import ch.dvbern.ebegu.enums.MusterDokumentTyp;
 import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.MergeDocException;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
-import ch.dvbern.ebegu.pdfgenerator.verfuegung.AbstractVerfuegungPdfGenerator;
-import ch.dvbern.ebegu.pdfgenerator.verfuegung.AbstractVerfuegungPdfGenerator.Art;
 import ch.dvbern.ebegu.pdfgenerator.AnmeldebestaetigungTSPDFGenerator;
 import ch.dvbern.ebegu.pdfgenerator.BegleitschreibenPdfGenerator;
-import ch.dvbern.ebegu.pdfgenerator.BegleitschreibenPdfGeneratorVisitor;
+import ch.dvbern.ebegu.pdfgenerator.BegleitschreibenPdfGeneratorDefaultVisitor;
 import ch.dvbern.ebegu.pdfgenerator.DokumentAnFamilieGenerator;
-import ch.dvbern.ebegu.pdfgenerator.mahnung.erstemahnung.ErsteMahnungPdfGeneratorVisitor;
 import ch.dvbern.ebegu.pdfgenerator.FerienbetreuungReportPdfGenerator;
-import ch.dvbern.ebegu.pdfgenerator.FreigabequittungPdfQuittungVisitor;
+import ch.dvbern.ebegu.pdfgenerator.FreigabequittungMusterPdfGenerator;
+import ch.dvbern.ebegu.pdfgenerator.FreigabequittungPdfQuittungDefaultVisitor;
 import ch.dvbern.ebegu.pdfgenerator.KibonPdfGenerator;
 import ch.dvbern.ebegu.pdfgenerator.LATSReportPdfGenerator;
-import ch.dvbern.ebegu.pdfgenerator.mahnung.AbstractMahnungPdfGenerator;
 import ch.dvbern.ebegu.pdfgenerator.MandantPdfGenerator;
 import ch.dvbern.ebegu.pdfgenerator.MusterPdfGenerator;
 import ch.dvbern.ebegu.pdfgenerator.PdfUtil;
-import ch.dvbern.ebegu.pdfgenerator.RueckforderungPrivatDefinitivVerfuegungPdfGenerator;
-import ch.dvbern.ebegu.pdfgenerator.RueckforderungPrivateVerfuegungPdfGenerator;
-import ch.dvbern.ebegu.pdfgenerator.RueckforderungProvVerfuegungPdfGenerator;
-import ch.dvbern.ebegu.pdfgenerator.RueckforderungPublicVerfuegungPdfGenerator;
-import ch.dvbern.ebegu.pdfgenerator.verfuegung.VerfuegungPdfGeneratorVisitor;
 import ch.dvbern.ebegu.pdfgenerator.VollmachtPdfGenerator;
 import ch.dvbern.ebegu.pdfgenerator.finanzielleSituation.FinanzielleSituationPdfGeneratorFactory;
-import ch.dvbern.ebegu.pdfgenerator.mahnung.zweitemahnung.ZweiteMahnungPdfGeneratorVisitor;
+import ch.dvbern.ebegu.pdfgenerator.mahnung.AbstractMahnungPdfGenerator;
+import ch.dvbern.ebegu.pdfgenerator.mahnung.erstemahnung.ErsteMahnungPdfGeneratorDefaultVisitor;
+import ch.dvbern.ebegu.pdfgenerator.mahnung.zweitemahnung.ZweiteMahnungPdfGeneratorDefaultVisitor;
+import ch.dvbern.ebegu.pdfgenerator.verfuegung.AbstractVerfuegungPdfGenerator;
+import ch.dvbern.ebegu.pdfgenerator.verfuegung.AbstractVerfuegungPdfGenerator.Art;
+import ch.dvbern.ebegu.pdfgenerator.verfuegung.VerfuegungPdfGeneratorVisitor;
 import ch.dvbern.ebegu.rules.anlageverzeichnis.DokumentenverzeichnisEvaluator;
 import ch.dvbern.ebegu.util.DokumenteUtil;
 import ch.dvbern.ebegu.util.EbeguUtil;
@@ -103,13 +99,13 @@ public class PDFServiceBean implements PDFService {
 	private EinstellungService einstellungService;
 
 	@Inject
-	private EbeguConfiguration ebeguConfiguration;
-
-	@Inject
 	private Authorizer authorizer;
 
 	@Inject
 	private ConfigurationService configurationService;
+
+	@Inject
+	private GesuchsperiodeService gesuchsperiodeService;
 
 	@Nonnull
 	@Override
@@ -119,22 +115,32 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Locale locale
 	) throws MergeDocException {
 
-		Objects.requireNonNull(betreuung, "Das Argument 'betreuung' darf nicht leer sein");
-		GemeindeStammdaten stammdaten = getGemeindeStammdaten(betreuung.extractGesuch());
+		Objects.requireNonNull(
+			betreuung,
+			"Das Argument 'betreuung' darf nicht leer sein"
+		);
+		GemeindeStammdaten stammdaten = getGemeindeStammdaten(
+			betreuung.extractGesuch()
+		);
 
 		Mandant mandant = stammdaten.getGemeinde().getMandant();
 		assert mandant != null;
 
 		// Bei Nicht-Eintreten soll der FEBR-Erklaerungstext gar nicht erscheinen, es ist daher egal,
 		// was wir mitgeben
-		VerfuegungPdfGeneratorVisitor verfuegungPdfGeneratorVisitor = new VerfuegungPdfGeneratorVisitor(
-			betreuung,
-			stammdaten,
-			Art.NICHT_EINTRETTEN,
-			configurationService.getVerfuegungPdfGeneratorKonfigurationNichtEintretten(betreuung)
-		);
+		VerfuegungPdfGeneratorVisitor verfuegungPdfGeneratorVisitor =
+			new VerfuegungPdfGeneratorVisitor(
+				betreuung,
+				stammdaten,
+				Art.NICHT_EINTRETTEN,
+				configurationService
+					.getVerfuegungPdfGeneratorKonfigurationNichtEintretten(
+						betreuung
+					)
+			);
 		AbstractVerfuegungPdfGenerator pdfGenerator =
-			verfuegungPdfGeneratorVisitor.getVerfuegungPdfGeneratorForMandant(mandant);
+			verfuegungPdfGeneratorVisitor
+				.getVerfuegungPdfGeneratorForMandant(mandant);
 		return generateDokument(pdfGenerator, !writeProtected, locale, mandant);
 	}
 
@@ -147,23 +153,55 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Locale locale
 	) throws MergeDocException {
 
-		Objects.requireNonNull(mahnung, "Das Argument 'mahnung' darf nicht leer sein");
-		GemeindeStammdaten stammdaten = getGemeindeStammdaten(mahnung.getGesuch());
+		Objects.requireNonNull(
+			mahnung,
+			"Das Argument 'mahnung' darf nicht leer sein"
+		);
+		GemeindeStammdaten stammdaten = getGemeindeStammdaten(
+			mahnung.getGesuch()
+		);
 
 		AbstractMahnungPdfGenerator pdfGenerator;
 		switch (mahnung.getMahnungTyp()) {
 		case ERSTE_MAHNUNG:
-			pdfGenerator = new ErsteMahnungPdfGeneratorVisitor(mahnung, stammdaten)
-				.getErsteMahnungPdfGeneratorForMandant(mahnung.getGesuch().extractMandant());
+			pdfGenerator = new ErsteMahnungPdfGeneratorDefaultVisitor(
+				mahnung,
+				stammdaten
+			)
+				.getErsteMahnungPdfGeneratorForMandant(
+					mahnung.getGesuch().extractMandant()
+				);
 			break;
 		case ZWEITE_MAHNUNG:
-			Mahnung vorgaengerMahnung = vorgaengerMahnungOptional.orElseThrow(() -> new EbeguEntityNotFoundException("generateMahnung", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, mahnung.getId()));
-			pdfGenerator = new ZweiteMahnungPdfGeneratorVisitor(mahnung, vorgaengerMahnung, stammdaten).getZweiteMahnungPdfGeneratorForMandant(mahnung.getGesuch().extractMandant());
+			Mahnung vorgaengerMahnung = vorgaengerMahnungOptional.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"generateMahnung",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					mahnung.getId()
+				)
+			);
+			pdfGenerator = new ZweiteMahnungPdfGeneratorDefaultVisitor(
+				mahnung,
+				vorgaengerMahnung,
+				stammdaten
+			).getZweiteMahnungPdfGeneratorForMandant(
+				mahnung.getGesuch().extractMandant()
+			);
 			break;
 		default:
-			throw new MergeDocException("generateMahnung()", "Unexpected Mahnung Type", null, OBJECTARRAY);
+			throw new MergeDocException(
+				"generateMahnung()",
+				"Unexpected Mahnung Type",
+				null,
+				OBJECTARRAY
+			);
 		}
-		return generateDokument(pdfGenerator, !writeProtected, locale, stammdaten.getGemeinde().getMandant());
+		return generateDokument(
+			pdfGenerator,
+			!writeProtected,
+			locale,
+			stammdaten.getGemeinde().getMandant()
+		);
 	}
 
 	@Override
@@ -174,20 +212,31 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Locale locale
 	) throws MergeDocException {
 
-		Objects.requireNonNull(gesuch, "Das Argument 'gesuch' darf nicht leer sein");
+		Objects.requireNonNull(
+			gesuch,
+			"Das Argument 'gesuch' darf nicht leer sein"
+		);
 
 		GemeindeStammdaten stammdaten = getGemeindeStammdaten(gesuch);
-		final List<DokumentGrund> benoetigteUnterlagen = calculateListOfDokumentGrunds(gesuch, locale);
+		final List<DokumentGrund> benoetigteUnterlagen =
+			calculateListOfDokumentGrunds(gesuch, locale);
 
 		Mandant mandant = stammdaten.getGemeinde().getMandant();
 
-		FreigabequittungPdfQuittungVisitor pdfGeneratorVisitor = new FreigabequittungPdfQuittungVisitor(gesuch, stammdaten,
-			benoetigteUnterlagen);
+		FreigabequittungPdfQuittungDefaultVisitor pdfGeneratorVisitor =
+			new FreigabequittungPdfQuittungDefaultVisitor(
+				gesuch,
+				stammdaten,
+				benoetigteUnterlagen
+			);
 		return generateDokument(
-			pdfGeneratorVisitor.getFreigabequittungPdfGeneratorForMandant(mandant),
+			pdfGeneratorVisitor.getFreigabequittungPdfGeneratorForMandant(
+				mandant
+			),
 			!writeProtected,
 			locale,
-			mandant);
+			mandant
+		);
 	}
 
 	@Override
@@ -198,17 +247,31 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Locale locale
 	) throws MergeDocException {
 
-		Objects.requireNonNull(gesuch, "Das Argument 'gesuch' darf nicht leer sein");
+		Objects.requireNonNull(
+			gesuch,
+			"Das Argument 'gesuch' darf nicht leer sein"
+		);
 		authorizer.checkReadAuthorization(gesuch);
 
 		GemeindeStammdaten stammdaten = getGemeindeStammdaten(gesuch);
 
-		BegleitschreibenPdfGeneratorVisitor begleitschreibenPdfGeneratorVisitor =
-			new BegleitschreibenPdfGeneratorVisitor(gesuch, stammdaten);
+		BegleitschreibenPdfGeneratorDefaultVisitor begleitschreibenPdfGeneratorVisitor =
+			new BegleitschreibenPdfGeneratorDefaultVisitor(
+				gesuch,
+				stammdaten,
+				gesuchsperiodeService
+			);
 
 		BegleitschreibenPdfGenerator pdfGenerator =
-			begleitschreibenPdfGeneratorVisitor.visit(stammdaten.getGemeinde().getMandant());
-		return generateDokument(pdfGenerator, !writeProtected, locale, stammdaten.getGemeinde().getMandant());
+			begleitschreibenPdfGeneratorVisitor.visit(
+				stammdaten.getGemeinde().getMandant()
+			);
+		return generateDokument(
+			pdfGenerator,
+			!writeProtected,
+			locale,
+			stammdaten.getGemeinde().getMandant()
+		);
 	}
 
 	@Nonnull
@@ -220,7 +283,10 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Locale locale
 	) throws MergeDocException {
 
-		Objects.requireNonNull(gesuch, "Das Argument 'gesuch' darf nicht leer sein");
+		Objects.requireNonNull(
+			gesuch,
+			"Das Argument 'gesuch' darf nicht leer sein"
+		);
 
 		if (EbeguUtil.isFinanzielleSituationRequired(gesuch)) {
 
@@ -234,17 +300,26 @@ public class PDFServiceBean implements PDFService {
 			// Im Dokument der Finanziellen Situation werden nur die Zeitabschnitte dargestellt, die nach dem
 			// ersten Einreichungsdatum aller Gesuche dieses Dossiers liegen
 			LocalDate erstesEinreichungsdatum =
-				dossierService.getErstesEinreichungsdatum(gesuch.getDossier(), gesuch.getGesuchsperiode());
+				dossierService.getErstesEinreichungsdatum(
+					gesuch.getDossier(),
+					gesuch.getGesuchsperiode()
+				);
 
 			GemeindeStammdaten stammdaten = getGemeindeStammdaten(gesuch);
 
-			DokumentAnFamilieGenerator pdfGenerator = FinanzielleSituationPdfGeneratorFactory.getGenerator(
-				gesuch,
-				famGroessenVerfuegung,
-				stammdaten,
-				erstesEinreichungsdatum
+			DokumentAnFamilieGenerator pdfGenerator =
+				FinanzielleSituationPdfGeneratorFactory.getGenerator(
+					gesuch,
+					famGroessenVerfuegung,
+					stammdaten,
+					erstesEinreichungsdatum
+				);
+			return generateDokument(
+				pdfGenerator,
+				!writeProtected,
+				locale,
+				stammdaten.getGemeinde().getMandant()
 			);
-			return generateDokument(pdfGenerator, !writeProtected, locale, stammdaten.getGemeinde().getMandant());
 		}
 		return BYTES;
 	}
@@ -258,22 +333,33 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Locale locale
 	) throws MergeDocException {
 
-		Objects.requireNonNull(betreuung, "Das Argument 'betreuung' darf nicht leer sein");
-		GemeindeStammdaten stammdaten = getGemeindeStammdaten(betreuung.extractGesuch());
+		Objects.requireNonNull(
+			betreuung,
+			"Das Argument 'betreuung' darf nicht leer sein"
+		);
+		GemeindeStammdaten stammdaten = getGemeindeStammdaten(
+			betreuung.extractGesuch()
+		);
 
 		Art art = evaluateArt(betreuung);
 
 		Mandant mandant = stammdaten.getGemeinde().getMandant();
 		assert mandant != null;
 
-		VerfuegungPdfGeneratorVisitor verfuegungPdfGeneratorVisitor = new VerfuegungPdfGeneratorVisitor(
-			betreuung,
-			stammdaten,
-			art,
-			configurationService.getVerfuegungPdfGeneratorKonfiguration(betreuung, writeProtected)
-		);
+		VerfuegungPdfGeneratorVisitor verfuegungPdfGeneratorVisitor =
+			new VerfuegungPdfGeneratorVisitor(
+				betreuung,
+				stammdaten,
+				art,
+				configurationService
+					.getVerfuegungPdfGeneratorKonfiguration(
+						betreuung,
+						writeProtected
+					)
+			);
 		AbstractVerfuegungPdfGenerator pdfGenerator =
-			verfuegungPdfGeneratorVisitor.getVerfuegungPdfGeneratorForMandant(mandant);
+			verfuegungPdfGeneratorVisitor
+				.getVerfuegungPdfGeneratorForMandant(mandant);
 
 		return generateDokument(pdfGenerator, !writeProtected, locale, mandant);
 	}
@@ -283,7 +369,9 @@ public class PDFServiceBean implements PDFService {
 			return Art.NORMAL;
 		}
 
-		return betreuung.isAngebotTagesfamilien() ? Art.KEIN_ANSCHRUCH_TFO : Art.KEIN_ANSPRUCH;
+		return betreuung.isAngebotTagesfamilien() ?
+			Art.KEIN_ANSCHRUCH_TFO :
+			Art.KEIN_ANSPRUCH;
 	}
 
 	@Nonnull
@@ -295,91 +383,88 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Locale locale
 	) throws MergeDocException {
 
-		Objects.requireNonNull(anmeldungTagesschule, "Das Argument 'anmeldungTagesschule' darf nicht leer sein");
+		Objects.requireNonNull(
+			anmeldungTagesschule,
+			"Das Argument 'anmeldungTagesschule' darf nicht leer sein"
+		);
 		Gesuch gesuch = anmeldungTagesschule.extractGesuch();
 		GemeindeStammdaten stammdaten = getGemeindeStammdaten(gesuch);
 
-		AnmeldebestaetigungTSPDFGenerator.Art art = mitTarif ? AnmeldebestaetigungTSPDFGenerator.Art.MIT_TARIF :
+		AnmeldebestaetigungTSPDFGenerator.Art art = mitTarif ?
+			AnmeldebestaetigungTSPDFGenerator.Art.MIT_TARIF :
 			AnmeldebestaetigungTSPDFGenerator.Art.OHNE_TARIF;
 
-		Einstellung mahlzeitenverguenstigungEnabled = einstellungService.findEinstellung(
-			EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED,
-			anmeldungTagesschule.extractGesuch().extractGemeinde(),
-			anmeldungTagesschule.extractGesuchsperiode());
+		Einstellung mahlzeitenverguenstigungEnabled = einstellungService
+			.findEinstellung(
+				EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED,
+				anmeldungTagesschule.extractGesuch().extractGemeinde(),
+				anmeldungTagesschule.extractGesuchsperiode()
+			);
 
-		AnmeldebestaetigungTSPDFGenerator pdfGenerator = new AnmeldebestaetigungTSPDFGenerator(gesuch,
-			stammdaten, art, anmeldungTagesschule, mahlzeitenverguenstigungEnabled.getValueAsBoolean());
-		return generateDokument(pdfGenerator, !writeProtected, locale, stammdaten.getGemeinde().getMandant());
-	}
-
-	@Nonnull
-	@Override
-	public byte[] generateProvisorischeVerfuegungRuckforderungformular(
-		@Nonnull RueckforderungFormular rueckforderungFormular, boolean writeProtected
-	) throws MergeDocException {
-
-		Objects.requireNonNull(rueckforderungFormular, "Das Argument 'rueckforderungFormular' darf nicht leer sein");
-
-		String nameVerantwortlichePerson = ebeguConfiguration.getNotverordnungUnterschriftName();
-		String unterschriftPath = ebeguConfiguration.getNotverordnungUnterschriftPath();
-		RueckforderungProvVerfuegungPdfGenerator pdfGenerator =
-			new RueckforderungProvVerfuegungPdfGenerator(rueckforderungFormular, nameVerantwortlichePerson, unterschriftPath);
-		return generateDokument(pdfGenerator, !writeProtected, rueckforderungFormular.getKorrespondenzSprache().getLocale(),
-			Objects.requireNonNull(rueckforderungFormular.getInstitutionStammdaten().getInstitution()
-				.getMandant()));
-	}
-
-	@Nonnull
-	@Override
-	public byte[] generateDefinitiveVerfuegungRuckforderungformular(
-		@Nonnull RueckforderungFormular rueckforderungFormular, boolean writeProtected
-	) throws MergeDocException {
-
-		Objects.requireNonNull(rueckforderungFormular, "Das Argument 'rueckforderungFormular' darf nicht leer sein");
-
-		String nameVerantwortlichePerson = ebeguConfiguration.getNotverordnungUnterschriftName();
-		MandantPdfGenerator pdfGenerator = null;
-		if (rueckforderungFormular.getInstitutionTyp() == RueckforderungInstitutionTyp.PRIVAT) {
-			// is institution private
-			if (rueckforderungFormular.isHasBeenProvisorisch()) {
-				pdfGenerator = new RueckforderungPrivatDefinitivVerfuegungPdfGenerator(
-					rueckforderungFormular, nameVerantwortlichePerson);
-			} else {
-				pdfGenerator = new RueckforderungPrivateVerfuegungPdfGenerator(
-					rueckforderungFormular, nameVerantwortlichePerson);
-			}
-		} else {
-			// is instition public
-			pdfGenerator = new RueckforderungPublicVerfuegungPdfGenerator(
-				rueckforderungFormular, nameVerantwortlichePerson);
-		}
-		return generateDokument(pdfGenerator, !writeProtected, rueckforderungFormular.getKorrespondenzSprache().getLocale(),
-			Objects.requireNonNull(rueckforderungFormular.getInstitutionStammdaten().getInstitution()
-				.getMandant()));
+		AnmeldebestaetigungTSPDFGenerator pdfGenerator =
+			new AnmeldebestaetigungTSPDFGenerator(
+				gesuch,
+				stammdaten,
+				art,
+				anmeldungTagesschule,
+				mahlzeitenverguenstigungEnabled.getValueAsBoolean()
+			);
+		return generateDokument(
+			pdfGenerator,
+			!writeProtected,
+			locale,
+			stammdaten.getGemeinde().getMandant()
+		);
 	}
 
 	@Override
 	@Nonnull
 	public byte[] generateMusterdokument(
-		@Nonnull GemeindeStammdaten gemeindeStammdaten
+		@Nonnull GemeindeStammdaten gemeindeStammdaten,
+		@Nonnull MusterDokumentTyp musterDokumentTyp
 	) throws MergeDocException {
-		Objects.requireNonNull(gemeindeStammdaten, "Das Argument 'gemeindeStammdaten' darf nicht leer sein");
+		Objects.requireNonNull(
+			gemeindeStammdaten,
+			"Das Argument 'gemeindeStammdaten' darf nicht leer sein"
+		);
 		authorizer.checkReadAuthorization(gemeindeStammdaten.getGemeinde());
 
-		MusterPdfGenerator pdfGenerator = new MusterPdfGenerator(gemeindeStammdaten);
-		return generateDokument(pdfGenerator, false, LocaleThreadLocal.get(), gemeindeStammdaten.getGemeinde().getMandant());
+		KibonPdfGenerator pdfGenerator = musterDokumentTyp
+			== MusterDokumentTyp.KORRESPONDENZ_MUSTERDOKUMENT ?
+				new MusterPdfGenerator(gemeindeStammdaten) :
+				new FreigabequittungMusterPdfGenerator(
+					gemeindeStammdaten
+				);
+
+		return generateDokument(
+			pdfGenerator,
+			false,
+			LocaleThreadLocal.get(),
+			gemeindeStammdaten.getGemeinde().getMandant()
+		);
 	}
 
 	/**
-	 * In dieser Methode werden alle DokumentGrunds vom Gesuch einer Liste hinzugefuegt. Die die bereits existieren und die
+	 * In dieser Methode werden alle DokumentGrunds vom Gesuch einer Liste hinzugefuegt. Die die bereits existieren und
+	 * die
 	 * die noch nicht hochgeladen wurden
 	 */
 	@Nonnull
-	private List<DokumentGrund> calculateListOfDokumentGrunds(@Nonnull Gesuch gesuch, @Nonnull Locale locale) {
-		List<DokumentGrund> dokumentGrundsMerged = new ArrayList<>(DokumenteUtil
-			.mergeNeededAndPersisted(
-				dokumentenverzeichnisEvaluator.calculate(gesuch, locale),
-				dokumentGrundService.findAllDokumentGrundByGesuch(gesuch)));
+	private List<DokumentGrund> calculateListOfDokumentGrunds(
+		@Nonnull Gesuch gesuch,
+		@Nonnull Locale locale
+	) {
+		List<DokumentGrund> dokumentGrundsMerged = new ArrayList<>(
+			DokumenteUtil
+				.mergeNeededAndPersisted(
+					dokumentenverzeichnisEvaluator.calculate(
+						gesuch,
+						locale
+					),
+					dokumentGrundService
+						.findAllDokumentGrundByGesuch(gesuch)
+				)
+		);
 		Collections.sort(dokumentGrundsMerged);
 		return dokumentGrundsMerged;
 	}
@@ -387,9 +472,15 @@ public class PDFServiceBean implements PDFService {
 	@Nonnull
 	private GemeindeStammdaten getGemeindeStammdaten(@Nonnull Gesuch gesuch) {
 		String gemeindeId = gesuch.extractGemeinde().getId();
-		GemeindeStammdaten stammdaten = gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId)
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"getGemeindeStammdaten", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gemeindeId));
+		GemeindeStammdaten stammdaten = gemeindeService
+			.getGemeindeStammdatenByGemeindeId(gemeindeId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getGemeindeStammdaten",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gemeindeId
+				)
+			);
 		return stammdaten;
 	}
 
@@ -398,7 +489,8 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull KibonPdfGenerator pdfGenerator,
 		boolean entwurf,
 		@Nonnull Locale locale,
-		Mandant mandant) throws MergeDocException {
+		Mandant mandant
+	) throws MergeDocException {
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
@@ -409,8 +501,12 @@ public class PDFServiceBean implements PDFService {
 			}
 			return content;
 		} catch (InvoiceGeneratorException | IOException e) {
-			throw new MergeDocException("generateDokument()",
-				"Bei der Generierung des Dokuments ist ein Fehler aufgetreten", e, OBJECTARRAY);
+			throw new MergeDocException(
+				"generateDokument()",
+				"Bei der Generierung des Dokuments ist ein Fehler aufgetreten",
+				e,
+				OBJECTARRAY
+			);
 		}
 	}
 
@@ -431,8 +527,12 @@ public class PDFServiceBean implements PDFService {
 			}
 			return content;
 		} catch (InvoiceGeneratorException | IOException e) {
-			throw new MergeDocException("generateDokument()",
-				"Bei der Generierung des Dokuments ist ein Fehler aufgetreten", e, OBJECTARRAY);
+			throw new MergeDocException(
+				"generateDokument()",
+				"Bei der Generierung des Dokuments ist ein Fehler aufgetreten",
+				e,
+				OBJECTARRAY
+			);
 		}
 	}
 
@@ -443,9 +543,15 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Sprache sprache
 	) throws MergeDocException {
 
-		Objects.requireNonNull(sozialdienstFall, "Das Argument 'sozialdienstFall' darf nicht leer sein");
+		Objects.requireNonNull(
+			sozialdienstFall,
+			"Das Argument 'sozialdienstFall' darf nicht leer sein"
+		);
 
-		VollmachtPdfGenerator pdfGenerator = new VollmachtPdfGenerator(sprache, sozialdienstFall);
+		VollmachtPdfGenerator pdfGenerator = new VollmachtPdfGenerator(
+			sprache,
+			sozialdienstFall
+		);
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
@@ -453,8 +559,12 @@ public class PDFServiceBean implements PDFService {
 			byte[] content = baos.toByteArray();
 			return content;
 		} catch (InvoiceGeneratorException e) {
-			throw new MergeDocException("generateDokument()",
-				"Bei der Generierung des Dokuments ist ein Fehler aufgetreten", e, OBJECTARRAY);
+			throw new MergeDocException(
+				"generateDokument()",
+				"Bei der Generierung des Dokuments ist ein Fehler aufgetreten",
+				e,
+				OBJECTARRAY
+			);
 		}
 	}
 
@@ -466,10 +576,19 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Sprache sprache
 	) throws MergeDocException {
 
-		Objects.requireNonNull(ferienbetreuung, "Das Argument 'ferienbetreuung' darf nicht leer sein");
+		Objects.requireNonNull(
+			ferienbetreuung,
+			"Das Argument 'ferienbetreuung' darf nicht leer sein"
+		);
 
-		FerienbetreuungReportPdfGenerator pdfGenerator = new FerienbetreuungReportPdfGenerator(ferienbetreuung, sprache);
-		return generateDokument(pdfGenerator, false, sprache.getLocale(), gemeindeStammdaten.getGemeinde().getMandant());
+		FerienbetreuungReportPdfGenerator pdfGenerator =
+			new FerienbetreuungReportPdfGenerator(ferienbetreuung, sprache);
+		return generateDokument(
+			pdfGenerator,
+			false,
+			sprache.getLocale(),
+			gemeindeStammdaten.getGemeinde().getMandant()
+		);
 	}
 
 	@Nonnull
@@ -480,10 +599,23 @@ public class PDFServiceBean implements PDFService {
 		@Nonnull Einstellung lohnnormkosten,
 		@Nonnull Einstellung lohnnormkostenLessThan50
 	) throws MergeDocException {
-		Objects.requireNonNull(container, "Das Argument 'container' darf nicht leer sein");
+		Objects.requireNonNull(
+			container,
+			"Das Argument 'container' darf nicht leer sein"
+		);
 
 		LATSReportPdfGenerator pdfGenerator =
-			new LATSReportPdfGenerator(container, lohnnormkosten, lohnnormkostenLessThan50, sprache);
-		return generateDokument(pdfGenerator, false, sprache.getLocale(), container.getGemeinde().getMandant());
+			new LATSReportPdfGenerator(
+				container,
+				lohnnormkosten,
+				lohnnormkostenLessThan50,
+				sprache
+			);
+		return generateDokument(
+			pdfGenerator,
+			false,
+			sprache.getLocale(),
+			container.getGemeinde().getMandant()
+		);
 	}
 }

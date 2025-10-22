@@ -21,7 +21,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
  */
 @Component({
     selector: 'dv-ng-link-dialog',
-    templateUrl: './dv-ng-link-dialog.template.html'
+    templateUrl: './dv-ng-link-dialog.template.html',
+    standalone: false
 })
 export class DvNgLinkDialogComponent {
     public title: string = '';

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util.betreuungsmitteilung.messages;
@@ -26,7 +26,8 @@ import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import org.apache.commons.lang.StringUtils;
 
-public class EingewoehnungMessageFactory implements BetreuungsmitteilungPensumMessageFactory {
+public class EingewoehnungMessageFactory implements
+	BetreuungsmitteilungPensumMessageFactory {
 
 	private final Mandant mandant;
 	private final Locale locale;
@@ -37,7 +38,10 @@ public class EingewoehnungMessageFactory implements BetreuungsmitteilungPensumMe
 	}
 
 	@Override
-	public String messageForPensum(int index, BetreuungsmitteilungPensum pensum) {
+	public String messageForPensum(
+		int index,
+		BetreuungsmitteilungPensum pensum
+	) {
 		Eingewoehnung eingewoehnung = pensum.getEingewoehnung();
 		if (eingewoehnung == null) {
 			return StringUtils.EMPTY;
@@ -49,7 +53,8 @@ public class EingewoehnungMessageFactory implements BetreuungsmitteilungPensumMe
 			mandant,
 			formatAb(eingewoehnung),
 			formatBis(eingewoehnung),
-			NumberFormat.getNumberInstance(locale).format(eingewoehnung.getKosten())
+			NumberFormat.getNumberInstance(locale)
+				.format(eingewoehnung.getKosten())
 		);
 	}
 }

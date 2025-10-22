@@ -31,7 +31,7 @@ import {TSAuthEvent} from '../../../models/enums/TSAuthEvent';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {ErrorService} from '../errors/service/ErrorService';
-import {LogFactory} from '../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DvDialog} from './dv-dialog/dv-dialog';
 import ITranslateService = angular.translate.ITranslateService;
 
@@ -93,18 +93,18 @@ export class DVBarcodeController implements IController {
         this.authLifeCycleService
             .get$(TSAuthEvent.LOGIN_SUCCESS)
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                () => this.handleLoginSuccessEvent(keypressEvent),
-                err => this.$log.error(err)
-            );
+            .subscribe({
+                next: () => this.handleLoginSuccessEvent(keypressEvent),
+                error: err => this.$log.error(err)
+            });
 
         this.authLifeCycleService
             .get$(TSAuthEvent.LOGOUT_SUCCESS)
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                () => this.handleLogoutSuccessEvent(keypressEvent),
-                err => this.$log.error(err)
-            );
+            .subscribe({
+                next: () => this.handleLogoutSuccessEvent(keypressEvent),
+                error: err => this.$log.error(err)
+            });
     }
 
     public $onDestroy(): void {

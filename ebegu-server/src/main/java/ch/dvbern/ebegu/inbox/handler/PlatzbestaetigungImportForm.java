@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -37,7 +37,8 @@ public class PlatzbestaetigungImportForm {
 		Betreuung betreuung = ctx.getBetreuung();
 
 		ImportForm statusBased = basedOnBetreuungsstatus(betreuung);
-		ImportForm mitteilungBased = ctx.getLatestOpenBetreuungsmitteilung() == null ? null : ImportForm.MUTATIONS_MITTEILUNG;
+		ImportForm mitteilungBased = ctx.getLatestOpenBetreuungsmitteilung()
+			== null ? null : ImportForm.MUTATIONS_MITTEILUNG;
 
 		return Stream.of(statusBased, mitteilungBased)
 			.filter(Objects::nonNull)
@@ -72,7 +73,6 @@ public class PlatzbestaetigungImportForm {
 	}
 
 	public enum ImportForm {
-		PLATZBESTAETIGUNG,
-		MUTATIONS_MITTEILUNG,
+		PLATZBESTAETIGUNG, MUTATIONS_MITTEILUNG,
 	}
 }

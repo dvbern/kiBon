@@ -8,19 +8,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.validators;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
@@ -33,12 +33,16 @@ import org.apache.commons.lang3.StringUtils;
  * that is allowed for the Betreungstyp for a given date
  */
 @RequiredArgsConstructor(onConstructor_ = @Inject)
-public class CheckKontodatenGemeindeValidator implements ConstraintValidator<CheckKontodatenGemeinde, GemeindeStammdaten> {
+public class CheckKontodatenGemeindeValidator implements
+	ConstraintValidator<CheckKontodatenGemeinde, GemeindeStammdaten> {
 
 	private final PrincipalBean principal;
 
 	@Override
-	public boolean isValid(@Nonnull GemeindeStammdaten stammdaten, ConstraintValidatorContext context) {
+	public boolean isValid(
+		@Nonnull GemeindeStammdaten stammdaten,
+		ConstraintValidatorContext context
+	) {
 
 		// Mandant does not have edit permissions for these fields, so they must be able to
 		// save them empty

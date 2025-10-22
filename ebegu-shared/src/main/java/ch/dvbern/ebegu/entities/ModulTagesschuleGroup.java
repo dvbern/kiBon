@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -26,21 +26,21 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.ModulTagesschuleIntervall;
 import ch.dvbern.ebegu.enums.ModulTagesschuleName;
@@ -57,24 +57,31 @@ import org.hibernate.envers.Audited;
 @Audited
 @Entity
 @Table(uniqueConstraints = {
-	@UniqueConstraint(columnNames = "bezeichnung_id", name = "UK_bezeichnung_id"),
-	@UniqueConstraint(columnNames = {"fremdId", "einstellungen_tagesschule_id"}, name = "UK_fremd_id_gesuschperiode_institution")
+	@UniqueConstraint(columnNames = "bezeichnung_id",
+		name = "UK_bezeichnung_id"),
+	@UniqueConstraint(columnNames = { "fremdId",
+		"einstellungen_tagesschule_id" },
+		name = "UK_fremd_id_gesuschperiode_institution")
 })
-public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<ModulTagesschuleGroup> {
+public class ModulTagesschuleGroup extends AbstractEntity implements
+	Comparable<ModulTagesschuleGroup> {
 
 	private static final long serialVersionUID = -8403411439182708718L;
 
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_modul_tagesschule_einstellungen_tagesschule_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_modul_tagesschule_einstellungen_tagesschule_id"),
+		nullable = false)
 	private EinstellungenTagesschule einstellungenTagesschule;
 
 	@Enumerated(value = EnumType.STRING)
 	@NotNull
 	@Nonnull
 	@Column(nullable = false)
-	private ModulTagesschuleName modulTagesschuleName = ModulTagesschuleName.DYNAMISCH;
+	private ModulTagesschuleName modulTagesschuleName =
+		ModulTagesschuleName.DYNAMISCH;
 
 	@NotNull
 	@Nonnull
@@ -109,7 +116,8 @@ public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<
 	@NotNull
 	@Nonnull
 	@Column(nullable = false)
-	private ModulTagesschuleIntervall intervall = ModulTagesschuleIntervall.WOECHENTLICH;
+	private ModulTagesschuleIntervall intervall =
+		ModulTagesschuleIntervall.WOECHENTLICH;
 
 	@NotNull
 	@Column(nullable = false)
@@ -120,8 +128,10 @@ public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<
 	@Column(nullable = false)
 	private Integer reihenfolge;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "modulTagesschuleGroup", fetch =
-		FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "modulTagesschuleGroup",
+		fetch = FetchType.LAZY)
 	@OrderBy("wochentag")
 	private Set<ModulTagesschule> module = new TreeSet<>();
 
@@ -136,11 +146,20 @@ public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final ModulTagesschuleGroup otherModulTagesschule = (ModulTagesschuleGroup) other;
-		return getModulTagesschuleName() == otherModulTagesschule.getModulTagesschuleName() &&
-			Objects.equals(getZeitVon(), otherModulTagesschule.getZeitVon()) &&
-			Objects.equals(getZeitBis(), otherModulTagesschule.getZeitBis()) &&
-			Objects.equals(isWirdPaedagogischBetreut(), ((ModulTagesschuleGroup) other).isWirdPaedagogischBetreut());
+		final ModulTagesschuleGroup otherModulTagesschule =
+			(ModulTagesschuleGroup) other;
+		return getModulTagesschuleName()
+			== otherModulTagesschule.getModulTagesschuleName()
+			&&
+			Objects.equals(getZeitVon(), otherModulTagesschule.getZeitVon())
+			&&
+			Objects.equals(getZeitBis(), otherModulTagesschule.getZeitBis())
+			&&
+			Objects.equals(
+				isWirdPaedagogischBetreut(),
+				((ModulTagesschuleGroup) other)
+					.isWirdPaedagogischBetreut()
+			);
 	}
 
 	@Nonnull
@@ -148,7 +167,9 @@ public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<
 		return modulTagesschuleName;
 	}
 
-	public void setModulTagesschuleName(@Nonnull ModulTagesschuleName modulname) {
+	public void setModulTagesschuleName(
+		@Nonnull ModulTagesschuleName modulname
+	) {
 		this.modulTagesschuleName = modulname;
 	}
 
@@ -170,19 +191,23 @@ public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<
 		this.zeitBis = zeitBis;
 	}
 
+	@Nonnull
 	public EinstellungenTagesschule getEinstellungenTagesschule() {
 		return einstellungenTagesschule;
 	}
 
-	public void setEinstellungenTagesschule(EinstellungenTagesschule einstellungenTagesschule) {
+	public void setEinstellungenTagesschule(
+		@Nonnull EinstellungenTagesschule einstellungenTagesschule
+	) {
 		this.einstellungenTagesschule = einstellungenTagesschule;
 	}
 
+	@Nonnull
 	public String getIdentifier() {
 		return identifier;
 	}
 
-	public void setIdentifier(String identifier) {
+	public void setIdentifier(@Nonnull String identifier) {
 		this.identifier = identifier;
 	}
 
@@ -195,11 +220,12 @@ public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<
 		this.bezeichnung = bezeichnung;
 	}
 
+	@Nullable
 	public BigDecimal getVerpflegungskosten() {
 		return verpflegungskosten;
 	}
 
-	public void setVerpflegungskosten(BigDecimal verpflegungskosten) {
+	public void setVerpflegungskosten(@Nullable BigDecimal verpflegungskosten) {
 		this.verpflegungskosten = verpflegungskosten;
 	}
 
@@ -220,11 +246,12 @@ public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<
 		this.wirdPaedagogischBetreut = wirdPaedagogischBetreut;
 	}
 
+	@Nonnull
 	public Integer getReihenfolge() {
 		return reihenfolge;
 	}
 
-	public void setReihenfolge(Integer reihenfolge) {
+	public void setReihenfolge(@Nonnull Integer reihenfolge) {
 		this.reihenfolge = reihenfolge;
 	}
 
@@ -257,15 +284,27 @@ public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<
 	@Override
 	public int compareTo(@Nonnull ModulTagesschuleGroup o) {
 		CompareToBuilder builder = new CompareToBuilder();
-		builder.append(this.getEinstellungenTagesschule(), o.getEinstellungenTagesschule());
+		builder.append(
+			this.getEinstellungenTagesschule(),
+			o.getEinstellungenTagesschule()
+		);
 		// bei Scolaris Modulen die Bezeichnung. Diese muss eindeutig sein.
 		if (this.getModulTagesschuleName().toString().startsWith("SCOLARIS_")) {
-			builder.append(this.getModulTagesschuleName().toString(), o.getModulTagesschuleName().toString());
+			builder.append(
+				this.getModulTagesschuleName().toString(),
+				o.getModulTagesschuleName().toString()
+			);
 		} else {
 			builder.append(this.getZeitVon(), o.getZeitVon());
 			builder.append(this.getZeitBis(), o.getZeitBis());
-			builder.append(this.getBezeichnung().getTextDeutsch(), o.getBezeichnung().getTextDeutsch());
-			builder.append(this.isWirdPaedagogischBetreut(), o.isWirdPaedagogischBetreut());
+			builder.append(
+				this.getBezeichnung().getTextDeutsch(),
+				o.getBezeichnung().getTextDeutsch()
+			);
+			builder.append(
+				this.isWirdPaedagogischBetreut(),
+				o.isWirdPaedagogischBetreut()
+			);
 		}
 		builder.append(this.getIdentifier(), o.getIdentifier());
 		return builder.toComparison();
@@ -283,7 +322,7 @@ public class ModulTagesschuleGroup extends AbstractEntity implements Comparable<
 		copy.setWirdPaedagogischBetreut(this.isWirdPaedagogischBetreut());
 		copy.setReihenfolge(this.getReihenfolge());
 		if (CollectionUtils.isNotEmpty(this.getModule())) {
-			copy.setModule(new TreeSet<>());
+			copy.getModule().clear();
 			this.getModule().forEach(modul -> {
 				ModulTagesschule newModul = modul.copyForGesuchsperiode();
 				copy.getModule().add(newModul);

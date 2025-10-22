@@ -34,47 +34,84 @@ public class AntragStatusConverterUtilTest {
 
 	@Test
 	public void convertStatusToDTOGEPRUEFTTest() {
-		Gesuch gesuch = TestDataUtil.createTestgesuchDagmar(new FinanzielleSituationBernRechner()); // by default
-		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
+		Gesuch gesuch = TestDataUtil.createTestgesuchDagmar(
+			new FinanzielleSituationBernRechner()
+		); // by default
+		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil
+			.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
 		Assert.assertEquals(AntragStatusDTO.GEPRUEFT, antragStatusDTO);
 	}
 
 	@Test
 	public void convertStatusToDTOAlleBestaetigtTest() {
-		final Gesuch gesuch = prepareGesuchAndBetreuungsstatus(GesuchBetreuungenStatus.ALLE_BESTAETIGT);
+		final Gesuch gesuch = prepareGesuchAndBetreuungsstatus(
+			GesuchBetreuungenStatus.ALLE_BESTAETIGT
+		);
 
-		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
+		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil
+			.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
 		Assert.assertEquals(AntragStatusDTO.GEPRUEFT, antragStatusDTO);
 	}
 
 	@Test
 	public void convertStatusToDTOEinsAbgewiesenTest() {
-		final Gesuch gesuch = prepareGesuchAndBetreuungsstatus(GesuchBetreuungenStatus.ABGEWIESEN);
+		final Gesuch gesuch = prepareGesuchAndBetreuungsstatus(
+			GesuchBetreuungenStatus.ABGEWIESEN
+		);
 
-		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
-		Assert.assertEquals(AntragStatusDTO.PLATZBESTAETIGUNG_ABGEWIESEN, antragStatusDTO);
+		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil
+			.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
+		Assert.assertEquals(
+			AntragStatusDTO.PLATZBESTAETIGUNG_ABGEWIESEN,
+			antragStatusDTO
+		);
 	}
 
 	@Test
 	public void convertStatusToDTOEinsWartenTest() {
-		final Gesuch gesuch = prepareGesuchAndBetreuungsstatus(GesuchBetreuungenStatus.WARTEN);
+		final Gesuch gesuch = prepareGesuchAndBetreuungsstatus(
+			GesuchBetreuungenStatus.WARTEN
+		);
 
-		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
-		Assert.assertEquals(AntragStatusDTO.PLATZBESTAETIGUNG_WARTEN, antragStatusDTO);
+		AntragStatusDTO antragStatusDTO = AntragStatusConverterUtil
+			.convertStatusToDTO(gesuch, AntragStatus.GEPRUEFT);
+		Assert.assertEquals(
+			AntragStatusDTO.PLATZBESTAETIGUNG_WARTEN,
+			antragStatusDTO
+		);
 	}
 
 	@Test
 	public void convertStatusToEntityGEPRUEFTTest() {
-		Assert.assertEquals(AntragStatus.GEPRUEFT, AntragStatusConverterUtil.convertStatusToEntity(AntragStatusDTO.PLATZBESTAETIGUNG_WARTEN));
-		Assert.assertEquals(AntragStatus.GEPRUEFT, AntragStatusConverterUtil.convertStatusToEntity(AntragStatusDTO.PLATZBESTAETIGUNG_ABGEWIESEN));
-		Assert.assertEquals(AntragStatus.GEPRUEFT, AntragStatusConverterUtil.convertStatusToEntity(AntragStatusDTO.GEPRUEFT));
+		Assert.assertEquals(
+			AntragStatus.GEPRUEFT,
+			AntragStatusConverterUtil.convertStatusToEntity(
+				AntragStatusDTO.PLATZBESTAETIGUNG_WARTEN
+			)
+		);
+		Assert.assertEquals(
+			AntragStatus.GEPRUEFT,
+			AntragStatusConverterUtil.convertStatusToEntity(
+				AntragStatusDTO.PLATZBESTAETIGUNG_ABGEWIESEN
+			)
+		);
+		Assert.assertEquals(
+			AntragStatus.GEPRUEFT,
+			AntragStatusConverterUtil.convertStatusToEntity(
+				AntragStatusDTO.GEPRUEFT
+			)
+		);
 	}
 
 	// HELP METHODS
 
 	@Nonnull
-	private Gesuch prepareGesuchAndBetreuungsstatus(GesuchBetreuungenStatus status) {
-		final Gesuch gesuch = TestDataUtil.createTestgesuchDagmar(new FinanzielleSituationBernRechner());
+	private Gesuch prepareGesuchAndBetreuungsstatus(
+		GesuchBetreuungenStatus status
+	) {
+		final Gesuch gesuch = TestDataUtil.createTestgesuchDagmar(
+			new FinanzielleSituationBernRechner()
+		);
 		gesuch.setGesuchBetreuungenStatus(status);
 		return gesuch;
 	}

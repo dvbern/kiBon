@@ -11,7 +11,8 @@ public class FinSitZusatzangabenAppenzellTest {
 
 	@Test
 	public void isVollstaendigTest() {
-		FinSitZusatzangabenAppenzell finSitZusatzangabenAppenzell = new FinSitZusatzangabenAppenzell();
+		FinSitZusatzangabenAppenzell finSitZusatzangabenAppenzell =
+			new FinSitZusatzangabenAppenzell();
 		assertThat(finSitZusatzangabenAppenzell.isVollstaendig(), is(false));
 		finSitZusatzangabenAppenzell.setSaeule3a(BigDecimal.ONE);
 		assertThat(finSitZusatzangabenAppenzell.isVollstaendig(), is(false));
@@ -27,7 +28,9 @@ public class FinSitZusatzangabenAppenzellTest {
 		assertThat(finSitZusatzangabenAppenzell.isVollstaendig(), is(false));
 		finSitZusatzangabenAppenzell.setPolitischeParteiSpende(BigDecimal.ONE);
 		assertThat(finSitZusatzangabenAppenzell.isVollstaendig(), is(false));
-		finSitZusatzangabenAppenzell.setLeistungAnJuristischePersonen(BigDecimal.ONE);
+		finSitZusatzangabenAppenzell.setLeistungAnJuristischePersonen(
+			BigDecimal.ONE
+		);
 		assertThat(finSitZusatzangabenAppenzell.isVollstaendig(), is(true));
 	}
 }

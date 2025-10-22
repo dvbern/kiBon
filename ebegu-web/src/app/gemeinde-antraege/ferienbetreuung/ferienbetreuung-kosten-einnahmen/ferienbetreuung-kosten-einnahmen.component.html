@@ -57,6 +57,10 @@
         </div>
     </div>
 
+    @if (isZweitPruefungAndSameUserAsPruefung() | async) {
+        <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
+    }
+
     <form *ngIf="container" [formGroup]="form">
         <h3 class="uppercase">
             {{ 'FERIENBETREUUNG_KOSTEN_SCHULJAHR' | translate }}

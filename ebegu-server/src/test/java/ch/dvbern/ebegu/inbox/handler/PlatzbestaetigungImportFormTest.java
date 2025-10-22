@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -52,8 +52,13 @@ class PlatzbestaetigungImportFormTest {
 
 		@ParameterizedTest
 		@EnumSource(Betreuungsstatus.class)
-		void shouldAlwaysIncludeMutationsMitteilung(Betreuungsstatus betreuungsstatus) {
-			var ctx = createBetreuungsContext(betreuungsstatus, mock(Betreuungsmitteilung.class));
+		void shouldAlwaysIncludeMutationsMitteilung(
+			Betreuungsstatus betreuungsstatus
+		) {
+			var ctx = createBetreuungsContext(
+				betreuungsstatus,
+				mock(Betreuungsmitteilung.class)
+			);
 
 			var result = PlatzbestaetigungImportForm.importAs(ctx);
 			assertThat(result, hasItem(ImportForm.MUTATIONS_MITTEILUNG));
@@ -116,7 +121,8 @@ class PlatzbestaetigungImportFormTest {
 	@ParameterizedTest
 	@EnumSource(value = Betreuungsstatus.class,
 		mode = Mode.EXCLUDE,
-		names = { "WARTEN", "BESTAETIGT", "VERFUEGT", "STORNIERT", "GESCHLOSSEN_OHNE_VERFUEGUNG" })
+		names = { "WARTEN", "BESTAETIGT", "VERFUEGT", "STORNIERT",
+			"GESCHLOSSEN_OHNE_VERFUEGUNG" })
 	void ignored(Betreuungsstatus betreuungsstatus) {
 		var ctx = createBetreuungsContext(betreuungsstatus);
 
@@ -136,15 +142,23 @@ class PlatzbestaetigungImportFormTest {
 		ProcessingContextParams params = new ProcessingContextParams(
 			new BetreuungEventDTO(),
 			BetreuungEinstellungen.builder().build(),
-			new EventMonitor(new BetreuungMonitoringServiceBean(), LocalDateTime.now(), "1.2.3.4", "client"),
+			new EventMonitor(
+				new BetreuungMonitoringServiceBean(),
+				LocalDateTime.now(),
+				"1.2.3.4",
+				"client"
+			),
 			true,
-			new DateRange());
+			new DateRange()
+		);
 
 		return new ProcessingContext(betreuung, betreuungsmitteilung, params);
 	}
 
 	@Nonnull
-	private ProcessingContext createBetreuungsContext(Betreuungsstatus betreuungsstatus) {
+	private ProcessingContext createBetreuungsContext(
+		Betreuungsstatus betreuungsstatus
+	) {
 		return createBetreuungsContext(betreuungsstatus, null);
 	}
 }

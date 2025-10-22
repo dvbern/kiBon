@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "externalRechnungsAdresse")
 public class JaxExternalRechnungsAdresse implements Serializable {
@@ -53,10 +53,17 @@ public class JaxExternalRechnungsAdresse implements Serializable {
 	@Nullable
 	private String organisation;
 
-
-	public JaxExternalRechnungsAdresse(@Nonnull String vorname, @Nonnull String nachname, @Nonnull String strasse,
-		@Nullable String hausnummer, @Nullable String zusatzzeile, @Nonnull String plz, @Nonnull String ort, @Nonnull String land,
-		@Nullable String organisation) {
+	public JaxExternalRechnungsAdresse(
+		@Nonnull String vorname,
+		@Nonnull String nachname,
+		@Nonnull String strasse,
+		@Nullable String hausnummer,
+		@Nullable String zusatzzeile,
+		@Nonnull String plz,
+		@Nonnull String ort,
+		@Nonnull String land,
+		@Nullable String organisation
+	) {
 		this.vorname = vorname;
 		this.nachname = nachname;
 		this.strasse = strasse;

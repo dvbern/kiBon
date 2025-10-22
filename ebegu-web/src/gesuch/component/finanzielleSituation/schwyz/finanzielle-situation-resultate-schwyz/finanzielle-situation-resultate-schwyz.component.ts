@@ -20,11 +20,10 @@ import {
     ChangeDetectorRef,
     Component
 } from '@angular/core';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
@@ -39,7 +38,8 @@ const LOG = LogFactory.createLog(
 @Component({
     selector: 'dv-finanzielle-situation-resultate-schwyz',
     templateUrl: './finanzielle-situation-resultate-schwyz.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FinanzielleSituationResultateSchwyzComponent extends AbstractGesuchViewX<TSFinanzModel> {
     public resultate?: TSFinanzielleSituationResultateDTO;

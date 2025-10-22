@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.institutionclient;
@@ -40,14 +40,23 @@ import static org.hamcrest.Matchers.is;
 public class InstitutionClientEventConverterTest {
 
 	@Nonnull
-	private final InstitutionClientEventConverter converter = new InstitutionClientEventConverter();
+	private final InstitutionClientEventConverter converter =
+		new InstitutionClientEventConverter();
 
-	private static final ExternalClient CLIENT = new ExternalClient("foo", ExternalClientType.EXCHANGE_SERVICE_USER, ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION);
-	private static final String INSTITUTION_ID = "1";
+	private static final ExternalClient CLIENT = new ExternalClient(
+		"foo",
+		ExternalClientType.EXCHANGE_SERVICE_USER,
+		ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION
+	);
+	private static final String INSTITUTION_ID =
+		"ece539e6-348d-11ef-b37a-4304b30a8754";
 
 	@Test
 	public void testAddedEvent() {
-		InstitutionClientAddedEvent event = converter.clientAddedEventOf(INSTITUTION_ID, createInstitutionExternalClient());
+		InstitutionClientAddedEvent event = converter.clientAddedEventOf(
+			INSTITUTION_ID,
+			createInstitutionExternalClient()
+		);
 
 		assertThat(event, exportedEventMatcher("ClientAdded"));
 
@@ -56,7 +65,10 @@ public class InstitutionClientEventConverterTest {
 
 	@Test
 	public void testRemovedEvent() {
-		InstitutionClientRemovedEvent event = converter.clientRemovedEventOf(INSTITUTION_ID, createInstitutionExternalClient());
+		InstitutionClientRemovedEvent event = converter.clientRemovedEventOf(
+			INSTITUTION_ID,
+			createInstitutionExternalClient()
+		);
 
 		assertThat(event, exportedEventMatcher("ClientRemoved"));
 
@@ -65,7 +77,10 @@ public class InstitutionClientEventConverterTest {
 
 	@Test
 	public void testModifiedEvent() {
-		InstitutionClientModifiedEvent event = converter.clientModifiedEventOf(INSTITUTION_ID, createInstitutionExternalClient());
+		InstitutionClientModifiedEvent event = converter.clientModifiedEventOf(
+			INSTITUTION_ID,
+			createInstitutionExternalClient()
+		);
 
 		assertThat(event, exportedEventMatcher("ClientModified"));
 
@@ -73,34 +88,61 @@ public class InstitutionClientEventConverterTest {
 	}
 
 	@Nonnull
-	private Matcher<ExportedEvent> exportedEventMatcher(@Nonnull String expectedType) {
-		return is(pojo(ExportedEvent.class)
-			.where(ExportedEvent::getAggregateId, is(INSTITUTION_ID))
-			.where(ExportedEvent::getAggregateType, is("InstitutionClient"))
-			.where(ExportedEvent::getType, is(expectedType)));
+	private Matcher<ExportedEvent> exportedEventMatcher(
+		@Nonnull String expectedType
+	) {
+		return is(
+			pojo(ExportedEvent.class)
+				.where(
+					ExportedEvent::getAggregateId,
+					is(INSTITUTION_ID)
+				)
+				.where(
+					ExportedEvent::getAggregateType,
+					is("InstitutionClient")
+				)
+				.where(ExportedEvent::getType, is(expectedType))
+		);
 	}
 
 	private void verifyPayload(@Nonnull ExportedEvent event) {
 		//noinspection deprecation
-		InstitutionClientEventDTO specificRecord = AvroConverter.fromAvroBinary(event.getSchema(), event.getPayload());
+		InstitutionClientEventDTO specificRecord = AvroConverter.fromAvroBinary(
+			event.getSchema(),
+			event.getPayload()
+		);
 
-		assertThat(specificRecord, is(pojo(InstitutionClientEventDTO.class)
-			.where(InstitutionClientEventDTO::getInstitutionId, is(INSTITUTION_ID))
-			.where(InstitutionClientEventDTO::getClientName, is(CLIENT.getClientName()))
-			.where(InstitutionClientEventDTO::getClientType, is(CLIENT.getType().name()))
-		));
+		assertThat(
+			specificRecord,
+			is(
+				pojo(InstitutionClientEventDTO.class)
+					.where(
+						InstitutionClientEventDTO::getInstitutionId,
+						is(INSTITUTION_ID)
+					)
+					.where(
+						InstitutionClientEventDTO::getClientName,
+						is(CLIENT.getClientName())
+					)
+					.where(
+						InstitutionClientEventDTO::getClientType,
+						is(CLIENT.getType().name())
+					)
+			)
+		);
 	}
 
 	@Nonnull
 	private InstitutionExternalClient createInstitutionExternalClient() {
-		InstitutionExternalClient institutionExternalClient = new InstitutionExternalClient();
+		InstitutionExternalClient institutionExternalClient =
+			new InstitutionExternalClient();
 		institutionExternalClient.setExternalClient(CLIENT);
 		Institution institution = new Institution();
 		institution.setId(INSTITUTION_ID);
 		institutionExternalClient.setInstitution(institution);
 		DateRange dateRange = new DateRange();
-		dateRange.setGueltigAb(LocalDate.of(2000,1,1));
-		dateRange.setGueltigBis(LocalDate.of(9999,1,1));
+		dateRange.setGueltigAb(LocalDate.of(2000, 1, 1));
+		dateRange.setGueltigBis(LocalDate.of(9999, 1, 1));
 		institutionExternalClient.setGueltigkeit(dateRange);
 
 		return institutionExternalClient;

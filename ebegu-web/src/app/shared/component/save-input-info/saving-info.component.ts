@@ -23,7 +23,7 @@ import {
     OnInit
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 const LOG = LogFactory.createLog('SavingInfo');
 
@@ -31,7 +31,8 @@ const LOG = LogFactory.createLog('SavingInfo');
     selector: 'dv-saving-info',
     templateUrl: './saving-info.component.html',
     styleUrls: ['./saving-info.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SavingInfoComponent implements OnInit {
     private static readonly HIDE_SAVED_AFTER_MS = 3000;
@@ -44,8 +45,8 @@ export class SavingInfoComponent implements OnInit {
     public constructor(private readonly ref: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
-        this.subscription = this.saving$.subscribe(
-            saving => {
+        this.subscription = this.saving$.subscribe({
+            next: saving => {
                 if (saving) {
                     this.showSavingInfo();
                 } else {
@@ -53,8 +54,8 @@ export class SavingInfoComponent implements OnInit {
                 }
                 this.ref.markForCheck();
             },
-            error => LOG.error(error)
-        );
+            error: error => LOG.error(error)
+        });
     }
 
     private showSavingInfo(): void {

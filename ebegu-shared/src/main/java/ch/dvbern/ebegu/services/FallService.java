@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Fall;
@@ -65,7 +64,7 @@ public interface FallService {
 	 * Gibt den Fall zurueck der zum eingeloggten Benutzer gehoert oder ein leeres optional wenn keiner vorhanden
 	 */
 	@Nonnull
-	Optional<Fall> findFallByBesitzer(@Nullable Benutzer benutzer);
+	Optional<Fall> findFallByBesitzer(@Nonnull Benutzer benutzer);
 
 	@Nonnull
 	Optional<Fall> findAnyFallByGSName(String nachname, String vorname);
@@ -83,12 +82,18 @@ public interface FallService {
 	/**
 	 * Entfernt einen Fall aus der Datenbank, falls er dort existiert.
 	 */
-	void removeFallIfExists(@Nonnull String fallId, @Nonnull GesuchDeletionCause deletionCause);
+	void removeFallIfExists(
+		@Nonnull String fallId,
+		@Nonnull GesuchDeletionCause deletionCause
+	);
 
 	/**
 	 * entfernt einen Fall aus der Database
 	 */
-	void removeFall(@Nonnull Fall fall, @Nonnull GesuchDeletionCause deletionCause);
+	void removeFall(
+		@Nonnull Fall fall,
+		@Nonnull GesuchDeletionCause deletionCause
+	);
 
 	/**
 	 * Erstellt einen neuen Fall fuer den aktuellen Benutzer und setzt diesen als Besitzer des Falles.
@@ -106,6 +111,8 @@ public interface FallService {
 	@Nonnull
 	Optional<String> getCurrentEmailAddress(@Nonnull String fallID);
 
-
-	byte[] generateVollmachtDokument(@Nonnull String fallId, @Nonnull Sprache sprache) throws MergeDocException;
+	byte[] generateVollmachtDokument(
+		@Nonnull String fallId,
+		@Nonnull Sprache sprache
+	) throws MergeDocException;
 }

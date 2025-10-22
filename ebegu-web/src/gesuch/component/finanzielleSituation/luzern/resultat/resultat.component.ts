@@ -22,7 +22,7 @@ import {
     Input,
     OnInit
 } from '@angular/core';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern.service';
@@ -33,7 +33,8 @@ const LOG = LogFactory.createLog('ResultatComponent');
     selector: 'dv-resultat',
     templateUrl: './resultat.component.html',
     styleUrls: ['./resultat.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ResultatComponent implements OnInit {
     @Input()

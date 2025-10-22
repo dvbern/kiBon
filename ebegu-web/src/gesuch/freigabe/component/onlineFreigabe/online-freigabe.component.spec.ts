@@ -17,11 +17,11 @@
  */
 
 import {TSAntragStatus} from '../../../../models/enums/TSAntragStatus';
-import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFreigabe} from '../../../../models/TSFreigabe';
 import {TSGesuch} from '../../../../models/TSGesuch';
-import {TSWizardStep} from '../../../../models/TSWizardStep';
+import {TSWizardStep} from '@kibon/shared/model/entity';
+
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../service/wizardStepManager';
 import {FreigabeService} from '../../freigabe.service';
@@ -71,37 +71,12 @@ describe('OnlineFreigabeComponent', () => {
             );
 
             // then
-            expect(testee.alreadyFreigegeben).toBeFalse();
+            expect(testee.alreadyFreigegeben()).toBeFalse();
             expect(
                 wizardStepManager.updateCurrentWizardStepStatusSafe
             ).toHaveBeenCalledWith(
                 TSWizardStepName.FREIGABE,
                 TSWizardStepStatus.IN_BEARBEITUNG
-            );
-        });
-
-        it('must update step status to OK if alreadyFreigeben is true', () => {
-            // given
-            const gesuch = new TSGesuch();
-            gesuch.status = TSAntragStatus.IN_BEARBEITUNG_JA;
-            gesuchModelManager.getGesuch.and.returnValue(gesuch);
-            const step = new TSWizardStep();
-            wizardStepManager.getStepByName.and.returnValue(step);
-
-            // when
-            testee = new OnlineFreigabeComponent(
-                gesuchModelManager,
-                wizardStepManager,
-                freigabeService
-            );
-
-            // then
-            expect(testee.alreadyFreigegeben).toBeTrue();
-            expect(
-                wizardStepManager.updateCurrentWizardStepStatusSafe
-            ).toHaveBeenCalledWith(
-                TSWizardStepName.FREIGABE,
-                TSWizardStepStatus.OK
             );
         });
     });

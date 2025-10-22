@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -38,18 +38,24 @@ class StaedtischerZuschlagPauschalRechnerTest {
 		// given
 
 		var testee = new StaedtischerZuschlagPauschalRechner();
-		BGCalculationInput input = new BGCalculationInput(new VerfuegungZeitabschnitt(), RuleValidity.ASIV);
+		BGCalculationInput input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.ASIV
+		);
 		input.setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
 
 		BGRechnerParameterDTO rechnerParameterDTO = new BGRechnerParameterDTO();
-		BGRechnerParameterGemeindeDTO gemeindeParameter = new BGRechnerParameterGemeindeDTO();
+		BGRechnerParameterGemeindeDTO gemeindeParameter =
+			new BGRechnerParameterGemeindeDTO();
 		BigDecimal zusaetzlicherGutscheinBetragKita = new BigDecimal("23.5");
-		gemeindeParameter.setGemeindeZusaetzlicherGutscheinBetragKita(zusaetzlicherGutscheinBetragKita);
+		gemeindeParameter.setGemeindeZusaetzlicherGutscheinBetragKita(
+			zusaetzlicherGutscheinBetragKita
+		);
 		rechnerParameterDTO.setGemeindeParameter(gemeindeParameter);
 
 		// when
 		BigDecimal zuschlagKita =
-				testee.calculate(input, rechnerParameterDTO);
+			testee.calculate(input, rechnerParameterDTO);
 
 		// verify
 		assertThat(zuschlagKita, is(zusaetzlicherGutscheinBetragKita));
@@ -59,18 +65,24 @@ class StaedtischerZuschlagPauschalRechnerTest {
 	void mustReturnCorrectPauschalZuschlagForTfo() {
 		// given
 		var testee = new StaedtischerZuschlagPauschalRechner();
-		BGCalculationInput input = new BGCalculationInput(new VerfuegungZeitabschnitt(), RuleValidity.ASIV);
+		BGCalculationInput input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.ASIV
+		);
 		input.setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESFAMILIEN);
 
 		BGRechnerParameterDTO rechnerParameterDTO = new BGRechnerParameterDTO();
-		BGRechnerParameterGemeindeDTO gemeindeParameter = new BGRechnerParameterGemeindeDTO();
+		BGRechnerParameterGemeindeDTO gemeindeParameter =
+			new BGRechnerParameterGemeindeDTO();
 		BigDecimal zusaetzlicherGutscheinBetragTfo = new BigDecimal("23.5");
-		gemeindeParameter.setGemeindeZusaetzlicherGutscheinBetragTfo(zusaetzlicherGutscheinBetragTfo);
+		gemeindeParameter.setGemeindeZusaetzlicherGutscheinBetragTfo(
+			zusaetzlicherGutscheinBetragTfo
+		);
 		rechnerParameterDTO.setGemeindeParameter(gemeindeParameter);
 
 		// when
 		BigDecimal zuschlagKita =
-				testee.calculate(input, rechnerParameterDTO);
+			testee.calculate(input, rechnerParameterDTO);
 
 		// verify
 		assertThat(zuschlagKita, is(zusaetzlicherGutscheinBetragTfo));

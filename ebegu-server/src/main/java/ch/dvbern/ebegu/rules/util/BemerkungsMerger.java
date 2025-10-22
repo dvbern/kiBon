@@ -42,13 +42,15 @@ import com.google.common.collect.SortedSetMultimap;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * This class is supposed to find the longest timeperiods for which bemerkungen in {@link VerfuegungZeitabschnitt}en exists.
- * It takes a list of {@link VerfuegungZeitabschnitt} that has no overlap and returns a list of every bemerkungtext and its
+ * This class is supposed to find the longest timeperiods for which bemerkungen in {@link VerfuegungZeitabschnitt}en
+ * exists.
+ * It takes a list of {@link VerfuegungZeitabschnitt} that has no overlap and returns a list of every bemerkungtext and
+ * its
  * continous ranges
  *
  * Example
  * <pre>
- * |AC  |AB |AC |
+ * |AC |AB |AC |
  * </pre>
  * where A,B and C are bemerkungen and the | | represent date ranges
  * is turned into to
@@ -68,65 +70,97 @@ public final class BemerkungsMerger {
 	@SuppressWarnings("SimplifyStreamApiCallChains")
 	@Nullable
 	public static String evaluateBemerkungenForVerfuegung(
-			List<VerfuegungZeitabschnitt> zeitabschnitte,
-			Mandant mandant,
-			boolean isTexteForFKJV) {
+		List<VerfuegungZeitabschnitt> zeitabschnitte,
+		Mandant mandant,
+		boolean isTexteForFKJV
+	) {
 		if (zeitabschnitte == null || zeitabschnitte.isEmpty()) {
 			return null;
 		}
 		// Die Bemerkungen aus der transienten BemerkungenMap ins Feld schreiben
 		prepareGeneratedBemerkungen(zeitabschnitte, mandant, isTexteForFKJV);
 		StringJoiner joiner = new StringJoiner("\n");
-		Map<String, Collection<DateRange>> rangesByBemerkungKey = evaluateRangesByBemerkungKey(zeitabschnitte);
-
+		Map<String, Collection<DateRange>> rangesByBemerkungKey =
+			evaluateRangesByBemerkungKey(zeitabschnitte);
 
 		// Jetzt sind die DateRanges pro Message zusammengefasst, wir wollen aber nach Datum sortieren, nicht nach Message
 		List<BemerkungItem> listOrdered = new LinkedList<>();
-		for (Entry<String, Collection<DateRange>> stringCollectionEntry : rangesByBemerkungKey.entrySet()) {
+		for (Entry<String, Collection<DateRange>> stringCollectionEntry : rangesByBemerkungKey
+			.entrySet()) {
 			for (DateRange dateRanges : stringCollectionEntry.getValue()) {
-				listOrdered.add(new BemerkungItem(dateRanges, stringCollectionEntry.getKey()));
+				listOrdered.add(
+					new BemerkungItem(
+						dateRanges,
+						stringCollectionEntry.getKey()
+					)
+				);
 			}
 		}
 		Collections.sort(listOrdered);
 		for (BemerkungItem poi : listOrdered) {
-			joiner.add(poi.getRange().toRangeString() + ": " + poi.getMessage());
+			joiner.add(
+				poi.getRange().toRangeString() + ": " + poi.getMessage()
+			);
 		}
 		return joiner.toString();
 	}
 
 	public static void prepareGeneratedBemerkungen(
 		List<VerfuegungZeitabschnitt> zeitabschnitte,
-		Mandant mandant) {
+		Mandant mandant
+	) {
 		prepareGeneratedBemerkungen(zeitabschnitte, mandant, false);
 	}
 
 	public static void prepareGeneratedBemerkungen(
-			List<VerfuegungZeitabschnitt> zeitabschnitte,
-			Mandant mandant,
-			boolean isTexteForFKJV) {
+		List<VerfuegungZeitabschnitt> zeitabschnitte,
+		Mandant mandant,
+		boolean isTexteForFKJV
+	) {
 		for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : zeitabschnitte) {
-			prepareGeneratedBemerkungen(verfuegungZeitabschnitt, mandant, isTexteForFKJV);
+			prepareGeneratedBemerkungen(
+				verfuegungZeitabschnitt,
+				mandant,
+				isTexteForFKJV
+			);
 		}
 	}
 
 	public static void prepareGeneratedBemerkungen(
 		VerfuegungZeitabschnitt verfuegungZeitabschnitt,
-		Mandant mandant) {
+		Mandant mandant
+	) {
 		prepareGeneratedBemerkungen(verfuegungZeitabschnitt, mandant, false);
 	}
 
 	private static void prepareGeneratedBemerkungen(
-			VerfuegungZeitabschnitt verfuegungZeitabschnitt,
-			Mandant mandant,
-			boolean isTexteForFKJV) {
-		List<VerfuegungsBemerkungDTO> bemerkungen = verfuegungZeitabschnitt.getBemerkungenDTOList().getRequiredBemerkungen(isTexteForFKJV);
-		List<VerfuegungZeitabschnittBemerkung> zeitabschnittBemerkungList = bemerkungen.stream()
-				.map(bemerkung -> new VerfuegungZeitabschnittBemerkung(bemerkung ,verfuegungZeitabschnitt, mandant))
-			 // Leere Bemerkungen sollen gelöscht werden. Bemerkungen welche für bestimmte Mandanten nicht angezeigt
-			 // werden sollen, können so gefiltert werden
-				.filter(bemerkung -> StringUtils.isNotBlank(bemerkung.getBemerkung()))
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt,
+		Mandant mandant,
+		boolean isTexteForFKJV
+	) {
+		List<VerfuegungsBemerkungDTO> bemerkungen = verfuegungZeitabschnitt
+			.getBemerkungenDTOList()
+			.getRequiredBemerkungen(isTexteForFKJV);
+		List<VerfuegungZeitabschnittBemerkung> zeitabschnittBemerkungList =
+			bemerkungen.stream()
+				.map(
+					bemerkung -> new VerfuegungZeitabschnittBemerkung(
+						bemerkung,
+						verfuegungZeitabschnitt,
+						mandant
+					)
+				)
+				// Leere Bemerkungen sollen gelöscht werden. Bemerkungen welche für bestimmte Mandanten nicht angezeigt
+				// werden sollen, können so gefiltert werden
+				.filter(
+					bemerkung -> StringUtils.isNotBlank(
+						bemerkung.getBemerkung()
+					)
+				)
 				.collect(Collectors.toList());
-		verfuegungZeitabschnitt.setVerfuegungZeitabschnittBemerkungList(zeitabschnittBemerkungList);
+		verfuegungZeitabschnitt.setVerfuegungZeitabschnittBemerkungList(
+			zeitabschnittBemerkungList
+		);
 	}
 
 	/**
@@ -135,12 +169,19 @@ public final class BemerkungsMerger {
 	 * @param zeitabschnitte list to analyze
 	 * @return a map with the bemerkung as key and the longest contious ranges as values
 	 */
-	private static Map<String, Collection<DateRange>> evaluateRangesByBemerkungKey(List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	private static Map<String, Collection<DateRange>> evaluateRangesByBemerkungKey(
+		List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 
-		SortedSetMultimap<String, Gueltigkeit> multimap = createMultimap(zeitabschnitte);
-		Map<String, Collection<DateRange>> continousRangesPerKey = new HashMap<>();
+		SortedSetMultimap<String, Gueltigkeit> multimap = createMultimap(
+			zeitabschnitte
+		);
+		Map<String, Collection<DateRange>> continousRangesPerKey =
+			new HashMap<>();
 		multimap.keySet().forEach(bemKey -> {
-			Collection<DateRange> contRanges = mergeAdjacentRanges(multimap.get(bemKey));
+			Collection<DateRange> contRanges = mergeAdjacentRanges(
+				multimap.get(bemKey)
+			);
 
 			continousRangesPerKey.put(bemKey, contRanges);
 		});
@@ -148,7 +189,9 @@ public final class BemerkungsMerger {
 		return continousRangesPerKey;
 	}
 
-	private static Collection<DateRange> mergeAdjacentRanges(@Nullable SortedSet<Gueltigkeit> gueltigkeiten) {
+	private static Collection<DateRange> mergeAdjacentRanges(
+		@Nullable SortedSet<Gueltigkeit> gueltigkeiten
+	) {
 		if (gueltigkeiten == null) {
 			return Collections.emptyList();
 		}
@@ -158,22 +201,50 @@ public final class BemerkungsMerger {
 		gueltigkeiten.stream()
 			.forEachOrdered(gueltigkeit -> {
 				if (rangesWithoutGaps.isEmpty()) {
-					rangesWithoutGaps.add(new DateRange(gueltigkeit.getGueltigkeit()));
+					rangesWithoutGaps.add(
+						new DateRange(gueltigkeit.getGueltigkeit())
+					);
 				} else {
 
-					LocalDate lastEndingDate = rangesWithoutGaps.getLast().getGueltigBis();
+					LocalDate lastEndingDate = rangesWithoutGaps.getLast()
+						.getGueltigBis();
 					//if the periods are adjacent make the existing period longer
-					if (lastEndingDate.plusDays(1).equals(gueltigkeit.getGueltigkeit().getGueltigAb())) {
-						DateRange longerRange = new DateRange(rangesWithoutGaps.getLast().getGueltigAb(), gueltigkeit.getGueltigkeit().getGueltigBis());
+					if (lastEndingDate.plusDays(1)
+						.equals(
+							gueltigkeit.getGueltigkeit()
+								.getGueltigAb()
+						)) {
+						DateRange longerRange = new DateRange(
+							rangesWithoutGaps.getLast().getGueltigAb(),
+							gueltigkeit.getGueltigkeit().getGueltigBis()
+						);
 						rangesWithoutGaps.removeLast();
 						rangesWithoutGaps.addLast(longerRange);
 						//if there is a gap add the new period
-					} else if (lastEndingDate.plusDays(1).isBefore(gueltigkeit.getGueltigkeit().getGueltigAb())) {
-						rangesWithoutGaps.add(new DateRange(gueltigkeit.getGueltigkeit()));
+					} else if (lastEndingDate.plusDays(1)
+						.isBefore(
+							gueltigkeit.getGueltigkeit()
+								.getGueltigAb()
+						)) {
+						rangesWithoutGaps.add(
+							new DateRange(gueltigkeit.getGueltigkeit())
+						);
 						//this should not happen since the evaluator is supposed to eliminate gaps
-					} else if (lastEndingDate.equals(gueltigkeit.getGueltigkeit().getGueltigAb()) || lastEndingDate.isAfter(gueltigkeit.getGueltigkeit().getGueltigAb())) {
-						String message = "The passed list of gueltigkeiten must be ordered and may not have any overlapping gueltigkeiten around date " +
-							lastEndingDate + ". The	offending gueltigkeiten are " + rangesWithoutGaps.getLast() + "  and " + gueltigkeit;
+					} else if (lastEndingDate.equals(
+						gueltigkeit.getGueltigkeit().getGueltigAb()
+					)
+						|| lastEndingDate.isAfter(
+							gueltigkeit.getGueltigkeit()
+								.getGueltigAb()
+						)) {
+						String message =
+							"The passed list of gueltigkeiten must be ordered and may not have any overlapping gueltigkeiten around date "
+								+
+								lastEndingDate
+								+ ". The	offending gueltigkeiten are "
+								+ rangesWithoutGaps.getLast()
+								+ "  and "
+								+ gueltigkeit;
 						throw new IllegalArgumentException(message);
 					}
 
@@ -182,11 +253,26 @@ public final class BemerkungsMerger {
 		return rangesWithoutGaps;
 	}
 
-	private static SortedSetMultimap<String, Gueltigkeit> createMultimap(List<VerfuegungZeitabschnitt> zeitabschnitte) {
-		SortedSetMultimap<String, Gueltigkeit> multimap = Multimaps.newSortedSetMultimap(new HashMap<>(), () -> new TreeSet<>(Gueltigkeit.GUELTIG_AB_COMPARATOR));
+	private static SortedSetMultimap<String, Gueltigkeit> createMultimap(
+		List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
+		SortedSetMultimap<String, Gueltigkeit> multimap = Multimaps
+			.newSortedSetMultimap(
+				new HashMap<>(),
+				() -> new TreeSet<>(Gueltigkeit.GUELTIG_AB_COMPARATOR)
+			);
 		zeitabschnitte.stream()
-			.flatMap(zeitabschnitt -> zeitabschnitt.getVerfuegungZeitabschnittBemerkungList().stream())
-			.forEach(bemerkung -> multimap.put(bemerkung.getBemerkung(), bemerkung));
+			.flatMap(
+				zeitabschnitt -> zeitabschnitt
+					.getVerfuegungZeitabschnittBemerkungList()
+					.stream()
+			)
+			.forEach(
+				bemerkung -> multimap.put(
+					bemerkung.getBemerkung(),
+					bemerkung
+				)
+			);
 		return multimap;
 	}
 }

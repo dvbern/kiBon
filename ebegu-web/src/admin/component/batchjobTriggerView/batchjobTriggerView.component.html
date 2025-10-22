@@ -13,11 +13,14 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class="batchjob-trigger-view batchjobTriggerModul">
+<div class="batchjob-trigger-view batchjobTriggerModul admin-modul">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <!-- Batch Jobs -->
-            <h2 class="margin-top-40">Batch Jobs manuell ausführen</h2>
+            <div class="view-title">
+                <h2>{{ 'EXECUTE_BATCHJOB' | translate }}</h2>
+                <hr class="header" />
+            </div>
             <div class="row">
                 <div class="col-md-12 margin-top-20">
                     <div>
@@ -27,25 +30,23 @@
                         Reports-Folder gelöscht, deren Tokenlifespan abgelaufen
                         ist
                     </div>
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="runBatchCleanDownloadFiles()"
-                        class="dv-btn margin-top-20"
+                    <dv-loading-button
+                        (buttonClick)="runBatchCleanDownloadFiles()"
+                        buttonClass="margin-top-20"
                     >
                         Batchjob ausführen
-                    </button>
+                    </dv-loading-button>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12 margin-top-20">
                     <div>Mahnung Prüfung ausführen</div>
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="runBatchMahnungFristablauf()"
-                        class="dv-btn margin-top-20"
+                    <dv-loading-button
+                        (buttonClick)="runBatchMahnungFristablauf()"
+                        buttonClass="margin-top-20"
                     >
                         Batchjob ausführen
-                    </button>
+                    </dv-loading-button>
                 </div>
             </div>
             <div class="row">
@@ -53,15 +54,14 @@
                     <div>
                         Gemeinden für Institutionsstammdaten aktualisieren
                     </div>
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="
+                    <dv-loading-button
+                        (buttonClick)="
                             runBatchUpdateGemeindeForBGInstitutionen()
                         "
-                        class="dv-btn margin-top-20"
+                        buttonClass="margin-top-20"
                     >
                         Batchjob ausführen
-                    </button>
+                    </dv-loading-button>
                 </div>
             </div>
 

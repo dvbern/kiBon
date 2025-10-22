@@ -16,6 +16,5 @@
 package ch.dvbern.ebegu.enums;
 
 public enum Zustelladresse {
-	JUGENDAMT,
-	SCHULAMT
+	JUGENDAMT, SCHULAMT
 }

@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -45,7 +45,9 @@ public class JaxGeoadminSearchResult implements Serializable {
 		return results;
 	}
 
-	public void setResults(@Nonnull List<JaxGeoadminSearchResultEntry> results) {
+	public void setResults(
+		@Nonnull List<JaxGeoadminSearchResultEntry> results
+	) {
 		this.results = results;
 	}
 

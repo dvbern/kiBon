@@ -57,7 +57,8 @@ describe('SaveInputInfoComponent', () => {
 
     @Component({
         selector: `host-component`,
-        template: `<dv-saving-info [saving$]="input"></dv-saving-info>`
+        template: `<dv-saving-info [saving$]="input"></dv-saving-info>`,
+        standalone: false
     })
     class TestHostComponent {
         public input = new BehaviorSubject(true);

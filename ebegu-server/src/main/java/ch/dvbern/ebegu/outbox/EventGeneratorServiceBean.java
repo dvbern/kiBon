@@ -8,20 +8,53 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
 import ch.dvbern.ebegu.config.EbeguConfiguration;
-import ch.dvbern.ebegu.entities.*;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
+import ch.dvbern.ebegu.entities.AbstractEntity_;
+import ch.dvbern.ebegu.entities.AbstractPlatz_;
+import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.Betreuung_;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gemeinde_;
+import ch.dvbern.ebegu.entities.Institution;
+import ch.dvbern.ebegu.entities.InstitutionStammdaten;
+import ch.dvbern.ebegu.entities.InstitutionStammdaten_;
+import ch.dvbern.ebegu.entities.Institution_;
+import ch.dvbern.ebegu.entities.Verfuegung;
+import ch.dvbern.ebegu.entities.Verfuegung_;
 import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlen;
 import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlen_;
-import ch.dvbern.ebegu.enums.*;
+import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.InstitutionStatus;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.outbox.gemeinde.GemeindeEventConverter;
@@ -30,19 +63,7 @@ import ch.dvbern.ebegu.outbox.institution.InstitutionEventConverter;
 import ch.dvbern.ebegu.outbox.institution.InstitutionEventUtil;
 import ch.dvbern.ebegu.outbox.platzbestaetigung.BetreuungAnfrageEventConverter;
 import ch.dvbern.ebegu.outbox.verfuegung.VerfuegungEventAsyncHelper;
-import ch.dvbern.ebegu.services.ApplicationPropertyService;
-import ch.dvbern.ebegu.services.EinstellungService;
-import ch.dvbern.lib.cdipersistence.Persistence;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 import static ch.dvbern.ebegu.services.util.PredicateHelper.NEW;
 
@@ -72,18 +93,34 @@ public class EventGeneratorServiceBean {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void exportInstitutionEvent() {
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		CriteriaQuery<InstitutionStammdaten> query = cb.createQuery(InstitutionStammdaten.class);
-		Root<InstitutionStammdaten> root = query.from(InstitutionStammdaten.class);
+		CriteriaQuery<InstitutionStammdaten> query = cb.createQuery(
+			InstitutionStammdaten.class
+		);
+		Root<InstitutionStammdaten> root = query.from(
+			InstitutionStammdaten.class
+		);
 
-		Join<InstitutionStammdaten, Institution> institutionJoin = root.join(InstitutionStammdaten_.institution);
+		Join<InstitutionStammdaten, Institution> institutionJoin = root.join(
+			InstitutionStammdaten_.institution
+		);
 
-		Predicate isNotPublished = cb.isFalse(institutionJoin.get(Institution_.eventPublished));
-		var statusParam = cb.parameter(InstitutionStatus.class, Institution_.STATUS);
-		Predicate notLatsStatus = cb.notEqual(institutionJoin.get(Institution_.status), statusParam);
+		Predicate isNotPublished = cb.isFalse(
+			institutionJoin.get(Institution_.eventPublished)
+		);
+		var statusParam = cb.parameter(
+			InstitutionStatus.class,
+			Institution_.STATUS
+		);
+		Predicate notLatsStatus = cb.notEqual(
+			institutionJoin.get(Institution_.status),
+			statusParam
+		);
 
 		query.where(isNotPublished, notLatsStatus);
 
-		List<InstitutionStammdaten> institutions = persistence.getEntityManager().createQuery(query)
+		List<InstitutionStammdaten> institutions = persistence
+			.getEntityManager()
+			.createQuery(query)
 			.setParameter(statusParam, InstitutionStatus.NUR_LATS)
 			.getResultList();
 
@@ -101,34 +138,51 @@ public class EventGeneratorServiceBean {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void exportGemeindeKennzahlenEvent() {
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		CriteriaQuery<GemeindeKennzahlen> query = cb.createQuery(GemeindeKennzahlen.class);
+		CriteriaQuery<GemeindeKennzahlen> query = cb.createQuery(
+			GemeindeKennzahlen.class
+		);
 		Root<GemeindeKennzahlen> root = query.from(GemeindeKennzahlen.class);
 
-		Predicate isNotPublished = cb.isFalse(root.get(GemeindeKennzahlen_.eventPublished));
+		Predicate isNotPublished = cb.isFalse(
+			root.get(GemeindeKennzahlen_.eventPublished)
+		);
 
 		query.where(isNotPublished);
 
-		List<GemeindeKennzahlen> gemeinden = persistence.getEntityManager().createQuery(query)
+		List<GemeindeKennzahlen> gemeinden = persistence.getEntityManager()
+			.createQuery(query)
 			.getResultList();
 
 		gemeinden.forEach(gemeindeKennzahlen -> {
-			Map<EinstellungKey, Einstellung> gemeindeKonfigurationMap = einstellungService
-				.getGemeindeEinstellungenOnlyAsMap(
-					gemeindeKennzahlen.getGemeinde(),
-					gemeindeKennzahlen.getGesuchsperiode());
+			Map<EinstellungKey, Einstellung> gemeindeKonfigurationMap =
+				einstellungService
+					.getGemeindeEinstellungenOnlyAsMap(
+						gemeindeKennzahlen.getGemeinde(),
+						gemeindeKennzahlen.getGesuchsperiode()
+					);
 
 			Einstellung einstellungBgAusstellenBisStufe =
-				gemeindeKonfigurationMap.get(EinstellungKey.GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE);
+				gemeindeKonfigurationMap.get(
+					EinstellungKey.GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE
+				);
 			EinschulungTyp bgAusstellenBisUndMitStufe =
-				EinschulungTyp.valueOf(einstellungBgAusstellenBisStufe.getValue());
+				EinschulungTyp.valueOf(
+					einstellungBgAusstellenBisStufe.getValue()
+				);
 
 			Einstellung einstellungErwerbspensumZuschlag =
-				gemeindeKonfigurationMap.get(EinstellungKey.ERWERBSPENSUM_ZUSCHLAG);
+				gemeindeKonfigurationMap.get(
+					EinstellungKey.ERWERBSPENSUM_ZUSCHLAG
+				);
 
-			event.fire(gemeindeKennzahlenEventConverter.of(
-				gemeindeKennzahlen,
-				bgAusstellenBisUndMitStufe,
-				einstellungErwerbspensumZuschlag.getValueAsBigDecimal()));
+			event.fire(
+				gemeindeKennzahlenEventConverter.of(
+					gemeindeKennzahlen,
+					bgAusstellenBisUndMitStufe,
+					einstellungErwerbspensumZuschlag
+						.getValueAsBigDecimal()
+				)
+			);
 			gemeindeKennzahlen.setEventPublished(true);
 			persistence.merge(gemeindeKennzahlen);
 		});
@@ -140,11 +194,14 @@ public class EventGeneratorServiceBean {
 		CriteriaQuery<Gemeinde> query = cb.createQuery(Gemeinde.class);
 		Root<Gemeinde> root = query.from(Gemeinde.class);
 
-		Predicate isNotPublished = cb.isFalse(root.get(Gemeinde_.eventPublished));
+		Predicate isNotPublished = cb.isFalse(
+			root.get(Gemeinde_.eventPublished)
+		);
 
 		query.where(isNotPublished);
 
-		List<Gemeinde> gemeinden = persistence.getEntityManager().createQuery(query)
+		List<Gemeinde> gemeinden = persistence.getEntityManager()
+			.createQuery(query)
 			.getResultList();
 
 		gemeinden.forEach(gemeinde -> {
@@ -169,32 +226,45 @@ public class EventGeneratorServiceBean {
 		Join<Betreuung, InstitutionStammdaten> institutionStammdatenJoin =
 			root.join(Betreuung_.institutionStammdaten);
 		Predicate isBetreuungsgutscheinTyp =
-			institutionStammdatenJoin.get(InstitutionStammdaten_.betreuungsangebotTyp)
+			institutionStammdatenJoin.get(
+				InstitutionStammdaten_.betreuungsangebotTyp
+			)
 				.in(BetreuungsangebotTyp.getBetreuungsgutscheinTypes());
 		predicates.add(isBetreuungsgutscheinTyp);
 
 		//Event muss noch nicht plubliziert sein
-		Predicate isNotPublished = cb.isFalse(root.get(Betreuung_.eventPublished));
+		Predicate isNotPublished = cb.isFalse(
+			root.get(Betreuung_.eventPublished)
+		);
 		predicates.add(isNotPublished);
 
 		//Status muss warten sein
-		Predicate statusWarten = cb.equal(root.get(AbstractPlatz_.betreuungsstatus), Betreuungsstatus.WARTEN);
+		Predicate statusWarten = cb.equal(
+			root.get(AbstractPlatz_.betreuungsstatus),
+			Betreuungsstatus.WARTEN
+		);
 		predicates.add(statusWarten);
 
 		query.where(predicates.toArray(NEW));
 
-		List<Betreuung> betreuungs = persistence.getEntityManager().createQuery(query)
+		List<Betreuung> betreuungs = persistence.getEntityManager()
+			.createQuery(query)
 			.getResultList();
 
 		betreuungs.stream()
-			.filter(betreuung -> applicationPropertyService.isPublishSchnittstelleEventsAktiviert(betreuung.extractGesuch().extractMandant()))
+			.filter(
+				betreuung -> applicationPropertyService
+					.isPublishSchnittstelleEventsAktiviert(
+						betreuung.extractGesuch()
+							.extractMandant()
+					)
+			)
 			.forEach(betreuung -> {
 				event.fire(betreuungAnfrageEventConverter.of(betreuung));
 				betreuung.setEventPublished(true);
 				persistence.merge(betreuung);
 			});
 	}
-
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void exportVerfuegungEvent() {
@@ -203,15 +273,23 @@ public class EventGeneratorServiceBean {
 		Root<Verfuegung> root = query.from(Verfuegung.class);
 		Path<Betreuung> betreuungPath = root.get(Verfuegung_.betreuung);
 
-		ParameterExpression<Betreuungsstatus> statusParam = cb.parameter(Betreuungsstatus.class);
-		Predicate isVerfuegt = cb.equal(betreuungPath.get(AbstractPlatz_.betreuungsstatus), statusParam);
+		ParameterExpression<Betreuungsstatus> statusParam = cb.parameter(
+			Betreuungsstatus.class
+		);
+		Predicate isVerfuegt = cb.equal(
+			betreuungPath.get(AbstractPlatz_.betreuungsstatus),
+			statusParam
+		);
 
-		Predicate isNotPublished = cb.isFalse(root.get(Verfuegung_.eventPublished));
+		Predicate isNotPublished = cb.isFalse(
+			root.get(Verfuegung_.eventPublished)
+		);
 
 		query.where(isNotPublished, isVerfuegt);
 		query.select(root.get(AbstractEntity_.ID));
 
-		List<String> verfuegungen = persistence.getEntityManager().createQuery(query)
+		List<String> verfuegungen = persistence.getEntityManager()
+			.createQuery(query)
 			.setParameter(statusParam, Betreuungsstatus.VERFUEGT)
 			.getResultList();
 

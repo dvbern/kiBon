@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
@@ -25,7 +25,8 @@ import ch.dvbern.kibon.exchange.commons.platzbestaetigung.ZeitabschnittDTO;
 import lombok.Value;
 
 @Value
-public class BetreuteTageMapper implements PensumMapper<AbstractMahlzeitenPensum> {
+public class BetreuteTageMapper implements
+	PensumMapper<AbstractMahlzeitenPensum> {
 
 	private final ProcessingContext ctx;
 
@@ -39,7 +40,9 @@ public class BetreuteTageMapper implements PensumMapper<AbstractMahlzeitenPensum
 		if (target.getBetreuteTage() == null) {
 			target.setVollstaendig(false);
 			ctx.requireHumanConfirmation();
-			ctx.addHumanConfirmationMessage("BetreuteTage ist nicht gesetzt. Automatische Bestätigung nicht möglich.");
+			ctx.addHumanConfirmationMessage(
+				"BetreuteTage ist nicht gesetzt. Automatische Bestätigung nicht möglich."
+			);
 		}
 	}
 }

@@ -15,23 +15,24 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * DTO fuer Verfuegung Zeitabschnitte. Gehoert immer zu einer Verfuegung welche weiderum zu einen Betreuung gehoert
@@ -108,13 +109,18 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 	private BigDecimal massgebendesEinkommenVorAbzugFamgr = BigDecimal.ZERO;
 
 	@Nullable
-	private List<JaxVerfuegungZeitabschnittBemerkung> verfuegungZeitabschnittBemerkungList = new ArrayList<>();
+	private List<JaxVerfuegungZeitabschnittBemerkung> verfuegungZeitabschnittBemerkungList =
+		new ArrayList<>();
 
-	@NotNull @Nonnull
-	private VerfuegungsZeitabschnittZahlungsstatus zahlungsstatusInstitution = VerfuegungsZeitabschnittZahlungsstatus.NEU;
+	@NotNull
+	@Nonnull
+	private VerfuegungsZeitabschnittZahlungsstatus zahlungsstatusInstitution =
+		VerfuegungsZeitabschnittZahlungsstatus.NEU;
 
-	@NotNull @Nonnull
-	private VerfuegungsZeitabschnittZahlungsstatus zahlungsstatusAntragsteller = VerfuegungsZeitabschnittZahlungsstatus.NEU;
+	@NotNull
+	@Nonnull
+	private VerfuegungsZeitabschnittZahlungsstatus zahlungsstatusAntragsteller =
+		VerfuegungsZeitabschnittZahlungsstatus.NEU;
 
 	private boolean kategorieMaxEinkommen = false;
 
@@ -203,7 +209,9 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return minimalesEwpUnterschritten;
 	}
 
-	public void setMinimalesEwpUnterschritten(boolean minimalesEwpUnterschritten) {
+	public void setMinimalesEwpUnterschritten(
+		boolean minimalesEwpUnterschritten
+	) {
 		this.minimalesEwpUnterschritten = minimalesEwpUnterschritten;
 	}
 
@@ -228,7 +236,9 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return verfuegteAnzahlZeiteinheiten;
 	}
 
-	public void setVerfuegteAnzahlZeiteinheiten(@Nullable BigDecimal verfuegteAnzahlZeiteinheiten) {
+	public void setVerfuegteAnzahlZeiteinheiten(
+		@Nullable BigDecimal verfuegteAnzahlZeiteinheiten
+	) {
 		this.verfuegteAnzahlZeiteinheiten = verfuegteAnzahlZeiteinheiten;
 	}
 
@@ -238,8 +248,10 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 	}
 
 	public void setAnspruchsberechtigteAnzahlZeiteinheiten(
-		@Nullable BigDecimal anspruchsberechtigteAnzahlZeiteinheiten) {
-		this.anspruchsberechtigteAnzahlZeiteinheiten = anspruchsberechtigteAnzahlZeiteinheiten;
+		@Nullable BigDecimal anspruchsberechtigteAnzahlZeiteinheiten
+	) {
+		this.anspruchsberechtigteAnzahlZeiteinheiten =
+			anspruchsberechtigteAnzahlZeiteinheiten;
 	}
 
 	@Nullable
@@ -255,7 +267,9 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return betreuungspensumZeiteinheit;
 	}
 
-	public void setBetreuungspensumZeiteinheit(BigDecimal betreuungspensumZeiteinheit) {
+	public void setBetreuungspensumZeiteinheit(
+		BigDecimal betreuungspensumZeiteinheit
+	) {
 		this.betreuungspensumZeiteinheit = betreuungspensumZeiteinheit;
 	}
 
@@ -271,16 +285,22 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return verguenstigungOhneBeruecksichtigungVollkosten;
 	}
 
-	public void setVerguenstigungOhneBeruecksichtigungVollkosten(BigDecimal verguenstigungOhneBeruecksichtigungVollkosten) {
-		this.verguenstigungOhneBeruecksichtigungVollkosten = verguenstigungOhneBeruecksichtigungVollkosten;
+	public void setVerguenstigungOhneBeruecksichtigungVollkosten(
+		BigDecimal verguenstigungOhneBeruecksichtigungVollkosten
+	) {
+		this.verguenstigungOhneBeruecksichtigungVollkosten =
+			verguenstigungOhneBeruecksichtigungVollkosten;
 	}
 
 	public BigDecimal getVerguenstigungOhneBeruecksichtigungMinimalbeitrag() {
 		return verguenstigungOhneBeruecksichtigungMinimalbeitrag;
 	}
 
-	public void setVerguenstigungOhneBeruecksichtigungMinimalbeitrag(BigDecimal verguenstigungOhneBeruecksichtigungMinimalbeitrag) {
-		this.verguenstigungOhneBeruecksichtigungMinimalbeitrag = verguenstigungOhneBeruecksichtigungMinimalbeitrag;
+	public void setVerguenstigungOhneBeruecksichtigungMinimalbeitrag(
+		BigDecimal verguenstigungOhneBeruecksichtigungMinimalbeitrag
+	) {
+		this.verguenstigungOhneBeruecksichtigungMinimalbeitrag =
+			verguenstigungOhneBeruecksichtigungMinimalbeitrag;
 	}
 
 	public BigDecimal getVerguenstigung() {
@@ -327,8 +347,11 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return massgebendesEinkommenVorAbzugFamgr;
 	}
 
-	public void setMassgebendesEinkommenVorAbzugFamgr(BigDecimal massgebendesEinkommenVorAbzugFamgr) {
-		this.massgebendesEinkommenVorAbzugFamgr = massgebendesEinkommenVorAbzugFamgr;
+	public void setMassgebendesEinkommenVorAbzugFamgr(
+		BigDecimal massgebendesEinkommenVorAbzugFamgr
+	) {
+		this.massgebendesEinkommenVorAbzugFamgr =
+			massgebendesEinkommenVorAbzugFamgr;
 	}
 
 	@Nonnull
@@ -336,7 +359,9 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return zahlungsstatusInstitution;
 	}
 
-	public void setZahlungsstatusInstitution(@Nonnull VerfuegungsZeitabschnittZahlungsstatus zahlungsstatusInstitution) {
+	public void setZahlungsstatusInstitution(
+		@Nonnull VerfuegungsZeitabschnittZahlungsstatus zahlungsstatusInstitution
+	) {
 		this.zahlungsstatusInstitution = zahlungsstatusInstitution;
 	}
 
@@ -346,7 +371,8 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 	}
 
 	public void setZahlungsstatusAntragsteller(
-		@Nonnull VerfuegungsZeitabschnittZahlungsstatus zahlungsstatusAntragsteller) {
+		@Nonnull VerfuegungsZeitabschnittZahlungsstatus zahlungsstatusAntragsteller
+	) {
 		this.zahlungsstatusAntragsteller = zahlungsstatusAntragsteller;
 	}
 
@@ -370,15 +396,20 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return sameVerfuegteVerfuegungsrelevanteDaten;
 	}
 
-	public void setSameVerfuegteVerfuegungsrelevanteDaten(boolean sameVerfuegteVerfuegungsrelevanteDaten) {
-		this.sameVerfuegteVerfuegungsrelevanteDaten = sameVerfuegteVerfuegungsrelevanteDaten;
+	public void setSameVerfuegteVerfuegungsrelevanteDaten(
+		boolean sameVerfuegteVerfuegungsrelevanteDaten
+	) {
+		this.sameVerfuegteVerfuegungsrelevanteDaten =
+			sameVerfuegteVerfuegungsrelevanteDaten;
 	}
 
 	public boolean isSameAusbezahlteVerguenstigung() {
 		return sameAusbezahlteVerguenstigung;
 	}
 
-	public void setSameAusbezahlteVerguenstigung(boolean sameAusbezahlteVerguenstigung) {
+	public void setSameAusbezahlteVerguenstigung(
+		boolean sameAusbezahlteVerguenstigung
+	) {
 		this.sameAusbezahlteVerguenstigung = sameAusbezahlteVerguenstigung;
 	}
 
@@ -386,7 +417,9 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return sameAusbezahlteMahlzeiten;
 	}
 
-	public void setSameAusbezahlteMahlzeiten(boolean sameAusbezahlteMahlzeiten) {
+	public void setSameAusbezahlteMahlzeiten(
+		boolean sameAusbezahlteMahlzeiten
+	) {
 		this.sameAusbezahlteMahlzeiten = sameAusbezahlteMahlzeiten;
 	}
 
@@ -394,7 +427,9 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return minimalerElternbeitragGekuerzt;
 	}
 
-	public void setMinimalerElternbeitragGekuerzt(BigDecimal minimalerElternbeitragGekuerzt) {
+	public void setMinimalerElternbeitragGekuerzt(
+		BigDecimal minimalerElternbeitragGekuerzt
+	) {
 		this.minimalerElternbeitragGekuerzt = minimalerElternbeitragGekuerzt;
 	}
 
@@ -403,8 +438,11 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return tsCalculationResultMitPaedagogischerBetreuung;
 	}
 
-	public void setTsCalculationResultMitPaedagogischerBetreuung(@Nullable JaxTsCalculationResult tsCalculationResultMitPaedagogischerBetreuung) {
-		this.tsCalculationResultMitPaedagogischerBetreuung = tsCalculationResultMitPaedagogischerBetreuung;
+	public void setTsCalculationResultMitPaedagogischerBetreuung(
+		@Nullable JaxTsCalculationResult tsCalculationResultMitPaedagogischerBetreuung
+	) {
+		this.tsCalculationResultMitPaedagogischerBetreuung =
+			tsCalculationResultMitPaedagogischerBetreuung;
 	}
 
 	@Nullable
@@ -412,15 +450,20 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return tsCalculationResultOhnePaedagogischerBetreuung;
 	}
 
-	public void setTsCalculationResultOhnePaedagogischerBetreuung(@Nullable JaxTsCalculationResult tsCalculationResultOhnePaedagogischerBetreuung) {
-		this.tsCalculationResultOhnePaedagogischerBetreuung = tsCalculationResultOhnePaedagogischerBetreuung;
+	public void setTsCalculationResultOhnePaedagogischerBetreuung(
+		@Nullable JaxTsCalculationResult tsCalculationResultOhnePaedagogischerBetreuung
+	) {
+		this.tsCalculationResultOhnePaedagogischerBetreuung =
+			tsCalculationResultOhnePaedagogischerBetreuung;
 	}
 
 	public BigDecimal getVerguenstigungMahlzeitTotal() {
 		return verguenstigungMahlzeitTotal;
 	}
 
-	public void setVerguenstigungMahlzeitTotal(BigDecimal verguenstigungMahlzeitTotal) {
+	public void setVerguenstigungMahlzeitTotal(
+		BigDecimal verguenstigungMahlzeitTotal
+	) {
 		this.verguenstigungMahlzeitTotal = verguenstigungMahlzeitTotal;
 	}
 
@@ -428,8 +471,11 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return sameVerfuegteMahlzeitenVerguenstigung;
 	}
 
-	public void setSameVerfuegteMahlzeitenVerguenstigung(boolean sameVerfuegteMahlzeitenVerguenstigung) {
-		this.sameVerfuegteMahlzeitenVerguenstigung = sameVerfuegteMahlzeitenVerguenstigung;
+	public void setSameVerfuegteMahlzeitenVerguenstigung(
+		boolean sameVerfuegteMahlzeitenVerguenstigung
+	) {
+		this.sameVerfuegteMahlzeitenVerguenstigung =
+			sameVerfuegteMahlzeitenVerguenstigung;
 	}
 
 	@Nullable
@@ -438,15 +484,19 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 	}
 
 	public void setVerfuegungZeitabschnittBemerkungList(
-		@Nullable List<JaxVerfuegungZeitabschnittBemerkung> verfuegungZeitabschnittBemerkungList) {
-		this.verfuegungZeitabschnittBemerkungList = verfuegungZeitabschnittBemerkungList;
+		@Nullable List<JaxVerfuegungZeitabschnittBemerkung> verfuegungZeitabschnittBemerkungList
+	) {
+		this.verfuegungZeitabschnittBemerkungList =
+			verfuegungZeitabschnittBemerkungList;
 	}
 
 	public BigDecimal getVerguenstigungProZeiteinheit() {
 		return verguenstigungProZeiteinheit;
 	}
 
-	public void setVerguenstigungProZeiteinheit(BigDecimal verguenstigungProZeiteinheit) {
+	public void setVerguenstigungProZeiteinheit(
+		BigDecimal verguenstigungProZeiteinheit
+	) {
 		this.verguenstigungProZeiteinheit = verguenstigungProZeiteinheit;
 	}
 
@@ -463,7 +513,9 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return beitragshoeheProzent;
 	}
 
-	public void setBeitragshoeheProzent(@Nullable Integer beitragshoeheProzent) {
+	public void setBeitragshoeheProzent(
+		@Nullable Integer beitragshoeheProzent
+	) {
 		this.beitragshoeheProzent = beitragshoeheProzent;
 	}
 
@@ -471,7 +523,10 @@ public class JaxVerfuegungZeitabschnitt extends JaxAbstractDateRangedDTO {
 		return zusaetzlicherGutscheinGemeindeBetrag;
 	}
 
-	public void setZusaetzlicherGutscheinGemeindeBetrag(BigDecimal zusaetzlicherGutscheinGemeindeBetrag) {
-		this.zusaetzlicherGutscheinGemeindeBetrag = zusaetzlicherGutscheinGemeindeBetrag;
+	public void setZusaetzlicherGutscheinGemeindeBetrag(
+		BigDecimal zusaetzlicherGutscheinGemeindeBetrag
+	) {
+		this.zusaetzlicherGutscheinGemeindeBetrag =
+			zusaetzlicherGutscheinGemeindeBetrag;
 	}
 }

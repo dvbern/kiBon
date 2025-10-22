@@ -15,8 +15,8 @@
 
 package ch.dvbern.ebegu.validators;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import org.slf4j.Logger;
@@ -28,14 +28,22 @@ import org.slf4j.LoggerFactory;
 public class CheckGesuchstellerContainerCompleteValidator implements
 	ConstraintValidator<CheckGesuchstellerContainerComplete, GesuchstellerContainer> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CheckGesuchstellerContainerCompleteValidator.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		CheckGesuchstellerContainerCompleteValidator.class.getSimpleName()
+	);
 
 	@SuppressWarnings("ConstantConditions")
 	@Override
-	public boolean isValid(GesuchstellerContainer gsContainer, ConstraintValidatorContext context) {
+	public boolean isValid(
+		GesuchstellerContainer gsContainer,
+		ConstraintValidatorContext context
+	) {
 		boolean valid = true;
 		if (gsContainer.getGesuchstellerJA() == null) {
-			LOG.error("GesuchstellerJA is empty for GesuchstellerContainer {}", gsContainer.getId());
+			LOG.error(
+				"GesuchstellerJA is empty for GesuchstellerContainer {}",
+				gsContainer.getId()
+			);
 			valid = false;
 		}
 		// The check if the finanzielleSitutionContaier is empty can not be done here any more since it can now be empty for a given set of Angebote

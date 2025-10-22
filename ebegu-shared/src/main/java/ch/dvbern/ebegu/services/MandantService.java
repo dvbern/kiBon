@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.Cookie;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
@@ -33,6 +33,12 @@ public interface MandantService {
 
 	/**
 	 * @param id PK (id) des Mandanten
+	 * @return Mandant mit dem gegebenen key oder Exception falls nicht vorhanden
+	 */
+	Mandant getMandant(@Nonnull final String id);
+
+	/**
+	 * @param id PK (id) des Mandanten
 	 * @return Mandant mit dem gegebenen key oder null falls nicht vorhanden
 	 */
 	@Nonnull
@@ -42,7 +48,9 @@ public interface MandantService {
 	Optional<Mandant> findMandantByName(@Nonnull String name);
 
 	@Nonnull
-	Optional<Mandant> findMandantByIdentifier(@Nonnull MandantIdentifier mandantIdentifier);
+	Optional<Mandant> findMandantByIdentifier(
+		@Nonnull MandantIdentifier mandantIdentifier
+	);
 
 	@Nonnull
 	Mandant findMandantByCookie(@Nullable Cookie mandantCookie);
@@ -53,5 +61,9 @@ public interface MandantService {
 	@Nonnull
 	Collection<Mandant> getAll();
 
-	void updateNextInfomaBelegnummer(@Nonnull Mandant mandant, @Nonnull ZahlungslaufTyp zahlungslaufTyp, long nextNumber);
+	void updateNextInfomaBelegnummer(
+		@Nonnull Mandant mandant,
+		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
+		long nextNumber
+	);
 }

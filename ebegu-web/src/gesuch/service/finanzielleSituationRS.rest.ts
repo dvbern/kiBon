@@ -15,21 +15,20 @@
 
 import {HttpHeaders} from '@angular/common/http';
 import {IHttpService} from 'angular';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
 import {TSFinanzielleSituationAufteilungDTO} from '../../models/dto/TSFinanzielleSituationAufteilungDTO';
 import {TSFinanzielleSituationResultateDTO} from '../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSEinstellungKey} from '../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';
 import {TSFinanzielleSituationTyp} from '../../models/enums/TSFinanzielleSituationTyp';
-import {TSEinstellung} from '../../models/TSEinstellung';
+import {TSEinstellung} from '../../admin/einstellungen/TSEinstellung';
 import {TSFinanzielleSituationContainer} from '../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../models/TSFinanzModel';
-import {TSGemeinde} from '../../models/TSGemeinde';
 import {TSGesuch} from '../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../models/TSGesuchsperiode';
 import {TSGesuchstellerContainer} from '../../models/TSGesuchstellerContainer';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {WizardStepManager} from './wizardStepManager';

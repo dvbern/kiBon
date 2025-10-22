@@ -24,20 +24,19 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.dto.suchfilter.lucene.Searchable;
 import ch.dvbern.ebegu.enums.AntragCopyType;
@@ -51,9 +50,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 /**
  * Container-Entity fuer die Kinder: Diese muss für jeden Benutzertyp (GS, JA) einzeln gefuehrt werden,
@@ -66,31 +66,37 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 @Audited
 @Entity
 @Table(
-	uniqueConstraints = @UniqueConstraint(columnNames = { "kindNummer", "gesuch_id" }, name = "UK_kindcontainer_gesuch_kind_nummer")
+	uniqueConstraints = @UniqueConstraint(columnNames = { "kindNummer",
+		"gesuch_id" }, name = "UK_kindcontainer_gesuch_kind_nummer")
 )
 @Indexed
-@EntityListeners({ AlleFaelleKindContainerListener.class })
-@Analyzer(definition = "EBEGUGermanAnalyzer")
-public class KindContainer extends AbstractMutableEntity implements Comparable<KindContainer>, Searchable {
+public class KindContainer extends AbstractMutableEntity implements
+	Comparable<KindContainer>,
+	Searchable {
 
 	private static final long serialVersionUID = -6784985260190035840L;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_kind_container_gesuch_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_kind_container_gesuch_id"),
+		nullable = false,
+		updatable = false)
 	@IndexedEmbedded
 	private Gesuch gesuch;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_kind_container_kindgs_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_kind_container_kindgs_id"),
+		nullable = true)
 	private Kind kindGS;
 
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_kind_container_kindja_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_kind_container_kindja_id"),
+		nullable = true)
 	@IndexedEmbedded
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW) // automatic re-indexing requires bidirectional relationship
 	private Kind kindJA;
 
 	@NotNull
@@ -99,8 +105,10 @@ public class KindContainer extends AbstractMutableEntity implements Comparable<K
 	private Integer kindNummer = -1; // by default ungueltig, sodass wir wissen wann es neu ist
 
 	/**
-	 * nextNumberBetreuung ist die Nummer, die die naechste Betreuung bekommen wird. Aus diesem Grund ist es by default 1
-	 * Dieses Feld darf nicht mit der Anzahl der Betreuungen verwechselt werden, da sie sehr unterschiedlich sein koennen falls mehrere Betreuungen geloescht wurden
+	 * nextNumberBetreuung ist die Nummer, die die naechste Betreuung bekommen wird. Aus diesem Grund ist es by default
+	 * 1
+	 * Dieses Feld darf nicht mit der Anzahl der Betreuungen verwechselt werden, da sie sehr unterschiedlich sein
+	 * koennen falls mehrere Betreuungen geloescht wurden
 	 */
 	@NotNull
 	@Min(1)
@@ -110,19 +118,25 @@ public class KindContainer extends AbstractMutableEntity implements Comparable<K
 	@Nonnull
 	@Valid
 	@SortNatural
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "kind")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "kind")
 	private Set<Betreuung> betreuungen = new TreeSet<>();
 
 	@Nonnull
 	@Valid
 	@SortNatural
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "kind")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "kind")
 	private Set<AnmeldungTagesschule> anmeldungenTagesschule = new TreeSet<>();
 
 	@Nonnull
 	@Valid
 	@SortNatural
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "kind")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "kind")
 	private Set<AnmeldungFerieninsel> anmeldungenFerieninsel = new TreeSet<>();
 
 	@Column(nullable = true)
@@ -201,7 +215,9 @@ public class KindContainer extends AbstractMutableEntity implements Comparable<K
 		return keinSelbstbehaltDurchGemeinde;
 	}
 
-	public void setKeinSelbstbehaltDurchGemeinde(@Nullable Boolean keinSelbstbehaltDurchGemeinde) {
+	public void setKeinSelbstbehaltDurchGemeinde(
+		@Nullable Boolean keinSelbstbehaltDurchGemeinde
+	) {
 		this.keinSelbstbehaltDurchGemeinde = keinSelbstbehaltDurchGemeinde;
 	}
 
@@ -210,7 +226,9 @@ public class KindContainer extends AbstractMutableEntity implements Comparable<K
 		return anmeldungenTagesschule;
 	}
 
-	public void setAnmeldungenTagesschule(@Nonnull Set<AnmeldungTagesschule> anmeldungenTagesschule) {
+	public void setAnmeldungenTagesschule(
+		@Nonnull Set<AnmeldungTagesschule> anmeldungenTagesschule
+	) {
 		this.anmeldungenTagesschule = anmeldungenTagesschule;
 	}
 
@@ -219,7 +237,9 @@ public class KindContainer extends AbstractMutableEntity implements Comparable<K
 		return anmeldungenFerieninsel;
 	}
 
-	public void setAnmeldungenFerieninsel(@Nonnull Set<AnmeldungFerieninsel> anmeldungenFerieninsel) {
+	public void setAnmeldungenFerieninsel(
+		@Nonnull Set<AnmeldungFerieninsel> anmeldungenFerieninsel
+	) {
 		this.anmeldungenFerieninsel = anmeldungenFerieninsel;
 	}
 
@@ -233,21 +253,35 @@ public class KindContainer extends AbstractMutableEntity implements Comparable<K
 
 	@Nonnull
 	public KindContainer copyKindContainer(
-		@Nonnull KindContainer target, @Nonnull AntragCopyType copyType, @Nonnull Gesuch targetGesuch,
-		@Nonnull Gesuchsperiode gesuchsperiode, @Nonnull LocalDate regelStartDatum) {
+		@Nonnull KindContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull Gesuch targetGesuch,
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull LocalDate regelStartDatum
+	) {
 		super.copyAbstractEntity(target, copyType);
 		target.setGesuch(targetGesuch);
 		target.setKindGS(null);
 		target.setKindNummer(this.getKindNummer());
 		target.setKindMutiert(null);
-		target.setKindJA(this.getKindJA().copyKind(new Kind(), copyType, gesuchsperiode, regelStartDatum));
+		target.setKindJA(
+			this.getKindJA()
+				.copyKind(
+					new Kind(),
+					copyType,
+					gesuchsperiode,
+					regelStartDatum
+				)
+		);
 
 		switch (copyType) {
 		case MUTATION:
 			target.setNextNumberBetreuung(this.getNextNumberBetreuung());
 			copyBetreuungen(target, copyType, targetGesuch);
 			copyAnmeldungen(target, copyType, targetGesuch);
-			target.setKeinSelbstbehaltDurchGemeinde(this.getKeinSelbstbehaltDurchGemeinde());
+			target.setKeinSelbstbehaltDurchGemeinde(
+				this.getKeinSelbstbehaltDurchGemeinde()
+			);
 			break;
 		case ERNEUERUNG:
 		case ERNEUERUNG_AR_2023:
@@ -260,23 +294,54 @@ public class KindContainer extends AbstractMutableEntity implements Comparable<K
 		return target;
 	}
 
-	private void copyBetreuungen(@Nonnull KindContainer target, @Nonnull AntragCopyType copyType, @Nonnull Gesuch targetGesuch) {
+	private void copyBetreuungen(
+		@Nonnull KindContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull Gesuch targetGesuch
+	) {
 		target.setBetreuungen(new TreeSet<>());
 		for (Betreuung betreuung : this.getBetreuungen()) {
-			target.getBetreuungen().add(betreuung.copyBetreuung(new Betreuung(), copyType, target, targetGesuch.getEingangsart()));
+			target.getBetreuungen()
+				.add(
+					betreuung.copyBetreuung(
+						new Betreuung(),
+						copyType,
+						target,
+						targetGesuch.getEingangsart()
+					)
+				);
 		}
 	}
 
-	private void copyAnmeldungen(@Nonnull KindContainer target, @Nonnull AntragCopyType copyType,
-		@Nonnull Gesuch targetGesuch) {
-		target.setAnmeldungenTagesschule(new TreeSet<>());
-		for (AnmeldungTagesschule anmeldungTagesschule : this.getAnmeldungenTagesschule()) {
-			target.getAnmeldungenTagesschule().add(anmeldungTagesschule.copyAnmeldungTagesschule(
-				new AnmeldungTagesschule(), copyType, target, targetGesuch.getEingangsart()));
+	private void copyAnmeldungen(
+		@Nonnull KindContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull Gesuch targetGesuch
+	) {
+		target.getAnmeldungenTagesschule().clear();
+		for (AnmeldungTagesschule anmeldungTagesschule : this
+			.getAnmeldungenTagesschule()) {
+			target.getAnmeldungenTagesschule()
+				.add(
+					anmeldungTagesschule.copyAnmeldungTagesschule(
+						new AnmeldungTagesschule(),
+						copyType,
+						target,
+						targetGesuch.getEingangsart()
+					)
+				);
 		}
-		for (AnmeldungFerieninsel anmeldungFerieninsel : this.getAnmeldungenFerieninsel()) {
-			target.getAnmeldungenFerieninsel().add(anmeldungFerieninsel.copyAnmeldungFerieninsel(
-				new AnmeldungFerieninsel(), copyType, target, targetGesuch.getEingangsart()));
+		for (AnmeldungFerieninsel anmeldungFerieninsel : this
+			.getAnmeldungenFerieninsel()) {
+			target.getAnmeldungenFerieninsel()
+				.add(
+					anmeldungFerieninsel.copyAnmeldungFerieninsel(
+						new AnmeldungFerieninsel(),
+						copyType,
+						target,
+						targetGesuch.getEingangsart()
+					)
+				);
 		}
 	}
 
@@ -338,7 +403,11 @@ public class KindContainer extends AbstractMutableEntity implements Comparable<K
 			return false;
 		}
 		final KindContainer otherKindContainer = (KindContainer) other;
-		return EbeguUtil.isSame(getKindJA(), otherKindContainer.getKindJA()) &&
-			Objects.equals(getKindNummer(), otherKindContainer.getKindNummer());
+		return EbeguUtil.isSame(getKindJA(), otherKindContainer.getKindJA())
+			&&
+			Objects.equals(
+				getKindNummer(),
+				otherKindContainer.getKindNummer()
+			);
 	}
 }

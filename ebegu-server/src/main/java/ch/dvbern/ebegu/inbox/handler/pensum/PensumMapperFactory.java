@@ -8,19 +8,22 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
 
-import javax.annotation.Nonnull;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import java.math.BigDecimal;
 
+import javax.annotation.Nonnull;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractBetreuungsPensum;
 import ch.dvbern.ebegu.entities.BetreuungsmitteilungPensum;
 import ch.dvbern.ebegu.entities.Betreuungspensum;
@@ -28,6 +31,8 @@ import ch.dvbern.ebegu.entities.containers.PensumUtil;
 import ch.dvbern.ebegu.inbox.handler.ProcessingContext;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_MITTAGSTISCH;
 
 @ApplicationScoped
 @NoArgsConstructor
@@ -38,26 +43,49 @@ public class PensumMapperFactory {
 	private PensumValueMapperFactory pensumValueMapperFactory;
 	@Inject
 	private EingewoehnungMapperFactory eingewoehnungMapperFactory;
+	@Inject
+	private EinstellungService einstellungService;
 
 	@Nonnull
-	public PensumMapper<Betreuungspensum> createForPlatzbestaetigung(@Nonnull ProcessingContext ctx) {
+	public PensumMapper<Betreuungspensum> createForPlatzbestaetigung(
+		@Nonnull ProcessingContext ctx
+	) {
 		return createPensumMapper(ctx);
 	}
 
 	@Nonnull
-	public PensumMapper<BetreuungsmitteilungPensum> createForBetreuungsmitteilung(@Nonnull ProcessingContext ctx) {
+	public PensumMapper<BetreuungsmitteilungPensum> createForBetreuungsmitteilung(
+		@Nonnull ProcessingContext ctx
+	) {
 		return createPensumMapper(ctx);
 	}
 
 	@Nonnull
-	<T extends AbstractBetreuungsPensum> PensumMapper<T> createPensumMapper(@Nonnull ProcessingContext ctx) {
+	<T extends AbstractBetreuungsPensum> PensumMapper<T> createPensumMapper(
+		@Nonnull ProcessingContext ctx
+	) {
 		if (ctx.getBetreuung().isAngebotMittagstisch()) {
+			BigDecimal oeffnungstageMittagstisch = einstellungService
+				.getEinstellungAsBigDecimal(
+					OEFFNUNGSTAGE_MITTAGSTISCH,
+					ctx.getBetreuung()
+				);
 			return (target, zeitabschnittDTO) -> {
-				PensumMapper.GUELTIGKEIT_MAPPER.toAbstractMahlzeitenPensum(target, zeitabschnittDTO);
-				target.setMonatlicheHauptmahlzeiten(zeitabschnittDTO.getAnzahlHauptmahlzeiten());
-				target.setTarifProHauptmahlzeit(zeitabschnittDTO.getTarifProHauptmahlzeiten());
+				PensumMapper.GUELTIGKEIT_MAPPER.toAbstractMahlzeitenPensum(
+					target,
+					zeitabschnittDTO
+				);
+				target.setMonatlicheHauptmahlzeiten(
+					zeitabschnittDTO.getAnzahlHauptmahlzeiten()
+				);
+				target.setTarifProHauptmahlzeit(
+					zeitabschnittDTO.getTarifProHauptmahlzeiten()
+				);
 				// this transformation should be at the end
-				PensumUtil.transformMittagstischPensum(target);
+				PensumUtil.transformMittagstischPensum(
+					target,
+					oeffnungstageMittagstisch
+				);
 			};
 		}
 
@@ -68,8 +96,10 @@ public class PensumMapperFactory {
 			pensumValueMapperFactory.createForPensum(ctx),
 			// the following mappers are (currently) not possible for Mittagstisch
 			eingewoehnungMapperFactory.createForEingewoehnung(ctx),
-			MahlzeitVerguenstigungMapperFactory.createForMahlzeitenVerguenstigung(ctx),
-			BetreuungInFerienzeitMapperFactory.createForBetreuungInFerienzeit(ctx)
+			MahlzeitVerguenstigungMapperFactory
+				.createForMahlzeitenVerguenstigung(ctx),
+			BetreuungInFerienzeitMapperFactory
+				.createForBetreuungInFerienzeit(ctx)
 		);
 	}
 }

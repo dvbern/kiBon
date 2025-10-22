@@ -19,8 +19,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 
@@ -29,7 +29,8 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Je nach {@link BetreuungsangebotTyp} der verknuepften Institutionstammdaten darf im Betreuungspensum nur eingeschraenkte
+ * Je nach {@link BetreuungsangebotTyp} der verknuepften Institutionstammdaten darf im Betreuungspensum nur
+ * eingeschraenkte
  * Werte eingegeben werden.
  */
 @Target({ TYPE, ANNOTATION_TYPE })

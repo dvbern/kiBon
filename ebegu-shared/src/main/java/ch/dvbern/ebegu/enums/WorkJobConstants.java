@@ -30,7 +30,8 @@ public final class WorkJobConstants {
 	public static final String INKL_BG_GESUCHE = "inklBgGesuche";
 	public static final String INKL_MISCH_GESUCHE = "inklMischGesuche";
 	public static final String INKL_TS_GESUCHE = "InklTsGesuche";
-	public static final String OHNE_ERNEUERUNGSGESUCHE = "OhneErneuerungsgesuche";
+	public static final String OHNE_ERNEUERUNGSGESUCHE =
+		"OhneErneuerungsgesuche";
 	public static final String TEXT = "text";
 	public static final String DO_SAVE = "doSave";
 	public static final String BETRAG_PRO_KIND = "betragProKind";
@@ -40,8 +41,13 @@ public final class WorkJobConstants {
 	public static final String GEMEINDE_ID_PARAM = "gemeindeId";
 	public static final String INSTITUTION_ID_PARAM = "institutionId";
 	public static final String JAHR_PARAM = "jahr";
-	public static final String KANTON_SELBSTBEHALT ="kantonSelbstbehalt";
-	public static final String REPORT_MANDANT_ID ="mandant";
+	public static final String KANTON_SELBSTBEHALT = "kantonSelbstbehalt";
+	public static final String REPORT_MANDANT_ID = "mandant";
+	public static final String LAS_JAHR = "lasJahr";
+	public static final String LAS_SELBSTBEHALT = "lasSelbstbehalt";
+	public static final String REPORT_MANDANT_IDENTIFIER = "mandantIdentifier";
+	public static final String ZAHLUNGSLAUFTYP = "zahlungslauftyp";
+	public static final String AUSZAHLUNG_IN_ZUKUNFT = "zahlungInZukunft";
 
 	private WorkJobConstants() {
 	}

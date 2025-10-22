@@ -20,15 +20,15 @@ import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.enums.MahnungTyp;
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO fuer Mahnungen
@@ -46,14 +46,14 @@ public class JaxMahnung extends JaxAbstractDTO {
 	private MahnungTyp mahnungTyp;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate datumFristablauf = null;
 
 	@Nullable
 	private String bemerkungen;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime timestampAbgeschlossen;
 
 	@NotNull
@@ -100,7 +100,9 @@ public class JaxMahnung extends JaxAbstractDTO {
 		return timestampAbgeschlossen;
 	}
 
-	public void setTimestampAbgeschlossen(@Nullable LocalDateTime timestampAbgeschlossen) {
+	public void setTimestampAbgeschlossen(
+		@Nullable LocalDateTime timestampAbgeschlossen
+	) {
 		this.timestampAbgeschlossen = timestampAbgeschlossen;
 	}
 

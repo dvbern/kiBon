@@ -19,7 +19,8 @@ import {Directive, ElementRef, Injector, Input} from '@angular/core';
 import {UpgradeComponent} from '@angular/upgrade/static';
 
 @Directive({
-    selector: 'dv-accordion'
+    selector: 'dv-accordion',
+    standalone: false
 })
 export class AccordionDirective extends UpgradeComponent {
     @Input() public allowMultipleSections: boolean;

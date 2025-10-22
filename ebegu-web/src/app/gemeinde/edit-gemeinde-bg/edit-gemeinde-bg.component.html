@@ -15,7 +15,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<div class="dv-content" *ngIf="stammdaten$ | async as stammdaten">
+<div class="dv-content edit-bg" *ngIf="stammdaten$ | async as stammdaten">
     <div *ngIf="editMode; else viewModeTemplate">
         <fieldset ngModelGroup="dv-edit-gemeinde-bg">
             <div class="row">
@@ -102,8 +102,11 @@
                             name="bic_id"
                             #nameBIC="ngModel"
                             required
-                            [(ngModel)]="stammdaten.bic"
                             [maxlength]="255"
+                            [(ngModel)]="stammdaten.bic"
+                            (blur)="removeSpacesOnBlur(stammdaten)"
+                            (keydown.space)="$event.preventDefault()"
+                            isValidBicSwiftCode
                             class="form-control"
                         />
                         <dv-error-messages
@@ -122,6 +125,7 @@
                             name="iban_id"
                             #nameIBAN="ngModel"
                             required
+                            placeholder="CHXX XXXX XXXX XXXX XXXX X"
                             ngxIban
                             isNotQrIbanN
                             [(ngModel)]="stammdaten.iban"
@@ -149,15 +153,16 @@
                                         'BENACHRICHTIGUNGEN_EMAIL_SENDEN'
                                             | translate
                                     }}
+
+                                    <dv-tooltip
+                                        id="benachrichtigungBgEmailAuto-tooltip"
+                                        [text]="
+                                            'BENACHRICHTIGUNGEN_EMAIL_SENDEN_HELP'
+                                                | translate
+                                        "
+                                    ></dv-tooltip>
                                 </mat-checkbox>
                             </div>
-                            <dv-tooltip
-                                id="benachrichtigungBgEmailAuto-tooltip"
-                                [text]="
-                                    'BENACHRICHTIGUNGEN_EMAIL_SENDEN_HELP'
-                                        | translate
-                                "
-                            ></dv-tooltip>
                         </div>
                     </div>
 
@@ -172,15 +177,21 @@
                                         stammdaten.standardDokSignature
                                     "
                                 >
-                                    {{ 'STANDARD_DOK_SIGNATURE' | translate }}
+                                    <span
+                                        [innerHTML]="
+                                            'STANDARD_DOK_SIGNATURE' | translate
+                                        "
+                                    ></span>
+                                    <dv-tooltip
+                                        id="standardDokSignature_tooltip"
+                                        class="tooltip-pd-8 align-start"
+                                        [text]="
+                                            'STANDARD_DOK_SIGNATURE_HELP'
+                                                | translate
+                                        "
+                                    ></dv-tooltip>
                                 </mat-checkbox>
                             </div>
-                            <dv-tooltip
-                                id="standardDokSignature_tooltip"
-                                [text]="
-                                    'STANDARD_DOK_SIGNATURE_HELP' | translate
-                                "
-                            ></dv-tooltip>
                         </div>
                         <div *ngIf="!stammdaten.standardDokSignature">
                             <div class="row">
@@ -349,16 +360,16 @@
                                         'TS_VERANTWORTLICHER_NACH_VERFUEGUNG_BENACHRICHTIGEN'
                                             | translate
                                     }}
+
+                                    <dv-tooltip
+                                        id="verantwortlicherTSInformieren_tooltip"
+                                        class="align-start"
+                                        [text]="
+                                            'TS_VERANTWORTLICHER_NACH_VERFUEGUNG_BENACHRICHTIGEN_HELP'
+                                                | translate
+                                        "
+                                    ></dv-tooltip>
                                 </mat-checkbox>
-                            </div>
-                            <div class="tooltip-margin">
-                                <dv-tooltip
-                                    id="verantwortlicherTSInformieren_tooltip"
-                                    [text]="
-                                        'TS_VERANTWORTLICHER_NACH_VERFUEGUNG_BENACHRICHTIGEN_HELP'
-                                            | translate
-                                    "
-                                ></dv-tooltip>
                             </div>
                         </div>
                     </div>
@@ -378,16 +389,15 @@
                                         'EMAIL_BEI_GESUCHSPERIODE_OEFFNUNG'
                                             | translate
                                     }}
+
+                                    <dv-tooltip
+                                        id="emailBeiGesuchsperiodeOeffnung_tooltip"
+                                        [text]="
+                                            'EMAIL_BEI_GESUCHSPERIODE_OEFFNUNG_HELP'
+                                                | translate
+                                        "
+                                    ></dv-tooltip>
                                 </mat-checkbox>
-                            </div>
-                            <div class="tooltip-margin">
-                                <dv-tooltip
-                                    id="emailBeiGesuchsperiodeOeffnung_tooltip"
-                                    [text]="
-                                        'EMAIL_BEI_GESUCHSPERIODE_OEFFNUNG_HELP'
-                                            | translate
-                                    "
-                                ></dv-tooltip>
                             </div>
                         </div>
                     </div>
@@ -407,15 +417,16 @@
                                         'ZUSAETZLICHER_TEXT_VERFUEGUNG_JA'
                                             | translate
                                     }}
+
+                                    <dv-tooltip
+                                        id="zusatzText_tooltip"
+                                        [text]="
+                                            'ZUSAETZLICHER_TEXT_VERFUEGUNG_HELP'
+                                                | translate
+                                        "
+                                    ></dv-tooltip>
                                 </mat-checkbox>
                             </div>
-                            <dv-tooltip
-                                id="zusatzText_tooltip"
-                                [text]="
-                                    'ZUSAETZLICHER_TEXT_VERFUEGUNG_HELP'
-                                        | translate
-                                "
-                            ></dv-tooltip>
                         </div>
                         <div *ngIf="stammdaten.hasZusatzTextVerfuegung">
                             <div class="row">
@@ -463,67 +474,6 @@
                     <div class="form-group mt-5">
                         <h3 translate>BEGU_START</h3>
                         <p>{{ beguStartStr }}</p>
-                    </div>
-                    <!-- Welche Institutionen können ausgewählt werden? -->
-                    <div *ngIf="erlaubenInstitutionenZuWaehlen">
-                        <div class="form-group mt-5">
-                            <h3 translate>WELCHE_INSTITUTIONEN_ZUGELASSEN</h3>
-                            <mat-radio-group
-                                name="alleBgInstitutionenZugelassen"
-                                [(ngModel)]="
-                                    stammdaten.alleBgInstitutionenZugelassen
-                                "
-                                (ngModelChange)="
-                                    alleBgInstitutionenZugelassenChanged(
-                                        stammdaten
-                                    )
-                                "
-                                required
-                            >
-                                <mat-radio-button [value]="true">{{
-                                    'ALLE_CAPITAL' | translate
-                                }}</mat-radio-button>
-                                &nbsp;
-                                <mat-radio-button [value]="false"
-                                    >{{ 'AUSWAHL' | translate }}
-                                </mat-radio-button>
-                            </mat-radio-group>
-                        </div>
-                        <div
-                            class="form-group"
-                            *ngIf="!stammdaten.alleBgInstitutionenZugelassen"
-                        >
-                            <mat-select
-                                class="form-control"
-                                id="zugelasseneBgInstitutionen"
-                                [(ngModel)]="
-                                    stammdaten.zugelasseneBgInstitutionen
-                                "
-                                name="zugelasseneBgInstitutionen"
-                                [multiple]="true"
-                                [compareWith]="compareInstitution"
-                                #zugelasseneBgInstitutionen="ngModel"
-                                required
-                                panelClass="mat-select-panel1"
-                            >
-                                <mat-select-trigger>{{
-                                    zugelasseneBgInstitutionenShort(
-                                        stammdaten.zugelasseneBgInstitutionen
-                                    )
-                                }}</mat-select-trigger>
-                                <mat-option
-                                    *ngFor="let i of institutionen"
-                                    [value]="i"
-                                    ><span>{{ i.name }}</span></mat-option
-                                >
-                            </mat-select>
-                            <dv-error-messages
-                                [errorObject]="
-                                    zugelasseneBgInstitutionen.errors
-                                "
-                                inputId="zusatzTextTitle_id"
-                            ></dv-error-messages>
-                        </div>
                     </div>
                 </div>
                 <div class="col-sm-6">
@@ -728,8 +678,11 @@
                                         name="email_bg_id"
                                         #nameEmailBG="ngModel"
                                         [(ngModel)]="stammdaten.bgEmail"
-                                        class="form-control"
                                         email
+                                        placeholder="{{
+                                            'BEISPIEL_EMAIL' | translate
+                                        }}"
+                                        class="form-control"
                                     />
                                     <dv-error-messages
                                         [errorObject]="nameEmailBG.errors"
@@ -758,6 +711,10 @@
                                         #nameTelefonnummerBG="ngModel"
                                         [(ngModel)]="stammdaten.bgTelefon"
                                         [pattern]="CONSTANTS.PATTERN_PHONE"
+                                        placeholder="{{
+                                            'BEISPIEL_TELEFON_NUMMER'
+                                                | translate
+                                        }}"
                                         class="form-control"
                                     />
                                     <dv-error-messages
@@ -1342,9 +1299,8 @@
                                                         type="number"
                                                         #ewp_zuschlag="ngModel"
                                                         required
-                                                        customMinMax
-                                                        [minValue]="0"
-                                                        [maxValue]="
+                                                        [min]="0"
+                                                        [max]="
                                                             konfigurationsListe[
                                                                 i
                                                             ]
@@ -1471,9 +1427,8 @@
                                                             type="number"
                                                             #ewp_mininum_vorschulalter="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
-                                                            [maxValue]="
+                                                            [min]="0"
+                                                            [max]="
                                                                 konfigurationsListe[
                                                                     i
                                                                 ]
@@ -1540,9 +1495,8 @@
                                                             type="number"
                                                             #ewp_mininum_schulkind="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
-                                                            [maxValue]="
+                                                            [min]="0"
+                                                            [max]="
                                                                 konfigurationsListe[
                                                                     i
                                                                 ]
@@ -1723,8 +1677,7 @@
                                                             type="number"
                                                             #zusaetzlicher_gutschein_betrag_kita="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
+                                                            [min]="0"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -1791,8 +1744,7 @@
                                                             type="number"
                                                             #zusaetzlicher_gutschein_betrag_tfo="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
+                                                            [min]="0"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -1859,8 +1811,7 @@
                                                             type="number"
                                                             #zusaetzlicher_gutschein_max_betrag_kita="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
+                                                            [min]="0"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -1931,8 +1882,7 @@
                                                             type="number"
                                                             #zusaetzlicher_gutschein_max_betrag_tfo="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
+                                                            [min]="0"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -2109,8 +2059,7 @@
                                                             type="number"
                                                             required
                                                             #zusaetzlicher_gutschein_min_massgebendes_einkommen="ngModel"
-                                                            customMinMax
-                                                            [minValue]="0"
+                                                            [min]="0"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -2175,8 +2124,7 @@
                                                             type="number"
                                                             required
                                                             #zusaetzlicher_gutschein_max_massgebendes_einkommen="ngModel"
-                                                            customMinMax
-                                                            [minValue]="0"
+                                                            [min]="0"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -2288,8 +2236,7 @@
                                                             type="number"
                                                             #zusaetzlicher_babybeitrag_betrag_kita="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
+                                                            [min]="0"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -2350,8 +2297,7 @@
                                                             type="number"
                                                             #zusaetzlicher_babybeitrag_betrag_tfo="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
+                                                            [min]="0"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -2445,9 +2391,8 @@
                                                             type="number"
                                                             #zusaetzlicher_anspruch_freiwilligenarbeit_max="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
-                                                            [maxValue]="100"
+                                                            [min]="0"
+                                                            [max]="100"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -2542,8 +2487,7 @@
                                                             type="number"
                                                             #minimaler_elternbeitrag_mahlzeiten="ngModel"
                                                             required
-                                                            customMinMax
-                                                            [minValue]="0"
+                                                            [min]="0"
                                                             [(ngModel)]="
                                                                 konfigurationsListe[
                                                                     i
@@ -2646,8 +2590,7 @@
                                                                                     type="number"
                                                                                     #mahlzeitenverguenstigung_stufe1_max="ngModel"
                                                                                     required
-                                                                                    customMinMax
-                                                                                    [minValue]="
+                                                                                    [min]="
                                                                                         1
                                                                                     "
                                                                                     [(ngModel)]="
@@ -2692,8 +2635,7 @@
                                                                                     type="number"
                                                                                     #mahlzeitenverguenstigung_stufe1_mahlzeit="ngModel"
                                                                                     required
-                                                                                    customMinMax
-                                                                                    [minValue]="
+                                                                                    [min]="
                                                                                         0
                                                                                     "
                                                                                     [(ngModel)]="
@@ -2764,8 +2706,7 @@
                                                                                     type="number"
                                                                                     #mahlzeitenverguenstigung_stufe2_max="ngModel"
                                                                                     required
-                                                                                    customMinMax
-                                                                                    [minValue]="
+                                                                                    [min]="
                                                                                         konfigurationsListe[
                                                                                             i
                                                                                         ]
@@ -2813,8 +2754,7 @@
                                                                                     type="number"
                                                                                     #mahlzeitenverguenstigung_stufe2_mahlzeit="ngModel"
                                                                                     required
-                                                                                    customMinMax
-                                                                                    [minValue]="
+                                                                                    [min]="
                                                                                         0
                                                                                     "
                                                                                     [(ngModel)]="
@@ -2886,8 +2826,7 @@
                                                                                     type="number"
                                                                                     #mahlzeitenverguenstigung_stufe3_mahlzeit="ngModel"
                                                                                     required
-                                                                                    customMinMax
-                                                                                    [minValue]="
+                                                                                    [min]="
                                                                                         0
                                                                                     "
                                                                                     [(ngModel)]="
@@ -3035,8 +2974,7 @@
                                                         type="number"
                                                         #hohe_einkommensklassen_betrag_kita="ngModel"
                                                         required
-                                                        customMinMax
-                                                        [minValue]="0"
+                                                        [min]="0"
                                                         [(ngModel)]="
                                                             konfigurationsListe[
                                                                 i
@@ -3089,8 +3027,7 @@
                                                         type="number"
                                                         #hohe_einkommensklassen_betrag_tfo="ngModel"
                                                         required
-                                                        customMinMax
-                                                        [minValue]="0"
+                                                        [min]="0"
                                                         [(ngModel)]="
                                                             konfigurationsListe[
                                                                 i
@@ -3142,8 +3079,7 @@
                                                         type="number"
                                                         #hohe_einkommensklassen_betrag_tfo_ab_primarschule="ngModel"
                                                         required
-                                                        customMinMax
-                                                        [minValue]="0"
+                                                        [min]="0"
                                                         [(ngModel)]="
                                                             konfigurationsListe[
                                                                 i
@@ -3196,8 +3132,7 @@
                                                         type="number"
                                                         #hohe_einkommensklassen_massgebendeneinkommen="ngModel"
                                                         required
-                                                        customMinMax
-                                                        [minValue]="0"
+                                                        [min]="0"
                                                         [(ngModel)]="
                                                             konfigurationsListe[
                                                                 i
@@ -3526,32 +3461,6 @@
                             <h3 translate>BEGU_START</h3>
                             <p>{{ beguStartStr }}</p>
                         </div>
-                    </div>
-                    <!-- Welche Institutionen können ausgewählt werden? -->
-                    <div
-                        class="form-group mt-5"
-                        *ngIf="erlaubenInstitutionenZuWaehlen"
-                    >
-                        <h3 translate>WELCHE_INSTITUTIONEN_ZUGELASSEN</h3>
-                        <p
-                            translate
-                            *ngIf="stammdaten.alleBgInstitutionenZugelassen"
-                        >
-                            ALLE_CAPITAL
-                        </p>
-                        <p
-                            [title]="
-                                zugelasseneBgInstitutionenStr(
-                                    stammdaten.zugelasseneBgInstitutionen
-                                )
-                            "
-                        >
-                            {{
-                                zugelasseneBgInstitutionenShort(
-                                    stammdaten.zugelasseneBgInstitutionen
-                                )
-                            }}
-                        </p>
                     </div>
                 </div>
 

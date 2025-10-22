@@ -24,19 +24,19 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.ZahlungauftragStatus;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
@@ -50,11 +50,13 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class Zahlungsauftrag extends AbstractDateRangedEntity implements HasMandant {
+public class Zahlungsauftrag extends AbstractDateRangedEntity implements
+	HasMandant {
 
 	private static final long serialVersionUID = 5758088668232796741L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ZahlungslaufTyp zahlungslaufTyp;
@@ -84,12 +86,16 @@ public class Zahlungsauftrag extends AbstractDateRangedEntity implements HasMand
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_zahlungsauftrag_gemeinde_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_zahlungsauftrag_gemeinde_id"), updatable = false)
 	private Gemeinde gemeinde;
 
 	@Nonnull
 	@Valid
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "zahlungsauftrag")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		fetch = FetchType.LAZY,
+		mappedBy = "zahlungsauftrag")
 	private List<Zahlung> zahlungen = new ArrayList<>();
 
 	@Nonnull
@@ -100,10 +106,9 @@ public class Zahlungsauftrag extends AbstractDateRangedEntity implements HasMand
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_zahlungsauftrag_mandant_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_zahlungsauftrag_mandant_id"), updatable = false)
 	private Mandant mandant;
-
-
 
 	@Nonnull
 	public ZahlungslaufTyp getZahlungslaufTyp() {
@@ -192,7 +197,10 @@ public class Zahlungsauftrag extends AbstractDateRangedEntity implements HasMand
 	}
 
 	public String getFilename() {
-		return "Zahlungen_" + getGemeinde().getName() + '_' + Constants.SQL_DATE_FORMAT.format(getDatumGeneriert());
+		return "Zahlungen_"
+			+ getGemeinde().getName()
+			+ '_'
+			+ Constants.SQL_DATE_FORMAT.format(getDatumGeneriert());
 	}
 
 	@Override
@@ -210,12 +218,32 @@ public class Zahlungsauftrag extends AbstractDateRangedEntity implements HasMand
 			return false;
 		}
 		final Zahlungsauftrag otherZahlungsauftrag = (Zahlungsauftrag) other;
-		return Objects.equals(getDatumFaellig(), otherZahlungsauftrag.getDatumFaellig()) &&
-			Objects.equals(getDatumGeneriert(), otherZahlungsauftrag.getDatumGeneriert()) &&
-			getStatus() == otherZahlungsauftrag.getStatus() &&
-			Objects.equals(getBeschrieb(), otherZahlungsauftrag.getBeschrieb()) &&
-			MathUtil.isSame(getBetragTotalAuftrag(), otherZahlungsauftrag.getBetragTotalAuftrag()) &&
-			Objects.equals(getGemeinde(), otherZahlungsauftrag.getGemeinde());
+		return Objects.equals(
+			getDatumFaellig(),
+			otherZahlungsauftrag.getDatumFaellig()
+		)
+			&&
+			Objects.equals(
+				getDatumGeneriert(),
+				otherZahlungsauftrag.getDatumGeneriert()
+			)
+			&&
+			getStatus() == otherZahlungsauftrag.getStatus()
+			&&
+			Objects.equals(
+				getBeschrieb(),
+				otherZahlungsauftrag.getBeschrieb()
+			)
+			&&
+			MathUtil.isSame(
+				getBetragTotalAuftrag(),
+				otherZahlungsauftrag.getBetragTotalAuftrag()
+			)
+			&&
+			Objects.equals(
+				getGemeinde(),
+				otherZahlungsauftrag.getGemeinde()
+			);
 	}
 
 	@NotNull

@@ -8,16 +8,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.gemeinden;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -72,7 +71,9 @@ public class GemeindenDataRow {
 		return gutscheinausgabestelle;
 	}
 
-	public void setGutscheinausgabestelle(@Nullable String gutscheinausgabestelle) {
+	public void setGutscheinausgabestelle(
+		@Nullable String gutscheinausgabestelle
+	) {
 		this.gutscheinausgabestelle = gutscheinausgabestelle;
 	}
 
@@ -81,7 +82,9 @@ public class GemeindenDataRow {
 		return korrespondenzspracheGemeinde;
 	}
 
-	public void setKorrespondenzspracheGemeinde(@Nullable String korrespondenzspracheGemeinde) {
+	public void setKorrespondenzspracheGemeinde(
+		@Nullable String korrespondenzspracheGemeinde
+	) {
 		this.korrespondenzspracheGemeinde = korrespondenzspracheGemeinde;
 	}
 

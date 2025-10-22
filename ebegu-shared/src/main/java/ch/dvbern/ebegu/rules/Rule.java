@@ -21,10 +21,10 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.types.DateRange;
 
 /**
@@ -75,10 +75,14 @@ public interface Rule {
 	 * @return gemergete Liste von bestehenden und neu berechneten Zeitabschnitten
 	 */
 	@Nonnull
-	List<VerfuegungZeitabschnitt> calculate(@Nonnull AbstractPlatz platz, @Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte);
+	List<VerfuegungZeitabschnitt> calculate(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	);
 
 	/**
-	 * Gibt zurueck, ob die Regel fuer die Berechnung der Familiensituation (Fam-Groesse, Einkommen, Abzug fuer Fam-Groesse)
+	 * Gibt zurueck, ob die Regel fuer die Berechnung der Familiensituation (Fam-Groesse, Einkommen, Abzug fuer
+	 * Fam-Groesse)
 	 * relevant ist
 	 */
 	boolean isRelevantForFamiliensituation();
@@ -88,5 +92,7 @@ public interface Rule {
 	 * z.B: ErwerbspensumZuschlag ist von der Gemeinde nicht ueberschrieben worden -> die
 	 * Regel ErwerbspensumGemeindeCalcRule wird nicht benoetigt.
 	 */
-	boolean isRelevantForGemeinde(@Nonnull Map<EinstellungKey, Einstellung> einstellungMap);
+	boolean isRelevantForGemeinde(
+		@Nonnull Map<EinstellungKey, Einstellung> einstellungMap
+	);
 }

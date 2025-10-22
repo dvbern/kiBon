@@ -15,12 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSBrowserLanguage} from '../../../../models/enums/TSBrowserLanguage';
+import {TSBrowserLanguage} from '@kibon/shared/model/enums';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {I18nServiceRSRest} from '../../../i18n/services/i18nServiceRS.rest';
-import {LogFactory} from '../../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 const LOG = LogFactory.createLog('LangageSelectorComponent');
 
@@ -28,7 +28,8 @@ const LOG = LogFactory.createLog('LangageSelectorComponent');
     selector: 'dv-language-selector',
     templateUrl: './language-selector.component.html',
     styleUrls: ['./language-selector.component.less'],
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class LanguageSelectorComponent {
     @Input()

@@ -25,24 +25,23 @@
         class="portal"
         (click)="selectMandant(mandant)"
     >
-        <div class="flex-row flex-no-grow-auto">
-            <div class="flew-column-center">
-                <div class="img-container">
-                    <img
-                        [src]="getMandantLogoUrl(mandant)"
-                        height="40px"
-                        alt="Logo {{ mandant.name }}"
-                    />
-                </div>
-            </div>
-            <div class="flew-column-center">
-                <p class="mandantNameLenght">{{ mandant.name }}</p>
+        <div class="col logo">
+            <div class="img-container">
+                <img
+                    [src]="getMandantLogoUrl(mandant)"
+                    height="40px"
+                    alt="Logo {{ mandant.name }}"
+                />
             </div>
         </div>
-        <div class="flex-grow"></div>
-        <div class="flew-column-center">
+        <div class="col name">
+            <p class="mandantNameLenght">
+                {{ mandant.mandantIdentifier | translate }}
+            </p>
+        </div>
+        <div class="col ctaButton">
             <div
-                class="onboarding-login-buttons flex-no-grow-auto"
+                class="onboarding-login-buttons"
                 *ngIf="(isScreenMobile$ | async) === false"
             >
                 <button

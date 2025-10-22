@@ -142,6 +142,7 @@ module.exports = function (config) {
         captureTimeout: 120000,
         browserDisconnectTimeout: 30000,
         browserNoActivityTimeout: 120000,
+        failOnEmptyTestSuite: false,
 
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: false

@@ -18,14 +18,14 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {StateService} from '@uirouter/core';
-import {TSBetreuungsstatus} from '../../../../models/enums/betreuung/TSBetreuungsstatus';
+import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
 import {TSMitteilungStatus} from '../../../../models/enums/TSMitteilungStatus';
 import {TSBetreuungsmitteilung} from '../../../../models/TSBetreuungsmitteilung';
 import {TSMitteilung} from '../../../../models/TSMitteilung';
 import {TSMitteilungVerarbeitungResult} from '../../../../models/TSMitteilungVerarbeitungResult';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {ErrorServiceX} from '../../errors/service/ErrorServiceX';
-import {LogFactory} from '../../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {MitteilungRS} from '../../service/mitteilungRS.rest';
 
 const LOG = LogFactory.createLog('DvNgMitteilungResultDialogComponent');
@@ -37,7 +37,8 @@ const LOG = LogFactory.createLog('DvNgMitteilungResultDialogComponent');
 @Component({
     selector: 'dv-ng-mitteilung-result-dialog',
     templateUrl: './dv-ng-mitteilung-result-dialog.template.html',
-    styleUrls: ['./dv-ng-mitteilung-result-dialog.template.less']
+    styleUrls: ['./dv-ng-mitteilung-result-dialog.template.less'],
+    standalone: false
 })
 export class DvNgMitteilungResultDialogComponent implements OnInit {
     public verarbeitung?: TSMitteilungVerarbeitungResult;
@@ -58,14 +59,14 @@ export class DvNgMitteilungResultDialogComponent implements OnInit {
         }
         this.mitteilungRS
             .applyAlleBetreuungsmitteilungen(this.mitteilungenToProcess)
-            .subscribe(
-                verarbeitungResult => {
+            .subscribe({
+                next: verarbeitungResult => {
                     this.verarbeitung = verarbeitungResult;
                 },
-                error => {
+                error: error => {
                     LOG.error(error);
                 }
-            );
+            });
     }
 
     public getVerfuegtSuccessItems(): TSBetreuungsmitteilung[] {

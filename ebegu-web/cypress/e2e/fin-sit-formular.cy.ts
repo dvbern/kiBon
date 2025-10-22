@@ -21,15 +21,17 @@ import {
     TestFaellePO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '../../libs/shared/model/shared-model-mandant/src/lib/MANDANTS';
 import {SidenavPO} from '../page-objects/antrag/sidenav.po';
 
 describe('kiBon - Features auf der FinSit - Page', () => {
-    const superAdmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const superAdmin = getUser('[1-Superadmin] Super User');
     const sbBGLondon = getUser('[6-L-SB-BG] Jörg Keller');
 
     let gesuchUrl: string;
 
     before('create Antrag', () => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.login(superAdmin);
         cy.visit('/#/faelle');
 

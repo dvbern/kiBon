@@ -16,43 +16,29 @@
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
 
 import java.time.LocalDate;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.validation.constraints.Null;
 
-import ch.dvbern.ebegu.entities.DokumentGrund;
-import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.PensumFachstelle;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 import ch.dvbern.ebegu.enums.IntegrationTyp;
 
-public class LuzernKindDokumente extends BernKindDokumente {
-
-	@Override
-	public void getAllDokumente(
-		@Nonnull Gesuch gesuch,
-		@Nonnull Set<DokumentGrund> anlageVerzeichnis,
-		@Nonnull Locale locale
-	) {
-		super.getAllDokumente(gesuch, anlageVerzeichnis, locale);
-	}
+public class LuzernKindDokumente extends KindDokumente {
 
 	@Override
 	public boolean isDokumentNeeded(
 		@Nonnull DokumentTyp dokumentTyp,
 		Kind kind,
 		Object pensumFachstelle,
-		LocalDate stichtag) {
+		LocalDate stichtag
+	) {
 
 		// Für Luzern muss eine andere Prüfung gemacht werden, ob eine Fachstellenbestätigung gefordert ist als für
 		// Bern, da Luzern keine Dokumente für die sprachliche Integration fordert
 		if (dokumentTyp == DokumentTyp.FACHSTELLENBESTAETIGUNG) {
-			return ((PensumFachstelle) pensumFachstelle).getIntegrationTyp() != IntegrationTyp.SPRACHLICHE_INTEGRATION;
+			return ((PensumFachstelle) pensumFachstelle).getIntegrationTyp()
+				!= IntegrationTyp.SPRACHLICHE_INTEGRATION;
 		}
 
 		return super.isDokumentNeeded(dokumentTyp, kind);

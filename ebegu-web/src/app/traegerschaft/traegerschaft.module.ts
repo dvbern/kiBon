@@ -18,10 +18,10 @@
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {MaterialModule} from '../shared/material.module';
 import {SharedModule} from '../shared/shared.module';
+import {TraegerschaftAddComponent} from './traegerschaft-add/traegerschaft-add.component';
 import {TraegerschaftEditComponent} from './traegerschaft-edit/traegerschaft-edit.component';
 import {TraegerschaftListComponent} from './traegerschaft-list/traegerschaft-list.component';
 import {TraegerschaftRoutingModule} from './traegerschaft-routing/traegerschaft-routing.module';
-import {TraegerschaftAddComponent} from './traegerschaft-add/traegerschaft-add.component';
 
 @NgModule({
     imports: [SharedModule, TraegerschaftRoutingModule, MaterialModule],

@@ -24,8 +24,8 @@ import {
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
-import {NEVER, Subscription} from 'rxjs';
-import {concatMap} from 'rxjs/operators';
+import {combineLatest, NEVER, Observable, Subscription} from 'rxjs';
+import {concatMap, map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {FerienbetreuungAngabenStatus} from '../../../../models/enums/FerienbetreuungAngabenStatus';
 import {TSWizardStepXTyp} from '../../../../models/enums/TSWizardStepXTyp';
@@ -34,15 +34,16 @@ import {TSFerienbetreuungDokument} from '../../../../models/gemeindeantrag/TSFer
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '../../../core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
-import {MAX_FILE_SIZE} from '../../../core/constants/CONSTANTS';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {UploadRS} from '../../../core/service/uploadRS.rest';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {FerienbetreuungDokumentService} from '../services/ferienbetreuung-dokument.service';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
+import {FerienbetreuungPermissionUtil} from '../util/FerienbetreuungPermissionUtil';
 
 const LOG = LogFactory.createLog('FerienbetreuungUploadComponent');
 
@@ -50,7 +51,8 @@ const LOG = LogFactory.createLog('FerienbetreuungUploadComponent');
     selector: 'dv-ferienbetreuung-upload',
     templateUrl: './ferienbetreuung-upload.component.html',
     styleUrls: ['./ferienbetreuung-upload.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FerienbetreuungUploadComponent implements OnInit, OnDestroy {
     public dokumente: TSFerienbetreuungDokument[];
@@ -106,7 +108,7 @@ export class FerienbetreuungUploadComponent implements OnInit, OnDestroy {
         this.downloadRS
             .getAccessTokenFerienbetreuungDokument(dokument.id)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     attachment,
@@ -179,19 +181,26 @@ export class FerienbetreuungUploadComponent implements OnInit, OnDestroy {
             });
     }
 
-    public isReadonly(): boolean {
-        return (
-            (this.container?.status ===
-                FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE &&
-                this.authService.isOneOfRoles(
-                    TSRoleUtil.getMandantOnlyRoles()
-                )) ||
-            (this.container?.status ===
-                FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON &&
-                this.authService.isOneOfRoles(
-                    TSRoleUtil.getGemeindeOrFBOnlyRoles()
-                )) ||
-            this.container?.isGeprueft()
+    public isReadonly(): Observable<boolean> {
+        return this.isZweitPruefungAndSameUserAsPruefung().pipe(
+            map(isSameUser => {
+                if (isSameUser) {
+                    return true;
+                }
+                return (
+                    (this.container?.status ===
+                        FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE &&
+                        this.authService.isOneOfRoles(
+                            TSRoleUtil.getMandantOnlyRoles()
+                        )) ||
+                    (this.container?.status ===
+                        FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON &&
+                        this.authService.isOneOfRoles(
+                            TSRoleUtil.getGemeindeOrFBOnlyRoles()
+                        )) ||
+                    this.container?.isGeprueftOrAbgeschlossenOrAbgelehnt()
+                );
+            })
         );
     }
 
@@ -206,5 +215,20 @@ export class FerienbetreuungUploadComponent implements OnInit, OnDestroy {
             }
         }
         return this.filesTooBig.length > 0;
+    }
+
+    public isZweitPruefungAndSameUserAsPruefung() {
+        return combineLatest([
+            this.authService.principal$,
+            this.ferienbetreuungService.getFerienbetreuungHistory()
+        ]).pipe(
+            map(([principal, history]) =>
+                FerienbetreuungPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    this.container,
+                    history
+                )
+            )
+        );
     }
 }

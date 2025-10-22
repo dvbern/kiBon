@@ -87,10 +87,12 @@
                             <label translate for="email_ID">EMAIL</label>
                             <input
                                 id="email_ID"
-                                type="text"
+                                type="email"
                                 name="email"
                                 disabled
                                 [ngModel]="selectedUser.email"
+                                placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
+                                email
                                 class="form-control"
                             />
                         </div>
@@ -167,73 +169,27 @@
                 </dv-berechtigung>
                 <div class="row">
                     <div class="col-sm-12 dv-input-container-small">
-                        <div class="form-group">
-                            <label translate for="futureGueltigAb"
-                                >ROLLE_GUELTIG_AB</label
-                            >
-                            <input
-                                class="dv-mat-datepicker"
-                                type="text"
-                                name="futureGueltigAb"
-                                id="futureGueltigAb"
-                                [matDatepicker]="futureGueltigAb"
-                                [min]="tomorrow"
-                                [disabled]="isDisabled"
-                                required
-                                placeholder="{{
-                                    'DATE_PLACEHOLDER' | translate
-                                }}"
-                                [(ngModel)]="
-                                    futureBerechtigung.gueltigkeit.gueltigAb
-                                "
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="futureGueltigAb"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker #futureGueltigAb></mat-datepicker>
-                            <dv-error-messages
-                                inputId="futureGueltigAb"
-                                [errorObject]="
-                                    form.controls.futureGueltigAb?.errors
-                                "
-                            >
-                            </dv-error-messages>
-                        </div>
+                        <dv-date-picker-x
+                            id="futureGueltigAb"
+                            [label]="'ROLLE_GUELTIG_AB'"
+                            [(date)]="futureBerechtigung.gueltigkeit.gueltigAb"
+                            [datePickerEnabled]="true"
+                            [disabled]="isDisabled"
+                            [minDate]="tomorrow"
+                            [required]="true"
+                        >
+                        </dv-date-picker-x>
                     </div>
                     <div class="col-sm-12 dv-input-container-small">
-                        <div class="form-group">
-                            <label translate for="futureGueltigBis"
-                                >ROLLE_GUELTIG_BIS</label
-                            >
-                            <input
-                                class="dv-mat-datepicker"
-                                type="text"
-                                name="futureGueltigBis"
-                                id="futureGueltigBis"
-                                [matDatepicker]="futureGueltigBis"
-                                [min]="tomorrow"
-                                placeholder="{{
-                                    'DATE_PLACEHOLDER' | translate
-                                }}"
-                                [disabled]="isDisabled"
-                                [(ngModel)]="
-                                    futureBerechtigung.gueltigkeit.gueltigBis
-                                "
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="futureGueltigBis"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker #futureGueltigBis></mat-datepicker>
-                            <dv-error-messages
-                                inputId="futureGueltigBis"
-                                [errorObject]="
-                                    form.controls.futureGueltigBis?.errors
-                                "
-                            >
-                            </dv-error-messages>
-                        </div>
+                        <dv-date-picker-x
+                            id="futureGueltigBis"
+                            [label]="'ROLLE_GUELTIG_BIS'"
+                            [(date)]="futureBerechtigung.gueltigkeit.gueltigBis"
+                            [datePickerEnabled]="true"
+                            [disabled]="isDisabled"
+                            [minDate]="tomorrow"
+                        >
+                        </dv-date-picker-x>
                     </div>
                 </div>
             </fieldset>
@@ -431,14 +387,6 @@
                 "
                 (click)="deleteBenutzer()"
                 [textContent]="'BENUTZER_DELETE' | translate"
-            ></button>
-
-            <button
-                type="button"
-                class="dv-btn cancel-button"
-                *dvNgShowElement="true; roles: TSRoleUtil.getSuperAdminRoles()"
-                (click)="deleteExternalUuidForBenutzer()"
-                [textContent]="'BENUTZER_RESET' | translate"
             ></button>
         </div>
     </form>

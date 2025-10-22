@@ -15,31 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {KiBonMandant} from './MANDANTS';
-import {MandantVisitor} from './MandantVisitor';
+import {
+    AbstractMandantDefaultVisitor,
+    KiBonMandant
+} from '@kibon/shared-model-mandant';
 
-export class UnknownTagesschuleIdVisitor implements MandantVisitor<string> {
+export class UnknownTagesschuleIdVisitor extends AbstractMandantDefaultVisitor<string> {
+    protected visitDefault(): string {
+        throw new Error('This Mandant has no Tagesschulen.');
+    }
     public process(mandant: KiBonMandant): string {
         return mandant.accept(this);
     }
 
     public visitBern(): string {
         return '00000000-0000-0000-0000-000000000002';
-    }
-
-    public visitLuzern(): string {
-        return '00000000-0000-0000-0000-000000000005';
-    }
-
-    public visitSolothurn(): string {
-        return '00000000-0000-0000-0000-000000000008';
-    }
-
-    public visitAppenzellAusserrhoden(): string {
-        return '00000000-0000-0000-0000-000000000011';
-    }
-
-    public visitSchwyz(): string {
-        return '00000000-0000-0000-0000-000000000014';
     }
 }

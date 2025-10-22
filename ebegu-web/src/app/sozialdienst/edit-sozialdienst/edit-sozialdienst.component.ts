@@ -28,10 +28,10 @@ import {StateService, Transition} from '@uirouter/core';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSSozialdienstStammdaten} from '../../../models/sozialdienst/TSSozialdienstStammdaten';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
 
@@ -39,7 +39,8 @@ import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
     selector: 'dv-edit-sozialdienst',
     templateUrl: './edit-sozialdienst.component.html',
     styleUrls: ['./edit-sozialdienst.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EditSozialdienstComponent implements OnInit {
     public readonly CONSTANTS: any = CONSTANTS;

@@ -8,20 +8,20 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
 package ch.dvbern.ebegu.ws.ewk;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.servlet.http.HttpServletRequest;
 
 import ch.bedag.geres.schemas._20180101.geresresidentinfoservice.ResidentInfoPortType;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
@@ -37,16 +37,27 @@ public class ResidentInfoPortTypeProducer {
 	public ResidentInfoPortType createResidentInfoPortType(
 		HttpServletRequest request,
 		WSSSecurityGeresAssertionOutboundHandler wssUsernameTokenSecurityHandler,
-		EbeguConfiguration configuration) throws PersonenSucheServiceException {
+		EbeguConfiguration configuration
+	) throws PersonenSucheServiceException {
 
-		MandantIdentifier mandant = MandantCookieUtil.getMandantFromCookie(request);
+		MandantIdentifier mandant = MandantCookieUtil.getMandantFromCookie(
+			request
+		);
 		switch (mandant) {
 		case BERN:
-			return new GeresBernPortFactory(configuration, wssUsernameTokenSecurityHandler).getPort();
+			return new GeresBernPortFactory(
+				configuration,
+				wssUsernameTokenSecurityHandler
+			).getPort();
 		case SCHWYZ:
 			return new GeresSchwyzPortFactory(configuration).getPort();
 		default:
-			throw new IllegalStateException(String.format("GERES not configured for Mandant %s", mandant));
+			throw new IllegalStateException(
+				String.format(
+					"GERES not configured for Mandant %s",
+					mandant
+				)
+			);
 		}
 	}
 }

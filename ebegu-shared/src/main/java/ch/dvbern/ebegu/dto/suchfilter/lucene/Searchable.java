@@ -43,7 +43,8 @@ public interface Searchable {
 	String getSearchResultAdditionalInformation();
 
 	/**
-	 * @return Liefert die Unique_ID des Gesuchs zu dem dieses Entity gehoert. Kann null sein wenn es keine direkte verknuepfung gibt. In diesem Fall muss die gesuchID per query emittelt werden :(
+	 * @return Liefert die Unique_ID des Gesuchs zu dem dieses Entity gehoert. Kann null sein wenn es keine direkte
+	 * verknuepfung gibt. In diesem Fall muss die gesuchID per query emittelt werden :(
 	 */
 	@Nullable
 	String getOwningGesuchId();
@@ -56,7 +57,7 @@ public interface Searchable {
 	String getOwningFallId();
 
 	/**
-	 *  @return Liefert die Unique_ID des Dossiers zu dem dieses Entity gehoert. Kann null sein wenn es keine direkte
+	 * @return Liefert die Unique_ID des Dossiers zu dem dieses Entity gehoert. Kann null sein wenn es keine direkte
 	 * verknuepfung gibt.
 	 */
 	@Nullable

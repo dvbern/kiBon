@@ -104,6 +104,7 @@
                                 type="email"
                                 name="e_mail_id"
                                 #name="ngModel"
+                                placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
                                 [(ngModel)]="stammdaten.mail"
                                 email
                                 [maxlength]="255"
@@ -241,6 +242,10 @@
                                 [(ngModel)]="stammdaten.webseite"
                                 [maxlength]="255"
                                 class="form-control"
+                                placeholder="{{
+                                    'BEISPIEL_WEBSITE' | translate
+                                }}"
+                                isValidWebseite
                             />
                             <dv-error-messages
                                 [errorObject]="

@@ -15,9 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Observable, of, ReplaySubject} from 'rxjs';
-import {filter, map, mergeMap, tap} from 'rxjs/operators';
+import {Injectable, OnDestroy} from '@angular/core';
+import {CONSTANTS, HTTP_CODES} from '@kibon/shared/model/constants';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {filter, map, mergeMap, takeUntil, tap} from 'rxjs/operators';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {TSFerienbetreuungAngabenAngebot} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenAngebot';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
@@ -25,29 +26,55 @@ import {TSFerienbetreuungAngabenKostenEinnahmen} from '../../../../models/gemein
 import {TSFerienbetreuungAngabenNutzung} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenNutzung';
 import {TSFerienbetreuungAngabenStammdaten} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenStammdaten';
 import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
-import {CONSTANTS, HTTP_CODES} from '../../../core/constants/CONSTANTS';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFerienbetreuungBerechnung} from '../ferienbetreuung-kosten-einnahmen/TSFerienbetreuungBerechnung';
+import {
+    FerienbetreuungStatusHistory,
+    FerienbetreuungStatusHistoryDTO
+} from '../../../../models/gemeindeantrag/ferienbetreuung/dto/FerienbetreuungStatusHistory';
+import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {TSBenutzer} from '../../../../models/TSBenutzer';
 
 const LOG = LogFactory.createLog('FerienbetreuungService');
 
 @Injectable({
     providedIn: 'root'
 })
-export class FerienbetreuungService {
+export class FerienbetreuungService implements OnDestroy {
     private readonly API_BASE_URL = `${CONSTANTS.REST_API}ferienbetreuung`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
     // return last item but don't provide initial value like BehaviourSubject does
-    private ferienbetreuungAngabenContainerStore =
-        new ReplaySubject<TSFerienbetreuungAngabenContainer>(1);
+    private readonly ferienbetreuungAngabenContainerStore = new ReplaySubject<
+        TSFerienbetreuungAngabenContainer | undefined
+    >(1);
 
-    private ferienbetreuungAngabenContainerVorjahrStore =
-        new ReplaySubject<TSFerienbetreuungAngabenContainer>(1);
+    private readonly ferienbetreuungAngabenContainerVorjahrStore =
+        new ReplaySubject<TSFerienbetreuungAngabenContainer | undefined>(1);
+
+    private readonly ferienbetreuungHistoryStore = new ReplaySubject<
+        FerienbetreuungStatusHistory[] | undefined
+    >(1);
+
+    private readonly unsubscribe = new Subject<void>();
 
     public constructor(
         private readonly http: HttpClient,
         private readonly einstellungRS: EinstellungRS
-    ) {}
+    ) {
+        this.ferienbetreuungAngabenContainerStore
+            .pipe(
+                takeUntil(this.unsubscribe),
+                filter(container => container !== undefined),
+                mergeMap(container => this.getHistory(container))
+            )
+            .subscribe(history =>
+                this.ferienbetreuungHistoryStore.next(history)
+            );
+    }
+
+    ngOnDestroy(): void {
+        this.unsubscribe.next();
+    }
 
     public updateFerienbetreuungContainerStores(id: string): void {
         this.updateFerienBetreuungContainerStore(id);
@@ -98,18 +125,35 @@ export class FerienbetreuungService {
     }
 
     public getFerienbetreuungContainer(): Observable<TSFerienbetreuungAngabenContainer> {
-        return this.ferienbetreuungAngabenContainerStore.asObservable();
+        return this.ferienbetreuungAngabenContainerStore
+            .asObservable()
+            .pipe(
+                filter(container => EbeguUtil.isNotNullOrUndefined(container))
+            );
     }
 
     public getFerienbetreuungVorgaengerContainer(): Observable<TSFerienbetreuungAngabenContainer> {
-        return this.ferienbetreuungAngabenContainerVorjahrStore.asObservable();
+        return this.ferienbetreuungAngabenContainerVorjahrStore
+            .asObservable()
+            .pipe(
+                filter(container => EbeguUtil.isNotNullOrUndefined(container))
+            );
+    }
+
+    public getFerienbetreuungHistory(): Observable<
+        FerienbetreuungStatusHistory[]
+    > {
+        return this.ferienbetreuungHistoryStore
+            .asObservable()
+            .pipe(
+                filter(container => EbeguUtil.isNotNullOrUndefined(container))
+            );
     }
 
     public emptyStores(): void {
-        this.ferienbetreuungAngabenContainerStore =
-            new ReplaySubject<TSFerienbetreuungAngabenContainer>(1);
-        this.ferienbetreuungAngabenContainerVorjahrStore =
-            new ReplaySubject<TSFerienbetreuungAngabenContainer>(1);
+        this.ferienbetreuungAngabenContainerStore.next(undefined);
+        this.ferienbetreuungAngabenContainerVorjahrStore.next(undefined);
+        this.ferienbetreuungHistoryStore.next(undefined);
     }
 
     public saveKommentar(
@@ -415,7 +459,7 @@ export class FerienbetreuungService {
 
     public ferienbetreuungAngabenGeprueft(
         container: TSFerienbetreuungAngabenContainer
-    ): Observable<any> {
+    ): Observable<TSFerienbetreuungAngabenContainer> {
         return this.einstellungRS
             .getPauschalbetraegeFerienbetreuung(container)
             .pipe(
@@ -437,14 +481,44 @@ export class FerienbetreuungService {
 
     private setContainerToGeprueft(
         container: TSFerienbetreuungAngabenContainer
-    ): Observable<any> {
-        return this.http.put(
-            `${this.API_BASE_URL}/geprueft/${encodeURIComponent(container.id)}`,
-            this.ebeguRestUtil.ferienbetreuungContainerToRestObject(
-                {},
-                container
+    ): Observable<TSFerienbetreuungAngabenContainer> {
+        return this.http
+            .put(
+                `${this.API_BASE_URL}/geprueft/${encodeURIComponent(container.id)}`,
+                this.ebeguRestUtil.ferienbetreuungContainerToRestObject(
+                    {},
+                    container
+                )
             )
-        );
+            .pipe(
+                map(result =>
+                    this.ebeguRestUtil.parseFerienbetreuungContainer(
+                        new TSFerienbetreuungAngabenContainer(),
+                        result
+                    )
+                )
+            );
+    }
+
+    public ferienbetreuungZurZweitpruefung(
+        container: TSFerienbetreuungAngabenContainer
+    ): Observable<TSFerienbetreuungAngabenContainer> {
+        return this.http
+            .put(
+                `${this.API_BASE_URL}/zur-zweitpruefung/${encodeURIComponent(container.id)}`,
+                this.ebeguRestUtil.ferienbetreuungContainerToRestObject(
+                    {},
+                    container
+                )
+            )
+            .pipe(
+                map(result =>
+                    this.ebeguRestUtil.parseFerienbetreuungContainer(
+                        new TSFerienbetreuungAngabenContainer(),
+                        result
+                    )
+                )
+            );
     }
 
     public ferienbetreuungAngabenFreigeben(
@@ -537,6 +611,28 @@ export class FerienbetreuungService {
         return this.http.get(`${this.API_BASE_URL}/${container.id}/report`, {
             responseType: 'blob'
         });
+    }
+
+    public getHistory(
+        container: TSFerienbetreuungAngabenContainer
+    ): Observable<FerienbetreuungStatusHistory[]> {
+        return this.http
+            .get<
+                FerienbetreuungStatusHistoryDTO[]
+            >(`${this.API_BASE_URL}/${container.id}/status-history`)
+            .pipe(
+                map(dtoList =>
+                    dtoList.map(dto => ({
+                        ...dto,
+                        benutzer: this.ebeguRestUtil.parseUser(
+                            new TSBenutzer(),
+                            dto.benutzer
+                        ),
+                        timestampVon: new Date(dto.timestampVon),
+                        timestampBis: new Date(dto.timestampBis)
+                    }))
+                )
+            );
     }
 
     private parseRestBerechnung(

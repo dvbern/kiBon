@@ -16,11 +16,13 @@
  */
 
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
-import {TSRole} from '../enums/TSRole';
-import {TSAbstractEntity} from '../TSAbstractEntity';
+import {TSRole} from '@kibon/shared/model/enums';
+import {
+    TSAbstractEntity,
+    TSGemeinde,
+    TSGesuchsperiode
+} from '@kibon/shared/model/entity';
 import {TSBenutzerNoDetails} from '../TSBenutzerNoDetails';
-import {TSGemeinde} from '../TSGemeinde';
-import {TSGesuchsperiode} from '../TSGesuchsperiode';
 import {TSLastenausgleichTagesschuleAngabenGemeinde} from './TSLastenausgleichTagesschuleAngabenGemeinde';
 import {TSLastenausgleichTagesschuleAngabenInstitutionContainer} from './TSLastenausgleichTagesschuleAngabenInstitutionContainer';
 

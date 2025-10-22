@@ -31,7 +31,9 @@ class DateUtilTest {
 	@Test
 	void parseStringToDateOrReturnNowTestNullString() {
 		final LocalDate now = LocalDate.now();
-		final LocalDate returnedDate = DateUtil.parseStringToDateOrReturnNow(null);
+		final LocalDate returnedDate = DateUtil.parseStringToDateOrReturnNow(
+			null
+		);
 		Assertions.assertNotNull(returnedDate);
 		Assertions.assertTrue(now.isEqual(returnedDate));
 	}
@@ -39,14 +41,18 @@ class DateUtilTest {
 	@Test
 	void parseStringToDateOrReturnNowTestEmptyString() {
 		final LocalDate now = LocalDate.now();
-		final LocalDate returnedDate = DateUtil.parseStringToDateOrReturnNow("");
+		final LocalDate returnedDate = DateUtil.parseStringToDateOrReturnNow(
+			""
+		);
 		Assertions.assertNotNull(returnedDate);
 		Assertions.assertTrue(now.isEqual(returnedDate));
 	}
 
 	@Test
 	void parseStringToDateOrReturnNowTest() {
-		final LocalDate returnedDate = DateUtil.parseStringToDateOrReturnNow("2015-12-31");
+		final LocalDate returnedDate = DateUtil.parseStringToDateOrReturnNow(
+			"2015-12-31"
+		);
 		Assertions.assertNotNull(returnedDate);
 		Assertions.assertEquals(2015, returnedDate.getYear());
 		Assertions.assertEquals(12, returnedDate.getMonthValue());
@@ -72,16 +78,18 @@ class DateUtilTest {
 		}
 
 		@ParameterizedTest
-		@ValueSource(ints = {1, 3, 10, 30})
+		@ValueSource(ints = { 1, 3, 10, 30 })
 		void xNon0DaysLaerShouldBeFalsy(int minusDays) {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = date.minusDays(minusDays);
 
-			Assertions.assertFalse(DateUtil.isSameDateOrBefore(date, compareTo));
+			Assertions.assertFalse(
+				DateUtil.isSameDateOrBefore(date, compareTo)
+			);
 		}
 
 		@ParameterizedTest
-		@ValueSource(ints = {1, 3, 10, 30})
+		@ValueSource(ints = { 1, 3, 10, 30 })
 		void xNon0DaysEarlierShouldBeTruthy(int plusDays) {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = date.plusDays(plusDays);
@@ -102,7 +110,7 @@ class DateUtilTest {
 		}
 
 		@ParameterizedTest
-		@ValueSource(ints = {1, 3, 10, 30})
+		@ValueSource(ints = { 1, 3, 10, 30 })
 		void xNon0DaysEarlierShouldBeFalsy(int days) {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = date.plusDays(days);
@@ -111,7 +119,7 @@ class DateUtilTest {
 		}
 
 		@ParameterizedTest
-		@ValueSource(ints = {1, 3, 10, 30})
+		@ValueSource(ints = { 1, 3, 10, 30 })
 		void xNon0DaysLaterShouldBeTruthy(int days) {
 			final LocalDate date = LocalDate.of(2017, 1, 1);
 			final LocalDate compareTo = date.minusDays(days);

@@ -15,223 +15,121 @@
 
 package ch.dvbern.ebegu.services;
 
-import ch.dvbern.ebegu.config.EbeguConfiguration;
-import ch.dvbern.ebegu.entities.VersendeteMail;
-import ch.dvbern.ebegu.errors.MailException;
-import ch.dvbern.ebegu.util.UploadFileInfo;
-import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import ch.dvbern.lib.cdipersistence.Persistence;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.apache.commons.mail.*;
-import org.apache.commons.net.smtp.SMTPReply;
-import org.apache.commons.net.smtp.SMTPSClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.transaction.Status;
-import javax.transaction.TransactionSynchronizationRegistry;
-import java.io.IOException;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.LocalDateTime;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
-import static ch.dvbern.ebegu.util.Constants.NEW_LINE_CHAR_PATTERN;
+import javax.annotation.Nonnull;
+import jakarta.inject.Inject;
+
+import ch.dvbern.ebegu.mailing.OutboxMail;
+import ch.dvbern.ebegu.mailing.OutboxMailService;
+import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allgemeine Mailing-Funktionalität
  */
-public abstract class AbstractMailServiceBean extends AbstractBaseService {
+public abstract class AbstractMailServiceBean {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractMailServiceBean.class.getSimpleName());
-	private static final int CONNECTION_TIMEOUT = 15000;
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		AbstractMailServiceBean.class
+	);
 
-	@Inject
-	private Persistence persistence;
-
-	@Inject
-	private EbeguConfiguration configuration;
+	private static final Pattern PATTERN = Pattern.compile("(\r\n|\n)");
+	private static final Pattern REGEX = Pattern.compile("\\r?\\n");
 
 	@Inject
-	private VersendeteMailsService versendeteMailsService;
+	private OutboxMailService outboxMailService;
 
-	@Resource
-	private TransactionSynchronizationRegistry txReg;
-
-	public void sendMessage(
+	public void toOutboxMail(
 		@Nonnull String subject,
 		@Nonnull String messageBody,
 		@Nonnull String mailadress,
-		@Nonnull MandantIdentifier mandantIdentifier)
-		throws MailException {
+		@Nonnull MandantIdentifier mandantIdentifier
+	) {
 
-		Objects.requireNonNull(subject);
-		Objects.requireNonNull(messageBody);
-		Objects.requireNonNull(mailadress);
+		String processedMessageBody = messageBody;
 
-		if (configuration.isSendingOfMailsDisabled()) {
-			pretendToSendMessage(messageBody, mailadress);
-		} else {
-			doSendMessage(subject, messageBody, mailadress);
-			saveSentMails(subject, mailadress, mandantIdentifier);
+		if (!messageBody.trim()
+			.toLowerCase(new Locale("de", "CH"))
+			.contains("<html")) {
+			processedMessageBody = PATTERN.matcher(messageBody)
+				.replaceAll("<br>");
 		}
+
+		outboxMailService.saveOutboxMail(
+			new OutboxMail(
+				subject,
+				processedMessageBody,
+				mailadress,
+				mandantIdentifier
+			)
+		);
+
 	}
 
-	public void sendMessageWithAttachment(
-		@Nonnull String subject,
-		@Nonnull String messageBody,
-		@Nonnull String mailadress,
-		@Nonnull UploadFileInfo uploadFileInfo,
-		@Nonnull MandantIdentifier mandantIdentifier) throws MailException {
-
-		Objects.requireNonNull(subject);
-		Objects.requireNonNull(messageBody);
-		Objects.requireNonNull(mailadress);
-		Objects.requireNonNull(uploadFileInfo);
-
-		if (configuration.isSendingOfMailsDisabled()) {
-			pretendToSendMessage(messageBody, mailadress);
-		} else {
-			doSendMessageWithAttachment(subject, messageBody, mailadress, uploadFileInfo);
-			saveSentMails(subject, mailadress, mandantIdentifier);
-		}
-	}
-
-	private void doSendMessage(
-		@Nonnull String subject,
-		@Nonnull String messageBody,
-		@Nonnull String mailadress)
-		throws MailException {
-		try {
-			Email email = new SimpleEmail();
-			email.setHostName(configuration.getSMTPHost());
-			email.setSmtpPort(configuration.getSMTPPort());
-			email.setSSLOnConnect(false);
-			email.setFrom(configuration.getSenderAddress());
-			email.setSubject(subject);
-			email.setMsg(messageBody);
-			email.addTo(mailadress);
-			email.send();
-		} catch (final EmailException e) {
-			throw new MailException("Error while sending Mail to: '" + mailadress + '\'', e);
-		}
-	}
-
-	private void doSendMessageWithAttachment(
-		@Nonnull String subject,
-		@Nonnull String messageBody,
-		@Nonnull String mailadress,
-		@Nonnull UploadFileInfo uploadFileInfo)
-		throws MailException {
-		try {
-			// Create the attachment
-			EmailAttachment attachment = new EmailAttachment();
-			final String pathOfAttachment = "File://" + uploadFileInfo.getPathAsString();
-			attachment.setURL(new URL(pathOfAttachment));
-			attachment.setDisposition(EmailAttachment.ATTACHMENT);
-			attachment.setDescription(uploadFileInfo.getFilename());
-			attachment.setName(uploadFileInfo.getFilename());
-
-			// Create the email message
-			MultiPartEmail email = new MultiPartEmail();
-			email.setHostName(configuration.getSMTPHost());
-			email.setSmtpPort(configuration.getSMTPPort());
-			email.setSSLOnConnect(false);
-
-			email.setFrom(configuration.getSenderAddress());
-			email.setSubject(subject);
-			email.setMsg(messageBody);
-			email.addTo(mailadress);
-
-			// add the attachment
-			email.attach(attachment);
-
-			// send the email
-			email.send();
-		} catch (final EmailException | MalformedURLException e) {
-			throw new MailException("Error while sending Mail with Attachment to: '" + mailadress + '\'', e);
-		}
-	}
-
-	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
-	private void  doSendMessage(@Nonnull String messageBody, @Nonnull String mailadress, @Nonnull MandantIdentifier mandantIdentifier) throws MailException {
-		final SMTPSClient client = new SMTPSClient("TLS", false, StandardCharsets.UTF_8.displayName());
-		Writer writer = null;
-		try {
-			client.setDefaultTimeout(CONNECTION_TIMEOUT);
-			client.connect(configuration.getSMTPHost(), configuration.getSMTPPort());
-			if (!client.execTLS()) {
-				LOG.warn("connecting to %s without {}", configuration.getSMTPHost());
-			}
-			client.setSoTimeout(CONNECTION_TIMEOUT);
-			assertPositiveCompletion(client);
-			client.helo(configuration.getHostname(mandantIdentifier));
-			assertPositiveCompletion(client);
-			client.setSender(configuration.getSenderAddress());
-			assertPositiveCompletion(client);
-			client.addRecipient(mailadress);
-			assertPositiveCompletion(client);
-			writer = client.sendMessageData();
-			writer.write(messageBody);
-			writer.close();
-			assertPositiveIntermediate(client);
-			client.quit();
-		} catch (final Exception e) {
-			throw new MailException("Error while sending Mail to: '" + mailadress + '\'', e);
-		} finally {
-			if (client.isConnected()) {
-				try {
-					client.disconnect();
-				} catch (final IOException e) {
-					LOG.error("Could not disconnetct client", e);
-				}
-			}
-			if (writer != null) {
-				try {
-					writer.close();
-				} catch (IOException ignore) {
-					// NOP
-				}
-			}
-		}
-	}
-
-	/**
-	 * Emails should only be sent when all actions were performed withou any error.
-	 * For this reason this method flushes the EntityManager before sending emails.
-	 */
-	protected void sendMessageWithTemplate(@Nonnull final String messageBody, @Nonnull final String mailadress, @Nonnull final MandantIdentifier mandantIdentifier)
-		throws MailException {
-		Objects.requireNonNull(mailadress);
-		Objects.requireNonNull(messageBody);
-		// wir haben hier nicht zwingend immer eine transaktion
-		final int transactionStatus = txReg.getTransactionStatus();
-		if (Status.STATUS_NO_TRANSACTION != transactionStatus) {
-			// nur wenn eine Transaction existiert, macht ein flush Sinn
-			persistence.getEntityManager().flush();
-		}
-		if (configuration.isSendingOfMailsDisabled()) {
-			pretendToSendMessage(messageBody, mailadress);
-		} else {
-			doSendMessage(messageBody, mailadress, mandantIdentifier);
-			String subject = extractSubjectFromMessageBody(messageBody);
-			saveSentMails(subject, mailadress, mandantIdentifier);
-		}
+	protected void toOutboxMail(
+		@Nonnull final String messageBody,
+		@Nonnull final String mailadress,
+		@Nonnull final MandantIdentifier mandantIdentifier
+	) {
+		outboxMailService.saveOutboxMail(
+			new OutboxMail(
+				extractSubjectFromMessageBody(messageBody),
+				extractContentFromMessageBody(messageBody),
+				mailadress,
+				mandantIdentifier
+			)
+		);
 	}
 
 	private String extractSubjectFromMessageBody(String messageBody) {
-		String decodedSubject = messageBody.substring(messageBody.indexOf("Subject: ")+9, messageBody.indexOf("Content-Type"));
+		String decodedSubject = messageBody.substring(
+			messageBody.indexOf("Subject: ") + 9,
+			messageBody.indexOf("Content-Type")
+		);
 		return decodeMixedBase64String(decodedSubject);
 	}
 
-	public static String decodeMixedBase64String(String mixedString) {
+	private String extractContentFromMessageBody(String messageBody) {
+		try {
+			String[] lines = REGEX.split(messageBody);
+			StringBuilder contentBuilder = new StringBuilder();
+
+			boolean insideHeaders = true;
+			for (String line : lines) {
+				if (insideHeaders && line.trim().isEmpty()) {
+					insideHeaders = false;
+					continue;
+				}
+
+				// Skip specific headers if we're still in header section
+				if (insideHeaders
+					&& (line.startsWith("From:")
+						||
+						line.startsWith("To:")
+						||
+						line.startsWith("Subject:")
+						||
+						line.startsWith("Content-Type:"))) {
+					continue;
+				}
+
+				contentBuilder.append(line).append('\n');
+			}
+
+			return contentBuilder.toString().trim();
+
+		} catch (Exception e) {
+			LOGGER.error("Failed to parse message body", e);
+			return messageBody; // fallback: return original if something goes wrong
+		}
+	}
+
+	private static String decodeMixedBase64String(String mixedString) {
 		StringBuilder decodedBuilder = new StringBuilder();
 		int start = 0; // Start index for the non-encoded part
 
@@ -251,10 +149,15 @@ public abstract class AbstractMailServiceBean extends AbstractBaseService {
 				return decodedBuilder.toString();
 			}
 			// Extract the encoded part without the MIME and encoding prefix and suffix
-			String encodedPart = mixedString.substring(startIndex + 10, endIndex - 2);
+			String encodedPart = mixedString.substring(
+				startIndex + 10,
+				endIndex - 2
+			);
 			// Decode and append the encoded part
 			byte[] decodedBytes = Base64.getDecoder().decode(encodedPart);
-			decodedBuilder.append(new String(decodedBytes, StandardCharsets.UTF_8));
+			decodedBuilder.append(
+				new String(decodedBytes, StandardCharsets.UTF_8)
+			);
 
 			// Move start index forward
 			start = endIndex;
@@ -263,40 +166,4 @@ public abstract class AbstractMailServiceBean extends AbstractBaseService {
 		return decodedBuilder.toString();
 	}
 
-	private void pretendToSendMessage(final String messageBody, final String mailadress) {
-		LOG.info("Sending of Emails disabled. Mail would be sent to {} : {}", removeNewLineChar(mailadress), removeNewLineChar(messageBody));
-	}
-
-	protected String removeNewLineChar(String str) {
-		return NEW_LINE_CHAR_PATTERN.matcher(str).replaceAll("_");
-	}
-
-	private void assertPositiveIntermediate(final SMTPSClient client) {
-		assertPositiveIntermediate(client.getReplyCode());
-	}
-
-	private void assertPositiveIntermediate(final int replyCode) {
-		if (!SMTPReply.isPositiveIntermediate(replyCode)) {
-			throw new IllegalStateException("Reply code is not as expected: " + replyCode);
-		}
-	}
-
-	private void assertPositiveCompletion(final int replyCode) {
-		if (!SMTPReply.isPositiveCompletion(replyCode)) {
-			throw new IllegalStateException("Reply code is not as expected: " + replyCode);
-		}
-	}
-
-	private void assertPositiveCompletion(final SMTPSClient client) {
-		assertPositiveCompletion(client.getReplyCode());
-	}
-
-	private void saveSentMails(String subject, String mailadress, MandantIdentifier mandant) {
-		LocalDateTime zeitpunktVersand = LocalDateTime.now();
-		String empfaengerAdresse = mailadress;
-		String betreff = subject;
-		MandantIdentifier mandantIdentifier = mandant;
-		VersendeteMail versendeteMail = new VersendeteMail(zeitpunktVersand, empfaengerAdresse, betreff, mandantIdentifier);
-		versendeteMailsService.saveVersendeteMail(versendeteMail);
-	}
 }

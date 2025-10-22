@@ -25,7 +25,7 @@ import {
 } from '@angular/core';
 import {Moment} from 'moment';
 import {TSFile} from '../../../../models/TSFile';
-import {DateUtil} from '../../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 
 export interface HTMLInputEvent extends Event {
     target: HTMLInputElement & EventTarget;
@@ -35,7 +35,8 @@ export interface HTMLInputEvent extends Event {
     selector: 'dv-single-file-upload',
     templateUrl: './single-file-upload.component.html',
     styleUrls: ['./single-file-upload.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SingleFileUploadComponent<T extends TSFile> implements OnChanges {
     @Input() public title: string;
@@ -67,7 +68,10 @@ export class SingleFileUploadComponent<T extends TSFile> implements OnChanges {
     }
 
     public formatDate(timestampUpload: Moment): string {
-        return DateUtil.momentToLocalDateFormat(timestampUpload, 'DD.MM.YYYY');
+        return MomentUtil.momentToLocalDateFormat(
+            timestampUpload,
+            'DD.MM.YYYY'
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {

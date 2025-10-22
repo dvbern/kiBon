@@ -20,20 +20,20 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.gesuch.JaxAntragStatusHistoryConverter;
 import ch.dvbern.ebegu.api.dtos.JaxAntragStatusHistory;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.entities.AntragStatusHistory;
@@ -44,8 +44,7 @@ import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.services.AntragStatusHistoryService;
 import ch.dvbern.ebegu.services.DossierService;
 import ch.dvbern.ebegu.services.GesuchsperiodeService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
@@ -68,12 +67,11 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("antragStatusHistory")
 @Stateless
-@Api(description = "Resource zum Lesen der History von Gesuchen / Mutationen (Anträgen)")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class AntragStatusHistoryResource {
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxAntragStatusHistoryConverter converter;
 	@Inject
 	private GesuchsperiodeService gesuchsperiodeService;
 	@Inject
@@ -81,7 +79,8 @@ public class AntragStatusHistoryResource {
 	@Inject
 	private AntragStatusHistoryService antragStatusHistoryService;
 
-	@ApiOperation(value = "Ermittelt den letzten Statusübergang des Antrags mit der übergebenen Id.", response = JaxAntragStatusHistory.class)
+	@Operation(
+		summary = "Ermittelt den letzten Statusübergang des Antrags mit der übergebenen Id.")
 	@Nullable
 	@GET
 	@Path("/{gesuchId}")
@@ -89,12 +88,14 @@ public class AntragStatusHistoryResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Migriert
 	public JaxAntragStatusHistory findLastStatusChange(
-		@Nonnull @NotNull @PathParam("gesuchId") JaxId jaxGesuchId) {
+		@Nonnull @NotNull @PathParam("gesuchId") JaxId jaxGesuchId
+	) {
 
 		Objects.requireNonNull(jaxGesuchId.getId());
 		String gesuchId = converter.toEntityId(jaxGesuchId);
 
-		final AntragStatusHistory lastStatusChange = antragStatusHistoryService.findLastStatusChange(gesuchId);
+		final AntragStatusHistory lastStatusChange = antragStatusHistoryService
+			.findLastStatusChange(gesuchId);
 
 		if (lastStatusChange != null) {
 			return converter.antragStatusHistoryToJAX(lastStatusChange);
@@ -103,29 +104,54 @@ public class AntragStatusHistoryResource {
 		return null;
 	}
 
-	@ApiOperation(value = "Ermittelt alle Statusübergänge des Antrags mit der übergebenen Id.", response = Collection.class)
+	@Operation(
+		summary = "Ermittelt alle Statusübergänge des Antrags mit der übergebenen Id.")
 	@Nullable
 	@GET
 	@Path("/verlauf/{gesuchsperiodeId}/{dossierId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, JURIST, REVISOR, ADMIN_TS, SACHBEARBEITER_TS,  STEUERAMT,
-		GESUCHSTELLER, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST})
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, JURIST, REVISOR, ADMIN_TS,
+		SACHBEARBEITER_TS, STEUERAMT,
+		GESUCHSTELLER, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST })
 	public Collection<JaxAntragStatusHistory> findAllAntragStatusHistoryByGPForDossier(
-		@Nonnull @NotNull @PathParam("gesuchsperiodeId") JaxId jaxGesuchsperiodeId,
-		@Nonnull @NotNull @PathParam("dossierId") JaxId jaxDossierId) {
+		@Nonnull
+		@NotNull
+		@PathParam("gesuchsperiodeId") JaxId jaxGesuchsperiodeId,
+		@Nonnull @NotNull @PathParam("dossierId") JaxId jaxDossierId
+	) {
 
 		Objects.requireNonNull(jaxGesuchsperiodeId.getId());
 		String gesuchsperiodeId = converter.toEntityId(jaxGesuchsperiodeId);
 		Objects.requireNonNull(jaxDossierId.getId());
 		String dossierId = converter.toEntityId(jaxDossierId);
 
-		Gesuchsperiode gesuchsperiode = gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeId).orElseThrow(()
-			-> new EbeguRuntimeException("findAllAntragStatusHistoryByGesuch", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gesuchsperiodeId));
-		Dossier dossier = dossierService.findDossier(dossierId).orElseThrow(()
-			-> new EbeguRuntimeException("findBenutzer", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, dossierId));
+		Gesuchsperiode gesuchsperiode = gesuchsperiodeService
+			.findGesuchsperiode(gesuchsperiodeId)
+			.orElseThrow(
+				() -> new EbeguRuntimeException(
+					"findAllAntragStatusHistoryByGesuch",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gesuchsperiodeId
+				)
+			);
+		Dossier dossier = dossierService.findDossier(dossierId)
+			.orElseThrow(
+				() -> new EbeguRuntimeException(
+					"findBenutzer",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					dossierId
+				)
+			);
 
-		final Collection<AntragStatusHistory> statusHistory = antragStatusHistoryService.findAllAntragStatusHistoryByGPForDossier(gesuchsperiode, dossier);
+		final Collection<AntragStatusHistory> statusHistory =
+			antragStatusHistoryService
+				.findAllAntragStatusHistoryByGPForDossier(
+					gesuchsperiode,
+					dossier
+				);
 		return converter.antragStatusHistoryCollectionToJAX(statusHistory);
 	}
 }

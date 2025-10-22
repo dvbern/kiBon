@@ -16,7 +16,6 @@
  */
 
 import {
-    AbweichungenPO,
     AntragBetreuungPO,
     ConfirmDialogPO,
     DossierToolbarPO,
@@ -28,13 +27,13 @@ import {
     VerfuegungPO
 } from '@dv-e2e/page-objects';
 import {GemeindeTestFall, getUser, TestGesuchstellende} from '@dv-e2e/types';
-import {MANDANTS} from '../../../../src/app/core/constants/MANDANTS';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 
 describe('Mittagstisch Anmeldung', () => {
-    const besitzerin: TestGesuchstellende = '[5-GS] Heinrich Mueller';
+    const besitzerin: TestGesuchstellende = '[5-GS] Heinrich Müller';
     const userGS = getUser(besitzerin);
     const userSB = getUser('[6-P-SB-BG] Jörg Becker');
-    const userSuperadmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const userSuperadmin = getUser('[1-Superadmin] Super User');
     const userTraegerschaft = getUser(
         '[3-SB-Trägerschaft-Kitas-StadtBern] Agnes Krause'
     );

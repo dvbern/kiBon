@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {waitForAsync, TestBed} from '@angular/core/testing';
+import {TestBed, waitForAsync} from '@angular/core/testing';
 import {of} from 'rxjs';
 import {AntragStatusHistoryRS} from '../../app/core/service/antragStatusHistoryRS.rest';
 import {GesuchsperiodeRS} from '../../app/core/service/gesuchsperiodeRS.rest';
@@ -27,8 +27,8 @@ import {TSEingangsart} from '../../models/enums/TSEingangsart';
 import {TSBenutzer} from '../../models/TSBenutzer';
 import {TSDossier} from '../../models/TSDossier';
 import {TSFall} from '../../models/TSFall';
-import {TSGemeinde} from '../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../models/TSGesuchsperiode';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TestDataUtil} from '../../utils/TestDataUtil.spec';
 import {DossierRS} from './dossierRS.rest';
 import {FallRS} from './fallRS.rest';

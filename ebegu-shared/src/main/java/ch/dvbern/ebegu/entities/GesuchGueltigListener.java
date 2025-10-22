@@ -15,11 +15,12 @@
 
 package ch.dvbern.ebegu.entities;
 
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 /**
- * For using the unique key "UK_gueltiges_gesuch" we need to use false as null (there can be only one false but more than one null gueltigkeit)
+ * For using the unique key "UK_gueltiges_gesuch" we need to use false as null (there can be only one false but more
+ * than one null gueltigkeit)
  * So we set gueltig zu null when we mean guelitgkeit false
  */
 public class GesuchGueltigListener {

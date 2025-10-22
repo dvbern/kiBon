@@ -40,14 +40,19 @@ public interface EinkommensverschlechterungService {
 	 * @return Die aktualisierte EinkommensverschlechterungContainer
 	 */
 	@Nonnull
-	EinkommensverschlechterungContainer saveEinkommensverschlechterungContainer(@Nonnull EinkommensverschlechterungContainer einkommensverschlechterungContainer, Gesuch gesuch);
+	EinkommensverschlechterungContainer saveEinkommensverschlechterungContainer(
+		@Nonnull EinkommensverschlechterungContainer einkommensverschlechterungContainer,
+		Gesuch gesuch
+	);
 
 	/**
 	 * @param key PK (id) der EinkommensverschlechterungContainer
 	 * @return EinkommensverschlechterungContainer mit dem gegebenen key oder null falls nicht vorhanden
 	 */
 	@Nonnull
-	Optional<EinkommensverschlechterungContainer> findEinkommensverschlechterungContainer(@Nonnull String key);
+	Optional<EinkommensverschlechterungContainer> findEinkommensverschlechterungContainer(
+		@Nonnull String key
+	);
 
 	/**
 	 * Gibt alle existierenden EinkommensverschlechterungContainer zurueck.
@@ -62,24 +67,34 @@ public interface EinkommensverschlechterungService {
 	 *
 	 * @param einkommensverschlechterungContainer die EinkommensverschlechterungContainer als DTO
 	 */
-	void removeEinkommensverschlechterungContainer(@Nonnull EinkommensverschlechterungContainer einkommensverschlechterungContainer);
+	void removeEinkommensverschlechterungContainer(
+		@Nonnull EinkommensverschlechterungContainer einkommensverschlechterungContainer
+	);
 
 	/**
 	 * Removes the given Einkommensverschlechterung
 	 */
-	void removeEinkommensverschlechterung(@Nonnull Einkommensverschlechterung einkommensverschlechterung);
+	void removeEinkommensverschlechterung(
+		@Nonnull Einkommensverschlechterung einkommensverschlechterung
+	);
 
 	/**
 	 * Berechnet die Einkomensverschlechterung beider Gesuchsteller für das entsprechende BasisJahr 1 oder 2
 	 */
 	@Nonnull
-	FinanzielleSituationResultateDTO calculateResultate(@Nonnull Gesuch gesuch, int basisJahrPlus);
+	FinanzielleSituationResultateDTO calculateResultate(
+		@Nonnull Gesuch gesuch,
+		int basisJahrPlus
+	);
 
 	/**
 	 * Berechnet die Veränderung des Einkommens im Vergleich zum Vorjahr in Prozent
 	 */
 	@Nonnull
-	String calculateProzentualeDifferenz(@Nullable BigDecimal einkommenJahr, @Nullable BigDecimal einkommenJahrPlus1);
+	String calculateProzentualeDifferenz(
+		@Nullable BigDecimal einkommenJahr,
+		@Nullable BigDecimal einkommenJahrPlus1
+	);
 
 	/**
 	 * Removes all Einkommensverschlechterungen of the given year for the given Gesuch. The year is 1 or 2 and will
@@ -93,5 +108,8 @@ public interface EinkommensverschlechterungService {
 	/**
 	 * Returns minimal Einkommen nach Familienabzug for current gesuch or mutation
 	 */
-	@Nonnull BigDecimal getMinimalesMassgebendesEinkommenForGesuch(@Nonnull Gesuch gesuch);
+	@Nonnull
+	BigDecimal getMinimalesMassgebendesEinkommenForGesuch(
+		@Nonnull Gesuch gesuch
+	);
 }

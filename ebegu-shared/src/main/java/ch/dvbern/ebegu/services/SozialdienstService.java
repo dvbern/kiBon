@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -39,7 +39,10 @@ public interface SozialdienstService {
 	 * Creates a new Sozialdienst. Name and BSFNummer must be unique. If they already exist an Exception will be thrown
 	 */
 	@Nonnull
-	Sozialdienst createSozialdienst(@Nonnull String adminMail, @Nonnull Sozialdienst sozialdienst);
+	Sozialdienst createSozialdienst(
+		@Nonnull String adminMail,
+		@Nonnull Sozialdienst sozialdienst
+	);
 
 	/**
 	 * Gibt die Sozialdienst mit der uebergebenen ID zurueck.
@@ -49,6 +52,7 @@ public interface SozialdienstService {
 
 	/**
 	 * Gibt alle Sozialdienst zurück
+	 * 
 	 * @param mandant
 	 */
 	@Nonnull
@@ -58,22 +62,29 @@ public interface SozialdienstService {
 	 * Gibt die Stammdaten zurück
 	 */
 	@Nonnull
-	Optional<SozialdienstStammdaten> getSozialdienstStammdaten(@Nonnull String id);
+	Optional<SozialdienstStammdaten> getSozialdienstStammdaten(
+		@Nonnull String id
+	);
 
 	/**
 	 * Gibt die Stammdaten von dieser Sozialdienst zurück
 	 */
 	@Nonnull
-	Optional<SozialdienstStammdaten> getSozialdienstStammdatenBySozialdienstId(@Nonnull String sozialdienstId);
+	Optional<SozialdienstStammdaten> getSozialdienstStammdatenBySozialdienstId(
+		@Nonnull String sozialdienstId
+	);
 
 	/**
 	 * Speichert die Stammdaten
 	 */
 	@Nonnull
-	SozialdienstStammdaten saveSozialdienstStammdaten(@Nonnull SozialdienstStammdaten stammdaten);
+	SozialdienstStammdaten saveSozialdienstStammdaten(
+		@Nonnull SozialdienstStammdaten stammdaten
+	);
 
 	/**
 	 * Gibt der Sozialdienst Fall zurück
+	 * 
 	 * @param id
 	 * @return
 	 */

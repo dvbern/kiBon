@@ -13,9 +13,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {TSGeschlecht} from './enums/TSGeschlecht';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import moment from 'moment';
+import {
+    TSAbstractMutableEntity,
+    TSGeschlecht
+} from '@kibon/shared/model/entity';
 import {TSEWKAdresse} from './TSEWKAdresse';
 import {TSEWKBeziehung} from './TSEWKBeziehung';
 

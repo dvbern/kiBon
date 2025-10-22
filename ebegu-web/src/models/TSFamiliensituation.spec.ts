@@ -1,9 +1,8 @@
-import * as moment from 'moment';
+import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
+import moment from 'moment';
 import {TSFamilienstatus} from './enums/TSFamilienstatus';
-import {TSGesuchsperiodeStatus} from './enums/TSGesuchsperiodeStatus';
 import {TSFamiliensituation} from './TSFamiliensituation';
-import {TSGesuchsperiode} from './TSGesuchsperiode';
-import {TSDateRange} from './types/TSDateRange';
+import {TSDateRange, TSGesuchsperiode} from '@kibon/shared/model/entity';
 
 describe('Familiensituation', () => {
     describe('spezialfall konkubinat ohne kind wird X jährig während der Periode', () => {
@@ -20,7 +19,7 @@ describe('Familiensituation', () => {
                 TSFamilienstatus.KONKUBINAT_KEIN_KIND;
             familiensituation.startKonkubinat = moment('2023-07-31');
             expect(
-                familiensituation.konkuinatOhneKindBecomesXYearsDuringPeriode(
+                familiensituation.konkubinatOhneKindBecomesXYearsDuringPeriode(
                     periode
                 )
             ).toBeFalsy();
@@ -32,7 +31,7 @@ describe('Familiensituation', () => {
                 TSFamilienstatus.KONKUBINAT_KEIN_KIND;
             familiensituation.startKonkubinat = moment('2024-08-01');
             expect(
-                familiensituation.konkuinatOhneKindBecomesXYearsDuringPeriode(
+                familiensituation.konkubinatOhneKindBecomesXYearsDuringPeriode(
                     periode
                 )
             ).toBeFalsy();
@@ -44,7 +43,7 @@ describe('Familiensituation', () => {
                 TSFamilienstatus.KONKUBINAT_KEIN_KIND;
             familiensituation.startKonkubinat = moment('2023-10-01');
             expect(
-                familiensituation.konkuinatOhneKindBecomesXYearsDuringPeriode(
+                familiensituation.konkubinatOhneKindBecomesXYearsDuringPeriode(
                     periode
                 )
             ).toBeTruthy();
@@ -56,7 +55,7 @@ describe('Familiensituation', () => {
                 TSFamilienstatus.KONKUBINAT_KEIN_KIND;
             familiensituation.startKonkubinat = moment(periodeStart);
             expect(
-                familiensituation.konkuinatOhneKindBecomesXYearsDuringPeriode(
+                familiensituation.konkubinatOhneKindBecomesXYearsDuringPeriode(
                     periode
                 )
             ).toBeTruthy();
@@ -68,7 +67,7 @@ describe('Familiensituation', () => {
                 TSFamilienstatus.KONKUBINAT_KEIN_KIND;
             familiensituation.startKonkubinat = moment(periodeEnd);
             expect(
-                familiensituation.konkuinatOhneKindBecomesXYearsDuringPeriode(
+                familiensituation.konkubinatOhneKindBecomesXYearsDuringPeriode(
                     periode
                 )
             ).toBeTruthy();

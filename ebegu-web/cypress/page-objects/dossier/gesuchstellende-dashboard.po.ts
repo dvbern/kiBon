@@ -25,6 +25,20 @@ const getAntragBearbeitenButton = (periode: TestPeriode) => {
     );
 };
 
+const getGesuchStellenButton = () => {
+    return cy.getByData('container.antrag-bearbeiten', 'navigation-button');
+};
+
+const getCorrectPeriodeGesuchButton = (periode: string) => {
+    return cy.getByData(
+        'container.periode.' + periode,
+        'container.antrag-bearbeiten',
+        'navigation-button'
+    );
+};
+
 export const GesuchstellendeDashboardPO = {
-    getAntragBearbeitenButton
+    getAntragBearbeitenButton,
+    getGesuchStellenButton,
+    getCorrectPeriodeGesuchButton
 };

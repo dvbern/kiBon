@@ -8,31 +8,36 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.services.InstitutionStammdatenService;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilderAr;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilderBe;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilderLu;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilderSo;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilderSz;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilderAr;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilderBe;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilderDvb;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilderLu;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilderSo;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilderSz;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilderZg;
 import ch.dvbern.ebegu.util.mandant.MandantVisitor;
 import org.jetbrains.annotations.NotNull;
 
-public final class InstitutionStammdatenBuilderVisitor implements MandantVisitor<InstitutionStammdatenBuilder> {
+public final class InstitutionStammdatenBuilderVisitor implements
+	MandantVisitor<InstitutionStammdatenBuilder> {
 
 	private final InstitutionStammdatenService institutionStammdatenService;
 
-	public InstitutionStammdatenBuilderVisitor(InstitutionStammdatenService institutionStammdatenService) {
+	public InstitutionStammdatenBuilderVisitor(
+		InstitutionStammdatenService institutionStammdatenService
+	) {
 		this.institutionStammdatenService = institutionStammdatenService;
 	}
 
@@ -60,9 +65,20 @@ public final class InstitutionStammdatenBuilderVisitor implements MandantVisitor
 		return new InstitutionStammdatenBuilderAr(institutionStammdatenService);
 	}
 
-	// TODO
 	@Override
 	public InstitutionStammdatenBuilder visitSchwyz() {
 		return new InstitutionStammdatenBuilderSz(institutionStammdatenService);
+	}
+
+	@Override
+	public InstitutionStammdatenBuilder visitZug() {
+		return new InstitutionStammdatenBuilderZg(institutionStammdatenService);
+	}
+
+	@Override
+	public InstitutionStammdatenBuilder visitDvb() {
+		return new InstitutionStammdatenBuilderDvb(
+			institutionStammdatenService
+		);
 	}
 }

@@ -19,9 +19,9 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 /**
  * DTO fuer Daten der erweiterten Betreeung
@@ -72,7 +72,9 @@ public class JaxErweiterteBetreuung extends JaxAbstractDTO {
 		return erweiterteBeduerfnisse;
 	}
 
-	public void setErweiterteBeduerfnisse(@Nullable Boolean erweiterteBeduerfnisse) {
+	public void setErweiterteBeduerfnisse(
+		@Nullable Boolean erweiterteBeduerfnisse
+	) {
 		this.erweiterteBeduerfnisse = erweiterteBeduerfnisse;
 	}
 
@@ -88,8 +90,11 @@ public class JaxErweiterteBetreuung extends JaxAbstractDTO {
 		return erweiterteBeduerfnisseBestaetigt;
 	}
 
-	public void setErweiterteBeduerfnisseBestaetigt(boolean erweiterteBeduerfnisseBestaetigt) {
-		this.erweiterteBeduerfnisseBestaetigt = erweiterteBeduerfnisseBestaetigt;
+	public void setErweiterteBeduerfnisseBestaetigt(
+		boolean erweiterteBeduerfnisseBestaetigt
+	) {
+		this.erweiterteBeduerfnisseBestaetigt =
+			erweiterteBeduerfnisseBestaetigt;
 	}
 
 	@Nonnull
@@ -115,7 +120,9 @@ public class JaxErweiterteBetreuung extends JaxAbstractDTO {
 		return erweitereteBeduerfnisseBetrag;
 	}
 
-	public void setErweitereteBeduerfnisseBetrag(@Nullable BigDecimal erweitereteBeduerfnisseBetrag) {
+	public void setErweitereteBeduerfnisseBetrag(
+		@Nullable BigDecimal erweitereteBeduerfnisseBetrag
+	) {
 		this.erweitereteBeduerfnisseBetrag = erweitereteBeduerfnisseBetrag;
 	}
 
@@ -123,7 +130,9 @@ public class JaxErweiterteBetreuung extends JaxAbstractDTO {
 		return kitaPlusZuschlagBestaetigt;
 	}
 
-	public void setKitaPlusZuschlagBestaetigt(Boolean kitaPlusZuschlagBestaetigt) {
+	public void setKitaPlusZuschlagBestaetigt(
+		Boolean kitaPlusZuschlagBestaetigt
+	) {
 		this.kitaPlusZuschlagBestaetigt = kitaPlusZuschlagBestaetigt;
 	}
 
@@ -131,15 +140,20 @@ public class JaxErweiterteBetreuung extends JaxAbstractDTO {
 		return anspruchFachstelleWennPensumUnterschritten;
 	}
 
-	public void setAnspruchFachstelleWennPensumUnterschritten(Boolean anspruchFachstelleWennPensumUnterschritten) {
-		this.anspruchFachstelleWennPensumUnterschritten = anspruchFachstelleWennPensumUnterschritten;
+	public void setAnspruchFachstelleWennPensumUnterschritten(
+		Boolean anspruchFachstelleWennPensumUnterschritten
+	) {
+		this.anspruchFachstelleWennPensumUnterschritten =
+			anspruchFachstelleWennPensumUnterschritten;
 	}
 
 	public Boolean getSprachfoerderungBestaetigt() {
 		return sprachfoerderungBestaetigt;
 	}
 
-	public void setSprachfoerderungBestaetigt(Boolean sprachfoerderungBestaetigt) {
+	public void setSprachfoerderungBestaetigt(
+		Boolean sprachfoerderungBestaetigt
+	) {
 		this.sprachfoerderungBestaetigt = sprachfoerderungBestaetigt;
 	}
 }

@@ -19,7 +19,7 @@ import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest'
 import {TSAntragStatusHistory} from '../../../models/TSAntragStatusHistory';
 import {TSDossier} from '../../../models/TSDossier';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 
 export class AntragStatusHistoryRS {

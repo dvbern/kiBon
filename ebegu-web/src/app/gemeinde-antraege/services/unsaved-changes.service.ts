@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TransitionService} from '@uirouter/core';
-import {Observable, of} from 'rxjs';
+import {firstValueFrom, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {DvNgBackDialogComponent} from '../../core/component/dv-ng-back-dialog/dv-ng-back-dialog.component';
 
@@ -32,9 +32,9 @@ export class UnsavedChangesService {
 
     private async checkUnsavedChanges(): Promise<boolean> {
         if (!this.isFormDirty()) {
-            return of(true).toPromise();
+            return Promise.resolve(true);
         }
-        return this.openDialog().toPromise();
+        return firstValueFrom(this.openDialog());
     }
 
     private isFormDirty(): boolean {

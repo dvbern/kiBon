@@ -8,9 +8,10 @@ import {
     TestFaellePO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 
 describe('Kibon - Test Mitteilungen', () => {
-    const userSuperAdmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const userSuperAdmin = getUser('[1-Superadmin] Super User');
     const userSB = getUser('[6-L-SB-BG] Jörg Keller');
     const userGS = getUser('[5-GS] Michael Berger');
     let gesuchUrl: string;
@@ -21,6 +22,7 @@ describe('Kibon - Test Mitteilungen', () => {
     const inhaltSB: string = 'Guten Tag, der Gutschein wurde nicht gekürzt.';
 
     before(() => {
+        cy.changeMandant(MANDANTS.BERN); // change mandant back to default
         cy.resetViewport();
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
         cy.login(userSuperAdmin);
@@ -72,17 +74,14 @@ describe('Kibon - Test Mitteilungen', () => {
 
     it('Sachbearbeiter sees message and responds', () => {
         cy.login(userSB);
-
-        // TODO: add support for intercepting multiple requests in custom command
-        cy.intercept('GET', '**/mitteilungen/amountnewforuser/**').as(
-            'mitteilungCount'
+        cy.waitForRequest(
+            'GET',
+            '**/gesuchsperioden/gemeinde/**',
+            () => {
+                cy.visit(gesuchUrl);
+            },
+            {waitOptions: {timeout: 20000}}
         );
-        cy.intercept('GET', '**/gesuchsperioden/gemeinde/**').as(
-            'untilReadySB'
-        );
-        cy.visit(gesuchUrl);
-        cy.wait('@untilReadySB', {timeout: 17500});
-        cy.wait('@mitteilungCount');
 
         NavbarPO.getLinkPosteingang().should('include.text', '(1)');
         NavbarPO.getLinkPosteingang().click();

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
@@ -46,18 +46,34 @@ class MahlzeitVerguenstigungMapperFactoryTest {
 		void doImport() {
 			ZeitabschnittDTO z = createZeitabschnittWithMahlzeiten();
 
-			BetreuungEinstellungen einstellungen = BetreuungEinstellungen.builder()
+			BetreuungEinstellungen einstellungen = BetreuungEinstellungen
+				.builder()
 				.mahlzeitenVerguenstigungEnabled(true)
 				.build();
 
 			ProcessingContext ctx = initProcessingContext(z, einstellungen);
 			BetreuungsmitteilungPensum actual = convert(ctx, z);
 
-			assertThat(actual, pojo(AbstractMahlzeitenPensum.class)
-				.where(AbstractMahlzeitenPensum::getMonatlicheHauptmahlzeiten, comparesEqualTo(BigDecimal.ONE))
-				.where(AbstractMahlzeitenPensum::getMonatlicheNebenmahlzeiten, comparesEqualTo(BigDecimal.TEN))
-				.where(AbstractMahlzeitenPensum::getTarifProHauptmahlzeit, comparesEqualTo(BigDecimal.valueOf(12.5)))
-				.where(AbstractMahlzeitenPensum::getTarifProNebenmahlzeit, comparesEqualTo(BigDecimal.valueOf(9.5))));
+			assertThat(
+				actual,
+				pojo(AbstractMahlzeitenPensum.class)
+					.where(
+						AbstractMahlzeitenPensum::getMonatlicheHauptmahlzeiten,
+						comparesEqualTo(BigDecimal.ONE)
+					)
+					.where(
+						AbstractMahlzeitenPensum::getMonatlicheNebenmahlzeiten,
+						comparesEqualTo(BigDecimal.TEN)
+					)
+					.where(
+						AbstractMahlzeitenPensum::getTarifProHauptmahlzeit,
+						comparesEqualTo(BigDecimal.valueOf(12.5))
+					)
+					.where(
+						AbstractMahlzeitenPensum::getTarifProNebenmahlzeit,
+						comparesEqualTo(BigDecimal.valueOf(9.5))
+					)
+			);
 		}
 
 		@Test
@@ -65,7 +81,8 @@ class MahlzeitVerguenstigungMapperFactoryTest {
 			ZeitabschnittDTO z = createZeitabschnittWithMahlzeiten();
 			z.setTarifProHauptmahlzeiten(null);
 
-			BetreuungEinstellungen einstellungen = BetreuungEinstellungen.builder()
+			BetreuungEinstellungen einstellungen = BetreuungEinstellungen
+				.builder()
 				.mahlzeitenVerguenstigungEnabled(true)
 				.build();
 
@@ -81,7 +98,8 @@ class MahlzeitVerguenstigungMapperFactoryTest {
 			ZeitabschnittDTO z = createZeitabschnittWithMahlzeiten();
 			z.setTarifProNebenmahlzeiten(null);
 
-			BetreuungEinstellungen einstellungen = BetreuungEinstellungen.builder()
+			BetreuungEinstellungen einstellungen = BetreuungEinstellungen
+				.builder()
 				.mahlzeitenVerguenstigungEnabled(true)
 				.build();
 
@@ -104,16 +122,33 @@ class MahlzeitVerguenstigungMapperFactoryTest {
 		ProcessingContext ctx = initProcessingContext(z, einstellungen);
 		BetreuungsmitteilungPensum actual = convert(ctx, z);
 
-		assertThat(actual, pojo(AbstractMahlzeitenPensum.class)
-			.where(AbstractMahlzeitenPensum::getMonatlicheHauptmahlzeiten, comparesEqualTo(BigDecimal.ZERO))
-			.where(AbstractMahlzeitenPensum::getMonatlicheNebenmahlzeiten, comparesEqualTo(BigDecimal.ZERO))
-			.where(AbstractMahlzeitenPensum::getTarifProHauptmahlzeit, comparesEqualTo(BigDecimal.ZERO))
-			.where(AbstractMahlzeitenPensum::getTarifProNebenmahlzeit, comparesEqualTo(BigDecimal.ZERO)));
+		assertThat(
+			actual,
+			pojo(AbstractMahlzeitenPensum.class)
+				.where(
+					AbstractMahlzeitenPensum::getMonatlicheHauptmahlzeiten,
+					comparesEqualTo(BigDecimal.ZERO)
+				)
+				.where(
+					AbstractMahlzeitenPensum::getMonatlicheNebenmahlzeiten,
+					comparesEqualTo(BigDecimal.ZERO)
+				)
+				.where(
+					AbstractMahlzeitenPensum::getTarifProHauptmahlzeit,
+					comparesEqualTo(BigDecimal.ZERO)
+				)
+				.where(
+					AbstractMahlzeitenPensum::getTarifProNebenmahlzeit,
+					comparesEqualTo(BigDecimal.ZERO)
+				)
+		);
 	}
 
 	@Nonnull
 	private ZeitabschnittDTO createZeitabschnittWithMahlzeiten() {
-		ZeitabschnittDTO z = createZeitabschnittDTO(Constants.DEFAULT_GUELTIGKEIT);
+		ZeitabschnittDTO z = createZeitabschnittDTO(
+			Constants.DEFAULT_GUELTIGKEIT
+		);
 		z.setAnzahlHauptmahlzeiten(BigDecimal.ONE);
 		z.setTarifProHauptmahlzeiten(BigDecimal.valueOf(12.5));
 		z.setAnzahlNebenmahlzeiten(BigDecimal.TEN);
@@ -123,9 +158,14 @@ class MahlzeitVerguenstigungMapperFactoryTest {
 	}
 
 	@Nonnull
-	private BetreuungsmitteilungPensum convert(ProcessingContext ctx, ZeitabschnittDTO z) {
+	private BetreuungsmitteilungPensum convert(
+		ProcessingContext ctx,
+		ZeitabschnittDTO z
+	) {
 		BetreuungsmitteilungPensum actual = new BetreuungsmitteilungPensum();
-		MahlzeitVerguenstigungMapperFactory.createForMahlzeitenVerguenstigung(ctx).toAbstractMahlzeitenPensum(actual, z);
+		MahlzeitVerguenstigungMapperFactory.createForMahlzeitenVerguenstigung(
+			ctx
+		).toAbstractMahlzeitenPensum(actual, z);
 
 		return actual;
 	}

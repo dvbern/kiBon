@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -29,12 +29,15 @@ import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
 import ch.dvbern.ebegu.types.DateRange;
+import ch.dvbern.ebegu.util.RuleUtil;
 
 /**
  * Abstract class for AbschnittRules that are related to the Erwerbspensum and share some common methods
  */
-public abstract class AbstractErwerbspensumAbschnittRule extends AbstractAbschnittRule {
+public abstract class AbstractErwerbspensumAbschnittRule extends
+	AbstractAbschnittRule {
 
 	protected AbstractErwerbspensumAbschnittRule(
 		@Nonnull RuleKey ruleKey,
@@ -48,16 +51,29 @@ public abstract class AbstractErwerbspensumAbschnittRule extends AbstractAbschni
 
 	@Nonnull
 	@Override
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
-		List<VerfuegungZeitabschnitt> erwerbspensumAbschnitte = new ArrayList<>();
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
+		List<VerfuegungZeitabschnitt> erwerbspensumAbschnitte =
+			new ArrayList<>();
 		Gesuch gesuch = platz.extractGesuch();
 		if (gesuch.getGesuchsteller1() != null) {
-			erwerbspensumAbschnitte.addAll(getErwerbspensumAbschnittForGesuchsteller(gesuch,
-				gesuch.getGesuchsteller1(),false));
+			erwerbspensumAbschnitte.addAll(
+				getErwerbspensumAbschnittForGesuchsteller(
+					gesuch,
+					gesuch.getGesuchsteller1(),
+					false
+				)
+			);
 		}
 		if (gesuch.getGesuchsteller2() != null) {
-			erwerbspensumAbschnitte.addAll(getErwerbspensumAbschnittForGesuchsteller(gesuch,
-				gesuch.getGesuchsteller2(), true));
+			erwerbspensumAbschnitte.addAll(
+				getErwerbspensumAbschnittForGesuchsteller(
+					gesuch,
+					gesuch.getGesuchsteller2(),
+					true
+				)
+			);
 		}
 		return erwerbspensumAbschnitte;
 	}
@@ -69,29 +85,54 @@ public abstract class AbstractErwerbspensumAbschnittRule extends AbstractAbschni
 	);
 
 	protected void getGueltigkeitFromFamiliensituation(
+		@Nonnull Gesuch gesuch,
 		@Nonnull DateRange gueltigkeit,
 		@Nonnull Familiensituation familiensituationErstgesuch,
 		@Nonnull Familiensituation familiensituation
 	) {
-		LocalDate familiensituationGueltigAb = familiensituation.getAenderungPer();
+		LocalDate familiensituationGueltigAb = familiensituation
+			.getAenderungPer();
 		if (familiensituationGueltigAb != null) {
 			// Die Familiensituation wird immer fruehestens per nächsten Monat angepasst!
-			LocalDate familiensituationStichtag = getStichtagForEreignis(familiensituationGueltigAb);
-			if (!familiensituationErstgesuch.hasSecondGesuchsteller(gueltigkeit.getGueltigBis())
-				&& familiensituation.hasSecondGesuchsteller(gueltigkeit.getGueltigBis())) {
+			LocalDate familiensituationStichtag = getStichtagForEreignis(
+				RuleUtil.getFamSitAenderungPerDatum(
+					gesuch,
+					familiensituationGueltigAb
+				)
+			);
+			if ((!familiensituationErstgesuch.hasSecondGesuchsteller(
+				gueltigkeit.getGueltigBis()
+			)
+				||
+				familiensituationErstgesuch.getUnterhaltsvereinbarung()
+					== UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG)
+				&& familiensituation.hasSecondGesuchsteller(
+					gueltigkeit.getGueltigBis()
+				)) {
 				// 1GS to 2GS
-				if (gueltigkeit.getGueltigBis().isAfter(familiensituationStichtag)
-					&& gueltigkeit.getGueltigAb().isBefore(familiensituationStichtag)) {
+				if (gueltigkeit.getGueltigBis()
+					.isAfter(familiensituationStichtag)
+					&& gueltigkeit.getGueltigAb()
+						.isBefore(familiensituationStichtag)) {
 
 					gueltigkeit.setGueltigAb(familiensituationStichtag);
 				}
-			} else if (familiensituationErstgesuch.hasSecondGesuchsteller(gueltigkeit.getGueltigBis())
-				&& !familiensituation.hasSecondGesuchsteller(gueltigkeit.getGueltigBis())
-				&& gueltigkeit.getGueltigAb().isBefore(familiensituationStichtag)
-				&& gueltigkeit.getGueltigBis().isAfter(familiensituationStichtag)) {
-
-				// 2GS to 1GS
-				gueltigkeit.setGueltigBis(familiensituationStichtag.minusDays(1));
+			} else if (
+				familiensituationErstgesuch.hasSecondGesuchsteller(
+					gueltigkeit.getGueltigBis()
+				)
+					&&
+					!familiensituation.hasSecondGesuchsteller(
+						gueltigkeit.getGueltigBis()
+					)
+					&& gueltigkeit.getGueltigAb()
+						.isBefore(familiensituationStichtag)
+					&& gueltigkeit.getGueltigBis()
+						.isAfter(familiensituationStichtag)) {
+				//2GS to 1GS
+				gueltigkeit.setGueltigBis(
+					familiensituationStichtag.minusDays(1)
+				);
 			}
 		}
 	}

@@ -33,15 +33,14 @@ import {SupportRS} from '../../gesuch/service/supportRS.rest';
 import {WizardStepManager} from '../../gesuch/service/wizardStepManager';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {ErrorService} from './errors/service/ErrorService';
-import {ApplicationPropertyRS} from './rest-services/applicationPropertyRS.rest';
 import {AntragStatusHistoryRS} from './service/antragStatusHistoryRS.rest';
+import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
 import {DownloadRS} from './service/downloadRS.rest';
 import {GesuchsperiodeRS} from './service/gesuchsperiodeRS.rest';
 import {GesuchstellerRS} from './service/gesuchstellerRS.rest';
 import {InstitutionStammdatenRS} from './service/institutionStammdatenRS.rest';
 import {ListResourceRS} from './service/listResourceRS.rest';
 import {MitteilungRS} from './service/mitteilungRS.rest';
-import {NotrechtRS} from './service/notrechtRS.rest';
 import {ReportRS} from './service/reportRS.rest';
 import {TraegerschaftRS} from './service/traegerschaftRS.rest';
 import {UploadRS} from './service/uploadRS.rest';
@@ -59,19 +58,6 @@ export function authServiceRSServiceFactory(
 export const authServiceRSProvider = {
     provide: AuthServiceRS,
     useFactory: authServiceRSServiceFactory,
-    deps: ['$injector']
-};
-
-// ApplicationPropertyRS
-export function applicationPropertyRSServiceFactory(
-    i: IInjectorService
-): ApplicationPropertyRS {
-    return i.get('ApplicationPropertyRS');
-}
-
-export const applicationPropertyRSProvider = {
-    provide: ApplicationPropertyRS,
-    useFactory: applicationPropertyRSServiceFactory,
     deps: ['$injector']
 };
 
@@ -258,19 +244,6 @@ export const supportRSProvider = {
     deps: ['$injector']
 };
 
-// NotrechtRS
-export function notrechtRSProviderServiceFactory(
-    i: IInjectorService
-): NotrechtRS {
-    return i.get('NotrechtRS');
-}
-
-export const notrechtRSProvider = {
-    provide: NotrechtRS,
-    useFactory: notrechtRSProviderServiceFactory,
-    deps: ['$injector']
-};
-
 // UploadRS
 export function uploadRSServiceFactory(i: IInjectorService): UploadRS {
     return i.get('UploadRS');
@@ -403,9 +376,19 @@ export const ekvInfoRSProvider = {
     deps: ['$injector']
 };
 
+// BetreuungRS
+export function betreuungRSFactory(i: IInjectorService): BetreuungRS {
+    return i.get('BetreuungRS');
+}
+
+export const betreuungRSProvider = {
+    provide: BetreuungRS,
+    useFactory: betreuungRSFactory,
+    deps: ['$injector']
+};
+
 export const UPGRADED_PROVIDERS: Provider[] = [
     authServiceRSProvider,
-    applicationPropertyRSProvider,
     traegerschaftRSProvider,
     errorServiceProvider,
     gesuchsperiodeRSProvider,
@@ -421,7 +404,6 @@ export const UPGRADED_PROVIDERS: Provider[] = [
     institutionStammdatenRSProvider,
     supportRSProvider,
     uploadRSProvider,
-    notrechtRSProvider,
     gesuchModelManagerProvider,
     reportRSProvider,
     ebeguUtilProvider,
@@ -431,5 +413,6 @@ export const UPGRADED_PROVIDERS: Provider[] = [
     gesuchstellerRSProvider,
     globalCacheServiceProvider,
     ekvContainerRSServiceProvider,
-    ekvInfoRSProvider
+    ekvInfoRSProvider,
+    betreuungRSProvider
 ];

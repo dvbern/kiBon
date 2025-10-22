@@ -13,20 +13,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {TSGesuchsperiodeStatus} from '../models/enums/TSGesuchsperiodeStatus';
-import {TSAbstractEntity} from '../models/TSAbstractEntity';
+import angular from 'angular';
+import moment from 'moment';
+import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
+
+import {
+    TSAbstractEntity,
+    TSDateRange,
+    TSIntegrationTyp,
+    TSPensumFachstelle
+} from '@kibon/shared/model/entity';
 import {TSFall} from '../models/TSFall';
-import {TSGemeinde} from '../models/TSGemeinde';
-import {TSGesuchsperiode} from '../models/TSGesuchsperiode';
-import {TSDateRange} from '../models/types/TSDateRange';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSKind} from '@kibon/kind/model/entity';
+import {TSKindContainer} from '../models/TSKindContainer';
 import {EbeguUtil} from './EbeguUtil';
 import {TestDataUtil} from './TestDataUtil.spec';
 import IProvideService = angular.auto.IProvideService;
-import {TSKindContainer} from '../models/TSKindContainer';
-import {TSKind} from '../models/TSKind';
-import {TSPensumFachstelle} from '../models/TSPensumFachstelle';
-import {TSIntegrationTyp} from '../models/enums/TSIntegrationTyp';
 
 /* eslint-disable no-magic-numbers */
 describe('EbeguUtil', () => {

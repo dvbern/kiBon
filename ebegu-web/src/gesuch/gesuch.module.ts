@@ -16,10 +16,19 @@
  */
 
 import {downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
+import {BetreuungUtilAnmeldungRestService} from '@kibon/betreuung/util/anmeldung-rest';
+import {GesuchErwerbspensumViewComponent} from '@kibon/gesuch-erwerbspensumView';
+import {BetreuungUiKindGueltigkeitTerminiertAngularjsWrapperComponent} from '@kibon/kind/ui/kind-gueltigkeit-terminiert';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {TransitionService} from '@uirouter/core';
 import * as angular from 'angular';
+import {EinstellungRS} from '../admin/service/einstellungRS.rest';
 import {CORE_JS_MODULE} from '../app/core/core.angularjs.module';
 import {PersonensucheComponent} from '../app/personensuche/personensuche.component';
 import {MultipleFileUploadComponent} from '../app/shared/component/multpile-file-upload/multiple-file-upload.component';
+import {GemeindeService} from '../app/shared/services/gemeinde.service';
+import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
+import {FinSitFelderAppenzellComponent} from './component/abstractFinanzielleSituation/appenzell/fin-sit-zusatzfelder-appenzell/fin-sit-felder-appenzell.component';
 import {SelbstdeklarationComponent} from './component/abstractFinanzielleSituation/luzern/selbstdeklaration/selbstdeklaration.component';
 import {AbwesenheitViewComponentConfig} from './component/abwesenheitView/abwesenheitView';
 import {BetreuungAbweichungenViewComponentConfig} from './component/betreuungAbweichungenView/betreuungAbweichungenView';
@@ -39,6 +48,8 @@ import {
 import {DvEingabeHintComponent} from './component/dv-eingabe-hint/dv-eingabe-hint.component';
 import {DvFinanzielleSituationRequire} from './component/dv-finanzielle-situation-require/dv-finanzielle-situation-require';
 import {DvSwitchComponent} from './component/dv-switch/dv-switch.component';
+import {EinkommensverschlechterungAppenzellResultateViewComponent} from './component/einkommensverschlechterung/appenzell/einkommensverschlechterung-appenzell-resultate-view/einkommensverschlechterung-appenzell-resultate-view.component';
+import {EinkommensverschlechterungAppenzellViewComponent} from './component/einkommensverschlechterung/appenzell/einkommensverschlechterung-appenzell-view/einkommensverschlechterung-appenzell-view.component';
 import {EinkommensverschlechterungResultateViewComponent} from './component/einkommensverschlechterung/bern/einkommensverschlechterung-resultate-view/einkommensverschlechterung-resultate-view.component';
 import {EinkommensverschlechterungViewComponentConfig} from './component/einkommensverschlechterung/bern/einkommensverschlechterungView/einkommensverschlechterungView';
 import {EinkommensverschlechterungInfoViewComponentConfig} from './component/einkommensverschlechterung/einkommensverschlechterungInfoView/einkommensverschlechterungInfoView';
@@ -53,7 +64,6 @@ import {FallToolbarComponent} from './component/fallToolbar/fallToolbar.componen
 import {FamiliensituationAppenzellViewXComponent} from './component/familiensituation/familiensituation-appenzell-view-x/familiensituation-appenzell-view-x.component';
 import {FamiliensituationSchwyzComponent} from './component/familiensituation/familiensituation-schwyz/familiensituation-schwyz.component';
 import {FamiliensituationViewXComponent} from './component/familiensituation/familiensituation-view-x/familiensituation-view-x.component';
-import {FinSitFelderAppenzellComponent} from './component/abstractFinanzielleSituation/appenzell/fin-sit-zusatzfelder-appenzell/fin-sit-felder-appenzell.component';
 import {familiensituationRun} from './component/familiensituation/familiensituation.route';
 import {FinanzielleSituationAppenzellViewComponent} from './component/finanzielleSituation/appenzell/finanzielle-situation-appenzell-view/finanzielle-situation-appenzell-view.component';
 import {FinanzielleSituationAufteilungComponent} from './component/finanzielleSituation/bern/finanzielleSituationAufteilung/finanzielle-situation-aufteilung.component';
@@ -69,18 +79,14 @@ import {ResultatComponent} from './component/finanzielleSituation/luzern/resulta
 import {VeranlagungComponent} from './component/finanzielleSituation/luzern/veranlagung/veranlagung.component';
 import {finSitSchwyzRun} from './component/finanzielleSituation/schwyz/fin-sit-schwyz.route';
 import {FinanzielleSituationStartSolothurnComponent} from './component/finanzielleSituation/solothurn/finanzielle-situation-start-solothurn/finanzielle-situation-start-solothurn.component';
-import {FreigabeViewComponentConfig} from './freigabe/component/freigabeView/freigabeView';
 import {InternePendenzDialogComponent} from './component/internePendenzenView/interne-pendenz-dialog/interne-pendenz-dialog.component';
 import {InternePendenzenComponent} from './component/internePendenzenView/interne-pendenzen.component';
 import {KinderListViewComponentConfig} from './component/kinderListView/kinderListView';
 import {FkjvKinderabzugComponent} from './component/kindView/fkjv-kinderabzug/fkjv-kinderabzug.component';
 import {HoehereBetraegeBeeintraechtigungComponent} from './component/kindView/hoehere-betraege-beeintraechtigung/hoehere-betraege-beeintraechtigung.component';
-import {SchwyzKinderabzugComponent} from './component/kindView/schwyz-kinderabzug/schwyz-kinderabzug.component';
-import {FreigabeService} from './freigabe/freigabe.service';
-import {OnlineFreigabeComponent} from './freigabe/component/onlineFreigabe/online-freigabe.component';
-import {HybridFormBridgeService} from './service/hybrid-form-bridge.service';
 import {KindFachstelleComponent} from './component/kindView/kind-fachstelle/kind-fachstelle.component';
 import {KindViewComponentConfig} from './component/kindView/kindView';
+import {SchwyzKinderabzugComponent} from './component/kindView/schwyz-kinderabzug/schwyz-kinderabzug.component';
 import {KommentarViewComponentConfig} from './component/kommentarView/kommentarView';
 import {SozialdienstFallCreationViewComponentConfig} from './component/sozialdienstFallCreationView/sozialdienstFallCreationView';
 import {StammdatenViewComponentConfig} from './component/stammdatenView/stammdatenView';
@@ -88,13 +94,15 @@ import {UmzugViewComponentConfig} from './component/umzugView/umzugView';
 import {VerfuegenListViewComponentConfig} from './component/verfuegenListView/verfuegenListView';
 import {VerfuegenViewComponentConfig} from './component/verfuegenView/verfuegenView';
 import {ZahlungsstatusIconComponent} from './component/zahlungsstatus-icon/zahlungsstatus-icon.component';
+import {FreigabeViewComponentConfig} from './freigabe/component/freigabeView/freigabeView';
+import {OnlineFreigabeComponent} from './freigabe/component/onlineFreigabe/online-freigabe.component';
+import {FreigabeService} from './freigabe/freigabe.service';
 import {gesuchRun} from './gesuch.route';
-import {EinkommensverschlechterungAppenzellResultateViewComponent} from './component/einkommensverschlechterung/appenzell/einkommensverschlechterung-appenzell-resultate-view/einkommensverschlechterung-appenzell-resultate-view.component';
-import {EinkommensverschlechterungAppenzellViewComponent} from './component/einkommensverschlechterung/appenzell/einkommensverschlechterung-appenzell-view/einkommensverschlechterung-appenzell-view.component';
+import {GesuchModelManager} from './service/gesuchModelManager';
+import {UnterstuetzungsdienstFallService} from './service/unterstuetzungsdienst-fall.service';
 import {abweichungenEnabledHook} from './state-hooks/abweichungen-enabled.hook';
-import {TransitionService} from '@uirouter/core';
-import {ApplicationPropertyRS} from '../app/core/rest-services/applicationPropertyRS.rest';
-import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
+import {GemeindeKontaktdatenComponent} from './component/dossierToolbar/gemeinde-kontaktdaten/gemeinde-kontaktdaten.component';
+import {OpenTabellarischeMaskeButtonComponent} from '@kibon/betreuung-pattern-tabellarische-maske-kita';
 
 export const GESUCH_JS_MODULE = angular
     .module('ebeguWeb.gesuch', [CORE_JS_MODULE.name])
@@ -103,17 +111,20 @@ export const GESUCH_JS_MODULE = angular
     .run(familiensituationRun)
     .run([
         '$transitions',
-        'ApplicationPropertyRS',
+        'EinstellungRS',
         'AuthServiceRS',
+        'GesuchModelManager',
         (
             $transitions: TransitionService,
-            applicationPropertyRS: ApplicationPropertyRS,
-            authService: AuthServiceRS
+            einstellungRS: EinstellungRS,
+            authService: AuthServiceRS,
+            gesuchModelManager: GesuchModelManager
         ) =>
             abweichungenEnabledHook(
                 $transitions,
-                applicationPropertyRS,
-                authService
+                einstellungRS,
+                authService,
+                gesuchModelManager
             )
     ])
     .component(
@@ -295,6 +306,7 @@ export const GESUCH_JS_MODULE = angular
         'HybridFormBridgeService',
         downgradeInjectable(HybridFormBridgeService as any)
     )
+    .factory('GemeindeService', downgradeInjectable(GemeindeService as any))
     .directive(
         'dvFallToolbar',
         downgradeComponent({component: FallToolbarComponent})
@@ -318,7 +330,8 @@ export const GESUCH_JS_MODULE = angular
                 'files',
                 'readOnly',
                 'readOnlyDelete',
-                'tooltipText'
+                'tooltipText',
+                'fileTypes'
             ],
             outputs: ['download', 'delete', 'uploadFile']
         })
@@ -343,6 +356,13 @@ export const GESUCH_JS_MODULE = angular
         })
     )
     .directive(
+        'gemeindeKontaktdaten',
+        downgradeComponent({
+            component: GemeindeKontaktdatenComponent,
+            inputs: ['stammdaten']
+        })
+    )
+    .directive(
         'hoehereBetraegeBeeintraechtigung',
         downgradeComponent({
             component: HoehereBetraegeBeeintraechtigungComponent,
@@ -354,6 +374,21 @@ export const GESUCH_JS_MODULE = angular
         downgradeComponent({
             component: SchwyzKinderabzugComponent,
             inputs: ['kindContainer']
+        })
+    )
+    .directive(
+        'dvOpenTabellarischeMaskeButton',
+        downgradeComponent({
+            component: OpenTabellarischeMaskeButtonComponent,
+            inputs: [
+                'buttonDisabled',
+                'betreuung',
+                'gesuchsperiode',
+                'multiplierKita',
+                'multiplierTfo',
+                'formDirty',
+                'anwesenheitstageMonatActivated'
+            ]
         })
     )
     .directive(
@@ -390,4 +425,26 @@ export const GESUCH_JS_MODULE = angular
     .directive(
         'dvPersonensuche',
         downgradeComponent({component: PersonensucheComponent})
+    )
+    .factory(
+        'UnterstuetzungsdienstFallService',
+        downgradeInjectable(UnterstuetzungsdienstFallService)
+    )
+    .factory(
+        'BetreuungUtilAnmeldungRestService',
+        downgradeInjectable(BetreuungUtilAnmeldungRestService)
+    )
+    .directive(
+        'dvBetreuungUiKindGueltigkeitTerminiertAngularJSWrapper',
+        downgradeComponent({
+            component:
+                BetreuungUiKindGueltigkeitTerminiertAngularjsWrapperComponent,
+            inputs: ['kind']
+        })
+    )
+    .directive(
+        'dvGesuchErwerbspensumView',
+        downgradeComponent({
+            component: GesuchErwerbspensumViewComponent
+        })
     );

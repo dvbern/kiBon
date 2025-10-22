@@ -28,15 +28,15 @@ import {StateService} from '@uirouter/core';
 import {Moment} from 'moment';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSExternalClientAssignment} from '../../../models/TSExternalClientAssignment';
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
 import {TSInstitutionListDTO} from '../../../models/TSInstitutionListDTO';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-import {LogFactory} from '../../core/logging/LogFactory';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 
 const LOG = LogFactory.createLog('EditGemeidneComponentTS');
 
@@ -45,7 +45,8 @@ const LOG = LogFactory.createLog('EditGemeidneComponentTS');
     templateUrl: './edit-gemeinde-ts.component.html',
     styleUrls: ['./edit-gemeinde-ts.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class EditGemeindeTSComponent implements OnInit {
     @Input() public stammdaten$: Observable<TSGemeindeStammdaten>;
@@ -105,15 +106,15 @@ export class EditGemeindeTSComponent implements OnInit {
     public updateInstitutionenList(): void {
         this.institutionRS
             .getInstitutionenForGemeinde(this.gemeindeId)
-            .subscribe(
-                result => {
+            .subscribe({
+                next: result => {
                     this._tagesschulen = result;
                     this._tagesschulen.sort((a, b) =>
                         a.name.localeCompare(b.name)
                     );
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public get tagesschulen(): TSInstitutionListDTO[] {

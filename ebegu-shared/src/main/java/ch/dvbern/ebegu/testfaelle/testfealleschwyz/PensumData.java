@@ -1,32 +1,39 @@
 package ch.dvbern.ebegu.testfaelle.testfealleschwyz;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class PensumData {
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private int pensum;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private LocalDate gueltigAb;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private LocalDate gueltigBis;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private BigDecimal monatlicheBetreuungskosten;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private boolean betreuungInFerienzeit;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private BigDecimal monatlicheHauptmahlzeiten = BigDecimal.ZERO;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private BigDecimal tarifProMahlzeit = BigDecimal.ZERO;
 
 }

@@ -15,7 +15,10 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<div class="dv-content" *ngIf="stammdaten$ | async as stammdaten">
+<div
+    class="dv-content dv-edit-gemeinde-stammdaten"
+    *ngIf="stammdaten$ | async as stammdaten"
+>
     <div *ngIf="editMode; else viewModeTemplate">
         <fieldset ngModelGroup="dv-edit-gemeinde-stammdaten">
             <div class="row margin-top-20">
@@ -59,6 +62,7 @@
                             #nameEmail="ngModel"
                             [(ngModel)]="stammdaten.mail"
                             email
+                            placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
                             data-test="email"
                             [maxlength]="255"
                             class="form-control"
@@ -130,10 +134,13 @@
                             #nameTelefon="ngModel"
                             [(ngModel)]="stammdaten.telefon"
                             [maxlength]="255"
+                            [pattern]="CONSTANTS.PATTERN_PHONE"
+                            placeholder="{{
+                                'BEISPIEL_TELEFON_NUMMER' | translate
+                            }}"
                             class="form-control"
                             data-test="telefon"
                             required
-                            [pattern]="CONSTANTS.PATTERN_PHONE"
                         />
                         <dv-error-messages
                             [errorObject]="nameTelefon.errors"
@@ -198,9 +205,12 @@
                             type="text"
                             name="webseite_id"
                             #nameWebsite="ngModel"
+                            data-test="gemeinde.edit.webseite"
                             [(ngModel)]="stammdaten.webseite"
                             [maxlength]="255"
                             class="form-control"
+                            placeholder="{{ 'BEISPIEL_WEBSITE' | translate }}"
+                            isValidWebseite
                         />
                         <dv-error-messages
                             [errorObject]="nameWebsite.errors"
@@ -213,8 +223,15 @@
                 <!-- Standardverantwortliche -->
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <h3 translate class="required" for="verantwortliche_id">
-                            STANDARD_VERANTWORTLICHE
+                        <h3 class="required" for="verantwortliche_id">
+                            {{ 'STANDARD_VERANTWORTLICHE' | translate }}
+
+                            <dv-tooltip
+                                id="STANDARD_VERANTWORTLICHE"
+                                [text]="
+                                    'STANDARD_VERANTWORTLICHE_HELP' | translate
+                                "
+                            ></dv-tooltip>
                         </h3>
                         <mat-select
                             [(ngModel)]="stammdaten.defaultBenutzer"
@@ -282,181 +299,99 @@
             <div class="row">
                 <!-- Konfiguration der Angebote -->
                 <div class="col-sm-6">
-                    <div class="form-group">
-                        <label
-                            class="md-no-float"
-                            translate
-                            for="gemeinde_end_ID"
-                            >GEMEINDE_GUELTIG_BIS</label
-                        >
-                        <input
-                            class="dv-mat-datepicker"
-                            type="text"
-                            name="gemeinde_end_ID"
-                            id="gemeinde_end_ID"
-                            #gemeindeEndDate="ngModel"
-                            [(ngModel)]="stammdaten.gemeinde.gueltigBis"
-                            [matDatepicker]="gemeinde_end_ID"
-                            [disabled]="!isSuperadminOrMandant()"
-                            placeholder="{{
-                                'DATE_PLACEHOLDER_FIRSTOFMONTH' | translate
-                            }}"
-                        />
-                        <mat-datepicker-toggle
-                            matSuffix
-                            [for]="gemeinde_end_ID"
-                        ></mat-datepicker-toggle>
-                        <mat-datepicker #gemeinde_end_ID></mat-datepicker>
-                        <dv-error-messages
-                            input-id="gemeinde_end_ID"
-                            [errorObject]="gemeindeEndDate.errors"
-                        >
-                        </dv-error-messages>
-                    </div>
+                    <dv-date-picker-x
+                        id="gemeinde_end_ID"
+                        [label]="'GEMEINDE_GUELTIG_BIS'"
+                        [(date)]="stammdaten.gemeinde.gueltigBis"
+                        [datePickerEnabled]="true"
+                        [disabled]="!isSuperadminOrMandant()"
+                    >
+                    </dv-date-picker-x>
                 </div>
                 <!-- Alternatives Kontaktfeld -->
-                <div class="col-sm-6">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <mat-checkbox
-                                    id="altBGAdresse_id"
-                                    name="altBGAdresse_id"
-                                    [(ngModel)]="
-                                        stammdaten.hasAltGemeindeKontakt
-                                    "
-                                    (ngModelChange)="
-                                        altGemeindeKontaktHasChange($event)
-                                    "
-                                >
-                                    {{
-                                        'ALTERNATIVES_KONTAKTFELD' | translate
-                                    }}&nbsp;
-                                    <dv-tooltip
-                                        inputId="altBGAdresse_id"
-                                        [text]="
-                                            'ALTERNATIVES_KONTAKTFELD_INFO'
-                                                | translate
-                                        "
-                                    ></dv-tooltip>
-                                </mat-checkbox>
-                            </div>
-                            <div *ngIf="stammdaten.hasAltGemeindeKontakt">
+                <div class="col-sm-6 checkboxes">
+                    @if (isAPeriodeOffline) {
+                        <div class="row">
+                            <div class="col-sm-12">
                                 <div class="form-group">
-                                    <dv-input-container-x
-                                        [verticalAlign]="true"
+                                    <div
+                                        class="form-group checkbox-with-tooltip"
                                     >
-                                        <label
-                                            class="required"
-                                            translate
-                                            for="alternativekontaktdaten_id"
-                                            >ANGABEN_KONTAKTFELD</label
+                                        <mat-checkbox
+                                            id="zusatzTextFreigabequittung_id"
+                                            name="zusatzTextFreigabequittung_name"
+                                            (change)="
+                                                hasZusatzTextFreigabequittungChange(
+                                                    stammdaten
+                                                )
+                                            "
+                                            [(ngModel)]="
+                                                stammdaten.hasZusatzTextFreigabequittung
+                                            "
                                         >
-                                        <mat-form-field
-                                            floatLabel="always"
-                                            class="no-margin-left"
-                                        >
-                                            <textarea
-                                                matInput
-                                                id="alternativekontaktdaten_id"
-                                                name="nameAlternativeKontaktdaten"
-                                                #nameAlternativeKontaktdaten="ngModel"
-                                                [(ngModel)]="
-                                                    stammdaten.altGemeindeKontaktText
+                                            {{
+                                                'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_JA'
+                                                    | translate
+                                            }}
+
+                                            <dv-tooltip
+                                                id="zusatzText_tooltip"
+                                                [text]="
+                                                    'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_HELP'
+                                                        | translate
                                                 "
-                                                type="text"
-                                                class="form-control"
-                                                required
-                                            ></textarea>
-                                            <dv-error-messages
-                                                [errorObject]="
-                                                    nameAlternativeKontaktdaten.errors
-                                                "
-                                                inputId="alternativekontaktdaten_id"
-                                            ></dv-error-messages>
-                                        </mat-form-field>
-                                    </dv-input-container-x>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <div class="form-group checkbox-with-tooltip">
-                                    <mat-checkbox
-                                        id="zusatzTextFreigabequittung_id"
-                                        name="zusatzTextFreigabequittung_name"
-                                        (change)="
-                                            hasZusatzTextFreigabequittungChange(
-                                                stammdaten
-                                            )
-                                        "
-                                        [(ngModel)]="
+                                            ></dv-tooltip>
+                                        </mat-checkbox>
+                                    </div>
+                                    <div
+                                        *ngIf="
                                             stammdaten.hasZusatzTextFreigabequittung
                                         "
                                     >
-                                        {{
-                                            'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_JA'
-                                                | translate
-                                        }}
-                                    </mat-checkbox>
-                                    <dv-tooltip
-                                        id="zusatzText_tooltip"
-                                        [text]="
-                                            'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_HELP'
-                                                | translate
-                                        "
-                                    ></dv-tooltip>
-                                </div>
-                                <div
-                                    *ngIf="
-                                        stammdaten.hasZusatzTextFreigabequittung
-                                    "
-                                >
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <dv-input-container-x
-                                                    [verticalAlign]="true"
-                                                >
-                                                    <label
-                                                        class="required"
-                                                        translate
-                                                        for="zusatzText_id"
-                                                        >ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_TITEL</label
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                    <dv-input-container-x
+                                                        [verticalAlign]="true"
                                                     >
-                                                    <mat-form-field
-                                                        floatLabel="always"
-                                                        class="no-margin-left"
-                                                    >
-                                                        <textarea
-                                                            matInput
-                                                            id="zusatzTextFreigabequittungTitle_id"
-                                                            name="zusatzTextFreigabequittungTitle_name"
-                                                            #nameZusatzText="ngModel"
-                                                            [(ngModel)]="
-                                                                stammdaten.zusatzTextFreigabequittung
-                                                            "
-                                                            type="text"
-                                                            class="form-control"
-                                                            required
-                                                        ></textarea>
-                                                        <dv-error-messages
-                                                            [errorObject]="
-                                                                nameZusatzText.errors
-                                                            "
-                                                            inputId="zusatzTextFreigabequittungTitle_id"
-                                                        ></dv-error-messages>
-                                                    </mat-form-field>
-                                                </dv-input-container-x>
+                                                        <label
+                                                            class="required"
+                                                            translate
+                                                            for="zusatzTextFreigabequittungTitle_id"
+                                                            >ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_TITEL</label
+                                                        >
+                                                        <mat-form-field
+                                                            floatLabel="always"
+                                                            class="no-margin-left"
+                                                        >
+                                                            <textarea
+                                                                matInput
+                                                                id="zusatzTextFreigabequittungTitle_id"
+                                                                name="zusatzTextFreigabequittungTitle_name"
+                                                                #nameZusatzText="ngModel"
+                                                                [(ngModel)]="
+                                                                    stammdaten.zusatzTextFreigabequittung
+                                                                "
+                                                                type="text"
+                                                                class="form-control"
+                                                                required
+                                                            ></textarea>
+                                                            <dv-error-messages
+                                                                [errorObject]="
+                                                                    nameZusatzText.errors
+                                                                "
+                                                                inputId="zusatzTextFreigabequittungTitle_id"
+                                                            ></dv-error-messages>
+                                                        </mat-form-field>
+                                                    </dv-input-container-x>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    }
                     <div class="row" *ngIf="isInfomazahlungen">
                         <div class="col-sm-12">
                             <div class="form-group">
@@ -464,6 +399,7 @@
                                     <mat-checkbox
                                         id="infomaZahlungen_id"
                                         name="infomaZahlungen_name"
+                                        [disabled]="!isSuperadmin()"
                                         [(ngModel)]="
                                             stammdaten.gemeinde.infomaZahlungen
                                         "
@@ -474,18 +410,48 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row" *ngIf="isSuperadmin()">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="form-group checkbox-with-tooltip">
+                                    <mat-checkbox
+                                        id="adminMutationAbweichungMeldungEnabled_id"
+                                        name="adminMutationAbweichungMeldungEnabled_name"
+                                        [(ngModel)]="
+                                            stammdaten.gemeinde
+                                                .adminMutationAbweichungMeldungEnabled
+                                        "
+                                    >
+                                        {{
+                                            'ADMIN_MUTATION_ABWEICHUNG_MELDUNG_ENABLED'
+                                                | translate
+                                        }}
+
+                                        <dv-tooltip
+                                            inputId="adminMutationAbweichungMeldungEnabled_id"
+                                            [text]="
+                                                'ADMIN_MUTATION_ABWEICHUNG_MELDUNG_ENABLED_INFO'
+                                                    | translate
+                                            "
+                                        ></dv-tooltip>
+                                    </mat-checkbox>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Angebote Gemeinde-->
             <div class="row">
                 <div class="col-sm-6">
-                    <div class="form-group">
-                        <label
+                    <div class="form-group margin-top-30">
+                        <h3
                             class="md-no-float margin-top-30"
                             translate
                             for="begu_start_ID"
-                            >GEMEINDE_ANGEBOT</label
                         >
+                            GEMEINDE_ANGEBOT
+                        </h3>
 
                         <mat-checkbox
                             id="angebotBG"
@@ -504,41 +470,16 @@
                             class="form-group inner-option"
                             *ngIf="stammdaten.gemeinde.angebotBG"
                         >
-                            <div class="form-group">
-                                <label
-                                    class="md-no-float"
-                                    translate
-                                    for="begu_start_ID"
-                                    >BEGU_START</label
-                                >
-                                <input
-                                    class="dv-mat-datepicker"
-                                    type="text"
-                                    name="begu_start"
-                                    id="begu_start_ID"
-                                    #bgStartDate="ngModel"
-                                    [(ngModel)]="
-                                        stammdaten.gemeinde
-                                            .betreuungsgutscheineStartdatum
-                                    "
-                                    [matDatepicker]="begu_start"
-                                    [disabled]="!isSuperadminOrMandant()"
-                                    placeholder="{{
-                                        'DATE_PLACEHOLDER_FIRSTOFMONTH'
-                                            | translate
-                                    }}"
-                                />
-                                <mat-datepicker-toggle
-                                    matSuffix
-                                    [for]="begu_start"
-                                ></mat-datepicker-toggle>
-                                <mat-datepicker #begu_start></mat-datepicker>
-                                <dv-error-messages
-                                    input-id="begu_start_ID"
-                                    [errorObject]="bgStartDate.errors"
-                                >
-                                </dv-error-messages>
-                            </div>
+                            <dv-date-picker-x
+                                id="begu_start_ID"
+                                [label]="'BEGU_START'"
+                                [datePickerEnabled]="true"
+                                [(date)]="
+                                    stammdaten.gemeinde
+                                        .betreuungsgutscheineStartdatum
+                                "
+                                [disabled]="!isSuperadminOrMandant()"
+                            ></dv-date-picker-x>
                             <div
                                 class="form-group"
                                 *ngIf="
@@ -552,6 +493,7 @@
                                     [(ngModel)]="
                                         stammdaten.gemeinde.angebotBGTFO
                                     "
+                                    [disabled]="!isSuperadminOrMandant()"
                                 >
                                     {{
                                         'GEMEINDE_ANGEBOT_BETREUUNGSGUTSCHEINE_TFO'
@@ -561,134 +503,100 @@
                             </div>
                         </div>
 
-                        <mat-checkbox
-                            id="angebotTS"
-                            name="angebotTS"
-                            [disabled]="!isSuperadminOrMandant()"
-                            [(ngModel)]="stammdaten.gemeinde.angebotTS"
-                            (ngModelChange)="
-                                handleAngebotTSChange(stammdaten.gemeinde)
-                            "
-                            *ngIf="tageschuleEnabledForMandant"
-                            (ngModelChange)="angeboteChanged(stammdaten)"
-                        >
-                            {{
-                                'GEMEINDE_ANGEBOT_TAGESSCHULE' | translate
-                            }}</mat-checkbox
-                        >
+                        <div *ngIf="isAppConfigAngebotTSActivated">
+                            <mat-checkbox
+                                id="angebotTS"
+                                name="angebotTS"
+                                [disabled]="!isSuperadminOrMandant()"
+                                [(ngModel)]="stammdaten.gemeinde.angebotTS"
+                                (ngModelChange)="
+                                    handleAngebotTSChange(stammdaten)
+                                "
+                                *ngIf="tageschuleEnabledForMandant"
+                            >
+                                {{
+                                    'GEMEINDE_ANGEBOT_TAGESSCHULE' | translate
+                                }}</mat-checkbox
+                            >
 
-                        <div
-                            class="inner-option"
-                            *ngIf="stammdaten.gemeinde.angebotTS"
-                        >
-                            <div class="form-group">
-                                <label
-                                    class="md-no-float"
-                                    translate
-                                    for="begu_start_ID"
-                                    >TS_START</label
-                                >
-                                <input
-                                    class="dv-mat-datepicker"
-                                    type="text"
-                                    name="ts_start"
+                            <div
+                                class="inner-option"
+                                *ngIf="stammdaten.gemeinde.angebotTS"
+                            >
+                                <dv-date-picker-x
                                     id="ts_start_ID"
-                                    #tsStartDate="ngModel"
-                                    [(ngModel)]="
+                                    [label]="'TS_START'"
+                                    [datePickerEnabled]="true"
+                                    [(date)]="
                                         stammdaten.gemeinde
                                             .tagesschulanmeldungenStartdatum
                                     "
-                                    [matDatepicker]="ts_start"
-                                    [min]="minDateTSFI"
+                                    [minDate]="minDateTSFI"
                                     [disabled]="!isSuperadminOrMandant()"
-                                    placeholder="{{
-                                        'DATE_PLACEHOLDER_FIRSTOFMONTH'
-                                            | translate
-                                    }}"
-                                />
-                                <mat-datepicker-toggle
-                                    matSuffix
-                                    [for]="ts_start"
-                                ></mat-datepicker-toggle>
-                                <mat-datepicker #ts_start></mat-datepicker>
-                                <dv-error-messages
-                                    input-id="ts_start_ID"
-                                    [errorObject]="tsStartDate.errors"
                                 >
-                                </dv-error-messages>
-                            </div>
-                            <div class="form-group">
-                                <mat-checkbox
-                                    id="nurLats"
-                                    name="nurLats"
-                                    [(ngModel)]="stammdaten.gemeinde.nurLats"
+                                </dv-date-picker-x>
+                                <div
+                                    class="form-group"
+                                    *ngIf="stammdaten.gemeinde.angebotTS"
                                 >
-                                    {{
-                                        'GEMEINDE_ANGEBOT_NUR_LATS' | translate
-                                    }}</mat-checkbox
-                                >
+                                    <mat-checkbox
+                                        id="nurLats"
+                                        name="nurLats"
+                                        [disabled]="!isSuperadminOrMandant()"
+                                        [(ngModel)]="
+                                            stammdaten.gemeinde.nurLats
+                                        "
+                                        *ngIf="tageschuleEnabledForMandant"
+                                    >
+                                        {{
+                                            'GEMEINDE_ANGEBOT_NUR_LATS'
+                                                | translate
+                                        }}</mat-checkbox
+                                    >
+                                </div>
                             </div>
                         </div>
 
-                        <mat-checkbox
-                            id="angebotFI"
-                            name="angebotFI"
-                            [disabled]="!isSuperadmin()"
-                            [(ngModel)]="stammdaten.gemeinde.angebotFI"
-                            *ngIf="tageschuleEnabledForMandant"
-                            (ngModelChange)="angeboteChanged(stammdaten)"
-                        >
-                            {{
-                                'GEMEINDE_ANGEBOT_FERIENINSEL' | translate
-                            }}</mat-checkbox
-                        >
-
-                        <div
-                            class="form-group inner-option"
-                            *ngIf="stammdaten.gemeinde.angebotFI"
-                        >
-                            <label
-                                class="md-no-float"
-                                translate
-                                for="begu_start_ID"
-                                >FI_START</label
-                            >
-                            <input
-                                class="dv-mat-datepicker"
-                                type="text"
-                                name="fi_start"
-                                id="fi_start_ID"
-                                #fiStartDate="ngModel"
-                                [(ngModel)]="
-                                    stammdaten.gemeinde
-                                        .ferieninselanmeldungenStartdatum
-                                "
-                                [matDatepicker]="fi_start"
-                                [min]="minDateTSFI"
+                        <div *ngIf="isAppConfigAngebotFIActivated">
+                            <mat-checkbox
+                                id="angebotFI"
+                                name="angebotFI"
                                 [disabled]="!isSuperadmin()"
-                                placeholder="{{
-                                    'DATE_PLACEHOLDER_FIRSTOFMONTH' | translate
-                                }}"
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="fi_start"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker #fi_start></mat-datepicker>
-                            <dv-error-messages
-                                input-id="fi_start_ID"
-                                [errorObject]="fiStartDate.errors"
+                                [(ngModel)]="stammdaten.gemeinde.angebotFI"
+                                *ngIf="tageschuleEnabledForMandant"
+                                (ngModelChange)="angeboteChanged(stammdaten)"
                             >
-                            </dv-error-messages>
-                        </div>
+                                {{
+                                    'GEMEINDE_ANGEBOT_FERIENINSEL' | translate
+                                }}</mat-checkbox
+                            >
 
-                        <div
-                            class="dv-error-messages"
-                            *ngIf="showMessageKeinAngebotSelected"
-                        >
-                            <span>{{
-                                'GEMEINDE_ANGEBOT_EMPTY_SELECTION' | translate
-                            }}</span>
+                            <div
+                                class="form-group inner-option"
+                                *ngIf="stammdaten.gemeinde.angebotFI"
+                            >
+                                <dv-date-picker-x
+                                    id="fi_start_ID"
+                                    [label]="'FI_START'"
+                                    [minDate]="minDateTSFI"
+                                    [(date)]="
+                                        stammdaten.gemeinde
+                                            .ferieninselanmeldungenStartdatum
+                                    "
+                                    [disabled]="!isSuperadmin()"
+                                    [datePickerEnabled]="true"
+                                ></dv-date-picker-x>
+                            </div>
+
+                            <div
+                                class="dv-error-messages"
+                                *ngIf="showMessageKeinAngebotSelected"
+                            >
+                                <span>{{
+                                    'GEMEINDE_ANGEBOT_EMPTY_SELECTION'
+                                        | translate
+                                }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -797,7 +705,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6" *ngIf="stammdaten.infomaZahlungen">
+                <div
+                    class="col-sm-6"
+                    *ngIf="stammdaten.gemeinde.infomaZahlungen"
+                >
                     <div class="form-group">
                         <h3>
                             {{ 'INFOMA_ZAHLUNGEN_JA' | translate }}

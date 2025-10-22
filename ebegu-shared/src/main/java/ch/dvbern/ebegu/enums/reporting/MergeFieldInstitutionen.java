@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.enums.reporting;
@@ -38,95 +38,182 @@ public enum MergeFieldInstitutionen implements MergeFieldProvider {
 
 	repeatInstitutionenRow(new RepeatRowMergeField("repeatInstitutionenRow")),
 
-	reportInstitutionenTitle(new SimpleMergeField<>("reportInstitutionenTitle", STRING_CONVERTER)),
+	reportInstitutionenTitle(
+		new SimpleMergeField<>("reportInstitutionenTitle", STRING_CONVERTER)
+	),
 
-	typTitle(new SimpleMergeField<>("typTitle", STRING_CONVERTER)),
-	traegerschaftTitle(new SimpleMergeField<>("traegerschaftTitle", STRING_CONVERTER)),
-	traegerschaftEmailTitle(new SimpleMergeField<>("traegerschaftEmailTitle", STRING_CONVERTER)),
-	emailTitle(new SimpleMergeField<>("emailTitle", STRING_CONVERTER)),
-	familienportalEmailTitle(new SimpleMergeField<>("familienportalEmailTitle", STRING_CONVERTER)),
-	emailBenachrichtigungKiBonTitle(new SimpleMergeField<>("emailBenachrichtigungKiBonTitle", STRING_CONVERTER)),
-	nameTitle(new SimpleMergeField<>("nameTitle", STRING_CONVERTER)),
-	statusTitle(new SimpleMergeField<>("statusTitle", STRING_CONVERTER)),
-	anschriftTitle(new SimpleMergeField<>("anschriftTitle", STRING_CONVERTER)),
-	strasseTitle(new SimpleMergeField<>("strasseTitle", STRING_CONVERTER)),
-	plzTitle(new SimpleMergeField<>("plzTitle", STRING_CONVERTER)),
-	ortTitle(new SimpleMergeField<>("ortTitle", STRING_CONVERTER)),
-	traegergemeindeTitle(new SimpleMergeField<>("traegergemeindeTitle", STRING_CONVERTER)),
-	standortgemeindeTitle(new SimpleMergeField<>("standortgemeindeTitle", STRING_CONVERTER)),
-	bfsTraegergemeindeTitle(new SimpleMergeField<>("bfsTraegergemeindeTitle", STRING_CONVERTER)),
-	bfsStandortgemeindeTitle(new SimpleMergeField<>("bfsStandortgemeindeTitle", STRING_CONVERTER)),
-	telefonTitle(new SimpleMergeField<>("telefonTitle", STRING_CONVERTER)),
-	urlTitle(new SimpleMergeField<>("urlTitle", STRING_CONVERTER)),
-	oeffnungstageProJahrTitle(new SimpleMergeField<>("oeffnungstageProJahrTitle", STRING_CONVERTER)),
-	emailBenachrichtigungKiBonMailTitle(new SimpleMergeField<>("emailBenachrichtigungKiBonMailTitle", STRING_CONVERTER)),
-	gueltigAbTitle(new SimpleMergeField<>("gueltigAbTitle", STRING_CONVERTER)),
-	gueltigBisTitle(new SimpleMergeField<>("gueltigBisTitle", STRING_CONVERTER)),
-	grundSchliessungTitle(new SimpleMergeField<>("grundSchliessungTitle", STRING_CONVERTER)),
-	oeffnungstageTitle(new SimpleMergeField<>("oeffnungstageTitle", STRING_CONVERTER)),
-	oeffnungszeitAbTitle(new SimpleMergeField<>("oeffnungszeitAbTitle", STRING_CONVERTER)),
-	oeffnungszeitenBisTitle(new SimpleMergeField<>("oeffnungszeitBisTitle", STRING_CONVERTER)),
-	oeffnungVor630Title(new SimpleMergeField<>("oeffnungVorTitle", STRING_CONVERTER)),
-	oeffnungNach1830Title(new SimpleMergeField<>("oeffnungNachTitle", STRING_CONVERTER)),
-	oeffnungAnWochenendenTitle(new SimpleMergeField<>("oeffnungAnWochenendenTitle", STRING_CONVERTER)),
-	uebernachtungMoeglichTitle(new SimpleMergeField<>("uebernachtungMoeglichTitle", STRING_CONVERTER)),
-	oeffnungsAbweichungenTitle(new SimpleMergeField<>("oeffnungsAbweichungenTitle", STRING_CONVERTER)),
-	babyTitle(new SimpleMergeField<>("babyTitle", STRING_CONVERTER)),
-	vorschulkindTitle(new SimpleMergeField<>("vorschulkindTitle", STRING_CONVERTER)),
-	kindergartenTitle(new SimpleMergeField<>("kindergartenTitle", STRING_CONVERTER)),
-	schulkindTitle(new SimpleMergeField<>("schulkindTitle", STRING_CONVERTER)),
-	subventioniertTitle(new SimpleMergeField<>("subventioniertTitle", STRING_CONVERTER)),
-	kapazitaetTitle(new SimpleMergeField<>("kapazitaetTitle", STRING_CONVERTER)),
-	reserviertFuerFirmenTitle(new SimpleMergeField<>("reserviertFuerFirmenTitle", STRING_CONVERTER)),
-	zuletztGeaendertTitle(new SimpleMergeField<>("zuletztGeaendertTitle", STRING_CONVERTER)),
-	auslastungTitle(new SimpleMergeField<>("auslastungTitle", STRING_CONVERTER)),
-	anzahlKinderWartelisteTitle(new SimpleMergeField<>("anzahlKinderWartelisteTitle", STRING_CONVERTER)),
-	summePensumWartelisteTitle(new SimpleMergeField<>("summePensumWartelisteTitle", STRING_CONVERTER)),
-	dauerWartelisteTitle(new SimpleMergeField<>("dauerWartelisteTitle", STRING_CONVERTER)),
+	typTitle(
+		new SimpleMergeField<>("typTitle", STRING_CONVERTER)
+	), traegerschaftTitle(
+		new SimpleMergeField<>("traegerschaftTitle", STRING_CONVERTER)
+	), traegerschaftEmailTitle(
+		new SimpleMergeField<>("traegerschaftEmailTitle", STRING_CONVERTER)
+	), emailTitle(
+		new SimpleMergeField<>("emailTitle", STRING_CONVERTER)
+	), familienportalEmailTitle(
+		new SimpleMergeField<>("familienportalEmailTitle", STRING_CONVERTER)
+	), emailBenachrichtigungKiBonTitle(
+		new SimpleMergeField<>(
+			"emailBenachrichtigungKiBonTitle",
+			STRING_CONVERTER
+		)
+	), nameTitle(
+		new SimpleMergeField<>("nameTitle", STRING_CONVERTER)
+	), statusTitle(
+		new SimpleMergeField<>("statusTitle", STRING_CONVERTER)
+	), anschriftTitle(
+		new SimpleMergeField<>("anschriftTitle", STRING_CONVERTER)
+	), strasseTitle(
+		new SimpleMergeField<>("strasseTitle", STRING_CONVERTER)
+	), plzTitle(new SimpleMergeField<>("plzTitle", STRING_CONVERTER)), ortTitle(
+		new SimpleMergeField<>("ortTitle", STRING_CONVERTER)
+	), traegergemeindeTitle(
+		new SimpleMergeField<>("traegergemeindeTitle", STRING_CONVERTER)
+	), standortgemeindeTitle(
+		new SimpleMergeField<>("standortgemeindeTitle", STRING_CONVERTER)
+	), bfsTraegergemeindeTitle(
+		new SimpleMergeField<>("bfsTraegergemeindeTitle", STRING_CONVERTER)
+	), bfsStandortgemeindeTitle(
+		new SimpleMergeField<>("bfsStandortgemeindeTitle", STRING_CONVERTER)
+	), telefonTitle(
+		new SimpleMergeField<>("telefonTitle", STRING_CONVERTER)
+	), urlTitle(
+		new SimpleMergeField<>("urlTitle", STRING_CONVERTER)
+	), oeffnungstageProJahrTitle(
+		new SimpleMergeField<>(
+			"oeffnungstageProJahrTitle",
+			STRING_CONVERTER
+		)
+	), emailBenachrichtigungKiBonMailTitle(
+		new SimpleMergeField<>(
+			"emailBenachrichtigungKiBonMailTitle",
+			STRING_CONVERTER
+		)
+	), gueltigAbTitle(
+		new SimpleMergeField<>("gueltigAbTitle", STRING_CONVERTER)
+	), gueltigBisTitle(
+		new SimpleMergeField<>("gueltigBisTitle", STRING_CONVERTER)
+	), grundSchliessungTitle(
+		new SimpleMergeField<>("grundSchliessungTitle", STRING_CONVERTER)
+	), oeffnungstageTitle(
+		new SimpleMergeField<>("oeffnungstageTitle", STRING_CONVERTER)
+	), oeffnungszeitAbTitle(
+		new SimpleMergeField<>("oeffnungszeitAbTitle", STRING_CONVERTER)
+	), oeffnungszeitenBisTitle(
+		new SimpleMergeField<>("oeffnungszeitBisTitle", STRING_CONVERTER)
+	), oeffnungVor630Title(
+		new SimpleMergeField<>("oeffnungVorTitle", STRING_CONVERTER)
+	), oeffnungNach1830Title(
+		new SimpleMergeField<>("oeffnungNachTitle", STRING_CONVERTER)
+	), oeffnungAnWochenendenTitle(
+		new SimpleMergeField<>(
+			"oeffnungAnWochenendenTitle",
+			STRING_CONVERTER
+		)
+	), uebernachtungMoeglichTitle(
+		new SimpleMergeField<>(
+			"uebernachtungMoeglichTitle",
+			STRING_CONVERTER
+		)
+	), oeffnungsAbweichungenTitle(
+		new SimpleMergeField<>(
+			"oeffnungsAbweichungenTitle",
+			STRING_CONVERTER
+		)
+	), babyTitle(
+		new SimpleMergeField<>("babyTitle", STRING_CONVERTER)
+	), vorschulkindTitle(
+		new SimpleMergeField<>("vorschulkindTitle", STRING_CONVERTER)
+	), kindergartenTitle(
+		new SimpleMergeField<>("kindergartenTitle", STRING_CONVERTER)
+	), schulkindTitle(
+		new SimpleMergeField<>("schulkindTitle", STRING_CONVERTER)
+	), kapazitaetTitle(
+		new SimpleMergeField<>("kapazitaetTitle", STRING_CONVERTER)
+	), reserviertFuerFirmenTitle(
+		new SimpleMergeField<>(
+			"reserviertFuerFirmenTitle",
+			STRING_CONVERTER
+		)
+	), zuletztGeaendertTitle(
+		new SimpleMergeField<>("zuletztGeaendertTitle", STRING_CONVERTER)
+	), auslastungTitle(
+		new SimpleMergeField<>("auslastungTitle", STRING_CONVERTER)
+	),
 
-	typ(new SimpleMergeField<>("typ", STRING_CONVERTER)),
-	traegerschaft(new SimpleMergeField<>("traegerschaft", STRING_CONVERTER)),
-	traegerschaftEmail(new SimpleMergeField<>("traegerschaftEmail", STRING_CONVERTER)),
-	email(new SimpleMergeField<>("email", STRING_CONVERTER)),
-	familienportalEmail(new SimpleMergeField<>("familienportalEmail", STRING_CONVERTER)),
-	emailBenachrichtigungKiBon(new SimpleMergeField<>("emailBenachrichtigungKiBon", BOOLEAN_X_CONVERTER)),
-	name(new SimpleMergeField<>("name", STRING_CONVERTER)),
-	status(new SimpleMergeField<>("status", STRING_CONVERTER)),
-	anschrift(new SimpleMergeField<>("anschrift", STRING_CONVERTER)),
-	strasse(new SimpleMergeField<>("strasse", STRING_CONVERTER)),
-	plz(new SimpleMergeField<>("plz", STRING_CONVERTER)),
-	ort(new SimpleMergeField<>("ort", STRING_CONVERTER)),
-	traegergemeinde(new SimpleMergeField<>("traegergemeinde", STRING_CONVERTER)),
-	standortgemeinde(new SimpleMergeField<>("standortgemeinde", STRING_CONVERTER)),
-	bfsStandortgemeinde(new SimpleMergeField<>("bfsStandortgemeinde", LONG_CONVERTER)),
-	bfsTraegergemeinde(new SimpleMergeField<>("bfsTraegergemeinde", LONG_CONVERTER)),
-	telefon(new SimpleMergeField<>("telefon", STRING_CONVERTER)),
-	url(new SimpleMergeField<>("url", STRING_CONVERTER)),
-	oeffnungstageProJahr(new SimpleMergeField<>("oeffnungstageProJahr", BIGDECIMAL_CONVERTER)),
-	emailBenachrichtigungKiBonMail(new SimpleMergeField<>("emailBenachrichtigungKiBonMail", STRING_CONVERTER)),
-	gueltigAb(new SimpleMergeField<>("gueltigAb", DATE_CONVERTER)),
-	gueltigBis(new SimpleMergeField<>("gueltigBis", DATE_CONVERTER)),
-	grundSchliessung(new SimpleMergeField<>("grundSchliessung", STRING_CONVERTER)),
-	oeffnungstage(new SimpleMergeField<>("oeffnungstage", STRING_CONVERTER)),
-	oeffnungszeitAb(new SimpleMergeField<>("oeffnungszeitAb", STRING_CONVERTER)),
-	oeffnungszeitenBis(new SimpleMergeField<>("oeffnungszeitBis", STRING_CONVERTER)),
-	oeffnungVor630(new SimpleMergeField<>("oeffnungVor", BOOLEAN_X_CONVERTER)),
-	oeffnungNach1830(new SimpleMergeField<>("oeffnungNach", BOOLEAN_X_CONVERTER)),
-	oeffnungAnWochenenden(new SimpleMergeField<>("oeffnungAnWochenenden", BOOLEAN_X_CONVERTER)),
-	uebernachtungMoeglich(new SimpleMergeField<>("uebernachtungMoeglich", BOOLEAN_X_CONVERTER)),
-	oeffnungsAbweichungen(new SimpleMergeField<>("oeffnungsAbweichungen", STRING_CONVERTER)),
-	isBaby(new SimpleMergeField<>("isBaby", BOOLEAN_X_CONVERTER)),
-	isVorschulkind(new SimpleMergeField<>("isVorschulkind", BOOLEAN_X_CONVERTER)),
-	isKindergarten(new SimpleMergeField<>("isKindergarten", BOOLEAN_X_CONVERTER)),
-	isSchulkind(new SimpleMergeField<>("isSchulkind", BOOLEAN_X_CONVERTER)),
-	subventioniert(new SimpleMergeField<>("subventioniert", BOOLEAN_X_CONVERTER)),
-	kapazitaet(new SimpleMergeField<>("kapazitaet", BIGDECIMAL_CONVERTER)),
-	reserviertFuerFirmen(new SimpleMergeField<>("reserviertFuerFirmen", BIGDECIMAL_CONVERTER)),
-	zuletztGeaendert(new SimpleMergeField<>("zuletztGeaendert", DATETIME_CONVERTER)),
-	auslastung(new SimpleMergeField<>("auslastung", BIGDECIMAL_CONVERTER)),
-	anzahlKinderWarteliste(new SimpleMergeField<>("anzahlKinderWarteliste", BIGDECIMAL_CONVERTER)),
-	summePensumWarteliste(new SimpleMergeField<>("summePensumWarteliste", BIGDECIMAL_CONVERTER)),
-	dauerWarteliste(new SimpleMergeField<>("dauerWarteliste", BIGDECIMAL_CONVERTER));
+	typ(new SimpleMergeField<>("typ", STRING_CONVERTER)), traegerschaft(
+		new SimpleMergeField<>("traegerschaft", STRING_CONVERTER)
+	), traegerschaftEmail(
+		new SimpleMergeField<>("traegerschaftEmail", STRING_CONVERTER)
+	), email(
+		new SimpleMergeField<>("email", STRING_CONVERTER)
+	), familienportalEmail(
+		new SimpleMergeField<>("familienportalEmail", STRING_CONVERTER)
+	), emailBenachrichtigungKiBon(
+		new SimpleMergeField<>(
+			"emailBenachrichtigungKiBon",
+			BOOLEAN_X_CONVERTER
+		)
+	), name(new SimpleMergeField<>("name", STRING_CONVERTER)), status(
+		new SimpleMergeField<>("status", STRING_CONVERTER)
+	), anschrift(
+		new SimpleMergeField<>("anschrift", STRING_CONVERTER)
+	), strasse(new SimpleMergeField<>("strasse", STRING_CONVERTER)), plz(
+		new SimpleMergeField<>("plz", STRING_CONVERTER)
+	), ort(new SimpleMergeField<>("ort", STRING_CONVERTER)), traegergemeinde(
+		new SimpleMergeField<>("traegergemeinde", STRING_CONVERTER)
+	), standortgemeinde(
+		new SimpleMergeField<>("standortgemeinde", STRING_CONVERTER)
+	), bfsStandortgemeinde(
+		new SimpleMergeField<>("bfsStandortgemeinde", LONG_CONVERTER)
+	), bfsTraegergemeinde(
+		new SimpleMergeField<>("bfsTraegergemeinde", LONG_CONVERTER)
+	), telefon(new SimpleMergeField<>("telefon", STRING_CONVERTER)), url(
+		new SimpleMergeField<>("url", STRING_CONVERTER)
+	), oeffnungstageProJahr(
+		new SimpleMergeField<>("oeffnungstageProJahr", BIGDECIMAL_CONVERTER)
+	), emailBenachrichtigungKiBonMail(
+		new SimpleMergeField<>(
+			"emailBenachrichtigungKiBonMail",
+			STRING_CONVERTER
+		)
+	), gueltigAb(
+		new SimpleMergeField<>("gueltigAb", DATE_CONVERTER)
+	), gueltigBis(
+		new SimpleMergeField<>("gueltigBis", DATE_CONVERTER)
+	), grundSchliessung(
+		new SimpleMergeField<>("grundSchliessung", STRING_CONVERTER)
+	), oeffnungstage(
+		new SimpleMergeField<>("oeffnungstage", STRING_CONVERTER)
+	), oeffnungszeitAb(
+		new SimpleMergeField<>("oeffnungszeitAb", STRING_CONVERTER)
+	), oeffnungszeitenBis(
+		new SimpleMergeField<>("oeffnungszeitBis", STRING_CONVERTER)
+	), oeffnungVor630(
+		new SimpleMergeField<>("oeffnungVor", BOOLEAN_X_CONVERTER)
+	), oeffnungNach1830(
+		new SimpleMergeField<>("oeffnungNach", BOOLEAN_X_CONVERTER)
+	), oeffnungAnWochenenden(
+		new SimpleMergeField<>("oeffnungAnWochenenden", BOOLEAN_X_CONVERTER)
+	), uebernachtungMoeglich(
+		new SimpleMergeField<>("uebernachtungMoeglich", BOOLEAN_X_CONVERTER)
+	), oeffnungsAbweichungen(
+		new SimpleMergeField<>("oeffnungsAbweichungen", STRING_CONVERTER)
+	), isBaby(
+		new SimpleMergeField<>("isBaby", BOOLEAN_X_CONVERTER)
+	), isVorschulkind(
+		new SimpleMergeField<>("isVorschulkind", BOOLEAN_X_CONVERTER)
+	), isKindergarten(
+		new SimpleMergeField<>("isKindergarten", BOOLEAN_X_CONVERTER)
+	), isSchulkind(
+		new SimpleMergeField<>("isSchulkind", BOOLEAN_X_CONVERTER)
+	), kapazitaet(
+		new SimpleMergeField<>("kapazitaet", BIGDECIMAL_CONVERTER)
+	), reserviertFuerFirmen(
+		new SimpleMergeField<>("reserviertFuerFirmen", BIGDECIMAL_CONVERTER)
+	), zuletztGeaendert(
+		new SimpleMergeField<>("zuletztGeaendert", DATETIME_CONVERTER)
+	);
 
 	@Nonnull
 	private final MergeField<?> mergeField;

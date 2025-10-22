@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.finanziellesituation;
@@ -21,13 +21,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
 
 /**
  * DTO fuer Finanzielle Situation
@@ -79,19 +79,20 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 	@Nullable
 	private Boolean momentanSelbststaendig;
 
-
 	@Nullable
 	private BigDecimal ersatzeinkommenSelbststaendigkeitBasisjahrMinus2;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime steuerdatenAbfrageTimestamp;
 
 	public Boolean getSteuerveranlagungErhalten() {
 		return steuerveranlagungErhalten;
 	}
 
-	public void setSteuerveranlagungErhalten(final Boolean steuerveranlagungErhalten) {
+	public void setSteuerveranlagungErhalten(
+		final Boolean steuerveranlagungErhalten
+	) {
 		this.steuerveranlagungErhalten = steuerveranlagungErhalten;
 	}
 
@@ -99,7 +100,9 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 		return steuererklaerungAusgefuellt;
 	}
 
-	public void setSteuererklaerungAusgefuellt(final Boolean steuererklaerungAusgefuellt) {
+	public void setSteuererklaerungAusgefuellt(
+		final Boolean steuererklaerungAusgefuellt
+	) {
 		this.steuererklaerungAusgefuellt = steuererklaerungAusgefuellt;
 	}
 
@@ -108,7 +111,9 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 		return geschaeftsgewinnBasisjahrMinus2;
 	}
 
-	public void setGeschaeftsgewinnBasisjahrMinus2(@Nullable final BigDecimal geschaeftsgewinnBasisjahrMinus2) {
+	public void setGeschaeftsgewinnBasisjahrMinus2(
+		@Nullable final BigDecimal geschaeftsgewinnBasisjahrMinus2
+	) {
 		this.geschaeftsgewinnBasisjahrMinus2 = geschaeftsgewinnBasisjahrMinus2;
 	}
 
@@ -135,7 +140,9 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 		return gemeinsameStekVorjahr;
 	}
 
-	public void setGemeinsameStekVorjahr(@Nullable Boolean gemeinsameStekVorjahr) {
+	public void setGemeinsameStekVorjahr(
+		@Nullable Boolean gemeinsameStekVorjahr
+	) {
 		this.gemeinsameStekVorjahr = gemeinsameStekVorjahr;
 	}
 
@@ -144,7 +151,9 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 		return alleinigeStekVorjahr;
 	}
 
-	public void setAlleinigeStekVorjahr(@Nullable Boolean alleinigeStekVorjahr) {
+	public void setAlleinigeStekVorjahr(
+		@Nullable Boolean alleinigeStekVorjahr
+	) {
 		this.alleinigeStekVorjahr = alleinigeStekVorjahr;
 	}
 
@@ -171,7 +180,9 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 		return unterhaltsBeitraege;
 	}
 
-	public void setUnterhaltsBeitraege(@Nullable BigDecimal unterhaltsBeitraege) {
+	public void setUnterhaltsBeitraege(
+		@Nullable BigDecimal unterhaltsBeitraege
+	) {
 		this.unterhaltsBeitraege = unterhaltsBeitraege;
 	}
 
@@ -180,17 +191,20 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 		return abzuegeKinderAusbildung;
 	}
 
-	public void setAbzuegeKinderAusbildung(@Nullable BigDecimal abzuegeKinderAusbildung) {
+	public void setAbzuegeKinderAusbildung(
+		@Nullable BigDecimal abzuegeKinderAusbildung
+	) {
 		this.abzuegeKinderAusbildung = abzuegeKinderAusbildung;
 	}
-
 
 	@Nullable
 	public SteuerdatenAnfrageStatus getSteuerdatenAbfrageStatus() {
 		return steuerdatenAbfrageStatus;
 	}
 
-	public void setSteuerdatenAbfrageStatus(@Nullable SteuerdatenAnfrageStatus steuerdatenAbfrageStatus) {
+	public void setSteuerdatenAbfrageStatus(
+		@Nullable SteuerdatenAnfrageStatus steuerdatenAbfrageStatus
+	) {
 		this.steuerdatenAbfrageStatus = steuerdatenAbfrageStatus;
 	}
 
@@ -199,7 +213,9 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 		return steuerdatenAbfrageTimestamp;
 	}
 
-	public void setSteuerdatenAbfrageTimestamp(@Nullable LocalDateTime steuerdatenAbfrageTimestamp) {
+	public void setSteuerdatenAbfrageTimestamp(
+		@Nullable LocalDateTime steuerdatenAbfrageTimestamp
+	) {
 		this.steuerdatenAbfrageTimestamp = steuerdatenAbfrageTimestamp;
 	}
 
@@ -208,7 +224,9 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 		return automatischePruefungErlaubt;
 	}
 
-	public void setAutomatischePruefungErlaubt(@Nullable Boolean automatischePruefungErlaubt) {
+	public void setAutomatischePruefungErlaubt(
+		@Nullable Boolean automatischePruefungErlaubt
+	) {
 		this.automatischePruefungErlaubt = automatischePruefungErlaubt;
 	}
 
@@ -217,7 +235,9 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 		return momentanSelbststaendig;
 	}
 
-	public void setMomentanSelbststaendig(@Nullable Boolean momentanSelbststaendig) {
+	public void setMomentanSelbststaendig(
+		@Nullable Boolean momentanSelbststaendig
+	) {
 		this.momentanSelbststaendig = momentanSelbststaendig;
 	}
 
@@ -227,7 +247,9 @@ public class JaxFinanzielleSituation extends JaxAbstractFinanzielleSituation {
 	}
 
 	public void setErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(
-		@Nullable BigDecimal ersatzeinkommenSelbststaendigkeitBasisjahrMinus2) {
-		this.ersatzeinkommenSelbststaendigkeitBasisjahrMinus2 = ersatzeinkommenSelbststaendigkeitBasisjahrMinus2;
+		@Nullable BigDecimal ersatzeinkommenSelbststaendigkeitBasisjahrMinus2
+	) {
+		this.ersatzeinkommenSelbststaendigkeitBasisjahrMinus2 =
+			ersatzeinkommenSelbststaendigkeitBasisjahrMinus2;
 	}
 }

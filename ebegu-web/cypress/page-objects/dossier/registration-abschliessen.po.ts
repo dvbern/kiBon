@@ -30,9 +30,14 @@ const getRegistrierungAbschliessenButton = () => {
     return cy.getByData('registrierung-abschliessen');
 };
 
+const getConfirmPopUpRegistrationButton = () => {
+    return cy.getByData('cancel-dialog');
+};
+
 export const RegistrationAbschliessenPO = {
     getBGBeantragen,
     getGemeindeSelection,
     getRegistrierenButton,
-    getRegistrierungAbschliessenButton
+    getRegistrierungAbschliessenButton,
+    getConfirmPopUpRegistrationButton
 };

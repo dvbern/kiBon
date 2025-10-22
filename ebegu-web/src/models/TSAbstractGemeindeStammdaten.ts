@@ -15,34 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractEntity} from './TSAbstractEntity';
-import {TSAdresse} from './TSAdresse';
+import {TSAbstractEntity, TSAdresse} from '@kibon/shared/model/entity';
 import {TSGemeindeKonfiguration} from './TSGemeindeKonfiguration';
-import {TSGesuchsperiode} from './TSGesuchsperiode';
 
 export class TSAbstractGemeindeStammdaten extends TSAbstractEntity {
     public adresse: TSAdresse;
     public mail: string;
     public telefon: string;
-    public webseite: string;
+    public webseite: string = undefined;
     public korrespondenzspracheDe: boolean;
     public korrespondenzspracheFr: boolean;
     public altGemeindeKontaktText: string;
     public hasAltGemeindeKontakt: boolean;
     // ---------- Konfiguration ----------
     public konfigurationsListe: TSGemeindeKonfiguration[];
-
-    public getGemeindeKonfigurationForGesuchsperiode(
-        gesuchsperiode: TSGesuchsperiode
-    ): TSGemeindeKonfiguration {
-        for (const konfigurationsListeElement of this.konfigurationsListe) {
-            if (
-                konfigurationsListeElement.gesuchsperiode.id ===
-                gesuchsperiode.id
-            ) {
-                return konfigurationsListeElement;
-            }
-        }
-        return undefined;
-    }
 }

@@ -16,6 +16,7 @@
                     "
                     [deklaration]="model.finanzielleSituationGS?.bruttoLohn"
                     [korrektur]="model.finanzielleSituationJA.bruttoLohn"
+                    data-test="bruttoLohn"
                 >
                 </dv-input-label-field>
             </div>
@@ -46,6 +47,7 @@
                     [showBisher]="
                         isNotNullOrUndefined(model.finanzielleSituationGS)
                     "
+                    data-test="steuerbaresVermoegen"
                 >
                 </dv-input-label-field>
             </div>

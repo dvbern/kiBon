@@ -26,6 +26,7 @@ export class TSBetreuungspensumAbweichung extends TSAbstractMahlzeitenPensum {
     private _vertraglicheNebenmahlzeiten: number;
     private _vertraglicherTarifHaupt: number;
     private _vertraglicherTarifNeben: number;
+    private _vertraglicheBetreuuteTage: number;
     private _multiplier: number;
 
     public get status(): TSBetreuungspensumAbweichungStatus {
@@ -90,5 +91,13 @@ export class TSBetreuungspensumAbweichung extends TSAbstractMahlzeitenPensum {
 
     public set multiplier(value: number) {
         this._multiplier = value;
+    }
+
+    public get vertraglicheBetreuuteTage(): number {
+        return this._vertraglicheBetreuuteTage;
+    }
+
+    public set vertraglicheBetreuuteTage(value: number) {
+        this._vertraglicheBetreuuteTage = value;
     }
 }

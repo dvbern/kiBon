@@ -13,6 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import angular from 'angular';
 import {CORE_JS_MODULE} from '../core/core.angularjs.module';
 import {CreateAngebotListViewConfig} from './component/angebot/createAngebotView';
 import {GesuchstellerDashboardListViewConfig} from './component/dashboard/gesuchstellerDashboardView';

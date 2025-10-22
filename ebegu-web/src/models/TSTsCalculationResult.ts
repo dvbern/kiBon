@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractEntity} from './TSAbstractEntity';
-
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 export class TSTsCalculationResult extends TSAbstractEntity {
     public betreuungszeitProWoche: number;
     public verpflegungskosten: number;

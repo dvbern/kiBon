@@ -19,14 +19,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.annotation.Nullable;
-import javax.ejb.EJBAccessException;
-import javax.ejb.EJBTransactionRolledbackException;
-import javax.persistence.PersistenceException;
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.Provider;
+import jakarta.ejb.EJBAccessException;
+import jakarta.ejb.EJBTransactionRolledbackException;
+import jakarta.persistence.PersistenceException;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.Provider;
 
 import ch.dvbern.ebegu.api.util.RestUtil;
 import ch.dvbern.ebegu.api.validation.EbeguExceptionReport;
@@ -37,6 +37,7 @@ import ch.dvbern.ebegu.util.Constants;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hibernate.StaleObjectStateException;
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 
 /**
  * Created by imanol on 01.03.16.
@@ -45,11 +46,15 @@ import org.jboss.resteasy.api.validation.ResteasyViolationException;
  */
 @Provider
 public class EbeguConstraintValidationExceptionMapper
-	extends AbstractEbeguExceptionMapper<EJBTransactionRolledbackException> {
+	extends
+	AbstractEbeguExceptionMapper<EJBTransactionRolledbackException> {
 
 	@Nullable
 	@Override
-	protected Response buildViolationReportResponse(EJBTransactionRolledbackException exception, Status status) {
+	protected Response buildViolationReportResponse(
+		EJBTransactionRolledbackException exception,
+		Status status
+	) {
 		return null;
 	}
 
@@ -57,14 +62,20 @@ public class EbeguConstraintValidationExceptionMapper
 	public Response toResponse(EJBTransactionRolledbackException exception) {
 		Throwable rootCause = ExceptionUtils.getRootCause(exception);
 		if (rootCause instanceof ConstraintViolationException) {
-			ConstraintViolationException constViolationEx = (ConstraintViolationException) rootCause;
+			ConstraintViolationException constViolationEx =
+				(ConstraintViolationException) rootCause;
 			ResteasyViolationException resteasyViolationException =
-				new ResteasyViolationException(constViolationEx.getConstraintViolations());
-			final MediaType acceptMediaType = getAcceptMediaType(resteasyViolationException.getAccept());
+				new ResteasyViolationExceptionImpl(
+					constViolationEx.getConstraintViolations()
+				);
+			final MediaType acceptMediaType = getAcceptMediaType(
+				resteasyViolationException.getAccept()
+			);
 			return ViolationReportCreator.buildViolationReportResponse(
 				resteasyViolationException,
 				Status.CONFLICT,
-				acceptMediaType);
+				acceptMediaType
+			);
 		}
 		if (rootCause instanceof StaleObjectStateException) {
 			// OptimisticLockingException: Wir werfen einen CONFLICT Fehler
@@ -73,33 +84,58 @@ public class EbeguConstraintValidationExceptionMapper
 		if (rootCause instanceof EJBAccessException) {
 			return RestUtil.sendErrorNotAuthorized();    // nackte 403 status antwort
 		}
-		if (exception.getCause() instanceof PersistenceException && exception.getCause()
-			.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+		if (exception.getCause() instanceof PersistenceException
+			&& exception.getCause()
+				.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
 			org.hibernate.exception.ConstraintViolationException constraintViolationException =
-				(org.hibernate.exception.ConstraintViolationException) exception.getCause().getCause();
+				(org.hibernate.exception.ConstraintViolationException) exception
+					.getCause()
+					.getCause();
 			ErrorCodeEnum errorCodeEnum;
-			String constraintName = constraintViolationException.getConstraintName().toUpperCase(Constants.DEFAULT_LOCALE);
-			try{
+			String constraintName = constraintViolationException
+				.getConstraintName()
+				.toUpperCase(Constants.DEFAULT_LOCALE);
+			try {
 				String enumConstraintError = "ERROR_" + constraintName;
 				errorCodeEnum = ErrorCodeEnum.valueOf(enumConstraintError);
-			} catch (IllegalArgumentException e){
+			} catch (IllegalArgumentException e) {
 				errorCodeEnum = ErrorCodeEnum.ERROR_UNBEKANNTE_DB_CONSTRAINT;
 			}
-			EbeguExistingAntragRuntimeException
-				ebeguExistingAntragRuntimeException = new EbeguExistingAntragRuntimeException(null, errorCodeEnum,
-				constraintViolationException, "", constraintName);
+			EbeguExistingAntragRuntimeException ebeguExistingAntragRuntimeException =
+				new EbeguExistingAntragRuntimeException(
+					null,
+					errorCodeEnum,
+					constraintViolationException,
+					"",
+					constraintName
+				);
 			//No Mandant specific Exception possible for the constraints
 			Mandant mandant = mandantService.getMandantBern();
-			return EbeguExceptionReport.buildResponse(Status.CONFLICT,
-				ebeguExistingAntragRuntimeException, getLocaleFromHeader(), mandant, false);
+			return EbeguExceptionReport.buildResponse(
+				Status.CONFLICT,
+				ebeguExistingAntragRuntimeException,
+				getLocaleFromHeader(),
+				mandant,
+				false
+			);
 		}
 		// wir bauen hier auch eine eigene response fuer EJBTransactionRolledbackException die wir nicht erwarten
 		// die unwrapped exception sollten wir nur zurueckgeben wenn wir im dev mode sind um keine infos zu leaken
 		if (configuration.getIsDevmode()) {
-			return buildResponse(unwrapException(exception), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
+			return buildResponse(
+				unwrapException(exception),
+				MediaType.TEXT_PLAIN,
+				Status.INTERNAL_SERVER_ERROR
+			);
 		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Internal error in E-Begu. Timestamp: " +
-			LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)).type("text/plain").build();
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+			.entity(
+				"Internal error in E-Begu. Timestamp: "
+					+
+					LocalDateTime.now()
+						.format(DateTimeFormatter.ISO_DATE_TIME)
+			)
+			.type("text/plain")
+			.build();
 	}
 }
-

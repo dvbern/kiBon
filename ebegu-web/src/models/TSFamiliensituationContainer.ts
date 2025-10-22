@@ -13,10 +13,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {EbeguUtil} from '../utils/EbeguUtil';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {TSFamiliensituation} from './TSFamiliensituation';
 import {TSSozialhilfeZeitraumContainer} from './TSSozialhilfeZeitraumContainer';
-import {EbeguUtil} from '../utils/EbeguUtil';
 
 export class TSFamiliensituationContainer extends TSAbstractMutableEntity {
     private _familiensituationJA: TSFamiliensituation;

@@ -17,7 +17,7 @@
 
 import {Injectable} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Observable, Subject} from 'rxjs';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class KinderabzugExchangeService {
         new Subject();
     private readonly _formValidationTriggered: Subject<void> = new Subject();
 
-    private readonly _familienErgaenzendeBetreuungChanged: Subject<moment.Moment> =
+    private readonly _familienErgaenzendeBetreuungChanged: Subject<void> =
         new Subject();
 
     public get forms(): NgForm[] {
@@ -58,7 +58,7 @@ export class KinderabzugExchangeService {
         }
     }
 
-    public getFamilienErgaenzendeBetreuungChanged$(): Observable<moment.Moment> {
+    public getFamilienErgaenzendeBetreuungChanged$(): Observable<void> {
         return this._familienErgaenzendeBetreuungChanged.asObservable();
     }
 

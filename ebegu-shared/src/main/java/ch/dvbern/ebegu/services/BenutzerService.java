@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.authentication.KibonJwt;
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.BenutzerTableMandantFilterDTO;
 import ch.dvbern.ebegu.einladung.Einladung;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -31,7 +32,6 @@ import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Traegerschaft;
-import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.enums.UserRole;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -48,7 +48,10 @@ public interface BenutzerService {
 	 * @return Die aktualisierte Benutzer
 	 */
 	@Nonnull
-	Benutzer saveBenutzerBerechtigungen(@Nonnull Benutzer benutzer, boolean currentBerechtigungChanged);
+	Benutzer saveBenutzerBerechtigungen(
+		@Nonnull Benutzer benutzer,
+		boolean currentBerechtigungChanged
+	);
 
 	/**
 	 * Aktualisiert den Benutzer in der DB or erstellt ihn wenn er noch nicht existiert.
@@ -60,41 +63,6 @@ public interface BenutzerService {
 	Benutzer saveBenutzer(@Nonnull Benutzer benutzer);
 
 	/**
-	 * Creates a new user of Role userRole with the given adminMail as email and as username and the given
-	 * Gemeinde as the only Gemeinde in the current Berechtigung, which will be valid from today on. Name
-	 * and Vorname will be set to "UNKNOWN"
-	 */
-	@Nonnull
-	Benutzer createAdminGemeindeByEmail(
-		@Nonnull String adminMail,
-		@Nonnull UserRole userRole,
-		@Nonnull Gemeinde gemeinde);
-
-	/**
-	 * Creates a new user of Role ADMIN_INSTITUTION with the given adminMail as email and as username and the given
-	 * Institution as the only
-	 * Institution in the current Berechtigung, which will be valid from today on. Name and Vorname will be set to
-	 * "UNKNOWN"
-	 */
-	Benutzer createAdminInstitutionByEmail(@Nonnull String adminMail, @Nonnull Institution institution);
-
-	/**
-	 * Creates a new user of Role ADMIN_TRAEGERSCHAFT with the given adminMail as email and as username and the given
-	 * Traegerschaft as the only
-	 * Traegerschaft in the current Berechtigung, which will be valid from today on. Name and Vorname will be set to
-	 * "UNKNOWN"
-	 */
-	Benutzer createAdminTraegerschaftByEmail(@Nonnull String adminMail, @Nonnull Traegerschaft traegerschaft);
-
-	/**
-	 * Creates a new user of Role ADMIN_SOZIALDIENST with the given adminMail as email and as username and the given
-	 * Sozialdienst as the only Sozialdienst in the current Berechtigung, which will be valid from today on. Name
-	 * and Vorname will be set to "UNKNOWN"
-	 */
-	@Nonnull
-	Benutzer createAdminSozialdienstByEmail(@Nonnull String adminMail, @Nonnull Sozialdienst sozialdienst);
-
-	/**
 	 * Saves the given Benutzer and sends him an Einladungsemail
 	 */
 	@Nonnull
@@ -103,21 +71,32 @@ public interface BenutzerService {
 	/**
 	 * Sendet einem eingeladenen Benutzer erneut das Einladungsmail
 	 */
-	@Nonnull
 	void erneutEinladen(@Nonnull Benutzer eingeladener);
 
-	void checkBenutzerIsNotGesuchstellerWithFreigegebenemGesuch(@Nonnull Benutzer benutzer);
+	void checkBenutzerIsNotGesuchstellerWithFreigegebenemGesuch(
+		@Nonnull Benutzer benutzer
+	);
 
-	String findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(@Nonnull Benutzer benutzer);
+	String findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
+		@Nonnull Benutzer benutzer
+	);
 
 	@Nonnull
-	Optional<Benutzer> findBenutzer(@Nonnull String username, @Nonnull Mandant mandant);
+	Optional<Benutzer> findBenutzer(
+		@Nonnull String username,
+		@Nonnull Mandant mandant
+	);
 
 	@Nonnull
-	Optional<Benutzer> findAndLockBenutzer(@Nonnull String username, @Nonnull Mandant mandant);
+	Optional<Benutzer> findAndLockBenutzer(
+		@Nonnull String username,
+		@Nonnull Mandant mandant
+	);
 
 	@Nonnull
 	Optional<Benutzer> findBenutzerById(@Nonnull String id);
+
+	Optional<Benutzer> findBenutzer(KibonJwt kibonJwt);
 
 	/**
 	 * Sucht einen Benutzer nach externalUUID: Diese Methode wird nur von den Connectoren gebraucht.
@@ -126,6 +105,8 @@ public interface BenutzerService {
 	@Nonnull
 	Optional<Benutzer> findBenutzerByExternalUUID(@Nonnull String externalUUID);
 
+	Optional<Benutzer> findByEmail(String email, Mandant mandant);
+
 	/**
 	 * Gibt alle Administratoren einer Gemeinde zurueck.
 	 *
@@ -133,7 +114,7 @@ public interface BenutzerService {
 	 * @return Liste aller Benutzern aus der DB
 	 */
 	@Nonnull
-	Collection<Benutzer> getGemeindeAdministratoren(Gemeinde gemeinde);
+	Collection<Benutzer> getAktivGemeindeAdministratoren(Gemeinde gemeinde);
 
 	/**
 	 * Gibt alle Sachbearbeiter einer Gemeinde zurueck.
@@ -142,7 +123,7 @@ public interface BenutzerService {
 	 * @return Liste aller Benutzern aus der DB
 	 */
 	@Nonnull
-	Collection<Benutzer> getGemeindeSachbearbeiter(Gemeinde gemeinde);
+	Collection<Benutzer> getAktiveGemeindeSachbearbeiter(Gemeinde gemeinde);
 
 	/**
 	 * Gibt alle Administratoren einer Institution zurueck.
@@ -169,16 +150,18 @@ public interface BenutzerService {
 	 * @return Liste aller Benutzern aus der DB
 	 */
 	@Nonnull
-	Collection<Benutzer> getTraegerschaftAdministratoren(Traegerschaft traegerschaft);
+	Collection<Benutzer> getTraegerschaftAdministratoren(
+		Traegerschaft traegerschaft
+	);
 
 	/**
-	 * Gibt alle existierenden Benutzer mit den Rollen Sachbearbeiter_BG oder Admin_BG oder
+	 * Gibt alle existierenden aktiven Benutzer mit den Rollen Sachbearbeiter_BG oder Admin_BG oder
 	 * Sachbearbeiter_Gemeinde oder Admin_Gemeinde einer bestimmten Gemeinde zurueck.
 	 *
 	 * @param gemeinde Die Gemeinde
 	 * @return Liste aller Benutzern mit entsprechender Rolle aus der DB
 	 */
-	Collection<Benutzer> getBenutzerBgOrGemeinde(Gemeinde gemeinde);
+	Collection<Benutzer> getActiveBenutzerBgOrGemeinde(Gemeinde gemeinde);
 
 	/**
 	 * Gibt alle existierenden Benutzer mit den Rollen Sachbearbeiter_BG, Admin_BG, Sachbearbeiter_TS, Admin_TS oder
@@ -190,13 +173,13 @@ public interface BenutzerService {
 	Collection<Benutzer> getBenutzerTsBgOrGemeinde(Gemeinde gemeinde);
 
 	/**
-	 * Gibt alle existierenden Benutzer mit den Rollen Sachbearbeiter_TS oder Admin_TS oder
+	 * Gibt alle existierenden aktiven Benutzer mit den Rollen Sachbearbeiter_TS oder Admin_TS oder
 	 * Sachbearbeiter_Gemeinde oder Admin_Gemeinde einer bestimmten Gemeinde zurueck.
 	 *
 	 * @param gemeinde Die Gemeinde
 	 * @return Liste aller Benutzern mit entsprechender Rolle aus der DB
 	 */
-	Collection<Benutzer> getBenutzerTsOrGemeinde(Gemeinde gemeinde);
+	Collection<Benutzer> getActiveBenutzerTsOrGemeinde(Gemeinde gemeinde);
 
 	/**
 	 * Gibt alle existierenden Benutzer mit den Rollen Sachbearbeiter_BG oder Admin_BG oder
@@ -243,16 +226,14 @@ public interface BenutzerService {
 	 */
 	void removeBenutzer(@Nonnull String username, @Nonnull Mandant mandant);
 
+	@Nonnull
+	Collection<Benutzer> getAllUserButGesuchsteller(@Nonnull Mandant mandant);
+
 	/**
 	 * Gibt den aktuell eingeloggten Benutzer zurueck
 	 */
 	@Nonnull
 	Optional<Benutzer> getCurrentBenutzer();
-
-	/**
-	 * inserts a user received from iam or updates it if it alreday exists
-	 */
-	Benutzer updateOrStoreUserFromIAM(@Nonnull Benutzer benutzer);
 
 	/**
 	 * Setzt den uebergebenen Benutzer auf gesperrt. Es werden auch alle möglicherweise noch vorhandenen
@@ -273,7 +254,8 @@ public interface BenutzerService {
 	@Nonnull
 	Pair<Long, List<Benutzer>> searchBenutzer(
 		@Nonnull BenutzerTableMandantFilterDTO benutzerTableFilterDto,
-		@Nonnull Boolean forStatistik);
+		@Nonnull Boolean forStatistik
+	);
 
 	/**
 	 * Setzt alle Benutzer mit abgelaufenen Rollen auf die Rolle GESUCHSTELLER zurück.
@@ -285,13 +267,18 @@ public interface BenutzerService {
 	/**
 	 * Schreibt eine Berechtigungs-History in die DB
 	 */
-	void saveBerechtigungHistory(@Nonnull Berechtigung berechtigung, boolean deleted);
+	void saveBerechtigungHistory(
+		@Nonnull Berechtigung berechtigung,
+		boolean deleted
+	);
 
 	/**
 	 * Gibt alle BerechtigungsHistories fuer den übergebenen Benutzer zurück
 	 */
 	@Nonnull
-	Collection<BerechtigungHistory> getBerechtigungHistoriesForBenutzer(@Nonnull Benutzer benutzer);
+	Collection<BerechtigungHistory> getBerechtigungHistoriesForBenutzer(
+		@Nonnull Benutzer benutzer
+	);
 
 	/**
 	 * Gibt zurück, ob der Benutzer mit der übergebenen Username in irgendeiner Gemeinde (für die der eingeloggte
@@ -300,20 +287,22 @@ public interface BenutzerService {
 	boolean isBenutzerDefaultBenutzerOfAnyGemeinde(@Nonnull String username);
 
 	/**
-	 * Loescht die externalUUID des Benutzers
-	 */
-	void deleteExternalUUIDInNewTransaction(@Nonnull String id);
-
-	/**
 	 * Gibt zurück, ob der Benutzer eine offene Einladung hat
 	 */
 	Optional<Benutzer> findUserWithInvitation(
-			@Nonnull Benutzer benutzer,
-			Mandant mandant);
+		@Nonnull String externalUuid
+	);
 
-	/**
-	 * Erzeugt einen Einladungslink für einen Benutzer
-	 */
-	String createInvitationLink(@Nonnull Benutzer eingeladener, @Nonnull Einladung einladung);
+	boolean hasMoreThanOneMandantUser();
 
+	Collection<Benutzer> getActiveBenutzerInRolesOfActiveGemeinden(
+		Mandant mandant,
+		UserRole... roles
+	);
+
+	Collection<Benutzer> getActiveBenutzerInRolesOfGemeinden(
+		Mandant mandant,
+		List<Gemeinde> gemeinden,
+		UserRole... roles
+	);
 }

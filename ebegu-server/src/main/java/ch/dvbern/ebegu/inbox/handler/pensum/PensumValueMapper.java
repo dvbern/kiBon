@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
@@ -26,7 +26,8 @@ import ch.dvbern.kibon.exchange.commons.platzbestaetigung.ZeitabschnittDTO;
 import lombok.Value;
 
 @Value
-public class PensumValueMapper implements PensumMapper<AbstractMahlzeitenPensum> {
+public class PensumValueMapper implements
+	PensumMapper<AbstractMahlzeitenPensum> {
 
 	private final BigDecimal maxTageProMonat;
 	private final BigDecimal maxStundenProMonat;
@@ -38,16 +39,27 @@ public class PensumValueMapper implements PensumMapper<AbstractMahlzeitenPensum>
 	) {
 		switch (zeitabschnittDTO.getPensumUnit()) {
 		case DAYS:
-			target.applyPensumFromDays(zeitabschnittDTO.getBetreuungspensum(), maxTageProMonat);
+			target.applyPensumFromDays(
+				zeitabschnittDTO.getBetreuungspensum(),
+				maxTageProMonat
+			);
 			return;
 		case HOURS:
-			target.applyPensumFromHours(zeitabschnittDTO.getBetreuungspensum(), maxStundenProMonat);
+			target.applyPensumFromHours(
+				zeitabschnittDTO.getBetreuungspensum(),
+				maxStundenProMonat
+			);
 			return;
 		case PERCENTAGE:
-			target.applyPensumFromPercentage(zeitabschnittDTO.getBetreuungspensum());
+			target.applyPensumFromPercentage(
+				zeitabschnittDTO.getBetreuungspensum()
+			);
 			return;
 		default:
-			throw new IllegalArgumentException("Unsupported pensum unit: " + zeitabschnittDTO.getPensumUnit());
+			throw new IllegalArgumentException(
+				"Unsupported pensum unit: "
+					+ zeitabschnittDTO.getPensumUnit()
+			);
 		}
 	}
 }

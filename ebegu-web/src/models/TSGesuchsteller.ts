@@ -13,8 +13,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSSprache} from './enums/TSSprache';
-import {TSAbstractPersonEntity} from './TSAbstractPersonEntity';
+import {TSAbstractPersonEntity} from '@kibon/shared/model/entity';
+import {TSSprache} from '@kibon/shared/model/enums';
 
 export class TSGesuchsteller extends TSAbstractPersonEntity {
     private _mail: string;

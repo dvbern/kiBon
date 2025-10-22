@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {Transition} from '@uirouter/core';
 import {of} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
@@ -63,7 +63,7 @@ describe('EinladungAbschliessenComponent', () => {
         );
         const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
             I18nServiceRSRest.name,
-            ['extractPreferredLanguage']
+            ['extractPreferredLanguage', 'init']
         );
 
         superadmin = TestDataUtil.createSuperadmin();

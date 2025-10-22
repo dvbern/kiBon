@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.kanton.institutionen;
@@ -70,14 +70,9 @@ public class InstitutionenDataRow {
 	private Boolean vorschulkind = null;
 	private Boolean kindergarten = null;
 	private Boolean schulkind = null;
-	private Boolean subventioniert = null;
 	private BigDecimal kapazitaet = null;
 	private BigDecimal reserviertFuerFirmen = null;
 	private LocalDateTime zuletztGeaendert = null;
-	private BigDecimal auslastung = null;
-	private BigDecimal anzahlKinderWarteliste = null;
-	private BigDecimal summePensumWarteliste = null;
-	private BigDecimal dauerWarteliste = null;
 
 	public String getTyp() {
 		return typ;
@@ -170,12 +165,13 @@ public class InstitutionenDataRow {
 	}
 
 	@Nullable
-	public
-	String getOeffnungsAbweichungen() {
+	public String getOeffnungsAbweichungen() {
 		return oeffnungsAbweichungen;
 	}
 
-	public void setOeffnungsAbweichungen(@Nullable String oeffnungsAbweichungen) {
+	public void setOeffnungsAbweichungen(
+		@Nullable String oeffnungsAbweichungen
+	) {
 		this.oeffnungsAbweichungen = oeffnungsAbweichungen;
 	}
 
@@ -227,14 +223,6 @@ public class InstitutionenDataRow {
 		this.zuletztGeaendert = zuletztGeaendert;
 	}
 
-	public Boolean getSubventioniert() {
-		return subventioniert;
-	}
-
-	public void setSubventioniert(Boolean subventioniert) {
-		this.subventioniert = subventioniert;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -281,7 +269,9 @@ public class InstitutionenDataRow {
 		return emailBenachrichtigungenKiBon;
 	}
 
-	public void setEmailBenachrichtigungenKiBon(Boolean emailBenachrichtigungenKiBon) {
+	public void setEmailBenachrichtigungenKiBon(
+		Boolean emailBenachrichtigungenKiBon
+	) {
 		this.emailBenachrichtigungenKiBon = emailBenachrichtigungenKiBon;
 	}
 
@@ -341,38 +331,7 @@ public class InstitutionenDataRow {
 		this.oeffnungszeitBis = oeffnungszeitBis;
 	}
 
-	public BigDecimal getAuslastung() {
-		return auslastung;
-	}
-
-	public void setAuslastung(BigDecimal auslastung) {
-		this.auslastung = auslastung;
-	}
-
-	public BigDecimal getAnzahlKinderWarteliste() {
-		return anzahlKinderWarteliste;
-	}
-
-	public void setAnzahlKinderWarteliste(BigDecimal anzahlKinderWarteliste) {
-		this.anzahlKinderWarteliste = anzahlKinderWarteliste;
-	}
-
-	public BigDecimal getSummePensumWarteliste() {
-		return summePensumWarteliste;
-	}
-
-	public void setSummePensumWarteliste(BigDecimal summePensumWarteliste) {
-		this.summePensumWarteliste = summePensumWarteliste;
-	}
-
-	public BigDecimal getDauerWarteliste() {
-		return dauerWarteliste;
-	}
-
-	public void setDauerWarteliste(BigDecimal dauerWarteliste) {
-		this.dauerWarteliste = dauerWarteliste;
-	}
-
+	@Nullable
 	public String getGrundSchliessung() {
 		return grundSchliessung;
 	}
@@ -417,7 +376,9 @@ public class InstitutionenDataRow {
 		return emailBenachrichtigungKiBonMail;
 	}
 
-	public void setEmailBenachrichtigungKiBonMail(String emailBenachrichtigungKiBonMail) {
+	public void setEmailBenachrichtigungKiBonMail(
+		String emailBenachrichtigungKiBonMail
+	) {
 		this.emailBenachrichtigungKiBonMail = emailBenachrichtigungKiBonMail;
 	}
 

@@ -16,7 +16,7 @@
  */
 
 export type User =
-    | '[1-Superadmin] E-BEGU Superuser'
+    | '[1-Superadmin] Super User'
     // Admins & Sachbearbeiter
     | '[2-Admin-Kanton-Bern] Bernhard Röthlisberger'
     | '[2-SB-Kanton-Bern] Benno Röthlisberger'
@@ -30,7 +30,7 @@ export type User =
     | '[4-SB-Unterstützung-BernerSozialdienst] Max Palmer'
     // Gesuchsteller
     | '[5-GS] Emma Gerber'
-    | '[5-GS] Heinrich Mueller'
+    | '[5-GS] Heinrich Müller'
     | '[5-GS] Michael Berger'
     | '[5-GS] Hans Zimmermann'
     | '[5-GS] Jean Chambre'
@@ -92,7 +92,7 @@ export type TestBetreuungsstatus = 'warten' | 'bestaetigt' | 'verfuegt';
 export type TestGesuchstellende = Extract<
     User,
     | '[5-GS] Emma Gerber'
-    | '[5-GS] Heinrich Mueller'
+    | '[5-GS] Heinrich Müller'
     | '[5-GS] Michael Berger'
     | '[5-GS] Hans Zimmermann'
     | '[5-GS] Jean Chambre'
@@ -120,6 +120,12 @@ export type SidenavStep =
     | 'FREIGABE'
     | 'VERFUEGEN';
 
+export type LATSSidenavStep =
+    | 'ANGABEN_TAGESSCHULEN'
+    | 'ANGABEN_GEMEINDE'
+    | 'FREIGABE'
+    | 'LASTENAUSGLEICH';
+
 export type MainnavStep =
     | 'ALLE_FAELLE'
     | 'PENDENZEN'
@@ -132,6 +138,13 @@ export type MainnavStep =
     | 'ZAHLUNGEN'
     | 'STATISTIKEN';
 
-export type GemeindeTestFall = 'London' | 'Paris' | 'Testgemeinde Schwyz';
+export type GemeindeTestFall =
+    | 'London'
+    | 'Paris'
+    | 'Testgemeinde Schwyz'
+    | 'Testgemeinde Luzern'
+    | 'Testgemeinde Horw'
+    | 'Testgemeinde Solothurn'
+    | 'Testgemeinde Appenzell Ausserrhoden';
 
 export type TestInstitution = 'Tagesschule Paris';

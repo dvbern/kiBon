@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util.betreuungsmitteilung.messages;
@@ -24,7 +24,8 @@ import ch.dvbern.ebegu.entities.BetreuungsmitteilungPensum;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 
-public class MahlzeitenKostenMessageFactory implements BetreuungsmitteilungPensumMessageFactory {
+public class MahlzeitenKostenMessageFactory implements
+	BetreuungsmitteilungPensumMessageFactory {
 
 	private final Mandant mandant;
 	private final Locale locale;
@@ -36,11 +37,16 @@ public class MahlzeitenKostenMessageFactory implements BetreuungsmitteilungPensu
 		this.mandant = mandant;
 		this.locale = locale;
 	}
+
 	@Override
-	public String messageForPensum(int index, BetreuungsmitteilungPensum pensum) {
+	public String messageForPensum(
+		int index,
+		BetreuungsmitteilungPensum pensum
+	) {
 		NumberFormat decimalFormat = NumberFormat.getNumberInstance(locale);
 
-		String messageKey = "mutationsmeldung_message_kosten_mahlzeitverguenstigung";
+		String messageKey =
+			"mutationsmeldung_message_kosten_mahlzeitverguenstigung";
 		return ServerMessageUtil.getMessage(
 			messageKey,
 			locale,

@@ -27,6 +27,9 @@ ${templateConfiguration.mailCss}
     <p>
 		${contentDE}
     </p>
+    <#if templateConfiguration.showInitialPassword(eingeladener)>
+    <p>Melden Sie sich mit dem folgenden Initialpasswort an: ${eingeladener.getInitialPassword()}</p>
+    </#if>
 	<p>
         <table cellspacing="0" cellpadding="0" width="100%">
             <tr>
@@ -64,6 +67,9 @@ ${templateConfiguration.mailCss}
     <p>
 		${contentFR}
     </p>
+    <#if templateConfiguration.showInitialPassword(eingeladener)>
+    <p>Connectez-vous avec le mot de passe initial suivant: ${eingeladener.getInitialPassword()}</p>
+    </#if>
     <p>
     <table cellspacing="0" cellpadding="0" width="100%">
         <tr>

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.wizardx.ferienbetreuung;
@@ -49,12 +49,16 @@ public class AbschlussStep implements WizardStep<FerienbetreuungWizard> {
 			}
 			return WizardStateEnum.IN_BEARBEITUNG;
 		}
-		if (wizard.getFerienbetreuungAngabenContainer().isInPruefungKanton()) {
+		if (wizard.getFerienbetreuungAngabenContainer()
+			.isInPruefungKantonOrZweitpruefung()) {
 			if (wizard.getRole().isRoleGemeindeabhaengig()) {
 				return WizardStateEnum.OK;
 			}
 
-			if (Objects.requireNonNull(wizard.getFerienbetreuungAngabenContainer().getAngabenKorrektur())
+			if (Objects.requireNonNull(
+				wizard.getFerienbetreuungAngabenContainer()
+					.getAngabenKorrektur()
+			)
 				.isReadyForFreigeben()) {
 				return WizardStateEnum.IN_BEARBEITUNG;
 			}
@@ -62,13 +66,21 @@ public class AbschlussStep implements WizardStep<FerienbetreuungWizard> {
 			return WizardStateEnum.NONE;
 		}
 		// IN_BEARBEITUNG_GEMEINDE
-		if (wizard.getFerienbetreuungAngabenContainer().getAngabenDeklaration().isReadyForFreigeben()) {
+		if (wizard.getFerienbetreuungAngabenContainer()
+			.getAngabenDeklaration()
+			.isReadyForFreigeben()) {
 			return WizardStateEnum.IN_BEARBEITUNG;
 		}
 		// zurueck an Gemeinde
-		if (wizard.getFerienbetreuungAngabenContainer().getStatus() == FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE) {
-			Objects.requireNonNull(wizard.getFerienbetreuungAngabenContainer().getAngabenKorrektur());
-			if (wizard.getFerienbetreuungAngabenContainer().getAngabenKorrektur().isReadyForFreigeben()) {
+		if (wizard.getFerienbetreuungAngabenContainer().getStatus()
+			== FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE) {
+			Objects.requireNonNull(
+				wizard.getFerienbetreuungAngabenContainer()
+					.getAngabenKorrektur()
+			);
+			if (wizard.getFerienbetreuungAngabenContainer()
+				.getAngabenKorrektur()
+				.isReadyForFreigeben()) {
 				return WizardStateEnum.IN_BEARBEITUNG;
 			}
 		}
@@ -85,13 +97,21 @@ public class AbschlussStep implements WizardStep<FerienbetreuungWizard> {
 	@Override
 	public boolean isDisabled(@Nonnull FerienbetreuungWizard wizard) {
 		if (wizard.getRole().isRoleMandant()) {
-			return wizard.getFerienbetreuungAngabenContainer().isInBearbeitungGemeinde();
+			return wizard.getFerienbetreuungAngabenContainer()
+				.isInBearbeitungGemeinde();
 		}
-		if (wizard.getRole().isRoleGemeindeabhaengig() ||
-			(wizard.getRole().isSuperadmin() && wizard.getFerienbetreuungAngabenContainer()
-				.isInBearbeitungOrZurueckAnGemeinde())) {
-			return wizard.getFerienbetreuungAngabenContainer().getDokumente() == null ||
-				wizard.getFerienbetreuungAngabenContainer().getDokumente().isEmpty() ||
+		if (wizard.getRole().isRoleGemeindeabhaengig()
+			||
+			(wizard.getRole().isSuperadmin()
+				&& wizard.getFerienbetreuungAngabenContainer()
+					.isInBearbeitungOrZurueckAnGemeinde())) {
+			return wizard.getFerienbetreuungAngabenContainer().getDokumente()
+				== null
+				||
+				wizard.getFerienbetreuungAngabenContainer()
+					.getDokumente()
+					.isEmpty()
+				||
 				!isReadyForFreigeben(wizard);
 		}
 		return false;
@@ -99,7 +119,8 @@ public class AbschlussStep implements WizardStep<FerienbetreuungWizard> {
 
 	private boolean isReadyForFreigeben(@Nonnull FerienbetreuungWizard wizard) {
 		var container = wizard.getFerienbetreuungAngabenContainer();
-		if (container.getStatus() == FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE) {
+		if (container.getStatus()
+			== FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE) {
 			Objects.requireNonNull(container.getAngabenKorrektur());
 			return container.getAngabenKorrektur().isReadyForFreigeben();
 		}

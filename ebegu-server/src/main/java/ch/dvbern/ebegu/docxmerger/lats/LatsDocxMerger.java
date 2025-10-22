@@ -36,29 +36,137 @@ public class LatsDocxMerger extends DocxMerger<LatsDocxDTO> {
 	@Override
 	public void addMergeFields(@Nonnull LatsDocxDTO dto) {
 		this.mergeFields = new ArrayList<>();
-		this.mergeFields.add(new StringMergeField("userName", dto.getUserName()));
-		this.mergeFields.add(new StringMergeField("userEmail", dto.getUserEmail()));
-		this.mergeFields.add(new StringMergeField("gemeindeAnschrift", dto.getGemeindeAnschrift()));
-		this.mergeFields.add(new StringMergeField("gemeindeStrasse", dto.getGemeindeStrasse()));
-		this.mergeFields.add(new StringMergeField("gemeindeNr", dto.getGemeindeNr()));
-		this.mergeFields.add(new StringMergeField("gemeindePLZ", dto.getGemeindePLZ()));
-		this.mergeFields.add(new StringMergeField("gemeindeOrt", dto.getGemeindeOrt()));
-		this.mergeFields.add(new StringMergeField("gemeindeName", dto.getGemeindeName()));
-		this.mergeFields.add(new StringMergeField("fallNummer", dto.getFallNummer()));
-		this.mergeFields.add(new BigDecimalMergeField("betreuungsstunden", dto.getBetreuungsstunden(), Constants.NO_DECIMAL_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("betreuungsstundenProg", dto.getBetreuungsstundenProg(), Constants.NO_DECIMAL_PATTERN));
-		this.mergeFields.add(new StringMergeField("normlohnkosten", dto.getNormlohnkosten()));
-		this.mergeFields.add(new StringMergeField("normlohnkostenProg", dto.getNormlohnkostenProg()));
-		this.mergeFields.add(new BigDecimalMergeField("normlohnkostenTotal", dto.getNormlohnkostenTotal(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("normlohnkostenTotalProg", dto.getNormlohnkostenTotalProg(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("elterngebuehren", dto.getElterngebuehren(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("elterngebuehrenProg", dto.getElterngebuehrenProg(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("lastenausgleichsberechtigterBetrag", dto.getLastenausgleichsberechtigterBetrag(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("lastenausgleichsberechtigterBetragProg", dto.getLastenausgleichsberechtigterBetragProg(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("ersteRate", dto.getErsteRate(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("ersteRateProg", dto.getErsteRateProg(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("zweiteRate", dto.getZweiteRate(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new BigDecimalMergeField("auszahlungTotal", dto.getAuszahlungTotal(), Constants.CURRENCY_PATTERN));
-		this.mergeFields.add(new StringMergeField("textPaedagogischOderNicht", dto.getTextPaedagogischOderNicht()));
+		this.mergeFields.add(
+			new StringMergeField("userName", dto.getUserName())
+		);
+		this.mergeFields.add(
+			new StringMergeField("userEmail", dto.getUserEmail())
+		);
+		this.mergeFields.add(
+			new StringMergeField(
+				"gemeindeAnschrift",
+				dto.getGemeindeAnschrift()
+			)
+		);
+		this.mergeFields.add(
+			new StringMergeField(
+				"gemeindeStrasse",
+				dto.getGemeindeStrasse()
+			)
+		);
+		this.mergeFields.add(
+			new StringMergeField("gemeindeNr", dto.getGemeindeNr())
+		);
+		this.mergeFields.add(
+			new StringMergeField("gemeindePLZ", dto.getGemeindePLZ())
+		);
+		this.mergeFields.add(
+			new StringMergeField("gemeindeOrt", dto.getGemeindeOrt())
+		);
+		this.mergeFields.add(
+			new StringMergeField("gemeindeName", dto.getGemeindeName())
+		);
+		this.mergeFields.add(
+			new StringMergeField("fallNummer", dto.getFallNummer())
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"betreuungsstunden",
+				dto.getBetreuungsstunden(),
+				Constants.NO_DECIMAL_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"betreuungsstundenProg",
+				dto.getBetreuungsstundenProg(),
+				Constants.NO_DECIMAL_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new StringMergeField("normlohnkosten", dto.getNormlohnkosten())
+		);
+		this.mergeFields.add(
+			new StringMergeField(
+				"normlohnkostenProg",
+				dto.getNormlohnkostenProg()
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"normlohnkostenTotal",
+				dto.getNormlohnkostenTotal(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"normlohnkostenTotalProg",
+				dto.getNormlohnkostenTotalProg(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"elterngebuehren",
+				dto.getElterngebuehren(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"elterngebuehrenProg",
+				dto.getElterngebuehrenProg(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"lastenausgleichsberechtigterBetrag",
+				dto.getLastenausgleichsberechtigterBetrag(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"lastenausgleichsberechtigterBetragProg",
+				dto.getLastenausgleichsberechtigterBetragProg(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"ersteRate",
+				dto.getErsteRate(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"ersteRateProg",
+				dto.getErsteRateProg(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"zweiteRate",
+				dto.getZweiteRate(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"auszahlungTotal",
+				dto.getAuszahlungTotal(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new StringMergeField(
+				"textPaedagogischOderNicht",
+				dto.getTextPaedagogischOderNicht()
+			)
+		);
 	}
 }

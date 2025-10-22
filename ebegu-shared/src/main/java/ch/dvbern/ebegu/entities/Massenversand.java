@@ -19,15 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.util.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -52,17 +52,22 @@ public class Massenversand extends AbstractEntity {
 
 	@ManyToMany
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "massenversand_id", nullable = false),
-		inverseJoinColumns = @JoinColumn(name = "gesuch_id", nullable = false),
-		foreignKey = @ForeignKey(name = "FK_massenversand_massenversand_id"),
-		inverseForeignKey = @ForeignKey(name = "FK_massenversand_gesuch_id"),
+		joinColumns = @JoinColumn(name = "massenversand_id",
+			nullable = false),
+		inverseJoinColumns = @JoinColumn(name = "gesuch_id",
+			nullable = false),
+		foreignKey = @ForeignKey(
+			name = "FK_massenversand_massenversand_id"),
+		inverseForeignKey = @ForeignKey(
+			name = "FK_massenversand_gesuch_id"),
 		indexes = {
-			@Index(name = "IX_massenversand_massenversand_id", columnList = "massenversand_id"),
-			@Index(name = "IX_massenversand_gesuch_id", columnList = "gesuch_id"),
+			@Index(name = "IX_massenversand_massenversand_id",
+				columnList = "massenversand_id"),
+			@Index(name = "IX_massenversand_gesuch_id",
+				columnList = "gesuch_id"),
 		}
 	)
 	private List<Gesuch> gesuche = new ArrayList<>();
-
 
 	public Massenversand() {
 	}
@@ -103,7 +108,11 @@ public class Massenversand extends AbstractEntity {
 			return false;
 		}
 		final Massenversand otherGesuchsteller = (Massenversand) other;
-		return Objects.equals(getEinstellungen(), otherGesuchsteller.getEinstellungen()) &&
+		return Objects.equals(
+			getEinstellungen(),
+			otherGesuchsteller.getEinstellungen()
+		)
+			&&
 			Objects.equals(getText(), otherGesuchsteller.getText());
 	}
 
@@ -113,7 +122,9 @@ public class Massenversand extends AbstractEntity {
 	public String getDescription() {
 		String description = getText();
 		if (getTimestampErstellt() != null) {
-			description = Constants.DATE_FORMATTER.format(getTimestampErstellt()) + " (" + getUserErstellt() + "): " + description;
+			description = Constants.DATE_FORMATTER.format(
+				getTimestampErstellt()
+			) + " (" + getUserErstellt() + "): " + description;
 		}
 		return description;
 	}

@@ -21,13 +21,13 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.util.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -42,7 +42,9 @@ public class InternePendenz extends AbstractEntity {
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_interne_pendenz_gesuch_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_interne_pendenz_gesuch_id"),
+		nullable = false,
+		updatable = false)
 	private Gesuch gesuch;
 
 	@NotNull
@@ -105,7 +107,7 @@ public class InternePendenz extends AbstractEntity {
 		if (this == other) {
 			return true;
 		}
-		if (!(other instanceof InternePendenz)){
+		if (!(other instanceof InternePendenz)) {
 			return false;
 		}
 		if (!super.equals(other)) {
@@ -115,6 +117,9 @@ public class InternePendenz extends AbstractEntity {
 		return Objects.equals(this.getGesuch(), internePendenz.getGesuch())
 			&& Objects.equals(this.getTermin(), internePendenz.getTermin())
 			&& Objects.equals(this.getText(), internePendenz.getText())
-			&& Objects.equals(this.getErledigt(), internePendenz.getErledigt());
+			&& Objects.equals(
+				this.getErledigt(),
+				internePendenz.getErledigt()
+			);
 	}
 }

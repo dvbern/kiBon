@@ -50,155 +50,267 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static ch.dvbern.ebegu.pdfgenerator.PdfUtil.DEFAULT_FONT_SIZE;
-import static ch.dvbern.lib.invoicegenerator.pdf.PdfUtilities.DEFAULT_MULTIPLIED_LEADING;
 
-public abstract class AbstractFreigabequittungPdfGenerator extends DokumentAnGemeindeGenerator {
+public abstract class AbstractFreigabequittungPdfGenerator extends
+	DokumentAnGemeindeGenerator {
 
-	private static final String FREIGABEQUITTUNG_TITLE = "PdfGeneration_Freigabequittung_Title";
+	private static final String FREIGABEQUITTUNG_TITLE =
+		"PdfGeneration_Freigabequittung_Title";
 	private static final String GESUCHSTELLER = "PdfGeneration_Gesuchsteller";
-	private static final String BETREUUNGSANGEBOTE = "PdfGeneration_Betreuungsangebote";
+	private static final String BETREUUNGSANGEBOTE =
+		"PdfGeneration_Betreuungsangebote";
 	private static final String BETREUUNG_KIND = "PdfGeneration_Kind";
-	private static final String BENOETIGTE_UNTERLAGEN = "PdfGeneration_BenoetigteUnterlagen";
-	private static final String EINWILLIGUNG_STEUERDATEN_TITLE = "PdfGeneration_EinwilligungSteuerdaten_Title";
-	private static final String EINWILLIGUNG_STEUERDATEN_CONTENT = "PdfGeneration_EinwilligungSteuerdaten_Content";
-	private static final String VOLLSTAENDIGKEIT_TITLE = "PdfGeneration_Vollstaendigkeit_Title";
-	private static final String VOLLSTAENDIGKEIT_CONTENT = "PdfGeneration_Vollstaendigkeit_Content";
+	private static final String BENOETIGTE_UNTERLAGEN =
+		"PdfGeneration_BenoetigteUnterlagen";
+	private static final String EINWILLIGUNG_STEUERDATEN_TITLE =
+		"PdfGeneration_EinwilligungSteuerdaten_Title";
+	private static final String EINWILLIGUNG_STEUERDATEN_CONTENT =
+		"PdfGeneration_EinwilligungSteuerdaten_Content";
+	private static final String VOLLSTAENDIGKEIT_TITLE =
+		"PdfGeneration_Vollstaendigkeit_Title";
+	private static final String VOLLSTAENDIGKEIT_CONTENT =
+		"PdfGeneration_Vollstaendigkeit_Content";
 	private static final String EINGEREICHT = "PdfGeneration_Eingereicht";
-	private static final String UNTERSCHRIFTEN_ORT_DATUM = "PdfGeneration_UnterschriftenOrtDatum";
+	private static final String UNTERSCHRIFTEN_ORT_DATUM =
+		"PdfGeneration_UnterschriftenOrtDatum";
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractFreigabequittungPdfGenerator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		AbstractFreigabequittungPdfGenerator.class
+	);
+
+	private static final float SPACING_ONE_LINE = DEFAULT_FONT_SIZE
+		* PdfUtilities.DEFAULT_MULTIPLIED_LEADING;
 
 	@Nonnull
 	private final List<DokumentGrund> benoetigteUnterlagen;
 
+	private final float barcodeSpacingTop;
+	private final float barcodeSpacingLeft;
+
 	protected AbstractFreigabequittungPdfGenerator(
 		@Nonnull Gesuch gesuch,
 		@Nonnull GemeindeStammdaten stammdaten,
-		@Nonnull List<DokumentGrund> benoetigteUnterlagen) {
+		@Nonnull List<DokumentGrund> benoetigteUnterlagen
+	) {
 		super(gesuch, stammdaten);
 		this.benoetigteUnterlagen = benoetigteUnterlagen;
+
+		this.barcodeSpacingTop = Utilities.millimetersToPoints(
+			stammdaten.getGemeindeStammdatenKorrespondenz()
+				.getBarcodeSpacingTop()
+		);
+		this.barcodeSpacingLeft = Utilities.millimetersToPoints(
+			stammdaten.getGemeindeStammdatenKorrespondenz()
+				.getBarcodeSpacingLeft()
+		);
 	}
 
 	@Override
 	@Nonnull
 	protected String getDocumentTitle() {
-		return translate(FREIGABEQUITTUNG_TITLE, getGesuch().getGesuchsperiode().getGesuchsperiodeString());
+		return translate(
+			FREIGABEQUITTUNG_TITLE,
+			getGesuch().getGesuchsperiode().getGesuchsperiodeString()
+		);
 	}
 
 	@Override
 	@Nonnull
 	protected CustomGenerator getCustomGenerator() {
-		final List<String> dokumente = KibonPrintUtil.getBenoetigteDokumenteAsList(benoetigteUnterlagen, gesuch,
-			sprache);
 		return (generator, ctx) -> {
 			Document document = generator.getDocument();
-			addBarcode(document);
+			createBarcode(document);
 			createParagraphBitteAusdrucken(document);
-			document.add(createGesuchstellerTable());
-			document.add(PdfUtil.createSubTitle(translate(BETREUUNGSANGEBOTE)));
-			document.add(createBetreuungsangeboteTable());
-			if (!dokumente.isEmpty()) {
-				document.add(PdfUtil.createSubTitle(translate(BENOETIGTE_UNTERLAGEN)));
-				createParagraphBenoetigteUnterlagenInfo(document);
-			}
-			Paragraph dokumenteParagraph = new Paragraph();
-			dokumenteParagraph.setSpacingAfter(1 * DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
-			dokumenteParagraph.add(PdfUtil.createListInParagraph(dokumente));
-			document.add(dokumenteParagraph);
-			addZusatzTextIfAvailable(document);
+			createGesuchstellerTable(document);
+			createBetreuungsangeboteTable(document);
+			createDocumentList(document);
+			createZusatzTextIfAvailable(document);
 			createSeite2(document);
 		};
 	}
 
+	private void createDocumentList(Document document) {
+		final List<String> dokumente = KibonPrintUtil
+			.getBenoetigteDokumenteAsList(
+				benoetigteUnterlagen,
+				gesuch,
+				sprache
+			);
+
+		if (dokumente.isEmpty()) {
+			return;
+		}
+
+		document.add(PdfUtil.createSubTitle(translate(BENOETIGTE_UNTERLAGEN)));
+		createParagraphBenoetigteUnterlagenInfo(document);
+
+		Paragraph dokumenteParagraph = new Paragraph();
+		dokumenteParagraph.setSpacingAfter(SPACING_ONE_LINE);
+		dokumenteParagraph.add(PdfUtil.createListInParagraph(dokumente));
+
+		document.add(dokumenteParagraph);
+	}
+
 	protected void createSeite2(@Nonnull Document document) {
 		List<Element> seite2Paragraphs = Lists.newArrayList();
-		seite2Paragraphs.add(PdfUtil.createSubTitle(translate(EINWILLIGUNG_STEUERDATEN_TITLE)));
-		seite2Paragraphs.add(PdfUtil.createParagraph(
-			translate(EINWILLIGUNG_STEUERDATEN_CONTENT, gesuch.getDossier().getGemeinde().getName())
-		));
+		seite2Paragraphs.add(
+			PdfUtil.createSubTitle(
+				translate(EINWILLIGUNG_STEUERDATEN_TITLE)
+			)
+		);
+		seite2Paragraphs.add(
+			PdfUtil.createParagraph(
+				translate(
+					EINWILLIGUNG_STEUERDATEN_CONTENT,
+					gesuch.getDossier().getGemeinde().getName()
+				)
+			)
+		);
 		createVollstaendigkeitUndSignatur(seite2Paragraphs);
 		document.add(PdfUtil.createKeepTogetherTable(seite2Paragraphs, 1, 0));
 	}
 
-	protected void createVollstaendigkeitUndSignatur(List<Element> seite2Paragraphs) {
+	protected void createVollstaendigkeitUndSignatur(
+		List<Element> seite2Paragraphs
+	) {
 		seite2Paragraphs.add(new Paragraph());
-		seite2Paragraphs.add(PdfUtil.createSubTitle(translate(VOLLSTAENDIGKEIT_TITLE)));
-		seite2Paragraphs.add(PdfUtil.createParagraph(translate(VOLLSTAENDIGKEIT_CONTENT)));
+		seite2Paragraphs.add(
+			PdfUtil.createSubTitle(translate(VOLLSTAENDIGKEIT_TITLE))
+		);
+		seite2Paragraphs.add(
+			PdfUtil.createParagraph(translate(VOLLSTAENDIGKEIT_CONTENT))
+		);
 		createParagraphSofortEinrichten(seite2Paragraphs);
 		seite2Paragraphs.add(createUnterschriftenTable());
 		seite2Paragraphs.add(PdfUtil.createParagraph(translate(EINGEREICHT)));
 	}
 
-	protected void addZusatzTextIfAvailable(Document document) {
+	protected void createZusatzTextIfAvailable(Document document) {
 		if (getGemeindeStammdaten().getHasZusatzTextFreigabequittung()) {
-			document.add(PdfUtil.createParagraph(Objects.requireNonNull(gemeindeStammdaten.getZusatzTextFreigabequittung())));
+			document.add(
+				PdfUtil.createParagraph(
+					Objects.requireNonNull(
+						gemeindeStammdaten
+							.getZusatzTextFreigabequittung()
+					)
+				)
+			);
 		}
 	}
 
-	@Nonnull
-	public PdfPTable createGesuchstellerTable() {
+	public void createGesuchstellerTable(Document document) {
 		PdfPTable table = new PdfPTable(3);
 		// Init
 		PdfUtil.setTableDefaultStyles(table);
-		table.getDefaultCell().setPaddingBottom(DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE);
+		table.getDefaultCell().setPaddingBottom(SPACING_ONE_LINE);
 		// Row: Referenznummer
 		final Font defaultFont = getPageConfiguration().getFonts().getFont();
 		table.addCell(new Phrase(translate(REFERENZ_NUMMER), defaultFont));
-		table.addCell(new Phrase(getGesuch().getJahrFallAndGemeindenummer(), defaultFont));
+		table.addCell(
+			new Phrase(
+				getGesuch().getJahrFallAndGemeindenummer(),
+				defaultFont
+			)
+		);
 		table.addCell(new Phrase());
 		// Row: Gesuchersteller-Adressen
 		table.addCell(new Phrase(translate(GESUCHSTELLER), defaultFont));
-		String gs1 = KibonPrintUtil.getGesuchstellerWithAddressAsString(getGesuch().getGesuchsteller1());
-		String gs2 = KibonPrintUtil.getGesuchstellerWithAddressAsString(getGesuch().getGesuchsteller2());
+		String gs1 = KibonPrintUtil.getGesuchstellerWithAddressAsString(
+			getGesuch().getGesuchsteller1()
+		);
+		String gs2 = KibonPrintUtil.getGesuchstellerWithAddressAsString(
+			getGesuch().getGesuchsteller2()
+		);
 		table.addCell(new Phrase(gs1, defaultFont));
 		table.addCell(new Phrase(gs2, defaultFont));
-		return table;
+
+		document.add(table);
 	}
 
-	public void addBarcode(Document document) {
+	private void createBarcode(Document document) {
 		try {
-			DataMatrixBean dataMatrixBean = new DataMatrixBean();
 			ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 			BitmapCanvasProvider canvas = new BitmapCanvasProvider(
-				bytesOut, "image/x-png", 175, BufferedImage.TYPE_BYTE_BINARY, false, 0);
-			dataMatrixBean.generateBarcode(canvas,
-				"§FREIGABE|OPEN|" + getGesuch().getId() + '|' + getGesuch().getAnzahlGesuchZurueckgezogen() + '§');
+				bytesOut,
+				"image/x-png",
+				175,
+				BufferedImage.TYPE_BYTE_BINARY,
+				false,
+				0
+			);
+			new DataMatrixBean().generateBarcode(
+				canvas,
+				"§FREIGABE|OPEN|"
+					+ getGesuch().getId()
+					+ '|'
+					+ getGesuch().getAnzahlGesuchZurueckgezogen()
+					+ '§'
+			);
 			canvas.finish();
-			Image image = Image.getInstance(bytesOut.toByteArray());
-			image.setAbsolutePosition(document.leftMargin(),
-				document.getPageSize().getHeight() - 2 * Utilities.millimetersToPoints(PdfLayoutConfiguration.BARCODE_TOP_IN_MM));
-			document.add(image);
+			setBarcodePositioning(
+				Image.getInstance(bytesOut.toByteArray()),
+				document
+			);
 		} catch (IOException | DocumentException e) {
 			LOG.error("Failed to read the Barcode: {}", e.getMessage(), e);
 		}
 	}
 
-	@Nonnull
-	public PdfPTable createBetreuungsangeboteTable() throws DocumentException {
+	protected void setBarcodePositioning(Image image, Document document) {
+		// absolute position is lower left corner of the image
+		// zero point is lower left corner of the page
+		// barcodeSpacingTop is the spacing between the upper left corner of the barcode and the upper left corner of the page
+		// so we need to calculate the effectivePosition
+		float effectiveBarcodePosition = document.getPageSize().getHeight()
+			- image.getScaledHeight()
+			- barcodeSpacingTop;
+		image.setAbsolutePosition(barcodeSpacingLeft, effectiveBarcodePosition);
+		document.add(image);
+	}
+
+	public void createBetreuungsangeboteTable(Document document)
+		throws DocumentException {
 		PdfPTable table = new PdfPTable(3);
 		table.setWidthPercentage(PdfElementGenerator.FULL_WIDTH);
 		table.setWidths(new int[] { 30, 50, 20 });
 		table.setHeaderRows(1);
 		table.setKeepTogether(true);
 		table.addCell(PdfUtil.createTitleCell(translate(BETREUUNG_KIND)));
-		table.addCell(PdfUtil.createTitleCell(translate(BETREUUNG_INSTITUTION)));
+		table.addCell(
+			PdfUtil.createTitleCell(translate(BETREUUNG_INSTITUTION))
+		);
 		table.addCell(PdfUtil.createTitleCell(translate(REFERENZ_NUMMER)));
 
 		getGesuch().extractAllPlaetze().forEach(platz -> {
-			final Font defaultFont = getPageConfiguration().getFonts().getFont();
-			table.addCell(new Phrase(platz.getKind().getKindJA().getFullName(), defaultFont));
-			table.addCell(new Phrase(platz.getInstitutionAndBetreuungsangebottyp(sprache), defaultFont));
+			final Font defaultFont = getPageConfiguration().getFonts()
+				.getFont();
+			table.addCell(
+				new Phrase(
+					platz.getKind().getKindJA().getFullName(),
+					defaultFont
+				)
+			);
+			table.addCell(
+				new Phrase(
+					platz.getInstitutionAndBetreuungsangebottyp(
+						sprache
+					),
+					defaultFont
+				)
+			);
 			table.addCell(new Phrase(platz.getReferenzNummer(), defaultFont));
 		});
-		table.setSpacingAfter(DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE);
-		return table;
+		table.setSpacingAfter(SPACING_ONE_LINE);
+
+		document.add(PdfUtil.createSubTitle(translate(BETREUUNGSANGEBOTE)));
+		document.add(table);
 	}
 
 	@Nonnull
 	public PdfPTable createUnterschriftenTable() {
 		PdfPTable table = new PdfPTable(2);
 		PdfUtil.setTableDefaultStyles(table);
-		table.getDefaultCell().setPaddingTop(3 * DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		table.getDefaultCell().setPaddingTop(3 * SPACING_ONE_LINE);
 		GesuchstellerContainer gesuchsteller1 = getGesuch().getGesuchsteller1();
 		GesuchstellerContainer gesuchsteller2 = getGesuch().getGesuchsteller2();
 		if (gesuchsteller1 != null) {
@@ -207,19 +319,28 @@ public abstract class AbstractFreigabequittungPdfGenerator extends DokumentAnGem
 		if (gesuchsteller2 != null) {
 			addGesuchstellerToUnterschriften(table, gesuchsteller2);
 		}
-		table.setSpacingAfter(2 * DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		table.setSpacingAfter(2 * SPACING_ONE_LINE);
 		return table;
 	}
 
 	protected abstract void createParagraphBitteAusdrucken(Document document);
-	protected abstract void createParagraphBenoetigteUnterlagenInfo(Document document);
-	protected abstract void createParagraphSofortEinrichten(List<Element> paragraphlist);
 
+	protected abstract void createParagraphBenoetigteUnterlagenInfo(
+		Document document
+	);
 
-	private void addGesuchstellerToUnterschriften(@Nonnull PdfPTable table,
-		@Nonnull GesuchstellerContainer gesuchsteller) {
+	protected abstract void createParagraphSofortEinrichten(
+		List<Element> paragraphlist
+	);
+
+	private void addGesuchstellerToUnterschriften(
+		@Nonnull PdfPTable table,
+		@Nonnull GesuchstellerContainer gesuchsteller
+	) {
 		final Font defaultFont = getPageConfiguration().getFonts().getFont();
-		table.addCell(new Phrase(translate(UNTERSCHRIFTEN_ORT_DATUM), defaultFont));
+		table.addCell(
+			new Phrase(translate(UNTERSCHRIFTEN_ORT_DATUM), defaultFont)
+		);
 		table.addCell(new Phrase(gesuchsteller.extractFullName(), defaultFont));
 
 		table.addCell(new Phrase());

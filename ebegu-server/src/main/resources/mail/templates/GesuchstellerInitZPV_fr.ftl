@@ -30,7 +30,7 @@ Content-Type: text/html;charset=utf-8
 	</p>
 	<p>
 		Le bouton ci-dessous vous permet de récupérer vos données fiscales:<br>
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}${link}">Connecter à BE Login et autoriser la récupération des données fiscales.</a></li>
+		<a href="${link}">Connecter à BE Login et autoriser la récupération des données fiscales.</a></li>
 	</p>
 	<p>
 		Une fois connecté·e dans BE-Login, vous serez redirigé·e vers kiBon et votre demande sera reliée à votre compte BE-Login.

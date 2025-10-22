@@ -15,7 +15,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable */
 import {StateService, TransitionPromise} from '@uirouter/core';
 import {
     IComponentOptions,
@@ -26,43 +25,45 @@ import {
     IWindowService
 } from 'angular';
 import {map} from 'rxjs/operators';
+import {
+    TSEinstellungenTagesschule,
+    TSModulTagesschuleGroup
+} from '@kibon/shared/model/entity';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {
+    TSWizardStepName,
+    TSBetreuungsstatus,
+    TSRole,
+    TSDayOfWeek,
+    getWeekdaysValues,
+    TSBrowserLanguage
+} from '@kibon/shared/model/enums';
+import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
+import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MandantService} from '@kibon/shared-util-mandant-service';
+import {TSZahlungslaufTyp} from '@kibon/zahlung/model/entity';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {MANDANTS} from '../../../app/core/constants/MANDANTS';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {DemoFeatureRS} from '../../../app/core/service/demoFeatureRS.rest';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
-import {MandantService} from '../../../app/shared/services/mandant.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSBedarfsstufe} from '../../../models/enums/betreuung/TSBedarfsstufe';
-import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
 import {
     getTSAbholungTagesschuleValues,
     TSAbholungTagesschule
 } from '../../../models/enums/TSAbholungTagesschule';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {TSBrowserLanguage} from '../../../models/enums/TSBrowserLanguage';
-import {
-    getWeekdaysValues,
-    TSDayOfWeek
-} from '../../../models/enums/TSDayOfWeek';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSZahlungslaufTyp} from '../../../models/enums/TSZahlungslaufTyp';
 import {TSGemeindeZusaetzlicherGutscheinTyp} from '../../../models/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
 import {TSBelegungTagesschuleModulGroup} from '../../../models/TSBelegungTagesschuleModulGroup';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
-import {TSEinstellung} from '../../../models/TSEinstellung';
-import {TSEinstellungenTagesschule} from '../../../models/TSEinstellungenTagesschule';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSModulTagesschuleGroup} from '../../../models/TSModulTagesschuleGroup';
-import {TSPublicAppConfig} from '../../../models/TSPublicAppConfig';
 import {TSVerfuegung} from '../../../models/TSVerfuegung';
 import {TSVerfuegungZeitabschnitt} from '../../../models/TSVerfuegungZeitabschnitt';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
@@ -107,7 +108,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         '$stateParams',
         '$window',
         'ExportRS',
-        'ApplicationPropertyRS',
+        'SharedUtilApplicationPropertyRsService',
         '$timeout',
         'AuthServiceRS',
         'I18nServiceRSRest',
@@ -164,7 +165,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         $stateParams: IBetreuungStateParams,
         private readonly $window: IWindowService,
         private readonly exportRS: ExportRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         $timeout: ITimeoutService,
         private readonly authServiceRs: AuthServiceRS,
         private readonly i18nServiceRS: I18nServiceRSRest,
@@ -253,7 +254,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
 
         this.demoFeatureRS
             .isDemoFeatureAllowed(TSDemoFeature.ZAHLUNGSSTATUS)
-            .then(res => {
+            .subscribe(res => {
                 this.demoFeatureZahlungsstatusAllowed = res;
             });
 
@@ -319,7 +320,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
     private initProperties(): void {
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then((response: TSPublicAppConfig) => {
+            .subscribe((response: TSPublicAppConfig) => {
                 // Schemas are only visible in devmode
                 this.showSchemas = response.devmode;
                 this.isAuszahlungAnAntragstellerEnabled =
@@ -400,9 +401,23 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         return false; // by default
     }
 
+    private hasUnignoredZeitabschnitt(): boolean {
+        if (this.getVerfuegenToWorkWith()) {
+            return this.getVerfuegenToWorkWith().hasUnignoredZeitabschnitt();
+        }
+        return false; // by default
+    }
+
     private isAlreadyIgnoredMahlzeiten(): boolean {
         if (this.getVerfuegenToWorkWith()) {
             return this.getVerfuegenToWorkWith().isAlreadyIgnoredMahlzeiten();
+        }
+        return false; // by default
+    }
+
+    private hasUnignoredZeitabschnittMahlzeiten(): boolean {
+        if (this.getVerfuegenToWorkWith()) {
+            return this.getVerfuegenToWorkWith().hasUnignoredZeitabschnittMahlzeiten();
         }
         return false; // by default
     }
@@ -417,11 +432,11 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         const direktVerfuegenVerguenstigung =
             !this.fragenObIgnorieren ||
             !this.isMutation() ||
-            this.isAlreadyIgnored();
+            !this.hasUnignoredZeitabschnitt();
         const direktVerfuegenMahlzeiten =
             !this.fragenObIgnorierenMahlzeiten ||
             !this.isMutation() ||
-            this.isAlreadyIgnoredMahlzeiten();
+            !this.hasUnignoredZeitabschnittMahlzeiten();
 
         // Zuerst zeigen wir aber eine Warnung an, falls schon ignoriert war (wiederum separat fuer Verguenstigung
         // und Mahlzeiten)
@@ -689,11 +704,10 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
             )
             .then(() => {
                 this.isVerfuegenClicked = false;
-                // Auch wenn wir nicht nach dem Ignorieren gefragt haben, muessen wir u.U. ignorieren:
-                // Dann naemlich, wenn fuer diese Verfuegung bereits frueher ignoriert wurde!
+                //Zu disem Zeitpunkt kann im Frontend nicht ignoriert werden, allfällige änderungen müssen im Backend angepasst werden
                 return this.gesuchModelManager.saveVerfuegung(
-                    this.isAlreadyIgnored(),
-                    this.isAlreadyIgnoredMahlzeiten(),
+                    false,
+                    false,
                     this.bemerkungen
                 );
             });
@@ -833,7 +847,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                 this.$log.debug(
                     'accessToken for verfuegung: ' + downloadFile.accessToken
                 );
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -851,7 +865,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                 this.$log.debug(
                     'accessToken for export: ' + downloadFile.accessToken
                 );
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     true,
@@ -873,7 +887,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                     'accessToken for nichteintreten: ' +
                         downloadFile.accessToken
                 );
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -1090,7 +1104,7 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                     'accessToken for Anmeldebestaetigung: ' +
                         downloadFile.accessToken
                 );
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -1200,12 +1214,9 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         if (this.authServiceRs.isRole(TSRole.GESUCHSTELLER)) {
             return false;
         }
-        if (
-            this.getBetreuung().betreuungsstatus !== TSBetreuungsstatus.VERFUEGT
-        ) {
-            return false;
-        }
-        return true;
+        return (
+            this.getBetreuung().betreuungsstatus === TSBetreuungsstatus.VERFUEGT
+        );
     }
 
     public showZahlungsstatusInstitutionenCol(): boolean {

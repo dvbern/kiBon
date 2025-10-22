@@ -1,12 +1,12 @@
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {StateService, Transition} from '@uirouter/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {of} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
-import {TSDateRange} from '../../../models/types/TSDateRange';
+import {TSDateRange} from '@kibon/shared/model/entity';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {InstitutionStammdatenRS} from '../../core/service/institutionStammdatenRS.rest';
@@ -52,7 +52,7 @@ describe('EditInstitutionComponent', () => {
     );
     const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
         I18nServiceRSRest.name,
-        ['extractPreferredLanguage']
+        ['extractPreferredLanguage', 'init']
     );
 
     beforeEach(waitForAsync(() => {

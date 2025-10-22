@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.gemeindeantrag;
@@ -21,17 +21,17 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -45,44 +45,59 @@ import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
-public class LastenausgleichTagesschuleAngabenInstitutionContainer extends AbstractEntity implements GemeindeAntrag {
+public class LastenausgleichTagesschuleAngabenInstitutionContainer extends
+	AbstractEntity implements
+	GemeindeAntrag {
 
 	private static final long serialVersionUID = -3965299440745733592L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_lats_institution_container_gemeinde_container_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_lats_institution_container_gemeinde_container_id"),
+		nullable = false)
 	private LastenausgleichTagesschuleAngabenGemeindeContainer angabenGemeinde;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private LastenausgleichTagesschuleAngabenInstitutionStatus status = LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN;
+	private LastenausgleichTagesschuleAngabenInstitutionStatus status =
+		LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_lats_institution_container_institution_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_lats_institution_container_institution_id"),
+		nullable = false)
 	private Institution institution;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_lats_institution_container_institutiondeklaration_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_lats_institution_container_institutiondeklaration_id"),
+		nullable = true)
 	private LastenausgleichTagesschuleAngabenInstitution angabenDeklaration;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_lats_institution_container_institutionkorrektur_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_lats_institution_container_institutionkorrektur_id"),
+		nullable = true)
 	private LastenausgleichTagesschuleAngabenInstitution angabenKorrektur;
-
 
 	@Nonnull
 	public LastenausgleichTagesschuleAngabenGemeindeContainer getAngabenGemeinde() {
 		return angabenGemeinde;
 	}
 
-	public void setAngabenGemeinde(@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer angabenGemeinde) {
+	public void setAngabenGemeinde(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer angabenGemeinde
+	) {
 		this.angabenGemeinde = angabenGemeinde;
 	}
 
@@ -91,7 +106,9 @@ public class LastenausgleichTagesschuleAngabenInstitutionContainer extends Abstr
 		return status;
 	}
 
-	public void setStatus(@Nonnull LastenausgleichTagesschuleAngabenInstitutionStatus status) {
+	public void setStatus(
+		@Nonnull LastenausgleichTagesschuleAngabenInstitutionStatus status
+	) {
 		this.status = status;
 	}
 
@@ -109,7 +126,9 @@ public class LastenausgleichTagesschuleAngabenInstitutionContainer extends Abstr
 		return angabenDeklaration;
 	}
 
-	public void setAngabenDeklaration(@Nullable LastenausgleichTagesschuleAngabenInstitution angabenDeklaration) {
+	public void setAngabenDeklaration(
+		@Nullable LastenausgleichTagesschuleAngabenInstitution angabenDeklaration
+	) {
 		this.angabenDeklaration = angabenDeklaration;
 	}
 
@@ -118,7 +137,9 @@ public class LastenausgleichTagesschuleAngabenInstitutionContainer extends Abstr
 		return angabenKorrektur;
 	}
 
-	public void setAngabenKorrektur(@Nullable LastenausgleichTagesschuleAngabenInstitution angabenKorrektur) {
+	public void setAngabenKorrektur(
+		@Nullable LastenausgleichTagesschuleAngabenInstitution angabenKorrektur
+	) {
 		this.angabenKorrektur = angabenKorrektur;
 	}
 
@@ -136,16 +157,28 @@ public class LastenausgleichTagesschuleAngabenInstitutionContainer extends Abstr
 		if (!super.equals(other)) {
 			return false;
 		}
-		LastenausgleichTagesschuleAngabenInstitutionContainer that = (LastenausgleichTagesschuleAngabenInstitutionContainer) other;
-		return getInstitution().equals(that.getInstitution()) &&
-			Objects.equals(getAngabenDeklaration(), that.getAngabenDeklaration()) &&
-			Objects.equals(getAngabenKorrektur(), that.getAngabenKorrektur());
+		LastenausgleichTagesschuleAngabenInstitutionContainer that =
+			(LastenausgleichTagesschuleAngabenInstitutionContainer) other;
+		return getInstitution().equals(that.getInstitution())
+			&&
+			Objects.equals(
+				getAngabenDeklaration(),
+				that.getAngabenDeklaration()
+			)
+			&&
+			Objects.equals(
+				getAngabenKorrektur(),
+				that.getAngabenKorrektur()
+			);
 	}
 
 	public void copyForFreigabe() {
 		// Nur moeglich, wenn noch nicht freigegeben und ueberhaupt Daten zum kopieren vorhanden
-		if (status == LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN && angabenDeklaration != null) {
-			angabenKorrektur = new LastenausgleichTagesschuleAngabenInstitution(angabenDeklaration);
+		if (status == LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN
+			&& angabenDeklaration != null) {
+			angabenKorrektur = new LastenausgleichTagesschuleAngabenInstitution(
+				angabenDeklaration
+			);
 		}
 	}
 
@@ -175,7 +208,8 @@ public class LastenausgleichTagesschuleAngabenInstitutionContainer extends Abstr
 
 	@Override
 	public boolean isAntragAbgeschlossen() {
-		return status == LastenausgleichTagesschuleAngabenInstitutionStatus.GEPRUEFT;
+		return status
+			== LastenausgleichTagesschuleAngabenInstitutionStatus.GEPRUEFT;
 	}
 
 	@Nullable
@@ -185,7 +219,8 @@ public class LastenausgleichTagesschuleAngabenInstitutionContainer extends Abstr
 	}
 
 	public boolean isAntragInPruefungGemeinde() {
-		return status == LastenausgleichTagesschuleAngabenInstitutionStatus.IN_PRUEFUNG_GEMEINDE;
+		return status
+			== LastenausgleichTagesschuleAngabenInstitutionStatus.IN_PRUEFUNG_GEMEINDE;
 	}
 
 	public boolean isAntragAtLeastInPruefungGemeinde() {

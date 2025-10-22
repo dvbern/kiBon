@@ -1,0 +1,56 @@
+.admin-view {
+    &.dv-table mat-cell {
+        min-height: 6rem;
+        height: auto;
+    }
+
+    .mat-column-name {
+        flex: 3 !important;
+        white-space: unset;
+    }
+
+    .mat-column-value {
+        flex: 3 !important;
+    }
+
+    /* stylelint-disable-next-line selector-class-pattern */
+
+    .mat-column-timestampErstellt {
+        flex: 1 !important;
+    }
+
+    .mat.column-filter {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    .mat-sort-header {
+        color: #000;
+        font-size: 1.4rem;
+        font-weight: 400;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .mat-sort-header-arrow {
+        height: 1rem !important;
+    }
+
+    .mat-mdc-radio-button .mat-internal-form-field {
+        line-height: inherit !important;
+    }
+
+    input[type='text'],
+    select {
+        background: rgb(240, 240, 240);
+    }
+
+    mat-cell > dv-edit-einstellung {
+        width: 100%;
+
+        dv-date-picker-x {
+            position: relative;
+            top: 1.5rem;
+        }
+    }
+}

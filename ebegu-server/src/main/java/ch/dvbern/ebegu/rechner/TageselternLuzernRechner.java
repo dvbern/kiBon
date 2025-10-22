@@ -8,61 +8,76 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.rechner.rules.RechnerRule;
-import ch.dvbern.ebegu.util.MathUtil;
-
-import javax.annotation.Nonnull;
-import java.math.BigDecimal;
-import java.util.List;
 
 public class TageselternLuzernRechner extends AbstractLuzernRechner {
 
 	//Die Tarife werden im Moment als Konstante gespeichert. Dies wird in Zukunft evtl noch konfigurierbar gemacht.
-	private static final BigDecimal MIN_BETREUUNGSGUTSCHEIN_BABY = BigDecimal.valueOf(1.30);
-	private static final BigDecimal MIN_BETREUUNGSGUTSCHEIN_KIND = BigDecimal.ONE;
+	private static final BigDecimal MIN_BETREUUNGSGUTSCHEIN_BABY = BigDecimal
+		.valueOf(1.30);
+	private static final BigDecimal MIN_BETREUUNGSGUTSCHEIN_KIND =
+		BigDecimal.ONE;
 
 	private boolean isBaby = false;
 	private BigDecimal stuendlicherVorllkostenTarif;
 
-	protected TageselternLuzernRechner(List<RechnerRule> rechnerRulesForGemeinde) {
+	protected TageselternLuzernRechner(
+		List<RechnerRule> rechnerRulesForGemeinde
+	) {
 		super(rechnerRulesForGemeinde);
 	}
 
 	@Override
 	public void calculate(
 		@Nonnull VerfuegungZeitabschnitt verfuegungZeitabschnitt,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
-		isBaby = verfuegungZeitabschnitt.getBgCalculationInputAsiv().isBabyTarif();
-		stuendlicherVorllkostenTarif = verfuegungZeitabschnitt.getBgCalculationInputAsiv().getStuendlicheVollkosten();
+		isBaby = verfuegungZeitabschnitt.getBgCalculationInputAsiv()
+			.isBabyTarif();
+		stuendlicherVorllkostenTarif = verfuegungZeitabschnitt
+			.getBgCalculationInputAsiv()
+			.getStuendlicheVollkosten();
 		super.calculate(verfuegungZeitabschnitt, parameterDTO);
 	}
 
 	@Override
-	protected BigDecimal calculateVollkostenProZeitabschnitt(BigDecimal vollkostenGekuerzt) {
+	protected BigDecimal calculateVollkostenProZeitabschnitt(
+		BigDecimal vollkostenGekuerzt
+	) {
 		return EXACT.multiply(vollkostenGekuerzt, this.verfuegteZeiteinheit);
 	}
 
 	@Override
-	protected BigDecimal calculateGutscheinProZeitabschnitt(BigDecimal gutschein) {
+	protected BigDecimal calculateGutscheinProZeitabschnitt(
+		BigDecimal gutschein
+	) {
 		return EXACT.multiply(gutschein, this.verfuegteZeiteinheit);
 	}
 
 	@Override
 	protected BigDecimal calculateGutscheinVorZuschlagUndSelbstbehalt() {
-		BigDecimal gutscheinProStundeAufgrundEinkommen = calculateBGProZeiteinheitByEinkommen();
-		return calculateGutscheinProZeiteinheitVorZuschlagUndSelbstbehalt(gutscheinProStundeAufgrundEinkommen);
+		BigDecimal gutscheinProStundeAufgrundEinkommen =
+			calculateBGProZeiteinheitByEinkommen();
+		return calculateGutscheinProZeiteinheitVorZuschlagUndSelbstbehalt(
+			gutscheinProStundeAufgrundEinkommen
+		);
 	}
 
 	@Override
@@ -87,7 +102,9 @@ public class TageselternLuzernRechner extends AbstractLuzernRechner {
 
 	@Override
 	protected BigDecimal getVollkostenTarif() {
-		return isBaby ? getInputParameter().getMaxVerguenstigungVorschuleBabyProStd() : getInputParameter().getMaxVerguenstigungVorschuleKindProStd();
+		return isBaby ?
+			getInputParameter().getMaxVerguenstigungVorschuleBabyProStd() :
+			getInputParameter().getMaxVerguenstigungVorschuleKindProStd();
 	}
 
 	@Override
@@ -98,9 +115,12 @@ public class TageselternLuzernRechner extends AbstractLuzernRechner {
 
 	@Override
 	protected BigDecimal calculateSelbstbehaltElternProzent() {
-		BigDecimal prozentuallerSelbstbehaltGemaessFormel = calculateSelbstbehaltProzentenGemaessFormel();
+		BigDecimal prozentuallerSelbstbehaltGemaessFormel =
+			calculateSelbstbehaltProzentenGemaessFormel();
 
-		if(prozentuallerSelbstbehaltGemaessFormel.compareTo(BigDecimal.valueOf(100)) > 0) {
+		if (prozentuallerSelbstbehaltGemaessFormel.compareTo(
+			BigDecimal.valueOf(100)
+		) > 0) {
 			return BigDecimal.valueOf(100);
 		}
 
@@ -109,14 +129,19 @@ public class TageselternLuzernRechner extends AbstractLuzernRechner {
 
 	@Override
 	protected BigDecimal calculateBGProZeiteinheitByEinkommen() {
-		BigDecimal bgProStunde = calculateBetreuungsgutscheinProZeiteinheitAufgrundEinkommenGemaessFormel();
-		return MathUtil.maximum(bgProStunde, getMaximalWertBGProTagAufgrundEinkommen());
+		return calculateBetreuungsgutscheinProZeiteinheitAufgrundEinkommenGemaessFormel();
 	}
 
 	@Override
 	protected BigDecimal getAnzahlZeiteinheitenProMonat() {
-		BigDecimal tageProMonat = EXACT.divide(getInputParameter().getOeffnungstageTFO(), BigDecimal.valueOf(12));
-		return EXACT.multiply(getInputParameter().getOeffnungsstundenTFO(), tageProMonat);
+		BigDecimal tageProMonat = EXACT.divide(
+			getInputParameter().getOeffnungstageTFO(),
+			BigDecimal.valueOf(12)
+		);
+		return EXACT.multiply(
+			getInputParameter().getOeffnungsstundenTFO(),
+			tageProMonat
+		);
 	}
 
 	@Override
@@ -126,7 +151,9 @@ public class TageselternLuzernRechner extends AbstractLuzernRechner {
 
 	@Override
 	protected BigDecimal getMinBetreuungsgutschein() {
-		return  isBaby ? MIN_BETREUUNGSGUTSCHEIN_BABY : MIN_BETREUUNGSGUTSCHEIN_KIND;
+		return isBaby ?
+			MIN_BETREUUNGSGUTSCHEIN_BABY :
+			MIN_BETREUUNGSGUTSCHEIN_KIND;
 	}
 
 	@Override
@@ -134,9 +161,15 @@ public class TageselternLuzernRechner extends AbstractLuzernRechner {
 		@Nonnull BigDecimal gutschein
 	) {
 		// Zusaetzlicher Gutschein Gemeinde
-		gutschein = EXACT.addNullSafe(gutschein, rechnerParameter.getZusaetzlicherGutscheinGemeindeBetrag());
+		gutschein = EXACT.addNullSafe(
+			gutschein,
+			rechnerParameter.getZusaetzlicherGutscheinGemeindeBetrag()
+		);
 		// Zusaetzlicher Baby-Gutschein
-		gutschein = EXACT.addNullSafe(gutschein, rechnerParameter.getZusaetzlicherBabyGutscheinBetrag());
+		gutschein = EXACT.addNullSafe(
+			gutschein,
+			rechnerParameter.getZusaetzlicherBabyGutscheinBetrag()
+		);
 
 		return gutschein;
 	}

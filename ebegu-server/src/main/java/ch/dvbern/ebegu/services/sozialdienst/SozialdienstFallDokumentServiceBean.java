@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.sozialdienst;
@@ -24,28 +24,30 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFall;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFallDokument;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFallDokument_;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.AbstractBaseService;
 import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.SozialdienstFallDokumentService;
-import ch.dvbern.lib.cdipersistence.Persistence;
 
 @Stateless
 @Local(SozialdienstFallDokumentService.class)
-public class SozialdienstFallDokumentServiceBean extends AbstractBaseService implements SozialdienstFallDokumentService {
+public class SozialdienstFallDokumentServiceBean extends AbstractBaseService
+	implements
+	SozialdienstFallDokumentService {
 
 	@Inject
 	private Persistence persistence;
@@ -55,9 +57,14 @@ public class SozialdienstFallDokumentServiceBean extends AbstractBaseService imp
 
 	@Override
 	@Nonnull
-	public Optional<SozialdienstFallDokument> findDokument(@Nonnull String key) {
+	public Optional<SozialdienstFallDokument> findDokument(
+		@Nonnull String key
+	) {
 		Objects.requireNonNull(key, "id muss gesetzt sein");
-		SozialdienstFallDokument doc = persistence.find(SozialdienstFallDokument.class, key);
+		SozialdienstFallDokument doc = persistence.find(
+			SozialdienstFallDokument.class,
+			key
+		);
 		if (doc == null) {
 			return Optional.empty();
 		}
@@ -67,27 +74,43 @@ public class SozialdienstFallDokumentServiceBean extends AbstractBaseService imp
 
 	@Nonnull
 	@Override
-	public List<SozialdienstFallDokument> findDokumente(@Nonnull String sozialdienstFallId) {
-		final SozialdienstFall
-			sozialdienstFall = persistence.find(SozialdienstFall.class, sozialdienstFallId);
+	public List<SozialdienstFallDokument> findDokumente(
+		@Nonnull String sozialdienstFallId
+	) {
+		final SozialdienstFall sozialdienstFall = persistence.find(
+			SozialdienstFall.class,
+			sozialdienstFallId
+		);
 		if (sozialdienstFall == null) {
 			return Collections.emptyList();
 		}
 		authorizer.checkReadAuthorization(sozialdienstFall);
 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<SozialdienstFallDokument> query = cb.createQuery(SozialdienstFallDokument.class);
-		Root<SozialdienstFallDokument> root = query.from(SozialdienstFallDokument.class);
+		final CriteriaQuery<SozialdienstFallDokument> query = cb.createQuery(
+			SozialdienstFallDokument.class
+		);
+		Root<SozialdienstFallDokument> root = query.from(
+			SozialdienstFallDokument.class
+		);
 
-		ParameterExpression<String>
-			sozialdienstFallFormularIdParam = cb.parameter(String.class, "sozialdienstFallId");
+		ParameterExpression<String> sozialdienstFallFormularIdParam = cb
+			.parameter(String.class, "sozialdienstFallId");
 
 		Predicate predicateRueckfoderungFormularId =
-			cb.equal(root.get(SozialdienstFallDokument_.sozialdienstFall).get(
-				AbstractEntity_.id), sozialdienstFallFormularIdParam);
+			cb.equal(
+				root.get(SozialdienstFallDokument_.sozialdienstFall)
+					.get(
+						AbstractEntity_.id
+					),
+				sozialdienstFallFormularIdParam
+			);
 		query.where(predicateRueckfoderungFormularId);
-		query.orderBy(cb.asc(root.get(SozialdienstFallDokument_.timestampUpload)));
-		TypedQuery<SozialdienstFallDokument> q = persistence.getEntityManager().createQuery(query);
+		query.orderBy(
+			cb.asc(root.get(SozialdienstFallDokument_.timestampUpload))
+		);
+		TypedQuery<SozialdienstFallDokument> q = persistence.getEntityManager()
+			.createQuery(query);
 		q.setParameter(sozialdienstFallFormularIdParam, sozialdienstFallId);
 
 		return q.getResultList();
@@ -101,20 +124,29 @@ public class SozialdienstFallDokumentServiceBean extends AbstractBaseService imp
 
 	@Nonnull
 	@Override
-	public SozialdienstFallDokument saveVollmachtDokument(@Nonnull SozialdienstFallDokument sozialdienstFallDokument) {
+	public SozialdienstFallDokument saveVollmachtDokument(
+		@Nonnull SozialdienstFallDokument sozialdienstFallDokument
+	) {
 		Objects.requireNonNull(sozialdienstFallDokument);
-		authorizer.checkWriteAuthorization(sozialdienstFallDokument.getSozialdienstFall());
+		authorizer.checkWriteAuthorization(
+			sozialdienstFallDokument.getSozialdienstFall()
+		);
 
 		sozialdienstFallDokument.setTimestampUpload(LocalDateTime.now());
 
-		final SozialdienstFallDokument mergedRueckforderungDokument = persistence.merge(sozialdienstFallDokument);
+		final SozialdienstFallDokument mergedSozialdienstFallDokument =
+			persistence.merge(sozialdienstFallDokument);
 
-		return mergedRueckforderungDokument;
+		return mergedSozialdienstFallDokument;
 	}
 
 	@Override
-	public void removeDokumenteForSozialdienstFall(@Nonnull String sozialdienstFallId) {
-		for(SozialdienstFallDokument dokument: findDokumente(sozialdienstFallId)) {
+	public void removeDokumenteForSozialdienstFall(
+		@Nonnull String sozialdienstFallId
+	) {
+		for (SozialdienstFallDokument dokument : findDokumente(
+			sozialdienstFallId
+		)) {
 			removeDokument(dokument);
 		}
 	}

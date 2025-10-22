@@ -23,7 +23,8 @@ import com.github.oxo42.stateless4j.triggers.TriggerWithParameters1;
 /**
  * Um Typesafety der Parameter zu garantieren ist diese Klasse noetig
  */
-public final class GesuchEventWithParam extends TriggerWithParameters1<Gesuch, AntragStatus, AntragEvents> {
+public final class GesuchEventWithParam extends
+	TriggerWithParameters1<Gesuch, AntragStatus, AntragEvents> {
 	private GesuchEventWithParam(AntragEvents underlyingTrigger) {
 		super(underlyingTrigger, Gesuch.class);
 	}
@@ -32,4 +33,3 @@ public final class GesuchEventWithParam extends TriggerWithParameters1<Gesuch, A
 		return new GesuchEventWithParam(event);
 	}
 }
-

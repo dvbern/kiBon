@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import * as moment from 'moment';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
+import moment from 'moment';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 
 export interface DVAntragListItem {
     fallNummer?: number;
@@ -40,6 +40,7 @@ export interface DVAntragListItem {
     isSozialdienst?: boolean;
     antragAbgeschlossen?: boolean;
     verantwortlicherGemeindeantraege?: TSBenutzerNoDetails;
+    gemeindeAntragFirstEinreichedatum?: string;
 
     hasBesitzer?(): boolean;
 }

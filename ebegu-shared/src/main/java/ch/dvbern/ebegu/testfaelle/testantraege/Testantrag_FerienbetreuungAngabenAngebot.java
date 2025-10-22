@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle.testantraege;
@@ -29,7 +29,9 @@ public class Testantrag_FerienbetreuungAngabenAngebot {
 
 	private FerienbetreuungAngabenAngebot angebot;
 
-	public Testantrag_FerienbetreuungAngabenAngebot(FerienbetreuungAngabenStatus status) {
+	public Testantrag_FerienbetreuungAngabenAngebot(
+		FerienbetreuungAngabenStatus status
+	) {
 		this.angebot = new FerienbetreuungAngabenAngebot();
 		this.angebot.setAngebot("Ferienbetreuung");
 		this.angebot.setAngebotKontaktpersonVorname("Lena");
@@ -39,12 +41,13 @@ public class Testantrag_FerienbetreuungAngabenAngebot {
 		testAdresse.setPlz("3000");
 		testAdresse.setOrt("Bern");
 		this.angebot.setAngebotAdresse(testAdresse);
-		this.angebot.setAnzahlFerienwochenFruehlingsferien(new BigDecimal(2));
+		BigDecimal two = BigDecimal.valueOf(2);
+		this.angebot.setAnzahlFerienwochenFruehlingsferien(two);
 		this.angebot.setAnzahlFerienwochenSommerferien(new BigDecimal(5));
 		this.angebot.setAnzahlFerienwochenHerbstferien(new BigDecimal(3));
-		this.angebot.setAnzahlFerienwochenWinterferien(new BigDecimal(2));
+		this.angebot.setAnzahlFerienwochenWinterferien(two);
 		this.angebot.setAnzahlFerienwochenSportferien(BigDecimal.ONE);
-		this.angebot.setAnzahlTage(new BigDecimal(2));
+		this.angebot.setAnzahlTage(two);
 
 		this.angebot.setLeitungDurchPersonMitAusbildung(true);
 		this.angebot.setAnzahlKinderAngemessen(true);
@@ -57,8 +60,10 @@ public class Testantrag_FerienbetreuungAngabenAngebot {
 		this.angebot.setGemeindeFuehrtAngebotSelber(true);
 		this.angebot.setGemeindeBeauftragtExterneAnbieter(false);
 
-		if(status == FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE) {
-			this.angebot.setStatus(FerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE);
+		if (status == FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE) {
+			this.angebot.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
 		} else {
 			this.angebot.setStatus(FerienbetreuungFormularStatus.ABGESCHLOSSEN);
 		}

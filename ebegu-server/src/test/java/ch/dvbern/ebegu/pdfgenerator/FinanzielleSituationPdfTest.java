@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -79,7 +79,8 @@ import static org.hamcrest.Matchers.stringContainsInOrder;
 @ExtendWith(SnapshotExtension.class)
 class FinanzielleSituationPdfTest {
 
-	private static final String PATH_PREFIX = FileUtils.getTempDirectoryPath() + "/kiBon/FinanzielleSituation/";
+	private static final String PATH_PREFIX = FileUtils.getTempDirectoryPath()
+		+ "/kiBon/FinanzielleSituation/";
 	private static final Pattern PATTERN = Pattern.compile("\\r");
 
 	@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized" })
@@ -87,7 +88,7 @@ class FinanzielleSituationPdfTest {
 
 	@BeforeAll
 	static void beforeAll() throws IOException {
-		 FileUtils.deleteDirectory(new File(PATH_PREFIX));
+		FileUtils.deleteDirectory(new File(PATH_PREFIX));
 
 		Arrays.stream(MandantIdentifier.values())
 			.map(FinanzielleSituationPdfTest::getOutputPath)
@@ -102,11 +103,19 @@ class FinanzielleSituationPdfTest {
 	@EnumSource(value = MandantIdentifier.class, mode = Mode.MATCH_ALL)
 	void testAlleinstehend(MandantIdentifier identifier) {
 		Mandant mandant = MandantFactory.fromIdentifier(identifier);
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(mandant);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(
+			mandant
+		);
 		Gemeinde gemeinde = TestDataUtil.createGemeindeLondon(mandant);
 
-		TestDataInstitutionStammdatenBuilder institution = new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
-		var testFall = new Testfall01_WaeltiDagmar(gesuchsperiode, true, gemeinde, institution);
+		TestDataInstitutionStammdatenBuilder institution =
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
+		var testFall = new Testfall01_WaeltiDagmar(
+			gesuchsperiode,
+			true,
+			gemeinde,
+			institution
+		);
 		Gesuch gesuch = testFall.setupGesuch();
 
 		File pdf = generatePdf(gesuch, "WaeltiDagmar.pdf");
@@ -115,7 +124,12 @@ class FinanzielleSituationPdfTest {
 		expect.scenario(identifier.name())
 			.toMatchSnapshot(textForSnapshot(text));
 
-		assertThat(text, stringContainsInOrder("Berechnung der finanziellen Verhältnisse"));
+		assertThat(
+			text,
+			stringContainsInOrder(
+				"Berechnung der finanziellen Verhältnisse"
+			)
+		);
 	}
 
 	@SnapshotName("finsit-testVerheirated")
@@ -123,19 +137,33 @@ class FinanzielleSituationPdfTest {
 	@EnumSource(value = MandantIdentifier.class, mode = Mode.MATCH_ALL)
 	void testVerheirated(MandantIdentifier identifier) {
 		Mandant mandant = MandantFactory.fromIdentifier(identifier);
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(mandant);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(
+			mandant
+		);
 		Gemeinde gemeinde = TestDataUtil.createGemeindeLondon(mandant);
 
-		TestDataInstitutionStammdatenBuilder institution = new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
-		var testFall = new Testfall02_FeutzYvonne(gesuchsperiode, true, gemeinde, institution);
+		TestDataInstitutionStammdatenBuilder institution =
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
+		var testFall = new Testfall02_FeutzYvonne(
+			gesuchsperiode,
+			true,
+			gemeinde,
+			institution
+		);
 		Gesuch gesuch = testFall.setupGesuch();
 
 		File pdf = generatePdf(gesuch, "FeutzYvonne.pdf");
 		String text = PdfUnitTestUtil.getText(pdf);
 
-		expect.scenario(identifier.name()).toMatchSnapshot(textForSnapshot(text));
+		expect.scenario(identifier.name())
+			.toMatchSnapshot(textForSnapshot(text));
 
-		assertThat(text, stringContainsInOrder("Berechnung der finanziellen Verhältnisse"));
+		assertThat(
+			text,
+			stringContainsInOrder(
+				"Berechnung der finanziellen Verhältnisse"
+			)
+		);
 	}
 
 	@Nested
@@ -144,7 +172,8 @@ class FinanzielleSituationPdfTest {
 		@Nested
 		class WhenSingleGesuchsteller {
 
-			@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized", "InnerClassFieldHidesOuterClassField" })
+			@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized",
+				"InnerClassFieldHidesOuterClassField" })
 			private Expect expect;
 
 			@SnapshotName("finsit-schwyz-single-veranlagt")
@@ -160,14 +189,20 @@ class FinanzielleSituationPdfTest {
 
 				expect.toMatchSnapshot(textForSnapshot(text));
 
-				assertThat(text, stringContainsInOrder(
-					"Berechnung der finanziellen Verhältnisse",
-					"Einkünfte", "Tim Tester",
-					"Reineinkommen", "88’000.00",
-					"Einkäufe berufliche Vorsorge (BVG / 2. Säule)", "5’000.00",
-					"Abzüge",
-					"Ausserordentlicher Liegenschaftsaufwand"
-				));
+				assertThat(
+					text,
+					stringContainsInOrder(
+						"Berechnung der finanziellen Verhältnisse",
+						"Einkünfte",
+						"Tim Tester",
+						"Reineinkommen",
+						"88’000.00",
+						"Einkäufe berufliche Vorsorge (BVG / 2. Säule)",
+						"5’000.00",
+						"Abzüge",
+						"Ausserordentlicher Liegenschaftsunterhalt"
+					)
+				);
 			}
 
 			@SnapshotName("finsit-schwyz-single-quellenbesteuert")
@@ -175,7 +210,9 @@ class FinanzielleSituationPdfTest {
 			void alleinerziehend_quellenbesteuert() {
 				var gesuch = setupSingleGesuchsteller(
 					SchwyzTestfallDataProvider::createAlleinerziehend,
-					s -> s.createFinanzielleSituationQuellenbesteuert(BigDecimal.valueOf(123_456))
+					s -> s.createFinanzielleSituationQuellenbesteuert(
+						BigDecimal.valueOf(123_456)
+					)
 				);
 
 				File pdf = generatePdf(gesuch, "single-quellenbesteuert.pdf");
@@ -183,10 +220,13 @@ class FinanzielleSituationPdfTest {
 
 				expect.toMatchSnapshot(textForSnapshot(text));
 
-				assertThat(text, stringContainsInOrder(
-					"Berechnung der finanziellen Verhältnisse",
-					"Bruttolohn"
-				));
+				assertThat(
+					text,
+					stringContainsInOrder(
+						"Berechnung der finanziellen Verhältnisse",
+						"Bruttolohn"
+					)
+				);
 			}
 
 			Gesuch setupSingleGesuchsteller(
@@ -194,9 +234,13 @@ class FinanzielleSituationPdfTest {
 				Function<SchwzyTestData, FinanzielleSituation> finSit
 			) {
 				var gesuch = setUpTestgesuch();
-				var schwyzTestData = new SchwzyTestData(gesuch.getGesuchsperiode());
+				var schwyzTestData = new SchwzyTestData(
+					gesuch.getGesuchsperiode()
+				);
 
-				var gesuchsteller = createGesuchsteller(finSit.apply(schwyzTestData));
+				var gesuchsteller = createGesuchsteller(
+					finSit.apply(schwyzTestData)
+				);
 				gesuch.setGesuchsteller1(gesuchsteller);
 
 				addFamiliensituation(famSit.apply(schwyzTestData), gesuch);
@@ -208,7 +252,8 @@ class FinanzielleSituationPdfTest {
 		@Nested
 		class WhenMultipleGesuchsteller {
 
-			@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized", "InnerClassFieldHidesOuterClassField" })
+			@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized",
+				"InnerClassFieldHidesOuterClassField" })
 			private Expect expect;
 
 			@SnapshotName("finsit-schwyz-gemeinsam-veranlagt")
@@ -223,14 +268,23 @@ class FinanzielleSituationPdfTest {
 
 				expect.toMatchSnapshot(textForSnapshot(text));
 
-				assertThat(text, stringContainsInOrder("Berechnung der finanziellen Verhältnisse"));
+				assertThat(
+					text,
+					stringContainsInOrder(
+						"Berechnung der finanziellen Verhältnisse"
+					)
+				);
 			}
 
 			@Test
 			void beideQuellenbesteuert() {
 				var gesuch = setupIndividuelleSteuererklaerungen(
-					s -> s.createFinanzielleSituationQuellenbesteuert(BigDecimal.valueOf(33_333)),
-					s -> s.createFinanzielleSituationQuellenbesteuert(BigDecimal.valueOf(55_555))
+					s -> s.createFinanzielleSituationQuellenbesteuert(
+						BigDecimal.valueOf(33_333)
+					),
+					s -> s.createFinanzielleSituationQuellenbesteuert(
+						BigDecimal.valueOf(55_555)
+					)
 				);
 
 				File pdf = generatePdf(gesuch, "beideQuellenbesteuert.pdf");
@@ -238,25 +292,39 @@ class FinanzielleSituationPdfTest {
 
 				expect.toMatchSnapshot(textForSnapshot(text));
 
-				assertThat(text, stringContainsInOrder(
-					"Berechnung der finanziellen Verhältnisse",
-					"Einkünfte", "Tim Tester",
-					"Bruttolohn", "33’333.00",
-					"20% Bruttopauschale vom Bruttoeinkommen", "6’667.00",
-					"Massgebendes Einkommen in CHF", "26’666.00",
-					"Einkünfte", "Hanna Tester",
-					"Bruttolohn", "55’555.00",
-					"20% Bruttopauschale vom Bruttoeinkommen", "11’111.00",
-					"Massgebendes Einkommen in CHF", "44’444.00",
-					"Zusammenzug",
-					"Massgebendes Einkommen in CHF", "71’110.00"
-				));
+				assertThat(
+					text,
+					stringContainsInOrder(
+						"Berechnung der finanziellen Verhältnisse",
+						"Einkünfte",
+						"Tim Tester",
+						"Bruttolohn",
+						"33’333.00",
+						"20% Bruttopauschale vom Bruttoeinkommen",
+						"6’667.00",
+						"Massgebendes Einkommen in CHF",
+						"26’666.00",
+						"Einkünfte",
+						"Hanna Tester",
+						"Bruttolohn",
+						"55’555.00",
+						"20% Bruttopauschale vom Bruttoeinkommen",
+						"11’111.00",
+						"Massgebendes Einkommen in CHF",
+						"44’444.00",
+						"Zusammenzug",
+						"Massgebendes Einkommen in CHF",
+						"71’110.00"
+					)
+				);
 			}
 
 			@Test
 			void mixed() {
 				var gesuch = setupIndividuelleSteuererklaerungen(
-					s -> s.createFinanzielleSituationQuellenbesteuert(BigDecimal.valueOf(80_000)),
+					s -> s.createFinanzielleSituationQuellenbesteuert(
+						BigDecimal.valueOf(80_000)
+					),
 					SchwzyTestData::createFinanzielleSituationVeranlagt
 				);
 
@@ -265,20 +333,30 @@ class FinanzielleSituationPdfTest {
 
 				expect.toMatchSnapshot(textForSnapshot(text));
 
-				assertThat(text, stringContainsInOrder("Berechnung der finanziellen Verhältnisse"));
+				assertThat(
+					text,
+					stringContainsInOrder(
+						"Berechnung der finanziellen Verhältnisse"
+					)
+				);
 			}
 
 			@Test
 			void withEinkommensverschlaechterung() {
 				var gesuch = setupIndividuelleSteuererklaerungen(
 					SchwzyTestData::createFinanzielleSituationVeranlagt,
-					s -> s.createFinanzielleSituationQuellenbesteuert(BigDecimal.valueOf(80_000))
+					s -> s.createFinanzielleSituationQuellenbesteuert(
+						BigDecimal.valueOf(80_000)
+					)
 				);
 
 				EinkommensverschlechterungContainer ekv1 =
-					addEinkommensVerschlechterung(requireNonNull(gesuch.getGesuchsteller1()));
+					addEinkommensVerschlechterung(
+						requireNonNull(gesuch.getGesuchsteller1())
+					);
 
-				Einkommensverschlechterung ekvJABasisJahrPlus1 = new Einkommensverschlechterung();
+				Einkommensverschlechterung ekvJABasisJahrPlus1 =
+					new Einkommensverschlechterung();
 				SchwyzTestfallDataProvider.applyVerfuegt(
 					ekvJABasisJahrPlus1,
 					BigDecimal.valueOf(90_000),
@@ -288,53 +366,62 @@ class FinanzielleSituationPdfTest {
 				);
 				ekv1.setEkvJABasisJahrPlus1(ekvJABasisJahrPlus1);
 
-				Einkommensverschlechterung ekvJABasisJahrPlus2 = new Einkommensverschlechterung();
-				SchwyzTestfallDataProvider.applyVerfuegt(
-					ekvJABasisJahrPlus2,
-					BigDecimal.valueOf(85_000),
-					BigDecimal.valueOf(70_000),
-					BigDecimal.valueOf(500),
-					BigDecimal.valueOf(2_000)
-				);
-				ekv1.setEkvJABasisJahrPlus2(ekvJABasisJahrPlus2);
-
 				EinkommensverschlechterungContainer ekv2 =
-					addEinkommensVerschlechterung(requireNonNull(gesuch.getGesuchsteller2()));
+					addEinkommensVerschlechterung(
+						requireNonNull(gesuch.getGesuchsteller2())
+					);
 
-				Einkommensverschlechterung ekv2JABasisJahrPlus1 = new Einkommensverschlechterung();
+				Einkommensverschlechterung ekv2JABasisJahrPlus1 =
+					new Einkommensverschlechterung();
 				ekv2JABasisJahrPlus1.setBruttoLohn(BigDecimal.valueOf(70_000));
 				ekv2.setEkvJABasisJahrPlus1(ekv2JABasisJahrPlus1);
 
-				Einkommensverschlechterung ekv2JABasisJahrPlus2 = new Einkommensverschlechterung();
-				ekv2JABasisJahrPlus2.setBruttoLohn(BigDecimal.valueOf(74_000));
-				ekv2.setEkvJABasisJahrPlus2(ekv2JABasisJahrPlus2);
-
-				EinkommensverschlechterungInfoContainer infoContainer = new EinkommensverschlechterungInfoContainer();
-				EinkommensverschlechterungInfo info = new EinkommensverschlechterungInfo();
+				EinkommensverschlechterungInfoContainer infoContainer =
+					new EinkommensverschlechterungInfoContainer();
+				EinkommensverschlechterungInfo info =
+					new EinkommensverschlechterungInfo();
 				info.setEkvFuerBasisJahrPlus1(true);
-				info.setEkvFuerBasisJahrPlus2(true);
+				info.setEkvFuerBasisJahrPlus2(false);
 				infoContainer.setEinkommensverschlechterungInfoJA(info);
-				gesuch.setEinkommensverschlechterungInfoContainer(infoContainer);
+				gesuch.setEinkommensverschlechterungInfoContainer(
+					infoContainer
+				);
 
-				File pdf = generatePdf(gesuch, "einkommensverschlaechterung.pdf");
+				File pdf = generatePdf(
+					gesuch,
+					"einkommensverschlaechterung.pdf"
+				);
 				String text = PdfUnitTestUtil.getText(pdf);
 
 				expect.toMatchSnapshot(textForSnapshot(text));
 
-				assertThat(text, stringContainsInOrder("Berechnung der finanziellen Verhältnisse"));
+				assertThat(
+					text,
+					stringContainsInOrder(
+						"Berechnung der finanziellen Verhältnisse"
+					)
+				);
 			}
 
 			Gesuch setupGemeinsameSteuererklaerung(
 				Function<SchwzyTestData, FinanzielleSituation> finSitGs
 			) {
-				return setupMultipleGesuchsteller(true, finSitGs, a -> Optional.empty());
+				return setupMultipleGesuchsteller(
+					true,
+					finSitGs,
+					a -> Optional.empty()
+				);
 			}
 
 			Gesuch setupIndividuelleSteuererklaerungen(
 				Function<SchwzyTestData, FinanzielleSituation> finSitGs1,
 				Function<SchwzyTestData, FinanzielleSituation> finSitGs2
 			) {
-				return setupMultipleGesuchsteller(false, finSitGs1, finSitGs2.andThen(Optional::of));
+				return setupMultipleGesuchsteller(
+					false,
+					finSitGs1,
+					finSitGs2.andThen(Optional::of)
+				);
 			}
 
 			Gesuch setupMultipleGesuchsteller(
@@ -343,27 +430,42 @@ class FinanzielleSituationPdfTest {
 				Function<SchwzyTestData, Optional<FinanzielleSituation>> finSitGs2
 			) {
 				var gesuch = setUpTestgesuch();
-				var schwyzTestData = new SchwzyTestData(gesuch.getGesuchsperiode());
+				var schwyzTestData = new SchwzyTestData(
+					gesuch.getGesuchsperiode()
+				);
 
-				gesuch.setGesuchsteller1(createGesuchsteller(finSitGs1.apply(schwyzTestData)));
+				gesuch.setGesuchsteller1(
+					createGesuchsteller(finSitGs1.apply(schwyzTestData))
+				);
 
-				GesuchstellerContainer gesuchsteller2 = finSitGs2.apply(schwyzTestData)
+				GesuchstellerContainer gesuchsteller2 = finSitGs2.apply(
+					schwyzTestData
+				)
 					.map(SchwyzTest.this::createGesuchsteller)
-					.orElseGet(TestDataUtil::createDefaultGesuchstellerContainer);
+					.orElseGet(
+						TestDataUtil::createDefaultGesuchstellerContainer
+					);
 				gesuchsteller2.getGesuchstellerJA().setVorname("Hanna");
 				gesuch.setGesuchsteller2(gesuchsteller2);
 
 				// nur in diesem Fall darf es 2 Gesuchsteller geben (Verheiratet / Konkubinat ist ebenbürtig)
-				Familiensituation verheiratet = schwyzTestData.createVerheiratet();
-				verheiratet.setGemeinsameSteuererklaerung(gemeinsameSteuererklaerung);
+				Familiensituation verheiratet = schwyzTestData
+					.createVerheiratet();
+				verheiratet.setGemeinsameSteuererklaerung(
+					gemeinsameSteuererklaerung
+				);
 				addFamiliensituation(verheiratet, gesuch);
 
 				return gesuch;
 			}
 		}
 
-		private void addFamiliensituation(Familiensituation familiensituation, Gesuch gesuch) {
-			FamiliensituationContainer famSitContainer = new FamiliensituationContainer();
+		private void addFamiliensituation(
+			Familiensituation familiensituation,
+			Gesuch gesuch
+		) {
+			FamiliensituationContainer famSitContainer =
+				new FamiliensituationContainer();
 			famSitContainer.setFamiliensituationJA(familiensituation);
 
 			gesuch.setFamiliensituationContainer(famSitContainer);
@@ -372,11 +474,18 @@ class FinanzielleSituationPdfTest {
 		private Gesuch setUpTestgesuch() {
 			Mandant mandant = TestDataUtil.getMandantSchwyz();
 
-			Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718(mandant);
+			Gesuchsperiode gesuchsperiode = TestDataUtil
+				.createGesuchsperiode1718(mandant);
 			Gemeinde gemeinde = TestDataUtil.createGemeindeLondon(mandant);
 
-			TestDataInstitutionStammdatenBuilder institution = new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
-			var testFall = new Testfall_EmptyGesuch(gesuchsperiode, true, gemeinde, institution);
+			TestDataInstitutionStammdatenBuilder institution =
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
+			var testFall = new Testfall_EmptyGesuch(
+				gesuchsperiode,
+				true,
+				gemeinde,
+				institution
+			);
 
 			return testFall.setupGesuch();
 		}
@@ -387,8 +496,11 @@ class FinanzielleSituationPdfTest {
 				super(gesuchsperiode);
 			}
 
-			FinanzielleSituation createFinanzielleSituationQuellenbesteuert(BigDecimal bruttolohn) {
-				FinanzielleSituation finanzielleSituation = new FinanzielleSituation();
+			FinanzielleSituation createFinanzielleSituationQuellenbesteuert(
+				BigDecimal bruttolohn
+			) {
+				FinanzielleSituation finanzielleSituation =
+					new FinanzielleSituation();
 				finanzielleSituation.setQuellenbesteuert(true);
 				finanzielleSituation.setBruttoLohn(bruttolohn);
 
@@ -398,26 +510,40 @@ class FinanzielleSituationPdfTest {
 			FinanzielleSituation createFinanzielleSituationVeranlagt() {
 				BigDecimal vermoegen = BigDecimal.valueOf(123_456);
 				BigDecimal einkommen = BigDecimal.valueOf(88_000);
-				var finanzielleSituation = createFinanzielleSituation(vermoegen, einkommen);
-				finanzielleSituation.setEinkaeufeVorsorge(BigDecimal.valueOf(5_000));
-				finanzielleSituation.setAbzuegeLiegenschaft(BigDecimal.valueOf(1_000));
+				var finanzielleSituation = createFinanzielleSituation(
+					vermoegen,
+					einkommen
+				);
+				finanzielleSituation.setEinkaeufeVorsorge(
+					BigDecimal.valueOf(5_000)
+				);
+				finanzielleSituation.setAbzuegeLiegenschaft(
+					BigDecimal.valueOf(1_000)
+				);
 
 				return finanzielleSituation;
 			}
 		}
 
-		GesuchstellerContainer createGesuchsteller(FinanzielleSituation finSit) {
-			GesuchstellerContainer gesuchsteller = TestDataUtil.createDefaultGesuchstellerContainer();
+		GesuchstellerContainer createGesuchsteller(
+			FinanzielleSituation finSit
+		) {
+			GesuchstellerContainer gesuchsteller = TestDataUtil
+				.createDefaultGesuchstellerContainer();
 
-			FinanzielleSituationContainer finSitContainer = new FinanzielleSituationContainer();
+			FinanzielleSituationContainer finSitContainer =
+				new FinanzielleSituationContainer();
 			finSitContainer.setFinanzielleSituationJA(finSit);
 			gesuchsteller.setFinanzielleSituationContainer(finSitContainer);
 
 			return gesuchsteller;
 		}
 
-		EinkommensverschlechterungContainer addEinkommensVerschlechterung(GesuchstellerContainer gesuchsteller) {
-			EinkommensverschlechterungContainer ekvContainer = new EinkommensverschlechterungContainer();
+		EinkommensverschlechterungContainer addEinkommensVerschlechterung(
+			GesuchstellerContainer gesuchsteller
+		) {
+			EinkommensverschlechterungContainer ekvContainer =
+				new EinkommensverschlechterungContainer();
 			gesuchsteller.setEinkommensverschlechterungContainer(ekvContainer);
 
 			return ekvContainer;
@@ -430,19 +556,33 @@ class FinanzielleSituationPdfTest {
 		// there are no easy-to-use Mandant rules for test cases, so we create our own...
 		Verfuegung verfuegung = new Verfuegung();
 		VerfuegungZeitabschnitt single =
-			new VerfuegungZeitabschnitt(new DateRange(gesuchsperiode.getGueltigkeit().getGueltigAb()).withFullMonths());
-		single.getRelevantBgCalculationResult().setEinkommensjahr(gesuchsperiode.getBasisJahr());
+			new VerfuegungZeitabschnitt(
+				new DateRange(
+					gesuchsperiode.getGueltigkeit().getGueltigAb()
+				).withFullMonths()
+			);
+		single.getRelevantBgCalculationResult()
+			.setEinkommensjahr(gesuchsperiode.getBasisJahr());
 
 		verfuegung.setZeitabschnitte(Collections.singletonList(single));
 
-		GemeindeStammdaten gemeindeStammdaten = TestDataUtil.createGemeindeStammdaten(gesuch.extractGemeinde());
+		GemeindeStammdaten gemeindeStammdaten = TestDataUtil
+			.createGemeindeStammdaten(gesuch.extractGemeinde());
 		var generator =
-			FinanzielleSituationPdfGeneratorFactory.getGenerator(gesuch, verfuegung, gemeindeStammdaten,
-				Constants.START_OF_TIME);
-		MandantIdentifier mandant = gesuch.extractMandant().getMandantIdentifier();
+			FinanzielleSituationPdfGeneratorFactory.getGenerator(
+				gesuch,
+				verfuegung,
+				gemeindeStammdaten,
+				Constants.START_OF_TIME
+			);
+		MandantIdentifier mandant = gesuch.extractMandant()
+			.getMandantIdentifier();
 
 		try {
-			Path path = Path.of(getOutputPath(mandant).toString(), dokumentname);
+			Path path = Path.of(
+				getOutputPath(mandant).toString(),
+				dokumentname
+			);
 			generator.generate(Files.newOutputStream(path));
 
 			return path.toFile();
@@ -457,7 +597,12 @@ class FinanzielleSituationPdfTest {
 
 	@Nonnull
 	private String textForSnapshot(String text) {
-		return PATTERN.matcher(text.replaceAll(Constants.DATE_FORMATTER.format(LocalDate.now()), "<TODAY>"))
+		return PATTERN.matcher(
+			text.replaceAll(
+				Constants.DATE_FORMATTER.format(LocalDate.now()),
+				"<TODAY>"
+			)
+		)
 			.replaceAll("");
 	}
 }

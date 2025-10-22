@@ -15,12 +15,12 @@
 
 package ch.dvbern.ebegu.batch.jobs.report;
 
-import javax.batch.api.listener.AbstractStepListener;
-import javax.batch.runtime.context.JobContext;
-import javax.batch.runtime.context.StepContext;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.batch.api.listener.AbstractStepListener;
+import jakarta.batch.runtime.context.JobContext;
+import jakarta.batch.runtime.context.StepContext;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,9 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class ReportJobStepListener extends AbstractStepListener {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ReportJobStepListener.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		ReportJobStepListener.class
+	);
 
 	@Inject
 	private JobContext jobCtx;
@@ -39,13 +41,19 @@ public class ReportJobStepListener extends AbstractStepListener {
 
 	@Override
 	public void beforeStep() {
-		LOG.info("ReportJobStepListener started, job: {}, step: {}",
-			jobCtx.getExecutionId(), stepCtx.getStepExecutionId());
+		LOG.info(
+			"ReportJobStepListener started, job: {}, step: {}",
+			jobCtx.getExecutionId(),
+			stepCtx.getStepExecutionId()
+		);
 	}
 
 	@Override
 	public void afterStep() {
-		LOG.info("ReportJobStepListener finished, job: {}, step: {}",
-			jobCtx.getExecutionId(), stepCtx.getStepExecutionId());
+		LOG.info(
+			"ReportJobStepListener finished, job: {}, step: {}",
+			jobCtx.getExecutionId(),
+			stepCtx.getStepExecutionId()
+		);
 	}
 }

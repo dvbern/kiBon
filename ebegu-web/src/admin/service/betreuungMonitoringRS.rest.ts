@@ -19,10 +19,10 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {TSBetreuungMonitoring} from '../../models/TSBetreuungMonitoring';
 import {TSExternalClient} from '../../models/TSExternalClient';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 
 @Injectable({

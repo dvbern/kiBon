@@ -32,15 +32,23 @@ import ch.dvbern.ebegu.entities.Betreuungspensum;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
 import ch.dvbern.ebegu.entities.Eingewoehnung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 
 public class EingewoehnungAbschnittRule extends AbstractAbschnittRule {
 
-
-	public EingewoehnungAbschnittRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.BETREUUNGSPENSUM, RuleType.GRUNDREGEL_DATA, RuleValidity.ASIV, validityPeriod, locale);
+	public EingewoehnungAbschnittRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.BETREUUNGSPENSUM,
+			RuleType.GRUNDREGEL_DATA,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -50,14 +58,19 @@ public class EingewoehnungAbschnittRule extends AbstractAbschnittRule {
 
 	@Nonnull
 	@Override
-	@SuppressWarnings("PMD.NcssMethodCount")
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
 		Betreuung betreuung = (Betreuung) platz;
-		Set<BetreuungspensumContainer> betreuungspensen = betreuung.getBetreuungspensumContainers();
-
+		Set<BetreuungspensumContainer> betreuungspensen = betreuung
+			.getBetreuungspensumContainers();
 
 		return betreuungspensen.stream()
-			.map(b -> createVerfuegungsZeitabschnittIfEingewoehnung(b.getBetreuungspensumJA()))
+			.map(
+				b -> createVerfuegungsZeitabschnittIfEingewoehnung(
+					b.getBetreuungspensumJA()
+				)
+			)
 			.filter(Objects::nonNull)
 			.collect(Collectors.toList());
 	}
@@ -70,7 +83,10 @@ public class EingewoehnungAbschnittRule extends AbstractAbschnittRule {
 			return null;
 		}
 
-		return toVerfuegungZeitabschnitt(betreuungspensum.getEingewoehnung(), betreuungspensum.getGueltigkeit());
+		return toVerfuegungZeitabschnitt(
+			betreuungspensum.getEingewoehnung(),
+			betreuungspensum.getGueltigkeit()
+		);
 	}
 
 	@Nonnull
@@ -78,24 +94,42 @@ public class EingewoehnungAbschnittRule extends AbstractAbschnittRule {
 		@Nonnull Eingewoehnung eingewoehnung,
 		@Nonnull DateRange gueltigkeitBetreuungspensum
 	) {
-		DateRange gueltigkeit = calculateGueltigkeitForEingewoehnungZa(gueltigkeitBetreuungspensum);
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
+		DateRange gueltigkeit = calculateGueltigkeitForEingewoehnungZa(
+			gueltigkeitBetreuungspensum
+		);
+		VerfuegungZeitabschnitt zeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
 		zeitabschnitt.setEingewoehnungKosten(eingewoehnung.getKosten());
-		zeitabschnitt.getBgCalculationInputAsiv().addBemerkung(MsgKey.EINGEWOEHUNG_KOSTEN, getLocale());
+		zeitabschnitt.getBgCalculationInputAsiv()
+			.addBemerkung(MsgKey.EINGEWOEHUNG_KOSTEN, getLocale());
 		return zeitabschnitt;
 	}
 
 	@Nonnull
-	private DateRange calculateGueltigkeitForEingewoehnungZa(DateRange gueltigkeitBetreuungspensum) {
+	private DateRange calculateGueltigkeitForEingewoehnungZa(
+		DateRange gueltigkeitBetreuungspensum
+	) {
 		LocalDate gueltigBis =
-			isGueltigAbAndGueltigBisInSameMonth(gueltigkeitBetreuungspensum) ?
+			isGueltigAbAndGueltigBisInSameMonthAndYear(
+				gueltigkeitBetreuungspensum
+			) ?
 				gueltigkeitBetreuungspensum.getGueltigBis() :
-				gueltigkeitBetreuungspensum.getGueltigAb().with(TemporalAdjusters.lastDayOfMonth());
+				gueltigkeitBetreuungspensum.getGueltigAb()
+					.with(TemporalAdjusters.lastDayOfMonth());
 
-		return new DateRange(gueltigkeitBetreuungspensum.getGueltigAb(), gueltigBis);
+		return new DateRange(
+			gueltigkeitBetreuungspensum.getGueltigAb(),
+			gueltigBis
+		);
 	}
 
-	private boolean isGueltigAbAndGueltigBisInSameMonth(DateRange gueltigkeit) {
-		return gueltigkeit.getGueltigAb().getMonth() == gueltigkeit.getGueltigBis().getMonth();
+	private boolean isGueltigAbAndGueltigBisInSameMonthAndYear(
+		DateRange gueltigkeit
+	) {
+		return gueltigkeit.getGueltigAb().getYear()
+			== gueltigkeit.getGueltigBis().getYear()
+			&& gueltigkeit.getGueltigAb().getMonth()
+				== gueltigkeit.getGueltigBis().getMonth();
 	}
+
 }

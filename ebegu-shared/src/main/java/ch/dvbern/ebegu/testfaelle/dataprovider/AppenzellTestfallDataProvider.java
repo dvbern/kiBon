@@ -12,7 +12,8 @@ import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 
-public class AppenzellTestfallDataProvider extends AbstractTestfallDataProvider {
+public class AppenzellTestfallDataProvider extends
+	AbstractTestfallDataProvider {
 
 	protected AppenzellTestfallDataProvider(Gesuchsperiode gesuchsperiode) {
 		super(gesuchsperiode);
@@ -20,17 +21,22 @@ public class AppenzellTestfallDataProvider extends AbstractTestfallDataProvider 
 
 	@Override
 	public Familiensituation createVerheiratet() {
-		Familiensituation familiensituation = createDefaultFieldsOfFamiliensituation();
+		Familiensituation familiensituation =
+			createDefaultFieldsOfFamiliensituation();
 		familiensituation.setFamilienstatus(EnumFamilienstatus.APPENZELL);
 		familiensituation.setGeteilteObhut(Boolean.TRUE);
-		familiensituation.setGemeinsamerHaushaltMitObhutsberechtigterPerson(Boolean.TRUE);
+		familiensituation.setGemeinsamerHaushaltMitObhutsberechtigterPerson(
+			Boolean.TRUE
+		);
 		familiensituation.setGemeinsameSteuererklaerung(Boolean.FALSE);
 		return familiensituation;
 	}
 
 	@Override
 	public Familiensituation createAlleinerziehend() {
-		Familiensituation familiensituation = createDefaultFieldsOfFamiliensituation();
+		Familiensituation familiensituation =
+			createDefaultFieldsOfFamiliensituation();
+		familiensituation.setGemeinsameSteuererklaerung(false);
 		familiensituation.setFamilienstatus(EnumFamilienstatus.APPENZELL);
 		familiensituation.setGeteilteObhut(Boolean.FALSE);
 		familiensituation.setGemeinsamerHaushaltMitPartner(Boolean.FALSE);
@@ -38,8 +44,12 @@ public class AppenzellTestfallDataProvider extends AbstractTestfallDataProvider 
 	}
 
 	@Override
-	public FinanzielleSituation createFinanzielleSituation(BigDecimal vermoegen, BigDecimal einkommen) {
-		FinSitZusatzangabenAppenzell finSitZusatzangabenAppenzell = new FinSitZusatzangabenAppenzell();
+	public FinanzielleSituation createFinanzielleSituation(
+		BigDecimal vermoegen,
+		BigDecimal einkommen
+	) {
+		FinSitZusatzangabenAppenzell finSitZusatzangabenAppenzell =
+			new FinSitZusatzangabenAppenzell();
 
 		finSitZusatzangabenAppenzell.setSteuerbaresEinkommen(einkommen);
 		finSitZusatzangabenAppenzell.setSteuerbaresVermoegen(vermoegen);
@@ -50,10 +60,15 @@ public class AppenzellTestfallDataProvider extends AbstractTestfallDataProvider 
 		finSitZusatzangabenAppenzell.setEinkuenfteBgsa(BigDecimal.ZERO);
 		finSitZusatzangabenAppenzell.setVorjahresverluste(BigDecimal.ZERO);
 		finSitZusatzangabenAppenzell.setPolitischeParteiSpende(BigDecimal.ZERO);
-		finSitZusatzangabenAppenzell.setLeistungAnJuristischePersonen(BigDecimal.ZERO);
+		finSitZusatzangabenAppenzell.setLeistungAnJuristischePersonen(
+			BigDecimal.ZERO
+		);
 
-		FinanzielleSituation finanzielleSituation = createDefaultFinanzielleSituation();
-		finanzielleSituation.setFinSitZusatzangabenAppenzell(finSitZusatzangabenAppenzell);
+		FinanzielleSituation finanzielleSituation =
+			createDefaultFinanzielleSituation();
+		finanzielleSituation.setFinSitZusatzangabenAppenzell(
+			finSitZusatzangabenAppenzell
+		);
 		return finanzielleSituation;
 	}
 

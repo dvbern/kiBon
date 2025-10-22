@@ -20,7 +20,10 @@
         <div class="row">
             <div class="col-md-12">
                 <dv-new-antrag-list
-                    [hidden-columns]="['verantwortlicherGemeindeantraege']"
+                    [hidden-columns]="[
+                        'verantwortlicherGemeindeantraege',
+                        'gemeindeAntragFirstEinreichedatum'
+                    ]"
                     (row-clicked)="vm.editFall($event.antrag, $event.event)"
                     [state-store-id]="'alle-faelle-asdf'"
                 ></dv-new-antrag-list>

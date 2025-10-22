@@ -25,7 +25,8 @@ import {getEntityTargetState} from '../einladung-routing/einladung-helpers';
     selector: 'dv-einladung-abschliessen',
     templateUrl: './einladung-abschliessen.component.html',
     styleUrls: ['./einladung-abschliessen.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EinladungAbschliessenComponent {
     @Input() public principal: TSBenutzer;

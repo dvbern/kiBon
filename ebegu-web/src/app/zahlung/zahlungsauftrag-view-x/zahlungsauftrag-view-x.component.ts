@@ -24,44 +24,41 @@ import {
     OnInit,
     ViewChild
 } from '@angular/core';
-import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {
-    MatSort,
-    MatSortHeader,
-    Sort,
-    SortDirection
-} from '@angular/material/sort';
+import {MatSort, Sort, SortDirection} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, TransitionService, UIRouterGlobals} from '@uirouter/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {of, Subject} from 'rxjs';
-import {filter, switchMap, takeUntil} from 'rxjs/operators';
+import {mergeMap, switchMap, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSZahlungsauftragsstatus} from '../../../models/enums/TSZahlungsauftragstatus';
-import {TSZahlungslaufTyp} from '../../../models/enums/TSZahlungslaufTyp';
-import {TSZahlungsstatus} from '../../../models/enums/TSZahlungsstatus';
+import {TSGeneratedDokumentTyp} from '../../../models/enums/TSGeneratedDokumentTyp';
+import {
+    TSZahlungsauftragsstatus,
+    TSZahlungsstatus,
+    TSZahlungsauftrag,
+    TSZahlungslaufTyp
+} from '@kibon/zahlung/model/entity';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSPaginationResultDTO} from '../../../models/TSPaginationResultDTO';
-import {TSPublicAppConfig} from '../../../models/TSPublicAppConfig';
-import {TSZahlungsauftrag} from '../../../models/TSZahlungsauftrag';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
+import {TSPaginationResultDTO} from '@kibon/shared/model/dto';
+import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '../../core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
 import {ReportRS} from '../../core/service/reportRS.rest';
 import {DvSimpleTableColumnDefinition} from '../../shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {StateStoreService} from '../../shared/services/state-store.service';
-import {ZahlungRS} from '../services/zahlungRS.rest';
-import {TSGeneratedDokumentTyp} from '../../../models/enums/TSGeneratedDokumentTyp';
+import {ZahlungUtilZahlungService} from '@kibon/zahlung/util/zahlung-service';
 
 const LOG = LogFactory.createLog('ZahlungsauftragViewXComponent');
 
@@ -69,32 +66,29 @@ const LOG = LogFactory.createLog('ZahlungsauftragViewXComponent');
     selector: 'zahlungsauftrag-view',
     templateUrl: './zahlungsauftrag-view-x.component.html',
     styleUrls: ['./zahlungsauftrag-view-x.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ZahlungsauftragViewXComponent
     implements OnInit, AfterViewInit, OnDestroy
 {
-    @ViewChild(NgForm) public readonly form: NgForm;
     @ViewChild(MatSort) public sort: MatSort;
     @ViewChild(MatPaginator) private readonly paginator: MatPaginator;
 
     public datasource: MatTableDataSource<any> = new MatTableDataSource<any>(
         []
     );
-    public data: TSZahlungsauftrag[] = [];
 
     public zahlungsauftragToEdit: TSZahlungsauftrag;
     public zahlungsAuftraege: TSZahlungsauftrag[] = [];
 
     public zahlungslaufTyp: TSZahlungslaufTyp;
     public beschrieb: string;
-    public faelligkeitsdatum: moment.Moment;
     public datumGeneriert: moment.Moment;
     public itemsByPage: number = 12;
     public testMode: boolean = false;
     public checkboxAuszahlungInZukunft: boolean = false;
     public auszahlungInZukunft: boolean = false;
-    public minDateForTestlauf: moment.Moment;
     public gemeinde: TSGemeinde;
     // Anzuzeigende Gemeinden fuer den gewaehlten Zahlungslauftyp
     public gemeindenList: Array<TSGemeinde> = [];
@@ -106,9 +100,10 @@ export class ZahlungsauftragViewXComponent
     public tableColumns: DvSimpleTableColumnDefinition[] = [];
 
     private readonly unsubscribe$ = new Subject<void>();
+    public readonly updateZahlungsauftrag$ = new Subject<void>();
 
-    private hasMahlzeitenZahlungslaeufe: boolean = false;
-    private hasAuszahlungAnEltern: boolean = false;
+    public hasMahlzeitenZahlungslaeufe: boolean = false;
+    private isAuszahlungAnElternActive: boolean = false;
 
     public principal: TSBenutzer;
 
@@ -118,6 +113,7 @@ export class ZahlungsauftragViewXComponent
     public readonly PAGE_SIZE: number = 20;
     public totalResult: number = 0;
     public hasInfomaZahlung: boolean = false;
+    public zahlungAnTyp: string;
 
     public readonly DEFAULT_SORT = {
         active: 'datumFaellig',
@@ -127,10 +123,10 @@ export class ZahlungsauftragViewXComponent
     private readonly FILTER_STORE_KEY = 'zahlungsauftrag-view-filter';
 
     public constructor(
-        private readonly zahlungRS: ZahlungRS,
+        private readonly zahlungRS: ZahlungUtilZahlungService,
         private readonly $state: StateService,
         private readonly downloadRS: DownloadRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly reportRS: ReportRS,
         private readonly authServiceRS: AuthServiceRS,
         private readonly translate: TranslateService,
@@ -154,20 +150,20 @@ export class ZahlungsauftragViewXComponent
         this.updateHasAuszahlungAnElternZahlungslaeufe();
         this.applicationPropertyRS
             .isZahlungenTestMode()
-            .then((response: any) => {
+            .subscribe((response: any) => {
                 this.testMode = response;
             });
         this.applicationPropertyRS
             .getCheckboxAuszahlungInZukunft()
-            .then((response: any) => {
+            .subscribe((response: any) => {
                 this.checkboxAuszahlungInZukunft = response;
                 this.auszahlungInZukunft = this.checkboxAuszahlungInZukunft;
             });
         this.setupTableColumns();
-        this.authServiceRS.principal$.subscribe(
-            user => (this.principal = user),
-            error => LOG.error(error)
-        );
+        this.authServiceRS.principal$.subscribe({
+            next: user => (this.principal = user),
+            error: error => LOG.error(error)
+        });
         this.translate.onDefaultLangChange.subscribe(
             () => this.setupTableColumns(),
             (error: any) => LOG.error(error)
@@ -187,36 +183,16 @@ export class ZahlungsauftragViewXComponent
                 this.stateStore.delete(this.FILTER_STORE_KEY);
             }
         });
+        this.initializeZahlungsauftraegeListe();
     }
 
-    public ngAfterViewInit(): void {
-        this.initSort();
-        this.initGemeindenListAndFilter();
-        this.updateZahlungsauftrag();
-    }
-
-    public ngOnDestroy(): void {
-        this.unsubscribe$.next();
-    }
-
-    private initSort(): void {
-        if (this.stateStore.has(this.SORT_STORE_KEY)) {
-            const stored = this.stateStore.get(this.SORT_STORE_KEY) as MatSort;
-            this.sort.active = stored.active;
-            this.sort.direction = stored.direction;
-        } else {
-            this.sort.active = this.DEFAULT_SORT.active;
-            this.sort.direction = this.DEFAULT_SORT.direction as SortDirection;
-        }
-        (
-            this.sort.sortables.get(this.sort.active) as MatSortHeader
-        )?._setAnimationTransitionState({toState: 'active'});
-    }
-
-    public updateZahlungsauftrag(): void {
-        this.authServiceRS.principal$
-            .pipe(takeUntil(this.unsubscribe$))
+    private initializeZahlungsauftraegeListe() {
+        this.updateZahlungsauftrag$
             .pipe(
+                takeUntil(this.unsubscribe$),
+                mergeMap(() => {
+                    return this.authServiceRS.principal$;
+                }),
                 switchMap(principal => {
                     if (principal) {
                         return this.zahlungRS.getZahlungsauftraegeForRole$(
@@ -233,14 +209,35 @@ export class ZahlungsauftragViewXComponent
                     );
                 })
             )
-            .subscribe(
-                result => {
+            .subscribe({
+                next: result => {
                     this.zahlungsAuftraege = result.resultList;
                     this.datasource.data = result.resultList;
                     this.updatePagination(result.totalResultSize);
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
+    }
+
+    public ngAfterViewInit(): void {
+        this.initSort();
+        this.initGemeindenListAndFilter();
+        this.updateZahlungsauftrag$.next();
+    }
+
+    public ngOnDestroy(): void {
+        this.unsubscribe$.next();
+    }
+
+    private initSort(): void {
+        if (this.stateStore.has(this.SORT_STORE_KEY)) {
+            const stored = this.stateStore.get(this.SORT_STORE_KEY) as MatSort;
+            this.sort.active = stored.active;
+            this.sort.direction = stored.direction;
+        } else {
+            this.sort.active = this.DEFAULT_SORT.active;
+            this.sort.direction = this.DEFAULT_SORT.direction as SortDirection;
+        }
     }
 
     public gotoZahlung(zahlungsauftrag: TSZahlungsauftrag): void {
@@ -248,56 +245,9 @@ export class ZahlungsauftragViewXComponent
             zahlungsauftragId: zahlungsauftrag.id,
             isMahlzeitenzahlungen:
                 this.zahlungslaufTyp ===
-                TSZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER
+                TSZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER,
+            zahlungAnTyp: this.zahlungAnTyp
         });
-    }
-
-    public createZahlungsauftrag(): void {
-        if (!this.form.valid) {
-            return;
-        }
-
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.data = {
-            title: this.translate.instant('ZAHLUNG_ERSTELLEN_CONFIRM'),
-            text: this.translate.instant('ZAHLUNG_ERSTELLEN_INFO')
-        };
-
-        this.dialog
-            .open(DvNgRemoveDialogComponent, dialogConfig)
-            .afterClosed()
-            .pipe(filter(result => !!result))
-            .subscribe(
-                () => {
-                    this.errorService.addMesageAsInfo(
-                        this.translate.instant('ZAHLUNG_AUSGELOEST_INFO')
-                    );
-                    this.zahlungRS
-                        .createZahlungsauftrag(
-                            this.zahlungslaufTyp,
-                            this.gemeinde,
-                            this.beschrieb,
-                            this.faelligkeitsdatum,
-                            this.datumGeneriert,
-                            this.auszahlungInZukunft
-                        )
-                        .subscribe(
-                            (response: TSZahlungsauftrag) => {
-                                this.errorService.clearAll();
-                                this.errorService.addMesageAsInfo(
-                                    this.translate.instant('ZAHLUNG_ERSTELLT')
-                                );
-                                this.zahlungsAuftraege.push(response);
-                                this.resetEditZahlungsauftrag();
-                                this.resetForm();
-                                this.updateZahlungsauftrag();
-                                this.cd.markForCheck();
-                            },
-                            error => LOG.error(error)
-                        );
-                },
-                error => LOG.error(error)
-            );
     }
 
     public downloadPain(zahlungsauftrag: TSZahlungsauftrag): Promise<void> {
@@ -322,7 +272,7 @@ export class ZahlungsauftragViewXComponent
         return this.downloadRS
             .getPain001AccessTokenGeneratedDokument(zahlungsauftrag.id, typ)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     true,
@@ -343,7 +293,7 @@ export class ZahlungsauftragViewXComponent
         this.reportRS
             .getZahlungsauftragReportExcel(zahlungsauftrag.id)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -368,16 +318,16 @@ export class ZahlungsauftragViewXComponent
         this.dialog
             .open(DvNgRemoveDialogComponent, dialogConfig)
             .afterClosed()
-            .subscribe(
-                result => {
+            .subscribe({
+                next: result => {
                     // User confirmed removal
                     if (!result) {
                         return;
                     }
                     this.zahlungRS
                         .zahlungsauftragAusloesen(zahlungsauftragId)
-                        .subscribe(
-                            (response: TSZahlungsauftrag) => {
+                        .subscribe({
+                            next: (response: TSZahlungsauftrag) => {
                                 const index = EbeguUtil.getIndexOfElementwithID(
                                     response,
                                     this.zahlungsAuftraege
@@ -385,20 +335,20 @@ export class ZahlungsauftragViewXComponent
                                 if (index > -1) {
                                     this.zahlungsAuftraege[index] = response;
                                 }
-                                this.updateZahlungsauftrag();
+                                this.updateZahlungsauftrag$.next();
                                 this.cd.markForCheck();
                             },
-                            error =>
+                            error: error =>
                                 this.errorService.addMesageAsError(
                                     error?.error?.translatedMessage ||
                                         this.translate.instant(
                                             'ERROR_UNEXPECTED'
                                         )
                                 )
-                        );
+                        });
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public edit(zahlungsauftrag: TSZahlungsauftrag): void {
@@ -416,8 +366,8 @@ export class ZahlungsauftragViewXComponent
                 this.zahlungsauftragToEdit.datumFaellig,
                 this.zahlungsauftragToEdit.id
             )
-            .subscribe(
-                (response: TSZahlungsauftrag) => {
+            .subscribe({
+                next: (response: TSZahlungsauftrag) => {
                     const index = EbeguUtil.getIndexOfElementwithID(
                         response,
                         this.zahlungsAuftraege
@@ -426,15 +376,14 @@ export class ZahlungsauftragViewXComponent
                         this.zahlungsAuftraege[index] = response;
                     }
                     // nach dem es gespeichert wird, muessen wir das Form wieder auf clean setzen
-                    this.form.form.markAsPristine();
                     this.resetEditZahlungsauftrag();
                 },
-                error =>
+                error: error =>
                     this.errorService.addMesageAsError(
                         error?.error?.translatedMessage ||
                             this.translate.instant('ERROR_UNEXPECTED')
                     )
-            );
+            });
     }
 
     public isEditable(status: TSZahlungsauftragsstatus): boolean {
@@ -469,19 +418,6 @@ export class ZahlungsauftragViewXComponent
         return '';
     }
 
-    /**
-     * resets all three variables needed to create a Zahlung.
-     */
-    private resetForm(): void {
-        this.beschrieb = undefined;
-        this.faelligkeitsdatum = undefined;
-        this.datumGeneriert = undefined;
-        this.gemeinde = null;
-        this.form.form.markAsPristine();
-        this.form.form.markAsUntouched();
-        this.form.resetForm();
-    }
-
     public getCalculatedStatus(zahlungsauftrag: TSZahlungsauftrag): any {
         if (
             zahlungsauftrag.status !== TSZahlungsauftragsstatus.BESTAETIGT &&
@@ -501,8 +437,8 @@ export class ZahlungsauftragViewXComponent
         this.gemeindeRS
             .getGemeindenForPrincipal$()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                gemeinden => {
+            .subscribe({
+                next: gemeinden => {
                     this.berechtigteGemeindenList = gemeinden;
                     this.berechtigteGemeindenList.sort((a, b) =>
                         a.name.localeCompare(b.name)
@@ -511,8 +447,8 @@ export class ZahlungsauftragViewXComponent
                     this.initFilterFromStore();
                     this.cd.markForCheck();
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     private initFilterFromStore(): void {
@@ -520,7 +456,7 @@ export class ZahlungsauftragViewXComponent
             this.filterGemeinde = this.stateStore.get(
                 this.FILTER_STORE_KEY
             ) as TSGemeinde;
-            this.updateZahlungsauftrag();
+            this.updateZahlungsauftrag$.next();
         }
     }
 
@@ -551,20 +487,10 @@ export class ZahlungsauftragViewXComponent
     }
 
     private updateHasAuszahlungAnElternZahlungslaeufe(): void {
-        this.hasAuszahlungAnEltern = false;
-        // Grundsaetzliche nur fuer Superadmin und Gemeinde-Mitarbeiter
-        if (
-            !this.authServiceRS.isOneOfRoles(
-                TSRoleUtil.getAdministratorOrAmtRole()
-            )
-        ) {
-            this.hasAuszahlungAnEltern = false;
-            return;
-        }
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then((response: TSPublicAppConfig) => {
-                this.hasAuszahlungAnEltern = response.auszahlungAnEltern;
+            .subscribe((response: TSPublicAppConfig) => {
+                this.isAuszahlungAnElternActive = response.auszahlungAnEltern;
                 this.hasInfomaZahlung = response.infomaZahlungen;
             });
     }
@@ -578,7 +504,8 @@ export class ZahlungsauftragViewXComponent
                 : Array.from(this.berechtigteGemeindenMitMahlzeitenList);
         this.totalResult = 0;
         this.page = 0;
-        this.updateZahlungsauftrag();
+        this.updateZahlungsauftrag$.next();
+        this.zahlungAnTyp = this.zahlungslaufTyp;
     }
 
     public getMsgKeyForToggleRight(): string {
@@ -591,7 +518,7 @@ export class ZahlungsauftragViewXComponent
     public sortData($event: Sort): void {
         this.sort.active = $event.active;
         this.sort.direction = $event.direction;
-        this.updateZahlungsauftrag();
+        this.updateZahlungsauftrag$.next();
     }
 
     private updatePagination(totalResultSize: number): void {
@@ -613,27 +540,19 @@ export class ZahlungsauftragViewXComponent
     public handlePagination(pageEvent: Partial<PageEvent>): void {
         this.page = pageEvent.pageIndex;
         this.paginator.pageIndex = this.page;
-        this.updateZahlungsauftrag();
+        this.updateZahlungsauftrag$.next();
     }
 
     public showAuszahlungsTypToggle(): boolean {
         // Wenn entweder Mahlzeitenzahlungslaeufe oder Auszahlungen an Eltern aktiviert sind,
         // soll der zweite Tab angezeigt werden
         return (
-            !!this.hasMahlzeitenZahlungslaeufe || !!this.hasAuszahlungAnEltern
+            !!this.hasMahlzeitenZahlungslaeufe ||
+            (this.isAuszahlungAnElternActive &&
+                this.authServiceRS.isOneOfRoles(
+                    TSRoleUtil.getZahlungslaufElternRoles()
+                ))
         );
-    }
-
-    public getLabelZahlungslaufErstellen(): string {
-        if (
-            this.zahlungslaufTyp === TSZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER &&
-            this.hasMahlzeitenZahlungslaeufe
-        ) {
-            return this.translate.instant(
-                'BUTTON_GEMEINDE_ZAHLUNGSLAUF_MAHLZEITEN'
-            );
-        }
-        return this.translate.instant('BUTTON_GEMEINDE_ZAHLUNGSLAUF_GUTSCHEIN');
     }
 
     public showInfotext(): boolean {
@@ -712,4 +631,6 @@ export class ZahlungsauftragViewXComponent
     public showGemeindeFilter(): boolean {
         return this.gemeindenList.length > 1;
     }
+
+    protected readonly TSZahlungslaufTyp = TSZahlungslaufTyp;
 }

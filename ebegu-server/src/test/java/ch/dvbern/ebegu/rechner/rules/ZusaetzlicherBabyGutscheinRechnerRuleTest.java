@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner.rules;
@@ -43,26 +43,46 @@ import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESSCHULE;
 
 public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 
-	private static final BigDecimal babyGutscheinKita = MathUtil.DEFAULT.from(50.00);
-	private static final BigDecimal babyGutscheinTfo = MathUtil.DEFAULT.from(4.54);
+	private static final BigDecimal babyGutscheinKita = MathUtil.DEFAULT.from(
+		50.00
+	);
+	private static final BigDecimal babyGutscheinTfo = MathUtil.DEFAULT.from(
+		4.54
+	);
 
-	final Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718();
-	private ZusaetzlicherBabyGutscheinRechnerRule rule = new ZusaetzlicherBabyGutscheinRechnerRule(Locale.GERMAN);
+	final Gesuchsperiode gesuchsperiode = TestDataUtil
+		.createGesuchsperiode1718();
+	private ZusaetzlicherBabyGutscheinRechnerRule rule =
+		new ZusaetzlicherBabyGutscheinRechnerRule(Locale.GERMAN);
 	private BGRechnerParameterDTO londonDTO =
-		new BGRechnerParameterDTO(EbeguRuleTestsHelper.getAllEinstellungen(gesuchsperiode),	gesuchsperiode, new Gemeinde());
+		new BGRechnerParameterDTO(
+			EbeguRuleTestsHelper.getAllEinstellungen(gesuchsperiode),
+			gesuchsperiode,
+			new Gemeinde()
+		);
 	private BGRechnerParameterDTO parisDTO =
-		new BGRechnerParameterDTO(EbeguRuleTestsHelper.getAllEinstellungen(gesuchsperiode),	gesuchsperiode, new Gemeinde());
+		new BGRechnerParameterDTO(
+			EbeguRuleTestsHelper.getAllEinstellungen(gesuchsperiode),
+			gesuchsperiode,
+			new Gemeinde()
+		);
 
 	@Before
 	public void init() {
-		BGRechnerParameterGemeindeDTO londonGemeindeDTO = new BGRechnerParameterGemeindeDTO();
+		BGRechnerParameterGemeindeDTO londonGemeindeDTO =
+			new BGRechnerParameterGemeindeDTO();
 		londonGemeindeDTO.setGemeindeZusaetzlicherBabyGutscheinEnabled(false);
 		this.londonDTO.setGemeindeParameter(londonGemeindeDTO);
 
-		BGRechnerParameterGemeindeDTO parisGemeindeDTO = new BGRechnerParameterGemeindeDTO();
+		BGRechnerParameterGemeindeDTO parisGemeindeDTO =
+			new BGRechnerParameterGemeindeDTO();
 		parisGemeindeDTO.setGemeindeZusaetzlicherBabyGutscheinEnabled(true);
-		parisGemeindeDTO.setGemeindeZusaetzlicherBabyGutscheinBetragKita(babyGutscheinKita);
-		parisGemeindeDTO.setGemeindeZusaetzlicherBabyGutscheinBetragTfo(babyGutscheinTfo);
+		parisGemeindeDTO.setGemeindeZusaetzlicherBabyGutscheinBetragKita(
+			babyGutscheinKita
+		);
+		parisGemeindeDTO.setGemeindeZusaetzlicherBabyGutscheinBetragTfo(
+			babyGutscheinTfo
+		);
 		parisDTO.setGemeindeParameter(parisGemeindeDTO);
 	}
 
@@ -74,42 +94,97 @@ public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 
 	@Test
 	public void isRelevantForVerfuegungSozialhilfe() {
-		Assert.assertFalse(rule.isRelevantForVerfuegung(prepareInput(false, true, KITA), londonDTO));
-		Assert.assertFalse(rule.isRelevantForVerfuegung(prepareInput(true, true, KITA), parisDTO));
-		Assert.assertTrue(rule.isRelevantForVerfuegung(prepareInput(false, true, KITA), parisDTO));
+		Assert.assertFalse(
+			rule.isRelevantForVerfuegung(
+				prepareInput(false, true, KITA),
+				londonDTO
+			)
+		);
+		Assert.assertFalse(
+			rule.isRelevantForVerfuegung(
+				prepareInput(true, true, KITA),
+				parisDTO
+			)
+		);
+		Assert.assertTrue(
+			rule.isRelevantForVerfuegung(
+				prepareInput(false, true, KITA),
+				parisDTO
+			)
+		);
 	}
 
 	@Test
 	public void isRelevantForVerfuegungUngueltigesAngebot() {
-		Assert.assertFalse(rule.isRelevantForVerfuegung(prepareInput(false, true, TAGESSCHULE), parisDTO));
+		Assert.assertFalse(
+			rule.isRelevantForVerfuegung(
+				prepareInput(false, true, TAGESSCHULE),
+				parisDTO
+			)
+		);
 	}
 
 	@Test
 	public void isRelevantForVerfuegungKindalter() {
-		Assert.assertFalse(rule.isRelevantForVerfuegung(prepareInput(false, false, KITA), parisDTO));
-		Assert.assertTrue(rule.isRelevantForVerfuegung(prepareInput(false, true, KITA), parisDTO));
+		Assert.assertFalse(
+			rule.isRelevantForVerfuegung(
+				prepareInput(false, false, KITA),
+				parisDTO
+			)
+		);
+		Assert.assertTrue(
+			rule.isRelevantForVerfuegung(
+				prepareInput(false, true, KITA),
+				parisDTO
+			)
+		);
 	}
 
 	@Test
 	public void prepareParameter() {
 		RechnerRuleParameterDTO result = new RechnerRuleParameterDTO();
 		// London: Nichts gesetzt
-		rule.prepareParameter(prepareInput(false, true, KITA), londonDTO, result);
-		Assert.assertEquals(BigDecimal.ZERO, result.getZusaetzlicherBabyGutscheinBetrag());
-		// Paris: 50, aber bei 160'000, dort ist aber der Anspruch bereits 0. Bei 159'999 gibt es 49.99 CHF, gerundet wieder 50
-		rule.prepareParameter(prepareInput(false, true, KITA), parisDTO, result);
-		Assert.assertEquals(MathUtil.DEFAULT.from(50.00), MathUtil.DEFAULT.from(result.getZusaetzlicherBabyGutscheinBetrag()));
+		rule.prepareParameter(
+			prepareInput(false, true, KITA),
+			londonDTO,
+			result
+		);
+		Assert.assertEquals(
+			BigDecimal.ZERO,
+			result.getZusaetzlicherBabyGutscheinBetrag()
+		);
+		// Paris: 50, aber bei 170'000, dort ist aber der Anspruch bereits 0. Bei 159'999 gibt es 49.99 CHF, gerundet wieder 50
+		rule.prepareParameter(
+			prepareInput(false, true, KITA),
+			parisDTO,
+			result
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(50.00),
+			MathUtil.DEFAULT.from(
+				result.getZusaetzlicherBabyGutscheinBetrag()
+			)
+		);
 	}
 
-	private BGCalculationInput prepareInput(@Nonnull Boolean hasSozialhilfe, boolean isBaby, @Nonnull BetreuungsangebotTyp betreuungsangebotTyp) {
-		BGCalculationInput input = new BGCalculationInput(new VerfuegungZeitabschnitt(), RuleValidity.ASIV);
+	private BGCalculationInput prepareInput(
+		@Nonnull Boolean hasSozialhilfe,
+		boolean isBaby,
+		@Nonnull BetreuungsangebotTyp betreuungsangebotTyp
+	) {
+		BGCalculationInput input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.ASIV
+		);
 		input.setSozialhilfeempfaenger(hasSozialhilfe);
 		input.setBetreuungsangebotTyp(betreuungsangebotTyp);
 		input.setAnspruchspensumProzent(100);
 		input.setBetreuungspensumProzent(BigDecimal.valueOf(100));
 		input.setBetreuungInGemeinde(true);
 		input.setBabyTarif(isBaby);
-		input.setMassgebendesEinkommenVorAbzugFamgr(MathUtil.DEFAULT.from(159999));
+		input.setMassgebendesEinkommenVorAbzugFamgr(
+			MathUtil.DEFAULT.from(159999)
+		);
 		input.setAbzugFamGroesse(BigDecimal.ZERO);
 		return input;
 	}

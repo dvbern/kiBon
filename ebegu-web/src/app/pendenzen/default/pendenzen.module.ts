@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import angular from 'angular';
 import {downgradeComponent} from '@angular/upgrade/static';
 import {CORE_JS_MODULE} from '../../core/core.angularjs.module';
 import {PendenzenListViewComponent} from './component/pendenzenListView/pendenzen-list-view.component';

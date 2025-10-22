@@ -14,17 +14,17 @@
  */
 
 import {waitForAsync} from '@angular/core/testing';
-import {IComponentControllerService, IScope} from 'angular';
+import angular, {IComponentControllerService, IScope} from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {ngServicesMock} from '../../../../../hybridTools/ngServicesMocks';
 import {TSCreationAction} from '../../../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../../../models/enums/TSEingangsart';
-import {TSEinstellungKey} from '../../../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../../../admin/einstellungen/TSEinstellungKey';
 import {TSEinkommensverschlechterung} from '../../../../../models/TSEinkommensverschlechterung';
 import {TSEinkommensverschlechterungContainer} from '../../../../../models/TSEinkommensverschlechterungContainer';
-import {TSEinstellung} from '../../../../../models/TSEinstellung';
-import {TSGesuchsperiode} from '../../../../../models/TSGesuchsperiode';
+import {TSEinstellung} from '../../../../../admin/einstellungen/TSEinstellung';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSGesuchsteller} from '../../../../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
 import {GESUCH_JS_MODULE} from '../../../../gesuch.module';

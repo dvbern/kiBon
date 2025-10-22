@@ -2,16 +2,18 @@
 
 import {StatistikPO, TestFaellePO} from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 
 describe('Kibon - generate Statistiken', () => {
     const downloadsPath = Cypress.config('downloadsFolder');
     const fileName = 'StatistikTest.xlsx';
-    const userSuperadmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const userSuperadmin = getUser('[1-Superadmin] Super User');
     const userSB = getUser('[6-P-SB-Gemeinde] Stefan Wirth');
 
     before(() => {
         cy.login(userSuperadmin);
         cy.visit('/#/faelle');
+        cy.ignoreUncaughtException();
 
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
@@ -22,9 +24,11 @@ describe('Kibon - generate Statistiken', () => {
     });
 
     beforeEach(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
         cy.login(userSB);
         cy.visit('/#/statistik');
+        cy.ignoreUncaughtException();
     });
 
     it('should correctly create the Betreuungsgutscheine: Antragsstellende-Kinder-Betreuung statistik', () => {
@@ -205,8 +209,8 @@ function checkValuesOfTwoLastVerfuegteBetreuung(data: any): void {
     expect(data[last][0]).to.eq('Weissenstein');
 
     // Check Angebot Typ
-    expect(data[last - 1][1]).to.eq('Tagesstätte für Kleinkinder');
-    expect(data[last][1]).to.eq('Tagesstätte für Kleinkinder');
+    expect(data[last - 1][1]).to.eq('Kita');
+    expect(data[last][1]).to.eq('Kita');
 
     // Check Gesuchsperiode same as last created Fall
     expect(data[last - 1][2]).to.eq('2022/2023');
@@ -367,16 +371,16 @@ function checkValuesOfTwoLastVerfuegteBetreuung(data: any): void {
     expect(data[last][43]).to.eq(4);
 
     // Check Anrechenbares Einkommen vor Familienabzug
-    expect(data[last - 1][44]).to.eq(137346);
-    expect(data[last][44]).to.eq(137346);
+    expect(data[last - 1][44]).to.eq(113842);
+    expect(data[last][44]).to.eq(113842);
 
     // Check Familienabzug
     expect(data[last - 1][45]).to.eq(24000);
     expect(data[last][45]).to.eq(24000);
 
     // Check Massgebendes Einkommen
-    expect(data[last - 1][46]).to.eq(113346);
-    expect(data[last][46]).to.eq(113346);
+    expect(data[last - 1][46]).to.eq(89842);
+    expect(data[last][46]).to.eq(89842);
 
     // Check Einkommensjahr
     expect(data[last - 1][47]).to.eq(2021);
@@ -499,18 +503,18 @@ function checkValuesOfTwoLastVerfuegteBetreuung(data: any): void {
     expect(data[last][85]).to.eq(2000);
 
     // Check Elternbeitrag
-    expect(data[last - 1][86]).to.eq(1389.5);
-    expect(data[last][86]).to.eq(1593);
+    expect(data[last - 1][86]).to.eq(1148.45);
+    expect(data[last][86]).to.eq(1432.3);
 
     // Check Gutschein Kanton
-    expect(data[last - 1][87]).to.eq(478.5);
-    expect(data[last][87]).to.eq(319);
+    expect(data[last - 1][87]).to.eq(719.55);
+    expect(data[last][87]).to.eq(479.7);
 
     // Check Gutschein Gemeinde
     expect(data[last - 1][88]).to.eq(132);
     expect(data[last][88]).to.eq(88);
 
     // Check Gutschein Total
-    expect(data[last - 1][89]).to.eq(610.5);
-    expect(data[last][89]).to.eq(407);
+    expect(data[last - 1][89]).to.eq(851.55);
+    expect(data[last][89]).to.eq(567.7);
 }

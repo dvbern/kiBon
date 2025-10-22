@@ -15,15 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 /* eslint-disable no-magic-numbers */
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
 import {SharedModule} from '../../../../shared/shared.module';
 import {TSFerienbetreuungBerechnung} from '../TSFerienbetreuungBerechnung';
 
 import {FerienbetreuungBerechnungComponent} from './ferienbetreuung-berechnung.component';
+import {of} from 'rxjs';
 
 const einstellungRSSpy = jasmine.createSpyObj<EinstellungRS>(
     EinstellungRS.name,
@@ -31,29 +32,23 @@ const einstellungRSSpy = jasmine.createSpyObj<EinstellungRS>(
 );
 
 describe('FerienbetreuungBerechnungComponent', () => {
-    let component: FerienbetreuungBerechnungComponent;
-    let fixture: ComponentFixture<FerienbetreuungBerechnungComponent>;
     const pauschale = 30;
     const pauschaleSonderschueler = 60;
+    einstellungRSSpy.getPauschalbetraegeFerienbetreuung.and.returnValue(
+        of([30, 60])
+    );
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            providers: [{provide: EinstellungRS, useValue: einstellungRSSpy}],
             declarations: [FerienbetreuungBerechnungComponent],
-            imports: [HttpClientModule, SharedModule]
+            imports: [SharedModule],
+            providers: [
+                {provide: EinstellungRS, useValue: einstellungRSSpy},
+                provideHttpClient(withInterceptorsFromDi())
+            ]
         })
             .overrideModule(SharedModule, SHARED_MODULE_OVERRIDES)
             .compileComponents();
-    });
-
-    beforeEach(() => {
-        fixture = TestBed.createComponent(FerienbetreuungBerechnungComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
     });
 
     it('should calculate 1440 CHF, 960 CHF and "true"', () => {

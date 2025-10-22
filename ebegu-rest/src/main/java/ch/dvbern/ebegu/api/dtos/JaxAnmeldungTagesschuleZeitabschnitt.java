@@ -8,20 +8,21 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
 
 import java.math.BigDecimal;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
-public class JaxAnmeldungTagesschuleZeitabschnitt extends JaxAbstractDateRangedDTO {
+public class JaxAnmeldungTagesschuleZeitabschnitt extends
+	JaxAbstractDateRangedDTO {
 
 	private static final long serialVersionUID = 3939072050781289383L;
 
@@ -50,8 +51,11 @@ public class JaxAnmeldungTagesschuleZeitabschnitt extends JaxAbstractDateRangedD
 		return massgebendesEinkommenInklAbzugFamgr;
 	}
 
-	public void setMassgebendesEinkommenInklAbzugFamgr(BigDecimal massgebendesEinkommenInklAbzugFamgr) {
-		this.massgebendesEinkommenInklAbzugFamgr = massgebendesEinkommenInklAbzugFamgr;
+	public void setMassgebendesEinkommenInklAbzugFamgr(
+		BigDecimal massgebendesEinkommenInklAbzugFamgr
+	) {
+		this.massgebendesEinkommenInklAbzugFamgr =
+			massgebendesEinkommenInklAbzugFamgr;
 	}
 
 	public BigDecimal getVerpflegungskosten() {
@@ -66,7 +70,9 @@ public class JaxAnmeldungTagesschuleZeitabschnitt extends JaxAbstractDateRangedD
 		return betreuungsstundenProWoche;
 	}
 
-	public void setBetreuungsstundenProWoche(BigDecimal betreuungsstundenProWoche) {
+	public void setBetreuungsstundenProWoche(
+		BigDecimal betreuungsstundenProWoche
+	) {
 		this.betreuungsstundenProWoche = betreuungsstundenProWoche;
 	}
 
@@ -74,7 +80,9 @@ public class JaxAnmeldungTagesschuleZeitabschnitt extends JaxAbstractDateRangedD
 		return betreuungsminutenProWoche;
 	}
 
-	public void setBetreuungsminutenProWoche(BigDecimal betreuungsminutenProWoche) {
+	public void setBetreuungsminutenProWoche(
+		BigDecimal betreuungsminutenProWoche
+	) {
 		this.betreuungsminutenProWoche = betreuungsminutenProWoche;
 	}
 

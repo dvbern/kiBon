@@ -20,9 +20,23 @@
         <div class="form-group">
             <span class="ebegu-h1 required">
                 <span
-                    data-translate="FINANZIELLE_SITUATION_SOZIALHILFE_BEZUEGER"
+                    ng-if="vm.einzeln"
+                    data-translate="FINANZIELLE_SITUATION_SOZIALHILFE_EINZELN"
                     translate-values="{basisjahr: vm.gesuchModelManager.getBasisjahr()}"
                 ></span>
+                <span
+                    ng-if="!vm.einzeln"
+                    data-translate="FINANZIELLE_SITUATION_SOZIALHILFE_ZU_ZWEIT"
+                    translate-values="{basisjahr: vm.gesuchModelManager.getBasisjahr()}"
+                ></span>
+                <dv-tooltip
+                    ng-if="vm.einzeln"
+                    text="'FINANZIELLE_SITUATION_SOZIALHILFE_EINZELN_HINT' | translate"
+                ></dv-tooltip>
+                <dv-tooltip
+                    ng-if="!vm.einzeln"
+                    text="'FINANZIELLE_SITUATION_SOZIALHILFE_ZU_ZWEIT_HINT' | translate"
+                ></dv-tooltip>
             </span>
             <dv-radio-container
                 name="sozialhilfeBezueger"
@@ -36,7 +50,10 @@
                 dv-enable-allowed-roles="vm.allowedRoles"
                 dv-enable-expression="!vm.isGesuchReadonly() && !vm.isKorrekturModusJugendamt()"
                 aria-label="{{
-                    'FINANZIELLE_SITUATION_SOZIALHILFE_BEZUEGER' | translate
+                    (vm.einzeln
+                        ? 'FINANZIELLE_SITUATION_SOZIALHILFE_EINZELN'
+                        : 'FINANZIELLE_SITUATION_SOZIALHILFE_ZU_ZWEIT'
+                    ) | translate
                 }}"
                 aria-described-by="sozialhilfeBezueger-error"
             >

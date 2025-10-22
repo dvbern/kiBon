@@ -20,13 +20,13 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.einladung.Einladung;
@@ -39,14 +39,14 @@ import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Traegerschaft;
 import ch.dvbern.ebegu.entities.Traegerschaft_;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.UserRole;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 import static java.util.Objects.requireNonNull;
 
@@ -55,7 +55,8 @@ import static java.util.Objects.requireNonNull;
  */
 @Stateless
 @Local(TraegerschaftService.class)
-public class TraegerschaftServiceBean extends AbstractBaseService implements TraegerschaftService {
+public class TraegerschaftServiceBean extends AbstractBaseService implements
+	TraegerschaftService {
 
 	@Inject
 	private Persistence persistence;
@@ -75,38 +76,60 @@ public class TraegerschaftServiceBean extends AbstractBaseService implements Tra
 	@Inject
 	private PrincipalBean principalBean;
 
+	@Inject
+	private CreateBenutzerService createBenutzerService;
+
 	@Nonnull
 	@Override
-	public Traegerschaft createTraegerschaft(@Nonnull Traegerschaft traegerschaft, @Nonnull String adminEmail) {
+	public Traegerschaft createTraegerschaft(
+		@Nonnull Traegerschaft traegerschaft,
+		@Nonnull String adminEmail
+	) {
 		requireNonNull(traegerschaft);
 		requireNonNull(adminEmail);
 
 		authorizer.checkWriteAuthorization(traegerschaft);
 
-		Traegerschaft persistedTraegerschaft = persistence.persist(traegerschaft);
+		Traegerschaft persistedTraegerschaft = persistence.persist(
+			traegerschaft
+		);
 
-		final Mandant mandant = requireNonNull(persistedTraegerschaft.getMandant());
+		final Mandant mandant = requireNonNull(
+			persistedTraegerschaft.getMandant()
+		);
 
-		Benutzer benutzer = benutzerService.findBenutzer(adminEmail, mandant).map(b -> {
-			if(b.getRole() != UserRole.GESUCHSTELLER) {
-				throw new EbeguRuntimeException(
-					KibonLogLevel.INFO,
-					"createTraegerschaft",
-					ErrorCodeEnum.EXISTING_USER_MAIL,
-					adminEmail);
-			}
-			return b;
-		}).orElseGet(() -> benutzerService.createAdminTraegerschaftByEmail(adminEmail, persistedTraegerschaft));
+		Benutzer benutzer = benutzerService.findBenutzer(adminEmail, mandant)
+			.map(b -> {
+				if (b.getRole() != UserRole.GESUCHSTELLER) {
+					throw new EbeguRuntimeException(
+						KibonLogLevel.INFO,
+						"createTraegerschaft",
+						ErrorCodeEnum.EXISTING_USER_MAIL,
+						adminEmail
+					);
+				}
+				return b;
+			})
+			.orElseGet(
+				() -> createBenutzerService.createAdminTraegerschaftByEmail(
+					adminEmail,
+					persistedTraegerschaft
+				)
+			);
 
-		benutzerService.einladen(Einladung.forTraegerschaft(benutzer, persistedTraegerschaft),
-				mandant);
+		benutzerService.einladen(
+			Einladung.forTraegerschaft(benutzer, persistedTraegerschaft),
+			mandant
+		);
 
 		return traegerschaft;
 	}
 
 	@Nonnull
 	@Override
-	public Traegerschaft saveTraegerschaft(@Nonnull Traegerschaft traegerschaft) {
+	public Traegerschaft saveTraegerschaft(
+		@Nonnull Traegerschaft traegerschaft
+	) {
 		requireNonNull(traegerschaft);
 		authorizer.checkWriteAuthorization(traegerschaft);
 		return persistence.merge(traegerschaft);
@@ -114,9 +137,14 @@ public class TraegerschaftServiceBean extends AbstractBaseService implements Tra
 
 	@Nonnull
 	@Override
-	public Optional<Traegerschaft> findTraegerschaft(@Nonnull final String traegerschaftId) {
+	public Optional<Traegerschaft> findTraegerschaft(
+		@Nonnull final String traegerschaftId
+	) {
 		requireNonNull(traegerschaftId, "id muss gesetzt sein");
-		Traegerschaft a = persistence.find(Traegerschaft.class, traegerschaftId);
+		Traegerschaft a = persistence.find(
+			Traegerschaft.class,
+			traegerschaftId
+		);
 		return Optional.ofNullable(a);
 	}
 
@@ -124,19 +152,32 @@ public class TraegerschaftServiceBean extends AbstractBaseService implements Tra
 	@Nonnull
 	public Collection<Traegerschaft> getAllActiveTraegerschaften() {
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		CriteriaQuery<Traegerschaft> query = cb.createQuery(Traegerschaft.class);
+		CriteriaQuery<Traegerschaft> query = cb.createQuery(
+			Traegerschaft.class
+		);
 		Root<Traegerschaft> root = query.from(Traegerschaft.class);
 
 		Mandant mandant = principalBean.getMandant();
 
-		Predicate mandantPredicate = cb.equal(root.get(Traegerschaft_.mandant), mandant);
-		Predicate activePredicate = cb.equal(root.get(Traegerschaft_.active), true);
+		Predicate mandantPredicate = cb.equal(
+			root.get(Traegerschaft_.mandant),
+			mandant
+		);
+		Predicate activePredicate = cb.equal(
+			root.get(Traegerschaft_.active),
+			true
+		);
 
 		query.orderBy(cb.asc(root.get(Traegerschaft_.name)));
 		query.where(mandantPredicate, activePredicate);
 
-		Collection<Traegerschaft> traegerschaften = persistence.getCriteriaResults(query);
-		traegerschaften.forEach(traegerschaft -> authorizer.checkReadAuthorization(traegerschaft));
+		Collection<Traegerschaft> traegerschaften = persistence
+			.getCriteriaResults(query);
+		traegerschaften.forEach(
+			traegerschaft -> authorizer.checkReadAuthorization(
+				traegerschaft
+			)
+		);
 
 		return traegerschaften;
 	}
@@ -146,17 +187,27 @@ public class TraegerschaftServiceBean extends AbstractBaseService implements Tra
 	public Collection<Traegerschaft> getAllTraegerschaften() {
 
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		CriteriaQuery<Traegerschaft> query = cb.createQuery(Traegerschaft.class);
+		CriteriaQuery<Traegerschaft> query = cb.createQuery(
+			Traegerschaft.class
+		);
 		Root<Traegerschaft> root = query.from(Traegerschaft.class);
 
 		Mandant mandant = principalBean.getMandant();
 
-		Predicate mandantPredicate = cb.equal(root.get(Traegerschaft_.mandant), mandant);
+		Predicate mandantPredicate = cb.equal(
+			root.get(Traegerschaft_.mandant),
+			mandant
+		);
 		query.orderBy(cb.asc(root.get(Traegerschaft_.name)));
 		query.where(mandantPredicate);
 
-		Collection<Traegerschaft> traegerschaften = persistence.getCriteriaResults(query);
-		traegerschaften.forEach(traegerschaft -> authorizer.checkReadAuthorization(traegerschaft));
+		Collection<Traegerschaft> traegerschaften = persistence
+			.getCriteriaResults(query);
+		traegerschaften.forEach(
+			traegerschaft -> authorizer.checkReadAuthorization(
+				traegerschaft
+			)
+		);
 
 		return traegerschaften;
 	}
@@ -164,18 +215,28 @@ public class TraegerschaftServiceBean extends AbstractBaseService implements Tra
 	@Override
 	public void removeTraegerschaft(@Nonnull String traegerschaftId) {
 		requireNonNull(traegerschaftId);
-		Optional<Traegerschaft> traegerschaftToRemove = findTraegerschaft(traegerschaftId);
+		Optional<Traegerschaft> traegerschaftToRemove = findTraegerschaft(
+			traegerschaftId
+		);
 		Traegerschaft traegerschaft =
-			traegerschaftToRemove.orElseThrow(() -> new EbeguEntityNotFoundException("removeTraegerschaft",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, traegerschaftId));
+			traegerschaftToRemove.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"removeTraegerschaft",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					traegerschaftId
+				)
+			);
 
 		authorizer.checkWriteAuthorization(traegerschaft);
 		checkForLinkedBerechtigungen(traegerschaft);
 
 		// Es müssen auch alle Berechtigungen für diese Traegerschaft gelöscht werden
 		Collection<BerechtigungHistory> berechtigungenToDelete =
-			criteriaQueryHelper.getEntitiesByAttribute(BerechtigungHistory.class, traegerschaft,
-				BerechtigungHistory_.traegerschaft);
+			criteriaQueryHelper.getEntitiesByAttribute(
+				BerechtigungHistory.class,
+				traegerschaft,
+				BerechtigungHistory_.traegerschaft
+			);
 		for (BerechtigungHistory berechtigungHistory : berechtigungenToDelete) {
 			persistence.remove(berechtigungHistory);
 		}
@@ -183,34 +244,60 @@ public class TraegerschaftServiceBean extends AbstractBaseService implements Tra
 		persistence.remove(traegerschaft);
 	}
 
-	private void checkForLinkedBerechtigungen(@Nonnull Traegerschaft traegerschaft) {
-		final Collection<Berechtigung> linkedBerechtigungen = findBerechtigungByTraegerschaft(traegerschaft);
+	private void checkForLinkedBerechtigungen(
+		@Nonnull Traegerschaft traegerschaft
+	) {
+		final Collection<Berechtigung> linkedBerechtigungen =
+			findBerechtigungByTraegerschaft(traegerschaft);
 		if (!linkedBerechtigungen.isEmpty()) {
-			throw new EbeguRuntimeException("checkForLinkedBerechtigungen", ErrorCodeEnum.ERROR_LINKED_BERECHTIGUNGEN, traegerschaft.getId());
+			throw new EbeguRuntimeException(
+				"checkForLinkedBerechtigungen",
+				ErrorCodeEnum.ERROR_LINKED_BERECHTIGUNGEN,
+				traegerschaft.getId()
+			);
 		}
 	}
 
-	private Collection<Berechtigung> findBerechtigungByTraegerschaft(@Nonnull Traegerschaft traegerschaft) {
+	private Collection<Berechtigung> findBerechtigungByTraegerschaft(
+		@Nonnull Traegerschaft traegerschaft
+	) {
 		requireNonNull(traegerschaft, "traegerschaft cannot be null");
-		return criteriaQueryHelper.getEntitiesByAttribute(Berechtigung.class, traegerschaft, Berechtigung_.traegerschaft);
+		return criteriaQueryHelper.getEntitiesByAttribute(
+			Berechtigung.class,
+			traegerschaft,
+			Berechtigung_.traegerschaft
+		);
 	}
 
 	@Override
-	public EnumSet<BetreuungsangebotTyp> getAllAngeboteFromTraegerschaft(@Nonnull String traegerschaftId) {
+	public EnumSet<BetreuungsangebotTyp> getAllAngeboteFromTraegerschaft(
+		@Nonnull String traegerschaftId
+	) {
 		requireNonNull(traegerschaftId);
-		Optional<Traegerschaft> traegerschaftOptional = findTraegerschaft(traegerschaftId);
-		Traegerschaft traegerschaft = traegerschaftOptional.orElseThrow(() -> new EbeguEntityNotFoundException(
-			"setInactive",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			traegerschaftId));
+		Optional<Traegerschaft> traegerschaftOptional = findTraegerschaft(
+			traegerschaftId
+		);
+		Traegerschaft traegerschaft = traegerschaftOptional.orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"setInactive",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				traegerschaftId
+			)
+		);
 
-		EnumSet<BetreuungsangebotTyp> result = EnumSet.noneOf(BetreuungsangebotTyp.class);
+		EnumSet<BetreuungsangebotTyp> result = EnumSet.noneOf(
+			BetreuungsangebotTyp.class
+		);
 
 		Collection<Institution> allInstitutionen =
-			institutionService.getAllInstitutionenFromTraegerschaft(traegerschaft.getId());
+			institutionService.getAllInstitutionenFromTraegerschaft(
+				traegerschaft.getId()
+			);
 		allInstitutionen.forEach(institution -> {
 			BetreuungsangebotTyp angebotInstitution =
-				institutionService.getAngebotFromInstitution(institution.getId());
+				institutionService.getAngebotFromInstitution(
+					institution.getId()
+				);
 			result.add(angebotInstitution);
 		});
 

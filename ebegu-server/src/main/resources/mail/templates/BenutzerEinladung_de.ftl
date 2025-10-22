@@ -27,7 +27,10 @@ ${templateConfiguration.mailCss}
     <p>
 		${contentDE}
     </p>
-	<p>
+    <#if templateConfiguration.showInitialPassword(eingeladener)>
+        <p>Melden Sie sich mit dem folgenden Initialpasswort an: <strong>${eingeladener.getInitialPassword()}</strong></p>
+    </#if>
+    <p>
         <table cellspacing="0" cellpadding="0" width="100%">
             <tr>
                 <td>

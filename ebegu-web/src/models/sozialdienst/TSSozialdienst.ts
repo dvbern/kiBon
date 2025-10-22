@@ -16,8 +16,7 @@
  */
 
 import {TSSozialdienstStatus} from '../enums/TSSozialdienstStatus';
-import {TSAbstractEntity} from '../TSAbstractEntity';
-
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 export class TSSozialdienst extends TSAbstractEntity {
     public name: string;
     public status: TSSozialdienstStatus;

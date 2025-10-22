@@ -18,9 +18,9 @@ package ch.dvbern.ebegu.api.dtos;
 import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import lombok.EqualsAndHashCode;
 
@@ -32,12 +32,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class JaxEingewoehnung extends JaxAbstractDateRangedDTO {
 
-
 	private static final long serialVersionUID = 5161971483109161443L;
 
 	@Nonnull
 	private BigDecimal kosten;
-
 
 	@Nonnull
 	public BigDecimal getKosten() {

@@ -15,8 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {FixtureFamSit} from '@dv-e2e/fixtures';
-import {NavigationPO} from '@dv-e2e/page-objects';
+import {
+    FixtureFamSit,
+    FixtureFamSitFeutz,
+    FixtureFamSitFeutzLuzern,
+    FixtureFamSitFeutzSolothurn,
+    FixtureFamSitFeutzAppenzell
+} from '@dv-e2e/fixtures';
+import {DokumentePO, NavigationPO} from '@dv-e2e/page-objects';
 
 const getGeschlechtOption = (selection: string) => {
     return cy.getByData(`geschlecht.radio-value.${selection}`);
@@ -30,8 +36,20 @@ const getNachname = () => {
     return cy.getByData('nachname');
 };
 
+const getMobilePhone = () => {
+    return cy.getByData('mobile');
+};
+
 const getGeburtsdatum = () => {
     return cy.getByData('geburtsdatum');
+};
+
+const getMail = () => {
+    return cy.getByData('email');
+};
+
+const getSozialVersicherungsNummer = () => {
+    return cy.getByData('sozialversicherungsnummer');
 };
 
 const getKorrespondenzsprache = () => {
@@ -70,14 +88,102 @@ const fillVerheiratet = (dataset: keyof typeof FixtureFamSit) => {
     });
 };
 
+const fillAntragsstellendeAppenzell = (
+    dataset: keyof typeof FixtureFamSitFeutzAppenzell
+) => {
+    FixtureFamSitFeutzAppenzell[dataset](({GS1}) => {
+        fillGS1Appenzell(GS1);
+    });
+    NavigationPO.saveAndGoNext();
+    getFormularTitle().should('include.text', '2');
+    FixtureFamSitFeutzAppenzell[dataset](({GS2}) => {
+        fillBaseGesuchsteller(GS2);
+    });
+};
+
+const fillVerheiratetFamFeutz = (dataset: keyof typeof FixtureFamSitFeutz) => {
+    FixtureFamSitFeutz[dataset](({GS1}) => {
+        fillGS1Schwyz(GS1);
+    });
+    NavigationPO.saveAndGoNext();
+    getFormularTitle().should('include.text', '2');
+    FixtureFamSitFeutz[dataset](({GS2}) => {
+        fillGS2Schwyz(GS2);
+    });
+};
+const fillVerheiratetFamFeutzLuzern = (
+    dataset: keyof typeof FixtureFamSitFeutzLuzern
+) => {
+    FixtureFamSitFeutzLuzern[dataset](({GS1}) => {
+        fillGS1Luzern(GS1);
+    });
+    NavigationPO.saveAndGoNext();
+    getFormularTitle().should('include.text', '2');
+    FixtureFamSitFeutzLuzern[dataset](({GS2}) => {
+        fillGS2Luzern(GS2);
+    });
+};
+
 // TODO: type this
-function fillGS1(GS1: any): void {
-    fillBaseGesuchsteller(GS1);
-    getKorrespondenzsprache().select(GS1.korrespondenzSprache);
-    getAdresseStrasse().type(GS1.adresseStrasse);
-    getAdresseHausnummer().type(GS1.adresseHausnummer);
-    getAdressePlz().type(GS1.adressePlz);
-    getAdresseOrt().type(GS1.adresseOrt);
+function fillGS1(gesuchSteller: any): void {
+    fillBaseGesuchsteller(gesuchSteller);
+    getKorrespondenzsprache().select(gesuchSteller.korrespondenzSprache);
+    fillBaseAdress(gesuchSteller);
+}
+
+function fillBaseAdress(gesuchSteller: any) {
+    getAdresseStrasse().type(gesuchSteller.adresseStrasse);
+    getAdresseHausnummer().type(gesuchSteller.adresseHausnummer);
+    getAdressePlz().type(gesuchSteller.adressePlz);
+    getAdresseOrt().type(gesuchSteller.adresseOrt);
+}
+
+function fillEmail(gesuchSteller: any) {
+    getMail().type(gesuchSteller.email);
+}
+
+function fillGS1Luzern(gesuchSteller: any) {
+    fillBaseGesuchsteller(gesuchSteller);
+    uploadDummyAusweis();
+    fillBaseAdress(gesuchSteller);
+}
+function fillGS2Luzern(gesuchSteller: any) {
+    fillBaseGesuchsteller(gesuchSteller);
+}
+
+function fillGS1Schwyz(gesuchSteller: any): void {
+    fillBaseGesuchsteller(gesuchSteller);
+    getSozialVersicherungsNummer().type(
+        gesuchSteller.sozialversicherungsnummer
+    );
+    fillBaseAdress(gesuchSteller);
+    getMobilePhone().type(gesuchSteller.mobile);
+}
+
+function fillGS2Schwyz(gesuchSteller: any): void {
+    fillBaseGesuchsteller(gesuchSteller);
+    getSozialVersicherungsNummer().type(
+        gesuchSteller.sozialversicherungsnummer
+    );
+    getMobilePhone().type(gesuchSteller.mobile);
+}
+
+function fillGS1Appenzell(gesuchSteller: any): void {
+    fillBaseGesuchsteller(gesuchSteller);
+    fillBaseAdress(gesuchSteller);
+}
+
+function fillGSSolothurn(dataset: keyof typeof FixtureFamSitFeutzSolothurn) {
+    FixtureFamSitFeutzSolothurn[dataset](({GS1}) => {
+        fillBaseGesuchsteller(GS1);
+        fillBaseAdress(GS1);
+    });
+    NavigationPO.saveAndGoNext();
+
+    getFormularTitle().should('include.text', '2');
+    FixtureFamSitFeutzSolothurn[dataset](({GS2}) => {
+        fillBaseGesuchsteller(GS2);
+    });
 }
 
 const fillBaseGesuchsteller = (GS1: {
@@ -91,6 +197,28 @@ const fillBaseGesuchsteller = (GS1: {
     getVorname().clear().type(GS1.vorname);
     getNachname().clear().type(GS1.nachname);
     getGeburtsdatum().find('input').type(GS1.geburtsdatum);
+    cy.wait(1500);
+};
+
+function uploadDummyAusweis() {
+    cy.fixture('documents/small.png').as('smallPng');
+
+    getAusweisUpload().each(($el, index) => {
+        const upload = `fileUpload#${index}`;
+        cy.intercept('POST', '**/upload').as(upload);
+        cy.wrap($el).selectFile(
+            {
+                contents: '@smallPng',
+                fileName: `small-${index}.png`
+            },
+            {force: true}
+        );
+        return cy.wait(`@${upload}`);
+    });
+}
+
+const getAusweisUpload = () => {
+    return cy.getByData('mutipleFiles');
 };
 
 export const GesuchstellendePO = {
@@ -107,5 +235,10 @@ export const GesuchstellendePO = {
     getFormularTitle,
     // page actions
     fillVerheiratet,
+    fillGS1Appenzell,
+    fillAntragsstellendeAppenzell,
+    fillVerheiratetFamFeutz,
+    fillVerheiratetFamFeutzLuzern,
+    fillGSSolothurn,
     fillBaseGesuchsteller
 };

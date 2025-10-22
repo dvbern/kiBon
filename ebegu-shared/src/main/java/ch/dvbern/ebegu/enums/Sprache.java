@@ -24,8 +24,7 @@ import ch.dvbern.ebegu.util.Constants;
  */
 public enum Sprache {
 
-	DEUTSCH(Constants.DEUTSCH_LOCALE),
-	FRANZOESISCH(Constants.FRENCH_LOCALE);
+	DEUTSCH(Constants.DEUTSCH_LOCALE), FRANZOESISCH(Constants.FRENCH_LOCALE);
 
 	private Locale locale;
 

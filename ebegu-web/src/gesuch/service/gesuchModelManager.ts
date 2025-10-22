@@ -15,17 +15,40 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ILogService, IPromise, IQService} from 'angular';
-import * as moment from 'moment';
-import {BehaviorSubject, Observable, of, Subscription} from 'rxjs';
-import {mergeMap} from 'rxjs/operators';
+import {BetreuungUtilAnmeldungRestService} from '@kibon/betreuung/util/anmeldung-rest';
+import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
+import {isSchulamt} from '@kibon/shared/util-fn/betreuungsangebot-typ';
+import {ILogService, IPromise, IQService, copy} from 'angular';
+import moment from 'moment';
+import {
+    BehaviorSubject,
+    combineLatest,
+    firstValueFrom,
+    Observable,
+    of,
+    Subscription
+} from 'rxjs';
+import {map, mergeMap} from 'rxjs/operators';
+import {
+    TSBetreuungsstatus,
+    TSWizardStepName,
+    TSWizardStepStatus,
+    TSGesuchsperiodeStatus,
+    TSRole,
+    TSAdressetyp
+} from '@kibon/shared/model/enums';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {
+    TSGesuchsperiode,
+    TSInstitutionStammdaten,
+    TSGemeinde,
+    TSAdresse,
+    TSFachstelle
+} from '@kibon/shared/model/entity';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
 import {ErrorService} from '../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../app/core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../app/core/rest-services/applicationPropertyRS.rest';
 import {AntragStatusHistoryRS} from '../../app/core/service/antragStatusHistoryRS.rest';
-import {BetreuungRS} from '../../app/core/service/betreuungRS.rest';
 import {ErwerbspensumRS} from '../../app/core/service/erwerbspensumRS.rest';
 import {EwkRS} from '../../app/core/service/ewkRS.rest';
 import {FachstelleRS} from '../../app/core/service/fachstelleRS.rest';
@@ -33,9 +56,9 @@ import {GesuchstellerRS} from '../../app/core/service/gesuchstellerRS.rest';
 import {InstitutionStammdatenRS} from '../../app/core/service/institutionStammdatenRS.rest';
 import {KindRS} from '../../app/core/service/kindRS.rest';
 import {VerfuegungRS} from '../../app/core/service/verfuegungRS.rest';
+import {GemeindeService} from '../../app/shared/services/gemeinde.service';
 import {AuthLifeCycleService} from '../../authentication/service/authLifeCycle.service';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
-import {TSAdressetyp} from '../../models/enums/TSAdressetyp';
 import {
     isAnyStatusOfVerfuegt,
     isAtLeastFreigegeben,
@@ -45,22 +68,15 @@ import {
 } from '../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../models/enums/TSAntragTyp';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
-import {isSchulamt} from '../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSBetreuungsstatus} from '../../models/enums/betreuung/TSBetreuungsstatus';
 import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
 import {TSCreationAction} from '../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
-import {TSEinstellungKey} from '../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';
 import {TSErrorLevel} from '../../models/enums/TSErrorLevel';
 import {TSErrorType} from '../../models/enums/TSErrorType';
 import {TSFamilienstatus} from '../../models/enums/TSFamilienstatus';
 import {TSGesuchBetreuungenStatus} from '../../models/enums/TSGesuchBetreuungenStatus';
-import {TSGesuchsperiodeStatus} from '../../models/enums/TSGesuchsperiodeStatus';
-import {TSRole} from '../../models/enums/TSRole';
 import {TSSozialdienstFallStatus} from '../../models/enums/TSSozialdienstFallStatus';
-import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../models/enums/TSWizardStepStatus';
-import {TSAdresse} from '../../models/TSAdresse';
 import {TSAdresseContainer} from '../../models/TSAdresseContainer';
 import {TSBenutzerNoDetails} from '../../models/TSBenutzerNoDetails';
 import {TSBetreuung} from '../../models/TSBetreuung';
@@ -69,20 +85,16 @@ import {TSEinkommensverschlechterungContainer} from '../../models/TSEinkommensve
 import {TSEinkommensverschlechterungInfoContainer} from '../../models/TSEinkommensverschlechterungInfoContainer';
 import {TSErwerbspensumContainer} from '../../models/TSErwerbspensumContainer';
 import {TSExceptionReport} from '../../models/TSExceptionReport';
-import {TSFachstelle} from '../../models/TSFachstelle';
 import {TSFall} from '../../models/TSFall';
 import {TSFamiliensituation} from '../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../models/TSFamiliensituationContainer';
 import {TSFinanzielleSituationContainer} from '../../models/TSFinanzielleSituationContainer';
 import {TSFreigabe} from '../../models/TSFreigabe';
-import {TSGemeinde} from '../../models/TSGemeinde';
 import {TSGemeindeKonfiguration} from '../../models/TSGemeindeKonfiguration';
 import {TSGemeindeStammdatenLite} from '../../models/TSGemeindeStammdatenLite';
 import {TSGesuch} from '../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../models/TSGesuchsperiode';
 import {TSGesuchsteller} from '../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../models/TSGesuchstellerContainer';
-import {TSInstitutionStammdaten} from '../../models/TSInstitutionStammdaten';
 import {TSKindContainer} from '../../models/TSKindContainer';
 import {TSVerfuegung} from '../../models/TSVerfuegung';
 import {EbeguUtil} from '../../utils/EbeguUtil';
@@ -129,7 +141,8 @@ export class GesuchModelManager {
         'GemeindeRS',
         'InternePendenzenRS',
         'EinstellungRS',
-        'MandantService'
+        'GemeindeService',
+        'BetreuungUtilAnmeldungRestService'
     ];
     private gesuch: TSGesuch;
     private neustesGesuch: boolean;
@@ -180,7 +193,8 @@ export class GesuchModelManager {
         private readonly gemeindeRS: GemeindeRS,
         private readonly internePendenzenRS: InternePendenzenRS,
         private readonly einstellungenRS: EinstellungRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly gemeindeService: GemeindeService,
+        private readonly anmeldungService: BetreuungUtilAnmeldungRestService
     ) {}
 
     public $onInit(): void {
@@ -193,19 +207,8 @@ export class GesuchModelManager {
         );
     }
 
-    /**
-     * Je nach dem welche Rolle der Benutzer hat, wird das Gesuch aus der DB anders geholt.
-     * Fuer Institutionen z.B. wird das Gesuch nur mit den relevanten Daten geholt
-     */
     public openGesuch(gesuchId: string): IPromise<TSGesuch> {
-        // Superadmin muss als "normale" Benutzer betrachtet werden
-        const gesuchPromise = this.authServiceRS.isOneOfRoles(
-            TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
-        )
-            ? this.gesuchRS.findGesuchForInstitution(gesuchId)
-            : this.gesuchRS.findGesuch(gesuchId);
-
-        return gesuchPromise.then(gesuch =>
+        return this.gesuchRS.findGesuch(gesuchId).then(gesuch =>
             this.wizardStepManager
                 .findStepsFromGesuch(gesuchId)
                 .then(() => {
@@ -238,49 +241,32 @@ export class GesuchModelManager {
             this.wizardStepManager.setHiddenSteps(this.gesuch);
             // Es soll nur einmalig geprueft werden, ob das aktuelle Gesuch das neueste dieses Falls fuer die
             // gewuenschte Periode ist.
-            this.checkIfGesuchIsNeustes().then(
-                response => (this.neustesGesuch = response)
-            );
-            if (
-                this.authServiceRS.isOneOfRoles(
-                    TSRoleUtil.getGemeindeBgTSMandantRoles()
-                )
-            ) {
-                this.subscription = this.internePendenzenRS
-                    .getPendenzCountUpdated$(this.getGesuch())
-                    .subscribe(
-                        () => {
-                            this.internePendenzenRS
-                                .countInternePendenzenForGesuch(
-                                    this.getGesuch()
+            this.checkIfGesuchIsNeustes()
+                .then(response => (this.neustesGesuch = response))
+                .then(() => {
+                    if (
+                        this.authServiceRS.isOneOfRoles(
+                            TSRoleUtil.getGemeindeBgTSMandantRoles()
+                        )
+                    ) {
+                        this.internePendenzenRS
+                            .getPendenzCountUpdated$(gesuch)
+                            .pipe(
+                                mergeMap(() =>
+                                    combineLatest([
+                                        this.internePendenzenRS.countInternePendenzenForGesuch(
+                                            this.getGesuch()
+                                        ),
+                                        this.hasAgelaufenePendenz$()
+                                    ])
                                 )
-                                .subscribe(
-                                    numberInternePendenzen =>
-                                        (this.numberInternePendenzen =
-                                            numberInternePendenzen),
-                                    error => this.log.error(error)
-                                );
-                            this.internePendenzenRS
-                                .findInternePendenzenForGesuch(this.getGesuch())
-                                .subscribe(
-                                    pendenzen => {
-                                        this.hasAbgelaufenePendenz =
-                                            pendenzen.reduce(
-                                                (has, current) =>
-                                                    (current.termin.isBefore(
-                                                        moment()
-                                                    ) &&
-                                                        !current.erledigt) ||
-                                                    has,
-                                                false
-                                            );
-                                    },
-                                    error => this.log.error(error)
-                                );
-                        },
-                        error => this.log.error(error)
-                    );
-            }
+                            )
+                            .subscribe(([count, hasAbgelaufene]) => {
+                                this.numberInternePendenzen = count;
+                                this.hasAbgelaufenePendenz = hasAbgelaufene;
+                            });
+                    }
+                });
         }
         // Liste zuruecksetzen, da u.U. im Folgegesuch andere Stammdaten gelten!
         this.activInstitutionenForGemeindeList = undefined;
@@ -301,7 +287,24 @@ export class GesuchModelManager {
                 );
         }
 
+        this.gemeindeService.setCurrentActiveGemeinde(this.getGemeinde());
         return gesuch;
+    }
+
+    private hasAgelaufenePendenz$(): Observable<boolean> {
+        return this.internePendenzenRS
+            .findInternePendenzenForGesuch(this.getGesuch())
+            .pipe(
+                map(pendenzen =>
+                    pendenzen.reduce(
+                        (has, current) =>
+                            (current.termin.isBefore(moment()) &&
+                                !current.erledigt) ||
+                            has,
+                        false
+                    )
+                )
+            );
     }
 
     public checkIfGesuchIsNeustes(): IPromise<boolean> {
@@ -515,7 +518,7 @@ export class GesuchModelManager {
         this.gesuch.familiensituationContainer.familiensituationJA.verguenstigungGewuenscht =
             true;
         this.familiensitutaionRS
-            .saveFamiliensituation(
+            .saveFamiliensituationOnly(
                 this.gesuch.familiensituationContainer,
                 this.gesuch.id
             )
@@ -662,13 +665,11 @@ export class GesuchModelManager {
      * erstellt
      */
     public saveGesuchAndFall(): IPromise<TSGesuch> {
-        if (this.gesuch && this.gesuch.timestampErstellt) {
-            // Gesuch schon vorhanden
+        if (this.isGesuchSchonVorhanden()) {
             return this.updateGesuch();
         }
 
-        // Gesuch noch nicht vorhanden
-        if (this.gesuch.dossier && !this.gesuch.dossier.isNew()) {
+        if (this.isDossierSchonVorhanden()) {
             // Dossier schon vorhaden -> Wir koennen davon ausgehen, dass auch der Fall vorhanden ist
             return this.createNewGesuchForCurrentDossier();
         }
@@ -679,6 +680,28 @@ export class GesuchModelManager {
         return this.createNewFall();
     }
 
+    private isGesuchSchonVorhanden(): boolean {
+        return (
+            EbeguUtil.isNotNullOrUndefined(this.gesuch) &&
+            EbeguUtil.isNotNullOrUndefined(this.gesuch.timestampErstellt)
+        );
+    }
+
+    private isDossierSchonVorhanden(): boolean {
+        return (
+            EbeguUtil.isNotNullOrUndefined(this.gesuch.dossier) &&
+            !this.gesuch.dossier.isNew()
+        );
+    }
+
+    public isNewMutation(): boolean {
+        return (
+            !this.isGesuchSchonVorhanden() &&
+            this.isDossierSchonVorhanden() &&
+            this.gesuch.isMutation()
+        );
+    }
+
     /**
      * Save the fall contained in the gesuch only
      * the createNewFall call a save method at the end
@@ -687,7 +710,7 @@ export class GesuchModelManager {
         return this.gesuchGenerator
             .createNewFall(this.gesuch.dossier.fall)
             .then((fallResponse: TSFall) => {
-                this.gesuch.dossier.fall = angular.copy(fallResponse);
+                this.gesuch.dossier.fall = copy(fallResponse);
                 return this.gesuch.dossier.fall;
             });
     }
@@ -699,7 +722,7 @@ export class GesuchModelManager {
         return this.gesuchGenerator
             .createNewFall(this.gesuch.dossier.fall)
             .then((fallResponse: TSFall) => {
-                this.gesuch.dossier.fall = angular.copy(fallResponse);
+                this.gesuch.dossier.fall = copy(fallResponse);
                 return this.createNewDossierForCurrentFall();
             });
     }
@@ -711,7 +734,7 @@ export class GesuchModelManager {
         return this.gesuchGenerator
             .createNewDossier(this.gesuch.dossier)
             .then((dossierResponse: TSDossier) => {
-                this.gesuch.dossier = angular.copy(dossierResponse);
+                this.gesuch.dossier = copy(dossierResponse);
                 return this.createNewGesuchForCurrentDossier();
             });
     }
@@ -804,8 +827,12 @@ export class GesuchModelManager {
             .then((finSitContRespo: TSFinanzielleSituationContainer) => {
                 this.getStammdatenToWorkWith().finanzielleSituationContainer =
                     finSitContRespo;
-                return this.getStammdatenToWorkWith()
-                    .finanzielleSituationContainer;
+                return this.wizardStepManager
+                    .selfUpdateFinSitStepStatus()
+                    .then(() => {
+                        return this.getStammdatenToWorkWith()
+                            .finanzielleSituationContainer;
+                    });
             });
     }
 
@@ -1201,7 +1228,7 @@ export class GesuchModelManager {
         betreuungToSave: TSBetreuung,
         betreuungsstatusNeu: TSBetreuungsstatus,
         abwesenheit: boolean
-    ): IPromise<TSBetreuung> {
+    ): Promise<TSBetreuung> {
         const handleStatus = (
             betreuungenStatus: TSGesuchBetreuungenStatus,
             storedBetreuung: TSBetreuung
@@ -1228,53 +1255,63 @@ export class GesuchModelManager {
         betreuungToSave: TSBetreuung,
         betreuungsstatusNeu: TSBetreuungsstatus,
         abwesenheit: boolean
-    ): IPromise<TSBetreuung> {
+    ): Promise<TSBetreuung> {
         switch (betreuungsstatusNeu) {
             case TSBetreuungsstatus.ABGEWIESEN:
                 return this.betreuungRS.betreuungsPlatzAbweisen(
                     betreuungToSave,
                     this.gesuch.id
-                );
+                ) as Promise<TSBetreuung>;
             case TSBetreuungsstatus.BESTAETIGT:
                 return this.betreuungRS.betreuungsPlatzBestaetigen(
                     betreuungToSave,
                     this.gesuch.id
-                );
+                ) as Promise<TSBetreuung>;
             case TSBetreuungsstatus.SCHULAMT_MODULE_AKZEPTIERT:
-                return this.betreuungRS.anmeldungSchulamtModuleAkzeptiert(
-                    betreuungToSave,
-                    this.gesuch.id
+                return firstValueFrom(
+                    this.anmeldungService.anmeldungSchulamtModuleAkzeptiert(
+                        betreuungToSave,
+                        this.gesuch.id
+                    )
                 );
             case TSBetreuungsstatus.SCHULAMT_ANMELDUNG_UEBERNOMMEN:
-                return this.verfuegungRS.anmeldungUebernehmen(betreuungToSave);
+                return this.verfuegungRS.anmeldungUebernehmen(
+                    betreuungToSave
+                ) as Promise<TSBetreuung>;
             case TSBetreuungsstatus.SCHULAMT_ANMELDUNG_ABGELEHNT:
-                return this.betreuungRS.anmeldungSchulamtAblehnen(
-                    betreuungToSave,
-                    this.gesuch.id
+                return firstValueFrom(
+                    this.anmeldungService.anmeldungSchulamtAblehnen(
+                        betreuungToSave,
+                        this.gesuch.id
+                    )
                 );
             case TSBetreuungsstatus.SCHULAMT_FALSCHE_INSTITUTION:
-                return this.betreuungRS.anmeldungSchulamtFalscheInstitution(
-                    betreuungToSave,
-                    this.gesuch.id
+                return firstValueFrom(
+                    this.anmeldungService.anmeldungSchulamtFalscheInstitution(
+                        betreuungToSave,
+                        this.gesuch.id
+                    )
                 );
             case TSBetreuungsstatus.SCHULAMT_ANMELDUNG_STORNIERT:
-                return this.betreuungRS.anmeldungSchulamtStorniert(
-                    betreuungToSave,
-                    this.gesuch.id
+                return firstValueFrom(
+                    this.anmeldungService.anmeldungSchulamtStorniert(
+                        betreuungToSave,
+                        this.gesuch.id
+                    )
                 );
             case null:
                 return this.betreuungRS.saveBetreuung(
                     betreuungToSave,
                     this.gesuch.id,
                     abwesenheit
-                );
+                ) as Promise<TSBetreuung>;
             default:
                 betreuungToSave.betreuungsstatus = betreuungsstatusNeu;
                 return this.betreuungRS.saveBetreuung(
                     betreuungToSave,
                     this.gesuch.id,
                     abwesenheit
-                );
+                ) as Promise<TSBetreuung>;
         }
     }
 

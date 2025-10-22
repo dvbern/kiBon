@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.wizardx.tagesschuleLastenausgleich;
@@ -49,17 +49,21 @@ public class FreigabeStep implements WizardStep<TagesschuleWizard> {
 	public WizardStateEnum getStatus(@Nonnull TagesschuleWizard wizard) {
 		// IF ALL DATA Filled RETURN OK
 		// IF NOT KO
-		if (wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer().isAntragAbgeschlossen()) {
+		if (wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer()
+			.isAntragAbgeschlossen()) {
 			return WizardStateEnum.OK;
 		}
 		if (wizard.getRole().isRoleGemeindeabhaengig()) {
-			return wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer().isAtLeastInBearbeitungKanton() ?
+			return wizard
+				.getLastenausgleichTagesschuleAngabenGemeindeContainer()
+				.isAtLeastInBearbeitungKanton() ?
+					WizardStateEnum.OK :
+					WizardStateEnum.IN_BEARBEITUNG;
+		}
+		return wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer()
+			.isAntragGeprueft() ?
 				WizardStateEnum.OK :
 				WizardStateEnum.IN_BEARBEITUNG;
-		}
-		return wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer().isAntragGeprueft() ?
-			WizardStateEnum.OK :
-			WizardStateEnum.IN_BEARBEITUNG;
 	}
 
 	@Override
@@ -76,14 +80,16 @@ public class FreigabeStep implements WizardStep<TagesschuleWizard> {
 		if (container.isInStatusNeu()) {
 			return true;
 		}
-		if (container.getStatus() == LastenausgleichTagesschuleAngabenGemeindeStatus.IN_BEARBEITUNG_GEMEINDE) {
+		if (container.getStatus()
+			== LastenausgleichTagesschuleAngabenGemeindeStatus.IN_BEARBEITUNG_GEMEINDE) {
 			if (role.isRoleMandant()) {
 				return true;
 			}
 			return !(container.isAngabenDeklarationAbgeschlossen()
 				&& container.allInstitutionenGeprueft());
 		}
-		if (container.getStatus() == LastenausgleichTagesschuleAngabenGemeindeStatus.ZURUECK_AN_GEMEINDE) {
+		if (container.getStatus()
+			== LastenausgleichTagesschuleAngabenGemeindeStatus.ZURUECK_AN_GEMEINDE) {
 			if (role.isRoleMandant()) {
 				return true;
 			}

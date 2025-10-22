@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IComponentControllerService, IScope} from 'angular';
+import angular, {IComponentControllerService, IScope} from 'angular';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {DvRadioContainerComponentConfig} from './dv-radio-container';
 import IInjectorService = angular.auto.IInjectorService;

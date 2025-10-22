@@ -8,19 +8,50 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import ch.dvbern.ebegu.enums.KorrespondenzSpracheTyp;
 import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.validators.CheckEmail;
 import ch.dvbern.ebegu.validators.CheckKontodatenGemeinde;
+import ch.dvbern.ebegu.validators.CheckWebseite;
 import ch.dvbern.ebegu.validators.ExternalClientOfType;
+import ch.dvbern.ebegu.validators.bicswift.CheckBicSwift;
 import ch.dvbern.ebegu.validators.iban.CheckIBANNotQR;
 import ch.dvbern.ebegu.validators.iban.CheckIBANUppercase;
 import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
@@ -28,102 +59,113 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.util.*;
-
 import static ch.dvbern.ebegu.enums.ExternalClientType.GEMEINDE_SCOLARIS_SERVICE;
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
 @Audited
 @Entity
-@Table (
+@Table(
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "gemeinde_id", name = "UK_gemeinde_stammdaten_gemeinde_id"),
-		@UniqueConstraint(columnNames = "adresse_id", name = "UK_gemeinde_stammdaten_adresse_id"),
-		@UniqueConstraint(columnNames = "rechtsmittelbelehrung_id", name = "UK_rechtsmittelbelehrung_id"),
-		@UniqueConstraint(columnNames = "bg_adresse_id", name = "UK_gemeinde_stammdaten_bg_adresse_id"),
-		@UniqueConstraint(columnNames = "ts_adresse_id", name = "UK_gemeinde_stammdaten_ts_adresse_id"),
-		@UniqueConstraint(columnNames = "gemeinde_stammdaten_korrespondenz_id", name = "UK_gemeinde_stammdaten_korrespondenz_id")
+		@UniqueConstraint(columnNames = "gemeinde_id",
+			name = "UK_gemeinde_stammdaten_gemeinde_id"),
+		@UniqueConstraint(columnNames = "adresse_id",
+			name = "UK_gemeinde_stammdaten_adresse_id"),
+		@UniqueConstraint(columnNames = "rechtsmittelbelehrung_id",
+			name = "UK_rechtsmittelbelehrung_id"),
+		@UniqueConstraint(columnNames = "bg_adresse_id",
+			name = "UK_gemeinde_stammdaten_bg_adresse_id"),
+		@UniqueConstraint(columnNames = "ts_adresse_id",
+			name = "UK_gemeinde_stammdaten_ts_adresse_id"),
+		@UniqueConstraint(
+			columnNames = "gemeinde_stammdaten_korrespondenz_id",
+			name = "UK_gemeinde_stammdaten_korrespondenz_id")
 	}
 )
 @CheckKontodatenGemeinde
 public class GemeindeStammdaten extends AbstractEntity {
 
 	private static final long serialVersionUID = -6627279554105679587L;
-	public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
 	@Nullable
 	@OneToOne(optional = true, orphanRemoval = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeindestammdaten_defaultbenutzer_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeindestammdaten_defaultbenutzer_id"), nullable = true)
 	private Benutzer defaultBenutzer;
 
 	@Nullable
 	@OneToOne(optional = true, orphanRemoval = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeindestammdaten_defaultbenutzerbg_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeindestammdaten_defaultbenutzerbg_id"),
+		nullable = true)
 	private Benutzer defaultBenutzerBG;
 
 	@Nullable
 	@OneToOne(optional = true, orphanRemoval = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeindestammdaten_defaultbenutzerts_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeindestammdaten_defaultbenutzerts_id"),
+		nullable = true)
 	private Benutzer defaultBenutzerTS;
 
 	@NotNull
 	@OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeindestammdaten_gemeinde_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeindestammdaten_gemeinde_id"), nullable = false)
 	private Gemeinde gemeinde;
 
 	@NotNull
 	@OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeindestammdaten_adresse_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeindestammdaten_adresse_id"), nullable = false)
 	private Adresse adresse;
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeindestammdaten_bg_adresse_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeindestammdaten_bg_adresse_id"), nullable = true)
 	private Adresse bgAdresse;
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeindestammdaten_ts_adresse_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeindestammdaten_ts_adresse_id"), nullable = true)
 	private Adresse tsAdresse;
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeindestammdaten_beschwerdeadresse_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeindestammdaten_beschwerdeadresse_id"),
+		nullable = true)
 	private Adresse beschwerdeAdresse;
 
 	@Nonnull
 	@OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeindestammdaten_stammdatenkorrespondenz_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeindestammdaten_stammdatenkorrespondenz_id"),
+		nullable = false)
 	private GemeindeStammdatenKorrespondenz gemeindeStammdatenKorrespondenz;
 
 	@NotNull
-	@Email
+	@CheckEmail
 	@Size(min = 5, max = DB_DEFAULT_MAX_LENGTH)
 	@Column(nullable = false)
 	private String mail;
 
 	@Nullable
 	@Column(nullable = true, length = Constants.DB_DEFAULT_MAX_LENGTH)
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{validator.constraints.phonenumber.message}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{validator.constraints.phonenumber.message}")
 	private String telefon;
 
 	@Nullable
-	@Pattern(regexp = Constants.REGEX_URL, message = "{validator.constraints.url.message}")
+	@CheckWebseite
 	@Size(max = DB_DEFAULT_MAX_LENGTH)
 	private String webseite;
 
 	@NotNull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private KorrespondenzSpracheTyp korrespondenzsprache = KorrespondenzSpracheTyp.DE;
+	private KorrespondenzSpracheTyp korrespondenzsprache =
+		KorrespondenzSpracheTyp.DE;
 
 	@Nullable
 	@Column(nullable = true, length = Constants.DB_DEFAULT_MAX_LENGTH)
@@ -131,6 +173,7 @@ public class GemeindeStammdaten extends AbstractEntity {
 
 	@Nullable
 	@Column(nullable = true, length = Constants.DB_DEFAULT_MAX_LENGTH)
+	@CheckBicSwift
 	private String bic;
 
 	@Nullable
@@ -196,22 +239,24 @@ public class GemeindeStammdaten extends AbstractEntity {
 
 	@Nullable
 	@Column(nullable = true)
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{validator.constraints.phonenumber.message}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{validator.constraints.phonenumber.message}")
 	private String bgTelefon;
 
 	@Nullable
 	@Column(nullable = true)
-	@Email
+	@CheckEmail
 	private String bgEmail;
 
 	@Nullable
 	@Column(nullable = true)
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{validator.constraints.phonenumber.message}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{validator.constraints.phonenumber.message}")
 	private String tsTelefon;
 
 	@Nullable
 	@Column(nullable = true)
-	@Email
+	@CheckEmail
 	private String tsEmail;
 
 	@Nonnull
@@ -251,22 +296,29 @@ public class GemeindeStammdaten extends AbstractEntity {
 	@Column(nullable = true)
 	private String zusatzTextFreigabequittung;
 
-
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeinde_stammdaten_gemeinde_ausgabestelle_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gemeinde_stammdaten_gemeinde_ausgabestelle_id"),
+		nullable = true)
 	private Gemeinde gemeindeAusgabestelle;
 
 	@Nonnull
 	@ManyToMany
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "gemeinde_stammdaten_id", nullable = false),
-		inverseJoinColumns = @JoinColumn(name = "external_client_id", nullable = false),
-		foreignKey = @ForeignKey(name = "FK_gemeinde_stammdaten_external_clients_gemeinde_stammdaten_id"),
-		inverseForeignKey = @ForeignKey(name = "FK_gemeinde_stammdaten_external_clients_external_client_id")
+		joinColumns = @JoinColumn(name = "gemeinde_stammdaten_id",
+			nullable = false),
+		inverseJoinColumns = @JoinColumn(name = "external_client_id",
+			nullable = false),
+		foreignKey = @ForeignKey(
+			name = "FK_gemeinde_stammdaten_external_clients_gemeinde_stammdaten_id"),
+		inverseForeignKey = @ForeignKey(
+			name = "FK_gemeinde_stammdaten_external_clients_external_client_id")
 	)
-	private @Valid @NotNull Set<@ExternalClientOfType(type = GEMEINDE_SCOLARIS_SERVICE)ExternalClient> externalClients =
-		new HashSet<>();
+	private @Valid
+	@NotNull Set<@ExternalClientOfType(
+		type = GEMEINDE_SCOLARIS_SERVICE) ExternalClient> externalClients =
+			new HashSet<>();
 
 	@Nonnull
 	@Column(nullable = false)
@@ -275,10 +327,14 @@ public class GemeindeStammdaten extends AbstractEntity {
 	@Nonnull
 	@ManyToMany
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "gemeinde_stammdaten_id", nullable = false),
-		inverseJoinColumns = @JoinColumn(name = "institution_id", nullable = false),
-		foreignKey = @ForeignKey(name = "FK_gemeinde_stammdaten_institutionen_gemeinde_stammdaten_id"),
-		inverseForeignKey = @ForeignKey(name = "FK_gemeinde_stammdaten_institutionen_institution_id")
+		joinColumns = @JoinColumn(name = "gemeinde_stammdaten_id",
+			nullable = false),
+		inverseJoinColumns = @JoinColumn(name = "institution_id",
+			nullable = false),
+		foreignKey = @ForeignKey(
+			name = "FK_gemeinde_stammdaten_institutionen_gemeinde_stammdaten_id"),
+		inverseForeignKey = @ForeignKey(
+			name = "FK_gemeinde_stammdaten_institutionen_institution_id")
 	)
 	private List<Institution> zugelasseneBgInstitutionen = new ArrayList<>();
 
@@ -332,7 +388,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return gemeindeStammdatenKorrespondenz;
 	}
 
-	public void setGemeindeStammdatenKorrespondenz(@Nonnull GemeindeStammdatenKorrespondenz gemeindeStammdatenKorrespondenz) {
+	public void setGemeindeStammdatenKorrespondenz(
+		@Nonnull GemeindeStammdatenKorrespondenz gemeindeStammdatenKorrespondenz
+	) {
 		this.gemeindeStammdatenKorrespondenz = gemeindeStammdatenKorrespondenz;
 	}
 
@@ -367,7 +425,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return korrespondenzsprache;
 	}
 
-	public void setKorrespondenzsprache(@Nonnull KorrespondenzSpracheTyp korrespondenzsprache) {
+	public void setKorrespondenzsprache(
+		@Nonnull KorrespondenzSpracheTyp korrespondenzsprache
+	) {
 		this.korrespondenzsprache = korrespondenzsprache;
 	}
 
@@ -405,7 +465,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return standardRechtsmittelbelehrung;
 	}
 
-	public void setStandardRechtsmittelbelehrung(@Nonnull Boolean beschwerdeStandardtext) {
+	public void setStandardRechtsmittelbelehrung(
+		@Nonnull Boolean beschwerdeStandardtext
+	) {
 		this.standardRechtsmittelbelehrung = beschwerdeStandardtext;
 	}
 
@@ -414,7 +476,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return rechtsmittelbelehrung;
 	}
 
-	public void setRechtsmittelbelehrung(@Nullable TextRessource rechtsmittelbelehrung) {
+	public void setRechtsmittelbelehrung(
+		@Nullable TextRessource rechtsmittelbelehrung
+	) {
 		this.rechtsmittelbelehrung = rechtsmittelbelehrung;
 	}
 
@@ -460,7 +524,10 @@ public class GemeindeStammdaten extends AbstractEntity {
 			return false;
 		}
 		GemeindeStammdaten gemeindeStammdaten = (GemeindeStammdaten) other;
-		return Objects.equals(this.getGemeinde(), gemeindeStammdaten.getGemeinde());
+		return Objects.equals(
+			this.getGemeinde(),
+			gemeindeStammdaten.getGemeinde()
+		);
 	}
 
 	public boolean isZahlungsinformationValid() {
@@ -492,10 +559,14 @@ public class GemeindeStammdaten extends AbstractEntity {
 	 * In allen anderen Faellen (inkl. gar keine Kinder oder Betreuungen) die allgemeinen Angaben
 	 */
 	public String getEmailForGesuch(Gesuch gesuch) {
-		if (bgEmail != null && !bgEmail.equals("") && gesuch.hasOnlyBetreuungenOfJugendamt()) {
+		if (bgEmail != null
+			&& !bgEmail.isEmpty()
+			&& gesuch.hasOnlyBetreuungenOfJugendamt()) {
 			return bgEmail;
 		}
-		if (tsEmail != null && !tsEmail.equals("") && gesuch.hasOnlyBetreuungenOfSchulamt()) {
+		if (tsEmail != null
+			&& !tsEmail.isEmpty()
+			&& gesuch.hasOnlyBetreuungenOfSchulamt()) {
 			return tsEmail;
 		}
 		return mail;
@@ -508,10 +579,14 @@ public class GemeindeStammdaten extends AbstractEntity {
 	 */
 	@Nullable
 	public String getTelefonForGesuch(Gesuch gesuch) {
-		if (bgTelefon != null && !bgTelefon.equals("") && gesuch.hasOnlyBetreuungenOfJugendamt()) {
+		if (bgTelefon != null
+			&& !bgTelefon.isEmpty()
+			&& gesuch.hasOnlyBetreuungenOfJugendamt()) {
 			return bgTelefon;
 		}
-		if (tsTelefon != null && !tsTelefon.equals("") && gesuch.hasOnlyBetreuungenOfSchulamt()) {
+		if (tsTelefon != null
+			&& !tsTelefon.isEmpty()
+			&& gesuch.hasOnlyBetreuungenOfSchulamt()) {
 			return tsTelefon;
 		}
 		return telefon;
@@ -523,13 +598,17 @@ public class GemeindeStammdaten extends AbstractEntity {
 	 * Falls *reines* TS Gesuch verwenden wir den TS-Benutzer, falls dieser die richtige Rolle hat
 	 * In allen anderen Fällen den Allgemeinen Benutzer
 	 */
-	public Optional<Benutzer> getDefaultBenutzerForGesuch(@Nonnull Gesuch gesuch) {
+	public Optional<Benutzer> getDefaultBenutzerForGesuch(
+		@Nonnull Gesuch gesuch
+	) {
 		if (gesuch.hasOnlyBetreuungenOfJugendamt()
-				&& defaultBenutzerBG != null && defaultBenutzerBG.getRole().isRoleGemeindeOrBG()) {
+			&& defaultBenutzerBG != null
+			&& defaultBenutzerBG.getRole().isRoleGemeindeOrBG()) {
 			return Optional.of(defaultBenutzerBG);
 		}
 		if (gesuch.hasOnlyBetreuungenOfSchulamt()
-				&& defaultBenutzerTS != null && defaultBenutzerTS.getRole().isRoleGemeindeOrTS()) {
+			&& defaultBenutzerTS != null
+			&& defaultBenutzerTS.getRole().isRoleGemeindeOrTS()) {
 			return Optional.of(defaultBenutzerTS);
 		}
 		return Optional.ofNullable(defaultBenutzer);
@@ -543,10 +622,12 @@ public class GemeindeStammdaten extends AbstractEntity {
 	 */
 	@Nonnull
 	public Optional<Benutzer> getDefaultBenutzerWithRoleBG() {
-		if (defaultBenutzerBG != null && defaultBenutzerBG.getRole().isRoleGemeindeOrBG()) {
+		if (defaultBenutzerBG != null
+			&& defaultBenutzerBG.getRole().isRoleGemeindeOrBG()) {
 			return Optional.ofNullable(defaultBenutzerBG);
 		}
-		if (defaultBenutzer != null && defaultBenutzer.getRole().isRoleGemeindeOrBG()) {
+		if (defaultBenutzer != null
+			&& defaultBenutzer.getRole().isRoleGemeindeOrBG()) {
 			return Optional.ofNullable(defaultBenutzer);
 		}
 		return Optional.empty();
@@ -560,10 +641,12 @@ public class GemeindeStammdaten extends AbstractEntity {
 	 */
 	@Nonnull
 	public Optional<Benutzer> getDefaultBenutzerWithRoleTS() {
-		if (defaultBenutzerTS != null && defaultBenutzerTS.getRole().isRoleGemeindeOrTS()) {
+		if (defaultBenutzerTS != null
+			&& defaultBenutzerTS.getRole().isRoleGemeindeOrTS()) {
 			return Optional.ofNullable(defaultBenutzerTS);
 		}
-		if (defaultBenutzer != null && defaultBenutzer.getRole().isRoleGemeindeOrTS()) {
+		if (defaultBenutzer != null
+			&& defaultBenutzer.getRole().isRoleGemeindeOrTS()) {
 			return Optional.ofNullable(defaultBenutzer);
 		}
 		return Optional.empty();
@@ -574,7 +657,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return benachrichtigungBgEmailAuto;
 	}
 
-	public void setBenachrichtigungBgEmailAuto(@Nonnull Boolean benachrichtigungBgEmailAuto) {
+	public void setBenachrichtigungBgEmailAuto(
+		@Nonnull Boolean benachrichtigungBgEmailAuto
+	) {
 		this.benachrichtigungBgEmailAuto = benachrichtigungBgEmailAuto;
 	}
 
@@ -583,7 +668,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return benachrichtigungTsEmailAuto;
 	}
 
-	public void setBenachrichtigungTsEmailAuto(@Nonnull Boolean benachrichtigungTsEmailAuto) {
+	public void setBenachrichtigungTsEmailAuto(
+		@Nonnull Boolean benachrichtigungTsEmailAuto
+	) {
 		this.benachrichtigungTsEmailAuto = benachrichtigungTsEmailAuto;
 	}
 
@@ -601,7 +688,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return standardDokUnterschriftTitel;
 	}
 
-	public void setStandardDokUnterschriftTitel(@Nullable String standardDokUnterschriftTitel) {
+	public void setStandardDokUnterschriftTitel(
+		@Nullable String standardDokUnterschriftTitel
+	) {
 		this.standardDokUnterschriftTitel = standardDokUnterschriftTitel;
 	}
 
@@ -610,7 +699,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return standardDokUnterschriftName;
 	}
 
-	public void setStandardDokUnterschriftName(@Nullable String standardDokUnterschriftName) {
+	public void setStandardDokUnterschriftName(
+		@Nullable String standardDokUnterschriftName
+	) {
 		this.standardDokUnterschriftName = standardDokUnterschriftName;
 	}
 
@@ -619,7 +710,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return standardDokUnterschriftTitel2;
 	}
 
-	public void setStandardDokUnterschriftTitel2(@Nullable String standardDokUnterschriftTitel2) {
+	public void setStandardDokUnterschriftTitel2(
+		@Nullable String standardDokUnterschriftTitel2
+	) {
 		this.standardDokUnterschriftTitel2 = standardDokUnterschriftTitel2;
 	}
 
@@ -628,7 +721,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return standardDokUnterschriftName2;
 	}
 
-	public void setStandardDokUnterschriftName2(@Nullable String standardDokUnterschriftName2) {
+	public void setStandardDokUnterschriftName2(
+		@Nullable String standardDokUnterschriftName2
+	) {
 		this.standardDokUnterschriftName2 = standardDokUnterschriftName2;
 	}
 
@@ -646,8 +741,11 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return tsVerantwortlicherNachVerfuegungBenachrichtigen;
 	}
 
-	public void setTsVerantwortlicherNachVerfuegungBenachrichtigen(@Nonnull Boolean tsVerantwortlicherNachVerfuegungBenachrichtigen) {
-		this.tsVerantwortlicherNachVerfuegungBenachrichtigen = tsVerantwortlicherNachVerfuegungBenachrichtigen;
+	public void setTsVerantwortlicherNachVerfuegungBenachrichtigen(
+		@Nonnull Boolean tsVerantwortlicherNachVerfuegungBenachrichtigen
+	) {
+		this.tsVerantwortlicherNachVerfuegungBenachrichtigen =
+			tsVerantwortlicherNachVerfuegungBenachrichtigen;
 	}
 
 	@Nullable
@@ -667,7 +765,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return externalClients;
 	}
 
-	public void setExternalClients(@Nonnull Set<ExternalClient> externalClients) {
+	public void setExternalClients(
+		@Nonnull Set<ExternalClient> externalClients
+	) {
 		this.externalClients = externalClients;
 	}
 
@@ -712,7 +812,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return emailBeiGesuchsperiodeOeffnung;
 	}
 
-	public void setEmailBeiGesuchsperiodeOeffnung(@Nonnull Boolean emailBeiGesuchsperiodeOeffnung) {
+	public void setEmailBeiGesuchsperiodeOeffnung(
+		@Nonnull Boolean emailBeiGesuchsperiodeOeffnung
+	) {
 		this.emailBeiGesuchsperiodeOeffnung = emailBeiGesuchsperiodeOeffnung;
 	}
 
@@ -721,7 +823,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return gutscheinSelberAusgestellt;
 	}
 
-	public void setGutscheinSelberAusgestellt(@Nonnull Boolean gutscheinSelberAusgestellt) {
+	public void setGutscheinSelberAusgestellt(
+		@Nonnull Boolean gutscheinSelberAusgestellt
+	) {
 		this.gutscheinSelberAusgestellt = gutscheinSelberAusgestellt;
 	}
 
@@ -730,7 +834,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return gemeindeAusgabestelle;
 	}
 
-	public void setGemeindeAusgabestelle(@Nullable Gemeinde gemeindeAusgabestelle) {
+	public void setGemeindeAusgabestelle(
+		@Nullable Gemeinde gemeindeAusgabestelle
+	) {
 		this.gemeindeAusgabestelle = gemeindeAusgabestelle;
 	}
 
@@ -739,7 +845,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return hasAltGemeindeKontakt;
 	}
 
-	public void setHasAltGemeindeKontakt(@Nonnull Boolean hasAltGemeindeKontakt) {
+	public void setHasAltGemeindeKontakt(
+		@Nonnull Boolean hasAltGemeindeKontakt
+	) {
 		this.hasAltGemeindeKontakt = hasAltGemeindeKontakt;
 	}
 
@@ -748,19 +856,25 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return altGemeindeKontaktText;
 	}
 
-	public void setAltGemeindeKontaktText(@Nullable String altGemeindeKontaktText) {
+	public void setAltGemeindeKontaktText(
+		@Nullable String altGemeindeKontaktText
+	) {
 		this.altGemeindeKontaktText = altGemeindeKontaktText;
 	}
 
 	@Nonnull
-	public Boolean getHasZusatzTextVerfuegung() { return hasZusatzTextVerfuegung; }
+	public Boolean getHasZusatzTextVerfuegung() {
+		return hasZusatzTextVerfuegung;
+	}
 
 	public void setHasZusatzTextVerfuegung(@Nonnull Boolean hasZusatzText) {
 		this.hasZusatzTextVerfuegung = hasZusatzText;
 	}
 
 	@Nullable
-	public String getZusatzTextVerfuegung() { return zusatzTextVerfuegung; }
+	public String getZusatzTextVerfuegung() {
+		return zusatzTextVerfuegung;
+	}
 
 	public void setZusatzTextVerfuegung(@Nullable String zusatzText) {
 		this.zusatzTextVerfuegung = zusatzText;
@@ -771,7 +885,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return hasZusatzTextFreigabequittung;
 	}
 
-	public void setHasZusatzTextFreigabequittung(@Nonnull Boolean hasZusatzTextFreigabequittung) {
+	public void setHasZusatzTextFreigabequittung(
+		@Nonnull Boolean hasZusatzTextFreigabequittung
+	) {
 		this.hasZusatzTextFreigabequittung = hasZusatzTextFreigabequittung;
 	}
 
@@ -780,7 +896,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return zusatzTextFreigabequittung;
 	}
 
-	public void setZusatzTextFreigabequittung(@Nullable String zusatzTextFreigabequittung) {
+	public void setZusatzTextFreigabequittung(
+		@Nullable String zusatzTextFreigabequittung
+	) {
 		this.zusatzTextFreigabequittung = zusatzTextFreigabequittung;
 	}
 
@@ -789,7 +907,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return alleBgInstitutionenZugelassen;
 	}
 
-	public void setAlleBgInstitutionenZugelassen(@Nonnull Boolean alleBgInstitutionenZugelassen) {
+	public void setAlleBgInstitutionenZugelassen(
+		@Nonnull Boolean alleBgInstitutionenZugelassen
+	) {
 		this.alleBgInstitutionenZugelassen = alleBgInstitutionenZugelassen;
 	}
 
@@ -798,7 +918,9 @@ public class GemeindeStammdaten extends AbstractEntity {
 		return zugelasseneBgInstitutionen;
 	}
 
-	public void setZugelasseneBgInstitutionen(@Nonnull List<Institution> zugelasseneBgInstitutionen) {
+	public void setZugelasseneBgInstitutionen(
+		@Nonnull List<Institution> zugelasseneBgInstitutionen
+	) {
 		this.zugelasseneBgInstitutionen = zugelasseneBgInstitutionen;
 	}
 }

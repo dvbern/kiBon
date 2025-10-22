@@ -27,6 +27,7 @@ import {
 } from '@angular/core';
 import {ControlContainer, NgForm, NgModelGroup} from '@angular/forms';
 import {MatButtonToggleChange} from '@angular/material/button-toggle';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateDeclaration, Transition} from '@uirouter/core';
 import {Moment} from 'moment';
@@ -34,30 +35,32 @@ import {Observable} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
-import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
+import {
+    TSEinschulungTyp,
+    TSGemeindeStatus,
+    TSGesuchsperiodeStatus,
+    TSRole
+} from '@kibon/shared/model/enums';
 import {
     getGemeindspezifischeBGConfigKeys,
     TSEinstellungKey
-} from '../../../models/enums/TSEinstellungKey';
-import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
-import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
-import {TSRole} from '../../../models/enums/TSRole';
+} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSGemeindeZusaetzlicherGutscheinTyp} from '../../../models/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
 import {TSBenutzer} from '../../../models/TSBenutzer';
-import {TSEinstellung} from '../../../models/TSEinstellung';
-import {TSGemeinde} from '../../../models/TSGemeinde';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGemeindeKonfiguration} from '../../../models/TSGemeindeKonfiguration';
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {TSInstitution} from '../../../models/TSInstitution';
+import {
+    TSGemeinde,
+    TSGesuchsperiode,
+    TSInstitution
+} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {EinschulungTypesGemeindeVisitor} from '../../core/constants/EinschulungTypesGemeindeVisitor';
-import {LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
-import {MandantService} from '../../shared/services/mandant.service';
-
+import {MandantService} from '@kibon/shared-util-mandant-service';
 const LOG = LogFactory.createLog('EditGemeindeBGComponent');
 
 @Component({
@@ -65,7 +68,8 @@ const LOG = LogFactory.createLog('EditGemeindeBGComponent');
     templateUrl: './edit-gemeinde-bg.component.html',
     styleUrls: ['./edit-gemeinde-bg.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class EditGemeindeBGComponent implements OnInit {
     @Input() public stammdaten$: Observable<TSGemeindeStammdaten>;
@@ -123,7 +127,7 @@ export class EditGemeindeBGComponent implements OnInit {
         private readonly authServiceRs: AuthServiceRS,
         private readonly einstellungRS: EinstellungRS,
         private readonly cd: ChangeDetectorRef,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly institutionRS: InstitutionRS,
         private readonly mandantService: MandantService
     ) {}
@@ -132,8 +136,8 @@ export class EditGemeindeBGComponent implements OnInit {
         if (!this.gemeindeId) {
             return;
         }
-        this.stammdaten$.subscribe(
-            stammdaten => {
+        this.stammdaten$.subscribe({
+            next: stammdaten => {
                 this.konfigurationsListe = stammdaten.konfigurationsListe;
                 this.gemeindeStatus = stammdaten.gemeinde.status;
                 this.initProperties();
@@ -141,16 +145,16 @@ export class EditGemeindeBGComponent implements OnInit {
                 this.getKeineBeschwerdeAdresseInfo();
                 this.getAdressTranslation();
             },
-            err => LOG.error(err)
-        );
+            error: err => LOG.error(err)
+        });
 
-        this.mandantService.mandant$.subscribe(
-            mandant => {
+        this.mandantService.mandant$.subscribe({
+            next: mandant => {
                 this.einschulungTypGemeindeValues =
                     new EinschulungTypesGemeindeVisitor().process(mandant);
             },
-            err => LOG.error(err)
-        );
+            error: err => LOG.error(err)
+        });
 
         this.navigationDest = this.$transition$.to();
         this.anspruchBeschaeftigungAbhaengigkeitTypValues = Object.values(
@@ -193,13 +197,13 @@ export class EditGemeindeBGComponent implements OnInit {
     private initDauerBabytarifEinstellungen(): void {
         this.einstellungRS
             .findEinstellungByKey(TSEinstellungKey.DAUER_BABYTARIF)
-            .subscribe(
-                einstellungen => {
+            .subscribe({
+                next: einstellungen => {
                     this.dauerBabyTarife = einstellungen;
                     this.cd.markForCheck();
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     private initGesuchsperiodeIdsGemeindespezifischeKonfigForBGMap(): void {
@@ -208,8 +212,8 @@ export class EditGemeindeBGComponent implements OnInit {
             .findEinstellungByKey(
                 TSEinstellungKey.GEMEINDESPEZIFISCHE_BG_KONFIGURATIONEN
             )
-            .subscribe(
-                (response: TSEinstellung[]) => {
+            .subscribe({
+                next: (response: TSEinstellung[]) => {
                     response.forEach(config => {
                         this.gesuchsperiodeIdsGemeindespezifischeKonfigForBGMap.set(
                             config.gesuchsperiodeId,
@@ -223,8 +227,8 @@ export class EditGemeindeBGComponent implements OnInit {
                     });
                     this.cd.markForCheck();
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     private loadGemeindespezifischeBgKonfigurationen(
@@ -245,8 +249,8 @@ export class EditGemeindeBGComponent implements OnInit {
                     this.gemeindeId,
                     gesuchsperiodeId
                 )
-                .subscribe(
-                    einstellung => {
+                .subscribe({
+                    next: einstellung => {
                         einstellung.gemeindeId = this.gemeindeId;
                         gemeindeKonfig.gemeindespezifischeBGKonfigurationen.push(
                             einstellung
@@ -257,8 +261,8 @@ export class EditGemeindeBGComponent implements OnInit {
                         gemeindeKonfig.konfigurationen.push(einstellung);
                         this.cd.markForCheck();
                     },
-                    error => LOG.error(error)
-                );
+                    error: error => LOG.error(error)
+                });
         });
     }
 
@@ -279,10 +283,6 @@ export class EditGemeindeBGComponent implements OnInit {
 
     public compareGemeinde(g1: TSGemeinde, g2: TSGemeinde): boolean {
         return g1 && g2 ? g1.name === g2.name : g1 === g2;
-    }
-
-    public compareInstitution(i1: TSInstitution, i2: TSInstitution): boolean {
-        return i1 && i2 ? i1.id === i2.id : i1 === i2;
     }
 
     public altBGAdresseHasChange(newVal: boolean): void {
@@ -332,10 +332,9 @@ export class EditGemeindeBGComponent implements OnInit {
     public getKonfigBeguBisUndMitSchulstufeString(
         gk: TSGemeindeKonfiguration
     ): string {
-        const bgBisStr = this.translate.instant(
+        return this.translate.instant(
             gk.konfigBeguBisUndMitSchulstufe.toString()
         );
-        return bgBisStr;
     }
 
     public getKonfigAbhaengigkeitAnspruchBeschaeftigungspensum(
@@ -939,12 +938,11 @@ export class EditGemeindeBGComponent implements OnInit {
     private initErlaubenInstitutionenZuWaehlen(): void {
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then(
-                res =>
-                    (this.erlaubenInstitutionenZuWaehlen =
-                        res.erlaubenInstitutionenZuWaehlen)
-            )
-            .then(() => this.initInstitutionen());
+            .subscribe(res => {
+                this.erlaubenInstitutionenZuWaehlen =
+                    res.erlaubenInstitutionenZuWaehlen;
+                this.initInstitutionen();
+            });
     }
 
     private initInstitutionen(): void {
@@ -955,6 +953,10 @@ export class EditGemeindeBGComponent implements OnInit {
         this.institutionRS
             .getAllBgInstitutionen()
             .subscribe(institutionen => (this.institutionen = institutionen));
+    }
+
+    public removeSpacesOnBlur(stammdaten: TSGemeindeStammdaten): void {
+        stammdaten.bic = stammdaten.bic.replace(/\s+/g, '');
     }
 
     public zugelasseneBgInstitutionenStr(institution: TSInstitution[]): string {

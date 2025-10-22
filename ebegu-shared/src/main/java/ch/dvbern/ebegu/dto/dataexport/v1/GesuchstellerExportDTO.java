@@ -17,8 +17,8 @@ package ch.dvbern.ebegu.dto.dataexport.v1;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 /**
  * This is a DTO that is used to export the relevant Information about a {@link ch.dvbern.ebegu.entities.Gesuchsteller}.
@@ -33,7 +33,11 @@ public class GesuchstellerExportDTO {
 	public GesuchstellerExportDTO() {
 	}
 
-	public GesuchstellerExportDTO(String vorname, String nachname, String mail) {
+	public GesuchstellerExportDTO(
+		String vorname,
+		String nachname,
+		String mail
+	) {
 		this.vorname = vorname;
 		this.nachname = nachname;
 		this.email = mail;
@@ -73,8 +77,10 @@ public class GesuchstellerExportDTO {
 			return false;
 		}
 		GesuchstellerExportDTO that = (GesuchstellerExportDTO) o;
-		return Objects.equals(getVorname(), that.getVorname()) &&
-			Objects.equals(getNachname(), that.getNachname()) &&
+		return Objects.equals(getVorname(), that.getVorname())
+			&&
+			Objects.equals(getNachname(), that.getNachname())
+			&&
 			Objects.equals(getEmail(), that.getEmail());
 	}
 

@@ -13,13 +13,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {TSGemeinde, TSInstitution} from '@kibon/shared/model/entity';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {getTSBetreuungsangebotTypValuesForMandant} from '@kibon/shared/util-fn/betreuungsangebot-typ';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {
     IComponentOptions,
     IController,
     IFilterService,
     IPromise,
     IScope,
-    IWindowService
+    IWindowService,
+    element,
+    isFunction
 } from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -35,20 +41,13 @@ import {
     getNormalizedTSAntragTypValues,
     TSAntragTyp
 } from '../../../../models/enums/TSAntragTyp';
-import {
-    getTSBetreuungsangebotTypValuesForMandant,
-    TSBetreuungsangebotTyp
-} from '../../../../models/enums/betreuung/TSBetreuungsangebotTyp';
 import {TSAbstractAntragEntity} from '../../../../models/TSAbstractAntragEntity';
 import {TSAntragDTO} from '../../../../models/TSAntragDTO';
 import {TSAntragSearchresultDTO} from '../../../../models/TSAntragSearchresultDTO';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
-import {TSGemeinde} from '../../../../models/TSGemeinde';
-import {TSInstitution} from '../../../../models/TSInstitution';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {LogFactory} from '../../logging/LogFactory';
-import {ApplicationPropertyRS} from '../../rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {GesuchsperiodeRS} from '../../service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../../service/institutionRS.rest';
 import ITranslateService = angular.translate.ITranslateService;
@@ -86,7 +85,7 @@ export class DVAntragListController implements IController {
         'EinstellungRS',
         '$translate',
         '$scope',
-        'ApplicationPropertyRS'
+        'SharedUtilApplicationPropertyRsService'
     ];
 
     public totalResultCount: number;
@@ -140,7 +139,7 @@ export class DVAntragListController implements IController {
         private readonly einstellungRS: EinstellungRS,
         private readonly $translate: ITranslateService,
         private readonly $scope: IScope,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {
@@ -170,10 +169,13 @@ export class DVAntragListController implements IController {
                 );
             }
         );
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.tagesschulangebotEnabled = res.angebotTSActivated;
-            this.angebotMittagstischEnabled = res.angebotMittagstischActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.tagesschulangebotEnabled = res.angebotTSActivated;
+                this.angebotMittagstischEnabled =
+                    res.angebotMittagstischActivated;
+            });
     }
 
     public $onDestroy(): void {
@@ -182,7 +184,7 @@ export class DVAntragListController implements IController {
     }
 
     public updateInstitutionFilter(): void {
-        const inputElement = angular.element('#institutionen');
+        const inputElement = element('#institutionen');
         this.setSelectedInstitutionName();
         inputElement.val(this.selectedInstitutionName).trigger('input');
     }
@@ -190,12 +192,12 @@ export class DVAntragListController implements IController {
     public updateInstitutionenList(): void {
         this.institutionRS
             .getInstitutionenReadableForCurrentBenutzer()
-            .subscribe(
-                response => {
+            .subscribe({
+                next: response => {
                     this.institutionenList = response;
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public updateGesuchsperiodenList(): void {
@@ -212,12 +214,12 @@ export class DVAntragListController implements IController {
         this.gemeindeRS
             .getGemeindenForPrincipal$()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                gemeinden => {
+            .subscribe({
+                next: gemeinden => {
                     this.gemeindenList = gemeinden;
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public removeClicked(antragToRemove: TSAbstractAntragEntity): void {
@@ -236,7 +238,7 @@ export class DVAntragListController implements IController {
         const pagination = tableFilterState.pagination;
         this.pagination = pagination;
 
-        if (!this.onFilterChange || !angular.isFunction(this.onFilterChange)) {
+        if (!this.onFilterChange || !isFunction(this.onFilterChange)) {
             LOG.info('no callback function spcified for filtering');
 
             return;

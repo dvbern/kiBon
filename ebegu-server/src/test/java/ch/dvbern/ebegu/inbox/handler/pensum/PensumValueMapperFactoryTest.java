@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
@@ -22,9 +22,9 @@ import java.math.BigDecimal;
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.betreuung.BetreuungEinstellungen;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.BetreuungsmitteilungPensum;
-import ch.dvbern.ebegu.enums.EinstellungKey;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.kibon.exchange.commons.platzbestaetigung.ZeitabschnittDTO;
 import ch.dvbern.kibon.exchange.commons.types.Zeiteinheit;
@@ -49,7 +49,8 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 class PensumValueMapperFactoryTest extends EasyMockSupport {
 
 	@TestSubject
-	private final PensumValueMapperFactory factory = new PensumValueMapperFactory();
+	private final PensumValueMapperFactory factory =
+		new PensumValueMapperFactory();
 
 	@Mock
 	private EinstellungService einstellungService;
@@ -70,19 +71,36 @@ class PensumValueMapperFactoryTest extends EasyMockSupport {
 		@Nonnull BigDecimal betreuungspensum,
 		@Nonnull BigDecimal pensumInPercent
 	) {
-		ZeitabschnittDTO z = createZeitabschnittDTO(Constants.DEFAULT_GUELTIGKEIT);
+		ZeitabschnittDTO z = createZeitabschnittDTO(
+			Constants.DEFAULT_GUELTIGKEIT
+		);
 		z.setPensumUnit(zeiteinheit);
 		z.setBetreuungspensum(betreuungspensum);
 
-		expect(einstellungService.getEinstellungAsBigDecimal(eq(EinstellungKey.OEFFNUNGSTAGE_KITA), anyObject()))
+		expect(
+			einstellungService.getEinstellungAsBigDecimal(
+				eq(EinstellungKey.OEFFNUNGSTAGE_KITA),
+				anyObject()
+			)
+		)
 			.andReturn(BigDecimal.valueOf(240))
 			.anyTimes();
 
-		expect(einstellungService.getEinstellungAsBigDecimal(eq(EinstellungKey.OEFFNUNGSTAGE_TFO), anyObject()))
+		expect(
+			einstellungService.getEinstellungAsBigDecimal(
+				eq(EinstellungKey.OEFFNUNGSTAGE_TFO),
+				anyObject()
+			)
+		)
 			.andReturn(BigDecimal.valueOf(240))
 			.anyTimes();
 
-		expect(einstellungService.getEinstellungAsBigDecimal(eq(EinstellungKey.OEFFNUNGSSTUNDEN_TFO), anyObject()))
+		expect(
+			einstellungService.getEinstellungAsBigDecimal(
+				eq(EinstellungKey.OEFFNUNGSSTUNDEN_TFO),
+				anyObject()
+			)
+		)
 			.andReturn(BigDecimal.valueOf(11))
 			.anyTimes();
 
@@ -101,7 +119,9 @@ class PensumValueMapperFactoryTest extends EasyMockSupport {
 			.mahlzeitenVerguenstigungEnabled(true)
 			.build();
 
-		PensumValueMapper pensumMapper = factory.createForPensum(initProcessingContext(z, einstellungen));
+		PensumValueMapper pensumMapper = factory.createForPensum(
+			initProcessingContext(z, einstellungen)
+		);
 
 		BetreuungsmitteilungPensum actual = new BetreuungsmitteilungPensum();
 		pensumMapper.toAbstractMahlzeitenPensum(actual, z);

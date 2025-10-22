@@ -13,7 +13,8 @@ public class AsivBernTestfallDataProvider extends BernTestfallDataProvider {
 
 	@Override
 	public Familiensituation createAlleinerziehend() {
-		Familiensituation familiensituation = createDefaultFieldsOfFamiliensituation();
+		Familiensituation familiensituation =
+			createDefaultFieldsOfFamiliensituation();
 		familiensituation.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
 		return familiensituation;
 	}

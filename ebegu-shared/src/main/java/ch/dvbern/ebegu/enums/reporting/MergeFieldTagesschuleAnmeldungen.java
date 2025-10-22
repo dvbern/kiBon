@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.enums.reporting;
@@ -34,87 +34,180 @@ import static ch.dvbern.oss.lib.excelmerger.converters.StandardConverters.STRING
 
 public enum MergeFieldTagesschuleAnmeldungen implements MergeFieldProvider {
 
-	tagesschuleAnmeldungenTitle(new SimpleMergeField<>("tagesschuleAnmeldungenTitle", STRING_CONVERTER)),
-	periode(new SimpleMergeField<>("periode", STRING_CONVERTER)),
-	kindTitle(new SimpleMergeField<>("kindTitle", STRING_CONVERTER)),
-	essensOptionTitle(new SimpleMergeField<>("essensOptionTitle", STRING_CONVERTER)),
-	antragsteller1Title(new SimpleMergeField<>("antragsteller1Title", STRING_CONVERTER)),
-	antragsteller2Title(new SimpleMergeField<>("antragsteller2Title", STRING_CONVERTER)),
-	nachnameTitle(new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)),
-	vornameTitle(new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)),
-	fleischOptionTitle(new SimpleMergeField<>("fleischOptionTitle", STRING_CONVERTER)),
-	allergienUndUnvertraeglichkeitenTitle(new SimpleMergeField<>("allergienUndUnvertraeglichkeitenTitle", STRING_CONVERTER)),
-	notfallnummerTitle(new SimpleMergeField<>("notfallnummerTitle", STRING_CONVERTER)),
-	emailTitle(new SimpleMergeField<>("emailTitle", STRING_CONVERTER)),
-	mobileTitle(new SimpleMergeField<>("mobileTitle", STRING_CONVERTER)),
-	telefonTitle(new SimpleMergeField<>("telefonTitle", STRING_CONVERTER)),
-	geburtsdatumTitle(new SimpleMergeField<>("geburtsdatumTitle", STRING_CONVERTER)),
-	referenzNummerTitle(new SimpleMergeField<>("referenznummerTitle", STRING_CONVERTER)),
-	eintrittsdatumTitle(new SimpleMergeField<>("eintrittsdatumTitle", STRING_CONVERTER)),
-	statusTitle(new SimpleMergeField<>("statusTitle", STRING_CONVERTER)),
-	abholungTagesschuleTitle(new SimpleMergeField<>("abholungTagesschuleTitle", STRING_CONVERTER)),
-	abweichungTitle(new SimpleMergeField<>("abweichungTitle", STRING_CONVERTER)),
-	bemerkungTitle(new SimpleMergeField<>("bemerkungTitle", STRING_CONVERTER)),
-	wochentagMo(new SimpleMergeField<>("wochentagMo", STRING_CONVERTER)),
-	wochentagDi(new SimpleMergeField<>("wochentagDi", STRING_CONVERTER)),
-	wochentagMi(new SimpleMergeField<>("wochentagMi", STRING_CONVERTER)),
-	wochentagDo(new SimpleMergeField<>("wochentagDo", STRING_CONVERTER)),
-	wochentagFr(new SimpleMergeField<>("wochentagFr", STRING_CONVERTER)),
-	summeStundenTitle(new SimpleMergeField<>("summeStundenTitle", STRING_CONVERTER)),
-	summeVerpflegungTitle(new SimpleMergeField<>("summeVerpflegungTitle", STRING_CONVERTER)),
-	generiertAmTitle(new SimpleMergeField<>("generiertAmTitle", STRING_CONVERTER)),
-	generiertAm(new SimpleMergeField<>("generiertAm", DATE_CONVERTER)),
-	legende(new SimpleMergeField<>("legende", STRING_CONVERTER)),
-	legendeVolleKosten(new SimpleMergeField<>("legendeVolleKosten", STRING_CONVERTER)),
-	legendeZweiwoechentlich(new SimpleMergeField<>("legendeZweiwoechentlich", STRING_CONVERTER)),
-	legendeOhneVerpflegung(new SimpleMergeField<>("legendeOhneVerpflegung", STRING_CONVERTER)),
-	anzahlBestaetigteAnmeldungen(new SimpleMergeField<>("anzahlBestaetigteAnmeldungen", STRING_CONVERTER)),
-	anzahlAbgelehnteAnmeldungen(new SimpleMergeField<>("anzahlAbgelehnteAnmeldungen", STRING_CONVERTER)),
-	anzahlOffeneAnmeldungen(new SimpleMergeField<>("anzahlOffeneAnmeldungen", STRING_CONVERTER)),
-	anzahlNichtFreigegebeneAnmeldungen(new SimpleMergeField<>("anzahlNichtFreigegebeneAnmeldungen", STRING_CONVERTER)),
+	tagesschuleAnmeldungenTitle(
+		new SimpleMergeField<>(
+			"tagesschuleAnmeldungenTitle",
+			STRING_CONVERTER
+		)
+	), periode(new SimpleMergeField<>("periode", STRING_CONVERTER)), kindTitle(
+		new SimpleMergeField<>("kindTitle", STRING_CONVERTER)
+	), essensOptionTitle(
+		new SimpleMergeField<>("essensOptionTitle", STRING_CONVERTER)
+	), antragsteller1Title(
+		new SimpleMergeField<>("antragsteller1Title", STRING_CONVERTER)
+	), antragsteller2Title(
+		new SimpleMergeField<>("antragsteller2Title", STRING_CONVERTER)
+	), nachnameTitle(
+		new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)
+	), vornameTitle(
+		new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)
+	), fleischOptionTitle(
+		new SimpleMergeField<>("fleischOptionTitle", STRING_CONVERTER)
+	), allergienUndUnvertraeglichkeitenTitle(
+		new SimpleMergeField<>(
+			"allergienUndUnvertraeglichkeitenTitle",
+			STRING_CONVERTER
+		)
+	), notfallnummerTitle(
+		new SimpleMergeField<>("notfallnummerTitle", STRING_CONVERTER)
+	), emailTitle(
+		new SimpleMergeField<>("emailTitle", STRING_CONVERTER)
+	), mobileTitle(
+		new SimpleMergeField<>("mobileTitle", STRING_CONVERTER)
+	), telefonTitle(
+		new SimpleMergeField<>("telefonTitle", STRING_CONVERTER)
+	), geburtsdatumTitle(
+		new SimpleMergeField<>("geburtsdatumTitle", STRING_CONVERTER)
+	), referenzNummerTitle(
+		new SimpleMergeField<>("referenznummerTitle", STRING_CONVERTER)
+	), eintrittsdatumTitle(
+		new SimpleMergeField<>("eintrittsdatumTitle", STRING_CONVERTER)
+	), statusTitle(
+		new SimpleMergeField<>("statusTitle", STRING_CONVERTER)
+	), planKlasseTitle(
+		new SimpleMergeField<>("planKlasseTitle", STRING_CONVERTER)
+	), abholungTagesschuleTitle(
+		new SimpleMergeField<>("abholungTagesschuleTitle", STRING_CONVERTER)
+	), abweichungTitle(
+		new SimpleMergeField<>("abweichungTitle", STRING_CONVERTER)
+	), bemerkungTitle(
+		new SimpleMergeField<>("bemerkungTitle", STRING_CONVERTER)
+	), wochentagMo(
+		new SimpleMergeField<>("wochentagMo", STRING_CONVERTER)
+	), wochentagDi(
+		new SimpleMergeField<>("wochentagDi", STRING_CONVERTER)
+	), wochentagMi(
+		new SimpleMergeField<>("wochentagMi", STRING_CONVERTER)
+	), wochentagDo(
+		new SimpleMergeField<>("wochentagDo", STRING_CONVERTER)
+	), wochentagFr(
+		new SimpleMergeField<>("wochentagFr", STRING_CONVERTER)
+	), summeStundenTitle(
+		new SimpleMergeField<>("summeStundenTitle", STRING_CONVERTER)
+	), summeVerpflegungTitle(
+		new SimpleMergeField<>("summeVerpflegungTitle", STRING_CONVERTER)
+	), generiertAmTitle(
+		new SimpleMergeField<>("generiertAmTitle", STRING_CONVERTER)
+	), generiertAm(
+		new SimpleMergeField<>("generiertAm", DATE_CONVERTER)
+	), legende(
+		new SimpleMergeField<>("legende", STRING_CONVERTER)
+	), legendeVolleKosten(
+		new SimpleMergeField<>("legendeVolleKosten", STRING_CONVERTER)
+	), legendeZweiwoechentlich(
+		new SimpleMergeField<>("legendeZweiwoechentlich", STRING_CONVERTER)
+	), legendeOhneVerpflegung(
+		new SimpleMergeField<>("legendeOhneVerpflegung", STRING_CONVERTER)
+	), anzahlBestaetigteAnmeldungen(
+		new SimpleMergeField<>(
+			"anzahlBestaetigteAnmeldungen",
+			STRING_CONVERTER
+		)
+	), anzahlAbgelehnteAnmeldungen(
+		new SimpleMergeField<>(
+			"anzahlAbgelehnteAnmeldungen",
+			STRING_CONVERTER
+		)
+	), anzahlOffeneAnmeldungen(
+		new SimpleMergeField<>("anzahlOffeneAnmeldungen", STRING_CONVERTER)
+	), anzahlNichtFreigegebeneAnmeldungen(
+		new SimpleMergeField<>(
+			"anzahlNichtFreigegebeneAnmeldungen",
+			STRING_CONVERTER
+		)
+	),
 
-	repeatRow(new RepeatRowMergeField("repeatRow")),
-	repeatRow2(new RepeatRowMergeField("repeatRow2")),
+	repeatRow(new RepeatRowMergeField("repeatRow")), repeatRow2(
+		new RepeatRowMergeField("repeatRow2")
+	),
 
-	nachnameKind(new SimpleMergeField<>("nachnameKind", STRING_CONVERTER)),
-	vornameKind(new SimpleMergeField<>("vornameKind", STRING_CONVERTER)),
-	geburtsdatumKind(new SimpleMergeField<>("geburtsdatumKind", DATE_CONVERTER)),
+	nachnameKind(
+		new SimpleMergeField<>("nachnameKind", STRING_CONVERTER)
+	), vornameKind(
+		new SimpleMergeField<>("vornameKind", STRING_CONVERTER)
+	), geburtsdatumKind(
+		new SimpleMergeField<>("geburtsdatumKind", DATE_CONVERTER)
+	),
 
-	fleischOption(new SimpleMergeField<>("fleischOption", STRING_CONVERTER)),
-	allergienUndUnvertraeglichkeiten(new SimpleMergeField<>("allergienUndUnvertraeglichkeiten", STRING_CONVERTER)),
-	notfallnummer(new SimpleMergeField<>("notfallnummer", STRING_CONVERTER)),
+	fleischOption(
+		new SimpleMergeField<>("fleischOption", STRING_CONVERTER)
+	), allergienUndUnvertraeglichkeiten(
+		new SimpleMergeField<>(
+			"allergienUndUnvertraeglichkeiten",
+			STRING_CONVERTER
+		)
+	), notfallnummer(new SimpleMergeField<>("notfallnummer", STRING_CONVERTER)),
 
-	vornameAntragsteller1(new SimpleMergeField<>("vornameAntragsteller1", STRING_CONVERTER)),
-	nachnameAntragsteller1(new SimpleMergeField<>("nachnameAntragsteller1", STRING_CONVERTER)),
-	emailAntragsteller1(new SimpleMergeField<>("emailAntragsteller1", STRING_CONVERTER)),
-	mobileAntragsteller1(new SimpleMergeField<>("mobileAntragsteller1", STRING_CONVERTER)),
-	telefonAntragsteller1(new SimpleMergeField<>("telefonAntragsteller1", STRING_CONVERTER)),
+	vornameAntragsteller1(
+		new SimpleMergeField<>("vornameAntragsteller1", STRING_CONVERTER)
+	), nachnameAntragsteller1(
+		new SimpleMergeField<>("nachnameAntragsteller1", STRING_CONVERTER)
+	), emailAntragsteller1(
+		new SimpleMergeField<>("emailAntragsteller1", STRING_CONVERTER)
+	), mobileAntragsteller1(
+		new SimpleMergeField<>("mobileAntragsteller1", STRING_CONVERTER)
+	), telefonAntragsteller1(
+		new SimpleMergeField<>("telefonAntragsteller1", STRING_CONVERTER)
+	),
 
-	vornameAntragsteller2(new SimpleMergeField<>("vornameAntragsteller2", STRING_CONVERTER)),
-	nachnameAntragsteller2(new SimpleMergeField<>("nachnameAntragsteller2", STRING_CONVERTER)),
-	emailAntragsteller2(new SimpleMergeField<>("emailAntragsteller2", STRING_CONVERTER)),
-	mobileAntragsteller2(new SimpleMergeField<>("mobileAntragsteller2", STRING_CONVERTER)),
-	telefonAntragsteller2(new SimpleMergeField<>("telefonAntragsteller2", STRING_CONVERTER)),
+	vornameAntragsteller2(
+		new SimpleMergeField<>("vornameAntragsteller2", STRING_CONVERTER)
+	), nachnameAntragsteller2(
+		new SimpleMergeField<>("nachnameAntragsteller2", STRING_CONVERTER)
+	), emailAntragsteller2(
+		new SimpleMergeField<>("emailAntragsteller2", STRING_CONVERTER)
+	), mobileAntragsteller2(
+		new SimpleMergeField<>("mobileAntragsteller2", STRING_CONVERTER)
+	), telefonAntragsteller2(
+		new SimpleMergeField<>("telefonAntragsteller2", STRING_CONVERTER)
+	),
 
-	referenzNummer(new SimpleMergeField<>("referenznummer", STRING_CONVERTER)),
-	eintrittsdatum(new SimpleMergeField<>("eintrittsdatum", DATE_CONVERTER)),
-	status(new SimpleMergeField<>("status", STRING_CONVERTER)),
+	referenzNummer(
+		new SimpleMergeField<>("referenznummer", STRING_CONVERTER)
+	), eintrittsdatum(
+		new SimpleMergeField<>("eintrittsdatum", DATE_CONVERTER)
+	), status(
+		new SimpleMergeField<>("status", STRING_CONVERTER)
+	), planKlasse(
+		new SimpleMergeField<>("planKlasse", STRING_CONVERTER)
+	),
 
-	abholungTagesschule(new SimpleMergeField<>("abholungTagesschule", STRING_CONVERTER)),
-	abweichung(new SimpleMergeField<>("isAbweichung", BOOLEAN_X_CONVERTER)),
-	bemerkung(new SimpleMergeField<>("bemerkung", STRING_CONVERTER)),
+	abholungTagesschule(
+		new SimpleMergeField<>("abholungTagesschule", STRING_CONVERTER)
+	), abweichung(
+		new SimpleMergeField<>("isAbweichung", BOOLEAN_X_CONVERTER)
+	), bemerkung(new SimpleMergeField<>("bemerkung", STRING_CONVERTER)),
 
+	repeatCol1(
+		new RepeatColMergeField<>("repeatCol1", STRING_CONVERTER)
+	), repeatCol2(
+		new RepeatColMergeField<>("repeatCol2", STRING_CONVERTER)
+	), repeatCol3(
+		new RepeatColMergeField<>("repeatCol3", STRING_CONVERTER)
+	), repeatCol4(
+		new RepeatColMergeField<>("repeatCol4", STRING_CONVERTER)
+	), repeatCol5(new RepeatColMergeField<>("repeatCol5", STRING_CONVERTER)),
 
-	repeatCol1(new RepeatColMergeField<>("repeatCol1", STRING_CONVERTER)),
-	repeatCol2(new RepeatColMergeField<>("repeatCol2", STRING_CONVERTER)),
-	repeatCol3(new RepeatColMergeField<>("repeatCol3", STRING_CONVERTER)),
-	repeatCol4(new RepeatColMergeField<>("repeatCol4", STRING_CONVERTER)),
-	repeatCol5(new RepeatColMergeField<>("repeatCol5", STRING_CONVERTER)),
-
-	modulName(new RepeatValMergeField<>("modulName", STRING_CONVERTER)),
-	modulStunden(new RepeatValMergeField<>("modulStunden", BIGDECIMAL_CONVERTER)),
-	verpflegungskosten(new RepeatValMergeField<>("verpflegungskosten", BIGDECIMAL_CONVERTER)),
-	angemeldet(new RepeatValMergeField<>("angemeldet", INTEGER_CONVERTER));
+	modulName(
+		new RepeatValMergeField<>("modulName", STRING_CONVERTER)
+	), modulStunden(
+		new RepeatValMergeField<>("modulStunden", BIGDECIMAL_CONVERTER)
+	), verpflegungskosten(
+		new RepeatValMergeField<>(
+			"verpflegungskosten",
+			BIGDECIMAL_CONVERTER
+		)
+	), angemeldet(new RepeatValMergeField<>("angemeldet", INTEGER_CONVERTER));
 
 	@Nonnull
 	private final MergeField<?> mergeField;

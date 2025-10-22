@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.fristen;
@@ -31,10 +31,10 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.Eingangsart;
 import ch.dvbern.ebegu.enums.Taetigkeit;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.rechner.AbstractBGRechnerTest;
 import ch.dvbern.ebegu.rules.EbeguRuleTestsHelper;
 import ch.dvbern.ebegu.test.TestDataUtil;
@@ -63,8 +63,10 @@ import static ch.dvbern.ebegu.rules.EbeguRuleTestsHelper.calculateInklAllgemeine
 @SuppressWarnings({ "Duplicates", "UnusedAssignment" })
 public class AnspruchFristenTest extends AbstractBGRechnerTest {
 
-	private static final LocalDate EINREICHUNG_RECHTZEITIG = TestDataUtil.START_PERIODE.minusMonths(3);
-	private static final LocalDate EINREICHUNG_ZU_SPAET = TestDataUtil.ENDE_PERIODE.minusMonths(3);
+	private static final LocalDate EINREICHUNG_RECHTZEITIG =
+		TestDataUtil.START_PERIODE.minusMonths(3);
+	private static final LocalDate EINREICHUNG_ZU_SPAET =
+		TestDataUtil.ENDE_PERIODE.minusMonths(3);
 
 	/**
 	 * Erstgesuch
@@ -76,30 +78,109 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void erstgesuchErwerbspensumErhoehtRechzeitig() {
 		Betreuung betreuung = createErstgesuch(EINREICHUNG_RECHTZEITIG);
 		Gesuch gesuch = betreuung.extractGesuch();
-		changeErwerbspensum(gesuch, LocalDate.of(2017,  Month.NOVEMBER, 16), 80);
+		changeErwerbspensum(gesuch, LocalDate.of(2017, Month.NOVEMBER, 16), 80);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(13, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 80, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			80,
+			75
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 16), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 100, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 16),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			100,
+			75
+		);
 	}
-
 
 	/**
 	 * Erstgesuch
@@ -111,29 +192,114 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void erstgesuchErwerbspensumErhoehtRechzeitigAR() {
 		Betreuung betreuung = createErstgesuch(EINREICHUNG_RECHTZEITIG);
 		Gesuch gesuch = betreuung.extractGesuch();
-		gesuch.getFall().setMandant(TestDataUtil.createMandant(MandantIdentifier.APPENZELL_AUSSERRHODEN));
-		changeErwerbspensum(gesuch, LocalDate.of(2017,  Month.NOVEMBER, 16), 80);
+		gesuch.getFall()
+			.setMandant(
+				TestDataUtil.createMandant(
+					MandantIdentifier.APPENZELL_AUSSERRHODEN
+				)
+			);
+		changeErwerbspensum(gesuch, LocalDate.of(2017, Month.NOVEMBER, 16), 80);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(13, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 80, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			80,
+			75
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 16), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 100, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 16),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			100,
+			75
+		);
 	}
 
 	/**
@@ -146,27 +312,101 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void erstgesuchErwerbspensumErhoehtZuSpaet() {
 		Betreuung betreuung = createErstgesuch(EINREICHUNG_ZU_SPAET);
 		Gesuch gesuch = betreuung.extractGesuch();
-		changeErwerbspensum(gesuch, LocalDate.of(2017,  Month.NOVEMBER, 16), 80);
+		changeErwerbspensum(gesuch, LocalDate.of(2017, Month.NOVEMBER, 16), 80);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(12, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 0, 0);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			0,
+			0
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 100, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			100,
+			75
+		);
 	}
 
 	/**
@@ -179,29 +419,114 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void erstgesuchErwerbspensumErhoehtNach165TagenZuSpaetAR() {
 		Betreuung betreuung = createErstgesuch(EINREICHUNG_ZU_SPAET);
 		Gesuch gesuch = betreuung.extractGesuch();
-		gesuch.getFall().setMandant(TestDataUtil.createMandant(MandantIdentifier.APPENZELL_AUSSERRHODEN));
-		changeErwerbspensum(gesuch, LocalDate.of(2017,  Month.NOVEMBER, 16), 80);
+		gesuch.getFall()
+			.setMandant(
+				TestDataUtil.createMandant(
+					MandantIdentifier.APPENZELL_AUSSERRHODEN
+				)
+			);
+		changeErwerbspensum(gesuch, LocalDate.of(2017, Month.NOVEMBER, 16), 80);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(13, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 31), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 100, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 31),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			100,
+			75
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 100, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			100,
+			75
+		);
 	}
 
 	/**
@@ -214,27 +539,101 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void erstgesuchErwerbspensumReduziertRechtzeitig() {
 		Betreuung betreuung = createErstgesuch(EINREICHUNG_RECHTZEITIG);
 		Gesuch gesuch = betreuung.extractGesuch();
-		changeErwerbspensum(gesuch, LocalDate.of(2017,  Month.NOVEMBER, 16), 40);
+		changeErwerbspensum(gesuch, LocalDate.of(2017, Month.NOVEMBER, 16), 40);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(12, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 80, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			80,
+			75
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 60, 60);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			60,
+			60
+		);
 	}
 
 	/**
@@ -247,27 +646,101 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void erstgesuchErwerbspensumReduziertZuSpaet() {
 		Betreuung betreuung = createErstgesuch(EINREICHUNG_ZU_SPAET);
 		Gesuch gesuch = betreuung.extractGesuch();
-		changeErwerbspensum(gesuch, LocalDate.of(2017,  Month.NOVEMBER, 16), 40);
+		changeErwerbspensum(gesuch, LocalDate.of(2017, Month.NOVEMBER, 16), 40);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(12, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 0, 0);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 0, 0);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			0,
+			0
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			0,
+			0
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 60, 60);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			60,
+			60
+		);
 	}
 
 	/**
@@ -280,28 +753,112 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void mutationErwerbspensumErhoehtRechzeitig() {
 		Betreuung betreuung = createMutation(EINREICHUNG_RECHTZEITIG);
 		Gesuch mutation = betreuung.extractGesuch();
-		changeErwerbspensum(mutation, LocalDate.of(2017,  Month.NOVEMBER, 16), 80);
+		changeErwerbspensum(
+			mutation,
+			LocalDate.of(2017, Month.NOVEMBER, 16),
+			80
+		);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(13, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 80, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			80,
+			75
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 16), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 100, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 16),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			100,
+			75
+		);
 	}
 
 	/**
@@ -314,28 +871,112 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void mutationErwerbspensumErhoehtZuSpaet() {
 		Betreuung betreuung = createMutation(EINREICHUNG_ZU_SPAET);
 		Gesuch mutation = betreuung.extractGesuch();
-		changeErwerbspensum(mutation, LocalDate.of(2017,  Month.NOVEMBER, 16), 80);
+		changeErwerbspensum(
+			mutation,
+			LocalDate.of(2017, Month.NOVEMBER, 16),
+			80
+		);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(13, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 16), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 80, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 16),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			80,
+			75
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 100, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 100, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			100,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			100,
+			75
+		);
 	}
 
 	/**
@@ -348,27 +989,105 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void mutationErwerbspensumReduziertRechtzeitig() {
 		Betreuung betreuung = createMutation(EINREICHUNG_RECHTZEITIG);
 		Gesuch mutation = betreuung.extractGesuch();
-		changeErwerbspensum(mutation, LocalDate.of(2017,  Month.NOVEMBER, 16), 40);
+		changeErwerbspensum(
+			mutation,
+			LocalDate.of(2017, Month.NOVEMBER, 16),
+			40
+		);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(12, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 80, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			80,
+			75
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 60, 60);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			60,
+			60
+		);
 	}
 
 	/**
@@ -381,60 +1100,173 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 	public void mutationErwerbspensumReduziertZuSpaet() {
 		Betreuung betreuung = createMutation(EINREICHUNG_ZU_SPAET);
 		Gesuch mutation = betreuung.extractGesuch();
-		changeErwerbspensum(mutation, LocalDate.of(2017,  Month.NOVEMBER, 16), 40);
+		changeErwerbspensum(
+			mutation,
+			LocalDate.of(2017, Month.NOVEMBER, 16),
+			40
+		);
 
-		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(betreuung);
+		List<VerfuegungZeitabschnitt> result = calculateInklAllgemeineRegeln(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(12, result.size());
 		int i = 0;
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.AUGUST, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.SEPTEMBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.OCTOBER, 1), 75, 80, 75);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.NOVEMBER, 1), 75, 80, 75);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.AUGUST, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.SEPTEMBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.OCTOBER, 1),
+			75,
+			80,
+			75
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			75,
+			80,
+			75
+		);
 
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2017, Month.DECEMBER, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JANUARY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.FEBRUARY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MARCH, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.APRIL, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.MAY, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JUNE, 1), 75, 60, 60);
-		assertZeitabschnitt(result.get(i++), LocalDate.of(2018, Month.JULY, 1), 75, 60, 60);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2017, Month.DECEMBER, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JANUARY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.FEBRUARY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MARCH, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.APRIL, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.MAY, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JUNE, 1),
+			75,
+			60,
+			60
+		);
+		assertZeitabschnitt(
+			result.get(i++),
+			LocalDate.of(2018, Month.JULY, 1),
+			75,
+			60,
+			60
+		);
 	}
 
 	private Betreuung createErstgesuch(@Nonnull LocalDate eingangsdatum) {
-		Betreuung betreuung = EbeguRuleTestsHelper.createBetreuungWithPensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE, BetreuungsangebotTyp.KITA, 75,  BigDecimal.valueOf(2000));
+		Betreuung betreuung = EbeguRuleTestsHelper.createBetreuungWithPensum(
+			TestDataUtil.START_PERIODE,
+			TestDataUtil.ENDE_PERIODE,
+			BetreuungsangebotTyp.KITA,
+			75,
+			BigDecimal.valueOf(2000)
+		);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 		betreuung.setBetreuungsstatus(Betreuungsstatus.VERFUEGT);
-		Assert.assertNotNull(betreuung.getKind().getGesuch().getGesuchsteller1());
+		Assert.assertNotNull(
+			betreuung.getKind().getGesuch().getGesuchsteller1()
+		);
 		Gesuch gesuch = betreuung.extractGesuch();
 		GesuchstellerContainer gs1 = gesuch.getGesuchsteller1();
 		Assert.assertNotNull(gs1);
 		Assert.assertNotNull(gs1.getFinanzielleSituationContainer());
-		gs1.addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE, 60));
-		gs1.getFinanzielleSituationContainer().getFinanzielleSituationJA().setNettolohn(MathUtil.DEFAULT.from(50000L));
+		gs1.addErwerbspensumContainer(
+			TestDataUtil.createErwerbspensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				60
+			)
+		);
+		gs1.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA()
+			.setNettolohn(MathUtil.DEFAULT.from(50000L));
 		gesuch.setRegelnGueltigAb(eingangsdatum);
 		return betreuung;
 	}
 
 	private Betreuung createMutation(@Nonnull LocalDate eingangsdatum) {
-		Gesuch erstgesuch = createErstgesuch(EINREICHUNG_RECHTZEITIG).extractGesuch();
-		List<VerfuegungZeitabschnitt> calculate = calculateInklAllgemeineRegeln(erstgesuch.extractAllBetreuungen().get(0));
+		Gesuch erstgesuch = createErstgesuch(EINREICHUNG_RECHTZEITIG)
+			.extractGesuch();
+		List<VerfuegungZeitabschnitt> calculate = calculateInklAllgemeineRegeln(
+			erstgesuch.extractAllBetreuungen().get(0)
+		);
 		Verfuegung verfuegungErstgesuch = new Verfuegung();
 		verfuegungErstgesuch.setZeitabschnitte(calculate);
-		Gesuch mutation = erstgesuch.copyForMutation(new Gesuch(), Eingangsart.ONLINE, eingangsdatum);
-		mutation.extractAllBetreuungen().get(0).initVorgaengerVerfuegungen(verfuegungErstgesuch, null);
+		Gesuch mutation = erstgesuch.copyForMutation(
+			new Gesuch(),
+			Eingangsart.ONLINE,
+			eingangsdatum
+		);
+		mutation.extractAllBetreuungen()
+			.get(0)
+			.initVorgaengerVerfuegungen(verfuegungErstgesuch, null);
 		mutation.setRegelnGueltigAb(eingangsdatum);
 		return mutation.extractAllBetreuungen().get(0);
 	}
 
-	private void changeErwerbspensum(@Nonnull Gesuch gesuch, @Nonnull LocalDate stichtag, int neuesPensum) {
+	private void changeErwerbspensum(
+		@Nonnull Gesuch gesuch,
+		@Nonnull LocalDate stichtag,
+		int neuesPensum
+	) {
 		// Das alte beenden
 		Assert.assertNotNull(gesuch.getGesuchsteller1());
-		ErwerbspensumContainer altesEWP = gesuch.getGesuchsteller1().getErwerbspensenContainers().iterator().next();
+		ErwerbspensumContainer altesEWP = gesuch.getGesuchsteller1()
+			.getErwerbspensenContainers()
+			.iterator()
+			.next();
 		Assert.assertNotNull(altesEWP.getErwerbspensumJA());
-		altesEWP.getErwerbspensumJA().getGueltigkeit().setGueltigBis(stichtag.minusDays(1));
+		altesEWP.getErwerbspensumJA()
+			.getGueltigkeit()
+			.setGueltigBis(stichtag.minusDays(1));
 		// Une ein neues mit dem neuen Pensum erstellen
 		ErwerbspensumContainer neuesEWP = new ErwerbspensumContainer();
 		neuesEWP.setErwerbspensumJA(new Erwerbspensum());
@@ -445,4 +1277,3 @@ public class AnspruchFristenTest extends AbstractBGRechnerTest {
 		gesuch.getGesuchsteller1().getErwerbspensenContainers().add(neuesEWP);
 	}
 }
-

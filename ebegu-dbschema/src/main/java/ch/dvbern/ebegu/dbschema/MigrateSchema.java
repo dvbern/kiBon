@@ -15,14 +15,14 @@
 
 package ch.dvbern.ebegu.dbschema;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import javax.sql.DataSource;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
+import jakarta.ejb.TransactionManagement;
+import jakarta.ejb.TransactionManagementType;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.dbschema.dbprovider.DBProvider;
 import org.flywaydb.core.Flyway;
@@ -38,13 +38,11 @@ public class MigrateSchema {
 	@Inject
 	private Instance<DBProvider> dbProviderInst;
 
-
 	private DataSource resolveDB() {
 
 		DBProvider provider = dbProviderInst.get();
 		return provider.getDatasource();
 	}
-
 
 	@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
 	@PostConstruct
@@ -52,7 +50,12 @@ public class MigrateSchema {
 
 		final DataSource dataSource = resolveDB();
 		final Flyway flyway =
-			Flyway.configure().outOfOrder(true).encoding("UTF-8").table("schema_version").dataSource(dataSource).load();
+			Flyway.configure()
+				.outOfOrder(true)
+				.encoding("UTF-8")
+				.table("schema_version")
+				.dataSource(dataSource)
+				.load();
 
 		flyway.migrate();
 	}

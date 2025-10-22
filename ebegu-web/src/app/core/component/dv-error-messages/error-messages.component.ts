@@ -27,7 +27,7 @@ import {
 import {ControlContainer, NgForm, ValidationErrors} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {LogFactory} from '../../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 const LOG = LogFactory.createLog('ErrorMessagesComponent');
 
@@ -36,7 +36,8 @@ const LOG = LogFactory.createLog('ErrorMessagesComponent');
     templateUrl: './error-messages.component.html',
     styleUrls: ['./dv-error-messages.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class ErrorMessagesComponent implements OnChanges, OnDestroy {
     @Input() public errorObject: ValidationErrors | null;
@@ -50,10 +51,10 @@ export class ErrorMessagesComponent implements OnChanges, OnDestroy {
         public readonly form: NgForm,
         public readonly changeDetectorRef: ChangeDetectorRef
     ) {
-        this.form.ngSubmit.pipe(takeUntil(this.unsubscribe$)).subscribe(
-            () => this.changeDetectorRef.markForCheck(),
-            err => LOG.error(err)
-        );
+        this.form.ngSubmit.pipe(takeUntil(this.unsubscribe$)).subscribe({
+            next: () => this.changeDetectorRef.markForCheck(),
+            error: err => LOG.error(err)
+        });
     }
 
     public ngOnChanges(changes: SimpleChanges): void {

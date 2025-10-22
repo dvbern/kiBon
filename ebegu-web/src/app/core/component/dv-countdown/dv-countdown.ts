@@ -15,11 +15,11 @@
 
 import {StateService, UIRouterGlobals} from '@uirouter/core';
 import {IComponentOptions, IController, IIntervalService} from 'angular';
-import * as moment from 'moment';
+import moment from 'moment';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {OkDialogController} from '../../../../gesuch/dialog/OkDialogController';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
 import {TSHTTPEvent} from '../../events/TSHTTPEvent';

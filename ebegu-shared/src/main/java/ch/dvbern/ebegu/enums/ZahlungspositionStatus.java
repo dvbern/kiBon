@@ -20,7 +20,6 @@ package ch.dvbern.ebegu.enums;
  */
 public enum ZahlungspositionStatus {
 
-	NORMAL,
-	KORREKTUR
+	NORMAL, KORREKTUR
 
 }

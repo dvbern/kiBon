@@ -55,7 +55,7 @@ describe('StatistikComponent', () => {
     );
     const downloadRSSpy = jasmine.createSpyObj<DownloadRS>(DownloadRS.name, [
         'prepareDownloadWindow',
-        'startDownload'
+        'startDownloadGeneratedPDF'
     ]);
     const batchJobRSSpy = jasmine.createSpyObj<BatchJobRS>(BatchJobRS.name, [
         'getBatchJobsOfUser'

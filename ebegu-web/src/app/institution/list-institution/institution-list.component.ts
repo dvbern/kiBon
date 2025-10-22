@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {StateService} from '@uirouter/core';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -24,29 +25,31 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {StateService} from '@uirouter/core';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {TSInstitution} from '@kibon/shared/model/entity';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AbstractAdminViewX} from '../../../admin/abstractAdminViewX';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSInstitutionStatus} from '../../../models/enums/TSInstitutionStatus';
-import {TSRole} from '../../../models/enums/TSRole';
+import {
+    TSBetreuungsangebotTyp,
+    TSRole,
+    TSInstitutionStatus
+} from '@kibon/shared/model/enums';
 import {TSBerechtigung} from '../../../models/TSBerechtigung';
-import {TSInstitution} from '../../../models/TSInstitution';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '../../core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
-import {Log, LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
 
 @Component({
     selector: 'dv-institution-list',
     templateUrl: './institution-list.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class InstitutionListComponent
     extends AbstractAdminViewX
@@ -76,7 +79,7 @@ export class InstitutionListComponent
         authServiceRS: AuthServiceRS,
         private readonly cd: ChangeDetectorRef,
         private readonly gemeindeRS: GemeindeRS,
-        public readonly applicationPropertyRS: ApplicationPropertyRS
+        public readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {
         super(authServiceRS);
     }
@@ -85,14 +88,16 @@ export class InstitutionListComponent
         this.setHiddenColumns();
         this.loadData();
         this.setupGemeindeAndRoleSpecificProperties();
-        this.applicationPropertyRS.getPublicPropertiesCached().then(result => {
-            this.institutionenDurchGemeindenEinladen =
-                result.institutionenDurchGemeindenEinladen;
-            this.angebotTSActivated = result.angebotTSActivated;
-            this.angebotFIActivated = result.angebotFIActivated;
-            this.angebotMittagstischActivated =
-                result.angebotMittagstischActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(result => {
+                this.institutionenDurchGemeindenEinladen =
+                    result.institutionenDurchGemeindenEinladen;
+                this.angebotTSActivated = result.angebotTSActivated;
+                this.angebotFIActivated = result.angebotFIActivated;
+                this.angebotMittagstischActivated =
+                    result.angebotMittagstischActivated;
+            });
     }
 
     private setupGemeindeAndRoleSpecificProperties(): void {
@@ -133,9 +138,7 @@ export class InstitutionListComponent
                         const dvListItem = {
                             id: institution.id,
                             name: institution.name,
-                            status: institution.stammdatenCheckRequired
-                                ? 'CHECK_REQUIRED'
-                                : institution.status.toString(),
+                            status: institution.status.toString(),
                             gemeinde: institution.gemeinde?.name,
                             type: institution.betreuungsangebotTyp,
                             canEdit: this.hatBerechtigungEditieren(institution),

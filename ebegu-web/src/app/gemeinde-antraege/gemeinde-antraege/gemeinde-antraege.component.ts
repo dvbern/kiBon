@@ -24,12 +24,14 @@ import {
 } from '@angular/core';
 import {FormBuilder, NgForm, Validators} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {
     BehaviorSubject,
     combineLatest,
+    firstValueFrom,
     from,
     NEVER,
     Observable,
@@ -41,31 +43,29 @@ import {
     filter,
     map,
     mergeMap,
+    switchMap,
     tap
 } from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSPagination} from '../../../models/dto/TSPagination';
 import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
-import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../../../models/enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSGemeindeStatus, TSRole} from '@kibon/shared/model/enums';
 import {TSGemeindeAntrag} from '../../../models/gemeindeantrag/TSGemeindeAntrag';
 import {TSExceptionReport} from '../../../models/TSExceptionReport';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {TSPaginationResultDTO} from '../../../models/TSPaginationResultDTO';
-import {TSPublicAppConfig} from '../../../models/TSPublicAppConfig';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSPaginationResultDTO} from '@kibon/shared/model/dto';
+import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {
     DvMultiSelectDialogItem,
     DvNgMultiSelectDialogComponent
 } from '../../core/component/dv-ng-multi-select-dialog/dv-ng-multi-select-dialog.component';
-import {DvNgRemoveDialogComponent} from '../../core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {ErrorServiceX} from '../../core/errors/service/ErrorServiceX';
-import {LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {GesuchsperiodeRS} from '../../core/service/gesuchsperiodeRS.rest';
 import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
 import {DVAntragListFilter} from '../../shared/interfaces/DVAntragListFilter';
@@ -80,7 +80,8 @@ const LOG = LogFactory.createLog('GemeindeAntraegeComponent');
     templateUrl: './gemeinde-antraege.component.html',
     styleUrls: ['./gemeinde-antraege.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GemeindeAntraegeComponent implements OnInit {
     @ViewChild(NgForm) public form: NgForm;
@@ -140,7 +141,7 @@ export class GemeindeAntraegeComponent implements OnInit {
         private readonly wizardStepXRS: WizardStepXRS,
         private readonly gemeindeRS: GemeindeRS,
         private readonly authService: AuthServiceRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly dialog: MatDialog
     ) {}
 
@@ -167,7 +168,7 @@ export class GemeindeAntraegeComponent implements OnInit {
             this.sortDebounceSubject,
             this.paginationChangedSubj.asObservable()
         ]).pipe(
-            mergeMap(filterSortAndPag =>
+            switchMap(filterSortAndPag =>
                 this.gemeindeAntragService
                     .getGemeindeAntraege(
                         filterSortAndPag[0],
@@ -200,7 +201,18 @@ export class GemeindeAntraegeComponent implements OnInit {
                     antragTyp: antrag.gemeindeAntragTyp,
                     aenderungsdatum: antrag.timestampMutiert,
                     antragAbgeschlossen: antrag.antragAbgeschlossen,
-                    verantwortlicherGemeindeantraege: antrag.verantworlicher
+                    verantwortlicherGemeindeantraege: antrag.verantworlicher,
+                    gemeindeAntragFirstEinreichedatum:
+                        EbeguUtil.isNullOrUndefined(antrag.einreichedatum)
+                            ? ''
+                            : antrag.einreichedatum.toLocaleDateString(
+                                  'de-CH',
+                                  {
+                                      year: 'numeric',
+                                      month: '2-digit',
+                                      day: '2-digit'
+                                  }
+                              )
                 }))
             )
         );
@@ -256,10 +268,11 @@ export class GemeindeAntraegeComponent implements OnInit {
             this.formGroup.value.antragTyp ===
             TSGemeindeAntragTyp.LASTENAUSGLEICH_TAGESSCHULEN
         ) {
-            gemeindeSelection = await this.dialog
-                .open(DvNgMultiSelectDialogComponent, dialogConfig)
-                .afterClosed()
-                .toPromise()
+            gemeindeSelection = await firstValueFrom(
+                this.dialog
+                    .open(DvNgMultiSelectDialogComponent, dialogConfig)
+                    .afterClosed()
+            )
                 .then((allGemeinden: DvMultiSelectDialogItem[]) =>
                     allGemeinden?.filter(selection => selection.selected)
                 )

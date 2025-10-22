@@ -23,6 +23,15 @@ export class TSBetreuungspensum extends TSAbstractMahlzeitenPensum {
         super();
     }
 
+    override deepCopyTo(target: TSBetreuungspensum): TSBetreuungspensum {
+        super.deepCopyTo(target);
+
+        target.nichtEingetreten = this.nichtEingetreten;
+        target.betreuungInFerienzeit = this.betreuungInFerienzeit;
+
+        return target;
+    }
+
     public get nichtEingetreten(): boolean {
         return this._nichtEingetreten;
     }

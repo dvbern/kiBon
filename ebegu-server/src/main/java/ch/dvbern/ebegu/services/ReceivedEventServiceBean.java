@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -21,21 +21,21 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.ReceivedEvent;
 import ch.dvbern.ebegu.entities.ReceivedEvent_;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,19 +44,30 @@ import org.slf4j.LoggerFactory;
 @Local(ReceivedEventService.class)
 public class ReceivedEventServiceBean implements ReceivedEventService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ReceivedEventServiceBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		ReceivedEventServiceBean.class
+	);
 
 	@Inject
 	private Persistence persistence;
 
+	@SuppressWarnings("PMD.CloseResource")
 	@Override
 	public boolean isSuccessfullyProcessed(@Nonnull String eventId) {
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		CriteriaQuery<ReceivedEvent> query = cb.createQuery(ReceivedEvent.class);
+		CriteriaQuery<ReceivedEvent> query = cb.createQuery(
+			ReceivedEvent.class
+		);
 		Root<ReceivedEvent> root = query.from(ReceivedEvent.class);
 
-		ParameterExpression<String> eventIdParam = cb.parameter(String.class, "eventId");
-		Predicate eventIdPred = cb.equal(root.get(ReceivedEvent_.eventId), eventIdParam);
+		ParameterExpression<String> eventIdParam = cb.parameter(
+			String.class,
+			"eventId"
+		);
+		Predicate eventIdPred = cb.equal(
+			root.get(ReceivedEvent_.eventId),
+			eventIdParam
+		);
 
 		Predicate successPred = cb.isTrue(root.get(ReceivedEvent_.success));
 
@@ -71,21 +82,42 @@ public class ReceivedEventServiceBean implements ReceivedEventService {
 		return success.isPresent();
 	}
 
+	@SuppressWarnings("PMD.CloseResource")
 	@Override
 	public boolean isObsolete(@Nonnull ReceivedEvent receivedEvent) {
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		CriteriaQuery<ReceivedEvent> query = cb.createQuery(ReceivedEvent.class);
+		CriteriaQuery<ReceivedEvent> query = cb.createQuery(
+			ReceivedEvent.class
+		);
 		Root<ReceivedEvent> root = query.from(ReceivedEvent.class);
 
-		ParameterExpression<String> eventKeyParam = cb.parameter(String.class, "eventKey");
-		Predicate eventKeyPred = cb.equal(root.get(ReceivedEvent_.eventKey), eventKeyParam);
+		ParameterExpression<String> eventKeyParam = cb.parameter(
+			String.class,
+			"eventKey"
+		);
+		Predicate eventKeyPred = cb.equal(
+			root.get(ReceivedEvent_.eventKey),
+			eventKeyParam
+		);
 
-		ParameterExpression<String> eventTypeParam = cb.parameter(String.class, "eventType");
-		Predicate eventTypePred = cb.equal(root.get(ReceivedEvent_.eventType), eventTypeParam);
+		ParameterExpression<String> eventTypeParam = cb.parameter(
+			String.class,
+			"eventType"
+		);
+		Predicate eventTypePred = cb.equal(
+			root.get(ReceivedEvent_.eventType),
+			eventTypeParam
+		);
 
-		ParameterExpression<LocalDateTime> eventTimestampParam = cb.parameter(LocalDateTime.class, "eventTimestamp");
+		ParameterExpression<LocalDateTime> eventTimestampParam = cb.parameter(
+			LocalDateTime.class,
+			"eventTimestamp"
+		);
 		Predicate eventTimestampPred =
-			cb.greaterThanOrEqualTo(root.get(ReceivedEvent_.eventTimestamp), eventTimestampParam);
+			cb.greaterThanOrEqualTo(
+				root.get(ReceivedEvent_.eventTimestamp),
+				eventTimestampParam
+			);
 
 		query.where(eventKeyPred, eventTypePred, eventTimestampPred);
 
@@ -93,7 +125,10 @@ public class ReceivedEventServiceBean implements ReceivedEventService {
 		Optional<ReceivedEvent> success = em.createQuery(query)
 			.setParameter(eventKeyParam, receivedEvent.getEventKey())
 			.setParameter(eventTypeParam, receivedEvent.getEventType())
-			.setParameter(eventTimestampParam, receivedEvent.getEventTimestamp())
+			.setParameter(
+				eventTimestampParam,
+				receivedEvent.getEventTimestamp()
+			)
 			.getResultStream()
 			.findAny();
 
@@ -109,17 +144,25 @@ public class ReceivedEventServiceBean implements ReceivedEventService {
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void processingFailure(@Nonnull ReceivedEvent receivedEvent, @Nonnull Throwable e) {
+	public void processingFailure(
+		@Nonnull ReceivedEvent receivedEvent,
+		@Nonnull Throwable e
+	) {
 		receivedEvent.setSuccess(false);
 		try {
 			String error = String.format(
 				"Message: %s, Cause: %s, Root Cause: %s",
 				ExceptionUtils.getMessage(e),
 				ExceptionUtils.getMessage(e),
-				ExceptionUtils.getRootCauseMessage(e));
+				ExceptionUtils.getRootCauseMessage(e)
+			);
 			receivedEvent.setError(error);
 		} catch (RuntimeException ex) {
-			LOG.error("Exctracting error messages for {} failed", receivedEvent, ex);
+			LOG.error(
+				"Exctracting error messages for {} failed",
+				receivedEvent,
+				ex
+			);
 		}
 		persistence.persist(receivedEvent);
 	}

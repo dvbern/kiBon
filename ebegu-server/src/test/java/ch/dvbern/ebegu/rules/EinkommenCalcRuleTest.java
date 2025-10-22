@@ -15,117 +15,216 @@
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.dto.VerfuegungsBemerkungDTO;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import ch.dvbern.ebegu.dto.VerfuegungsBemerkungDTOList;
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.entities.AbstractPlatz;
+import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
+import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.Einkommensverschlechterung;
+import ch.dvbern.ebegu.entities.EinkommensverschlechterungContainer;
+import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfo;
+import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfoContainer;
+import ch.dvbern.ebegu.entities.ErweiterteBetreuung;
+import ch.dvbern.ebegu.entities.ErweiterteBetreuungContainer;
+import ch.dvbern.ebegu.entities.Fachstelle;
+import ch.dvbern.ebegu.entities.FinanzielleSituation;
+import ch.dvbern.ebegu.entities.FinanzielleSituationContainer;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.FinSitStatus;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationBernRechner;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.Before;
-import org.junit.Test;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_PAUSCHALE_BEI_ANSPRUCH;
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.KITA;
-import static ch.dvbern.ebegu.enums.EinstellungKey.FKJV_PAUSCHALE_BEI_ANSPRUCH;
 import static ch.dvbern.ebegu.util.Constants.EinstellungenDefaultWerteAsiv.EINSTELLUNG_MAX_EINKOMMEN;
 import static ch.dvbern.ebegu.util.Constants.EinstellungenDefaultWerteAsiv.MAX_EINKOMMEN;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * Testet die MaximalesEinkommen-Regel
  */
-public class EinkommenCalcRuleTest {
+class EinkommenCalcRuleTest {
 
 	private final BigDecimal EINKOMMEN = MathUtil.DEFAULT.fromNullSafe(100000);
-	private final BigDecimal EINKOMMEN_HOCH = MathUtil.DEFAULT.fromNullSafe(180000);
+	private final BigDecimal EINKOMMEN_HOCH = MathUtil.DEFAULT.fromNullSafe(
+		180000
+	);
 
 	private Mandant mandant;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		mandant = new Mandant();
 		mandant.setMandantIdentifier(MandantIdentifier.BERN);
 	}
 
 	@Test
-	public void testNormalfallKita() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, false, false, false, FinSitStatus.AKZEPTIERT));
+	void testNormalfallKita() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				false,
+				false,
+				false,
+				FinSitStatus.AKZEPTIERT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, EINKOMMEN.compareTo(abschnitt.getMassgebendesEinkommen()));
-		assertEquals(100, abschnitt.getAnspruchberechtigtesPensum());
-		assertFalse(abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertFalse(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(2, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
+		assertThat(
+			EINKOMMEN.compareTo(abschnitt.getMassgebendesEinkommen()),
+			is(0)
+		);
+		assertThat(abschnitt.getAnspruchberechtigtesPensum(), is(100));
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(false)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(2));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH),
+			is(true)
+		);
 	}
 
 	@Test
-	public void testNormalfallTagesschule() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungTagesschule(
-			EINKOMMEN, false, false, FinSitStatus.AKZEPTIERT));
+	void testNormalfallTagesschule() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungTagesschule(
+				EINKOMMEN,
+				false,
+				false,
+				FinSitStatus.AKZEPTIERT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, EINKOMMEN.compareTo(abschnitt.getMassgebendesEinkommen()));
-		assertEquals(100, abschnitt.getAnspruchberechtigtesPensum());
-		assertFalse(abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertFalse(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(1, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.BETREUUNGSANGEBOT_MSG));
+		assertThat(
+			EINKOMMEN.compareTo(abschnitt.getMassgebendesEinkommen()),
+			is(0)
+		);
+		assertThat(abschnitt.getAnspruchberechtigtesPensum(), is(100));
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(false)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(1));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.BETREUUNGSANGEBOT_MSG),
+			is(true)
+		);
 	}
 
 	@Test
-	public void testEinkommenZuHochKita() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN_HOCH, false, false, false, FinSitStatus.AKZEPTIERT));
+	void testEinkommenZuHochKita() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN_HOCH,
+				false,
+				false,
+				false,
+				FinSitStatus.AKZEPTIERT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, EINKOMMEN_HOCH.compareTo(abschnitt.getMassgebendesEinkommen()));
-		assertEquals(0, abschnitt.getAnspruchberechtigtesPensum());
-		assertTrue(abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertTrue(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(2, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_MAX_MSG));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
+		assertThat(
+			EINKOMMEN_HOCH.compareTo(abschnitt.getMassgebendesEinkommen()),
+			is(0)
+		);
+		assertThat(abschnitt.getAnspruchberechtigtesPensum(), is(100));
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(true)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(3));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.EINKOMMEN_MAX_MSG),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
 	}
 
 	@Test
-	public void testEinkommenZuHochTagesschule() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungTagesschule(
-			EINKOMMEN_HOCH, false, false, FinSitStatus.AKZEPTIERT));
+	void testEinkommenZuHochTagesschule() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungTagesschule(
+				EINKOMMEN_HOCH,
+				false,
+				false,
+				FinSitStatus.AKZEPTIERT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, EINKOMMEN_HOCH.compareTo(abschnitt.getMassgebendesEinkommen()));
-		assertEquals(100, abschnitt.getAnspruchberechtigtesPensum());
-		assertTrue(abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertTrue(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(2, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_MAX_MSG));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.BETREUUNGSANGEBOT_MSG));
+		assertThat(
+			EINKOMMEN_HOCH.compareTo(abschnitt.getMassgebendesEinkommen()),
+			is(0)
+		);
+		assertThat(abschnitt.getAnspruchberechtigtesPensum(), is(100));
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(true)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(2));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.EINKOMMEN_MAX_MSG),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.BETREUUNGSANGEBOT_MSG),
+			is(true)
+		);
 	}
 
 	/**
@@ -133,270 +232,708 @@ public class EinkommenCalcRuleTest {
 	 * Am Ende schaut es dass die Bemerkungen richtig geschrieben wurden
 	 */
 	@Test
-	public void testAcceptedEKV() {
+	void testAcceptedEKV() {
 		Betreuung betreuung = EbeguRuleTestsHelper.createBetreuungWithPensum(
-			TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE, KITA,100, BigDecimal.ZERO);
+			TestDataUtil.START_PERIODE,
+			TestDataUtil.ENDE_PERIODE,
+			KITA,
+			100,
+			BigDecimal.ZERO
+		);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 		Gesuch gesuch = betreuung.extractGesuch();
 
-		gesuch.setEinkommensverschlechterungInfoContainer(new EinkommensverschlechterungInfoContainer());
-		final EinkommensverschlechterungInfo einkommensverschlechterungInfoJA = new EinkommensverschlechterungInfo();
+		gesuch.setEinkommensverschlechterungInfoContainer(
+			new EinkommensverschlechterungInfoContainer()
+		);
+		final EinkommensverschlechterungInfo einkommensverschlechterungInfoJA =
+			new EinkommensverschlechterungInfo();
 		einkommensverschlechterungInfoJA.setEinkommensverschlechterung(true);
 		einkommensverschlechterungInfoJA.setEkvFuerBasisJahrPlus1(true);
 		einkommensverschlechterungInfoJA.setEkvFuerBasisJahrPlus2(true);
-		assertNotNull(gesuch.getEinkommensverschlechterungInfoContainer());
-		gesuch.getEinkommensverschlechterungInfoContainer().setEinkommensverschlechterungInfoJA(einkommensverschlechterungInfoJA);
+		assertThat(
+			gesuch.getEinkommensverschlechterungInfoContainer(),
+			notNullValue()
+		);
+		gesuch.getEinkommensverschlechterungInfoContainer()
+			.setEinkommensverschlechterungInfoJA(
+				einkommensverschlechterungInfoJA
+			);
 
-		assertNotNull(gesuch.getGesuchsteller1());
-		gesuch.getGesuchsteller1().addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE, 100));
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(new FinanzielleSituationContainer());
-		assertNotNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
-		gesuch.getGesuchsteller1().getFinanzielleSituationContainer().setFinanzielleSituationJA(new FinanzielleSituation());
-		gesuch.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA().setNettolohn(new BigDecimal(50000));
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
+		assertThat(gesuch.getGesuchsteller1(), notNullValue());
+		gesuch.getGesuchsteller1()
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					100
+				)
+			);
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				new FinanzielleSituationContainer()
+			);
+		assertThat(
+			gesuch.getGesuchsteller1().getFinanzielleSituationContainer(),
+			notNullValue()
+		);
+		gesuch.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.setFinanzielleSituationJA(new FinanzielleSituation());
+		gesuch.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA()
+			.setNettolohn(new BigDecimal(50000));
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
 
-		gesuch.getGesuchsteller1().setEinkommensverschlechterungContainer(new EinkommensverschlechterungContainer());
-		final Einkommensverschlechterung ekvJABasisJahrPlus1 = new Einkommensverschlechterung();
+		gesuch.getGesuchsteller1()
+			.setEinkommensverschlechterungContainer(
+				new EinkommensverschlechterungContainer()
+			);
+		final Einkommensverschlechterung ekvJABasisJahrPlus1 =
+			new Einkommensverschlechterung();
 		ekvJABasisJahrPlus1.setNettolohn(new BigDecimal(25000));
-		assertNotNull(gesuch.getGesuchsteller1().getEinkommensverschlechterungContainer());
-		gesuch.getGesuchsteller1().getEinkommensverschlechterungContainer().setEkvJABasisJahrPlus1(ekvJABasisJahrPlus1);
-		final Einkommensverschlechterung ekvJABasisJahrPlus2 = new Einkommensverschlechterung();
+		assertThat(
+			gesuch.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer(),
+			notNullValue()
+		);
+		gesuch.getGesuchsteller1()
+			.getEinkommensverschlechterungContainer()
+			.setEkvJABasisJahrPlus1(ekvJABasisJahrPlus1);
+		final Einkommensverschlechterung ekvJABasisJahrPlus2 =
+			new Einkommensverschlechterung();
 		ekvJABasisJahrPlus2.setNettolohn(new BigDecimal(20000));
-		gesuch.getGesuchsteller1().getEinkommensverschlechterungContainer().setEkvJABasisJahrPlus2(ekvJABasisJahrPlus2);
+		gesuch.getGesuchsteller1()
+			.getEinkommensverschlechterungContainer()
+			.setEkvJABasisJahrPlus2(ekvJABasisJahrPlus2);
 
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
-		assertEquals(2, result.size());
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
+		assertThat(result.size(), is(2));
 
 		VerfuegungZeitabschnitt abschnittErstesHalbjahrEKV1 = result.get(0);
-		assertEquals(25000, abschnittErstesHalbjahrEKV1.getMassgebendesEinkommen().intValue());
-		VerfuegungsBemerkungDTOList bemerkungenAbschnitt2 = abschnittErstesHalbjahrEKV1.getBemerkungenDTOList();
-		assertNotNull(bemerkungenAbschnitt2);
-		assertEquals(3, bemerkungenAbschnitt2.uniqueSize());
-		assertTrue(bemerkungenAbschnitt2.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		assertTrue(bemerkungenAbschnitt2.containsMsgKey(MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG));
-		assertTrue(bemerkungenAbschnitt2.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
-		String bemerkungEKV1 = "Ihr Antrag zur Anwendung der Einkommensverschlechterung wurde gutgeheissen. Das massgebende Einkommen des Jahres "
-			+ TestDataUtil.PERIODE_JAHR_1;
-		VerfuegungsBemerkungDTO bemerkungEkvAccept1 = bemerkungenAbschnitt2.findFirstBemerkungByMsgKey(MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG);
-		assertNotNull(bemerkungEkvAccept1);
-		assertTrue(bemerkungEkvAccept1.getTranslated(mandant).contains(bemerkungEKV1));
+		assertThat(
+			abschnittErstesHalbjahrEKV1.getMassgebendesEinkommen().intValue(),
+			is(25000)
+		);
+		VerfuegungsBemerkungDTOList bemerkungenAbschnitt2 =
+			abschnittErstesHalbjahrEKV1.getBemerkungenDTOList();
+		assertThat(bemerkungenAbschnitt2, notNullValue());
+		assertThat(bemerkungenAbschnitt2.uniqueSize(), is(3));
+		assertThat(
+			bemerkungenAbschnitt2.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			bemerkungenAbschnitt2.containsMsgKey(
+				MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG
+			),
+			is(true)
+		);
+		assertThat(
+			bemerkungenAbschnitt2.containsMsgKey(
+				MsgKey.VERFUEGUNG_MIT_ANSPRUCH
+			),
+			is(true)
+		);
 
 		VerfuegungZeitabschnitt abschnittZweitesHalbjahrEKV1 = result.get(1);
-		assertEquals(20000, abschnittZweitesHalbjahrEKV1.getMassgebendesEinkommen().intValue());
-		VerfuegungsBemerkungDTOList bemerkungenAbschnitt3 = abschnittZweitesHalbjahrEKV1.getBemerkungenDTOList();
-		assertNotNull(bemerkungenAbschnitt3);
-		assertEquals(3, bemerkungenAbschnitt3.uniqueSize());
-		assertTrue(bemerkungenAbschnitt3.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		assertTrue(bemerkungenAbschnitt3.containsMsgKey(MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG));
-		assertTrue(bemerkungenAbschnitt3.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
-		String bemerkungEKV2 = "Ihr Antrag zur Anwendung der Einkommensverschlechterung wurde gutgeheissen. Das massgebende Einkommen des Jahres "
-			+ TestDataUtil.PERIODE_JAHR_2;
-		VerfuegungsBemerkungDTO bemerkungEkvAccept2 = bemerkungenAbschnitt3.findFirstBemerkungByMsgKey(MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG);
-		assertNotNull(bemerkungEkvAccept2);
-		assertTrue(bemerkungEkvAccept2.getTranslated(mandant).contains(bemerkungEKV2));
+		assertThat(
+			abschnittZweitesHalbjahrEKV1.getMassgebendesEinkommen().intValue(),
+			is(20000)
+		);
+		VerfuegungsBemerkungDTOList bemerkungenAbschnitt3 =
+			abschnittZweitesHalbjahrEKV1.getBemerkungenDTOList();
+		assertThat(bemerkungenAbschnitt3, notNullValue());
+		assertThat(bemerkungenAbschnitt3.uniqueSize(), is(3));
+		assertThat(
+			bemerkungenAbschnitt3.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			bemerkungenAbschnitt3.containsMsgKey(
+				MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG
+			),
+			is(true)
+		);
+		assertThat(
+			bemerkungenAbschnitt3.containsMsgKey(
+				MsgKey.VERFUEGUNG_MIT_ANSPRUCH
+			),
+			is(true)
+		);
 	}
 
 	@Test
-	public void testSozialhilfebezueger() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, true, false, false, FinSitStatus.AKZEPTIERT));
+	void testSozialhilfebezueger() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				true,
+				false,
+				false,
+				FinSitStatus.AKZEPTIERT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, (new BigDecimal("0.00")).compareTo(abschnitt.getMassgebendesEinkommen()));
-		assertEquals(100, abschnitt.getAnspruchberechtigtesPensum());
-		assertFalse(abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertFalse(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(3, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
+		assertThat(
+			(new BigDecimal("0.00")).compareTo(
+				abschnitt.getMassgebendesEinkommen()
+			),
+			is(0)
+		);
+		assertThat(abschnitt.getAnspruchberechtigtesPensum(), is(100));
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isBezahltKompletteVollkosten(),
+			is(false)
+		);
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(false)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(3));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH),
+			is(true)
+		);
 	}
 
 	@Test
-	public void testNurPauschaleFuerErweiterteBeduernisse() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN_HOCH, false, true, true, FinSitStatus.AKZEPTIERT));
+	void testNurPauschaleFuerErweiterteBeduernisse() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN_HOCH,
+				false,
+				true,
+				true,
+				FinSitStatus.AKZEPTIERT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), Matchers.is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, (new BigDecimal(EINSTELLUNG_MAX_EINKOMMEN)).compareTo(result.get(0).getMassgebendesEinkommen()));
-		assertEquals("Anspruch wird wegen Pauschale bes. Bed. nicht auf 0 gesetzt", 100, abschnitt.getAnspruchberechtigtesPensum());
-		assertFalse("erweiterteBetreuung: BezahltVollkosten nicht gesetzt", abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertTrue(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(4, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_KEINE_VERGUENSTIGUNG_GEWUENSCHT_MSG));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWEITERTE_BEDUERFNISSE_MSG));
-		assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
+		assertThat(
+			(new BigDecimal(EINSTELLUNG_MAX_EINKOMMEN)).compareTo(
+				result.get(0).getMassgebendesEinkommen()
+			),
+			is(0)
+		);
+		assertThat(
+			"Anspruch wird wegen Pauschale bes. Bed. nicht auf 0 gesetzt",
+			abschnitt.getAnspruchberechtigtesPensum(),
+			is(100)
+		);
+		assertThat(
+			"erweiterteBetreuung: BezahltVollkosten nicht gesetzt",
+			abschnitt.getBgCalculationInputAsiv()
+				.isBezahltKompletteVollkosten(),
+			is(false)
+		);
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(true)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(4));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.EINKOMMEN_KEINE_VERGUENSTIGUNG_GEWUENSCHT_MSG
+				),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWEITERTE_BEDUERFNISSE_MSG),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH),
+			is(true)
+		);
 	}
 
 	@Test
-	public void testKeinePauschaleFuerErweiterteBeduernisseWennEinkommenZuHoch() {
+	void testKeinePauschaleFuerErweiterteBeduernisseWennEinkommenZuHoch() {
 		Betreuung betreuung = prepareBetreuungKita(
-			EINKOMMEN_HOCH, false, true, true, FinSitStatus.AKZEPTIERT);
-		Map<EinstellungKey, Einstellung> einstellungenMap = EbeguRuleTestsHelper.getAllEinstellungen(betreuung.extractGesuchsperiode());
+			EINKOMMEN_HOCH,
+			false,
+			true,
+			true,
+			FinSitStatus.AKZEPTIERT
+		);
+		Map<EinstellungKey, Einstellung> einstellungenMap = EbeguRuleTestsHelper
+			.getAllEinstellungen(betreuung.extractGesuchsperiode());
 		einstellungenMap.get(FKJV_PAUSCHALE_BEI_ANSPRUCH).setValue("true");
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung, einstellungenMap);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, (new BigDecimal(EINSTELLUNG_MAX_EINKOMMEN)).compareTo(result.get(0).getMassgebendesEinkommen()));
-		assertEquals("Anspruch wird trotz Pauschale bes. Bed. auf 0 gesetzt", 0, abschnitt.getAnspruchberechtigtesPensum());
-		assertTrue("erweiterteBetreuung: BezahltVollkosten gesetzt", abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertTrue(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(4, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_KEINE_VERGUENSTIGUNG_GEWUENSCHT_MSG));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.KEINE_ERWEITERTE_BEDUERFNISSE_MSG));
-		assertFalse(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
+		assertThat(
+			result.get(0).getMassgebendesEinkommen(),
+			is(new BigDecimal(EINSTELLUNG_MAX_EINKOMMEN))
+		);
+		assertThat(
+			result.get(0)
+				.getRelevantBgCalculationResult()
+				.getVerguenstigung()
+				.stripTrailingZeros(),
+			is(BigDecimal.ZERO)
+		);
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv().hasAnspruch(),
+			is(false)
+		);
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(true)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(3));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.EINKOMMEN_KEINE_VERGUENSTIGUNG_GEWUENSCHT_MSG
+				),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWEITERTE_BEDUERFNISSE_MSG),
+			is(false)
+		);
 	}
 
 	@Test
-	public void testKeineFinSitErfasstOhneErweiterteBeduerfnisse() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, false, true, false, FinSitStatus.AKZEPTIERT));
+	void testKeineFinSitErfasstOhneErweiterteBeduerfnisse() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				false,
+				true,
+				false,
+				FinSitStatus.AKZEPTIERT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, MAX_EINKOMMEN.compareTo(abschnitt.getMassgebendesEinkommen()));
-		assertEquals(0, abschnitt.getAnspruchberechtigtesPensum());
-		assertTrue(abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertTrue(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(2, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_KEINE_VERGUENSTIGUNG_GEWUENSCHT_MSG));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
+		assertThat(abschnitt.getMassgebendesEinkommen(), is(MAX_EINKOMMEN));
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv().hasAnspruch(),
+			is(false)
+		);
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(true)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(3));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.EINKOMMEN_KEINE_VERGUENSTIGUNG_GEWUENSCHT_MSG
+				),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH),
+			is(true)
+		);
 	}
 
 	@Test
-	public void testFinSitStatusNullKita() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, false, false, false, null));
+	void testFinSitStatusNullKita() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				false,
+				false,
+				false,
+				null
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, EINKOMMEN.compareTo(abschnitt.getMassgebendesEinkommen()));
-		assertEquals(100, abschnitt.getAnspruchberechtigtesPensum());
-		assertFalse(abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertFalse(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(2, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
+		assertThat(
+			EINKOMMEN.compareTo(abschnitt.getMassgebendesEinkommen()),
+			is(0)
+		);
+		assertThat(abschnitt.getAnspruchberechtigtesPensum(), is(100));
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isBezahltKompletteVollkosten(),
+			is(false)
+		);
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(false)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(2));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH),
+			is(true)
+		);
 	}
 
 	@Test
-	public void testFinSitStatusAbgelehntOhneBesondereBeduerfnisse() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, false, false, false, FinSitStatus.ABGELEHNT));
+	void testFinSitStatusAbgelehntOhneBesondereBeduerfnisse() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				false,
+				false,
+				false,
+				FinSitStatus.ABGELEHNT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, MAX_EINKOMMEN.compareTo(abschnitt.getMassgebendesEinkommen()));
-		assertEquals("Keine erweiterteBetreuung: Anspruch wird auf 0 gesetzt", 0, abschnitt.getAnspruchberechtigtesPensum());
-		assertTrue("Keine erweiterteBetreuung: Bezahlt Vollkosten", abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertTrue(abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(2, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG));
+		assertThat(abschnitt.getMassgebendesEinkommen(), is(MAX_EINKOMMEN));
+		assertThat(
+			abschnitt.getRelevantBgCalculationResult()
+				.getVerguenstigung()
+				.stripTrailingZeros(),
+			is(BigDecimal.ZERO)
+		);
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv().hasAnspruch(),
+			is(false)
+		);
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(true)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(2));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG
+				),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH),
+			is(false)
+		);
 	}
 
 	@Test
-	public void testFinSitStatusAbgelehntMitBesondereBeduerfnisse() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, false, false, true, FinSitStatus.ABGELEHNT));
+	void testFinSitStatusAbgelehntMitBesondereBeduerfnisse() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				false,
+				false,
+				true,
+				FinSitStatus.ABGELEHNT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
 		final VerfuegungZeitabschnitt abschnitt = result.get(0);
-		assertEquals(0, MAX_EINKOMMEN.compareTo(abschnitt.getMassgebendesEinkommen()));
-		assertEquals("Anspruch wird wegen Pauschale bes. Bed. nicht auf 0 gesetzt", 100, abschnitt.getAnspruchberechtigtesPensum());
-		assertFalse("erweiterteBetreuung: BezahltVollkosten nicht gesetzt", abschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		assertTrue("keinAnspruchAufgrundEinkommen gilt auch wenn erweiterteBetreuung", abschnitt.getBgCalculationInputAsiv().isKeinAnspruchAufgrundEinkommen());
-		assertFalse(abschnitt.getBemerkungenDTOList().isEmpty());
-		assertEquals(4, abschnitt.getBemerkungenDTOList().uniqueSize());
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWEITERTE_BEDUERFNISSE_MSG));
-		assertTrue(abschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
+		assertThat(abschnitt.getMassgebendesEinkommen(), is(MAX_EINKOMMEN));
+		assertThat(
+			"Anspruch wird wegen Pauschale bes. Bed. nicht auf 0 gesetzt",
+			abschnitt.getAnspruchberechtigtesPensum(),
+			is(100)
+		);
+		assertThat(
+			"erweiterteBetreuung: BezahltVollkosten nicht gesetzt",
+			abschnitt.getBgCalculationInputAsiv()
+				.isBezahltKompletteVollkosten(),
+			is(false)
+		);
+		assertThat(
+			"keinAnspruchAufgrundEinkommen gilt auch wenn erweiterteBetreuung",
+			abschnitt.getBgCalculationInputAsiv()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBgCalculationInputAsiv().hasAnspruch(),
+			is(false)
+		);
+		assertThat(abschnitt.getBemerkungenDTOList().isEmpty(), is(false));
+		assertThat(abschnitt.getBemerkungenDTOList().uniqueSize(), is(4));
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG
+				),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWEITERTE_BEDUERFNISSE_MSG),
+			is(true)
+		);
+		assertThat(
+			abschnitt.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH),
+			is(true)
+		);
 	}
 
 	@Test
-	public void finSitAbgelehentForSozialhilfeEmpfaenger() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, true, false, false, FinSitStatus.ABGELEHNT));
+	void finSitAbgelehentForSozialhilfeEmpfaenger() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				true,
+				false,
+				false,
+				FinSitStatus.ABGELEHNT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
-		assertEquals(MAX_EINKOMMEN, result.get(0).getMassgebendesEinkommen());
-		assertEquals(BigDecimal.ZERO.stripTrailingZeros(), result.get(0).getAbzugFamGroesse().stripTrailingZeros());
-		assertTrue(result.get(0).getRelevantBgCalculationInput().isKeinAnspruchAufgrundEinkommen());
-		assertTrue(result.get(0).getRelevantBgCalculationInput().isKategorieMaxEinkommen());
-		assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG));
-		assertFalse(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG_FKJV));
-		assertFalse(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG));
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
+		assertThat(result.get(0).getMassgebendesEinkommen(), is(MAX_EINKOMMEN));
+		assertThat(
+			result.get(0).getAbzugFamGroesse().stripTrailingZeros(),
+			is(BigDecimal.ZERO.stripTrailingZeros())
+		);
+		assertThat(
+			result.get(0)
+				.getRelevantBgCalculationInput()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getRelevantBgCalculationInput()
+				.isKategorieMaxEinkommen(),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG
+				),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG_FKJV
+				),
+			is(false)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG),
+			is(false)
+		);
 	}
 
 	@Test
-	public void finSitAbgelehentForSozialhilfeEmpfaengerAndTagesschulanmeldung() {
+	void finSitAbgelehentForSozialhilfeEmpfaengerAndTagesschulanmeldung() {
 		AnmeldungTagesschule anmeldungTagesschule = prepareBetreuungTagesschule(
-			EINKOMMEN, true, false,  FinSitStatus.ABGELEHNT);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(anmeldungTagesschule);
+			EINKOMMEN,
+			true,
+			false,
+			FinSitStatus.ABGELEHNT
+		);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			anmeldungTagesschule
+		);
 
 		BigDecimal maxTsTarif = EbeguRuleTestsHelper
-			.getAllEinstellungen(anmeldungTagesschule.extractGesuchsperiode())
+			.getAllEinstellungen(
+				anmeldungTagesschule.extractGesuchsperiode()
+			)
 			.get(EinstellungKey.MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG)
 			.getValueAsBigDecimal();
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
-		assertEquals(MAX_EINKOMMEN, result.get(0).getMassgebendesEinkommen());
-		assertEquals(BigDecimal.ZERO.stripTrailingZeros(), result.get(0).getAbzugFamGroesse().stripTrailingZeros());
-		assertTrue(result.get(0).getRelevantBgCalculationInput().isKeinAnspruchAufgrundEinkommen());
-		assertTrue(result.get(0).getRelevantBgCalculationInput().isKategorieMaxEinkommen());
-		assertEquals(result.get(0).getTsCalculationResultMitPaedagogischerBetreuung().getGebuehrProStunde(), maxTsTarif);
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
+		assertThat(result.get(0).getMassgebendesEinkommen(), is(MAX_EINKOMMEN));
+		assertThat(
+			result.get(0).getAbzugFamGroesse().stripTrailingZeros(),
+			is(BigDecimal.ZERO.stripTrailingZeros())
+		);
+		assertThat(
+			result.get(0)
+				.getRelevantBgCalculationInput()
+				.isKeinAnspruchAufgrundEinkommen(),
+			is(true)
+		);
+		assertThat(
+			result.get(0)
+				.getRelevantBgCalculationInput()
+				.isKategorieMaxEinkommen(),
+			is(true)
+		);
+		assertThat(
+			maxTsTarif,
+			is(
+				result.get(0)
+					.getTsCalculationResultMitPaedagogischerBetreuung()
+					.getGebuehrProStunde()
+			)
+		);
 	}
 
 	@Test
-	public void finSitAkzeptiertForSozialhilfeEmpfaenger() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, true, false, false, FinSitStatus.AKZEPTIERT));
+	void finSitAkzeptiertForSozialhilfeEmpfaenger() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				true,
+				false,
+				false,
+				FinSitStatus.AKZEPTIERT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
-		assertEquals(BigDecimal.ZERO.stripTrailingZeros(), result.get(0).getMassgebendesEinkommen().stripTrailingZeros());
-		assertFalse(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG));
-		assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG));
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
+		assertThat(
+			result.get(0).getMassgebendesEinkommen().stripTrailingZeros(),
+			is(BigDecimal.ZERO.stripTrailingZeros())
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG
+				),
+			is(false)
+		);
+		assertThat(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG),
+			is(true)
+		);
 	}
 
 	@Test
-	public void finSitAkzeptiert() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, true, false, false, FinSitStatus.AKZEPTIERT));
+	void finSitAkzeptiert() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				true,
+				false,
+				false,
+				FinSitStatus.AKZEPTIERT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
-		assertTrue(result.get(0).getBgCalculationInputAsiv().isFinsitAccepted());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
+		assertThat(
+			result.get(0).getBgCalculationInputAsiv().isFinsitAccepted(),
+			is(true)
+		);
 	}
 
 	@Test
-	public void finSitAbgelehnt() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareBetreuungKita(
-			EINKOMMEN, true, false, false, FinSitStatus.ABGELEHNT));
+	void finSitAbgelehnt() {
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareBetreuungKita(
+				EINKOMMEN,
+				true,
+				false,
+				false,
+				FinSitStatus.ABGELEHNT
+			)
+		);
 
-		assertNotNull(result);
-		assertEquals(1, result.size());
-		assertFalse(result.get(0).getBgCalculationInputAsiv().isFinsitAccepted());
+		assertThat(result, notNullValue());
+		assertThat(result.size(), is(1));
+		assertThat(
+			result.get(0).getBgCalculationInputAsiv().isFinsitAccepted(),
+			is(false)
+		);
 	}
 
 	private Betreuung prepareBetreuungKita(
@@ -407,18 +944,37 @@ public class EinkommenCalcRuleTest {
 		@Nullable FinSitStatus finSitStatus
 	) {
 		Betreuung betreuung = EbeguRuleTestsHelper.createBetreuungWithPensum(
-			TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE, KITA, 100, MathUtil.DEFAULT.fromNullSafe(2000));
-		prepareGesuch(betreuung, massgebendesEinkommen, sozialhilfeempfaenger, keineVerguenstigungGewuenscht, finSitStatus);
+			TestDataUtil.START_PERIODE,
+			TestDataUtil.ENDE_PERIODE,
+			KITA,
+			100,
+			MathUtil.DEFAULT.fromNullSafe(2000)
+		);
+		betreuung.initVorgaengerVerfuegungen(null, null);
+		prepareGesuch(
+			betreuung,
+			massgebendesEinkommen,
+			sozialhilfeempfaenger,
+			keineVerguenstigungGewuenscht,
+			finSitStatus
+		);
 		if (erweiterteBeduerfnisse) {
-			betreuung.setErweiterteBetreuungContainer(new ErweiterteBetreuungContainer());
-			betreuung.getErweiterteBetreuungContainer().setErweiterteBetreuungJA(new ErweiterteBetreuung());
-			ErweiterteBetreuung erweiterteBetreuungJA = betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA();
+			betreuung.setErweiterteBetreuungContainer(
+				new ErweiterteBetreuungContainer()
+			);
+			betreuung.getErweiterteBetreuungContainer()
+				.setErweiterteBetreuungJA(new ErweiterteBetreuung());
+			ErweiterteBetreuung erweiterteBetreuungJA = betreuung
+				.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA();
 			Objects.requireNonNull(erweiterteBetreuungJA);
 			erweiterteBetreuungJA.setErweiterteBeduerfnisse(true);
 			erweiterteBetreuungJA.setFachstelle(new Fachstelle());
 			erweiterteBetreuungJA.setErweiterteBeduerfnisseBestaetigt(true);
 			erweiterteBetreuungJA.setKeineKesbPlatzierung(true);
-			erweiterteBetreuungJA.setAnspruchFachstelleWennPensumUnterschritten(false);
+			erweiterteBetreuungJA.setAnspruchFachstelleWennPensumUnterschritten(
+				false
+			);
 		}
 		return betreuung;
 	}
@@ -429,8 +985,15 @@ public class EinkommenCalcRuleTest {
 		boolean keineVerguenstigungGewuenscht,
 		@Nullable FinSitStatus finSitStatus
 	) {
-		final AnmeldungTagesschule anmeldung = TestDataUtil.createGesuchWithAnmeldungTagesschule();
-		prepareGesuch(anmeldung, massgebendesEinkommen, sozialhilfeempfaenger, keineVerguenstigungGewuenscht, finSitStatus);
+		final AnmeldungTagesschule anmeldung = TestDataUtil
+			.createGesuchWithAnmeldungTagesschule();
+		prepareGesuch(
+			anmeldung,
+			massgebendesEinkommen,
+			sozialhilfeempfaenger,
+			keineVerguenstigungGewuenscht,
+			finSitStatus
+		);
 		return anmeldung;
 	}
 
@@ -443,16 +1006,39 @@ public class EinkommenCalcRuleTest {
 	) {
 		Gesuch gesuch = platz.extractGesuch();
 		gesuch.setFinSitStatus(finSitStatus);
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
-		assertNotNull(gesuch.getGesuchsteller1());
-		gesuch.getGesuchsteller1().addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE, 100));
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(new FinanzielleSituationContainer());
-		assertNotNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
-		gesuch.getGesuchsteller1().getFinanzielleSituationContainer().setFinanzielleSituationJA(new FinanzielleSituation());
-		gesuch.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA().setNettolohn(massgebendesEinkommen);
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
+		assertThat(gesuch.getGesuchsteller1(), notNullValue());
+		gesuch.getGesuchsteller1()
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					100
+				)
+			);
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				new FinanzielleSituationContainer()
+			);
+		assertThat(
+			gesuch.getGesuchsteller1().getFinanzielleSituationContainer(),
+			notNullValue()
+		);
+		gesuch.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.setFinanzielleSituationJA(new FinanzielleSituation());
+		gesuch.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA()
+			.setNettolohn(massgebendesEinkommen);
 		if (sozialhilfeempfaenger) {
-			Objects.requireNonNull(gesuch.extractFamiliensituation()).setSozialhilfeBezueger(true);
+			Objects.requireNonNull(gesuch.extractFamiliensituation())
+				.setSozialhilfeBezueger(true);
 		}
-		Objects.requireNonNull(gesuch.extractFamiliensituation()).setVerguenstigungGewuenscht(!keineVerguenstigungGewuenscht);
+		Objects.requireNonNull(gesuch.extractFamiliensituation())
+			.setVerguenstigungGewuenscht(!keineVerguenstigungGewuenscht);
 	}
 }

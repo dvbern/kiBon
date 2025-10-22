@@ -15,17 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IComponentOptions} from 'angular';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {copy, IComponentOptions} from 'angular';
+import {electronicFormatIBAN} from 'ibantools';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
-import {ApplicationPropertyRS} from '../../../../../app/core/rest-services/applicationPropertyRS.rest';
 import {ListResourceRS} from '../../../../../app/core/service/listResourceRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {isSteuerdatenAnfrageStatusErfolgreich} from '../../../../../models/enums/TSSteuerdatenAnfrageStatus';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
-import {TSAdresse} from '../../../../../models/TSAdresse';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSAdresse} from '@kibon/shared/model/entity';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {TSGesuch} from '../../../../../models/TSGesuch';
@@ -42,6 +42,7 @@ import IPromise = angular.IPromise;
 import IQService = angular.IQService;
 import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 const removeDialogTemplate = require('../../../../dialog/removeDialogTemplate.html');
 
@@ -68,8 +69,8 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
         'EbeguRestUtil',
         'ListResourceRS',
         'EinstellungRS',
-        'ApplicationPropertyRS',
-        'DemoFeatureRS'
+        'SharedUtilApplicationPropertyRsService',
+        'SharedUtilDvShowWarningAngabenVervollstaendingenService'
     ];
 
     public finanzielleSituationRequired: boolean;
@@ -78,6 +79,7 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
     private readonly initialModel: TSFinanzModel;
     public laenderList: TSLand[];
     private triedSavingWithoutForm: boolean = false;
+    public einzeln: boolean;
 
     public constructor(
         gesuchModelManager: GesuchModelManager,
@@ -92,7 +94,8 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
         private readonly ebeguRestUtil: EbeguRestUtil,
         listResourceRS: ListResourceRS,
         einstellungRS: EinstellungRS,
-        applicationPropertyRS: ApplicationPropertyRS
+        applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly showWarningAngabenVervollstaendingenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
     ) {
         super(
             gesuchModelManager,
@@ -117,7 +120,7 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
         this.model.copyFinSitDataFromGesuch(
             this.gesuchModelManager.getGesuch()
         );
-        this.initialModel = angular.copy(this.model);
+        this.initialModel = copy(this.model);
 
         this.allowedRoles =
             this.TSRoleUtil.getAllRolesButTraegerschaftInstitution();
@@ -128,7 +131,7 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
         this.areThereOnlySchulamtangebote =
             this.gesuchModelManager.areThereOnlySchulamtAngebote(); // so we load it
         // just once
-
+        this.einzeln = !this.is2GSRequired();
         this.gesuchModelManager.setGesuchstellerNumber(1);
     }
 
@@ -258,6 +261,10 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
             this.initialModel.isFinanzielleSituationRequired() &&
             !this.model.isFinanzielleSituationRequired()
         );
+    }
+
+    public showWarningAngabenVervollstaendigen(): boolean {
+        return this.showWarningAngabenVervollstaendingenService.showWarningAngabenVervollstaendigen();
     }
 
     public modelHasChangedToSozialhilfebezuegerin(): boolean {
@@ -428,8 +435,12 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
 
             properties.keineMahlzeitenverguenstigungBeantragt =
                 this.model.zahlungsinformationen.keineMahlzeitenverguenstigungBeantragt;
-            properties.iban =
-                this.model.zahlungsinformationen.iban?.toLocaleUpperCase();
+            properties.iban = electronicFormatIBAN(
+                this.model.zahlungsinformationen.iban?.toLocaleUpperCase()
+            );
+            if (properties.iban?.trim().length === 0) {
+                properties.iban = null;
+            }
             properties.kontoinhaber =
                 this.model.zahlungsinformationen.kontoinhaber;
             properties.abweichendeZahlungsadresse =

@@ -18,107 +18,149 @@
 package ch.dvbern.ebegu.lastenausgleich;
 
 import java.math.BigDecimal;
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Lastenausgleich;
 import ch.dvbern.ebegu.entities.LastenausgleichDetail;
 import ch.dvbern.ebegu.entities.LastenausgleichDetailZeitabschnitt;
 import ch.dvbern.ebegu.entities.LastenausgleichGrundlagen;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.services.VerfuegungService;
 import ch.dvbern.ebegu.util.DateUtil;
 import ch.dvbern.ebegu.util.MathUtil;
 
 public abstract class AbstractLastenausgleichRechner {
-
-	private final VerfuegungService verfuegungService;
-
-	protected Collection<VerfuegungZeitabschnitt> abschnitteProGemeindeUndJahr;
 	// Total Belegung = Totals aller Pensum * AnteilDesMonats / 12
 	protected BigDecimal totalBelegungInProzent = BigDecimal.ZERO;
 	// Total Gutscheine: Totals aller aktuell gültigen Zeitabschnitte, die im Kalenderjahr liegen
 	protected BigDecimal totalGutscheine = BigDecimal.ZERO;
 	// Total Belegung = Totals aller Pensum ohne selbstbehalt * AnteilDesMonats / 12
-	protected BigDecimal totalBelegungOhneSelbstbeahltInProzent = BigDecimal.ZERO;
+	protected BigDecimal totalBelegungOhneSelbstbeahltInProzent =
+		BigDecimal.ZERO;
 	// Total Gutscheine: Totals aller aktuell gültigen Zeitabschnitte ohne Selbstbehalt, die im Kalenderjahr liegen
 	protected BigDecimal totalGutscheineOhneSelbstbeahlt = BigDecimal.ZERO;
 
-	AbstractLastenausgleichRechner(@Nonnull VerfuegungService verfuegungService) {
-		this.verfuegungService = verfuegungService;
+	AbstractLastenausgleichRechner() {
 	}
 
 	@Nullable
 	public abstract LastenausgleichDetail createLastenausgleichDetail(
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull Lastenausgleich lastenausgleich,
-		@Nonnull LastenausgleichGrundlagen grundlagen
+		@Nonnull LastenausgleichGrundlagen grundlagen,
+		@Nonnull List<LastenausgleichZeitabschnitteDTO> abschnitteProGemeindeUndJahr
 	);
-
-	@Nonnull
-	protected Collection<VerfuegungZeitabschnitt> getZeitabschnitte(@Nonnull Gemeinde gemeinde, int jahr) {
-		return verfuegungService.findZeitabschnitteByYear(jahr, gemeinde);
-	}
 
 	@Nonnull
 	public LastenausgleichDetail createLastenausgleichDetailKorrektur(
 		@Nonnull LastenausgleichDetail detail
 	) {
-		detail.setTotalBelegungenMitSelbstbehalt(detail.getTotalBelegungenMitSelbstbehalt().negate());
+		detail.setTotalBelegungenMitSelbstbehalt(
+			detail.getTotalBelegungenMitSelbstbehalt().negate()
+		);
 		detail.setTotalAnrechenbar(detail.getTotalAnrechenbar().negate());
-		detail.setTotalBetragGutscheineMitSelbstbehalt(detail.getTotalBetragGutscheineMitSelbstbehalt().negate());
-		detail.setSelbstbehaltGemeinde(detail.getSelbstbehaltGemeinde().negate());
-		detail.setBetragLastenausgleich(detail.getBetragLastenausgleich().negate());
+		detail.setTotalBetragGutscheineMitSelbstbehalt(
+			detail.getTotalBetragGutscheineMitSelbstbehalt().negate()
+		);
+		detail.setSelbstbehaltGemeinde(
+			detail.getSelbstbehaltGemeinde().negate()
+		);
+		detail.setBetragLastenausgleich(
+			detail.getBetragLastenausgleich().negate()
+		);
 		detail.setKorrektur(true);
-		detail.setTotalBelegungenOhneSelbstbehalt(detail.getTotalBelegungenOhneSelbstbehalt().negate());
-		detail.setTotalBetragGutscheineOhneSelbstbehalt(detail.getTotalBetragGutscheineOhneSelbstbehalt().negate());
-		detail.setKostenFuerSelbstbehalt(detail.getKostenFuerSelbstbehalt().negate());
+		detail.setTotalBelegungenOhneSelbstbehalt(
+			detail.getTotalBelegungenOhneSelbstbehalt().negate()
+		);
+		detail.setTotalBetragGutscheineOhneSelbstbehalt(
+			detail.getTotalBetragGutscheineOhneSelbstbehalt().negate()
+		);
+		detail.setKostenFuerSelbstbehalt(
+			detail.getKostenFuerSelbstbehalt().negate()
+		);
 		return detail;
 	}
 
-	protected void setLastenausgleichDetailZeitabschnitte(LastenausgleichDetail detail) {
+	protected void setLastenausgleichDetailZeitabschnitte(
+		LastenausgleichDetail detail,
+		@Nonnull List<LastenausgleichZeitabschnitteDTO> abschnitteProGemeindeUndJahr
+	) {
 		var detailZeitabschnitte = abschnitteProGemeindeUndJahr
 			.stream()
-			.map(a -> new LastenausgleichDetailZeitabschnitt(a, detail))
+			.map(
+				a -> {
+					VerfuegungZeitabschnitt verfuegungZeitabschnitt =
+						new VerfuegungZeitabschnitt();
+					verfuegungZeitabschnitt.setId(
+						a.getVerfuegungZeitabschnittId()
+					);
+					return new LastenausgleichDetailZeitabschnitt(
+						verfuegungZeitabschnitt,
+						detail
+					);
+				}
+			)
 			.collect(Collectors.toList());
 		detail.setLastenausgleichDetailZeitabschnitte(detailZeitabschnitte);
 	}
 
-	public abstract void logLastenausgleichRechnerType(int jahr, StringBuilder sb);
-
-	protected void calculateTotals() {
-		for (VerfuegungZeitabschnitt abschnitt : abschnitteProGemeindeUndJahr) {
+	protected void calculateTotals(
+		@Nonnull List<LastenausgleichZeitabschnitteDTO> abschnitteProGemeindeUndJahr
+	) {
+		for (LastenausgleichZeitabschnitteDTO abschnitt : abschnitteProGemeindeUndJahr) {
 			BigDecimal anteilKalenderjahr = getAnteilKalenderjahr(abschnitt);
-			BigDecimal gutschein = abschnitt.getBgCalculationResultAsiv().getVerguenstigung();
-			Betreuung betreuung = abschnitt.getVerfuegung().getBetreuung();
-			if (betreuung != null
-				&& betreuung.getKind().getKeinSelbstbehaltDurchGemeinde() != null
-				&& betreuung.getKind().getKeinSelbstbehaltDurchGemeinde()) {
+			BigDecimal gutschein = abschnitt.getVerguenstigung();
+			if (abschnitt.getKeinSelbstbehaltDurchGemeinde()
+				!= null
+				&& abschnitt.getKeinSelbstbehaltDurchGemeinde()) {
 				totalBelegungOhneSelbstbeahltInProzent =
-					MathUtil.EXACT.addNullSafe(totalBelegungOhneSelbstbeahltInProzent, anteilKalenderjahr);
+					MathUtil.EXACT.addNullSafe(
+						totalBelegungOhneSelbstbeahltInProzent,
+						anteilKalenderjahr
+					);
 				totalGutscheineOhneSelbstbeahlt =
-					MathUtil.EXACT.addNullSafe(totalGutscheineOhneSelbstbeahlt, gutschein);
+					MathUtil.EXACT.addNullSafe(
+						totalGutscheineOhneSelbstbeahlt,
+						gutschein
+					);
 			} else {
-				totalBelegungInProzent = MathUtil.EXACT.addNullSafe(totalBelegungInProzent, anteilKalenderjahr);
-				totalGutscheine = MathUtil.EXACT.addNullSafe(totalGutscheine, gutschein);
+				totalBelegungInProzent = MathUtil.EXACT.addNullSafe(
+					totalBelegungInProzent,
+					anteilKalenderjahr
+				);
+				totalGutscheine = MathUtil.EXACT.addNullSafe(
+					totalGutscheine,
+					gutschein
+				);
 			}
 
 		}
 	}
 
 	@Nonnull
-	private BigDecimal getAnteilKalenderjahr(@Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	private BigDecimal getAnteilKalenderjahr(
+		@Nonnull LastenausgleichZeitabschnitteDTO zeitabschnitt
+	) {
 		// Pensum * AnteilDesMonats / 12. Beispiel 80% ganzer Monat = 6.67% AnteilKalenderjahr
 		BigDecimal anteilMonat = DateUtil.calculateAnteilMonatInklWeekend(
-			zeitabschnitt.getGueltigkeit().getGueltigAb(),
-			zeitabschnitt.getGueltigkeit().getGueltigBis());
-		BigDecimal pensum = zeitabschnitt.getBgCalculationResultAsiv().getBgPensumProzent();
-		BigDecimal pensumAnteilMonat = MathUtil.EXACT.multiplyNullSafe(anteilMonat, pensum);
-		return MathUtil.EXACT.divide(pensumAnteilMonat, MathUtil.EXACT.from(12d));
+			zeitabschnitt.getVerfuegungZeitabschnittGueltigkeit()
+				.getGueltigAb(),
+			zeitabschnitt.getVerfuegungZeitabschnittGueltigkeit()
+				.getGueltigBis()
+		);
+		BigDecimal pensum = zeitabschnitt
+			.getPensumProzent();
+		BigDecimal pensumAnteilMonat = MathUtil.EXACT.multiplyNullSafe(
+			anteilMonat,
+			pensum
+		);
+		return MathUtil.EXACT.divide(
+			pensumAnteilMonat,
+			MathUtil.EXACT.from(12d)
+		);
 	}
 }

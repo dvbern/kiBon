@@ -15,9 +15,8 @@
 
 package ch.dvbern.ebegu.batch.jobs.report;
 
-import org.jberet.cdi.JobScoped;
-
 import ch.dvbern.ebegu.util.UploadFileInfo;
+import org.jberet.cdi.JobScoped;
 
 /**
  * Objekt zum austauschen von Daten zwischen Steps, koennte auch ueber das Datenbankobjekt Workjob gemacht werden
@@ -26,7 +25,6 @@ import ch.dvbern.ebegu.util.UploadFileInfo;
 public class JobDataContainer {
 
 	private UploadFileInfo result;
-
 
 	public UploadFileInfo getResult() {
 		return result;

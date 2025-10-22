@@ -16,7 +16,7 @@
  */
 
 import {TranslateService} from '@ngx-translate/core';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSVerfuegungZeitabschnittZahlungsstatus} from '../../../models/enums/TSVerfuegungZeitabschnittZahlungsstatus';
 
 const LOG = LogFactory.createLog('TSZahlungsstatusIconLabel');

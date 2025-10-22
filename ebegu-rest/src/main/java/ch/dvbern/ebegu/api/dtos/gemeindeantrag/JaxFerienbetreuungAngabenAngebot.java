@@ -142,7 +142,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return angebotKontaktpersonVorname;
 	}
 
-	public void setAngebotKontaktpersonVorname(@Nullable String angebotKontaktpersonVorname) {
+	public void setAngebotKontaktpersonVorname(
+		@Nullable String angebotKontaktpersonVorname
+	) {
 		this.angebotKontaktpersonVorname = angebotKontaktpersonVorname;
 	}
 
@@ -151,7 +153,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return angebotKontaktpersonNachname;
 	}
 
-	public void setAngebotKontaktpersonNachname(@Nullable String angebotKontaktpersonNachname) {
+	public void setAngebotKontaktpersonNachname(
+		@Nullable String angebotKontaktpersonNachname
+	) {
 		this.angebotKontaktpersonNachname = angebotKontaktpersonNachname;
 	}
 
@@ -169,7 +173,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return anzahlFerienwochenHerbstferien;
 	}
 
-	public void setAnzahlFerienwochenHerbstferien(@Nullable BigDecimal anzahlFerienwochenHerbstferien) {
+	public void setAnzahlFerienwochenHerbstferien(
+		@Nullable BigDecimal anzahlFerienwochenHerbstferien
+	) {
 		this.anzahlFerienwochenHerbstferien = anzahlFerienwochenHerbstferien;
 	}
 
@@ -178,7 +184,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return anzahlFerienwochenWinterferien;
 	}
 
-	public void setAnzahlFerienwochenWinterferien(@Nullable BigDecimal anzahlFerienwochenWinterferien) {
+	public void setAnzahlFerienwochenWinterferien(
+		@Nullable BigDecimal anzahlFerienwochenWinterferien
+	) {
 		this.anzahlFerienwochenWinterferien = anzahlFerienwochenWinterferien;
 	}
 
@@ -187,8 +195,11 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return anzahlFerienwochenFruehlingsferien;
 	}
 
-	public void setAnzahlFerienwochenFruehlingsferien(@Nullable BigDecimal anzahlFerienwochenFruehlingsferien) {
-		this.anzahlFerienwochenFruehlingsferien = anzahlFerienwochenFruehlingsferien;
+	public void setAnzahlFerienwochenFruehlingsferien(
+		@Nullable BigDecimal anzahlFerienwochenFruehlingsferien
+	) {
+		this.anzahlFerienwochenFruehlingsferien =
+			anzahlFerienwochenFruehlingsferien;
 	}
 
 	@Nullable
@@ -196,7 +207,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return anzahlFerienwochenSommerferien;
 	}
 
-	public void setAnzahlFerienwochenSommerferien(@Nullable BigDecimal anzahlFerienwochenSommerferien) {
+	public void setAnzahlFerienwochenSommerferien(
+		@Nullable BigDecimal anzahlFerienwochenSommerferien
+	) {
 		this.anzahlFerienwochenSommerferien = anzahlFerienwochenSommerferien;
 	}
 
@@ -214,7 +227,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return bemerkungenAnzahlFerienwochen;
 	}
 
-	public void setBemerkungenAnzahlFerienwochen(@Nullable String bemerkungenAnzahlFerienwochen) {
+	public void setBemerkungenAnzahlFerienwochen(
+		@Nullable String bemerkungenAnzahlFerienwochen
+	) {
 		this.bemerkungenAnzahlFerienwochen = bemerkungenAnzahlFerienwochen;
 	}
 
@@ -223,7 +238,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return anzahlStundenProBetreuungstag;
 	}
 
-	public void setAnzahlStundenProBetreuungstag(@Nullable BigDecimal anzahlStundenProBetreuungstag) {
+	public void setAnzahlStundenProBetreuungstag(
+		@Nullable BigDecimal anzahlStundenProBetreuungstag
+	) {
 		this.anzahlStundenProBetreuungstag = anzahlStundenProBetreuungstag;
 	}
 
@@ -232,7 +249,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return betreuungErfolgtTagsueber;
 	}
 
-	public void setBetreuungErfolgtTagsueber(@Nullable Boolean betreuungErfolgtTagsueber) {
+	public void setBetreuungErfolgtTagsueber(
+		@Nullable Boolean betreuungErfolgtTagsueber
+	) {
 		this.betreuungErfolgtTagsueber = betreuungErfolgtTagsueber;
 	}
 
@@ -241,7 +260,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return bemerkungenOeffnungszeiten;
 	}
 
-	public void setBemerkungenOeffnungszeiten(@Nullable String bemerkungenOeffnungszeiten) {
+	public void setBemerkungenOeffnungszeiten(
+		@Nullable String bemerkungenOeffnungszeiten
+	) {
 		this.bemerkungenOeffnungszeiten = bemerkungenOeffnungszeiten;
 	}
 
@@ -250,7 +271,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return finanziellBeteiligteGemeinden;
 	}
 
-	public void setFinanziellBeteiligteGemeinden(@Nullable Set<String> finanziellBeteiligteGemeinden) {
+	public void setFinanziellBeteiligteGemeinden(
+		@Nullable Set<String> finanziellBeteiligteGemeinden
+	) {
 		this.finanziellBeteiligteGemeinden = finanziellBeteiligteGemeinden;
 	}
 
@@ -259,7 +282,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return gemeindeFuehrtAngebotSelber;
 	}
 
-	public void setGemeindeFuehrtAngebotSelber(@Nullable Boolean gemeindeFuehrtAngebotSelber) {
+	public void setGemeindeFuehrtAngebotSelber(
+		@Nullable Boolean gemeindeFuehrtAngebotSelber
+	) {
 		this.gemeindeFuehrtAngebotSelber = gemeindeFuehrtAngebotSelber;
 	}
 
@@ -268,8 +293,11 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return gemeindeBeauftragtExterneAnbieter;
 	}
 
-	public void setGemeindeBeauftragtExterneAnbieter(@Nullable Boolean gemeindeBeauftragtExterneAnbieter) {
-		this.gemeindeBeauftragtExterneAnbieter = gemeindeBeauftragtExterneAnbieter;
+	public void setGemeindeBeauftragtExterneAnbieter(
+		@Nullable Boolean gemeindeBeauftragtExterneAnbieter
+	) {
+		this.gemeindeBeauftragtExterneAnbieter =
+			gemeindeBeauftragtExterneAnbieter;
 	}
 
 	@Nullable
@@ -277,8 +305,11 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return angebotVereineUndPrivateIntegriert;
 	}
 
-	public void setAngebotVereineUndPrivateIntegriert(@Nullable Boolean angebotVereineUndPrivateIntegriert) {
-		this.angebotVereineUndPrivateIntegriert = angebotVereineUndPrivateIntegriert;
+	public void setAngebotVereineUndPrivateIntegriert(
+		@Nullable Boolean angebotVereineUndPrivateIntegriert
+	) {
+		this.angebotVereineUndPrivateIntegriert =
+			angebotVereineUndPrivateIntegriert;
 	}
 
 	@Nullable
@@ -286,7 +317,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return bemerkungenKooperation;
 	}
 
-	public void setBemerkungenKooperation(@Nullable String bemerkungenKooperation) {
+	public void setBemerkungenKooperation(
+		@Nullable String bemerkungenKooperation
+	) {
 		this.bemerkungenKooperation = bemerkungenKooperation;
 	}
 
@@ -295,7 +328,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return leitungDurchPersonMitAusbildung;
 	}
 
-	public void setLeitungDurchPersonMitAusbildung(@Nullable Boolean leitungDurchPersonMitAusbildung) {
+	public void setLeitungDurchPersonMitAusbildung(
+		@Nullable Boolean leitungDurchPersonMitAusbildung
+	) {
 		this.leitungDurchPersonMitAusbildung = leitungDurchPersonMitAusbildung;
 	}
 
@@ -304,8 +339,11 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return betreuungDurchPersonenMitErfahrung;
 	}
 
-	public void setBetreuungDurchPersonenMitErfahrung(@Nullable Boolean betreuungDurchPersonenMitErfahrung) {
-		this.betreuungDurchPersonenMitErfahrung = betreuungDurchPersonenMitErfahrung;
+	public void setBetreuungDurchPersonenMitErfahrung(
+		@Nullable Boolean betreuungDurchPersonenMitErfahrung
+	) {
+		this.betreuungDurchPersonenMitErfahrung =
+			betreuungDurchPersonenMitErfahrung;
 	}
 
 	@Nullable
@@ -313,7 +351,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return anzahlKinderAngemessen;
 	}
 
-	public void setAnzahlKinderAngemessen(@Nullable Boolean anzahlKinderAngemessen) {
+	public void setAnzahlKinderAngemessen(
+		@Nullable Boolean anzahlKinderAngemessen
+	) {
 		this.anzahlKinderAngemessen = anzahlKinderAngemessen;
 	}
 
@@ -340,7 +380,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return fixerTarifKinderDerGemeinde;
 	}
 
-	public void setFixerTarifKinderDerGemeinde(@Nullable Boolean fixerTarifKinderDerGemeinde) {
+	public void setFixerTarifKinderDerGemeinde(
+		@Nullable Boolean fixerTarifKinderDerGemeinde
+	) {
 		this.fixerTarifKinderDerGemeinde = fixerTarifKinderDerGemeinde;
 	}
 
@@ -349,8 +391,11 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return einkommensabhaengigerTarifKinderDerGemeinde;
 	}
 
-	public void setEinkommensabhaengigerTarifKinderDerGemeinde(@Nullable Boolean einkommensabhaengigerTarifKinderDerGemeinde) {
-		this.einkommensabhaengigerTarifKinderDerGemeinde = einkommensabhaengigerTarifKinderDerGemeinde;
+	public void setEinkommensabhaengigerTarifKinderDerGemeinde(
+		@Nullable Boolean einkommensabhaengigerTarifKinderDerGemeinde
+	) {
+		this.einkommensabhaengigerTarifKinderDerGemeinde =
+			einkommensabhaengigerTarifKinderDerGemeinde;
 	}
 
 	@Nullable
@@ -358,8 +403,11 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return tagesschuleTarifGiltFuerFerienbetreuung;
 	}
 
-	public void setTagesschuleTarifGiltFuerFerienbetreuung(@Nullable Boolean tagesschuleTarifGiltFuerFerienbetreuung) {
-		this.tagesschuleTarifGiltFuerFerienbetreuung = tagesschuleTarifGiltFuerFerienbetreuung;
+	public void setTagesschuleTarifGiltFuerFerienbetreuung(
+		@Nullable Boolean tagesschuleTarifGiltFuerFerienbetreuung
+	) {
+		this.tagesschuleTarifGiltFuerFerienbetreuung =
+			tagesschuleTarifGiltFuerFerienbetreuung;
 	}
 
 	@Nullable
@@ -367,8 +415,11 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
 	}
 
-	public void setFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet(@Nullable Boolean ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet) {
-		this.ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet = ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
+	public void setFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet(
+		@Nullable Boolean ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet
+	) {
+		this.ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet =
+			ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
 	}
 
 	@Nullable
@@ -379,7 +430,8 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 	public void setKinderAusAnderenGemeindenZahlenAnderenTarif(
 		@Nullable KinderAusAnderenGemeindenZahlenAnderenTarifAnswer kinderAusAnderenGemeindenZahlenAnderenTarif
 	) {
-		this.kinderAusAnderenGemeindenZahlenAnderenTarif = kinderAusAnderenGemeindenZahlenAnderenTarif;
+		this.kinderAusAnderenGemeindenZahlenAnderenTarif =
+			kinderAusAnderenGemeindenZahlenAnderenTarif;
 	}
 
 	@Nullable
@@ -387,7 +439,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return bemerkungenTarifsystem;
 	}
 
-	public void setBemerkungenTarifsystem(@Nullable String bemerkungenTarifsystem) {
+	public void setBemerkungenTarifsystem(
+		@Nullable String bemerkungenTarifsystem
+	) {
 		this.bemerkungenTarifsystem = bemerkungenTarifsystem;
 	}
 
@@ -405,7 +459,9 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return anzahlFerienwochenSportferien;
 	}
 
-	public void setAnzahlFerienwochenSportferien(@Nullable BigDecimal anzahlFerienwochenSportferien) {
+	public void setAnzahlFerienwochenSportferien(
+		@Nullable BigDecimal anzahlFerienwochenSportferien
+	) {
 		this.anzahlFerienwochenSportferien = anzahlFerienwochenSportferien;
 	}
 
@@ -414,7 +470,10 @@ public class JaxFerienbetreuungAngabenAngebot extends JaxAbstractDTO {
 		return gemeindeFuehrtAngebotInKooperation;
 	}
 
-	public void setGemeindeFuehrtAngebotInKooperation(@Nullable Boolean gemeindeFuehrtAngebotInKooperation) {
-		this.gemeindeFuehrtAngebotInKooperation = gemeindeFuehrtAngebotInKooperation;
+	public void setGemeindeFuehrtAngebotInKooperation(
+		@Nullable Boolean gemeindeFuehrtAngebotInKooperation
+	) {
+		this.gemeindeFuehrtAngebotInKooperation =
+			gemeindeFuehrtAngebotInKooperation;
 	}
 }

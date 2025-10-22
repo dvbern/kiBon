@@ -29,16 +29,18 @@ import {
 } from '@dv-e2e/page-objects';
 import {getUser, TestFall, TestPeriode} from '@dv-e2e/types';
 import {describe} from 'mocha';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {TSUnterhaltsvereinbarungAnswer} from '../../../src/models/enums/TSUnterhaltsvereinbarungAnswer';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 
 describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () => {
     describe('Grundantrag Familiensituation', () => {
-        const gesuchstellende = getUser('[5-GS] Heinrich Mueller');
+        const gesuchstellende = getUser('[5-GS] Heinrich Müller');
         const periode: TestPeriode = '2024/25';
 
         describe('Konkubinat ohne Kind', () => {
             beforeEach(() => {
+                cy.changeMandant(MANDANTS.BERN);
                 cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
                 createOnlineAntrag(periode, 'testfall-2');
                 cy.login(gesuchstellende);
@@ -429,7 +431,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
     describe('Mutation Papierantrag', () => {
         it('should not require beschaeftigungspensum in mutation from verheiratet to konkubinat ohne kind 2 jährig during gp', () => {
             cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
-            const superAdmin = getUser('[1-Superadmin] E-BEGU Superuser');
+            const superAdmin = getUser('[1-Superadmin] Super User');
             cy.login(superAdmin);
             cy.visit('/');
             TestFaellePO.createPapierTestfall({
@@ -472,7 +474,7 @@ describe('Kibon - Testet die Fachlichkeit auf der Seite der Erwerbspensen', () =
 });
 
 function createOnlineAntrag(periode: '2024/25', testFall: TestFall): void {
-    const superAdmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const superAdmin = getUser('[1-Superadmin] Super User');
     cy.login(superAdmin);
     cy.visit('/#/faelle');
     TestFaellePO.createOnlineTestfall({
@@ -480,6 +482,6 @@ function createOnlineAntrag(periode: '2024/25', testFall: TestFall): void {
         gemeinde: 'London',
         periode,
         betreuungsstatus: 'bestaetigt',
-        besitzerin: '[5-GS] Heinrich Mueller'
+        besitzerin: '[5-GS] Heinrich Müller'
     });
 }

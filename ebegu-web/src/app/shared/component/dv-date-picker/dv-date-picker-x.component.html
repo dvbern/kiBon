@@ -15,40 +15,53 @@
   ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<dv-input-container class="form-group" [ngClass]="{touched: dateRef.touched}">
-    <label
-        *ngIf="label"
-        class="md-no-float"
-        [ngClass]="{required: required}"
-        [for]="(inputId ? inputId : 'date-') + randId"
-        >{{ label | translate }}</label
-    >
-    <input
-        [ngClass]="{
-            'dv-mat-datepicker': datePickerEnabled,
-            'dv-mat-datepicker-wide': !datePickerEnabled
-        }"
-        type="text"
-        [name]="(inputId ? inputId : 'date-' + randId) + '-name'"
-        [id]="(inputId ? inputId : 'date-') + randId"
-        #dateRef="ngModel"
-        [(ngModel)]="date"
-        (dateChange)="emit()"
-        [min]="minDate"
-        [max]="maxDate"
-        [matDatepicker]="datePicker"
-        placeholder="{{ 'DATE_PLACEHOLDER' | translate }}"
-        [required]="required"
-        [disabled]="disabled"
-    />
-    <mat-datepicker-toggle
-        *ngIf="datePickerEnabled"
-        matSuffix
-        [for]="datePicker"
-    ></mat-datepicker-toggle>
-    <mat-datepicker #datePicker></mat-datepicker>
-    <dv-error-messages
-        [errorObject]="dateRef.errors"
-        class="error"
-    ></dv-error-messages>
-</dv-input-container>
+<div class="dv-date-picker-x">
+    <dv-input-container-x class="form-group">
+        <label
+            *ngIf="label"
+            class="md-no-float"
+            [ngClass]="{required: required}"
+            [for]="(inputId ? inputId : 'date-') + randId"
+            >{{ label | translate
+            }}<dv-tooltip
+                *ngIf="tooltip"
+                [text]="tooltip | translate"
+            ></dv-tooltip>
+        </label>
+        <input
+            [ngClass]="{
+                'dv-mat-datepicker': datePickerEnabled,
+                'dv-mat-datepicker-wide': !datePickerEnabled
+            }"
+            type="text"
+            [name]="(inputId ? inputId : 'date-' + randId) + '-name'"
+            [id]="(inputId ? inputId : 'date-') + randId"
+            #dateRef="ngModel"
+            [(ngModel)]="date"
+            [noFutureDate]="noFutureDate"
+            (dateChange)="emit()"
+            [min]="minDate"
+            [max]="maxDate"
+            [matDatepicker]="datePicker"
+            placeholder="{{
+                placeholderFirstOfMonth
+                    ? ('DATE_PLACEHOLDER_FIRSTOFMONTH' | translate)
+                    : ('DATE_PLACEHOLDER' | translate)
+            }}"
+            [required]="required"
+            [disabled]="disabled"
+        />
+        <mat-datepicker-toggle
+            *ngIf="datePickerEnabled"
+            matSuffix
+            [for]="datePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #datePicker></mat-datepicker>
+        @if (dateRef.touched) {
+            <dv-error-messages
+                [errorObject]="dateRef.errors"
+                class="error"
+            ></dv-error-messages>
+        }
+    </dv-input-container-x>
+</div>

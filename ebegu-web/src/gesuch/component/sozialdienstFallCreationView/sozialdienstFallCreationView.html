@@ -71,7 +71,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="NAME"
                                     for="name_ID"
                                 ></label>
@@ -95,7 +95,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="VORNAME"
                                     for="vorname_ID"
                                 ></label>
@@ -122,7 +122,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="GEBURTSDATUM"
                                     for="geburtsdatum_ID"
                                 >
@@ -148,7 +148,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="ADRESSE_STRASSE"
                                     for="name_ID"
                                 ></label>
@@ -172,7 +172,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="ADRESSE_HAUSNUMMER"
                                     for="hausnummer_ID"
                                 ></label>
@@ -197,7 +197,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="ADRESSE_ZUSATZZEILE"
                                     for="zusatzzeile_ID"
                                 ></label>
@@ -222,7 +222,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="ADRESSE_PLZ"
                                     for="plz_ID"
                                 ></label>
@@ -246,7 +246,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="ADRESSE_ORT"
                                     for="ort_ID"
                                 ></label>
@@ -292,7 +292,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="NAME"
                                     for="nameGs2_ID"
                                 ></label>
@@ -315,7 +315,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="VORNAME"
                                     for="vornameGs2_ID"
                                 ></label>
@@ -341,7 +341,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="GEBURTSDATUM"
                                     for="geburtsdatumGs2_ID"
                                 >
@@ -435,6 +435,7 @@
                             [title]="'VOLLMACHT_DOKUMENT'"
                             (delete)="vm.removeVollmachtDokument($event)"
                             (upload-file)="vm.uploadVollmachtDokument($event)"
+                            [file-types]="vm.fileTypes"
                             [files]="vm.dokumente"
                             [read-only]="vm.isSozialdienstDokumentReadOnly()"
                             [read-only-delete]="

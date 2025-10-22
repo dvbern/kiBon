@@ -15,10 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {SidenavStep} from '@dv-e2e/types';
+import {LATSSidenavStep, SidenavStep} from '@dv-e2e/types';
 
 const getSidenavStep = (step: SidenavStep) => {
     return cy.getByData(`sidenav.${step}`);
+};
+
+const getLATSSidenavStep = (step: LATSSidenavStep) => {
+    return cy.getByData(`LATS-sidenav.${step}`);
 };
 
 const goTo = (step: SidenavStep): void => {
@@ -37,10 +41,16 @@ const getSidenavStepStatus = (step: SidenavStep) => {
     return getSidenavStep(step).siblings('.fa').first();
 };
 
+const getLATSSidenavStepStatus = (step: LATSSidenavStep) => {
+    return getLATSSidenavStep(step).siblings('span').first();
+};
+
 export const SidenavPO = {
     goTo,
     getGesuchStatus,
     getGesuchsDaten,
     getSidenavStep,
-    getSidenavStepStatus
+    getSidenavStepStatus,
+    getLATSSidenavStep,
+    getLATSSidenavStepStatus
 };

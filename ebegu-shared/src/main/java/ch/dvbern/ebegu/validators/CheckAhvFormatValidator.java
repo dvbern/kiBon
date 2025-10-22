@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
-public class CheckAhvFormatValidator implements ConstraintValidator<CheckAhvFormat, String> {
+public class CheckAhvFormatValidator implements
+	ConstraintValidator<CheckAhvFormat, String> {
 
 	@Override
 	public void initialize(CheckAhvFormat constraintAnnotation) {
@@ -15,14 +16,22 @@ public class CheckAhvFormatValidator implements ConstraintValidator<CheckAhvForm
 	}
 
 	@Override
-	public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
+	public boolean isValid(
+		String s,
+		ConstraintValidatorContext constraintValidatorContext
+	) {
 
 		if (s == null) {
 			return true;
 		}
 
 		int ahvlenght = 13;
+		int maxStringLength = 16;
 		String startDigits = "756";
+
+		if (s.length() > maxStringLength) {
+			return false;
+		}
 		int relevantDigitsSum = 0;
 		List<Integer> digits = new ArrayList<>();
 		for (char c : s.replace(".", "").toCharArray()) {
@@ -41,12 +50,14 @@ public class CheckAhvFormatValidator implements ConstraintValidator<CheckAhvForm
 			relevantDigitsSum += relevantDigits.get(i) * multiplier;
 		}
 
-		int relevantDigitsRounded = (int) Math.ceil(relevantDigitsSum / 10.0) * 10;
+		int relevantDigitsRounded = (int) Math.ceil(relevantDigitsSum / 10.0)
+			* 10;
 		int calculatedDigit = relevantDigitsRounded - relevantDigitsSum;
 		int checkDigit = digits.get(12);
 
 		String startDigitsAHV = s.substring(0, 3);
 
-		return checkDigit == calculatedDigit && startDigitsAHV.equals(startDigits);
+		return checkDigit == calculatedDigit
+			&& startDigitsAHV.equals(startDigits);
 	}
 }

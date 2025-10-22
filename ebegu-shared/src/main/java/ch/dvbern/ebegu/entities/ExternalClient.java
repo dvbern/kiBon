@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -21,14 +21,14 @@ import java.util.StringJoiner;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.ExternalClientInstitutionType;
 import ch.dvbern.ebegu.enums.ExternalClientType;
@@ -40,7 +40,8 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "clientName", "type" }, name = "UK_external_client"))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "clientName",
+	"type" }, name = "UK_external_client"))
 public class ExternalClient extends AbstractEntity {
 
 	private static final long serialVersionUID = 7465912998960188302L;
@@ -70,10 +71,15 @@ public class ExternalClient extends AbstractEntity {
 	public ExternalClient() {
 		this.clientName = "";
 		this.type = ExternalClientType.EXCHANGE_SERVICE_USER;
-		this.institutionType = ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION;
+		this.institutionType =
+			ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION;
 	}
 
-	public ExternalClient(@Nonnull String clientName, @Nonnull ExternalClientType type, @Nullable ExternalClientInstitutionType institutionType) {
+	public ExternalClient(
+		@Nonnull String clientName,
+		@Nonnull ExternalClientType type,
+		@Nullable ExternalClientInstitutionType institutionType
+	) {
 		this.clientName = clientName;
 		this.type = type;
 		this.institutionType = institutionType;
@@ -87,7 +93,11 @@ public class ExternalClient extends AbstractEntity {
 	@Override
 	@Nonnull
 	public String toString() {
-		return new StringJoiner(", ", ExternalClient.class.getSimpleName() + '[', "]")
+		return new StringJoiner(
+			", ",
+			ExternalClient.class.getSimpleName() + '[',
+			"]"
+		)
 			.add("clientId='" + clientName + '\'')
 			.add("type=" + type)
 			.toString();
@@ -116,7 +126,9 @@ public class ExternalClient extends AbstractEntity {
 		return institutionType;
 	}
 
-	public void setInstitutionType(@Nonnull ExternalClientInstitutionType institutionType) {
+	public void setInstitutionType(
+		@Nonnull ExternalClientInstitutionType institutionType
+	) {
 		this.institutionType = institutionType;
 	}
 }

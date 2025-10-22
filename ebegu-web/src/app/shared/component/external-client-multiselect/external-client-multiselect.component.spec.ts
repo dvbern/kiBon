@@ -16,13 +16,13 @@
  */
 
 import {SimpleChange} from '@angular/core';
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {NgForm} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
 import {createClient} from '../../../../models/TSExternalClient';
 import {TSExternalClientAssignment} from '../../../../models/TSExternalClientAssignment';
-import {WindowRef} from '../../../core/service/windowRef.service';
+import {WindowRef} from '@kibon/shared-util-window-ref';
 import {MaterialModule} from '../../material.module';
 import {SharedModule} from '../../shared.module';
 

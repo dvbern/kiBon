@@ -8,27 +8,28 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
 
-import ch.dvbern.ebegu.enums.GemeindeStatus;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
-import org.apache.commons.lang3.builder.CompareToBuilder;
+import java.time.LocalDate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDate;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import ch.dvbern.ebegu.enums.GemeindeStatus;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import static ch.dvbern.ebegu.util.Constants.END_OF_TIME;
 
@@ -43,7 +44,6 @@ public class JaxGemeinde extends JaxAbstractDTO {
 	@NotNull
 	private String name;
 
-	@Nonnull
 	private long gemeindeNummer;
 
 	@Nonnull
@@ -53,19 +53,19 @@ public class JaxGemeinde extends JaxAbstractDTO {
 	private GemeindeStatus status;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate betreuungsgutscheineStartdatum;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate tagesschulanmeldungenStartdatum;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate ferieninselanmeldungenStartdatum;
 
 	@Nonnull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate gueltigBis = END_OF_TIME;
 
 	private boolean angebotBG = false;
@@ -79,13 +79,15 @@ public class JaxGemeinde extends JaxAbstractDTO {
 	@Nonnull
 	private Boolean infomaZahlungen = false;
 
+	@Nonnull
+	private Boolean adminMutationAbweichungMeldungEnabled = false;
+
 	// Dieses Feld wird *nur* für die Komponente gemeinde-multiselect.component verwendet
 	// Wir haben dort das Problem, dass in gewissen Einzelfällen die Id der Gemeinde (noch) nicht bekannt ist,
 	// da diese in kiBon noch nicht registriert ist: Beim Onboarding, Gemeindeauswahl für Tagessschulen, wenn ich
 	// eine Gemeinde explizit auswähle, die einem Verbund angehört und selber nicht in kiBon mitmacht.
 	@Nonnull
 	private String key;
-
 
 	@Nonnull
 	public String getName() {
@@ -127,7 +129,9 @@ public class JaxGemeinde extends JaxAbstractDTO {
 		return betreuungsgutscheineStartdatum;
 	}
 
-	public void setBetreuungsgutscheineStartdatum(@Nonnull LocalDate betreuungsgutscheineStartdatum) {
+	public void setBetreuungsgutscheineStartdatum(
+		@Nonnull LocalDate betreuungsgutscheineStartdatum
+	) {
 		this.betreuungsgutscheineStartdatum = betreuungsgutscheineStartdatum;
 	}
 
@@ -156,9 +160,13 @@ public class JaxGemeinde extends JaxAbstractDTO {
 	}
 
 	@Nonnull
-	public LocalDate getGueltigBis() { return gueltigBis; }
+	public LocalDate getGueltigBis() {
+		return gueltigBis;
+	}
 
-	public void setGueltigBis(@Nonnull LocalDate gueltigBis) { this.gueltigBis = gueltigBis; }
+	public void setGueltigBis(@Nonnull LocalDate gueltigBis) {
+		this.gueltigBis = gueltigBis;
+	}
 
 	@Nonnull
 	public String getKey() {
@@ -176,9 +184,15 @@ public class JaxGemeinde extends JaxAbstractDTO {
 		if (o instanceof JaxGemeinde) {
 			JaxGemeinde parsedEntity = (JaxGemeinde) o;
 			builder.append(this.getName(), parsedEntity.getName());
-			builder.append(this.getGemeindeNummer(), parsedEntity.getGemeindeNummer());
+			builder.append(
+				this.getGemeindeNummer(),
+				parsedEntity.getGemeindeNummer()
+			);
 			builder.append(this.getStatus(), parsedEntity.getStatus());
-			builder.append(this.getBetreuungsgutscheineStartdatum(), parsedEntity.getBetreuungsgutscheineStartdatum());
+			builder.append(
+				this.getBetreuungsgutscheineStartdatum(),
+				parsedEntity.getBetreuungsgutscheineStartdatum()
+			);
 			return builder.toComparison();
 		}
 		return builder.toComparison();
@@ -189,7 +203,9 @@ public class JaxGemeinde extends JaxAbstractDTO {
 		return tagesschulanmeldungenStartdatum;
 	}
 
-	public void setTagesschulanmeldungenStartdatum(@Nullable LocalDate tagesschulanmeldungenStartdatum) {
+	public void setTagesschulanmeldungenStartdatum(
+		@Nullable LocalDate tagesschulanmeldungenStartdatum
+	) {
 		this.tagesschulanmeldungenStartdatum = tagesschulanmeldungenStartdatum;
 	}
 
@@ -198,8 +214,11 @@ public class JaxGemeinde extends JaxAbstractDTO {
 		return ferieninselanmeldungenStartdatum;
 	}
 
-	public void setFerieninselanmeldungenStartdatum(@Nullable LocalDate ferieninselanmeldungenStartdatum) {
-		this.ferieninselanmeldungenStartdatum = ferieninselanmeldungenStartdatum;
+	public void setFerieninselanmeldungenStartdatum(
+		@Nullable LocalDate ferieninselanmeldungenStartdatum
+	) {
+		this.ferieninselanmeldungenStartdatum =
+			ferieninselanmeldungenStartdatum;
 	}
 
 	public boolean isBesondereVolksschule() {
@@ -233,5 +252,17 @@ public class JaxGemeinde extends JaxAbstractDTO {
 
 	public void setInfomaZahlungen(@Nonnull Boolean infomaZahlungen) {
 		this.infomaZahlungen = infomaZahlungen;
+	}
+
+	@Nonnull
+	public Boolean getAdminMutationAbweichungMeldungEnabled() {
+		return adminMutationAbweichungMeldungEnabled;
+	}
+
+	public void setAdminMutationAbweichungMeldungEnabled(
+		@Nonnull Boolean adminMutationAbweichungMeldungEnabled
+	) {
+		this.adminMutationAbweichungMeldungEnabled =
+			adminMutationAbweichungMeldungEnabled;
 	}
 }

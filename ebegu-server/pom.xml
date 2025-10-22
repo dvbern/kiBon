@@ -27,21 +27,14 @@
     <artifactId>ebegu-server</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
         <!--region WildFly stack -->
         <dependency>
             <!-- Fuer DB-Skripts (TransactionTimeout) -->
             <groupId>org.jboss.ejb3</groupId>
             <artifactId>jboss-ejb3-ext-api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <scope>provided</scope>
             <exclusions>
@@ -52,30 +45,58 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-envers</artifactId>
-            <version>${version.hibernate}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.search</groupId>
             <artifactId>hibernate-search-engine</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-search-orm</artifactId>
+            <groupId>org.hibernate.search</groupId>
+            <artifactId>hibernate-search-mapper-orm-jakarta-batch-jberet</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.search</groupId>
+            <artifactId>hibernate-search-mapper-orm</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-directory-provider</artifactId>
+            <groupId>jakarta.batch</groupId>
+            <artifactId>jakarta.batch-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.jberet</groupId>
-            <artifactId>jberet-core</artifactId>
-            <!-- eigentlich provided, aber Problem mit @JobScoped -->
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-batch-jberet</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.el</groupId>
+            <artifactId>jakarta.el-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.expressly</groupId>
+            <artifactId>expressly</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile.config</groupId>
+            <artifactId>microprofile-config-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.security.enterprise</groupId>
+            <artifactId>jakarta.security.enterprise-api</artifactId>
         </dependency>
         <!-- endregion -->
 
@@ -83,10 +104,17 @@
         <dependency>
             <groupId>ch.dvbern.ebegu</groupId>
             <artifactId>ebegu-shared</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.dvbern.ebegu</groupId>
+            <artifactId>ebegu-auth</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.dvbern.ebegu</groupId>
             <artifactId>ebegu-testutils</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.dvbern.ebegu</groupId>
@@ -94,11 +122,28 @@
             <version>${project.version}</version>
         </dependency>
         <!-- endregion -->
+        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+        </dependency>
 
         <!-- region DV Bern libs -->
         <dependency>
-            <groupId>ch.dvbern.oss.cdipersistence</groupId>
-            <artifactId>cdi-persistence-api</artifactId>
+            <groupId>jakarta.ejb</groupId>
+            <artifactId>jakarta.ejb-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ch.dvbern.oss.iso20022</groupId>
@@ -107,11 +152,6 @@
         <!-- endregion -->
 
         <!-- region testing -->
-        <dependency>
-            <groupId>org.needle4j</groupId>
-            <artifactId>needle4j</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>io.github.origin-energy</groupId>
             <artifactId>java-snapshot-testing-junit5</artifactId>
@@ -143,7 +183,7 @@
         <!-- region Mailing -->
         <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>commons-email</artifactId>
+            <artifactId>commons-email2-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-net</groupId>
@@ -156,20 +196,13 @@
         <!-- endregion -->
 
         <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry</artifactId>
+            <groupId>org.hibernate.search</groupId>
+            <artifactId>hibernate-search-backend-elasticsearch</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-search-elasticsearch</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-search-backend-jgroups</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-cachestore-jdbc</artifactId>
+            <groupId>org.hibernate.search</groupId>
+            <artifactId>hibernate-search-backend-lucene</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -196,26 +229,15 @@
             <artifactId>reflections</artifactId>
             <version>0.9.11</version>
         </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-admin-client</artifactId>
+        </dependency>
     </dependencies>
 
 
     <profiles>
 
-        <profile>
-            <id>test-wildfly-managed</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                    </plugin>
-                    <!--entpacke jboss-->
-                    <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <!-- Schema Generation-->
             <id>generate-ddl</id>
@@ -240,7 +262,7 @@
                             <url>${database.jdbc.url}</url>
 
                             <!--Der verwendete Dialekt fuer die Schema generierung-->
-                            <dialect>org.hibernate.dialect.MySQL5Dialect</dialect>
+                            <dialect>org.hibernate.dialect.MariaDBDialect</dialect>
                             <!-- Optionale Namensgebungsstrategie. Hiermit koennen die Tabellennamen zum Beispiel mit -->
                             <!-- underscore generiert werden statt mit CamelCase (application-property statt ApplicationProperty) -->
                             <physicalNamingStrategy>ch.dvbern.ebegu.persistence.EbeguPhysicalNamingStrategyImpl

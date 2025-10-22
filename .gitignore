@@ -52,3 +52,11 @@ ebegu-web/src/impressum/
 .vscode
 .nx
 **/.DS_Store
+
+ebegu-web/coverage
+
+# Lokale/Eigene Build-Einstellungen für jeden Entwickler
+**/ebegu-docker.properties
+**/ebegu-local-docker.properties
+**/ebegu-dump-docker.properties
+**/*.env

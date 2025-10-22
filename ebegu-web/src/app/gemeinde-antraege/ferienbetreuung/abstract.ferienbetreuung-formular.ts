@@ -21,7 +21,7 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import {Moment} from 'moment';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {TSWizardStepXTyp} from '../../../models/enums/TSWizardStepXTyp';
 import {TSFerienbetreuungAbstractAngaben} from '../../../models/gemeindeantrag/TSFerienbetreuungAbstractAngaben';
 import {TSFerienbetreuungAngabenContainer} from '../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
@@ -32,6 +32,8 @@ import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
+import {FerienbetreuungStatusHistory} from '../../../models/gemeindeantrag/ferienbetreuung/dto/FerienbetreuungStatusHistory';
+import {FerienbetreuungPermissionUtil} from './util/FerienbetreuungPermissionUtil';
 
 export abstract class AbstractFerienbetreuungFormular {
     public form: FormGroup;
@@ -117,19 +119,29 @@ export abstract class AbstractFerienbetreuungFormular {
         dialogConfig.data = {
             frage: this.translate.instant(frageKey)
         };
-        return this.dialog
-            .open(DvNgConfirmDialogComponent, dialogConfig)
-            .afterClosed()
-            .toPromise();
+        return firstValueFrom(
+            this.dialog
+                .open(DvNgConfirmDialogComponent, dialogConfig)
+                .afterClosed()
+        );
     }
 
     protected setupRoleBasedPropertiesForPrincipal(
         container: TSFerienbetreuungAngabenContainer,
         angaben: TSFerienbetreuungAbstractAngaben,
-        principal: TSBenutzer
+        principal: TSBenutzer,
+        history: FerienbetreuungStatusHistory[]
     ): void {
         if (container.isInPruefungKanton()) {
             if (
+                FerienbetreuungPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    container,
+                    history
+                )
+            ) {
+                this.setCanSeeNoActions();
+            } else if (
                 principal.hasOneOfRoles(TSRoleUtil.getMandantRoles()) &&
                 angaben.isInBearbeitung()
             ) {
@@ -173,11 +185,17 @@ export abstract class AbstractFerienbetreuungFormular {
     protected disableFormBasedOnStateAndPrincipal(
         principal: TSBenutzer,
         container: TSFerienbetreuungAngabenContainer,
-        angaben: TSFerienbetreuungAbstractAngaben
+        angaben: TSFerienbetreuungAbstractAngaben,
+        history: FerienbetreuungStatusHistory[]
     ): void {
         if (
+            FerienbetreuungPermissionUtil.isInZweitpruefungAndSameUser(
+                principal,
+                container,
+                history
+            ) ||
             angaben.isAbgeschlossen() ||
-            container?.isGeprueft() ||
+            container?.isGeprueftOrAbgeschlossenOrAbgelehnt() ||
             (container?.isInBearbeitungGemeinde() &&
                 principal.hasOneOfRoles(TSRoleUtil.getMandantOnlyRoles())) ||
             (container?.isInPruefungKanton() &&
@@ -192,16 +210,23 @@ export abstract class AbstractFerienbetreuungFormular {
     protected setupFormAndPermissions(
         container: TSFerienbetreuungAngabenContainer,
         angaben: TSFerienbetreuungAbstractAngaben,
-        principal: TSBenutzer
+        principal: TSBenutzer,
+        history: FerienbetreuungStatusHistory[]
     ): void {
         this.setupForm(angaben);
         this.cd.detectChanges();
 
-        this.disableFormBasedOnStateAndPrincipal(principal, container, angaben);
+        this.disableFormBasedOnStateAndPrincipal(
+            principal,
+            container,
+            angaben,
+            history
+        );
         this.setupRoleBasedPropertiesForPrincipal(
             container,
             angaben,
-            principal
+            principal,
+            history
         );
 
         this.cd.markForCheck();

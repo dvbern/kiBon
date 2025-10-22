@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {copy} from 'angular';
 import {EbeguUtil} from '../utils/EbeguUtil';
 import {TSFinanzielleSituationTyp} from './enums/TSFinanzielleSituationTyp';
 import {TSEinkommensverschlechterung} from './TSEinkommensverschlechterung';
@@ -108,9 +109,7 @@ export class TSFinanzModel {
         if (!gesuch) {
             return;
         }
-        this.familienSituation = angular.copy(
-            gesuch.extractFamiliensituation()
-        );
+        this.familienSituation = copy(gesuch.extractFamiliensituation());
         this.familienSituation.gemeinsameSteuererklaerung =
             this.getCopiedValueOrFalse(
                 gesuch.extractFamiliensituation().gemeinsameSteuererklaerung
@@ -128,11 +127,11 @@ export class TSFinanzModel {
             this.getCopiedValueOrUndefined(
                 gesuch.extractFamiliensituation().verguenstigungGewuenscht
             );
-        this.finanzielleSituationContainerGS1 = angular.copy(
+        this.finanzielleSituationContainerGS1 = copy(
             gesuch.gesuchsteller1.finanzielleSituationContainer
         );
         if (gesuch.gesuchsteller2) {
-            this.finanzielleSituationContainerGS2 = angular.copy(
+            this.finanzielleSituationContainerGS2 = copy(
                 gesuch.gesuchsteller2.finanzielleSituationContainer
             );
         }
@@ -177,25 +176,25 @@ export class TSFinanzModel {
     }
 
     private getCopiedValueOrFalse(value: boolean): boolean {
-        return value ? angular.copy(value) : false;
+        return value ? copy(value) : false;
     }
 
     private getCopiedValueOrUndefined(value: boolean): boolean {
-        return value || !value ? angular.copy(value) : undefined;
+        return value || !value ? copy(value) : undefined;
     }
 
     public copyEkvDataFromGesuch(gesuch: TSGesuch): void {
         this.einkommensverschlechterungInfoContainer =
             gesuch.einkommensverschlechterungInfoContainer
-                ? angular.copy(gesuch.einkommensverschlechterungInfoContainer)
+                ? copy(gesuch.einkommensverschlechterungInfoContainer)
                 : new TSEinkommensverschlechterungInfoContainer();
         if (gesuch.gesuchsteller1) {
-            this.einkommensverschlechterungContainerGS1 = angular.copy(
+            this.einkommensverschlechterungContainerGS1 = copy(
                 gesuch.gesuchsteller1.einkommensverschlechterungContainer
             );
         }
         if (gesuch.gesuchsteller2) {
-            this.einkommensverschlechterungContainerGS2 = angular.copy(
+            this.einkommensverschlechterungContainerGS2 = copy(
                 gesuch.gesuchsteller2.einkommensverschlechterungContainer
             );
         }
@@ -217,11 +216,19 @@ export class TSFinanzModel {
             return;
         }
 
+        this.initFinSitGS2();
+    }
+
+    public initFinSitGS2() {
         this.finanzielleSituationContainerGS2 =
             new TSFinanzielleSituationContainer();
         this.finanzielleSituationContainerGS2.jahr = this.basisjahr;
         this.finanzielleSituationContainerGS2.finanzielleSituationJA =
             new TSFinanzielleSituation();
+    }
+
+    public resetFinSitGS2() {
+        this.finanzielleSituationContainerGS2 = null;
     }
 
     public copyFinSitDataToGesuch(gesuch: TSGesuch): TSGesuch {
@@ -258,6 +265,9 @@ export class TSFinanzModel {
             this.zahlungsinformationen.kontoinhaber;
         familiensituation.iban =
             this.zahlungsinformationen.iban?.toLocaleUpperCase();
+        if (familiensituation.iban?.trim().length === 0) {
+            familiensituation.iban = null;
+        }
         familiensituation.abweichendeZahlungsadresse =
             this.zahlungsinformationen.abweichendeZahlungsadresse;
         familiensituation.zahlungsadresse =

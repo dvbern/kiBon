@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.converter;
@@ -24,8 +24,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.api.dtos.JaxBenutzer;
 import ch.dvbern.ebegu.api.dtos.JaxBenutzerNoDetails;
@@ -56,9 +56,11 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
 
-@RequestScoped
-public class JaxBenutzerConverter extends AbstractConverter {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JaxBenutzerConverter.class);
+@Dependent
+public class JaxBenutzerConverter extends AbstractBaseConverter {
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		JaxBenutzerConverter.class
+	);
 	@Inject
 	private JaxSozialdienstConverter jaxSozialdienstConverter;
 	@Inject
@@ -75,35 +77,39 @@ public class JaxBenutzerConverter extends AbstractConverter {
 	@Nonnull
 	public Benutzer jaxBenutzerToBenutzer(
 		@Nonnull JaxBenutzer jaxBenutzer,
-		@Nonnull Benutzer benutzer) {
+		@Nonnull Benutzer benutzer
+	) {
 
 		benutzer.setUsername(jaxBenutzer.getUsername());
-		benutzer.setExternalUUID(
-			Strings.isNullOrEmpty(jaxBenutzer.getExternalUUID()) ? null : jaxBenutzer.getExternalUUID()
-		);
 		benutzer.setEmail(jaxBenutzer.getEmail());
 		benutzer.setNachname(jaxBenutzer.getNachname());
 		benutzer.setVorname(jaxBenutzer.getVorname());
 		benutzer.setStatus(jaxBenutzer.getStatus());
-		if (jaxBenutzer.getMandant() != null && jaxBenutzer.getMandant().getId() != null) {
+		if (jaxBenutzer.getMandant() != null
+			&& jaxBenutzer.getMandant().getId() != null) {
 			// Mandant darf nicht vom Client ueberschrieben werden
-			Mandant mandantFromDB = mandantService.findMandant(jaxBenutzer.getMandant().getId())
-				.orElseThrow(() -> new EbeguEntityNotFoundException(
-					"jaxBenutzerToBenutzer -> mandant",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					benutzer.getMandant().getId()));
+			Mandant mandantFromDB = mandantService.getMandant(
+				jaxBenutzer.getMandant().getId()
+			);
 			benutzer.setMandant(mandantFromDB);
 		} else {
 			throw new EbeguEntityNotFoundException(
 				"jaxBenutzerToBenutzer -> mandant",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND);
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
+			);
 		}
-		// Berechtigungen
-		final Set<Berechtigung> convertedBerechtigungen = berechtigungenListToEntity(
-			jaxBenutzer.getBerechtigungen(),
-			benutzer.getBerechtigungen(),
-			benutzer
+		benutzer.setExternalUUID(
+			Strings.isNullOrEmpty(jaxBenutzer.getExternalUUID()) ?
+				null :
+				jaxBenutzer.getExternalUUID()
 		);
+		// Berechtigungen
+		final Set<Berechtigung> convertedBerechtigungen =
+			berechtigungenListToEntity(
+				jaxBenutzer.getBerechtigungen(),
+				benutzer.getBerechtigungen(),
+				benutzer
+			);
 		//change the existing collection to reflect changes
 		// Already tested: All existing module of the list remain as they were, that means their data are updated
 		// and the objects are not created again. ID and InsertTimeStamp are the same as before
@@ -116,49 +122,72 @@ public class JaxBenutzerConverter extends AbstractConverter {
 	private Set<Berechtigung> berechtigungenListToEntity(
 		@Nonnull Set<JaxBerechtigung> jaxBerechtigungenList,
 		@Nonnull Set<Berechtigung> berechtigungenList,
-		@Nonnull Benutzer benutzer) {
+		@Nonnull Benutzer benutzer
+	) {
 
 		final Set<Berechtigung> convertedBerechtigungen = new TreeSet<>();
 		for (final JaxBerechtigung jaxBerechtigung : jaxBerechtigungenList) {
 			final Berechtigung berechtigungToMergeWith = berechtigungenList
 				.stream()
-				.filter(existingBerechtigung -> existingBerechtigung.getId().equals(jaxBerechtigung.getId()))
+				.filter(
+					existingBerechtigung -> existingBerechtigung.getId()
+						.equals(jaxBerechtigung.getId())
+				)
 				.reduce(StreamsUtil.toOnlyElement())
 				.orElseGet(Berechtigung::new);
-			final Berechtigung berechtigungToAdd = berechtigungToEntity(jaxBerechtigung, berechtigungToMergeWith);
+			final Berechtigung berechtigungToAdd = berechtigungToEntity(
+				jaxBerechtigung,
+				berechtigungToMergeWith
+			);
 			berechtigungToAdd.setBenutzer(benutzer);
-			final boolean added = convertedBerechtigungen.add(berechtigungToAdd);
+			final boolean added = convertedBerechtigungen.add(
+				berechtigungToAdd
+			);
 			if (!added) {
-				LOGGER.warn("dropped duplicate berechtigung {}", berechtigungToAdd);
+				LOGGER.warn(
+					"dropped duplicate berechtigung {}",
+					berechtigungToAdd
+				);
 			}
 		}
 		return convertedBerechtigungen;
 	}
 
-	public JaxBenutzerNoDetails benutzerToJaxBenutzerNoDetails(@Nonnull Benutzer benutzer) {
+	public JaxBenutzerNoDetails benutzerToJaxBenutzerNoDetails(
+		@Nonnull Benutzer benutzer
+	) {
 		JaxBenutzerNoDetails jaxLoginElement = new JaxBenutzerNoDetails();
 		jaxLoginElement.setVorname(benutzer.getVorname());
 		jaxLoginElement.setNachname(benutzer.getNachname());
 		jaxLoginElement.setUsername(benutzer.getUsername());
 		Set<String> gemeindeIds = benutzer.getBerechtigungen()
 			.stream()
-			.flatMap(berechtigung -> berechtigung.getGemeindeList()
-				.stream())
+			.flatMap(
+				berechtigung -> berechtigung.getGemeindeList()
+					.stream()
+			)
 			.map(AbstractEntity::getId)
 			.collect(Collectors.toSet());
 		jaxLoginElement.setGemeindeIds(gemeindeIds);
 		return jaxLoginElement;
 	}
 
-	public Berechtigung berechtigungToEntity(JaxBerechtigung jaxBerechtigung, Berechtigung berechtigung) {
+	public Berechtigung berechtigungToEntity(
+		JaxBerechtigung jaxBerechtigung,
+		Berechtigung berechtigung
+	) {
 		convertAbstractDateRangedFieldsToEntity(jaxBerechtigung, berechtigung);
 		berechtigung.setRole(jaxBerechtigung.getRole());
 
 		// wir muessen Traegerschaft und Institution auch updaten wenn sie null sind. Es koennte auch so aus dem IAM
 		// kommen
-		if (jaxBerechtigung.getInstitution() != null && jaxBerechtigung.getInstitution().getId() != null) {
+		if (jaxBerechtigung.getInstitution() != null
+			&& jaxBerechtigung.getInstitution().getId() != null) {
 			final Optional<Institution> institutionFromDB =
-				institutionService.findInstitution(jaxBerechtigung.getInstitution().getId(), false);
+				institutionService.findInstitution(
+					jaxBerechtigung.getInstitution().getId(),
+					false
+				);
 			if (institutionFromDB.isPresent()) {
 				// Institution darf nicht vom Client ueberschrieben werden
 				berechtigung.setInstitution(institutionFromDB.get());
@@ -166,15 +195,19 @@ public class JaxBenutzerConverter extends AbstractConverter {
 				throw new EbeguEntityNotFoundException(
 					"berechtigungToEntity",
 					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					jaxBerechtigung.getInstitution().getId());
+					jaxBerechtigung.getInstitution().getId()
+				);
 			}
 		} else {
 			berechtigung.setInstitution(null);
 		}
 
-		if (jaxBerechtigung.getTraegerschaft() != null && jaxBerechtigung.getTraegerschaft().getId() != null) {
+		if (jaxBerechtigung.getTraegerschaft() != null
+			&& jaxBerechtigung.getTraegerschaft().getId() != null) {
 			final Optional<Traegerschaft> traegerschaftFromDB =
-				traegerschaftService.findTraegerschaft(jaxBerechtigung.getTraegerschaft().getId());
+				traegerschaftService.findTraegerschaft(
+					jaxBerechtigung.getTraegerschaft().getId()
+				);
 			if (traegerschaftFromDB.isPresent()) {
 				// Traegerschaft darf nicht vom Client ueberschrieben werden
 				berechtigung.setTraegerschaft(traegerschaftFromDB.get());
@@ -182,15 +215,19 @@ public class JaxBenutzerConverter extends AbstractConverter {
 				throw new EbeguEntityNotFoundException(
 					"berechtigungToEntity -> traegerschaft",
 					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					jaxBerechtigung.getTraegerschaft().getId());
+					jaxBerechtigung.getTraegerschaft().getId()
+				);
 			}
 		} else {
 			berechtigung.setTraegerschaft(null);
 		}
 
-		if (jaxBerechtigung.getSozialdienst() != null && jaxBerechtigung.getSozialdienst().getId() != null) {
+		if (jaxBerechtigung.getSozialdienst() != null
+			&& jaxBerechtigung.getSozialdienst().getId() != null) {
 			final Optional<Sozialdienst> sozialdienstFromDB =
-				sozialdienstService.findSozialdienst(jaxBerechtigung.getSozialdienst().getId());
+				sozialdienstService.findSozialdienst(
+					jaxBerechtigung.getSozialdienst().getId()
+				);
 			if (sozialdienstFromDB.isPresent()) {
 				// Traegerschaft darf nicht vom Client ueberschrieben werden
 				berechtigung.setSozialdienst(sozialdienstFromDB.get());
@@ -198,7 +235,8 @@ public class JaxBenutzerConverter extends AbstractConverter {
 				throw new EbeguEntityNotFoundException(
 					"berechtigungToEntity -> sozialdienst",
 					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					jaxBerechtigung.getSozialdienst().getId());
+					jaxBerechtigung.getSozialdienst().getId()
+				);
 			}
 		} else {
 			berechtigung.setSozialdienst(null);
@@ -209,7 +247,6 @@ public class JaxBenutzerConverter extends AbstractConverter {
 		return berechtigung;
 	}
 
-
 	public JaxBenutzer benutzerToJaxBenutzer(@Nonnull Benutzer benutzer) {
 		JaxBenutzer jaxLoginElement = new JaxBenutzer();
 		jaxLoginElement.setVorname(benutzer.getVorname());
@@ -219,11 +256,14 @@ public class JaxBenutzerConverter extends AbstractConverter {
 		jaxLoginElement.setUsername(benutzer.getUsername());
 		jaxLoginElement.setExternalUUID(benutzer.getExternalUUID());
 		jaxLoginElement.setStatus(benutzer.getStatus());
-		jaxLoginElement.setCurrentBerechtigung(berechtigungToJax(benutzer.getCurrentBerechtigung()));
+		jaxLoginElement.setCurrentBerechtigung(
+			berechtigungToJax(benutzer.getCurrentBerechtigung())
+		);
 		// Berechtigungen
 		Set<JaxBerechtigung> jaxBerechtigungen = new TreeSet<>();
 		if (benutzer.getBerechtigungen() != null) {
-			jaxBerechtigungen = benutzer.getBerechtigungen().stream()
+			jaxBerechtigungen = benutzer.getBerechtigungen()
+				.stream()
 				.map(this::berechtigungToJax)
 				.sorted()
 				.collect(Collectors.toCollection(TreeSet::new));
@@ -238,16 +278,25 @@ public class JaxBenutzerConverter extends AbstractConverter {
 		convertAbstractDateRangedFieldsToJAX(berechtigung, jaxBerechtigung);
 		jaxBerechtigung.setRole(berechtigung.getRole());
 		if (berechtigung.getInstitution() != null) {
-			jaxBerechtigung.setInstitution(institutionToJAX(berechtigung.getInstitution()));
+			jaxBerechtigung.setInstitution(
+				institutionToJAX(berechtigung.getInstitution())
+			);
 		}
 		if (berechtigung.getTraegerschaft() != null) {
-			jaxBerechtigung.setTraegerschaft(traegerschaftLightToJAX(berechtigung.getTraegerschaft()));
+			jaxBerechtigung.setTraegerschaft(
+				traegerschaftLightToJAX(berechtigung.getTraegerschaft())
+			);
 		}
 		if (berechtigung.getSozialdienst() != null) {
-			jaxBerechtigung.setSozialdienst(jaxSozialdienstConverter.sozialdienstToJAX(berechtigung.getSozialdienst()));
+			jaxBerechtigung.setSozialdienst(
+				jaxSozialdienstConverter.sozialdienstToJAX(
+					berechtigung.getSozialdienst()
+				)
+			);
 		}
 		// Gemeinden
-		Set<JaxGemeinde> jaxGemeinden = berechtigung.getGemeindeList().stream()
+		Set<JaxGemeinde> jaxGemeinden = berechtigung.getGemeindeList()
+			.stream()
 			.map(this::gemeindeToJAX)
 			.collect(Collectors.toCollection(TreeSet::new));
 		jaxBerechtigung.setGemeindeList(jaxGemeinden);
@@ -255,7 +304,9 @@ public class JaxBenutzerConverter extends AbstractConverter {
 		return jaxBerechtigung;
 	}
 
-	public JaxBerechtigungHistory berechtigungHistoryToJax(BerechtigungHistory history) {
+	public JaxBerechtigungHistory berechtigungHistoryToJax(
+		BerechtigungHistory history
+	) {
 		JaxBerechtigungHistory jaxHistory = new JaxBerechtigungHistory();
 		convertAbstractDateRangedFieldsToJAX(history, jaxHistory);
 		requireNonNull(history.getUserErstellt());
@@ -263,13 +314,21 @@ public class JaxBenutzerConverter extends AbstractConverter {
 		jaxHistory.setUsername(history.getUsername());
 		jaxHistory.setRole(history.getRole());
 		if (history.getInstitution() != null) {
-			jaxHistory.setInstitution(institutionToJAX(history.getInstitution()));
+			jaxHistory.setInstitution(
+				institutionToJAX(history.getInstitution())
+			);
 		}
 		if (history.getTraegerschaft() != null) {
-			jaxHistory.setTraegerschaft(traegerschaftLightToJAX(history.getTraegerschaft()));
+			jaxHistory.setTraegerschaft(
+				traegerschaftLightToJAX(history.getTraegerschaft())
+			);
 		}
 		if (history.getSozialdienst() != null) {
-			jaxHistory.setSozialdienst(jaxSozialdienstConverter.sozialdienstToJAX(history.getSozialdienst()));
+			jaxHistory.setSozialdienst(
+				jaxSozialdienstConverter.sozialdienstToJAX(
+					history.getSozialdienst()
+				)
+			);
 		}
 		jaxHistory.setGemeinden(history.getGemeinden());
 		jaxHistory.setStatus(history.getStatus());
@@ -277,15 +336,23 @@ public class JaxBenutzerConverter extends AbstractConverter {
 		return jaxHistory;
 	}
 
-	private void loadGemeindenFromJax(@Nonnull JaxBerechtigung jaxBerechtigung, @Nonnull Berechtigung berechtigung) {
+	private void loadGemeindenFromJax(
+		@Nonnull JaxBerechtigung jaxBerechtigung,
+		@Nonnull Berechtigung berechtigung
+	) {
 		final Set<Gemeinde> gemeindeListe = new HashSet<>();
 		for (JaxGemeinde jaxGemeinde : jaxBerechtigung.getGemeindeList()) {
 			if (jaxGemeinde.getId() != null) {
-				Gemeinde gemeinde = gemeindeService.findGemeinde(jaxGemeinde.getId())
-					.orElseThrow(() -> new EbeguRuntimeException(
-						"findGemeinde",
-						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-						jaxGemeinde.getId()));
+				Gemeinde gemeinde = gemeindeService.findGemeinde(
+					jaxGemeinde.getId()
+				)
+					.orElseThrow(
+						() -> new EbeguRuntimeException(
+							"findGemeinde",
+							ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+							jaxGemeinde.getId()
+						)
+					);
 				gemeindeListe.add(gemeinde);
 			}
 		}

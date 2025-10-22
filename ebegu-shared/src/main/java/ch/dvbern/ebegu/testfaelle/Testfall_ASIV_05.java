@@ -31,7 +31,7 @@ import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Kinderabzug;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.util.MathUtil;
 
 /**
@@ -40,14 +40,22 @@ import ch.dvbern.ebegu.util.MathUtil;
 @SuppressWarnings("PMD.ClassNamingConventions")
 public class Testfall_ASIV_05 extends AbstractASIVTestfall {
 
-	private static final BigDecimal EINKOMMEN_GS1 = MathUtil.DEFAULT.from(70000);
+	private static final BigDecimal EINKOMMEN_GS1 = MathUtil.DEFAULT.from(
+		70000
+	);
 
 	public Testfall_ASIV_05(
-			Gesuchsperiode gesuchsperiode,
-			boolean betreuungenBestaetigt,
-			Gemeinde gemeinde,
-			InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, gemeinde, institutionStammdatenBuilder);
+		Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		Gemeinde gemeinde,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			gemeinde,
+			institutionStammdatenBuilder
+		);
 	}
 
 	@Override
@@ -64,24 +72,61 @@ public class Testfall_ASIV_05 extends AbstractASIVTestfall {
 		ErwerbspensumContainer erwerbspensum = createErwerbspensum(100);
 		gesuchsteller1.addErwerbspensumContainer(erwerbspensum);
 		// Kinder
-		KindContainer kind = createKind(Geschlecht.MAENNLICH, "ASIV", "Kind", LocalDate.of(2014, Month.APRIL, 13), Kinderabzug.GANZER_ABZUG, true);
+		KindContainer kind = createKind(
+			Geschlecht.MAENNLICH,
+			"ASIV",
+			"Kind",
+			LocalDate.of(2014, Month.APRIL, 13),
+			Kinderabzug.GANZER_ABZUG,
+			true
+		);
 		kind.setGesuch(erstgesuch);
 		erstgesuch.getKindContainers().add(kind);
 		// Kita Brünnen
-		Betreuung betreuungKitaBruennen = createBetreuung(institutionStammdatenBuilder.getIdInstitutionStammdatenBruennen(), true);
+		Betreuung betreuungKitaBruennen = createBetreuung(
+			institutionStammdatenBuilder
+				.getIdInstitutionStammdatenBruennen(),
+			true
+		);
 		betreuungKitaBruennen.setKind(kind);
 		kind.getBetreuungen().add(betreuungKitaBruennen);
-		BetreuungspensumContainer betreuungspensumKitaBruennen = createBetreuungspensum(100, LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.AUGUST, 1), LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JULY, 31));
+		BetreuungspensumContainer betreuungspensumKitaBruennen =
+			createBetreuungspensum(
+				100,
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus1(),
+					Month.AUGUST,
+					1
+				),
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus2(),
+					Month.JULY,
+					31
+				)
+			);
 		betreuungspensumKitaBruennen.setBetreuung(betreuungKitaBruennen);
-		betreuungKitaBruennen.getBetreuungspensumContainers().add(betreuungspensumKitaBruennen);
+		betreuungKitaBruennen.getBetreuungspensumContainers()
+			.add(betreuungspensumKitaBruennen);
 		// Finanzielle Situation
-		FinanzielleSituationContainer finanzielleSituationContainer = createFinanzielleSituationContainer(BigDecimal.ZERO, EINKOMMEN_GS1);
+		FinanzielleSituationContainer finanzielleSituationContainer =
+			createFinanzielleSituationContainer(
+				BigDecimal.ZERO,
+				EINKOMMEN_GS1
+			);
 		finanzielleSituationContainer.setGesuchsteller(gesuchsteller1);
-		gesuchsteller1.setFinanzielleSituationContainer(finanzielleSituationContainer);
+		gesuchsteller1.setFinanzielleSituationContainer(
+			finanzielleSituationContainer
+		);
 
 		// Einkommensverschlechterug
-		EinkommensverschlechterungContainer ekvContainer = createEinkommensverschlechterungContainer(erstgesuch, true, false);
-		ekvContainer.getEkvJABasisJahrPlus1().setNettolohn(MathUtil.DEFAULT.from(49000));
+		EinkommensverschlechterungContainer ekvContainer =
+			createEinkommensverschlechterungContainer(
+				erstgesuch,
+				true,
+				false
+			);
+		ekvContainer.getEkvJABasisJahrPlus1()
+			.setNettolohn(MathUtil.DEFAULT.from(49000));
 		gesuchsteller1.setEinkommensverschlechterungContainer(ekvContainer);
 		return erstgesuch;
 	}
@@ -89,7 +134,14 @@ public class Testfall_ASIV_05 extends AbstractASIVTestfall {
 	@Override
 	public Gesuch createMutation(Gesuch erstgesuch) {
 		// Gesuch, Gesuchsteller
-		Gesuch mutation = createVerheiratet(erstgesuch, LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JANUARY, 15));
+		Gesuch mutation = createVerheiratet(
+			erstgesuch,
+			LocalDate.of(
+				gesuchsperiode.getBasisJahrPlus2(),
+				Month.JANUARY,
+				15
+			)
+		);
 		GesuchstellerContainer gesuchsteller2 = createGesuchstellerContainer(2);
 		mutation.setGesuchsteller2(gesuchsteller2);
 		// Erwerbspensum
@@ -97,12 +149,19 @@ public class Testfall_ASIV_05 extends AbstractASIVTestfall {
 		gesuchsteller2.addErwerbspensumContainer(erwerbspensum);
 		// Finanzielle Situation
 		FinanzielleSituationContainer finanzielleSituationContainerGS2 =
-				createFinanzielleSituationContainer(BigDecimal.ZERO, MathUtil.DEFAULT.from(30000));
+			createFinanzielleSituationContainer(
+				BigDecimal.ZERO,
+				MathUtil.DEFAULT.from(30000)
+			);
 		finanzielleSituationContainerGS2.setGesuchsteller(gesuchsteller2);
-		gesuchsteller2.setFinanzielleSituationContainer(finanzielleSituationContainerGS2);
+		gesuchsteller2.setFinanzielleSituationContainer(
+			finanzielleSituationContainerGS2
+		);
 		// Einkommensverschlechterug
-		EinkommensverschlechterungContainer ekvContainerGS2 = createEinkommensverschlechterungContainer(true, false);
-		ekvContainerGS2.getEkvJABasisJahrPlus1().setNettolohn(MathUtil.DEFAULT.from(30000));
+		EinkommensverschlechterungContainer ekvContainerGS2 =
+			createEinkommensverschlechterungContainer(true, false);
+		ekvContainerGS2.getEkvJABasisJahrPlus1()
+			.setNettolohn(MathUtil.DEFAULT.from(30000));
 		gesuchsteller2.setEinkommensverschlechterungContainer(ekvContainerGS2);
 		return mutation;
 	}

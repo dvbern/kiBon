@@ -8,18 +8,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rest.test;
 
 import java.util.Optional;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.institution.JaxInstitutionConverter;
+import ch.dvbern.ebegu.api.converter.institution.JaxInstitutionStammdatenConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdaten;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionUpdate;
@@ -45,7 +46,8 @@ import static org.junit.Assert.fail;
 public class InstitutionResourceTest {
 
 	@TestSubject
-	private final InstitutionResource institutionResource = new InstitutionResource();
+	private final InstitutionResource institutionResource =
+		new InstitutionResource();
 
 	@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized" })
 	@Mock
@@ -57,13 +59,16 @@ public class InstitutionResourceTest {
 
 	@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized" })
 	@Mock
-	private JaxBConverter converter;
+	private JaxInstitutionStammdatenConverter institutionStammdatenConverter;
+
+	@Mock
+	private JaxInstitutionConverter institutionConverter;
 
 	@Test
 	public void testUpdateInstitutionAndStammdaten_checksInstitutionId() {
-		String institutionId = "1";
-		String stammdatenId = "2";
-		String stammdatenInstitutonId = "3";
+		String institutionId = "bb65266a-348d-11ef-9b1e-2f5dc203ba03";
+		String stammdatenId = "c2ba972e-348d-11ef-a4cf-4b5fd54aa25a";
+		String stammdatenInstitutonId = "c646ce58-348d-11ef-8063-0fba5da803a7";
 
 		JaxInstitutionStammdaten jaxStammdaten = new JaxInstitutionStammdaten();
 		jaxStammdaten.setId(stammdatenId);
@@ -79,18 +84,32 @@ public class InstitutionResourceTest {
 		// Stammdaten belog to another Institution
 		Institution otherInstitution = new Institution();
 		otherInstitution.setId(stammdatenInstitutonId);
-		InstitutionStammdaten stammdaten = new InstitutionStammdaten(otherInstitution);
-		EasyMock.expect(institutionStammdatenService.findInstitutionStammdaten(stammdatenId))
+		InstitutionStammdaten stammdaten = new InstitutionStammdaten(
+			otherInstitution
+		);
+		EasyMock.expect(
+			institutionStammdatenService.findInstitutionStammdaten(
+				stammdatenId
+			)
+		)
 			.andReturn(Optional.of(stammdaten));
 
 		EasyMock.replay(institutionService, institutionStammdatenService);
 
 		try {
 			//noinspection ResultOfMethodCallIgnored
-			institutionResource.updateInstitutionAndStammdaten(new JaxId(institutionId), jaxUpdate);
+			institutionResource.updateInstitutionAndStammdaten(
+				new JaxId(institutionId),
+				jaxUpdate
+			);
 			fail();
 		} catch (IllegalArgumentException ex) {
-			assertThat(ex.getMessage(), containsString("Stammdaten and Institution must belong together"));
+			assertThat(
+				ex.getMessage(),
+				containsString(
+					"Stammdaten and Institution must belong together"
+				)
+			);
 		}
 
 		EasyMock.verify(institutionService, institutionStammdatenService);
@@ -98,42 +117,77 @@ public class InstitutionResourceTest {
 
 	@Test
 	public void testUpdateInstitutionAndStammdaten_firesChangeEventWithUpdatedStammdaten() {
-		String institutionId = "1";
+		String institutionId = "74485010-5a4c-11ef-8af4-ef2ea016785f";
 
 		Institution institution = new Institution();
 		institution.setId(institutionId);
 		EasyMock.expect(institutionService.findInstitution(institutionId, true))
 			.andReturn(Optional.of(institution));
 
-		converter.institutionStammdatenToEntity(EasyMock.anyObject(), EasyMock.anyObject());
+		institutionStammdatenConverter.institutionStammdatenToEntity(
+			EasyMock.anyObject(),
+			EasyMock.anyObject()
+		);
 		EasyMock.expectLastCall().once();
 
-		EasyMock.expect(converter.institutionToEntity(EasyMock.anyObject(), EasyMock.anyObject(),
-			EasyMock.anyObject()))
+		EasyMock.expect(
+			institutionConverter.institutionToEntity(
+				EasyMock.anyObject(),
+				EasyMock.anyObject(),
+				EasyMock.anyObject()
+			)
+		)
 			.andReturn(false);
 
-		EasyMock.expect(institutionStammdatenService.isGueltigkeitDecrease(EasyMock.anyObject(), EasyMock.anyObject()))
+		EasyMock.expect(
+			institutionStammdatenService.isGueltigkeitDecrease(
+				EasyMock.anyObject(),
+				EasyMock.anyObject()
+			)
+		)
 			.andReturn(false);
 
 		InstitutionStammdaten updatedStammdaten = new InstitutionStammdaten();
-		EasyMock.expect(institutionStammdatenService.saveInstitutionStammdaten(EasyMock.anyObject()))
+		EasyMock.expect(
+			institutionStammdatenService.saveInstitutionStammdaten(
+				EasyMock.anyObject()
+			)
+		)
 			.andReturn(updatedStammdaten);
 
 		// the event should be thrown with the updated Stammdaten
-		institutionStammdatenService.fireStammdatenChangedEvent(EasyMock.eq(updatedStammdaten));
+		institutionStammdatenService.fireStammdatenChangedEvent(
+			EasyMock.eq(updatedStammdaten)
+		);
 		EasyMock.expectLastCall().once();
 
 		// the updated Stammdaten should be returned
-		JaxInstitutionStammdaten expectedReturnValue = new JaxInstitutionStammdaten();
-		EasyMock.expect(converter.institutionStammdatenToJAX(updatedStammdaten))
+		JaxInstitutionStammdaten expectedReturnValue =
+			new JaxInstitutionStammdaten();
+		EasyMock.expect(
+			institutionStammdatenConverter.institutionStammdatenToJAX(
+				updatedStammdaten
+			)
+		)
 			.andReturn(expectedReturnValue);
 
-		EasyMock.replay(institutionService, institutionStammdatenService, converter);
+		EasyMock.replay(
+			institutionService,
+			institutionStammdatenService,
+			institutionStammdatenConverter
+		);
 
 		JaxInstitutionStammdaten actualReturnValue =
-			institutionResource.updateInstitutionAndStammdaten(new JaxId(institutionId), new JaxInstitutionUpdate());
+			institutionResource.updateInstitutionAndStammdaten(
+				new JaxId(institutionId),
+				new JaxInstitutionUpdate()
+			);
 
-		EasyMock.verify(institutionService, institutionStammdatenService, converter);
+		EasyMock.verify(
+			institutionService,
+			institutionStammdatenService,
+			institutionStammdatenConverter
+		);
 
 		assertThat(actualReturnValue, is(sameInstance(expectedReturnValue)));
 	}

@@ -17,10 +17,11 @@
 
 import {NgModule} from '@angular/core';
 import {SharedModule} from '../shared/shared.module';
-import {ListSozialdienstComponent} from './list-sozialdienst/list-sozialdienst.component';
+import {WebseiteValidatorDirective} from '../shared/validators/webseite-validator.directive';
 import {AddSozialdienstComponent} from './add-sozialdienst/add-sozialdienst.component';
-import {SozialdienstRoutingModule} from './sozialdienst-routing/sozialdienst-routing.module';
 import {EditSozialdienstComponent} from './edit-sozialdienst/edit-sozialdienst.component';
+import {ListSozialdienstComponent} from './list-sozialdienst/list-sozialdienst.component';
+import {SozialdienstRoutingModule} from './sozialdienst-routing/sozialdienst-routing.module';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,10 @@ import {EditSozialdienstComponent} from './edit-sozialdienst/edit-sozialdienst.c
         AddSozialdienstComponent,
         EditSozialdienstComponent
     ],
-    imports: [SharedModule, SozialdienstRoutingModule]
+    imports: [
+        SharedModule,
+        SozialdienstRoutingModule,
+        WebseiteValidatorDirective
+    ]
 })
 export class SozialdienstModule {}

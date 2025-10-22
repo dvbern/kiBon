@@ -17,21 +17,31 @@ public class FkjvBernTestfallDataProvider extends BernTestfallDataProvider {
 
 	@Override
 	public Familiensituation createAlleinerziehend() {
-		Familiensituation familiensituation = createDefaultFieldsOfFamiliensituation();
+		Familiensituation familiensituation =
+			createDefaultFieldsOfFamiliensituation();
 		familiensituation.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
 		familiensituation.setGeteilteObhut(Boolean.TRUE);
-		familiensituation.setGesuchstellerKardinalitaet(EnumGesuchstellerKardinalitaet.ALLEINE);
+		familiensituation.setGesuchstellerKardinalitaet(
+			EnumGesuchstellerKardinalitaet.ALLEINE
+		);
 		return familiensituation;
 	}
 
 	@Override
-	public FinanzielleSituation createFinanzielleSituation(BigDecimal vermoegen, BigDecimal einkommen) {
-		FinanzielleSituation finanzielleSituation = super.createFinanzielleSituation(vermoegen, einkommen);
+	public FinanzielleSituation createFinanzielleSituation(
+		BigDecimal vermoegen,
+		BigDecimal einkommen
+	) {
+		FinanzielleSituation finanzielleSituation =
+			super.createFinanzielleSituation(vermoegen, einkommen);
 		finanzielleSituation.setNettoertraegeErbengemeinschaft(BigDecimal.ZERO);
 		finanzielleSituation.setBruttoertraegeVermoegen(BigDecimal.ZERO);
-		finanzielleSituation.setEinkommenInVereinfachtemVerfahrenAbgerechnet(Boolean.FALSE);
+		finanzielleSituation.setEinkommenInVereinfachtemVerfahrenAbgerechnet(
+			Boolean.FALSE
+		);
 		finanzielleSituation.setAbzugSchuldzinsen(BigDecimal.ZERO);
 		finanzielleSituation.setGewinnungskosten(BigDecimal.ZERO);
+		finanzielleSituation.setAutomatischePruefungErlaubt(false);
 		return finanzielleSituation;
 	}
 

@@ -22,8 +22,7 @@ import {
     IDirectiveLinkFn,
     IScope
 } from 'angular';
-import {CONSTANTS} from '../../constants/CONSTANTS';
-
+import {CONSTANTS} from '@kibon/shared/model/constants';
 export class DvIsNotQrIban implements IDirective {
     public restrict = 'A';
     public require = 'ngModel';

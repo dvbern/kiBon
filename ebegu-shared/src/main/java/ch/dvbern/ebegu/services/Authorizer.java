@@ -16,18 +16,22 @@
 package ch.dvbern.ebegu.services;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 
+import ch.dvbern.ebegu.dto.pendenz.PendenzBetreuungDTO;
+import ch.dvbern.ebegu.dto.report.ReportZahlungspositionDTO;
+import ch.dvbern.ebegu.einstellung.ApplicationProperty;
+import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.AntragStatusHistory;
-import ch.dvbern.ebegu.entities.ApplicationProperty;
 import ch.dvbern.ebegu.entities.Benutzer;
+import ch.dvbern.ebegu.entities.Betreuungsmitteilung;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Dossier;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
 import ch.dvbern.ebegu.entities.Fall;
 import ch.dvbern.ebegu.entities.FinanzielleSituation;
@@ -41,7 +45,6 @@ import ch.dvbern.ebegu.entities.InstitutionStammdaten;
 import ch.dvbern.ebegu.entities.InternePendenz;
 import ch.dvbern.ebegu.entities.Mahnung;
 import ch.dvbern.ebegu.entities.Mitteilung;
-import ch.dvbern.ebegu.entities.RueckforderungFormular;
 import ch.dvbern.ebegu.entities.Traegerschaft;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.WizardStep;
@@ -85,10 +88,13 @@ public interface Authorizer {
 	boolean isReadAuthorized(@Nullable Gesuch gesuch);
 
 	/**
-	 * Returns true when the user is authorized to read the dossier and all subobjects it contains. This is method is useful for some cases
-	 * like when an Institution must get a dossier since it is only allowed when some gesuch of the dossier has a Betreuung of the
+	 * Returns true when the user is authorized to read the dossier and all subobjects it contains. This is method is
+	 * useful for some cases
+	 * like when an Institution must get a dossier since it is only allowed when some gesuch of the dossier has a
+	 * Betreuung of the
 	 * given institution
-	 * IMPORTANT. this method will do a deep check into the dossier so it will take more time. It should only be used when really needed.
+	 * IMPORTANT. this method will do a deep check into the dossier so it will take more time. It should only be used
+	 * when really needed.
 	 */
 	boolean isReadCompletelyAuthorizedDossier(@Nullable Dossier dossier);
 
@@ -155,12 +161,16 @@ public interface Authorizer {
 	/**
 	 * prueft ob der aktuell eingeloggte benutzer ALLE Plaetze in der Liste lesen darf
 	 */
-	<T extends AbstractPlatz> void checkReadAuthorizationForAllPlaetze(@Nullable Collection<T> betreuungen);
+	<T extends AbstractPlatz> void checkReadAuthorizationForAllPlaetze(
+		@Nullable Collection<T> betreuungen
+	);
 
 	/**
-	 * prueft ob der  eingeloggte benutzer EINEN der Plaetze in der Liste lesen darf
+	 * prueft ob der eingeloggte benutzer EINEN der Plaetze in der Liste lesen darf
 	 */
-	<T extends AbstractPlatz> void checkReadAuthorizationForAnyPlaetze(@Nullable Collection<T> plaetze);
+	<T extends AbstractPlatz> void checkReadAuthorizationForAnyPlaetze(
+		@Nullable Collection<T> plaetze
+	);
 
 	/**
 	 * prueft ob der aktuell eingeloggte Benutzer die Verfuegung lesen darf
@@ -170,23 +180,30 @@ public interface Authorizer {
 	/**
 	 * prueft ob der aktuell eingeloggte Benutzer die ALLE verfuegungen in der liste lesen darf
 	 */
-	void checkReadAuthorizationVerfuegungen(@Nullable Collection<Verfuegung> verfuegungen);
+	void checkReadAuthorizationVerfuegungen(
+		@Nullable Collection<Verfuegung> verfuegungen
+	);
 
 	/**
 	 * prueft ob der aktuell eingeloggte benutzer die verfuegung schreibend bearbeiten darf
 	 */
 	void checkWriteAuthorization(@Nullable Verfuegung verfuegung);
 
-	void checkReadAuthorization(@Nullable FinanzielleSituationContainer finanzielleSituation);
+	void checkReadAuthorization(
+		@Nullable FinanzielleSituationContainer finanzielleSituation
+	);
 
-	void checkWriteAuthorization(@Nullable FinanzielleSituationContainer finanzielleSituation);
+	void checkWriteAuthorization(
+		@Nullable FinanzielleSituationContainer finanzielleSituation
+	);
 
 	void checkWriteAuthorization(@Nullable ErwerbspensumContainer ewpCnt);
 
 	void checkReadAuthorization(@Nullable ErwerbspensumContainer ewpCnt);
 
 	/**
-	 * extrahiert die {@link FinanzielleSituation} von beiden GS wenn vorhanden und  prueft ob der aktuelle Benutzer berechtigt ist
+	 * extrahiert die {@link FinanzielleSituation} von beiden GS wenn vorhanden und prueft ob der aktuelle Benutzer
+	 * berechtigt ist
 	 */
 	void checkReadAuthorizationFinSit(@Nullable Gesuch gesuch);
 
@@ -207,7 +224,9 @@ public interface Authorizer {
 	/**
 	 * Prueft, ob der aktuelle Benutzer alle uebergebenen Mitteilungen lesen darf
 	 */
-	void checkReadAuthorizationMitteilungen(@Nonnull Collection<Mitteilung> mitteilungen);
+	void checkReadAuthorizationMitteilungen(
+		@Nonnull Collection<Mitteilung> mitteilungen
+	);
 
 	/**
 	 * Prueft, ob der aktuelle Benutzer die uebergebene Mitteilung lesen darf
@@ -220,18 +239,33 @@ public interface Authorizer {
 	void checkReadAuthorizationZahlung(@Nullable Zahlung zahlung);
 
 	/**
+	 * Prueft, ob der aktuelle Benutzer die uebergebene Zahlung lesen darf
+	 */
+	void checkReadAuthorizationZahlung(
+		@NotNull ReportZahlungspositionDTO zahlung
+	);
+
+	/**
 	 * Prueft, ob der aktuelle Benutzer den uebergebenen Zahlungsauftrag lesen darf
 	 */
-	void checkReadAuthorizationZahlungsauftrag(@Nullable Zahlungsauftrag zahlungsauftrag);
+	void checkReadAuthorizationZahlungsauftrag(
+		@Nullable Zahlungsauftrag zahlungsauftrag
+	);
 
 	/**
 	 * Prueft, ob der aktuelle Benutzer den uebergebenen Zahlungsauftrag editieren/erstellen darf
 	 */
-	void checkWriteAuthorizationZahlungsauftrag(@Nullable Zahlungsauftrag zahlungsauftrag);
+	void checkWriteAuthorizationZahlungsauftrag(
+		@Nullable Zahlungsauftrag zahlungsauftrag
+	);
 
-	boolean isReadAuthorizationInstitutionStammdaten(@Nullable InstitutionStammdaten institutionStammdaten);
+	boolean isReadAuthorizationInstitutionStammdaten(
+		@Nullable InstitutionStammdaten institutionStammdaten
+	);
 
-	boolean isWriteAuthorizationInstitutionStammdaten(@Nullable InstitutionStammdaten institutionStammdaten);
+	boolean isWriteAuthorizationInstitutionStammdaten(
+		@Nullable InstitutionStammdaten institutionStammdaten
+	);
 
 	void checkReadAuthorizationInstitution(@Nullable Institution institution);
 
@@ -241,19 +275,21 @@ public interface Authorizer {
 
 	void checkWriteAuthorization(@Nullable Traegerschaft traegerschaft);
 
-	void checkReadAuthorizationInstitutionStammdaten(@Nullable InstitutionStammdaten institutionStammdaten);
+	void checkReadAuthorizationInstitutionStammdaten(
+		@Nullable InstitutionStammdaten institutionStammdaten
+	);
 
-	void checkWriteAuthorizationInstitutionStammdaten(@Nullable InstitutionStammdaten institutionStammdaten);
+	void checkWriteAuthorizationInstitutionStammdaten(
+		@Nullable InstitutionStammdaten institutionStammdaten
+	);
 
-	void checkWriteAuthorization(@Nullable RueckforderungFormular rueckforderungFormular);
+	void checkReadAuthorization(
+		@Nullable AntragStatusHistory antragStatusHistory
+	);
 
-	void checkWriteAuthorizationDocument(@Nullable RueckforderungFormular rueckforderungFormular);
-
-	void checkReadAuthorization(@Nullable RueckforderungFormular rueckforderungFormular);
-
-	void checkReadAuthorization(@Nullable AntragStatusHistory antragStatusHistory);
-
-	void checkWriteAuthorization(@Nullable AntragStatusHistory antragStatusHistory);
+	void checkWriteAuthorization(
+		@Nullable AntragStatusHistory antragStatusHistory
+	);
 
 	void checkReadAuthorization(@Nullable DokumentGrund dokumentGrund);
 
@@ -267,17 +303,29 @@ public interface Authorizer {
 
 	void checkWriteAuthorization(@Nullable Mahnung mahnung);
 
-	void checkReadAuthorization(@Nullable LastenausgleichTagesschuleAngabenGemeindeContainer latsGemeindeContainer);
+	void checkReadAuthorization(
+		@Nullable LastenausgleichTagesschuleAngabenGemeindeContainer latsGemeindeContainer
+	);
 
-	void checkWriteAuthorization(@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer latsGemeindeContainer);
+	void checkWriteAuthorization(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer latsGemeindeContainer
+	);
 
-	void checkReadAuthorization(@Nullable LastenausgleichTagesschuleAngabenInstitutionContainer latsInstitutionContainer);
+	void checkReadAuthorization(
+		@Nullable LastenausgleichTagesschuleAngabenInstitutionContainer latsInstitutionContainer
+	);
 
-	void checkWriteAuthorization(@Nullable LastenausgleichTagesschuleAngabenInstitutionContainer latsInstitutionContainer);
+	void checkWriteAuthorization(
+		@Nullable LastenausgleichTagesschuleAngabenInstitutionContainer latsInstitutionContainer
+	);
 
-	void checkReadAuthorizationLATSGemeindeAntrag(@Nonnull String gemeindeAntragId);
+	void checkReadAuthorizationLATSGemeindeAntrag(
+		@Nonnull String gemeindeAntragId
+	);
 
-	void checkWriteAuthorizationLATSGemeindeAntrag(@Nonnull String gemeindeAntragId);
+	void checkWriteAuthorizationLATSGemeindeAntrag(
+		@Nonnull String gemeindeAntragId
+	);
 
 	void checkReadAuthorization(@Nullable Sozialdienst sozialdienst);
 
@@ -287,11 +335,15 @@ public interface Authorizer {
 
 	void checkWriteAuthorization(@Nullable SozialdienstFall sozialdienstFall);
 
-	void checkWriteAuthorization(@Nonnull FerienbetreuungAngabenContainer container);
+	void checkWriteAuthorization(
+		@Nonnull FerienbetreuungAngabenContainer container
+	);
 
 	void checkReadAuthorizationFerienbetreuung(@Nonnull String id);
 
-	void checkReadAuthorization(@Nonnull FerienbetreuungAngabenContainer container);
+	void checkReadAuthorization(
+		@Nonnull FerienbetreuungAngabenContainer container
+	);
 
 	void checkWriteAuthorization(@Nonnull InternePendenz internePendenz);
 
@@ -301,13 +353,25 @@ public interface Authorizer {
 
 	void checkReadAuthorization(@Nonnull GemeindeKennzahlen gemeindeKennzahlen);
 
-	void checkWriteAuthorization(@Nonnull GemeindeKennzahlen gemeindeKennzahlen);
+	void checkWriteAuthorization(
+		@Nonnull GemeindeKennzahlen gemeindeKennzahlen
+	);
 
 	void checkWriteAuthorization(@Nonnull Einstellung einstellung);
 
 	void checkWriteAuthorization(@Nonnull ApplicationProperty property);
 
-	void checkWriteAuthorization(@Nonnull GesuchstellerContainer gesuchstellerContainer);
+	void checkWriteAuthorization(
+		@Nonnull GesuchstellerContainer gesuchstellerContainer
+	);
 
-	void checkReadAuthorization(@Nonnull GesuchstellerContainer gesuchstellerContainer);
+	void checkReadAuthorization(
+		@Nonnull GesuchstellerContainer gesuchstellerContainer
+	);
+
+	void isCreateAuthorized(@Nonnull Betreuungsmitteilung betreuungsmitteilung);
+
+	void checkReadAuthorizationForAllPendenzAnmeldungDTO(
+		List<PendenzBetreuungDTO> pendenzAnmeldungen
+	);
 }

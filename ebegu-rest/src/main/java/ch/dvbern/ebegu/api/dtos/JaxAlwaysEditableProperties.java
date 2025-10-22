@@ -8,57 +8,61 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
 
-import ch.dvbern.ebegu.util.Constants;
-
 import javax.annotation.Nullable;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+
+import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.validators.CheckEmail;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JaxAlwaysEditableProperties {
 
-	private JaxId  gesuchId;
+	private JaxId gesuchId;
 
-	@Email
+	@CheckEmail
 	@Size(max = DB_DEFAULT_MAX_LENGTH)
 	@Nullable
 	private String mailGS1;
 
-	@Pattern(regexp = Constants.REGEX_TELEFON_MOBILE, message = "{error_invalid_mobilenummer}")
+	@Pattern(regexp = Constants.REGEX_TELEFON_MOBILE,
+		message = "{error_invalid_mobilenummer}")
 	@Nullable
 	private String mobileGS1;
 
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{error_invalid_mobilenummer}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{error_invalid_mobilenummer}")
 	@Nullable
 	private String telefonGS1;
 
 	@Nullable
 	private String telefonAuslandGS1;
 
-	@Email
+	@CheckEmail
 	@Size(max = DB_DEFAULT_MAX_LENGTH)
 	@Nullable
 	private String mailGS2;
 
-	@Pattern(regexp = Constants.REGEX_TELEFON_MOBILE, message = "{error_invalid_mobilenummer}")
+	@Pattern(regexp = Constants.REGEX_TELEFON_MOBILE,
+		message = "{error_invalid_mobilenummer}")
 	@Nullable
 	private String mobileGS2;
 
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{error_invalid_mobilenummer}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{error_invalid_mobilenummer}")
 	@Nullable
 	private String telefonGS2;
 
@@ -162,8 +166,11 @@ public class JaxAlwaysEditableProperties {
 		return keineMahlzeitenverguenstigungBeantragt;
 	}
 
-	public void setKeineMahlzeitenverguenstigungBeantragt(boolean keineMahlzeitenverguenstigungBeantragt) {
-		this.keineMahlzeitenverguenstigungBeantragt = keineMahlzeitenverguenstigungBeantragt;
+	public void setKeineMahlzeitenverguenstigungBeantragt(
+		boolean keineMahlzeitenverguenstigungBeantragt
+	) {
+		this.keineMahlzeitenverguenstigungBeantragt =
+			keineMahlzeitenverguenstigungBeantragt;
 	}
 
 	@Nullable
@@ -188,7 +195,9 @@ public class JaxAlwaysEditableProperties {
 		return abweichendeZahlungsadresse;
 	}
 
-	public void setAbweichendeZahlungsadresse(boolean abweichendeZahlungsadresse) {
+	public void setAbweichendeZahlungsadresse(
+		boolean abweichendeZahlungsadresse
+	) {
 		this.abweichendeZahlungsadresse = abweichendeZahlungsadresse;
 	}
 

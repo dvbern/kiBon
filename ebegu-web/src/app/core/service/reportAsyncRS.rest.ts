@@ -18,10 +18,8 @@
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSInstitution} from '../../../models/TSInstitution';
-import {CONSTANTS} from '../constants/CONSTANTS';
-
+import {TSGemeinde, TSInstitution} from '@kibon/shared/model/entity';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 /**
  * spricht die reportAsync ressource an welche die reports async generiert
  */
@@ -261,18 +259,6 @@ export class ReportAsyncRS {
         return this.http.get<{workjobId: string}>(
             `${this.serviceURL}/excel/tagesschuleRechnungsstellung`,
             {params}
-        );
-    }
-
-    public getNotrechtReportExcel(
-        zahlungenAusloesen: boolean
-    ): Observable<{workjobId: string}> {
-        const reportParams = ReportAsyncRS.createParamsFromObject({
-            zahlungenAusloesen
-        });
-        return this.http.get<{workjobId: string}>(
-            `${this.serviceURL}/excel/notrecht`,
-            {params: reportParams}
         );
     }
 

@@ -15,16 +15,16 @@
 
 import {Component, OnInit} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import * as moment from 'moment';
-import {Observable} from 'rxjs';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import moment from 'moment';
+import {firstValueFrom, Observable} from 'rxjs';
 import {DvNgConfirmDialogComponent} from '../../../app/core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
 import {DvNgDisplayObjectDialogComponent} from '../../../app/core/component/dv-ng-display-object-dialog/dv-ng-display-object-dialog.component';
 import {DvNgLinkDialogComponent} from '../../../app/core/component/dv-ng-link-dialog/dv-ng-link-dialog.component';
 import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
-import {DvNgRemoveDialogComponent} from '../../../app/core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../../app/core/service/benutzerRSX.rest';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {GemeindeAntragService} from '../../../app/gemeinde-antraege/services/gemeinde-antrag.service';
@@ -35,8 +35,7 @@ import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
 import {TSKibonAnfrage} from '../../../models/neskovanp/TSKibonAnfrage';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TestFaelleRS} from '../../service/testFaelleRS.rest';
 
 const LOG = LogFactory.createLog('TestdatenView');
@@ -44,7 +43,8 @@ const LOG = LogFactory.createLog('TestdatenView');
 @Component({
     selector: 'dv-testdaten-view',
     templateUrl: './testdatenView.component.html',
-    styleUrls: ['./testdatenView.component.less']
+    styleUrls: ['./testdatenView.component.less'],
+    standalone: false
 })
 export class TestdatenViewComponent implements OnInit {
     public dossierid: string;
@@ -62,6 +62,7 @@ export class TestdatenViewComponent implements OnInit {
     public gemeindeList: Array<TSGemeinde>;
 
     public mailadresse: string;
+    public gemeindeMails: TSGemeinde;
 
     public devMode: boolean;
 
@@ -83,7 +84,7 @@ export class TestdatenViewComponent implements OnInit {
         private readonly benutzerRS: BenutzerRSX,
         private readonly errorService: ErrorService,
         private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly gemeindeRS: GemeindeRS,
         private readonly dialog: MatDialog,
         private readonly gemeindeAntragRS: GemeindeAntragService,
@@ -97,7 +98,7 @@ export class TestdatenViewComponent implements OnInit {
         this.gesuchsperiodeRS.getAllGesuchsperioden().then(result => {
             this.gesuchsperiodeList = result;
         });
-        this.applicationPropertyRS.isDevMode().then(response => {
+        this.applicationPropertyRS.isDevMode().subscribe(response => {
             this.devMode = response;
         });
         this.gemeindeRS.getAktiveGemeinden().then(response => {
@@ -106,7 +107,7 @@ export class TestdatenViewComponent implements OnInit {
         });
         this.applicationPropertyRS
             .isEbeguKibonAnfrageTestGuiEnabled()
-            .then(response => {
+            .subscribe(response => {
                 this.kibonAnfrageTestEnabled = response;
             });
         this.initGemeindeAntragTypes();
@@ -246,7 +247,9 @@ export class TestdatenViewComponent implements OnInit {
     }
 
     public testAllMails(): void {
-        this.testFaelleRS.testAllMails(this.mailadresse).subscribe();
+        this.testFaelleRS
+            .testAllMails(this.mailadresse, this.gemeindeMails.id)
+            .subscribe();
     }
 
     public mutiereFallScheidung(): void {
@@ -263,24 +266,6 @@ export class TestdatenViewComponent implements OnInit {
                 },
                 error => LOG.error(error)
             );
-    }
-
-    public resetSchulungsdaten(): void {
-        this.testFaelleRS.resetSchulungsdaten().subscribe(
-            response => {
-                this.createAndOpenOkDialog(response);
-            },
-            error => LOG.error(error)
-        );
-    }
-
-    public deleteSchulungsdaten(): void {
-        this.testFaelleRS.deleteSchulungsdaten().subscribe(
-            response => {
-                this.createAndOpenOkDialog(response);
-            },
-            error => LOG.error(error)
-        );
     }
 
     public createTutorialdaten(): void {
@@ -424,8 +409,8 @@ export class TestdatenViewComponent implements OnInit {
     }
 
     private async overwriteIfGemeindeAntragExists(): Promise<boolean> {
-        const antraege = await this.gemeindeAntragRS
-            .getGemeindeAntraege(
+        const antraege = await firstValueFrom(
+            this.gemeindeAntragRS.getGemeindeAntraege(
                 {
                     antragTyp: this.gemeindeAntragTyp,
                     gesuchsperiodeString:
@@ -435,7 +420,7 @@ export class TestdatenViewComponent implements OnInit {
                 {},
                 new TSPagination()
             )
-            .toPromise();
+        );
         return (
             antraege.resultList.length === 0 ||
             this.confirmDialog(
@@ -445,7 +430,7 @@ export class TestdatenViewComponent implements OnInit {
     }
 
     private initGemeindeAntragTypes(): void {
-        this.applicationPropertyRS.getPublicPropertiesCached().then(
+        this.applicationPropertyRS.getPublicPropertiesCached().subscribe(
             configs => {
                 this.gemeindeAntragTypeList = [];
                 if (configs.ferienbetreuungAktiv) {
@@ -478,14 +463,15 @@ export class TestdatenViewComponent implements OnInit {
     }
 
     private async confirmDialog(text: string): Promise<boolean> {
-        return this.dialog
-            .open(DvNgConfirmDialogComponent, {
-                data: {
-                    frage: text
-                }
-            })
-            .afterClosed()
-            .toPromise();
+        return firstValueFrom(
+            this.dialog
+                .open(DvNgConfirmDialogComponent, {
+                    data: {
+                        frage: text
+                    }
+                })
+                .afterClosed()
+        );
     }
 
     public getGesuchstellerDataTestValue(gs: TSBenutzerNoDetails): string {

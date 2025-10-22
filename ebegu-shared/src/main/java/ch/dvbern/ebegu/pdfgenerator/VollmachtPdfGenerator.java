@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -48,18 +48,29 @@ import org.apache.commons.lang.StringUtils;
 import static ch.dvbern.lib.invoicegenerator.pdf.PdfUtilities.DEFAULT_MULTIPLIED_LEADING;
 import static com.lowagie.text.Utilities.millimetersToPoints;
 
-public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfiguration> {
+public class VollmachtPdfGenerator extends
+	BaseGenerator<VollmachtPdfLayoutConfiguration> {
 
-	private static final String VOLLMACHT_TITLE = "PdfGeneration_Vollmacht_title";
-	private static final String VOLLMACHT_SUBTITLE = "PdfGeneration_Vollmacht_subtitle";
-	private static final String VOLLMACHT_ADRESSE_TITLE = "PdfGeneration_Vollmacht_adresse_title";
-	private static final String VOLLMACHT_PARAGRAPH_1 = "PdfGeneration_Vollmacht_paragraph_1";
-	private static final String VOLLMACHT_PARAGRAPH_2A = "PdfGeneration_Vollmacht_paragraph_2A";
-	private static final String VOLLMACHT_PARAGRAPH_2B = "PdfGeneration_Vollmacht_paragraph_2B";
-	private static final String VOLLMACHT_BEMERKUNG = "PdfGeneration_Vollmacht_bemerkung";
-	private static final String VOLLMACHT_ORT_DATUM = "PdfGeneration_Vollmacht_ort_datum";
-	private static final String VOLLMACHT_UNTERSCHRIFT = "PdfGeneration_Vollmacht_unterschrift";
-	private static final String VOLLMACHT_FUSSZEILE_1 = "PdfGeneration_Vollmacht_fusszeile_1";
+	private static final String VOLLMACHT_TITLE =
+		"PdfGeneration_Vollmacht_title";
+	private static final String VOLLMACHT_SUBTITLE =
+		"PdfGeneration_Vollmacht_subtitle";
+	private static final String VOLLMACHT_ADRESSE_TITLE =
+		"PdfGeneration_Vollmacht_adresse_title";
+	private static final String VOLLMACHT_PARAGRAPH_1 =
+		"PdfGeneration_Vollmacht_paragraph_1";
+	private static final String VOLLMACHT_PARAGRAPH_2A =
+		"PdfGeneration_Vollmacht_paragraph_2A";
+	private static final String VOLLMACHT_PARAGRAPH_2B =
+		"PdfGeneration_Vollmacht_paragraph_2B";
+	private static final String VOLLMACHT_BEMERKUNG =
+		"PdfGeneration_Vollmacht_bemerkung";
+	private static final String VOLLMACHT_ORT_DATUM =
+		"PdfGeneration_Vollmacht_ort_datum";
+	private static final String VOLLMACHT_UNTERSCHRIFT =
+		"PdfGeneration_Vollmacht_unterschrift";
+	private static final String VOLLMACHT_FUSSZEILE_1 =
+		"PdfGeneration_Vollmacht_fusszeile_1";
 
 	private static final int SUPER_TEXT_SIZE = 6;
 	private static final int SUPER_TEXT_RISE = 4;
@@ -77,7 +88,10 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 	private SozialdienstFall sozialdienstFall;
 
 	@SuppressWarnings("PMD.ConstructorCallsOverridableMethod") // Stimmt nicht, die Methode ist final
-	public VollmachtPdfGenerator(Sprache sprache, @Nonnull SozialdienstFall sozialdienstFall) {
+	public VollmachtPdfGenerator(
+		Sprache sprache,
+		@Nonnull SozialdienstFall sozialdienstFall
+	) {
 		initSprache(sprache);
 		this.mandant = sozialdienstFall.getSozialdienst().getMandant();
 		this.sozialdienstFall = sozialdienstFall;
@@ -102,8 +116,12 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 		return pdfGenerator;
 	}
 
-	public void generate(@Nonnull final OutputStream outputStream) throws InvoiceGeneratorException {
-		OnPageHandler onPageHandler = new OnPageHandler(getPdfElementGenerator(), new ArrayList<>());
+	public void generate(@Nonnull final OutputStream outputStream)
+		throws InvoiceGeneratorException {
+		OnPageHandler onPageHandler = new OnPageHandler(
+			getPdfElementGenerator(),
+			new ArrayList<>()
+		);
 		getPdfGenerator().generate(outputStream, onPageHandler, (generator) -> {
 			Document document = generator.getDocument();
 			createContent(document, generator.getDirectContent());
@@ -111,7 +129,9 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 	}
 
 	private void initGenerator() {
-		this.pdfGenerator = new BaseGenerator<>(new VollmachtPdfLayoutConfiguration());
+		this.pdfGenerator = new BaseGenerator<>(
+			new VollmachtPdfLayoutConfiguration()
+		);
 	}
 
 	protected CustomGenerator getCustomGenerator() {
@@ -124,7 +144,8 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 
 	public void createContent(
 		@Nonnull final Document document,
-		@Nonnull PdfContentByte dirPdfContentByte) throws DocumentException {
+		@Nonnull PdfContentByte dirPdfContentByte
+	) throws DocumentException {
 
 		createContentWhereIWant(
 			dirPdfContentByte,
@@ -132,7 +153,8 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 			725,
 			20,
 			16,
-			PdfUtil.DEFAULT_FONT_BOLD);
+			PdfUtil.DEFAULT_FONT_BOLD
+		);
 
 		createContentWhereIWant(
 			dirPdfContentByte,
@@ -140,7 +162,8 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 			690,
 			20,
 			11,
-			PdfUtil.DEFAULT_FONT_BOLD);
+			PdfUtil.DEFAULT_FONT_BOLD
+		);
 
 		placeAbsender(dirPdfContentByte);
 		placeAntragsteller2(dirPdfContentByte);
@@ -149,35 +172,68 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 			PdfUtil.createParagraph(
 				translate(
 					VOLLMACHT_PARAGRAPH_1,
-					this.sozialdienstFall.getSozialdienst().getName()),
+					this.sozialdienstFall.getSozialdienst()
+						.getName()
+				),
 				2,
-				PdfUtil.DEFAULT_FONT);
+				PdfUtil.DEFAULT_FONT
+			);
 		paragraph1.setSpacingAfter(15);
 		document.add(paragraph1);
 		final String paragraph2Text = translate(VOLLMACHT_PARAGRAPH_2A);
-		Paragraph paragraph2 = PdfUtil.createParagraph(paragraph2Text, 2, PdfUtil.DEFAULT_FONT);
+		Paragraph paragraph2 = PdfUtil.createParagraph(
+			paragraph2Text,
+			2,
+			PdfUtil.DEFAULT_FONT
+		);
 		if (StringUtils.isNotEmpty(paragraph2Text)) {
 			// Die Fussnoten-Referenz nur anzeigen, wenn etwas im Text steht
-			paragraph2.add(PdfUtil.createSuperTextInText("1", SUPER_TEXT_SIZE, SUPER_TEXT_RISE));
+			paragraph2.add(
+				PdfUtil.createSuperTextInText(
+					"1",
+					SUPER_TEXT_SIZE,
+					SUPER_TEXT_RISE
+				)
+			);
 		}
 		paragraph2.add(new Chunk(translate(VOLLMACHT_PARAGRAPH_2B)));
 		paragraph2.setSpacingAfter(15);
 		document.add(paragraph2);
 
-		Paragraph bemerkung = PdfUtil.createParagraph(translate(VOLLMACHT_BEMERKUNG), 2, PdfUtil.DEFAULT_FONT);
+		Paragraph bemerkung = PdfUtil.createParagraph(
+			translate(VOLLMACHT_BEMERKUNG),
+			2,
+			PdfUtil.DEFAULT_FONT
+		);
 		bemerkung.setSpacingAfter(45);
 		document.add(bemerkung);
-		Paragraph ortDatum = PdfUtil.createParagraph(translate(VOLLMACHT_ORT_DATUM), 2, PdfUtil.DEFAULT_FONT);
+		Paragraph ortDatum = PdfUtil.createParagraph(
+			translate(VOLLMACHT_ORT_DATUM),
+			2,
+			PdfUtil.DEFAULT_FONT
+		);
 		ortDatum.setSpacingAfter(25);
 		document.add(ortDatum);
-		Paragraph unterschrift = PdfUtil.createParagraph(translate(VOLLMACHT_UNTERSCHRIFT), 2, PdfUtil.DEFAULT_FONT);
+		Paragraph unterschrift = PdfUtil.createParagraph(
+			translate(VOLLMACHT_UNTERSCHRIFT),
+			2,
+			PdfUtil.DEFAULT_FONT
+		);
 		unterschrift.setSpacingAfter(25);
 		document.add(unterschrift);
-		Paragraph unterschriftZeile1 = PdfUtil.createParagraph(UNTERSCHRIFT_PLACEHOLDER, 1, PdfUtil.DEFAULT_FONT);
+		Paragraph unterschriftZeile1 = PdfUtil.createParagraph(
+			UNTERSCHRIFT_PLACEHOLDER,
+			1,
+			PdfUtil.DEFAULT_FONT
+		);
 		unterschrift.setSpacingAfter(0);
 		document.add(unterschriftZeile1);
 		if (isZweiAntragstellende()) {
-			Paragraph unterschriftZeile2 = PdfUtil.createParagraph(UNTERSCHRIFT_PLACEHOLDER, 2, PdfUtil.DEFAULT_FONT);
+			Paragraph unterschriftZeile2 = PdfUtil.createParagraph(
+				UNTERSCHRIFT_PLACEHOLDER,
+				2,
+				PdfUtil.DEFAULT_FONT
+			);
 			unterschrift.setSpacingAfter(5);
 			document.add(unterschriftZeile2);
 		}
@@ -185,7 +241,8 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 			createFusszeile(
 				dirPdfContentByte,
 				Lists.newArrayList(translate(VOLLMACHT_FUSSZEILE_1)),
-				0, 0
+				0,
+				0
 			);
 		}
 	}
@@ -200,7 +257,8 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 				text,
 				position,
 				20,
-				PdfUtil.FONT_SIZE);
+				PdfUtil.FONT_SIZE
+			);
 			position -= ABSENDER_LINE_HEIGHT;
 		}
 	}
@@ -215,7 +273,8 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 				text,
 				position,
 				ABSENDER_2_X_POSITION,
-				PdfUtil.FONT_SIZE);
+				PdfUtil.FONT_SIZE
+			);
 			position -= ABSENDER_LINE_HEIGHT;
 		}
 	}
@@ -225,13 +284,29 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 		List<String> absender = new ArrayList<>();
 		absender.add(translate(VOLLMACHT_ADRESSE_TITLE));
 		absender.add("");
-		absender.add(this.sozialdienstFall.getName() + " " + this.sozialdienstFall.getVorname());
-		absender.add(this.sozialdienstFall.getAdresse().getStrasseAndHausnummer());
-		if (!StringUtils.isEmpty(this.sozialdienstFall.getAdresse().getZusatzzeile())) {
+		absender.add(
+			this.sozialdienstFall.getName()
+				+ " "
+				+ this.sozialdienstFall.getVorname()
+		);
+		absender.add(
+			this.sozialdienstFall.getAdresse().getStrasseAndHausnummer()
+		);
+		if (!StringUtils.isEmpty(
+			this.sozialdienstFall.getAdresse().getZusatzzeile()
+		)) {
 			absender.add(this.sozialdienstFall.getAdresse().getZusatzzeile());
 		}
-		absender.add(this.sozialdienstFall.getAdresse().getPlz() + " " + this.sozialdienstFall.getAdresse().getOrt());
-		absender.add(Constants.DATE_FORMATTER.format(this.sozialdienstFall.getGeburtsdatum()));
+		absender.add(
+			this.sozialdienstFall.getAdresse().getPlz()
+				+ " "
+				+ this.sozialdienstFall.getAdresse().getOrt()
+		);
+		absender.add(
+			Constants.DATE_FORMATTER.format(
+				this.sozialdienstFall.getGeburtsdatum()
+			)
+		);
 		return absender;
 	}
 
@@ -241,10 +316,18 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 		if (isZweiAntragstellende()) {
 			absender.add("");
 			absender.add("");
-			absender.add(this.sozialdienstFall.getNameGs2() + " " + this.sozialdienstFall.getVornameGs2());
-			absender.add(this.sozialdienstFall.getGeburtsdatumGs2() != null ?
-				Constants.DATE_FORMATTER.format(this.sozialdienstFall.getGeburtsdatumGs2()) :
-				"");
+			absender.add(
+				this.sozialdienstFall.getNameGs2()
+					+ " "
+					+ this.sozialdienstFall.getVornameGs2()
+			);
+			absender.add(
+				this.sozialdienstFall.getGeburtsdatumGs2() != null ?
+					Constants.DATE_FORMATTER.format(
+						this.sozialdienstFall.getGeburtsdatumGs2()
+					) :
+					""
+			);
 		}
 		return absender;
 	}
@@ -263,15 +346,31 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 		ColumnText fz = new ColumnText(dirPdfContentByte);
 		final float height = millimetersToPoints(30);
 		final float width = millimetersToPoints(170);
-		final float loverLeftX = millimetersToPoints(PageConfiguration.LEFT_PAGE_DEFAULT_MARGIN_MM);
-		final float loverLeftY = millimetersToPoints(PdfLayoutConfiguration.LOGO_TOP_IN_MM / 4.0f);
-		fz.setSimpleColumn(loverLeftX, loverLeftY, loverLeftX + width, loverLeftY + height);
+		final float loverLeftX = millimetersToPoints(
+			PageConfiguration.LEFT_PAGE_DEFAULT_MARGIN_MM
+		);
+		final float loverLeftY = millimetersToPoints(
+			PdfLayoutConfiguration.LOGO_TOP_IN_MM / 4.0f
+		);
+		fz.setSimpleColumn(
+			loverLeftX,
+			loverLeftY,
+			loverLeftX + width,
+			loverLeftY + height
+		);
 		fz.setLeading(0, DEFAULT_MULTIPLIED_LEADING);
-		Font fontWithSize = PdfUtil.createFontWithSize(getPageConfiguration().getFonts().getFont(), 6.5f);
+		Font fontWithSize = PdfUtil.createFontWithSize(
+			getPageConfiguration().getFonts().getFont(),
+			6.5f
+		);
 		for (int i = start; i < content.size(); i++) {
-			Chunk chunk = new Chunk((i + anzeigeNummerStart + 1) + " ", PdfUtil.createFontWithSize(
-				getPageConfiguration().getFonts().getFont(),
-				5));
+			Chunk chunk = new Chunk(
+				(i + anzeigeNummerStart + 1) + " ",
+				PdfUtil.createFontWithSize(
+					getPageConfiguration().getFonts().getFont(),
+					5
+				)
+			);
 			chunk.setTextRise(2);
 			fz.addText(chunk);
 			fz.addText(new Phrase(content.get(i) + '\n', fontWithSize));
@@ -284,22 +383,40 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 		String content,
 		float y,
 		float x,
-		float size) {
-		createContentWhereIWant(dirPdfContentByte, content, y, x, size, PdfUtil.DEFAULT_FONT);
+		float size
+	) {
+		createContentWhereIWant(
+			dirPdfContentByte,
+			content,
+			y,
+			x,
+			size,
+			PdfUtil.DEFAULT_FONT
+		);
 	}
 
 	/**
 	 * Wenn man etwas ganz genau platzieren muss...
 	 */
 	protected void createContentWhereIWant(
-		@Nonnull PdfContentByte dirPdfContentByte, String content, float y,
-		float x, float size, Font font) throws DocumentException {
+		@Nonnull PdfContentByte dirPdfContentByte,
+		String content,
+		float y,
+		float x,
+		float size,
+		Font font
+	) throws DocumentException {
 		ColumnText fz = new ColumnText(dirPdfContentByte);
 		final float height = millimetersToPoints(20);
 		final float width = millimetersToPoints(170);
 		final float loverLeftX = millimetersToPoints(x);
 		final float loverLeftY = y;
-		fz.setSimpleColumn(loverLeftX, loverLeftY, loverLeftX + width, loverLeftY + height);
+		fz.setSimpleColumn(
+			loverLeftX,
+			loverLeftY,
+			loverLeftX + width,
+			loverLeftY + height
+		);
 		fz.setLeading(0, DEFAULT_MULTIPLIED_LEADING);
 		Font fontWithSize = PdfUtil.createFontWithSize(font, size);
 		fz.addText(new Phrase(content + '\n', fontWithSize));
@@ -307,7 +424,8 @@ public class VollmachtPdfGenerator extends BaseGenerator<VollmachtPdfLayoutConfi
 	}
 
 	private boolean isZweiAntragstellende() {
-		if (this.sozialdienstFall.getNameGs2() != null && !this.sozialdienstFall.getNameGs2().isEmpty()) {
+		if (this.sozialdienstFall.getNameGs2() != null
+			&& !this.sozialdienstFall.getNameGs2().isEmpty()) {
 			return true;
 		}
 		return false;

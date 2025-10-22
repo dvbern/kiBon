@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle.testantraege;
@@ -28,23 +28,33 @@ public class Testantrag_FerienbetreuungAngabenNutzung {
 
 	private FerienbetreuungAngabenNutzung nutzung;
 
-	public Testantrag_FerienbetreuungAngabenNutzung(FerienbetreuungAngabenStatus status) {
+	public Testantrag_FerienbetreuungAngabenNutzung(
+		FerienbetreuungAngabenStatus status
+	) {
 		this.nutzung = new FerienbetreuungAngabenNutzung();
 
 		this.nutzung.setAnzahlBetreuungstageKinderBern(new BigDecimal(16));
 		this.nutzung.setBetreuungstageKinderDieserGemeinde(BigDecimal.TEN);
-		this.nutzung.setBetreuungstageKinderDieserGemeindeSonderschueler(new BigDecimal(3));
-		this.nutzung.setDavonBetreuungstageKinderAndererGemeinden(new BigDecimal(6));
-		this.nutzung.setDavonBetreuungstageKinderAndererGemeindenSonderschueler(new BigDecimal(3));
+		this.nutzung.setBetreuungstageKinderDieserGemeindeSonderschueler(
+			new BigDecimal(3)
+		);
+		this.nutzung.setDavonBetreuungstageKinderAndererGemeinden(
+			new BigDecimal(6)
+		);
+		this.nutzung.setDavonBetreuungstageKinderAndererGemeindenSonderschueler(
+			new BigDecimal(3)
+		);
 
-		this.nutzung.setAnzahlBetreuteKinder(new BigDecimal(26));
-		this.nutzung.setAnzahlBetreuteKinderSonderschueler(BigDecimal.TEN);
+		this.nutzung.setAnzahlBetreuteKinder(new BigDecimal(30));
+		this.nutzung.setAnzahlBetreuteKinderSonderschueler(BigDecimal.ZERO);
 		this.nutzung.setAnzahlBetreuteKinder1Zyklus(BigDecimal.TEN);
 		this.nutzung.setAnzahlBetreuteKinder2Zyklus(BigDecimal.TEN);
 		this.nutzung.setAnzahlBetreuteKinder3Zyklus(BigDecimal.TEN);
 
-		if(status == FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE) {
-			this.nutzung.setStatus(FerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE);
+		if (status == FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE) {
+			this.nutzung.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
 		} else {
 			this.nutzung.setStatus(FerienbetreuungFormularStatus.ABGESCHLOSSEN);
 		}

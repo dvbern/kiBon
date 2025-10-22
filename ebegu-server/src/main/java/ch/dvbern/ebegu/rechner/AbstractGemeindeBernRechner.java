@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner;
@@ -22,23 +22,25 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.BGCalculationResult;
-import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.rechner.rules.RechnerRule;
 import ch.dvbern.ebegu.util.MathUtil;
 
 /**
  * Superklasse für BG-Rechner der Gemeinde: Berechnet sowohl nach ASIV wie auch nach Gemeinde-spezifischen Regeln
  */
-public abstract class AbstractGemeindeBernRechner extends AbstractAsivBernRechner {
+public abstract class AbstractGemeindeBernRechner extends
+	AbstractAsivBernRechner {
 
 	private final List<RechnerRule> rechnerRulesForGemeinde;
-	private final RechnerRuleParameterDTO rechnerParameter = new RechnerRuleParameterDTO();
+	private final RechnerRuleParameterDTO rechnerParameter =
+		new RechnerRuleParameterDTO();
 
-	protected AbstractGemeindeBernRechner(List<RechnerRule> rechnerRulesForGemeinde) {
+	protected AbstractGemeindeBernRechner(
+		List<RechnerRule> rechnerRulesForGemeinde
+	) {
 		this.rechnerRulesForGemeinde = rechnerRulesForGemeinde;
 	}
 
@@ -46,7 +48,8 @@ public abstract class AbstractGemeindeBernRechner extends AbstractAsivBernRechne
 	@Override
 	public BGCalculationResult calculateAsiv(
 		@Nonnull BGCalculationInput input,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
 		// Fuer ASIV alles zuruecksetzen
 		prepareRechnerParameterForAsiv();
@@ -58,7 +61,8 @@ public abstract class AbstractGemeindeBernRechner extends AbstractAsivBernRechne
 	@Override
 	protected Optional<BGCalculationResult> calculateGemeinde(
 		@Nonnull BGCalculationInput input,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
 		// Fuer Gemeinde die richtigen Werte setzen
 		prepareRechnerParameterForGemeinde(input, parameterDTO);
@@ -83,8 +87,15 @@ public abstract class AbstractGemeindeBernRechner extends AbstractAsivBernRechne
 			// Diese Pruefung erfolgt eigentlich schon aussen... die Rules die reinkommen sind schon konfiguriert fuer
 			// Gemeinde
 			if (rechnerRule.isConfigueredForGemeinde(parameterDTO)) {
-				if (rechnerRule.isRelevantForVerfuegung(inputGemeinde, parameterDTO)) {
-					rechnerRule.prepareParameter(inputGemeinde, parameterDTO, rechnerParameter);
+				if (rechnerRule.isRelevantForVerfuegung(
+					inputGemeinde,
+					parameterDTO
+				)) {
+					rechnerRule.prepareParameter(
+						inputGemeinde,
+						parameterDTO,
+						rechnerParameter
+					);
 				} else {
 					//Hier muss man nur der Parameter die nicht relevant ist zuruecksetzen nicht alle parametern
 					//sonst man verliert die andere Gemeinde Relevanten Rules
@@ -98,33 +109,44 @@ public abstract class AbstractGemeindeBernRechner extends AbstractAsivBernRechne
 	@Override
 	BigDecimal getVerguenstigungProZeiteinheit(
 		@Nonnull BGRechnerParameterDTO parameterDTO,
-		boolean unter12Monate,
-	 	boolean besonderebeduerfnisse,
-		@Nonnull BigDecimal massgebendesEinkommen,
-		boolean bezahltVollkosten,
-		@Nullable EinschulungTyp einschulungTyp) {
+		@Nonnull BGCalculationInput input,
+		@Nonnull BigDecimal massgebendesEinkommen
+	) {
 		// "Normale" Verguentigung pro Zeiteinheit
 		BigDecimal verguenstigungProZeiteinheit =
-			super.getVerguenstigungProZeiteinheit(parameterDTO, unter12Monate,
-				besonderebeduerfnisse,
-				massgebendesEinkommen,
-				bezahltVollkosten, einschulungTyp);
+			super.getVerguenstigungProZeiteinheit(
+				parameterDTO,
+				input,
+				massgebendesEinkommen
+			);
 		// Zusaetzlicher Gutschein Gemeinde
 		verguenstigungProZeiteinheit =
 			EXACT.addNullSafe(
 				verguenstigungProZeiteinheit,
-				rechnerParameter.getZusaetzlicherGutscheinGemeindeBetrag());
+				rechnerParameter
+					.getZusaetzlicherGutscheinGemeindeBetrag()
+			);
 		// Zusaetzlicher Baby-Gutschein
 		verguenstigungProZeiteinheit =
-			EXACT.addNullSafe(verguenstigungProZeiteinheit, rechnerParameter.getZusaetzlicherBabyGutscheinBetrag());
+			EXACT.addNullSafe(
+				verguenstigungProZeiteinheit,
+				rechnerParameter.getZusaetzlicherBabyGutscheinBetrag()
+			);
 		// Minimaler Gutschein der Gemeinde
-		verguenstigungProZeiteinheit = getMinimaleVerguenstigungProZeiteinheit(verguenstigungProZeiteinheit);
+		verguenstigungProZeiteinheit = getMinimaleVerguenstigungProZeiteinheit(
+			verguenstigungProZeiteinheit
+		);
 
 		return verguenstigungProZeiteinheit;
 	}
 
-	protected BigDecimal getMinimaleVerguenstigungProZeiteinheit(BigDecimal verguenstigung) {
-		return MathUtil.minimum(verguenstigung, rechnerParameter.getMinimalPauschalBetrag());
+	protected BigDecimal getMinimaleVerguenstigungProZeiteinheit(
+		BigDecimal verguenstigung
+	) {
+		return MathUtil.minimum(
+			verguenstigung,
+			rechnerParameter.getMinimalPauschalBetrag()
+		);
 	}
 
 	/**
@@ -142,9 +164,15 @@ public abstract class AbstractGemeindeBernRechner extends AbstractAsivBernRechne
 	) {
 		// Falls der Zeitabschnitt untermonatlich ist, muessen sowohl die Anzahl Mahlzeiten wie auch die Kosten
 		// derselben mit dem Anteil des Monats korrigiert werden
-		final BigDecimal mahlzeitenTotal = rechnerParameter.getVerguenstigungMahlzeitenTotal();
-		result.setVerguenstigungMahlzeitenTotal(MathUtil.DEFAULT.multiply(mahlzeitenTotal, anteilMonat,
-			anteilMonatEffektivAusbezahlt));
+		final BigDecimal mahlzeitenTotal = rechnerParameter
+			.getVerguenstigungMahlzeitenTotal();
+		result.setVerguenstigungMahlzeitenTotal(
+			MathUtil.DEFAULT.multiply(
+				mahlzeitenTotal,
+				anteilMonat,
+				anteilMonatEffektivAusbezahlt
+			)
+		);
 	}
 
 	@Override
@@ -152,7 +180,13 @@ public abstract class AbstractGemeindeBernRechner extends AbstractAsivBernRechne
 		@Nonnull BGCalculationResult result,
 		@Nonnull BigDecimal effektivAusbezahlteZeiteinheiten
 	) {
-		final BigDecimal zusaetzlicherGutscheinGemeindeBetrag = rechnerParameter.getZusaetzlicherGutscheinGemeindeBetrag();
-		result.setZusaetzlicherGutscheinGemeindeBetrag(MathUtil.EXACT.multiplyNullSafe(effektivAusbezahlteZeiteinheiten, zusaetzlicherGutscheinGemeindeBetrag));
+		final BigDecimal zusaetzlicherGutscheinGemeindeBetrag = rechnerParameter
+			.getZusaetzlicherGutscheinGemeindeBetrag();
+		result.setZusaetzlicherGutscheinGemeindeBetrag(
+			MathUtil.EXACT.multiplyNullSafe(
+				effektivAusbezahlteZeiteinheiten,
+				zusaetzlicherGutscheinGemeindeBetrag
+			)
+		);
 	}
 }

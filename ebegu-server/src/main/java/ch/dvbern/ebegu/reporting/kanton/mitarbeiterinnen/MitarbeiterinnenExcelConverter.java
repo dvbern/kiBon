@@ -20,15 +20,14 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 import ch.dvbern.ebegu.entities.Mandant;
-import ch.dvbern.ebegu.util.ServerMessageUtil;
-import org.apache.poi.ss.usermodel.Sheet;
-
 import ch.dvbern.ebegu.enums.reporting.MergeFieldMitarbeiterinnen;
+import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.oss.lib.excelmerger.ExcelConverter;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergerDTO;
+import org.apache.poi.ss.usermodel.Sheet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -57,27 +56,100 @@ public class MitarbeiterinnenExcelConverter implements ExcelConverter {
 
 		addHeaders(excelMerger, locale, mandant);
 
-		excelMerger.addValue(MergeFieldMitarbeiterinnen.auswertungVon, datumVon);
-		excelMerger.addValue(MergeFieldMitarbeiterinnen.auswertungBis, datumBis);
+		excelMerger.addValue(
+			MergeFieldMitarbeiterinnen.auswertungVon,
+			datumVon
+		);
+		excelMerger.addValue(
+			MergeFieldMitarbeiterinnen.auswertungBis,
+			datumBis
+		);
 
 		data.forEach(dataRow -> {
-			ExcelMergerDTO excelRowGroup = excelMerger.createGroup(MergeFieldMitarbeiterinnen.repeatMitarbeiterinnenRow);
-			excelRowGroup.addValue(MergeFieldMitarbeiterinnen.name, dataRow.getName());
-			excelRowGroup.addValue(MergeFieldMitarbeiterinnen.vorname, dataRow.getVorname());
-			excelRowGroup.addValue(MergeFieldMitarbeiterinnen.verantwortlicheGesuche, dataRow.getVerantwortlicheGesuche());
-			excelRowGroup.addValue(MergeFieldMitarbeiterinnen.verfuegungenAusgestellt, dataRow.getVerfuegungenAusgestellt());
+			ExcelMergerDTO excelRowGroup = excelMerger.createGroup(
+				MergeFieldMitarbeiterinnen.repeatMitarbeiterinnenRow
+			);
+			excelRowGroup.addValue(
+				MergeFieldMitarbeiterinnen.name,
+				dataRow.getName()
+			);
+			excelRowGroup.addValue(
+				MergeFieldMitarbeiterinnen.vorname,
+				dataRow.getVorname()
+			);
+			excelRowGroup.addValue(
+				MergeFieldMitarbeiterinnen.verantwortlicheGesuche,
+				dataRow.getVerantwortlicheGesuche()
+			);
+			excelRowGroup.addValue(
+				MergeFieldMitarbeiterinnen.verfuegungenAusgestellt,
+				dataRow.getVerfuegungenAusgestellt()
+			);
 		});
 
 		return excelMerger;
 	}
 
-	private void addHeaders(@Nonnull ExcelMergerDTO excelMerger, @Nonnull Locale locale, @Nonnull Mandant mandant) {
-		excelMerger.addValue(MergeFieldMitarbeiterinnen.nachnameTitle, ServerMessageUtil.getMessage("Reports_nachnameTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMitarbeiterinnen.vornameTitle, ServerMessageUtil.getMessage("Reports_vornameTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMitarbeiterinnen.anzahlVerGesucheTitle, ServerMessageUtil.getMessage("Reports_anzahlVerGesucheTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMitarbeiterinnen.verfuegungAusgestelltTitle, ServerMessageUtil.getMessage("Reports_verfuegungAusgestelltTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMitarbeiterinnen.vonTitle, ServerMessageUtil.getMessage("Reports_vonTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMitarbeiterinnen.bisTitle, ServerMessageUtil.getMessage("Reports_bisTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMitarbeiterinnen.mitarbeiterinnenTitle, ServerMessageUtil.getMessage("Reports_mitarbeiterinnenTitle", locale, mandant));
+	private void addHeaders(
+		@Nonnull ExcelMergerDTO excelMerger,
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	) {
+		excelMerger.addValue(
+			MergeFieldMitarbeiterinnen.nachnameTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_nachnameTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMitarbeiterinnen.vornameTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_vornameTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMitarbeiterinnen.anzahlVerGesucheTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_anzahlVerGesucheTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMitarbeiterinnen.verfuegungAusgestelltTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_verfuegungAusgestelltTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMitarbeiterinnen.vonTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_vonTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMitarbeiterinnen.bisTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_bisTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMitarbeiterinnen.mitarbeiterinnenTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_mitarbeiterinnenTitle",
+				locale,
+				mandant
+			)
+		);
 	}
 }

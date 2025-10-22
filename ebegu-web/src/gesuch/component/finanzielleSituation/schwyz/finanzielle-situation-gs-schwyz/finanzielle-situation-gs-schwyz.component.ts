@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
@@ -14,7 +14,8 @@ import {FinanzielleSituationSchwyzService} from '../finanzielle-situation-schwyz
 @Component({
     selector: 'dv-finanzielle-situation-gs-schwyz',
     templateUrl: './finanzielle-situation-gs-schwyz.component.html',
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class FinanzielleSituationGsSchwyzComponent
     extends AbstractGesuchViewX<TSFinanzModel>

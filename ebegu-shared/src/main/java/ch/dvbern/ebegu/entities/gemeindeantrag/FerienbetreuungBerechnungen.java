@@ -8,22 +8,23 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.gemeindeantrag;
 
-import ch.dvbern.ebegu.entities.AbstractEntity;
-import org.hibernate.envers.Audited;
+import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import java.math.BigDecimal;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+
+import ch.dvbern.ebegu.entities.AbstractEntity;
+import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
@@ -63,8 +64,6 @@ public class FerienbetreuungBerechnungen extends AbstractEntity {
 	@Column
 	private Boolean beteiligungZuTief;
 
-
-
 	@Override
 	public boolean isSame(AbstractEntity other) {
 		return false;
@@ -84,8 +83,11 @@ public class FerienbetreuungBerechnungen extends AbstractEntity {
 		return beitragKinderAnbietendenGemeinde;
 	}
 
-	public void setBeitragKinderAnbietendenGemeinde(@Nullable BigDecimal beitragKinderAnbietendenGemeinde) {
-		this.beitragKinderAnbietendenGemeinde = beitragKinderAnbietendenGemeinde;
+	public void setBeitragKinderAnbietendenGemeinde(
+		@Nullable BigDecimal beitragKinderAnbietendenGemeinde
+	) {
+		this.beitragKinderAnbietendenGemeinde =
+			beitragKinderAnbietendenGemeinde;
 	}
 
 	@Nullable
@@ -102,7 +104,9 @@ public class FerienbetreuungBerechnungen extends AbstractEntity {
 		return beteiligungAnbietendenGemeinde;
 	}
 
-	public void setBeteiligungAnbietendenGemeinde(@Nullable BigDecimal beteiligungAnbietendenGemeinde) {
+	public void setBeteiligungAnbietendenGemeinde(
+		@Nullable BigDecimal beteiligungAnbietendenGemeinde
+	) {
 		this.beteiligungAnbietendenGemeinde = beteiligungAnbietendenGemeinde;
 	}
 
@@ -111,7 +115,9 @@ public class FerienbetreuungBerechnungen extends AbstractEntity {
 		return totalKantonsbeitrag;
 	}
 
-	public void setTotalKantonsbeitrag(@Nullable BigDecimal totalKantonsbeitrag) {
+	public void setTotalKantonsbeitrag(
+		@Nullable BigDecimal totalKantonsbeitrag
+	) {
 		this.totalKantonsbeitrag = totalKantonsbeitrag;
 	}
 
@@ -121,9 +127,10 @@ public class FerienbetreuungBerechnungen extends AbstractEntity {
 	}
 
 	public void setBetreuungstageKinderAndererGemeindeMinusSonderschueler(
-			@Nullable BigDecimal betreuungstageKinderAndererGemeindeMinusSonderschueler) {
+		@Nullable BigDecimal betreuungstageKinderAndererGemeindeMinusSonderschueler
+	) {
 		this.betreuungstageKinderAndererGemeindeMinusSonderschueler =
-				betreuungstageKinderAndererGemeindeMinusSonderschueler;
+			betreuungstageKinderAndererGemeindeMinusSonderschueler;
 	}
 
 	@Nullable
@@ -132,9 +139,10 @@ public class FerienbetreuungBerechnungen extends AbstractEntity {
 	}
 
 	public void setBetreuungstageKinderDieserGemeindeMinusSonderschueler(
-			@Nullable BigDecimal betreuungstageKinderDieserGemeindeMinusSonderschueler) {
+		@Nullable BigDecimal betreuungstageKinderDieserGemeindeMinusSonderschueler
+	) {
 		this.betreuungstageKinderDieserGemeindeMinusSonderschueler =
-				betreuungstageKinderDieserGemeindeMinusSonderschueler;
+			betreuungstageKinderDieserGemeindeMinusSonderschueler;
 	}
 
 	@Nullable

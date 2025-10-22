@@ -37,15 +37,16 @@ import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
 import {TSFinanzielleSituationSubStepName} from '../../../../models/enums/TSFinanzielleSituationSubStepName';
 import {TSFinanzielleSituationTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
-import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {ErrorService} from '../../errors/service/ErrorService';
-import {Log, LogFactory} from '../../logging/LogFactory';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 @Component({
     selector: 'dv-navigation-x',
     templateUrl: './dv-navigation-x.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DvNavigationXComponent implements OnInit {
     private readonly log: Log = LogFactory.createLog('DvNavigationXComponent');
@@ -99,8 +100,8 @@ export class DvNavigationXComponent implements OnInit {
                 this.gesuchModelManager.getGesuchsperiode(),
                 this.gesuchModelManager.getGemeinde()
             )
-            .subscribe(
-                typ => {
+            .subscribe({
+                next: typ => {
                     switch (typ) {
                         case TSFinanzielleSituationTyp.BERN:
                         case TSFinanzielleSituationTyp.BERN_FKJV:
@@ -129,6 +130,7 @@ export class DvNavigationXComponent implements OnInit {
                                 );
                             break;
                         case TSFinanzielleSituationTyp.SCHWYZ:
+                        case TSFinanzielleSituationTyp.SCHWYZ_ERWEITERT:
                             this.finSitWizardSubStepManager =
                                 new FinanzielleSituationSubStepManagerSchwyz(
                                     this.gesuchModelManager
@@ -140,16 +142,16 @@ export class DvNavigationXComponent implements OnInit {
                             );
                     }
                 },
-                err => this.log.error(err)
-            );
+                error: err => this.log.error(err)
+            });
     }
 
     public doesCancelExist(): boolean {
-        return this.dvCancel.observers.length > 0;
+        return this.dvCancel.observed;
     }
 
     public doesSaveExist(): boolean {
-        return this.dvSave.observers.length > 0;
+        return this.dvSave.observed;
     }
 
     public doesdvTranslateNextExist(): boolean {

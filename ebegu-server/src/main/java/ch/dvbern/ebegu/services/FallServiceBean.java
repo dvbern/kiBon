@@ -22,19 +22,18 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.AbstractPersonEntity_;
@@ -59,7 +58,7 @@ import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.MergeDocException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 import static java.util.Objects.requireNonNull;
 
@@ -68,7 +67,8 @@ import static java.util.Objects.requireNonNull;
  */
 @Stateless
 @Local(FallService.class)
-public class FallServiceBean extends AbstractBaseService implements FallService {
+public class FallServiceBean extends AbstractBaseService implements
+	FallService {
 
 	@Inject
 	private Persistence persistence;
@@ -109,8 +109,10 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 		Objects.requireNonNull(fall);
 		// Den "Besitzer" auf dem Fall ablegen
 		if (principalBean.isCallerInAnyOfRole(
-			UserRole.GESUCHSTELLER)) {
-			Optional<Benutzer> currentBenutzer = benutzerService.getCurrentBenutzer();
+			UserRole.GESUCHSTELLER
+		)) {
+			Optional<Benutzer> currentBenutzer = benutzerService
+				.getCurrentBenutzer();
 			currentBenutzer.ifPresent(fall::setBesitzer);
 		}
 		// mandant is set in AbstractEntityListener too. But we must set it before
@@ -136,24 +138,37 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 	public Optional<Fall> findFallByNumber(@Nonnull Long fallnummer) {
 		Objects.requireNonNull(fallnummer, "fallnummer muss gesetzt sein");
 		Optional<Fall> fallOptional =
-			criteriaQueryHelper.getEntityByUniqueAttribute(Fall.class, fallnummer, Fall_.fallNummer);
-		fallOptional.ifPresent(fall -> authorizer.checkReadAuthorizationFall(fall));
+			criteriaQueryHelper.getEntityByUniqueAttribute(
+				Fall.class,
+				fallnummer,
+				Fall_.fallNummer
+			);
+		fallOptional.ifPresent(
+			fall -> authorizer.checkReadAuthorizationFall(fall)
+		);
 		return fallOptional;
 	}
 
 	@Override
 	@Nonnull
 	public Optional<Fall> findFallByCurrentBenutzerAsBesitzer() {
-		Optional<Benutzer> currentBenutzerOptional = benutzerService.getCurrentBenutzer();
+		Optional<Benutzer> currentBenutzerOptional = benutzerService
+			.getCurrentBenutzer();
 		return currentBenutzerOptional.flatMap(this::findFallByBesitzer);
 	}
 
 	@Override
 	@Nonnull
-	public Optional<Fall> findFallByBesitzer(@Nullable Benutzer benutzer) {
+	public Optional<Fall> findFallByBesitzer(@Nonnull Benutzer benutzer) {
 		Optional<Fall> fallOptional =
-			criteriaQueryHelper.getEntityByUniqueAttribute(Fall.class, benutzer, Fall_.besitzer);
-		fallOptional.ifPresent(fall -> authorizer.checkReadAuthorizationFall(fall));
+			criteriaQueryHelper.getEntityByUniqueAttribute(
+				Fall.class,
+				benutzer,
+				Fall_.besitzer
+			);
+		fallOptional.ifPresent(
+			fall -> authorizer.checkReadAuthorizationFall(fall)
+		);
 		return fallOptional;
 	}
 
@@ -167,18 +182,35 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 		Join<Gesuch, Dossier> dossierJoin = root.join(Gesuch_.dossier);
 		Join<Dossier, Fall> fallJoin = dossierJoin.join(Dossier_.fall);
 
-		ParameterExpression<String> nameParam = cb.parameter(String.class, "nachname");
-		Path<Gesuchsteller> gsJAPath = root.get(Gesuch_.gesuchsteller1).get(GesuchstellerContainer_.gesuchstellerJA);
-		Predicate namePredicate = cb.equal(gsJAPath.get(AbstractPersonEntity_.nachname), nameParam);
+		ParameterExpression<String> nameParam = cb.parameter(
+			String.class,
+			"nachname"
+		);
+		Path<Gesuchsteller> gsJAPath = root.get(Gesuch_.gesuchsteller1)
+			.get(GesuchstellerContainer_.gesuchstellerJA);
+		Predicate namePredicate = cb.equal(
+			gsJAPath.get(AbstractPersonEntity_.nachname),
+			nameParam
+		);
 
-		ParameterExpression<String> vornameParam = cb.parameter(String.class, "vorname");
-		Predicate vornamePredicate = cb.equal(gsJAPath.get(AbstractPersonEntity_.vorname), vornameParam);
+		ParameterExpression<String> vornameParam = cb.parameter(
+			String.class,
+			"vorname"
+		);
+		Predicate vornamePredicate = cb.equal(
+			gsJAPath.get(AbstractPersonEntity_.vorname),
+			vornameParam
+		);
 
-		Predicate mandantPredicate = cb.equal(fallJoin.get(Fall_.MANDANT), principalBean.getMandant());
+		Predicate mandantPredicate = cb.equal(
+			fallJoin.get(Fall_.MANDANT),
+			principalBean.getMandant()
+		);
 
 		query.select(fallJoin)
 			.where(namePredicate, vornamePredicate, mandantPredicate);
-		TypedQuery<Fall> q = persistence.getEntityManager().createQuery(query)
+		TypedQuery<Fall> q = persistence.getEntityManager()
+			.createQuery(query)
 			.setMaxResults(1)
 			.setParameter(nameParam, nachname)
 			.setParameter(vornameParam, vorname);
@@ -189,7 +221,9 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 	@Nonnull
 	@Override
 	public Collection<Fall> getAllFalle(boolean doAuthCheck) {
-		List<Fall> faelle = new ArrayList<>(criteriaQueryHelper.getAll(Fall.class));
+		List<Fall> faelle = new ArrayList<>(
+			criteriaQueryHelper.getAll(Fall.class)
+		);
 		if (doAuthCheck) {
 			authorizer.checkReadAuthorizationFaelle(faelle);
 		}
@@ -197,7 +231,10 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 	}
 
 	@Override
-	public void removeFallIfExists(@Nonnull String fallId, @Nonnull GesuchDeletionCause deletionCause) {
+	public void removeFallIfExists(
+		@Nonnull String fallId,
+		@Nonnull GesuchDeletionCause deletionCause
+	) {
 		Objects.requireNonNull(fallId);
 		Optional<Fall> fallToRemove = findFall(fallId);
 		if (fallToRemove.isPresent()) {
@@ -207,23 +244,32 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 	}
 
 	@Override
-	public void removeFall(@Nonnull Fall fall, @Nonnull GesuchDeletionCause deletionCause) {
+	public void removeFall(
+		@Nonnull Fall fall,
+		@Nonnull GesuchDeletionCause deletionCause
+	) {
 		Objects.requireNonNull(fall);
 		Optional<Fall> fallToRemove = findFall(fall.getId());
-		Fall loadedFall = fallToRemove.orElseThrow(() -> new EbeguEntityNotFoundException(
-			"removeFall",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			fall));
+		Fall loadedFall = fallToRemove.orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"removeFall",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				fall
+			)
+		);
 		authorizer.checkWriteAuthorization(loadedFall);
 		// Remove all depending objects
 		mitteilungService.removeAllMitteilungenForFall(loadedFall);
 		massenversandService.removeMassenversandGesucheForFall(loadedFall);
-		if(loadedFall.isSozialdienstFall()) {
+		if (loadedFall.isSozialdienstFall()) {
 			sozialdienstFallDokumentService.removeDokumenteForSozialdienstFall(
-				requireNonNull(loadedFall.getSozialdienstFall()).getId());
+				requireNonNull(loadedFall.getSozialdienstFall()).getId()
+			);
 		}
 		// Alle Dossier des Falls loeschen (die entsprechenden Gesuchen werden damit auch geloescht
-		Collection<Dossier> dossiersByFall = dossierService.findDossiersByFall(fall.getId());
+		Collection<Dossier> dossiersByFall = dossierService.findDossiersByFall(
+			fall.getId()
+		);
 		for (Dossier dossier : dossiersByFall) {
 			dossierService.removeDossier(dossier.getId(), deletionCause);
 		}
@@ -236,7 +282,8 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 	public Optional<Fall> createFallForCurrentGesuchstellerAsBesitzer() {
 		UserRole role = principalBean.discoverMostPrivilegedRole();
 		if (UserRole.GESUCHSTELLER == role) {
-			final Optional<Fall> existingFall = findFallByCurrentBenutzerAsBesitzer();
+			final Optional<Fall> existingFall =
+				findFallByCurrentBenutzerAsBesitzer();
 			if (!existingFall.isPresent()) {
 				return Optional.of(saveFall(new Fall()));
 			}
@@ -253,40 +300,63 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 			() -> new EbeguEntityNotFoundException(
 				"getCurrentEmailAddress - findFall",
 				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				fallID)
+				fallID
+			)
 		);
 		String emailToReturn = null;
-		if(fall.getSozialdienstFall() != null) {
-			SozialdienstStammdaten stammdaten = sozialdienstService.getSozialdienstStammdatenBySozialdienstId(fall.getSozialdienstFall().getSozialdienst().getId()).orElseThrow(
-				() -> new EbeguEntityNotFoundException(
-					"getCurrentEmailAddress - getSozialdienstStammdatenBySozialdienstId",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					fall.getSozialdienstFall().getSozialdienst().getId()));
+		if (fall.getSozialdienstFall() != null) {
+			SozialdienstStammdaten stammdaten = sozialdienstService
+				.getSozialdienstStammdatenBySozialdienstId(
+					fall.getSozialdienstFall().getSozialdienst().getId()
+				)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"getCurrentEmailAddress - getSozialdienstStammdatenBySozialdienstId",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						fall.getSozialdienstFall()
+							.getSozialdienst()
+							.getId()
+					)
+				);
 			emailToReturn = stammdaten.getMail();
-		}
-		else {
+		} else {
 			emailToReturn = readEmailFromFall(fallID);
 		}
 		return Optional.ofNullable(emailToReturn);
 	}
 
-	private String readEmailFromFall(String fallId){
+	private String readEmailFromFall(String fallId) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 
 		final CriteriaQuery<String> query = cb.createQuery(String.class);
 		Root<Gesuch> root = query.from(Gesuch.class);
-		ParameterExpression<String> fallIdParam = cb.parameter(String.class, "fallId");
-		Join<Gesuch, Dossier> dossierJoin = root.join(Gesuch_.dossier, JoinType.LEFT);
+		ParameterExpression<String> fallIdParam = cb.parameter(
+			String.class,
+			"fallId"
+		);
+		Join<Gesuch, Dossier> dossierJoin = root.join(
+			Gesuch_.dossier,
+			JoinType.LEFT
+		);
 		Join<Dossier, Fall> fallJoin = dossierJoin.join(Dossier_.fall);
-		Join<Gesuch, GesuchstellerContainer> gesuchstellerJoin = root.join(Gesuch_.gesuchsteller1, JoinType.LEFT);
+		Join<Gesuch, GesuchstellerContainer> gesuchstellerJoin = root.join(
+			Gesuch_.gesuchsteller1,
+			JoinType.LEFT
+		);
 		Join<GesuchstellerContainer, Gesuchsteller> gesDataJoin =
-			gesuchstellerJoin.join(GesuchstellerContainer_.gesuchstellerJA, JoinType.LEFT);
+			gesuchstellerJoin.join(
+				GesuchstellerContainer_.gesuchstellerJA,
+				JoinType.LEFT
+			);
 		Predicate gesuchOfFall = cb.equal(fallJoin.get(Fall_.id), fallIdParam);
 		Path<String> gsEmail = gesDataJoin.get(Gesuchsteller_.mail);
 		query.select(gsEmail);
 		query.where(gesuchOfFall);
-		query.orderBy(cb.desc(gesDataJoin.get(Gesuchsteller_.timestampMutiert))); // Das zuletzt geänderte GS-Objekt
-		TypedQuery<String> typedQuery = persistence.getEntityManager().createQuery(query);
+		query.orderBy(
+			cb.desc(gesDataJoin.get(Gesuchsteller_.timestampMutiert))
+		); // Das zuletzt geänderte GS-Objekt
+		TypedQuery<String> typedQuery = persistence.getEntityManager()
+			.createQuery(query);
 		typedQuery.setParameter(fallIdParam, fallId);
 		typedQuery.setMaxResults(1);
 
@@ -297,7 +367,8 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 				throw new EbeguRuntimeException(
 					"getEmailAddressForFall",
 					ErrorCodeEnum.ERROR_TOO_MANY_RESULTS,
-					criteriaResults.size());
+					criteriaResults.size()
+				);
 			}
 			emailToReturn = criteriaResults.get(0);
 		}
@@ -311,25 +382,36 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<String> query = cb.createQuery(String.class);
 		Root<Fall> root = query.from(Fall.class);
-		Join<Fall, Benutzer> benutzerJoin = root.join(Fall_.besitzer, JoinType.LEFT);
-		ParameterExpression<String> fallIdParam = cb.parameter(String.class, "fallId");
+		Join<Fall, Benutzer> benutzerJoin = root.join(
+			Fall_.besitzer,
+			JoinType.LEFT
+		);
+		ParameterExpression<String> fallIdParam = cb.parameter(
+			String.class,
+			"fallId"
+		);
 		Predicate gesuchOfFall = cb.equal(root.get(Fall_.id), fallIdParam);
 		Path<String> benutzerEmail = benutzerJoin.get(Benutzer_.email);
 		query.select(benutzerEmail);
 		query.where(gesuchOfFall);
-		TypedQuery<String> typedQuery = persistence.getEntityManager().createQuery(query);
+		TypedQuery<String> typedQuery = persistence.getEntityManager()
+			.createQuery(query);
 		typedQuery.setParameter(fallIdParam, fallID);
 
 		return typedQuery.getSingleResult();
 	}
 
 	@Override
-	public byte[] generateVollmachtDokument(@Nonnull String fallId, @Nonnull Sprache sprache) throws MergeDocException {
+	public byte[] generateVollmachtDokument(
+		@Nonnull String fallId,
+		@Nonnull Sprache sprache
+	) throws MergeDocException {
 		final Fall fall = findFall(fallId).orElseThrow(
 			() -> new EbeguEntityNotFoundException(
 				"generateVollmachtDokument - findFall",
 				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				fallId)
+				fallId
+			)
 		);
 
 		authorizer.checkReadAuthorizationFall(fall);
@@ -338,9 +420,13 @@ public class FallServiceBean extends AbstractBaseService implements FallService 
 			throw new EbeguEntityNotFoundException(
 				"generateVollmachtDokument - getSozialdienstFall",
 				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				fallId);
+				fallId
+			);
 		}
 
-			return pdfService.generateVollmachtSozialdienst(fall.getSozialdienstFall(), sprache);
+		return pdfService.generateVollmachtSozialdienst(
+			fall.getSozialdienstFall(),
+			sprache
+		);
 	}
 }

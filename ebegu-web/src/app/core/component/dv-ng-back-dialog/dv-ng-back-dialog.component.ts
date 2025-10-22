@@ -21,7 +21,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
  */
 @Component({
     selector: 'dv-ng-back-dialog',
-    templateUrl: './dv-ng-back-dialog.template.html'
+    templateUrl: './dv-ng-back-dialog.template.html',
+    standalone: false
 })
 export class DvNgBackDialogComponent {
     public title: string = '';

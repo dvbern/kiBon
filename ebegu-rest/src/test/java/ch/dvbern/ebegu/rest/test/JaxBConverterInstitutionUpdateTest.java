@@ -8,18 +8,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rest.test;
 
 import java.util.Optional;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.institution.JaxInstitutionConverter;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionUpdate;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Institution;
@@ -44,7 +44,8 @@ import static org.hamcrest.Matchers.sameInstance;
 public class JaxBConverterInstitutionUpdateTest {
 
 	@TestSubject
-	private final JaxBConverter converter = new JaxBConverter();
+	private final JaxInstitutionConverter converter =
+		new JaxInstitutionConverter();
 
 	@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized" })
 	@Mock
@@ -61,7 +62,11 @@ public class JaxBConverterInstitutionUpdateTest {
 		Institution institution = new Institution();
 		institution.setStatus(InstitutionStatus.AKTIV);
 
-		boolean actual = converter.institutionToEntity(update, institution, new InstitutionStammdaten());
+		boolean actual = converter.institutionToEntity(
+			update,
+			institution,
+			new InstitutionStammdaten()
+		);
 
 		assertThat(actual, is(false));
 	}
@@ -75,7 +80,11 @@ public class JaxBConverterInstitutionUpdateTest {
 		institution.setStatus(InstitutionStatus.AKTIV);
 		institution.setName("foo");
 
-		boolean actual = converter.institutionToEntity(update, institution, new InstitutionStammdaten());
+		boolean actual = converter.institutionToEntity(
+			update,
+			institution,
+			new InstitutionStammdaten()
+		);
 
 		assertThat(actual, is(true));
 		assertThat(institution.getName(), is("bar"));
@@ -91,7 +100,11 @@ public class JaxBConverterInstitutionUpdateTest {
 		Traegerschaft traegerschaft = new Traegerschaft();
 		institution.setTraegerschaft(traegerschaft);
 
-		EasyMock.expect(principalBeanMock.isCallerInAnyOfRole(UserRole.getMandantSuperadminRoles())).andReturn(true);
+		EasyMock.expect(
+			principalBeanMock.isCallerInAnyOfRole(
+				UserRole.getMandantSuperadminRoles()
+			)
+		).andReturn(true);
 
 		Traegerschaft existingTraegerschaft = new Traegerschaft();
 		EasyMock.expect(traegerschaftServiceMock.findTraegerschaft("1"))
@@ -99,10 +112,17 @@ public class JaxBConverterInstitutionUpdateTest {
 
 		EasyMock.replay(principalBeanMock, traegerschaftServiceMock);
 
-		boolean actual = converter.institutionToEntity(update, institution, new InstitutionStammdaten());
+		boolean actual = converter.institutionToEntity(
+			update,
+			institution,
+			new InstitutionStammdaten()
+		);
 
 		assertThat(actual, is(true));
-		assertThat(institution.getTraegerschaft(), is(sameInstance(existingTraegerschaft)));
+		assertThat(
+			institution.getTraegerschaft(),
+			is(sameInstance(existingTraegerschaft))
+		);
 
 		EasyMock.verify(principalBeanMock, traegerschaftServiceMock);
 	}
@@ -110,21 +130,34 @@ public class JaxBConverterInstitutionUpdateTest {
 	@Test
 	public void testInstitutionToEntity_falseWhenNotSuperAdmin() {
 		JaxInstitutionUpdate update = new JaxInstitutionUpdate();
-		update.setTraegerschaftId("1");
+		String uuid = "659604a0-5a4b-11ef-856d-73c59f49f41b";
+		update.setTraegerschaftId(uuid);
 
 		Institution institution = new Institution();
 		institution.setStatus(InstitutionStatus.AKTIV);
 		Traegerschaft traegerschaft = new Traegerschaft();
+		traegerschaft.setId(uuid);
 		institution.setTraegerschaft(traegerschaft);
 
-		EasyMock.expect(principalBeanMock.isCallerInAnyOfRole(UserRole.getMandantSuperadminRoles())).andReturn(false);
+		EasyMock.expect(
+			principalBeanMock.isCallerInAnyOfRole(
+				UserRole.getMandantSuperadminRoles()
+			)
+		).andReturn(false);
 
 		EasyMock.replay(principalBeanMock);
 
-		boolean actual = converter.institutionToEntity(update, institution, new InstitutionStammdaten());
+		boolean actual = converter.institutionToEntity(
+			update,
+			institution,
+			new InstitutionStammdaten()
+		);
 
 		assertThat(actual, is(false));
-		assertThat(institution.getTraegerschaft(), is(sameInstance(traegerschaft)));
+		assertThat(
+			institution.getTraegerschaft(),
+			is(sameInstance(traegerschaft))
+		);
 
 		EasyMock.verify(principalBeanMock);
 	}
@@ -137,14 +170,22 @@ public class JaxBConverterInstitutionUpdateTest {
 		Institution institution = new Institution();
 		institution.setStatus(InstitutionStatus.AKTIV);
 		Traegerschaft traegerschaft = new Traegerschaft();
-		traegerschaft.setId("2");
+		traegerschaft.setId("aa68fa6c-348d-11ef-b4ea-cb9eee6b667b");
 		institution.setTraegerschaft(traegerschaft);
 
-		EasyMock.expect(principalBeanMock.isCallerInAnyOfRole(UserRole.getMandantSuperadminRoles())).andReturn(true);
+		EasyMock.expect(
+			principalBeanMock.isCallerInAnyOfRole(
+				UserRole.getMandantSuperadminRoles()
+			)
+		).andReturn(true);
 
 		EasyMock.replay(principalBeanMock);
 
-		boolean actual = converter.institutionToEntity(update, institution, new InstitutionStammdaten());
+		boolean actual = converter.institutionToEntity(
+			update,
+			institution,
+			new InstitutionStammdaten()
+		);
 
 		assertThat(actual, is(true));
 		assertThat(institution.getTraegerschaft(), is(nullValue()));
@@ -154,28 +195,40 @@ public class JaxBConverterInstitutionUpdateTest {
 
 	@Test
 	public void testInstitutionToEntity_falseWhenTraegerschaftNotUpdatedForSuperAdmin() {
+		String uuid = "b2018fdc-348d-11ef-a1f3-1b07029d91c9";
 		JaxInstitutionUpdate update = new JaxInstitutionUpdate();
-		update.setTraegerschaftId("1");
+		update.setTraegerschaftId(uuid);
 
 		Institution institution = new Institution();
 		institution.setStatus(InstitutionStatus.AKTIV);
 		Traegerschaft traegerschaft = new Traegerschaft();
-		traegerschaft.setId("1");
+		traegerschaft.setId(uuid);
 		institution.setTraegerschaft(traegerschaft);
 
-		EasyMock.expect(principalBeanMock.isCallerInAnyOfRole(UserRole.getMandantSuperadminRoles())).andReturn(true);
+		EasyMock.expect(
+			principalBeanMock.isCallerInAnyOfRole(
+				UserRole.getMandantSuperadminRoles()
+			)
+		).andReturn(true);
 
 		Traegerschaft existingTraegerschaft = new Traegerschaft();
-		existingTraegerschaft.setId("1");
-		EasyMock.expect(traegerschaftServiceMock.findTraegerschaft("1"))
+		existingTraegerschaft.setId(uuid);
+		EasyMock.expect(traegerschaftServiceMock.findTraegerschaft(uuid))
 			.andReturn(Optional.of(existingTraegerschaft));
 
 		EasyMock.replay(principalBeanMock, traegerschaftServiceMock);
 
-		boolean actual = converter.institutionToEntity(update, institution, new InstitutionStammdaten());
+		boolean actual = converter.institutionToEntity(
+			update,
+			institution,
+			new InstitutionStammdaten()
+		);
 
 		assertThat(actual, is(false));
-		assertThat(institution.getTraegerschaft(), is(sameInstance(traegerschaft)));
+		assertThat(
+			institution.getTraegerschaft(),
+			is(sameInstance(traegerschaft))
+		);
 
 		EasyMock.verify(principalBeanMock, traegerschaftServiceMock);
 	}

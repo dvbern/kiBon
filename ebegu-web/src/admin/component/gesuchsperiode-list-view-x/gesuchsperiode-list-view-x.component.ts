@@ -22,20 +22,21 @@ import {
     OnInit
 } from '@angular/core';
 import {StateService} from '@uirouter/core';
-import * as moment from 'moment';
-import {CONSTANTS} from '../../../app/core/constants/CONSTANTS';
+import moment from 'moment';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {DvSimpleTableColumnDefinition} from '../../../app/shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {DvSimpleTableConfig} from '../../../app/shared/component/dv-simple-table/dv-simple-table-config';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {AbstractAdminViewX} from '../../abstractAdminViewX';
 
 @Component({
     selector: 'dv-gesuchsperiode-list-view-x',
     templateUrl: './gesuchsperiode-list-view-x.component.html',
     styleUrls: ['./gesuchsperiode-list-view-x.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class GesuchsperiodeListViewXComponent
     extends AbstractAdminViewX

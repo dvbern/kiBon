@@ -17,8 +17,8 @@ package ch.dvbern.ebegu.validators.dateranges;
 
 import java.util.Collection;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.util.Gueltigkeit;
 import ch.dvbern.ebegu.util.GueltigkeitsUtil;
@@ -27,10 +27,14 @@ import ch.dvbern.ebegu.util.GueltigkeitsUtil;
  * {@link Gueltigkeit} of intervals may not overlap.
  */
 public class CheckGueltigkeitenValidator
-	implements ConstraintValidator<CheckGueltigkeiten, Collection<? extends Gueltigkeit>> {
+	implements
+	ConstraintValidator<CheckGueltigkeiten, Collection<? extends Gueltigkeit>> {
 
 	@Override
-	public boolean isValid(Collection<? extends Gueltigkeit> gueltigkeitIntervals, ConstraintValidatorContext context) {
+	public boolean isValid(
+		Collection<? extends Gueltigkeit> gueltigkeitIntervals,
+		ConstraintValidatorContext context
+	) {
 		return !GueltigkeitsUtil.hasOverlapingGueltigkeit(gueltigkeitIntervals);
 	}
 }

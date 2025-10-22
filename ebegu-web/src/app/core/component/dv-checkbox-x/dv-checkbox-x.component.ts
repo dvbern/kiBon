@@ -16,6 +16,7 @@
  */
 
 import {
+    booleanAttribute,
     ChangeDetectionStrategy,
     Component,
     EventEmitter,
@@ -31,7 +32,8 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     selector: 'dv-checkbox-x',
     templateUrl: './dv-checkbox-x.component.html',
     styleUrls: ['./dv-checkbox-x.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DvCheckboxXComponent {
     @Input()
@@ -43,7 +45,7 @@ export class DvCheckboxXComponent {
     @Input()
     public readonly: boolean = false;
 
-    @Input()
+    @Input({transform: booleanAttribute})
     public model: boolean;
 
     @Input()

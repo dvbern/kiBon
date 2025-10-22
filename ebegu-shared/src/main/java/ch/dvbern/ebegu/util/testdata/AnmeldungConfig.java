@@ -34,7 +34,9 @@ public final class AnmeldungConfig {
 	public static AnmeldungConfig createAnmeldungTagesschule() {
 		AnmeldungConfig config = new AnmeldungConfig();
 		config.setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESSCHULE);
-		config.setBetreuungsstatus(Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST);
+		config.setBetreuungsstatus(
+			Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST
+		);
 		return config;
 	}
 
@@ -42,7 +44,9 @@ public final class AnmeldungConfig {
 		return betreuungsangebotTyp;
 	}
 
-	public void setBetreuungsangebotTyp(BetreuungsangebotTyp betreuungsangebotTyp) {
+	public void setBetreuungsangebotTyp(
+		BetreuungsangebotTyp betreuungsangebotTyp
+	) {
 		this.betreuungsangebotTyp = betreuungsangebotTyp;
 	}
 
@@ -58,7 +62,9 @@ public final class AnmeldungConfig {
 		return institutionStammdaten;
 	}
 
-	public void setInstitutionStammdaten(InstitutionStammdaten institutionStammdaten) {
+	public void setInstitutionStammdaten(
+		InstitutionStammdaten institutionStammdaten
+	) {
 		this.institutionStammdaten = institutionStammdaten;
 	}
 }

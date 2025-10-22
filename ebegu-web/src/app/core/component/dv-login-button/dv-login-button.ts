@@ -15,14 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {UIRouterGlobals} from '@uirouter/core';
 import {IComponentOptions, IController} from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {LogFactory} from '../../logging/LogFactory';
-import {UIRouterGlobals} from '@uirouter/core';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 export class DVLoginButtonConfig implements IComponentOptions {
     public transclude = true;
@@ -51,16 +51,19 @@ export class DVLoginButtonController implements IController {
     public $onInit(): void {
         this.authServiceRS.principal$
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                principal => {
+            .subscribe({
+                next: principal => {
                     this.principal = principal;
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public showButton(): boolean {
-        if (this.uiRouterGlobals.current.name !== 'einladung.logininfo') {
+        if (
+            this.uiRouterGlobals.current.name !== 'einladung.logininfo' &&
+            this.uiRouterGlobals.current.name !== 'onboarding.mandant'
+        ) {
             return !this.principal;
         }
         return false;

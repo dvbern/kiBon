@@ -26,7 +26,7 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
 
 /**
  * Superklasse für ASIV-Testfaelle
@@ -34,34 +34,53 @@ import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammd
 public abstract class AbstractASIVTestfall extends AbstractTestfall {
 
 	protected AbstractASIVTestfall(
-			@Nonnull Gesuchsperiode gesuchsperiode,
-			boolean betreuungenBestaetigt,
-			@Nonnull Gemeinde gemeinde,
-			InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, gemeinde, institutionStammdatenBuilder);
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		@Nonnull Gemeinde gemeinde,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			gemeinde,
+			institutionStammdatenBuilder
+		);
 	}
 
 	protected AbstractASIVTestfall(
-			@Nonnull Gesuchsperiode gesuchsperiode,
-			boolean betreuungenBestaetigt,
-			InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, institutionStammdatenBuilder);
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			institutionStammdatenBuilder
+		);
 	}
 
 	public abstract Gesuch createMutation(Gesuch erstgesuch);
 
-	protected Gesuch createAlleinerziehend(Gesuch gesuch, LocalDate ereignisdatum) {
+	protected Gesuch createAlleinerziehend(
+		Gesuch gesuch,
+		LocalDate ereignisdatum
+	) {
 		// Familiensituation
 		Familiensituation familiensituation = new Familiensituation();
 		familiensituation.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
-		FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
+		FamiliensituationContainer familiensituationContainer =
+			new FamiliensituationContainer();
 		familiensituationContainer.setFamiliensituationJA(familiensituation);
 		familiensituation.setAenderungPer(ereignisdatum);
 
 		Familiensituation familiensituationErstgesuch = new Familiensituation();
-		familiensituationErstgesuch.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
+		familiensituationErstgesuch.setFamilienstatus(
+			EnumFamilienstatus.VERHEIRATET
+		);
 		familiensituationErstgesuch.setGemeinsameSteuererklaerung(Boolean.TRUE);
-		familiensituationContainer.setFamiliensituationErstgesuch(familiensituationErstgesuch);
+		familiensituationContainer.setFamiliensituationErstgesuch(
+			familiensituationErstgesuch
+		);
 
 		gesuch.setFamiliensituationContainer(familiensituationContainer);
 		return gesuch;
@@ -70,23 +89,35 @@ public abstract class AbstractASIVTestfall extends AbstractTestfall {
 	protected Gesuch createVerheiratet(Gesuch gesuch, LocalDate ereignisdatum) {
 		// Familiensituation
 		assert gesuch.getFamiliensituationContainer() != null;
-		assert gesuch.getFamiliensituationContainer().getFamiliensituationJA() != null;
+		assert gesuch.getFamiliensituationContainer().getFamiliensituationJA()
+			!= null;
 
-		Familiensituation familiensituation = gesuch.getFamiliensituationContainer()
+		Familiensituation familiensituation = gesuch
+			.getFamiliensituationContainer()
+			.getFamiliensituationJA()
+			.copyFamiliensituation(
+				new Familiensituation(),
+				AntragCopyType.MUTATION
+			);
+		familiensituation.setSozialhilfeBezueger(
+			gesuch.getFamiliensituationContainer()
 				.getFamiliensituationJA()
-				.copyFamiliensituation(new Familiensituation(), AntragCopyType.MUTATION);
-		familiensituation.setSozialhilfeBezueger(gesuch.getFamiliensituationContainer()
-				.getFamiliensituationJA()
-				.getSozialhilfeBezueger());
+				.getSozialhilfeBezueger()
+		);
 		familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
-		familiensituation.setGemeinsameSteuererklaerung(gesuch.getFamiliensituationContainer()
+		familiensituation.setGemeinsameSteuererklaerung(
+			gesuch.getFamiliensituationContainer()
 				.getFamiliensituationJA()
-				.getGemeinsameSteuererklaerung());
-		FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
+				.getGemeinsameSteuererklaerung()
+		);
+		FamiliensituationContainer familiensituationContainer =
+			new FamiliensituationContainer();
 		familiensituationContainer.setFamiliensituationJA(familiensituation);
 		familiensituation.setAenderungPer(ereignisdatum);
 
-		familiensituationContainer.setFamiliensituationErstgesuch(gesuch.extractFamiliensituationErstgesuch());
+		familiensituationContainer.setFamiliensituationErstgesuch(
+			gesuch.extractFamiliensituationErstgesuch()
+		);
 
 		gesuch.setFamiliensituationContainer(familiensituationContainer);
 		return gesuch;

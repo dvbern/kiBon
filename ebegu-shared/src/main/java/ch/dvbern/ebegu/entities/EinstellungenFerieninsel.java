@@ -8,25 +8,24 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -39,18 +38,25 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
  */
 @Audited
 @Entity
-public class EinstellungenFerieninsel extends AbstractEntity implements Comparable<EinstellungenFerieninsel> {
+public class EinstellungenFerieninsel extends AbstractEntity implements
+	Comparable<EinstellungenFerieninsel> {
 
 	private static final long serialVersionUID = -495776045789299006L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_einstellungen_fi_inst_stammdaten_ferieninsel_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_einstellungen_fi_inst_stammdaten_ferieninsel_id"),
+		nullable = false)
 	private InstitutionStammdatenFerieninsel institutionStammdatenFerieninsel;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(updatable = false, foreignKey = @ForeignKey(name = "FK_einstellungen_fi_gesuchsperiode_id"))
+	@JoinColumn(updatable = false,
+		foreignKey = @ForeignKey(
+			name = "FK_einstellungen_fi_gesuchsperiode_id"))
 	private Gesuchsperiode gesuchsperiode;
 
 	@Nullable
@@ -72,7 +78,6 @@ public class EinstellungenFerieninsel extends AbstractEntity implements Comparab
 	@Size(max = DB_DEFAULT_MAX_LENGTH)
 	@Column(nullable = true)
 	private String ausweichstandortFruehlingsferien;
-
 
 	public EinstellungenFerieninsel() {
 	}
@@ -103,8 +108,11 @@ public class EinstellungenFerieninsel extends AbstractEntity implements Comparab
 		return institutionStammdatenFerieninsel;
 	}
 
-	public void setInstitutionStammdatenFerieninsel(@Nonnull InstitutionStammdatenFerieninsel institutionStammdatenFerieninsel) {
-		this.institutionStammdatenFerieninsel = institutionStammdatenFerieninsel;
+	public void setInstitutionStammdatenFerieninsel(
+		@Nonnull InstitutionStammdatenFerieninsel institutionStammdatenFerieninsel
+	) {
+		this.institutionStammdatenFerieninsel =
+			institutionStammdatenFerieninsel;
 	}
 
 	@Nonnull
@@ -121,7 +129,9 @@ public class EinstellungenFerieninsel extends AbstractEntity implements Comparab
 		return ausweichstandortSommerferien;
 	}
 
-	public void setAusweichstandortSommerferien(@Nullable String ausweichstandortSommerferien) {
+	public void setAusweichstandortSommerferien(
+		@Nullable String ausweichstandortSommerferien
+	) {
 		this.ausweichstandortSommerferien = ausweichstandortSommerferien;
 	}
 
@@ -130,7 +140,9 @@ public class EinstellungenFerieninsel extends AbstractEntity implements Comparab
 		return ausweichstandortHerbstferien;
 	}
 
-	public void setAusweichstandortHerbstferien(@Nullable String ausweichstandortHerbstferien) {
+	public void setAusweichstandortHerbstferien(
+		@Nullable String ausweichstandortHerbstferien
+	) {
 		this.ausweichstandortHerbstferien = ausweichstandortHerbstferien;
 	}
 
@@ -139,7 +151,9 @@ public class EinstellungenFerieninsel extends AbstractEntity implements Comparab
 		return ausweichstandortSportferien;
 	}
 
-	public void setAusweichstandortSportferien(@Nullable String ausweichstandortSportferien) {
+	public void setAusweichstandortSportferien(
+		@Nullable String ausweichstandortSportferien
+	) {
 		this.ausweichstandortSportferien = ausweichstandortSportferien;
 	}
 
@@ -148,19 +162,34 @@ public class EinstellungenFerieninsel extends AbstractEntity implements Comparab
 		return ausweichstandortFruehlingsferien;
 	}
 
-	public void setAusweichstandortFruehlingsferien(@Nullable String ausweichstandortFruehlingsferien) {
-		this.ausweichstandortFruehlingsferien = ausweichstandortFruehlingsferien;
+	public void setAusweichstandortFruehlingsferien(
+		@Nullable String ausweichstandortFruehlingsferien
+	) {
+		this.ausweichstandortFruehlingsferien =
+			ausweichstandortFruehlingsferien;
 	}
 
 	@Nonnull
-	public EinstellungenFerieninsel copyForGesuchsperiode(@Nonnull Gesuchsperiode gesuchsperiode) {
+	public EinstellungenFerieninsel copyForGesuchsperiode(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		EinstellungenFerieninsel copy = new EinstellungenFerieninsel();
-		copy.setInstitutionStammdatenFerieninsel(this.getInstitutionStammdatenFerieninsel());
+		copy.setInstitutionStammdatenFerieninsel(
+			this.getInstitutionStammdatenFerieninsel()
+		);
 		copy.setGesuchsperiode(gesuchsperiode);
-		copy.setAusweichstandortHerbstferien(this.getAusweichstandortHerbstferien());
-		copy.setAusweichstandortFruehlingsferien(this.getAusweichstandortFruehlingsferien());
-		copy.setAusweichstandortSommerferien(this.getAusweichstandortSommerferien());
-		copy.setAusweichstandortSportferien(this.getAusweichstandortSportferien());
+		copy.setAusweichstandortHerbstferien(
+			this.getAusweichstandortHerbstferien()
+		);
+		copy.setAusweichstandortFruehlingsferien(
+			this.getAusweichstandortFruehlingsferien()
+		);
+		copy.setAusweichstandortSommerferien(
+			this.getAusweichstandortSommerferien()
+		);
+		copy.setAusweichstandortSportferien(
+			this.getAusweichstandortSportferien()
+		);
 		return copy;
 	}
 }

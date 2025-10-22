@@ -15,16 +15,17 @@
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.dto.BGCalculationInput;
-import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
-import ch.dvbern.ebegu.enums.MsgKey;
-import ch.dvbern.ebegu.types.DateRange;
-
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
+
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.entities.AbstractPlatz;
+import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
+import ch.dvbern.ebegu.types.DateRange;
 
 /**
  * Regel für die Kuendigung vor Eintritt in die Institution. Sie beachtet:
@@ -33,8 +34,17 @@ import java.util.Locale;
  */
 public class StorniertCalcRule extends AbstractCalcRule {
 
-	public StorniertCalcRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.STORNIERT, RuleType.GRUNDREGEL_CALC, RuleValidity.ASIV, validityPeriod, locale);
+	public StorniertCalcRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.STORNIERT,
+			RuleType.GRUNDREGEL_CALC,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -43,7 +53,10 @@ public class StorniertCalcRule extends AbstractCalcRule {
 	}
 
 	@Override
-	protected void executeRule(@Nonnull AbstractPlatz platz, @Nonnull BGCalculationInput inputData) {
+	protected void executeRule(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull BGCalculationInput inputData
+	) {
 		// Bei Betreuungen mit status STORNIERT wird Bemerkung hinzugefügt
 		if (Betreuungsstatus.STORNIERT == platz.getBetreuungsstatus()) {
 			inputData.addBemerkung(MsgKey.STORNIERT_MSG, getLocale());

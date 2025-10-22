@@ -8,32 +8,33 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer InstitutionStammdatenBetreuungsgutscheine
  */
 @XmlRootElement(name = "institutionStammdaten")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO {
+public class JaxInstitutionStammdatenBetreuungsgutscheine extends
+	JaxAbstractDTO {
 
 	private static final long serialVersionUID = 1881996153584255198L;
 
@@ -82,9 +83,6 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 	private Integer oeffnungstageProJahr;
 
 	@Nullable
-	private BigDecimal auslastungInstitutionen;
-
-	@Nullable
 	private BigDecimal anzahlKinderWarteliste;
 
 	@Nullable
@@ -106,10 +104,6 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 
 	@Nullable
 	private String infomaBankcode;
-
-
-	@Nonnull
-	private Set<JaxBetreuungsstandort> betreuungsstandorte = new HashSet<>();
 
 	@Nullable
 	public String getIban() {
@@ -134,7 +128,9 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return adresseKontoinhaber;
 	}
 
-	public void setAdresseKontoinhaber(@Nullable JaxAdresse adresseKontoinhaber) {
+	public void setAdresseKontoinhaber(
+		@Nullable JaxAdresse adresseKontoinhaber
+	) {
 		this.adresseKontoinhaber = adresseKontoinhaber;
 	}
 
@@ -158,7 +154,9 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return alterskategorieKindergarten;
 	}
 
-	public void setAlterskategorieKindergarten(boolean alterskategorieKindergarten) {
+	public void setAlterskategorieKindergarten(
+		boolean alterskategorieKindergarten
+	) {
 		this.alterskategorieKindergarten = alterskategorieKindergarten;
 	}
 
@@ -184,7 +182,9 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return anzahlPlaetzeFirmen;
 	}
 
-	public void setAnzahlPlaetzeFirmen(@Nullable BigDecimal anzahlPlaetzeFirmen) {
+	public void setAnzahlPlaetzeFirmen(
+		@Nullable BigDecimal anzahlPlaetzeFirmen
+	) {
 		this.anzahlPlaetzeFirmen = anzahlPlaetzeFirmen;
 	}
 
@@ -193,7 +193,9 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return tarifProHauptmahlzeit;
 	}
 
-	public void setTarifProHauptmahlzeit(@Nullable BigDecimal tarifProHauptmahlzeit) {
+	public void setTarifProHauptmahlzeit(
+		@Nullable BigDecimal tarifProHauptmahlzeit
+	) {
 		this.tarifProHauptmahlzeit = tarifProHauptmahlzeit;
 	}
 
@@ -202,7 +204,9 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return tarifProNebenmahlzeit;
 	}
 
-	public void setTarifProNebenmahlzeit(@Nullable BigDecimal tarifProNebenmahlzeit) {
+	public void setTarifProNebenmahlzeit(
+		@Nullable BigDecimal tarifProNebenmahlzeit
+	) {
 		this.tarifProNebenmahlzeit = tarifProNebenmahlzeit;
 	}
 
@@ -211,7 +215,9 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return oeffnungsAbweichungen;
 	}
 
-	public void setOeffnungsAbweichungen(@Nullable String oeffnungsAbweichungen) {
+	public void setOeffnungsAbweichungen(
+		@Nullable String oeffnungsAbweichungen
+	) {
 		this.oeffnungsAbweichungen = oeffnungsAbweichungen;
 	}
 
@@ -247,17 +253,10 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return alternativeEmailFamilienportal;
 	}
 
-	public void setAlternativeEmailFamilienportal(@Nullable String alternativeEmailFamilienportal) {
+	public void setAlternativeEmailFamilienportal(
+		@Nullable String alternativeEmailFamilienportal
+	) {
 		this.alternativeEmailFamilienportal = alternativeEmailFamilienportal;
-	}
-
-	@Nonnull
-	public Set<JaxBetreuungsstandort> getBetreuungsstandorte() {
-		return betreuungsstandorte;
-	}
-
-	public void setBetreuungsstandorte(@Nonnull Set<JaxBetreuungsstandort> betreuungsstandorte) {
-		this.betreuungsstandorte = betreuungsstandorte;
 	}
 
 	@Nullable
@@ -265,17 +264,10 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return oeffnungstageProJahr;
 	}
 
-	public void setOeffnungstageProJahr(@Nullable Integer oeffnungstageProJahr) {
+	public void setOeffnungstageProJahr(
+		@Nullable Integer oeffnungstageProJahr
+	) {
 		this.oeffnungstageProJahr = oeffnungstageProJahr;
-	}
-
-	@Nullable
-	public BigDecimal getAuslastungInstitutionen() {
-		return auslastungInstitutionen;
-	}
-
-	public void setAuslastungInstitutionen(@Nullable BigDecimal auslastungInstitutionen) {
-		this.auslastungInstitutionen = auslastungInstitutionen;
 	}
 
 	@Nullable
@@ -283,7 +275,9 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return anzahlKinderWarteliste;
 	}
 
-	public void setAnzahlKinderWarteliste(@Nullable BigDecimal anzahlKinderWarteliste) {
+	public void setAnzahlKinderWarteliste(
+		@Nullable BigDecimal anzahlKinderWarteliste
+	) {
 		this.anzahlKinderWarteliste = anzahlKinderWarteliste;
 	}
 
@@ -292,7 +286,9 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return summePensumWarteliste;
 	}
 
-	public void setSummePensumWarteliste(@Nullable BigDecimal summePensumWarteliste) {
+	public void setSummePensumWarteliste(
+		@Nullable BigDecimal summePensumWarteliste
+	) {
 		this.summePensumWarteliste = summePensumWarteliste;
 	}
 
@@ -342,7 +338,9 @@ public class JaxInstitutionStammdatenBetreuungsgutscheine extends JaxAbstractDTO
 		return infomaKreditorennummer;
 	}
 
-	public void setInfomaKreditorennummer(@Nullable String infomaKreditorennummer) {
+	public void setInfomaKreditorennummer(
+		@Nullable String infomaKreditorennummer
+	) {
 		this.infomaKreditorennummer = infomaKreditorennummer;
 	}
 

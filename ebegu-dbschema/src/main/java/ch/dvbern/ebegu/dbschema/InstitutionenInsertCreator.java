@@ -15,6 +15,20 @@
 
 package ch.dvbern.ebegu.dbschema;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.services.AdministrationService;
 import org.apache.commons.lang.StringUtils;
@@ -26,20 +40,23 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.*;
-
 /**
  * Liest die Liste der Institutionen (Excel) ein
  * Info:
- * Es gibt Institutionen mit mehreren Angeboten. Teilweise sollen sich diese nicht sehen können; In diesen Faellen machen
+ * Es gibt Institutionen mit mehreren Angeboten. Teilweise sollen sich diese nicht sehen können; In diesen Faellen
+ * machen
  * wir zwei Institutionen daraus. Im Excel muss dazu die Spalte Institutions-Id leer bleiben, bzw. dort wo für mehrere
  * Angebote die gleiche InstitutionsId drinn steht, werden die Angebote als InstitutiosStammdaten importiert.
  */
-@SuppressWarnings({ "CallToPrintStackTrace", "IOResourceOpenedButNotSafelyClosed", "UseOfSystemOutOrSystemErr", "TooBroadScope", "PMD.AvoidDuplicateLiterals", "StringBufferReplaceableByString" })
+@SuppressWarnings({ "CallToPrintStackTrace",
+	"IOResourceOpenedButNotSafelyClosed", "UseOfSystemOutOrSystemErr",
+	"TooBroadScope", "PMD.AvoidDuplicateLiterals",
+	"StringBufferReplaceableByString" })
 public class InstitutionenInsertCreator {
 
-	private static final Logger LOG = LoggerFactory.getLogger(InstitutionenInsertCreator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		InstitutionenInsertCreator.class
+	);
 
 	private final Map<String, String> traegerschaftenMap = new HashMap<>();
 	private final Map<String, String> institutionenMap = new HashMap<>();
@@ -47,10 +64,12 @@ public class InstitutionenInsertCreator {
 	private final List<String> insertTraegerschaften = new LinkedList<>();
 	private final List<String> insertAdressen = new LinkedList<>();
 	private final List<String> insertInstitutionen = new LinkedList<>();
-	private final List<String> insertInstitutionsStammdaten = new LinkedList<>();
+	private final List<String> insertInstitutionsStammdaten =
+		new LinkedList<>();
 
 	private PrintWriter printWriter;
-	private static final String INPUT_FILE = "/institutionen/institutionen-24.02.2017.xlsx";
+	private static final String INPUT_FILE =
+		"/institutionen/institutionen-24.02.2017.xlsx";
 	private static final int ANZAHL_ZEILEN = 87;
 	private static final String OUTPUT_FILE = "insertInstitutionen.sql";
 	private static final String VALUES = "\"VALUES (\"";
@@ -68,8 +87,11 @@ public class InstitutionenInsertCreator {
 
 	private void readExcel() throws IOException {
 		try (
-			InputStream resourceAsStream = InstitutionenInsertCreator.class.getResourceAsStream(INPUT_FILE);
-			XSSFWorkbook myWorkBook = new XSSFWorkbook(Objects.requireNonNull(resourceAsStream));
+			InputStream resourceAsStream = InstitutionenInsertCreator.class
+				.getResourceAsStream(INPUT_FILE);
+			XSSFWorkbook myWorkBook = new XSSFWorkbook(
+				Objects.requireNonNull(resourceAsStream)
+			);
 		) {
 			XSSFSheet mySheet = myWorkBook.getSheetAt(0);
 			Iterator<Row> rowIterator = mySheet.iterator();
@@ -102,7 +124,10 @@ public class InstitutionenInsertCreator {
 			return;
 		}
 		// Traegerschaften
-		String traegerschaftKey = readString(row, AdministrationService.COL_TRAEGERSCHAFT_ID);
+		String traegerschaftKey = readString(
+			row,
+			AdministrationService.COL_TRAEGERSCHAFT_ID
+		);
 		String traegerschaftsId = null;
 		if (StringUtils.isNotEmpty(traegerschaftKey)) {
 			if (traegerschaftenMap.containsKey(traegerschaftKey)) {
@@ -113,22 +138,32 @@ public class InstitutionenInsertCreator {
 			}
 
 			if (traegerschaftsId == null) {
-				LOG.error("TraegerschaftsId ist null, breche ab. {}", row.getRowNum());
+				LOG.error(
+					"TraegerschaftsId ist null, breche ab. {}",
+					row.getRowNum()
+				);
 				return;
 			}
 		}
 
 		// Institutionen
-		String institutionsKey = readString(row, AdministrationService.COL_INSTITUTION_ID);
+		String institutionsKey = readString(
+			row,
+			AdministrationService.COL_INSTITUTION_ID
+		);
 		String institutionsId;
-		if (StringUtils.isNotEmpty(institutionsKey) && institutionenMap.containsKey(institutionsKey)) {
+		if (StringUtils.isNotEmpty(institutionsKey)
+			&& institutionenMap.containsKey(institutionsKey)) {
 			institutionsId = institutionenMap.get(institutionsKey);
 		} else {
 			institutionsId = writeInstitution(row, traegerschaftsId);
 			institutionenMap.put(institutionsKey, institutionsId);
 		}
 		if (institutionsId == null) {
-			LOG.error("institutionsId ist null, breche ab. {}", row.getRowNum());
+			LOG.error(
+				"institutionsId ist null, breche ab. {}",
+				row.getRowNum()
+			);
 			return;
 		}
 		// Adressen
@@ -144,11 +179,22 @@ public class InstitutionenInsertCreator {
 			return;
 		}
 		try {
-			BetreuungsangebotTyp betreuungsangebotTyp = BetreuungsangebotTyp.valueOf(angebot);
-			writeInstitutionStammdaten(row, institutionsId, adresseId, betreuungsangebotTyp);
+			BetreuungsangebotTyp betreuungsangebotTyp = BetreuungsangebotTyp
+				.valueOf(angebot);
+			writeInstitutionStammdaten(
+				row,
+				institutionsId,
+				adresseId,
+				betreuungsangebotTyp
+			);
 		} catch (IllegalArgumentException iae) {
 			if ("TAGESELTERN".equalsIgnoreCase(angebot)) {
-				writeInstitutionStammdaten(row, institutionsId, adresseId, BetreuungsangebotTyp.TAGESFAMILIEN);
+				writeInstitutionStammdaten(
+					row,
+					institutionsId,
+					adresseId,
+					BetreuungsangebotTyp.TAGESFAMILIEN
+				);
 			} else {
 				LOG.warn("Unbekannter Betreuungsangebot-Typ: {}", angebot);
 			}
@@ -167,10 +213,16 @@ public class InstitutionenInsertCreator {
 	private String writeAdresse(Row row) {
 		String id = UUID.randomUUID().toString();
 		String strasse = readString(row, AdministrationService.COL_STRASSE);
-		String hausnummer = readString(row, AdministrationService.COL_HAUSNUMMER);
+		String hausnummer = readString(
+			row,
+			AdministrationService.COL_HAUSNUMMER
+		);
 		String plz = readString(row, AdministrationService.COL_PLZ);
 		String ort = readString(row, AdministrationService.COL_ORT);
-		String zusatzzeile = readString(row, AdministrationService.COL_ZUSATZZEILE);
+		String zusatzzeile = readString(
+			row,
+			AdministrationService.COL_ZUSATZZEILE
+		);
 
 		if (strasse == null) {
 			LOG.error("strasse is null: {}", row.getRowNum());
@@ -187,7 +239,9 @@ public class InstitutionenInsertCreator {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO adresse ");
-		sb.append("(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, gemeinde, gueltig_ab, gueltig_bis, hausnummer, land, ort, plz, strasse, zusatzzeile, event_published) ");
+		sb.append(
+			"(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, gemeinde, gueltig_ab, gueltig_bis, hausnummer, land, ort, plz, strasse, zusatzzeile, event_published) "
+		);
 		sb.append(VALUES);
 		sb.append('\'').append(id).append("', ");    // id
 		sb.append(TIMESTAMP);       				 // timestamp_erstellt
@@ -213,8 +267,14 @@ public class InstitutionenInsertCreator {
 
 	private String writeTraegerschaft(Row row) {
 		String id = UUID.randomUUID().toString();
-		String traegerschaftsname = readString(row, AdministrationService.COL_TRAEGERSCHAFT_NAME);
-		String traegerschaftEmail = readString(row, AdministrationService.COL_TRAEGERSCHAFT_MAIL);
+		String traegerschaftsname = readString(
+			row,
+			AdministrationService.COL_TRAEGERSCHAFT_NAME
+		);
+		String traegerschaftEmail = readString(
+			row,
+			AdministrationService.COL_TRAEGERSCHAFT_MAIL
+		);
 
 		if (traegerschaftsname == null) {
 			LOG.error("institutionsname is null: {}", row.getRowNum());
@@ -227,7 +287,9 @@ public class InstitutionenInsertCreator {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO traegerschaft ");
-		sb.append("(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, active, mail) ");
+		sb.append(
+			"(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, active, mail) "
+		);
 		sb.append(VALUES);
 		sb.append('\'').append(id).append("', ");    // id
 		sb.append(TIMESTAMP);        // timestamp_erstellt
@@ -246,8 +308,14 @@ public class InstitutionenInsertCreator {
 
 	private String writeInstitution(Row row, String traegerschaftId) {
 		String id = UUID.randomUUID().toString();
-		String institutionsname = readString(row, AdministrationService.COL_INSTITUTION_NAME);
-		String institutionsEmail = readString(row, AdministrationService.COL_INSTITUTION_MAIL);
+		String institutionsname = readString(
+			row,
+			AdministrationService.COL_INSTITUTION_NAME
+		);
+		String institutionsEmail = readString(
+			row,
+			AdministrationService.COL_INSTITUTION_MAIL
+		);
 
 		if (institutionsname == null) {
 			LOG.error("institutionsname is null: {}", row.getRowNum());
@@ -260,7 +328,9 @@ public class InstitutionenInsertCreator {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO institution ");
-		sb.append("(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, mandant_id, traegerschaft_id, active, mail) ");
+		sb.append(
+			"(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, mandant_id, traegerschaft_id, active, mail) "
+		);
 		sb.append(VALUES);
 		sb.append('\'').append(id).append("', ");    // id
 		sb.append(TIMESTAMP);        // timestamp_erstellt
@@ -269,7 +339,9 @@ public class InstitutionenInsertCreator {
 		sb.append(USER);                    // user_mutiert
 		sb.append("0, ");                            // version,
 		sb.append(toStringOrNull(institutionsname)).append(", "); // name
-		sb.append('\'').append(AdministrationService.MANDANT_ID_BERN).append("', ");    // mandant_id,
+		sb.append('\'')
+			.append(AdministrationService.MANDANT_ID_BERN)
+			.append("', ");    // mandant_id,
 		sb.append(toStringOrNull(traegerschaftId)).append(", "); // name
 		sb.append("true, "); // active
 		sb.append(toStringOrNull(institutionsEmail)); // mail
@@ -279,7 +351,12 @@ public class InstitutionenInsertCreator {
 		return id;
 	}
 
-	private String writeInstitutionStammdaten(Row row, String institutionsId, String adresseId, BetreuungsangebotTyp typ) {
+	private String writeInstitutionStammdaten(
+		Row row,
+		String institutionsId,
+		String adresseId,
+		BetreuungsangebotTyp typ
+	) {
 		if (institutionsId == null) {
 			LOG.error("institutionsId is null: {}", row.getRowNum());
 			return null;
@@ -294,7 +371,9 @@ public class InstitutionenInsertCreator {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO institution_stammdaten ");
-		sb.append("(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, gueltig_ab, gueltig_bis, betreuungsangebot_typ, iban, institution_id, adresse_id) ");
+		sb.append(
+			"(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, gueltig_ab, gueltig_bis, betreuungsangebot_typ, iban, institution_id, adresse_id) "
+		);
 		sb.append(VALUES);
 		sb.append('\'').append(id).append("', ");    // id
 		sb.append(TIMESTAMP);        // timestamp_erstellt
@@ -322,12 +401,14 @@ public class InstitutionenInsertCreator {
 	}
 
 	// this class is not really a part of the software itself. For this reason it is not important that some code is duplicated
-	@SuppressWarnings({"Duplicates", "PMD.CloseResource"})
+	@SuppressWarnings({ "Duplicates", "PMD.CloseResource" })
 	private PrintWriter getPrintWriter() {
 		if (printWriter == null) {
 			try {
 				File output = new File(OUTPUT_FILE);
-				FileOutputStream fos = new FileOutputStream(output.getAbsolutePath());
+				FileOutputStream fos = new FileOutputStream(
+					output.getAbsolutePath()
+				);
 				printWriter = new PrintWriter(fos);
 				LOG.info("File generiert: {}", output.getAbsolutePath());
 			} catch (FileNotFoundException e) {
@@ -340,7 +421,7 @@ public class InstitutionenInsertCreator {
 	@SuppressWarnings("PMD.CloseResource")
 	private void println(String s) {
 		PrintWriter printWriter = getPrintWriter();
-		if(printWriter != null){
+		if (printWriter != null) {
 			printWriter.println(s);
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 DV Bern AG, Switzerland
+ * Copyright (C) 2025 DV Bern AG, Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -8,92 +8,373 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.gemeindeantrag;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Gemeinde;
-import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.GemeindeStammdaten;
+import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngaben;
+import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenAngebot;
 import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
-import ch.dvbern.ebegu.errors.EntityExistsException;
-import ch.dvbern.ebegu.test.IntegrationTest;
-import ch.dvbern.ebegu.test.TestDataUtil;
-import ch.dvbern.ebegu.tests.AbstractEbeguLoginTest;
-import ch.dvbern.lib.cdipersistence.Persistence;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.persistence.UsingDataSet;
-import org.jboss.arquillian.transaction.api.annotation.TransactionMode;
-import org.jboss.arquillian.transaction.api.annotation.Transactional;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
+import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenKostenEinnahmen;
+import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenNutzung;
+import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenStammdaten;
+import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungBerechnungen;
+import ch.dvbern.ebegu.enums.KorrespondenzSpracheTyp;
+import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungAngabenStatus;
+import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungFormularStatus;
+import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.services.BenutzerService;
+import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.services.gemeindeantrag.ferienbetreuung.FerienbetreuungAngabenContainerStatusHistoryService;
+import org.easymock.EasyMockExtension;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
+import org.easymock.TestSubject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(Arquillian.class)
-@Category(IntegrationTest.class)
-@UsingDataSet("datasets/mandant-dataset.xml")
-@Transactional(TransactionMode.DISABLED)
-public class FerienbetreuungServiceBeanTest extends AbstractEbeguLoginTest {
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 
-	@Inject
-	private FerienbetreuungService ferienbetreuungService;
+@ExtendWith(EasyMockExtension.class)
+class FerienbetreuungServiceBeanTest extends
+	EasyMockSupport {
 
-	@Inject
+	@TestSubject
+	private FerienbetreuungServiceBean ferienbetreuungServiceBean;
+	@Mock
+	private FerienbetreuungAngabenContainer container;
+	@Mock
 	private Persistence persistence;
+	@Mock
+	private FerienbetreuungAngaben angabenKorrektur;
+	@Mock
+	private GemeindeService gemeindeService;
+	@Mock
+	private ApplicationPropertyService applicationPropertyService;
+	@Mock
+	private BenutzerService benutzerService;
+	@Mock
+	private FerienbetreuungAngabenContainerStatusHistoryService statusHistoryService;
+	@Mock
+	FerienbetreuungBerechnungen ferienbetreuungBerechnungen;
 
-	private Gesuchsperiode gesuchsperiode1920;
-	private Gemeinde gemeindeParis;
-
-	@Before
+	@BeforeEach
 	public void setUp() {
-		gesuchsperiode1920 = TestDataUtil.createAndPersistCustomGesuchsperiode(persistence, 2018, 2019);
-		TestDataUtil.prepareParameters(gesuchsperiode1920, persistence);
-		insertInstitutionen();
-		gemeindeParis = TestDataUtil.getGemeindeParis(persistence);
-		TestDataUtil.getGemeindeLondon(persistence);
+		expect(container.getAngabenKorrektur()).andReturn(angabenKorrektur)
+			.atLeastOnce();
+		expect(container.getStatus()).andReturn(
+			FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON
+		).atLeastOnce();
+		expect(angabenKorrektur.isReadyForFreigeben()).andReturn(true);
 	}
 
 	@Test
-	public void createFerienbetreuungAntrag() {
-		final FerienbetreuungAngabenContainer ferienbetreuungAngabenContainer =
-			ferienbetreuungService.createFerienbetreuungAntrag(gemeindeParis, gesuchsperiode1920);
-		Assert.assertNotNull(ferienbetreuungAngabenContainer);
-		Assert.assertNotNull(ferienbetreuungAngabenContainer.getAngabenDeklaration());
-		Assert.assertNull(ferienbetreuungAngabenContainer.getAngabenKorrektur());
-		Assert.assertEquals("Bern", ferienbetreuungAngabenContainer.getGemeinde().getName());
-		Assert.assertEquals("IN_BEARBEITUNG_GEMEINDE", ferienbetreuungAngabenContainer.getStatusString());
-		Assert.assertEquals(2017, ferienbetreuungAngabenContainer.getGesuchsperiode().getBasisJahr());
-	}
+	void ferienbetreuungAngabenGeprueft_ZWEITPRUEFUNG_when_Kantonsbeitrag_zu_hoch() {
+		GemeindeStammdaten stammdaten = new GemeindeStammdaten();
+		stammdaten.setKorrespondenzsprache(KorrespondenzSpracheTyp.DE);
+		Gemeinde gemeinde = new Gemeinde();
+		gemeinde.setId("123");
+		expect(container.isInZweitpruefung()).andReturn(false);
+		expect(container.getGemeinde()).andReturn(gemeinde).atLeastOnce();
+		expect(
+			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeinde.getId())
+		).andReturn(
+			Optional.of(
+				stammdaten
+			)
+		);
+		expect(
+			applicationPropertyService.findApplicationPropertyAsBigDecimal(
+				ApplicationPropertyKey.FERIENBETREUUNG_AUTO_ZWEITPRUEFUNG_DE,
+				gemeinde
+					.getMandant()
+			)
+		).andReturn(new BigDecimal(100000));
+		expect(
+			applicationPropertyService.findApplicationPropertyAsBigDecimal(
+				ApplicationPropertyKey.FERIENBETREUUNG_ANTEIL_ZWEITPRUEFUNG_DE,
+				gemeinde
+					.getMandant()
+			)
+		).andReturn(BigDecimal.ZERO);
 
-	@Test(expected = EntityExistsException.class)
-	public void createFerienbetreuungAntragDuplicate() {
-		ferienbetreuungService.createFerienbetreuungAntrag(gemeindeParis, gesuchsperiode1920);
-		ferienbetreuungService.createFerienbetreuungAntrag(gemeindeParis, gesuchsperiode1920);
+		expect(angabenKorrektur.getFerienbetreuungBerechnungen()).andReturn(
+			ferienbetreuungBerechnungen
+		).anyTimes();
+		expect(
+			ferienbetreuungBerechnungen.getTotalKantonsbeitrag()
+		).andReturn(new BigDecimal(200000)).anyTimes();
+
+		expectResetAllFormular();
+		expect(benutzerService.hasMoreThanOneMandantUser()).andReturn(true);
+
+		expect(container.setStatus(FerienbetreuungAngabenStatus.ZWEITPRUEFUNG))
+			.andReturn(container);
+		statusHistoryService.updateStatusChangeHistory(container);
+		expect(
+			statusHistoryService.findLastHistoryOfStatus(
+				container,
+				FerienbetreuungAngabenStatus.GEPRUEFT
+			)
+		).andReturn(Optional.empty());
+		expectLastCall();
+
+		expect(persistence.merge(container)).andReturn(container);
+
+		replayAll();
+
+		ferienbetreuungServiceBean.ferienbetreuungAngabenGeprueft(container);
+
+		verifyAll();
 	}
 
 	@Test
-	public void saveKommentar() {
-		final FerienbetreuungAngabenContainer ferienbetreuungAngabenContainer =
-			ferienbetreuungService.createFerienbetreuungAntrag(gemeindeParis, gesuchsperiode1920);
+	void ferienbetreuungAngabenGeprueft_GEPRUEFT_when_Kantonsbeitrag_zu_hoch_but_only_one_mandant_user() {
+		GemeindeStammdaten stammdaten = new GemeindeStammdaten();
+		stammdaten.setKorrespondenzsprache(KorrespondenzSpracheTyp.DE);
+		Gemeinde gemeinde = new Gemeinde();
+		gemeinde.setId("123");
+		expect(container.isInZweitpruefung()).andReturn(false);
+		expect(container.getGemeinde()).andReturn(gemeinde).atLeastOnce();
+		expect(
+			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeinde.getId())
+		).andReturn(
+			Optional.of(
+				stammdaten
+			)
+		);
+		expect(
+			applicationPropertyService.findApplicationPropertyAsBigDecimal(
+				ApplicationPropertyKey.FERIENBETREUUNG_AUTO_ZWEITPRUEFUNG_DE,
+				gemeinde
+					.getMandant()
+			)
+		).andReturn(new BigDecimal(100000));
+		expect(
+			applicationPropertyService.findApplicationPropertyAsBigDecimal(
+				ApplicationPropertyKey.FERIENBETREUUNG_ANTEIL_ZWEITPRUEFUNG_DE,
+				gemeinde
+					.getMandant()
+			)
+		).andReturn(BigDecimal.ZERO);
 
-		ferienbetreuungService.saveKommentar(ferienbetreuungAngabenContainer.getId(), "abcd");
-		Optional<FerienbetreuungAngabenContainer> persistedOpt =
-			ferienbetreuungService.findFerienbetreuungAngabenContainer(ferienbetreuungAngabenContainer.getId());
-		Assert.assertTrue(persistedOpt.isPresent());
-		FerienbetreuungAngabenContainer persisted = persistedOpt.get();
-		Assert.assertEquals(persisted.getInternerKommentar(), "abcd");
-		// should not change status
-		Assert.assertEquals("IN_BEARBEITUNG_GEMEINDE", persisted.getStatusString());
+		expect(angabenKorrektur.getFerienbetreuungBerechnungen()).andReturn(
+			ferienbetreuungBerechnungen
+		).anyTimes();
+		expect(
+			ferienbetreuungBerechnungen.getTotalKantonsbeitrag()
+		).andReturn(new BigDecimal(200000)).anyTimes();
+
+		expect(benutzerService.hasMoreThanOneMandantUser()).andReturn(false);
+		statusHistoryService.updateStatusChangeHistory(container);
+
+		expect(container.setStatus(FerienbetreuungAngabenStatus.GEPRUEFT))
+			.andReturn(container);
+		expect(
+			statusHistoryService.findLastHistoryOfStatus(
+				container,
+				FerienbetreuungAngabenStatus.GEPRUEFT
+			)
+		).andReturn(Optional.empty());
+		expectLastCall();
+
+		expect(persistence.merge(container)).andReturn(container);
+
+		replayAll();
+
+		ferienbetreuungServiceBean.ferienbetreuungAngabenGeprueft(container);
+
+		verifyAll();
 	}
 
+	@Test
+	void ferienbetreuungAngaben_GEPRUEFT_when_Kantonsbeitrag_zu_klein() {
+		GemeindeStammdaten stammdaten = new GemeindeStammdaten();
+		stammdaten.setKorrespondenzsprache(KorrespondenzSpracheTyp.DE);
+		Gemeinde gemeinde = new Gemeinde();
+		gemeinde.setId("123");
+		expect(container.isInZweitpruefung()).andReturn(false);
+		expect(container.getGemeinde()).andReturn(gemeinde).atLeastOnce();
+		expect(
+			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeinde.getId())
+		).andReturn(
+			Optional.of(
+				stammdaten
+			)
+		);
+		expect(
+			applicationPropertyService.findApplicationPropertyAsBigDecimal(
+				ApplicationPropertyKey.FERIENBETREUUNG_AUTO_ZWEITPRUEFUNG_DE,
+				gemeinde
+					.getMandant()
+			)
+		).andReturn(new BigDecimal(100000));
+		expect(
+			applicationPropertyService.findApplicationPropertyAsBigDecimal(
+				ApplicationPropertyKey.FERIENBETREUUNG_ANTEIL_ZWEITPRUEFUNG_DE,
+				gemeinde
+					.getMandant()
+			)
+		).andReturn(BigDecimal.ZERO);
+
+		expect(angabenKorrektur.getFerienbetreuungBerechnungen()).andReturn(
+			ferienbetreuungBerechnungen
+		).anyTimes();
+		expect(
+			ferienbetreuungBerechnungen.getTotalKantonsbeitrag()
+		).andReturn(new BigDecimal(1000)).anyTimes();
+
+		expect(container.setStatus(FerienbetreuungAngabenStatus.GEPRUEFT))
+			.andReturn(container);
+		statusHistoryService.updateStatusChangeHistory(container);
+		expect(
+			statusHistoryService.findLastHistoryOfStatus(
+				container,
+				FerienbetreuungAngabenStatus.GEPRUEFT
+			)
+		).andReturn(Optional.empty());
+		expectLastCall();
+
+		expect(persistence.merge(container)).andReturn(container);
+
+		replayAll();
+
+		ferienbetreuungServiceBean.ferienbetreuungAngabenGeprueft(container);
+
+		verifyAll();
+	}
+
+	@Test
+	void ferienbetreuungAngaben_GEPRUEFT_when_schon_in_ZWEITPRUEFUNG() {
+		expect(container.isInZweitpruefung()).andReturn(true);
+
+		expect(container.setStatus(FerienbetreuungAngabenStatus.GEPRUEFT))
+			.andReturn(container);
+
+		expect(persistence.merge(container)).andReturn(container);
+		statusHistoryService.updateStatusChangeHistory(container);
+		expect(
+			statusHistoryService.findLastHistoryOfStatus(
+				container,
+				FerienbetreuungAngabenStatus.GEPRUEFT
+			)
+		).andReturn(Optional.empty());
+
+		replayAll();
+
+		ferienbetreuungServiceBean.ferienbetreuungAngabenGeprueft(container);
+
+		verifyAll();
+	}
+
+	void expectResetAllFormular() {
+		FerienbetreuungAngaben ferienbetreuungAngaben = createMock(
+			FerienbetreuungAngaben.class
+		);
+		expect(container.getAngabenDeklaration()).andReturn(
+			ferienbetreuungAngaben
+		).anyTimes();
+		FerienbetreuungAngabenAngebot ferienbetreuungAngabenAngebot =
+			createMock(FerienbetreuungAngabenAngebot.class);
+		expect(ferienbetreuungAngaben.getFerienbetreuungAngabenAngebot())
+			.andReturn(ferienbetreuungAngabenAngebot);
+
+		ferienbetreuungAngabenAngebot
+			.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
+		expectLastCall();
+
+		FerienbetreuungAngabenNutzung ferienbetreuungAngabenNutzung =
+			createMock(FerienbetreuungAngabenNutzung.class);
+		expect(ferienbetreuungAngaben.getFerienbetreuungAngabenNutzung())
+			.andReturn(ferienbetreuungAngabenNutzung);
+
+		ferienbetreuungAngabenNutzung
+			.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
+		expectLastCall();
+
+		FerienbetreuungAngabenStammdaten ferienbetreuungAngabenStammdaten =
+			createMock(FerienbetreuungAngabenStammdaten.class);
+		expect(ferienbetreuungAngaben.getFerienbetreuungAngabenStammdaten())
+			.andReturn(ferienbetreuungAngabenStammdaten);
+
+		ferienbetreuungAngabenStammdaten
+			.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
+
+		FerienbetreuungAngabenKostenEinnahmen ferienbetreuungAngabenKostenEinnahmen =
+			createMock(FerienbetreuungAngabenKostenEinnahmen.class);
+		expect(
+			ferienbetreuungAngaben.getFerienbetreuungAngabenKostenEinnahmen()
+		).andReturn(ferienbetreuungAngabenKostenEinnahmen);
+
+		ferienbetreuungAngabenKostenEinnahmen
+			.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
+
+		FerienbetreuungAngabenAngebot ferienbetreuungAngabenAngebotKorrektur =
+			createMock(FerienbetreuungAngabenAngebot.class);
+		expect(angabenKorrektur.getFerienbetreuungAngabenAngebot()).andReturn(
+			ferienbetreuungAngabenAngebotKorrektur
+		);
+
+		ferienbetreuungAngabenAngebotKorrektur
+			.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
+		expectLastCall();
+
+		FerienbetreuungAngabenNutzung ferienbetreuungAngabenNutzungKorrektur =
+			createMock(FerienbetreuungAngabenNutzung.class);
+		expect(angabenKorrektur.getFerienbetreuungAngabenNutzung()).andReturn(
+			ferienbetreuungAngabenNutzungKorrektur
+		);
+
+		ferienbetreuungAngabenNutzungKorrektur
+			.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
+		expectLastCall();
+
+		FerienbetreuungAngabenStammdaten ferienbetreuungAngabenStammdatenKorrektur =
+			createMock(FerienbetreuungAngabenStammdaten.class);
+		expect(angabenKorrektur.getFerienbetreuungAngabenStammdaten())
+			.andReturn(ferienbetreuungAngabenStammdatenKorrektur);
+
+		ferienbetreuungAngabenStammdatenKorrektur
+			.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
+		expectLastCall();
+
+		FerienbetreuungAngabenKostenEinnahmen ferienbetreuungAngabenKostenEinnahmenKorrektur =
+			createMock(FerienbetreuungAngabenKostenEinnahmen.class);
+		expect(angabenKorrektur.getFerienbetreuungAngabenKostenEinnahmen())
+			.andReturn(ferienbetreuungAngabenKostenEinnahmenKorrektur);
+
+		ferienbetreuungAngabenKostenEinnahmenKorrektur
+			.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
+		expectLastCall();
+	}
 }

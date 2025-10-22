@@ -15,7 +15,6 @@
 
 package ch.dvbern.ebegu.services;
 
-import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -29,38 +28,39 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
-import javax.persistence.criteria.Subquery;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.SetJoin;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
+import ch.dvbern.ebegu.authentication.ExternalUUIDUtil;
+import ch.dvbern.ebegu.authentication.KibonJwt;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.BenutzerPredicateObjectDTO;
+import ch.dvbern.ebegu.dto.suchfilter.smarttable.BenutzerSearchDTO;
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.BenutzerTableFilterDTO;
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.BenutzerTableMandantFilterDTO;
 import ch.dvbern.ebegu.einladung.Einladung;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
-import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Benutzer_;
@@ -88,31 +88,33 @@ import ch.dvbern.ebegu.entities.Traegerschaft_;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst_;
 import ch.dvbern.ebegu.enums.AntragStatus;
+import ch.dvbern.ebegu.enums.BenutzerQueries_;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
-import ch.dvbern.ebegu.enums.EinladungTyp;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
-import ch.dvbern.ebegu.enums.SearchMode;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.enums.UserRoleName;
 import ch.dvbern.ebegu.errors.BenutzerExistException;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-import ch.dvbern.ebegu.errors.EntityExistsException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
-import ch.dvbern.ebegu.errors.MailException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.services.authentication.KeycloakApi;
 import ch.dvbern.ebegu.services.util.SearchUtil;
-import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.types.DateRange_;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.EnumUtil;
-import ch.dvbern.lib.cdipersistence.Persistence;
-import org.apache.commons.lang.StringUtils;
+import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hibernate.Hibernate;
+import org.hibernate.query.criteria.HibernateCriteriaBuilder;
+import org.hibernate.query.criteria.JpaCriteriaQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static ch.dvbern.ebegu.enums.BenutzerStatus.AKTIV;
+import static ch.dvbern.ebegu.enums.BenutzerStatus.GESPERRT;
 import static ch.dvbern.ebegu.enums.UserRole.GESUCHSTELLER;
 import static ch.dvbern.ebegu.enums.UserRole.getBgAndGemeindeRoles;
 import static ch.dvbern.ebegu.enums.UserRole.getMandantRoles;
@@ -129,17 +131,20 @@ import static ch.dvbern.ebegu.services.util.FilterFunctions.setSuperAdminFilterF
 import static ch.dvbern.ebegu.services.util.FilterFunctions.setTraegerschaftFilterForCurrentUser;
 import static ch.dvbern.ebegu.services.util.PredicateHelper.NEW;
 import static com.google.common.base.Preconditions.checkArgument;
+import static jakarta.persistence.LockModeType.PESSIMISTIC_WRITE;
 import static java.util.Objects.requireNonNull;
-import static javax.persistence.LockModeType.PESSIMISTIC_WRITE;
 
 /**
  * Service fuer Benutzer
  */
 @Stateless
 @Local(BenutzerService.class)
-public class BenutzerServiceBean extends AbstractBaseService implements BenutzerService {
+public class BenutzerServiceBean extends AbstractBaseService implements
+	BenutzerService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(BenutzerServiceBean.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		BenutzerServiceBean.class.getSimpleName()
+	);
 
 	@Inject
 	private Persistence persistence;
@@ -151,7 +156,7 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 	private PrincipalBean principalBean;
 
 	@Inject
-	private AuthService authService;
+	private KeycloakApi keycloakApi;
 
 	@Inject
 	private MailService mailService;
@@ -160,17 +165,23 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 	private Authorizer authorizer;
 
 	@Inject
-	private EbeguConfiguration ebeguConfiguration;
-
-	@Inject
 	private FallService fallService;
 
 	@Inject
 	private GesuchService gesuchService;
 
+	@Inject
+	private PasswordGenerator passwordGenerator;
+
+	@Inject
+	private MandantService mandantService;
+
 	@Nonnull
 	@Override
-	public Benutzer saveBenutzerBerechtigungen(@Nonnull Benutzer benutzer, boolean currentBerechtigungChanged) {
+	public Benutzer saveBenutzerBerechtigungen(
+		@Nonnull Benutzer benutzer,
+		boolean currentBerechtigungChanged
+	) {
 		requireNonNull(benutzer);
 		prepareBenutzerForSave(benutzer, currentBerechtigungChanged);
 		authorizer.checkWriteAuthorization(benutzer);
@@ -191,174 +202,91 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 
 	@Nonnull
 	@Override
-	public Benutzer createAdminGemeindeByEmail(
-		@Nonnull String adminMail, @Nonnull UserRole userRole, @Nonnull Gemeinde gemeinde
+	public Benutzer einladen(
+		@Nonnull Einladung einladung,
+		@Nonnull Mandant mandant
 	) {
-		requireNonNull(gemeinde);
-		requireNonNull(gemeinde.getMandant());
-		return createBenutzerFromEmail(
-			adminMail,
-			userRole,
-			gemeinde.getMandant(),
-			gemeinde,
-			b -> b.getGemeindeList().add(gemeinde));
-	}
-
-	@Nonnull
-	@Override
-	public Benutzer createAdminInstitutionByEmail(@Nonnull String adminMail, @Nonnull Institution institution) {
-		requireNonNull(institution);
-		requireNonNull(institution.getMandant());
-		return createBenutzerFromEmail(
-			adminMail,
-			UserRole.ADMIN_INSTITUTION,
-			institution.getMandant(),
-			institution,
-			b -> b.setInstitution(institution));
-	}
-
-	@Nonnull
-	@Override
-	public Benutzer createAdminTraegerschaftByEmail(@Nonnull String adminMail, @Nonnull Traegerschaft traegerschaft) {
-		requireNonNull(traegerschaft);
-		requireNonNull(traegerschaft.getMandant());
-		Benutzer admin = createBenutzerFromEmail(
-			adminMail,
-			UserRole.ADMIN_TRAEGERSCHAFT,
-			traegerschaft.getMandant(),
-			traegerschaft,
-			b -> b.setTraegerschaft(traegerschaft));
-
-		return admin;
-	}
-
-	@Nonnull
-	@Override
-	public Benutzer createAdminSozialdienstByEmail(
-		@Nonnull String adminMail, @Nonnull Sozialdienst sozialdienst
-	) {
-		requireNonNull(sozialdienst);
-		return createBenutzerFromEmail(
-			adminMail,
-			UserRole.ADMIN_SOZIALDIENST,
-			sozialdienst.getMandant(),
-			sozialdienst,
-			b -> b.setSozialdienst(sozialdienst));
-	}
-
-	@Nonnull
-	private <T extends AbstractEntity> Benutzer createBenutzerFromEmail(
-		@Nonnull String adminMail,
-		@Nonnull UserRole role,
-		@Nonnull Mandant mandant,
-		@Nullable T associatedEntity,
-		@Nonnull Consumer<Berechtigung> appender
-	) {
-		requireNonNull(adminMail);
-		requireNonNull(mandant);
-
-		checkArgument(role.getRollenAbhaengigkeit().getAssociatedEntityClass()
-			.map(clazz -> clazz.isInstance(associatedEntity))
-			.orElseGet(() -> associatedEntity == null)
-		);
-
-		final Benutzer benutzer = new Benutzer();
-		benutzer.setEmail(adminMail);
-		benutzer.setNachname(Constants.UNKNOWN);
-		benutzer.setVorname(Constants.UNKNOWN);
-		benutzer.setUsername(adminMail);
-		benutzer.setStatus(BenutzerStatus.EINGELADEN);
-		benutzer.setMandant(mandant);
-
-		final Berechtigung berechtigung = new Berechtigung();
-		berechtigung.setRole(role);
-		berechtigung.setBenutzer(benutzer);
-		berechtigung.setGueltigkeit(new DateRange(LocalDate.now(), Constants.END_OF_TIME));
-		benutzer.getBerechtigungen().add(berechtigung);
-
-		appender.accept(berechtigung);
-
-		return saveBenutzer(benutzer);
-	}
-
-	@Nonnull
-	@Override
-	public Benutzer einladen(@Nonnull Einladung einladung, @Nonnull Mandant mandant) {
 		requireNonNull(einladung);
 
 		checkEinladung(einladung, mandant);
-
-		Benutzer persistedBenutzer = saveBenutzer(einladung.getEingeladener());
-
-		try {
-			mailService.sendBenutzerEinladung(principalBean.getBenutzer(), einladung);
-
-		} catch (MailException e) {
-			String message =
-				String.format("Es konnte keine Email Einladung an %s geschickt werden", persistedBenutzer.getEmail());
-			KibonLogLevel logLevel = ebeguConfiguration.getIsDevmode() ? KibonLogLevel.INFO : KibonLogLevel.ERROR;
-			throw new EbeguRuntimeException(logLevel, "sendEinladung", message, ErrorCodeEnum.ERROR_MAIL, e);
-		}
-		return persistedBenutzer;
+		sendBenutzerEinladung(einladung);
+		return saveBenutzer(einladung.getEingeladener());
 	}
 
 	@Override
 	public void erneutEinladen(@Nonnull Benutzer eingeladener) {
 		authorizer.checkWriteAuthorization(eingeladener);
-		try {
-			if (eingeladener.getStatus() != BenutzerStatus.EINGELADEN) {
-				throw new EbeguRuntimeException(
-					KibonLogLevel.INFO,
-					eingeladener.getUsername(),
-					ErrorCodeEnum.ERROR_BENUTZER_STATUS_NOT_EINGELADEN);
-			}
-			Einladung einladung = Einladung.forRolle(eingeladener);
-			mailService.sendBenutzerEinladung(principalBean.getBenutzer(), einladung);
-		} catch (MailException e) {
-			String message =
-				String.format("Es konnte keine Email Einladung an %s geschickt werden", eingeladener.getEmail());
-			KibonLogLevel logLevel = ebeguConfiguration.getIsDevmode() ? KibonLogLevel.INFO : KibonLogLevel.ERROR;
-			throw new EbeguRuntimeException(logLevel, "sendEinladung", message, ErrorCodeEnum.ERROR_MAIL, e);
+
+		if (eingeladener.getStatus() != BenutzerStatus.EINGELADEN) {
+			throw new EbeguRuntimeException(
+				KibonLogLevel.INFO,
+				eingeladener.getUsername(),
+				ErrorCodeEnum.ERROR_BENUTZER_STATUS_NOT_EINGELADEN
+			);
 		}
+		eingeladener.setInitialPassword(
+			passwordGenerator.createRandomPassword()
+		);
+
+		if (isPreOidcBenutzer(eingeladener)) {
+			String externalUuid = keycloakApi.create(eingeladener);
+			eingeladener.setExternalUUID(externalUuid);
+		} else {
+			keycloakApi.updateInitialPassword(eingeladener);
+			// make sure user is not (yet) deleted by EingeladeneBenutzerCleanUpJob
+			eingeladener.setTimestampMutiert(LocalDateTime.now());
+		}
+		Einladung einladung = Einladung.forRolle(eingeladener);
+		sendBenutzerEinladung(einladung);
+	}
+
+	// Refers to users invited before KIBON-2453 was merged and therefore no
+	// keycloak user exists at this point
+	private static boolean isPreOidcBenutzer(Benutzer eingeladener) {
+		return eingeladener.getExternalUUID() == null;
+	}
+
+	private void sendBenutzerEinladung(Einladung einladung) {
+		mailService.sendBenutzerEinladung(
+			principalBean.getBenutzer(),
+			einladung
+		);
+		einladung.getEingeladener().setInitialPassword(null);
 	}
 
 	/**
 	 * According to the type of Einladung it checks that the given benutzer meets the conditions required.
 	 */
 	@SuppressWarnings("NonBooleanMethodNameMayNotStartWithQuestion")
-	private void checkEinladung(@Nonnull Einladung einladung, @Nonnull Mandant mandant) {
+	private void checkEinladung(
+		@Nonnull Einladung einladung,
+		@Nonnull Mandant mandant
+	) {
 		Benutzer benutzer = einladung.getEingeladener();
 		checkSuperuserRoleZuteilung(einladung.getEingeladener());
-		EinladungTyp einladungTyp = einladung.getEinladungTyp();
 		checkArgument(Objects.equals(benutzer.getMandant(), mandant));
-
-		if (einladungTyp == EinladungTyp.MITARBEITER && (!benutzer.isNew()
-			|| findBenutzer(benutzer.getUsername(), mandant).isPresent())) {
-			// when inviting a new Mitarbeiter the user cannot exist.
-			// For any other invitation the user may exist already
-			throw new EntityExistsException(
-				KibonLogLevel.INFO,
-				Benutzer.class,
-				"email",
-				benutzer.getUsername(),
-				ErrorCodeEnum.ERROR_BENUTZER_EXISTS);
-		}
 
 		checkBenutzerIsNotGesuchstellerWithFreigegebenemGesuch(benutzer);
 
-		if (benutzer.isNew() && benutzer.getStatus() != BenutzerStatus.EINGELADEN) {
+		if (benutzer.isNew()
+			&& benutzer.getStatus() != BenutzerStatus.EINGELADEN) {
 			throw new EbeguRuntimeException(
 				KibonLogLevel.INFO,
 				benutzer.getUsername(),
-				ErrorCodeEnum.ERROR_BENUTZER_STATUS_NOT_EINGELADEN);
+				ErrorCodeEnum.ERROR_BENUTZER_STATUS_NOT_EINGELADEN
+			);
 		}
 	}
 
 	@Override
 	@SuppressWarnings("NonBooleanMethodNameMayNotStartWithQuestion")
-	public void checkBenutzerIsNotGesuchstellerWithFreigegebenemGesuch(@Nonnull Benutzer benutzer) {
+	public void checkBenutzerIsNotGesuchstellerWithFreigegebenemGesuch(
+		@Nonnull Benutzer benutzer
+	) {
 		// falls gesuchsteller, und darf einladen
-		if (!benutzer.isNew() && benutzer.getCurrentBerechtigung().getRole() == GESUCHSTELLER) {
+		if (!benutzer.isNew()
+			&& benutzer.getCurrentBerechtigung().getRole()
+				== GESUCHSTELLER) {
 			//check if Gesuch exist
 			Optional<Fall> fallOpt = fallService.findFallByBesitzer(benutzer);
 			if (!fallOpt.isPresent()) {
@@ -368,11 +296,13 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 					benutzer.getUsername(),
 					benutzer.getFullName(),
 					ErrorCodeEnum.ERROR_GESUCHSTELLER_EXIST_NO_GESUCH,
-					null);
+					null
+				);
 
 			} else {
 				Fall existingFall = fallOpt.get();
-				List<String> gesuchIdList = gesuchService.getAllGesuchIDsForFall(existingFall.getId());
+				List<String> gesuchIdList = gesuchService
+					.getAllGesuchIDsForFall(existingFall.getId());
 				if (gesuchIdList.isEmpty()) {
 					//return error code keinen Gesusch, user can be deleted without warning
 					throw new BenutzerExistException(
@@ -380,7 +310,8 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 						benutzer.getUsername(),
 						benutzer.getFullName(),
 						ErrorCodeEnum.ERROR_GESUCHSTELLER_EXIST_NO_GESUCH,
-						existingFall.getId());
+						existingFall.getId()
+					);
 				}
 				if (checkIfGesuchFreigegeben(gesuchIdList)) {
 					throw new BenutzerExistException(
@@ -388,14 +319,16 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 						benutzer.getUsername(),
 						benutzer.getFullName(),
 						ErrorCodeEnum.ERROR_GESUCHSTELLER_EXIST_WITH_FREGEGEBENE_GESUCH,
-						existingFall.getId());
+						existingFall.getId()
+					);
 				} else {
 					throw new BenutzerExistException(
 						KibonLogLevel.NONE,
 						benutzer.getUsername(),
 						benutzer.getFullName(),
 						ErrorCodeEnum.ERROR_GESUCHSTELLER_EXIST_WITH_GESUCH,
-						existingFall.getId());
+						existingFall.getId()
+					);
 				}
 			}
 		}
@@ -403,23 +336,30 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 
 	@Override
 	@SuppressWarnings("NonBooleanMethodNameMayNotStartWithQuestion")
-	public String findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(@Nonnull Benutzer benutzer) {
+	public String findFallIdIfBenutzerIsGesuchstellerWithoutFreigegebenemGesuch(
+		@Nonnull Benutzer benutzer
+	) {
 		// falls gesuchsteller, und darf einladen
-		if (!benutzer.isNew() && benutzer.getCurrentBerechtigung().getRole() == GESUCHSTELLER) {
+		if (!benutzer.isNew()
+			&& benutzer.getCurrentBerechtigung().getRole()
+				== GESUCHSTELLER) {
 			//check if Gesuch exist
 			Optional<Fall> fallOpt = fallService.findFallByBesitzer(benutzer);
 			if (!fallOpt.isPresent()) {
 				return null;
 			} else {
 				Fall existingFall = fallOpt.get();
-				List<String> gesuchIdList = gesuchService.getAllGesuchIDsForFall(existingFall.getId());
-				if (!gesuchIdList.isEmpty() && checkIfGesuchFreigegeben(gesuchIdList)) {
+				List<String> gesuchIdList = gesuchService
+					.getAllGesuchIDsForFall(existingFall.getId());
+				if (!gesuchIdList.isEmpty()
+					&& checkIfGesuchFreigegeben(gesuchIdList)) {
 					throw new BenutzerExistException(
 						KibonLogLevel.NONE,
 						benutzer.getUsername(),
 						benutzer.getFullName(),
 						ErrorCodeEnum.ERROR_GESUCHSTELLER_EXIST_WITH_FREGEGEBENE_GESUCH,
-						existingFall.getId());
+						existingFall.getId()
+					);
 				}
 				return existingFall.getId();
 			}
@@ -430,8 +370,12 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 	private boolean checkIfGesuchFreigegeben(List<String> gesuchIdList) {
 		for (String id : gesuchIdList) {
 			Gesuch gs = gesuchService.findGesuch(id, false)
-				.orElseThrow(() -> new EbeguRuntimeException(
-					"checkIfGesuchFreigegeben", "Gesuch nicht gefunden"));
+				.orElseThrow(
+					() -> new EbeguRuntimeException(
+						"checkIfGesuchFreigegeben",
+						"Gesuch nicht gefunden"
+					)
+				);
 			if (gs.getStatus() != AntragStatus.IN_BEARBEITUNG_GS) {
 				return true;
 			}
@@ -442,29 +386,42 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 	@SuppressWarnings("NonBooleanMethodNameMayNotStartWithQuestion")
 	private void checkSuperuserRoleZuteilung(@Nonnull Benutzer benutzer) {
 		// Nur ein Superadmin kann Superadmin-Rechte vergeben!
-		if (benutzer.getRole() == UserRole.SUPER_ADMIN && !principalBean.isCallerInRole(UserRoleName.SUPER_ADMIN)) {
+		if (benutzer.getRole() == UserRole.SUPER_ADMIN
+			&& !principalBean.isCallerInRole(UserRoleName.SUPER_ADMIN)) {
 			throw new IllegalStateException(
 				"Nur ein Superadmin kann Superadmin-Rechte vergeben. Dies wurde aber versucht durch: "
-					+ principalBean.getBenutzer().getUsername());
+					+ principalBean.getBenutzer().getUsername()
+			);
 		}
 	}
 
 	@Nonnull
 	@Override
-	public Optional<Benutzer> findBenutzer(@Nonnull String username, @Nonnull Mandant mandant) {
+	public Optional<Benutzer> findBenutzer(
+		@Nonnull String username,
+		@Nonnull Mandant mandant
+	) {
 		requireNonNull(username, "username muss gesetzt sein");
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
 		Root<Benutzer> root = query.from(Benutzer.class);
-		Predicate usernamePredicate = cb.equal(root.get(Benutzer_.username), username);
-		Predicate mandantPredicate = cb.equal(root.get(Benutzer_.mandant), mandant);
+		Predicate usernamePredicate = cb.equal(
+			root.get(Benutzer_.username),
+			username
+		);
+		Predicate mandantPredicate = cb.equal(
+			root.get(Benutzer_.mandant),
+			mandant
+		);
 
 		query.where(usernamePredicate, mandantPredicate);
 
 		try {
-			return Optional.of(persistence.getEntityManager()
-				.createQuery(query)
-				.getSingleResult());
+			return Optional.of(
+				persistence.getEntityManager()
+					.createQuery(query)
+					.getSingleResult()
+			);
 		} catch (NoResultException nre) {
 			return Optional.empty();
 		}
@@ -472,24 +429,35 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 
 	@Nonnull
 	@Override
-	public Optional<Benutzer> findAndLockBenutzer(@Nonnull String username, @Nonnull Mandant mandant) {
+	public Optional<Benutzer> findAndLockBenutzer(
+		@Nonnull String username,
+		@Nonnull Mandant mandant
+	) {
 		requireNonNull(username, "username muss gesetzt sein");
 		requireNonNull(mandant, "mandant muss gesetzt sein");
 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
 		Root<Benutzer> root = query.from(Benutzer.class);
-		Predicate predicateUsername = cb.equal(root.get(Benutzer_.username), username);
-		Predicate mandantPredicate = cb.equal(root.get(Benutzer_.mandant), mandant);
+		Predicate predicateUsername = cb.equal(
+			root.get(Benutzer_.username),
+			username
+		);
+		Predicate mandantPredicate = cb.equal(
+			root.get(Benutzer_.mandant),
+			mandant
+		);
 
 		query.where(predicateUsername, mandantPredicate);
 		query.distinct(true);
 
 		try {
-			Optional<Benutzer> benutzer = Optional.of(persistence.getEntityManager()
-				.createQuery(query)
-				.setLockMode(PESSIMISTIC_WRITE)
-				.getSingleResult());
+			Optional<Benutzer> benutzer = Optional.of(
+				persistence.getEntityManager()
+					.createQuery(query)
+					.setLockMode(PESSIMISTIC_WRITE)
+					.getSingleResult()
+			);
 			return benutzer;
 		} catch (NoResultException nre) {
 			return Optional.empty();
@@ -504,40 +472,130 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		return Optional.ofNullable(persistence.find(Benutzer.class, id));
 	}
 
-	@Nonnull
 	@Override
-	public Optional<Benutzer> findBenutzerByExternalUUID(@Nonnull String externalUUID) {
-		requireNonNull(externalUUID, "externalUUID muss gesetzt sein");
-		return criteriaQueryHelper.getEntityByUniqueAttribute(Benutzer.class, externalUUID, Benutzer_.externalUUID);
+	public Optional<Benutzer> findBenutzer(KibonJwt kibonJwt) {
+		return findBenutzerByExternalUUID(kibonJwt.getExternalUUID())
+			.or(
+				() -> kibonJwt.getBeLoginPrimaryId()
+					.flatMap(this::findBenutzerByExternalUUID)
+			)
+			.or(
+				() -> findBenutzer(
+					kibonJwt.getEmail(),
+					kibonJwt.getMandantIdentifier()
+				)
+			);
+	}
+
+	private Optional<? extends Benutzer> findBenutzer(
+		String username,
+		MandantIdentifier mandantIdentifier
+	) {
+		Mandant mandant = mandantService.findMandantByIdentifier(
+			mandantIdentifier
+		)
+			.orElseThrow();
+		return findBenutzer(username, mandant);
 	}
 
 	@Nonnull
 	@Override
-	public Collection<Benutzer> getGemeindeAdministratoren(Gemeinde gemeinde) {
-		return getBenutzersOfRoles(UserRole.getAllGemeindeAdminRoles(), gemeinde);
+	@Transactional(TxType.SUPPORTS)
+	public Optional<Benutzer> findBenutzerByExternalUUID(
+		@Nonnull String externalUUID
+	) {
+		Optional<Benutzer> benutzer = criteriaQueryHelper
+			.getEntityByUniqueAttribute(
+				Benutzer.class,
+				requireNonNull(
+					ExternalUUIDUtil.addPrefixIfNecessary(
+						externalUUID,
+						principalBean.getMandant().getMandantIdentifier()
+					)
+				),
+				Benutzer_.externalUUID
+			);
+		if (benutzer.isPresent()) {
+			Hibernate.initialize(
+				benutzer.get().getCurrentBerechtigung().getGemeindeList()
+			);
+			Hibernate.initialize(
+				benutzer.get().getCurrentBerechtigung().getTraegerschaft()
+			);
+			Hibernate.initialize(
+				benutzer.get().getCurrentBerechtigung().getInstitution()
+			);
+			Hibernate.initialize(
+				benutzer.get().getCurrentBerechtigung().getSozialdienst()
+			);
+		}
+		return benutzer;
+	}
+
+	@Override
+	public Optional<Benutzer> findByEmail(String email, Mandant mandant) {
+		try {
+			return Optional.ofNullable(
+				BenutzerQueries_.findByEmail(
+					persistence.getEntityManager(),
+					email,
+					mandant
+				)
+			);
+		} catch (NoResultException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Nonnull
 	@Override
-	public Collection<Benutzer> getGemeindeSachbearbeiter(Gemeinde gemeinde) {
-		return getBenutzersOfRoles(UserRole.getAllGemeindeSachbearbeiterRoles(), gemeinde);
+	public Collection<Benutzer> getAktivGemeindeAdministratoren(
+		Gemeinde gemeinde
+	) {
+		return getActiveBenutzersOfRoles(
+			UserRole.getAllGemeindeAdminRoles(),
+			gemeinde
+		);
 	}
 
 	@Nonnull
 	@Override
-	public Collection<Benutzer> getInstitutionAdministratoren(Institution institution) {
-		return getBenutzersOfRoles(UserRole.getAllInstitutionAdminRoles(), institution);
+	public Collection<Benutzer> getAktiveGemeindeSachbearbeiter(
+		Gemeinde gemeinde
+	) {
+		return getActiveBenutzersOfRoles(
+			UserRole.getAllGemeindeSachbearbeiterRoles(),
+			gemeinde
+		);
 	}
 
 	@Nonnull
 	@Override
-	public Collection<Benutzer> getInstitutionSachbearbeiter(Institution institution) {
-		return getBenutzersOfRoles(UserRole.getAllInstitutionSachbearbeiterRoles(), institution);
+	public Collection<Benutzer> getInstitutionAdministratoren(
+		Institution institution
+	) {
+		return getBenutzersOfRoles(
+			UserRole.getAllInstitutionAdminRoles(),
+			institution
+		);
 	}
 
 	@Nonnull
 	@Override
-	public Collection<Benutzer> getTraegerschaftAdministratoren(final Traegerschaft traegerschaft) {
+	public Collection<Benutzer> getInstitutionSachbearbeiter(
+		Institution institution
+	) {
+		return getBenutzersOfRoles(
+			UserRole.getAllInstitutionSachbearbeiterRoles(),
+			institution
+		);
+	}
+
+	@Nonnull
+	@Override
+	public Collection<Benutzer> getTraegerschaftAdministratoren(
+		final Traegerschaft traegerschaft
+	) {
 		checkIfUserIsLoggedIn("getTraegerschaftAdministratoren");
 		authorizer.checkReadAuthorization(traegerschaft);
 
@@ -547,16 +605,27 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
 		Root<Benutzer> root = query.from(Benutzer.class);
 
-		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(Benutzer_.berechtigungen);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
 
 		query.select(root);
 
-		predicates.add(cb.between(
-			cb.literal(LocalDate.now()),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis)));
-		predicates.add(cb.equal(joinBerechtigungen.get(Berechtigung_.role), UserRole.ADMIN_TRAEGERSCHAFT));
-		predicates.add(cb.equal(joinBerechtigungen.get(Berechtigung_.traegerschaft), traegerschaft));
+		predicates.add(
+			getBerechtigungGueltigPredicate(cb, joinBerechtigungen)
+		);
+		predicates.add(
+			cb.equal(
+				joinBerechtigungen.get(Berechtigung_.role),
+				UserRole.ADMIN_TRAEGERSCHAFT
+			)
+		);
+		predicates.add(
+			cb.equal(
+				joinBerechtigungen.get(Berechtigung_.traegerschaft),
+				traegerschaft
+			)
+		);
 
 		query.where(predicates.toArray(NEW));
 		query.distinct(true);
@@ -566,20 +635,27 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 
 	@Nonnull
 	@Override
-	public Collection<Benutzer> getBenutzerBgOrGemeinde(Gemeinde gemeinde) {
-		return getBenutzersOfRoles(getBgAndGemeindeRoles(), gemeinde);
+	public Collection<Benutzer> getActiveBenutzerBgOrGemeinde(
+		Gemeinde gemeinde
+	) {
+		return getActiveBenutzersOfRoles(getBgAndGemeindeRoles(), gemeinde);
 	}
 
 	@Nonnull
 	@Override
 	public Collection<Benutzer> getBenutzerTsBgOrGemeinde(Gemeinde gemeinde) {
-		return getBenutzersOfRoles(UserRole.getTsBgAndGemeindeRoles(), gemeinde);
+		return getBenutzersOfRoles(
+			UserRole.getTsBgAndGemeindeRoles(),
+			gemeinde
+		);
 	}
 
 	@Nonnull
 	@Override
-	public Collection<Benutzer> getBenutzerTsOrGemeinde(Gemeinde gemeinde) {
-		return getBenutzersOfRoles(getTsAndGemeindeRoles(), gemeinde);
+	public Collection<Benutzer> getActiveBenutzerTsOrGemeinde(
+		Gemeinde gemeinde
+	) {
+		return getActiveBenutzersOfRoles(getTsAndGemeindeRoles(), gemeinde);
 	}
 
 	@Nonnull
@@ -595,10 +671,15 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 	}
 
 	@Override
-	public Collection<Benutzer> getAllActiveBenutzerMandant(@Nonnull Mandant mandant) {
+	public Collection<Benutzer> getAllActiveBenutzerMandant(
+		@Nonnull Mandant mandant
+	) {
 		return getBenutzersOfRoles(getMandantRoles())
 			.stream()
-			.filter(benutzer -> benutzer.getMandant().getMandantIdentifier() == mandant.getMandantIdentifier())
+			.filter(
+				benutzer -> benutzer.getMandant().getMandantIdentifier()
+					== mandant.getMandantIdentifier()
+			)
 			.filter(benutzer -> !benutzer.isGesperrt())
 			.collect(Collectors.toList());
 	}
@@ -610,8 +691,8 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 	}
 
 	/**
-	 * Gibt alle existierenden Benutzer mit den gewünschten Rollen zurueck.
-	 * ¡Diese Methode filtert die Gemeinde über den angemeldeten Benutzer!
+	 * Gibt alle existierenden Benutzer mit den gewünschten Rollen zurueck. ¡Diese Methode filtert die Gemeinde über den
+	 * angemeldeten Benutzer!
 	 *
 	 * @param roles Die besagten Rollen
 	 * @return Liste aller Benutzern mit entsprechender Rolle aus der DB
@@ -624,37 +705,113 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
 		Root<Benutzer> root = query.from(Benutzer.class);
-		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(Benutzer_.berechtigungen);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
 		SetJoin<Berechtigung, Gemeinde> joinGemeinde =
-			joinBerechtigungen.join(Berechtigung_.gemeindeList, JoinType.LEFT);
+			joinBerechtigungen.join(
+				Berechtigung_.gemeindeList,
+				JoinType.LEFT
+			);
 		query.select(root);
 
-		predicates.add(cb.between(
-			cb.literal(LocalDate.now()),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis)));
+		predicates.add(
+			getBerechtigungGueltigPredicate(cb, joinBerechtigungen)
+		);
 		predicates.add(joinBerechtigungen.get(Berechtigung_.role).in(roles));
 
-		setGemeindeFilterForCurrentUser(currentBenutzer, joinGemeinde, predicates);
-		Predicate predicateMandant = cb.equal(root.get(Benutzer_.mandant), currentBenutzer.getMandant());
+		setGemeindeFilterForCurrentUser(
+			currentBenutzer,
+			joinGemeinde,
+			predicates
+		);
+		Predicate predicateMandant = cb.equal(
+			root.get(Benutzer_.mandant),
+			currentBenutzer.getMandant()
+		);
 		predicates.add(predicateMandant);
 
 		query.where(predicates.toArray(NEW));
 		query.distinct(true);
 
-		final List<Benutzer> benutzerList = persistence.getCriteriaResults(query);
+		final List<Benutzer> benutzerList = persistence.getCriteriaResults(
+			query
+		);
 		return benutzerList;
 	}
 
 	/**
-	 * Gibt alle existierenden Benutzer mit den gewünschten Rollen zurueck.
-	 * ¡Diese Methode filtert die Gemeinde über den Gemeinde-Parameter!
+	 * Gibt alle existierenden Benutzer mit den gewünschten Rollen zurueck. ¡Diese Methode filtert die Gemeinde über den
+	 * Gemeinde-Parameter!
 	 *
-	 * @param roles Das Rollen Filter
-	 * @param gemeinde Das Gemeinde Filter
+	 * @param roles Der Rollen Filter
+	 * @param gemeinde Der Gemeinde Filter
 	 * @return Liste aller Benutzern mit entsprechender Rolle aus der DB
 	 */
-	private Collection<Benutzer> getBenutzersOfRoles(@Nonnull List<UserRole> roles, @Nonnull Gemeinde gemeinde) {
+	private Collection<Benutzer> getActiveBenutzersOfRoles(
+		@Nonnull List<UserRole> roles,
+		@Nonnull Gemeinde gemeinde
+	) {
+		checkIfUserIsLoggedIn("getActiveBenutzersOfRoles");
+		authorizer.checkReadAuthorization(gemeinde);
+
+		List<Predicate> predicates = new ArrayList<>();
+
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
+		Root<Benutzer> root = query.from(Benutzer.class);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
+		Join<Berechtigung, Gemeinde> joinBerechtigungenGemeinde =
+			joinBerechtigungen.join(Berechtigung_.gemeindeList);
+
+		query.select(root);
+		predicates.add(cb.equal(root.get(Benutzer_.status), AKTIV));
+		predicates.add(
+			getBerechtigungGueltigPredicate(cb, joinBerechtigungen)
+		);
+		predicates.add(joinBerechtigungen.get(Berechtigung_.role).in(roles));
+		predicates.add(
+			cb.equal(
+				joinBerechtigungenGemeinde.get(AbstractEntity_.id),
+				gemeinde.getId()
+			)
+		);
+
+		query.where(predicates.toArray(NEW));
+		query.distinct(true);
+
+		return persistence.getCriteriaResults(query);
+	}
+
+	private static Predicate getBerechtigungGueltigPredicate(
+		CriteriaBuilder cb,
+		Join<Benutzer, Berechtigung> joinBerechtigungen
+	) {
+		return cb.between(
+			cb.literal(LocalDate.now()),
+			joinBerechtigungen.get(
+				AbstractDateRangedEntity_.gueltigkeit
+			).get(DateRange_.gueltigAb),
+			joinBerechtigungen.get(
+				AbstractDateRangedEntity_.gueltigkeit
+			).get(DateRange_.gueltigBis)
+		);
+	}
+
+	/**
+	 * Gibt alle existierenden Benutzer mit den gewünschten Rollen zurueck. ¡Diese Methode filtert die Gemeinde über den
+	 * Gemeinde-Parameter!
+	 *
+	 * @param roles Der Rollen Filter
+	 * @param gemeinde Der Gemeinde Filter
+	 * @return Liste aller Benutzern mit entsprechender Rolle aus der DB
+	 */
+	private Collection<Benutzer> getBenutzersOfRoles(
+		@Nonnull List<UserRole> roles,
+		@Nonnull Gemeinde gemeinde
+	) {
 		checkIfUserIsLoggedIn("getBenutzersOfRoles");
 		authorizer.checkReadAuthorization(gemeinde);
 
@@ -664,17 +821,24 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
 		Root<Benutzer> root = query.from(Benutzer.class);
 
-		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(Benutzer_.berechtigungen);
-		Join<Berechtigung, Gemeinde> joinBerechtigungenGemeinde = joinBerechtigungen.join(Berechtigung_.gemeindeList);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
+		Join<Berechtigung, Gemeinde> joinBerechtigungenGemeinde =
+			joinBerechtigungen.join(Berechtigung_.gemeindeList);
 
 		query.select(root);
 
-		predicates.add(cb.between(
-			cb.literal(LocalDate.now()),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis)));
+		predicates.add(
+			getBerechtigungGueltigPredicate(cb, joinBerechtigungen)
+		);
 		predicates.add(joinBerechtigungen.get(Berechtigung_.role).in(roles));
-		predicates.add(cb.equal(joinBerechtigungenGemeinde.get(AbstractEntity_.id), gemeinde.getId()));
+		predicates.add(
+			cb.equal(
+				joinBerechtigungenGemeinde.get(AbstractEntity_.id),
+				gemeinde.getId()
+			)
+		);
 
 		query.where(predicates.toArray(NEW));
 		query.distinct(true);
@@ -689,7 +853,10 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 	 * @param institution zum Filtern nach der Institution
 	 * @return Liste aller Benutzern mit entsprechender Rolle aus der DB
 	 */
-	private Collection<Benutzer> getBenutzersOfRoles(@Nonnull List<UserRole> roles, @Nonnull Institution institution) {
+	private Collection<Benutzer> getBenutzersOfRoles(
+		@Nonnull List<UserRole> roles,
+		@Nonnull Institution institution
+	) {
 		checkIfUserIsLoggedIn("getBenutzersOfRoles");
 		authorizer.checkReadAuthorizationInstitution(institution);
 
@@ -699,16 +866,22 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
 		Root<Benutzer> root = query.from(Benutzer.class);
 
-		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(Benutzer_.berechtigungen);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
 
 		query.select(root);
 
-		predicates.add(cb.between(
-			cb.literal(LocalDate.now()),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis)));
+		predicates.add(
+			getBerechtigungGueltigPredicate(cb, joinBerechtigungen)
+		);
 		predicates.add(joinBerechtigungen.get(Berechtigung_.role).in(roles));
-		predicates.add(cb.equal(joinBerechtigungen.get(Berechtigung_.institution), institution));
+		predicates.add(
+			cb.equal(
+				joinBerechtigungen.get(Berechtigung_.institution),
+				institution
+			)
+		);
 
 		query.where(predicates.toArray(NEW));
 		query.distinct(true);
@@ -722,28 +895,43 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
 		Root<Benutzer> root = query.from(Benutzer.class);
-		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(Benutzer_.berechtigungen);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
 		query.select(root);
 
-		Predicate predicateMandant = cb.equal(root.get(Benutzer_.mandant), mandant);
+		Predicate predicateMandant = cb.equal(
+			root.get(Benutzer_.mandant),
+			mandant
+		);
 
-		Predicate predicateActive = cb.between(
-			cb.literal(LocalDate.now()),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb),
-			joinBerechtigungen.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis));
-		Predicate predicateRole = joinBerechtigungen.get(Berechtigung_.role).in(GESUCHSTELLER);
+		Predicate predicateActive = getBerechtigungGueltigPredicate(
+			cb,
+			joinBerechtigungen
+		);
+		Predicate predicateRole = joinBerechtigungen.get(Berechtigung_.role)
+			.in(GESUCHSTELLER);
 		query.where(predicateActive, predicateRole, predicateMandant);
-		query.orderBy(cb.asc(root.get(Benutzer_.vorname)), cb.asc(root.get(Benutzer_.nachname)));
+		query.orderBy(
+			cb.asc(root.get(Benutzer_.vorname)),
+			cb.asc(root.get(Benutzer_.nachname))
+		);
 		return persistence.getCriteriaResults(query);
 	}
 
 	@Override
-	public void removeBenutzer(@Nonnull String username, @Nonnull Mandant mandant) {
+	public void removeBenutzer(
+		@Nonnull String username,
+		@Nonnull Mandant mandant
+	) {
 		requireNonNull(username);
-		Benutzer benutzer = findBenutzer(username, mandant).orElseThrow(() -> new EbeguEntityNotFoundException(
-			"removeBenutzer",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			username));
+		Benutzer benutzer = findBenutzer(username, mandant).orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"removeBenutzer",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				username
+			)
+		);
 
 		try {
 			checkBenutzerIsNotGesuchstellerWithFreigegebenemGesuch(benutzer);
@@ -751,7 +939,8 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 			removeBenutzerForced(benutzer.getUsername(), mandant);
 		} catch (BenutzerExistException b) {
 			// Es ist ein Gesuchsteller: Wir löschen, solange er keine freigegebenen/verfuegten Gesuche hat
-			if (b.getErrorCodeEnum() != ErrorCodeEnum.ERROR_GESUCHSTELLER_EXIST_WITH_FREGEGEBENE_GESUCH) {
+			if (b.getErrorCodeEnum()
+				!= ErrorCodeEnum.ERROR_GESUCHSTELLER_EXIST_WITH_FREGEGEBENE_GESUCH) {
 				removeBenutzerForced(benutzer.getUsername(), mandant);
 			} else {
 				throw b;
@@ -759,23 +948,63 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		}
 	}
 
-	private void removeBenutzerForced(@Nonnull String username, @Nonnull Mandant mandant) {
+	@Nonnull
+	@Override
+	public Collection<Benutzer> getAllUserButGesuchsteller(
+		@Nonnull Mandant mandant
+	) {
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
+		Root<Benutzer> root = query.from(Benutzer.class);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
+		query.select(root);
+
+		Predicate predicateMandant = cb.equal(
+			root.get(Benutzer_.mandant),
+			mandant
+		);
+
+		Predicate predicateActive = getBerechtigungGueltigPredicate(
+			cb,
+			joinBerechtigungen
+		);
+		Predicate predicateRole = cb.notEqual(
+			joinBerechtigungen.get(Berechtigung_.role),
+			GESUCHSTELLER
+		);
+		query.where(predicateActive, predicateRole, predicateMandant);
+		return persistence.getCriteriaResults(query);
+	}
+
+	private void removeBenutzerForced(
+		@Nonnull String username,
+		@Nonnull Mandant mandant
+	) {
 		requireNonNull(username);
-		Benutzer benutzer = findBenutzer(username, mandant).orElseThrow(() -> new EbeguEntityNotFoundException(
-			"removeBenutzer",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			username));
+		Benutzer benutzer = findBenutzer(username, mandant).orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"removeBenutzer",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				username
+			)
+		);
 
 		authorizer.checkWriteAuthorization(benutzer);
 
 		// Den Benutzer ausloggen und seine AuthBenutzer loeschen
-		authService.logoutAndDeleteAuthorisierteBenutzerForUser(username);
+		keycloakApi.delete(benutzer);
+		benutzer.setMarkedForDeletion(true);
 		removeBerechtigungHistoryForBenutzer(benutzer);
 		persistence.remove(benutzer);
 	}
 
-	private void removeBerechtigungHistoryForBenutzer(@Nonnull Benutzer benutzer) {
-		Collection<BerechtigungHistory> histories = getBerechtigungHistoriesForBenutzer(benutzer);
+	private void removeBerechtigungHistoryForBenutzer(
+		@Nonnull Benutzer benutzer
+	) {
+		Collection<BerechtigungHistory> histories =
+			getBerechtigungHistoriesForBenutzer(benutzer);
 		for (BerechtigungHistory history : histories) {
 			persistence.remove(history);
 		}
@@ -784,185 +1013,188 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 	@Nonnull
 	@Override
 	public Optional<Benutzer> getCurrentBenutzer() {
-		String benutzerId = null;
-		if (principalBean != null) {
-			if (principalBean.isAnonymousSuperadmin()) {
-				return Optional.empty();
-			}
-			final Principal principal = principalBean.getPrincipal();
-			benutzerId = principal.getName();
+		if (principalBean.isKibonServiceAccount()) {
+			return Optional.empty();
 		}
-		if (StringUtils.isNotEmpty(benutzerId)) {
-			return findBenutzerById(benutzerId);
-		}
-		return Optional.empty();
-	}
-
-	@Override
-	public Benutzer updateOrStoreUserFromIAM(@Nonnull Benutzer benutzer) {
-		requireNonNull(benutzer.getExternalUUID());
-
-		Optional<Benutzer> foundUserOptional = this.findBenutzerByExternalUUID(benutzer.getExternalUUID());
-
-		if (foundUserOptional.isPresent()) {
-			// Wir kennen den Benutzer schon: Es werden nur die readonly-Attribute neu von IAM uebernommen
-			Benutzer foundUser = foundUserOptional.get();
-			// Wir ueberpruefen, ob der Username sich geaendert hat
-			if (!foundUser.getUsername().equals(benutzer.getUsername())) {
-				LOG.info("External User has new Username: ExternalUUID {}, old username {}, new username {}. "
-						+ "Updating and setting Bemerkung!",
-					benutzer.getExternalUUID(), foundUser.getUsername(), benutzer.getUsername());
-				foundUser.addBemerkung("External User has new Username: ExternalUUID: "
-					+ benutzer.getExternalUUID()
-					+ ", old username: "
-					+ foundUser.getUsername()
-					+ ", new username "
-					+ benutzer.getUsername());
-				foundUser.setUsername(benutzer.getUsername());
-			}
-			// den username ueberschreiben wir nicht!
-			foundUser.setNachname(benutzer.getNachname());
-			foundUser.setVorname(benutzer.getVorname());
-			foundUser.setEmail(benutzer.getEmail());
-			foundUser.setZpvNummer(benutzer.getZpvNummer());
-
-			// Wir setzen den konfigurierten User als SUPER_ADMIN
-			setSuperAdminRole(foundUser);
-
-			return saveBenutzer(foundUser);
-		}
-
-		// Benutzer nicht ueber ExternalUUID gefunden. Es koennte aber sein, dass wir den Benutzer resettet wurde
-		final Optional<Benutzer> benutzerByUsernameOptional = findBenutzer(
-			benutzer.getUsername(),
-			requireNonNull(benutzer.getMandant()));
-		if (benutzerByUsernameOptional.isPresent()) {
-			// Wir kennen den Benutzer schon: Es werden nur die readonly-Attribute neu von IAM uebernommen
-			Benutzer foundUser = benutzerByUsernameOptional.get();
-			// Wir ueberpruefen, ob sich die Daten aus IAM geaendert haben (ausser der ExternalUUID,
-			// die wir uebernehmen wollen)
-			if (!foundUser.getNachname().equalsIgnoreCase(benutzer.getNachname())
-				|| !foundUser.getVorname().equalsIgnoreCase(benutzer.getVorname())
-				|| !foundUser.getEmail().equalsIgnoreCase(benutzer.getEmail())) {
-				String message = String.format("External User has new User-Data: Username %s, "
-						+ "Nachname bisher %s, neu %s; "
-						+ "Vorname bisher %s, neu %s}; "
-						+ "E-Mail bisher %s, neu %s. Updating and setting Bemerkung!",
-					benutzer.getUsername(),
-					foundUser.getNachname(), benutzer.getNachname(),
-					foundUser.getVorname(), benutzer.getVorname(),
-					foundUser.getEmail(), benutzer.getEmail());
-				LOG.warn(message);
-				foundUser.addBemerkung(message);
-				foundUser.setNachname(benutzer.getNachname());
-				foundUser.setVorname(benutzer.getVorname());
-				foundUser.setEmail(benutzer.getEmail());
-			}
-			// Wir uebernehmen nur die externalUUID
-			foundUser.setExternalUUID(benutzer.getExternalUUID());
-			return saveBenutzer(foundUser);
-		}
-
-		// Wir kennen den Benutzer noch nicht: Wir uebernehmen alles, setzen aber grundsätzlich die Rolle auf
-		// GESUCHSTELLER
-		Berechtigung berechtigung = new Berechtigung();
-		berechtigung.setRole(GESUCHSTELLER);
-		berechtigung.setInstitution(null);
-		berechtigung.setTraegerschaft(null);
-		berechtigung.setBenutzer(benutzer);
-		benutzer.getBerechtigungen().clear();
-		benutzer.getBerechtigungen().add(berechtigung);
-
-		// Wir setzen den konfigurierten User als SUPER_ADMIN
-		setSuperAdminRole(benutzer);
-
-		return saveBenutzer(benutzer);
-	}
-
-	private void setSuperAdminRole(@Nonnull Benutzer benutzer) {
-		// Wir setzen den konfigurierten User als SUPER_ADMIN
-		String superuserMail = ebeguConfiguration.getSuperuserMail();
-		if (superuserMail != null
-			&& superuserMail.equalsIgnoreCase(benutzer.getEmail()) && benutzer.getRole() != UserRole.SUPER_ADMIN
-		) {
-			benutzer.setRole(UserRole.SUPER_ADMIN);
-			benutzer.setInstitution(null);
-			benutzer.setTraegerschaft(null);
-			benutzer.setSozialdienst(null);
-			LOG.warn("Benutzer eingeloggt mit E-Mail {}: {}", benutzer.getEmail(), benutzer);
-		}
+		return Optional.of(principalBean.getBenutzer());
 	}
 
 	@Override
 	public Optional<Benutzer> findUserWithInvitation(
-		@Nonnull Benutzer benutzer,
-		Mandant mandant) {
-		return findBenutzer(benutzer.getEmail(), mandant)
-			.filter(benutzerByEmail ->
-				benutzerByEmail.getStatus() == BenutzerStatus.EINGELADEN
-					&& benutzerByEmail.getExternalUUID() == null
+		@Nonnull String externalUuid
+	) {
+		return findBenutzerByExternalUUID(externalUuid)
+			.filter(
+				benutzerByEmail -> benutzerByEmail.getStatus()
+					== BenutzerStatus.EINGELADEN
 			);
 	}
 
+	@Override
+	public boolean hasMoreThanOneMandantUser() {
+		return getAllActiveBenutzerMandant(this.principalBean.getMandant())
+			.size()
+			> 1;
+	}
+
+	@Override
+	public Collection<Benutzer> getActiveBenutzerInRolesOfActiveGemeinden(
+		Mandant mandant,
+		UserRole... roles
+	) {
+		List<Predicate> predicates = new ArrayList<>();
+
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
+		Root<Benutzer> root = query.from(Benutzer.class);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
+		Join<Berechtigung, Gemeinde> joinBerechtigungenGemeinde =
+			joinBerechtigungen.join(Berechtigung_.gemeindeList);
+
+		query.select(root);
+		predicates.add(cb.equal(root.get(Benutzer_.status), AKTIV));
+		predicates.add(cb.equal(root.get(Benutzer_.mandant), mandant));
+		predicates.add(
+			getBerechtigungGueltigPredicate(cb, joinBerechtigungen)
+		);
+		predicates.add(
+			cb.equal(joinBerechtigungenGemeinde.get(Gemeinde_.status), AKTIV)
+		);
+		predicates.add(
+			joinBerechtigungen.get(Berechtigung_.role).in(List.of(roles))
+		);
+
+		query.where(predicates.toArray(NEW));
+		query.distinct(true);
+
+		return persistence.getCriteriaResults(query);
+	}
+
+	@Override
+	public Collection<Benutzer> getActiveBenutzerInRolesOfGemeinden(
+		Mandant mandant,
+		List<Gemeinde> gemeinden,
+		UserRole... roles
+	) {
+		List<Predicate> predicates = new ArrayList<>();
+
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
+		Root<Benutzer> root = query.from(Benutzer.class);
+		Join<Benutzer, Berechtigung> joinBerechtigungen = root.join(
+			Benutzer_.berechtigungen
+		);
+		Join<Berechtigung, Gemeinde> joinBerechtigungenGemeinde =
+			joinBerechtigungen.join(Berechtigung_.gemeindeList);
+
+		query.select(root);
+		predicates.add(cb.equal(root.get(Benutzer_.status), AKTIV));
+		predicates.add(cb.equal(root.get(Benutzer_.mandant), mandant));
+		predicates.add(
+			getBerechtigungGueltigPredicate(cb, joinBerechtigungen)
+		);
+		predicates.add(
+			(joinBerechtigungenGemeinde.get(Gemeinde_.id)
+				.in(
+					gemeinden.stream()
+						.map(Gemeinde::getId)
+						.collect(Collectors.toList())
+				))
+		);
+		predicates.add(
+			joinBerechtigungen.get(Berechtigung_.role).in(List.of(roles))
+		);
+
+		query.where(predicates.toArray(NEW));
+		query.distinct(true);
+
+		return persistence.getCriteriaResults(query);
+	}
+
 	@Nonnull
 	@Override
-	public Benutzer sperren(@Nonnull String username, @Nonnull Mandant mandant) {
+	public Benutzer sperren(
+		@Nonnull String username,
+		@Nonnull Mandant mandant
+	) {
 		Benutzer benutzerFromDB = findBenutzer(username, mandant)
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"sperren",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				"GesuchId invalid: " + username));
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"sperren",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"GesuchId invalid: " + username
+				)
+			);
 
 		authorizer.checkWriteAuthorization(benutzerFromDB);
 
-		benutzerFromDB.setStatus(BenutzerStatus.GESPERRT);
-		int deletedAuthBenutzer = authService.logoutAndDeleteAuthorisierteBenutzerForUser(username);
-		logSperreBenutzer(benutzerFromDB, deletedAuthBenutzer);
-
-		return persistence.merge(benutzerFromDB);
-	}
-
-	private void logSperreBenutzer(@Nonnull Benutzer benutzer, int deletedAuthBenutzer) {
+		benutzerFromDB.setStatus(GESPERRT);
+		keycloakApi.deleteMitarbeiterAccessBenutzerRole(benutzerFromDB);
+		keycloakApi.lock(benutzerFromDB);
 		LOG.info(
-			"Setze Benutzer auf GESPERRT: {} / Eingeloggt: {} / Lösche {} Eintraege aus der AuthorisierteBenutzer"
-				+ " Tabelle",
-			benutzer.getUsername(),
-			principalBean.getBenutzer().getUsername(),
-			deletedAuthBenutzer);
+			"Setze Benutzer auf GESPERRT: {} / Eingeloggt: {}",
+			benutzerFromDB.getUsername(),
+			principalBean.getBenutzer().getUsername()
+		);
+
+		return persistence.merge(
+			benutzerFromDB
+		);
 	}
 
 	@Nonnull
 	@Override
-	public Benutzer reaktivieren(@Nonnull String username, @Nonnull Mandant mandant) {
+	public Benutzer reaktivieren(
+		@Nonnull String username,
+		@Nonnull Mandant mandant
+	) {
 		Benutzer benutzerFromDB = findBenutzer(username, mandant)
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"reaktivieren",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				"GesuchId invalid: " + username));
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"reaktivieren",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"GesuchId invalid: " + username
+				)
+			);
 
 		authorizer.checkWriteAuthorization(benutzerFromDB);
 
 		benutzerFromDB.setStatus(findLastNotGesperrtStatus(benutzerFromDB));
-		logReaktivierenBenutzer(benutzerFromDB);
+		if (GESUCHSTELLER != benutzerFromDB.getRole()) {
+			// Gesuchsteller dürfen keinen Mitarbeiter-Zugang haben, alle andere schon
+			// (auch die Test-Benutzer nicht)
+			keycloakApi.addMitarbeiterAccessBenutzerRole(benutzerFromDB);
+		}
+		keycloakApi.unlock(benutzerFromDB);
+		LOG.info(
+			"Reaktiviere Benutzer: {} / Eingeloggt: {}",
+			benutzerFromDB.getUsername(),
+			principalBean.getBenutzer().getUsername()
+		);
 
 		return persistence.merge(benutzerFromDB);
 	}
 
-	private void logReaktivierenBenutzer(Benutzer benutzerFromDB) {
-		LOG.info(
-			"Reaktiviere Benutzer: {} / Eingeloggt: {}",
-			benutzerFromDB.getUsername(),
-			principalBean.getBenutzer().getUsername());
-	}
-
-	private void prepareBenutzerForSave(@Nonnull Benutzer benutzer, boolean currentBerechtigungChanged) {
-		List<Berechtigung> allSortedBerechtigungen = new LinkedList<>(benutzer.getBerechtigungen());
-		allSortedBerechtigungen.sort(Comparator.comparing(o -> o.getGueltigkeit().getGueltigAb()));
+	private void prepareBenutzerForSave(
+		@Nonnull Benutzer benutzer,
+		boolean currentBerechtigungChanged
+	) {
+		List<Berechtigung> allSortedBerechtigungen = new LinkedList<>(
+			benutzer.getBerechtigungen()
+		);
+		allSortedBerechtigungen.sort(
+			Comparator.comparing(o -> o.getGueltigkeit().getGueltigAb())
+		);
 
 		final Berechtigung currentBerechtigung = allSortedBerechtigungen.get(0);
 
-		handleGueltigkeitCurrentBerechtigung(allSortedBerechtigungen,
-			currentBerechtigung, currentBerechtigungChanged);
+		handleGueltigkeitCurrentBerechtigung(
+			allSortedBerechtigungen,
+			currentBerechtigung,
+			currentBerechtigungChanged
+		);
 
 		for (Berechtigung berechtigung : allSortedBerechtigungen) {
 			prepareBerechtigungForSave(berechtigung);
@@ -972,388 +1204,598 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		if (currentBerechtigungChanged) {
 			LOG.info(
 				"Aktuelle Berechtigung des Benutzers {} hat geändert, Benutzer wird ausgeloggt",
-				benutzer.getUsername());
-			authService.logoutAndDeleteAuthorisierteBenutzerForUser(benutzer.getUsername());
+				benutzer.getUsername()
+			);
+			keycloakApi.logout(benutzer);
 		}
 	}
 
 	/**
 	 * If there are future Berechtigungen it sets the gueltigBis of the currentBerechtigung to one day before the
-	 * gueltigAb of the futureBerechtigung.
-	 * For no futureBerechtigungen it sets the gueltigBis of the currentBerechtigung to END_OF_TIME
-	 * If the currentBerechtigung changed it sets the gueltigAb of the currentBerechtigung to now()
+	 * gueltigAb of
+	 * the
+	 * futureBerechtigung. For no futureBerechtigungen it sets the gueltigBis of the currentBerechtigung to END_OF_TIME
+	 * If the
+	 * currentBerechtigung changed it sets the gueltigAb of the currentBerechtigung to now()
 	 */
 	private void handleGueltigkeitCurrentBerechtigung(
 		@Nonnull List<Berechtigung> allSortedBerechtigungen,
 		@Nonnull Berechtigung currentBerechtigung,
-		boolean currentBerechtigungChanged) {
+		boolean currentBerechtigungChanged
+	) {
 
-		currentBerechtigung.getGueltigkeit().setGueltigBis(
-			allSortedBerechtigungen.size() > 1 ?
-				allSortedBerechtigungen.get(1).getGueltigkeit().getGueltigAb().minusDays(1) :
-				Constants.END_OF_TIME
-		);
+		currentBerechtigung.getGueltigkeit()
+			.setGueltigBis(
+				allSortedBerechtigungen.size() > 1 ?
+					allSortedBerechtigungen.get(1)
+						.getGueltigkeit()
+						.getGueltigAb()
+						.minusDays(1) :
+					Constants.END_OF_TIME
+			);
 
 		if (currentBerechtigungChanged) {
 			currentBerechtigung.getGueltigkeit().setGueltigAb(LocalDate.now());
 		}
 	}
 
-	private void prepareBerechtigungForSave(@Nonnull Berechtigung berechtigung) {
+	private void prepareBerechtigungForSave(
+		@Nonnull Berechtigung berechtigung
+	) {
 		// Es darf nur eine Institution gesetzt sein, wenn die Rolle INSTITUTION ist
 		if (EnumUtil.isNoneOf(
 			berechtigung.getRole(),
 			UserRole.ADMIN_INSTITUTION,
-			UserRole.SACHBEARBEITER_INSTITUTION)) {
+			UserRole.SACHBEARBEITER_INSTITUTION
+		)) {
 			berechtigung.setInstitution(null);
 		}
 		// Es darf nur eine Trägerschaft gesetzt sein, wenn die Rolle TRAEGERSCHAFT ist
 		if (EnumUtil.isNoneOf(
 			berechtigung.getRole(),
 			UserRole.ADMIN_TRAEGERSCHAFT,
-			UserRole.SACHBEARBEITER_TRAEGERSCHAFT)) {
+			UserRole.SACHBEARBEITER_TRAEGERSCHAFT
+		)) {
 			berechtigung.setTraegerschaft(null);
 		}
 	}
 
-	@Nonnull
 	@Override
+	@Nonnull
 	public Pair<Long, List<Benutzer>> searchBenutzer(
-		@Nonnull BenutzerTableMandantFilterDTO benutzerTableFilterDto,
-		@Nonnull Boolean forStatistik) {
-		Long countResult = searchBenutzer(benutzerTableFilterDto, SearchMode.COUNT, forStatistik).getLeft();
+		@Nonnull BenutzerTableMandantFilterDTO benutzerTableFilterDTO,
+		@Nonnull Boolean forStatistik
+	) {
+		Pair<Long, List<Benutzer>> benutzer = innerSearchBenutzer(
+			benutzerTableFilterDTO,
+			forStatistik
+		);
 
-		if (countResult.equals(0L)) {    // no result found
-			return new ImmutablePair<>(0L, Collections.emptyList());
-		}
-
-		Pair<Long, List<Benutzer>> searchResult =
-			searchBenutzer(benutzerTableFilterDto, SearchMode.SEARCH, forStatistik);
-		return new ImmutablePair<>(countResult, searchResult.getRight());
+		return benutzer;
 	}
 
-	@SuppressWarnings("PMD.NcssMethodCount")
-	private Pair<Long, List<Benutzer>> searchBenutzer(
+	public Pair<Long, List<Benutzer>> innerSearchBenutzer(
 		@Nonnull BenutzerTableMandantFilterDTO benutzerTableFilterDTO,
-		@Nonnull SearchMode mode,
-		@Nonnull Boolean forStatistik) {
-
+		@Nonnull Boolean forStatistik
+	) {
 		final String methodName = "searchBenutzer";
 
-		// if the caller is in any administrative Gemeinde role, we need to select the Institution users separatly
-		// because there is no obvious link between an Institution and Gemeinde but is extractable by joining
-		// InstitutionStammdatenTagesschule
-		boolean addInstitutionUsers = principalBean.isCallerInAnyOfRole(UserRole.ADMIN_GEMEINDE, UserRole.ADMIN_BG
-			, UserRole.ADMIN_TS);
-
-		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		@SuppressWarnings("rawtypes") // Je nach Abfrage ist es String oder Long
-		CriteriaQuery query = SearchUtil.getQueryForSearchMode(cb, mode, methodName);
-		CriteriaQuery queryTS = SearchUtil.getQueryForSearchMode(cb, mode, methodName);
-
+		// We cast to HibernateCriteriaBuilder because we want to use JpaCriteriaQuery#createCountQuery
+		HibernateCriteriaBuilder cb =
+			(HibernateCriteriaBuilder) persistence.getCriteriaBuilder();
+		JpaCriteriaQuery<String> query = cb.createQuery(String.class);
 		// Construct from-clause
-		@SuppressWarnings("unchecked") // Je nach Abfrage ist das Query String oder Long
 		Root<Benutzer> root = query.from(Benutzer.class);
-		Join<Benutzer, Berechtigung> currentBerechtigungJoin = root.join(Benutzer_.berechtigungen);
+
+		Join<Benutzer, Berechtigung> currentBerechtigungJoin = root.join(
+			Benutzer_.berechtigungen
+		);
 		Join<Berechtigung, Institution> institutionJoin =
-			currentBerechtigungJoin.join(Berechtigung_.institution, JoinType.LEFT);
+			currentBerechtigungJoin.join(
+				Berechtigung_.institution,
+				JoinType.LEFT
+			);
 		Join<Berechtigung, Traegerschaft> traegerschaftJoin =
-			currentBerechtigungJoin.join(Berechtigung_.traegerschaft, JoinType.LEFT);
+			currentBerechtigungJoin.join(
+				Berechtigung_.traegerschaft,
+				JoinType.LEFT
+			);
 		SetJoin<Berechtigung, Gemeinde> gemeindeSetJoin =
-			currentBerechtigungJoin.join(Berechtigung_.gemeindeList, JoinType.LEFT);
+			currentBerechtigungJoin.join(
+				Berechtigung_.gemeindeList,
+				JoinType.LEFT
+			);
 		Join<Berechtigung, Sozialdienst> sozialdienstJoin =
-			currentBerechtigungJoin.join(Berechtigung_.sozialdienst, JoinType.LEFT);
+			currentBerechtigungJoin.join(
+				Berechtigung_.sozialdienst,
+				JoinType.LEFT
+			);
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		// we need to filter TS users separatly because they do not directly belong to a Gemeinde
-		List<Predicate> predicatesTS = new ArrayList<>();
-
 		// General role based predicates
 		Benutzer user =
-			getCurrentBenutzer().orElseThrow(() -> new EbeguRuntimeException(methodName, "No User is logged "
-				+ "in"));
+			getCurrentBenutzer().orElseThrow(
+				() -> new EbeguRuntimeException(
+					methodName,
+					"No User is logged in"
+				)
+			);
 
 		// Scheinbar sind die berechtigungen nicht geladen, weswegen ich hier zuerst ein
 		// getCurrentBerechtigung() mache. somit werden sie geladen. das könnte aber ein allgemeines problem sein
 		user.getCurrentBerechtigung();
-		Set<Gemeinde> userGemeinden = user.extractGemeindenForUser();
 
-		Predicate mandantPredicate = cb.equal(root.get(Benutzer_.mandant), benutzerTableFilterDTO.getMandant());
+		Predicate mandantPredicate = cb.equal(
+			root.get(Benutzer_.mandant),
+			benutzerTableFilterDTO.getMandant()
+		);
 		predicates.add(mandantPredicate);
-
-		if (addInstitutionUsers) {
-			if (userGemeinden.isEmpty()) {
-				throw new EbeguRuntimeException(methodName, "user does not have any Gemeinde");
-			}
-			Root<Benutzer> rootTS = queryTS.from(Benutzer.class);
-			Join<Benutzer, Berechtigung> currentBerechtigungJoinTS = rootTS.join(Benutzer_.berechtigungen);
-
-			// BEGIN SUBQUERY
-			Subquery<String> subquery = queryTS.subquery(String.class);
-			Root<InstitutionStammdaten> sqFrom = subquery.from(InstitutionStammdaten.class);
-			Subquery<String> subqueryFI = queryTS.subquery(String.class);
-			Root<InstitutionStammdaten> sqFromFI = subqueryFI.from(InstitutionStammdaten.class);
-
-			Predicate stammdatenTSPredicate =
-				cb.isNotNull(sqFrom.get(InstitutionStammdaten_.institutionStammdatenTagesschule));
-			Predicate stammdatenFIPredicate =
-				cb.isNotNull(sqFromFI.get(InstitutionStammdaten_.institutionStammdatenFerieninsel));
-
-			Join<InstitutionStammdaten, InstitutionStammdatenTagesschule> instStammdatenTSJoin =
-				sqFrom.join(InstitutionStammdaten_.institutionStammdatenTagesschule, JoinType.INNER);
-
-			Join<InstitutionStammdaten, InstitutionStammdatenFerieninsel> instStammdatenFIJoin =
-				sqFromFI.join(InstitutionStammdaten_.institutionStammdatenFerieninsel, JoinType.INNER);
-
-			Predicate predicateFI = cb.and(
-				stammdatenFIPredicate,
-				instStammdatenFIJoin.get(InstitutionStammdatenFerieninsel_.gemeinde).in(userGemeinden));
-
-			Predicate predicateTS = cb.and(
-				stammdatenTSPredicate,
-				instStammdatenTSJoin.get(InstitutionStammdatenTagesschule_.gemeinde).in(userGemeinden));
-
-			subquery.where(predicateTS);
-
-			subqueryFI.where(predicateFI);
-
-			subquery.select(sqFrom.get(InstitutionStammdaten_.institution).get(Institution_.id));
-			subqueryFI.select(sqFromFI.get(InstitutionStammdaten_.institution).get(Institution_.id));
-			// END SUBQUERY
-
-			Join<Berechtigung, Institution> instiutionenJoin =
-				currentBerechtigungJoinTS.join(Berechtigung_.institution, JoinType.INNER);
-
-			Predicate inSubquery = cb.in(instiutionenJoin.get(Institution_.id)).value(subquery);
-			Predicate inSubqueryFI = cb.in(instiutionenJoin.get(Institution_.id)).value(subqueryFI);
-			predicatesTS.add(cb.or(inSubquery, inSubqueryFI));
-		}
 
 		if (!principalBean.isCallerInRole(UserRole.SUPER_ADMIN)) {
 			// Not SuperAdmin users are allowed to see all users of their mandant
 			setMandantFilterForCurrentUser(user, root, cb, predicates);
 
 			// They cannot see superadmin users
-			setSuperAdminFilterForCurrentUser(user, currentBerechtigungJoin, predicates);
+			setSuperAdminFilterForCurrentUser(
+				user,
+				currentBerechtigungJoin,
+				predicates
+			);
 
 			// KIBON-1668: diese 2 Filtern muessen fur Statistik und Mandant Rolle nicht verwendet werden
 			// als man als Mandant alle Benutzende lesen wollen in die stat, aber nur die von der Mandant bearbeiten
-			if (!(forStatistik && principalBean.isCallerInAnyOfRole(
-				UserRole.ADMIN_MANDANT,
-				UserRole.SACHBEARBEITER_MANDANT))) {
-				setGemeindeFilterForCurrentUser(user, gemeindeSetJoin, predicates);
+			if (!(forStatistik
+				&& principalBean.isCallerInAnyOfRole(
+					UserRole.ADMIN_MANDANT,
+					UserRole.SACHBEARBEITER_MANDANT
+				))) {
+				setGemeindeFilterForCurrentUser(
+					user,
+					gemeindeSetJoin,
+					predicates
+				);
 
-				setRoleFilterForCurrentUser(user, currentBerechtigungJoin, predicates);
+				setRoleFilterForCurrentUser(
+					user,
+					currentBerechtigungJoin,
+					predicates
+				);
 			} else {
 				// Mandant Benutzende cannot see Antragstellende users in Statistik
-				setAntragstellerFilterForCurrentUser(currentBerechtigungJoin, predicates);
+				setAntragstellerFilterForCurrentUser(
+					currentBerechtigungJoin,
+					predicates
+				);
 			}
 		}
 
 		if (principalBean.isCallerInRole(UserRole.ADMIN_INSTITUTION)) {
-			setInstitutionFilterForCurrentUser(user, currentBerechtigungJoin, cb, predicates);
+			setInstitutionFilterForCurrentUser(
+				user,
+				currentBerechtigungJoin,
+				cb,
+				predicates
+			);
 		}
 
 		if (principalBean.isCallerInAnyOfRole(UserRole.ADMIN_FERIENBETREUUNG)) {
-			setGemeindeFilterForCurrentFerienbetreuungUser(user, currentBerechtigungJoin, cb, predicates);
+			setGemeindeFilterForCurrentFerienbetreuungUser(
+				user,
+				currentBerechtigungJoin,
+				cb,
+				predicates
+			);
 		}
 
 		if (principalBean.isCallerInRole(UserRole.ADMIN_TRAEGERSCHAFT)) {
-			setTraegerschaftFilterForCurrentUser(user, currentBerechtigungJoin, cb, predicates);
+			setTraegerschaftFilterForCurrentUser(
+				user,
+				currentBerechtigungJoin,
+				cb,
+				predicates,
+				institutionJoin
+			);
 		}
 
 		if (principalBean.isCallerInRole(UserRole.ADMIN_SOZIALDIENST)) {
-			setSozialdienstFilterForCurrentUser(user, currentBerechtigungJoin, cb, predicates);
+			setSozialdienstFilterForCurrentUser(
+				user,
+				currentBerechtigungJoin,
+				cb,
+				predicates
+			);
 		}
 
 		//prepare predicates from table filters
 		if (benutzerTableFilterDTO.getSearch() != null) {
-			BenutzerPredicateObjectDTO predicateObjectDto = benutzerTableFilterDTO.getSearch().getPredicateObject();
-			// username
-			if (predicateObjectDto.getUsername() != null) {
-				Expression<String> expression = root.get(Benutzer_.username).as(String.class);
-				String value = SearchUtil.withWildcards(predicateObjectDto.getUsername());
-				predicates.add(cb.like(expression, value));
-				predicatesTS.add(cb.like(expression, value));
+			try {
+				preparePredicateFromTableFilter(
+					benutzerTableFilterDTO.getSearch(),
+					root,
+					cb,
+					currentBerechtigungJoin,
+					institutionJoin,
+					predicates
+				);
+			} catch (DateTimeParseException e) {
+				// Kein gueltiges Datum. Es kann kein Gesuch geben, welches passt. Wir geben leer zurueck
+				return new ImmutablePair<>(0L, Collections.emptyList());
 			}
-			// vorname
-			if (predicateObjectDto.getVorname() != null) {
-				Expression<String> expression = root.get(Benutzer_.vorname).as(String.class);
-				String value = SearchUtil.withWildcards(predicateObjectDto.getVorname());
-				predicates.add(cb.like(expression, value));
-				predicatesTS.add(cb.like(expression, value));
-			}
-			// nachname
-			if (predicateObjectDto.getNachname() != null) {
-				Expression<String> expression = root.get(Benutzer_.nachname).as(String.class);
-				String value = SearchUtil.withWildcards(predicateObjectDto.getNachname());
-				predicates.add(cb.like(expression, value));
-				predicatesTS.add(cb.like(expression, value));
-			}
-			// email
-			if (predicateObjectDto.getEmail() != null) {
-				Expression<String> expression = root.get(Benutzer_.email).as(String.class);
-				String value = SearchUtil.withWildcards(predicateObjectDto.getEmail());
-				predicates.add(cb.like(expression, value));
-				predicatesTS.add(cb.like(expression, value));
-			}
-			// role
-			if (predicateObjectDto.getRole() != null) {
-				predicates.add(cb.equal(
-					currentBerechtigungJoin.get(Berechtigung_.role),
-					predicateObjectDto.getRole()));
-				predicatesTS.add(cb.equal(
-					currentBerechtigungJoin.get(Berechtigung_.role),
-					predicateObjectDto.getRole()));
-			}
-			// roleGueltigBis
-			if (predicateObjectDto.getRoleGueltigBis() != null) {
-				try {
-					LocalDate searchDate =
-						LocalDate.parse(predicateObjectDto.getRoleGueltigBis(), Constants.DATE_FORMATTER);
-					predicates.add(cb.equal(currentBerechtigungJoin.get(AbstractDateRangedEntity_.gueltigkeit)
-						.get(DateRange_.gueltigBis), searchDate));
-				} catch (DateTimeParseException e) {
-					// Kein gueltiges Datum. Es kann kein Gesuch geben, welches passt. Wir geben leer zurueck
-					return new ImmutablePair<>(0L, Collections.emptyList());
-				}
-			}
-			// roleGueltigAb
-			if (predicateObjectDto.getRoleGueltigAb() != null) {
-				try {
-					LocalDate searchDate =
-						LocalDate.parse(predicateObjectDto.getRoleGueltigAb(), Constants.DATE_FORMATTER);
-					predicates.add(cb.equal(currentBerechtigungJoin.get(AbstractDateRangedEntity_.gueltigkeit)
-						.get(DateRange_.gueltigAb), searchDate));
-				} catch (DateTimeParseException e) {
-					// Kein gueltiges Datum. Es kann kein Gesuch geben, welches passt. Wir geben leer zurueck
-					return new ImmutablePair<>(0L, Collections.emptyList());
-				}
-			}
+			BenutzerPredicateObjectDTO predicateObjectDto =
+				benutzerTableFilterDTO.getSearch().getPredicateObject();
 			// gemeinde
 			if (predicateObjectDto.getGemeinde() != null) {
-				predicates.add(cb.equal(gemeindeSetJoin.get(Gemeinde_.name), predicateObjectDto.getGemeinde()));
-			}
-			// institution
-			if (predicateObjectDto.getInstitution() != null) {
-				predicates.add(cb.equal(institutionJoin.get(Institution_.name), predicateObjectDto.getInstitution()));
-				predicatesTS.add(cb.equal(
-					institutionJoin.get(Institution_.name),
-					predicateObjectDto.getInstitution()));
+				predicates.add(
+					cb.equal(
+						gemeindeSetJoin.get(Gemeinde_.name),
+						predicateObjectDto.getGemeinde()
+					)
+				);
 			}
 			// traegerschaft
 			if (predicateObjectDto.getTraegerschaft() != null) {
-				predicates.add(cb.equal(
-					traegerschaftJoin.get(Traegerschaft_.name),
-					predicateObjectDto.getTraegerschaft()));
+				predicates.add(
+					cb.equal(
+						traegerschaftJoin.get(Traegerschaft_.name),
+						predicateObjectDto.getTraegerschaft()
+					)
+				);
 			}
 			// sozialdienst
 			if (predicateObjectDto.getSozialdienst() != null) {
-				predicates.add(cb.equal(
-					sozialdienstJoin.get(Sozialdienst_.name),
-					predicateObjectDto.getSozialdienst()));
-			}
-			// gesperrt
-			if (predicateObjectDto.getStatus() != null) {
-				predicates.add(cb.equal(root.get(Benutzer_.status), predicateObjectDto.getStatus()));
-				predicatesTS.add(cb.equal(root.get(Benutzer_.status), predicateObjectDto.getStatus()));
+				predicates.add(
+					cb.equal(
+						sozialdienstJoin.get(Sozialdienst_.name),
+						predicateObjectDto.getSozialdienst()
+					)
+				);
 			}
 		}
-		// Construct the select- and where-clause
-		switch (mode) {
-		case SEARCH:
-			//noinspection unchecked // Je nach Abfrage ist das Query String oder Long
-			query.select(root.get(AbstractEntity_.id));
-			if (!predicates.isEmpty()) {
-				query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));
-			}
-
-			if (addInstitutionUsers) {
-				//noinspection unchecked // Je nach Abfrage ist das Query String oder Long
-				queryTS.select(root.get(AbstractEntity_.id));
-				if (!predicatesTS.isEmpty()) {
-					queryTS.where(CriteriaQueryHelper.concatenateExpressions(cb, predicatesTS));
-				}
-			}
-
-			constructOrderByClause(
-				benutzerTableFilterDTO,
-				cb,
-				query,
-				root,
-				currentBerechtigungJoin,
-				institutionJoin,
-				traegerschaftJoin,
-				gemeindeSetJoin);
-			constructOrderByClause(
-				benutzerTableFilterDTO,
-				cb,
-				queryTS,
-				root,
-				currentBerechtigungJoin,
-				institutionJoin,
-				traegerschaftJoin,
-				gemeindeSetJoin);
-			break;
-		case COUNT:
-			//noinspection unchecked // Je nach Abfrage ist das Query String oder Long
-			query.select(cb.countDistinct(root.get(AbstractEntity_.id)));
-			if (!predicates.isEmpty()) {
-				query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));
-			}
-			if (addInstitutionUsers) {
-				//noinspection unchecked // Je nach Abfrage ist das Query String oder Long
-				queryTS.select(cb.countDistinct(root.get(AbstractEntity_.id)));
-				if (!predicatesTS.isEmpty()) {
-					queryTS.where(CriteriaQueryHelper.concatenateExpressions(cb, predicatesTS));
-				}
-			}
-			break;
+		query.select(root.get(AbstractEntity_.id)).distinct(true);
+		if (!predicates.isEmpty()) {
+			query.where(
+				CriteriaQueryHelper.concatenateExpressions(cb, predicates)
+			);
 		}
+
+		constructOrderByClause(
+			benutzerTableFilterDTO,
+			cb,
+			query,
+			root,
+			currentBerechtigungJoin,
+			institutionJoin,
+			traegerschaftJoin,
+			gemeindeSetJoin
+		);
 
 		// Prepare and execute the query and build the result
-		Pair<Long, List<Benutzer>> result = null;
-		switch (mode) {
-		case SEARCH:
-			//select all ids may contain duplicates
-			List<String> benutzerIds = persistence.getCriteriaResults(query);
-			if (addInstitutionUsers) {
-				benutzerIds.addAll(persistence.getCriteriaResults(queryTS));
-			}
-			List<Benutzer> pagedResult;
-			if (benutzerTableFilterDTO.getPagination() != null) {
-				int firstIndex = benutzerTableFilterDTO.getPagination().getStart();
-				Integer maxresults = benutzerTableFilterDTO.getPagination().getNumber();
-				List<String> orderedIdsToLoad =
-					SearchUtil.determineDistinctIdsToLoad(benutzerIds, firstIndex, maxresults);
-				pagedResult = findBenutzer(orderedIdsToLoad);
-			} else {
-				pagedResult = findBenutzer(benutzerIds);
-			}
-			result = new ImmutablePair<>(null, pagedResult);
+		//select all ids may contain duplicates
+		List<String> benutzerIds = persistence.getCriteriaResults(query);
 
-			break;
-		case COUNT:
-			Long count = (Long) persistence.getCriteriaSingleResult(query);
-			if (addInstitutionUsers) {
-				count += (Long) persistence.getCriteriaSingleResult(queryTS);
+		boolean addInstitutionUsers = principalBean.isCallerInAnyOfRole(
+			UserRole.ADMIN_GEMEINDE,
+			UserRole.ADMIN_BG,
+			UserRole.ADMIN_TS
+		);
+		JpaCriteriaQuery<String> queryTS = null;
+		if (addInstitutionUsers) {
+			try {
+				queryTS = createSubqueryFITSBenutzende(
+					benutzerTableFilterDTO,
+					user
+				);
+			} catch (DateTimeParseException e) {
+				// Kein gueltiges Datum. Es kann kein Gesuch geben, welches passt. Wir geben leer zurueck
+				return new ImmutablePair<>(0L, Collections.emptyList());
 			}
-			result = new ImmutablePair<>(count, null);
-			break;
+			benutzerIds.addAll(persistence.getCriteriaResults(queryTS));
 		}
-		return result;
+		List<Benutzer> pagedResult;
+		if (benutzerTableFilterDTO.getPagination() != null) {
+			int firstIndex = benutzerTableFilterDTO.getPagination()
+				.getStart();
+			Integer maxresults = benutzerTableFilterDTO.getPagination()
+				.getNumber();
+			List<String> orderedIdsToLoad =
+				SearchUtil.determineDistinctIdsToLoad(
+					benutzerIds,
+					firstIndex,
+					maxresults
+				);
+			pagedResult = findBenutzer(orderedIdsToLoad);
+		} else {
+			pagedResult = findBenutzer(benutzerIds);
+		}
+
+		long count = persistence.getCriteriaSingleResult(
+			query.createCountQuery()
+		);
+		if (addInstitutionUsers) {
+			count += persistence.getCriteriaSingleResult(
+				queryTS.createCountQuery()
+			);
+		}
+
+		return new ImmutablePair<>(count, pagedResult);
+	}
+
+	private JpaCriteriaQuery<String> createSubqueryFITSBenutzende(
+		@Nonnull BenutzerTableMandantFilterDTO benutzerTableFilterDTO,
+		@Nonnull Benutzer user
+	) throws DateTimeParseException {
+		// We cast to HibernateCriteriaBuilder because we want to use JpaCriteriaQuery#createCountQuery
+		HibernateCriteriaBuilder cb =
+			(HibernateCriteriaBuilder) persistence.getCriteriaBuilder();
+		JpaCriteriaQuery<String> queryTS = cb.createQuery(String.class);
+		Set<Gemeinde> userGemeinden = user.extractGemeindenForUser();
+		if (userGemeinden.isEmpty()) {
+			throw new EbeguRuntimeException(
+				"createSubqueryFITSBenutzende",
+				"user does not have any Gemeinde"
+			);
+		}
+
+		// we need to filter TS users separatly because they do not directly belong to a Gemeinde
+		List<Predicate> predicatesTS = new ArrayList<>();
+
+		Root<Benutzer> rootTS = queryTS.from(Benutzer.class);
+
+		Join<Benutzer, Berechtigung> currentBerechtigungJoin = rootTS.join(
+			Benutzer_.berechtigungen
+		);
+		Join<Berechtigung, Institution> institutionJoin =
+			currentBerechtigungJoin.join(
+				Berechtigung_.institution,
+				JoinType.LEFT
+			);
+		Join<Berechtigung, Traegerschaft> traegerschaftJoin =
+			currentBerechtigungJoin.join(
+				Berechtigung_.traegerschaft,
+				JoinType.LEFT
+			);
+		SetJoin<Berechtigung, Gemeinde> gemeindeSetJoin =
+			currentBerechtigungJoin.join(
+				Berechtigung_.gemeindeList,
+				JoinType.LEFT
+			);
+
+		// BEGIN SUBQUERY
+		Subquery<String> subquery = queryTS.subquery(String.class);
+		Root<InstitutionStammdaten> sqFrom = subquery.from(
+			InstitutionStammdaten.class
+		);
+		Subquery<String> subqueryFI = queryTS.subquery(String.class);
+		Root<InstitutionStammdaten> sqFromFI = subqueryFI.from(
+			InstitutionStammdaten.class
+		);
+
+		Predicate stammdatenTSPredicate =
+			cb.isNotNull(
+				sqFrom.get(
+					InstitutionStammdaten_.institutionStammdatenTagesschule
+				)
+			);
+		Predicate stammdatenFIPredicate =
+			cb.isNotNull(
+				sqFromFI.get(
+					InstitutionStammdaten_.institutionStammdatenFerieninsel
+				)
+			);
+
+		Join<InstitutionStammdaten, InstitutionStammdatenTagesschule> instStammdatenTSJoin =
+			sqFrom.join(
+				InstitutionStammdaten_.institutionStammdatenTagesschule,
+				JoinType.INNER
+			);
+
+		Join<InstitutionStammdaten, InstitutionStammdatenFerieninsel> instStammdatenFIJoin =
+			sqFromFI.join(
+				InstitutionStammdaten_.institutionStammdatenFerieninsel,
+				JoinType.INNER
+			);
+
+		Predicate predicateFI = cb.and(
+			stammdatenFIPredicate,
+			instStammdatenFIJoin.get(
+				InstitutionStammdatenFerieninsel_.gemeinde
+			).in(userGemeinden)
+		);
+
+		Predicate predicateTS = cb.and(
+			stammdatenTSPredicate,
+			instStammdatenTSJoin.get(
+				InstitutionStammdatenTagesschule_.gemeinde
+			).in(userGemeinden)
+		);
+
+		subquery.where(predicateTS);
+
+		subqueryFI.where(predicateFI);
+
+		subquery.select(
+			sqFrom.get(InstitutionStammdaten_.institution)
+				.get(Institution_.id)
+		);
+		subqueryFI.select(
+			sqFromFI.get(InstitutionStammdaten_.institution)
+				.get(Institution_.id)
+		);
+		// END SUBQUERY
+
+		Join<Berechtigung, Institution> instiutionenJoin =
+			currentBerechtigungJoin.join(
+				Berechtigung_.institution,
+				JoinType.INNER
+			);
+
+		Predicate inSubquery = cb.in(instiutionenJoin.get(Institution_.id))
+			.value(subquery);
+		Predicate inSubqueryFI = cb.in(
+			instiutionenJoin.get(Institution_.id)
+		).value(subqueryFI);
+		predicatesTS.add(cb.or(inSubquery, inSubqueryFI));
+
+		//prepare predicates from table filters
+		if (benutzerTableFilterDTO.getSearch() != null) {
+			preparePredicateFromTableFilter(
+				benutzerTableFilterDTO.getSearch(),
+				rootTS,
+				cb,
+				currentBerechtigungJoin,
+				institutionJoin,
+				predicatesTS
+			);
+		}
+
+		queryTS.select(rootTS.get(AbstractEntity_.id));
+		if (!predicatesTS.isEmpty()) {
+			queryTS.where(
+				CriteriaQueryHelper.concatenateExpressions(
+					cb,
+					predicatesTS
+				)
+			);
+		}
+
+		constructOrderByClause(
+			benutzerTableFilterDTO,
+			cb,
+			queryTS,
+			rootTS,
+			currentBerechtigungJoin,
+			institutionJoin,
+			traegerschaftJoin,
+			gemeindeSetJoin
+		);
+
+		return queryTS;
+	}
+
+	private void preparePredicateFromTableFilter(
+		@Nonnull BenutzerSearchDTO benutzerSearchDTO,
+		@Nonnull Root<Benutzer> root,
+		@Nonnull HibernateCriteriaBuilder cb,
+		@Nonnull Join<Benutzer, Berechtigung> currentBerechtigungJoin,
+		@Nonnull Join<Berechtigung, Institution> institutionJoin,
+		@Nonnull List<Predicate> predicates
+	) throws DateTimeParseException {
+		//prepare predicates from table filters
+		BenutzerPredicateObjectDTO predicateObjectDto =
+			benutzerSearchDTO.getPredicateObject();
+		// username
+		if (predicateObjectDto.getUsername() != null) {
+			Expression<String> expression = root.get(Benutzer_.username)
+				.as(String.class);
+			String value = SearchUtil.withWildcards(
+				predicateObjectDto.getUsername()
+			);
+			predicates.add(cb.like(expression, value));
+		}
+		// vorname
+		if (predicateObjectDto.getVorname() != null) {
+			Expression<String> expression = root.get(Benutzer_.vorname)
+				.as(String.class);
+			String value = SearchUtil.withWildcards(
+				predicateObjectDto.getVorname()
+			);
+			predicates.add(cb.like(expression, value));
+		}
+		// nachname
+		if (predicateObjectDto.getNachname() != null) {
+			Expression<String> expression = root.get(Benutzer_.nachname)
+				.as(String.class);
+			String value = SearchUtil.withWildcards(
+				predicateObjectDto.getNachname()
+			);
+			predicates.add(cb.like(expression, value));
+		}
+		// email
+		if (predicateObjectDto.getEmail() != null) {
+			Expression<String> expression = root.get(Benutzer_.email)
+				.as(String.class);
+			String value = SearchUtil.withWildcards(
+				predicateObjectDto.getEmail()
+			);
+			predicates.add(cb.like(expression, value));
+		}
+		// role
+		if (predicateObjectDto.getRole() != null) {
+			predicates.add(
+				cb.equal(
+					currentBerechtigungJoin.get(Berechtigung_.role),
+					predicateObjectDto.getRole()
+				)
+			);
+		}
+		// roleGueltigBis
+		if (predicateObjectDto.getRoleGueltigBis() != null) {
+			LocalDate searchDate =
+				LocalDate.parse(
+					predicateObjectDto.getRoleGueltigBis(),
+					Constants.DATE_FORMATTER
+				);
+			predicates.add(
+				cb.equal(
+					currentBerechtigungJoin.get(
+						AbstractDateRangedEntity_.gueltigkeit
+					)
+						.get(DateRange_.gueltigBis),
+					searchDate
+				)
+			);
+		}
+		// roleGueltigAb
+		if (predicateObjectDto.getRoleGueltigAb() != null) {
+			LocalDate searchDate =
+				LocalDate.parse(
+					predicateObjectDto.getRoleGueltigAb(),
+					Constants.DATE_FORMATTER
+				);
+			predicates.add(
+				cb.equal(
+					currentBerechtigungJoin.get(
+						AbstractDateRangedEntity_.gueltigkeit
+					)
+						.get(DateRange_.gueltigAb),
+					searchDate
+				)
+			);
+		}
+		// institution
+		if (predicateObjectDto.getInstitution() != null) {
+			predicates.add(
+				cb.equal(
+					institutionJoin.get(Institution_.name),
+					predicateObjectDto.getInstitution()
+				)
+			);
+		}
+		// gesperrt
+		if (predicateObjectDto.getStatus() != null) {
+			predicates.add(
+				cb.equal(
+					root.get(Benutzer_.status),
+					predicateObjectDto.getStatus()
+				)
+			);
+		}
 	}
 
 	private void constructOrderByClause(
-		@Nonnull BenutzerTableFilterDTO benutzerTableFilterDto, CriteriaBuilder cb, CriteriaQuery query,
+		@Nonnull BenutzerTableFilterDTO benutzerTableFilterDto,
+		CriteriaBuilder cb,
+		CriteriaQuery<String> query,
 		Root<Benutzer> root,
 		Join<Benutzer, Berechtigung> currentBerechtigung,
 		Join<Berechtigung, Institution> institution,
 		Join<Berechtigung, Traegerschaft> traegerschaft,
-		@Nonnull SetJoin<Berechtigung, Gemeinde> gemeindeSetJoin) {
+		@Nonnull SetJoin<Berechtigung, Gemeinde> gemeindeSetJoin
+	) {
 		Expression<?> expression;
-		if (benutzerTableFilterDto.getSort() != null && benutzerTableFilterDto.getSort().getPredicate() != null) {
+		if (benutzerTableFilterDto.getSort() != null
+			&& benutzerTableFilterDto.getSort().getPredicate() != null) {
 			switch (benutzerTableFilterDto.getSort().getPredicate()) {
 			case "username":
 				expression = root.get(Benutzer_.username);
@@ -1371,19 +1813,25 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 				expression = currentBerechtigung.get(Berechtigung_.role);
 				break;
 			case "roleGueltigAb":
-				expression = currentBerechtigung.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb);
+				expression = currentBerechtigung.get(
+					AbstractDateRangedEntity_.gueltigkeit
+				).get(DateRange_.gueltigAb);
 				break;
 			case "roleGueltigBis":
-				expression = currentBerechtigung.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis);
+				expression = currentBerechtigung.get(
+					AbstractDateRangedEntity_.gueltigkeit
+				).get(DateRange_.gueltigBis);
 				break;
 			case "gemeinde":
 				// Die Gemeinden sind eine Liste innerhalb der Liste (also des Tabelleneintrages).
 				// Berechtigungen ohne Gemeinde sollen egal wie sortiert ist am Schluss kommen!
 				if (benutzerTableFilterDto.getSort().getReverse()) {
-					expression = cb.selectCase().when(gemeindeSetJoin.isNull(), "ZZZZ")
+					expression = cb.selectCase()
+						.when(gemeindeSetJoin.isNull(), "ZZZZ")
 						.otherwise(gemeindeSetJoin.get(Gemeinde_.name));
 				} else {
-					expression = cb.selectCase().when(gemeindeSetJoin.isNull(), "0000")
+					expression = cb.selectCase()
+						.when(gemeindeSetJoin.isNull(), "0000")
 						.otherwise(gemeindeSetJoin.get(Gemeinde_.name));
 				}
 				break;
@@ -1399,11 +1847,16 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 			default:
 				LOG.warn(
 					"Using default sort by Timestamp mutiert because there is no specific clause for predicate {}",
-					benutzerTableFilterDto.getSort().getPredicate());
+					benutzerTableFilterDto.getSort().getPredicate()
+				);
 				expression = root.get(AbstractEntity_.timestampMutiert);
 				break;
 			}
-			query.orderBy(benutzerTableFilterDto.getSort().getReverse() ? cb.asc(expression) : cb.desc(expression));
+			query.orderBy(
+				benutzerTableFilterDto.getSort().getReverse() ?
+					cb.asc(expression) :
+					cb.desc(expression)
+			);
 		} else {
 			// Default sort when nothing is choosen
 			expression = root.get(AbstractEntity_.timestampMutiert);
@@ -1415,12 +1868,16 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		requireNonNull(benutzerIds);
 		if (!benutzerIds.isEmpty()) {
 			final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-			final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
+			final CriteriaQuery<Benutzer> query = cb.createQuery(
+				Benutzer.class
+			);
 			Root<Benutzer> root = query.from(Benutzer.class);
 			Predicate predicate = root.get(AbstractEntity_.id).in(benutzerIds);
 			query.where(predicate);
 			//reduce to unique Benutzer
-			List<Benutzer> listWithDuplicates = persistence.getCriteriaResults(query);
+			List<Benutzer> listWithDuplicates = persistence.getCriteriaResults(
+				query
+			);
 			LinkedHashSet<Benutzer> setOfBenutzer = new LinkedHashSet<>();
 			//richtige reihenfolge beibehalten
 			for (String userId : benutzerIds) {
@@ -1441,13 +1898,19 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Benutzer> query = cb.createQuery(Benutzer.class);
 		Root<Benutzer> root = query.from(Benutzer.class);
-		Join<Benutzer, Berechtigung> currentBerechtigung = root.join(Benutzer_.berechtigungen);
+		Join<Benutzer, Berechtigung> currentBerechtigung = root.join(
+			Benutzer_.berechtigungen
+		);
 		Predicate predicateAbgelaufen =
 			cb.lessThan(
-				currentBerechtigung.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis),
-				stichtag);
+				currentBerechtigung.get(
+					AbstractDateRangedEntity_.gueltigkeit
+				).get(DateRange_.gueltigBis),
+				stichtag
+			);
 		query.where(predicateAbgelaufen);
-		List<Benutzer> userMitAbgelaufenerRolle = persistence.getCriteriaResults(query);
+		List<Benutzer> userMitAbgelaufenerRolle = persistence
+			.getCriteriaResults(query);
 
 		for (Benutzer benutzer : userMitAbgelaufenerRolle) {
 			List<Berechtigung> abgelaufeneBerechtigungen = new ArrayList<>();
@@ -1457,19 +1920,27 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 				}
 			}
 			try {
-				Berechtigung aktuelleBerechtigung = getAktuellGueltigeBerechtigungFuerBenutzer(benutzer);
+				Berechtigung aktuelleBerechtigung =
+					getAktuellGueltigeBerechtigungFuerBenutzer(benutzer);
 				persistence.merge(aktuelleBerechtigung);
 			} catch (NoResultException nre) {
 				// Sonderfall: Die letzte Berechtigung ist abgelaufen. Wir erstellen sofort eine neue anschliessende
 				// Berechtigung als Gesuchsteller
 				Berechtigung futureGesuchstellerBerechtigung =
-					createFutureBerechtigungAsGesuchsteller(LocalDate.now(), benutzer);
+					createFutureBerechtigungAsGesuchsteller(
+						LocalDate.now(),
+						benutzer
+					);
 				persistence.persist(futureGesuchstellerBerechtigung);
 			}
 			// Die abgelaufene Rolle löschen
 			for (Berechtigung abgelaufeneBerechtigung : abgelaufeneBerechtigungen) {
-				LOG.info("... Benutzerrolle ist abgelaufen: {}, war: {}, abgelaufen: {}", benutzer.getUsername(),
-					abgelaufeneBerechtigung.getRole(), abgelaufeneBerechtigung.getGueltigkeit().getGueltigBis());
+				LOG.info(
+					"... Benutzerrolle ist abgelaufen: {}, war: {}, abgelaufen: {}",
+					benutzer.getUsername(),
+					abgelaufeneBerechtigung.getRole(),
+					abgelaufeneBerechtigung.getGueltigkeit().getGueltigBis()
+				);
 				benutzer.getBerechtigungen().remove(abgelaufeneBerechtigung);
 				persistence.merge(benutzer);
 				removeBerechtigung(abgelaufeneBerechtigung);
@@ -1479,136 +1950,190 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 		return userMitAbgelaufenerRolle.size();
 	}
 
-	private Berechtigung createFutureBerechtigungAsGesuchsteller(LocalDate startDatum, Benutzer benutzer) {
+	private Berechtigung createFutureBerechtigungAsGesuchsteller(
+		LocalDate startDatum,
+		Benutzer benutzer
+	) {
 		Berechtigung futureGesuchstellerBerechtigung = new Berechtigung();
-		futureGesuchstellerBerechtigung.getGueltigkeit().setGueltigAb(startDatum);
-		futureGesuchstellerBerechtigung.getGueltigkeit().setGueltigBis(Constants.END_OF_TIME);
+		futureGesuchstellerBerechtigung.getGueltigkeit()
+			.setGueltigAb(startDatum);
+		futureGesuchstellerBerechtigung.getGueltigkeit()
+			.setGueltigBis(Constants.END_OF_TIME);
 		futureGesuchstellerBerechtigung.setRole(GESUCHSTELLER);
 		futureGesuchstellerBerechtigung.setBenutzer(benutzer);
 		return futureGesuchstellerBerechtigung;
 	}
 
 	@Nonnull
-	private Berechtigung getAktuellGueltigeBerechtigungFuerBenutzer(@Nonnull Benutzer benutzer) {
+	private Berechtigung getAktuellGueltigeBerechtigungFuerBenutzer(
+		@Nonnull Benutzer benutzer
+	) {
 		requireNonNull(benutzer);
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Berechtigung> query = cb.createQuery(Berechtigung.class);
+		final CriteriaQuery<Berechtigung> query = cb.createQuery(
+			Berechtigung.class
+		);
 		Root<Berechtigung> root = query.from(Berechtigung.class);
 
-		ParameterExpression<Benutzer> benutzerParam = cb.parameter(Benutzer.class, "benutzer");
-		ParameterExpression<LocalDate> dateParam = cb.parameter(LocalDate.class, "date");
+		ParameterExpression<Benutzer> benutzerParam = cb.parameter(
+			Benutzer.class,
+			"benutzer"
+		);
+		ParameterExpression<LocalDate> dateParam = cb.parameter(
+			LocalDate.class,
+			"date"
+		);
 
-		Predicate predicateBenutzer = cb.equal(root.get(Berechtigung_.benutzer), benutzerParam);
+		Predicate predicateBenutzer = cb.equal(
+			root.get(Berechtigung_.benutzer),
+			benutzerParam
+		);
 		Predicate predicateZeitraum = cb.between(
 			dateParam,
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb),
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis));
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigAb),
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigBis)
+		);
 
 		query.where(predicateBenutzer, predicateZeitraum);
 
-		TypedQuery<Berechtigung> q = persistence.getEntityManager().createQuery(query);
+		TypedQuery<Berechtigung> q = persistence.getEntityManager()
+			.createQuery(query);
 		q.setParameter(dateParam, LocalDate.now());
 		q.setParameter(benutzerParam, benutzer);
 		List<Berechtigung> resultList = q.getResultList();
 
 		if (resultList.isEmpty()) {
-			throw new NoResultException("No Berechtigung found for Benutzer" + benutzer.getUsername());
+			throw new NoResultException(
+				"No Berechtigung found for Benutzer"
+					+ benutzer.getUsername()
+			);
 		}
 		if (resultList.size() > 1) {
-			throw new NonUniqueResultException("More than one Berechtigung found for Benutzer "
-				+ benutzer.getUsername());
+			throw new NonUniqueResultException(
+				"More than one Berechtigung found for Benutzer "
+					+ benutzer.getUsername()
+			);
 		}
 		return resultList.get(0);
 	}
 
 	private void removeBerechtigung(@Nonnull Berechtigung berechtigung) {
 		requireNonNull(berechtigung);
-		authService.logoutAndDeleteAuthorisierteBenutzerForUser(berechtigung.getBenutzer().getUsername());
+		keycloakApi.logout(
+			berechtigung.getBenutzer()
+		);
 		persistence.remove(berechtigung);
 	}
 
 	@Override
-	public void saveBerechtigungHistory(@Nonnull Berechtigung berechtigung, boolean deleted) {
+	public void saveBerechtigungHistory(
+		@Nonnull Berechtigung berechtigung,
+		boolean deleted
+	) {
 		requireNonNull(berechtigung);
-		BerechtigungHistory newBerechtigungsHistory = new BerechtigungHistory(berechtigung, deleted);
+		BerechtigungHistory newBerechtigungsHistory = new BerechtigungHistory(
+			berechtigung,
+			deleted
+		);
 		newBerechtigungsHistory.setTimestampErstellt(LocalDateTime.now());
 		String userMutiert =
-			berechtigung.getUserMutiert() != null ? berechtigung.getUserMutiert() : Constants.SYSTEM_USER_USERNAME;
+			berechtigung.getUserMutiert() != null ?
+				berechtigung.getUserMutiert() :
+				Constants.SYSTEM_USER_USERNAME;
 		newBerechtigungsHistory.setUserErstellt(userMutiert);
 		persistence.persist(newBerechtigungsHistory);
 	}
 
 	@Nonnull
 	@Override
-	public Collection<BerechtigungHistory> getBerechtigungHistoriesForBenutzer(@Nonnull Benutzer benutzer) {
+	public Collection<BerechtigungHistory> getBerechtigungHistoriesForBenutzer(
+		@Nonnull Benutzer benutzer
+	) {
 		requireNonNull(benutzer);
 		authorizer.checkReadAuthorization(benutzer);
 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<BerechtigungHistory> query = cb.createQuery(BerechtigungHistory.class);
+		final CriteriaQuery<BerechtigungHistory> query = cb.createQuery(
+			BerechtigungHistory.class
+		);
 		Root<BerechtigungHistory> root = query.from(BerechtigungHistory.class);
+		Join<BerechtigungHistory, Benutzer> benutzerJoin = root.join(
+			BerechtigungHistory_.benutzer
+		);
 
-		ParameterExpression<String> benutzerParam = cb.parameter(String.class, "username");
-		Predicate predicateBenutzer = cb.equal(root.get(BerechtigungHistory_.username), benutzerParam);
+		ParameterExpression<String> benutzerParam = cb.parameter(
+			String.class,
+			"username"
+		);
+		// Wegen eines Fehlers konnten nicht alle BerechtigungHistory Einträge rückwirkend mit einer Benutzer-Entity
+		//verknüpft werden. Daher müssen diese per username suchbar bleiben
+		Predicate benutzerByUsername = cb.equal(
+			root.get(BerechtigungHistory_.username),
+			benutzerParam
+		);
+		Predicate benutzerById = cb.equal(
+			root.get(BerechtigungHistory_.benutzer),
+			benutzer
+		);
+		Predicate mandantPredicate = cb.equal(
+			benutzerJoin.get(Benutzer_.mandant),
+			benutzer.getMandant()
+		);
+
 		query.orderBy(cb.desc(root.get(AbstractEntity_.timestampErstellt)));
-		query.where(predicateBenutzer);
+		query.where(
+			cb.and(cb.or(benutzerById, benutzerByUsername), mandantPredicate)
+		);
 
-		TypedQuery<BerechtigungHistory> q = persistence.getEntityManager().createQuery(query);
+		TypedQuery<BerechtigungHistory> q = persistence.getEntityManager()
+			.createQuery(query);
 		q.setParameter(benutzerParam, benutzer.getUsername());
 		return q.getResultList();
 	}
 
 	@Override
-	public boolean isBenutzerDefaultBenutzerOfAnyGemeinde(@Nonnull String username) {
+	public boolean isBenutzerDefaultBenutzerOfAnyGemeinde(
+		@Nonnull String username
+	) {
 		requireNonNull(username);
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<GemeindeStammdaten> query = cb.createQuery(GemeindeStammdaten.class);
+		final CriteriaQuery<GemeindeStammdaten> query = cb.createQuery(
+			GemeindeStammdaten.class
+		);
 		Root<GemeindeStammdaten> root = query.from(GemeindeStammdaten.class);
 
-		ParameterExpression<String> benutzerParam = cb.parameter(String.class, "username");
+		ParameterExpression<String> benutzerParam = cb.parameter(
+			String.class,
+			"username"
+		);
 		Predicate predicateDefaultBG =
-			cb.equal(root.get(GemeindeStammdaten_.defaultBenutzerBG).get(Benutzer_.username), benutzerParam);
+			cb.equal(
+				root.get(GemeindeStammdaten_.defaultBenutzerBG)
+					.get(Benutzer_.username),
+				benutzerParam
+			);
 		Predicate predicateDefaultTS =
-			cb.equal(root.get(GemeindeStammdaten_.defaultBenutzerTS).get(Benutzer_.username), benutzerParam);
+			cb.equal(
+				root.get(GemeindeStammdaten_.defaultBenutzerTS)
+					.get(Benutzer_.username),
+				benutzerParam
+			);
 		Predicate anyDefault = cb.or(predicateDefaultBG, predicateDefaultTS);
 		query.where(anyDefault);
 
-		TypedQuery<GemeindeStammdaten> q = persistence.getEntityManager().createQuery(query);
+		TypedQuery<GemeindeStammdaten> q = persistence.getEntityManager()
+			.createQuery(query);
 		q.setParameter(benutzerParam, username);
 		return !q.getResultList().isEmpty();
 	}
 
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void deleteExternalUUIDInNewTransaction(@Nonnull String id) {
-		Optional<Benutzer> benutzerOptional = findBenutzerById(id);
-		if (benutzerOptional.isPresent()) {
-			Benutzer benutzer = benutzerOptional.get();
-			// Es gelten dieselben Regeln wie beim Loeschen
-			authorizer.checkWriteAuthorization(benutzer);
-			LOG.warn("ExternalUUID von Benutzer wird gelöscht: {}", benutzer);
-			benutzer.addBemerkung("ExternalUUID " + benutzer.getExternalUUID() + " gelöscht");
-			benutzer.setExternalUUID(null);
-			persistence.merge(benutzer);
-		}
-	}
-
-	@Override
-	public String createInvitationLink(
-		@Nonnull Benutzer eingeladener,
-		@Nonnull Einladung einladung
-	) {
-		return ebeguConfiguration.isClientUsingHTTPS() ? "https://" : "http://"
-			+ ebeguConfiguration.getHostname(eingeladener.getMandant().getMandantIdentifier())
-			+ "/einladung?typ=" + einladung.getEinladungTyp()
-			+ einladung.getEinladungRelatedObjectId().map(entityId -> "&entityid=" + entityId).orElse("")
-			+ "&userid=" + eingeladener.getId();
-	}
-
 	private BenutzerStatus findLastNotGesperrtStatus(Benutzer benutzer) {
-		Collection<BerechtigungHistory> history = getBerechtigungHistoriesForBenutzer(benutzer);
+		Collection<BerechtigungHistory> history =
+			getBerechtigungHistoriesForBenutzer(benutzer);
 		BerechtigungHistory lastNotGesperrtHistory = history.stream()
-			.filter(x -> x.getStatus() != BenutzerStatus.GESPERRT)
+			.filter(x -> x.getStatus() != GESPERRT)
 			.findFirst()
 			.get();
 
@@ -1616,7 +2141,12 @@ public class BenutzerServiceBean extends AbstractBaseService implements Benutzer
 	}
 
 	private Benutzer checkIfUserIsLoggedIn(String methodName) {
-		return getCurrentBenutzer().orElseThrow(() -> new EbeguRuntimeException(
-			methodName, "Non logged in user should never reach this"));
+		return getCurrentBenutzer().orElseThrow(
+			() -> new EbeguRuntimeException(
+				methodName,
+				"Non logged in user should never reach this"
+			)
+		);
 	}
+
 }

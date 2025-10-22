@@ -46,7 +46,8 @@ public interface GesuchsperiodeService {
 	@Nonnull
 	Gesuchsperiode saveGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull GesuchsperiodeStatus statusBisher);
+		@Nonnull GesuchsperiodeStatus statusBisher
+	);
 
 	/**
 	 * @param key PK (id) der Gesuchsperiode
@@ -75,7 +76,9 @@ public interface GesuchsperiodeService {
 	 * @param key PK (id) der Gesuchsperiode
 	 * @return Diese und alle zukünftigen Gesuchsperioden
 	 */
-	Collection<Gesuchsperiode> findThisAndFutureGesuchsperioden(@Nonnull String key);
+	Collection<Gesuchsperiode> findThisAndFutureGesuchsperioden(
+		@Nonnull String key
+	);
 
 	/**
 	 * Loescht alle Gesuchsperioden inkl. Gesuche und Dokumente, wenn die Gesuchsperiode mehr als 10 Jahre alt ist.
@@ -108,29 +111,40 @@ public interface GesuchsperiodeService {
 	 * Dossier noch kein Gesuch freigegeben hat.
 	 */
 	@Nonnull
-	Collection<Gesuchsperiode> getAllAktivInaktivNichtVerwendeteGesuchsperioden(@Nonnull String dossierId);
+	Collection<Gesuchsperiode> getAllAktivInaktivNichtVerwendeteGesuchsperioden(
+		@Nonnull String dossierId
+	);
 
 	/**
 	 * Gibt alle aktiven Gesuchsperioden zurueck, deren Ende-Datum noch nicht erreicht ist, und für die das angegebene
 	 * Dossier noch kein Gesuch freigegeben hat.
 	 */
 	@Nonnull
-	Collection<Gesuchsperiode> getAllAktiveNichtVerwendeteGesuchsperioden(@Nonnull String dossierId);
+	Collection<Gesuchsperiode> getAllAktiveNichtVerwendeteGesuchsperioden(
+		@Nonnull String dossierId
+	);
 
 	/**
 	 * Gibt die Gesuchsperiode zurueck, welche am uebergebenen Stichtag aktuell war/ist
 	 */
 	@Nonnull
-	Optional<Gesuchsperiode> getGesuchsperiodeAm(@Nonnull LocalDate stichtag, @Nonnull Mandant mandant);
+	Optional<Gesuchsperiode> getGesuchsperiodeAm(
+		@Nonnull LocalDate stichtag,
+		@Nonnull Mandant mandant
+	);
 
 	/**
 	 * Gibt alle Gesuchsperioden zurueck, welche im angegebenen Zeitraum liegen (nicht zwingend vollständig)
 	 */
 	@Nonnull
-	Collection<Gesuchsperiode> getGesuchsperiodenBetween(@Nonnull LocalDate datumVon, @Nonnull LocalDate datumBis);
+	Collection<Gesuchsperiode> getGesuchsperiodenBetween(
+		@Nonnull LocalDate datumVon,
+		@Nonnull LocalDate datumBis
+	);
 
 	/**
 	 * Gibt die neuste Gesuchsperiode zurueck anhand des Datums gueltigBis.
+	 * 
 	 * @param mandant
 	 */
 	@Nonnull
@@ -144,25 +158,39 @@ public interface GesuchsperiodeService {
 		@Nonnull String gesuchsperiodeId,
 		@Nonnull Sprache sprache,
 		@Nonnull DokumentTyp dokumentTyp,
-		@Nonnull byte[] content);
+		@Nonnull byte[] content
+	);
 
 	/**
 	 * Löscht eine Erläuterung zur Verfügung einer Gesuchsperiode abhängig der Sprache.
 	 */
 	@Nonnull
-	Gesuchsperiode removeGesuchsperiodeDokument(@Nonnull String gesuchsperiodeId, @Nonnull Sprache sprache,
-		@Nonnull DokumentTyp dokumentTyp);
+	Gesuchsperiode removeGesuchsperiodeDokument(
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	);
 
 	/**
 	 * retuns true id the VerfuegungErlaeuterung exists for the given language
 	 */
-	boolean existDokument(@Nonnull String gesuchsperiodeId, @Nonnull Sprache sprache,
-		@Nonnull DokumentTyp dokumentTyp);
+	boolean existDokument(
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	);
 
-	byte[] downloadGesuchsperiodeDokument(@Nonnull String gesuchsperiodeId, @Nonnull Sprache sprache,
-		@Nonnull DokumentTyp dokumentTyp);
+	byte[] downloadGesuchsperiodeDokument(
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	);
 
-	Optional<Gesuchsperiode> getVorjahrGesuchsperiode(Gesuchsperiode gesuchsperiode);
+	Optional<Gesuchsperiode> getVorjahrGesuchsperiode(
+		Gesuchsperiode gesuchsperiode
+	);
 
-	Optional<Gesuchsperiode> getNachfolgendeGesuchsperiode(Gesuchsperiode gesuchsperiode);
+	Optional<Gesuchsperiode> getNachfolgendeGesuchsperiode(
+		Gesuchsperiode gesuchsperiode
+	);
 }

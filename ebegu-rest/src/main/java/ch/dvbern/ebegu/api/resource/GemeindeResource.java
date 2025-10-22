@@ -8,57 +8,120 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.resource;
 
-import ch.dvbern.ebegu.api.AuthConstants;
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.UriInfo;
+
+import ch.dvbern.ebegu.api.converter.gemeinde.JaxGemeindeConverter;
 import ch.dvbern.ebegu.api.converter.gemeinde.JaxGemeindeStammdatenConverter;
-import ch.dvbern.ebegu.api.dtos.*;
+import ch.dvbern.ebegu.api.dtos.JaxBfsGemeinde;
+import ch.dvbern.ebegu.api.dtos.JaxEinstellung;
+import ch.dvbern.ebegu.api.dtos.JaxExternalClientAssignment;
+import ch.dvbern.ebegu.api.dtos.JaxGemeinde;
+import ch.dvbern.ebegu.api.dtos.JaxGemeindeKonfiguration;
+import ch.dvbern.ebegu.api.dtos.JaxGemeindeRegistrierung;
+import ch.dvbern.ebegu.api.dtos.JaxGemeindeStammdaten;
+import ch.dvbern.ebegu.api.dtos.JaxGemeindeStammdatenGesuchsperiodeFerieninsel;
+import ch.dvbern.ebegu.api.dtos.JaxGemeindeStammdatenLite;
+import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.resource.util.MultipartFormToFileConverter;
 import ch.dvbern.ebegu.api.resource.util.TransferFile;
 import ch.dvbern.ebegu.api.util.RestUtil;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.einladung.Einladung;
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.*;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
+import ch.dvbern.ebegu.entities.Adresse;
+import ch.dvbern.ebegu.entities.Benutzer;
+import ch.dvbern.ebegu.entities.BfsGemeinde;
+import ch.dvbern.ebegu.entities.ExternalClient;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.GemeindeStammdaten;
+import ch.dvbern.ebegu.entities.GemeindeStammdatenGesuchsperiode;
+import ch.dvbern.ebegu.entities.GemeindeStammdatenGesuchsperiodeFerieninsel;
+import ch.dvbern.ebegu.entities.GemeindeStammdatenKorrespondenz;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.enums.DokumentTyp;
+import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.GemeindeStatus;
+import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
+import ch.dvbern.ebegu.enums.MusterDokumentTyp;
+import ch.dvbern.ebegu.enums.Sprache;
+import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.MergeDocException;
-import ch.dvbern.ebegu.services.*;
+import ch.dvbern.ebegu.services.BenutzerService;
+import ch.dvbern.ebegu.services.CreateBenutzerService;
+import ch.dvbern.ebegu.services.ExternalClientService;
+import ch.dvbern.ebegu.services.FerieninselStammdatenService;
+import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.services.GesuchsperiodeService;
+import ch.dvbern.ebegu.services.MandantService;
+import ch.dvbern.ebegu.services.PDFService;
 import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
 import com.lowagie.text.Image;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.Validate;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.Status;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static ch.dvbern.ebegu.api.resource.util.ResourceConstants.UPLOAD_WARNING;
-import static ch.dvbern.ebegu.enums.UserRoleName.*;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_SOZIALDIENST;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.GESUCHSTELLER;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_SOZIALDIENST;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -66,7 +129,6 @@ import static java.util.Objects.requireNonNull;
  */
 @Path("gemeinde")
 @Stateless
-@Api(description = "Resource für Gemeinden")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class GemeindeResource {
 
@@ -89,7 +151,7 @@ public class GemeindeResource {
 	private ExternalClientService externalClientService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxGemeindeConverter converter;
 
 	@Inject
 	private JaxGemeindeStammdatenConverter gemeindeStammdatenConverter;
@@ -103,7 +165,10 @@ public class GemeindeResource {
 	@Inject
 	private PrincipalBean principalBean;
 
-	@ApiOperation(value = "Erstellt eine neue Gemeinde in der Datenbank", response = JaxGemeinde.class)
+	@Inject
+	private CreateBenutzerService createBenutzerService;
+
+	@Operation(summary = "Erstellt eine neue Gemeinde in der Datenbank")
 	@Nullable
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -113,25 +178,50 @@ public class GemeindeResource {
 		@Nonnull @NotNull @Valid JaxGemeinde gemeindeJAXP,
 		@Nonnull @NotNull @Valid @QueryParam("adminMail") String adminMail,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
-		Gemeinde convertedGemeinde = converter.gemeindeToEntity(gemeindeJAXP, new Gemeinde());
+		Gemeinde convertedGemeinde = converter.gemeindeToEntity(
+			gemeindeJAXP,
+			new Gemeinde()
+		);
 
-		Gemeinde persistedGemeinde = this.gemeindeService.createGemeinde(convertedGemeinde);
+		Gemeinde persistedGemeinde = this.gemeindeService.createGemeinde(
+			convertedGemeinde
+		);
 		Mandant mandant = requireNonNull(persistedGemeinde.getMandant());
 		// Aufgrund der Flags entscheiden, in welcher Rolle der Admin eingeladen werden soll
 		UserRole roleOfAdmin = getUserRoleForGemeindeAdmin(persistedGemeinde);
-		final Benutzer benutzer = benutzerService.findBenutzer(adminMail, mandant)
-			.orElseGet(() -> benutzerService.createAdminGemeindeByEmail(adminMail, roleOfAdmin, persistedGemeinde));
+		final Benutzer benutzer = benutzerService.findBenutzer(
+			adminMail,
+			mandant
+		)
+			.orElseGet(
+				() -> createBenutzerService.createAdminGemeindeByEmail(
+					adminMail,
+					roleOfAdmin,
+					persistedGemeinde
+				)
+			);
 		//This line is weird I think its already done in the create methods
-		benutzer.getCurrentBerechtigung().getGemeindeList().add(persistedGemeinde);
+		benutzer.getCurrentBerechtigung()
+			.getGemeindeList()
+			.add(persistedGemeinde);
 
-		benutzerService.einladen(Einladung.forGemeinde(benutzer, persistedGemeinde), mandant);
+		benutzerService.einladen(
+			Einladung.forGemeinde(benutzer, persistedGemeinde),
+			mandant
+		);
 
 		// if Ferieninsel is active, we need to initialize the Ferien
 		if (persistedGemeinde.isAngebotFI()) {
 			gesuchsperiodeService.getAllGesuchsperioden()
-				.forEach(gp -> initFerieninselnForGemeindeAndGesuchsperiode(persistedGemeinde, gp));
+				.forEach(
+					gp -> initFerieninselnForGemeindeAndGesuchsperiode(
+						persistedGemeinde,
+						gp
+					)
+				);
 		}
 
 		gemeindeService.fireGemeindeChangedEvent(persistedGemeinde);
@@ -151,7 +241,7 @@ public class GemeindeResource {
 		return UserRole.ADMIN_GEMEINDE;
 	}
 
-	@ApiOperation(value = "Speichert eine Gemeinde in der Datenbank", response = JaxGemeinde.class)
+	@Operation(summary = "Speichert eine Gemeinde in der Datenbank")
 	@Nullable
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -160,14 +250,20 @@ public class GemeindeResource {
 	public JaxGemeinde saveGemeinde(
 		@Nonnull @NotNull @Valid JaxGemeinde gemeindeJAXP,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		Gemeinde gemeinde = Optional.ofNullable(gemeindeJAXP.getId())
 			.flatMap(id -> gemeindeService.findGemeinde(id))
 			.orElseGet(Gemeinde::new);
 
-		Gemeinde convertedGemeinde = converter.gemeindeToEntity(gemeindeJAXP, gemeinde);
-		Gemeinde persistedGemeinde = this.gemeindeService.saveGemeinde(convertedGemeinde);
+		Gemeinde convertedGemeinde = converter.gemeindeToEntity(
+			gemeindeJAXP,
+			gemeinde
+		);
+		Gemeinde persistedGemeinde = this.gemeindeService.saveGemeinde(
+			convertedGemeinde
+		);
 		JaxGemeinde jaxGemeinde = converter.gemeindeToJAX(persistedGemeinde);
 
 		gemeindeService.fireGemeindeChangedEvent(persistedGemeinde);
@@ -175,22 +271,27 @@ public class GemeindeResource {
 		return jaxGemeinde;
 	}
 
-	@ApiOperation(value = "Returns all Gemeinden", responseContainer = "Collection", response = JaxGemeinde.class)
+	@Operation(summary = "Returns all Gemeinden")
 	@Nullable
 	@GET
 	@Path("/all")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten für eingeloggte User
-	public List<JaxGemeinde> getAllGemeinden() {
-		return gemeindeService.getAllGemeinden(requireNonNull(principalBean.getMandant())).stream()
+	public List<JaxGemeinde> getAllGemeinden(
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
+
+	) {
+		Mandant mandant = mandantService.findMandantByCookie(mandantCookie);
+		return gemeindeService.getAllGemeinden(
+			requireNonNull(mandant)
+		)
+			.stream()
 			.map(gemeinde -> converter.gemeindeToJAX(gemeinde))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Returns all Gemeinden with Status AKTIV",
-		responseContainer = "Collection",
-		response = JaxGemeinde.class)
+	@Operation(summary = "Returns all Gemeinden with Status AKTIV")
 	@Nullable
 	@GET
 	@Path("/active")
@@ -198,19 +299,18 @@ public class GemeindeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxGemeinde> getAktiveGemeinden(
-			@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
 	) {
 		var mandant = mandantService.findMandantByCookie(mandantCookie);
 
-		return gemeindeService.getAktiveGemeinden(mandant).stream()
+		return gemeindeService.getAktiveGemeinden(mandant)
+			.stream()
 			.map(gemeinde -> converter.gemeindeToJAX(gemeinde))
 			.collect(Collectors.toList());
 	}
 
-
-	@ApiOperation(value = "Returns all Gemeinden with Status AKTIV and gueltigBis after the current day",
-		responseContainer = "Collection",
-		response = JaxGemeinde.class)
+	@Operation(
+		summary = "Returns all Gemeinden with Status AKTIV and gueltigBis after the current day")
 	@Nullable
 	@GET
 	@Path("/activegueltig")
@@ -218,15 +318,19 @@ public class GemeindeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxGemeinde> getAktiveGueltigeGemeinden(
-		@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
 	) {
 		Mandant mandant = mandantService.findMandantByCookie(mandantCookie);
-		return gemeindeService.getAktiveGemeindenGueltigAm(LocalDate.now(), mandant).stream()
+		return gemeindeService.getAktiveGemeindenGueltigAm(
+			LocalDate.now(),
+			mandant
+		)
+			.stream()
 			.map(gemeinde -> converter.gemeindeToJAX(gemeinde))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Returns the Gemeinde with the given Id.", response = JaxGemeinde.class)
+	@Operation(summary = "Returns the Gemeinde with the given Id.")
 	@Nullable
 	@GET
 	@Path("/id/{gemeindeId}")
@@ -234,7 +338,8 @@ public class GemeindeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public JaxGemeinde findGemeinde(
-		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId) {
+		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId
+	) {
 
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
 
@@ -243,8 +348,8 @@ public class GemeindeResource {
 			.orElse(null);
 	}
 
-	@ApiOperation(value = "Returns the GemeindeStammdaten with the given GemeindeId.",
-		response = JaxGemeindeStammdaten.class)
+	@Operation(
+		summary = "Returns the GemeindeStammdaten with the given GemeindeId.")
 	@Nullable
 	@GET
 	@Path("/stammdaten/{gemeindeId}")
@@ -252,21 +357,26 @@ public class GemeindeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public JaxGemeindeStammdaten getGemeindeStammdaten(
-		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId) {
+		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId
+	) {
 
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
 
-		Optional<GemeindeStammdaten> stammdatenFromDB = gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId);
+		Optional<GemeindeStammdaten> stammdatenFromDB = gemeindeService
+			.getGemeindeStammdatenByGemeindeId(gemeindeId);
 		if (!stammdatenFromDB.isPresent()) {
 			stammdatenFromDB = initGemeindeStammdaten(gemeindeId);
 		}
 		return stammdatenFromDB
-			.map(stammdaten -> gemeindeStammdatenConverter.gemeindeStammdatenToJAX(stammdaten))
+			.map(
+				stammdaten -> gemeindeStammdatenConverter
+					.gemeindeStammdatenToJAX(stammdaten)
+			)
 			.orElse(null);
 	}
 
-	@ApiOperation(value = "Returns the lite version of the GemeindeStammdaten with the given GemeindeId.",
-		response = JaxGemeindeStammdaten.class)
+	@Operation(
+		summary = "Returns the lite version of the GemeindeStammdaten with the given GemeindeId.")
 	@Nullable
 	@GET
 	@Path("/stammdaten/lite/{gemeindeId}")
@@ -274,27 +384,36 @@ public class GemeindeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public JaxGemeindeStammdatenLite getGemeindeStammdatenLite(
-		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId) {
+		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId
+	) {
 
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
 
-		Optional<GemeindeStammdaten> stammdatenFromDB = gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId);
+		Optional<GemeindeStammdaten> stammdatenFromDB = gemeindeService
+			.getGemeindeStammdatenByGemeindeId(gemeindeId);
 		if (!stammdatenFromDB.isPresent()) {
 			stammdatenFromDB = initGemeindeStammdaten(gemeindeId);
 		}
 		return stammdatenFromDB
-			.map(stammdaten -> gemeindeStammdatenConverter.gemeindeStammdatenLiteToJAX(stammdaten))
+			.map(
+				stammdaten -> gemeindeStammdatenConverter
+					.gemeindeStammdatenLiteToJAX(stammdaten)
+			)
 			.orElse(null);
 	}
 
-
-	private Optional<GemeindeStammdaten> initGemeindeStammdaten(String gemeindeId) {
-		GemeindeStammdatenKorrespondenz gemeindeStammdatenKorrespondenz = new GemeindeStammdatenKorrespondenz();
+	private Optional<GemeindeStammdaten> initGemeindeStammdaten(
+		String gemeindeId
+	) {
+		GemeindeStammdatenKorrespondenz gemeindeStammdatenKorrespondenz =
+			new GemeindeStammdatenKorrespondenz();
 		GemeindeStammdaten stammdaten = new GemeindeStammdaten();
 		Optional<Gemeinde> gemeinde = gemeindeService.findGemeinde(gemeindeId);
 		stammdaten.setGemeinde(gemeinde.orElse(new Gemeinde()));
 		stammdaten.setAdresse(getInitAdresse());
-		stammdaten.setGemeindeStammdatenKorrespondenz(gemeindeStammdatenKorrespondenz);
+		stammdaten.setGemeindeStammdatenKorrespondenz(
+			gemeindeStammdatenKorrespondenz
+		);
 		stammdaten.setMail("");
 		return Optional.of(stammdaten);
 	}
@@ -307,61 +426,91 @@ public class GemeindeResource {
 		return a;
 	}
 
-	@ApiOperation(value = "Speichert die GemeindeStammdaten", response = JaxGemeindeStammdaten.class)
+	@Operation(summary = "Speichert die GemeindeStammdaten")
 	@Nullable
 	@PUT
 	@Path("/stammdaten")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS,
+		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public JaxGemeindeStammdaten saveGemeindeStammdaten(
 		@Nonnull @NotNull @Valid JaxGemeindeStammdaten jaxStammdaten,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		GemeindeStammdaten stammdaten;
 		if (jaxStammdaten.getId() != null) {
-			Optional<GemeindeStammdaten> optional = gemeindeService.getGemeindeStammdaten(jaxStammdaten.getId());
+			Optional<GemeindeStammdaten> optional = gemeindeService
+				.getGemeindeStammdaten(jaxStammdaten.getId());
 			stammdaten = optional.orElse(new GemeindeStammdaten());
 		} else {
 			stammdaten = new GemeindeStammdaten();
 		}
 		if (stammdaten.isNew()) {
 			stammdaten.setAdresse(new Adresse());
-			stammdaten.setGemeindeStammdatenKorrespondenz(new GemeindeStammdatenKorrespondenz());
+			stammdaten.setGemeindeStammdatenKorrespondenz(
+				new GemeindeStammdatenKorrespondenz()
+			);
 		}
-		GemeindeStammdaten convertedStammdaten = gemeindeStammdatenConverter.gemeindeStammdatenToEntity(jaxStammdaten, stammdaten);
+		GemeindeStammdaten convertedStammdaten = gemeindeStammdatenConverter
+			.gemeindeStammdatenToEntity(jaxStammdaten, stammdaten);
 
 		// Konfiguration
 		// Die Konfiguratoin kann bearbeitet werden, bis die Periode geschlossen ist.
-		boolean eingeladen = GemeindeStatus.EINGELADEN == jaxStammdaten.getGemeinde().getStatus();
+		boolean eingeladen = GemeindeStatus.EINGELADEN
+			== jaxStammdaten.getGemeinde().getStatus();
 		jaxStammdaten.getKonfigurationsListe().forEach(konfiguration -> {
 			Objects.requireNonNull(konfiguration.getGesuchsperiode());
 			if (eingeladen) {
 				// KIBON-360: die Konfiguration in der aktuellen und in allen zukünftigen Gesuchsperioden speichern
-				saveAllFutureJaxGemeindeKonfiguration(stammdaten.getGemeinde(), konfiguration);
-			} else if (GesuchsperiodeStatus.GESCHLOSSEN != konfiguration.getGesuchsperiode().getStatus()) {
-				saveJaxGemeindeKonfiguration(stammdaten.getGemeinde(), konfiguration);
+				saveAllFutureJaxGemeindeKonfiguration(
+					stammdaten.getGemeinde(),
+					konfiguration
+				);
+			} else if (GesuchsperiodeStatus.GESCHLOSSEN
+				!= konfiguration.getGesuchsperiode().getStatus()) {
+				saveJaxGemeindeKonfiguration(
+					stammdaten.getGemeinde(),
+					konfiguration
+				);
 			}
 
-			saveFerieninseln(konfiguration.getFerieninselStammdaten(), stammdaten.getGemeinde());
+			saveFerieninseln(
+				konfiguration.getFerieninselStammdaten(),
+				stammdaten.getGemeinde()
+			);
 		});
 
 		// Statuswechsel, Mandant kann Gemeinden nicht aktivieren
-		if (convertedStammdaten.getGemeinde().getStatus() == GemeindeStatus.EINGELADEN && !principalBean.isCallerInAnyOfRole(UserRole.getMandantRoles())) {
+		if (convertedStammdaten.getGemeinde().getStatus()
+			== GemeindeStatus.EINGELADEN
+			&& !principalBean.isCallerInAnyOfRole(
+				UserRole.getMandantRoles()
+			)) {
 			convertedStammdaten.getGemeinde().setStatus(GemeindeStatus.AKTIV);
 		}
 
 		// ExternalCleints updaten:
 		if (jaxStammdaten.getExternalClients() != null) {
-			Collection<ExternalClient> availableClients = externalClientService.getAllForGemeinde();
-			availableClients.removeIf(client -> !jaxStammdaten.getExternalClients().contains(client.getId()));
-			convertedStammdaten.setExternalClients(new HashSet<>(availableClients));
+			Collection<ExternalClient> availableClients = externalClientService
+				.getAllForGemeinde();
+			availableClients.removeIf(
+				client -> !jaxStammdaten.getExternalClients()
+					.contains(client.getId())
+			);
+			convertedStammdaten.setExternalClients(
+				new HashSet<>(availableClients)
+			);
 		}
 
-		GemeindeStammdaten persistedStammdaten = gemeindeService.saveGemeindeStammdaten(convertedStammdaten);
+		GemeindeStammdaten persistedStammdaten = gemeindeService
+			.saveGemeindeStammdaten(convertedStammdaten);
 
-		return gemeindeStammdatenConverter.gemeindeStammdatenToJAX(persistedStammdaten);
+		return gemeindeStammdatenConverter.gemeindeStammdatenToJAX(
+			persistedStammdaten
+		);
 
 	}
 
@@ -374,9 +523,15 @@ public class GemeindeResource {
 		requireNonNull(konfiguration.getGesuchsperiode().getId());
 
 		Gesuchsperiode gesuchsperiode =
-			gesuchsperiodeService.findGesuchsperiode(konfiguration.getGesuchsperiode().getId())
-				.orElseThrow(() -> new EbeguEntityNotFoundException("saveJaxGemeindeKonfiguration",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND));
+			gesuchsperiodeService.findGesuchsperiode(
+				konfiguration.getGesuchsperiode().getId()
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"saveJaxGemeindeKonfiguration",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
+					)
+				);
 
 		for (JaxEinstellung jaxKonfig : konfiguration.getKonfigurationen()) {
 			saveEinstellung(gemeinde, gesuchsperiode, jaxKonfig);
@@ -392,20 +547,32 @@ public class GemeindeResource {
 		requireNonNull(konfiguration.getGesuchsperiode().getId());
 
 		Collection<Gesuchsperiode> gesuchsperioden =
-			gesuchsperiodeService.findThisAndFutureGesuchsperioden(konfiguration.getGesuchsperiode().getId());
+			gesuchsperiodeService.findThisAndFutureGesuchsperioden(
+				konfiguration.getGesuchsperiode().getId()
+			);
 
 		if (gesuchsperioden != null && !gesuchsperioden.isEmpty()) {
 			for (Gesuchsperiode gesuchsperiode : gesuchsperioden) {
-				for (JaxEinstellung jaxKonfig : konfiguration.getKonfigurationen()) {
+				for (JaxEinstellung jaxKonfig : konfiguration
+					.getKonfigurationen()) {
 					saveEinstellung(gemeinde, gesuchsperiode, jaxKonfig);
 				}
 			}
 		}
 	}
 
-	private void saveEinstellung(@Nonnull Gemeinde gemeinde, Gesuchsperiode gesuchsperiode, JaxEinstellung jaxKonfig) {
-		Einstellung einstellung = einstellungService.findEinstellung(jaxKonfig.getKey(), gemeinde, gesuchsperiode);
-		if (!gemeinde.equals(einstellung.getGemeinde()) || !gesuchsperiode.equals(einstellung.getGesuchsperiode())) {
+	private void saveEinstellung(
+		@Nonnull Gemeinde gemeinde,
+		Gesuchsperiode gesuchsperiode,
+		JaxEinstellung jaxKonfig
+	) {
+		Einstellung einstellung = einstellungService.findEinstellung(
+			jaxKonfig.getKey(),
+			gemeinde,
+			gesuchsperiode
+		);
+		if (!gemeinde.equals(einstellung.getGemeinde())
+			|| !gesuchsperiode.equals(einstellung.getGesuchsperiode())) {
 			einstellung = new Einstellung();
 			einstellung.setKey(jaxKonfig.getKey());
 			einstellung.setGemeinde(gemeinde);
@@ -416,7 +583,10 @@ public class GemeindeResource {
 		einstellungService.saveEinstellung(einstellung);
 	}
 
-	private void initFerieninselnForGemeindeAndGesuchsperiode(Gemeinde gemeinde, Gesuchsperiode gp) {
+	private void initFerieninselnForGemeindeAndGesuchsperiode(
+		Gemeinde gemeinde,
+		Gesuchsperiode gp
+	) {
 		Optional<GemeindeStammdatenGesuchsperiode> gemeindeStammdatenGesuchsperiodeOpt =
 			gemeindeService.findGemeindeStammdatenGesuchsperiode(
 				gemeinde.getId(),
@@ -437,7 +607,10 @@ public class GemeindeResource {
 		ferieninselStammdatenService.initFerieninselStammdaten(gsgp);
 	}
 
-	private void removeFerieninselnForGemeindeAndGesuchsperiode(Gemeinde gemeinde, Gesuchsperiode gp) {
+	private void removeFerieninselnForGemeindeAndGesuchsperiode(
+		Gemeinde gemeinde,
+		Gesuchsperiode gp
+	) {
 		Optional<GemeindeStammdatenGesuchsperiode> gemeindeStammdatenGesuchsperiodeOpt =
 			gemeindeService.findGemeindeStammdatenGesuchsperiode(
 				gemeinde.getId(),
@@ -446,44 +619,62 @@ public class GemeindeResource {
 
 		if (gemeindeStammdatenGesuchsperiodeOpt.isPresent()) {
 
-			GemeindeStammdatenGesuchsperiode gsgp = gemeindeStammdatenGesuchsperiodeOpt.get();
+			GemeindeStammdatenGesuchsperiode gsgp =
+				gemeindeStammdatenGesuchsperiodeOpt.get();
 
 			if (gsgp.getGemeindeStammdatenGesuchsperiodeFerieninseln() != null
-				&& !gsgp.getGemeindeStammdatenGesuchsperiodeFerieninseln().isEmpty()) {
+				&& !gsgp.getGemeindeStammdatenGesuchsperiodeFerieninseln()
+					.isEmpty()) {
 				gsgp.getGemeindeStammdatenGesuchsperiodeFerieninseln()
-					.forEach(stammdaten -> ferieninselStammdatenService.removeFerieninselStammdaten(stammdaten.getId()));
+					.forEach(
+						stammdaten -> ferieninselStammdatenService
+							.removeFerieninselStammdaten(stammdaten.getId())
+					);
 				gsgp.getGemeindeStammdatenGesuchsperiodeFerieninseln().clear();
 			}
 		}
 	}
 
-	private void saveFerieninseln(List<JaxGemeindeStammdatenGesuchsperiodeFerieninsel> jaxFiStammdaten,
-		Gemeinde gemeinde) {
+	private void saveFerieninseln(
+		List<JaxGemeindeStammdatenGesuchsperiodeFerieninsel> jaxFiStammdaten,
+		Gemeinde gemeinde
+	) {
 		if (gemeinde.isAngebotFI()) {
 			Objects.requireNonNull(jaxFiStammdaten);
 			for (JaxGemeindeStammdatenGesuchsperiodeFerieninsel fiStammdaten : jaxFiStammdaten) {
 				Objects.requireNonNull(fiStammdaten.getId());
 				GemeindeStammdatenGesuchsperiodeFerieninsel fiStammdatenFromDB =
-					ferieninselStammdatenService.findFerieninselStammdaten(fiStammdaten.getId()).orElseThrow(() ->
-						new EbeguEntityNotFoundException("saveFerieninseln", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND)
-					);
+					ferieninselStammdatenService.findFerieninselStammdaten(
+						fiStammdaten.getId()
+					)
+						.orElseThrow(
+							() -> new EbeguEntityNotFoundException(
+								"saveFerieninseln",
+								ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
+							)
+						);
 				ferieninselStammdatenService.saveFerieninselStammdaten(
-					converter.ferieninselStammdatenToEntity(fiStammdaten,
-						fiStammdatenFromDB)
+					gemeindeStammdatenConverter.ferieninselStammdatenToEntity(
+						fiStammdaten,
+						fiStammdatenFromDB
+					)
 				);
 			}
 		}
 	}
 
-	@ApiOperation("Stores the logo image of the Gemeinde with the given id")
+	@Operation(
+		summary = "Stores the logo image of the Gemeinde with the given id")
 	@POST
 	@Path("/logo/data/{gemeindeId}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS,
+		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public Response uploadLogo(
 		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId,
-		@Nonnull @NotNull MultipartFormDataInput input) {
+		@Nonnull @NotNull MultipartFormDataInput input
+	) {
 
 		List<TransferFile> fileList = MultipartFormToFileConverter.parse(input);
 
@@ -492,20 +683,28 @@ public class GemeindeResource {
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
 
 		TransferFile file = fileList.get(0);
-		gemeindeService.uploadLogo(gemeindeId, file.getContent(), file.getFilename(), file.getFiletype());
+		gemeindeService.uploadLogo(
+			gemeindeId,
+			file.getContent(),
+			file.getFilename(),
+			file.getFiletype()
+		);
 
 		return Response.ok().build();
 	}
 
-	@ApiOperation("Stores the alternative logo-image for tagesschule of the Gemeinde with the given id")
+	@Operation(
+		summary = "Stores the alternative logo-image for tagesschule of the Gemeinde with the given id")
 	@POST
 	@Path("/alternativeLogo/data/{gemeindeId}")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS,
+		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public Response uploadAlternativeLogoTagesschule(
 		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId,
-		@Nonnull @NotNull MultipartFormDataInput input) {
+		@Nonnull @NotNull MultipartFormDataInput input
+	) {
 
 		List<TransferFile> fileList = MultipartFormToFileConverter.parse(input);
 
@@ -514,96 +713,138 @@ public class GemeindeResource {
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
 
 		TransferFile file = fileList.get(0);
-		gemeindeService.uploadAlternativeLogoTagesschule(gemeindeId, file.getContent(), file.getFilename(), file.getFiletype());
+		gemeindeService.uploadAlternativeLogoTagesschule(
+			gemeindeId,
+			file.getContent(),
+			file.getFilename(),
+			file.getFiletype()
+		);
 
 		return Response.ok().build();
 	}
 
-	@ApiOperation("Checks if it isa supported image")
+	@Operation(summary = "Checks if it isa supported image")
 	@POST
 	@Path("/supported/image")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentlich
-	public Response isSupportedImage(@Nonnull @NotNull MultipartFormDataInput input) {
+	public Response isSupportedImage(
+		@Nonnull @NotNull MultipartFormDataInput input
+	) {
 		List<TransferFile> fileList = MultipartFormToFileConverter.parse(input);
 		Validate.notEmpty(fileList, UPLOAD_WARNING);
 		TransferFile file = fileList.get(0);
 		try {
 			Image.getInstance(file.getContent());
 		} catch (IOException exception) {
-			throw new EbeguRuntimeException("isSupportedImage", ErrorCodeEnum.ERROR_NOT_SUPPORTED_IMAGE, exception);
+			throw new EbeguRuntimeException(
+				"isSupportedImage",
+				ErrorCodeEnum.ERROR_NOT_SUPPORTED_IMAGE,
+				exception
+			);
 		}
 		return Response.ok().build();
 	}
 
-	@ApiOperation("Returns the logo image of the Gemeinde with the given id or an errorcode if none is available")
+	@Operation(
+		summary = "Returns the logo image of the Gemeinde with the given id or an errorcode if none is available")
 	@GET
 	@Path("/logo/data/{gemeindeId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@PermitAll // Oeffentliche Daten
 	public Response downloadLogo(
-		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId) {
+		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId
+	) {
 
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
-		Optional<GemeindeStammdaten> stammdaten = gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId);
+		Optional<GemeindeStammdaten> stammdaten = gemeindeService
+			.getGemeindeStammdatenByGemeindeId(gemeindeId);
 		if (stammdaten.isPresent()) {
 			try {
-				String name = stammdaten.get().getGemeindeStammdatenKorrespondenz().getLogoName();
-				String type = stammdaten.get().getGemeindeStammdatenKorrespondenz().getLogoType();
-				return RestUtil.buildDownloadResponse(false, name == null ? "logo" : name,
-					type == null ? "image/*" : type, stammdaten.get().getGemeindeStammdatenKorrespondenz().getLogoContent());
+				String name = stammdaten.get()
+					.getGemeindeStammdatenKorrespondenz()
+					.getLogoName();
+				String type = stammdaten.get()
+					.getGemeindeStammdatenKorrespondenz()
+					.getLogoType();
+				return RestUtil.buildDownloadResponse(
+					false,
+					name == null ? "logo" : name,
+					type == null ? "image/*" : type,
+					stammdaten.get()
+						.getGemeindeStammdatenKorrespondenz()
+						.getLogoContent()
+				);
 			} catch (IOException e) {
-				return Response.status(Status.NOT_FOUND).entity("Logo kann nicht gelesen werden").build();
+				return Response.status(Status.NOT_FOUND)
+					.entity("Logo kann nicht gelesen werden")
+					.build();
 			}
 		}
 
 		return Response.status(Status.NO_CONTENT).build();
 	}
 
-	@ApiOperation("Returns the alternative logo image for tagesschulen of the Gemeinde with the given id or an errorcode if none is available")
+	@Operation(
+		summary = "Returns the alternative logo image for tagesschulen of the Gemeinde with the given id or an errorcode if none is available")
 	@GET
 	@Path("/alternativeLogo/data/{gemeindeId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@PermitAll // Oeffentliche Daten
 	public Response downloadAlternativeLogoTagesschule(
-		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId) {
+		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId
+	) {
 
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
-		Optional<GemeindeStammdaten> stammdaten = gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId);
+		Optional<GemeindeStammdaten> stammdaten = gemeindeService
+			.getGemeindeStammdatenByGemeindeId(gemeindeId);
 		if (stammdaten.isPresent()) {
 			try {
-				String name = stammdaten.get().getGemeindeStammdatenKorrespondenz().getAlternativesLogoTagesschuleName();
-				String type = stammdaten.get().getGemeindeStammdatenKorrespondenz().getAlternativesLogoTagesschuleType();
+				String name = stammdaten.get()
+					.getGemeindeStammdatenKorrespondenz()
+					.getAlternativesLogoTagesschuleName();
+				String type = stammdaten.get()
+					.getGemeindeStammdatenKorrespondenz()
+					.getAlternativesLogoTagesschuleType();
 
-				return RestUtil.buildDownloadResponse(false,
+				return RestUtil.buildDownloadResponse(
+					false,
 					name == null ? "logo" : name,
 					type == null ? "image/*" : type,
-					stammdaten.get().getGemeindeStammdatenKorrespondenz().getAlternativesLogoTagesschuleContent());
+					stammdaten.get()
+						.getGemeindeStammdatenKorrespondenz()
+						.getAlternativesLogoTagesschuleContent()
+				);
 			} catch (IOException e) {
-				return Response.status(Status.NOT_FOUND).entity("Logo kann nicht gelesen werden").build();
+				return Response.status(Status.NOT_FOUND)
+					.entity("Logo kann nicht gelesen werden")
+					.build();
 			}
 		}
 
 		return Response.status(Status.NO_CONTENT).build();
 	}
 
-	@ApiOperation("Deletes alternative logo image for tagesschulen of the Gemeinde with the given id or an errorcode if none is available")
+	@Operation(
+		summary = "Deletes alternative logo image for tagesschulen of the Gemeinde with the given id or an errorcode if none is available")
 	@DELETE
 	@Path("/alternativeLogo/{gemeindeId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.WILDCARD)
 	@PermitAll // Oeffentliche Daten
 	public JaxGemeindeStammdaten deleteAlternativeLogoTagesschule(
-		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId) {
+		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId
+	) {
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
-		return gemeindeStammdatenConverter.gemeindeStammdatenToJAX(gemeindeService.deleteAlternativeLogoTagesschule(gemeindeId));
+		return gemeindeStammdatenConverter.gemeindeStammdatenToJAX(
+			gemeindeService.deleteAlternativeLogoTagesschule(gemeindeId)
+		);
 	}
 
-	@ApiOperation(value = "Returns all unregistered Gemeinden from BFS", responseContainer = "Collection",
-		response = JaxBfsGemeinde.class)
+	@Operation(summary = "Returns all unregistered Gemeinden from BFS")
 	@Nullable
 	@GET
 	@Path("/unregistered")
@@ -613,13 +854,13 @@ public class GemeindeResource {
 	public List<JaxBfsGemeinde> getUnregisteredBfsGemeinden() {
 		Mandant mandant = principalBean.getMandant();
 		Objects.requireNonNull(mandant);
-		return gemeindeService.getUnregisteredBfsGemeinden(mandant).stream()
+		return gemeindeService.getUnregisteredBfsGemeinden(mandant)
+			.stream()
 			.map(gemeinde -> converter.gemeindeBfsToJax(gemeinde))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Returns all unregistered Gemeinden from BFS", responseContainer = "Collection",
-		response = JaxBfsGemeinde.class)
+	@Operation(summary = "Returns all unregistered Gemeinden from BFS")
 	@Nullable
 	@GET
 	@Path("/allBfs")
@@ -627,16 +868,17 @@ public class GemeindeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxBfsGemeinde> getAllBfsGemeinden(
-		@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
 	) {
 		Mandant mandant = mandantService.findMandantByCookie(mandantCookie);
-		return gemeindeService.getAllBfsGemeinden(mandant).stream()
+		return gemeindeService.getAllBfsGemeinden(mandant)
+			.stream()
 			.map(gemeinde -> converter.gemeindeBfsToJax(gemeinde))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Returns true, if the currently logged in Benutzer has any Gemeinden in Status EINGELADEN",
-		response = Boolean.class)
+	@Operation(
+		summary = "Returns true, if the currently logged in Benutzer has any Gemeinden in Status EINGELADEN")
 	@Nonnull
 	@GET
 	@Path("/hasEinladungen/currentuser")
@@ -645,15 +887,23 @@ public class GemeindeResource {
 	@PermitAll
 	public Response hasGemeindenInStatusEingeladenForCurrentBenutzer() {
 		final Benutzer benutzer = benutzerService.getCurrentBenutzer()
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"hasGemeindenInStatusEingeladenForCurrentBenutzer",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND));
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"hasGemeindenInStatusEingeladenForCurrentBenutzer",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
+				)
+			);
 
 		Collection<Gemeinde> gemeindeList = new HashSet<>();
-		if (benutzer.getCurrentBerechtigung().getRole().isRoleGemeindeabhaengig()) {
+		if (benutzer.getCurrentBerechtigung()
+			.getRole()
+			.isRoleGemeindeabhaengig()) {
 			gemeindeList = benutzer.getCurrentBerechtigung().getGemeindeList();
-		} else if (benutzer.getCurrentBerechtigung().getRole() == UserRole.SUPER_ADMIN) {
-			gemeindeList = gemeindeService.getAllGemeinden(benutzer.getMandant());
+		} else if (benutzer.getCurrentBerechtigung().getRole()
+			== UserRole.SUPER_ADMIN) {
+			gemeindeList = gemeindeService.getAllGemeinden(
+				benutzer.getMandant()
+			);
 		}
 		long anzahl = gemeindeList.stream()
 			.filter(inst -> inst.getStatus() == GemeindeStatus.EINGELADEN)
@@ -661,17 +911,19 @@ public class GemeindeResource {
 		return Response.ok(anzahl > 0).build();
 	}
 
-	@ApiOperation(value = "Returns GemeindeVerbund when already registred", responseContainer = "Collection",
-		response = JaxBfsGemeinde.class)
+	@Operation(summary = "Returns GemeindeVerbund when already registred")
 	@Nullable
 	@GET
 	@Path("/gemeindeRegistrierung/{gemeindeId}/{gemeindenTSId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Fuer Registrierungsprozess
-	public List<JaxGemeindeRegistrierung> getGemeindenRegistrierung(@Nullable @PathParam("gemeindeId") JaxId gemeindeBGJAXPId,
-		@Nullable @PathParam("gemeindenTSId") String gemeindenTSIdList) {
-		List<JaxGemeindeRegistrierung> gemeindeRegistrierungList = new ArrayList<>();
+	public List<JaxGemeindeRegistrierung> getGemeindenRegistrierung(
+		@Nullable @PathParam("gemeindeId") JaxId gemeindeBGJAXPId,
+		@Nullable @PathParam("gemeindenTSId") String gemeindenTSIdList
+	) {
+		List<JaxGemeindeRegistrierung> gemeindeRegistrierungList =
+			new ArrayList<>();
 
 		// BG-Gemeinde: Es kann nur 1 geben. Falls sie gesetzt ist, darf sie für TS nicht ein zweites Mal hinzugefügt
 		// werden
@@ -682,11 +934,17 @@ public class GemeindeResource {
 			if (!gemeindeBGId.equals("null")) {
 				String finalGemeindeBGId = gemeindeBGId;
 				Gemeinde gemeindeBG =
-					gemeindeService.findGemeinde(gemeindeBGId).orElseThrow(() -> new EbeguEntityNotFoundException(
-						"findGemeinde",
-						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, finalGemeindeBGId));
+					gemeindeService.findGemeinde(gemeindeBGId)
+						.orElseThrow(
+							() -> new EbeguEntityNotFoundException(
+								"findGemeinde",
+								ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+								finalGemeindeBGId
+							)
+						);
 
-				JaxGemeindeRegistrierung gemeindeRegistrierungBG = new JaxGemeindeRegistrierung();
+				JaxGemeindeRegistrierung gemeindeRegistrierungBG =
+					new JaxGemeindeRegistrierung();
 				gemeindeRegistrierungBG.setId(gemeindeBGId);
 				gemeindeRegistrierungBG.setName(gemeindeBG.getName());
 				gemeindeRegistrierungList.add(gemeindeRegistrierungBG);
@@ -702,21 +960,42 @@ public class GemeindeResource {
 				// nicht so es heisst das es einen Kind von einen Schulverbund ist
 				if (gemeindeTSId.matches(Constants.REGEX_UUID)) {
 					Gemeinde gemeindeTS =
-						gemeindeService.findGemeinde(gemeindeTSId).orElseThrow(() -> new EbeguEntityNotFoundException(
-							"findGemeinde",
-							ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gemeindeTSId));
+						gemeindeService.findGemeinde(gemeindeTSId)
+							.orElseThrow(
+								() -> new EbeguEntityNotFoundException(
+									"findGemeinde",
+									ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+									gemeindeTSId
+								)
+							);
 					gemeindeTSVerbund =
-						gemeindeService.findRegistredGemeindeVerbundIfExist(gemeindeTS.getBfsNummer()).orElse(null);
+						gemeindeService.findRegistredGemeindeVerbundIfExist(
+							gemeindeTS.getBfsNummer()
+						).orElse(null);
 					gemeindeName = gemeindeTS.getName();
 				} else {
 					BfsGemeinde bfsGemeinde =
-						gemeindeService.findBfsGemeinde(Long.parseLong(gemeindeTSId)).orElseThrow(() -> new EbeguEntityNotFoundException(
-							"findBfsGemeinde",
-							ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gemeindeTSId));
+						gemeindeService.findBfsGemeinde(
+							Long.parseLong(gemeindeTSId)
+						)
+							.orElseThrow(
+								() -> new EbeguEntityNotFoundException(
+									"findBfsGemeinde",
+									ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+									gemeindeTSId
+								)
+							);
 					gemeindeTSVerbund =
-						gemeindeService.findRegistredGemeindeVerbundIfExist(bfsGemeinde.getBfsNummer()).orElseThrow(() -> new EbeguEntityNotFoundException(
-							"findRegistredGemeindeVerbundIfExist",
-							ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, bfsGemeinde.getBfsNummer()));
+						gemeindeService.findRegistredGemeindeVerbundIfExist(
+							bfsGemeinde.getBfsNummer()
+						)
+							.orElseThrow(
+								() -> new EbeguEntityNotFoundException(
+									"findRegistredGemeindeVerbundIfExist",
+									ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+									bfsGemeinde.getBfsNummer()
+								)
+							);
 					gemeindeName = bfsGemeinde.getName();
 				}
 
@@ -724,16 +1003,24 @@ public class GemeindeResource {
 				// sowohl für BG wie auch
 				// für TS ausgewählt wurde. Fall diese Gemeinde für TS keinem Verbund angehört, muss sie nicht ein
 				// zweites Mal hinzugefügt werden
-				if (gemeindeBGId != null && gemeindeBGId.equals(gemeindeTSId) && gemeindeTSVerbund == null) {
+				if (gemeindeBGId != null
+					&& gemeindeBGId.equals(gemeindeTSId)
+					&& gemeindeTSVerbund == null) {
 					continue;
 				}
 
-				JaxGemeindeRegistrierung gemeindeRegistrierungTS = new JaxGemeindeRegistrierung();
+				JaxGemeindeRegistrierung gemeindeRegistrierungTS =
+					new JaxGemeindeRegistrierung();
 				gemeindeRegistrierungTS.setId(gemeindeTSId);
 				gemeindeRegistrierungTS.setName(gemeindeName);
-				if (gemeindeTSVerbund != null && gemeindeTSVerbund.isAngebotTS()) {
-					gemeindeRegistrierungTS.setVerbundId(gemeindeTSVerbund.getId());
-					gemeindeRegistrierungTS.setVerbundName(gemeindeTSVerbund.getName());
+				if (gemeindeTSVerbund != null
+					&& gemeindeTSVerbund.isAngebotTS()) {
+					gemeindeRegistrierungTS.setVerbundId(
+						gemeindeTSVerbund.getId()
+					);
+					gemeindeRegistrierungTS.setVerbundName(
+						gemeindeTSVerbund.getName()
+					);
 				}
 				gemeindeRegistrierungList.add(gemeindeRegistrierungTS);
 			}
@@ -741,9 +1028,8 @@ public class GemeindeResource {
 		return gemeindeRegistrierungList;
 	}
 
-	@ApiOperation(value = "Returns all Gemeinden with Status AKTIV and all Gemeinde von Schulverbund",
-		responseContainer = "Collection",
-		response = JaxGemeinde.class)
+	@Operation(
+		summary = "Returns all Gemeinden with Status AKTIV and all Gemeinde von Schulverbund")
 	@Nullable
 	@GET
 	@Path("/activeAndSchulverbund")
@@ -751,24 +1037,42 @@ public class GemeindeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Fuer Registrierungsprozess
 	public List<JaxGemeinde> getAktiveUndSchulverbundGemeinden(
-		@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
 	) {
 		Mandant mandant = mandantService.findMandantByCookie(mandantCookie);
-		List<JaxGemeinde> aktiveGemeinde = gemeindeService.getAktiveGemeindenGueltigAm(LocalDate.now(), mandant).stream()
+		List<JaxGemeinde> aktiveGemeinde = gemeindeService
+			.getAktiveGemeindenGueltigAm(LocalDate.now(), mandant)
+			.stream()
 			.map(gemeinde -> converter.gemeindeToJAX(gemeinde))
 			.collect(Collectors.toList());
-		List<JaxGemeinde> aktiveUndSchulverbundGemeinden = new ArrayList<>(aktiveGemeinde);
+		List<JaxGemeinde> aktiveUndSchulverbundGemeinden = new ArrayList<>(
+			aktiveGemeinde
+		);
 		for (JaxGemeinde jaxGemeinde : aktiveGemeinde) {
-			if (BfsGemeinde.isBfsNummerVerbund(jaxGemeinde.getBfsNummer()) && jaxGemeinde.isAngebotTS()) {
-				List<BfsGemeinde> bfsGemeindeList = gemeindeService.findGemeindeVonVerbund(jaxGemeinde.getBfsNummer());
+			if (BfsGemeinde.isBfsNummerVerbund(jaxGemeinde.getBfsNummer())
+				&& jaxGemeinde.isAngebotTS()) {
+				List<BfsGemeinde> bfsGemeindeList = gemeindeService
+					.findGemeindeVonVerbund(jaxGemeinde.getBfsNummer());
 				bfsGemeindeList.forEach(bfsGemeinde -> {
 					boolean isAlreadyVorhanden =
-						aktiveUndSchulverbundGemeinden.stream().anyMatch(aktiveJaxGemeinde -> aktiveJaxGemeinde.getBfsNummer().equals(bfsGemeinde.getBfsNummer()));
+						aktiveUndSchulverbundGemeinden.stream()
+							.anyMatch(
+								aktiveJaxGemeinde -> aktiveJaxGemeinde
+									.getBfsNummer()
+									.equals(
+										bfsGemeinde
+											.getBfsNummer()
+									)
+							);
 					if (!isAlreadyVorhanden) {
 						JaxGemeinde vonSchulVerbund = new JaxGemeinde();
-						vonSchulVerbund.setKey(String.valueOf(bfsGemeinde.getBfsNummer()));
+						vonSchulVerbund.setKey(
+							String.valueOf(bfsGemeinde.getBfsNummer())
+						);
 						vonSchulVerbund.setId(bfsGemeinde.getId());
-						vonSchulVerbund.setBfsNummer(bfsGemeinde.getBfsNummer());
+						vonSchulVerbund.setBfsNummer(
+							bfsGemeinde.getBfsNummer()
+						);
 						vonSchulVerbund.setName(bfsGemeinde.getName());
 						vonSchulVerbund.setAngebotBG(false);
 						vonSchulVerbund.setAngebotTS(true);
@@ -780,9 +1084,7 @@ public class GemeindeResource {
 		return aktiveUndSchulverbundGemeinden;
 	}
 
-	@ApiOperation(
-		value = "Updated die Angebot Flags (BG/TS/FI) der Gemeinde",
-		response = Response.class)
+	@Operation(summary = "Updated die Angebot Flags (BG/TS/FI) der Gemeinde")
 	@Nonnull
 	@PUT
 	@Path("/updateangebote")
@@ -799,43 +1101,80 @@ public class GemeindeResource {
 		requireNonNull(jaxGemeinde.getFerieninselanmeldungenStartdatum());
 
 		Gemeinde gemeinde =
-			gemeindeService.findGemeinde(jaxGemeinde.getId()).orElseThrow(() -> new EbeguEntityNotFoundException(
-				"updateAngebotTS", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, jaxGemeinde.getId()));
-		boolean datesChanged = false;
-		if (!gemeinde.getBetreuungsgutscheineStartdatum().isEqual(jaxGemeinde.getBetreuungsgutscheineStartdatum())) {
-			gemeinde.setBetreuungsgutscheineStartdatum(jaxGemeinde.getBetreuungsgutscheineStartdatum());
-			datesChanged = true;
+			gemeindeService.findGemeinde(jaxGemeinde.getId())
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"updateAngebotTS",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						jaxGemeinde.getId()
+					)
+				);
+		boolean datasChanged = false;
+		if (!gemeinde.getBetreuungsgutscheineStartdatum()
+			.isEqual(jaxGemeinde.getBetreuungsgutscheineStartdatum())) {
+			gemeinde.setBetreuungsgutscheineStartdatum(
+				jaxGemeinde.getBetreuungsgutscheineStartdatum()
+			);
+			datasChanged = true;
 		}
-		if (!gemeinde.getTagesschulanmeldungenStartdatum().equals(jaxGemeinde.getTagesschulanmeldungenStartdatum())) {
-			gemeinde.setTagesschulanmeldungenStartdatum(jaxGemeinde.getTagesschulanmeldungenStartdatum());
-			datesChanged = true;
+		if (!gemeinde.getTagesschulanmeldungenStartdatum()
+			.equals(jaxGemeinde.getTagesschulanmeldungenStartdatum())) {
+			gemeinde.setTagesschulanmeldungenStartdatum(
+				jaxGemeinde.getTagesschulanmeldungenStartdatum()
+			);
+			datasChanged = true;
 		}
-		if (!gemeinde.getFerieninselanmeldungenStartdatum().equals(jaxGemeinde.getFerieninselanmeldungenStartdatum())) {
-			gemeinde.setFerieninselanmeldungenStartdatum(jaxGemeinde.getFerieninselanmeldungenStartdatum());
-			datesChanged = true;
+		if (!gemeinde.getFerieninselanmeldungenStartdatum()
+			.equals(jaxGemeinde.getFerieninselanmeldungenStartdatum())) {
+			gemeinde.setFerieninselanmeldungenStartdatum(
+				jaxGemeinde.getFerieninselanmeldungenStartdatum()
+			);
+			datasChanged = true;
 		}
 		if (!gemeinde.getGueltigBis().equals(jaxGemeinde.getGueltigBis())) {
 			gemeinde.setGueltigBis(jaxGemeinde.getGueltigBis());
-			datesChanged = true;
+			datasChanged = true;
 		}
-		if (!gemeinde.getInfomaZahlungen().equals(jaxGemeinde.getInfomaZahlungen())) {
+		if (!gemeinde.getInfomaZahlungen()
+			.equals(jaxGemeinde.getInfomaZahlungen())) {
 			gemeinde.setInfomaZahlungen(jaxGemeinde.getInfomaZahlungen());
-			datesChanged = true;
+			datasChanged = true;
 		}
-		if (datesChanged) {
+		if (!gemeinde.getAdminMutationAbweichungMeldungEnabled()
+			.equals(jaxGemeinde.getAdminMutationAbweichungMeldungEnabled())) {
+			gemeinde.setAdminMutationAbweichungMeldungEnabled(
+				jaxGemeinde.getAdminMutationAbweichungMeldungEnabled()
+			);
+			datasChanged = true;
+		}
+		if (datasChanged) {
 			gemeinde = gemeindeService.saveGemeinde(gemeinde);
 		}
 		if (gemeinde.isAngebotBG() != jaxGemeinde.isAngebotBG()) {
-			gemeindeService.updateAngebotBG(gemeinde, jaxGemeinde.isAngebotBG());
+			gemeindeService.updateAngebotBG(
+				gemeinde,
+				jaxGemeinde.isAngebotBG()
+			);
 		}
 		if (gemeinde.isAngebotBGTFO() != jaxGemeinde.isAngebotBGTFO()) {
-			gemeindeService.updateAngebotBGTFO(gemeinde, jaxGemeinde.isAngebotBGTFO());
+			gemeindeService.updateAngebotBGTFO(
+				gemeinde,
+				jaxGemeinde.isAngebotBGTFO()
+			);
 		}
-		if (gemeinde.isAngebotTS() != jaxGemeinde.isAngebotTS() || gemeinde.isNurLats() != jaxGemeinde.isNurLats()) {
-			gemeindeService.updateAngebotTS(gemeinde, jaxGemeinde.isAngebotTS(), jaxGemeinde.isNurLats());
+		if (gemeinde.isAngebotTS() != jaxGemeinde.isAngebotTS()
+			|| gemeinde.isNurLats() != jaxGemeinde.isNurLats()) {
+			gemeindeService.updateAngebotTS(
+				gemeinde,
+				jaxGemeinde.isAngebotTS(),
+				jaxGemeinde.isNurLats()
+			);
 		}
 		if (gemeinde.isAngebotFI() != jaxGemeinde.isAngebotFI()) {
-			gemeindeService.updateAngebotFI(gemeinde, jaxGemeinde.isAngebotFI());
+			gemeindeService.updateAngebotFI(
+				gemeinde,
+				jaxGemeinde.isAngebotFI()
+			);
 
 			handleFIAngebotChange(jaxGemeinde.isAngebotFI(), gemeinde);
 		}
@@ -845,28 +1184,46 @@ public class GemeindeResource {
 		return Response.ok().build();
 	}
 
-	private void handleFIAngebotChange(boolean isAngebotFI, final Gemeinde gemeinde) {
+	private void handleFIAngebotChange(
+		boolean isAngebotFI,
+		final Gemeinde gemeinde
+	) {
 		if (isAngebotFI) {
 			gesuchsperiodeService.getAllGesuchsperioden()
-				.forEach(gp -> initFerieninselnForGemeindeAndGesuchsperiode(gemeinde, gp));
+				.forEach(
+					gp -> initFerieninselnForGemeindeAndGesuchsperiode(
+						gemeinde,
+						gp
+					)
+				);
 		} else {
 			gesuchsperiodeService.getAllGesuchsperioden()
-				.forEach(gp -> removeFerieninselnForGemeindeAndGesuchsperiode(gemeinde, gp));
+				.forEach(
+					gp -> removeFerieninselnForGemeindeAndGesuchsperiode(
+						gemeinde,
+						gp
+					)
+				);
 		}
 	}
 
-	@ApiOperation("Returns a specific document of the Gemeinde with the given type or an errorcode if none is "
-		+ "available")
+	@Operation(
+		summary = "Returns a specific document of the Gemeinde with the given type or an errorcode if none is "
+			+ "available")
 	@GET
 	@Path("/gemeindeGesuchsperiodeDoku/{gemeindeId}/{gesuchsperiodeId}/{sprache}/{dokumentTyp}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_TS, ADMIN_GEMEINDE, SACHBEARBEITER_BG, SACHBEARBEITER_TS,
-		SACHBEARBEITER_GEMEINDE, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, GESUCHSTELLER, ADMIN_SOZIALDIENST,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_TS, ADMIN_GEMEINDE,
+		SACHBEARBEITER_BG, SACHBEARBEITER_TS,
+		SACHBEARBEITER_GEMEINDE, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		GESUCHSTELLER, ADMIN_SOZIALDIENST,
 		SACHBEARBEITER_SOZIALDIENST })
 	public Response downloadGemeindeDokument(
 		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId,
-		@Nonnull @NotNull @PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId,
+		@Nonnull
+		@NotNull
+		@PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId,
 		@Nonnull @PathParam("sprache") Sprache sprache,
 		@Nonnull @PathParam("dokumentTyp") DokumentTyp dokumentTyp
 	) {
@@ -877,22 +1234,40 @@ public class GemeindeResource {
 		// wir schauen welche Sprache sind bei der Gemeinde konfiguriert, falls nur eine ist der Dokument in dieser
 		// Sprache zurueckgegeben
 		GemeindeStammdaten gemeindeStammdaten =
-			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId).orElseThrow(() -> new EbeguEntityNotFoundException(
-				"GemeindeStammdaten",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gemeindeId));
-		Sprache[] korrespondenzsprachen = gemeindeStammdaten.getKorrespondenzsprache().getSprache();
+			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"GemeindeStammdaten",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						gemeindeId
+					)
+				);
+		Sprache[] korrespondenzsprachen = gemeindeStammdaten
+			.getKorrespondenzsprache()
+			.getSprache();
 		if (korrespondenzsprachen.length == 1) {
 			sprache = korrespondenzsprachen[0];
 		}
 
-		final byte[] content = gemeindeService.downloadGemeindeGesuchsperiodeDokument(gemeindeId, gesuchsperiodeId,
-			sprache, dokumentTyp);
+		final byte[] content = gemeindeService
+			.downloadGemeindeGesuchsperiodeDokument(
+				gemeindeId,
+				gesuchsperiodeId,
+				sprache,
+				dokumentTyp
+			);
 		if (content != null && content.length > 0) {
 			try {
-				return RestUtil.buildDownloadResponse(true, "vorlageMerkblattTS" + sprache + ".pdf",
-					"application/octet-stream", content);
+				return RestUtil.buildDownloadResponse(
+					true,
+					"vorlageMerkblattTS" + sprache + ".pdf",
+					"application/octet-stream",
+					content
+				);
 			} catch (IOException e) {
-				return Response.status(Status.NOT_FOUND).entity("Logo kann nicht gelesen werden").build();
+				return Response.status(Status.NOT_FOUND)
+					.entity("Logo kann nicht gelesen werden")
+					.build();
 			}
 		}
 		return Response.status(Status.NO_CONTENT).build();
@@ -902,14 +1277,18 @@ public class GemeindeResource {
 	@DELETE
 	@Path("/gemeindeGesuchsperiodeDoku/{gemeindeId}/{gesuchsperiodeId}/{sprache}/{dokumentTyp}")
 	@Consumes(MediaType.WILDCARD)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_TS, ADMIN_GEMEINDE, SACHBEARBEITER_BG, SACHBEARBEITER_TS,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_TS, ADMIN_GEMEINDE,
+		SACHBEARBEITER_BG, SACHBEARBEITER_TS,
 		SACHBEARBEITER_GEMEINDE, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public Response removeGesuchsperiodeDokument(
 		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId,
-		@Nonnull @NotNull @PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId,
+		@Nonnull
+		@NotNull
+		@PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId,
 		@Nonnull @PathParam("sprache") Sprache sprache,
 		@Nonnull @PathParam("dokumentTyp") DokumentTyp dokumentTyp,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
 		String gesuchsperiodeId = converter.toEntityId(gesuchsperiodeJAXPId);
@@ -918,13 +1297,17 @@ public class GemeindeResource {
 		requireNonNull(gesuchsperiodeId);
 		requireNonNull(sprache);
 		requireNonNull(dokumentTyp);
-		gemeindeService.removeGemeindeGesuchsperiodeDokument(gemeindeId, gesuchsperiodeId, sprache,
-			dokumentTyp);
+		gemeindeService.removeGemeindeGesuchsperiodeDokument(
+			gemeindeId,
+			gesuchsperiodeId,
+			sprache,
+			dokumentTyp
+		);
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "retuns true if the Dokument Typ exists for this gemeinde exists for the given language",
-		response = boolean.class)
+	@Operation(
+		summary = "retuns true if the Dokument Typ exists for this gemeinde exists for the given language")
 	@GET
 	@Path("/existGemeindeGesuchsperiodeDoku/{gemeindeId}/{gesuchsperiodeId}/{sprache}/{dokumentTyp}")
 	@Consumes(MediaType.WILDCARD)
@@ -932,7 +1315,9 @@ public class GemeindeResource {
 	@PermitAll // Oeffentliche Daten
 	public boolean existDokument(
 		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId,
-		@Nonnull @NotNull @PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId,
+		@Nonnull
+		@NotNull
+		@PathParam("gesuchsperiodeId") JaxId gesuchsperiodeJAXPId,
 		@Nonnull @PathParam("sprache") Sprache sprache,
 		@Nonnull @PathParam("dokumentTyp") DokumentTyp dokumentTyp,
 		@Context HttpServletResponse response
@@ -943,39 +1328,55 @@ public class GemeindeResource {
 		requireNonNull(gesuchsperiodeId);
 		requireNonNull(sprache);
 		requireNonNull(dokumentTyp);
-		return gemeindeService.existGemeindeGesuchsperiodeDokument(gemeindeId, gesuchsperiodeId, sprache, dokumentTyp);
+		return gemeindeService.existGemeindeGesuchsperiodeDokument(
+			gemeindeId,
+			gesuchsperiodeId,
+			sprache,
+			dokumentTyp
+		);
 	}
 
-	@ApiOperation(value = "Returns all still available external clients and all assigned external clients",
-		response = JaxExternalClientAssignment.class)
+	@Operation(
+		summary = "Returns all still available external clients and all assigned external clients")
 	@Nonnull
 	@GET
 	@Path("/{gemeindeId}/externalclients")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS,
 		SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_BG, SACHBEARBEITER_TS })
-	public Response getExternalClients(@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId) {
+	public Response getExternalClients(
+		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId
+	) {
 		requireNonNull(gemeindeJAXPId.getId());
 		String gemeindeID = converter.toEntityId(gemeindeJAXPId);
 		GemeindeStammdaten gemeindeStammdaten =
-			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeID).orElse(null);
+			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeID)
+				.orElse(null);
 
-		Collection<ExternalClient> availableClients = externalClientService.getAllForGemeinde();
-		JaxExternalClientAssignment jaxExternalClientAssignment = new JaxExternalClientAssignment();
+		Collection<ExternalClient> availableClients = externalClientService
+			.getAllForGemeinde();
+		JaxExternalClientAssignment jaxExternalClientAssignment =
+			new JaxExternalClientAssignment();
 		if (gemeindeStammdaten != null) {
 			availableClients.removeAll(gemeindeStammdaten.getExternalClients());
-			jaxExternalClientAssignment.getAssignedClients().addAll(converter.externalClientsToJAX(gemeindeStammdaten.getExternalClients()));
+			jaxExternalClientAssignment.getAssignedClients()
+				.addAll(
+					converter.externalClientsToJAX(
+						gemeindeStammdaten.getExternalClients()
+					)
+				);
 		}
-		jaxExternalClientAssignment.getAvailableClients().addAll(converter.externalClientsToJAX(availableClients));
+		jaxExternalClientAssignment.getAvailableClients()
+			.addAll(converter.externalClientsToJAX(availableClients));
 
 		return Response.ok(jaxExternalClientAssignment).build();
 	}
 
-	@ApiOperation(value = "Gibt alle Gemeinden zurueck, die Mahlzeitenverguenstigungen auszahlen und fuer die"
-		+ "der eingeloggte Benutzer zustaendig ist",
-		responseContainer = "Collection",
-		response = JaxGemeinde.class)
+	@Operation(
+		summary = "Gibt alle Gemeinden zurueck, die Mahlzeitenverguenstigungen auszahlen und fuer die"
+			+ "der eingeloggte Benutzer zustaendig ist")
 	@Nullable
 	@GET
 	@Path("/mahlzeitenverguenstigung")
@@ -983,61 +1384,82 @@ public class GemeindeResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxGemeinde> getGemeindenWithMahlzeitenverguenstigungForBenutzer() {
-		return gemeindeService.getGemeindenWithMahlzeitenverguenstigungForBenutzer().stream()
+		return gemeindeService
+			.getGemeindenWithMahlzeitenverguenstigungForBenutzer()
+			.stream()
 			.map(gemeinde -> converter.gemeindeToJAX(gemeinde))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Gibt die nächste freie BFS Nummer zurück, die ener besonderen Volksschule"
-		+ "zugewiesen werden kann",
-		response = Long.class)
+	@Operation(
+		summary = "Gibt die nächste freie BFS Nummer zurück, die ener besonderen Volksschule"
+			+ "zugewiesen werden kann")
 	@Nullable
 	@GET
 	@Path("/next-vollksschule-bfsnummer")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.TEXT_PLAIN)
-	@RolesAllowed( {SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT} ) // Oeffentliche Daten
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT }) // Oeffentliche Daten
 	public Long getNextBfsnummer() {
 		return gemeindeService.getNextBesondereVolksschuleBfsNummer();
 	}
 
-	@ApiOperation(value = "Gibt alle Gemeinden zurück, für welche ein Lastenausgleich Tagescchule existiert",
-		response = Long.class)
+	@Operation(
+		summary = "Gibt alle Gemeinden zurück, für welche ein Lastenausgleich Tagescchule existiert")
 	@Nullable
 	@GET
 	@Path("/gemeinden-with-lats")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed( {SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public List<JaxGemeinde> getGemeindenWithLats() {
 		return gemeindeService.getGemeindenWithLats()
-				.stream()
-				.map(gemeinde -> converter.gemeindeToJAX(gemeinde))
-				.collect(Collectors.toList());
+			.stream()
+			.map(gemeinde -> converter.gemeindeToJAX(gemeinde))
+			.collect(Collectors.toList());
 	}
 
-	@ApiOperation("Erstellt ein Musterdokument, damit die Korrespondenz-Einstellungen geprueft werden koennen")
+	@Operation(
+		summary = "Erstellt ein Musterdokument, damit die Korrespondenz-Einstellungen geprueft werden koennen")
 	@GET
-	@Path("/musterdokument/{gemeindeId}")
+	@Path("/musterdokument/{gemeindeId}/{musterDokumentTyp}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS,
+		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public Response downloadMusterDokument(
-		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId
+		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId,
+		@Nonnull
+		@NotNull
+		@PathParam("musterDokumentTyp") MusterDokumentTyp musterDokumentTyp
 	) {
 		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
 		GemeindeStammdaten gemeindeStammdaten =
-			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId).orElseThrow(() -> new EbeguEntityNotFoundException(
-				"GemeindeStammdaten",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gemeindeId));
+			gemeindeService.getGemeindeStammdatenByGemeindeId(gemeindeId)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"GemeindeStammdaten",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						gemeindeId
+					)
+				);
 		try {
-			final byte[] content = pdfService.generateMusterdokument(gemeindeStammdaten);
+			final byte[] content = pdfService.generateMusterdokument(
+				gemeindeStammdaten,
+				musterDokumentTyp
+			);
 			if (content.length > 0) {
-				return RestUtil.buildDownloadResponse(true, "Musterdokument.pdf",
-						"application/octet-stream", content);
+				return RestUtil.buildDownloadResponse(
+					true,
+					"Musterdokument.pdf",
+					"application/octet-stream",
+					content
+				);
 			}
 		} catch (IOException | MergeDocException e) {
-			return Response.status(Status.NOT_FOUND).entity("Musterdokument kann nicht gelesen werden").build();
+			return Response.status(Status.NOT_FOUND)
+				.entity("Musterdokument kann nicht gelesen werden")
+				.build();
 		}
 		return Response.status(Status.NO_CONTENT).build();
 	}

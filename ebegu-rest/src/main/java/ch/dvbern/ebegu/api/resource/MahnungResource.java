@@ -22,27 +22,24 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
-import ch.dvbern.ebegu.api.dtos.JaxGesuch;
+import ch.dvbern.ebegu.api.converter.JaxMahnungConverter;
+import ch.dvbern.ebegu.api.converter.gesuch.JaxAntragConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxMahnung;
 import ch.dvbern.ebegu.api.resource.util.ResourceHelper;
@@ -52,8 +49,7 @@ import ch.dvbern.ebegu.enums.AntragStatusDTO;
 import ch.dvbern.ebegu.enums.MahnungTyp;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.MahnungService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
@@ -68,7 +64,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("mahnung")
 @Stateless
-@Api(description = "Resource zum Verwalten eines Mahnlaufes")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class MahnungResource {
 
@@ -79,21 +74,23 @@ public class MahnungResource {
 	private MahnungService mahnungService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxMahnungConverter converter;
+	@Inject
+	private JaxAntragConverter antragConverter;
 
 	@Inject
 	private ResourceHelper resourceHelper;
 
-	@ApiOperation(value = "Speichert eine Mahnung in der Datenbank", response = JaxMahnung.class)
+	@Operation(summary = "Speichert eine Mahnung in der Datenbank")
 	@Nullable
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS, ADMIN_TS })
+	@RolesAllowed({ ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS, ADMIN_TS })
 	public JaxMahnung save(
-		@Nonnull @NotNull JaxMahnung mahnungJAXP,
-		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Nonnull @NotNull JaxMahnung mahnungJAXP
+	) {
 
 		Objects.requireNonNull(mahnungJAXP);
 		Objects.requireNonNull(mahnungJAXP.getGesuch());
@@ -101,9 +98,15 @@ public class MahnungResource {
 
 		// Sicherstellen, dass der Status des Client-Objektes genau dem des Servers entspricht
 		if (MahnungTyp.ERSTE_MAHNUNG == mahnungJAXP.getMahnungTyp()) {
-			resourceHelper.assertGesuchStatusEqual(mahnungJAXP.getGesuch().getId(), AntragStatusDTO.IN_BEARBEITUNG_JA);
+			resourceHelper.assertGesuchStatusEqual(
+				mahnungJAXP.getGesuch().getId(),
+				AntragStatusDTO.IN_BEARBEITUNG_JA
+			);
 		} else {
-			resourceHelper.assertGesuchStatusEqual(mahnungJAXP.getGesuch().getId(), AntragStatusDTO.ERSTE_MAHNUNG_ABGELAUFEN);
+			resourceHelper.assertGesuchStatusEqual(
+				mahnungJAXP.getGesuch().getId(),
+				AntragStatusDTO.ERSTE_MAHNUNG_ABGELAUFEN
+			);
 		}
 
 		Mahnung mahnung = converter.mahnungToEntity(mahnungJAXP, new Mahnung());
@@ -112,8 +115,8 @@ public class MahnungResource {
 		return converter.mahnungToJAX(persistedMahnung);
 	}
 
-	@ApiOperation(value = "Gibt alle Mahnungen zum Gesuch mit der uebergebenen Id zurueck",
-		responseContainer = "List", response = JaxMahnung.class)
+	@Operation(
+		summary = "Gibt alle Mahnungen zum Gesuch mit der uebergebenen Id zurueck")
 	@Nullable
 	@GET
 	@Path("/{gesuchId}")
@@ -121,7 +124,8 @@ public class MahnungResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public List<JaxMahnung> findMahnungen(
-		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId) {
+		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId
+	) {
 		Objects.requireNonNull(gesuchJAXPId.getId());
 		String gesuchID = converter.toEntityId(gesuchJAXPId);
 		Optional<Gesuch> gesuchOptional = gesuchService.findGesuch(gesuchID);
@@ -131,25 +135,35 @@ public class MahnungResource {
 		}
 		Gesuch gesuchToReturn = gesuchOptional.get();
 
-		return mahnungService.findMahnungenForGesuch(gesuchToReturn).stream()
+		return mahnungService.findMahnungenForGesuch(gesuchToReturn)
+			.stream()
 			.map(mahnung -> converter.mahnungToJAX(mahnung))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Beendet einen Mahnlauf und setzt alle vorhandenen Mahnungen auf erledigt. Der Gesuchsstatus " +
-		"geht zurueck auf IN_BEARBEITUNG_JA.", response = JaxGesuch.class)
+	@Operation(
+		summary = "Beendet einen Mahnlauf und setzt alle vorhandenen Mahnungen auf erledigt. Der Gesuchsstatus "
+			+
+			"geht zurueck auf IN_BEARBEITUNG_JA.")
 	@Nonnull
 	@PUT
 	@Path("/{gesuchId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS, ADMIN_TS })
-	public Response mahnlaufBeenden(@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId) {
+	@RolesAllowed({ ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS, ADMIN_TS })
+	public Response mahnlaufBeenden(
+		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId
+	) {
 		Objects.requireNonNull(gesuchJAXPId.getId());
 
-		resourceHelper.assertGesuchStatusEqual(gesuchJAXPId.getId(),
-			AntragStatusDTO.ERSTE_MAHNUNG, AntragStatusDTO.ERSTE_MAHNUNG_ABGELAUFEN,
-			AntragStatusDTO.ZWEITE_MAHNUNG, AntragStatusDTO.ZWEITE_MAHNUNG_ABGELAUFEN);
+		resourceHelper.assertGesuchStatusEqual(
+			gesuchJAXPId.getId(),
+			AntragStatusDTO.ERSTE_MAHNUNG,
+			AntragStatusDTO.ERSTE_MAHNUNG_ABGELAUFEN,
+			AntragStatusDTO.ZWEITE_MAHNUNG,
+			AntragStatusDTO.ZWEITE_MAHNUNG_ABGELAUFEN
+		);
 
 		String gesuchID = converter.toEntityId(gesuchJAXPId);
 		Optional<Gesuch> gesuchOptional = gesuchService.findGesuch(gesuchID);
@@ -158,20 +172,26 @@ public class MahnungResource {
 			return Response.serverError().build();
 		}
 
-		final Gesuch gesuchToReturn = mahnungService.mahnlaufBeenden(gesuchOptional.get());
+		final Gesuch gesuchToReturn = mahnungService.mahnlaufBeenden(
+			gesuchOptional.get()
+		);
 
-		return Response.ok(converter.gesuchToJAX(gesuchToReturn)).build();
+		return Response.ok(antragConverter.gesuchToJAX(gesuchToReturn)).build();
 	}
 
-	@ApiOperation(value = "Generiert die Bemerkungen fuer eine zu erstellende Mahnung. Die Bemerkungen werden aus den" +
-		" fehlenden Dokumenten zusammengestellt.", response = String.class)
+	@Operation(
+		summary = "Generiert die Bemerkungen fuer eine zu erstellende Mahnung. Die Bemerkungen werden aus den"
+			+
+			" fehlenden Dokumenten zusammengestellt.")
 	@Nonnull
 	@GET
 	@Path("/bemerkungen/{gesuchId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.TEXT_PLAIN)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
-	public String getInitialeBemerkungen(@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId) {
+	public String getInitialeBemerkungen(
+		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJAXPId
+	) {
 		Objects.requireNonNull(gesuchJAXPId.getId());
 		String gesuchID = converter.toEntityId(gesuchJAXPId);
 		Optional<Gesuch> gesuchOptional = gesuchService.findGesuch(gesuchID);

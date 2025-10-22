@@ -13,12 +13,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 
 export class TSFile extends TSAbstractMutableEntity {
     private _filename: string;
-
-    private _filepfad: string;
 
     private _filesize: string;
 
@@ -28,14 +26,6 @@ export class TSFile extends TSAbstractMutableEntity {
 
     public set filename(value: string) {
         this._filename = value;
-    }
-
-    public get filepfad(): string {
-        return this._filepfad;
-    }
-
-    public set filepfad(value: string) {
-        this._filepfad = value;
     }
 
     public get filesize(): string {

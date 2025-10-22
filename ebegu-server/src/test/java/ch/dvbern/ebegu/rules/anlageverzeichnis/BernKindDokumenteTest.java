@@ -23,26 +23,38 @@ import static org.hamcrest.Matchers.is;
 
 public class BernKindDokumenteTest {
 
-	BernKindDokumente bernKindDokumente = new BernKindDokumente();
+	KindDokumente kindDokumente = new KindDokumente();
+
 	@Test
 	public void getPensumFachstelleTag_test() {
 		Gesuch gesuch = new Gesuch();
 		gesuch.setDossier(new Dossier());
 		gesuch.getDossier().setFall(new Fall());
 		gesuch.getDossier().getFall().setMandant(new Mandant());
-		gesuch.getDossier().getFall().getMandant().setMandantIdentifier(MandantIdentifier.BERN);
+		gesuch.getDossier()
+			.getFall()
+			.getMandant()
+			.setMandantIdentifier(MandantIdentifier.BERN);
 		KindContainer kindContainer = new KindContainer();
 		kindContainer.setKindJA(new Kind());
 		PensumFachstelle pensumFachstelle = new PensumFachstelle();
 		pensumFachstelle.setGueltigkeit(new DateRange());
-		pensumFachstelle.getGueltigkeit().setGueltigAb(LocalDate.of(2023,8,1));
-		pensumFachstelle.getGueltigkeit().setGueltigBis(LocalDate.of(2024,7,31));
+		pensumFachstelle.getGueltigkeit()
+			.setGueltigAb(LocalDate.of(2023, 8, 1));
+		pensumFachstelle.getGueltigkeit()
+			.setGueltigBis(LocalDate.of(2024, 7, 31));
 		kindContainer.getKindJA().addPensumFachstelle(pensumFachstelle);
 		gesuch.addKindContainer(kindContainer);
 		Set<DokumentGrund> dokumentGrundSet = new HashSet<>();
-		bernKindDokumente.getAllDokumente(gesuch, dokumentGrundSet, Locale.GERMAN);
+		kindDokumente.getAllDokumente(
+			gesuch,
+			dokumentGrundSet,
+			Locale.GERMAN
+		);
 		assertThat(dokumentGrundSet.size(), is(1));
-		DokumentGrund dokumentGrund = dokumentGrundSet.stream().findFirst().get();
+		DokumentGrund dokumentGrund = dokumentGrundSet.stream()
+			.findFirst()
+			.get();
 		assertThat(dokumentGrund.getTag(), is("01.08.2023 - 31.07.2024"));
 
 		dokumentGrundSet.clear();
@@ -51,18 +63,14 @@ public class BernKindDokumenteTest {
 		kindContainer.getKindJA().addPensumFachstelle(pensumFachstelle);
 		gesuch.setKindContainers(new HashSet<>());
 		gesuch.addKindContainer(kindContainer);
-		bernKindDokumente.getAllDokumente(gesuch, dokumentGrundSet, Locale.GERMAN);
+		kindDokumente.getAllDokumente(
+			gesuch,
+			dokumentGrundSet,
+			Locale.GERMAN
+		);
 		assertThat(dokumentGrundSet.size(), is(1));
 		dokumentGrund = dokumentGrundSet.stream().findFirst().get();
 		assertThat(dokumentGrund.getTag(), is("ab 01.08.2023"));
 	}
-
-
-
-
-
-
-
-
 
 }

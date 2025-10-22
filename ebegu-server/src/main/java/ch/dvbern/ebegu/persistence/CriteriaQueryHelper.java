@@ -25,28 +25,27 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.PluralAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.types.DateRange_;
-import ch.dvbern.lib.cdipersistence.Persistence;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -71,7 +70,10 @@ public class CriteriaQueryHelper implements Serializable {
 	}
 
 	@Nonnull
-	public <T extends P, P extends AbstractEntity> Collection<T> getAllOrdered(@Nonnull final Class<T> clazz, @Nonnull SingularAttribute<P, String> orderBy) {
+	public <T extends P, P extends AbstractEntity> Collection<T> getAllOrdered(
+		@Nonnull final Class<T> clazz,
+		@Nonnull SingularAttribute<P, String> orderBy
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<T> query = cb.createQuery(clazz);
 		Root root = query.from(clazz);
@@ -82,19 +84,32 @@ public class CriteriaQueryHelper implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	@Nonnull
-	public <A, E extends AbstractEntity> Optional<E> getEntityByUniqueAttribute(@Nonnull final Class<E> entityClazz,
-		@Nullable final A attributeValue,
-		@Nonnull final SingularAttribute<E, A> attribute) {
-		final Collection<E> results = getEntitiesByAttribute(entityClazz, attributeValue, attribute);
+	public <A, E extends AbstractEntity> Optional<E> getEntityByUniqueAttribute(
+		@Nonnull final Class<E> entityClazz,
+		@Nonnull final A attributeValue,
+		@Nonnull final SingularAttribute<E, A> attribute
+	) {
+		final Collection<E> results = getEntitiesByAttribute(
+			entityClazz,
+			attributeValue,
+			attribute
+		);
 		E result = ensureSingleResult(results, attributeValue);
 		return Optional.ofNullable(result);
 	}
 
 	@Nullable
-	private <A, E> E ensureSingleResult(@Nonnull final Collection<E> results, @Nullable final A attributeValue) {
+	private <A, E> E ensureSingleResult(
+		@Nonnull final Collection<E> results,
+		@Nullable final A attributeValue
+	) {
 		if (results.size() > 1) {
-			throw new NonUniqueResultException("Attribute '" + attributeValue +
-				"' should be unique, therefore there may not be multiple occurences");
+			throw new NonUniqueResultException(
+				"Attribute '"
+					+ attributeValue
+					+
+					"' should be unique, therefore there may not be multiple occurences"
+			);
 		}
 		E retVal = null;
 		if (!results.isEmpty()) {
@@ -104,8 +119,11 @@ public class CriteriaQueryHelper implements Serializable {
 	}
 
 	@Nonnull
-	public <A, E,  E1 extends E> Collection<E1> getEntitiesByAttribute(@Nonnull final Class<E1> entityClass, @Nullable final A attributeValue,
-		@Nonnull final Attribute<E, A> attribute) {
+	public <A, E, E1 extends E> Collection<E1> getEntitiesByAttribute(
+		@Nonnull final Class<E1> entityClass,
+		@Nonnull final A attributeValue,
+		@Nonnull final Attribute<E, A> attribute
+	) {
 		final CriteriaBuilder builder = persistence.getCriteriaBuilder();
 		final CriteriaQuery<E1> query = builder.createQuery(entityClass);
 		final Root<E1> root = query.from(entityClass);
@@ -115,14 +133,19 @@ public class CriteriaQueryHelper implements Serializable {
 		} else if (attribute instanceof PluralAttribute) {
 			expression = root.get((PluralAttribute) attribute);
 		} else {
-			throw new IllegalArgumentException("attribute must be a PluralAttribute or a SingularAttribute");
+			throw new IllegalArgumentException(
+				"attribute must be a PluralAttribute or a SingularAttribute"
+			);
 		}
 		query.where(builder.equal(expression, attributeValue));
 		return persistence.getCriteriaResults(query);
 	}
 
 	@Nullable
-	public static Predicate concatenateExpressions(@Nonnull final CriteriaBuilder builder, @Nonnull final List<Predicate> predicatesToUse) {
+	public static Predicate concatenateExpressions(
+		@Nonnull final CriteriaBuilder builder,
+		@Nonnull final List<Predicate> predicatesToUse
+	) {
 		Predicate concatenated = null;
 		for (final Predicate expression : predicatesToUse) {
 			if (concatenated == null) {
@@ -137,7 +160,10 @@ public class CriteriaQueryHelper implements Serializable {
 	}
 
 	@Nullable
-	public static Predicate concatenateExpressions(@Nonnull final CriteriaBuilder builder, @Nonnull Predicate... predicatesToUse) {
+	public static Predicate concatenateExpressions(
+		@Nonnull final CriteriaBuilder builder,
+		@Nonnull Predicate... predicatesToUse
+	) {
 		return concatenateExpressions(builder, Arrays.asList(predicatesToUse));
 	}
 
@@ -150,24 +176,39 @@ public class CriteriaQueryHelper implements Serializable {
 	 * @param <T> Entity Class
 	 * @return Liste mit Datensaetzen
 	 */
-	public <T extends AbstractDateRangedEntity> Collection<T> getAllInInterval(Class<T> clazz, LocalDate date) {
+	public <T extends AbstractDateRangedEntity> Collection<T> getAllInInterval(
+		Class<T> clazz,
+		LocalDate date
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<T> query = cb.createQuery(clazz);
 		Root<T> root = query.from(clazz);
 		query.select(root);
 
-		ParameterExpression<LocalDate> dateParam = cb.parameter(LocalDate.class, "date");
-		Predicate intervalPredicate = cb.between(dateParam,
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb),
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis));
+		ParameterExpression<LocalDate> dateParam = cb.parameter(
+			LocalDate.class,
+			"date"
+		);
+		Predicate intervalPredicate = cb.between(
+			dateParam,
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigAb),
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigBis)
+		);
 
 		query.where(intervalPredicate);
-		TypedQuery<T> q = persistence.getEntityManager().createQuery(query).setParameter(dateParam, date);
+		TypedQuery<T> q = persistence.getEntityManager()
+			.createQuery(query)
+			.setParameter(dateParam, date);
 		List<T> resultList = q.getResultList();
 		return resultList;
 	}
 
-	public <T extends AbstractEntity> int deleteAllBefore(@Nonnull Class<T> entityClazz, @Nonnull LocalDateTime before) {
+	public <T extends AbstractEntity> int deleteAllBefore(
+		@Nonnull Class<T> entityClazz,
+		@Nonnull LocalDateTime before
+	) {
 		checkNotNull(entityClazz);
 		checkNotNull(before);
 
@@ -175,12 +216,19 @@ public class CriteriaQueryHelper implements Serializable {
 		CriteriaDelete<T> delete = cb.createCriteriaDelete(entityClazz);
 		Root<T> root = delete.from(entityClazz);
 
-		ParameterExpression<LocalDateTime> beforeParam = cb.parameter(LocalDateTime.class, "before");
-		delete.where(cb.lessThan(root.get(AbstractEntity_.timestampMutiert), beforeParam));
+		ParameterExpression<LocalDateTime> beforeParam = cb.parameter(
+			LocalDateTime.class,
+			"before"
+		);
+		delete.where(
+			cb.lessThan(
+				root.get(AbstractEntity_.timestampMutiert),
+				beforeParam
+			)
+		);
 
 		Query query = persistence.getEntityManager().createQuery(delete);
 		query.setParameter(beforeParam, before);
 		return query.executeUpdate();
 	}
 }
-

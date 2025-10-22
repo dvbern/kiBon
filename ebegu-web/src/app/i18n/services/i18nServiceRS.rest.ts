@@ -15,33 +15,97 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {DateAdapter} from '@angular/material/core';
 import {TranslateService} from '@ngx-translate/core';
-import {
-    TSBrowserLanguage,
-    tsBrowserLanguageFromString
-} from '../../../models/enums/TSBrowserLanguage';
+import {combineLatest, ReplaySubject, Subject} from 'rxjs';
+import ITranslateService = angular.translate.ITranslateService;
+import {takeUntil} from 'rxjs/operators';
+import {TSGemeinde} from '@kibon/shared/model/entity';
 import {
     CONSTANTS,
     LOCALSTORAGE_LANGUAGE_KEY
-} from '../../core/constants/CONSTANTS';
-import {WindowRef} from '../../core/service/windowRef.service';
-import ITranslateService = angular.translate.ITranslateService;
+} from '@kibon/shared/model/constants';
+import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
+import {MandantService} from '@kibon/shared-util-mandant-service';
+import {
+    TSBrowserLanguage,
+    tsBrowserLanguageFromString
+} from '@kibon/shared/model/enums';
+import {WindowRef} from '@kibon/shared-util-window-ref';
+import {GemeindeService} from '../../shared/services/gemeinde.service';
+
+const translationsDir = './assets/translations';
+const translationFilePrefix = 'translations_';
+const suffix = `.json?t=${Date.now()}`;
 
 @Injectable({
     providedIn: 'root'
 })
-export class I18nServiceRSRest {
+export class I18nServiceRSRest implements OnDestroy {
     public serviceURL: string;
+    public static readonly LOCALE_SEPARATOR = '_';
     private $translate: ITranslateService; // will be removed in KIBON-2962
+    private locale: string;
+    private readonly unsubscribe$ = new Subject<void>();
+    private readonly selectedLanguage$ = new ReplaySubject<string>(1);
 
     public constructor(
         private readonly translate: TranslateService,
         private readonly $window: WindowRef,
-        private readonly dateAdapter: DateAdapter<any>
+        private readonly dateAdapter: DateAdapter<any>,
+        private readonly gemeindeService: GemeindeService,
+        private readonly mandantService: MandantService
     ) {
         this.serviceURL = `${CONSTANTS.REST_API}i18n`;
+        this.selectedLanguage$.next(this.extractPreferredLanguage());
+    }
+
+    public static getBaseTranslationsUrl(language: string): string {
+        return `${translationsDir}/${translationFilePrefix}${language}${suffix}`;
+    }
+
+    public static getMandantTranslationsUrl(
+        language: string,
+        identifier: string
+    ): string {
+        return `${translationsDir}/mandant/${translationFilePrefix}${identifier}_${language}${suffix}`;
+    }
+
+    public static getGemeindeTranslationsUrl(
+        language: string,
+        gemeindeName: string
+    ): string {
+        return `${translationsDir}/gemeinde/${translationFilePrefix}${gemeindeName}_${language}${suffix}`;
+    }
+
+    public init(): void {
+        combineLatest([
+            this.mandantService.mandant$,
+            this.gemeindeService.gemeinde$,
+            this.selectedLanguage$
+        ])
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(([mandant, gemeinde, selectedLanguage]) => {
+                this.locale = this.constructLocale(
+                    mandant,
+                    gemeinde,
+                    selectedLanguage
+                );
+                this.$window.nativeLocalStorage.setItem(
+                    LOCALSTORAGE_LANGUAGE_KEY,
+                    selectedLanguage
+                );
+                this.translate.use(this.locale.toString()); // angular
+                this.dateAdapter.setLocale(selectedLanguage);
+                if (this.$translate) {
+                    this.$translate.use(this.locale.toString()); // will be removed in KIBON-2962
+                }
+            });
+    }
+
+    public ngOnDestroy(): void {
+        this.unsubscribe$.next();
     }
 
     /**
@@ -49,13 +113,24 @@ export class I18nServiceRSRest {
      * angularJsTranslateService to set the language in the corresponding plugin of angularjs
      */
     public changeClientLanguage(selectedLanguage: TSBrowserLanguage): void {
-        this.$window.nativeLocalStorage.setItem(
-            LOCALSTORAGE_LANGUAGE_KEY,
-            selectedLanguage
-        );
-        this.translate.use(selectedLanguage); // angular
-        this.dateAdapter.setLocale(selectedLanguage);
-        this.$translate.use(selectedLanguage); // will be removed in KIBON-2962
+        this.selectedLanguage$.next(selectedLanguage);
+    }
+
+    private constructLocale(
+        mandant: KiBonMandant,
+        gemeinde: TSGemeinde,
+        selectedLanguage: string
+    ): string {
+        let locale =
+            mandant === MANDANTS.NONE
+                ? selectedLanguage
+                : `${selectedLanguage}${I18nServiceRSRest.LOCALE_SEPARATOR}${mandant.hostname}`;
+        if (gemeinde !== null) {
+            locale = locale.concat(
+                `${I18nServiceRSRest.LOCALE_SEPARATOR}${gemeinde.bfsNummer}`
+            );
+        }
+        return locale;
     }
 
     /**
@@ -76,6 +151,9 @@ export class I18nServiceRSRest {
     // will be removed in KIBON-2962
     public setAngularJSTranslateService($translate: any): void {
         this.$translate = $translate;
+        if (this.$translate) {
+            this.$translate.use(this.locale.toString());
+        }
     }
 }
 

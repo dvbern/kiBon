@@ -37,7 +37,8 @@ public interface ReportTagesschuleService {
 	@Nonnull
 	List<TagesschuleAnmeldungenDataRow> getReportDataTagesschuleAnmeldungen(
 		@Nonnull String stammdatenID,
-		@Nonnull String gesuchsperiodeID);
+		@Nonnull String gesuchsperiodeID
+	);
 
 	@Nonnull
 	UploadFileInfo generateExcelReportTagesschuleRechnungsstellung(

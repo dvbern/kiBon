@@ -9,6 +9,7 @@ import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
 import ch.dvbern.ebegu.types.DateRange;
+import ch.dvbern.ebegu.util.RuleUtil;
 
 import static java.util.Objects.requireNonNull;
 
@@ -19,26 +20,46 @@ public abstract class AbstractErwerbspensumCalcRule extends AbstractCalcRule {
 		@Nonnull RuleType ruleType,
 		@Nonnull RuleValidity ruleValidity,
 		@Nonnull DateRange validityPeriod,
-		@Nonnull Locale locale) {
+		@Nonnull Locale locale
+	) {
 		super(ruleKey, ruleType, ruleValidity, validityPeriod, locale);
 	}
 
 	/**
 	 * Monat Rule, der GS2 ist nach aenderung die Famsit ab Anfang naechste Monat erst berucksichtig
 	 */
-	protected boolean hasSecondGSForZeit(@Nonnull Gesuch gesuch, DateRange gueltigkeit) {
-		final Familiensituation familiensituation = requireNonNull(gesuch.extractFamiliensituation());
-		final Familiensituation familiensituationErstGesuch = gesuch.extractFamiliensituationErstgesuch();
+	protected boolean hasSecondGSForZeit(
+		@Nonnull Gesuch gesuch,
+		DateRange gueltigkeit
+	) {
+		final Familiensituation familiensituation = requireNonNull(
+			gesuch.extractFamiliensituation()
+		);
+		final Familiensituation familiensituationErstGesuch = gesuch
+			.extractFamiliensituationErstgesuch();
+		if (familiensituation.getAenderungPer() != null) {
+			LocalDate familiensituationGueltigAb = RuleUtil
+				.getFamSitAenderungPerDatum(
+					gesuch,
+					familiensituation.getAenderungPer()
+				);
 
-		LocalDate familiensituationGueltigAb = familiensituation.getAenderungPer();
-		if (familiensituationGueltigAb != null
-			&& familiensituationErstGesuch != null
-			&& gueltigkeit.getGueltigAb().isBefore(familiensituationGueltigAb.plusMonths(1).withDayOfMonth(1))) {
-			return familiensituationErstGesuch.hasSecondGesuchsteller(gueltigkeit.getGueltigBis())
-				&& familiensituationErstGesuch.getUnterhaltsvereinbarung() != UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG;
+			if (familiensituationErstGesuch != null
+				&& gueltigkeit.getGueltigAb()
+					.isBefore(
+						familiensituationGueltigAb.plusMonths(1)
+							.withDayOfMonth(1)
+					)) {
+				return familiensituationErstGesuch.hasSecondGesuchsteller(
+					gueltigkeit.getGueltigBis()
+				)
+					&& familiensituationErstGesuch.getUnterhaltsvereinbarung()
+						!= UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG;
+			}
 		}
-		return familiensituation.hasSecondGesuchsteller(gueltigkeit.getGueltigBis());
+		return familiensituation.hasSecondGesuchsteller(
+			gueltigkeit.getGueltigBis()
+		);
 	}
-
 
 }

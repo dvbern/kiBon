@@ -15,7 +15,6 @@
 
 import {NgModule} from '@angular/core';
 import {SharedModule} from '../shared/shared.module';
-import {InitZpvNrComponent} from './init-zpv-nr/init-zpv-nr.component';
 import {OnboardingBeLoginComponent} from './onboarding-be-login/onboarding-be-login.component';
 import {OnboardingGsAbschliessenComponent} from './onboarding-gs-abschliessen/onboarding-gs-abschliessen.component';
 import {OnboardingHelpDialogComponent} from './onboarding-help-dialog/onboarding-help-dialog.component';
@@ -38,7 +37,6 @@ import {ZpvNrSuccessComponent} from './zpv-nr-success/zpv-nr-success.component';
         OnboardingNeuBenutzerComponent,
         OnboardingInfoGemeindeComponent,
         OnboardingInfoInstitutionComponent,
-        InitZpvNrComponent,
         ZpvNrSuccessComponent,
         PortalSelectionComponent,
         OnboardingHelpDialogComponent

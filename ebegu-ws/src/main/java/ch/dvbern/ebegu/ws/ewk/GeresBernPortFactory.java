@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -21,7 +21,7 @@ package ch.dvbern.ebegu.ws.ewk;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.xml.ws.Service;
+import jakarta.xml.ws.Service;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.ws.ewk.sts.WSSSecurityGeresAssertionOutboundHandler;
@@ -32,7 +32,8 @@ public class GeresBernPortFactory extends AbstractGeresPortFactory {
 
 	public GeresBernPortFactory(
 		EbeguConfiguration configuration,
-		WSSSecurityGeresAssertionOutboundHandler wssUsernameTokenSecurityHandler) {
+		WSSSecurityGeresAssertionOutboundHandler wssUsernameTokenSecurityHandler
+	) {
 		super(configuration);
 		this.wssUsernameTokenSecurityHandler = wssUsernameTokenSecurityHandler;
 	}
@@ -40,7 +41,11 @@ public class GeresBernPortFactory extends AbstractGeresPortFactory {
 	@Override
 	protected void customizeService(Service service) {
 		// handler that adds assertion to header
-		service.setHandlerResolver(portInfo -> Collections.singletonList(wssUsernameTokenSecurityHandler));
+		service.setHandlerResolver(
+			portInfo -> Collections.singletonList(
+				wssUsernameTokenSecurityHandler
+			)
+		);
 	}
 
 	@Override

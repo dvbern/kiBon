@@ -28,13 +28,13 @@ ${templateConfiguration.mailCss}
     <#if offenePendenzen>
 	<p>
 		Wir möchten Sie darüber informieren, dass für Ihre Institution ${institutionStammdaten.institution.name} in kiBon Pendenzen offen sind. <br>
-		Sie können diese <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/pendenzenBetreuungen">hier</a> einsehen.
+		Sie können diese <a href="${frontendUrl}/pendenzenBetreuungen">hier</a> einsehen.
 	</p>
     </#if>
     <#if ungelesendeMitteilung>
 	<p>
 		Wir möchten Sie <#if offenePendenzen> ausserdem </#if>darüber informieren, dass Sie für Ihre Institution ${institutionStammdaten.institution.name} ungelesene Nachrichten im Posteingang haben.
-		Sie können diese <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/posteingang">hier</a> einsehen.
+		Sie können diese <a href="${frontendUrl}/posteingang">hier</a> einsehen.
 	</p>
 	</#if>
 	<p>
@@ -54,7 +54,7 @@ ${templateConfiguration.mailCss}
 		Nous vous informons que des places sont en attente de confirmation pour
 		l'institution ${institutionStammdaten.institution.name} dans kiBon.
 		Vous pouvez les consulter
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/pendenzenBetreuungen">ici</a>.
+		<a href="${frontendUrl}/pendenzenBetreuungen">ici</a>.
 	</p>
     </#if>
     <#if ungelesendeMitteilung>
@@ -62,7 +62,7 @@ ${templateConfiguration.mailCss}
 		Nous vous informons<#if offenePendenzen> aussi </#if> qu'il y a des nouveaux messages pour
 		l'institution ${institutionStammdaten.institution.name} dans kiBon.
 		Vous pouvez les consulter
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/posteingang">ici</a>.
+		<a href="${frontendUrl}/posteingang">ici</a>.
 	</p>
     </#if>
 	<p>

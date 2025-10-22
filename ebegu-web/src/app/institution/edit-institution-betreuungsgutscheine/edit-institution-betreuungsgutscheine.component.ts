@@ -25,21 +25,25 @@ import {
     SimpleChanges
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
+import {
+    TSAdresse,
+    TSInstitutionStammdatenBetreuungsgutscheine,
+    TSInstitutionStammdaten
+} from '@kibon/shared/model/entity';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSAdresse} from '../../../models/TSAdresse';
-import {TSInstitutionStammdaten} from '../../../models/TSInstitutionStammdaten';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
 
 @Component({
     selector: 'dv-edit-institution-betreuungsgutscheine',
     templateUrl: './edit-institution-betreuungsgutscheine.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ['./edit-institution-betreuungsgutscheine.component.less'],
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class EditInstitutionBetreuungsgutscheineComponent
     implements OnInit, OnChanges
@@ -49,7 +53,6 @@ export class EditInstitutionBetreuungsgutscheineComponent
 
     public abweichendeZahlungsAdresse: boolean;
     public incompleteOeffnungszeiten: boolean = false;
-    public isInfomazahlungen: boolean = false;
     public zusatzinformationenInstitution: boolean;
 
     public readonly CONSTANTS = CONSTANTS;
@@ -57,23 +60,18 @@ export class EditInstitutionBetreuungsgutscheineComponent
     public constructor(
         private readonly translate: TranslateService,
         private readonly authServiceRS: AuthServiceRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly cd: ChangeDetectorRef
     ) {}
 
-    //
     public ngOnInit(): void {
-        const stammdatenBg =
+        const stammdatenBg: TSInstitutionStammdatenBetreuungsgutscheine =
             this.stammdaten.institutionStammdatenBetreuungsgutscheine;
         this.abweichendeZahlungsAdresse =
             stammdatenBg && !!stammdatenBg.adresseKontoinhaber;
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.isInfomazahlungen = res.infomaZahlungen;
-            this.cd.markForCheck();
-        });
         this.applicationPropertyRS
             .getZusatzinformationenInstitutionEnabled()
-            .then(enabled => {
+            .subscribe(enabled => {
                 this.zusatzinformationenInstitution = enabled;
                 this.cd.markForCheck();
             });
@@ -175,25 +173,7 @@ export class EditInstitutionBetreuungsgutscheineComponent
             stammdatenBg && (!stammdatenBg.offenVon || !stammdatenBg.offenBis);
     }
 
-    public showInfomaFields(): boolean {
-        return (
-            this.authServiceRS.isOneOfRoles(TSRoleUtil.getMandantRoles()) &&
-            this.isInfomazahlungen
-        );
-    }
-
-    public getAuslastungInstitutionenLabel(): string {
-        if (
-            this.stammdaten.betreuungsangebotTyp === TSBetreuungsangebotTyp.KITA
-        ) {
-            return 'INSTITUTION_AUSLASTUNG_INSTITUTIONEN_KITA';
-        }
-        if (
-            this.stammdaten.betreuungsangebotTyp ===
-            TSBetreuungsangebotTyp.TAGESFAMILIEN
-        ) {
-            return 'INSTITUTION_AUSLASTUNG_INSTITUTIONEN_TFO';
-        }
-        return '';
+    isSuperAdminOrMandant(): boolean {
+        return this.authServiceRS.isOneOfRoles(TSRoleUtil.getMandantRoles());
     }
 }

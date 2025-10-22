@@ -17,8 +17,6 @@ package ch.dvbern.ebegu.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,37 +29,34 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.AssociationOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-import ch.dvbern.ebegu.dto.suchfilter.lucene.ReferenzNummerBridge;
 import ch.dvbern.ebegu.entities.containers.BetreuungAbweichung;
 import ch.dvbern.ebegu.entities.containers.BetreuungAndPensumContainer;
 import ch.dvbern.ebegu.enums.AntragCopyType;
+import ch.dvbern.ebegu.enums.Eingangsart;
+import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAbweichungStatus;
-import ch.dvbern.ebegu.enums.Eingangsart;
-import ch.dvbern.ebegu.enums.PensumUnits;
-import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
-import ch.dvbern.ebegu.types.DateRange;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.util.Constants;
-import ch.dvbern.ebegu.util.DateUtil;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.validationgroups.BetreuungBestaetigenValidationGroup;
@@ -76,10 +71,12 @@ import ch.dvbern.ebegu.validators.dateranges.CheckGueltigkeiten;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.ClassBridge;
-import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+
+import static ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus.ABGEWIESEN;
+import static ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus.BESTAETIGT;
+import static ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus.STORNIERT;
+import static ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus.WARTEN;
 
 /**
  * Entity fuer Betreuungen.
@@ -91,30 +88,38 @@ import org.hibernate.search.annotations.Indexed;
 @CheckBetreuungspensum
 @CheckAbwesenheitDatesOverlapping
 @CheckMittagstischPensum
-@CheckBetreuungPensumContainerZeitraumInGesuchsperiode(groups = BetreuungBestaetigenValidationGroup.class)
-@CheckBetreuungZeitraumInstitutionsStammdatenZeitraum (groups = BetreuungBestaetigenValidationGroup.class)
+@CheckBetreuungPensumContainerZeitraumInGesuchsperiode(
+	groups = BetreuungBestaetigenValidationGroup.class)
+@CheckBetreuungZeitraumInstitutionsStammdatenZeitraum(
+	groups = BetreuungBestaetigenValidationGroup.class)
 // Der ForeignKey-Name wird leider nicht richtig generiert, muss von Hand angepasst werden!
 @AssociationOverrides({
-	@AssociationOverride(name = "kind", joinColumns = @JoinColumn(name = "kind_id"), foreignKey = @ForeignKey(name = "FK_betreuung_kind_id")),
-	@AssociationOverride(name="institutionStammdaten", joinColumns=@JoinColumn(name="institutionStammdaten_id"), foreignKey = @ForeignKey(name = "FK_betreuung_institution_stammdaten_id"))
+	@AssociationOverride(name = "kind",
+		joinColumns = @JoinColumn(name = "kind_id"),
+		foreignKey = @ForeignKey(name = "FK_betreuung_kind_id")),
+	@AssociationOverride(name = "institutionStammdaten",
+		joinColumns = @JoinColumn(name = "institutionStammdaten_id"),
+		foreignKey = @ForeignKey(
+			name = "FK_betreuung_institution_stammdaten_id"))
 })
 @Table(
-	uniqueConstraints =
-	@UniqueConstraint(columnNames = { "betreuungNummer", "kind_id" }, name = "UK_betreuung_kind_betreuung_nummer")
+	uniqueConstraints = @UniqueConstraint(columnNames = { "betreuungNummer",
+		"kind_id" }, name = "UK_betreuung_kind_betreuung_nummer")
 )
 @Indexed
-@Analyzer(definition = "EBEGUGermanAnalyzer")
-@ClassBridge(name = "bGNummer", impl = ReferenzNummerBridge.class, analyze = Analyze.NO)
-public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContainer {
+public class Betreuung extends AbstractPlatz implements
+	BetreuungAndPensumContainer {
 
 	private static final long serialVersionUID = -6776987863150835840L;
 
 	/**
-	 * Contains the VorgaengerVerfuegung that has already been paid. It can be null even in Mutationen if there was no Zahlung zet
+	 * Contains the VorgaengerVerfuegung that has already been paid. It can be null even in Mutationen if there was no
+	 * Zahlung zet
 	 */
 	@Transient
 	@Nullable
-	private Map<ZahlungslaufTyp, Verfuegung> vorgaengerAusbezahlteVerfuegungProAuszahlungstyp = new HashMap<>();
+	private Map<ZahlungslaufTyp, Verfuegung> vorgaengerAusbezahlteVerfuegungProAuszahlungstyp =
+		new HashMap<>();
 
 	/**
 	 * Contains a calculatedVerfuegung that we do not want to store in the database yet
@@ -123,21 +128,35 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 	@Nullable
 	private Verfuegung verfuegungPreview;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "betreuung")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "betreuung")
 	@SortNatural
-	private @Valid Set<BetreuungspensumContainer> betreuungspensumContainers = new TreeSet<>();
+	private @Valid Set<BetreuungspensumContainer> betreuungspensumContainers =
+		new TreeSet<>();
 
-	@OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "betreuung")
-	private @NotNull @Valid ErweiterteBetreuungContainer erweiterteBetreuungContainer = new ErweiterteBetreuungContainer(this);
+	@OneToOne(optional = false,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "betreuung")
+	private @NotNull
+	@Valid ErweiterteBetreuungContainer erweiterteBetreuungContainer =
+		new ErweiterteBetreuungContainer(this);
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "betreuung")
-	private @Valid Set<AbwesenheitContainer> abwesenheitContainers = new TreeSet<>();
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "betreuung")
+	private @Valid Set<AbwesenheitContainer> abwesenheitContainers =
+		new TreeSet<>();
 
 	@Column(nullable = true, length = Constants.DB_TEXTAREA_LENGTH)
 	@Nullable
 	private @Size(max = Constants.DB_TEXTAREA_LENGTH) String grundAblehnung;
 
-	@OneToOne(optional = true, cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "betreuung")
+	@OneToOne(optional = true,
+		cascade = CascadeType.REMOVE,
+		orphanRemoval = true,
+		mappedBy = "betreuung")
 	@Nullable
 	private @Valid Verfuegung verfuegung;
 
@@ -154,6 +173,10 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 
 	@Nullable
 	@Column(nullable = true)
+	private LocalDate datumAngefordert;
+
+	@Nullable
+	@Column(nullable = true)
 	private Boolean betreuungMutiert;
 
 	@Nullable
@@ -161,9 +184,12 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 	private Boolean abwesenheitMutiert;
 
 	@Nonnull
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "betreuung")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "betreuung")
 	@SortNatural
-	private Set<BetreuungspensumAbweichung> betreuungspensumAbweichungen = new TreeSet<>();
+	private Set<BetreuungspensumAbweichung> betreuungspensumAbweichungen =
+		new TreeSet<>();
 
 	@Column(nullable = false)
 	private @NotNull boolean eventPublished = true;
@@ -176,7 +202,8 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 
 	@Nullable
 	@Column(nullable = true)
-	private @Size(max = Constants.DB_TEXTAREA_LENGTH) String begruendungAuszahlungAnInstitution;
+	private @Size(
+		max = Constants.DB_TEXTAREA_LENGTH) String begruendungAuszahlungAnInstitution;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = true)
@@ -190,7 +217,9 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 		return betreuungspensumContainers;
 	}
 
-	public void setBetreuungspensumContainers(Set<BetreuungspensumContainer> betreuungspensumContainers) {
+	public void setBetreuungspensumContainers(
+		Set<BetreuungspensumContainer> betreuungspensumContainers
+	) {
 		this.betreuungspensumContainers = betreuungspensumContainers;
 	}
 
@@ -198,7 +227,9 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 		return abwesenheitContainers;
 	}
 
-	public void setAbwesenheitContainers(Set<AbwesenheitContainer> abwesenheiten) {
+	public void setAbwesenheitContainers(
+		Set<AbwesenheitContainer> abwesenheiten
+	) {
 		this.abwesenheitContainers = abwesenheiten;
 	}
 
@@ -207,7 +238,9 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 		return erweiterteBetreuungContainer;
 	}
 
-	public void setErweiterteBetreuungContainer(@Nonnull ErweiterteBetreuungContainer erweiterteBetreuungContainer) {
+	public void setErweiterteBetreuungContainer(
+		@Nonnull ErweiterteBetreuungContainer erweiterteBetreuungContainer
+	) {
 		this.erweiterteBetreuungContainer = erweiterteBetreuungContainer;
 	}
 
@@ -245,7 +278,7 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 		return datumAblehnung;
 	}
 
-	public void setDatumAblehnung(@Nullable LocalDate datumAblehnung) {
+	protected void setDatumAblehnung(@Nullable LocalDate datumAblehnung) {
 		this.datumAblehnung = datumAblehnung;
 	}
 
@@ -281,7 +314,9 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 		return betreuungspensumAbweichungen;
 	}
 
-	public void setBetreuungspensumAbweichungen(@Nonnull Set<BetreuungspensumAbweichung> betreuungspensumAbweichungen) {
+	public void setBetreuungspensumAbweichungen(
+		@Nonnull Set<BetreuungspensumAbweichung> betreuungspensumAbweichungen
+	) {
 		this.betreuungspensumAbweichungen = betreuungspensumAbweichungen;
 	}
 
@@ -304,7 +339,11 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
-	public boolean isSame(AbstractEntity other, boolean inklAbwesenheiten, boolean inklStatus) {
+	public boolean isSame(
+		AbstractEntity other,
+		boolean inklAbwesenheiten,
+		boolean inklStatus
+	) {
 		//noinspection ObjectEquality
 		if (this == other) {
 			return true;
@@ -317,30 +356,50 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 		}
 		final Betreuung otherBetreuung = (Betreuung) other;
 
-		boolean pensenSame = this.getBetreuungspensumContainers().stream().allMatch(
-			pensCont -> otherBetreuung.getBetreuungspensumContainers().stream()
-				.anyMatch(otherPensenCont -> otherPensenCont.isSame(pensCont)));
+		boolean pensenSame = this.getBetreuungspensumContainers()
+			.stream()
+			.allMatch(
+				pensCont -> otherBetreuung
+					.getBetreuungspensumContainers()
+					.stream()
+					.anyMatch(
+						otherPensenCont -> otherPensenCont
+							.isSame(pensCont)
+					)
+			);
 
 		boolean abwesenheitenSame = true;
 		if (inklAbwesenheiten) {
-			abwesenheitenSame = this.getAbwesenheitContainers().stream().allMatch(
-				abwesenheitCont -> otherBetreuung.getAbwesenheitContainers().stream()
-					.anyMatch(otherAbwesenheitCont -> otherAbwesenheitCont.isSame(abwesenheitCont)));
+			abwesenheitenSame = this.getAbwesenheitContainers()
+				.stream()
+				.allMatch(
+					abwesenheitCont -> otherBetreuung
+						.getAbwesenheitContainers()
+						.stream()
+						.anyMatch(
+							otherAbwesenheitCont -> otherAbwesenheitCont
+								.isSame(abwesenheitCont)
+						)
+				);
 		}
 		boolean statusSame = true;
 		if (inklStatus) {
-			statusSame = this.getBetreuungsstatus() == otherBetreuung.getBetreuungsstatus();
+			statusSame = this.getBetreuungsstatus()
+				== otherBetreuung.getBetreuungsstatus();
 		}
 
 		boolean sameErweiterteBeduerfnisse =
-			getErweiterteBetreuungContainer().isSame(otherBetreuung.getErweiterteBetreuungContainer());
+			getErweiterteBetreuungContainer().isSame(
+				otherBetreuung.getErweiterteBetreuungContainer()
+			);
 
 		return pensenSame
 			&& abwesenheitenSame
 			&& statusSame
 			&& sameErweiterteBeduerfnisse
 			&& this.getBedarfsstufe() == otherBetreuung.bedarfsstufe
-			&& this.isAuszahlungAnEltern() == otherBetreuung.isAuszahlungAnEltern();
+			&& this.isAuszahlungAnEltern()
+				== otherBetreuung.isAuszahlungAnEltern();
 	}
 
 	@Transient
@@ -355,7 +414,8 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 
 	@Transient
 	public boolean isAngebotAuszuzahlen() {
-		return BetreuungsangebotTyp.getBetreuungsgutscheinTypes().contains(getBetreuungsangebotTyp());
+		return BetreuungsangebotTyp.getBetreuungsgutscheinTypes()
+			.contains(getBetreuungsangebotTyp());
 	}
 
 	@Transient
@@ -368,8 +428,11 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 	 */
 	@Transient
 	public String getBetreuungsangebotTypTranslated(@Nonnull String sprache) {
-		return ServerMessageUtil.translateEnumValue(getBetreuungsangebotTyp(), Locale.forLanguageTag(sprache),
-				Objects.requireNonNull(extractGemeinde().getMandant()));
+		return ServerMessageUtil.translateEnumValue(
+			getBetreuungsangebotTyp(),
+			Locale.forLanguageTag(sprache),
+			Objects.requireNonNull(extractGemeinde().getMandant())
+		);
 	}
 
 	/**
@@ -393,48 +456,87 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 	@Override
 	public void initVorgaengerVerfuegungen(
 		@Nullable Verfuegung vorgaenger,
-		@Nullable  Map<ZahlungslaufTyp, Verfuegung> vorgaengerAusbezahlt
+		@Nullable Map<ZahlungslaufTyp, Verfuegung> vorgaengerAusbezahlt
 	) {
 		super.initVorgaengerVerfuegungen(vorgaenger, vorgaengerAusbezahlt);
-		this.vorgaengerAusbezahlteVerfuegungProAuszahlungstyp = vorgaengerAusbezahlt;
+		this.vorgaengerAusbezahlteVerfuegungProAuszahlungstyp =
+			vorgaengerAusbezahlt;
 	}
 
 	@Nonnull
-	@SuppressWarnings("PMD.NcssMethodCount")
-	public Betreuung copyBetreuung(@Nonnull Betreuung target, @Nonnull AntragCopyType copyType, @Nonnull KindContainer targetKindContainer, @Nonnull Eingangsart targetEingangsart) {
+	public Betreuung copyBetreuung(
+		@Nonnull Betreuung target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull KindContainer targetKindContainer,
+		@Nonnull Eingangsart targetEingangsart
+	) {
 		super.copyAbstractPlatz(target, copyType, targetKindContainer);
 		switch (copyType) {
 		case MUTATION:
-			for (BetreuungspensumContainer betreuungspensumContainer : this.getBetreuungspensumContainers()) {
-				target.getBetreuungspensumContainers().add(betreuungspensumContainer
-					.copyBetreuungspensumContainer(new BetreuungspensumContainer(), copyType, target));
+			for (BetreuungspensumContainer betreuungspensumContainer : this
+				.getBetreuungspensumContainers()) {
+				target.getBetreuungspensumContainers()
+					.add(
+						betreuungspensumContainer
+							.copyBetreuungspensumContainer(
+								new BetreuungspensumContainer(),
+								copyType,
+								target
+							)
+					);
 			}
 
-			for (BetreuungspensumAbweichung betreuungspensumAbweichung : this.getBetreuungspensumAbweichungen()) {
-				if (betreuungspensumAbweichung.getStatus() == BetreuungspensumAbweichungStatus.NICHT_FREIGEGEBEN) {
-					target.getBetreuungspensumAbweichungen().add(betreuungspensumAbweichung
-						.copyBetreuungspensumAbweichung(new BetreuungspensumAbweichung(), copyType, target));
+			for (BetreuungspensumAbweichung betreuungspensumAbweichung : this
+				.getBetreuungspensumAbweichungen()) {
+				if (betreuungspensumAbweichung.getStatus()
+					== BetreuungspensumAbweichungStatus.NICHT_FREIGEGEBEN) {
+					target.getBetreuungspensumAbweichungen()
+						.add(
+							betreuungspensumAbweichung
+								.copyBetreuungspensumAbweichung(
+									new BetreuungspensumAbweichung(),
+									copyType,
+									target
+								)
+						);
 				}
 			}
 
-			for (AbwesenheitContainer abwesenheitContainer : this.getAbwesenheitContainers()) {
-				target.getAbwesenheitContainers().add(abwesenheitContainer.copyAbwesenheitContainer(new AbwesenheitContainer(), copyType, target));
+			for (AbwesenheitContainer abwesenheitContainer : this
+				.getAbwesenheitContainers()) {
+				target.getAbwesenheitContainers()
+					.add(
+						abwesenheitContainer.copyAbwesenheitContainer(
+							new AbwesenheitContainer(),
+							copyType,
+							target
+						)
+					);
 			}
 
-			target.setErweiterteBetreuungContainer(erweiterteBetreuungContainer
-				.copyErweiterteBetreuungContainer(new ErweiterteBetreuungContainer(), copyType, target));
+			target.setErweiterteBetreuungContainer(
+				erweiterteBetreuungContainer
+					.copyErweiterteBetreuungContainer(
+						new ErweiterteBetreuungContainer(),
+						copyType,
+						target
+					)
+			);
 
 			target.setGrundAblehnung(this.getGrundAblehnung());
 			target.setVerfuegung(null);
 			target.setVertrag(this.getVertrag());
 			target.setDatumAblehnung(this.getDatumAblehnung());
 			target.setDatumBestaetigung(this.getDatumBestaetigung());
+			target.setDatumAngefordert(this.getDatumAngefordert());
 			target.setBetreuungMutiert(null);
 			target.setAbwesenheitMutiert(null);
 			target.setBedarfsstufe(this.bedarfsstufe);
 			target.setGueltig(false);
 			target.setAuszahlungAnEltern(this.isAuszahlungAnEltern());
-			target.setBegruendungAuszahlungAnInstitution(this.getBegruendungAuszahlungAnInstitution());
+			target.setBegruendungAuszahlungAnInstitution(
+				this.getBegruendungAuszahlungAnInstitution()
+			);
 			target.setEingewoehnung(this.isEingewoehnung());
 			break;
 		case ERNEUERUNG:
@@ -480,16 +582,25 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 	@Override
 	protected boolean hasAnyNonZeroPensum() {
 		for (BetreuungspensumContainer betreuungspensumContainer : betreuungspensumContainers) {
-			if (MathUtil.isPositive(betreuungspensumContainer.getBetreuungspensumJA().getPensum())) {
+			if (MathUtil.isPositive(
+				betreuungspensumContainer.getBetreuungspensumJA()
+					.getPensum()
+			)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	@Override
+	protected boolean isBetreunungNichtAngetreten() {
+		return Betreuungsstatus.NICHT_EINGETRETEN == getBetreuungsstatus();
+	}
+
 	public boolean hasAnspruch() {
 		if (getVerfuegungOrVerfuegungPreview() != null) {
-			List<VerfuegungZeitabschnitt> vzList = getVerfuegungOrVerfuegungPreview().getZeitabschnitte();
+			List<VerfuegungZeitabschnitt> vzList =
+				getVerfuegungOrVerfuegungPreview().getZeitabschnitte();
 			BigDecimal value = vzList.stream()
 				.map(VerfuegungZeitabschnitt::getBgPensum)
 				.reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -499,136 +610,33 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 	}
 
 	public boolean hasErweiterteBetreuung() {
-		return getErweiterteBetreuungContainer().getErweiterteBetreuungJA() != null
-			&& getErweiterteBetreuungContainer().getErweiterteBetreuungJA().getErweiterteBeduerfnisse();
+		return getErweiterteBetreuungContainer().getErweiterteBetreuungJA()
+			!= null
+			&& getErweiterteBetreuungContainer().getErweiterteBetreuungJA()
+				.getErweiterteBeduerfnisse();
 	}
 
 	public boolean isErweiterteBeduerfnisseBestaetigt() {
-		return getErweiterteBetreuungContainer().getErweiterteBetreuungJA() != null
-			&& getErweiterteBetreuungContainer().getErweiterteBetreuungJA().isErweiterteBeduerfnisseBestaetigt();
+		return getErweiterteBetreuungContainer().getErweiterteBetreuungJA()
+			!= null
+			&& getErweiterteBetreuungContainer().getErweiterteBetreuungJA()
+				.isErweiterteBeduerfnisseBestaetigt();
 	}
 
 	public boolean hasErweiterteBeduerfnisseBetrag() {
-		return getErweiterteBetreuungContainer().getErweiterteBetreuungJA() != null
-			&& getErweiterteBetreuungContainer().getErweiterteBetreuungJA().getErweitereteBeduerfnisseBetrag() != null;
+		return getErweiterteBetreuungContainer().getErweiterteBetreuungJA()
+			!= null
+			&& getErweiterteBetreuungContainer().getErweiterteBetreuungJA()
+				.getErweitereteBeduerfnisseBetrag()
+				!= null;
 	}
 
 	@Override
 	public String getMessageForAccessException() {
-		return "referenzNummer: " + getReferenzNummer()
-			+ ", gesuchInfo: " + this.extractGesuch().getMessageForAccessException();
-	}
-
-
-	public List<BetreuungspensumAbweichung> fillAbweichungen(@Nonnull BigDecimal multiplier) {
-		List<BetreuungspensumAbweichung> initialAbweichungen = initAbweichungen(multiplier);
-
-		for (BetreuungspensumAbweichung abweichung : initialAbweichungen) {
-			extractOriginalPensum(this.getBetreuungspensumContainers(), abweichung);
-		}
-		return initialAbweichungen;
-	}
-
-	private BetreuungspensumAbweichung extractOriginalPensum(Set<BetreuungspensumContainer> pensen,
-		BetreuungspensumAbweichung abweichung) {
-
-		LocalDate abweichungVon = abweichung.getGueltigkeit().getGueltigAb();
-		LocalDate abweichungBis = abweichung.getGueltigkeit().getGueltigBis();
-
-		for (BetreuungspensumContainer container : pensen) {
-			Betreuungspensum pensum = container.getBetreuungspensumJA();
-			LocalDate von = pensum.getGueltigkeit().getGueltigAb();
-			LocalDate bis = pensum.getGueltigkeit().getGueltigBis();
-
-			if ((von.isBefore(abweichungVon) || DateUtil.isSameMonthAndYear(von, abweichungVon))
-				&& (bis.isAfter(abweichungBis) || DateUtil.isSameMonthAndYear(bis, abweichungBis))) {
-				setAbweichungDatenFromPensum(abweichung, abweichungVon, abweichungBis, pensum, von, bis);
-			}
-		}
-		return abweichung;
-	}
-
-	private static void setAbweichungDatenFromPensum(
-		BetreuungspensumAbweichung abweichung,
-		LocalDate abweichungVon,
-		LocalDate abweichungBis,
-		Betreuungspensum pensum,
-		LocalDate von,
-		LocalDate bis
-	) {
-		if (von.isBefore(abweichungVon)) {
-			von = abweichungVon;
-		}
-
-		if (bis.isAfter(abweichungBis)) {
-			bis = abweichungBis;
-		}
-		BigDecimal anteil = DateUtil.calculateAnteilMonatInklWeekend(von, bis);
-		abweichung.addPensum(pensum.getPensum().multiply(anteil));
-		abweichung.addKosten(pensum.getMonatlicheBetreuungskosten().multiply(anteil));
-		abweichung.addHauptmahlzeiten(pensum.getMonatlicheHauptmahlzeiten().multiply(anteil));
-		abweichung.addNebenmahlzeiten(pensum.getMonatlicheNebenmahlzeiten().multiply(anteil));
-		abweichung.addTarifHaupt(pensum.getTarifProHauptmahlzeit().multiply(anteil));
-		abweichung.addTarifNeben(pensum.getTarifProNebenmahlzeit().multiply(anteil));
-		abweichung.setStuendlicheVollkosten(pensum.getStuendlicheVollkosten());
-
-		if (pensum.getEingewoehnung() != null && DateUtil.isSameMonthAndYear(
-			pensum.getGueltigkeit().getGueltigAb(),
-			abweichungVon)) {
-			abweichung.addEingewoehnung(pensum.getEingewoehnung());
-		}
-	}
-
-	// initiate an empty BetreuungspensumAbweichung for every month within the Gesuchsperiode
-	private List<BetreuungspensumAbweichung> initAbweichungen(@Nonnull BigDecimal multiplier) {
-		Gesuchsperiode gp = this.extractGesuchsperiode();
-		LocalDate from = gp.getGueltigkeit().getGueltigAb();
-		LocalDate to = gp.getGueltigkeit().getGueltigBis();
-
-		List<BetreuungspensumAbweichung> abweichungen = new ArrayList<>();
-		Set<BetreuungspensumAbweichung> abweichungenFromDb = this.getBetreuungspensumAbweichungen();
-
-		while (from.isBefore(to)) {
-			BetreuungspensumAbweichung abweichung;
-			// check if we already stored something in the database
-			if (!abweichungenFromDb.isEmpty()) {
-				Optional<BetreuungspensumAbweichung> existing = searchExistingAbweichung(from, abweichungenFromDb);
-				abweichung = existing.orElse(createEmptyAbweichung(from, this.isAngebotTagesfamilien()));
-			} else {
-				abweichung = createEmptyAbweichung(from, this.isAngebotTagesfamilien());
-			}
-			abweichung.setMultiplier(multiplier);
-			abweichungen.add(abweichung);
-			from = from.plusMonths(1);
-		}
-
-		return abweichungen;
-	}
-
-	@SuppressFBWarnings(value ="NP_NONNULL_PARAM_VIOLATION", justification = "initially the affected fields need to "
-		+ "be null, we want to force the user to enter data")
-	private BetreuungspensumAbweichung createEmptyAbweichung(@Nonnull LocalDate from, boolean isTagesfamilien) {
-		BetreuungspensumAbweichung abweichung = new BetreuungspensumAbweichung();
-		abweichung.setStatus(BetreuungspensumAbweichungStatus.NONE);
-		// initially those fields need to be null, we want to force the user to enter data
-		abweichung.setPensum(null);
-		abweichung.setMonatlicheHauptmahlzeiten(null);
-		abweichung.setMonatlicheNebenmahlzeiten(null);
-		abweichung.setMonatlicheBetreuungskosten(null);
-		YearMonth month = YearMonth.from(from);
-		abweichung.setGueltigkeit(new DateRange(month.atDay(1), month.atEndOfMonth()));
-
-		abweichung.setUnitForDisplay(PensumUnits.DAYS);
-		if (isTagesfamilien) {
-			abweichung.setUnitForDisplay(PensumUnits.HOURS);
-		}
-		return abweichung;
-	}
-
-	private Optional<BetreuungspensumAbweichung> searchExistingAbweichung(@Nonnull LocalDate from,
-		@Nonnull Set<BetreuungspensumAbweichung> abweichungenFromDb) {
-		return abweichungenFromDb.stream()
-			.filter(a -> a.getGueltigkeit().getGueltigAb().equals(from)).findFirst();
+		return "referenzNummer: "
+			+ getReferenzNummer()
+			+ ", gesuchInfo: "
+			+ this.extractGesuch().getMessageForAccessException();
 	}
 
 	public boolean isEventPublished() {
@@ -660,8 +668,11 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 		return begruendungAuszahlungAnInstitution;
 	}
 
-	public void setBegruendungAuszahlungAnInstitution(@Nullable String begruendungAuszahlungAnInstitution) {
-		this.begruendungAuszahlungAnInstitution = begruendungAuszahlungAnInstitution;
+	public void setBegruendungAuszahlungAnInstitution(
+		@Nullable String begruendungAuszahlungAnInstitution
+	) {
+		this.begruendungAuszahlungAnInstitution =
+			begruendungAuszahlungAnInstitution;
 	}
 
 	@Nullable
@@ -671,5 +682,36 @@ public class Betreuung extends AbstractPlatz implements BetreuungAndPensumContai
 
 	public void setBedarfsstufe(@Nullable Bedarfsstufe bedarfsstufe) {
 		this.bedarfsstufe = bedarfsstufe;
+	}
+
+	@Nullable
+	public LocalDate getDatumAngefordert() {
+		return datumAngefordert;
+	}
+
+	protected void setDatumAngefordert(@Nullable LocalDate datumAngefordert) {
+		this.datumAngefordert = datumAngefordert;
+	}
+
+	@Override
+	public void setBetreuungsstatus(
+		@NotNull Betreuungsstatus betreuungsstatus
+	) {
+		Betreuungsstatus oldStatus = this.getBetreuungsstatus();
+		super.setBetreuungsstatus(betreuungsstatus);
+		if (WARTEN.equals(betreuungsstatus)
+			&& this.getDatumAngefordert() == null) {
+			this.setDatumAngefordert(LocalDate.now());
+		}
+		if (ABGEWIESEN.equals(betreuungsstatus)
+			&& !ABGEWIESEN.equals(oldStatus)) {
+			this.setDatumAblehnung(LocalDate.now());
+		}
+		if ((BESTAETIGT.equals(betreuungsstatus)
+			&& !BESTAETIGT.equals(oldStatus))
+			|| (STORNIERT.equals(betreuungsstatus)
+				&& !STORNIERT.equals(oldStatus))) {
+			this.setDatumBestaetigung(LocalDate.now());
+		}
 	}
 }

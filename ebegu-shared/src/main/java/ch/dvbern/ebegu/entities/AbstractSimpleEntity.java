@@ -20,12 +20,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.util.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -38,7 +38,10 @@ public abstract class AbstractSimpleEntity implements Serializable {
 	private static final long serialVersionUID = -979317154050183445L;
 
 	@Id
-	@Column(unique = true, nullable = false, updatable = false, length = Constants.UUID_LENGTH)
+	@Column(unique = true,
+		nullable = false,
+		updatable = false,
+		length = Constants.UUID_LENGTH)
 	@Size(min = Constants.UUID_LENGTH, max = Constants.UUID_LENGTH)
 	private String id;
 
@@ -46,12 +49,10 @@ public abstract class AbstractSimpleEntity implements Serializable {
 	@NotNull
 	private long version;
 
-
 	public AbstractSimpleEntity() {
 		//da wir teilweise schon eine id brauchen bevor die Entities gespeichert werden initialisieren wir die uuid hier
 		id = UUID.randomUUID().toString();
 	}
-
 
 	public String getId() {
 		return id;
@@ -71,7 +72,8 @@ public abstract class AbstractSimpleEntity implements Serializable {
 	}
 
 	@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-	@SuppressFBWarnings(value = "BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS", justification = "Es wird Hibernate.getClass genutzt um von Proxies (LazyInit) die konkrete Klasse zu erhalten")
+	@SuppressFBWarnings(value = "BC_EQUALS_METHOD_SHOULD_WORK_FOR_ALL_OBJECTS",
+		justification = "Es wird Hibernate.getClass genutzt um von Proxies (LazyInit) die konkrete Klasse zu erhalten")
 	@Override
 	public boolean equals(@Nullable Object o) {
 		if (this == o) {

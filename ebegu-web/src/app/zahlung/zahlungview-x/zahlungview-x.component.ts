@@ -7,26 +7,25 @@ import {
     OnInit,
     ViewChild
 } from '@angular/core';
-import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, TransitionService, UIRouterGlobals} from '@uirouter/core';
 import {of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSZahlungsstatus} from '../../../models/enums/TSZahlungsstatus';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSZahlungsstatus, TSZahlung} from '@kibon/zahlung/model/entity';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
-import {TSZahlung} from '../../../models/TSZahlung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {LogFactory} from '../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
 import {ReportRS} from '../../core/service/reportRS.rest';
 import {StateStoreService} from '../../shared/services/state-store.service';
-import {ZahlungRS} from '../services/zahlungRS.rest';
+import {ZahlungUtilZahlungService} from '@kibon/zahlung/util/zahlung-service';
 
 const LOG = LogFactory.createLog('ZahlungviewXComponent');
 
@@ -34,7 +33,8 @@ const LOG = LogFactory.createLog('ZahlungviewXComponent');
     selector: 'dv-zahlungview-x',
     templateUrl: './zahlungview-x.component.html',
     styleUrls: ['./zahlungview-x.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ZahlungviewXComponent implements OnInit, AfterViewInit {
     @ViewChild(MatSort) public sort: MatSort;
@@ -43,6 +43,7 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
     private isMahlzeitenzahlungen: boolean = false;
     public datasource: MatTableDataSource<TSZahlung> =
         new MatTableDataSource<TSZahlung>([]);
+    public zahlungAnTyp: string;
 
     public itemsByPage: number = 20;
     public tableColumns: any[];
@@ -53,7 +54,7 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
         private readonly $state: StateService,
         private readonly downloadRS: DownloadRS,
         private readonly reportRS: ReportRS,
-        private readonly zahlungRS: ZahlungRS,
+        private readonly zahlungRS: ZahlungUtilZahlungService,
         private readonly authServiceRS: AuthServiceRS,
         private readonly routerGlobals: UIRouterGlobals,
         private readonly translate: TranslateService,
@@ -69,6 +70,9 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
             this.isMahlzeitenzahlungen = true;
         }
 
+        if (this.routerGlobals.params.zahlungAnTyp) {
+            this.zahlungAnTyp = this.routerGlobals.params.zahlungAnTyp;
+        }
         this.authServiceRS.principal$
             .pipe(
                 switchMap(principal => {
@@ -90,15 +94,15 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
                     zahlungsauftrag ? zahlungsauftrag.zahlungen : []
                 )
             )
-            .subscribe(
-                zahlungen => {
+            .subscribe({
+                next: zahlungen => {
                     this.zahlungen = zahlungen;
                     this.datasource.data = zahlungen;
                     this.datasource.sort = this.sort;
                     this.cd.markForCheck();
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
         this.setupTableColumns();
 
         this.transition.onStart({exiting: 'zahlung.view'}, () => {
@@ -115,9 +119,6 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
             const stored = this.stateStore.get(this.SORT_STORE_KEY) as MatSort;
             this.sort.active = stored.active;
             this.sort.direction = stored.direction;
-            (
-                this.sort.sortables.get(stored.active) as MatSortHeader
-            )?._setAnimationTransitionState({toState: 'active'});
         }
     }
 
@@ -132,7 +133,7 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
         this.reportRS
             .getZahlungReportExcel(zahlung.id)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -145,8 +146,8 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
     }
 
     public bestaetigen(zahlung: TSZahlung): void {
-        this.zahlungRS.zahlungBestaetigen(zahlung.id).subscribe(
-            (response: TSZahlung) => {
+        this.zahlungRS.zahlungBestaetigen(zahlung.id).subscribe({
+            next: (response: TSZahlung) => {
                 const index = EbeguUtil.getIndexOfElementwithID(
                     response,
                     this.zahlungen
@@ -158,12 +159,12 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
                 this.datasource.data = this.zahlungen;
                 this.cd.markForCheck();
             },
-            error =>
+            error: error =>
                 this.errorService.addMesageAsError(
                     error?.translatedMessage ||
                         this.translate.instant('ERROR_UNEXPECTED')
                 )
-        );
+        });
     }
 
     public canBestaetigen(zahlungsstatus: TSZahlungsstatus): boolean {
@@ -179,7 +180,9 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
     private setupTableColumns(): void {
         this.tableColumns = [
             {
-                displayedName: this.translate.instant('ZAHLUNG_INSTITUTION'),
+                displayedName: this.zahlungAnTyp.includes('INSTITUTION')
+                    ? this.translate.instant('ZAHLUNG_INSTITUTION')
+                    : this.translate.instant('ZAHLUNG_ELTERNTEIL'),
                 attributeName: 'empfaengerName'
             },
             {

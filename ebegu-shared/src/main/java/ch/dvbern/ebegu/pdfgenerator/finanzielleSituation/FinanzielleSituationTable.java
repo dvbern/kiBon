@@ -42,7 +42,9 @@ import org.slf4j.LoggerFactory;
 
 public class FinanzielleSituationTable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FinanzielleSituationTable.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		FinanzielleSituationTable.class
+	);
 
 	private final float[] columnWidths;
 	private final int[] alignment;
@@ -62,10 +64,12 @@ public class FinanzielleSituationTable {
 		this.isKorrekturmodusGemeinde = isKorrekturmodusGemeinde;
 		if (this.hasSecondGesuchsteller) {
 			this.columnWidths = new float[] { 10, 4, 4 };
-			this.alignment = new int[] { Element.ALIGN_LEFT, Element.ALIGN_RIGHT, Element.ALIGN_RIGHT };
+			this.alignment = new int[] { Element.ALIGN_LEFT,
+				Element.ALIGN_RIGHT, Element.ALIGN_RIGHT };
 		} else {
 			this.columnWidths = new float[] { 14, 4 };
-			this.alignment = new int[] { Element.ALIGN_LEFT, Element.ALIGN_RIGHT };
+			this.alignment = new int[] { Element.ALIGN_LEFT,
+				Element.ALIGN_RIGHT };
 		}
 	}
 
@@ -74,7 +78,9 @@ public class FinanzielleSituationTable {
 	}
 
 	@CanIgnoreReturnValue
-	public FinanzielleSituationTable addRows(@Nonnull FinanzielleSituationRow... rows) {
+	public FinanzielleSituationTable addRows(
+		@Nonnull FinanzielleSituationRow... rows
+	) {
 		Arrays.stream(rows)
 			.filter(Objects::nonNull)
 			.forEach(this::addRow);
@@ -108,11 +114,37 @@ public class FinanzielleSituationTable {
 		@Nonnull FinanzielleSituationRow row,
 		@Nonnull Color bgColor
 	) {
-		Font font = row.isBold() ? pageConfiguration.getFonts().getFontBold() : pageConfiguration.getFonts().getFont();
-		addCell(table, row.getLabel(), row.getSupertext(), null, font, bgColor, alignment[0]);
-		addCell(table, row.getGs1(), null, row.getGs1Urspruenglich(), font, bgColor, alignment[1]);
+		Font font = row.isBold() ?
+			pageConfiguration.getFonts().getFontBold() :
+			pageConfiguration.getFonts().getFont();
+		addCell(
+			table,
+			row.getLabel(),
+			row.getSupertext(),
+			null,
+			font,
+			bgColor,
+			alignment[0]
+		);
+		addCell(
+			table,
+			row.getGs1(),
+			null,
+			row.getGs1Urspruenglich(),
+			font,
+			bgColor,
+			alignment[1]
+		);
 		if (hasSecondGesuchsteller) {
-			addCell(table, row.getGs2(), null, row.getGs2Urspruenglich(), font, bgColor, alignment[2]);
+			addCell(
+				table,
+				row.getGs2(),
+				null,
+				row.getGs2Urspruenglich(),
+				font,
+				bgColor,
+				alignment[2]
+			);
 		}
 	}
 
@@ -130,7 +162,10 @@ public class FinanzielleSituationTable {
 			phrase.add(PdfUtil.createSuperTextInText(supertext));
 		}
 		if (originalValue != null && isKorrekturmodusGemeinde) {
-			Font fontWithSize = PdfUtil.createFontWithSize(pageConfiguration.getFonts().getFont(), 6);
+			Font fontWithSize = PdfUtil.createFontWithSize(
+				pageConfiguration.getFonts().getFont(),
+				6
+			);
 			fontWithSize.setColor(Color.GRAY);
 			phrase.add(new Chunk(originalValue, fontWithSize));
 		}

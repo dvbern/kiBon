@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -20,13 +20,14 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.Size;
+import javax.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.dto.VerfuegungsBemerkungDTO;
 import ch.dvbern.ebegu.types.DateRange;
@@ -47,7 +48,9 @@ public class VerfuegungZeitabschnittBemerkung extends AbstractDateRangedEntity {
 	private static final long serialVersionUID = 4621569356897563374L;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_verfuegung_zeitabschnitt_bemerkung_zeitabschnitt_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_verfuegung_zeitabschnitt_bemerkung_zeitabschnitt_id"),
+		nullable = false)
 	private VerfuegungZeitabschnitt verfuegungZeitabschnitt;
 
 	@Column(nullable = true, length = Constants.DB_TEXTAREA_LENGTH)
@@ -59,17 +62,46 @@ public class VerfuegungZeitabschnittBemerkung extends AbstractDateRangedEntity {
 	}
 
 	public VerfuegungZeitabschnittBemerkung(
-			@Nonnull VerfuegungsBemerkungDTO bemerkung,
-			VerfuegungZeitabschnitt verfuegungZeitabschnitt,
-			Mandant mandant) {
-		this.bemerkung = bemerkung.getTranslated(mandant);
+		@Nonnull VerfuegungsBemerkungDTO bemerkung,
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt,
+		Mandant mandant
+	) {
+		this.bemerkung = bemerkung.getTranslated(
+			mandant,
+			extractGemeinde(verfuegungZeitabschnitt)
+		);
 		this.verfuegungZeitabschnitt = verfuegungZeitabschnitt;
-		DateRange gueltig = bemerkung.getGueltigkeit() != null ? bemerkung.getGueltigkeit() : verfuegungZeitabschnitt.getGueltigkeit();
+		DateRange gueltig =
+			bemerkung.getGueltigkeit() != null ?
+				bemerkung.getGueltigkeit() :
+				verfuegungZeitabschnitt.getGueltigkeit();
 		this.setGueltigkeit(gueltig);
 	}
 
+	@SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
+	private @Nullable Gemeinde extractGemeinde(
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt
+	) {
+		if (verfuegungZeitabschnitt.getVerfuegung() == null) {
+			return null;
+		}
+		if (verfuegungZeitabschnitt.getVerfuegung().getBetreuung() != null) {
+			return verfuegungZeitabschnitt.getVerfuegung()
+				.getBetreuung()
+				.extractGemeinde();
+		} else if (verfuegungZeitabschnitt.getVerfuegung()
+			.getAnmeldungTagesschule()
+			!= null) {
+			return verfuegungZeitabschnitt.getVerfuegung()
+				.getAnmeldungTagesschule()
+				.extractGemeinde();
+		}
+		return null;
+	}
+
 	@Override
-	@SuppressWarnings({ "OverlyComplexBooleanExpression", "OverlyComplexMethod", "PMD.CompareObjectsWithEquals" })
+	@SuppressWarnings({ "OverlyComplexBooleanExpression", "OverlyComplexMethod",
+		"PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -84,9 +116,14 @@ public class VerfuegungZeitabschnittBemerkung extends AbstractDateRangedEntity {
 		if (!(other instanceof VerfuegungZeitabschnittBemerkung)) {
 			return false;
 		}
-		final VerfuegungZeitabschnittBemerkung that = (VerfuegungZeitabschnittBemerkung) other;
-		return StringUtils.equals(this.bemerkung, that.bemerkung) &&
-			   Objects.equals(this.verfuegungZeitabschnitt, that.verfuegungZeitabschnitt);
+		final VerfuegungZeitabschnittBemerkung that =
+			(VerfuegungZeitabschnittBemerkung) other;
+		return StringUtils.equals(this.bemerkung, that.bemerkung)
+			&&
+			Objects.equals(
+				this.verfuegungZeitabschnitt,
+				that.verfuegungZeitabschnitt
+			);
 	}
 
 	@Override
@@ -102,7 +139,9 @@ public class VerfuegungZeitabschnittBemerkung extends AbstractDateRangedEntity {
 		return verfuegungZeitabschnitt;
 	}
 
-	public void setVerfuegungZeitabschnitt(VerfuegungZeitabschnitt verfuegungZeitabschnitt) {
+	public void setVerfuegungZeitabschnitt(
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt
+	) {
 		this.verfuegungZeitabschnitt = verfuegungZeitabschnitt;
 	}
 

@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 import ch.dvbern.ebegu.entities.AnmeldungFerieninsel;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
 import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
@@ -46,7 +45,8 @@ public interface VerfuegungService {
 	 * @param betreuungId ID der Betreuung, welche verfügt werden soll
 	 * @param manuelleBemerkungen, user-provided Bemerkung zur Verfügung
 	 * @param ignorieren true wenn die ausbezahlten Zeitabschnitte nicht neu berechnet werden muessen
-	 * @param ignorierenMahlzeiten true wenn die ausbezahlten Mahlzeiten-Zeitabschnitte nicht neu berechnet werden muessen
+	 * @param ignorierenMahlzeiten true wenn die ausbezahlten Mahlzeiten-Zeitabschnitte nicht neu berechnet werden
+	 * muessen
 	 * @param sendEmail true wenn eine Info EMail versendet werden soll
 	 */
 	@Nonnull
@@ -56,7 +56,8 @@ public interface VerfuegungService {
 		@Nullable String manuelleBemerkungen,
 		boolean ignorieren,
 		boolean ignorierenMahlzeiten,
-		boolean sendEmail);
+		boolean sendEmail
+	);
 
 	void gesuchAutomatischVerfuegen(@Nonnull Gesuch mutation);
 
@@ -65,21 +66,28 @@ public interface VerfuegungService {
 	 * Verfügung wird definitiv und unveränderbar gespeichert.
 	 */
 	@Nonnull
-	AnmeldungTagesschule anmeldungTagesschuleUebernehmen(@Nonnull AnmeldungTagesschule anmeldungTagesschule);
+	AnmeldungTagesschule anmeldungTagesschuleUebernehmen(
+		@Nonnull AnmeldungTagesschule anmeldungTagesschule
+	);
 
 	/**
 	 * Schliesst eine Ferieninsel-Anmeldung ab. Dies entspricht einer Verfügung bei den BGs, d.h. die
 	 * Verfügung wird definitiv und unveränderbar gespeichert.
 	 */
 	@Nonnull
-	AnmeldungFerieninsel anmeldungFerieninselUebernehmen(@Nonnull AnmeldungFerieninsel anmeldungFerieninsel);
+	AnmeldungFerieninsel anmeldungFerieninselUebernehmen(
+		@Nonnull AnmeldungFerieninsel anmeldungFerieninsel
+	);
 
 	/**
 	 * Eine Schulamt-Anmeldung im Status AUSGELOEST muss beim Erstellen einer Mutation trotzdem "verfügt" werden
 	 * damit wir künftig mit der richtigen FinSit arbeiten!
 	 */
 	@Nonnull
-	AnmeldungTagesschule anmeldungSchulamtAusgeloestAbschliessen(@Nonnull String gesuchId, @Nonnull String betreuungId);
+	AnmeldungTagesschule anmeldungSchulamtAusgeloestAbschliessen(
+		@Nonnull String gesuchId,
+		@Nonnull String betreuungId
+	);
 
 	/**
 	 * Speichert die Verfuegung neu in der DB falls der Key noch nicht existiert.
@@ -89,7 +97,10 @@ public interface VerfuegungService {
 	 * @param betreuungId ID der Betreuung, welche verfügt werden soll
 	 */
 	@Nonnull
-	Verfuegung nichtEintreten(@Nonnull String gesuchId, @Nonnull String betreuungId);
+	Verfuegung nichtEintreten(
+		@Nonnull String gesuchId,
+		@Nonnull String betreuungId
+	);
 
 	/**
 	 * @param id PK (id) der Verfuegung
@@ -130,7 +141,9 @@ public interface VerfuegungService {
 	/**
 	 * genau wie findVorgaengerVerfuegung gibt aber nur deren TimestampErstellt zurueck wenn vorhanden
 	 */
-	Optional<LocalDate> findVorgaengerVerfuegungDate(@Nonnull Betreuung betreuung);
+	Optional<LocalDate> findVorgaengerVerfuegungDate(
+		@Nonnull Betreuung betreuung
+	);
 
 	/**
 	 * Sucht den Zeitabschnitt / die Zeitabschnitte mit demselben Zeitraum auf der Vorgängerverfügung,
@@ -143,7 +156,8 @@ public interface VerfuegungService {
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
 		@Nonnull VerfuegungZeitabschnitt zeitabschnittNeu,
 		@Nonnull Betreuung betreuungNeu,
-		@Nonnull List<VerfuegungZeitabschnitt> vorgaengerZeitabschnitte);
+		@Nonnull List<VerfuegungZeitabschnitt> vorgaengerZeitabschnitte
+	);
 
 	void findVerrechnetenZeitabschnittOnVorgaengerVerfuegung(
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
@@ -153,20 +167,11 @@ public interface VerfuegungService {
 	);
 
 	/**
-	 * Returns all Zeitabschnitte within the given year that are gueltig.
-	 */
-	@Nonnull
-	List<VerfuegungZeitabschnitt> findZeitabschnitteByYear(int year);
-
-	/**
-	 * Returns all Zeitabschnitte within the given year that are gueltig and concern the given gemeinde
-	 */
-	@Nonnull
-	List<VerfuegungZeitabschnitt> findZeitabschnitteByYear(int year, @Nonnull Gemeinde gemeinde);
-
-	/**
 	 * Calculates familiengrösse and massgebendes einkommen nach abzug familiengrösse for given gesuch
 	 */
 	@Nonnull
-	Verfuegung calculateFamGroessenVerfuegung(@Nonnull Gesuch gesuch, @Nonnull Sprache sprache);
+	Verfuegung calculateFamGroessenVerfuegung(
+		@Nonnull Gesuch gesuch,
+		@Nonnull Sprache sprache
+	);
 }

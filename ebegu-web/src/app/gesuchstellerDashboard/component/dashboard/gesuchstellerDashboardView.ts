@@ -13,15 +13,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
-import {IComponentOptions, IController, IPromise} from 'angular';
+import {copy, IComponentOptions, IController, IPromise} from 'angular';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {GesuchRS} from '../../../../gesuch/service/gesuchRS.rest';
 import {SearchRS} from '../../../../gesuch/service/searchRS.rest';
 import {
     IN_BEARBEITUNG_BASE_NAME,
-    isAnyStatusOfGeprueftVerfuegenVerfuegtOrAbgeschlossen,
+    isAnyStatusForGSMutation,
+    isAnyStatusOfFreigegebenGeprueftVerfuegenVerfuegtOrAbgeschlossen,
     isAnyStatusOfVerfuegt,
     TSAntragStatus
 } from '../../../../models/enums/TSAntragStatus';
@@ -32,16 +34,16 @@ import {TSAntragDTO} from '../../../../models/TSAntragDTO';
 import {TSDossier} from '../../../../models/TSDossier';
 import {TSGemeindeKonfiguration} from '../../../../models/TSGemeindeKonfiguration';
 import {TSGemeindeStammdaten} from '../../../../models/TSGemeindeStammdaten';
-import {TSGesuchsperiode} from '../../../../models/TSGesuchsperiode';
-import {DateUtil} from '../../../../utils/DateUtil';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {ApplicationPropertyRS} from '../../../core/rest-services/applicationPropertyRS.rest';
 import {GesuchsperiodeRS} from '../../../core/service/gesuchsperiodeRS.rest';
 import {MitteilungRS} from '../../../core/service/mitteilungRS.rest';
 import {IGesuchstellerDashboardStateParams} from '../../gesuchstellerDashboard.route';
 import ITranslateService = angular.translate.ITranslateService;
+import {firstValueFrom} from 'rxjs';
 
 export class GesuchstellerDashboardListViewConfig implements IComponentOptions {
     public transclude = false;
@@ -66,7 +68,7 @@ export class GesuchstellerDashboardViewController implements IController {
         'GesuchRS',
         'ErrorService',
         'GemeindeRS',
-        'ApplicationPropertyRS'
+        'SharedUtilApplicationPropertyRsService'
     ];
 
     private antragList: Array<TSAntragDTO> = [];
@@ -93,7 +95,7 @@ export class GesuchstellerDashboardViewController implements IController {
         private readonly gesuchRS: GesuchRS,
         private readonly errorService: ErrorService,
         private readonly gemeindeRS: GemeindeRS,
-        private readonly appplicationPropertyRS: ApplicationPropertyRS
+        private readonly appplicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {
@@ -103,28 +105,29 @@ export class GesuchstellerDashboardViewController implements IController {
             );
         }
 
-        this.periodYear = DateUtil.calculatePeriodenStartdatumString(
+        this.periodYear = MomentUtil.calculatePeriodenStartdatumString(
             this.dossier.gemeinde.betreuungsgutscheineStartdatum
         );
 
         this.initViewModel();
         this.loadGemeindeStammdaten();
-        this.appplicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.anmeldungTSEnabled = res.angebotTSActivated;
-            this.anmeldungFIEnabled = res.angebotFIActivated;
-        });
+        this.appplicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.anmeldungTSEnabled = res.angebotTSActivated;
+                this.anmeldungFIEnabled = res.angebotFIActivated;
+            });
     }
 
     private initViewModel(): IPromise<TSAntragDTO[]> {
-        return this.searchRS
-            .getAntraegeOfDossier(this.dossier.id)
-            .toPromise()
-            .then((response: any) => {
-                this.antragList = angular.copy(response);
-                this.getAmountNewMitteilungen();
-                this.updateActiveGesuchsperiodenList();
-                return this.antragList;
-            });
+        return firstValueFrom(
+            this.searchRS.getAntraegeOfDossier(this.dossier.id)
+        ).then((response: any) => {
+            this.antragList = copy(response);
+            this.getAmountNewMitteilungen();
+            this.updateActiveGesuchsperiodenList();
+            return this.antragList;
+        });
     }
 
     /**
@@ -190,6 +193,12 @@ export class GesuchstellerDashboardViewController implements IController {
         return TSAntragStatus.IN_BEARBEITUNG_GS !== antrag.status;
     }
 
+    public getAnsehenButtonClass(periode: TSGesuchsperiode): string {
+        return EbeguUtil.isNotNullOrUndefined(this.getButtonText(periode))
+            ? 'gdashboard-panel-button--ansehen'
+            : 'gdashboard-panel-button--margin';
+    }
+
     public getNumberMitteilungen(): number {
         return this.amountNewMitteilungen;
     }
@@ -214,13 +223,7 @@ export class GesuchstellerDashboardViewController implements IController {
             } else {
                 // Im Else-Fall ist das Gesuch nicht mehr ueber den Button verfuegbar
                 // Es kann nur noch eine Mutation gemacht werden
-                this.$state.go('gesuch.mutation', {
-                    creationAction: TSCreationAction.CREATE_NEW_MUTATION,
-                    eingangsart: TSEingangsart.ONLINE,
-                    gesuchsperiodeId: periode.id,
-                    gesuchId: antrag.antragId,
-                    dossierId: this.dossier.id
-                });
+                this.goToMutation(periode, antrag);
             }
         } else if (this.antragList && this.antragList.length > 0) {
             // Noch kein Antrag für die Gesuchsperiode vorhanden
@@ -242,6 +245,16 @@ export class GesuchstellerDashboardViewController implements IController {
                 dossierId: this.dossier.id
             });
         }
+    }
+
+    private goToMutation(periode: TSGesuchsperiode, antrag: TSAntragDTO): void {
+        this.$state.go('gesuch.mutation', {
+            creationAction: TSCreationAction.CREATE_NEW_MUTATION,
+            eingangsart: TSEingangsart.ONLINE,
+            gesuchsperiodeId: periode.id,
+            gesuchId: antrag.antragId,
+            dossierId: this.dossier.id
+        });
     }
 
     public createTagesschule(periode: TSGesuchsperiode): void {
@@ -351,7 +364,7 @@ export class GesuchstellerDashboardViewController implements IController {
                 return this.$translate.instant('GS_BEARBEITEN');
             }
             if (
-                !isAnyStatusOfGeprueftVerfuegenVerfuegtOrAbgeschlossen(
+                !isAnyStatusOfFreigegebenGeprueftVerfuegenVerfuegtOrAbgeschlossen(
                     antrag.status
                 ) ||
                 antrag.beschwerdeHaengig
@@ -359,7 +372,10 @@ export class GesuchstellerDashboardViewController implements IController {
                 // Alles ausser verfuegt und InBearbeitung -> Text DOKUMENTE HOCHLADEN
                 return this.$translate.instant('GS_DOKUMENTE_HOCHLADEN');
             }
-            if (this.isNeuestAntragOfGesuchsperiode(periode, antrag)) {
+            if (
+                this.isNeuestAntragOfGesuchsperiode(periode, antrag) &&
+                isAnyStatusForGSMutation(antrag.status)
+            ) {
                 // Im Else-Fall ist das Gesuch nicht mehr ueber den Button verfuegbar
                 // Es kann nur noch eine Mutation gemacht werden -> Text MUTIEREN
                 return this.$translate.instant('GS_MUTIEREN');

@@ -16,8 +16,7 @@
  */
 
 import {TSExternalClientType} from './enums/TSExternalClienType';
-import {TSAbstractEntity} from './TSAbstractEntity';
-
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 export class TSExternalClient extends TSAbstractEntity {
     public clientName: string;
     public type: TSExternalClientType;

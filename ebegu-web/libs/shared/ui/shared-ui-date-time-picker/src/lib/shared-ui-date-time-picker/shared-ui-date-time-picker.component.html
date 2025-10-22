@@ -1,0 +1,52 @@
+<fieldset class="dv-date-time-picker">
+    <legend translate [ngClass]="{required: required()}">
+        {{ label() | translate }}
+    </legend>
+    <div class="input-row">
+        <mat-form-field class="margin-r-2">
+            <input
+                matInput
+                aria-label="Datum"
+                #date="ngModel"
+                [required]="required()"
+                [ngModel]="dateTime()"
+                (ngModelChange)="setDate($event)"
+                [matDatepicker]="picker"
+                [disabled]="disabled()"
+                [min]="min()"
+            />
+            <mat-datepicker-toggle
+                class="no-box-shadow"
+                matIconSuffix
+                [disableRipple]="true"
+                [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+            <input
+                [required]="required()"
+                matInput
+                #time="ngModel"
+                aria-label="Uhrzeit"
+                [matTimepicker]="picker2"
+                [ngModel]="dateTime()"
+                [disabled]="disabled()"
+                [matTimepickerMin]="nextHalfHourMin()"
+                (ngModelChange)="setTime($event)"
+                [ngModelOptions]="{updateOn: 'blur'}"
+            />
+            <mat-timepicker-toggle
+                class="no-box-shadow"
+                matIconSuffix
+                [for]="picker2"
+            />
+            <mat-timepicker #picker2 />
+        </mat-form-field>
+    </div>
+
+    <dv-error-messages
+        [errorObject]="combine(date.errors, time.errors)"
+    ></dv-error-messages>
+</fieldset>

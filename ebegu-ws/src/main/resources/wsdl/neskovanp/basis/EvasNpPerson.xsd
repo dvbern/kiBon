@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- 
+<!--
 	Copyright (c) 2004 DV Bern AG, Switzerland
-	
+
 	Das vorliegende Dokument, einschliesslich aller seiner Teile, ist urheberrechtlich
 	geschützt. Jede Verwertung ist ohne Zustimmung der DV Bern AG unzulässig. Dies gilt
 	insbesondere für Vervielfältigungen, die Einspeicherung und Verarbeitung in
@@ -10,14 +10,12 @@
 	Ansicht übergeben ist jede weitere Verteilung durch den Kunden an Dritte untersagt.
 -->
 
-
 <xs:schema
 	targetNamespace="http://sv.fin.be.ch/schemas/A7V/20070710/EvasNpPerson"
 	xmlns:tns="http://sv.fin.be.ch/schemas/A7V/20070710/EvasNpPerson"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:common="http://sv.fin.be.ch/schemas/A7V/20070710/EvasNpCommon"
 	elementFormDefault="qualified"
-	xmlns:xhtml="http://www.w3.org/1999/xhtml"
 	attributeFormDefault="unqualified" version="0.1">
 
 	<xs:import

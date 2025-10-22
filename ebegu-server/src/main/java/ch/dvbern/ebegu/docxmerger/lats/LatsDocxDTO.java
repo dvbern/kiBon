@@ -22,30 +22,54 @@ import java.math.BigDecimal;
 import javax.annotation.Nullable;
 
 public class LatsDocxDTO {
-	@Nullable private String userName;
-	@Nullable private String userEmail;
-	@Nullable private String gemeindeAnschrift;
-	@Nullable private String gemeindeStrasse;
-	@Nullable private String gemeindeNr;
-	@Nullable private String gemeindePLZ;
-	@Nullable private String gemeindeOrt;
-	@Nullable private String fallNummer;
-	@Nullable private String gemeindeName;
-	@Nullable private BigDecimal betreuungsstunden;
-	@Nullable private BigDecimal betreuungsstundenProg;
-	@Nullable private String normlohnkosten;
-	@Nullable private String normlohnkostenProg;
-	@Nullable private BigDecimal normlohnkostenTotal;
-	@Nullable private BigDecimal normlohnkostenTotalProg;
-	@Nullable private BigDecimal elterngebuehren;
-	@Nullable private BigDecimal elterngebuehrenProg;
-	@Nullable private BigDecimal lastenausgleichsberechtigterBetrag;
-	@Nullable private BigDecimal lastenausgleichsberechtigterBetragProg;
-	@Nullable private BigDecimal ersteRate;
-	@Nullable private BigDecimal ersteRateProg;
-	@Nullable private BigDecimal zweiteRate;
-	@Nullable private BigDecimal auszahlungTotal;
-	@Nullable private String textPaedagogischOderNicht;
+	@Nullable
+	private String userName;
+	@Nullable
+	private String userEmail;
+	@Nullable
+	private String gemeindeAnschrift;
+	@Nullable
+	private String gemeindeStrasse;
+	@Nullable
+	private String gemeindeNr;
+	@Nullable
+	private String gemeindePLZ;
+	@Nullable
+	private String gemeindeOrt;
+	@Nullable
+	private String fallNummer;
+	@Nullable
+	private String gemeindeName;
+	@Nullable
+	private BigDecimal betreuungsstunden;
+	@Nullable
+	private BigDecimal betreuungsstundenProg;
+	@Nullable
+	private String normlohnkosten;
+	@Nullable
+	private String normlohnkostenProg;
+	@Nullable
+	private BigDecimal normlohnkostenTotal;
+	@Nullable
+	private BigDecimal normlohnkostenTotalProg;
+	@Nullable
+	private BigDecimal elterngebuehren;
+	@Nullable
+	private BigDecimal elterngebuehrenProg;
+	@Nullable
+	private BigDecimal lastenausgleichsberechtigterBetrag;
+	@Nullable
+	private BigDecimal lastenausgleichsberechtigterBetragProg;
+	@Nullable
+	private BigDecimal ersteRate;
+	@Nullable
+	private BigDecimal ersteRateProg;
+	@Nullable
+	private BigDecimal zweiteRate;
+	@Nullable
+	private BigDecimal auszahlungTotal;
+	@Nullable
+	private String textPaedagogischOderNicht;
 
 	public LatsDocxDTO() {
 	}
@@ -136,7 +160,9 @@ public class LatsDocxDTO {
 		return betreuungsstundenProg;
 	}
 
-	public void setBetreuungsstundenProg(@Nullable BigDecimal betreuungsstundenProg) {
+	public void setBetreuungsstundenProg(
+		@Nullable BigDecimal betreuungsstundenProg
+	) {
 		this.betreuungsstundenProg = betreuungsstundenProg;
 	}
 
@@ -163,7 +189,9 @@ public class LatsDocxDTO {
 		return normlohnkostenTotal;
 	}
 
-	public void setNormlohnkostenTotal(@Nullable BigDecimal normlohnkostenTotal) {
+	public void setNormlohnkostenTotal(
+		@Nullable BigDecimal normlohnkostenTotal
+	) {
 		this.normlohnkostenTotal = normlohnkostenTotal;
 	}
 
@@ -172,7 +200,9 @@ public class LatsDocxDTO {
 		return normlohnkostenTotalProg;
 	}
 
-	public void setNormlohnkostenTotalProg(@Nullable BigDecimal normlohnkostenTotalProg) {
+	public void setNormlohnkostenTotalProg(
+		@Nullable BigDecimal normlohnkostenTotalProg
+	) {
 		this.normlohnkostenTotalProg = normlohnkostenTotalProg;
 	}
 
@@ -190,7 +220,9 @@ public class LatsDocxDTO {
 		return elterngebuehrenProg;
 	}
 
-	public void setElterngebuehrenProg(@Nullable BigDecimal elterngebuehrenProg) {
+	public void setElterngebuehrenProg(
+		@Nullable BigDecimal elterngebuehrenProg
+	) {
 		this.elterngebuehrenProg = elterngebuehrenProg;
 	}
 
@@ -199,8 +231,11 @@ public class LatsDocxDTO {
 		return lastenausgleichsberechtigterBetrag;
 	}
 
-	public void setLastenausgleichsberechtigterBetrag(@Nullable BigDecimal lastenausgleichsberechtigterBetrag) {
-		this.lastenausgleichsberechtigterBetrag = lastenausgleichsberechtigterBetrag;
+	public void setLastenausgleichsberechtigterBetrag(
+		@Nullable BigDecimal lastenausgleichsberechtigterBetrag
+	) {
+		this.lastenausgleichsberechtigterBetrag =
+			lastenausgleichsberechtigterBetrag;
 	}
 
 	@Nullable
@@ -208,8 +243,11 @@ public class LatsDocxDTO {
 		return lastenausgleichsberechtigterBetragProg;
 	}
 
-	public void setLastenausgleichsberechtigterBetragProg(@Nullable BigDecimal lastenausgleichsberechtigterBetragProg) {
-		this.lastenausgleichsberechtigterBetragProg = lastenausgleichsberechtigterBetragProg;
+	public void setLastenausgleichsberechtigterBetragProg(
+		@Nullable BigDecimal lastenausgleichsberechtigterBetragProg
+	) {
+		this.lastenausgleichsberechtigterBetragProg =
+			lastenausgleichsberechtigterBetragProg;
 	}
 
 	@Nullable
@@ -253,7 +291,9 @@ public class LatsDocxDTO {
 		return textPaedagogischOderNicht;
 	}
 
-	public void setTextPaedagogischOderNicht(@Nullable String textPaedagogischOderNicht) {
+	public void setTextPaedagogischOderNicht(
+		@Nullable String textPaedagogischOderNicht
+	) {
 		this.textPaedagogischOderNicht = textPaedagogischOderNicht;
 	}
 

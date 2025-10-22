@@ -14,10 +14,10 @@
   -->
 
 <ejb-jar
-	xmlns="http://java.sun.com/xml/ns/javaee"
-	version="3.0"
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	version="4.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd">
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/ejb-jar_4_0.xsd">
 
 	<interceptors>
 		<interceptor>
@@ -33,7 +33,7 @@
 		<!-- Wir behandeln die ConstraintViolationException neu als Rollback-ApplicationException, damit sie nicht mehr in eine EJBTransactionRolledbackException
 		gewrappt wird. Siehe auch EbeguConstraintValidationUnwrappedExceptionMapper -->
 		<application-exception>
-			<exception-class>javax.validation.ConstraintViolationException</exception-class>
+			<exception-class>jakarta.validation.ConstraintViolationException</exception-class>
 			<rollback>true</rollback>
 		</application-exception>
 	</assembly-descriptor>

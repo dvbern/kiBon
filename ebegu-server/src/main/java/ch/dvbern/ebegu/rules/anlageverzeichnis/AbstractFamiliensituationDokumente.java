@@ -22,17 +22,14 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.Gesuch;
-import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
 import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
 import ch.dvbern.ebegu.util.EbeguUtil;
-import ch.dvbern.ebegu.util.mandant.MandantVisitor;
 
 /**
  * Dokumente für Familiensituation:
@@ -46,7 +43,8 @@ import ch.dvbern.ebegu.util.mandant.MandantVisitor;
  * Unterstützungsnachweis / Bestätigung Sozialdienst
  * Notwendig, wenn die GS Sozialhilfe bekommen
  **/
-public abstract class AbstractFamiliensituationDokumente extends AbstractDokumente<Familiensituation, Familiensituation> {
+public abstract class AbstractFamiliensituationDokumente extends
+	AbstractDokumente<Familiensituation, Familiensituation> {
 
 	@Override
 	public void getAllDokumente(
@@ -54,8 +52,11 @@ public abstract class AbstractFamiliensituationDokumente extends AbstractDokumen
 		@Nonnull Set<DokumentGrund> anlageVerzeichnis,
 		@Nonnull Locale locale
 	) {
-		LocalDate gesuchsperiodeBis = gesuch.getGesuchsperiode().getGueltigkeit().getGueltigBis();
-		Familiensituation famsitErstgesuch = gesuch.extractFamiliensituationErstgesuch();
+		LocalDate gesuchsperiodeBis = gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigBis();
+		Familiensituation famsitErstgesuch = gesuch
+			.extractFamiliensituationErstgesuch();
 		if (famsitErstgesuch != null) {
 			add(
 				getDokument(
@@ -71,19 +72,49 @@ public abstract class AbstractFamiliensituationDokumente extends AbstractDokumen
 				anlageVerzeichnis
 			);
 		}
-		add(getDokument(DokumentTyp.NACHWEIS_UNTERHALTSVEREINBARUNG, gesuch.extractFamiliensituation(),
-				null, null, null, DokumentGrundTyp.FAMILIENSITUATION), anlageVerzeichnis);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_UNTERHALTSVEREINBARUNG,
+				gesuch.extractFamiliensituation(),
+				null,
+				null,
+				null,
+				DokumentGrundTyp.FAMILIENSITUATION
+			),
+			anlageVerzeichnis
+		);
 		// dieses Dokument gehoert eigentlich zur FinSit aber muss hier hinzugefuegt werden, da es Daten aus der
 		// Familiensituation benoetigt
-		add(getDokument(DokumentTyp.UNTERSTUETZUNGSBESTAETIGUNG, gesuch.extractFamiliensituation(),
-			null, null, null, DokumentGrundTyp.FINANZIELLESITUATION), anlageVerzeichnis);
-		add(getDokument(DokumentTyp.NACHWEIS_GETEILTE_OBHUT, gesuch.extractFamiliensituation(),
-			null, null, null, DokumentGrundTyp.FAMILIENSITUATION), anlageVerzeichnis);
+		add(
+			getDokument(
+				DokumentTyp.UNTERSTUETZUNGSBESTAETIGUNG,
+				gesuch.extractFamiliensituation(),
+				null,
+				null,
+				null,
+				DokumentGrundTyp.FINANZIELLESITUATION
+			),
+			anlageVerzeichnis
+		);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_GETEILTE_OBHUT,
+				gesuch.extractFamiliensituation(),
+				null,
+				null,
+				null,
+				DokumentGrundTyp.FAMILIENSITUATION
+			),
+			anlageVerzeichnis
+		);
 	}
 
 	@SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
 	@Override
-	public boolean isDokumentNeeded(@Nonnull DokumentTyp dokumentTyp, @Nullable Familiensituation familiensituation) {
+	public boolean isDokumentNeeded(
+		@Nonnull DokumentTyp dokumentTyp,
+		@Nullable Familiensituation familiensituation
+	) {
 		if (familiensituation == null) {
 			return false;
 		}
@@ -91,7 +122,7 @@ public abstract class AbstractFamiliensituationDokumente extends AbstractDokumen
 		case UNTERSTUETZUNGSBESTAETIGUNG:
 			return isUnterstuetzungsbestaetigungNeeded(familiensituation);
 		case NACHWEIS_UNTERHALTSVEREINBARUNG:
-			return isNachweisunterhaltsverinabrungNeeded(familiensituation);
+			return isNachweisUnterhaltsvereinbarungNeeded(familiensituation);
 		case NACHWEIS_GETEILTE_OBHUT:
 			return isNachweisGeteilteObhutNeeded(familiensituation);
 		default:
@@ -99,31 +130,35 @@ public abstract class AbstractFamiliensituationDokumente extends AbstractDokumen
 		}
 	}
 
-	protected abstract boolean isUnterstuetzungsbestaetigungNeeded(Familiensituation familiensituation);
+	protected abstract boolean isUnterstuetzungsbestaetigungNeeded(
+		Familiensituation familiensituation
+	);
 
-	private boolean isNachweisGeteilteObhutNeeded(Familiensituation familiensituation) {
+	private boolean isNachweisGeteilteObhutNeeded(
+		Familiensituation familiensituation
+	) {
 		if (!familiensituation.isFkjvFamSit()) {
 			return false;
 		}
 
-		if (familiensituation.getGeteilteObhut() == null || !familiensituation.getGeteilteObhut()) {
+		if (familiensituation.getGeteilteObhut() == null
+			|| !familiensituation.getGeteilteObhut()) {
 			return false;
 		}
 
-		return familiensituation.getGesuchstellerKardinalitaet() == EnumGesuchstellerKardinalitaet.ALLEINE;
+		return familiensituation.getGesuchstellerKardinalitaet()
+			== EnumGesuchstellerKardinalitaet.ALLEINE;
 	}
 
-	private boolean isNachweisunterhaltsverinabrungNeeded(Familiensituation familiensituation) {
+	private boolean isNachweisUnterhaltsvereinbarungNeeded(
+		Familiensituation familiensituation
+	) {
 		if (EbeguUtil.isNullOrFalse(familiensituation.isFkjvFamSit())) {
 			return false;
 		}
 
-		//Sozialhilfebezüger müssen kein Beleg zur Unterhaltsvereinbarung hochladen
-		if (EbeguUtil.isNotNullAndTrue(familiensituation.getSozialhilfeBezueger())) {
-			return false;
-		}
-
-		return familiensituation.getUnterhaltsvereinbarung() == UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG;
+		return familiensituation.getUnterhaltsvereinbarung()
+			== UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG;
 	}
 
 	@SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
@@ -132,16 +167,21 @@ public abstract class AbstractFamiliensituationDokumente extends AbstractDokumen
 		@Nonnull DokumentTyp dokumentTyp,
 		Familiensituation familiensituationErstgesuch,
 		Familiensituation familiensituationMutation,
-		@Nullable LocalDate stichtag) {
+		@Nullable LocalDate stichtag
+	) {
 
-		if (familiensituationErstgesuch == null || familiensituationMutation == null || stichtag == null) {
+		if (familiensituationErstgesuch == null
+			|| familiensituationMutation == null
+			|| stichtag == null) {
 			return false;
 		}
 		switch (dokumentTyp) {
 		case NACHWEIS_TRENNUNG:
 			//überprüfen, ob ein Wechsel von zwei Gesuchsteller auf einen stattgefunden hat.
 			return familiensituationErstgesuch.hasSecondGesuchsteller(stichtag)
-				&& !familiensituationMutation.hasSecondGesuchsteller(stichtag);
+				&& !familiensituationMutation.hasSecondGesuchsteller(
+					stichtag
+				);
 		default:
 			return false;
 		}

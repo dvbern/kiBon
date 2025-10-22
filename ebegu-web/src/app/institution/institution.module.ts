@@ -17,19 +17,20 @@
 
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {InfoSchnittstelleDialogComponent} from '@kibon/admin/ui/tagesschule-modul-list';
+import {AdminUiTagesschuleModulListComponent} from '@kibon/admin/ui/tagesschule-modul-list';
 import {NgxIbanModule} from 'ngx-iban';
 import {WarningComponent} from '../shared/component/warning/warning.component';
 import {MaterialModule} from '../shared/material.module';
 import {SharedModule} from '../shared/shared.module';
+import {WebseiteValidatorDirective} from '../shared/validators/webseite-validator.directive';
 import {AddInstitutionComponent} from './add-institution/add-institution.component';
-import {EditBetreuungsstandortComponent} from './betreuungsstandort/edit-betreuungsstandort.component';
 import {EditInstitutionBetreuungsgutscheineComponent} from './edit-institution-betreuungsgutscheine/edit-institution-betreuungsgutscheine.component';
 import {EditInstitutionFerieninselComponent} from './edit-institution-ferieninsel/edit-institution-ferieninsel.component';
 import {DialogImportFromOtherInstitutionComponent} from './edit-institution-tagesschule/dialog-import-from-other-institution/dialog-import-from-other-institution.component';
 import {EditInstitutionTagesschuleComponent} from './edit-institution-tagesschule/edit-institution-tagesschule.component';
 import {EditInstitutionComponent} from './edit-institution/edit-institution.component';
 import {ModulTagesschuleDialogComponent} from './edit-modul-tagesschule/modul-tagesschule-dialog.component';
-import {InfoSchnittstelleDialogComponent} from './info-schnittstelle-dialog/info-schnittstelle-dialog.component';
 import {InstitutionRoutingModule} from './institution-routing/institution-routing.module';
 import {InstitutionListComponent} from './list-institution/institution-list.component';
 
@@ -40,7 +41,10 @@ import {InstitutionListComponent} from './list-institution/institution-list.comp
         MaterialModule,
         NgxIbanModule,
         ClipboardModule,
-        WarningComponent
+        WarningComponent,
+        AdminUiTagesschuleModulListComponent,
+        InfoSchnittstelleDialogComponent,
+        WebseiteValidatorDirective
     ],
     // adding custom elements schema disables Angular's element validation: you can now use transclusion for the
     // dv-accordion-tab with multi-slot transclusion (tab-title & tab-body elements).
@@ -49,14 +53,13 @@ import {InstitutionListComponent} from './list-institution/institution-list.comp
     declarations: [
         InstitutionListComponent,
         EditInstitutionComponent,
+        EditInstitutionComponent,
         AddInstitutionComponent,
         EditInstitutionBetreuungsgutscheineComponent,
         EditInstitutionTagesschuleComponent,
         EditInstitutionFerieninselComponent,
         ModulTagesschuleDialogComponent,
-        DialogImportFromOtherInstitutionComponent,
-        EditBetreuungsstandortComponent,
-        InfoSchnittstelleDialogComponent
+        DialogImportFromOtherInstitutionComponent
     ],
     providers: []
 })

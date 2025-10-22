@@ -8,28 +8,33 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 /**
- * Container-Entity für die Sozialhilfe Zeiträume: Diese muss für die  Benutzertypen (GS, JA) einzeln geführt werden,
+ * Container-Entity für die Sozialhilfe Zeiträume: Diese muss für die Benutzertypen (GS, JA) einzeln geführt werden,
  * damit die Veränderungen / Korrekturen angezeigt werden können.
  */
 @Audited
@@ -40,21 +45,23 @@ public class SozialhilfeZeitraumContainer extends AbstractMutableEntity {
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_sozialhilfe_zeitraum_container_familliensituation_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_sozialhilfe_zeitraum_container_familliensituation_id"))
 	private FamiliensituationContainer familiensituationContainer;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_sozialhilfe_zeitraum_container_sozialhilfezeitraumgs_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_sozialhilfe_zeitraum_container_sozialhilfezeitraumgs_id"))
 	private SozialhilfeZeitraum sozialhilfeZeitraumGS;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_sozialhilfe_zeitraum_container_sozialhilfezeitraumja_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_sozialhilfe_zeitraum_container_sozialhilfezeitraumja_id"))
 	private SozialhilfeZeitraum sozialhilfeZeitraumJA;
-
 
 	@Override
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
@@ -67,22 +74,36 @@ public class SozialhilfeZeitraumContainer extends AbstractMutableEntity {
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final SozialhilfeZeitraumContainer otherSozialhilfeZeitraumContainer = (SozialhilfeZeitraumContainer) other;
-		return EbeguUtil.isSame(getSozialhilfeZeitraumJA(), otherSozialhilfeZeitraumContainer.getSozialhilfeZeitraumJA());
+		final SozialhilfeZeitraumContainer otherSozialhilfeZeitraumContainer =
+			(SozialhilfeZeitraumContainer) other;
+		return EbeguUtil.isSame(
+			getSozialhilfeZeitraumJA(),
+			otherSozialhilfeZeitraumContainer.getSozialhilfeZeitraumJA()
+		);
 	}
 
 	@Nonnull
 	public SozialhilfeZeitraumContainer copySozialhilfeZeitraumContainer(
-		@Nonnull SozialhilfeZeitraumContainer target, @Nonnull AntragCopyType copyType,
-		@Nonnull FamiliensituationContainer targetFamiliensituationContainer) {
+		@Nonnull SozialhilfeZeitraumContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull FamiliensituationContainer targetFamiliensituationContainer
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
 		case MUTATION_NEUES_DOSSIER:
-			target.setFamiliensituationContainer(targetFamiliensituationContainer);
+			target.setFamiliensituationContainer(
+				targetFamiliensituationContainer
+			);
 			target.setSozialhilfeZeitraumGS(null);
 			if (this.getSozialhilfeZeitraumJA() != null) {
-				target.setSozialhilfeZeitraumJA(this.getSozialhilfeZeitraumJA().copySozialhilfeZeitraum(new SozialhilfeZeitraum(), copyType));
+				target.setSozialhilfeZeitraumJA(
+					this.getSozialhilfeZeitraumJA()
+						.copySozialhilfeZeitraum(
+							new SozialhilfeZeitraum(),
+							copyType
+						)
+				);
 			}
 			break;
 		case ERNEUERUNG:
@@ -97,7 +118,9 @@ public class SozialhilfeZeitraumContainer extends AbstractMutableEntity {
 		return familiensituationContainer;
 	}
 
-	public void setFamiliensituationContainer(FamiliensituationContainer familiensituationContainer) {
+	public void setFamiliensituationContainer(
+		FamiliensituationContainer familiensituationContainer
+	) {
 		this.familiensituationContainer = familiensituationContainer;
 	}
 
@@ -106,7 +129,9 @@ public class SozialhilfeZeitraumContainer extends AbstractMutableEntity {
 		return sozialhilfeZeitraumGS;
 	}
 
-	public void setSozialhilfeZeitraumGS(@Nullable SozialhilfeZeitraum sozialhilfeZeitraumGS) {
+	public void setSozialhilfeZeitraumGS(
+		@Nullable SozialhilfeZeitraum sozialhilfeZeitraumGS
+	) {
 		this.sozialhilfeZeitraumGS = sozialhilfeZeitraumGS;
 	}
 
@@ -115,7 +140,9 @@ public class SozialhilfeZeitraumContainer extends AbstractMutableEntity {
 		return sozialhilfeZeitraumJA;
 	}
 
-	public void setSozialhilfeZeitraumJA(@Nullable SozialhilfeZeitraum sozialhilfeZeitraumJA) {
+	public void setSozialhilfeZeitraumJA(
+		@Nullable SozialhilfeZeitraum sozialhilfeZeitraumJA
+	) {
 		this.sozialhilfeZeitraumJA = sozialhilfeZeitraumJA;
 	}
 }

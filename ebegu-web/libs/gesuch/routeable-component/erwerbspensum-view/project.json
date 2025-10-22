@@ -1,0 +1,13 @@
+{
+    "name": "gesuch-erwerbspensumView",
+    "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/gesuch/routeable-component/erwerbspensumView/src",
+    "prefix": "lib",
+    "projectType": "library",
+    "tags": ["type:routeable-component", "domain:gesuch"],
+    "targets": {
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

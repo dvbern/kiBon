@@ -21,10 +21,12 @@
     display: flex;
     justify-content: center;
     margin-bottom: 5rem;
-    overflow-y: hidden;
     padding-left: 1rem;
     padding-right: 1rem;
-    padding-top: 25%;
+
+    @media (min-width: 1031px) {
+        padding-top: 15%;
+    }
 
     p {
         color: #000000;
@@ -42,99 +44,91 @@ input.filter {
 }
 
 .portal-list {
-    margin-left: 20%;
-    max-height: 55vh;
-    overflow-y: auto;
-    padding-right: 2rem;
-    width: 60%;
+    margin: auto 20%;
+
+    @media (max-width: 1900px) {
+        margin: 0 15%;
+    }
+
+    @media (max-width: 1380px) {
+        margin: 0 10%;
+    }
+
+    @media (max-width: 1200px) {
+        margin: 0 7%;
+    }
+
+    @media (max-width: 1140px) {
+        margin: 0 5%;
+    }
+
+    @media (max-width: 1070px) {
+        margin: 0 2%;
+    }
+
+    @media (min-width: 992px) and (max-width: 1030px) {
+        margin: 0 0;
+    }
+
+    @media (max-width: 991px) {
+        margin: 0 15%;
+    }
+
+    @media (max-width: 800px) {
+        margin: 0 10%;
+    }
+
+    @media (max-width: 700px) {
+        margin: 0 5%;
+    }
 
     p {
         color: black;
         font-size: 20px;
     }
 
-    @media (max-width: 1650px) {
-        margin: 0 15%;
-        width: 70%;
-    }
+    .portal {
+        display: flex;
+        border-bottom: rgba(192, 192, 192, 0.3) 1px solid;
+        cursor: pointer;
+        flex-wrap: wrap;
+        align-content: center;
+        align-items: center;
+        padding: 3rem;
 
-    @media (max-width: 1380px) {
-        margin: 0 10%;
-        width: 80%;
-    }
+        &:first-of-type {
+            border-top: rgba(192, 192, 192, 0.3) 1px solid;
+        }
 
-    @media (max-width: 1200px) {
-        margin: 0 7%;
-        width: 85%;
-    }
+        &:hover {
+            background-color: rgba(220, 220, 220, 0.2);
+        }
 
-    @media (max-width: 1140px) {
-        margin: 0 5%;
-        width: 90%;
-    }
+        .col {
+            flex: 1;
 
-    @media (max-width: 1070px) {
-        margin: 0 2%;
-        width: 95%;
-    }
+            &.ctaButton {
+                text-align: right;
+                @media (max-width: 700px) {
+                    flex: 0;
+                }
+            }
 
-    @media (max-width: 1000px) {
-        max-height: 50vh;
-    }
+            &.name {
+                p {
+                    line-height: 2.8rem;
+                }
+            }
 
-    @media (max-width: 980px) {
-        margin: 0 15%;
-        width: 70%;
-    }
-
-    @media (max-width: 700px) {
-        margin: 0 5%;
-        width: 90%;
+            .fa {
+                color: var(--primary-color);
+            }
+        }
     }
 }
 
-.portal {
-    border-bottom: rgba(192, 192, 192, 0.3) 1px solid;
-    cursor: pointer;
-    display: flex;
-    height: 84px;
-
-    &:first-of-type {
-        border-top: rgba(192, 192, 192, 0.3) 1px solid;
-    }
-
-    &:hover {
-        background-color: rgba(220, 220, 220, 0.2);
-    }
-
-    .img-container {
-        flex: 0 0 auto;
-        margin-right: 4rem;
-        // adjust to largest logo
-        min-width: 132px;
-
-        @media (min-width: 1400px) {
-            margin-right: 5rem;
-        }
-
-        @media (max-width: 400px) {
-            margin-right: 2rem;
-        }
-
-        @media (max-width: 370px) {
-            margin-right: 1rem;
-        }
-    }
-
-    i {
-        color: @primary;
-        margin-left: 2rem;
-    }
-}
-
-.mandantNameLenght {
-    @media (max-width: 1900px) {
-        max-width: 160px;
-    }
-    line-height: 3.5rem;
+::ng-deep dv-portal-selection {
+    max-height: none !important;
+    margin-bottom: 5%;
+    margin-top: 5%;
 }

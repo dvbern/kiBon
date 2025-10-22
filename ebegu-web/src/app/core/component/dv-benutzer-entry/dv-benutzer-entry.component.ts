@@ -16,7 +16,7 @@
  */
 
 import {Component, Input} from '@angular/core';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSVerantwortung} from '../../../../models/enums/TSVerantwortung';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
@@ -24,7 +24,8 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
 @Component({
     selector: 'dv-benutzer-entry',
     templateUrl: './dv-benutzer-entry.component.html',
-    styleUrls: ['./dv-benutzer-entry.component.less']
+    styleUrls: ['./dv-benutzer-entry.component.less'],
+    standalone: false
 })
 export class DvBenutzerEntryComponent {
     @Input() public benutzer: TSBenutzer;

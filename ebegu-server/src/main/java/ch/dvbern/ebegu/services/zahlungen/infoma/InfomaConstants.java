@@ -13,8 +13,10 @@ public final class InfomaConstants {
 	public static final String NEWLINE = "\n";
 	public static final String SEPARATOR = "|";
 
-	public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-	public static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HHmm");
+	public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter
+		.ofPattern("dd.MM.yyyy");
+	public static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter
+		.ofPattern("HHmm");
 
 	public static final String ZEILENART_HEADER = "0";
 	public static final String ZEILENART_FOOTER = "9";
@@ -24,8 +26,10 @@ public final class InfomaConstants {
 	public static final String KONTOART_ZAHLUNG = "2";
 	public static final String KONTOART_FINANZBUCHHALTUNG = "0";
 
-	public static final String KONTONUMMER_FINANZBUCHHALTUNG_INSTITUTION = "3637.010";
-	public static final String KONTONUMMER_FINANZBUCHHALTUNG_ELTERN = "3637.010";
+	public static final String KONTONUMMER_FINANZBUCHHALTUNG_INSTITUTION =
+		"3637.010";
+	public static final String KONTONUMMER_FINANZBUCHHALTUNG_ELTERN =
+		"3637.010";
 
 	public static final String BUCHUNGSKREIS = "1";
 	public static final String INSTITUTIONELLE_GLIEDERUNG = "215";

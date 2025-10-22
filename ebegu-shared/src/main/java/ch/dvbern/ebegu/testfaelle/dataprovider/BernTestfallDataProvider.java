@@ -7,7 +7,8 @@ import ch.dvbern.ebegu.entities.FinanzielleSituation;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 
-public abstract class BernTestfallDataProvider extends AbstractTestfallDataProvider {
+public abstract class BernTestfallDataProvider extends
+	AbstractTestfallDataProvider {
 
 	protected BernTestfallDataProvider(Gesuchsperiode gesuchsperiode) {
 		super(gesuchsperiode);
@@ -15,17 +16,24 @@ public abstract class BernTestfallDataProvider extends AbstractTestfallDataProvi
 
 	@Override
 	public Familiensituation createVerheiratet() {
-		Familiensituation familiensituation = createDefaultFieldsOfFamiliensituation();
+		Familiensituation familiensituation =
+			createDefaultFieldsOfFamiliensituation();
 		familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
 		familiensituation.setGemeinsameSteuererklaerung(Boolean.TRUE);
 		return familiensituation;
 	}
 
 	@Override
-	public FinanzielleSituation createFinanzielleSituation(BigDecimal vermoegen, BigDecimal einkommen) {
-		FinanzielleSituation finanzielleSituation = createDefaultFinanzielleSituation();
+	public FinanzielleSituation createFinanzielleSituation(
+		BigDecimal vermoegen,
+		BigDecimal einkommen
+	) {
+		FinanzielleSituation finanzielleSituation =
+			createDefaultFinanzielleSituation();
 		finanzielleSituation.setSteuerdatenZugriff(false);
+		finanzielleSituation.setAutomatischePruefungErlaubt(false);
 		finanzielleSituation.setNettolohn(einkommen);
+		finanzielleSituation.setAutomatischePruefungErlaubt(false);
 		finanzielleSituation.setBruttovermoegen(vermoegen);
 		return finanzielleSituation;
 	}

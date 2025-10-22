@@ -1,0 +1,153 @@
+<div class="col-sm-12">
+    <mat-radio-group
+        name="alleBgInstitutionenZugelassen"
+        [(ngModel)]="stammdaten().alleBgInstitutionenZugelassen"
+        required
+        [disabled]="!editMode()"
+    >
+        <mat-radio-button [value]="true">{{
+            'ALLE_CAPITAL' | translate
+        }}</mat-radio-button>
+        &nbsp;
+        <mat-radio-button [value]="false"
+            >{{ 'AUSWAHL' | translate }}
+        </mat-radio-button>
+    </mat-radio-group>
+</div>
+<div class="filter col-sm-12 margin-top-20">
+    <input
+        class="filter"
+        matInput
+        type="text"
+        (keyup)="doFilter($event.target.value)"
+        placeholder="{{ 'INSTITUTIONEN' | translate }}"
+        data-test="SearchBarInstitutionen"
+    />
+</div>
+
+<div class="col-sm-12">
+    <mat-table
+        #table
+        [dataSource]="dataSource()"
+        matSort
+        matSortActive="id"
+        matSortDirection="desc"
+        panelClass="mat-select-panel1"
+    >
+        <ng-container matColumnDef="checkbox">
+            <mat-header-cell *matHeaderCellDef [ngClass]="matTableClass">
+                @if (editMode()) {
+                    <mat-checkbox
+                        (change)="setAll($event.checked)"
+                        [checked]="
+                            setAllBgFlag() ||
+                            stammdaten().alleBgInstitutionenZugelassen
+                        "
+                        [disabled]="stammdaten().alleBgInstitutionenZugelassen"
+                    >
+                    </mat-checkbox>
+                    {{ 'ALLE_WAEHLEN' | translate }}
+                }
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let item" [ngClass]="matTableClass">
+                @if (editMode()) {
+                    <mat-checkbox
+                        (change)="editInstitutionenArray(item)"
+                        [checked]="
+                            checkSelectedInstitutionen(item?.id) ||
+                            stammdaten().alleBgInstitutionenZugelassen
+                        "
+                        [disabled]="stammdaten().alleBgInstitutionenZugelassen"
+                    >
+                    </mat-checkbox>
+                } @else {
+                    <mat-checkbox
+                        (change)="editInstitutionenArray(item)"
+                        [checked]="checkSelectedInstitutionen(item?.id)"
+                        [disabled]="true"
+                    >
+                    </mat-checkbox>
+                }
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="name">
+            <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                [ngClass]="matTableClass"
+            >
+                {{ 'INSTITUTIONSNAME' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let item" [ngClass]="matTableClass">
+                {{ item?.name }}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="institutionArt">
+            <mat-header-cell *matHeaderCellDef>
+                {{ 'INSTITUTIONS_ART' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let item">
+                {{ item?.institutionArt }}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="iban">
+            <mat-header-cell *matHeaderCellDef>
+                {{ 'IBAN_NUMMER' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let item">
+                {{ item.iban }}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="kontoinhaber">
+            <mat-header-cell *matHeaderCellDef>
+                {{ 'INSTITUTION_KONTOINHABER' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let item">
+                {{ item.kontoinhaber }}
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="infomaKreditorenNr">
+            <mat-header-cell *matHeaderCellDef>
+                {{ 'INFOMA_KREDITORENNUMMER' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let item">
+                {{ item.infomaKreditorenNr }}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="infomaBankCode">
+            <mat-header-cell *matHeaderCellDef>
+                {{ 'INFOMA_BANKCODE' | translate }}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let item">
+                {{ item.infomaBankCode }}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="editInfoma">
+            <mat-header-cell
+                *matHeaderCellDef
+                class="dv-align-right"
+            ></mat-header-cell>
+            <mat-cell *matCellDef="let item" class="dv-align-right">
+                <dv-loading-button
+                    *ngIf="!editMode() && checkInstitutionStatusAktiv(item)"
+                    [type]="'button'"
+                    title="edit"
+                    (buttonClick)="editInfoma(item)"
+                    disabled="false"
+                >
+                    <i class="fa fa-pencil"> </i>
+                </dv-loading-button>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns()"> </mat-header-row>
+        <mat-row
+            *matRowDef="let row; columns: displayedColumns()"
+            class="pointer-cursor"
+        >
+        </mat-row>
+    </mat-table>
+    <mat-paginator [pageSizeOptions]="[10, 25, 100]"> </mat-paginator>
+</div>

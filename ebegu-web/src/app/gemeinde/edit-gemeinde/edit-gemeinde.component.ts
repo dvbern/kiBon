@@ -25,21 +25,25 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
 import {StateDeclaration} from '@uirouter/core/lib/state/interface';
 import {IPromise} from 'angular';
 import {Moment} from 'moment';
-import {from, Observable} from 'rxjs';
+import {firstValueFrom, from, Observable} from 'rxjs';
+import {
+    TSAdresse,
+    TSGemeinde,
+    TSTextRessource
+} from '@kibon/shared/model/entity';
+import {TSRole} from '@kibon/shared/model/enums';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSAdresse} from '../../../models/TSAdresse';
 import {TSExternalClient} from '../../../models/TSExternalClient';
 import {TSExternalClientAssignment} from '../../../models/TSExternalClientAssignment';
-import {TSGemeinde} from '../../../models/TSGemeinde';
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
-import {TSTextRessource} from '../../../models/TSTextRessource';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {Permission} from '../../authorisation/Permission';
@@ -47,8 +51,6 @@ import {PERMISSIONS} from '../../authorisation/Permissions';
 import {DvNgConfirmDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
 import {DvNgOkDialogComponent} from '../../core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
 import {GemeindeWarningService} from '../gemeinde-warning-service/gemeinde-warning.service';
 
 const LOG = LogFactory.createLog('EditGemeindeComponent');
@@ -57,7 +59,8 @@ const LOG = LogFactory.createLog('EditGemeindeComponent');
     selector: 'dv-edit-gemeinde',
     templateUrl: './edit-gemeinde.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    styleUrls: ['./edit-gemeinde.component.less']
+    styleUrls: ['./edit-gemeinde.component.less'],
+    standalone: false
 })
 export class EditGemeindeComponent implements OnInit {
     @ViewChildren(NgForm) public forms: QueryList<NgForm>;
@@ -75,6 +78,7 @@ export class EditGemeindeComponent implements OnInit {
     private isRegisteringGemeinde: boolean = false;
     public editMode: boolean = false;
     public tageschuleEnabledForMandant: boolean;
+    public erlaubenInstitutionenZuWaehlen: boolean;
     public tfoEnabledForMandant: boolean;
     public gemeindeVereinfachteKonfigAktiv: boolean;
     public currentTab: number;
@@ -102,7 +106,7 @@ export class EditGemeindeComponent implements OnInit {
         private readonly dialog: MatDialog,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly gemeindeWarningService: GemeindeWarningService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public ngOnInit(): void {
@@ -118,16 +122,19 @@ export class EditGemeindeComponent implements OnInit {
 
         this.isRegisteringGemeinde = this.$transition$.params().isRegistering;
 
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.tageschuleEnabledForMandant = res.angebotTSActivated;
-            this.tfoEnabledForMandant = res.angebotTFOActivated;
-            this.gemeindeVereinfachteKonfigAktiv =
-                res.gemeindeVereinfachteKonfigAktiv;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.tageschuleEnabledForMandant = res.angebotTSActivated;
+                this.tfoEnabledForMandant = res.angebotTFOActivated;
+                this.gemeindeVereinfachteKonfigAktiv =
+                    res.gemeindeVereinfachteKonfigAktiv;
+            });
 
         this.loadGemeindenList();
 
         this.loadStammdaten();
+        this.initErlaubenInstitutionenZuWaehlen();
 
         // initially display the first tab
         this.currentTab = 0;
@@ -207,16 +214,16 @@ export class EditGemeindeComponent implements OnInit {
                 })
         );
 
-        this.stammdaten$.subscribe(
-            stammdaten => {
+        this.stammdaten$.subscribe({
+            next: stammdaten => {
                 this.initialBGValue = stammdaten.gemeinde.angebotBG;
                 this.initialTSValue = stammdaten.gemeinde.angebotTS;
                 this.initialFIValue = stammdaten.gemeinde.angebotFI;
             },
-            err => {
+            error: err => {
                 LOG.error(err);
             }
-        );
+        });
     }
 
     private loadGemeindenList(): void {
@@ -263,6 +270,16 @@ export class EditGemeindeComponent implements OnInit {
         if (!stammdaten.rechtsmittelbelehrung) {
             stammdaten.rechtsmittelbelehrung = new TSTextRessource();
         }
+    }
+
+    private initErlaubenInstitutionenZuWaehlen(): void {
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(
+                res =>
+                    (this.erlaubenInstitutionenZuWaehlen =
+                        res.erlaubenInstitutionenZuWaehlen)
+            );
     }
 
     public getHeaderTitle(gemeinde: TSGemeinde): string {
@@ -317,6 +334,7 @@ export class EditGemeindeComponent implements OnInit {
         this.errorService.clearAll();
         this.setEmptyUnrequiredFieldsToUndefined(stammdaten);
         stammdaten.iban = stammdaten.iban?.toLocaleUpperCase();
+        stammdaten.bic = stammdaten.bic?.replace(/\s+/g, '');
         stammdaten.externalClients = this.externalClients.assignedClients.map(
             client => client.id
         );
@@ -371,7 +389,7 @@ export class EditGemeindeComponent implements OnInit {
 
             this.loadStammdaten();
             this.setViewMode();
-        } catch (err) {
+        } catch {
             this.setEditMode();
         } finally {
             this.changeDetectorRef.detectChanges();
@@ -583,14 +601,14 @@ export class EditGemeindeComponent implements OnInit {
         this.dialog
             .open(DvNgOkDialogComponent, dialogConfig)
             .afterClosed()
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     EbeguUtil.selectFirstInvalid();
                 },
-                err => {
+                error: err => {
                     LOG.error(err);
                 }
-            );
+            });
     }
 
     private async showDangerousSaveDialog(): Promise<boolean> {
@@ -598,10 +616,11 @@ export class EditGemeindeComponent implements OnInit {
         dialogConfig.data = {
             frage: this.translate.instant('GEMEINDE_DANGEROUS_SAVING')
         };
-        return this.dialog
-            .open(DvNgConfirmDialogComponent, dialogConfig)
-            .afterClosed()
-            .toPromise();
+        return firstValueFrom(
+            this.dialog
+                .open(DvNgConfirmDialogComponent, dialogConfig)
+                .afterClosed()
+        );
     }
 
     public isGemeindeEditable(): boolean {

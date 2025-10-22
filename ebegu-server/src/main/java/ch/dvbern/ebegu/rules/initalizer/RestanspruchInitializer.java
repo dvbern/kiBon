@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.initalizer;
@@ -33,9 +33,11 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.rules.AbstractAbschlussRule;
 
 /**
- * Hilfsklasse die nach der eigentlich Evaluation einer Betreuung angewendet wird um den Restanspruch zu uebernehmen fuer die
+ * Hilfsklasse die nach der eigentlich Evaluation einer Betreuung angewendet wird um den Restanspruch zu uebernehmen
+ * fuer die
  * Berechnung der nachsten Betreuung.
- * Ermittelt des Restanspruch aus den übergebenen Zeitabschnitten und erstellt neue Abschnitte mit nur dieser Information
+ * Ermittelt des Restanspruch aus den übergebenen Zeitabschnitten und erstellt neue Abschnitte mit nur dieser
+ * Information
  * für die Berechnung der nächsten Betreuung. Diese werden als initiale Zeitabschnitte der nachsten Betreuung verwendet
  * Bei Angeboten fuer Schulkinder ist der Restanspruch nicht tangiert
  * Verweis 15.9.5
@@ -43,12 +45,17 @@ import ch.dvbern.ebegu.rules.AbstractAbschlussRule;
  * <h1>Vorgehensskizze Restanspruchberechnung</h1>
  * <ul>
  * <li>Der Restanspruch ist bei der ersten Betreuung auf -1 gesetzt</li>
- * <li>Wir berechnen die Verfügung für diese erste Betreuung. Dabei wird in allen Regeln die den Anspruch benoetigen das Feld AnspruchberechtigtesPensum verwendet (nicht AnspruchspensumRest)</li>
+ * <li>Wir berechnen die Verfügung für diese erste Betreuung. Dabei wird in allen Regeln die den Anspruch benoetigen das
+ * Feld AnspruchberechtigtesPensum verwendet (nicht AnspruchspensumRest)</li>
  * <li> Als allerletzte Reduktionsregel läuft eine Regel die das Feld "AnspruchberechtigtesPensum" mit dem Feld<
- * "AnspruchspensumRest" vergleicht. Wenn letzteres -1 ist gilt der Wert im Feld "AnspruchsberechtigtesPensum, ansonsten wir das Minimum der beiden Felder in das Feld "AnspruchberechtigtesPensum" gesetzt. </li>
- * <li>Bevor die nächste Betreuung verfügt wird, berechnen wir den noch verfügbaren Restanspruch indem wir "AnspruchberechtigtesPensum" - "betreuungspensum" rechnen und das Resultat in das Feld "AnspruchspensumRest" schreiben</li>
+ * "AnspruchspensumRest" vergleicht. Wenn letzteres -1 ist gilt der Wert im Feld "AnspruchsberechtigtesPensum, ansonsten
+ * wir das Minimum der beiden Felder in das Feld "AnspruchberechtigtesPensum" gesetzt. </li>
+ * <li>Bevor die nächste Betreuung verfügt wird, berechnen wir den noch verfügbaren Restanspruch indem wir
+ * "AnspruchberechtigtesPensum" - "betreuungspensum" rechnen und das Resultat in das Feld "AnspruchspensumRest"
+ * schreiben</li>
  * </ul>
- * Die 2. Betreuung wird genau wie die erste durchgeführt. Nun wird allerdings die allerletzte Reduktionsregel den Anspruch reduzieren auf den gesetzten Restanspruch.
+ * Die 2. Betreuung wird genau wie die erste durchgeführt. Nun wird allerdings die allerletzte Reduktionsregel den
+ * Anspruch reduzieren auf den gesetzten Restanspruch.
  */
 public class RestanspruchInitializer extends AbstractAbschlussRule {
 
@@ -63,30 +70,44 @@ public class RestanspruchInitializer extends AbstractAbschlussRule {
 
 	@Nonnull
 	@Override
-	protected List<VerfuegungZeitabschnitt> execute(@Nonnull AbstractPlatz platz, @Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	protected List<VerfuegungZeitabschnitt> execute(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		if (!platz.getBetreuungsangebotTyp().isJugendamt()) {
 			// Im Fall des RestanspruchInitializer darf bei nicht-gebrauch nicht einfach die erhaltene Liste zurueckgegeben werden, sondern
 			// es muss *immer* eine neue Liste erstellt werden
-			return createInitialenRestanspruch(platz.extractGesuchsperiode(), zeitabschnitte.get(0).isHasGemeindeSpezifischeBerechnung());
+			return createInitialenRestanspruch(
+				platz.extractGesuchsperiode(),
+				zeitabschnitte.get(0).isHasGemeindeSpezifischeBerechnung()
+			);
 		}
-		List<VerfuegungZeitabschnitt> restanspruchZeitabschnitte = new ArrayList<>();
+		List<VerfuegungZeitabschnitt> restanspruchZeitabschnitte =
+			new ArrayList<>();
 
 		for (VerfuegungZeitabschnitt zeitabschnitt : zeitabschnitte) {
 			VerfuegungZeitabschnitt restanspruchsAbschnitt =
-					new VerfuegungZeitabschnitt(zeitabschnitt.getGueltigkeit());
-			restanspruchsAbschnitt.setHasGemeindeSpezifischeBerechnung(zeitabschnitt.isHasGemeindeSpezifischeBerechnung());
+				new VerfuegungZeitabschnitt(zeitabschnitt.getGueltigkeit());
+			restanspruchsAbschnitt.setHasGemeindeSpezifischeBerechnung(
+				zeitabschnitt.isHasGemeindeSpezifischeBerechnung()
+			);
 			restanspruchUebernehmenVerfuegt(
-					zeitabschnitt.getBgCalculationInputAsiv(),
-					zeitabschnitt.getBgCalculationResultAsiv(),
-					restanspruchsAbschnitt.getBgCalculationInputAsiv());
+				zeitabschnitt.getBgCalculationInputAsiv(),
+				zeitabschnitt.getBgCalculationResultAsiv(),
+				restanspruchsAbschnitt.getBgCalculationInputAsiv()
+			);
 			if (zeitabschnitt.isHasGemeindeSpezifischeBerechnung()) {
-				Objects.requireNonNull(zeitabschnitt.getBgCalculationResultGemeinde());
+				Objects.requireNonNull(
+					zeitabschnitt.getBgCalculationResultGemeinde()
+				);
 				restanspruchUebernehmenVerfuegt(
-						zeitabschnitt.getBgCalculationInputGemeinde(),
-						zeitabschnitt.getBgCalculationResultGemeinde(),
-						restanspruchsAbschnitt.getBgCalculationInputGemeinde());
+					zeitabschnitt.getBgCalculationInputGemeinde(),
+					zeitabschnitt.getBgCalculationResultGemeinde(),
+					restanspruchsAbschnitt.getBgCalculationInputGemeinde()
+				);
 			} else {
-				restanspruchsAbschnitt.getBgCalculationInputGemeinde().setAnspruchspensumRest(-1);
+				restanspruchsAbschnitt.getBgCalculationInputGemeinde()
+					.setAnspruchspensumRest(-1);
 			}
 			restanspruchZeitabschnitte.add(restanspruchsAbschnitt);
 		}
@@ -94,16 +115,23 @@ public class RestanspruchInitializer extends AbstractAbschlussRule {
 	}
 
 	protected void restanspruchUebernehmenVerfuegt(
-			@Nonnull BGCalculationInput sourceZeitabschnittInput,
-			@Nonnull BGCalculationResult sourceZeitabschnitt,
-			@Nonnull BGCalculationInput targetZeitabschnitt
+		@Nonnull BGCalculationInput sourceZeitabschnittInput,
+		@Nonnull BGCalculationResult sourceZeitabschnitt,
+		@Nonnull BGCalculationInput targetZeitabschnitt
 	) {
-		int anspruchberechtigtesPensum = sourceZeitabschnitt.getAnspruchspensumProzent();
-		BigDecimal betreuungspensum = sourceZeitabschnitt.getBetreuungspensumProzent();
+		int anspruchberechtigtesPensum = sourceZeitabschnitt
+			.getAnspruchspensumProzent();
+		BigDecimal betreuungspensum = sourceZeitabschnitt
+			.getBetreuungspensumProzent();
 		if (sourceZeitabschnitt.getAnspruchspensumRest() != null) {
 			// Wir haben einen Restanspruch nach dem neuen System gespeichert
-			final BigDecimal anspruchspensumRest = sourceZeitabschnitt.getAnspruchspensumRest();
-			final int restanspruchNeu = calculateRestanspruch(betreuungspensum.intValue(), anspruchberechtigtesPensum, anspruchspensumRest.intValue());
+			final BigDecimal anspruchspensumRest = sourceZeitabschnitt
+				.getAnspruchspensumRest();
+			final int restanspruchNeu = calculateRestanspruch(
+				betreuungspensum.intValue(),
+				anspruchberechtigtesPensum,
+				anspruchspensumRest.intValue()
+			);
 			targetZeitabschnitt.setAnspruchspensumRest(restanspruchNeu);
 		} else {
 			if (betreuungspensum.compareTo(BigDecimal.ZERO) == 0) {
@@ -112,15 +140,35 @@ public class RestanspruchInitializer extends AbstractAbschlussRule {
 				targetZeitabschnitt.setAnspruchspensumRest(-1);
 			}
 			//wenn nicht der ganze anspruch gebraucht wird gibt es einen rest, ansonsten ist rest 0
-			else if (betreuungspensum.compareTo(BigDecimal.valueOf(anspruchberechtigtesPensum).add(BigDecimal.valueOf(sourceZeitabschnittInput.getRueckwirkendReduziertesPensumRest()))) < 0) {
-				targetZeitabschnitt.setAnspruchspensumRest(Math.max(anspruchberechtigtesPensum - betreuungspensum.intValue(),0) + sourceZeitabschnittInput.getRueckwirkendReduziertesPensumRest());
+			else if (betreuungspensum.compareTo(
+				BigDecimal.valueOf(anspruchberechtigtesPensum)
+					.add(
+						BigDecimal.valueOf(
+							sourceZeitabschnittInput
+								.getRueckwirkendReduziertesPensumRest()
+						)
+					)
+			) < 0) {
+				targetZeitabschnitt.setAnspruchspensumRest(
+					Math.max(
+						anspruchberechtigtesPensum
+							- betreuungspensum.intValue(),
+						0
+					)
+						+ sourceZeitabschnittInput
+							.getRueckwirkendReduziertesPensumRest()
+				);
 			} else {
 				targetZeitabschnitt.setAnspruchspensumRest(0);
 			}
 		}
 	}
 
-	private int calculateRestanspruch(int betreuungspensum, int anspruchberechtigtesPensum, int anspruchspensumRest) {
+	private int calculateRestanspruch(
+		int betreuungspensum,
+		int anspruchberechtigtesPensum,
+		int anspruchspensumRest
+	) {
 		//wenn nicht der ganze anspruch gebraucht wird gibt es einen rest, ansonsten ist rest 0
 		if (anspruchberechtigtesPensum == 0) {
 			// Der Anspruch fuer diese Kita war 0, d.h. der Restanspruch bleibt gleich wie auf der vorherigen Betreuung
@@ -133,12 +181,19 @@ public class RestanspruchInitializer extends AbstractAbschlussRule {
 	}
 
 	@Nonnull
-	public static List<VerfuegungZeitabschnitt> createInitialenRestanspruch(@Nonnull Gesuchsperiode gesuchsperiode, boolean hasGemeindeSpezifischeBerechnung) {
-		List<VerfuegungZeitabschnitt> restanspruchZeitabschnitte = new ArrayList<>();
-		VerfuegungZeitabschnitt initialerRestanspruch = new VerfuegungZeitabschnitt(gesuchsperiode.getGueltigkeit());
+	public static List<VerfuegungZeitabschnitt> createInitialenRestanspruch(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		boolean hasGemeindeSpezifischeBerechnung
+	) {
+		List<VerfuegungZeitabschnitt> restanspruchZeitabschnitte =
+			new ArrayList<>();
+		VerfuegungZeitabschnitt initialerRestanspruch =
+			new VerfuegungZeitabschnitt(gesuchsperiode.getGueltigkeit());
 		// Damit wir erkennen, ob schon einmal ein "Rest" durch eine Rule gesetzt wurde
 		initialerRestanspruch.setAnspruchspensumRestForAsivAndGemeinde(-1);
-		initialerRestanspruch.setHasGemeindeSpezifischeBerechnung(hasGemeindeSpezifischeBerechnung);
+		initialerRestanspruch.setHasGemeindeSpezifischeBerechnung(
+			hasGemeindeSpezifischeBerechnung
+		);
 		restanspruchZeitabschnitte.add(initialerRestanspruch);
 		return restanspruchZeitabschnitte;
 	}

@@ -13,8 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
-import {TSAdresse} from './TSAdresse';
+import {TSAbstractMutableEntity, TSAdresse} from '@kibon/shared/model/entity';
 
 export class TSAdresseContainer extends TSAbstractMutableEntity {
     private _adresseJA: TSAdresse;

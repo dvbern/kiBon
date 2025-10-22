@@ -1,24 +1,37 @@
+/*
+ * Copyright (C) 2024 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
 package ch.dvbern.ebegu.hibernate;
 
 import java.util.UUID;
 
 import org.hibernate.type.descriptor.WrapperOptions;
-import org.hibernate.type.descriptor.java.AbstractTypeDescriptor;
-import org.hibernate.type.descriptor.java.UUIDTypeDescriptor.PassThroughTransformer;
-import org.hibernate.type.descriptor.java.UUIDTypeDescriptor.ToBytesTransformer;
-import org.hibernate.type.descriptor.java.UUIDTypeDescriptor.ToStringTransformer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.hibernate.type.descriptor.java.AbstractClassJavaType;
+import org.hibernate.type.descriptor.java.UUIDJavaType;
 
 /**
  * This descriptor defines how to map StrinUUIDType to the Database
  */
-public class StringUUIDTypeDescriptor extends AbstractTypeDescriptor<String> {
+public class StringUUIDTypeDescriptor extends AbstractClassJavaType<String> {
 
 	private static final long serialVersionUID = -394259331570702578L;
-	public static final StringUUIDTypeDescriptor INSTANCE = new StringUUIDTypeDescriptor();
-
-	private static final Logger LOG = LoggerFactory.getLogger(StringUUIDTypeDescriptor.class);
+	public static final StringUUIDTypeDescriptor INSTANCE =
+		new StringUUIDTypeDescriptor();
 
 	public StringUUIDTypeDescriptor() {
 		super(String.class);
@@ -30,56 +43,22 @@ public class StringUUIDTypeDescriptor extends AbstractTypeDescriptor<String> {
 	}
 
 	@Override
-	public String fromString(String uuidString) {
-		return uuidString;
-	}
-
-	@SuppressWarnings({ "unchecked" })
-	public <X> X unwrap(String uuidAsString, Class<X> type, WrapperOptions options) {
-
-		if (uuidAsString == null) {
-			return null;
-		}
-		final UUID uuid;
-		try {
-
-			uuid = UUID.fromString(uuidAsString);
-		} catch (IllegalArgumentException ex) {
-			LOG.error("Could not map value '{}' as uuid. Check that it is a valid uuid. ", uuidAsString);
-			throw ex;
-		}
-
-		if (UUID.class.isAssignableFrom(type)) {
-			return (X) PassThroughTransformer.INSTANCE.transform(uuid);
-		}
-		if (String.class.isAssignableFrom(type)) {
-			return (X) ToStringTransformer.INSTANCE.transform(uuid);
-		}
-		if (byte[].class.isAssignableFrom(type)) {
-			return (X) ToBytesTransformer.INSTANCE.transform(uuid);
-		}
-		throw unknownUnwrap(type);
-
-	}
-
-	public <X> String wrap(X value, WrapperOptions options) {
-
+	public <X> X unwrap(String value, Class<X> type, WrapperOptions options) {
 		if (value == null) {
 			return null;
 		}
-		if (UUID.class.isInstance(value)) {
-			final UUID parsed = PassThroughTransformer.INSTANCE.parse(value);
-			return parsed.toString();
-		}
-		if (String.class.isInstance(value)) {
-			final UUID parsed = ToStringTransformer.INSTANCE.parse(value);
-			return parsed.toString();
-		}
-		if (byte[].class.isInstance(value)) {
-			final UUID parsed = ToBytesTransformer.INSTANCE.parse(value);
-			return parsed.toString();
-		}
-		throw unknownWrap(value.getClass());
+		return UUIDJavaType.INSTANCE.unwrap(
+			UUID.fromString(value),
+			type,
+			options
+		);
+	}
 
+	@Override
+	public <X> String wrap(X value, WrapperOptions options) {
+		if (value == null) {
+			return null;
+		}
+		return UUIDJavaType.INSTANCE.wrap(value, options).toString();
 	}
 }

@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 import ch.dvbern.ebegu.enums.SearchMode;
 
@@ -29,10 +29,19 @@ public final class SearchUtil {
 	private SearchUtil() {
 	}
 
-	public static List<String> determineDistinctIdsToLoad(List<String> allIds, int startindex, int maxresults) {
-		List<String> uniqueGesuchIds = new ArrayList<>(new LinkedHashSet<>(allIds)); //keep order but remove duplicate ids
+	public static List<String> determineDistinctIdsToLoad(
+		List<String> allIds,
+		int startindex,
+		int maxresults
+	) {
+		List<String> uniqueGesuchIds = new ArrayList<>(
+			new LinkedHashSet<>(allIds)
+		); //keep order but remove duplicate ids
 		int firstIndex = Math.min(startindex, uniqueGesuchIds.size());
-		int lastindex = Math.min(startindex + maxresults, (uniqueGesuchIds.size()));
+		int lastindex = Math.min(
+			startindex + maxresults,
+			(uniqueGesuchIds.size())
+		);
 		return uniqueGesuchIds.subList(firstIndex, lastindex);
 	}
 
@@ -41,7 +50,11 @@ public final class SearchUtil {
 	}
 
 	@SuppressWarnings("rawtypes") // Je nach Abfrage ist es String oder Long
-	public static CriteriaQuery getQueryForSearchMode(CriteriaBuilder cb, SearchMode mode, String methodName) {
+	public static CriteriaQuery getQueryForSearchMode(
+		CriteriaBuilder cb,
+		SearchMode mode,
+		String methodName
+	) {
 		CriteriaQuery query;
 		switch (mode) {
 		case SEARCH:
@@ -51,7 +64,9 @@ public final class SearchUtil {
 			query = cb.createQuery(Long.class);
 			return query;
 		default:
-			throw new IllegalStateException("Undefined Mode for " + methodName + " Query: " + mode);
+			throw new IllegalStateException(
+				"Undefined Mode for " + methodName + " Query: " + mode
+			);
 		}
 	}
 }

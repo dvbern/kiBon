@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSRole} from '../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {Permission} from './Permission';
 
 export const PERMISSIONS: {[k in Permission]: ReadonlyArray<TSRole>} = {
@@ -121,5 +121,16 @@ export const PERMISSIONS: {[k in Permission]: ReadonlyArray<TSRole>} = {
         TSRole.SACHBEARBEITER_INSTITUTION,
         TSRole.ADMIN_TRAEGERSCHAFT,
         TSRole.SACHBEARBEITER_TRAEGERSCHAFT
+    ],
+    [Permission.ZAHLUNG_AN_ELTERN_READ]: [
+        TSRole.SUPER_ADMIN,
+        TSRole.ADMIN_MANDANT,
+        TSRole.SACHBEARBEITER_MANDANT,
+        TSRole.ADMIN_BG,
+        TSRole.SACHBEARBEITER_BG,
+        TSRole.ADMIN_GEMEINDE,
+        TSRole.SACHBEARBEITER_GEMEINDE,
+        TSRole.ADMIN_TS,
+        TSRole.SACHBEARBEITER_TS
     ]
 };

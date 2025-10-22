@@ -17,8 +17,8 @@ package ch.dvbern.ebegu.dto.dataexport.v1;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.enums.Land;
 
@@ -35,7 +35,14 @@ public class AdresseExportDTO {
 	private String plz;
 	private Land land;
 
-	public AdresseExportDTO(String strasse, String hausnummer, String zusatzzeile, String ort, String plz, Land land) {
+	public AdresseExportDTO(
+		String strasse,
+		String hausnummer,
+		String zusatzzeile,
+		String ort,
+		String plz,
+		Land land
+	) {
 		this.strasse = strasse;
 		this.hausnummer = hausnummer;
 		this.adresszusatz = zusatzzeile;
@@ -104,16 +111,28 @@ public class AdresseExportDTO {
 			return false;
 		}
 		AdresseExportDTO that = (AdresseExportDTO) o;
-		return Objects.equals(getStrasse(), that.getStrasse()) &&
-			Objects.equals(getHausnummer(), that.getHausnummer()) &&
-			Objects.equals(getAdresszusatz(), that.getAdresszusatz()) &&
-			Objects.equals(getOrt(), that.getOrt()) &&
-			Objects.equals(getPlz(), that.getPlz()) &&
+		return Objects.equals(getStrasse(), that.getStrasse())
+			&&
+			Objects.equals(getHausnummer(), that.getHausnummer())
+			&&
+			Objects.equals(getAdresszusatz(), that.getAdresszusatz())
+			&&
+			Objects.equals(getOrt(), that.getOrt())
+			&&
+			Objects.equals(getPlz(), that.getPlz())
+			&&
 			getLand() == that.getLand();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getStrasse(), getHausnummer(), getAdresszusatz(), getOrt(), getPlz(), getLand());
+		return Objects.hash(
+			getStrasse(),
+			getHausnummer(),
+			getAdresszusatz(),
+			getOrt(),
+			getPlz(),
+			getLand()
+		);
 	}
 }

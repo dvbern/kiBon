@@ -16,18 +16,22 @@
 package ch.dvbern.ebegu.validators.dateranges;
 
 import javax.annotation.Nonnull;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.types.DateRange;
 
-public class CheckDateRangeValidator implements ConstraintValidator<CheckDateRange, DateRange> {
+public class CheckDateRangeValidator implements
+	ConstraintValidator<CheckDateRange, DateRange> {
 
 	/**
 	 * gueltigAb und gueltigBis duerfen auch gleich sein. Dies bedeutet eine Zeitspannung von 1 Tag
 	 */
 	@Override
-	public boolean isValid(@Nonnull DateRange instance, ConstraintValidatorContext context) {
+	public boolean isValid(
+		@Nonnull DateRange instance,
+		ConstraintValidatorContext context
+	) {
 		return !instance.getGueltigAb().isAfter(instance.getGueltigBis());
 	}
 }

@@ -39,15 +39,21 @@ public interface InstitutionStammdatenService {
 	 *
 	 * @param institutionStammdaten Die InstitutionStammdaten als DTO
 	 */
-	InstitutionStammdaten saveInstitutionStammdaten(InstitutionStammdaten institutionStammdaten);
+	InstitutionStammdaten saveInstitutionStammdaten(
+		InstitutionStammdaten institutionStammdaten
+	);
 
-	void fireStammdatenChangedEvent(@Nonnull InstitutionStammdaten updatedStammdaten);
+	void fireStammdatenChangedEvent(
+		@Nonnull InstitutionStammdaten updatedStammdaten
+	);
 
 	/**
 	 * @param institutionStammdatenID PK (id) der InstitutionStammdaten
 	 * @return InstitutionStammdaten mit dem gegebenen key oder null falls nicht vorhanden
 	 */
-	Optional<InstitutionStammdaten> findInstitutionStammdaten(String institutionStammdatenID);
+	Optional<InstitutionStammdaten> findInstitutionStammdaten(
+		String institutionStammdatenID
+	);
 
 	/**
 	 * @return Aller InstitutionStammdaten aus der DB für den Mandanten des Principal
@@ -65,7 +71,9 @@ public interface InstitutionStammdatenService {
 	 * totally removes a InstitutionStammdaten from the Database. It takes the InstitutionStammdaten based on the
 	 * given Institution ID
 	 */
-	void removeInstitutionStammdatenByInstitution(@Nonnull String institutionId);
+	void removeInstitutionStammdatenByInstitution(
+		@Nonnull String institutionId
+	);
 
 	/**
 	 * @param gesuchsperiodeId Id der gewuenschten Gesuchsperiode
@@ -75,13 +83,25 @@ public interface InstitutionStammdatenService {
 	 */
 	Collection<InstitutionStammdaten> getAllActiveInstitutionStammdatenByGesuchsperiodeAndGemeinde(
 		@Nonnull String gesuchsperiodeId,
-		@Nonnull String gemeindeId);
+		@Nonnull String gemeindeId
+	);
+
+	/**
+	 * @param gemeindeId Id der Gemeinde für welche die InstiutionStammdaten gesucht werden sollen
+	 * @return Alle InstiutionStammdaten, welche für eine Gemeinde aktiviert sind zurück
+	 */
+	Collection<InstitutionStammdaten> getAllInstitutionStammdatenByGemeinde(
+		@Nonnull String gemeindeId
+	);
 
 	/**
 	 * Gibt die Stammdaten dieser Institution zurueck.
 	 * Falls die Institution keine Stammdaten hat gibt sie null zurück, dabei wird keine Ausnahme geworfen.
 	 */
-	InstitutionStammdaten fetchInstitutionStammdatenByInstitution(String institutionId, boolean doAuthCheck);
+	InstitutionStammdaten fetchInstitutionStammdatenByInstitution(
+		String institutionId,
+		boolean doAuthCheck
+	);
 
 	/**
 	 * Gibt alle Betreuungsangebotstypen zurueck, welche die Institutionen anbieten, fuer welche der
@@ -96,11 +116,12 @@ public interface InstitutionStammdatenService {
 	 */
 	Collection<InstitutionStammdaten> getTagesschulenForCurrentBenutzer();
 
-	Collection<InstitutionStammdaten> getAllInstitutionStammdatenForTraegerschaft(@Nonnull Traegerschaft trageschaft);
+	Collection<InstitutionStammdaten> getAllInstitutionStammdatenForTraegerschaft(
+		@Nonnull Traegerschaft trageschaft
+	);
 
 	/**
-	 * Findet über den GeoAdmin Service für Adresse in den InsitutionStammdaten sowie für jeden Betreuungsstandort die
-	 * politische Gemeinde und speichert diese ab. Dazu wird der GeoAdminService genutzt
+	 * Findet über den GeoAdmin Service für Adresse in den InsitutionStammdaten. Dazu wird der GeoAdminService genutzt
 	 *
 	 * @return Set containing all changed InstitutionStammdaten
 	 */
@@ -114,20 +135,16 @@ public interface InstitutionStammdatenService {
 	@Nonnull
 	Collection<InstitutionStammdaten> getAllTagesschulenForGesuchsperiodeAndGemeinde(
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull Gemeinde gemeinde);
+		@Nonnull Gemeinde gemeinde
+	);
 
 	@Nonnull
-	Collection<InstitutionStammdaten> getAllTagesschulenForGemeinde(@Nonnull Gemeinde gemeinde);
+	Collection<InstitutionStammdaten> getAllTagesschulenForGemeinde(
+		@Nonnull Gemeinde gemeinde
+	);
 
-	boolean isGueltigkeitDecrease(@Nonnull DateRange current, @Nonnull DateRange change);
-
-	/**
-	 * Nur für Batchjob.
-	 * Löscht von allen Institutionen die Felder:
-	 * * Auslastung der Institutionen
-	 * * Anzahl Kinder auf Warteliste
-	 * * Pensum Warteliste
-	 * * Dauer Warteliste
-	 */
-	void deleteInstitutionKennzahlenFields();
+	boolean isGueltigkeitDecrease(
+		@Nonnull DateRange current,
+		@Nonnull DateRange change
+	);
 }

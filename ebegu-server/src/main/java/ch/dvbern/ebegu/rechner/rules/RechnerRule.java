@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner.rules;
@@ -29,14 +29,16 @@ public interface RechnerRule {
 	 * Entscheidet, ob die Rule für die betroffene Gemeinde eingeschaltet ist.
 	 */
 	boolean isConfigueredForGemeinde(
-		@Nonnull BGRechnerParameterDTO parameterDTO);
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	);
 
 	/**
 	 * Entscheidet, ob die Rule für diesen spezifischen Platz angewendet werden soll.
 	 */
 	boolean isRelevantForVerfuegung(
 		@Nonnull BGCalculationInput inputGemeinde,
-		@Nonnull BGRechnerParameterDTO parameterDTO);
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	);
 
 	/**
 	 * Setzt die Parameter, welche fuer diese Rule benoetigt werden
@@ -44,7 +46,8 @@ public interface RechnerRule {
 	void prepareParameter(
 		@Nonnull BGCalculationInput inputGemeinde,
 		@Nonnull BGRechnerParameterDTO parameterDTO,
-		@Nonnull RechnerRuleParameterDTO rechnerParameter);
+		@Nonnull RechnerRuleParameterDTO rechnerParameter
+	);
 
 	/**
 	 * Reset Parameter wenn Rules nicht Relevant ist

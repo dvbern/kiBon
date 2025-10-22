@@ -15,10 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {FixtureBetreuung} from '@dv-e2e/fixtures';
+import {
+    FixtureBetreuung,
+    FixtureBetreuungFeutzLuzern,
+    FixtureBetreuungFeutzSchwyz
+} from '@dv-e2e/fixtures';
 import {GemeindeTestFall} from '@dv-e2e/types';
-import {TSDayOfWeek} from '../../../src/models/enums/TSDayOfWeek';
 import {ConfirmDialogPO} from '../dialogs';
+import {TSDayOfWeek} from '@kibon/shared/model/enums';
 
 // !! -- PAGE OBJECTS -- !!
 const getPageTitle = () => {
@@ -63,6 +67,13 @@ const getAnmeldungErstellenButton = (kindIndex: number) => {
 const getBetreuungsstatus = (kindIndex: number, betreuungsIndex: number) => {
     return getBetreuung(kindIndex, betreuungsIndex).findByData(
         'betreuungs-status'
+    );
+};
+
+const getAbrechnungGutscheine = (answer: string) => {
+    return cy.getByData(
+        'abrechnungGutscheine.radio-group',
+        'abrechnungGutscheine.radio-value.' + answer
     );
 };
 
@@ -142,7 +153,7 @@ const getInstitutionMobile = () => {
 };
 
 const getInstitutionSuchtext = () => {
-    return cy.getByData('instutions-suchtext');
+    return cy.getByData('institutions-suchtext');
 };
 
 const getHasVertrag = (answer: string) => {
@@ -151,6 +162,10 @@ const getHasVertrag = (answer: string) => {
 
 const getKesbPlatzierung = (answer: string) => {
     return cy.getByData('keineKesbPlatzierung.radio-value.' + answer);
+};
+
+const getBegruendungAuszahlungAnInstution = () => {
+    return cy.getByData('begruendung-auszahlung-institution');
 };
 
 const getXthTagesschulModulOfDay = (index: number, day: TSDayOfWeek) => {
@@ -181,6 +196,12 @@ const getGrundAblehnung = () => {
     return cy.getByData('grund-ablehnung');
 };
 
+const getErweiterteBeduerfnisse = (answer: string) => {
+    return cy.getByData(
+        'erweiterteBeduerfnisse.radio-group',
+        'erweiterteBeduerfnisse.radio-value.' + answer
+    );
+};
 const getErweiterteBeduerfnisseBestaetigt = () => {
     return cy.getByData('erweiterte-beduerfnisse-bestaetigt');
 };
@@ -287,25 +308,110 @@ const fillKitaBetreuungspensumForm = (
     });
 };
 
+const fillKitaBetreuungspensumFormSchwyz = (
+    dataset: keyof typeof FixtureBetreuungFeutzSchwyz,
+    gemeinde: GemeindeTestFall
+) => {
+    cy.wait(2000);
+    FixtureBetreuungFeutzSchwyz[dataset]((data: any) => {
+        const pensen = data[gemeinde].kita.betreuungspensen;
+        pensen.forEach((pensum: any, index: number) => {
+            if (index > 0) {
+                AntragBetreuungPO.getWeiteresBetreuungspensumErfassenButton().click();
+            }
+            AntragBetreuungPO.getBetreuungspensum(index).type(
+                pensum.monatlichesBetreuungspensum
+            );
+            AntragBetreuungPO.getMonatlicheBetreuungskosten(index).type(
+                pensum.monatlicheBetreuungskosten
+            );
+            AntragBetreuungPO.getBetreuungspensumAb(index)
+                .find('input')
+                .type(pensum.von);
+            AntragBetreuungPO.getBetreuungspensumBis(index)
+                .find('input')
+                .type(pensum.bis);
+        });
+    });
+};
+
+const fillKitaBetreuungspensumFormLuzern = (
+    dataset: keyof typeof FixtureBetreuungFeutzLuzern,
+    gemeinde: GemeindeTestFall
+) => {
+    cy.wait(2000);
+    FixtureBetreuungFeutzLuzern[dataset]((data: any) => {
+        const pensen = data[gemeinde].kita.betreuungspensen;
+        pensen.forEach((pensum: any, index: number) => {
+            if (index > 0) {
+                AntragBetreuungPO.getWeiteresBetreuungspensumErfassenButton().click();
+            }
+            AntragBetreuungPO.getBetreuungspensum(index).type(
+                pensum.monatlichesBetreuungspensum
+            );
+            AntragBetreuungPO.getMonatlicheBetreuungskosten(index).type(
+                pensum.monatlicheBetreuungskosten
+            );
+            AntragBetreuungPO.getBetreuungspensumAb(index)
+                .find('input')
+                .type(pensum.von);
+            AntragBetreuungPO.getBetreuungspensumBis(index)
+                .find('input')
+                .type(pensum.bis);
+        });
+    });
+};
+
+const fillOnlineKitaBetreuungsFormAppenzell = (
+    dataset: keyof typeof FixtureBetreuung,
+    gemeinde: GemeindeTestFall,
+    opts?: {kita2?: boolean}
+) => {
+    cy.wait(2000);
+    FixtureBetreuung[dataset]((data: any) => {
+        const kita = opts?.kita2 ? data[gemeinde].kita2 : data[gemeinde].kita;
+        getHasVertrag('ja').click();
+        getInstitution().find('input').type(kita.institution);
+        cy.wait(1500);
+        getInstitutionSuchtext().click();
+        cy.wait(1500);
+        getInstitution().find('input').should('have.value', kita.institution);
+    });
+};
+
 const fillOnlineKitaBetreuungsForm = (
     dataset: keyof typeof FixtureBetreuung,
     gemeinde: GemeindeTestFall,
-    opts?: {mobile: boolean}
+    opts?: {mobile?: boolean; kita2?: boolean}
 ) => {
     FixtureBetreuung[dataset]((data: any) => {
-        const kita = data[gemeinde].kita;
+        const kita = opts?.kita2 ? data[gemeinde].kita2 : data[gemeinde].kita;
         getBetreuungsangebot().select(kita.betreuungsangebot);
         getHasVertrag('ja').click();
         if (opts?.mobile) {
             getInstitutionMobile().select(kita.institution);
         } else {
             getInstitution().find('input').type(kita.institution);
+            cy.wait(1500);
             getInstitutionSuchtext().click();
+            cy.wait(1500);
             getInstitution()
                 .find('input')
                 .should('have.value', kita.institution);
         }
     });
+};
+
+const fillAuszahlungBeitraege = () => {
+    getAbrechnungGutscheine('nein').click();
+    cy.wait(1500);
+    fillBegruendungAuszahlungInstitution();
+};
+
+const fillBegruendungAuszahlungInstitution = () => {
+    getBegruendungAuszahlungAnInstution().type(
+        'Begründung der Auszahlung wäre hier'
+    );
 };
 
 const fillOnlineTfoBetreuungsForm = (
@@ -374,6 +480,10 @@ const platzBestaetigungAnfordern = () => {
     });
 };
 
+const selectAusserordentlicherBedarf = (answer: string) => {
+    getErweiterteBeduerfnisse(answer).click();
+};
+
 const saveBetreuung = () => {
     cy.waitForRequest('PUT', '**/betreuungen/betreuung/*', () => {
         cy.getByData('container.save', 'navigation-button').click();
@@ -404,7 +514,7 @@ const platzAbweisen = (grundAbweisung: string) => {
 
 const platzAkzeptieren = () => {
     cy.waitForRequest('GET', '**/gesuchBetreuungenStatus/*', () => {
-        cy.waitForRequest('PUT', '**/schulamt/akzeptieren', () => {
+        cy.waitForRequest('PUT', '**/anmeldung/akzeptieren', () => {
             cy.wait(1500);
             getPlatzAkzeptierenButton().click();
             cy.wait(1500);
@@ -434,6 +544,7 @@ export const AntragBetreuungPO = {
     getMutationsmeldungSendenButton,
     getPlatzbestaetigungAnfordernButton,
     getSaveButton,
+    getAbrechnungGutscheine,
     getBetreuungErstellenButton,
     getAnmeldungErstellenButton,
     getBetreuungsangebot,
@@ -449,12 +560,16 @@ export const AntragBetreuungPO = {
     getGrundAblehnung,
     getAbweichungenMeldenButton,
     getErweiterteBeduerfnisseBestaetigt,
+    getErweiterteBeduerfnisse,
     // page actions
     createNewBetreuung,
     createNewTagesschulAnmeldung,
     selectTagesschulBetreuung,
     fillTagesschulBetreuungsForm,
     fillKitaBetreuungsForm,
+    fillKitaBetreuungspensumFormSchwyz,
+    fillKitaBetreuungspensumFormLuzern,
+    fillOnlineKitaBetreuungsFormAppenzell,
     fillMittagstischBetreuungsForm,
     fillMittagstischBetreuungenForm,
     fillOnlineKitaBetreuungsForm,
@@ -462,11 +577,13 @@ export const AntragBetreuungPO = {
     fillKeinePlatzierung,
     fillErweiterteBeduerfnisse,
     fillEingewoehnung,
+    fillAuszahlungBeitraege,
     platzBestaetigungAnfordern,
     saveBetreuung,
     saveAndConfirmBetreuung,
     fillKitaBetreuungspensumForm,
     platzBestaetigen,
     platzAbweisen,
-    platzAkzeptieren
+    platzAkzeptieren,
+    selectAusserordentlicherBedarf
 };

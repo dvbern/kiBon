@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.verfuegung;
@@ -27,7 +27,8 @@ import org.apache.avro.Schema;
 public class VerfuegungVerfuegtEvent implements ExportedEvent {
 
 	/**
-	 * Die ReferenzNummer bleibt immer dieselbe, auch wenn es eine neue Version der Verfügung (z.B. nach Mutationsmeldung)
+	 * Die ReferenzNummer bleibt immer dieselbe, auch wenn es eine neue Version der Verfügung (z.B. nach
+	 * Mutationsmeldung)
 	 * gibt. Es wird deshalb die ReferenzNummer statt der entity ID als aggregateId verwendet.
 	 */
 	@Nonnull
@@ -39,7 +40,11 @@ public class VerfuegungVerfuegtEvent implements ExportedEvent {
 	@Nonnull
 	private final Schema schema;
 
-	public VerfuegungVerfuegtEvent(@Nonnull String referenzNummer, @Nonnull byte[] verfuegung, @Nonnull Schema schema) {
+	public VerfuegungVerfuegtEvent(
+		@Nonnull String referenzNummer,
+		@Nonnull byte[] verfuegung,
+		@Nonnull Schema schema
+	) {
 		this.referenzNummer = referenzNummer;
 		this.verfuegung = Arrays.copyOf(verfuegung, verfuegung.length);
 		this.schema = schema;

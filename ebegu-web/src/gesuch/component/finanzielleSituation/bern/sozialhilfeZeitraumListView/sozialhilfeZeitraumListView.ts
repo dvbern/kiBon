@@ -16,13 +16,12 @@
  */
 
 import {StateService} from '@uirouter/core';
-import {IComponentOptions, IScope, ITimeoutService} from 'angular';
+import {element, IComponentOptions, IScope, ITimeoutService} from 'angular';
 import {IDVFocusableController} from '../../../../../app/core/component/IDVFocusableController';
 import {DvDialog} from '../../../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {SozialhilfeZeitraumRS} from '../../../../../app/core/service/sozialhilfeZeitraumRS.rest';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSSozialhilfeZeitraumContainer} from '../../../../../models/TSSozialhilfeZeitraumContainer';
 import {RemoveDialogController} from '../../../../dialog/RemoveDialogController';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
@@ -170,7 +169,7 @@ class SozialhilfeZeitraumListViewController
     }
 
     public setFocusBack(elementID: string): void {
-        angular.element(`#${elementID}`).first().focus();
+        element(`#${elementID}`).first().focus();
     }
 
     public isSaveDisabled(): boolean {

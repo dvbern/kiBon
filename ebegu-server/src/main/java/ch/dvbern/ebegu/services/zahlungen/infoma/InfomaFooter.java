@@ -16,14 +16,23 @@ public class InfomaFooter {
 	private final String anzahlBuchungen;
 	private final String summeAllerBuchungen;
 
-	private InfomaFooter(int anzahlBuchungen, @Nonnull BigDecimal summeAllerBuchungen) {
+	private InfomaFooter(
+		int anzahlBuchungen,
+		@Nonnull BigDecimal summeAllerBuchungen
+	) {
 		this.anzahlBuchungen = String.valueOf(anzahlBuchungen);
 		this.summeAllerBuchungen = decimalFormat().format(summeAllerBuchungen);
 	}
 
 	@Nonnull
-	public static String with(int anzahlBuchungen, @Nonnull BigDecimal summeAllerBuchungen) {
-		InfomaFooter footer = new InfomaFooter(anzahlBuchungen, summeAllerBuchungen);
+	public static String with(
+		int anzahlBuchungen,
+		@Nonnull BigDecimal summeAllerBuchungen
+	) {
+		InfomaFooter footer = new InfomaFooter(
+			anzahlBuchungen,
+			summeAllerBuchungen
+		);
 		return footer.toString();
 	}
 

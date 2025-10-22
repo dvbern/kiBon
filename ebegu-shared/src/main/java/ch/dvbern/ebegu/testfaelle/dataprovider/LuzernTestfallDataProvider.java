@@ -21,8 +21,9 @@ public class LuzernTestfallDataProvider extends AbstractTestfallDataProvider {
 
 	@Override
 	public Familiensituation createVerheiratet() {
-		Familiensituation familiensituation = createDefaultFieldsOfFamiliensituation();
-		familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
+		Familiensituation familiensituation =
+			createDefaultFieldsOfFamiliensituation();
+		familiensituation.setFamilienstatus(EnumFamilienstatus.KONKUBINAT);
 		familiensituation.setGemeinsameSteuererklaerung(Boolean.TRUE);
 		setAuszahlungsdatenInforma(familiensituation);
 		return familiensituation;
@@ -30,41 +31,62 @@ public class LuzernTestfallDataProvider extends AbstractTestfallDataProvider {
 
 	@Override
 	public Familiensituation createAlleinerziehend() {
-		Familiensituation familiensituation = createDefaultFieldsOfFamiliensituation();
+		Familiensituation familiensituation =
+			createDefaultFieldsOfFamiliensituation();
 		familiensituation.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
 		setAuszahlungsdatenInforma(familiensituation);
 		return familiensituation;
 	}
 
 	@Override
-	public FinanzielleSituation createFinanzielleSituation(BigDecimal vermoegen, BigDecimal einkommen) {
-		FinanzielleSituation finanzielleSituation = createDefaultFinanzielleSituation();
+	public FinanzielleSituation createFinanzielleSituation(
+		BigDecimal vermoegen,
+		BigDecimal einkommen
+	) {
+		FinanzielleSituation finanzielleSituation =
+			createDefaultFinanzielleSituation();
 		finanzielleSituation.setQuellenbesteuert(true);
 		final FinanzielleSituationSelbstdeklaration selbstdeklaration =
-				new FinanzielleSituationSelbstdeklaration();
+			new FinanzielleSituationSelbstdeklaration();
 		selbstdeklaration.setVermoegen(vermoegen);
 		selbstdeklaration.setEinkunftErwerb(einkommen);
 		selbstdeklaration.setEinkunftVersicherung(MathUtil.DEFAULT.from(0));
 		selbstdeklaration.setEinkunftWertschriften(MathUtil.DEFAULT.from(0));
-		selbstdeklaration.setEinkunftUnterhaltsbeitragKinder(MathUtil.DEFAULT.from(0));
+		selbstdeklaration.setEinkunftUnterhaltsbeitragKinder(
+			MathUtil.DEFAULT.from(0)
+		);
 		selbstdeklaration.setEinkunftUeberige(MathUtil.DEFAULT.from(0));
 		selbstdeklaration.setEinkunftLiegenschaften(MathUtil.DEFAULT.from(0));
 
 		selbstdeklaration.setAbzugBerufsauslagen(MathUtil.DEFAULT.from(0));
 		selbstdeklaration.setAbzugSchuldzinsen(MathUtil.DEFAULT.from(0));
-		selbstdeklaration.setAbzugUnterhaltsbeitragKinder(MathUtil.DEFAULT.from(0));
+		selbstdeklaration.setAbzugUnterhaltsbeitragKinder(
+			MathUtil.DEFAULT.from(0)
+		);
 		selbstdeklaration.setAbzugSaeule3A(MathUtil.DEFAULT.from(0));
-		selbstdeklaration.setAbzugVersicherungspraemien(MathUtil.DEFAULT.from(0));
-		selbstdeklaration.setAbzugKrankheitsUnfallKosten(MathUtil.DEFAULT.from(0));
-		selbstdeklaration.setSonderabzugErwerbstaetigkeitEhegatten(MathUtil.DEFAULT.from(0));
+		selbstdeklaration.setAbzugVersicherungspraemien(
+			MathUtil.DEFAULT.from(0)
+		);
+		selbstdeklaration.setAbzugKrankheitsUnfallKosten(
+			MathUtil.DEFAULT.from(0)
+		);
+		selbstdeklaration.setSonderabzugErwerbstaetigkeitEhegatten(
+			MathUtil.DEFAULT.from(0)
+		);
 		selbstdeklaration.setAbzugKinderSchule(MathUtil.DEFAULT.from(0));
 		selbstdeklaration.setAbzugKinderVorschule(MathUtil.DEFAULT.from(0));
 		selbstdeklaration.setAbzugEigenbetreuung(MathUtil.DEFAULT.from(0));
 		selbstdeklaration.setAbzugFremdbetreuung(MathUtil.DEFAULT.from(0));
-		selbstdeklaration.setAbzugErwerbsunfaehigePersonen(MathUtil.DEFAULT.from(0));
+		selbstdeklaration.setAbzugErwerbsunfaehigePersonen(
+			MathUtil.DEFAULT.from(0)
+		);
 
-		selbstdeklaration.setAbzugSteuerfreierBetragErwachsene(MathUtil.DEFAULT.from(0));
-		selbstdeklaration.setAbzugSteuerfreierBetragKinder(MathUtil.DEFAULT.from(0));
+		selbstdeklaration.setAbzugSteuerfreierBetragErwachsene(
+			MathUtil.DEFAULT.from(0)
+		);
+		selbstdeklaration.setAbzugSteuerfreierBetragKinder(
+			MathUtil.DEFAULT.from(0)
+		);
 
 		finanzielleSituation.setSelbstdeklaration(selbstdeklaration);
 		return finanzielleSituation;
@@ -75,12 +97,17 @@ public class LuzernTestfallDataProvider extends AbstractTestfallDataProvider {
 		return FinanzielleSituationTyp.LUZERN;
 	}
 
-	private void setAuszahlungsdatenInforma(@NotNull Familiensituation familiensituation) {
+	private void setAuszahlungsdatenInforma(
+		@NotNull Familiensituation familiensituation
+	) {
 		if (familiensituation.getAuszahlungsdaten() == null) {
-			familiensituation.setAuszahlungsdaten(createDefaultAuszahlungsdaten());
+			familiensituation.setAuszahlungsdaten(
+				createDefaultAuszahlungsdaten()
+			);
 		}
 
-		familiensituation.getAuszahlungsdaten().setInfomaKreditorennummer("0010");
+		familiensituation.getAuszahlungsdaten()
+			.setInfomaKreditorennummer("0010");
 		familiensituation.getAuszahlungsdaten().setInfomaBankcode("00-1-00");
 	}
 

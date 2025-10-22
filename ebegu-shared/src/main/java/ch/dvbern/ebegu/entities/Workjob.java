@@ -15,33 +15,34 @@
 
 package ch.dvbern.ebegu.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Lob;
-import javax.persistence.NamedQuery;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
+import jakarta.persistence.NamedQuery;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.WorkJobType;
 import ch.dvbern.ebegu.enums.reporting.BatchJobStatus;
 import ch.dvbern.ebegu.util.Constants;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
 /**
- * Entity that represents the Metadata of a job that may potentially  be further split into multiple workpackages. In our
+ * Entity that represents the Metadata of a job that may potentially be further split into multiple workpackages. In our
  * case we use this to create reports
  */
 @Entity
-@NamedQuery(name = Workjob.Q_WORK_JOB_STATE_UPDATE, query = "update Workjob wj set wj.status = :status where executionId = :exId")
+@NamedQuery(name = Workjob.Q_WORK_JOB_STATE_UPDATE,
+	query = "update Workjob wj set wj.status = :status where executionId = :exId")
 public class Workjob extends AbstractMutableEntity {
 
-	public static final String Q_WORK_JOB_STATE_UPDATE = "WORK_JOB_STATE_UPDATE";
+	public static final String Q_WORK_JOB_STATE_UPDATE =
+		"WORK_JOB_STATE_UPDATE";
 
 	private static final long serialVersionUID = -1964772151498547196L;
 
@@ -84,7 +85,6 @@ public class Workjob extends AbstractMutableEntity {
 	@NotNull
 	private BatchJobStatus status;
 
-
 	public String getMetadata() {
 		return metadata;
 	}
@@ -117,7 +117,7 @@ public class Workjob extends AbstractMutableEntity {
 		this.status = status;
 	}
 
-	@SuppressWarnings({"ObjectEquality", "PMD.CompareObjectsWithEquals"})
+	@SuppressWarnings({ "ObjectEquality", "PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	@Override
 	public boolean isSame(AbstractEntity o) {
@@ -141,7 +141,9 @@ public class Workjob extends AbstractMutableEntity {
 		if (!requestURI.equals(workjob.getRequestURI())) {
 			return false;
 		}
-		return metadata != null ? metadata.equals(workjob.getMetadata()) : workjob.getMetadata() == null;
+		return metadata != null ?
+			metadata.equals(workjob.getMetadata()) :
+			workjob.getMetadata() == null;
 	}
 
 	@Override
@@ -161,16 +163,22 @@ public class Workjob extends AbstractMutableEntity {
 		if (workJobType != workjob.workJobType) {
 			return false;
 		}
-		if (metadata != null ? !metadata.equals(workjob.metadata) : workjob.metadata != null) {
+		if (metadata != null ?
+			!metadata.equals(workjob.metadata) :
+			workjob.metadata != null) {
 			return false;
 		}
 		if (!startinguser.equals(workjob.startinguser)) {
 			return false;
 		}
-		if (params != null ? !params.equals(workjob.params) : workjob.params != null) {
+		if (params != null ?
+			!params.equals(workjob.params) :
+			workjob.params != null) {
 			return false;
 		}
-		return triggeringIp != null ? triggeringIp.equals(workjob.triggeringIp) : workjob.triggeringIp == null;
+		return triggeringIp != null ?
+			triggeringIp.equals(workjob.triggeringIp) :
+			workjob.triggeringIp == null;
 	}
 
 	@Override
@@ -180,7 +188,8 @@ public class Workjob extends AbstractMutableEntity {
 		result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
 		result = 31 * result + startinguser.hashCode();
 		result = 31 * result + (params != null ? params.hashCode() : 0);
-		result = 31 * result + (triggeringIp != null ? triggeringIp.hashCode() : 0);
+		result = 31 * result
+			+ (triggeringIp != null ? triggeringIp.hashCode() : 0);
 		return result;
 	}
 

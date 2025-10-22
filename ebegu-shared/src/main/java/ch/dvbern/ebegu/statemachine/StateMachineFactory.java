@@ -39,34 +39,53 @@ import org.slf4j.LoggerFactory;
  */
 public final class StateMachineFactory {
 
-	private static final Logger LOG = LoggerFactory.getLogger(StateMachineFactory.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		StateMachineFactory.class.getSimpleName()
+	);
 
 	private StateMachineFactory() {
 	}
 
 	public static StateMachine<AntragStatus, AntragEvents> getStateMachine(
 		@Nonnull Gesuch gesuch,
-		@Nonnull StateMachineConfig<AntragStatus, AntragEvents> config) {
+		@Nonnull StateMachineConfig<AntragStatus, AntragEvents> config
+	) {
 		Objects.requireNonNull(gesuch);
 		Objects.requireNonNull(config);
 
 		StateMachine<AntragStatus, AntragEvents> gesuchFiniteStateMachine =
 			new StateMachine<>(gesuch.getStatus(), config);
-		gesuchFiniteStateMachine.onUnhandledTrigger((antragStatus, antragEvent) -> {
+		gesuchFiniteStateMachine.onUnhandledTrigger(
+			(antragStatus, antragEvent) -> {
 
-			String message = String.format("State Machine received unhandled event (%s) for current state %s", antragEvent, antragStatus);
-			throw new EbeguRuntimeException("handleFSMEvent", message, ErrorCodeEnum.ERROR_INVALID_EBEGUSTATE, antragStatus);
-		});
+				String message = String.format(
+					"State Machine received unhandled event (%s) for current state %s",
+					antragEvent,
+					antragStatus
+				);
+				throw new EbeguRuntimeException(
+					"handleFSMEvent",
+					message,
+					ErrorCodeEnum.ERROR_INVALID_EBEGUSTATE,
+					antragStatus
+				);
+			}
+		);
 
 		return gesuchFiniteStateMachine;
 
 	}
 
-	public static void printStateMachineDocumentation(StateMachineConfig<AntragStatus, AntragEvents> config) {
+	public static void printStateMachineDocumentation(
+		StateMachineConfig<AntragStatus, AntragEvents> config
+	) {
 		Path out = Paths.get("stateMachineDocumentation.dot");
 		try (OutputStream outputStream = Files.newOutputStream(out)) {
 			config.generateDotFileInto(outputStream);
-			LOG.info("Printed State Machine documentation to {}", out.toAbsolutePath().toUri());
+			LOG.info(
+				"Printed State Machine documentation to {}",
+				out.toAbsolutePath().toUri()
+			);
 
 		} catch (IOException e) {
 			LOG.error("Could not print state machine ", e);

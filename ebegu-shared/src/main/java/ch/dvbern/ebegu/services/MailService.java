@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.dto.SupportAnfrageDTO;
 import ch.dvbern.ebegu.einladung.Einladung;
@@ -35,13 +34,8 @@ import ch.dvbern.ebegu.entities.InstitutionStammdaten;
 import ch.dvbern.ebegu.entities.Lastenausgleich;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Mitteilung;
-import ch.dvbern.ebegu.entities.RueckforderungFormular;
-import ch.dvbern.ebegu.entities.RueckforderungMitteilung;
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
 import ch.dvbern.ebegu.enums.GemeindeAngebotTyp;
-import ch.dvbern.ebegu.enums.RueckforderungStatus;
-import ch.dvbern.ebegu.errors.MailException;
-import ch.dvbern.ebegu.util.UploadFileInfo;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 
 /**
@@ -53,20 +47,12 @@ public interface MailService {
 	 * Sendet die Email mit gegebenem MessageBody an die gegebene Adresse. Dadurch kann eine beliebige Message gemailt
 	 * werden
 	 */
-	void sendMessage(@Nonnull String subject, @Nonnull String messageBody, @Nonnull String mailadress,
-		@Nonnull MandantIdentifier mandantIdentifier)
-		throws MailException;
-
-	/**
-	 * Sendet die Email mit gegebenem MessageBody an die gegebene Adresse. Dadurch kann eine beliebige Message gemailt
-	 * werden. Das uebergebene UploadFileInfo wird als Attachment mitgeschickt.
-	 */
-	void sendMessageWithAttachment(
+	void toOutboxMail(
 		@Nonnull String subject,
 		@Nonnull String messageBody,
 		@Nonnull String mailadress,
-		@Nonnull UploadFileInfo uploadFileInfo,
-		MandantIdentifier mandantIdentifier) throws MailException;
+		@Nonnull MandantIdentifier mandantIdentifier
+	);
 
 	/**
 	 * Sendet eine Supportanfrage an die definierte Support-Email
@@ -77,77 +63,91 @@ public interface MailService {
 	 * Sendet eine Email mit der Information, dass alle Betreuungsplaetze bestaetigt wurden und das Gesuch freigegeben
 	 * werden kann.
 	 */
-	void sendInfoBetreuungenBestaetigt(@Nonnull Gesuch gesuch) throws MailException;
+	void sendInfoBetreuungenBestaetigt(@Nonnull Gesuch gesuch);
 
 	/**
 	 * Sendet eine Email mit der Information, dass ein Betreuungsplatz abgelehnt wurde.
 	 */
-	void sendInfoBetreuungAbgelehnt(@Nonnull Betreuung betreuung) throws MailException;
+	void sendInfoBetreuungAbgelehnt(@Nonnull Betreuung betreuung);
 
 	/**
 	 * Sendet eine Email mit der Information, dass eine Anmeldung fuer ein Schulamt-Angebot ins Backend uebernommen
 	 * wurde
 	 */
-	void sendInfoSchulamtAnmeldungTagesschuleUebernommen(@Nonnull AbstractAnmeldung abstractAnmeldung) throws MailException;
+	void sendInfoSchulamtAnmeldungTagesschuleUebernommen(
+		@Nonnull AbstractAnmeldung abstractAnmeldung
+	);
 
 	/**
 	 * Sendet eine Email mit der Information, dass eine Anmeldung fuer ein Schulamt-Angebot abgelehnt wurde.
 	 */
-	void sendInfoSchulamtAnmeldungAbgelehnt(@Nonnull AbstractAnmeldung abstractAnmeldung) throws MailException;
+	void sendInfoSchulamtAnmeldungAbgelehnt(
+		@Nonnull AbstractAnmeldung abstractAnmeldung
+	);
 
 	/**
 	 * Sendet eine Email mit der Information, dass eine Anmeldung für eine Ferieninsel angenommen wurde
 	 */
-	void sendInfoSchulamtAnmeldungFerieninselUebernommen(@Nonnull AbstractAnmeldung abstractAnmeldung) throws MailException;
+	void sendInfoSchulamtAnmeldungFerieninselUebernommen(
+		@Nonnull AbstractAnmeldung abstractAnmeldung
+	);
 
 	/**
 	 * Sendet eine Email mit der Benachrichtigung, dass eine In-System Nachricht erhalten wurde.
 	 */
-	void sendInfoMitteilungErhalten(@Nonnull Mitteilung mitteilung) throws MailException;
+	void sendInfoMitteilungErhalten(@Nonnull Mitteilung mitteilung);
 
 	/**
 	 * Sendet eine Email mit der Information, dass ein Gesuch Verfügt wurde.
 	 */
-	void sendInfoVerfuegtGesuch(@Nonnull Gesuch gesuch) throws MailException;
+	void sendInfoVerfuegtGesuch(@Nonnull Gesuch gesuch);
 
 	/**
 	 * Sendet eine Email mit der Information, dass eine Mutation Verfügt wurde.
 	 */
-	void sendInfoVerfuegtMutation(@Nonnull Gesuch gesuch) throws MailException;
+	void sendInfoVerfuegtMutation(@Nonnull Gesuch gesuch);
 
 	/**
 	 * Sendet eine Email mit der Information, dass eine Mahnung versendet wurde.
 	 */
-	void sendInfoMahnung(@Nonnull Gesuch gesuch) throws MailException;
+	void sendInfoMahnung(@Nonnull Gesuch gesuch);
 
 	/**
 	 * Sendet eine Email mit der Information, dass ein Gesuch Verfügt wurde.
 	 */
-	void sendWarnungGesuchNichtFreigegeben(@Nonnull Gesuch gesuch, int anzahlTageBisLoeschung) throws MailException;
+	void sendWarnungGesuchNichtFreigegeben(
+		@Nonnull Gesuch gesuch,
+		int anzahlTageBisLoeschung
+	);
 
 	/**
 	 * Sendet eine Email mit der Information, dass ein Gesuch Verfügt wurde.
 	 */
-	void sendWarnungFreigabequittungFehlt(@Nonnull Gesuch gesuch, int anzahlTageBisLoeschung) throws MailException;
+	void sendWarnungFreigabequittungFehlt(
+		@Nonnull Gesuch gesuch,
+		int anzahlTageBisLoeschung
+	);
 
 	/**
 	 * Sendet eine Email mit der Information, dass ein Gesuch Verfügt wurde.
 	 */
-	void sendInfoGesuchGeloescht(@Nonnull Gesuch gesuch) throws MailException;
+	void sendInfoGesuchGeloescht(@Nonnull Gesuch gesuch);
 
 	/**
 	 * Sendet eine Mail an den GS1 der übergebenen Gesuche, dass die übergebene Gesuchsperiode eröffnet wurde.
 	 */
 	Future<Integer> sendInfoFreischaltungGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull List<Gesuch> gesucheToSendMail);
+		@Nonnull List<Gesuch> gesucheToSendMail
+	);
 
 	/**
 	 * Sendet eine Mail an den GS1 des übergebenen Gesuchs, dass die übergebene Gesuchsperiode eröffnet wurde.
 	 */
 	boolean sendInfoFreischaltungGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull Gesuch gesuch);
+		@Nonnull Gesuch gesuch
+	);
 
 	/**
 	 * Sendet unter gewissen Bedingungen pro Betreuung eine Email mit der Information, dass ein Betreuungsplatz
@@ -164,55 +164,86 @@ public interface MailService {
 	 * Sendet eine E-Mail mit der Information, dass die Statistik erstellt wurde
 	 */
 	void sendInfoStatistikGeneriert(
-		@Nonnull String receiverEmail, @Nonnull String downloadurl,
-		@Nonnull Locale locale, @Nonnull Mandant mandant);
+		@Nonnull String receiverEmail,
+		@Nonnull String downloadurl,
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	);
 
 	/**
 	 * Sends an Einladungsemail to the given user according to the type of the Einladung
 	 */
-	void sendBenutzerEinladung(@Nonnull Benutzer einladender, @Nonnull Einladung einladung) throws MailException;
+	void sendBenutzerEinladung(
+		@Nonnull Benutzer einladender,
+		@Nonnull Einladung einladung
+	);
 
 	/**
 	 * Sendet eine E-Mail an eine Institution mit der Info, dass es offene Pendenzen gibt
 	 */
-	void sendInfoOffenePendenzenNeuMitteilungInstitution(@Nonnull InstitutionStammdaten institutionStammdaten, boolean offenePendenzen, boolean ungelesendeMitteilung);
+	void sendInfoOffenePendenzenNeuMitteilungInstitution(
+		@Nonnull InstitutionStammdaten institutionStammdaten,
+		boolean offenePendenzen,
+		boolean ungelesendeMitteilung
+	);
 
 	/**
 	 * Sendet eine Email mit der Information, dass eine Anmeldung fuer ein Schulamt-Angebot ins Backend uebernommen
 	 * wurde
 	 */
-	void sendInfoSchulamtAnmeldungTagesschuleAkzeptiert(@Nonnull AbstractAnmeldung abstractAnmeldung) throws MailException;
+	void sendInfoSchulamtAnmeldungTagesschuleAkzeptiert(
+		@Nonnull AbstractAnmeldung abstractAnmeldung
+	);
 
 	/**
 	 * Sendet eine Email mit der Information, dass ein Angebot für eine Gemeinde aktiviert wurde
 	 */
-	void sendInfoGemeineAngebotAktiviert(@Nonnull Gemeinde gemeinde, @Nonnull GemeindeAngebotTyp angebot);
+	void sendInfoGemeindeAngebotAktiviert(
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull GemeindeAngebotTyp angebot
+	);
+
 	/**
 	 * schickt eine email an den Verantwortlichen Tagesschule und informiert, dass das Gesuch verfuegt wurde
 	 */
-	void sendInfoGesuchVerfuegtVerantwortlicherTS(@Nonnull Gesuch gesuch, @Nonnull Benutzer verantwortlicherTS) throws MailException;
-
-	void sendNotrechtGenerischeMitteilung(
-		@Nonnull RueckforderungMitteilung mitteilung,
-		@Nonnull String empfaengerMail,
-		@Nonnull List<RueckforderungStatus> statusList);
+	void sendInfoGesuchVerfuegtVerantwortlicherTS(
+		@Nonnull Gesuch gesuch,
+		@Nonnull Benutzer verantwortlicherTS
+	);
 
 	/**
 	 * Sendet eine Email mit der Informatiom, dass ein Ruckforderungformular bei der Kanton geprueft wurde
 	 */
-	@Nullable
-	String sendNotrechtBestaetigungPruefungStufe1(@Nonnull RueckforderungFormular rueckforderungFormular);
 
-	void sendInfoRueckforderungProvisorischVerfuegt(@Nonnull RueckforderungFormular rueckforderungFormular) throws MailException;
+	void sendInfoLastenausgleichGemeinde(
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull Lastenausgleich lastenausgleich
+	);
 
-	void sendInfoLastenausgleichGemeinde(@Nonnull Gemeinde gemeinde, @Nonnull Lastenausgleich lastenausgleich);
+	void sendInfoSchulamtAnmeldungStorniert(
+		AbstractAnmeldung abstractAnmeldung
+	);
 
-	void sendInfoSchulamtAnmeldungStorniert(AbstractAnmeldung abstractAnmeldung) throws MailException;
-
-	void sendInfoLATSAntragZurueckAnGemeinde(@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer wiederEroeffnet);
+	void sendInfoLATSAntragZurueckAnGemeinde(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer wiederEroeffnet
+	);
 
 	void sendInitGSZPVNr(
-			@Nonnull String ssoInitURL,
-			GesuchstellerContainer gesuchstellerContainer,
-			@Nonnull String email, String korrespondenzSprache);
+		@Nonnull String ssoInitURL,
+		GesuchstellerContainer gesuchstellerContainer,
+		@Nonnull String email,
+		String korrespondenzSprache
+	);
+
+	void sendInfoAuszahlungsdatenChanged(
+		InstitutionStammdaten institutionStammdaten,
+		@Nonnull String email
+	);
+
+	void sendInfoLastenausgleichProzessBeendet(
+		@Nonnull String jahr,
+		@Nonnull String receiverEmail,
+		boolean isProcessSuccessfull,
+		@Nonnull Mandant mandant
+	);
 }

@@ -8,19 +8,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.enums.betreuung;
 
-import ch.dvbern.ebegu.util.BetreuungsangebotTypVisitor;
-
 import java.util.Arrays;
 import java.util.List;
+
+import ch.dvbern.ebegu.util.BetreuungsangebotTypVisitor;
 
 /**
  * Enum fuers Feld betreuungsangebotTyp in Institution.
@@ -65,7 +65,9 @@ public enum BetreuungsangebotTyp {
 		return TAGESSCHULE == this;
 	}
 
-	public boolean isTagesfamilien() { return TAGESFAMILIEN == this; }
+	public boolean isTagesfamilien() {
+		return TAGESFAMILIEN == this;
+	}
 
 	public boolean isMittagstisch() {
 		return MITTAGSTISCH == this;
@@ -79,7 +81,9 @@ public enum BetreuungsangebotTyp {
 		return TAGESSCHULE == this || FERIENINSEL == this;
 	}
 
-	public boolean isAngebotJugendamtKleinkind() { return KITA == this || TAGESFAMILIEN == this; }
+	public boolean isAngebotJugendamtKleinkind() {
+		return KITA == this || TAGESFAMILIEN == this;
+	}
 
 	public boolean isJugendamt() {
 		return !isSchulamt();

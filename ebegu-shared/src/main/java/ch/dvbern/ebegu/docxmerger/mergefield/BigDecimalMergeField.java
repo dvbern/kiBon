@@ -30,11 +30,20 @@ public class BigDecimalMergeField extends AbstractMergeField<BigDecimal> {
 	private final int scale;
 	private final DecimalFormat formater;
 
-	public BigDecimalMergeField(@Nonnull String name, @Nullable BigDecimal value, @Nonnull String format) {
-		this(name, value , 2, format);
+	public BigDecimalMergeField(
+		@Nonnull String name,
+		@Nullable BigDecimal value,
+		@Nonnull String format
+	) {
+		this(name, value, 2, format);
 	}
 
-	public BigDecimalMergeField(@Nonnull String name, @Nullable BigDecimal value,  @Nonnull Integer precision, @Nonnull String format) {
+	public BigDecimalMergeField(
+		@Nonnull String name,
+		@Nullable BigDecimal value,
+		@Nonnull Integer precision,
+		@Nonnull String format
+	) {
 		super(name, value);
 		this.scale = precision;
 
@@ -49,6 +58,8 @@ public class BigDecimalMergeField extends AbstractMergeField<BigDecimal> {
 		if (getValue() == null) {
 			return "";
 		}
-		return formater.format(this.getValue().setScale(this.scale, RoundingMode.HALF_UP));
+		return formater.format(
+			this.getValue().setScale(this.scale, RoundingMode.HALF_UP)
+		);
 	}
 }

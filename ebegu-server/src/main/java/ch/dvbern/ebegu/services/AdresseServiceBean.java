@@ -15,25 +15,31 @@
 
 package ch.dvbern.ebegu.services;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nonnull;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+
 import ch.dvbern.ebegu.dto.geoadmin.JaxWohnadresse;
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
-import ch.dvbern.lib.cdipersistence.Persistence;
-
-import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 /**
  * Service fuer Adresse
  */
 @Stateless
 @Local(AdresseService.class)
-public class AdresseServiceBean extends AbstractBaseService implements AdresseService {
+public class AdresseServiceBean extends AbstractBaseService implements
+	AdresseService {
 
 	@Inject
 	private Persistence persistence;
@@ -75,18 +81,27 @@ public class AdresseServiceBean extends AbstractBaseService implements AdresseSe
 	}
 
 	@Override
-	public boolean updateGemeindeAndBFS(@Nonnull Adresse adresse) {
+	public boolean updateGemeindeAndBFS(
+		@Nonnull Adresse adresse
+	) {
 		// für ein paar Millisekunden warten, um die GeoAdmin Api nicht mit Requests zu überladen
 		try {
 			TimeUnit.MILLISECONDS.sleep(WAIT_MILLISECONDS_BEFORE_REQUEST);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new EbeguRuntimeException("updateGemeindeAndBFS", "Program Interrupted", e);
+			throw new EbeguRuntimeException(
+				"updateGemeindeAndBFS",
+				"Program Interrupted",
+				e
+			);
 		}
-		List<JaxWohnadresse> wohnadresseList = geoadminSearchService.findWohnadressenByStrasseAndPlz(
-			adresse.getStrasse(),
-			adresse.getHausnummer(),
-			adresse.getPlz());
+		List<JaxWohnadresse> wohnadresseList = geoadminSearchService
+			.findWohnadressenByStrasseAndPlzAndOrt(
+				adresse.getStrasse(),
+				adresse.getHausnummer(),
+				adresse.getPlz(),
+				adresse.getOrt()
+			);
 
 		String originalGemeinde = adresse.getGemeinde();
 		Long originalBfs = adresse.getBfsNummer();
@@ -102,6 +117,7 @@ public class AdresseServiceBean extends AbstractBaseService implements AdresseSe
 		adresse.setGemeinde(newGemeinde);
 		adresse.setBfsNummer(newBfs);
 
-		return !Objects.equals(originalGemeinde, newGemeinde) || !Objects.equals(originalBfs, newBfs);
+		return !Objects.equals(originalGemeinde, newGemeinde)
+			|| !Objects.equals(originalBfs, newBfs);
 	}
 }

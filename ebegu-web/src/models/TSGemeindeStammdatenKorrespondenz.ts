@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractEntity} from './TSAbstractEntity';
-
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 export class TSGemeindeStammdatenKorrespondenz extends TSAbstractEntity {
     public senderAddressSpacingLeft: number;
     public senderAddressSpacingTop: number;
@@ -28,4 +27,6 @@ export class TSGemeindeStammdatenKorrespondenz extends TSAbstractEntity {
     public standardSignatur: string;
     // Transient, should not be sent to the backend
     public hasAlternativeLogoTagesschule: boolean;
+    public barcodeSpacingLeft: number;
+    public barcodeSpacingTop: number;
 }

@@ -1,0 +1,31 @@
+{
+    "valid": {
+        "Start": {
+            "iban": "CH2089144969768441935",
+            "kontoinhaber": "kiBon Test",
+            "steuerveranlagungGemeinsam": "false"
+        },
+        "GS1": {
+            "quellenbesteuert": "true",
+            "bruttoLohn": "34022",
+            "nettoEinkommen": "",
+            "einkaeufeVorsorge": "",
+            "abzuegeLiegenschaft": "",
+            "steuerbaresVermoegen": ""
+        },
+        "GS2": {
+            "quellenbesteuert": "false",
+            "nettoEinkommen": "90000",
+            "einkaeufeVorsorge": "10000",
+            "liegenschaftsErtraege": "0",
+            "abzuegeLiegenschaft": "5000",
+            "steuerbaresVermoegen": "300000",
+            "bruttoLohn": ""
+        },
+        "Resultate": {
+            "massgebendesEinkommenGS1": "27'218",
+            "massgebendesEinkommenGS2": "113'000",
+            "massgebendesEinkommenTotal": "140'218"
+        }
+    }
+}

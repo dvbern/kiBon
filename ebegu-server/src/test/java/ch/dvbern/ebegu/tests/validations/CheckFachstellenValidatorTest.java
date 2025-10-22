@@ -8,19 +8,21 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.tests.validations;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Dossier;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.Fachstelle;
 import ch.dvbern.ebegu.entities.Fall;
 import ch.dvbern.ebegu.entities.Gemeinde;
@@ -30,10 +32,8 @@ import ch.dvbern.ebegu.entities.Kind;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.PensumFachstelle;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.IntegrationTyp;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.validators.CheckFachstellenValidator;
 import org.easymock.EasyMockExtension;
@@ -44,8 +44,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static ch.dvbern.ebegu.enums.EinstellungKey.FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE;
-import static ch.dvbern.ebegu.enums.EinstellungKey.SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -55,15 +55,25 @@ import static org.easymock.EasyMock.expect;
 class CheckFachstellenValidatorTest extends EasyMockSupport {
 
 	@TestSubject
-	private final CheckFachstellenValidator validator = new CheckFachstellenValidator();
+	private final CheckFachstellenValidator validator =
+		new CheckFachstellenValidator();
 
 	@Mock
 	private EinstellungService einstellungServiceMock;
 
 	@Test
 	void checkKindWithoutFachstelleIsValid() {
-		var kindContainer = createKindContainer(false, EinschulungTyp.KINDERGARTEN2, IntegrationTyp.SOZIALE_INTEGRATION);
-		createEinstellungMock(kindContainer, FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE, "KINDERGARTEN2", 1);
+		var kindContainer = createKindContainer(
+			false,
+			EinschulungTyp.KINDERGARTEN2,
+			IntegrationTyp.SOZIALE_INTEGRATION
+		);
+		createEinstellungMock(
+			kindContainer,
+			FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+			"KINDERGARTEN2",
+			1
+		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
 		Assertions.assertTrue(isValid);
@@ -71,8 +81,17 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 
 	@Test
 	void checkMaxFachstelleEinstellungOk() {
-		var kindContainer = createKindContainer(true, EinschulungTyp.KINDERGARTEN2, IntegrationTyp.SOZIALE_INTEGRATION);
-		createEinstellungMock(kindContainer, FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE, "KINDERGARTEN2", 1);
+		var kindContainer = createKindContainer(
+			true,
+			EinschulungTyp.KINDERGARTEN2,
+			IntegrationTyp.SOZIALE_INTEGRATION
+		);
+		createEinstellungMock(
+			kindContainer,
+			FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+			"KINDERGARTEN2",
+			1
+		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
 		Assertions.assertTrue(isValid);
@@ -80,9 +99,24 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 
 	@Test
 	void checkMaxFachstelleEinstellungOkTwoOfTwo() {
-		var kindContainer = createKindContainer(true, EinschulungTyp.KINDERGARTEN2, IntegrationTyp.SOZIALE_INTEGRATION);
-		kindContainer.getKindJA().getPensumFachstelle().add(createPensumFachstelleWithIntegrationTyp(IntegrationTyp.SOZIALE_INTEGRATION));
-		createEinstellungMock(kindContainer, FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE, "KINDERGARTEN2", 2);
+		var kindContainer = createKindContainer(
+			true,
+			EinschulungTyp.KINDERGARTEN2,
+			IntegrationTyp.SOZIALE_INTEGRATION
+		);
+		kindContainer.getKindJA()
+			.getPensumFachstelle()
+			.add(
+				createPensumFachstelleWithIntegrationTyp(
+					IntegrationTyp.SOZIALE_INTEGRATION
+				)
+			);
+		createEinstellungMock(
+			kindContainer,
+			FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+			"KINDERGARTEN2",
+			2
+		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
 		Assertions.assertTrue(isValid);
@@ -90,8 +124,17 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 
 	@Test
 	void checkMaxFachstelleEinstellungNotOk() {
-		var kindContainer = createKindContainer(true, EinschulungTyp.KINDERGARTEN2, IntegrationTyp.SOZIALE_INTEGRATION);
-		createEinstellungMock(kindContainer, FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE, "KINDERGARTEN1", 1);
+		var kindContainer = createKindContainer(
+			true,
+			EinschulungTyp.KINDERGARTEN2,
+			IntegrationTyp.SOZIALE_INTEGRATION
+		);
+		createEinstellungMock(
+			kindContainer,
+			FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+			"KINDERGARTEN1",
+			1
+		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
 		Assertions.assertFalse(isValid);
@@ -99,9 +142,24 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 
 	@Test
 	void checkMaxFachstelleEinstellungNotOkTwoOfTwo() {
-		var kindContainer = createKindContainer(true, EinschulungTyp.KINDERGARTEN2, IntegrationTyp.SOZIALE_INTEGRATION);
-		kindContainer.getKindJA().getPensumFachstelle().add(createPensumFachstelleWithIntegrationTyp(IntegrationTyp.SOZIALE_INTEGRATION));
-		createEinstellungMock(kindContainer, FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE, "KINDERGARTEN1", 1);
+		var kindContainer = createKindContainer(
+			true,
+			EinschulungTyp.KINDERGARTEN2,
+			IntegrationTyp.SOZIALE_INTEGRATION
+		);
+		kindContainer.getKindJA()
+			.getPensumFachstelle()
+			.add(
+				createPensumFachstelleWithIntegrationTyp(
+					IntegrationTyp.SOZIALE_INTEGRATION
+				)
+			);
+		createEinstellungMock(
+			kindContainer,
+			FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+			"KINDERGARTEN1",
+			1
+		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
 		Assertions.assertFalse(isValid);
@@ -109,16 +167,38 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 
 	@Test
 	void checkMaxFachstelleEinstellungNotOkOneOfTwo() {
-		var kindContainer = createKindContainer(true, EinschulungTyp.KINDERGARTEN2, IntegrationTyp.SOZIALE_INTEGRATION);
-		kindContainer.getKindJA().getPensumFachstelle().add(createPensumFachstelleWithIntegrationTyp(IntegrationTyp.SPRACHLICHE_INTEGRATION));
-		createEinstellungMock(kindContainer, FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE, "KINDERGARTEN1", 1);
-		createEinstellungMock(kindContainer, SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE, "KINDERGARTEN1", 1);
+		var kindContainer = createKindContainer(
+			true,
+			EinschulungTyp.KINDERGARTEN2,
+			IntegrationTyp.SOZIALE_INTEGRATION
+		);
+		kindContainer.getKindJA()
+			.getPensumFachstelle()
+			.add(
+				createPensumFachstelleWithIntegrationTyp(
+					IntegrationTyp.SPRACHLICHE_INTEGRATION
+				)
+			);
+		createEinstellungMock(
+			kindContainer,
+			FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+			"KINDERGARTEN1",
+			1
+		);
+		createEinstellungMock(
+			kindContainer,
+			SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,
+			"KINDERGARTEN1",
+			1
+		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
 		Assertions.assertFalse(isValid);
 	}
 
-	private static PensumFachstelle createPensumFachstelleWithIntegrationTyp(IntegrationTyp integrationTyp) {
+	private static PensumFachstelle createPensumFachstelleWithIntegrationTyp(
+		IntegrationTyp integrationTyp
+	) {
 		PensumFachstelle pensumFachstelle = new PensumFachstelle();
 		pensumFachstelle.setFachstelle(new Fachstelle());
 		pensumFachstelle.setIntegrationTyp(integrationTyp);
@@ -127,8 +207,17 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 
 	@Test()
 	void checkWrongEinstellung() {
-		var kindContainer = createKindContainer(true, EinschulungTyp.KINDERGARTEN2, IntegrationTyp.SOZIALE_INTEGRATION);
-		createEinstellungMock(kindContainer, FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,"wrong", 1);
+		var kindContainer = createKindContainer(
+			true,
+			EinschulungTyp.KINDERGARTEN2,
+			IntegrationTyp.SOZIALE_INTEGRATION
+		);
+		createEinstellungMock(
+			kindContainer,
+			FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+			"wrong",
+			1
+		);
 		replayAll();
 		Assertions.assertThrows(EbeguRuntimeException.class, () -> {
 			validator.isValid(kindContainer, null);
@@ -137,8 +226,17 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 
 	@Test()
 	void sprachlicheIntegrationVorschulalterValid() {
-		var kindContainer = createKindContainer(true, EinschulungTyp.VORSCHULALTER, IntegrationTyp.SPRACHLICHE_INTEGRATION);
-		createEinstellungMock(kindContainer, SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,"VORSCHULALTER", 1);
+		var kindContainer = createKindContainer(
+			true,
+			EinschulungTyp.VORSCHULALTER,
+			IntegrationTyp.SPRACHLICHE_INTEGRATION
+		);
+		createEinstellungMock(
+			kindContainer,
+			SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,
+			"VORSCHULALTER",
+			1
+		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
 		Assertions.assertTrue(isValid);
@@ -146,25 +244,44 @@ class CheckFachstellenValidatorTest extends EasyMockSupport {
 
 	@Test()
 	void sprachlicheIntegrationVorschulalterNotValid() {
-		var kindContainer = createKindContainer(true, EinschulungTyp.KINDERGARTEN1, IntegrationTyp.SPRACHLICHE_INTEGRATION);
-		createEinstellungMock(kindContainer, SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,"VORSCHULALTER", 1);
+		var kindContainer = createKindContainer(
+			true,
+			EinschulungTyp.KINDERGARTEN1,
+			IntegrationTyp.SPRACHLICHE_INTEGRATION
+		);
+		createEinstellungMock(
+			kindContainer,
+			SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,
+			"VORSCHULALTER",
+			1
+		);
 		replayAll();
 		var isValid = validator.isValid(kindContainer, null);
 		Assertions.assertFalse(isValid);
 	}
 
-	private void createEinstellungMock(KindContainer kindContainer, EinstellungKey key, String stufe, int times) {
-		expect(einstellungServiceMock.findEinstellung(
-			key,
-			kindContainer.getGesuch().extractGemeinde(),
-			kindContainer.getGesuch().getGesuchsperiode(),
-			null
-		))
-			.andReturn(new Einstellung(
+	private void createEinstellungMock(
+		KindContainer kindContainer,
+		EinstellungKey key,
+		String stufe,
+		int times
+	) {
+		expect(
+			einstellungServiceMock.findEinstellung(
 				key,
-				stufe,
-				kindContainer.getGesuch().getGesuchsperiode()
-			)).times(times) ;
+				kindContainer.getGesuch().extractGemeinde(),
+				kindContainer.getGesuch().getGesuchsperiode(),
+				null
+			)
+		)
+			.andReturn(
+				new Einstellung(
+					key,
+					stufe,
+					kindContainer.getGesuch().getGesuchsperiode()
+				)
+			)
+			.times(times);
 	}
 
 	private KindContainer createKindContainer(

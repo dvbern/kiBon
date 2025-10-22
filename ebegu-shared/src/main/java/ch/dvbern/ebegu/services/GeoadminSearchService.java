@@ -28,8 +28,15 @@ public interface GeoadminSearchService {
 	 * @param searchText Nicht-Leerer Text, maximal 10 Woerter
 	 */
 	@Nonnull
-	List<JaxWohnadresse> findWohnadressenBySearchText(@Nonnull String searchText);
+	List<JaxWohnadresse> findWohnadressenBySearchText(
+		@Nonnull String searchText
+	);
 
 	@Nonnull
-	List<JaxWohnadresse> findWohnadressenByStrasseAndPlz(@Nonnull String strasse, @Nullable String nr, @Nonnull String plz);
+	List<JaxWohnadresse> findWohnadressenByStrasseAndPlzAndOrt(
+		@Nonnull String strasse,
+		@Nullable String nr,
+		@Nonnull String plz,
+		@Nonnull String ort
+	);
 }

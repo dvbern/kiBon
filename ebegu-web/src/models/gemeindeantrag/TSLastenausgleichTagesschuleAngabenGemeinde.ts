@@ -16,8 +16,7 @@
  */
 
 import {TSLastenausgleichTagesschuleAngabenGemeindeFormularStatus} from '../enums/TSLastenausgleichTagesschuleAngabenGemeindeFormularStatus';
-import {TSAbstractEntity} from '../TSAbstractEntity';
-
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 export class TSLastenausgleichTagesschuleAngabenGemeinde extends TSAbstractEntity {
     public status: TSLastenausgleichTagesschuleAngabenGemeindeFormularStatus;
 

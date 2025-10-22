@@ -8,30 +8,36 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.validators;
 
 import javax.annotation.Nullable;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.Berechtigung;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.util.EnumUtil;
 
-public class CheckBerechtigungSozialdienstValidator implements ConstraintValidator<CheckBerechtigungSozialdienst, Berechtigung> {
+public class CheckBerechtigungSozialdienstValidator implements
+	ConstraintValidator<CheckBerechtigungSozialdienst, Berechtigung> {
 
 	@Override
 	public boolean isValid(
 		Berechtigung berechtigung,
-		@Nullable ConstraintValidatorContext constraintValidatorContext) {
-		if (EnumUtil.isOneOf(berechtigung.getRole(), UserRole.ADMIN_SOZIALDIENST, UserRole.SACHBEARBEITER_SOZIALDIENST)) {
+		@Nullable ConstraintValidatorContext constraintValidatorContext
+	) {
+		if (EnumUtil.isOneOf(
+			berechtigung.getRole(),
+			UserRole.ADMIN_SOZIALDIENST,
+			UserRole.SACHBEARBEITER_SOZIALDIENST
+		)) {
 			return berechtigung.getSozialdienst() != null;
 		}
 		// alle anderen Benutzer duerfen keine Inst/Traeg haben

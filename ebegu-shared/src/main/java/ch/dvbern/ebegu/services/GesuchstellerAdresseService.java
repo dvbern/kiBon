@@ -33,7 +33,9 @@ public interface GesuchstellerAdresseService {
 	 * @param gesuchstellerAdresse Die Adresse als DTO
 	 */
 	@Nonnull
-	GesuchstellerAdresseContainer createAdresse(@Nonnull GesuchstellerAdresseContainer gesuchstellerAdresse);
+	GesuchstellerAdresseContainer createAdresse(
+		@Nonnull GesuchstellerAdresseContainer gesuchstellerAdresse
+	);
 
 	/**
 	 * Aktualisiert die Adresse in der DB.
@@ -41,7 +43,9 @@ public interface GesuchstellerAdresseService {
 	 * @param gesuchstellerAdresse Die Adresse als DTO
 	 */
 	@Nonnull
-	GesuchstellerAdresseContainer updateAdresse(@Nonnull GesuchstellerAdresseContainer gesuchstellerAdresse);
+	GesuchstellerAdresseContainer updateAdresse(
+		@Nonnull GesuchstellerAdresseContainer gesuchstellerAdresse
+	);
 
 	/**
 	 * @param id PK (id) der Adresse
@@ -61,17 +65,23 @@ public interface GesuchstellerAdresseService {
 	 *
 	 * @param gesuchstellerAdresse Adresse zu entfernen
 	 */
-	void removeAdresse(@Nonnull GesuchstellerAdresseContainer gesuchstellerAdresse);
+	void removeAdresse(
+		@Nonnull GesuchstellerAdresseContainer gesuchstellerAdresse
+	);
 
 	/**
 	 * Laedt die Korrespondenzadresse (aktuell gibt es immer nur 1) fuer die Gesuchsteller mit gesuchstellerID
 	 */
 	@Nonnull
-	Optional<GesuchstellerAdresseContainer> getKorrespondenzAdr(@Nonnull String gesuchstellerID);
+	Optional<GesuchstellerAdresseContainer> getKorrespondenzAdr(
+		@Nonnull String gesuchstellerID
+	);
 
 	/**
 	 * Laedt die Rechnungsadresse fuer den Gesuchsteller
 	 */
 	@Nonnull
-	Optional<GesuchstellerAdresseContainer> getRechnungsAdr(@Nonnull String gesuchstellerID);
+	Optional<GesuchstellerAdresseContainer> getRechnungsAdr(
+		@Nonnull String gesuchstellerID
+	);
 }

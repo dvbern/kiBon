@@ -66,6 +66,9 @@ const getAnspruchberechtigtesBetreuungspensum = (
     );
 };
 
+const getVerfuegenStatusTitle = () => {
+    return cy.getByData('verfuegen-status');
+};
 const getVerfuegenButton = () => {
     return cy.getByData('container.verfuegen', 'navigation-button');
 };
@@ -115,6 +118,7 @@ export const VerfuegungPO = {
     getVerfuegungsBemerkungenKontrolliert,
     getVerfuegenButton,
     getVerfuegenVerzichtenButton,
+    getVerfuegenStatusTitle,
     getNichtEintretenButton,
     getAnspruchberechtigtesBetreuungspensum,
     // PAGE ACTIONS

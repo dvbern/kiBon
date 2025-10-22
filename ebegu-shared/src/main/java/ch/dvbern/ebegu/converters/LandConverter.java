@@ -15,9 +15,9 @@
 package ch.dvbern.ebegu.converters;
 
 import javax.annotation.Nullable;
-import javax.persistence.Converter;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.Converter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.enums.Land;
 import org.apache.commons.lang3.StringUtils;

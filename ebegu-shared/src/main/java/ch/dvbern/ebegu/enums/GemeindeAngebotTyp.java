@@ -19,7 +19,5 @@ package ch.dvbern.ebegu.enums;
  * Enum für die Betreuungsnagebote der Gemeinde
  */
 public enum GemeindeAngebotTyp {
-	BETREUUNGSGUTSCHEIN,
-	TAGESSCHULE,
-	FERIENINSEL
+	BETREUUNGSGUTSCHEIN, TAGESSCHULE, FERIENINSEL
 }

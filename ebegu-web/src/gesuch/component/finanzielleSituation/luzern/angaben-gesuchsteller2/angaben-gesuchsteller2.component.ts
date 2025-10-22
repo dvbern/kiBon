@@ -16,9 +16,9 @@
  */
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {IPromise} from 'angular';
-import {ApplicationPropertyRS} from '../../../../../app/core/rest-services/applicationPropertyRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
@@ -26,11 +26,13 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractFinSitLuzernView} from '../AbstractFinSitLuzernView';
 import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern.service';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 @Component({
     selector: 'dv-angaben-gesuchsteller2',
     templateUrl: '../finanzielle-situation-luzern.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AngabenGesuchsteller2Component extends AbstractFinSitLuzernView {
     public constructor(
@@ -39,7 +41,8 @@ export class AngabenGesuchsteller2Component extends AbstractFinSitLuzernView {
         protected finSitLuService: FinanzielleSituationLuzernService,
         protected authServiceRS: AuthServiceRS,
         protected readonly translate: TranslateService,
-        protected readonly applicationPropertyRS: ApplicationPropertyRS
+        protected readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        protected dvShowWarningAngabenVervollstaendigenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
     ) {
         super(
             gesuchModelManager,

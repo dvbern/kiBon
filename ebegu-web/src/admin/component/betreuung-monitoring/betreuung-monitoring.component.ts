@@ -18,7 +18,8 @@ import {BetreuungMonitoringRS} from '../../service/betreuungMonitoringRS.rest';
     selector: 'dv-betreuung-monitoring',
     templateUrl: './betreuung-monitoring.component.html',
     styleUrls: ['./betreuung-monitoring.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BetreuungMonitoringComponent implements OnInit, AfterViewInit {
     public displayedColumns: string[] = [

@@ -8,31 +8,31 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.verfuegung;
 
 import java.util.Optional;
 
-import javax.annotation.Resource;
-import javax.ejb.Asynchronous;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.transaction.TransactionSynchronizationRegistry;
+import jakarta.annotation.Resource;
+import jakarta.ejb.Asynchronous;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+import jakarta.transaction.TransactionSynchronizationRegistry;
 
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.outbox.ExportedEvent;
-import ch.dvbern.ebegu.services.ApplicationPropertyService;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,9 @@ import static java.util.Objects.requireNonNull;
 @Stateless
 public class VerfuegungEventAsyncHelper {
 
-	private static final Logger LOG = LoggerFactory.getLogger(VerfuegungEventAsyncHelper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		VerfuegungEventAsyncHelper.class
+	);
 
 	@Resource
 	private TransactionSynchronizationRegistry txReg;
@@ -63,9 +65,13 @@ public class VerfuegungEventAsyncHelper {
 	public void convert(String id) {
 		Verfuegung verfuegung = persistence.find(Verfuegung.class, id);
 
-		Mandant mandant = verfuegung.getPlatz().extractGesuch().extractMandant();
+		Mandant mandant = verfuegung.getPlatz()
+			.extractGesuch()
+			.extractMandant();
 
-		if (!applicationPropertyService.isPublishSchnittstelleEventsAktiviert(mandant)) {
+		if (!applicationPropertyService.isPublishSchnittstelleEventsAktiviert(
+			mandant
+		)) {
 			return;
 		}
 
@@ -73,9 +79,11 @@ public class VerfuegungEventAsyncHelper {
 			"Converting {} in Thread {} and Transaction {}",
 			requireNonNull(verfuegung.getBetreuung()).getReferenzNummer(),
 			Thread.currentThread(),
-			txReg.getTransactionKey());
+			txReg.getTransactionKey()
+		);
 
-		Optional<VerfuegungVerfuegtEvent> eventOpt = verfuegungEventConverter.of(verfuegung);
+		Optional<VerfuegungVerfuegtEvent> eventOpt = verfuegungEventConverter
+			.of(verfuegung);
 
 		eventOpt.ifPresent(verfuegungVerfuegtEvent -> {
 			this.event.fire(verfuegungVerfuegtEvent);

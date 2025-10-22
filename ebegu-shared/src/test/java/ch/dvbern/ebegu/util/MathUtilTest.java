@@ -36,7 +36,10 @@ public class MathUtilTest {
 	private static final RoundingMode DFLT_ROUNDING = RoundingMode.HALF_UP;
 	private static final int DFLT_SCALE = 2;
 
-	public static void assertCompare(@Nullable BigDecimal ref, @Nullable BigDecimal other) {
+	public static void assertCompare(
+		@Nullable BigDecimal ref,
+		@Nullable BigDecimal other
+	) {
 		String msg = "ref != other: " + ref + " != " + other;
 		assertTrue(msg, ref == null ? other == null : other != null);
 		if (ref != null) {
@@ -51,7 +54,10 @@ public class MathUtilTest {
 		BigDecimal val = MathUtil.DEFAULT.from(123L);
 		assertEquals(5, val.precision());
 		assertEquals(DFLT_SCALE, val.scale());
-		assertCompare(val, new BigDecimal(123L).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		assertCompare(
+			val,
+			new BigDecimal(123L).setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 	}
 
 	@Test
@@ -62,18 +68,26 @@ public class MathUtilTest {
 		assertEquals(5, val.precision());
 		assertEquals(DFLT_SCALE, val.scale());
 
-		assertCompare(val, BigDecimal.valueOf(123.45).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		assertCompare(
+			val,
+			BigDecimal.valueOf(123.45).setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 	}
 
 	@Test
 	public void testFrom_BigDecimal() {
 		assertNull(MathUtil.DEFAULT.from((BigDecimal) null));
 
-		BigDecimal val = MathUtil.DEFAULT.from(BigDecimal.valueOf(123.45).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		BigDecimal val = MathUtil.DEFAULT.from(
+			BigDecimal.valueOf(123.45).setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 		assertEquals(5, val.precision());
 		assertEquals(DFLT_SCALE, val.scale());
 
-		assertCompare(val, BigDecimal.valueOf(123.45).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		assertCompare(
+			val,
+			BigDecimal.valueOf(123.45).setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 	}
 
 	@Test
@@ -84,7 +98,10 @@ public class MathUtilTest {
 		assertEquals(5, val.precision());
 		assertEquals(DFLT_SCALE, val.scale());
 
-		assertCompare(val, BigDecimal.valueOf(123).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		assertCompare(
+			val,
+			BigDecimal.valueOf(123).setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 	}
 
 	@Test(expected = PrecisionTooLargeException.class)
@@ -94,8 +111,15 @@ public class MathUtilTest {
 
 	@Test
 	public void testAdd() {
-		BigDecimal val = MathUtil.DEFAULT.add(MathUtil.DEFAULT.from(123L), MathUtil.DEFAULT.from(456L));
-		assertCompare(val, BigDecimal.valueOf(123L + 456L).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		BigDecimal val = MathUtil.DEFAULT.add(
+			MathUtil.DEFAULT.from(123L),
+			MathUtil.DEFAULT.from(456L)
+		);
+		assertCompare(
+			val,
+			BigDecimal.valueOf(123L + 456L)
+				.setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 		assertCompare(BigDecimal.valueOf(579.00), val);
 		assertEquals(5, val.precision());
 		assertEquals(DFLT_SCALE, val.scale());
@@ -103,8 +127,15 @@ public class MathUtilTest {
 
 	@Test
 	public void testSubtract() {
-		BigDecimal val = MathUtil.DEFAULT.subtract(MathUtil.DEFAULT.from(456L), MathUtil.DEFAULT.from(123L));
-		assertCompare(val, BigDecimal.valueOf(456L - 123L).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		BigDecimal val = MathUtil.DEFAULT.subtract(
+			MathUtil.DEFAULT.from(456L),
+			MathUtil.DEFAULT.from(123L)
+		);
+		assertCompare(
+			val,
+			BigDecimal.valueOf(456L - 123L)
+				.setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 		assertCompare(BigDecimal.valueOf(333.00), val);
 		assertEquals(5, val.precision());
 		assertEquals(DFLT_SCALE, val.scale());
@@ -112,8 +143,15 @@ public class MathUtilTest {
 
 	@Test
 	public void testMultiply() {
-		BigDecimal val = MathUtil.DEFAULT.multiply(MathUtil.DEFAULT.from(123L), MathUtil.DEFAULT.from(456L));
-		assertCompare(val, BigDecimal.valueOf(123L * 456L).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		BigDecimal val = MathUtil.DEFAULT.multiply(
+			MathUtil.DEFAULT.from(123L),
+			MathUtil.DEFAULT.from(456L)
+		);
+		assertCompare(
+			val,
+			BigDecimal.valueOf(123L * 456L)
+				.setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 		assertCompare(BigDecimal.valueOf(56088.00), val);
 		assertEquals(7, val.precision());
 		assertEquals(DFLT_SCALE, val.scale());
@@ -121,8 +159,16 @@ public class MathUtilTest {
 
 	@Test
 	public void testMultiplyWithManyArguments() {
-		BigDecimal val = MathUtil.DEFAULT.multiply(MathUtil.DEFAULT.from(123L), MathUtil.DEFAULT.from(456L), MathUtil.DEFAULT.from(789L));
-		assertCompare(val, BigDecimal.valueOf(123L * 456L * 789L).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		BigDecimal val = MathUtil.DEFAULT.multiply(
+			MathUtil.DEFAULT.from(123L),
+			MathUtil.DEFAULT.from(456L),
+			MathUtil.DEFAULT.from(789L)
+		);
+		assertCompare(
+			val,
+			BigDecimal.valueOf(123L * 456L * 789L)
+				.setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 		assertCompare(BigDecimal.valueOf(44253432.00), val);
 		assertEquals(10, val.precision());
 		assertEquals(DFLT_SCALE, val.scale());
@@ -130,8 +176,15 @@ public class MathUtilTest {
 
 	@Test
 	public void testDivide() {
-		BigDecimal val = MathUtil.DEFAULT.divide(MathUtil.DEFAULT.from(123L), MathUtil.DEFAULT.from(456L));
-		assertCompare(val, BigDecimal.valueOf(123.0 / 456.0).setScale(DFLT_SCALE, DFLT_ROUNDING));
+		BigDecimal val = MathUtil.DEFAULT.divide(
+			MathUtil.DEFAULT.from(123L),
+			MathUtil.DEFAULT.from(456L)
+		);
+		assertCompare(
+			val,
+			BigDecimal.valueOf(123.0 / 456.0)
+				.setScale(DFLT_SCALE, DFLT_ROUNDING)
+		);
 		// 0.27 (gerundet von 0.2697368421)
 		assertCompare(BigDecimal.valueOf(0.27), val);
 		assertEquals(2, val.precision());
@@ -140,10 +193,22 @@ public class MathUtilTest {
 
 	@Test
 	public void testRoundToFrankenRappen() {
-		assertEquals(new BigDecimal("1.05"), MathUtil.roundToFrankenRappen(new BigDecimal("1.051")));
-		assertEquals(new BigDecimal("1.10"), MathUtil.roundToFrankenRappen(new BigDecimal("1.075")));
-		assertEquals(new BigDecimal("1.10"), MathUtil.roundToFrankenRappen(new BigDecimal("1.0749")));
-		assertEquals(new BigDecimal("1.05"), MathUtil.roundToFrankenRappen(new BigDecimal("1.0744")));
+		assertEquals(
+			new BigDecimal("1.05"),
+			MathUtil.roundToFrankenRappen(new BigDecimal("1.051"))
+		);
+		assertEquals(
+			new BigDecimal("1.10"),
+			MathUtil.roundToFrankenRappen(new BigDecimal("1.075"))
+		);
+		assertEquals(
+			new BigDecimal("1.10"),
+			MathUtil.roundToFrankenRappen(new BigDecimal("1.0749"))
+		);
+		assertEquals(
+			new BigDecimal("1.05"),
+			MathUtil.roundToFrankenRappen(new BigDecimal("1.0744"))
+		);
 	}
 
 	@Test
@@ -181,43 +246,132 @@ public class MathUtilTest {
 
 	@Test
 	public void testRoundToNearestQuarter() {
-		assertEquals(new BigDecimal("0.00"), MathUtil.roundToNearestQuarter(new BigDecimal(0)));
-		assertEquals(new BigDecimal("0.00"), MathUtil.roundToNearestQuarter(new BigDecimal("0.12")));
-		assertEquals(new BigDecimal("0.25"), MathUtil.roundToNearestQuarter(new BigDecimal("0.13")));
-		assertEquals(new BigDecimal("0.25"), MathUtil.roundToNearestQuarter(new BigDecimal("0.25")));
-		assertEquals(new BigDecimal("1.00"), MathUtil.roundToNearestQuarter(new BigDecimal("0.9")));
-		assertEquals(new BigDecimal("500.00"), MathUtil.roundToNearestQuarter(new BigDecimal("499.994")));
+		assertEquals(
+			new BigDecimal("0.00"),
+			MathUtil.roundToNearestQuarter(new BigDecimal(0))
+		);
+		assertEquals(
+			new BigDecimal("0.00"),
+			MathUtil.roundToNearestQuarter(new BigDecimal("0.12"))
+		);
+		assertEquals(
+			new BigDecimal("0.25"),
+			MathUtil.roundToNearestQuarter(new BigDecimal("0.13"))
+		);
+		assertEquals(
+			new BigDecimal("0.25"),
+			MathUtil.roundToNearestQuarter(new BigDecimal("0.25"))
+		);
+		assertEquals(
+			new BigDecimal("1.00"),
+			MathUtil.roundToNearestQuarter(new BigDecimal("0.9"))
+		);
+		assertEquals(
+			new BigDecimal("500.00"),
+			MathUtil.roundToNearestQuarter(new BigDecimal("499.994"))
+		);
 	}
 
 	@Test
 	public void testIsClose() {
-		assertTrue(MathUtil.isClose(BigDecimal.valueOf(1.01), BigDecimal.valueOf(1.02), BigDecimal.valueOf(0.01)));
-		assertTrue(MathUtil.isClose(BigDecimal.valueOf(1.01), BigDecimal.valueOf(1.01), BigDecimal.ZERO));
-		assertTrue(MathUtil.isClose(BigDecimal.valueOf(1.01), BigDecimal.valueOf(1.009), BigDecimal.valueOf(0.01)));
-		assertTrue(MathUtil.isClose(BigDecimal.valueOf(1.01), BigDecimal.valueOf(5), BigDecimal.TEN));
-		assertFalse(MathUtil.isClose(BigDecimal.valueOf(1.01), BigDecimal.valueOf(1.02), BigDecimal.valueOf(0.001)));
-		assertFalse(MathUtil.isClose(BigDecimal.valueOf(3.01), BigDecimal.valueOf(1.02), BigDecimal.valueOf(1.01)));
+		assertTrue(
+			MathUtil.isClose(
+				BigDecimal.valueOf(1.01),
+				BigDecimal.valueOf(1.02),
+				BigDecimal.valueOf(0.01)
+			)
+		);
+		assertTrue(
+			MathUtil.isClose(
+				BigDecimal.valueOf(1.01),
+				BigDecimal.valueOf(1.01),
+				BigDecimal.ZERO
+			)
+		);
+		assertTrue(
+			MathUtil.isClose(
+				BigDecimal.valueOf(1.01),
+				BigDecimal.valueOf(1.009),
+				BigDecimal.valueOf(0.01)
+			)
+		);
+		assertTrue(
+			MathUtil.isClose(
+				BigDecimal.valueOf(1.01),
+				BigDecimal.valueOf(5),
+				BigDecimal.TEN
+			)
+		);
+		assertFalse(
+			MathUtil.isClose(
+				BigDecimal.valueOf(1.01),
+				BigDecimal.valueOf(1.02),
+				BigDecimal.valueOf(0.001)
+			)
+		);
+		assertFalse(
+			MathUtil.isClose(
+				BigDecimal.valueOf(3.01),
+				BigDecimal.valueOf(1.02),
+				BigDecimal.valueOf(1.01)
+			)
+		);
 	}
 
 	@Test
 	public void roundToFivesUp() {
-		assertEquals(MathUtil.GANZZAHL.from(5.00), MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(4.99)));
-		assertEquals(MathUtil.GANZZAHL.from(5.00), MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(1.2)));
-		assertEquals(MathUtil.GANZZAHL.from(5.00), MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(0.01)));
-		assertEquals(MathUtil.GANZZAHL.from(0.00), MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(0)));
-		assertEquals(MathUtil.GANZZAHL.from(5.00), MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(5.00)));
-		assertEquals(MathUtil.GANZZAHL.from(10.00), MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(5.01)));
+		assertEquals(
+			MathUtil.GANZZAHL.from(5.00),
+			MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(4.99))
+		);
+		assertEquals(
+			MathUtil.GANZZAHL.from(5.00),
+			MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(1.2))
+		);
+		assertEquals(
+			MathUtil.GANZZAHL.from(5.00),
+			MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(0.01))
+		);
+		assertEquals(
+			MathUtil.GANZZAHL.from(0.00),
+			MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(0))
+		);
+		assertEquals(
+			MathUtil.GANZZAHL.from(5.00),
+			MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(5.00))
+		);
+		assertEquals(
+			MathUtil.GANZZAHL.from(10.00),
+			MathUtil.roundToFivesUp(MathUtil.DEFAULT.from(5.01))
+		);
 	}
 
 	@Test
 	public void ceilToFrankenRappen() {
-		assertEquals(new BigDecimal("0.00"), MathUtil.ceilToFrankenRappen(new BigDecimal(0)));
-		assertEquals(new BigDecimal("0.05"), MathUtil.ceilToFrankenRappen(new BigDecimal("0.02")));
-		assertEquals(new BigDecimal("0.05"), MathUtil.ceilToFrankenRappen(new BigDecimal("0.03")));
-		assertEquals(new BigDecimal("0.05"), MathUtil.ceilToFrankenRappen(new BigDecimal("0.05")));
-		assertEquals(new BigDecimal("0.10"), MathUtil.ceilToFrankenRappen(new BigDecimal("0.051")));
-		assertEquals(new BigDecimal("100.10"), MathUtil.ceilToFrankenRappen(new BigDecimal("100.051")));
+		assertEquals(
+			new BigDecimal("0.00"),
+			MathUtil.ceilToFrankenRappen(new BigDecimal(0))
+		);
+		assertEquals(
+			new BigDecimal("0.05"),
+			MathUtil.ceilToFrankenRappen(new BigDecimal("0.02"))
+		);
+		assertEquals(
+			new BigDecimal("0.05"),
+			MathUtil.ceilToFrankenRappen(new BigDecimal("0.03"))
+		);
+		assertEquals(
+			new BigDecimal("0.05"),
+			MathUtil.ceilToFrankenRappen(new BigDecimal("0.05"))
+		);
+		assertEquals(
+			new BigDecimal("0.10"),
+			MathUtil.ceilToFrankenRappen(new BigDecimal("0.051"))
+		);
+		assertEquals(
+			new BigDecimal("100.10"),
+			MathUtil.ceilToFrankenRappen(new BigDecimal("100.051"))
+		);
 	}
-
 
 }

@@ -16,7 +16,8 @@
 package ch.dvbern.ebegu.validation;
 
 /**
- * Felder mit dieser Gruppe werden nur validiert, wenn die Resource eigentlich schon in der DB sein muesste (i.E.: die ID ist schon vorhanden)
+ * Felder mit dieser Gruppe werden nur validiert, wenn die Resource eigentlich schon in der DB sein muesste (i.E.: die
+ * ID ist schon vorhanden)
  */
 @SuppressWarnings("InterfaceNeverImplemented") // Bean Validation only
 public interface Persisted {

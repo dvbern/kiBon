@@ -15,12 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
-import {TSGemeinde} from './TSGemeinde';
-import {TSInstitution} from './TSInstitution';
-import {TSInstitutionStammdaten} from './TSInstitutionStammdaten';
+import moment from 'moment';
 import {TSDatumTyp} from './enums/TSDatumTyp';
+import {
+    TSAbstractMutableEntity,
+    TSGemeinde,
+    TSInstitution,
+    TSInstitutionStammdaten
+} from '@kibon/shared/model/entity';
 
 export class TSStatistikParameter extends TSAbstractMutableEntity {
     private _jahr: number;

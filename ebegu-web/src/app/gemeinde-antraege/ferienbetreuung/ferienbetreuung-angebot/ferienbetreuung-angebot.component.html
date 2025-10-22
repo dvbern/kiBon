@@ -15,7 +15,7 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<div class="ferienbetreuung-stammdaten">
+<div class="ferienbetreuung-angebot">
     <h1 class="access-for-all-title" translate>FERIENBETREUUNG_ANGEBOT</h1>
     <div class="row view-title">
         <div class="col-md-12">
@@ -41,6 +41,10 @@
             <hr class="header" />
         </div>
     </div>
+
+    @if (isZweitPruefungAndSameUserAsPruefung() | async) {
+        <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
+    }
 
     <form *ngIf="container" [formGroup]="form">
         <div class="max-width-container-750">

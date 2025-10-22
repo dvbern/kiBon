@@ -148,37 +148,13 @@
                         </div>
                     </div>
                     <div class="col-sm-6" *ngIf="isBGInstitution">
-                        <div class="form-group">
-                            <label
-                                class="required"
-                                class="md-no-float"
-                                translate
-                                for="begu_start_ID"
-                                >INSTITUTION_BEGU_START</label
-                            >
-                            <input
-                                class="dv-mat-datepicker"
-                                type="text"
-                                name="start_date"
-                                id="begu_start_ID"
-                                [(ngModel)]="startDate"
-                                [matDatepicker]="start_date"
-                                placeholder="{{
-                                    'DATE_PLACEHOLDER_FIRSTOFMONTH' | translate
-                                }}"
-                                required
-                            />
-                            <mat-datepicker-toggle
-                                matSuffix
-                                [for]="start_date"
-                            ></mat-datepicker-toggle>
-                            <mat-datepicker #start_date></mat-datepicker>
-                            <dv-error-messages
-                                input-id="begu_start_ID"
-                                [errorObject]="form.controls.begu_start?.errors"
-                            >
-                            </dv-error-messages>
-                        </div>
+                        <dv-date-picker-x
+                            id="begu_start_ID"
+                            [label]="'INSTITUTION_BEGU_START'"
+                            [(date)]="startDate"
+                            [datePickerEnabled]="true"
+                            [required]="true"
+                        ></dv-date-picker-x>
                     </div>
                 </div>
 
@@ -224,6 +200,7 @@
                                 id="admin_mail_ID"
                                 type="email"
                                 name="admin_mail"
+                                placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
                                 [(ngModel)]="adminMail"
                                 email
                                 [maxlength]="255"

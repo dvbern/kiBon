@@ -26,19 +26,19 @@ import {FormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {UIRouterGlobals} from '@uirouter/core';
-import {combineLatest, of, Observable, Subject} from 'rxjs';
-import {filter, takeUntil} from 'rxjs/operators';
+import {combineLatest, firstValueFrom, Observable, Subject} from 'rxjs';
+import {filter, map, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {TSFerienbetreuungFormularStatus} from '../../../../models/enums/TSFerienbetreuungFormularStatus';
 import {TSFerienbetreuungAngaben} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngaben';
 import {TSFerienbetreuungAngabenAngebot} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenAngebot';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
-import {TSAdresse} from '../../../../models/TSAdresse';
+import {TSAdresse} from '@kibon/shared/model/entity';
 import {TSBfsGemeinde} from '../../../../models/TSBfsGemeinde';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {
     numberValidator,
@@ -47,6 +47,7 @@ import {
 import {UnsavedChangesService} from '../../services/unsaved-changes.service';
 import {AbstractFerienbetreuungFormular} from '../abstract.ferienbetreuung-formular';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
+import {FerienbetreuungPermissionUtil} from '../util/FerienbetreuungPermissionUtil';
 
 const LOG = LogFactory.createLog('FerienbetreuungAngebotComponent');
 
@@ -54,7 +55,8 @@ const LOG = LogFactory.createLog('FerienbetreuungAngebotComponent');
     selector: 'dv-ferienbetreuung-angebot',
     templateUrl: './ferienbetreuung-angebot.component.html',
     styleUrls: ['./ferienbetreuung-angebot.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FerienbetreuungAngebotComponent
     extends AbstractFerienbetreuungFormular
@@ -107,7 +109,7 @@ export class FerienbetreuungAngebotComponent
 
     private angebot: TSFerienbetreuungAngabenAngebot;
     public vorgaenger$: Observable<TSFerienbetreuungAngabenContainer>;
-    private readonly unsubscribe$ = new Subject();
+    private readonly unsubscribe$ = new Subject<void>();
 
     public constructor(
         protected readonly errorService: ErrorService,
@@ -128,11 +130,12 @@ export class FerienbetreuungAngebotComponent
     public ngOnInit(): void {
         combineLatest([
             this.ferienbetreuungService.getFerienbetreuungContainer(),
-            this.authService.principal$.pipe(filter(principal => !!principal))
+            this.authService.principal$.pipe(filter(principal => !!principal)),
+            this.ferienbetreuungService.getFerienbetreuungHistory()
         ])
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(
-                ([container, principal]) => {
+                ([container, principal, history]) => {
                     this.container = container;
                     this.angebot =
                         container.isAtLeastInPruefungKantonOrZurueckgegeben()
@@ -141,7 +144,8 @@ export class FerienbetreuungAngebotComponent
                     this.setupFormAndPermissions(
                         container,
                         this.angebot,
-                        principal
+                        principal,
+                        history
                     );
                     this.unsavedChangesService.registerForm(this.form);
                 },
@@ -321,14 +325,14 @@ export class FerienbetreuungAngebotComponent
 
         if (!this.form.valid) {
             this.showValidierungFehlgeschlagenErrorMessage();
-            return of<void>().toPromise();
+            return Promise.resolve();
         }
         try {
             await this.modifyValuesDelegationsModellIfNecessary();
         } catch (e) {
             if (e instanceof UserDidNotAcceptError) {
                 // user did not accept saving.
-                return of<void>().toPromise();
+                return Promise.resolve();
             }
             throw e;
         }
@@ -353,14 +357,14 @@ export class FerienbetreuungAngebotComponent
     // alle Werte gelöscht werden, die spezifisch für das Delegationsmodell angegeben wurden.
     private modifyValuesDelegationsModellIfNecessary(): Promise<any> {
         if (!this.container) {
-            return of().toPromise();
+            return Promise.resolve();
         }
         const angaben =
             this.container.isAtLeastInPruefungKantonOrZurueckgegeben()
                 ? this.container.angabenKorrektur
                 : this.container.angabenDeklaration;
         if (!angaben.kostenEinnahmen) {
-            return of().toPromise();
+            return Promise.resolve();
         }
         // falls es sich NICHT um das Delegationsmodell handelt und einige Werte, die nur für das Delegationsmodell
         // notwendig sind, schon ausgefüllt sind, dann werden diese gelöscht
@@ -393,11 +397,14 @@ export class FerienbetreuungAngebotComponent
             angaben.kostenEinnahmen.beitraegeNachAnmeldungen = null;
             angaben.kostenEinnahmen.vorfinanzierteKantonsbeitraege = null;
             angaben.kostenEinnahmen.eigenleistungenGemeinde = null;
-            return this.ferienbetreuungService
-                .saveKostenEinnahmen(this.container.id, angaben.kostenEinnahmen)
-                .toPromise();
+            return firstValueFrom(
+                this.ferienbetreuungService.saveKostenEinnahmen(
+                    this.container.id,
+                    angaben.kostenEinnahmen
+                )
+            );
         }
-        return of().toPromise();
+        return Promise.resolve();
     }
 
     private async invalidateKostenEinnahmenBecauseOfDelegationsmodell(
@@ -408,7 +415,7 @@ export class FerienbetreuungAngebotComponent
             angaben.kostenEinnahmen.status !==
             TSFerienbetreuungFormularStatus.ABGESCHLOSSEN
         ) {
-            return of().toPromise();
+            return Promise.resolve();
         }
         if (
             !angaben.kostenEinnahmen.sockelbeitrag ||
@@ -422,14 +429,14 @@ export class FerienbetreuungAngebotComponent
             if (!confirmed) {
                 throw new UserDidNotAcceptError();
             }
-            return this.ferienbetreuungService
-                .falscheAngabenKostenEinnahmen(
+            return firstValueFrom(
+                this.ferienbetreuungService.falscheAngabenKostenEinnahmen(
                     this.container.id,
                     angaben.kostenEinnahmen
                 )
-                .toPromise();
+            );
         }
-        return of().toPromise();
+        return Promise.resolve();
     }
 
     private formToObject(): TSFerienbetreuungAngabenAngebot {
@@ -504,14 +511,14 @@ export class FerienbetreuungAngebotComponent
 
     public async onAbschliessen(): Promise<void> {
         if (!(await this.checkReadyForAbschliessen())) {
-            return of<void>().toPromise();
+            return Promise.resolve();
         }
         try {
             await this.modifyValuesDelegationsModellIfNecessary();
         } catch (e) {
             if (e instanceof UserDidNotAcceptError) {
                 // user did not accept saving.
-                return of<void>().toPromise();
+                return Promise.resolve();
             }
             throw e;
         }
@@ -595,6 +602,21 @@ export class FerienbetreuungAngebotComponent
             EbeguUtil.isNotNullAndFalse(
                 this.form.value.gemeindeFuehrtAngebotSelber
             ) && this.form.value.gemeindeBeauftragtExterneAnbieter
+        );
+    }
+
+    public isZweitPruefungAndSameUserAsPruefung() {
+        return combineLatest([
+            this.authService.principal$,
+            this.ferienbetreuungService.getFerienbetreuungHistory()
+        ]).pipe(
+            map(([principal, history]) =>
+                FerienbetreuungPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    this.container,
+                    history
+                )
+            )
         );
     }
 }

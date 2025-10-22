@@ -18,9 +18,9 @@ package ch.dvbern.ebegu.api.dtos;
 import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.api.dtos.finanziellesituation.JaxAbstractFinanzielleSituation;
 
@@ -29,7 +29,8 @@ import ch.dvbern.ebegu.api.dtos.finanziellesituation.JaxAbstractFinanzielleSitua
  */
 @XmlRootElement(name = "einkommensverschlechterung")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JaxEinkommensverschlechterung extends JaxAbstractFinanzielleSituation {
+public class JaxEinkommensverschlechterung extends
+	JaxAbstractFinanzielleSituation {
 
 	private static final long serialVersionUID = 3659631207762053261L;
 
@@ -50,7 +51,9 @@ public class JaxEinkommensverschlechterung extends JaxAbstractFinanzielleSituati
 		return bruttolohnAbrechnung1;
 	}
 
-	public void setBruttolohnAbrechnung1(@Nullable BigDecimal bruttolohnAbrechnung1) {
+	public void setBruttolohnAbrechnung1(
+		@Nullable BigDecimal bruttolohnAbrechnung1
+	) {
 		this.bruttolohnAbrechnung1 = bruttolohnAbrechnung1;
 	}
 
@@ -59,7 +62,9 @@ public class JaxEinkommensverschlechterung extends JaxAbstractFinanzielleSituati
 		return bruttolohnAbrechnung2;
 	}
 
-	public void setBruttolohnAbrechnung2(@Nullable BigDecimal bruttolohnAbrechnung2) {
+	public void setBruttolohnAbrechnung2(
+		@Nullable BigDecimal bruttolohnAbrechnung2
+	) {
 		this.bruttolohnAbrechnung2 = bruttolohnAbrechnung2;
 	}
 
@@ -68,7 +73,9 @@ public class JaxEinkommensverschlechterung extends JaxAbstractFinanzielleSituati
 		return bruttolohnAbrechnung3;
 	}
 
-	public void setBruttolohnAbrechnung3(@Nullable BigDecimal bruttolohnAbrechnung3) {
+	public void setBruttolohnAbrechnung3(
+		@Nullable BigDecimal bruttolohnAbrechnung3
+	) {
 		this.bruttolohnAbrechnung3 = bruttolohnAbrechnung3;
 	}
 

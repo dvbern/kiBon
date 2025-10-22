@@ -11,7 +11,7 @@ import {
 import {NgForm} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSGesuchstellerKardinalitaet} from '../../../../models/enums/TSGesuchstellerKardinalitaet';
 import {TSKindContainer} from '../../../../models/TSKindContainer';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
@@ -23,7 +23,8 @@ const LOG = LogFactory.createLog('SchwyzKinderabzugComponent');
 @Component({
     selector: 'dv-schwyz-kinderabzug',
     templateUrl: './schwyz-kinderabzug.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SchwyzKinderabzugComponent
     implements OnInit, AfterViewInit, OnDestroy

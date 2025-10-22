@@ -15,35 +15,51 @@
 
 package ch.dvbern.ebegu.dto;
 
-import ch.dvbern.ebegu.enums.*;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
+
+import javax.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import ch.dvbern.ebegu.enums.AntragStatus;
+import ch.dvbern.ebegu.enums.AntragStatusDTO;
+import ch.dvbern.ebegu.enums.AntragTyp;
+import ch.dvbern.ebegu.enums.Eingangsart;
+import ch.dvbern.ebegu.enums.FinSitStatus;
+import ch.dvbern.ebegu.enums.GesuchBetreuungenStatus;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * DTO fuer Pendenzen
  */
 @XmlRootElement(name = "pendenz")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+@Setter
 public class JaxAntragDTO extends JaxAbstractAntragDTO {
 
 	private static final long serialVersionUID = -1277026654764135397L;
 
 	//probably unused
 	public JaxAntragDTO(
-		String antragId, LocalDate gesuchsperiodeGueltigAb, LocalDate gesuchsperiodeGueltigBis,
-		@Nullable LocalDate eingangsdatum, @Nullable LocalDate eingangsdatumSTV, AntragTyp antragTyp,
-		int laufnummer, Eingangsart eingangsart) {
+		String antragId,
+		LocalDate gesuchsperiodeGueltigAb,
+		LocalDate gesuchsperiodeGueltigBis,
+		@Nullable LocalDate eingangsdatum,
+		@Nullable LocalDate eingangsdatumSTV,
+		AntragTyp antragTyp,
+		int laufnummer,
+		Eingangsart eingangsart
+	) {
 		this();
 		this.antragId = antragId;
 		this.gesuchsperiodeGueltigAb = gesuchsperiodeGueltigAb;
@@ -57,9 +73,17 @@ public class JaxAntragDTO extends JaxAbstractAntragDTO {
 
 	//constructor fuer query
 	public JaxAntragDTO(
-		String antragId, LocalDate gesuchsperiodeGueltigAb, LocalDate gesuchsperiodeGueltigBis,
-		@Nullable LocalDate eingangsdatum, @Nullable LocalDate eingangsdatumSTV, AntragTyp antragTyp,
-		AntragStatus antragStatus, int laufnummer, Eingangsart eingangsart, @Nullable String besitzerUsername) {
+		String antragId,
+		LocalDate gesuchsperiodeGueltigAb,
+		LocalDate gesuchsperiodeGueltigBis,
+		@Nullable LocalDate eingangsdatum,
+		@Nullable LocalDate eingangsdatumSTV,
+		AntragTyp antragTyp,
+		AntragStatus antragStatus,
+		int laufnummer,
+		Eingangsart eingangsart,
+		@Nullable String besitzerUsername
+	) {
 		this();
 		this.antragId = antragId;
 		this.gesuchsperiodeGueltigAb = gesuchsperiodeGueltigAb;
@@ -68,7 +92,8 @@ public class JaxAntragDTO extends JaxAbstractAntragDTO {
 		this.eingangsdatumSTV = eingangsdatumSTV;
 		this.antragTyp = antragTyp;
 		this.verfuegt = antragStatus.isAnyStatusOfVerfuegt();
-		this.beschwerdeHaengig = antragStatus == AntragStatus.BESCHWERDE_HAENGIG;
+		this.beschwerdeHaengig = antragStatus
+			== AntragStatus.BESCHWERDE_HAENGIG;
 		this.laufnummer = laufnummer;
 		this.eingangsart = eingangsart;
 		this.besitzerUsername = besitzerUsername;
@@ -79,7 +104,7 @@ public class JaxAntragDTO extends JaxAbstractAntragDTO {
 	}
 
 	@NotNull
-	private String antragId = null;
+	private String antragId;
 
 	@NotNull
 	private Eingangsart eingangsart;
@@ -91,11 +116,11 @@ public class JaxAntragDTO extends JaxAbstractAntragDTO {
 	private AntragTyp antragTyp;
 
 	@NotNull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate gesuchsperiodeGueltigAb = null;
 
 	@NotNull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate gesuchsperiodeGueltigBis = null;
 
 	@NotNull
@@ -111,19 +136,19 @@ public class JaxAntragDTO extends JaxAbstractAntragDTO {
 	private String verantwortlicherUsernameTS; // Wird fuer Freigabe gebraucht
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate eingangsdatum = null;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate regelnGueltigAb = null;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate eingangsdatumSTV = null;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime aenderungsdatum = null;
 
 	@NotNull
@@ -171,262 +196,4 @@ public class JaxAntragDTO extends JaxAbstractAntragDTO {
 	@Nullable
 	private String gesuchsperiodeString;
 
-	public String getAntragId() {
-		return antragId;
-	}
-
-	public void setAntragId(String antragId) {
-		this.antragId = antragId;
-	}
-
-	public AntragTyp getAntragTyp() {
-		return antragTyp;
-	}
-
-	public void setAntragTyp(AntragTyp antragTyp) {
-		this.antragTyp = antragTyp;
-	}
-
-	public LocalDate getGesuchsperiodeGueltigAb() {
-		return gesuchsperiodeGueltigAb;
-	}
-
-	public void setGesuchsperiodeGueltigAb(LocalDate gesuchsperiodeGueltigAb) {
-		this.gesuchsperiodeGueltigAb = gesuchsperiodeGueltigAb;
-	}
-
-	public LocalDate getGesuchsperiodeGueltigBis() {
-		return gesuchsperiodeGueltigBis;
-	}
-
-	public void setGesuchsperiodeGueltigBis(LocalDate gesuchsperiodeGueltigBis) {
-		this.gesuchsperiodeGueltigBis = gesuchsperiodeGueltigBis;
-	}
-
-	public String getVerantwortlicherBG() {
-		return verantwortlicherBG;
-	}
-
-	public void setVerantwortlicherBG(String verantwortlicherBG) {
-		this.verantwortlicherBG = verantwortlicherBG;
-	}
-
-	@Nullable
-	public String getVerantwortlicherTS() {
-		return verantwortlicherTS;
-	}
-
-	public void setVerantwortlicherTS(@Nullable String verantwortlicherTS) {
-		this.verantwortlicherTS = verantwortlicherTS;
-	}
-
-	@Nullable
-	public String getVerantwortlicherUsernameBG() {
-		return verantwortlicherUsernameBG;
-	}
-
-	public void setVerantwortlicherUsernameBG(@Nullable String verantwortlicherUsernameBG) {
-		this.verantwortlicherUsernameBG = verantwortlicherUsernameBG;
-	}
-
-	@Nullable
-	public String getVerantwortlicherUsernameTS() {
-		return verantwortlicherUsernameTS;
-	}
-
-	public void setVerantwortlicherUsernameTS(@Nullable String verantwortlicherUsernameTS) {
-		this.verantwortlicherUsernameTS = verantwortlicherUsernameTS;
-	}
-
-	@Nullable
-	public LocalDate getEingangsdatum() {
-		return eingangsdatum;
-	}
-
-	public void setEingangsdatum(@Nullable LocalDate eingangsdatum) {
-		this.eingangsdatum = eingangsdatum;
-	}
-
-	@Nullable
-	public LocalDate getEingangsdatumSTV() {
-		return eingangsdatumSTV;
-	}
-
-	public void setEingangsdatumSTV(@Nullable LocalDate eingangsdatumSTV) {
-		this.eingangsdatumSTV = eingangsdatumSTV;
-	}
-
-	@Nullable
-	public LocalDate getRegelnGueltigAb() {
-		return regelnGueltigAb;
-	}
-
-	public void setRegelnGueltigAb(@Nullable LocalDate regelnGueltigAb) {
-		this.regelnGueltigAb = regelnGueltigAb;
-	}
-
-	@Nullable
-	public LocalDateTime getAenderungsdatum() {
-		return aenderungsdatum;
-	}
-
-	public void setAenderungsdatum(@Nullable LocalDateTime aenderungsdatum) {
-		this.aenderungsdatum = aenderungsdatum;
-	}
-
-	public Set<BetreuungsangebotTyp> getAngebote() {
-		return angebote;
-	}
-
-	public void setAngebote(Set<BetreuungsangebotTyp> angebote) {
-		this.angebote = angebote;
-	}
-
-	public Set<String> getInstitutionen() {
-		return institutionen;
-	}
-
-	public void setInstitutionen(Set<String> institutionen) {
-		this.institutionen = institutionen;
-	}
-
-	public AntragStatusDTO getStatus() {
-		return status;
-	}
-
-	public void setStatus(AntragStatusDTO status) {
-		this.status = status;
-	}
-
-	public boolean isVerfuegt() {
-		return verfuegt;
-	}
-
-	public void setVerfuegt(boolean verfuegt) {
-		this.verfuegt = verfuegt;
-	}
-
-	public boolean isBeschwerdeHaengig() {
-		return beschwerdeHaengig;
-	}
-
-	public void setBeschwerdeHaengig(boolean beschwerdeHaengig) {
-		this.beschwerdeHaengig = beschwerdeHaengig;
-	}
-
-	public int getLaufnummer() {
-		return laufnummer;
-	}
-
-	public void setLaufnummer(int laufnummer) {
-		this.laufnummer = laufnummer;
-	}
-
-	public Eingangsart getEingangsart() {
-		return eingangsart;
-	}
-
-	public void setEingangsart(Eingangsart eingangsart) {
-		this.eingangsart = eingangsart;
-	}
-
-	@Nullable
-	public String getBesitzerUsername() {
-		return besitzerUsername;
-	}
-
-	public void setBesitzerUsername(@Nullable String besitzerUsername) {
-		this.besitzerUsername = besitzerUsername;
-	}
-
-	public Set<String> getKinder() {
-		return kinder;
-	}
-
-	public void setKinder(Set<String> kinder) {
-		this.kinder = kinder;
-	}
-
-	public GesuchBetreuungenStatus getGesuchBetreuungenStatus() {
-		return gesuchBetreuungenStatus;
-	}
-
-	public void setGesuchBetreuungenStatus(GesuchBetreuungenStatus gesuchBetreuungenStatus) {
-		this.gesuchBetreuungenStatus = gesuchBetreuungenStatus;
-	}
-
-	public boolean isDokumenteHochgeladen() {
-		return dokumenteHochgeladen;
-	}
-
-	public void setDokumenteHochgeladen(boolean dokumenteHochgeladen) {
-		this.dokumenteHochgeladen = dokumenteHochgeladen;
-	}
-
-	@Nullable
-	public FinSitStatus getFinSitStatus() {
-		return finSitStatus;
-	}
-
-	public void setFinSitStatus(@Nullable FinSitStatus finSitStatus) {
-		this.finSitStatus = finSitStatus;
-	}
-
-	public String getGemeinde() {
-		return gemeinde;
-	}
-
-	public void setGemeinde(String gemeinde) {
-		this.gemeinde = gemeinde;
-	}
-
-	public String getGemeindeId() {
-		return gemeindeId;
-	}
-
-	public void setGemeindeId(String gemeindeId) {
-		this.gemeindeId = gemeindeId;
-	}
-
-	public boolean isSozialdienst() {
-		return isSozialdienst;
-	}
-
-	public void setSozialdienst(boolean sozialdienst) {
-		isSozialdienst = sozialdienst;
-	}
-
-	public boolean hasInternePendenz() {
-		return internePendenz;
-	}
-
-	public void setInternePendenz(boolean internePendenz) {
-		this.internePendenz = internePendenz;
-	}
-
-	public Boolean getInternePendenzAbgelaufen() {
-		return internePendenzAbgelaufen;
-	}
-
-	public void setInternePendenzAbgelaufen(Boolean internePendenzAbgelaufen) {
-		this.internePendenzAbgelaufen = internePendenzAbgelaufen;
-	}
-
-	@Nullable
-	public String getBegruendungMutation() {
-		return begruendungMutation;
-	}
-
-	public void setBegruendungMutation(@Nullable String begruendungMutation) {
-		this.begruendungMutation = begruendungMutation;
-	}
-
-	@Nullable
-	public String getGesuchsperiodeString() {
-		return gesuchsperiodeString;
-	}
-
-	public void setGesuchsperiodeString(@Nullable String gesuchsperiodeString) {
-		this.gesuchsperiodeString = gesuchsperiodeString;
-	}
 }

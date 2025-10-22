@@ -64,7 +64,7 @@
                                                     'FI_START' | translate
                                                 }}&nbsp;
                                                 <strong>{{
-                                                    getFerieninselAktivierungsdatumAsString(
+                                                    getFerieninselAktivierungsdatumAsDisplayString(
                                                         konfigurationsListe[i]
                                                     )
                                                 }}</strong>
@@ -184,11 +184,6 @@
                             <!-- editable -->
                             <div class="form-group">
                                 <div
-                                    *ngIf="
-                                        isKonfigurationEditable(
-                                            konfigurationsListe[i]
-                                        )
-                                    "
                                     class="col-sm-12"
                                     ngModelGroup="fiStammdaten"
                                     [appOverlappingZeitraum]="
@@ -199,43 +194,21 @@
                                 >
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <label
-                                                class="required"
-                                                translate
-                                                for="fiAktivierungsdatum_{{
-                                                    i
-                                                }}"
-                                            >
-                                                FI_START</label
-                                            >
-                                            <input
-                                                class="dv-mat-datepicker"
-                                                type="text"
-                                                [name]="
-                                                    'fiAktivierungsdatum_' + i
-                                                "
+                                            <dv-date-picker-x
                                                 id="fiAktivierungsdatum_{{ i }}"
-                                                [(ngModel)]="
+                                                [label]="'FI_START'"
+                                                [(date)]="
                                                     konfigurationsListe[i]
                                                         .konfigFerieninselAktivierungsdatum
                                                 "
-                                                [matDatepicker]="
-                                                    fiAktivierungsdatum
-                                                "
+                                                [disabled]="!editMode"
+                                                [required]="true"
                                                 (dateChange)="
                                                     ferieninselAktivierungsdatumChanged(
                                                         konfigurationsListe[i]
                                                     )
                                                 "
-                                                required
-                                            />
-                                            <mat-datepicker-toggle
-                                                matSuffix
-                                                [for]="fiAktivierungsdatum"
-                                            ></mat-datepicker-toggle>
-                                            <mat-datepicker
-                                                #fiAktivierungsdatum
-                                            ></mat-datepicker>
+                                            ></dv-date-picker-x>
                                         </div>
                                     </div>
                                     <br />
@@ -291,38 +264,20 @@
                                             </div>
                                             <div class="row zeitabschnitt">
                                                 <div class="col-md-4">
-                                                    <input
-                                                        class="dv-mat-datepicker"
-                                                        type="text"
-                                                        #ersterZeitraumGueltigAbInput="ngModel"
-                                                        [name]="
-                                                            fiStammdaten.ferienname +
-                                                            '_gueltigAb_' +
-                                                            i
-                                                        "
+                                                    <dv-date-picker-x
                                                         [id]="
                                                             fiStammdaten.ferienname +
                                                             '_gueltigAb_' +
                                                             i
                                                         "
-                                                        [(ngModel)]="
+                                                        [(date)]="
                                                             fiStammdaten
                                                                 .zeitraumList[0]
                                                                 .gueltigkeit
                                                                 .gueltigAb
                                                         "
-                                                        [matDatepicker]="
-                                                            gueltigAb
-                                                        "
-                                                        [placeholder]="
-                                                            'DATE_PLACEHOLDER'
-                                                                | translate
-                                                        "
-                                                        [max]="
-                                                            fiStammdaten
-                                                                .zeitraumList[0]
-                                                                .gueltigkeit
-                                                                .gueltigBis
+                                                        [datePickerEnabled]="
+                                                            true
                                                         "
                                                         [required]="
                                                             isDatumAbRequired(
@@ -331,53 +286,30 @@
                                                                 fiStammdaten
                                                             )
                                                         "
-                                                    />
-                                                    <mat-datepicker-toggle
-                                                        matSuffix
-                                                        [for]="gueltigAb"
-                                                    ></mat-datepicker-toggle>
-                                                    <mat-datepicker
-                                                        #gueltigAb
-                                                    ></mat-datepicker>
-                                                    <dv-error-messages
-                                                        [errorObject]="
-                                                            ersterZeitraumGueltigAbInput.errors
-                                                        "
-                                                    ></dv-error-messages>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <input
-                                                        class="dv-mat-datepicker"
-                                                        type="text"
-                                                        #ersterZeitraumGueltigBisInput="ngModel"
-                                                        [name]="
-                                                            fiStammdaten.ferienname +
-                                                            '_gueltigBis_' +
-                                                            i
-                                                        "
-                                                        [id]="
-                                                            fiStammdaten.ferienname +
-                                                            '_gueltigBis_' +
-                                                            i
-                                                        "
-                                                        [(ngModel)]="
+                                                        [maxDate]="
                                                             fiStammdaten
                                                                 .zeitraumList[0]
                                                                 .gueltigkeit
                                                                 .gueltigBis
                                                         "
-                                                        [matDatepicker]="
-                                                            gueltigBis
+                                                    >
+                                                    </dv-date-picker-x>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <dv-date-picker-x
+                                                        [id]="
+                                                            fiStammdaten.ferienname +
+                                                            '_gueltigBis_' +
+                                                            i
                                                         "
-                                                        [placeholder]="
-                                                            'DATE_PLACEHOLDER'
-                                                                | translate
-                                                        "
-                                                        [min]="
+                                                        [(date)]="
                                                             fiStammdaten
                                                                 .zeitraumList[0]
                                                                 .gueltigkeit
-                                                                .gueltigAb
+                                                                .gueltigBis
+                                                        "
+                                                        [datePickerEnabled]="
+                                                            true
                                                         "
                                                         [required]="
                                                             isDatumBisRequired(
@@ -386,63 +318,35 @@
                                                                 fiStammdaten
                                                             )
                                                         "
-                                                    />
-                                                    <mat-datepicker-toggle
-                                                        matSuffix
-                                                        [for]="gueltigBis"
-                                                    ></mat-datepicker-toggle>
-                                                    <mat-datepicker
-                                                        #gueltigBis
-                                                    ></mat-datepicker>
-                                                    <dv-error-messages
-                                                        [errorObject]="
-                                                            ersterZeitraumGueltigBisInput.errors
+                                                        [minDate]="
+                                                            fiStammdaten
+                                                                .zeitraumList[0]
+                                                                .gueltigkeit
+                                                                .gueltigAb
                                                         "
-                                                    ></dv-error-messages>
+                                                    >
+                                                    </dv-date-picker-x>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <input
-                                                        class="dv-mat-datepicker"
-                                                        type="text"
-                                                        #anmeldeschlussInput="ngModel"
-                                                        [name]="
-                                                            fiStammdaten.ferienname +
-                                                            '_anmeldeschluss_' +
-                                                            i
-                                                        "
+                                                    <dv-date-picker-x
                                                         [id]="
                                                             fiStammdaten.ferienname +
                                                             '_anmeldeschluss_' +
                                                             i
-                                                        "
-                                                        [(ngModel)]="
-                                                            fiStammdaten.anmeldeschluss
-                                                        "
-                                                        [matDatepicker]="
-                                                            anmeldeschluss
-                                                        "
-                                                        [placeholder]="
-                                                            'DATE_PLACEHOLDER'
-                                                                | translate
                                                         "
                                                         [required]="
                                                             isAnmeldeschlussRequired(
                                                                 fiStammdaten
                                                             )
                                                         "
-                                                    />
-                                                    <mat-datepicker-toggle
-                                                        matSuffix
-                                                        [for]="anmeldeschluss"
-                                                    ></mat-datepicker-toggle>
-                                                    <mat-datepicker
-                                                        #anmeldeschluss
-                                                    ></mat-datepicker>
-                                                    <dv-error-messages
-                                                        [errorObject]="
-                                                            anmeldeschlussInput.errors
+                                                        [(date)]="
+                                                            fiStammdaten.anmeldeschluss
                                                         "
-                                                    ></dv-error-messages>
+                                                        [datePickerEnabled]="
+                                                            true
+                                                        "
+                                                    >
+                                                    </dv-date-picker-x>
                                                 </div>
                                             </div>
 
@@ -455,36 +359,12 @@
                                                 "
                                             >
                                                 <div class="col-md-4">
-                                                    <input
-                                                        class="dv-mat-datepicker"
-                                                        type="text"
-                                                        #zeitraumGueltigAbInput="ngModel"
-                                                        [name]="
-                                                            fiStammdaten.ferienname +
-                                                            zeitraum.id +
-                                                            '-gueltigAb-' +
-                                                            j
-                                                        "
+                                                    <dv-date-picker-x
                                                         [id]="
                                                             fiStammdaten.ferienname +
                                                             zeitraum.id +
                                                             '-gueltigAb-' +
                                                             j
-                                                        "
-                                                        [(ngModel)]="
-                                                            zeitraum.gueltigkeit
-                                                                .gueltigAb
-                                                        "
-                                                        [matDatepicker]="
-                                                            zeitraumGueltigAb
-                                                        "
-                                                        [max]="
-                                                            zeitraum.gueltigkeit
-                                                                .gueltigBis
-                                                        "
-                                                        [placeholder]="
-                                                            'DATE_PLACEHOLDER'
-                                                                | translate
                                                         "
                                                         [required]="
                                                             isDatumAbRequired(
@@ -492,53 +372,34 @@
                                                                 fiStammdaten
                                                             )
                                                         "
-                                                    />
-                                                    <mat-datepicker-toggle
-                                                        matSuffix
-                                                        [for]="
-                                                            zeitraumGueltigAb
+                                                        [maxDate]="
+                                                            zeitraum.gueltigkeit
+                                                                .gueltigBis
                                                         "
-                                                    ></mat-datepicker-toggle>
-                                                    <mat-datepicker
-                                                        #zeitraumGueltigAb
-                                                    ></mat-datepicker>
-                                                    <dv-error-messages
-                                                        [errorObject]="
-                                                            zeitraumGueltigAbInput.errors
+                                                        [datePickerEnabled]="
+                                                            true
                                                         "
-                                                    ></dv-error-messages>
+                                                        [(date)]="
+                                                            zeitraum.gueltigkeit
+                                                                .gueltigAb
+                                                        "
+                                                    >
+                                                    </dv-date-picker-x>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <input
-                                                        class="dv-mat-datepicker"
-                                                        type="text"
-                                                        #zeitraumGueltigBisInput="ngModel"
-                                                        [name]="
-                                                            fiStammdaten.ferienname +
-                                                            zeitraum.id +
-                                                            '-gueltigBis-' +
-                                                            j
-                                                        "
+                                                    <dv-date-picker-x
                                                         [id]="
                                                             fiStammdaten.ferienname +
                                                             zeitraum.id +
                                                             '-gueltigBis-' +
                                                             j
                                                         "
-                                                        [(ngModel)]="
+                                                        [(date)]="
                                                             zeitraum.gueltigkeit
                                                                 .gueltigBis
                                                         "
-                                                        [matDatepicker]="
-                                                            zeitraumGueltigBis
-                                                        "
-                                                        [min]="
-                                                            zeitraum.gueltigkeit
-                                                                .gueltigAb
-                                                        "
-                                                        [placeholder]="
-                                                            'DATE_PLACEHOLDER'
-                                                                | translate
+                                                        [datePickerEnabled]="
+                                                            true
                                                         "
                                                         [required]="
                                                             isDatumBisRequired(
@@ -546,21 +407,11 @@
                                                                 fiStammdaten
                                                             )
                                                         "
-                                                    />
-                                                    <mat-datepicker-toggle
-                                                        matSuffix
-                                                        [for]="
-                                                            zeitraumGueltigBis
+                                                        [minDate]="
+                                                            zeitraum.gueltigkeit
+                                                                .gueltigAb
                                                         "
-                                                    ></mat-datepicker-toggle>
-                                                    <mat-datepicker
-                                                        #zeitraumGueltigBis
-                                                    ></mat-datepicker>
-                                                    <dv-error-messages
-                                                        [errorObject]="
-                                                            zeitraumGueltigBisInput.errors
-                                                        "
-                                                    ></dv-error-messages>
+                                                    ></dv-date-picker-x>
                                                 </div>
                                                 <div
                                                     class="col-md-1 absolute-height"

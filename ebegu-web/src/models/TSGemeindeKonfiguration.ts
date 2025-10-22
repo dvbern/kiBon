@@ -15,16 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {CONSTANTS} from '../app/core/constants/CONSTANTS';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import moment from 'moment';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {EbeguUtil} from '../utils/EbeguUtil';
 import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from './enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
-import {TSEinschulungTyp} from './enums/TSEinschulungTyp';
-import {TSEinstellungKey} from './enums/TSEinstellungKey';
+import {TSEinschulungTyp} from '@kibon/shared/model/enums';
+import {TSEinstellungKey} from '../admin/einstellungen/TSEinstellungKey';
 import {TSGemeindeZusaetzlicherGutscheinTyp} from './gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
-import {TSEinstellung} from './TSEinstellung';
+import {TSEinstellung} from '../admin/einstellungen/TSEinstellung';
 import {TSFerieninselStammdaten} from './TSFerieninselStammdaten';
-import {TSGesuchsperiode} from './TSGesuchsperiode';
 
 export class TSGemeindeKonfiguration {
     public gesuchsperiodeName: string;
@@ -165,21 +165,21 @@ export class TSGemeindeKonfiguration {
                 case TSEinstellungKey.GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB: {
                     this.konfigTagesschuleAktivierungsdatum = moment(
                         property.value,
-                        CONSTANTS.DATE_FORMAT
+                        CONSTANTS.SQL_FORMAT
                     );
                     break;
                 }
                 case TSEinstellungKey.GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB: {
                     this.konfigFerieninselAktivierungsdatum = moment(
                         property.value,
-                        CONSTANTS.DATE_FORMAT
+                        CONSTANTS.SQL_FORMAT
                     );
                     break;
                 }
                 case TSEinstellungKey.GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG: {
                     this.konfigTagesschuleErsterSchultag = moment(
                         property.value,
-                        CONSTANTS.DATE_FORMAT
+                        CONSTANTS.SQL_FORMAT
                     );
                     break;
                 }

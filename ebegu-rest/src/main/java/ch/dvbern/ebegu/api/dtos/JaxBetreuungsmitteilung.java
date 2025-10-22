@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer Stammdaten der Betreuungsmitteilung
@@ -36,7 +36,8 @@ public class JaxBetreuungsmitteilung extends JaxMitteilung {
 
 	@NotNull
 	@Valid
-	private List<JaxBetreuungsmitteilungPensum> betreuungspensen = new ArrayList<>();
+	private List<JaxBetreuungsmitteilungPensum> betreuungspensen =
+		new ArrayList<>();
 
 	@NotNull
 	private Boolean applied = false;
@@ -51,7 +52,9 @@ public class JaxBetreuungsmitteilung extends JaxMitteilung {
 		return betreuungspensen;
 	}
 
-	public void setBetreuungspensen(List<JaxBetreuungsmitteilungPensum> betreuungspensen) {
+	public void setBetreuungspensen(
+		List<JaxBetreuungsmitteilungPensum> betreuungspensen
+	) {
 		this.betreuungspensen = betreuungspensen;
 	}
 

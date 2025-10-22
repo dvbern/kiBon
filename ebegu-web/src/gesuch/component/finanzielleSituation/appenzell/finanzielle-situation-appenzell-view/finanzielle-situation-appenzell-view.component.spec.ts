@@ -28,15 +28,17 @@ import {TSFamiliensituation} from '../../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../../models/TSFamiliensituationContainer';
 import {TSGesuch} from '../../../../../models/TSGesuch';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
-import {TSWizardStep} from '../../../../../models/TSWizardStep';
+import {TSWizardStep} from '@kibon/shared/model/entity';
+
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
 import {FinanzielleSituationRS} from '../../../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {FinanzielleSituationAppenzellViewComponent} from './finanzielle-situation-appenzell-view.component';
+import {TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {By} from '@angular/platform-browser';
 
 describe('FinanzielleSituationAppenzellViewComponent', () => {
-    let component: FinanzielleSituationAppenzellViewComponent;
     let fixture: ComponentFixture<FinanzielleSituationAppenzellViewComponent>;
 
     const berechnungsManagerSpy = jasmine.createSpyObj<BerechnungsManager>(
@@ -63,6 +65,7 @@ describe('FinanzielleSituationAppenzellViewComponent', () => {
     const wizardStepManagerSpy = jasmine.createSpyObj<WizardStepManager>(
         WizardStepManager.name,
         [
+            'getCurrentStep',
             'setCurrentStep',
             'isNextStepBesucht',
             'isNextStepEnabled',
@@ -126,12 +129,38 @@ describe('FinanzielleSituationAppenzellViewComponent', () => {
         fixture = TestBed.createComponent(
             FinanzielleSituationAppenzellViewComponent
         );
-        component = fixture.componentInstance;
-        fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('should show warning fill data 2nd gesuchsteller if wizardstep gesuchsteller is invalid', () => {
+        const tsWizardStepCurrent = new TSWizardStep();
+        const tsWizardStep = new TSWizardStep();
+        tsWizardStepCurrent.wizardStepStatus = TSWizardStepStatus.NOK;
+        tsWizardStep.wizardStepStatus = TSWizardStepStatus.NOK;
+        wizardStepManagerSpy.getCurrentStep.and.returnValue(
+            tsWizardStepCurrent
+        );
+        wizardStepManagerSpy.getStepByName.and.returnValue(tsWizardStep);
+        fixture.detectChanges();
+        const warningBanner = fixture.debugElement.query(
+            By.css('.fa.fa-exclamation-triangle')
+        );
+        expect(warningBanner).toBeTruthy();
+    });
+
+    it('should not show warning fill data 2nd gesuchsteller if wizardstep gesuchsteller is valid', () => {
+        const tsWizardStepCurrent = new TSWizardStep();
+        const tsWizardStep = new TSWizardStep();
+        tsWizardStepCurrent.wizardStepStatus = TSWizardStepStatus.NOK;
+        tsWizardStep.wizardStepStatus = TSWizardStepStatus.OK;
+        wizardStepManagerSpy.getCurrentStep.and.returnValue(
+            tsWizardStepCurrent
+        );
+        wizardStepManagerSpy.getStepByName.and.returnValue(tsWizardStep);
+        fixture.detectChanges();
+        const warningBanner = fixture.debugElement.query(
+            By.css('.fa.fa-exclamation-triangle')
+        );
+        expect(warningBanner).toBeFalsy();
     });
 
     function createGesuch(): TSGesuch {

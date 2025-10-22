@@ -17,6 +17,7 @@ import {IHttpResponse} from 'angular';
 import {TSErrorLevel} from '../../../../models/enums/TSErrorLevel';
 import {TSErrorType} from '../../../../models/enums/TSErrorType';
 import {TSExceptionReport} from '../../../../models/TSExceptionReport';
+import {HTTP_CODES} from '@kibon/shared/model/constants';
 import {ErrorService} from './ErrorService';
 import {isOIDCTokenInitialisationException} from './HttpErrorInterceptorUtil';
 import IHttpInterceptor = angular.IHttpInterceptor;
@@ -75,12 +76,12 @@ export class HttpErrorInterceptor implements IHttpInterceptor {
      */
     private handleErrorResponse(response: any): Array<TSExceptionReport> {
         const http404 = 404;
-        const url = response && response.config ? response.config.url : '';
+        const url: string = response?.config?.url ?? '';
         if (
             response.status === http404 &&
-            (url.contains('ebegu.dvbern.ch') ||
-                url.contains('ebegu-test.bern.ch') ||
-                url.contains('ebegu.bern.ch'))
+            (url?.includes('ebegu.dvbern.ch') ||
+                url?.includes('ebegu-test.bern.ch') ||
+                url?.includes('ebegu.bern.ch'))
         ) {
             return [];
         }
@@ -89,6 +90,8 @@ export class HttpErrorInterceptor implements IHttpInterceptor {
         // noinspection IfStatementWithTooManyBranchesJS
         if (this.isDataViolationResponse(response.data)) {
             errors = this.convertViolationReport(response.data);
+        } else if (this.isTranslationNotFound(response.status, response.data)) {
+            this.$log.warn('translation not found');
         } else if (this.isDataEbeguExceptionReport(response.data)) {
             errors = this.convertEbeguExceptionReport(response.data);
         } else if (isOIDCTokenInitialisationException(response)) {
@@ -154,7 +157,6 @@ export class HttpErrorInterceptor implements IHttpInterceptor {
         return []
             .concat(this.convertToExceptionReport(data.parameterViolations))
             .concat(this.convertToExceptionReport(data.classViolations))
-            .concat(this.convertToExceptionReport(data.fieldViolations))
             .concat(this.convertToExceptionReport(data.propertyViolations))
             .concat(this.convertToExceptionReport(data.returnValueViolations));
     }
@@ -205,20 +207,12 @@ export class HttpErrorInterceptor implements IHttpInterceptor {
             );
             const hasClassViol: boolean =
                 data.hasOwnProperty('classViolations');
-            const hasfieldViol: boolean =
-                data.hasOwnProperty('fieldViolations');
             const hasPropViol: boolean =
                 data.hasOwnProperty('propertyViolations');
             const hasRetViol: boolean = data.hasOwnProperty(
                 'returnValueViolations'
             );
-            return (
-                hasParamViol &&
-                hasClassViol &&
-                hasfieldViol &&
-                hasPropViol &&
-                hasRetViol
-            );
+            return hasParamViol && hasClassViol && hasPropViol && hasRetViol;
         }
         return false;
     }
@@ -278,5 +272,11 @@ export class HttpErrorInterceptor implements IHttpInterceptor {
         const msg = 'java.net.UnknownHostException';
 
         return data.status === http500 && data.data.indexOf(msg) > -1;
+    }
+
+    private isTranslationNotFound(status: number, error: any): boolean {
+        return (
+            status === HTTP_CODES.NOT_FOUND && error?.includes('translations_')
+        );
     }
 }

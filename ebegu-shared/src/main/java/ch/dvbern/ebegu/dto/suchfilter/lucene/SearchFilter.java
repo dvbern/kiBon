@@ -44,22 +44,41 @@ public class SearchFilter implements Serializable {
 	/**
 	 * @param fieldNames Leer: alle Felder der Entity durchsuchen.
 	 */
-	public SearchFilter(@Nonnull SearchEntityType searchEntityType, @Nonnull String... fieldNames) {
+	public SearchFilter(
+		@Nonnull SearchEntityType searchEntityType,
+		@Nonnull String... fieldNames
+	) {
 		this(searchEntityType, null, fieldNames);
 
 	}
 
-	public SearchFilter(@Nonnull SearchEntityType searchEntityType, @Nullable Integer maxResults, @Nonnull String... fieldNames) {
+	public SearchFilter(
+		@Nonnull SearchEntityType searchEntityType,
+		@Nullable Integer maxResults,
+		@Nonnull String... fieldNames
+	) {
 		Objects.requireNonNull(searchEntityType);
 		Objects.requireNonNull(fieldNames);
 
 		if (fieldNames.length > 0) {
-			Preconditions.checkArgument(searchEntityType.getFieldNames().containsAll(Arrays.asList(fieldNames)));
-			this.fieldsToSearch = Arrays.stream(searchEntityType.getIndexedFields())
-				.filter(indexedField -> Arrays.asList(fieldNames).contains(indexedField.getIndexedFieldName()))
+			Preconditions.checkArgument(
+				searchEntityType.getFieldNames()
+					.containsAll(Arrays.asList(fieldNames))
+			);
+			this.fieldsToSearch = Arrays.stream(
+				searchEntityType.getIndexedFields()
+			)
+				.filter(
+					indexedField -> Arrays.asList(fieldNames)
+						.contains(
+							indexedField.getIndexedFieldName()
+						)
+				)
 				.toArray(IndexedEBEGUFieldName[]::new);
 		} else {
-			this.fieldsToSearch = Arrays.stream(searchEntityType.getIndexedFields())
+			this.fieldsToSearch = Arrays.stream(
+				searchEntityType.getIndexedFields()
+			)
 				.toArray(IndexedEBEGUFieldName[]::new);
 		}
 		this.searchEntityType = searchEntityType;
@@ -89,4 +108,3 @@ public class SearchFilter implements Serializable {
 			.toString();
 	}
 }
-

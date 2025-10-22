@@ -22,26 +22,28 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
+import ch.dvbern.ebegu.authentication.ExternalUUIDUtil;
+import ch.dvbern.ebegu.dto.suchfilter.lucene.KibonElasticsearchAnalyzerConfigurer;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
 import ch.dvbern.ebegu.enums.RollenAbhaengigkeit;
@@ -50,6 +52,8 @@ import ch.dvbern.ebegu.listener.BenutzerChangedEntityListener;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -57,7 +61,7 @@ import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 import static java.util.Objects.requireNonNull;
@@ -66,13 +70,18 @@ import static java.util.Objects.requireNonNull;
 @EntityListeners(BenutzerChangedEntityListener.class)
 @Table(
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"username", "mandant_id"}, name = "UK_username_mandant"),
-		@UniqueConstraint(columnNames = "externalUUID", name = "UK_externalUUID"),
-		@UniqueConstraint(columnNames = "zpvNummer", name = "UK_zpv_nummer")
+		@UniqueConstraint(columnNames = { "username", "mandant_id" },
+			name = "UK_username_mandant"),
+		@UniqueConstraint(columnNames = "externalUUID",
+			name = "UK_externalUUID"),
+		@UniqueConstraint(columnNames = "zpvNummer",
+			name = "UK_zpv_nummer")
 	},
 	indexes = {
-		@Index(columnList = "username, mandant_id", name = "IX_benutzer_username_mandant"),
-		@Index(columnList = "externalUUID", name = "IX_benutzer_externalUUID")
+		@Index(columnList = "username, mandant_id",
+			name = "IX_benutzer_username_mandant"),
+		@Index(columnList = "externalUUID",
+			name = "IX_benutzer_externalUUID")
 	}
 )
 @Audited
@@ -101,13 +110,15 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 	@NotNull
 	@Column(nullable = false)
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
-	@Field
+	@FullTextField(
+		analyzer = KibonElasticsearchAnalyzerConfigurer.KIBON_GERMAN_ANALYZER)
 	private String nachname = null;
 
 	@NotNull
 	@Column(nullable = false)
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
-	@Field
+	@FullTextField(
+		analyzer = KibonElasticsearchAnalyzerConfigurer.KIBON_GERMAN_ANALYZER)
 	private String vorname = null;
 
 	@Formula("concat(vorname, ' ', nachname)")
@@ -124,13 +135,18 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 
 	@Valid
 	@SortNatural
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "benutzer")
+	@OneToMany(cascade = CascadeType.ALL,
+		fetch = FetchType.EAGER,
+		orphanRemoval = true,
+		mappedBy = "benutzer")
 	private Set<Berechtigung> berechtigungen = new TreeSet<>();
 
 	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_benutzer_mandant_id"))
-	private Mandant mandant = null;
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_benutzer_mandant_id"),
+		updatable = false)
+	private Mandant mandant;
 
 	@Size(max = Constants.DB_TEXTAREA_LENGTH)
 	@Nullable
@@ -141,6 +157,12 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 	@Column
 	private String zpvNummer = null;
 
+	@Getter
+	@Setter
+	private transient String initialPassword;
+
+	@Transient
+	private boolean markedForDeletion = false;
 
 	public String getUsername() {
 		return username;
@@ -152,11 +174,18 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 
 	@Nullable
 	public String getExternalUUID() {
-		return externalUUID;
+		return ExternalUUIDUtil.removePrefixIfNecessary(externalUUID);
 	}
 
 	public void setExternalUUID(@Nullable String externalUUID) {
-		this.externalUUID = externalUUID;
+		requireNonNull(
+			getMandant().getMandantIdentifier(),
+			"Mandant must be set first"
+		);
+		this.externalUUID = ExternalUUIDUtil.addPrefixIfNecessary(
+			externalUUID,
+			getMandant().getMandantIdentifier()
+		);
 	}
 
 	public String getNachname() {
@@ -214,11 +243,6 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 		this.status = status;
 	}
 
-	@Nullable
-	public String getBemerkungen() {
-		return bemerkungen;
-	}
-
 	public void setBemerkungen(@Nullable String bemerkungen) {
 		this.bemerkungen = bemerkungen;
 	}
@@ -255,7 +279,10 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 				}
 			}
 		}
-		requireNonNull(currentBerechtigung, "Keine aktive Berechtigung vorhanden fuer Benutzer " + username);
+		requireNonNull(
+			currentBerechtigung,
+			"Keine aktive Berechtigung vorhanden fuer Benutzer " + username
+		);
 		return currentBerechtigung;
 	}
 
@@ -311,13 +338,15 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 
 	@Nonnull
 	public String extractRollenAbhaengigkeitAsString() {
-		RollenAbhaengigkeit rollenAbhaengigkeit = getRole().getRollenAbhaengigkeit();
+		RollenAbhaengigkeit rollenAbhaengigkeit = getRole()
+			.getRollenAbhaengigkeit();
 
 		switch (rollenAbhaengigkeit) {
 		case NONE:
 			return "";
 		case GEMEINDE:
-			return getCurrentBerechtigung().extractGemeindenForBerechtigungAsString();
+			return getCurrentBerechtigung()
+				.extractGemeindenForBerechtigungAsString();
 		case INSTITUTION:
 			return requireNonNull(getInstitution()).getName();
 		case TRAEGERSCHAFT:
@@ -328,21 +357,26 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 			return requireNonNull(getSozialdienst()).getName();
 		}
 
-		throw new IllegalStateException("No mapping defined for " + rollenAbhaengigkeit);
+		throw new IllegalStateException(
+			"No mapping defined for " + rollenAbhaengigkeit
+		);
 	}
 
 	/**
 	 * A user whose role is not linked to a Gemeinde can see all Gemeinden
 	 * A user whose role is linked to 1..n Gemeinden can see only those Gemeinden
 	 */
-	public boolean belongsToGemeinde(@Nonnull Gemeinde gemeinde) {
-		return !getRole().isRoleGemeindeabhaengig() || getCurrentBerechtigung().getGemeindeList()
-			.stream()
-			.anyMatch(gemeinde::equals);
+	public boolean belongsToGemeinde(@Nonnull String gemeindeId) {
+		return !getRole().isRoleGemeindeabhaengig()
+			|| getCurrentBerechtigung().getGemeindeList()
+				.stream()
+				.anyMatch(gemeinde -> gemeinde.getId().equals(gemeindeId));
 	}
 
 	public void addBemerkung(String s) {
-		String bemerkungWithDate = Constants.DATE_FORMATTER.format(LocalDate.now()) + ": " + s;
+		String bemerkungWithDate = Constants.DATE_FORMATTER.format(
+			LocalDate.now()
+		) + ": " + s;
 		if (bemerkungen == null) {
 			bemerkungen = bemerkungWithDate;
 		} else {
@@ -352,12 +386,23 @@ public class Benutzer extends AbstractMutableEntity implements HasMandant {
 
 	@Override
 	public String getMessageForAccessException() {
-		return "username: " + this.getUsername()
-			+ ", rolle: " + this.getRole()
-			+ ", berechtigung: " + this.extractRollenAbhaengigkeitAsString();
+		return "username: "
+			+ this.getUsername()
+			+ ", rolle: "
+			+ this.getRole()
+			+ ", berechtigung: "
+			+ this.extractRollenAbhaengigkeitAsString();
 	}
 
 	public boolean isGesperrt() {
 		return status == BenutzerStatus.GESPERRT;
+	}
+
+	public boolean isMarkedForDeletion() {
+		return markedForDeletion;
+	}
+
+	public void setMarkedForDeletion(boolean markedForDeletion) {
+		this.markedForDeletion = markedForDeletion;
 	}
 }

@@ -4,8 +4,9 @@
 <#-- @ftlvariable name="empfaengerMail" type="java.lang.String" -->
 <#-- @ftlvariable name="fall" type="ch.dvbern.ebegu.entities.Fall"-->
 <#-- @ftlvariable name="gesuchsperiode" type="ch.dvbern.ebegu.entities.Gesuchsperiode"-->
+<#-- @ftlvariable name="verantwortlicherTS" type="ch.dvbern.ebegu.entities.Benutzer"-->
 From: ${configuration.senderAddress}
-To: <@base64Header>${gesuch.dossier.verantwortlicherTS.fullName}</@base64Header> <${empfaengerMail}>
+To: <@base64Header>${verantwortlicherTS.vorname} ${verantwortlicherTS.nachname}</@base64Header> <${empfaengerMail}>
 Subject: ${fall.getPaddedFallnummer()}, ${gesuchsperiode.getGesuchsperiodeString()}, <@base64Header>kiBon - Betreuungsgutschein wurde verfügt</@base64Header>
 Content-Type: text/html;charset=utf-8
 
@@ -25,7 +26,7 @@ ${templateConfiguration.mailCss}
 		Guten Tag
 	</p>
 	<p>
-		Der Antrag mit der Fallnummer ${gesuch.dossier.fall.fallNummer} wurde verfügt. Es können nun auch die
+		Der Antrag mit der Fallnummer ${gesuch.dossier.fall.fallNummer?string("#")} wurde verfügt. Es können nun auch die
 		Tagesschulanmeldungen abgeschlossen werden.
 	</p>
 	<p>

@@ -16,85 +16,36 @@
  */
 
 import {Component, Input} from '@angular/core';
-import {StateService, TargetState} from '@uirouter/core';
-import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSBenutzer} from '../../../models/TSBenutzer';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSMandant} from '../../../models/TSMandant';
-import {returnToOriginalState} from '../../../utils/AuthenticationUtil';
+import {TargetState} from '@uirouter/core';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
+import {MandantService} from '@kibon/shared-util-mandant-service';
+import {KiBonMandant} from '@kibon/shared-model-mandant';
 
 @Component({
     selector: 'dv-tutorial-gemeinde-login',
     templateUrl: './tutorial-gemeinde-login.component.html',
-    styleUrls: ['../tutorial-login.component.less']
+    styleUrls: ['../tutorial-login.component.less'],
+    standalone: false
 })
 export class TutorialGemeindeLoginComponent {
-    private static readonly ID_GEMEINDE_TUTORIAL =
-        '11111111-1111-4444-4444-111111111111';
-
     @Input() public returnTo: TargetState;
 
-    // Only the role Sachbearbeiter. This simplifies the tutorial and gives the user a restricted access
-    public sachbearbeiterGemeindeTutorial: TSBenutzer;
-
-    private readonly mandant: TSMandant;
-    private gemeindeTutorial: TSGemeinde;
+    private mandant: KiBonMandant;
 
     public constructor(
         private readonly authServiceRS: AuthServiceRS,
-        private readonly stateService: StateService,
-        private readonly gemeindeRS: GemeindeRS
+        private readonly mandantService: MandantService
     ) {
-        this.mandant = TutorialGemeindeLoginComponent.getMandant();
-
-        // getAktiveGemeinden() can be called by anonymous.
-        this.gemeindeRS.getAktiveGemeinden().then(aktiveGemeinden => {
-            this.gemeindeTutorial = aktiveGemeinden.find(
-                gemeinde =>
-                    gemeinde.id ===
-                    TutorialGemeindeLoginComponent.ID_GEMEINDE_TUTORIAL
-            );
-
-            this.initUsers();
+        this.mandantService.mandant$.subscribe(mandant => {
+            this.mandant = mandant;
         });
     }
 
-    /**
-     * Der Mandant wird direkt gegeben. Diese Daten und die Daten der DB muessen uebereinstimmen
-     */
-    private static getMandant(): TSMandant {
-        const mandant = new TSMandant();
-        mandant.name = 'TestMandant';
-        mandant.id = 'e3736eb8-6eef-40ef-9e52-96ab48d8f220';
-        return mandant;
-    }
-
-    private initUsers(): void {
-        this.createUsersOfGemeinde();
-    }
-
-    private createUsersOfGemeinde(): void {
-        this.sachbearbeiterGemeindeTutorial = new TSBenutzer(
-            'Gerlinde',
-            'Tutorial',
-            'tust',
-            'password9',
-            'gerlinde.tutorial@example.com',
-            this.mandant,
-            TSRole.ADMIN_BG,
-            undefined,
-            undefined,
-            [this.gemeindeTutorial]
-        );
-    }
-
     public logIn(): void {
-        this.authServiceRS
-            .loginRequest(this.sachbearbeiterGemeindeTutorial)
-            .then(() =>
-                returnToOriginalState(this.stateService, this.returnTo)
-            );
+        const hostname = this.mandant.hostname;
+        this.authServiceRS.initLoginReturnToTargetState(
+            this.returnTo,
+            `gerlinde.tutorial.${hostname}.persona@mailbucket.dvbern.ch`
+        );
     }
 }

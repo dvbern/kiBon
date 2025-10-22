@@ -17,16 +17,19 @@
 
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {TSModulTagesschuleTyp} from '../../../../models/enums/TSModulTagesschuleTyp';
-import {TSEinstellungenTagesschule} from '../../../../models/TSEinstellungenTagesschule';
-import {TSInstitutionStammdaten} from '../../../../models/TSInstitutionStammdaten';
-import {TSModulTagesschuleGroup} from '../../../../models/TSModulTagesschuleGroup';
+import {
+    TSEinstellungenTagesschule,
+    TSInstitutionStammdaten,
+    TSModulTagesschuleGroup
+} from '@kibon/shared/model/entity';
+import {TSModulTagesschuleTyp} from '@kibon/shared/model/enums';
 import {InstitutionStammdatenRS} from '../../../core/service/institutionStammdatenRS.rest';
 
 @Component({
     selector: 'dv-ng-gemeinde-dialog',
     templateUrl: './dialog-import-from-other-institution.template.html',
-    styleUrls: ['./dialog-import-from-other-institution.component.less']
+    styleUrls: ['./dialog-import-from-other-institution.component.less'],
+    standalone: false
 })
 export class DialogImportFromOtherInstitutionComponent implements OnInit {
     public selectedInstitutionStammdaten: TSInstitutionStammdaten;

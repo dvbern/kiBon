@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.lastenausgleichTagesschulen;
@@ -111,7 +111,7 @@ public class LastenausgleichGemeindenDataRow {
 	private Boolean betreuungsstundenDokumentiert;
 
 	@Nullable
-	private Boolean ElterngebuehrenTSV;
+	private Boolean elterngebuehrenTSV;
 
 	@Nullable
 	private Boolean elterngebuehrenBelege;
@@ -143,7 +143,8 @@ public class LastenausgleichGemeindenDataRow {
 	@Nullable
 	private BigDecimal betreuungsstundenPrognose;
 
-	private Set<LastenausgleichTagesschulenDataRow> lastenausgleichTagesschulenDaten = new HashSet<>();
+	private Set<LastenausgleichTagesschulenDataRow> lastenausgleichTagesschulenDaten =
+		new HashSet<>();
 
 	@Nullable
 	public String getNameGemeinde() {
@@ -204,7 +205,9 @@ public class LastenausgleichGemeindenDataRow {
 		return alleAnmeldungenKibon;
 	}
 
-	public void setAlleAnmeldungenKibon(@Nullable Boolean alleAnmeldungenKibon) {
+	public void setAlleAnmeldungenKibon(
+		@Nullable Boolean alleAnmeldungenKibon
+	) {
 		this.alleAnmeldungenKibon = alleAnmeldungenKibon;
 	}
 
@@ -240,7 +243,9 @@ public class LastenausgleichGemeindenDataRow {
 		return grundZugangEingeschraenkt;
 	}
 
-	public void setGrundZugangEingeschraenkt(@Nullable String grundZugangEingeschraenkt) {
+	public void setGrundZugangEingeschraenkt(
+		@Nullable String grundZugangEingeschraenkt
+	) {
 		this.grundZugangEingeschraenkt = grundZugangEingeschraenkt;
 	}
 
@@ -249,7 +254,9 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungsstundenFaktor1;
 	}
 
-	public void setBetreuungsstundenFaktor1(@Nullable BigDecimal betreuungsstundenFaktor1) {
+	public void setBetreuungsstundenFaktor1(
+		@Nullable BigDecimal betreuungsstundenFaktor1
+	) {
 		this.betreuungsstundenFaktor1 = betreuungsstundenFaktor1;
 	}
 
@@ -258,7 +265,9 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungsstundenFaktor15;
 	}
 
-	public void setBetreuungsstundenFaktor15(@Nullable BigDecimal betreuungsstundenFaktor15) {
+	public void setBetreuungsstundenFaktor15(
+		@Nullable BigDecimal betreuungsstundenFaktor15
+	) {
 		this.betreuungsstundenFaktor15 = betreuungsstundenFaktor15;
 	}
 
@@ -267,7 +276,9 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungsstundenFaktor3;
 	}
 
-	public void setBetreuungsstundenFaktor3(@Nullable BigDecimal betreuungsstundenFaktor3) {
+	public void setBetreuungsstundenFaktor3(
+		@Nullable BigDecimal betreuungsstundenFaktor3
+	) {
 		this.betreuungsstundenFaktor3 = betreuungsstundenFaktor3;
 	}
 
@@ -276,7 +287,9 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungsstundenPaed;
 	}
 
-	public void setBetreuungsstundenPaed(@Nullable BigDecimal betreuungsstundenPaed) {
+	public void setBetreuungsstundenPaed(
+		@Nullable BigDecimal betreuungsstundenPaed
+	) {
 		this.betreuungsstundenPaed = betreuungsstundenPaed;
 	}
 
@@ -285,7 +298,9 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungsstundenNichtPaed;
 	}
 
-	public void setBetreuungsstundenNichtPaed(@Nullable BigDecimal betreuungsstundenNichtPaed) {
+	public void setBetreuungsstundenNichtPaed(
+		@Nullable BigDecimal betreuungsstundenNichtPaed
+	) {
 		this.betreuungsstundenNichtPaed = betreuungsstundenNichtPaed;
 	}
 
@@ -294,7 +309,9 @@ public class LastenausgleichGemeindenDataRow {
 		return elterngebuehrenBetreuung;
 	}
 
-	public void setElterngebuehrenBetreuung(@Nullable BigDecimal elterngebuehrenBetreuung) {
+	public void setElterngebuehrenBetreuung(
+		@Nullable BigDecimal elterngebuehrenBetreuung
+	) {
 		this.elterngebuehrenBetreuung = elterngebuehrenBetreuung;
 	}
 
@@ -303,8 +320,11 @@ public class LastenausgleichGemeindenDataRow {
 		return elterngebuehrenVolksschulangebot;
 	}
 
-	public void setElterngebuehrenVolksschulangebot(@Nullable BigDecimal elterngebuehrenVolksschulangebot) {
-		this.elterngebuehrenVolksschulangebot = elterngebuehrenVolksschulangebot;
+	public void setElterngebuehrenVolksschulangebot(
+		@Nullable BigDecimal elterngebuehrenVolksschulangebot
+	) {
+		this.elterngebuehrenVolksschulangebot =
+			elterngebuehrenVolksschulangebot;
 	}
 
 	@Nullable
@@ -321,7 +341,9 @@ public class LastenausgleichGemeindenDataRow {
 		return elterngebuehrenCovid;
 	}
 
-	public void setElterngebuehrenCovid(@Nullable BigDecimal elterngebuehrenCovid) {
+	public void setElterngebuehrenCovid(
+		@Nullable BigDecimal elterngebuehrenCovid
+	) {
 		this.elterngebuehrenCovid = elterngebuehrenCovid;
 	}
 
@@ -348,7 +370,9 @@ public class LastenausgleichGemeindenDataRow {
 		return elterngebuehrenVerpflegung;
 	}
 
-	public void setElterngebuehrenVerpflegung(@Nullable BigDecimal elterngebuehrenVerpflegung) {
+	public void setElterngebuehrenVerpflegung(
+		@Nullable BigDecimal elterngebuehrenVerpflegung
+	) {
 		this.elterngebuehrenVerpflegung = elterngebuehrenVerpflegung;
 	}
 
@@ -375,7 +399,9 @@ public class LastenausgleichGemeindenDataRow {
 		return ueberschussVerwendung;
 	}
 
-	public void setUeberschussVerwendung(@Nullable String ueberschussVerwendung) {
+	public void setUeberschussVerwendung(
+		@Nullable String ueberschussVerwendung
+	) {
 		this.ueberschussVerwendung = ueberschussVerwendung;
 	}
 
@@ -393,17 +419,19 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungsstundenDokumentiert;
 	}
 
-	public void setBetreuungsstundenDokumentiert(@Nullable Boolean betreuungsstundenDokumentiert) {
+	public void setBetreuungsstundenDokumentiert(
+		@Nullable Boolean betreuungsstundenDokumentiert
+	) {
 		this.betreuungsstundenDokumentiert = betreuungsstundenDokumentiert;
 	}
 
 	@Nullable
 	public Boolean getElterngebuehrenTSV() {
-		return ElterngebuehrenTSV;
+		return elterngebuehrenTSV;
 	}
 
 	public void setElterngebuehrenTSV(@Nullable Boolean elterngebuehrenTSV) {
-		ElterngebuehrenTSV = elterngebuehrenTSV;
+		this.elterngebuehrenTSV = elterngebuehrenTSV;
 	}
 
 	@Nullable
@@ -411,7 +439,9 @@ public class LastenausgleichGemeindenDataRow {
 		return elterngebuehrenBelege;
 	}
 
-	public void setElterngebuehrenBelege(@Nullable Boolean elterngebuehrenBelege) {
+	public void setElterngebuehrenBelege(
+		@Nullable Boolean elterngebuehrenBelege
+	) {
 		this.elterngebuehrenBelege = elterngebuehrenBelege;
 	}
 
@@ -420,7 +450,9 @@ public class LastenausgleichGemeindenDataRow {
 		return elterngebuehrenMaximaltarif;
 	}
 
-	public void setElterngebuehrenMaximaltarif(@Nullable Boolean elterngebuehrenMaximaltarif) {
+	public void setElterngebuehrenMaximaltarif(
+		@Nullable Boolean elterngebuehrenMaximaltarif
+	) {
 		this.elterngebuehrenMaximaltarif = elterngebuehrenMaximaltarif;
 	}
 
@@ -429,7 +461,9 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungPaedagogisch;
 	}
 
-	public void setBetreuungPaedagogisch(@Nullable Boolean betreuungPaedagogisch) {
+	public void setBetreuungPaedagogisch(
+		@Nullable Boolean betreuungPaedagogisch
+	) {
 		this.betreuungPaedagogisch = betreuungPaedagogisch;
 	}
 
@@ -456,7 +490,9 @@ public class LastenausgleichGemeindenDataRow {
 		return bemerkungStarkeVeraenderung;
 	}
 
-	public void setBemerkungStarkeVeraenderung(@Nullable String bemerkungStarkeVeraenderung) {
+	public void setBemerkungStarkeVeraenderung(
+		@Nullable String bemerkungStarkeVeraenderung
+	) {
 		this.bemerkungStarkeVeraenderung = bemerkungStarkeVeraenderung;
 	}
 
@@ -465,8 +501,11 @@ public class LastenausgleichGemeindenDataRow {
 		return bemerkungMindestens50ProzentAusgebildet;
 	}
 
-	public void setBemerkungMindestens50ProzentAusgebildet(@Nullable String bemerkungMindestens50ProzentAusgebildet) {
-		this.bemerkungMindestens50ProzentAusgebildet = bemerkungMindestens50ProzentAusgebildet;
+	public void setBemerkungMindestens50ProzentAusgebildet(
+		@Nullable String bemerkungMindestens50ProzentAusgebildet
+	) {
+		this.bemerkungMindestens50ProzentAusgebildet =
+			bemerkungMindestens50ProzentAusgebildet;
 	}
 
 	@Nullable
@@ -474,7 +513,9 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungsstundenPrognoseKibon;
 	}
 
-	public void setBetreuungsstundenPrognoseKibon(@Nullable String betreuungsstundenPrognoseKibon) {
+	public void setBetreuungsstundenPrognoseKibon(
+		@Nullable String betreuungsstundenPrognoseKibon
+	) {
 		this.betreuungsstundenPrognoseKibon = betreuungsstundenPrognoseKibon;
 	}
 
@@ -483,16 +524,22 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungsstundenPrognoseBemerkungen;
 	}
 
-	public void setBetreuungsstundenPrognoseBemerkungen(@Nullable String betreuungsstundenPrognoseBemerkungen) {
-		this.betreuungsstundenPrognoseBemerkungen = betreuungsstundenPrognoseBemerkungen;
+	public void setBetreuungsstundenPrognoseBemerkungen(
+		@Nullable String betreuungsstundenPrognoseBemerkungen
+	) {
+		this.betreuungsstundenPrognoseBemerkungen =
+			betreuungsstundenPrognoseBemerkungen;
 	}
 
 	public Set<LastenausgleichTagesschulenDataRow> getLastenausgleichTagesschulenDaten() {
 		return lastenausgleichTagesschulenDaten;
 	}
 
-	public void setLastenausgleichTagesschulenDaten(Set<LastenausgleichTagesschulenDataRow> lastenausgleichTagesschulenDaten) {
-		this.lastenausgleichTagesschulenDaten = lastenausgleichTagesschulenDaten;
+	public void setLastenausgleichTagesschulenDaten(
+		Set<LastenausgleichTagesschulenDataRow> lastenausgleichTagesschulenDaten
+	) {
+		this.lastenausgleichTagesschulenDaten =
+			lastenausgleichTagesschulenDaten;
 	}
 
 	@Nullable
@@ -500,7 +547,9 @@ public class LastenausgleichGemeindenDataRow {
 		return betreuungsstundenPrognose;
 	}
 
-	public void setBetreuungsstundenPrognose(@Nullable BigDecimal betreuungsstundenPrognose) {
+	public void setBetreuungsstundenPrognose(
+		@Nullable BigDecimal betreuungsstundenPrognose
+	) {
 		this.betreuungsstundenPrognose = betreuungsstundenPrognose;
 	}
 }

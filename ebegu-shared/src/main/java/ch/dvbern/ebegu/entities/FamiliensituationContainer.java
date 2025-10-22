@@ -22,13 +22,13 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.validation.Valid;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.EbeguUtil;
@@ -40,7 +40,8 @@ import org.hibernate.envers.Audited;
 /**
  * Entitaet zum Speichern von FamiliensituationContainer in der Datenbank.
  */
-@CheckFamiliensituationContainerComplete(groups = AntragCompleteValidationGroup.class)
+@CheckFamiliensituationContainerComplete(
+	groups = AntragCompleteValidationGroup.class)
 @Audited
 @Entity
 public class FamiliensituationContainer extends AbstractMutableEntity {
@@ -50,47 +51,78 @@ public class FamiliensituationContainer extends AbstractMutableEntity {
 	@Valid
 	@Nullable
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_familiensituation_container_familiensituation_JA_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_familiensituation_container_familiensituation_JA_id"))
 	private Familiensituation familiensituationJA;
 
 	@Valid
 	@Nullable
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_familiensituation_container_familiensituation_GS_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_familiensituation_container_familiensituation_GS_id"))
 	private Familiensituation familiensituationGS;
 
 	@Valid
 	@Nullable
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_familiensituation_container_familiensituation_erstgesuch_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_familiensituation_container_familiensituation_erstgesuch_id"))
 	private Familiensituation familiensituationErstgesuch;
 
 	@Nonnull
 	@Valid
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "familiensituationContainer")
-	private Set<SozialhilfeZeitraumContainer> sozialhilfeZeitraumContainers = new HashSet<>();
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "familiensituationContainer")
+	private Set<SozialhilfeZeitraumContainer> sozialhilfeZeitraumContainers =
+		new HashSet<>();
 
 	public FamiliensituationContainer() {
 	}
 
 	@Nonnull
 	public FamiliensituationContainer copyFamiliensituationContainer(
-		@Nonnull FamiliensituationContainer target, @Nonnull AntragCopyType copyType, boolean sourceGesuchIsMutation) {
+		@Nonnull FamiliensituationContainer target,
+		@Nonnull AntragCopyType copyType,
+		boolean sourceGesuchIsMutation
+	) {
 		super.copyAbstractEntity(target, copyType);
 		target.setFamiliensituationGS(null);
 		Objects.requireNonNull(getFamiliensituationJA());
-		target.setFamiliensituationJA(getFamiliensituationJA().copyFamiliensituation(new Familiensituation(), copyType));
+		target.setFamiliensituationJA(
+			getFamiliensituationJA().copyFamiliensituation(
+				new Familiensituation(),
+				copyType
+			)
+		);
 		switch (copyType) {
 		case MUTATION:
-			target.setFamiliensituationJA(this.getFamiliensituationJA().copyFamiliensituation(new Familiensituation(),
-				copyType));
+			target.setFamiliensituationJA(
+				this.getFamiliensituationJA()
+					.copyFamiliensituation(
+						new Familiensituation(),
+						copyType
+					)
+			);
 			// Falls das zu kopierende Gesuch bereits eine Mutation war, muss die FamiliensituationErstgesuch auch
 			// gesetzt werden
 			if (sourceGesuchIsMutation) {
 				Objects.requireNonNull(this.getFamiliensituationErstgesuch());
-				target.setFamiliensituationErstgesuch(this.getFamiliensituationErstgesuch().copyFamiliensituation(new Familiensituation(), copyType));
+				target.setFamiliensituationErstgesuch(
+					this.getFamiliensituationErstgesuch()
+						.copyFamiliensituation(
+							new Familiensituation(),
+							copyType
+						)
+				);
 			} else {
-				target.setFamiliensituationErstgesuch(this.getFamiliensituationJA().copyFamiliensituation(new Familiensituation(), copyType));
+				target.setFamiliensituationErstgesuch(
+					this.getFamiliensituationJA()
+						.copyFamiliensituation(
+							new Familiensituation(),
+							copyType
+						)
+				);
 			}
 			copySozialhilfeZeitraeume(target, copyType);
 			break;
@@ -110,7 +142,9 @@ public class FamiliensituationContainer extends AbstractMutableEntity {
 		return familiensituationJA;
 	}
 
-	public void setFamiliensituationJA(@Nullable Familiensituation familiensituationJA) {
+	public void setFamiliensituationJA(
+		@Nullable Familiensituation familiensituationJA
+	) {
 		this.familiensituationJA = familiensituationJA;
 	}
 
@@ -119,7 +153,9 @@ public class FamiliensituationContainer extends AbstractMutableEntity {
 		return familiensituationGS;
 	}
 
-	public void setFamiliensituationGS(@Nullable Familiensituation familiensituationGS) {
+	public void setFamiliensituationGS(
+		@Nullable Familiensituation familiensituationGS
+	) {
 		this.familiensituationGS = familiensituationGS;
 	}
 
@@ -128,7 +164,9 @@ public class FamiliensituationContainer extends AbstractMutableEntity {
 		return familiensituationErstgesuch;
 	}
 
-	public void setFamiliensituationErstgesuch(@Nullable Familiensituation familiensituationErstgesuch) {
+	public void setFamiliensituationErstgesuch(
+		@Nullable Familiensituation familiensituationErstgesuch
+	) {
 		this.familiensituationErstgesuch = familiensituationErstgesuch;
 	}
 
@@ -142,20 +180,31 @@ public class FamiliensituationContainer extends AbstractMutableEntity {
 		return sozialhilfeZeitraumContainers;
 	}
 
-	public void setSozialhilfeZeitraumContainers(@Nonnull Set<SozialhilfeZeitraumContainer> sozialhilfeZeitraumContainers) {
+	public void setSozialhilfeZeitraumContainers(
+		@Nonnull Set<SozialhilfeZeitraumContainer> sozialhilfeZeitraumContainers
+	) {
 		this.sozialhilfeZeitraumContainers = sozialhilfeZeitraumContainers;
 	}
 
-	public boolean addSozialhilfeZeitraumContainer(@Nonnull final SozialhilfeZeitraumContainer sozialhilfeZeitraumContainerToAdd) {
+	public boolean addSozialhilfeZeitraumContainer(
+		@Nonnull final SozialhilfeZeitraumContainer sozialhilfeZeitraumContainerToAdd
+	) {
 		sozialhilfeZeitraumContainerToAdd.setFamiliensituationContainer(this);
-		return !sozialhilfeZeitraumContainers.contains(sozialhilfeZeitraumContainerToAdd) &&
-			sozialhilfeZeitraumContainers.add(sozialhilfeZeitraumContainerToAdd);
+		return !sozialhilfeZeitraumContainers.contains(
+			sozialhilfeZeitraumContainerToAdd
+		)
+			&&
+			sozialhilfeZeitraumContainers.add(
+				sozialhilfeZeitraumContainerToAdd
+			);
 	}
 
 	@Nonnull
 	public Familiensituation getFamiliensituationAm(LocalDate stichtag) {
 		Objects.requireNonNull(getFamiliensituationJA());
-		if (getFamiliensituationJA().getAenderungPer() == null || getFamiliensituationJA().getAenderungPer().isBefore(stichtag)) {
+		if (getFamiliensituationJA().getAenderungPer() == null
+			|| getFamiliensituationJA().getAenderungPer()
+				.isBefore(stichtag)) {
 			return getFamiliensituationJA();
 		}
 		Objects.requireNonNull(getFamiliensituationErstgesuch());
@@ -173,15 +222,28 @@ public class FamiliensituationContainer extends AbstractMutableEntity {
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final FamiliensituationContainer otherFamSitContainer = (FamiliensituationContainer) other;
-		return EbeguUtil.isSame(getFamiliensituationJA(), otherFamSitContainer.getFamiliensituationJA());
+		final FamiliensituationContainer otherFamSitContainer =
+			(FamiliensituationContainer) other;
+		return EbeguUtil.isSame(
+			getFamiliensituationJA(),
+			otherFamSitContainer.getFamiliensituationJA()
+		);
 	}
 
-	private void copySozialhilfeZeitraeume(@Nonnull FamiliensituationContainer target,
-		@Nonnull AntragCopyType copyType) {
-		for (SozialhilfeZeitraumContainer sozialhilfeZeitraumContainer : this.getSozialhilfeZeitraumContainers()) {
-			target.addSozialhilfeZeitraumContainer(sozialhilfeZeitraumContainer.copySozialhilfeZeitraumContainer(new SozialhilfeZeitraumContainer(),
-				copyType, this));
+	private void copySozialhilfeZeitraeume(
+		@Nonnull FamiliensituationContainer target,
+		@Nonnull AntragCopyType copyType
+	) {
+		for (SozialhilfeZeitraumContainer sozialhilfeZeitraumContainer : this
+			.getSozialhilfeZeitraumContainers()) {
+			target.addSozialhilfeZeitraumContainer(
+				sozialhilfeZeitraumContainer
+					.copySozialhilfeZeitraumContainer(
+						new SozialhilfeZeitraumContainer(),
+						copyType,
+						this
+					)
+			);
 		}
 	}
 }

@@ -23,13 +23,16 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.ws.rs.core.Cookie;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
+import jakarta.ws.rs.core.Cookie;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Mandant_;
@@ -38,15 +41,17 @@ import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import org.hibernate.jpa.QueryHints;
 
 /**
  * Service fuer Mandanten
  */
 @Stateless
 @Local(MandantService.class)
-public class MandantServiceBean extends AbstractBaseService implements MandantService {
+public class MandantServiceBean extends AbstractBaseService implements
+	MandantService {
 
 	@Inject
 	private Persistence persistence;
@@ -54,8 +59,21 @@ public class MandantServiceBean extends AbstractBaseService implements MandantSe
 	@Inject
 	private CriteriaQueryHelper criteriaQueryHelper;
 
+	@Override
+	public Mandant getMandant(@Nonnull final String id) {
+		return findMandant(id)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getMandant",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					id
+				)
+			);
+	}
+
 	@Nonnull
 	@Override
+	@Transactional(TxType.SUPPORTS)
 	public Optional<Mandant> findMandant(@Nonnull final String id) {
 		Objects.requireNonNull(id, "id muss gesetzt sein");
 		Mandant a = persistence.find(Mandant.class, id);
@@ -66,19 +84,30 @@ public class MandantServiceBean extends AbstractBaseService implements MandantSe
 	@Override
 	public Optional<Mandant> findMandantByName(@Nonnull String name) {
 		return criteriaQueryHelper.getEntityByUniqueAttribute(
-				Mandant.class,
-				name,
-				Mandant_.name
+			Mandant.class,
+			name,
+			Mandant_.name
 		);
 	}
 
 	@Nonnull
 	@Override
-	public Optional<Mandant> findMandantByIdentifier(@Nonnull MandantIdentifier mandantIdentifier) {
-		return criteriaQueryHelper.getEntityByUniqueAttribute(
-			Mandant.class,
-			mandantIdentifier,
-			Mandant_.mandantIdentifier
+	@Transactional(TxType.SUPPORTS)
+	public Optional<Mandant> findMandantByIdentifier(
+		@Nonnull MandantIdentifier mandantIdentifier
+	) {
+		CriteriaBuilder builder = persistence.getCriteriaBuilder();
+		CriteriaQuery<Mandant> query = builder.createQuery(Mandant.class);
+		Root<Mandant> from = query.from(Mandant.class);
+		Predicate equal = builder.equal(
+			from.get(Mandant_.mandantIdentifier),
+			mandantIdentifier
+		);
+		return Optional.ofNullable(
+			persistence.getEntityManager()
+				.createQuery(query.where(equal))
+				.setHint(QueryHints.HINT_CACHEABLE, true)
+				.getSingleResult()
 		);
 	}
 
@@ -86,20 +115,33 @@ public class MandantServiceBean extends AbstractBaseService implements MandantSe
 	@Override
 	public Mandant findMandantByCookie(@Nullable Cookie mandantCookie) {
 		if (mandantCookie == null) {
-			throw new EbeguRuntimeException("findMandantByCookie", ErrorCodeEnum.ERROR_MANDANT_COOKIE_IS_NULL);
+			throw new EbeguRuntimeException(
+				"findMandantByCookie",
+				ErrorCodeEnum.ERROR_MANDANT_COOKIE_IS_NULL
+			);
 		}
-		var cookieDecoded = URLDecoder.decode(mandantCookie.getValue(), StandardCharsets.UTF_8);
+		var cookieDecoded = URLDecoder.decode(
+			mandantCookie.getValue(),
+			StandardCharsets.UTF_8
+		);
 		return findMandantByName(cookieDecoded)
 			.orElseThrow(() -> {
-				throw new EbeguEntityNotFoundException("findMandantByCookie", cookieDecoded);
+				throw new EbeguEntityNotFoundException(
+					"findMandantByCookie",
+					cookieDecoded
+				);
 			});
 	}
 
 	@Nonnull
 	@Override
 	public Mandant getMandantBern() {
-		return findMandantByName("Kanton Bern").orElseThrow(()
-			-> new EbeguRuntimeException("getDefaultMandant", "Kanton Bern Mandant not found"));
+		return findMandantByName("Kanton Bern").orElseThrow(
+			() -> new EbeguRuntimeException(
+				"getDefaultMandant",
+				"Kanton Bern Mandant not found"
+			)
+		);
 	}
 
 	@Nonnull
@@ -113,7 +155,11 @@ public class MandantServiceBean extends AbstractBaseService implements MandantSe
 	}
 
 	@Override
-	public void updateNextInfomaBelegnummer(@Nonnull Mandant mandant, @Nonnull ZahlungslaufTyp zahlungslaufTyp, long nextNumber) {
+	public void updateNextInfomaBelegnummer(
+		@Nonnull Mandant mandant,
+		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
+		long nextNumber
+	) {
 		mandant.setNextInfomaBelegnummer(zahlungslaufTyp, nextNumber);
 		persistence.merge(mandant);
 	}

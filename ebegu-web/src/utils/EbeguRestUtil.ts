@@ -16,7 +16,47 @@
  */
 
 import {Injectable} from '@angular/core';
-import * as moment from 'moment';
+import moment from 'moment';
+import {TSAnmeldungDTO} from '@kibon/shared/model/dto';
+import {
+    ferienInselNameOrder,
+    TSAdressetyp,
+    TSEinschulungTyp
+} from '@kibon/shared/model/enums';
+import {
+    TSAbstractDateRangedEntity,
+    TSAbstractIntegerPensumEntity,
+    TSAbstractPersonEntity,
+    TSDateRange,
+    TSFachstellenTyp,
+    TSPensumAusserordentlicherAnspruch,
+    TSPensumFachstelle,
+    TSAbstractEntity,
+    TSAbstractMutableEntity,
+    TSWizardStep,
+    TSFachstelle,
+    TSEinstellungenFerieninsel,
+    TSInstitutionStammdaten,
+    TSInstitutionStammdatenTagesschule,
+    TSInstitutionStammdatenSummary,
+    TSInstitutionStammdatenFerieninsel,
+    TSEinstellungenTagesschule,
+    TSTextRessource,
+    TSModulTagesschule,
+    TSModulTagesschuleGroup,
+    TSMandant,
+    TSAdresse,
+    TSGemeinde,
+    TSInstitution,
+    TSInstitutionStammdatenBetreuungsgutscheine,
+    TSGesuchsperiode,
+    TSTraegerschaft
+} from '@kibon/shared/model/entity';
+import {TSKind} from '@kibon/kind/model/entity';
+import {
+    TSApplicationProperty,
+    TSPublicAppConfig
+} from '@kibon/shared/model/einstellung';
 import {BenutzerListFilter} from '../admin/component/benutzerListView/dv-benutzer-list/BenutzerListFilter';
 import {TSFerienbetreuungBerechnung} from '../app/gemeinde-antraege/ferienbetreuung/ferienbetreuung-kosten-einnahmen/TSFerienbetreuungBerechnung';
 import {TSBenutzerTableFilterDTO} from '../models/dto/TSBenutzerTableFilterDTO';
@@ -26,13 +66,9 @@ import {TSFinanzielleSituationResultateDTO} from '../models/dto/TSFinanzielleSit
 import {TSKitaxResponse} from '../models/dto/TSKitaxResponse';
 import {TSQuickSearchResult} from '../models/dto/TSQuickSearchResult';
 import {TSSearchResultEntry} from '../models/dto/TSSearchResultEntry';
-import {TSAdressetyp} from '../models/enums/TSAdressetyp';
+import {TSBetreuungspensumAbweichungStatus} from '../models/enums/betreuung/TSBetreuungspensumAbweichungStatus';
 import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
 import {TSAusserordentlicherAnspruchTyp} from '../models/enums/TSAusserordentlicherAnspruchTyp';
-import {TSBetreuungspensumAbweichungStatus} from '../models/enums/betreuung/TSBetreuungspensumAbweichungStatus';
-import {TSEinschulungTyp} from '../models/enums/TSEinschulungTyp';
-import {TSFachstellenTyp} from '../models/enums/TSFachstellenTyp';
-import {ferienInselNameOrder} from '../models/enums/TSFerienname';
 import {TSFinanzielleSituationTyp} from '../models/enums/TSFinanzielleSituationTyp';
 import {TSKinderabzugTyp} from '../models/enums/TSKinderabzugTyp';
 import {TSPensumAnzeigeTyp} from '../models/enums/TSPensumAnzeigeTyp';
@@ -60,24 +96,15 @@ import {TSSozialdienstFall} from '../models/sozialdienst/TSSozialdienstFall';
 import {TSSozialdienstFallDokument} from '../models/sozialdienst/TSSozialdienstFallDokument';
 import {TSSozialdienstStammdaten} from '../models/sozialdienst/TSSozialdienstStammdaten';
 import {TSAbstractAntragEntity} from '../models/TSAbstractAntragEntity';
-import {TSAbstractDateRangedEntity} from '../models/TSAbstractDateRangedEntity';
 import {TSAbstractDecimalPensumEntity} from '../models/TSAbstractDecimalPensumEntity';
-import {TSAbstractEntity} from '../models/TSAbstractEntity';
 import {TSAbstractFinanzielleSituation} from '../models/TSAbstractFinanzielleSituation';
 import {TSAbstractGemeindeStammdaten} from '../models/TSAbstractGemeindeStammdaten';
-import {TSAbstractIntegerPensumEntity} from '../models/TSAbstractIntegerPensumEntity';
-import {TSAbstractMutableEntity} from '../models/TSAbstractMutableEntity';
-import {TSAbstractPersonEntity} from '../models/TSAbstractPersonEntity';
 import {TSAbwesenheit} from '../models/TSAbwesenheit';
 import {TSAbwesenheitContainer} from '../models/TSAbwesenheitContainer';
-import {TSAdresse} from '../models/TSAdresse';
 import {TSAdresseContainer} from '../models/TSAdresseContainer';
-import {TSAnmeldungDTO} from '../models/TSAnmeldungDTO';
 import {TSAnmeldungTagesschuleZeitabschnitt} from '../models/TSAnmeldungTagesschuleZeitabschnitt';
 import {TSAntragDTO} from '../models/TSAntragDTO';
 import {TSAntragStatusHistory} from '../models/TSAntragStatusHistory';
-import {TSApplicationProperty} from '../models/TSApplicationProperty';
-import {TSBatchJobInformation} from '../models/TSBatchJobInformation';
 import {TSBelegungFerieninsel} from '../models/TSBelegungFerieninsel';
 import {TSBelegungFerieninselTag} from '../models/TSBelegungFerieninselTag';
 import {TSBelegungTagesschule} from '../models/TSBelegungTagesschule';
@@ -93,21 +120,17 @@ import {TSBetreuungsmitteilungPensum} from '../models/TSBetreuungsmitteilungPens
 import {TSBetreuungspensum} from '../models/TSBetreuungspensum';
 import {TSBetreuungspensumAbweichung} from '../models/TSBetreuungspensumAbweichung';
 import {TSBetreuungspensumContainer} from '../models/TSBetreuungspensumContainer';
-import {TSBetreuungsstandort} from '../models/TSBetreuungsstandort';
 import {TSBfsGemeinde} from '../models/TSBfsGemeinde';
 import {TSDokument} from '../models/TSDokument';
 import {TSDokumentGrund} from '../models/TSDokumentGrund';
 import {TSDossier} from '../models/TSDossier';
 import {TSDownloadFile} from '../models/TSDownloadFile';
-import {TSEbeguVorlage} from '../models/TSEbeguVorlage';
 import {TSEingewoehnung} from '../models/TSEingewoehnung';
 import {TSEinkommensverschlechterung} from '../models/TSEinkommensverschlechterung';
 import {TSEinkommensverschlechterungContainer} from '../models/TSEinkommensverschlechterungContainer';
 import {TSEinkommensverschlechterungInfo} from '../models/TSEinkommensverschlechterungInfo';
 import {TSEinkommensverschlechterungInfoContainer} from '../models/TSEinkommensverschlechterungInfoContainer';
-import {TSEinstellung} from '../models/TSEinstellung';
-import {TSEinstellungenFerieninsel} from '../models/TSEinstellungenFerieninsel';
-import {TSEinstellungenTagesschule} from '../models/TSEinstellungenTagesschule';
+import {TSEinstellung} from '../admin/einstellungen/TSEinstellung';
 import {TSErweiterteBetreuung} from '../models/TSErweiterteBetreuung';
 import {TSErweiterteBetreuungContainer} from '../models/TSErweiterteBetreuungContainer';
 import {TSErwerbspensum} from '../models/TSErwerbspensum';
@@ -118,7 +141,6 @@ import {TSEWKPerson} from '../models/TSEWKPerson';
 import {TSEWKResultat} from '../models/TSEWKResultat';
 import {TSExternalClient} from '../models/TSExternalClient';
 import {TSExternalClientAssignment} from '../models/TSExternalClientAssignment';
-import {TSFachstelle} from '../models/TSFachstelle';
 import {TSFall} from '../models/TSFall';
 import {TSFallAntragDTO} from '../models/TSFallAntragDTO';
 import {TSFamiliensituation} from '../models/TSFamiliensituation';
@@ -131,63 +153,39 @@ import {TSFinanzielleSituationContainer} from '../models/TSFinanzielleSituationC
 import {TSFinanzielleSituationSelbstdeklaration} from '../models/TSFinanzielleSituationSelbstdeklaration';
 import {TSFinanzModel} from '../models/TSFinanzModel';
 import {TSFinSitZusatzangabenAppenzell} from '../models/TSFinSitZusatzangabenAppenzell';
-import {TSGemeinde} from '../models/TSGemeinde';
 import {TSGemeindeKonfiguration} from '../models/TSGemeindeKonfiguration';
 import {TSGemeindeRegistrierung} from '../models/TSGemeindeRegistrierung';
 import {TSGemeindeStammdaten} from '../models/TSGemeindeStammdaten';
 import {TSGemeindeStammdatenKorrespondenz} from '../models/TSGemeindeStammdatenKorrespondenz';
 import {TSGemeindeStammdatenLite} from '../models/TSGemeindeStammdatenLite';
 import {TSGesuch} from '../models/TSGesuch';
-import {TSGesuchsperiode} from '../models/TSGesuchsperiode';
 import {TSGesuchsteller} from '../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../models/TSGesuchstellerContainer';
-import {TSInstitution} from '../models/TSInstitution';
 import {TSInstitutionExternalClient} from '../models/TSInstitutionExternalClient';
 import {TSInstitutionExternalClientAssignment} from '../models/TSInstitutionExternalClientAssignment';
 import {TSInstitutionListDTO} from '../models/TSInstitutionListDTO';
-import {TSInstitutionStammdaten} from '../models/TSInstitutionStammdaten';
-import {TSInstitutionStammdatenBetreuungsgutscheine} from '../models/TSInstitutionStammdatenBetreuungsgutscheine';
-import {TSInstitutionStammdatenFerieninsel} from '../models/TSInstitutionStammdatenFerieninsel';
-import {TSInstitutionStammdatenSummary} from '../models/TSInstitutionStammdatenSummary';
-import {TSInstitutionStammdatenTagesschule} from '../models/TSInstitutionStammdatenTagesschule';
 import {TSInstitutionUpdate} from '../models/TSInstitutionUpdate';
 import {TSInternePendenz} from '../models/TSInternePendenz';
-import {TSKind} from '../models/TSKind';
 import {TSKindContainer} from '../models/TSKindContainer';
 import {TSKindDublette} from '../models/TSKindDublette';
 import {TSLastenausgleich} from '../models/TSLastenausgleich';
 import {TSMahnung} from '../models/TSMahnung';
-import {TSMandant} from '../models/TSMandant';
 import {TSMitteilung} from '../models/TSMitteilung';
-import {TSModulTagesschule} from '../models/TSModulTagesschule';
-import {TSModulTagesschuleGroup} from '../models/TSModulTagesschuleGroup';
 import {TSPendenzBetreuung} from '../models/TSPendenzBetreuung';
-import {TSPensumAusserordentlicherAnspruch} from '../models/TSPensumAusserordentlicherAnspruch';
-import {TSPensumFachstelle} from '../models/TSPensumFachstelle';
-import {TSPublicAppConfig} from '../models/TSPublicAppConfig';
-import {TSRueckforderungDokument} from '../models/TSRueckforderungDokument';
-import {TSRueckforderungFormular} from '../models/TSRueckforderungFormular';
-import {TSRueckforderungMitteilung} from '../models/TSRueckforderungMitteilung';
 import {TSSozialhilfeZeitraum} from '../models/TSSozialhilfeZeitraum';
 import {TSSozialhilfeZeitraumContainer} from '../models/TSSozialhilfeZeitraumContainer';
 import {TSSupportAnfrage} from '../models/TSSupportAnfrage';
-import {TSTextRessource} from '../models/TSTextRessource';
-import {TSTraegerschaft} from '../models/TSTraegerschaft';
 import {TSTsCalculationResult} from '../models/TSTsCalculationResult';
-import {TSVersendeteMail} from '../models/TSVersendeteMail';
 import {TSUnbezahlterUrlaub} from '../models/TSUnbezahlterUrlaub';
 import {TSVerfuegung} from '../models/TSVerfuegung';
 import {TSVerfuegungZeitabschnitt} from '../models/TSVerfuegungZeitabschnitt';
 import {TSVerfuegungZeitabschnittBemerkung} from '../models/TSVerfuegungZeitabschnittBemerkung';
-import {TSVorlage} from '../models/TSVorlage';
-import {TSWizardStep} from '../models/TSWizardStep';
+import {TSVersendeteMail} from '../models/TSVersendeteMail';
 import {TSWizardStepX} from '../models/TSWizardStepX';
 import {TSWorkJob} from '../models/TSWorkJob';
-import {TSZahlung} from '../models/TSZahlung';
-import {TSZahlungsauftrag} from '../models/TSZahlungsauftrag';
-import {TSDateRange} from '../models/types/TSDateRange';
+import {TSZahlung, TSZahlungsauftrag} from '@kibon/zahlung/model/entity';
 import {TSLand} from '../models/types/TSLand';
-import {DateUtil} from './DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from './EbeguUtil';
 
 @Injectable({
@@ -204,13 +202,13 @@ export class EbeguRestUtil {
         return Array.isArray(data)
             ? data.map(item =>
                   this.parseApplicationProperty(
-                      new TSApplicationProperty('', ''),
+                      new TSApplicationProperty(),
                       item
                   )
               )
             : [
                   this.parseApplicationProperty(
-                      new TSApplicationProperty('', ''),
+                      new TSApplicationProperty(),
                       data
                   )
               ];
@@ -287,78 +285,12 @@ export class EbeguRestUtil {
         return undefined;
     }
 
-    public parseEbeguVorlages(data: any): TSEbeguVorlage[] {
-        if (!data) {
-            return [];
-        }
-        return Array.isArray(data)
-            ? data.map(item =>
-                  this.parseEbeguVorlage(new TSEbeguVorlage(), item)
-              )
-            : [this.parseEbeguVorlage(new TSEbeguVorlage(), data)];
-    }
-
-    public parseEbeguVorlage(
-        ebeguVorlageTS: TSEbeguVorlage,
-        receivedEbeguVorlage: any
-    ): TSEbeguVorlage {
-        if (receivedEbeguVorlage) {
-            this.parseDateRangeEntity(ebeguVorlageTS, receivedEbeguVorlage);
-            ebeguVorlageTS.name = receivedEbeguVorlage.name;
-            ebeguVorlageTS.vorlage = this.parseVorlage(
-                new TSVorlage(),
-                receivedEbeguVorlage.vorlage
-            );
-            return ebeguVorlageTS;
-        }
-        return undefined;
-    }
-
-    public parseVorlage(vorlageTS: TSVorlage, receivedVorlage: any): TSVorlage {
-        if (receivedVorlage) {
-            this.parseAbstractFileEntity(vorlageTS, receivedVorlage);
-            return vorlageTS;
-        }
-        return undefined;
-    }
-
-    public ebeguVorlageToRestObject(
-        restEbeguVorlage: any,
-        ebeguVorlage: TSEbeguVorlage
-    ): TSEbeguVorlage {
-        if (ebeguVorlage) {
-            this.abstractDateRangeEntityToRestObject(
-                restEbeguVorlage,
-                ebeguVorlage
-            );
-            restEbeguVorlage.name = ebeguVorlage.name;
-            restEbeguVorlage.value = this.vorlageToRestObject(
-                {},
-                ebeguVorlage.vorlage
-            );
-            return restEbeguVorlage;
-        }
-        return undefined;
-    }
-
-    public vorlageToRestObject(
-        restVorlage: any,
-        vorlage: TSVorlage
-    ): TSVorlage {
-        if (vorlage) {
-            this.abstractFileEntityToRestObject(restVorlage, vorlage);
-            return restVorlage;
-        }
-        return undefined;
-    }
-
     private parseAbstractFileEntity(
         fileTS: TSFile,
         fileFromServer: any
     ): TSFile {
         this.parseAbstractMutableEntity(fileTS, fileFromServer);
         fileTS.filename = fileFromServer.filename;
-        fileTS.filepfad = fileFromServer.filepfad;
         fileTS.filesize = fileFromServer.filesize;
         return fileTS;
     }
@@ -369,7 +301,6 @@ export class EbeguRestUtil {
     ): any {
         this.abstractMutableEntityToRestObject(restObject, typescriptObject);
         restObject.filename = typescriptObject.filename;
-        restObject.filepfad = typescriptObject.filepfad;
         restObject.filesize = typescriptObject.filesize;
         return restObject;
     }
@@ -380,12 +311,14 @@ export class EbeguRestUtil {
     ): void {
         parsedAbstractEntity.id = receivedAbstractEntity.id;
         parsedAbstractEntity.version = receivedAbstractEntity.version;
-        parsedAbstractEntity.timestampErstellt = DateUtil.localDateTimeToMoment(
-            receivedAbstractEntity.timestampErstellt
-        );
-        parsedAbstractEntity.timestampMutiert = DateUtil.localDateTimeToMoment(
-            receivedAbstractEntity.timestampMutiert
-        );
+        parsedAbstractEntity.timestampErstellt =
+            MomentUtil.localDateTimeToMoment(
+                receivedAbstractEntity.timestampErstellt
+            );
+        parsedAbstractEntity.timestampMutiert =
+            MomentUtil.localDateTimeToMoment(
+                receivedAbstractEntity.timestampMutiert
+            );
     }
 
     private abstractEntityToRestObject(
@@ -395,12 +328,12 @@ export class EbeguRestUtil {
         restObject.id = typescriptObject.id;
         restObject.version = typescriptObject.version;
         if (typescriptObject.timestampErstellt) {
-            restObject.timestampErstellt = DateUtil.momentToLocalDateTime(
+            restObject.timestampErstellt = MomentUtil.momentToLocalDateTime(
                 typescriptObject.timestampErstellt
             );
         }
         if (typescriptObject.timestampMutiert) {
-            restObject.timestampMutiert = DateUtil.momentToLocalDateTime(
+            restObject.timestampMutiert = MomentUtil.momentToLocalDateTime(
                 typescriptObject.timestampMutiert
             );
         }
@@ -429,7 +362,7 @@ export class EbeguRestUtil {
         this.parseAbstractMutableEntity(personObjectTS, receivedPersonObject);
         personObjectTS.vorname = receivedPersonObject.vorname;
         personObjectTS.nachname = receivedPersonObject.nachname;
-        personObjectTS.geburtsdatum = DateUtil.localDateToMoment(
+        personObjectTS.geburtsdatum = MomentUtil.localDateToMoment(
             receivedPersonObject.geburtsdatum
         );
         personObjectTS.geschlecht = receivedPersonObject.geschlecht;
@@ -442,7 +375,7 @@ export class EbeguRestUtil {
         this.abstractMutableEntityToRestObject(restPersonObject, personObject);
         restPersonObject.vorname = personObject.vorname;
         restPersonObject.nachname = personObject.nachname;
-        restPersonObject.geburtsdatum = DateUtil.momentToLocalDate(
+        restPersonObject.geburtsdatum = MomentUtil.momentToLocalDate(
             personObject.geburtsdatum
         );
         restPersonObject.geschlecht = personObject.geschlecht;
@@ -454,10 +387,10 @@ export class EbeguRestUtil {
     ): void {
         this.abstractMutableEntityToRestObject(restObj, dateRangedEntity);
         if (dateRangedEntity && dateRangedEntity.gueltigkeit) {
-            restObj.gueltigAb = DateUtil.momentToLocalDate(
+            restObj.gueltigAb = MomentUtil.momentToLocalDate(
                 dateRangedEntity.gueltigkeit.gueltigAb
             );
-            restObj.gueltigBis = DateUtil.momentToLocalDate(
+            restObj.gueltigBis = MomentUtil.momentToLocalDate(
                 dateRangedEntity.gueltigkeit.gueltigBis
             );
         }
@@ -468,8 +401,10 @@ export class EbeguRestUtil {
         receivedAppProperty: any
     ): void {
         this.parseAbstractMutableEntity(parsedObject, receivedAppProperty);
-        const ab = DateUtil.localDateToMoment(receivedAppProperty.gueltigAb);
-        const bis = DateUtil.localDateToMoment(receivedAppProperty.gueltigBis);
+        const ab = MomentUtil.localDateToMoment(receivedAppProperty.gueltigAb);
+        const bis = MomentUtil.localDateToMoment(
+            receivedAppProperty.gueltigBis
+        );
         parsedObject.gueltigkeit = new TSDateRange(ab, bis);
     }
 
@@ -574,13 +509,13 @@ export class EbeguRestUtil {
             {},
             antragEntity.gesuchsperiode
         );
-        restObj.eingangsdatum = DateUtil.momentToLocalDate(
+        restObj.eingangsdatum = MomentUtil.momentToLocalDate(
             antragEntity.eingangsdatum
         );
-        restObj.regelnGueltigAb = DateUtil.momentToLocalDate(
+        restObj.regelnGueltigAb = MomentUtil.momentToLocalDate(
             antragEntity.regelnGueltigAb
         );
-        restObj.freigabeDatum = DateUtil.momentToLocalDate(
+        restObj.freigabeDatum = MomentUtil.momentToLocalDate(
             antragEntity.freigabeDatum
         );
         restObj.status = antragEntity.status;
@@ -602,13 +537,13 @@ export class EbeguRestUtil {
             new TSGesuchsperiode(),
             antragFromServer.gesuchsperiode
         );
-        antragTS.eingangsdatum = DateUtil.localDateToMoment(
+        antragTS.eingangsdatum = MomentUtil.localDateToMoment(
             antragFromServer.eingangsdatum
         );
-        antragTS.regelnGueltigAb = DateUtil.localDateToMoment(
+        antragTS.regelnGueltigAb = MomentUtil.localDateToMoment(
             antragFromServer.regelnGueltigAb
         );
-        antragTS.freigabeDatum = DateUtil.localDateToMoment(
+        antragTS.freigabeDatum = MomentUtil.localDateToMoment(
             antragFromServer.freigabeDatum
         );
         antragTS.status = antragFromServer.status;
@@ -860,12 +795,11 @@ export class EbeguRestUtil {
                 familiensituation.familienstatus;
             restFamiliensituation.gemeinsameSteuererklaerung =
                 familiensituation.gemeinsameSteuererklaerung;
-            restFamiliensituation.aenderungPer = DateUtil.momentToLocalDate(
+            restFamiliensituation.aenderungPer = MomentUtil.momentToLocalDate(
                 familiensituation.aenderungPer
             );
-            restFamiliensituation.startKonkubinat = DateUtil.momentToLocalDate(
-                familiensituation.startKonkubinat
-            );
+            restFamiliensituation.startKonkubinat =
+                MomentUtil.momentToLocalDate(familiensituation.startKonkubinat);
             restFamiliensituation.sozialhilfeBezueger =
                 familiensituation.sozialhilfeBezueger;
             restFamiliensituation.zustaendigeAmtsstelle =
@@ -982,10 +916,10 @@ export class EbeguRestUtil {
                 familiensituationFromServer.familienstatus;
             familiensituation.gemeinsameSteuererklaerung =
                 familiensituationFromServer.gemeinsameSteuererklaerung;
-            familiensituation.aenderungPer = DateUtil.localDateToMoment(
+            familiensituation.aenderungPer = MomentUtil.localDateToMoment(
                 familiensituationFromServer.aenderungPer
             );
-            familiensituation.startKonkubinat = DateUtil.localDateToMoment(
+            familiensituation.startKonkubinat = MomentUtil.localDateToMoment(
                 familiensituationFromServer.startKonkubinat
             );
             familiensituation.sozialhilfeBezueger =
@@ -1326,21 +1260,21 @@ export class EbeguRestUtil {
             restGemeinde.status = gemeinde.status;
             restGemeinde.bfsNummer = gemeinde.bfsNummer;
             restGemeinde.betreuungsgutscheineStartdatum =
-                DateUtil.momentToLocalDate(
+                MomentUtil.momentToLocalDate(
                     gemeinde.betreuungsgutscheineStartdatum
                 );
             restGemeinde.tagesschulanmeldungenStartdatum =
-                DateUtil.momentToLocalDate(
+                MomentUtil.momentToLocalDate(
                     gemeinde.tagesschulanmeldungenStartdatum
                 );
             restGemeinde.ferieninselanmeldungenStartdatum =
-                DateUtil.momentToLocalDate(
+                MomentUtil.momentToLocalDate(
                     gemeinde.ferieninselanmeldungenStartdatum
                 );
             restGemeinde.gueltigBis =
                 gemeinde.gueltigBis === null
                     ? '9999-12-31'
-                    : DateUtil.momentToLocalDate(gemeinde.gueltigBis);
+                    : MomentUtil.momentToLocalDate(gemeinde.gueltigBis);
             restGemeinde.angebotBG = gemeinde.angebotBG;
             restGemeinde.angebotBGTFO = gemeinde.angebotBGTFO;
             restGemeinde.angebotTS = gemeinde.angebotTS;
@@ -1348,6 +1282,8 @@ export class EbeguRestUtil {
             restGemeinde.besondereVolksschule = gemeinde.besondereVolksschule;
             restGemeinde.nurLats = gemeinde.nurLats;
             restGemeinde.infomaZahlungen = gemeinde.infomaZahlungen;
+            restGemeinde.adminMutationAbweichungMeldungEnabled =
+                gemeinde.adminMutationAbweichungMeldungEnabled;
             return restGemeinde;
         }
         return undefined;
@@ -1364,21 +1300,23 @@ export class EbeguRestUtil {
             gemeindeTS.gemeindeNummer = gemeindeFromServer.gemeindeNummer;
             gemeindeTS.bfsNummer = gemeindeFromServer.bfsNummer;
             gemeindeTS.betreuungsgutscheineStartdatum =
-                DateUtil.localDateToMoment(
+                MomentUtil.localDateToMoment(
                     gemeindeFromServer.betreuungsgutscheineStartdatum
                 );
             gemeindeTS.tagesschulanmeldungenStartdatum =
-                DateUtil.localDateToMoment(
+                MomentUtil.localDateToMoment(
                     gemeindeFromServer.tagesschulanmeldungenStartdatum
                 );
             gemeindeTS.ferieninselanmeldungenStartdatum =
-                DateUtil.localDateToMoment(
+                MomentUtil.localDateToMoment(
                     gemeindeFromServer.ferieninselanmeldungenStartdatum
                 );
             gemeindeTS.gueltigBis =
                 gemeindeFromServer.gueltigBis === '9999-12-31'
                     ? null
-                    : DateUtil.localDateToMoment(gemeindeFromServer.gueltigBis);
+                    : MomentUtil.localDateToMoment(
+                          gemeindeFromServer.gueltigBis
+                      );
             gemeindeTS.angebotBG = gemeindeFromServer.angebotBG;
             gemeindeTS.angebotBGTFO = gemeindeFromServer.angebotBGTFO;
             gemeindeTS.angebotTS = gemeindeFromServer.angebotTS;
@@ -1388,6 +1326,8 @@ export class EbeguRestUtil {
             gemeindeTS.nurLats = gemeindeFromServer.nurLats;
             gemeindeTS.key = gemeindeFromServer.key;
             gemeindeTS.infomaZahlungen = gemeindeFromServer.infomaZahlungen;
+            gemeindeTS.adminMutationAbweichungMeldungEnabled =
+                gemeindeFromServer.adminMutationAbweichungMeldungEnabled;
 
             return gemeindeTS;
         }
@@ -1759,6 +1699,8 @@ export class EbeguRestUtil {
             restStammdaten.logoSpacingLeft = stammdaten.logoSpacingLeft;
             restStammdaten.logoSpacingTop = stammdaten.logoSpacingTop;
             restStammdaten.standardSignatur = stammdaten.standardSignatur;
+            restStammdaten.barcodeSpacingLeft = stammdaten.barcodeSpacingLeft;
+            restStammdaten.barcodeSpacingTop = stammdaten.barcodeSpacingTop;
             return restStammdaten;
         }
         return undefined;
@@ -1785,6 +1727,10 @@ export class EbeguRestUtil {
                 stammdatenFromServer.standardSignatur;
             stammdatenTS.hasAlternativeLogoTagesschule =
                 stammdatenFromServer.hasAlternativeLogoTagesschule;
+            stammdatenTS.barcodeSpacingLeft =
+                stammdatenFromServer.barcodeSpacingLeft;
+            stammdatenTS.barcodeSpacingTop =
+                stammdatenFromServer.barcodeSpacingTop;
             return stammdatenTS;
         }
         return undefined;
@@ -2008,20 +1954,20 @@ export class EbeguRestUtil {
         restGesuch.geprueftSTV = gesuch.geprueftSTV;
         restGesuch.verfuegungEingeschrieben = gesuch.verfuegungEingeschrieben;
         restGesuch.gesperrtWegenBeschwerde = gesuch.gesperrtWegenBeschwerde;
-        restGesuch.datumGewarntNichtFreigegeben = DateUtil.momentToLocalDate(
+        restGesuch.datumGewarntNichtFreigegeben = MomentUtil.momentToLocalDate(
             gesuch.datumGewarntNichtFreigegeben
         );
-        restGesuch.datumGewarntFehlendeQuittung = DateUtil.momentToLocalDate(
+        restGesuch.datumGewarntFehlendeQuittung = MomentUtil.momentToLocalDate(
             gesuch.datumGewarntFehlendeQuittung
         );
-        restGesuch.timestampVerfuegt = DateUtil.momentToLocalDateTime(
+        restGesuch.timestampVerfuegt = MomentUtil.momentToLocalDateTime(
             gesuch.timestampVerfuegt
         );
         restGesuch.gueltig = gesuch.gueltig;
         restGesuch.dokumenteHochgeladen = gesuch.dokumenteHochgeladen;
         restGesuch.finSitStatus = gesuch.finSitStatus;
         restGesuch.finSitTyp = gesuch.finSitTyp;
-        restGesuch.finSitAenderungGueltigAbDatum = DateUtil.momentToLocalDate(
+        restGesuch.finSitAenderungGueltigAbDatum = MomentUtil.momentToLocalDate(
             gesuch.finSitAenderungGueltigAbDatum
         );
         return restGesuch;
@@ -2063,13 +2009,15 @@ export class EbeguRestUtil {
                 gesuchFromServer.verfuegungEingeschrieben;
             gesuchTS.gesperrtWegenBeschwerde =
                 gesuchFromServer.gesperrtWegenBeschwerde;
-            gesuchTS.datumGewarntNichtFreigegeben = DateUtil.localDateToMoment(
-                gesuchFromServer.datumGewarntNichtFreigegeben
-            );
-            gesuchTS.datumGewarntFehlendeQuittung = DateUtil.localDateToMoment(
-                gesuchFromServer.datumGewarntFehlendeQuittung
-            );
-            gesuchTS.timestampVerfuegt = DateUtil.localDateTimeToMoment(
+            gesuchTS.datumGewarntNichtFreigegeben =
+                MomentUtil.localDateToMoment(
+                    gesuchFromServer.datumGewarntNichtFreigegeben
+                );
+            gesuchTS.datumGewarntFehlendeQuittung =
+                MomentUtil.localDateToMoment(
+                    gesuchFromServer.datumGewarntFehlendeQuittung
+                );
+            gesuchTS.timestampVerfuegt = MomentUtil.localDateTimeToMoment(
                 gesuchFromServer.timestampVerfuegt
             );
             gesuchTS.gueltig = gesuchFromServer.gueltig;
@@ -2077,9 +2025,10 @@ export class EbeguRestUtil {
                 gesuchFromServer.dokumenteHochgeladen;
             gesuchTS.finSitStatus = gesuchFromServer.finSitStatus;
             gesuchTS.finSitTyp = gesuchFromServer.finSitTyp;
-            gesuchTS.finSitAenderungGueltigAbDatum = DateUtil.localDateToMoment(
-                gesuchFromServer.finSitAenderungGueltigAbDatum
-            );
+            gesuchTS.finSitAenderungGueltigAbDatum =
+                MomentUtil.localDateToMoment(
+                    gesuchFromServer.finSitAenderungGueltigAbDatum
+                );
             gesuchTS.markiertFuerKontroll =
                 gesuchFromServer.markiertFuerKontroll;
             return gesuchTS;
@@ -2226,8 +2175,6 @@ export class EbeguRestUtil {
                 institution.traegerschaft
             );
             restInstitution.status = institution.status;
-            restInstitution.stammdatenCheckRequired =
-                institution.stammdatenCheckRequired;
             return restInstitution;
         }
         return undefined;
@@ -2252,9 +2199,6 @@ export class EbeguRestUtil {
                 institutionFromServer.traegerschaft
             );
             institutionTS.status = institutionFromServer.status;
-            institutionTS.stammdatenCheckRequired =
-                institutionFromServer.stammdatenCheckRequired;
-
             if (institutionTS instanceof TSInstitutionListDTO) {
                 institutionTS.betreuungsangebotTyp =
                     institutionFromServer.betreuungsangebotTyp;
@@ -2500,10 +2444,6 @@ export class EbeguRestUtil {
                 institutionStammdaten.tarifProHauptmahlzeit;
             restInstitutionStammdaten.tarifProNebenmahlzeit =
                 institutionStammdaten.tarifProNebenmahlzeit;
-            restInstitutionStammdaten.betreuungsstandorte =
-                this.betreuungsstandortListToRestObject(
-                    institutionStammdaten.betreuungsstandorte
-                );
             restInstitutionStammdaten.oeffnungstage =
                 institutionStammdaten.oeffnungstage.getActiveDaysAsList();
             restInstitutionStammdaten.offenVon = institutionStammdaten.offenVon;
@@ -2516,8 +2456,6 @@ export class EbeguRestUtil {
                     : null;
             restInstitutionStammdaten.oeffnungstageProJahr =
                 institutionStammdaten.oeffnungstageProJahr;
-            restInstitutionStammdaten.auslastungInstitutionen =
-                institutionStammdaten.auslastungInstitutionen;
             restInstitutionStammdaten.anzahlKinderWarteliste =
                 institutionStammdaten.anzahlKinderWarteliste;
             restInstitutionStammdaten.summePensumWarteliste =
@@ -2540,28 +2478,6 @@ export class EbeguRestUtil {
             return restInstitutionStammdaten;
         }
         return undefined;
-    }
-
-    private betreuungsstandortListToRestObject(
-        betreuungsstandorte: Array<TSBetreuungsstandort>
-    ): Array<any> {
-        return betreuungsstandorte
-            ? betreuungsstandorte.map(item =>
-                  this.betreuungsstandortToRestObject({}, item)
-              )
-            : [];
-    }
-
-    private betreuungsstandortToRestObject(
-        restStandort: any,
-        standort: TSBetreuungsstandort
-    ): any {
-        this.abstractEntityToRestObject(restStandort, standort);
-        restStandort.adresse = this.adresseToRestObject({}, standort.adresse);
-        restStandort.mail = standort.mail;
-        restStandort.telefon = standort.telefon;
-        restStandort.webseite = standort.webseite;
-        return restStandort;
     }
 
     private parseInstitutionStammdatenBetreuungsgutscheine(
@@ -2607,14 +2523,8 @@ export class EbeguRestUtil {
                 institutionStammdatenFromServer.oeffnungsAbweichungen;
             institutionStammdatenTS.alternativeEmailFamilienportal =
                 institutionStammdatenFromServer.alternativeEmailFamilienportal;
-            institutionStammdatenTS.betreuungsstandorte =
-                this.parseBetreuungsstandortList(
-                    institutionStammdatenFromServer.betreuungsstandorte
-                );
             institutionStammdatenTS.oeffnungstageProJahr =
                 institutionStammdatenFromServer.oeffnungstageProJahr;
-            institutionStammdatenTS.auslastungInstitutionen =
-                institutionStammdatenFromServer.auslastungInstitutionen;
             institutionStammdatenTS.anzahlKinderWarteliste =
                 institutionStammdatenFromServer.anzahlKinderWarteliste;
             institutionStammdatenTS.summePensumWarteliste =
@@ -2637,35 +2547,6 @@ export class EbeguRestUtil {
             return institutionStammdatenTS;
         }
         return undefined;
-    }
-
-    private parseBetreuungsstandortList(data: Array<any>): Array<any> {
-        if (!data) {
-            return [];
-        }
-        return Array.isArray(data)
-            ? data.map(item =>
-                  this.parseBetreuungsstandort(new TSBetreuungsstandort(), item)
-              )
-            : [this.parseBetreuungsstandort(new TSBetreuungsstandort(), data)];
-    }
-
-    private parseBetreuungsstandort(
-        betreuungsstandort: TSBetreuungsstandort,
-        betreuungsstandortFromServer: any
-    ): TSBetreuungsstandort {
-        this.parseAbstractEntity(
-            betreuungsstandort,
-            betreuungsstandortFromServer
-        );
-        betreuungsstandort.adresse = this.parseAdresse(
-            new TSAdresse(),
-            betreuungsstandortFromServer.adresse
-        );
-        betreuungsstandort.webseite = betreuungsstandortFromServer.webseite;
-        betreuungsstandort.telefon = betreuungsstandortFromServer.telefon;
-        betreuungsstandort.mail = betreuungsstandortFromServer.mail;
-        return betreuungsstandort;
     }
 
     public institutionStammdatenFerieninselToRestObject(
@@ -2975,6 +2856,8 @@ export class EbeguRestUtil {
             abstractFinanzielleSituation.geschaeftsverlust;
         restAbstractFinanzielleSituation.abzuegeLiegenschaft =
             abstractFinanzielleSituation.abzuegeLiegenschaft;
+        restAbstractFinanzielleSituation.liegenschaftsErtraege =
+            abstractFinanzielleSituation.liegenschaftsErtraege;
         restAbstractFinanzielleSituation.einkaeufeVorsorge =
             abstractFinanzielleSituation.einkaeufeVorsorge;
         restAbstractFinanzielleSituation.bruttoLohn =
@@ -3150,6 +3033,8 @@ export class EbeguRestUtil {
                 abstractFinanzielleSituationFromServer.geschaeftsverlust;
             abstractFinanzielleSituationTS.abzuegeLiegenschaft =
                 abstractFinanzielleSituationFromServer.abzuegeLiegenschaft;
+            abstractFinanzielleSituationTS.liegenschaftsErtraege =
+                abstractFinanzielleSituationFromServer.liegenschaftsErtraege;
             abstractFinanzielleSituationTS.einkaeufeVorsorge =
                 abstractFinanzielleSituationFromServer.einkaeufeVorsorge;
             abstractFinanzielleSituationTS.abzugSchuldzinsen =
@@ -3225,7 +3110,7 @@ export class EbeguRestUtil {
                 finanzielleSituationFromServer.automatischePruefungErlaubt;
             if (finanzielleSituationFromServer.steuerdatenAbfrageTimestamp) {
                 finanzielleSituationTS.steuerdatenAbfrageTimestamp =
-                    DateUtil.localDateTimeToMoment(
+                    MomentUtil.localDateTimeToMoment(
                         finanzielleSituationFromServer.steuerdatenAbfrageTimestamp
                     );
             }
@@ -3536,7 +3421,7 @@ export class EbeguRestUtil {
         this.abstractPersonEntitytoRestObject(restKind, kind);
         restKind.kinderabzugErstesHalbjahr = kind.kinderabzugErstesHalbjahr;
         restKind.kinderabzugZweitesHalbjahr = kind.kinderabzugZweitesHalbjahr;
-        restKind.isPflegekind = kind.isPflegekind;
+        restKind.pflegekind = kind.pflegekind;
         restKind.pflegeEntschaedigungErhalten =
             kind.pflegeEntschaedigungErhalten;
         restKind.obhutAlternierendAusueben = kind.obhutAlternierendAusueben;
@@ -3559,6 +3444,12 @@ export class EbeguRestUtil {
             kind.hoehereBeitraegeWegenBeeintraechtigungBeantragen;
         restKind.hoehereBeitraegeUnterlagenDigital =
             kind.hoehereBeitraegeUnterlagenDigital;
+        restKind.gueltigkeitTerminiert = kind.gueltigkeitTerminiert;
+        restKind.gueltigkeitTerminiertPer = MomentUtil.momentToLocalDate(
+            kind.gueltigkeitTerminiertPer
+        );
+        restKind.gueltigkeitTerminiertKommentar =
+            kind.gueltigkeitTerminiertKommentar;
         if (kind.pensumFachstellen) {
             restKind.pensumFachstellen = this.pensumFachstellenToRestObject(
                 kind.pensumFachstellen
@@ -3650,7 +3541,7 @@ export class EbeguRestUtil {
                 kindFromServer.kinderabzugErstesHalbjahr;
             kindTS.kinderabzugZweitesHalbjahr =
                 kindFromServer.kinderabzugZweitesHalbjahr;
-            kindTS.isPflegekind = kindFromServer.isPflegekind;
+            kindTS.pflegekind = kindFromServer.pflegekind;
             kindTS.pflegeEntschaedigungErhalten =
                 kindFromServer.pflegeEntschaedigungErhalten;
             kindTS.obhutAlternierendAusueben =
@@ -3675,6 +3566,12 @@ export class EbeguRestUtil {
                 kindFromServer.hoehereBeitraegeWegenBeeintraechtigungBeantragen;
             kindTS.hoehereBeitraegeUnterlagenDigital =
                 kindFromServer.hoehereBeitraegeUnterlagenDigital;
+            kindTS.gueltigkeitTerminiert = kindFromServer.gueltigkeitTerminiert;
+            kindTS.gueltigkeitTerminiertPer = MomentUtil.localDateToMoment(
+                kindFromServer.gueltigkeitTerminiertPer
+            );
+            kindTS.gueltigkeitTerminiertKommentar =
+                kindFromServer.gueltigkeitTerminiertKommentar;
             if (kindFromServer.pensumFachstellen) {
                 kindTS.pensumFachstellen = this.parsePensumFachstellen(
                     kindFromServer.pensumFachstellen
@@ -3807,12 +3704,6 @@ export class EbeguRestUtil {
         this.abstractMutableEntityToRestObject(restBetreuung, betreuung);
         restBetreuung.betreuungsstatus = betreuung.betreuungsstatus;
         restBetreuung.grundAblehnung = betreuung.grundAblehnung;
-        restBetreuung.datumAblehnung = DateUtil.momentToLocalDate(
-            betreuung.datumAblehnung
-        );
-        restBetreuung.datumBestaetigung = DateUtil.momentToLocalDate(
-            betreuung.datumBestaetigung
-        );
         restBetreuung.vertrag = betreuung.vertrag;
         if (betreuung.institutionStammdaten) {
             restBetreuung.institutionStammdaten =
@@ -3929,8 +3820,6 @@ export class EbeguRestUtil {
             {},
             angebotDTO.betreuung
         );
-        restAngebot.betreuung.erweiterteBetreuungContainer =
-            new TSErweiterteBetreuungContainer();
         restAngebot.betreuung.vertrag = true;
         restAngebot.additionalKindQuestions =
             angebotDTO.additionalKindQuestions;
@@ -4082,11 +3971,14 @@ export class EbeguRestUtil {
         if (betreuungFromServer) {
             this.parseAbstractMutableEntity(betreuungTS, betreuungFromServer);
             betreuungTS.grundAblehnung = betreuungFromServer.grundAblehnung;
-            betreuungTS.datumAblehnung = DateUtil.localDateToMoment(
+            betreuungTS.datumAblehnung = MomentUtil.localDateToMoment(
                 betreuungFromServer.datumAblehnung
             );
-            betreuungTS.datumBestaetigung = DateUtil.localDateToMoment(
+            betreuungTS.datumBestaetigung = MomentUtil.localDateToMoment(
                 betreuungFromServer.datumBestaetigung
+            );
+            betreuungTS.datumAngefordert = MomentUtil.localDateToMoment(
+                betreuungFromServer.datumAngefordert
             );
             betreuungTS.vertrag = betreuungFromServer.vertrag;
             betreuungTS.betreuungsstatus = betreuungFromServer.betreuungsstatus;
@@ -4101,11 +3993,17 @@ export class EbeguRestUtil {
             betreuungTS.abwesenheitContainers = this.parseAbwesenheitContainers(
                 betreuungFromServer.abwesenheitContainers
             );
-            betreuungTS.erweiterteBetreuungContainer =
-                this.parseErweiterteBetreuungContainer(
-                    new TSErweiterteBetreuungContainer(),
+            if (
+                EbeguUtil.isNotNullOrUndefined(
                     betreuungFromServer.erweiterteBetreuungContainer
-                );
+                )
+            ) {
+                betreuungTS.erweiterteBetreuungContainer =
+                    this.parseErweiterteBetreuungContainer(
+                        new TSErweiterteBetreuungContainer(),
+                        betreuungFromServer.erweiterteBetreuungContainer
+                    );
+            }
             betreuungTS.betreuungNummer = betreuungFromServer.betreuungNummer;
             betreuungTS.verfuegung = this.parseVerfuegung(
                 new TSVerfuegung(),
@@ -4163,6 +4061,7 @@ export class EbeguRestUtil {
         if (!data) {
             return [];
         }
+
         return Array.isArray(data)
             ? data.map(item =>
                   this.parseBetreuungspensumAbweichung(
@@ -4186,6 +4085,7 @@ export class EbeguRestUtil {
             abweichungTS,
             abweichungFromServer
         );
+
         abweichungTS.status = abweichungFromServer.status;
         abweichungTS.vertraglicheKosten =
             abweichungFromServer.vertraglicheKosten;
@@ -4212,6 +4112,8 @@ export class EbeguRestUtil {
             abweichungFromServer.vertraglicherTarifHaupt;
         abweichungTS.vertraglicherTarifNeben =
             abweichungFromServer.vertraglicherTarifNeben;
+        abweichungTS.vertraglicheBetreuuteTage =
+            abweichungFromServer.vertraglicheBetreuuteTage;
         abweichungTS.monatlicheHauptmahlzeiten =
             abweichungFromServer.monatlicheHauptmahlzeiten;
         abweichungTS.tarifProHauptmahlzeit = this.undefinedOrPositive(
@@ -4587,22 +4489,22 @@ export class EbeguRestUtil {
         restPendenz.familienName = pendenz.familienName;
         restPendenz.angebote = pendenz.angebote;
         restPendenz.antragTyp = pendenz.antragTyp;
-        restPendenz.eingangsdatum = DateUtil.momentToLocalDate(
+        restPendenz.eingangsdatum = MomentUtil.momentToLocalDate(
             pendenz.eingangsdatum
         );
-        restPendenz.regelnGueltigAb = DateUtil.momentToLocalDate(
+        restPendenz.regelnGueltigAb = MomentUtil.momentToLocalDate(
             pendenz.regelnGueltigAb
         );
-        restPendenz.eingangsdatumSTV = DateUtil.momentToLocalDate(
+        restPendenz.eingangsdatumSTV = MomentUtil.momentToLocalDate(
             pendenz.eingangsdatumSTV
         );
-        restPendenz.aenderungsdatum = DateUtil.momentToLocalDateTime(
+        restPendenz.aenderungsdatum = MomentUtil.momentToLocalDateTime(
             pendenz.aenderungsdatum
         );
-        restPendenz.gesuchsperiodeGueltigAb = DateUtil.momentToLocalDate(
+        restPendenz.gesuchsperiodeGueltigAb = MomentUtil.momentToLocalDate(
             pendenz.gesuchsperiodeGueltigAb
         );
-        restPendenz.gesuchsperiodeGueltigBis = DateUtil.momentToLocalDate(
+        restPendenz.gesuchsperiodeGueltigBis = MomentUtil.momentToLocalDate(
             pendenz.gesuchsperiodeGueltigBis
         );
         restPendenz.institutionen = pendenz.institutionen;
@@ -4639,22 +4541,22 @@ export class EbeguRestUtil {
         antragTS.angebote = antragFromServer.angebote;
         antragTS.kinder = antragFromServer.kinder;
         antragTS.antragTyp = antragFromServer.antragTyp;
-        antragTS.eingangsdatum = DateUtil.localDateToMoment(
+        antragTS.eingangsdatum = MomentUtil.localDateToMoment(
             antragFromServer.eingangsdatum
         );
-        antragTS.regelnGueltigAb = DateUtil.localDateToMoment(
+        antragTS.regelnGueltigAb = MomentUtil.localDateToMoment(
             antragFromServer.regelnGueltigAb
         );
-        antragTS.eingangsdatumSTV = DateUtil.localDateToMoment(
+        antragTS.eingangsdatumSTV = MomentUtil.localDateToMoment(
             antragFromServer.eingangsdatumSTV
         );
-        antragTS.aenderungsdatum = DateUtil.localDateTimeToMoment(
+        antragTS.aenderungsdatum = MomentUtil.localDateTimeToMoment(
             antragFromServer.aenderungsdatum
         );
-        antragTS.gesuchsperiodeGueltigAb = DateUtil.localDateToMoment(
+        antragTS.gesuchsperiodeGueltigAb = MomentUtil.localDateToMoment(
             antragFromServer.gesuchsperiodeGueltigAb
         );
-        antragTS.gesuchsperiodeGueltigBis = DateUtil.localDateToMoment(
+        antragTS.gesuchsperiodeGueltigBis = MomentUtil.localDateToMoment(
             antragFromServer.gesuchsperiodeGueltigBis
         );
         antragTS.institutionen = antragFromServer.institutionen;
@@ -4679,7 +4581,7 @@ export class EbeguRestUtil {
         antragTS.gemeinde = antragFromServer.gemeinde;
         antragTS.fallId = antragFromServer.fallId;
         antragTS.gemeindeId = antragFromServer.gemeindeId;
-        antragTS.isSozialdienst = antragFromServer.isSozialdienst;
+        antragTS.isSozialdienst = antragFromServer.sozialdienst;
         antragTS.begruendungMutation = antragFromServer.begruendungMutation;
         antragTS.gesuchsperiodeString = antragFromServer.gesuchsperiodeString;
         return antragTS;
@@ -4761,35 +4663,6 @@ export class EbeguRestUtil {
         return false;
     }
 
-    public pendenzBetreuungenToRestObject(
-        restPendenz: any,
-        pendenz: TSPendenzBetreuung
-    ): any {
-        restPendenz.betreuungsNummer = pendenz.betreuungsNummer;
-        restPendenz.betreuungsId = pendenz.betreuungsId;
-        restPendenz.gesuchId = pendenz.gesuchId;
-        restPendenz.kindId = pendenz.kindId;
-        restPendenz.name = pendenz.name;
-        restPendenz.vorname = pendenz.vorname;
-        restPendenz.geburtsdatum = DateUtil.momentToLocalDate(
-            pendenz.geburtsdatum
-        );
-        restPendenz.typ = pendenz.typ;
-        restPendenz.gesuchsperiode = this.gesuchsperiodeToRestObject(
-            {},
-            pendenz.gesuchsperiode
-        );
-        restPendenz.eingangsdatum = DateUtil.momentToLocalDate(
-            pendenz.eingangsdatum
-        );
-        restPendenz.eingangsdatumSTV = DateUtil.momentToLocalDate(
-            pendenz.eingangsdatumSTV
-        );
-        restPendenz.betreuungsangebotTyp = pendenz.betreuungsangebotTyp;
-        restPendenz.institution = pendenz.institution;
-        return restPendenz;
-    }
-
     public parsePendenzBetreuungen(
         pendenzTS: TSPendenzBetreuung,
         pendenzFromServer: any
@@ -4802,19 +4675,17 @@ export class EbeguRestUtil {
         pendenzTS.vorname = pendenzFromServer.vorname;
         pendenzTS.geburtsdatum = pendenzFromServer.geburtsdatum;
         pendenzTS.typ = pendenzFromServer.typ;
-        pendenzTS.gesuchsperiode = this.parseGesuchsperiode(
-            new TSGesuchsperiode(),
-            pendenzFromServer.gesuchsperiode
-        );
-        pendenzTS.eingangsdatum = DateUtil.localDateToMoment(
+        pendenzTS.gesuchsperiodeString = pendenzFromServer.gesuchsperiodeString;
+        pendenzTS.eingangsdatum = MomentUtil.localDateToMoment(
             pendenzFromServer.eingangsdatum
         );
-        pendenzTS.eingangsdatumSTV = DateUtil.localDateToMoment(
-            pendenzFromServer.eingangsdatumSTV
-        );
+
         pendenzTS.betreuungsangebotTyp = pendenzFromServer.betreuungsangebotTyp;
-        pendenzTS.institution = pendenzFromServer.institution;
-        pendenzTS.gemeinde = pendenzFromServer.gemeinde;
+        pendenzTS.institutionId = pendenzFromServer.institutionId;
+        pendenzTS.gemeindeId = pendenzFromServer.gemeindeId;
+        pendenzTS.gemeindeName = pendenzFromServer.gemeindeName;
+        pendenzTS.institutionName = pendenzFromServer.institutionName;
+        pendenzTS.antragStatus = pendenzFromServer.antragStatus;
         return pendenzTS;
     }
 
@@ -5113,7 +4984,7 @@ export class EbeguRestUtil {
     ): TSDokument {
         if (dokumentFromServer) {
             this.parseTSFileDokument(dokument, dokumentFromServer);
-            dokument.timestampUpload = DateUtil.localDateTimeToMoment(
+            dokument.timestampUpload = MomentUtil.localDateTimeToMoment(
                 dokumentFromServer.timestampUpload
             );
             dokument.userUploaded = this.parseUser(
@@ -5160,9 +5031,8 @@ export class EbeguRestUtil {
         if (dokumentTS) {
             this.abstractMutableEntityToRestObject(dokument, dokumentTS);
             dokument.filename = dokumentTS.filename;
-            dokument.filepfad = dokumentTS.filepfad;
             dokument.filesize = dokumentTS.filesize;
-            dokument.timestampUpload = DateUtil.momentToLocalDateTime(
+            dokument.timestampUpload = MomentUtil.momentToLocalDateTime(
                 dokumentTS.timestampUpload
             );
             return dokument;
@@ -5449,10 +5319,10 @@ export class EbeguRestUtil {
             new TSBenutzer(),
             antragStatusHistoryFromServer.benutzer
         );
-        antragStatusHistoryTS.timestampVon = DateUtil.localDateTimeToMoment(
+        antragStatusHistoryTS.timestampVon = MomentUtil.localDateTimeToMoment(
             antragStatusHistoryFromServer.timestampVon
         );
-        antragStatusHistoryTS.timestampBis = DateUtil.localDateTimeToMoment(
+        antragStatusHistoryTS.timestampBis = MomentUtil.localDateTimeToMoment(
             antragStatusHistoryFromServer.timestampBis
         );
         antragStatusHistoryTS.status = antragStatusHistoryFromServer.status;
@@ -5472,10 +5342,10 @@ export class EbeguRestUtil {
             {},
             antragStatusHistory.benutzer
         );
-        restAntragStatusHistory.timestampVon = DateUtil.momentToLocalDateTime(
+        restAntragStatusHistory.timestampVon = MomentUtil.momentToLocalDateTime(
             antragStatusHistory.timestampVon
         );
-        restAntragStatusHistory.timestampBis = DateUtil.momentToLocalDateTime(
+        restAntragStatusHistory.timestampBis = MomentUtil.momentToLocalDateTime(
             antragStatusHistory.timestampBis
         );
         restAntragStatusHistory.status = antragStatusHistory.status;
@@ -5487,13 +5357,14 @@ export class EbeguRestUtil {
             this.abstractMutableEntityToRestObject(restMahnung, tsMahnung);
             restMahnung.gesuch = this.gesuchToRestObject({}, tsMahnung.gesuch);
             restMahnung.mahnungTyp = tsMahnung.mahnungTyp;
-            restMahnung.datumFristablauf = DateUtil.momentToLocalDate(
+            restMahnung.datumFristablauf = MomentUtil.momentToLocalDate(
                 tsMahnung.datumFristablauf
             );
             restMahnung.bemerkungen = tsMahnung.bemerkungen;
-            restMahnung.timestampAbgeschlossen = DateUtil.momentToLocalDateTime(
-                tsMahnung.timestampAbgeschlossen
-            );
+            restMahnung.timestampAbgeschlossen =
+                MomentUtil.momentToLocalDateTime(
+                    tsMahnung.timestampAbgeschlossen
+                );
             restMahnung.abgelaufen = tsMahnung.abgelaufen;
             return restMahnung;
         }
@@ -5521,11 +5392,11 @@ export class EbeguRestUtil {
                 mahnungFromServer.gesuch
             );
             tsMahnung.mahnungTyp = mahnungFromServer.mahnungTyp;
-            tsMahnung.datumFristablauf = DateUtil.localDateToMoment(
+            tsMahnung.datumFristablauf = MomentUtil.localDateToMoment(
                 mahnungFromServer.datumFristablauf
             );
             tsMahnung.bemerkungen = mahnungFromServer.bemerkungen;
-            tsMahnung.timestampAbgeschlossen = DateUtil.localDateTimeToMoment(
+            tsMahnung.timestampAbgeschlossen = MomentUtil.localDateTimeToMoment(
                 mahnungFromServer.timestampAbgeschlossen
             );
             tsMahnung.abgelaufen = mahnungFromServer.abgelaufen;
@@ -5777,40 +5648,15 @@ export class EbeguRestUtil {
             tsWorkJob.workJobType = workjobFromServer.workJobType;
             tsWorkJob.resultData = workjobFromServer.resultData;
             tsWorkJob.requestURI = workjobFromServer.requestURI;
-            tsWorkJob.execution = this.parseBatchJobInformation(
-                new TSBatchJobInformation(),
-                workjobFromServer.execution
+            tsWorkJob.endTime = MomentUtil.localDateTimeToMoment(
+                workjobFromServer.endTime
+            );
+            tsWorkJob.startTime = MomentUtil.localDateTimeToMoment(
+                workjobFromServer.startTime
             );
             return tsWorkJob;
         }
         return undefined;
-    }
-
-    private parseBatchJobInformation(
-        testBatchJobInfo: TSBatchJobInformation,
-        batchJobInfoFromServer: any
-    ): TSBatchJobInformation {
-        if (!batchJobInfoFromServer) {
-            return undefined;
-        }
-
-        testBatchJobInfo.batchStatus = batchJobInfoFromServer.batchStatus;
-        testBatchJobInfo.createTime = DateUtil.localDateTimeToMoment(
-            batchJobInfoFromServer.createTime
-        );
-        testBatchJobInfo.endTime = DateUtil.localDateTimeToMoment(
-            batchJobInfoFromServer.endTime
-        );
-        testBatchJobInfo.executionId = batchJobInfoFromServer.executionId;
-        testBatchJobInfo.jobName = batchJobInfoFromServer.jobName;
-        testBatchJobInfo.lastUpdatedTime = DateUtil.localDateTimeToMoment(
-            batchJobInfoFromServer.lastUpdatedTime
-        );
-        testBatchJobInfo.startTime = DateUtil.localDateTimeToMoment(
-            batchJobInfoFromServer.startTime
-        );
-
-        return testBatchJobInfo;
     }
 
     public parseMitteilung(
@@ -5856,7 +5702,7 @@ export class EbeguRestUtil {
             tsMitteilung.message = mitteilungFromServer.message;
             tsMitteilung.mitteilungStatus =
                 mitteilungFromServer.mitteilungStatus;
-            tsMitteilung.sentDatum = DateUtil.localDateTimeToMoment(
+            tsMitteilung.sentDatum = MomentUtil.localDateTimeToMoment(
                 mitteilungFromServer.sentDatum
             );
             tsMitteilung.mitteilungTyp = mitteilungFromServer.mitteilungTyp;
@@ -5903,7 +5749,7 @@ export class EbeguRestUtil {
             restMitteilung.subject = tsMitteilung.subject;
             restMitteilung.message = tsMitteilung.message;
             restMitteilung.mitteilungStatus = tsMitteilung.mitteilungStatus;
-            restMitteilung.sentDatum = DateUtil.momentToLocalDateTime(
+            restMitteilung.sentDatum = MomentUtil.momentToLocalDateTime(
                 tsMitteilung.sentDatum
             );
             return restMitteilung;
@@ -6012,10 +5858,10 @@ export class EbeguRestUtil {
                 zahlungsauftragFromServer.zahlungslaufTyp;
             tsZahlungsauftrag.status = zahlungsauftragFromServer.status;
             tsZahlungsauftrag.beschrieb = zahlungsauftragFromServer.beschrieb;
-            tsZahlungsauftrag.datumFaellig = DateUtil.localDateToMoment(
+            tsZahlungsauftrag.datumFaellig = MomentUtil.localDateToMoment(
                 zahlungsauftragFromServer.datumFaellig
             );
-            tsZahlungsauftrag.datumGeneriert = DateUtil.localDateTimeToMoment(
+            tsZahlungsauftrag.datumGeneriert = MomentUtil.localDateTimeToMoment(
                 zahlungsauftragFromServer.datumGeneriert
             );
             tsZahlungsauftrag.betragTotalAuftrag =
@@ -6092,17 +5938,17 @@ export class EbeguRestUtil {
             tsEWKPerson.personID = ewkPersonFromServer.personID;
             tsEWKPerson.nachname = ewkPersonFromServer.nachname;
             tsEWKPerson.vorname = ewkPersonFromServer.vorname;
-            tsEWKPerson.geburtsdatum = DateUtil.localDateToMoment(
+            tsEWKPerson.geburtsdatum = MomentUtil.localDateToMoment(
                 ewkPersonFromServer.geburtsdatum
             );
-            tsEWKPerson.zuzugsdatum = DateUtil.localDateToMoment(
+            tsEWKPerson.zuzugsdatum = MomentUtil.localDateToMoment(
                 ewkPersonFromServer.zuzugsdatum
             );
-            tsEWKPerson.wegzugsdatum = DateUtil.localDateToMoment(
+            tsEWKPerson.wegzugsdatum = MomentUtil.localDateToMoment(
                 ewkPersonFromServer.wegzugsdatum
             );
             tsEWKPerson.zivilstand = ewkPersonFromServer.zivilstand;
-            tsEWKPerson.zivilstandsdatum = DateUtil.localDateToMoment(
+            tsEWKPerson.zivilstandsdatum = MomentUtil.localDateToMoment(
                 ewkPersonFromServer.zivilstandsdatum
             );
             tsEWKPerson.geschlecht = ewkPersonFromServer.geschlecht;
@@ -6160,7 +6006,7 @@ export class EbeguRestUtil {
             tsEWKBeziehung.personID = ewkBeziehungFromServer.personID;
             tsEWKBeziehung.nachname = ewkBeziehungFromServer.nachname;
             tsEWKBeziehung.vorname = ewkBeziehungFromServer.vorname;
-            tsEWKBeziehung.geburtsdatum = DateUtil.localDateToMoment(
+            tsEWKBeziehung.geburtsdatum = MomentUtil.localDateToMoment(
                 ewkBeziehungFromServer.geburtsdatum
             );
             tsEWKBeziehung.adresse = this.parseEWKAdresse(
@@ -6423,7 +6269,7 @@ export class EbeguRestUtil {
                 this.parseBelegungTagesschuleModulList(
                     belegungFromServer.belegungTagesschuleModule
                 );
-            belegungTS.eintrittsdatum = DateUtil.localDateToMoment(
+            belegungTS.eintrittsdatum = MomentUtil.localDateToMoment(
                 belegungFromServer.eintrittsdatum
             );
             belegungTS.abholungTagesschule =
@@ -6453,7 +6299,7 @@ export class EbeguRestUtil {
                 this.belegungTagesschuleModulArrayToRestObject(
                     belegungTS.belegungTagesschuleModule
                 );
-            restBelegung.eintrittsdatum = DateUtil.momentToLocalDate(
+            restBelegung.eintrittsdatum = MomentUtil.momentToLocalDate(
                 belegungTS.eintrittsdatum
             );
             restBelegung.abholungTagesschule = belegungTS.abholungTagesschule;
@@ -6576,9 +6422,10 @@ export class EbeguRestUtil {
             );
             ferieninselStammdatenTS.ferienname =
                 receivedFerieninselStammdaten.ferienname;
-            ferieninselStammdatenTS.anmeldeschluss = DateUtil.localDateToMoment(
-                receivedFerieninselStammdaten.anmeldeschluss
-            );
+            ferieninselStammdatenTS.anmeldeschluss =
+                MomentUtil.localDateToMoment(
+                    receivedFerieninselStammdaten.anmeldeschluss
+                );
             ferieninselStammdatenTS.ferienActive =
                 receivedFerieninselStammdaten.ferienActive;
 
@@ -6635,7 +6482,7 @@ export class EbeguRestUtil {
             restFerieninselStammdaten.ferienname =
                 ferieninselStammdatenTS.ferienname;
             restFerieninselStammdaten.anmeldeschluss =
-                DateUtil.momentToLocalDate(
+                MomentUtil.momentToLocalDate(
                     ferieninselStammdatenTS.anmeldeschluss
                 );
 
@@ -6728,7 +6575,7 @@ export class EbeguRestUtil {
                 belegungFerieninselTagTS,
                 receivedBelegungFerieninselTag
             );
-            belegungFerieninselTagTS.tag = DateUtil.localDateToMoment(
+            belegungFerieninselTagTS.tag = MomentUtil.localDateToMoment(
                 receivedBelegungFerieninselTag.tag
             );
             return belegungFerieninselTagTS;
@@ -6755,7 +6602,7 @@ export class EbeguRestUtil {
                 belegungFerieninselTS.tage.forEach(t => {
                     const tagRest: any = {};
                     this.abstractMutableEntityToRestObject(tagRest, t);
-                    tagRest.tag = DateUtil.momentToLocalDate(t.tag);
+                    tagRest.tag = MomentUtil.momentToLocalDate(t.tag);
                     restBelegungFerieninsel.tage.push(tagRest);
                 });
             }
@@ -6763,7 +6610,7 @@ export class EbeguRestUtil {
                 belegungFerieninselTS.tageMorgenmodul.forEach(t => {
                     const tagRest: any = {};
                     this.abstractMutableEntityToRestObject(tagRest, t);
-                    tagRest.tag = DateUtil.momentToLocalDate(t.tag);
+                    tagRest.tag = MomentUtil.momentToLocalDate(t.tag);
                     restBelegungFerieninsel.tageMorgenmodul.push(tagRest);
                 });
             }
@@ -6809,6 +6656,18 @@ export class EbeguRestUtil {
         if (supportTS) {
             supportRest.id = supportTS.id;
             supportRest.beschreibung = supportTS.beschreibung;
+            if (supportTS.betroffeneFaelle) {
+                supportRest.betroffeneFaelle = supportTS.betroffeneFaelle;
+            }
+            if (supportTS.betroffenePeriode) {
+                supportRest.betroffenePeriode = supportTS.betroffenePeriode;
+            }
+            if (supportTS.institution) {
+                supportRest.institution = supportTS.institution;
+            }
+            if (supportTS.gemeinde) {
+                supportRest.gemeinde = supportTS.gemeinde;
+            }
             return supportRest;
         }
         return undefined;
@@ -6828,28 +6687,22 @@ export class EbeguRestUtil {
         publicAppConfigTS.primaryColor = data.primaryColor;
         publicAppConfigTS.primaryColorDark = data.primaryColorDark;
         publicAppConfigTS.primaryColorLight = data.primaryColorLight;
-        publicAppConfigTS.logoFileName = data.logoFileName;
-        publicAppConfigTS.logoFileNameWhite = data.logoFileNameWhite;
         publicAppConfigTS.zahlungentestmode = data.zahlungentestmode;
         publicAppConfigTS.personenSucheDisabled = data.personenSucheDisabled;
         publicAppConfigTS.kitaxHost = data.kitaxHost;
         publicAppConfigTS.kitaxEndpoint = data.kitaxEndpoint;
-        publicAppConfigTS.notverordnungDefaultEinreichefristOeffentlich =
-            data.notverordnungDefaultEinreichefristOeffentlich;
-        publicAppConfigTS.notverordnungDefaultEinreichefristPrivat =
-            data.notverordnungDefaultEinreichefristPrivat;
         publicAppConfigTS.lastenausgleichTagesschulenAktiv =
             data.lastenausgleichTagesschulenAktiv;
         publicAppConfigTS.gemeindeKennzahlenAktiv =
             data.gemeindeKennzahlenAktiv;
         publicAppConfigTS.ferienbetreuungAktiv = data.ferienbetreuungAktiv;
         publicAppConfigTS.lastenausgleichAktiv = data.lastenausgleichAktiv;
-        publicAppConfigTS.mulitmandantAktiv = data.multimandantAktiviert;
+        publicAppConfigTS.multimandantAktiv = data.multimandantAktiv;
         publicAppConfigTS.angebotTSActivated = data.angebotTSActivated;
         publicAppConfigTS.angebotFIActivated = data.angebotFIActivated;
         publicAppConfigTS.angebotTFOActivated = data.angebotTFOActivated;
         publicAppConfigTS.angebotMittagstischActivated =
-            data.angebotMittagstischEnabled;
+            data.angebotMittagstischActivated;
         publicAppConfigTS.infomaZahlungen = data.infomaZahlungen;
         publicAppConfigTS.frenchEnabled = data.frenchEnabled;
         publicAppConfigTS.geresEnabledForMandant = data.geresEnabledForMandant;
@@ -6868,10 +6721,10 @@ export class EbeguRestUtil {
         publicAppConfigTS.erlaubenInstitutionenZuWaehlen =
             data.erlaubenInstitutionenZuWaehlen;
         publicAppConfigTS.auszahlungAnEltern = data.auszahlungAnEltern;
-        publicAppConfigTS.abweichungenEnabled = data.abweichungenEnabled;
         publicAppConfigTS.gemeindeVereinfachteKonfigAktiv =
             data.gemeindeVereinfachteKonfigAktiv;
         publicAppConfigTS.testfaelleEnabled = data.testfaelleEnabled;
+
         return publicAppConfigTS;
     }
 
@@ -6991,354 +6844,6 @@ export class EbeguRestUtil {
         return kitaxResponse;
     }
 
-    public parseRueckforderungFormularList(
-        data: any
-    ): TSRueckforderungFormular[] {
-        if (!data) {
-            return [];
-        }
-        return Array.isArray(data)
-            ? data.map(item =>
-                  this.parseRueckforderungFormular(
-                      new TSRueckforderungFormular(),
-                      item
-                  )
-              )
-            : [
-                  this.parseRueckforderungFormular(
-                      new TSRueckforderungFormular(),
-                      data
-                  )
-              ];
-    }
-
-    public parseRueckforderungFormular(
-        rueckforderungFormular: TSRueckforderungFormular,
-        rueckforderungFormularFromServer: any
-    ): TSRueckforderungFormular {
-        this.parseAbstractEntity(
-            rueckforderungFormular,
-            rueckforderungFormularFromServer
-        );
-
-        rueckforderungFormular.institutionStammdaten =
-            this.parseInstitutionStammdaten(
-                new TSInstitutionStammdaten(),
-                rueckforderungFormularFromServer.institutionStammdaten
-            );
-        rueckforderungFormular.rueckforderungMitteilungen =
-            this.parseRueckforderungMitteilungList(
-                rueckforderungFormularFromServer.rueckforderungMitteilungen
-            );
-        rueckforderungFormular.verantwortlicherName =
-            rueckforderungFormularFromServer.verantwortlicherName;
-        rueckforderungFormular.uncheckedDocuments =
-            rueckforderungFormularFromServer.uncheckedDocuments;
-        rueckforderungFormular.status = rueckforderungFormularFromServer.status;
-        rueckforderungFormular.hasBeenProvisorisch =
-            rueckforderungFormularFromServer.hasBeenProvisorisch;
-        rueckforderungFormular.stufe1KantonKostenuebernahmeAnzahlStunden =
-            rueckforderungFormularFromServer.stufe1KantonKostenuebernahmeAnzahlStunden;
-        rueckforderungFormular.stufe1InstitutionKostenuebernahmeAnzahlStunden =
-            rueckforderungFormularFromServer.stufe1InstitutionKostenuebernahmeAnzahlStunden;
-        rueckforderungFormular.stufe2KantonKostenuebernahmeAnzahlStunden =
-            rueckforderungFormularFromServer.stufe2KantonKostenuebernahmeAnzahlStunden;
-        rueckforderungFormular.stufe2InstitutionKostenuebernahmeAnzahlStunden =
-            rueckforderungFormularFromServer.stufe2InstitutionKostenuebernahmeAnzahlStunden;
-        rueckforderungFormular.stufe1KantonKostenuebernahmeAnzahlTage =
-            rueckforderungFormularFromServer.stufe1KantonKostenuebernahmeAnzahlTage;
-        rueckforderungFormular.stufe1InstitutionKostenuebernahmeAnzahlTage =
-            rueckforderungFormularFromServer.stufe1InstitutionKostenuebernahmeAnzahlTage;
-        rueckforderungFormular.stufe2KantonKostenuebernahmeAnzahlTage =
-            rueckforderungFormularFromServer.stufe2KantonKostenuebernahmeAnzahlTage;
-        rueckforderungFormular.stufe2InstitutionKostenuebernahmeAnzahlTage =
-            rueckforderungFormularFromServer.stufe2InstitutionKostenuebernahmeAnzahlTage;
-        rueckforderungFormular.stufe1KantonKostenuebernahmeBetreuung =
-            rueckforderungFormularFromServer.stufe1KantonKostenuebernahmeBetreuung;
-        rueckforderungFormular.stufe1InstitutionKostenuebernahmeBetreuung =
-            rueckforderungFormularFromServer.stufe1InstitutionKostenuebernahmeBetreuung;
-        rueckforderungFormular.stufe2KantonKostenuebernahmeBetreuung =
-            rueckforderungFormularFromServer.stufe2KantonKostenuebernahmeBetreuung;
-        rueckforderungFormular.stufe2InstitutionKostenuebernahmeBetreuung =
-            rueckforderungFormularFromServer.stufe2InstitutionKostenuebernahmeBetreuung;
-        rueckforderungFormular.stufe1FreigabeBetrag =
-            rueckforderungFormularFromServer.stufe1FreigabeBetrag;
-        rueckforderungFormular.stufe1FreigabeDatum =
-            DateUtil.localDateTimeToMoment(
-                rueckforderungFormularFromServer.stufe1FreigabeDatum
-            );
-        rueckforderungFormular.stufe1FreigabeAusbezahltAm =
-            DateUtil.localDateTimeToMoment(
-                rueckforderungFormularFromServer.stufe1FreigabeAusbezahltAm
-            );
-        rueckforderungFormular.stufe2VerfuegungBetrag =
-            rueckforderungFormularFromServer.stufe2VerfuegungBetrag;
-        rueckforderungFormular.stufe2VerfuegungDatum =
-            DateUtil.localDateTimeToMoment(
-                rueckforderungFormularFromServer.stufe2VerfuegungDatum
-            );
-        rueckforderungFormular.stufe2VerfuegungAusbezahltAm =
-            DateUtil.localDateTimeToMoment(
-                rueckforderungFormularFromServer.stufe2VerfuegungAusbezahltAm
-            );
-        rueckforderungFormular.institutionTyp =
-            rueckforderungFormularFromServer.institutionTyp;
-        rueckforderungFormular.extendedEinreichefrist =
-            DateUtil.localDateToMoment(
-                rueckforderungFormularFromServer.extendedEinreichefrist
-            );
-        rueckforderungFormular.relevantEinreichungsfrist =
-            DateUtil.localDateToMoment(
-                rueckforderungFormularFromServer.relevantEinreichungsfrist
-            );
-        rueckforderungFormular.betragEntgangeneElternbeitraege =
-            rueckforderungFormularFromServer.betragEntgangeneElternbeitraege;
-        rueckforderungFormular.betragEntgangeneElternbeitraegeNichtAngeboteneEinheiten =
-            rueckforderungFormularFromServer.betragEntgangeneElternbeitraegeNichtAngeboteneEinheiten;
-        rueckforderungFormular.anzahlNichtAngeboteneEinheiten =
-            rueckforderungFormularFromServer.anzahlNichtAngeboteneEinheiten;
-        rueckforderungFormular.kurzarbeitBeantragt =
-            rueckforderungFormularFromServer.kurzarbeitBeantragt;
-        rueckforderungFormular.kurzarbeitBetrag =
-            rueckforderungFormularFromServer.kurzarbeitBetrag;
-        rueckforderungFormular.kurzarbeitDefinitivVerfuegt =
-            rueckforderungFormularFromServer.kurzarbeitDefinitivVerfuegt;
-        rueckforderungFormular.kurzarbeitKeinAntragBegruendung =
-            rueckforderungFormularFromServer.kurzarbeitKeinAntragBegruendung;
-        rueckforderungFormular.kurzarbeitSonstiges =
-            rueckforderungFormularFromServer.kurzarbeitSonstiges;
-        rueckforderungFormular.coronaErwerbsersatzBeantragt =
-            rueckforderungFormularFromServer.coronaErwerbsersatzBeantragt;
-        rueckforderungFormular.coronaErwerbsersatzBetrag =
-            rueckforderungFormularFromServer.coronaErwerbsersatzBetrag;
-        rueckforderungFormular.coronaErwerbsersatzDefinitivVerfuegt =
-            rueckforderungFormularFromServer.coronaErwerbsersatzDefinitivVerfuegt;
-        rueckforderungFormular.coronaErwerbsersatzKeinAntragBegruendung =
-            rueckforderungFormularFromServer.coronaErwerbsersatzKeinAntragBegruendung;
-        rueckforderungFormular.coronaErwerbsersatzSonstiges =
-            rueckforderungFormularFromServer.coronaErwerbsersatzSonstiges;
-        rueckforderungFormular.korrespondenzSprache =
-            rueckforderungFormularFromServer.korrespondenzSprache;
-        rueckforderungFormular.bemerkungFuerVerfuegung =
-            rueckforderungFormularFromServer.bemerkungFuerVerfuegung;
-        rueckforderungFormular.beschwerdeBetrag =
-            rueckforderungFormularFromServer.beschwerdeBetrag;
-        rueckforderungFormular.beschwerdeBemerkung =
-            rueckforderungFormularFromServer.beschwerdeBemerkung;
-        rueckforderungFormular.beschwerdeAusbezahltAm =
-            DateUtil.localDateTimeToMoment(
-                rueckforderungFormularFromServer.beschwerdeAusbezahltAm
-            );
-        return rueckforderungFormular;
-    }
-
-    public parseRueckforderungMitteilungList(
-        data: Array<any>
-    ): TSRueckforderungMitteilung[] {
-        if (!data) {
-            return [];
-        }
-        return Array.isArray(data)
-            ? data.map(item =>
-                  this.parseRueckforderungMitteilung(
-                      new TSRueckforderungMitteilung(),
-                      item
-                  )
-              )
-            : [
-                  this.parseRueckforderungMitteilung(
-                      new TSRueckforderungMitteilung(),
-                      data
-                  )
-              ];
-    }
-
-    public parseRueckforderungMitteilung(
-        rueckforderungMitteilung: TSRueckforderungMitteilung,
-        rueckforderungMitteilungFromServer: any
-    ): TSRueckforderungMitteilung {
-        this.parseAbstractEntity(
-            rueckforderungMitteilung,
-            rueckforderungMitteilungFromServer
-        );
-        rueckforderungMitteilung.betreff =
-            rueckforderungMitteilungFromServer.betreff;
-        rueckforderungMitteilung.inhalt =
-            rueckforderungMitteilungFromServer.inhalt;
-        rueckforderungMitteilung.sendeDatum = DateUtil.localDateTimeToMoment(
-            rueckforderungMitteilungFromServer.sendeDatum
-        );
-        return rueckforderungMitteilung;
-    }
-
-    public rueckforderungFormularToRestObject(
-        rueckforderungFormularRest: any,
-        rueckforderungFormularTS: TSRueckforderungFormular
-    ): any {
-        this.abstractEntityToRestObject(
-            rueckforderungFormularRest,
-            rueckforderungFormularTS
-        );
-        rueckforderungFormularRest.institutionStammdaten =
-            this.institutionStammdatenToRestObject(
-                {},
-                rueckforderungFormularTS.institutionStammdaten
-            );
-        rueckforderungFormularRest.rueckforderungMitteilungen =
-            this.rueckforderungMitteilungListToRestObject(
-                rueckforderungFormularTS.rueckforderungMitteilungen
-            );
-        rueckforderungFormularRest.status = rueckforderungFormularTS.status;
-        rueckforderungFormularRest.hasBeenProvisorisch =
-            rueckforderungFormularTS.hasBeenProvisorisch;
-        rueckforderungFormularRest.stufe1KantonKostenuebernahmeAnzahlStunden =
-            rueckforderungFormularTS.stufe1KantonKostenuebernahmeAnzahlStunden;
-        rueckforderungFormularRest.stufe1InstitutionKostenuebernahmeAnzahlStunden =
-            rueckforderungFormularTS.stufe1InstitutionKostenuebernahmeAnzahlStunden;
-        rueckforderungFormularRest.stufe2KantonKostenuebernahmeAnzahlStunden =
-            rueckforderungFormularTS.stufe2KantonKostenuebernahmeAnzahlStunden;
-        rueckforderungFormularRest.stufe2InstitutionKostenuebernahmeAnzahlStunden =
-            rueckforderungFormularTS.stufe2InstitutionKostenuebernahmeAnzahlStunden;
-        rueckforderungFormularRest.stufe1KantonKostenuebernahmeAnzahlTage =
-            rueckforderungFormularTS.stufe1KantonKostenuebernahmeAnzahlTage;
-        rueckforderungFormularRest.stufe1InstitutionKostenuebernahmeAnzahlTage =
-            rueckforderungFormularTS.stufe1InstitutionKostenuebernahmeAnzahlTage;
-        rueckforderungFormularRest.stufe2KantonKostenuebernahmeAnzahlTage =
-            rueckforderungFormularTS.stufe2KantonKostenuebernahmeAnzahlTage;
-        rueckforderungFormularRest.stufe2InstitutionKostenuebernahmeAnzahlTage =
-            rueckforderungFormularTS.stufe2InstitutionKostenuebernahmeAnzahlTage;
-        rueckforderungFormularRest.stufe1KantonKostenuebernahmeBetreuung =
-            rueckforderungFormularTS.stufe1KantonKostenuebernahmeBetreuung;
-        rueckforderungFormularRest.stufe1InstitutionKostenuebernahmeBetreuung =
-            rueckforderungFormularTS.stufe1InstitutionKostenuebernahmeBetreuung;
-        rueckforderungFormularRest.stufe2KantonKostenuebernahmeBetreuung =
-            rueckforderungFormularTS.stufe2KantonKostenuebernahmeBetreuung;
-        rueckforderungFormularRest.stufe2InstitutionKostenuebernahmeBetreuung =
-            rueckforderungFormularTS.stufe2InstitutionKostenuebernahmeBetreuung;
-        rueckforderungFormularRest.stufe1FreigabeBetrag =
-            rueckforderungFormularTS.stufe1FreigabeBetrag;
-        rueckforderungFormularRest.stufe1FreigabeDatum =
-            DateUtil.momentToLocalDateTime(
-                rueckforderungFormularTS.stufe1FreigabeDatum
-            );
-        // stufe1FreigabeAusbezahltAm darf nie vom Client uebernommen werden, es muss Clientseitig gesetzt werden
-        rueckforderungFormularRest.stufe2VerfuegungBetrag =
-            rueckforderungFormularTS.stufe2VerfuegungBetrag;
-        rueckforderungFormularRest.stufe2VerfuegungDatum =
-            DateUtil.momentToLocalDateTime(
-                rueckforderungFormularTS.stufe2VerfuegungDatum
-            );
-        // stufe2VerfuegungAusbezahltAm darf nie vom Client uebernommen werden, es muss Clientseitig gesetzt werden
-        rueckforderungFormularRest.institutionTyp =
-            rueckforderungFormularTS.institutionTyp;
-        rueckforderungFormularRest.extendedEinreichefrist =
-            DateUtil.momentToLocalDate(
-                rueckforderungFormularTS.extendedEinreichefrist
-            );
-        rueckforderungFormularRest.relevantEinreichungsfrist =
-            DateUtil.momentToLocalDate(
-                rueckforderungFormularTS.relevantEinreichungsfrist
-            );
-        rueckforderungFormularRest.betragEntgangeneElternbeitraege =
-            rueckforderungFormularTS.betragEntgangeneElternbeitraege;
-        rueckforderungFormularRest.betragEntgangeneElternbeitraegeNichtAngeboteneEinheiten =
-            rueckforderungFormularTS.betragEntgangeneElternbeitraegeNichtAngeboteneEinheiten;
-        rueckforderungFormularRest.anzahlNichtAngeboteneEinheiten =
-            rueckforderungFormularTS.anzahlNichtAngeboteneEinheiten;
-        rueckforderungFormularRest.kurzarbeitBeantragt =
-            rueckforderungFormularTS.kurzarbeitBeantragt;
-        rueckforderungFormularRest.kurzarbeitBetrag =
-            rueckforderungFormularTS.kurzarbeitBetrag;
-        rueckforderungFormularRest.kurzarbeitDefinitivVerfuegt =
-            rueckforderungFormularTS.kurzarbeitDefinitivVerfuegt;
-        rueckforderungFormularRest.kurzarbeitKeinAntragBegruendung =
-            rueckforderungFormularTS.kurzarbeitKeinAntragBegruendung;
-        rueckforderungFormularRest.kurzarbeitSonstiges =
-            rueckforderungFormularTS.kurzarbeitSonstiges;
-        rueckforderungFormularRest.coronaErwerbsersatzBeantragt =
-            rueckforderungFormularTS.coronaErwerbsersatzBeantragt;
-        rueckforderungFormularRest.coronaErwerbsersatzBetrag =
-            rueckforderungFormularTS.coronaErwerbsersatzBetrag;
-        rueckforderungFormularRest.coronaErwerbsersatzDefinitivVerfuegt =
-            rueckforderungFormularTS.coronaErwerbsersatzDefinitivVerfuegt;
-        rueckforderungFormularRest.coronaErwerbsersatzKeinAntragBegruendung =
-            rueckforderungFormularTS.coronaErwerbsersatzKeinAntragBegruendung;
-        rueckforderungFormularRest.coronaErwerbsersatzSonstiges =
-            rueckforderungFormularTS.coronaErwerbsersatzSonstiges;
-        rueckforderungFormularRest.korrespondenzSprache =
-            rueckforderungFormularTS.korrespondenzSprache;
-        rueckforderungFormularRest.bemerkungFuerVerfuegung =
-            rueckforderungFormularTS.bemerkungFuerVerfuegung;
-        rueckforderungFormularRest.beschwerdeBetrag =
-            rueckforderungFormularTS.beschwerdeBetrag;
-        rueckforderungFormularRest.beschwerdeBemerkung =
-            rueckforderungFormularTS.beschwerdeBemerkung;
-        return rueckforderungFormularRest;
-    }
-
-    public rueckforderungMitteilungListToRestObject(
-        rueckforderungMitteilungenList: TSRueckforderungMitteilung[]
-    ): Array<any> {
-        return rueckforderungMitteilungenList
-            ? rueckforderungMitteilungenList.map(item =>
-                  this.rueckforderungMitteilungToRestObject({}, item)
-              )
-            : [];
-    }
-
-    public rueckforderungMitteilungToRestObject(
-        rueckforderungMitteilungRest: any,
-        rueckforderungMitteilungTS: TSRueckforderungMitteilung
-    ): any {
-        this.abstractEntityToRestObject(
-            rueckforderungMitteilungRest,
-            rueckforderungMitteilungTS
-        );
-        rueckforderungMitteilungRest.betreff =
-            rueckforderungMitteilungTS.betreff;
-        rueckforderungMitteilungRest.inhalt = rueckforderungMitteilungTS.inhalt;
-        rueckforderungMitteilungRest.sendeDatum =
-            DateUtil.momentToLocalDateTime(
-                rueckforderungMitteilungTS.sendeDatum
-            );
-        return rueckforderungMitteilungRest;
-    }
-
-    public parseRueckforderungDokumente(data: any): TSRueckforderungDokument[] {
-        if (!data) {
-            return [];
-        }
-        return Array.isArray(data)
-            ? data.map(item =>
-                  this.parseRueckforderungDokument(
-                      new TSRueckforderungDokument(),
-                      item
-                  )
-              )
-            : [
-                  this.parseRueckforderungDokument(
-                      new TSRueckforderungDokument(),
-                      data
-                  )
-              ];
-    }
-
-    public parseRueckforderungDokument(
-        dokument: TSRueckforderungDokument,
-        dokumentFromServer: any
-    ): TSRueckforderungDokument {
-        if (dokumentFromServer) {
-            this.parseTSFileDokument(dokument, dokumentFromServer);
-            dokument.timestampUpload = DateUtil.localDateTimeToMoment(
-                dokumentFromServer.timestampUpload
-            );
-            dokument.rueckforderungDokumentTyp =
-                dokumentFromServer.rueckforderungDokumentTyp;
-            return dokument;
-        }
-        return undefined;
-    }
-
     public parseInstitutionExternalClientAssignment(
         data: any
     ): TSInstitutionExternalClientAssignment {
@@ -7363,8 +6868,8 @@ export class EbeguRestUtil {
         const tsInstitutionExternalClient = new TSInstitutionExternalClient(
             this.parseExternalClient(data.externalClient)
         );
-        const ab = DateUtil.localDateToMoment(data.gueltigAb);
-        const bis = DateUtil.localDateToMoment(data.gueltigBis);
+        const ab = MomentUtil.localDateToMoment(data.gueltigAb);
+        const bis = MomentUtil.localDateToMoment(data.gueltigBis);
         tsInstitutionExternalClient.gueltigkeit = new TSDateRange(ab, bis);
         return tsInstitutionExternalClient;
     }
@@ -7390,11 +6895,11 @@ export class EbeguRestUtil {
             );
         if (institutionExternalClientTS.gueltigkeit) {
             institutionExternalClientRest.gueltigAb =
-                DateUtil.momentToLocalDate(
+                MomentUtil.momentToLocalDate(
                     institutionExternalClientTS.gueltigkeit.gueltigAb
                 );
             institutionExternalClientRest.gueltigBis =
-                DateUtil.momentToLocalDate(
+                MomentUtil.momentToLocalDate(
                     institutionExternalClientTS.gueltigkeit.gueltigBis
                 );
         }
@@ -7455,6 +6960,11 @@ export class EbeguRestUtil {
                     gemeindeAntragFromServer.verantwortlicher
                 );
             }
+            gemeindeAntragTS.einreichedatum = EbeguUtil.isNotNullOrUndefined(
+                gemeindeAntragFromServer.einreichedatum
+            )
+                ? new Date(gemeindeAntragFromServer.einreichedatum)
+                : null;
             return gemeindeAntragTS;
         }
         return undefined;
@@ -8196,7 +7706,7 @@ export class EbeguRestUtil {
         this.abstractEntityToRestObject(restStammdaten, stammdatenTS);
         restStammdaten.amAngebotBeteiligteGemeinden =
             stammdatenTS.amAngebotBeteiligteGemeinden;
-        restStammdaten.seitWannFerienbetreuungen = DateUtil.momentToLocalDate(
+        restStammdaten.seitWannFerienbetreuungen = MomentUtil.momentToLocalDate(
             stammdatenTS.seitWannFerienbetreuungen
         );
         restStammdaten.traegerschaft = stammdatenTS.traegerschaft;
@@ -8438,7 +7948,7 @@ export class EbeguRestUtil {
         stammdatenFromServer.amAngebotBeteiligteGemeinden.sort();
         stammdatenTS.amAngebotBeteiligteGemeinden =
             stammdatenFromServer.amAngebotBeteiligteGemeinden;
-        stammdatenTS.seitWannFerienbetreuungen = DateUtil.localDateToMoment(
+        stammdatenTS.seitWannFerienbetreuungen = MomentUtil.localDateToMoment(
             stammdatenFromServer.seitWannFerienbetreuungen
         );
         stammdatenTS.traegerschaft = stammdatenFromServer.traegerschaft;
@@ -8679,7 +8189,7 @@ export class EbeguRestUtil {
             return undefined;
         }
         this.parseTSFileDokument(dokument, dokumentFromServer);
-        dokument.timestampUpload = DateUtil.localDateTimeToMoment(
+        dokument.timestampUpload = MomentUtil.localDateTimeToMoment(
             dokumentFromServer.timestampUpload
         );
         return dokument;
@@ -8705,13 +8215,13 @@ export class EbeguRestUtil {
             );
             restSozialdienstFall.name = sozialdienstFall.name;
             restSozialdienstFall.vorname = sozialdienstFall.vorname;
-            restSozialdienstFall.geburtsdatum = DateUtil.momentToLocalDate(
+            restSozialdienstFall.geburtsdatum = MomentUtil.momentToLocalDate(
                 sozialdienstFall.geburtsdatum
             );
             restSozialdienstFall.status = sozialdienstFall.status;
             restSozialdienstFall.nameGs2 = sozialdienstFall.nameGs2;
             restSozialdienstFall.vornameGs2 = sozialdienstFall.vornameGs2;
-            restSozialdienstFall.geburtsdatumGs2 = DateUtil.momentToLocalDate(
+            restSozialdienstFall.geburtsdatumGs2 = MomentUtil.momentToLocalDate(
                 sozialdienstFall.geburtsdatumGs2
             );
             return restSozialdienstFall;
@@ -8738,13 +8248,13 @@ export class EbeguRestUtil {
             );
             sozialdienstFallTS.name = sozialdienstFallFromServer.name;
             sozialdienstFallTS.vorname = sozialdienstFallFromServer.vorname;
-            sozialdienstFallTS.geburtsdatum = DateUtil.localDateToMoment(
+            sozialdienstFallTS.geburtsdatum = MomentUtil.localDateToMoment(
                 sozialdienstFallFromServer.geburtsdatum
             );
             sozialdienstFallTS.nameGs2 = sozialdienstFallFromServer.nameGs2;
             sozialdienstFallTS.vornameGs2 =
                 sozialdienstFallFromServer.vornameGs2;
-            sozialdienstFallTS.geburtsdatumGs2 = DateUtil.localDateToMoment(
+            sozialdienstFallTS.geburtsdatumGs2 = MomentUtil.localDateToMoment(
                 sozialdienstFallFromServer.geburtsdatumGs2
             );
             sozialdienstFallTS.status = sozialdienstFallFromServer.status;
@@ -8814,7 +8324,7 @@ export class EbeguRestUtil {
             return undefined;
         }
         this.parseTSFileDokument(vollMachtDokument, dokumentFromServer);
-        vollMachtDokument.timestampUpload = DateUtil.localDateTimeToMoment(
+        vollMachtDokument.timestampUpload = MomentUtil.localDateTimeToMoment(
             dokumentFromServer.timestampUpload
         );
         return vollMachtDokument;
@@ -8826,7 +8336,6 @@ export class EbeguRestUtil {
     ): TSFile {
         this.parseAbstractMutableEntity(dokument, dokumentFromServer);
         dokument.filename = dokumentFromServer.filename;
-        dokument.filepfad = dokumentFromServer.filepfad;
         dokument.filesize = dokumentFromServer.filesize;
         return dokument;
     }
@@ -8861,7 +8370,7 @@ export class EbeguRestUtil {
         betreuungMonitoring.refNummer = betreuungMonitoringFromServer.refNummer;
         betreuungMonitoring.benutzer = betreuungMonitoringFromServer.benutzer;
         betreuungMonitoring.infoText = betreuungMonitoringFromServer.infoText;
-        betreuungMonitoring.timestamp = DateUtil.localDateTimeToMoment(
+        betreuungMonitoring.timestamp = MomentUtil.localDateTimeToMoment(
             betreuungMonitoringFromServer.timestamp
         );
         return betreuungMonitoring;
@@ -8898,10 +8407,10 @@ export class EbeguRestUtil {
             new TSBenutzer(),
             historyFromServer.benutzer
         );
-        historyTS.timestampVon = DateUtil.localDateTimeToMoment(
+        historyTS.timestampVon = MomentUtil.localDateTimeToMoment(
             historyFromServer.timestampVon
         );
-        historyTS.timestampBis = DateUtil.localDateTimeToMoment(
+        historyTS.timestampBis = MomentUtil.localDateTimeToMoment(
             historyFromServer.timestampBis
         );
         historyTS.status = historyFromServer.status;
@@ -8920,7 +8429,7 @@ export class EbeguRestUtil {
             {},
             internePendenz.gesuch
         );
-        internePendenzRest.termin = DateUtil.momentToLocalDate(
+        internePendenzRest.termin = MomentUtil.momentToLocalDate(
             internePendenz.termin
         );
         internePendenzRest.text = internePendenz.text;
@@ -8940,7 +8449,7 @@ export class EbeguRestUtil {
             new TSGesuch(),
             internePendentFromServer.gesuch
         );
-        internePendenz.termin = DateUtil.localDateToMoment(
+        internePendenz.termin = MomentUtil.localDateToMoment(
             internePendentFromServer.termin
         );
         internePendenz.text = internePendentFromServer.text;
@@ -9085,7 +8594,7 @@ export class EbeguRestUtil {
         tsSteuerdatenResponse.zpvNrAntragsteller =
             steuerdatenResponseFromServer.zpvNrAntragsteller;
         tsSteuerdatenResponse.geburtsdatumAntragsteller =
-            DateUtil.localDateTimeToMoment(
+            MomentUtil.localDateTimeToMoment(
                 steuerdatenResponseFromServer.geburtsdatumAntragsteller
             );
         tsSteuerdatenResponse.kiBonAntragID =
@@ -9095,17 +8604,17 @@ export class EbeguRestUtil {
         tsSteuerdatenResponse.zpvNrDossiertraeger =
             steuerdatenResponseFromServer.zpvNrDossiertraeger;
         tsSteuerdatenResponse.geburtsdatumDossiertraeger =
-            DateUtil.localDateTimeToMoment(
+            MomentUtil.localDateTimeToMoment(
                 steuerdatenResponseFromServer.geburtsdatumDossiertraeger
             );
         tsSteuerdatenResponse.zpvNrPartner =
             steuerdatenResponseFromServer.zpvNrPartner;
         tsSteuerdatenResponse.geburtsdatumPartner =
-            DateUtil.localDateTimeToMoment(
+            MomentUtil.localDateTimeToMoment(
                 steuerdatenResponseFromServer.geburtsdatumPartner
             );
         tsSteuerdatenResponse.fallId = steuerdatenResponseFromServer.fallId;
-        tsSteuerdatenResponse.antwortdatum = DateUtil.localDateTimeToMoment(
+        tsSteuerdatenResponse.antwortdatum = MomentUtil.localDateTimeToMoment(
             steuerdatenResponseFromServer.antwortdatum
         );
         tsSteuerdatenResponse.synchroneAntwort =
@@ -9168,7 +8677,7 @@ export class EbeguRestUtil {
         kibonAnfrage: TSKibonAnfrage
     ): any {
         restKibonAnfrage.antragId = kibonAnfrage.antragId;
-        restKibonAnfrage.geburtsdatum = DateUtil.momentToLocalDate(
+        restKibonAnfrage.geburtsdatum = MomentUtil.momentToLocalDate(
             kibonAnfrage.geburtsdatum
         );
         restKibonAnfrage.gesuchsperiodeBeginnJahr =
@@ -9259,7 +8768,7 @@ export class EbeguRestUtil {
             uebersichtVersendeteMailsFromServer
         );
         uebersichtVersendeteMails.zeitpunktVersand =
-            DateUtil.localDateTimeToMoment(
+            MomentUtil.localDateTimeToMoment(
                 uebersichtVersendeteMailsFromServer.zeitpunktVersand
             );
         uebersichtVersendeteMails.empfaengerAdresse =

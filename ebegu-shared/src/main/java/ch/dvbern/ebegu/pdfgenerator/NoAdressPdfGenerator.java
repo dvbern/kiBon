@@ -8,22 +8,22 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
 
-import ch.dvbern.ebegu.entities.GemeindeStammdatenKorrespondenz;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
-public class NoAdressPdfGenerator extends PdfGenerator{
+import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.entities.GemeindeStammdatenKorrespondenz;
+
+public class NoAdressPdfGenerator extends PdfGenerator {
 
 	public NoAdressPdfGenerator(@Nonnull PdfLayoutConfiguration configuration) {
 		super(configuration);
@@ -35,7 +35,8 @@ public class NoAdressPdfGenerator extends PdfGenerator{
 			new GemeindeStammdatenKorrespondenz(),
 			new ArrayList<>(),
 			false,
-			false);
+			false
+		);
 		layoutConfiguration.setFooter(null);
 		layoutConfiguration.setHeader(null);
 		// Die Default-Schriften aus der Library ueberschreiben

@@ -13,27 +13,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IFilterService, ILogService} from 'angular';
-import * as moment from 'moment';
-import {CONSTANTS} from '../app/core/constants/CONSTANTS';
-import {LogFactory} from '../app/core/logging/LogFactory';
+import angular, {copy, element} from 'angular';
+import moment from 'moment';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {
+    TSAbstractEntity,
+    TSDateRange,
+    TSIntegrationTyp,
+    TSAdresse,
+    TSGemeinde,
+    TSGesuchsperiode
+} from '@kibon/shared/model/entity';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {Displayable} from '../app/shared/interfaces/displayable';
 import {TSBetreuungsnummerParts} from '../models/dto/TSBetreuungsnummerParts';
 import {TSAntragTyp} from '../models/enums/TSAntragTyp';
-import {TSIntegrationTyp} from '../models/enums/TSIntegrationTyp';
-import {TSAbstractEntity} from '../models/TSAbstractEntity';
 import {TSAbstractGemeindeStammdaten} from '../models/TSAbstractGemeindeStammdaten';
-import {TSAdresse} from '../models/TSAdresse';
 import {TSBenutzerNoDetails} from '../models/TSBenutzerNoDetails';
 import {TSBetreuung} from '../models/TSBetreuung';
 import {TSDossier} from '../models/TSDossier';
 import {TSFall} from '../models/TSFall';
-import {TSGemeinde} from '../models/TSGemeinde';
 import {TSGesuch} from '../models/TSGesuch';
-import {TSGesuchsperiode} from '../models/TSGesuchsperiode';
 import {TSKindContainer} from '../models/TSKindContainer';
-import {TSDateRange} from '../models/types/TSDateRange';
-import {DateUtil} from './DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import ITranslateService = angular.translate.ITranslateService;
 
 const LOG = LogFactory.createLog('EbeguUtil');
@@ -47,9 +49,9 @@ export class EbeguUtil {
     public static $inject = ['$filter', '$translate', '$log'];
 
     public constructor(
-        private readonly $filter: IFilterService,
+        private readonly $filter: angular.IFilterService,
         private readonly $translate: ITranslateService,
-        private readonly $log: ILogService
+        private readonly $log: angular.ILogService
     ) {}
 
     public static hasTextCaseInsensitive(obj: any, text: any): boolean {
@@ -68,6 +70,10 @@ export class EbeguUtil {
             'An error occurred downloading the document, closing download window.',
             error
         );
+    }
+
+    public static roundToTwo(num: number) {
+        return Math.round(num * 100) / 100;
     }
 
     public static compareByName<T extends Displayable>(a: T, b: T): number {
@@ -117,7 +123,7 @@ export class EbeguUtil {
     public static copyArrayWithoutReference<T>(a: T[]): T[] {
         const newArray = [];
         for (let i = 0; i < a.length; i++) {
-            newArray[i] = angular.copy(a[i]);
+            newArray[i] = copy(a[i]);
         }
         return newArray;
     }
@@ -168,7 +174,7 @@ export class EbeguUtil {
         // Ugly Fix:
         // Because of a bug in smarttables, the table will only be refreshed if the reverence or the first element
         // changes in table. To resolve this bug, we overwrite the first element by a copy of itself.
-        aList[0] = angular.copy(aList[0]);
+        aList[0] = copy(aList[0]);
     }
 
     /**
@@ -211,14 +217,14 @@ export class EbeguUtil {
             tmp.attr(ariaDescribedby) === undefined
                 ? ''
                 : `${tmp.attr(ariaDescribedby)} `;
-        const h2 = angular.element('h2:not(.access-for-all-title)').first();
+        const h2 = element('h2:not(.access-for-all-title)').first();
         const h2Id =
             h2.attr('id') === undefined
                 ? 'aria-describe-form-h2'
                 : h2.attr('id');
         h2.attr('id', h2Id);
         tmpAria += h2Id;
-        const h3 = angular.element('h3:not(.access-for-all-title)').first();
+        const h3 = element('h3:not(.access-for-all-title)').first();
         const h3Id =
             h3.attr('id') === undefined
                 ? 'aria-describe-form-h3'
@@ -512,7 +518,7 @@ export class EbeguUtil {
             gesuchsperiode.gueltigkeit &&
             gesuchsperiode.gueltigkeit.gueltigAb
         ) {
-            return DateUtil.momentToLocalDateFormat(
+            return MomentUtil.momentToLocalDateFormat(
                 gesuchsperiode.gueltigkeit.gueltigAb,
                 defaultDateFormat
             );

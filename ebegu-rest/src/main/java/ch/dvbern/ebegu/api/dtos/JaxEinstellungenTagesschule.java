@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -22,53 +22,64 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.enums.ModulTagesschuleTyp;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JaxEinstellungenTagesschule extends JaxAbstractDTO {
 
 	private static final long serialVersionUID = -1513774591239298994L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxGesuchsperiode gesuchsperiode;
 
-	@NotNull @Nonnull
-	private List<JaxModulTagesschuleGroup> modulTagesschuleGroups = new ArrayList<>();
+	@NotNull
+	@Nonnull
+	private List<JaxModulTagesschuleGroup> modulTagesschuleGroups =
+		new ArrayList<>();
 
-	@NotNull @Nonnull
-	private ModulTagesschuleTyp modulTagesschuleTyp = ModulTagesschuleTyp.DYNAMISCH;
+	@NotNull
+	@Nonnull
+	private ModulTagesschuleTyp modulTagesschuleTyp =
+		ModulTagesschuleTyp.DYNAMISCH;
 
 	@Nullable
 	private String erlaeuterung;
 
 	private boolean tagi = false;
 
+	@Nonnull
 	public JaxGesuchsperiode getGesuchsperiode() {
 		return gesuchsperiode;
 	}
 
-	public void setGesuchsperiode(JaxGesuchsperiode gesuchsperiode) {
+	public void setGesuchsperiode(@Nonnull JaxGesuchsperiode gesuchsperiode) {
 		this.gesuchsperiode = gesuchsperiode;
 	}
 
+	@Nonnull
 	public List<JaxModulTagesschuleGroup> getModulTagesschuleGroups() {
 		return modulTagesschuleGroups;
 	}
 
-	public void setModulTagesschuleGroups(List<JaxModulTagesschuleGroup> modulTagesschuleGroups) {
+	public void setModulTagesschuleGroups(
+		@Nonnull List<JaxModulTagesschuleGroup> modulTagesschuleGroups
+	) {
 		this.modulTagesschuleGroups = modulTagesschuleGroups;
 	}
 
+	@Nonnull
 	public ModulTagesschuleTyp getModulTagesschuleTyp() {
 		return modulTagesschuleTyp;
 	}
 
-	public void setModulTagesschuleTyp(ModulTagesschuleTyp modulTagesschuleTyp) {
+	public void setModulTagesschuleTyp(
+		@Nonnull ModulTagesschuleTyp modulTagesschuleTyp
+	) {
 		this.modulTagesschuleTyp = modulTagesschuleTyp;
 	}
 

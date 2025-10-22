@@ -16,6 +16,7 @@
  */
 
 import {
+    copy,
     IComponentOptions,
     IPromise,
     IQService,
@@ -23,13 +24,13 @@ import {
     ITimeoutService
 } from 'angular';
 import {map} from 'rxjs/operators';
-import {MANDANTS} from '../../../../../app/core/constants/MANDANTS';
+import {MANDANTS} from '@kibon/shared-model-mandant';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {MandantService} from '@kibon/shared-util-mandant-service';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
 import {SozialhilfeZeitraumRS} from '../../../../../app/core/service/sozialhilfeZeitraumRS.rest';
-import {MandantService} from '../../../../../app/shared/services/mandant.service';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
 import {TSFamiliensituationContainer} from '../../../../../models/TSFamiliensituationContainer';
 import {TSSozialhilfeZeitraum} from '../../../../../models/TSSozialhilfeZeitraum';
 import {TSSozialhilfeZeitraumContainer} from '../../../../../models/TSSozialhilfeZeitraumContainer';
@@ -103,7 +104,7 @@ export class SozialhilfeZeitraumViewController extends AbstractGesuchViewControl
             if ($stateParams.sozialhilfeZeitraumNum) {
                 const ewpNum =
                     parseInt($stateParams.sozialhilfeZeitraumNum, 10) || 0;
-                this.model = angular.copy(
+                this.model = copy(
                     this.familiensituation.sozialhilfeZeitraumContainers[ewpNum]
                 );
             } else {

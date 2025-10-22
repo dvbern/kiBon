@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.initalizer;
@@ -27,9 +27,11 @@ import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.util.MathUtil;
 
 /**
- * Hilfsklasse die nach der eigentlich Evaluation einer Betreuung angewendet wird um den Restanspruch zu uebernehmen fuer die
+ * Hilfsklasse die nach der eigentlich Evaluation einer Betreuung angewendet wird um den Restanspruch zu uebernehmen
+ * fuer die
  * Berechnung der nachsten Betreuung.
- * Ermittelt des Restanspruch aus den übergebenen Zeitabschnitten und erstellt neue Abschnitte mit nur dieser Information
+ * Ermittelt des Restanspruch aus den übergebenen Zeitabschnitten und erstellt neue Abschnitte mit nur dieser
+ * Information
  * für die Berechnung der nächsten Betreuung. Diese werden als initiale Zeitabschnitte der nachsten Betreuung verwendet
  * Bei Angeboten fuer Schulkinder ist der Restanspruch nicht tangiert
  * Verweis 15.9.5
@@ -37,12 +39,17 @@ import ch.dvbern.ebegu.util.MathUtil;
  * <h1>Vorgehensskizze Restanspruchberechnung</h1>
  * <ul>
  * <li>Der Restanspruch ist bei der ersten Betreuung auf -1 gesetzt</li>
- * <li>Wir berechnen die Verfügung für diese erste Betreuung. Dabei wird in allen Regeln die den Anspruch benoetigen das Feld AnspruchberechtigtesPensum verwendet (nicht AnspruchspensumRest)</li>
+ * <li>Wir berechnen die Verfügung für diese erste Betreuung. Dabei wird in allen Regeln die den Anspruch benoetigen das
+ * Feld AnspruchberechtigtesPensum verwendet (nicht AnspruchspensumRest)</li>
  * <li> Als allerletzte Reduktionsregel läuft eine Regel die das Feld "AnspruchberechtigtesPensum" mit dem Feld<
- * "AnspruchspensumRest" vergleicht. Wenn letzteres -1 ist gilt der Wert im Feld "AnspruchsberechtigtesPensum, ansonsten wir das Minimum der beiden Felder in das Feld "AnspruchberechtigtesPensum" gesetzt. </li>
- * <li>Bevor die nächste Betreuung verfügt wird, berechnen wir den noch verfügbaren Restanspruch indem wir "AnspruchberechtigtesPensum" - "betreuungspensum" rechnen und das Resultat in das Feld "AnspruchspensumRest" schreiben</li>
+ * "AnspruchspensumRest" vergleicht. Wenn letzteres -1 ist gilt der Wert im Feld "AnspruchsberechtigtesPensum, ansonsten
+ * wir das Minimum der beiden Felder in das Feld "AnspruchberechtigtesPensum" gesetzt. </li>
+ * <li>Bevor die nächste Betreuung verfügt wird, berechnen wir den noch verfügbaren Restanspruch indem wir
+ * "AnspruchberechtigtesPensum" - "betreuungspensum" rechnen und das Resultat in das Feld "AnspruchspensumRest"
+ * schreiben</li>
  * </ul>
- * Die 2. Betreuung wird genau wie die erste durchgeführt. Nun wird allerdings die allerletzte Reduktionsregel den Anspruch reduzieren auf den gesetzten Restanspruch.
+ * Die 2. Betreuung wird genau wie die erste durchgeführt. Nun wird allerdings die allerletzte Reduktionsregel den
+ * Anspruch reduzieren auf den gesetzten Restanspruch.
  */
 public final class RestanspruchInitializerAR extends RestanspruchInitializer {
 
@@ -50,20 +57,30 @@ public final class RestanspruchInitializerAR extends RestanspruchInitializer {
 		super(isDebug);
 	}
 
-
 	@Override
 	protected void restanspruchUebernehmenVerfuegt(
-			@Nonnull BGCalculationInput sourceZeitabschnittInput,
-			@Nonnull BGCalculationResult sourceZeitabschnitt,
-			@Nonnull BGCalculationInput targetZeitabschnitt
+		@Nonnull BGCalculationInput sourceZeitabschnittInput,
+		@Nonnull BGCalculationResult sourceZeitabschnitt,
+		@Nonnull BGCalculationInput targetZeitabschnitt
 	) {
 		BigDecimal faktor = sourceZeitabschnittInput.getBgStundenFaktor();
-		BigDecimal anspruchberechtigtesPensumInStunden = sourceZeitabschnitt.getAnspruchspensumZeiteinheit();
-		BigDecimal betreuungspensumInStunden = sourceZeitabschnitt.getBetreuungspensumZeiteinheit();
+		BigDecimal anspruchberechtigtesPensumInStunden = sourceZeitabschnitt
+			.getAnspruchspensumZeiteinheit();
+		BigDecimal betreuungspensumInStunden = sourceZeitabschnitt
+			.getBetreuungspensumZeiteinheit();
 		if (sourceZeitabschnitt.getAnspruchspensumRest() != null) {
 			// Wir haben einen Restanspruch nach dem neuen System gespeichert
-			final BigDecimal anspruchspensumRestInStunden = MathUtil.EXACT.multiply(sourceZeitabschnitt.getAnspruchspensumRest(), faktor);
-			final int restanspruchNeu = calculateRestanspruchInStunden(betreuungspensumInStunden, anspruchberechtigtesPensumInStunden, anspruchspensumRestInStunden, faktor);
+			final BigDecimal anspruchspensumRestInStunden = MathUtil.EXACT
+				.multiply(
+					sourceZeitabschnitt.getAnspruchspensumRest(),
+					faktor
+				);
+			final int restanspruchNeu = calculateRestanspruchInStunden(
+				betreuungspensumInStunden,
+				anspruchberechtigtesPensumInStunden,
+				anspruchspensumRestInStunden,
+				faktor
+			);
 			targetZeitabschnitt.setAnspruchspensumRest(restanspruchNeu);
 		} else {
 			if (betreuungspensumInStunden.compareTo(BigDecimal.ZERO) == 0) {
@@ -72,13 +89,32 @@ public final class RestanspruchInitializerAR extends RestanspruchInitializer {
 				targetZeitabschnitt.setAnspruchspensumRest(-1);
 			}
 			//wenn nicht der ganze anspruch gebraucht wird gibt es einen rest, ansonsten ist rest 0
-			else if (betreuungspensumInStunden.compareTo(anspruchberechtigtesPensumInStunden.add(BigDecimal.valueOf(sourceZeitabschnittInput.getRueckwirkendReduziertesPensumRest()))) < 0) {
-				int rueckwirekndRedPeRe = sourceZeitabschnittInput.getRueckwirkendReduziertesPensumRest();
+			else if (betreuungspensumInStunden.compareTo(
+				anspruchberechtigtesPensumInStunden.add(
+					BigDecimal.valueOf(
+						sourceZeitabschnittInput
+							.getRueckwirkendReduziertesPensumRest()
+					)
+				)
+			) < 0) {
+				int rueckwirekndRedPeRe = sourceZeitabschnittInput
+					.getRueckwirkendReduziertesPensumRest();
 				BigDecimal restanpsurchStunden =
-						MathUtil.minimum(anspruchberechtigtesPensumInStunden.subtract(betreuungspensumInStunden), BigDecimal.ZERO);
-				BigDecimal anspruchspensumRest = MathUtil.EXACT.divide(restanpsurchStunden, faktor);
-				targetZeitabschnitt.setAnspruchspensumRest(anspruchspensumRest.setScale(0, RoundingMode.HALF_UP).intValue()
-						+ rueckwirekndRedPeRe);
+					MathUtil.minimum(
+						anspruchberechtigtesPensumInStunden.subtract(
+							betreuungspensumInStunden
+						),
+						BigDecimal.ZERO
+					);
+				BigDecimal anspruchspensumRest = MathUtil.EXACT.divide(
+					restanpsurchStunden,
+					faktor
+				);
+				targetZeitabschnitt.setAnspruchspensumRest(
+					anspruchspensumRest.setScale(0, RoundingMode.HALF_UP)
+						.intValue()
+						+ rueckwirekndRedPeRe
+				);
 			} else {
 				targetZeitabschnitt.setAnspruchspensumRest(0);
 			}
@@ -86,18 +122,28 @@ public final class RestanspruchInitializerAR extends RestanspruchInitializer {
 	}
 
 	private int calculateRestanspruchInStunden(
-			BigDecimal betreuungspensumInStunden,
-			BigDecimal anspruchberechtigtesPensumInStunden,
-			BigDecimal anspruchspensumRestInStunden,
-			BigDecimal faktorProzentToStunden) {
+		BigDecimal betreuungspensumInStunden,
+		BigDecimal anspruchberechtigtesPensumInStunden,
+		BigDecimal anspruchspensumRestInStunden,
+		BigDecimal faktorProzentToStunden
+	) {
 		//wenn nicht der ganze anspruch gebraucht wird gibt es einen rest, ansonsten ist rest 0
-		if (anspruchberechtigtesPensumInStunden.compareTo(BigDecimal.ZERO) == 0) {
+		if (anspruchberechtigtesPensumInStunden.compareTo(BigDecimal.ZERO)
+			== 0) {
 			// Der Anspruch fuer diese Kita war 0, d.h. der Restanspruch bleibt gleich wie auf der vorherigen Betreuung
-			return MathUtil.EXACT.divide(anspruchspensumRestInStunden, faktorProzentToStunden).intValue() ;
+			return MathUtil.EXACT.divide(
+				anspruchspensumRestInStunden,
+				faktorProzentToStunden
+			).intValue();
 		}
 
-		if (betreuungspensumInStunden.compareTo(anspruchberechtigtesPensumInStunden) < 0) {
-			return MathUtil.EXACT.subtract(anspruchberechtigtesPensumInStunden, betreuungspensumInStunden).intValue();
+		if (betreuungspensumInStunden.compareTo(
+			anspruchberechtigtesPensumInStunden
+		) < 0) {
+			return MathUtil.EXACT.subtract(
+				anspruchberechtigtesPensumInStunden,
+				betreuungspensumInStunden
+			).intValue();
 		}
 
 		return 0;

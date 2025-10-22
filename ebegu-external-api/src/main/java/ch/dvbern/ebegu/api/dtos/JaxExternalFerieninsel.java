@@ -19,11 +19,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.api.enums.JaxExternalFerienName;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO für ein Ferien-Insel Angebot für die externe Schnittstelle
@@ -37,15 +37,18 @@ public class JaxExternalFerieninsel implements Serializable {
 	private JaxExternalFerienName ferien;
 
 	@Nonnull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private List<LocalDate> tage;
 
 	@Nonnull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private List<LocalDate> morgenmodule;
 
-
-	public JaxExternalFerieninsel(@Nonnull JaxExternalFerienName ferien, @Nonnull List<LocalDate> tage, @Nonnull List<LocalDate> morgenmodule) {
+	public JaxExternalFerieninsel(
+		@Nonnull JaxExternalFerienName ferien,
+		@Nonnull List<LocalDate> tage,
+		@Nonnull List<LocalDate> morgenmodule
+	) {
 		this.ferien = ferien;
 		this.tage = tage;
 		this.morgenmodule = morgenmodule;

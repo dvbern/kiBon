@@ -31,7 +31,9 @@ public class JaxBetreuungsstundenPrognose extends JaxAbstractDTO {
 		return betreuungsstundenPrognose;
 	}
 
-	public void setBetreuungsstundenPrognose(BigDecimal betreuungsstundenPrognose) {
+	public void setBetreuungsstundenPrognose(
+		BigDecimal betreuungsstundenPrognose
+	) {
 		this.betreuungsstundenPrognose = betreuungsstundenPrognose;
 	}
 }

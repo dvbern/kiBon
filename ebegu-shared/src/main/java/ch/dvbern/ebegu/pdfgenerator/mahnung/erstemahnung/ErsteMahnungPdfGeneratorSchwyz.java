@@ -6,8 +6,12 @@ import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Mahnung;
 import com.lowagie.text.Paragraph;
 
-public class ErsteMahnungPdfGeneratorSchwyz extends AbstractErsteMahnungPdfGenerator{
-	public ErsteMahnungPdfGeneratorSchwyz(@Nonnull Mahnung mahnung, @Nonnull GemeindeStammdaten stammdaten) {
+public class ErsteMahnungPdfGeneratorSchwyz extends
+	AbstractErsteMahnungPdfGenerator {
+	public ErsteMahnungPdfGeneratorSchwyz(
+		@Nonnull Mahnung mahnung,
+		@Nonnull GemeindeStammdaten stammdaten
+	) {
 		super(mahnung, stammdaten);
 	}
 

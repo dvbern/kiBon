@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -30,9 +30,10 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.KindContainer;
@@ -40,9 +41,8 @@ import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragStatus;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
 import ch.dvbern.ebegu.rechner.rules.MahlzeitenverguenstigungBGRechnerRule;
@@ -52,19 +52,20 @@ import ch.dvbern.ebegu.rechner.rules.RechnerRule;
 import ch.dvbern.ebegu.rechner.rules.ZusaetzlicherBabyGutscheinRechnerRule;
 import ch.dvbern.ebegu.rechner.rules.ZusaetzlicherGutscheinGemeindeRechnerRule;
 import ch.dvbern.ebegu.rules.initalizer.RestanspruchInitializer;
-import ch.dvbern.ebegu.rules.initalizer.RestanspruchInitializerVisitor;
+import ch.dvbern.ebegu.rules.initalizer.RestanspruchInitializerDefaultVisitor;
 import ch.dvbern.ebegu.rules.mutationsmerger.MutationsMerger;
+import ch.dvbern.ebegu.rules.mutationsmerger.OneVorgaengerEnsurer;
 import ch.dvbern.ebegu.rules.util.BemerkungsMerger;
 import ch.dvbern.ebegu.rules.veraenderung.VeraenderungCalculator;
-import ch.dvbern.ebegu.util.BetreuungComparatorVisitor;
+import ch.dvbern.ebegu.util.BetreuungComparatorDefaultVisitor;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import ch.dvbern.ebegu.util.VerfuegungUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static ch.dvbern.ebegu.enums.EinstellungKey.ANSPRUCH_MONATSWEISE;
-import static ch.dvbern.ebegu.enums.EinstellungKey.EINGEWOEHNUNG_TYP;
-import static ch.dvbern.ebegu.enums.EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANSPRUCH_MONATSWEISE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.EINGEWOEHNUNG_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND;
 
 /**
  * This is the Evaluator that runs all the rules and calculations for a given Antrag to determine the
@@ -72,9 +73,11 @@ import static ch.dvbern.ebegu.enums.EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND;
  */
 public class BetreuungsgutscheinEvaluator {
 
-	private static final Logger LOG = LoggerFactory.getLogger(BetreuungsgutscheinEvaluator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		BetreuungsgutscheinEvaluator.class
+	);
 
-	private boolean isDebug = true;
+	private boolean isDebug = false;
 
 	private Map<EinstellungKey, Einstellung> kibonAbschlussRulesParameters;
 
@@ -84,20 +87,28 @@ public class BetreuungsgutscheinEvaluator {
 
 	public BetreuungsgutscheinEvaluator(
 		List<Rule> rules,
-		Map<EinstellungKey, Einstellung> kibonAbschlussRulesParameters) {
+		Map<EinstellungKey, Einstellung> kibonAbschlussRulesParameters
+	) {
 		this.rules = rules;
 		this.kibonAbschlussRulesParameters = kibonAbschlussRulesParameters;
-		executor = new BetreuungsgutscheinExecutor(true, this.kibonAbschlussRulesParameters);
+		executor = new BetreuungsgutscheinExecutor(
+			false,
+			this.kibonAbschlussRulesParameters
+		);
 	}
 
 	public BetreuungsgutscheinEvaluator(
 		List<Rule> rules,
 		boolean enableDebugOutput,
-		Map<EinstellungKey, Einstellung> kibonAbschlussRulesParameters) {
+		Map<EinstellungKey, Einstellung> kibonAbschlussRulesParameters
+	) {
 		this.rules = rules;
 		this.isDebug = enableDebugOutput;
 		this.kibonAbschlussRulesParameters = kibonAbschlussRulesParameters;
-		executor = new BetreuungsgutscheinExecutor(isDebug, this.kibonAbschlussRulesParameters);
+		executor = new BetreuungsgutscheinExecutor(
+			isDebug,
+			this.kibonAbschlussRulesParameters
+		);
 	}
 
 	/**
@@ -105,54 +116,107 @@ public class BetreuungsgutscheinEvaluator {
 	 * existieren
 	 */
 	@Nonnull
-	public Verfuegung evaluateFamiliensituation(@Nonnull Gesuch gesuch, @Nonnull Locale locale) {
+	public Verfuegung evaluateFamiliensituation(
+		@Nonnull Gesuch gesuch,
+		@Nonnull Locale locale
+	) {
 
 		// Wenn diese Methode aufgerufen wird, muss die Berechnung der Finanzdaten bereits erfolgt sein:
 		if (gesuch.getFinanzDatenDTO() == null) {
 			throw new IllegalStateException(
-				"Bitte zuerst die Finanzberechnung ausführen! -> FinanzielleSituationRechner.calculateFinanzDaten()");
+				"Bitte zuerst die Finanzberechnung ausführen! -> FinanzielleSituationRechner.calculateFinanzDaten()"
+			);
 		}
-		List<Rule> rulesToRun = findRulesToRunForPeriode(gesuch.getGesuchsperiode());
+		List<Rule> rulesToRun = findRulesToRunForPeriode(
+			gesuch.getGesuchsperiode()
+		);
 
 		// Fuer die Familiensituation ist die Betreuung nicht relevant. Wir brauchen aber eine, da die Signatur der
 		// Rules mit Betreuungen funktioniert. Wir nehmen einfach die erste von irgendeinem Kind, das heisst ohne
 		// betreuung koennen wir nicht berechnen Fuer ein Gesuch im Status KEIN_ANGEBOT wir können keine Betreuung
 		// finden, da es keine gibt.
-		AbstractPlatz firstBetreuungOfGesuch = gesuch.getStatus() == AntragStatus.KEIN_ANGEBOT
-			? null
-			: gesuch.getFirstBetreuungOrAnmeldungTagesschule();
+		AbstractPlatz firstBetreuungOfGesuch = gesuch.getStatus()
+			== AntragStatus.KEIN_ANGEBOT ?
+				null :
+				gesuch.getFirstBetreuungOrAnmeldungTagesschule();
 
 		// Die Initialen Zeitabschnitte erstellen (1 pro Gesuchsperiode)
 		List<VerfuegungZeitabschnitt> zeitabschnitte =
-			RestanspruchInitializer.createInitialenRestanspruch(gesuch.getGesuchsperiode(), false);
+			RestanspruchInitializer.createInitialenRestanspruch(
+				gesuch.getGesuchsperiode(),
+				false
+			);
 
 		if (firstBetreuungOfGesuch != null) {
-			Objects.requireNonNull(firstBetreuungOfGesuch.getKind().getKindJA().getEinschulungTyp());
+			Objects.requireNonNull(
+				firstBetreuungOfGesuch.getKind()
+					.getKindJA()
+					.getEinschulungTyp()
+			);
 
 			BetreuungsgutscheinExecutor.initFaktorBgStunden(
-					firstBetreuungOfGesuch.getKind().getKindJA().getEinschulungTyp(),
-					zeitabschnitte,
-					firstBetreuungOfGesuch.extractGesuch().extractMandant());
-			zeitabschnitte = executor.executeRules(rulesToRun, firstBetreuungOfGesuch, zeitabschnitte, true);
+				firstBetreuungOfGesuch.getKind()
+					.getKindJA()
+					.getEinschulungTyp(),
+				zeitabschnitte,
+				firstBetreuungOfGesuch.extractGesuch().extractMandant()
+			);
+			zeitabschnitte = executor.executeRules(
+				rulesToRun,
+				firstBetreuungOfGesuch,
+				zeitabschnitte,
+				true
+			);
 
 			MonatsRule monatsRule = new MonatsRule(isDebug);
 			Boolean pauschaleRueckwirkendAuszahlen =
-				kibonAbschlussRulesParameters.get(EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND).getValueAsBoolean();
-			MutationsMerger mutationsMerger = new MutationsMerger(locale, isDebug, pauschaleRueckwirkendAuszahlen);
-			AbschlussNormalizer abschlussNormalizerMitMonate = new AbschlussNormalizer(true, isDebug);
+				kibonAbschlussRulesParameters.get(
+					EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND
+				).getValueAsBoolean();
+			OneVorgaengerEnsurer oneVorgaengerEnsurer =
+				new OneVorgaengerEnsurer(
+					isDebug
+				);
+			MutationsMerger mutationsMerger = new MutationsMerger(
+				locale,
+				isDebug,
+				pauschaleRueckwirkendAuszahlen
+			);
+			AbschlussNormalizer abschlussNormalizerMitMonate =
+				new AbschlussNormalizer(true, isDebug);
 
-			zeitabschnitte = monatsRule.executeIfApplicable(firstBetreuungOfGesuch, zeitabschnitte);
+			zeitabschnitte = monatsRule.executeIfApplicable(
+				firstBetreuungOfGesuch,
+				zeitabschnitte
+			);
+			if (!kibonAbschlussRulesParameters.get(ANSPRUCH_MONATSWEISE)
+				.getValueAsBoolean()) {
+				zeitabschnitte = oneVorgaengerEnsurer.executeIfApplicable(
+					firstBetreuungOfGesuch,
+					zeitabschnitte
+				);
+			}
 			// Ganz am Ende der Berechnung mergen wir das aktuelle Ergebnis mit der Verfügung des letzten Gesuches
-			zeitabschnitte = mutationsMerger.executeIfApplicable(firstBetreuungOfGesuch, zeitabschnitte);
+			zeitabschnitte = mutationsMerger.executeIfApplicable(
+				firstBetreuungOfGesuch,
+				zeitabschnitte
+			);
 			// Falls jetzt wieder Abschnitte innerhalb eines Monats "gleich" sind, im Sinne der *angezeigten* Daten,
 			// diese auch noch mergen
-			zeitabschnitte = abschlussNormalizerMitMonate.executeIfApplicable(firstBetreuungOfGesuch, zeitabschnitte);
+			zeitabschnitte = abschlussNormalizerMitMonate.executeIfApplicable(
+				firstBetreuungOfGesuch,
+				zeitabschnitte
+			);
 
-			zeitabschnitte.forEach(VerfuegungZeitabschnitt::initBGCalculationResult);
+			zeitabschnitte.forEach(
+				VerfuegungZeitabschnitt::initBGCalculationResult
+			);
 
 		} else if (gesuch.getStatus() != AntragStatus.KEIN_ANGEBOT) {
 			// for Status KEIN_ANGEBOT it makes no sense to log an error because it is not an error
-			LOG.info("Keine Betreuung vorhanden kann Familiengroesse und Abzuege nicht berechnen");
+			LOG.info(
+				"Keine Betreuung vorhanden kann Familiengroesse und Abzuege nicht berechnen"
+			);
 		}
 
 		// Eine neue (nirgends angehaengte) Verfügung erstellen
@@ -161,26 +225,36 @@ public class BetreuungsgutscheinEvaluator {
 		return verfuegung;
 	}
 
-	@SuppressWarnings({ "OverlyComplexMethod", "PMD.NcssMethodCount" })
+	@SuppressWarnings("OverlyComplexMethod")
 	public void evaluate(
 		@Nonnull Gesuch gesuch,
 		@Nonnull BGRechnerParameterDTO bgRechnerParameterDTO,
 		@Nonnull KitaxUebergangsloesungParameter kitaxParameter,
-		@Nonnull Locale locale) {
+		@Nonnull Locale locale
+	) {
 
 		// Wenn diese Methode aufgerufen wird, muss die Berechnung der Finanzdaten bereits erfolgt sein:
 		if (gesuch.getFinanzDatenDTO() == null) {
 			throw new IllegalStateException(
-				"Bitte zuerst die Finanzberechnung ausführen! -> FinanzielleSituationRechner.calculateFinanzDaten()");
+				"Bitte zuerst die Finanzberechnung ausführen! -> FinanzielleSituationRechner.calculateFinanzDaten()"
+			);
 		}
 
 		Objects.requireNonNull(
 			kitaxParameter.getStadtBernAsivStartDate(),
-			"Das Startdatum ASIV fuer Bern muss in den ApplicationProperties definiert werden");
+			"Das Startdatum ASIV fuer Bern muss in den ApplicationProperties definiert werden"
+		);
 
-		List<Rule> rulesToRun = findRulesToRunForPeriode(gesuch.getGesuchsperiode());
-		List<RechnerRule> rechnerRulesForGemeinde = rechnerRulesForGemeinde(bgRechnerParameterDTO, locale);
-		List<KindContainer> kinder = new ArrayList<>(gesuch.getKindContainers());
+		List<Rule> rulesToRun = findRulesToRunForPeriode(
+			gesuch.getGesuchsperiode()
+		);
+		List<RechnerRule> rechnerRulesForGemeinde = rechnerRulesForGemeinde(
+			bgRechnerParameterDTO,
+			locale
+		);
+		List<KindContainer> kinder = new ArrayList<>(
+			gesuch.getKindContainers()
+		);
 		Collections.sort(kinder);
 		for (KindContainer kindContainer : kinder) {
 			// Pro Kind werden (je nach Angebot) die Anspruchspensen aufsummiert. Wir müssen uns also nach jeder
@@ -189,25 +263,38 @@ public class BetreuungsgutscheinEvaluator {
 			List<VerfuegungZeitabschnitt> restanspruchZeitabschnitte =
 				RestanspruchInitializer.createInitialenRestanspruch(
 					gesuch.getGesuchsperiode(),
-					!rechnerRulesForGemeinde.isEmpty());
+					!rechnerRulesForGemeinde.isEmpty()
+				);
 
 			// Betreuungen werden einzeln berechnet, reihenfolge ist wichtig (sortiert mit comperator gem regel
 			// EBEGU-561)
-			List<AbstractPlatz> plaetzeList = new ArrayList<>(kindContainer.getBetreuungen());
+			List<AbstractPlatz> plaetzeList = new ArrayList<>(
+				kindContainer.getBetreuungen()
+			);
 			plaetzeList.addAll(kindContainer.getAnmeldungenTagesschule());
-			plaetzeList.sort(new BetreuungComparatorVisitor().getComparatorForMandant(gesuch.extractMandant()));
+			plaetzeList.sort(
+				new BetreuungComparatorDefaultVisitor().getComparatorForMandant(
+					gesuch.extractMandant()
+				)
+			);
 
 			for (AbstractPlatz platz : plaetzeList) {
 				BetreuungsgutscheinExecutor.initFaktorBgStunden(
-						Objects.requireNonNull(kindContainer.getKindJA().getEinschulungTyp()),
-						restanspruchZeitabschnitte,
-						gesuch.extractMandant());
-				boolean isTagesschule = platz.getBetreuungsangebotTyp().isTagesschule();
+					Objects.requireNonNull(
+						kindContainer.getKindJA().getEinschulungTyp()
+					),
+					restanspruchZeitabschnitte,
+					gesuch.extractMandant()
+				);
+				boolean isTagesschule = platz.getBetreuungsangebotTyp()
+					.isTagesschule();
 
 				//initiale Restansprueche vorberechnen
-				if ((platz.getBetreuungsstatus() == Betreuungsstatus.GESCHLOSSEN_OHNE_VERFUEGUNG
+				if ((platz.getBetreuungsstatus()
+					== Betreuungsstatus.GESCHLOSSEN_OHNE_VERFUEGUNG
 					&& platz.getVerfuegungOrVorgaengerVerfuegung() == null)
-					|| platz.getBetreuungsstatus() == Betreuungsstatus.NICHT_EINGETRETEN) {
+					|| platz.getBetreuungsstatus()
+						== Betreuungsstatus.NICHT_EINGETRETEN) {
 					// es kann sein dass eine neue Betreuung in der Mutation abgelehnt wird, dann gibts keinen
 					// Vorgaenger und keine aktuelle verfuegung und wir muessen keinen restanspruch berechnen (vergl
 					// EBEGU-890)
@@ -215,37 +302,61 @@ public class BetreuungsgutscheinEvaluator {
 					// GESCHLOSSEN_OHNE_VERFUEGUNG sind
 					continue;
 				}
-				if (platz.getBetreuungsstatus().isGeschlossenJA() || platz.getBetreuungsstatus()
-					.isGeschlossenSchulamt()) {
+				if (platz.getBetreuungsstatus().isGeschlossenJA()
+					|| platz.getBetreuungsstatus()
+						.isGeschlossenSchulamt()) {
 					// Verfuegte Betreuungen duerfen nicht neu berechnet werden
-					LOG.info("Betreuung oder Tagesschulanmeldung ist schon abgeschlossen. Keine Neuberechnung durchgefuehrt");
+					LOG.info(
+						"Betreuung oder Tagesschulanmeldung ist schon abgeschlossen. Keine Neuberechnung durchgefuehrt"
+					);
 					if (platz.getBetreuungsstatus().isGeschlossenJA()) {
 						// Restanspruch muss mit Daten von Verfügung für nächste Betreuung richtig gesetzt werden
-						restanspruchZeitabschnitte = getRestanspruchForVerfuegteBetreung((Betreuung) platz);
+						restanspruchZeitabschnitte =
+							getRestanspruchForVerfuegteBetreung(
+								(Betreuung) platz
+							);
 					}
-					VeraenderungCalculator.getVeranderungCalculator(isTagesschule)
+					VeraenderungCalculator.getVeranderungCalculator(
+						isTagesschule
+					)
 						.calculateKorrekturAusbezahlteVerguenstigung(platz);
 
 					if (!isTagesschule) {
-						setZahlungRelevanteDaten((Betreuung) platz, bgRechnerParameterDTO, true);
+						setZahlungRelevanteDaten(
+							(Betreuung) platz,
+							bgRechnerParameterDTO,
+							true
+						);
 					}
 					continue;
 				}
 
 				// Die Initialen Zeitabschnitte sind die "Restansprüche" aus der letzten Betreuung
-				List<VerfuegungZeitabschnitt> zeitabschnitte = restanspruchZeitabschnitte;
+				List<VerfuegungZeitabschnitt> zeitabschnitte =
+					restanspruchZeitabschnitte;
 				if (isDebug) {
 					LOG.info("RefNr: {}", platz.getReferenzNummer());
-					LOG.info("{}: ", RestanspruchInitializer.class.getSimpleName());
+					LOG.info(
+						"{}: ",
+						RestanspruchInitializer.class.getSimpleName()
+					);
 					for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : zeitabschnitte) {
 						LOG.info(verfuegungZeitabschnitt.toString());
 					}
 				}
 
-				zeitabschnitte = executor.executeRules(rulesToRun, platz, zeitabschnitte);
+				zeitabschnitte = executor.executeRules(
+					rulesToRun,
+					platz,
+					zeitabschnitte
+				);
 
 				// Die Abschluss-Rules ebenfalls ausführen
-				zeitabschnitte = executor.executeAbschlussRules(platz, zeitabschnitte, locale);
+				zeitabschnitte = executor.executeAbschlussRules(
+					platz,
+					zeitabschnitte,
+					locale
+				);
 
 				// Die Verfügung erstellen
 				// Da wir die Verfügung nur beim eigentlichen Verfügen speichern wollen, wird
@@ -260,32 +371,53 @@ public class BetreuungsgutscheinEvaluator {
 					locale,
 					rechnerRulesForGemeinde,
 					platz,
-					zeitabschnitte);
+					zeitabschnitte
+				);
 
-				Verfuegung vorgaengerVerfuegung = platz.getVorgaengerVerfuegung();
+				Verfuegung vorgaengerVerfuegung = platz
+					.getVorgaengerVerfuegung();
 
 				if (vorgaengerVerfuegung != null) {
-					usePersistedCalculationResult(zeitabschnitte, vorgaengerVerfuegung);
+					usePersistedCalculationResult(
+						zeitabschnitte,
+						vorgaengerVerfuegung
+					);
 				}
 				// Und die Resultate in die Verfügung schreiben
 				verfuegungPreview.setZeitabschnitte(zeitabschnitte);
-				calculateVeraenderungen(verfuegungPreview, vorgaengerVerfuegung, isTagesschule);
+				calculateVeraenderungen(
+					verfuegungPreview,
+					vorgaengerVerfuegung,
+					isTagesschule
+				);
 
-				String bemerkungenToShow = BemerkungsMerger.evaluateBemerkungenForVerfuegung(zeitabschnitte,
-					gesuch.extractMandant(),
-					bgRechnerParameterDTO.isTexteForFKJV());
+				String bemerkungenToShow = BemerkungsMerger
+					.evaluateBemerkungenForVerfuegung(
+						zeitabschnitte,
+						gesuch.extractMandant(),
+						bgRechnerParameterDTO.isTexteForFKJV()
+					);
 				verfuegungPreview.setGeneratedBemerkungen(bemerkungenToShow);
 				if (!isTagesschule) {
-					setZahlungRelevanteDaten((Betreuung) platz, bgRechnerParameterDTO, false);
+					setZahlungRelevanteDaten(
+						(Betreuung) platz,
+						bgRechnerParameterDTO,
+						false
+					);
 				}
 
 				// Am Schluss der Abhandlung dieser Betreuung die Restansprüche für die nächste Betreuung extrahieren
-				restanspruchZeitabschnitte = executor.executeRestanspruchInitializer(platz, zeitabschnitte);
+				restanspruchZeitabschnitte = executor
+					.executeRestanspruchInitializer(platz, zeitabschnitte);
 			}
 		}
 	}
 
-	private void calculateVeraenderungen(Verfuegung verfuegungPreview, Verfuegung vorgaengerVerfuegung, boolean isTagesschule) {
+	private void calculateVeraenderungen(
+		Verfuegung verfuegungPreview,
+		Verfuegung vorgaengerVerfuegung,
+		boolean isTagesschule
+	) {
 		if (vorgaengerVerfuegung == null) {
 			return;
 		}
@@ -293,12 +425,23 @@ public class BetreuungsgutscheinEvaluator {
 		VeraenderungCalculator veraenderungCalculator = VeraenderungCalculator
 			.getVeranderungCalculator(isTagesschule);
 
-		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(verfuegungPreview.getZeitabschnitte(), vorgaengerVerfuegung);
-		boolean ignorable = veraenderungCalculator.calculateIgnorable(verfuegungPreview.getZeitabschnitte(), vorgaengerVerfuegung, veranderung);
-		veraenderungCalculator.calculateKorrekturAusbezahlteVerguenstigung(verfuegungPreview.getPlatz());
+		BigDecimal veranderung = veraenderungCalculator.calculateVeraenderung(
+			verfuegungPreview.getZeitabschnitte(),
+			vorgaengerVerfuegung
+		);
+		boolean ignorable = veraenderungCalculator.calculateIgnorable(
+			verfuegungPreview.getZeitabschnitte(),
+			vorgaengerVerfuegung,
+			veranderung
+		);
+		veraenderungCalculator.calculateKorrekturAusbezahlteVerguenstigung(
+			verfuegungPreview.getPlatz()
+		);
 
 		verfuegungPreview.setIgnorable(ignorable);
-		verfuegungPreview.setVeraenderungVerguenstigungGegenueberVorgaenger(veranderung);
+		verfuegungPreview.setVeraenderungVerguenstigungGegenueberVorgaenger(
+			veranderung
+		);
 	}
 
 	public static Set<EinstellungKey> getRequiredParametersForAbschlussRules() {
@@ -317,16 +460,29 @@ public class BetreuungsgutscheinEvaluator {
 	 */
 	private void usePersistedCalculationResult(
 		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte,
-		@Nonnull Verfuegung vorgaengerVerfuegung) {
+		@Nonnull Verfuegung vorgaengerVerfuegung
+	) {
 
-		List<VerfuegungZeitabschnitt> vorgaenger = vorgaengerVerfuegung.getZeitabschnitte();
+		List<VerfuegungZeitabschnitt> vorgaenger = vorgaengerVerfuegung
+			.getZeitabschnitte();
 
 		// Der folgende Hack gilt nur für die Gesuchsperiode 2019/20 (2018), da die Rundung geändert wurde
-		if (vorgaengerVerfuegung.getPlatz().extractGesuchsperiode().getBasisJahr() == 2018) {
+		if (vorgaengerVerfuegung.getPlatz()
+			.extractGesuchsperiode()
+			.getBasisJahr()
+			== 2018) {
 			zeitabschnitte
-				.forEach(zeitabschnitt -> VerfuegungUtil.findZeitabschnittSameGueltigkeit(vorgaenger, zeitabschnitt)
-					.filter(zeitabschnitt::isCloseTo)
-					.ifPresent(zeitabschnitt::copyCalculationResult));
+				.forEach(
+					zeitabschnitt -> VerfuegungUtil
+						.findZeitabschnittSameGueltigkeit(
+							vorgaenger,
+							zeitabschnitt
+						)
+						.filter(zeitabschnitt::isCloseTo)
+						.ifPresent(
+							zeitabschnitt::copyCalculationResult
+						)
+				);
 		}
 	}
 
@@ -342,7 +498,8 @@ public class BetreuungsgutscheinEvaluator {
 		@Nonnull BGRechnerParameterDTO bgRechnerParameterDTO,
 		boolean onlySetIsSameAusbezahlteVerguenstigung
 	) {
-		Verfuegung verfuegungZuBerechnen = betreuung.getVerfuegungOrVerfuegungPreview();
+		Verfuegung verfuegungZuBerechnen = betreuung
+			.getVerfuegungOrVerfuegungPreview();
 		if (verfuegungZuBerechnen == null) {
 			return;
 		}
@@ -355,9 +512,14 @@ public class BetreuungsgutscheinEvaluator {
 			// eben nicht)
 			VerfuegungUtil.setIsSameAusbezahlteVerguenstigung(
 				verfuegungZuBerechnen,
-				vorgaengerAusbezahlteVerfuegungProAuszahlungstyp.get(ZahlungslaufTyp.GEMEINDE_INSTITUTION),
-				vorgaengerAusbezahlteVerfuegungProAuszahlungstyp.get(ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER),
-				bgRechnerParameterDTO.getMahlzeitenverguenstigungEnabled());
+				vorgaengerAusbezahlteVerfuegungProAuszahlungstyp.get(
+					ZahlungslaufTyp.GEMEINDE_INSTITUTION
+				),
+				vorgaengerAusbezahlteVerfuegungProAuszahlungstyp.get(
+					ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER
+				),
+				bgRechnerParameterDTO.getMahlzeitenverguenstigungEnabled()
+			);
 
 			if (onlySetIsSameAusbezahlteVerguenstigung) {
 				return;
@@ -368,14 +530,18 @@ public class BetreuungsgutscheinEvaluator {
 			// die Mahlzeiten evtl. spaeter erst enabled werden!
 			VerfuegungUtil.setZahlungsstatusForAllZahlungslauftypes(
 				verfuegungZuBerechnen,
-				vorgaengerAusbezahlteVerfuegungProAuszahlungstyp);
+				vorgaengerAusbezahlteVerfuegungProAuszahlungstyp
+			);
 
 		}
 		Verfuegung vorgaengerVerfuegung = betreuung.getVorgaengerVerfuegung();
 		// Das Flag "Gleiche Verfügungsdaten" aus der letzten Verfuegung berechnen
 		if (vorgaengerVerfuegung != null) {
 			// Ueberpruefen, ob sich die Verfuegungsdaten veraendert haben
-			VerfuegungUtil.setIsSameVerfuegungsdaten(verfuegungZuBerechnen, vorgaengerVerfuegung);
+			VerfuegungUtil.setIsSameVerfuegungsdaten(
+				verfuegungZuBerechnen,
+				vorgaengerVerfuegung
+			);
 		}
 	}
 
@@ -384,32 +550,54 @@ public class BetreuungsgutscheinEvaluator {
 	 * Restanspruch beruecksichtigen
 	 */
 	@Nonnull
-	private List<VerfuegungZeitabschnitt> getRestanspruchForVerfuegteBetreung(Betreuung betreuung) {
+	private List<VerfuegungZeitabschnitt> getRestanspruchForVerfuegteBetreung(
+		Betreuung betreuung
+	) {
 		List<VerfuegungZeitabschnitt> restanspruchZeitabschnitte;
-		Verfuegung verfuegungForRestanspruch = betreuung.getVerfuegungOrVorgaengerVerfuegung();
+		Verfuegung verfuegungForRestanspruch = betreuung
+			.getVerfuegungOrVorgaengerVerfuegung();
 		if (verfuegungForRestanspruch == null) {
-			String message = "Ungueltiger Zustand, geschlossene Betreuung ohne Verfuegung oder Vorgaengerverfuegung ("
-				+ betreuung.getId()
-				+ ')';
-			throw new EbeguRuntimeException("getRestanspruchForVerfuegteBetreung", message);
+			String message =
+				"Ungueltiger Zustand, geschlossene Betreuung ohne Verfuegung oder Vorgaengerverfuegung ("
+					+ betreuung.getId()
+					+ ')';
+			throw new EbeguRuntimeException(
+				"getRestanspruchForVerfuegteBetreung",
+				message
+			);
 		}
 		Objects.requireNonNull(verfuegungForRestanspruch.getBetreuung());
-		Objects.requireNonNull(verfuegungForRestanspruch.getBetreuung().getKind().getKindJA().getEinschulungTyp());
+		Objects.requireNonNull(
+			verfuegungForRestanspruch.getBetreuung()
+				.getKind()
+				.getKindJA()
+				.getEinschulungTyp()
+		);
 
 		Mandant mandant = betreuung.extractGesuch().extractMandant();
 		BetreuungsgutscheinExecutor.initFaktorBgStunden(
-				verfuegungForRestanspruch.getBetreuung().getKind().getKindJA().getEinschulungTyp(),
-				verfuegungForRestanspruch.getZeitabschnitte(),
-				mandant);
+			verfuegungForRestanspruch.getBetreuung()
+				.getKind()
+				.getKindJA()
+				.getEinschulungTyp(),
+			verfuegungForRestanspruch.getZeitabschnitte(),
+			mandant
+		);
 		RestanspruchInitializer restanspruchInitializer =
-			new RestanspruchInitializerVisitor(isDebug).getRestanspruchInitialzier(mandant);
-		restanspruchZeitabschnitte = restanspruchInitializer.executeIfApplicable(
-			verfuegungForRestanspruch.getBetreuung(), verfuegungForRestanspruch.getZeitabschnitte());
+			new RestanspruchInitializerDefaultVisitor(isDebug)
+				.getRestanspruchInitialzier(mandant);
+		restanspruchZeitabschnitte = restanspruchInitializer
+			.executeIfApplicable(
+				verfuegungForRestanspruch.getBetreuung(),
+				verfuegungForRestanspruch.getZeitabschnitte()
+			);
 
 		return restanspruchZeitabschnitte;
 	}
 
-	private List<Rule> findRulesToRunForPeriode(@Nonnull Gesuchsperiode gesuchsperiode) {
+	private List<Rule> findRulesToRunForPeriode(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		List<Rule> rulesForGesuchsperiode = new LinkedList<>();
 		for (Rule rule : rules) {
 			// Die Regel muss irgendwann waehrend der Gesuchsperiode gueltig sein, sonst muessen wir sie nicht beachten
@@ -424,20 +612,29 @@ public class BetreuungsgutscheinEvaluator {
 
 	private List<RechnerRule> rechnerRulesForGemeinde(
 		@Nonnull BGRechnerParameterDTO bgRechnerParameterDTO,
-		@Nonnull Locale locale) {
+		@Nonnull Locale locale
+	) {
 		List<RechnerRule> rechnerRules = new LinkedList<>();
-		if (bgRechnerParameterDTO.getGemeindeParameter().getGemeindeZusaetzlicherGutscheinEnabled()) {
-			rechnerRules.add(new ZusaetzlicherGutscheinGemeindeRechnerRule(locale));
+		if (bgRechnerParameterDTO.getGemeindeParameter()
+			.getGemeindeZusaetzlicherGutscheinEnabled()) {
+			rechnerRules.add(
+				new ZusaetzlicherGutscheinGemeindeRechnerRule(locale)
+			);
 		}
-		if (bgRechnerParameterDTO.getGemeindeParameter().getGemeindeZusaetzlicherBabyGutscheinEnabled()) {
+		if (bgRechnerParameterDTO.getGemeindeParameter()
+			.getGemeindeZusaetzlicherBabyGutscheinEnabled()) {
 			rechnerRules.add(new ZusaetzlicherBabyGutscheinRechnerRule(locale));
 		}
-		if (bgRechnerParameterDTO.getMahlzeitenverguenstigungParameter().isEnabled()) {
+		if (bgRechnerParameterDTO.getMahlzeitenverguenstigungParameter()
+			.isEnabled()) {
 			rechnerRules.add(new MahlzeitenverguenstigungBGRechnerRule(locale));
 			rechnerRules.add(new MahlzeitenverguenstigungTSRechnerRule(locale));
 		}
-		if (bgRechnerParameterDTO.getGemeindeParameter().getGemeindePauschalbetragEnabled()) {
-			rechnerRules.add(new MinimalPauschalbetragGemeindeRechnerRule(locale));
+		if (bgRechnerParameterDTO.getGemeindeParameter()
+			.getGemeindePauschalbetragEnabled()) {
+			rechnerRules.add(
+				new MinimalPauschalbetragGemeindeRechnerRule(locale)
+			);
 		}
 
 		return rechnerRules;

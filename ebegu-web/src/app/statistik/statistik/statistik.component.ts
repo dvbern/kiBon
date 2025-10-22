@@ -25,31 +25,34 @@ import {
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Observable} from 'rxjs';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {
+    TSGemeinde,
+    TSGesuchsperiode,
+    TSInstitutionStammdaten,
+    TSInstitution
+} from '@kibon/shared/model/entity';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSInstitutionStatus} from '../../../models/enums/TSInstitutionStatus';
-import {TSRole} from '../../../models/enums/TSRole';
+import {
+    TSBetreuungsangebotTyp,
+    TSInstitutionStatus,
+    TSRole
+} from '@kibon/shared/model/enums';
 import {TSStatistikParameterType} from '../../../models/enums/TSStatistikParameterType';
-import {TSBatchJobInformation} from '../../../models/TSBatchJobInformation';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {TSInstitution} from '../../../models/TSInstitution';
-import {TSInstitutionStammdaten} from '../../../models/TSInstitutionStammdaten';
 import {TSStatistikParameter} from '../../../models/TSStatistikParameter';
 import {TSWorkJob} from '../../../models/TSWorkJob';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '../../core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {TSDemoFeature} from '../../core/directive/dv-hide-feature/TSDemoFeature';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
 import {BatchJobRS} from '../../core/service/batchRS.rest';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
 import {GesuchsperiodeRS} from '../../core/service/gesuchsperiodeRS.rest';
@@ -64,7 +67,8 @@ const LOG = LogFactory.createLog('StatistikComponent');
     selector: 'dv-statistik',
     templateUrl: './statistik.component.html',
     styleUrls: ['./statistik.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StatistikComponent implements OnInit, OnDestroy {
     public readonly TSStatistikParameterType = TSStatistikParameterType;
@@ -88,7 +92,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
         'status',
         'icon'
     ];
-    public allJobs: Array<TSBatchJobInformation>;
+    public allJobs: Array<TSWorkJob>;
     public years: number[];
     public tagesschulenStammdatenList: TSInstitutionStammdaten[];
     public bgInstitutionen: TSInstitution[];
@@ -115,8 +119,8 @@ export class StatistikComponent implements OnInit, OnDestroy {
         private readonly authServiceRS: AuthServiceRS,
         private readonly gemeindeRS: GemeindeRS,
         private readonly cd: ChangeDetectorRef,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
-        private readonly lastenausgleichRS: LastenausgleichRS
+        private readonly lastenausgleichRS: LastenausgleichRS,
+        public readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     private static sortInstitutions(
@@ -137,7 +141,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
             this.gesuchsperioden = response;
             if (this.gesuchsperioden.length > 0) {
                 this.maxDate = this.gesuchsperioden[0].gueltigkeit.gueltigBis;
-                this.minDate = DateUtil.localDateToMoment('2017-01-01');
+                this.minDate = MomentUtil.localDateToMoment('2017-01-01');
             }
             this.calculateYears();
             this.cd.markForCheck();
@@ -194,14 +198,16 @@ export class StatistikComponent implements OnInit, OnDestroy {
         this.refreshUserJobs();
         this.initBatchJobPolling();
 
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.ferienbetreuungActive = res.ferienbetreuungAktiv;
-            this.lastenausgleichActive = res.lastenausgleichAktiv;
-            this.lastenausgleichTagesschulenActive =
-                res.lastenausgleichTagesschulenAktiv;
-            this.updateShowKantonStatistik();
-            this.tagesschulenActive = res.angebotTSActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.ferienbetreuungActive = res.ferienbetreuungAktiv;
+                this.lastenausgleichActive = res.lastenausgleichAktiv;
+                this.lastenausgleichTagesschulenActive =
+                    res.lastenausgleichTagesschulenAktiv;
+                this.updateShowKantonStatistik();
+                this.tagesschulenActive = res.angebotTSActivated;
+            });
     }
 
     public ngOnDestroy(): void {
@@ -415,13 +421,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
                         this.informReportGenerationStarted(res);
                     }, StatistikComponent.handleError);
                 break;
-            case TSStatistikParameterType.NOTRECHT:
-                this.reportAsyncRS
-                    .getNotrechtReportExcel(this.statistikParameter.doSave)
-                    .subscribe((res: {workjobId: string}) => {
-                        this.informReportGenerationStarted(res);
-                    }, StatistikComponent.handleError);
-                break;
             case TSStatistikParameterType.MAHLZEITENVERGUENSTIGUNG:
                 this.reportAsyncRS
                     .getMahlzeitenverguenstigungReportExcel(
@@ -574,16 +573,13 @@ export class StatistikComponent implements OnInit, OnDestroy {
     }
 
     public downloadStatistik(row: TSWorkJob): void {
-        if (
-            EbeguUtil.isNullOrUndefined(row) ||
-            EbeguUtil.isNullOrUndefined(row.execution)
-        ) {
+        if (EbeguUtil.isNullOrUndefined(row)) {
             return;
         }
 
         if (
-            EbeguUtil.isNullOrUndefined(row.execution.batchStatus) ||
-            row.execution.batchStatus !== 'COMPLETED'
+            EbeguUtil.isNullOrUndefined(row.batchJobStatus) ||
+            row.batchJobStatus !== 'FINISHED'
         ) {
             LOG.info('batch-job is not yet finnished');
             return;
@@ -591,7 +587,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
 
         const win = this.downloadRS.prepareDownloadWindow();
         LOG.debug(`accessToken: ${row.resultData}`);
-        this.downloadRS.startDownload(
+        this.downloadRS.startDownloadGeneratedPDF(
             row.resultData,
             'report.xlsx',
             false,
@@ -604,9 +600,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
      */
     public showAllJobs(): void {
         this.batchJobRS.getAllJobs().subscribe((result: TSWorkJob[]) => {
-            let res: TSBatchJobInformation[] = [];
-            res = res.concat(result.map(value => value.execution || undefined));
-            this.allJobs = res;
+            this.allJobs = result;
             this.cd.markForCheck();
         }, StatistikComponent.handleError);
     }
@@ -647,9 +641,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
                 TSRole.ADMIN_BG,
                 TSRole.ADMIN_GEMEINDE,
                 TSRole.SACHBEARBEITER_GEMEINDE,
-                TSRole.SUPER_ADMIN,
-                TSRole.ADMIN_TS,
-                TSRole.SACHBEARBEITER_TS
+                TSRole.SUPER_ADMIN
             ])
         );
     }
@@ -770,10 +762,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
             TSRole.ADMIN_GEMEINDE,
             TSRole.SACHBEARBEITER_GEMEINDE
         ]);
-    }
-
-    public showStatistikForRoles(roles: TSRole[]): boolean {
-        return this.authServiceRS.isOneOfRoles(roles);
     }
 
     public showKinderStatistik(): boolean {
@@ -905,10 +893,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
         );
     }
 
-    public showNotrechtStatistik(): boolean {
-        return this.authServiceRS.isOneOfRoles(TSRoleUtil.getMandantRoles());
-    }
-
     public showMandantStatistik(): boolean {
         return this.authServiceRS.isOneOfRoles(TSRoleUtil.getMandantRoles());
     }
@@ -970,4 +954,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
     public getActiveGesuchsperioden(): TSGesuchsperiode[] {
         return this.gesuchsperioden?.filter(gp => gp.isAktiv());
     }
+
+    protected readonly SharedUtilApplicationPropertyRsService =
+        SharedUtilApplicationPropertyRsService;
 }

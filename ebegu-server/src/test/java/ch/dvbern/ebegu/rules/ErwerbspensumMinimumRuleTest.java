@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AnspruchBeschaeftigungAbhaengigkeitTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.rechner.AbstractBGRechnerTest;
 import ch.dvbern.ebegu.test.TestDataUtil;
@@ -33,7 +33,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static ch.dvbern.ebegu.enums.EinstellungKey.ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -48,84 +48,126 @@ public class ErwerbspensumMinimumRuleTest extends AbstractBGRechnerTest {
 
 	@Before
 	public void init() {
-		einstellungenMap = EbeguRuleTestsHelper.getAllEinstellungen(TestDataUtil.createGesuchsperiode1718());
-		einstellungenMap.get(ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM).setValue(AnspruchBeschaeftigungAbhaengigkeitTyp.MINIMUM.name());
+		einstellungenMap = EbeguRuleTestsHelper.getAllEinstellungen(
+			TestDataUtil.createGesuchsperiode1718()
+		);
+		einstellungenMap.get(ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM)
+			.setValue(
+				AnspruchBeschaeftigungAbhaengigkeitTyp.MINIMUM.name()
+			);
 	}
 
 	@Test
 	public void test1GSKeinErwerbspensum() {
-		final Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(false);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung, einstellungenMap);
+		final Betreuung betreuung = TestDataUtil
+			.createGesuchWithBetreuungspensum(false);
+		betreuung.initVorgaengerVerfuegungen(null, null);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assertKeinAnspruch(result);
 	}
 
 	@Test
 	public void test1GSErwerbspensumLessThanMinimum() {
 		final Betreuung betreuung = createBetreuungWithPensum(10, 0, false);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung, einstellungenMap);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assertKeinAnspruch(result);
 	}
 
 	@Test
 	public void test1GSErwerbspensumMinimum() {
-		Betreuung betreuung = createBetreuungWithPensum(20,0, false);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung,einstellungenMap);
+		Betreuung betreuung = createBetreuungWithPensum(20, 0, false);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assert100ProzentAnspruch(result);
 	}
 
 	@Test
 	public void test1GSErwerbspensumMaximum() {
-		Betreuung betreuung = createBetreuungWithPensum(100,0, false);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung,einstellungenMap);
+		Betreuung betreuung = createBetreuungWithPensum(100, 0, false);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assert100ProzentAnspruch(result);
 	}
 
 	@Test
 	public void test1GSErwerbspensumMoreThanMaximum() {
-		Betreuung betreuung = createBetreuungWithPensum(120,0, false);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung,einstellungenMap);
+		Betreuung betreuung = createBetreuungWithPensum(120, 0, false);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assert100ProzentAnspruch(result);
 	}
 
 	@Test
 	public void test2GSKeinErwerbspensum() {
-		final Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(true);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung, einstellungenMap);
+		final Betreuung betreuung = TestDataUtil
+			.createGesuchWithBetreuungspensum(true);
+		betreuung.initVorgaengerVerfuegungen(null, null);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assertKeinAnspruch(result);
 	}
 
 	@Test
 	public void test2GSErwerbspensumLessThanMinimum() {
 		final Betreuung betreuung = createBetreuungWithPensum(10, 100, true);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung, einstellungenMap);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assertKeinAnspruch(result);
 	}
 
 	@Test
 	public void test2GSErwerbspensumLessThanMinimumInTotal() {
 		final Betreuung betreuung = createBetreuungWithPensum(10, 120, true);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung, einstellungenMap);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assertKeinAnspruch(result);
 	}
 
 	@Test
 	public void test2GSErwerbspensumMinimum() {
-		Betreuung betreuung = createBetreuungWithPensum(20,100, true);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung,einstellungenMap);
+		Betreuung betreuung = createBetreuungWithPensum(20, 100, true);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assert100ProzentAnspruch(result);
 	}
 
 	@Test
 	public void test2GSErwerbspensumMaximum() {
-		Betreuung betreuung = createBetreuungWithPensum(100,100, true);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung,einstellungenMap);
+		Betreuung betreuung = createBetreuungWithPensum(100, 100, true);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assert100ProzentAnspruch(result);
 	}
 
 	@Test
 	public void test2GSErwerbspensumMoreThanMaximum() {
-		Betreuung betreuung = createBetreuungWithPensum(120,100, false);
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung,einstellungenMap);
+		Betreuung betreuung = createBetreuungWithPensum(120, 100, false);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung,
+			einstellungenMap
+		);
 		assert100ProzentAnspruch(result);
 	}
 
@@ -133,35 +175,63 @@ public class ErwerbspensumMinimumRuleTest extends AbstractBGRechnerTest {
 		assertNotNull(result);
 		assertEquals(1, result.size());
 		assertEquals(0, result.get(0).getAnspruchberechtigtesPensum());
-		assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_MINIMUM_NICHT_ERRECHT));
+		assertTrue(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.ERWERBSPENSUM_MINIMUM_NICHT_ERRECHT
+				)
+		);
 	}
 
-	private void assert100ProzentAnspruch(List<VerfuegungZeitabschnitt> result) {
+	private void assert100ProzentAnspruch(
+		List<VerfuegungZeitabschnitt> result
+	) {
 		assertNotNull(result);
 		assertEquals(1, result.size());
 		assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		assertFalse(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_MINIMUM_NICHT_ERRECHT));
+		assertFalse(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.ERWERBSPENSUM_MINIMUM_NICHT_ERRECHT
+				)
+		);
 	}
 
-	private Betreuung createBetreuungWithPensum(int pensumGS1, int pensumGS2, boolean gs2) {
-		final Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(gs2);
+	private Betreuung createBetreuungWithPensum(
+		int pensumGS1,
+		int pensumGS2,
+		boolean gs2
+	) {
+		final Betreuung betreuung = TestDataUtil
+			.createGesuchWithBetreuungspensum(gs2);
 		Gesuch gesuch = betreuung.extractGesuch();
 
 		Assert.assertNotNull(gesuch.getGesuchsteller1());
 
 		ErwerbspensumContainer ewpGS1 =
-			TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE, pensumGS1);
+			TestDataUtil.createErwerbspensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				pensumGS1
+			);
 		gesuch.getGesuchsteller1().setErwerbspensenContainers(Set.of(ewpGS1));
 
 		if (gs2) {
 			ErwerbspensumContainer ewpGS2 =
-				TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE, pensumGS2);
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					pensumGS2
+				);
 			Assert.assertNotNull(gesuch.getGesuchsteller2());
-			gesuch.getGesuchsteller2().setErwerbspensenContainers(Set.of(ewpGS2));
+			gesuch.getGesuchsteller2()
+				.setErwerbspensenContainers(Set.of(ewpGS2));
 		}
 
+		betreuung.initVorgaengerVerfuegungen(null, null);
 		return betreuung;
 	}
-
 
 }

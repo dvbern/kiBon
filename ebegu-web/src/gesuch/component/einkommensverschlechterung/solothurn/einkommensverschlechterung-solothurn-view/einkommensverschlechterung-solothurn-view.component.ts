@@ -23,8 +23,7 @@ import {
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSEinkommensverschlechterungContainer} from '../../../../../models/TSEinkommensverschlechterungContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
@@ -36,7 +35,8 @@ import {AbstractGesuchViewX} from '../../../abstractGesuchViewX';
     selector: 'dv-einkommensverschlechterung-solothurn-view',
     templateUrl: './einkommensverschlechterung-solothurn-view.component.html',
     styleUrls: ['./einkommensverschlechterung-solothurn-view.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EinkommensverschlechterungSolothurnViewComponent extends AbstractGesuchViewX<TSFinanzModel> {
     public readOnly: boolean = false;

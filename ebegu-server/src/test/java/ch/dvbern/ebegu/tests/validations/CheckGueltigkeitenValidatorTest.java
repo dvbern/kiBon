@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
@@ -52,7 +52,10 @@ class CheckGueltigkeitenValidatorTest extends AbstractValidatorTest {
 		Betreuung betreuung = createBetreuungWithOverlappedDates(false); // not overlapping
 		Set<ConstraintViolation<Betreuung>> violations = validate(betreuung);
 
-		assertThat(violations, not(violatesAnnotation(CheckGueltigkeiten.class)));
+		assertThat(
+			violations,
+			not(violatesAnnotation(CheckGueltigkeiten.class))
+		);
 	}
 
 	@Nonnull
@@ -63,16 +66,30 @@ class CheckGueltigkeitenValidatorTest extends AbstractValidatorTest {
 		betreuung.getKind().setGesuch(gesuch); // Aktuell nur in 1 Richtung verknuepft
 		Set<BetreuungspensumContainer> containerSet = new HashSet<>();
 
-		BetreuungspensumContainer betPensContainer = TestDataUtil.createBetPensContainer(betreuung);
+		BetreuungspensumContainer betPensContainer = TestDataUtil
+			.createBetPensContainer(betreuung);
 		betPensContainer.setBetreuungspensumGS(null); //wir wollen nur JA container testen
-		betPensContainer.getBetreuungspensumJA().getGueltigkeit().setGueltigAb(LocalDate.of(2000, 10, 10));
-		betPensContainer.getBetreuungspensumJA().getGueltigkeit().setGueltigBis(LocalDate.of(2005, 10, 10));
+		betPensContainer.getBetreuungspensumJA()
+			.getGueltigkeit()
+			.setGueltigAb(LocalDate.of(2000, 10, 10));
+		betPensContainer.getBetreuungspensumJA()
+			.getGueltigkeit()
+			.setGueltigBis(LocalDate.of(2005, 10, 10));
 		containerSet.add(betPensContainer);
 
-		BetreuungspensumContainer betPensContainer2 = TestDataUtil.createBetPensContainer(betreuung);
+		BetreuungspensumContainer betPensContainer2 = TestDataUtil
+			.createBetPensContainer(betreuung);
 		betPensContainer2.setBetreuungspensumGS(null);
-		betPensContainer2.getBetreuungspensumJA().getGueltigkeit().setGueltigAb(overlapping ? LocalDate.of(2003, 10, 10) : LocalDate.of(2006, 10, 10));
-		betPensContainer2.getBetreuungspensumJA().getGueltigkeit().setGueltigBis(LocalDate.of(2008, 10, 10));
+		betPensContainer2.getBetreuungspensumJA()
+			.getGueltigkeit()
+			.setGueltigAb(
+				overlapping ?
+					LocalDate.of(2003, 10, 10) :
+					LocalDate.of(2006, 10, 10)
+			);
+		betPensContainer2.getBetreuungspensumJA()
+			.getGueltigkeit()
+			.setGueltigBis(LocalDate.of(2008, 10, 10));
 		containerSet.add(betPensContainer2);
 
 		betreuung.setBetreuungspensumContainers(containerSet);

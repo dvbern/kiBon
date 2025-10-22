@@ -15,18 +15,25 @@
 
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
-import ch.dvbern.ebegu.enums.DokumentGrundTyp;
-import ch.dvbern.ebegu.enums.DokumentTyp;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import ch.dvbern.ebegu.entities.AbstractFinanzielleSituation;
+import ch.dvbern.ebegu.entities.DokumentGrund;
+import ch.dvbern.ebegu.entities.Einkommensverschlechterung;
+import ch.dvbern.ebegu.entities.EinkommensverschlechterungContainer;
+import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfo;
+import ch.dvbern.ebegu.entities.Familiensituation;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
+import ch.dvbern.ebegu.enums.DokumentGrundTyp;
+import ch.dvbern.ebegu.enums.DokumentTyp;
 
 import static ch.dvbern.ebegu.enums.DokumentTyp.NACHWEIS_SCHULDEN;
 import static ch.dvbern.ebegu.enums.DokumentTyp.NACHWEIS_VERMOEGEN;
@@ -61,7 +68,8 @@ import static ch.dvbern.ebegu.enums.DokumentTyp.NACHWEIS_VERMOEGEN;
  * Erfolgsrechnungen der letzten zwei Jahre (Jahr der Einkommensverschlechterung: x, x-1)
  * Notwendig, wenn Erfolgsrechnungen des Jahres nicht null
  **/
-public class BernEinkommensverschlechterungDokumente extends AbstractFinanzielleSituationDokumente {
+public class BernEinkommensverschlechterungDokumente extends
+	AbstractFinanzielleSituationDokumente {
 
 	@Override
 	public void getAllDokumente(
@@ -70,24 +78,39 @@ public class BernEinkommensverschlechterungDokumente extends AbstractFinanzielle
 		@Nonnull Locale locale
 	) {
 
-		final Familiensituation familiensituation = gesuch.extractFamiliensituation();
-		final boolean gemeinsam = familiensituation != null &&
-			familiensituation.getGemeinsameSteuererklaerung() != null &&
+		final Familiensituation familiensituation = gesuch
+			.extractFamiliensituation();
+		final boolean gemeinsam = familiensituation != null
+			&&
+			familiensituation.getGemeinsameSteuererklaerung() != null
+			&&
 			familiensituation.getGemeinsameSteuererklaerung();
 
 		final EinkommensverschlechterungInfo einkommensverschlechterungInfo =
 			gesuch.extractEinkommensverschlechterungInfo();
 
 		final int basisJahrPlus1 =
-			gesuch.getGesuchsperiode().getGueltigkeit().calculateEndOfPreviousYear().getYear() + 1;
+			gesuch.getGesuchsperiode()
+				.getGueltigkeit()
+				.calculateEndOfPreviousYear()
+				.getYear()
+				+ 1;
 		final int basisJahrPlus2 =
-			gesuch.getGesuchsperiode().getGueltigkeit().calculateEndOfPreviousYear().getYear() + 2;
+			gesuch.getGesuchsperiode()
+				.getGueltigkeit()
+				.calculateEndOfPreviousYear()
+				.getYear()
+				+ 2;
 
-		final GesuchstellerContainer gesuchsteller1 = gesuch.getGesuchsteller1();
-		final GesuchstellerContainer gesuchsteller2 = gesuch.getGesuchsteller2();
+		final GesuchstellerContainer gesuchsteller1 = gesuch
+			.getGesuchsteller1();
+		final GesuchstellerContainer gesuchsteller2 = gesuch
+			.getGesuchsteller2();
 
 		// we need to check the familiensituation at the end of the period to see if there is 1GS or 2GS
-		final LocalDate stichtag = gesuch.getGesuchsperiode().getGueltigkeit().getGueltigBis();
+		final LocalDate stichtag = gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigBis();
 
 		if (einkommensverschlechterungInfo != null) {
 			if (einkommensverschlechterungInfo.getEkvFuerBasisJahrPlus1()) {
@@ -99,7 +122,8 @@ public class BernEinkommensverschlechterungDokumente extends AbstractFinanzielle
 					1,
 					basisJahrPlus1,
 					stichtag,
-					familiensituation);
+					familiensituation
+				);
 				if (gesuch.hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode()) {
 					getAllDokumenteGesuchsteller(
 						anlageVerzeichnis,
@@ -109,7 +133,8 @@ public class BernEinkommensverschlechterungDokumente extends AbstractFinanzielle
 						1,
 						basisJahrPlus1,
 						stichtag,
-						familiensituation);
+						familiensituation
+					);
 				}
 			}
 			if (einkommensverschlechterungInfo.getEkvFuerBasisJahrPlus2()) {
@@ -121,7 +146,8 @@ public class BernEinkommensverschlechterungDokumente extends AbstractFinanzielle
 					2,
 					basisJahrPlus2,
 					stichtag,
-					familiensituation);
+					familiensituation
+				);
 				if (gesuch.hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode()) {
 					getAllDokumenteGesuchsteller(
 						anlageVerzeichnis,
@@ -131,7 +157,8 @@ public class BernEinkommensverschlechterungDokumente extends AbstractFinanzielle
 						2,
 						basisJahrPlus2,
 						stichtag,
-						familiensituation);
+						familiensituation
+					);
 				}
 			}
 		}
@@ -141,14 +168,22 @@ public class BernEinkommensverschlechterungDokumente extends AbstractFinanzielle
 	private void getAllDokumenteGesuchsteller(
 		Set<DokumentGrund> anlageVerzeichnis,
 		@Nullable GesuchstellerContainer gesuchsteller,
-		boolean gemeinsam, int gesuchstellerNumber, int basisJahrPlusNumber, int basisJahr,
-		@Nonnull LocalDate stichtag, @Nullable Familiensituation familiensituation) {
+		boolean gemeinsam,
+		int gesuchstellerNumber,
+		int basisJahrPlusNumber,
+		int basisJahr,
+		@Nonnull LocalDate stichtag,
+		@Nullable Familiensituation familiensituation
+	) {
 
-		if (gesuchsteller == null || gesuchsteller.getEinkommensverschlechterungContainer() == null) {
+		if (gesuchsteller == null
+			|| gesuchsteller.getEinkommensverschlechterungContainer()
+				== null) {
 			return;
 		}
 
-		if (isSozialhilfeempfaenger(familiensituation) || !isVerguenstigungGewuenscht(familiensituation)) {
+		if (isSozialhilfeempfaenger(familiensituation)
+			|| !isVerguenstigungGewuenscht(familiensituation)) {
 			return;
 		}
 
@@ -156,16 +191,31 @@ public class BernEinkommensverschlechterungDokumente extends AbstractFinanzielle
 			gesuchsteller.getEinkommensverschlechterungContainer();
 		Einkommensverschlechterung einkommensverschlechterung;
 		if (basisJahrPlusNumber == 2) {
-			einkommensverschlechterung = einkommensverschlechterungContainer.getEkvJABasisJahrPlus2();
+			einkommensverschlechterung = einkommensverschlechterungContainer
+				.getEkvJABasisJahrPlus2();
 		} else {
-			einkommensverschlechterung = einkommensverschlechterungContainer.getEkvJABasisJahrPlus1();
+			einkommensverschlechterung = einkommensverschlechterungContainer
+				.getEkvJABasisJahrPlus1();
 		}
 
-		getAllDokumenteGesuchstellerAutomatischeSteuerabfrage(anlageVerzeichnis, basisJahr,
-			gesuchstellerNumber, einkommensverschlechterung, DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG, stichtag);
+		getAllDokumenteGesuchstellerAutomatischeSteuerabfrage(
+			anlageVerzeichnis,
+			basisJahr,
+			gesuchstellerNumber,
+			einkommensverschlechterung,
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,
+			stichtag
+		);
 
-		getAllDokumenteGesuchstellerManuelleSteuerabfrage(anlageVerzeichnis, basisJahr, gemeinsam,
-			gesuchstellerNumber, einkommensverschlechterung, DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG, stichtag);
+		getAllDokumenteGesuchstellerManuelleSteuerabfrage(
+			anlageVerzeichnis,
+			basisJahr,
+			gemeinsam,
+			gesuchstellerNumber,
+			einkommensverschlechterung,
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,
+			stichtag
+		);
 
 		add(
 			getDokument(
@@ -194,52 +244,87 @@ public class BernEinkommensverschlechterungDokumente extends AbstractFinanzielle
 			return true;
 		}
 		if (dokumentTyp == NACHWEIS_SCHULDEN) {
-			return abstractFinanzielleSituation.getSchulden() != null &&
-				abstractFinanzielleSituation.getSchulden().compareTo(BigDecimal.ZERO) > 0;
+			return abstractFinanzielleSituation.getSchulden() != null
+				&&
+				abstractFinanzielleSituation.getSchulden()
+					.compareTo(BigDecimal.ZERO)
+					> 0;
 		}
 
-		return super.isDokumentNeeded(dokumentTyp, abstractFinanzielleSituation);
+		return super.isDokumentNeeded(
+			dokumentTyp,
+			abstractFinanzielleSituation
+		);
 	}
 
 	@Override
-	protected boolean isJahresLohnausweisNeeded(@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation) {
+	protected boolean isJahresLohnausweisNeeded(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation
+	) {
 		if (abstractFinanzielleSituation instanceof Einkommensverschlechterung) {
-			Einkommensverschlechterung ekv = (Einkommensverschlechterung) abstractFinanzielleSituation;
+			Einkommensverschlechterung ekv =
+				(Einkommensverschlechterung) abstractFinanzielleSituation;
 
-			return ekv.getNettolohn() != null &&
+			return ekv.getNettolohn() != null
+				&&
 				ekv.getNettolohn().compareTo(BigDecimal.ZERO) > 0;
 		}
 		return false;
 	}
 
 	@Override
-	protected boolean isErfolgsrechnungNeeded(@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation, int minus) {
+	protected boolean isErfolgsrechnungNeeded(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation,
+		int minus
+	) {
 		if (abstractFinanzielleSituation instanceof Einkommensverschlechterung) {
 			Einkommensverschlechterung einkommensverschlechterung =
 				(Einkommensverschlechterung) abstractFinanzielleSituation;
 			switch (minus) {
 			case 0:
-				return !einkommensverschlechterung.getSteuerveranlagungErhalten()
-					&& (einkommensverschlechterung.getGeschaeftsgewinnBasisjahr() != null);
+				return !einkommensverschlechterung
+					.getSteuerveranlagungErhalten()
+					&& (einkommensverschlechterung
+						.getGeschaeftsgewinnBasisjahr()
+						!= null);
 			case 1:
-				return !einkommensverschlechterung.getSteuerveranlagungErhalten()
-					&& (einkommensverschlechterung.getGeschaeftsgewinnBasisjahrMinus1() != null);
+				return !einkommensverschlechterung
+					.getSteuerveranlagungErhalten()
+					&& (einkommensverschlechterung
+						.getGeschaeftsgewinnBasisjahrMinus1()
+						!= null);
 			}
 		}
 		return false;
 	}
 
 	@Override
+	protected boolean isErfolgsrechnungNeededForSteuerveranlagung(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation,
+		int basisJahrMinus
+	) {
+		return false;
+	}
+
+	@Override
 	protected boolean isNachweisErsatzeinkommenSelbststaendigkeitNeeded(
 		AbstractFinanzielleSituation abstractFinanzielleSituation,
-		int minus) {
+		int minus
+	) {
 		if (abstractFinanzielleSituation instanceof Einkommensverschlechterung) {
-			Einkommensverschlechterung einkommensverschlechterung = (Einkommensverschlechterung) abstractFinanzielleSituation;
+			Einkommensverschlechterung einkommensverschlechterung =
+				(Einkommensverschlechterung) abstractFinanzielleSituation;
 			switch (minus) {
 			case 0:
-				return hasValueBigerThanZero(einkommensverschlechterung.getErsatzeinkommenSelbststaendigkeitBasisjahr());
+				return hasValueBigerThanZero(
+					einkommensverschlechterung
+						.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+				);
 			case 1:
-				return hasValueBigerThanZero(einkommensverschlechterung.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1());
+				return hasValueBigerThanZero(
+					einkommensverschlechterung
+						.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1()
+				);
 			default:
 				return false;
 			}

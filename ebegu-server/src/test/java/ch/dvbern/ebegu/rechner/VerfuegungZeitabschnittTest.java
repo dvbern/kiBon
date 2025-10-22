@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner;
@@ -35,14 +35,18 @@ import org.junit.Test;
 public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 
 	private final BGRechnerParameterDTO parameterDTO = getParameter();
-	private final TageselternBernRechner tageselternRechner = new TageselternBernRechner(Collections.emptyList());
+	private final TageselternRechner tageselternRechner =
+		new TageselternRechner(Collections.emptyList());
 
 	@Nonnull
-	private static final BigDecimal MAX_STUNDEN_MONTH = MathUtil.DEFAULT.from(220);
+	private static final BigDecimal MAX_STUNDEN_MONTH = MathUtil.DEFAULT.from(
+		220
+	);
 
 	@Test
 	public void whenFullMonth_30days_maxStunden() {
-		DateRange gueltigkeit = new DateRange(LocalDate.of(2019, 11, 1)).withFullMonths();
+		DateRange gueltigkeit = new DateRange(LocalDate.of(2019, 11, 1))
+			.withFullMonths();
 
 		BGCalculationResult result = calculate(gueltigkeit);
 		Assert.assertEquals(MAX_STUNDEN_MONTH, result.getBgPensumZeiteinheit());
@@ -50,7 +54,8 @@ public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 
 	@Test
 	public void whenFullMonth_31days_maxStunden() {
-		DateRange gueltigkeit = new DateRange(LocalDate.of(2019, 3, 1)).withFullMonths();
+		DateRange gueltigkeit = new DateRange(LocalDate.of(2019, 3, 1))
+			.withFullMonths();
 
 		BGCalculationResult result = calculate(gueltigkeit);
 		Assert.assertEquals(MAX_STUNDEN_MONTH, result.getBgPensumZeiteinheit());
@@ -58,7 +63,8 @@ public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 
 	@Test
 	public void whenFullMonth_28days_maxStunden() {
-		DateRange gueltigkeit = new DateRange(LocalDate.of(2019, 2, 1)).withFullMonths();
+		DateRange gueltigkeit = new DateRange(LocalDate.of(2019, 2, 1))
+			.withFullMonths();
 
 		BGCalculationResult result = calculate(gueltigkeit);
 		Assert.assertEquals(MAX_STUNDEN_MONTH, result.getBgPensumZeiteinheit());
@@ -66,33 +72,58 @@ public class VerfuegungZeitabschnittTest extends AbstractBGRechnerTest {
 
 	@Test
 	public void whenHalfMonth() {
-		DateRange gueltigkeit = new DateRange(LocalDate.of(2019, 11, 1), LocalDate.of(2019, 11, 15));
+		DateRange gueltigkeit = new DateRange(
+			LocalDate.of(2019, 11, 1),
+			LocalDate.of(2019, 11, 15)
+		);
 
 		BGCalculationResult result = calculate(gueltigkeit);
-		Assert.assertEquals(MathUtil.DEFAULT.divide(MAX_STUNDEN_MONTH, BigDecimal.valueOf(2)), result.getBgPensumZeiteinheit());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.divide(
+				MAX_STUNDEN_MONTH,
+				BigDecimal.valueOf(2)
+			),
+			result.getBgPensumZeiteinheit()
+		);
 	}
 
 	@Test
 	public void whenDay() {
-		DateRange gueltigkeit = new DateRange(LocalDate.of(2019, 11, 1), LocalDate.of(2019, 11, 1));
+		DateRange gueltigkeit = new DateRange(
+			LocalDate.of(2019, 11, 1),
+			LocalDate.of(2019, 11, 1)
+		);
 
 		BGCalculationResult result = calculate(gueltigkeit);
-		BigDecimal ungerundeterWert = MathUtil.DEFAULT.divide(MAX_STUNDEN_MONTH, BigDecimal.valueOf(30));
-		Assert.assertEquals(MathUtil.roundToNearestQuarter(ungerundeterWert), result.getBgPensumZeiteinheit());
+		BigDecimal ungerundeterWert = MathUtil.DEFAULT.divide(
+			MAX_STUNDEN_MONTH,
+			BigDecimal.valueOf(30)
+		);
+		Assert.assertEquals(
+			MathUtil.roundToNearestQuarter(ungerundeterWert),
+			result.getBgPensumZeiteinheit()
+		);
 	}
 
 	@Nonnull
 	private BGCalculationResult calculate(@Nonnull DateRange gueltigkeit) {
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnitt(gueltigkeit);
+		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnitt(
+			gueltigkeit
+		);
 		tageselternRechner.calculate(zeitabschnitt, parameterDTO);
 
 		return zeitabschnitt.getBgCalculationResultAsiv();
 	}
 
 	@Nonnull
-	private VerfuegungZeitabschnitt createZeitabschnitt(@Nonnull DateRange gueltigkeit) {
-		VerfuegungZeitabschnitt zeitabschnitt = new VerfuegungZeitabschnitt(gueltigkeit);
-		BGCalculationInput inputAsiv = zeitabschnitt.getBgCalculationInputAsiv();
+	private VerfuegungZeitabschnitt createZeitabschnitt(
+		@Nonnull DateRange gueltigkeit
+	) {
+		VerfuegungZeitabschnitt zeitabschnitt = new VerfuegungZeitabschnitt(
+			gueltigkeit
+		);
+		BGCalculationInput inputAsiv = zeitabschnitt
+			.getBgCalculationInputAsiv();
 		inputAsiv.setAnspruchspensumProzent(100);
 		inputAsiv.setBetreuungspensumProzent(MathUtil.DEFAULT.from(100));
 		inputAsiv.setEinschulungTyp(EinschulungTyp.VORSCHULALTER);

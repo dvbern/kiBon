@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.event.Event;
+import jakarta.enterprise.event.Event;
 
 import ch.dvbern.ebegu.entities.ExternalClient;
 import ch.dvbern.ebegu.entities.Institution;
@@ -56,10 +56,12 @@ import static org.hamcrest.Matchers.is;
 public class InstitutionServiceBeanTest {
 
 	private static final byte[] MOCK_BYTES = new byte[0];
-	private static final Schema SCHEMA = InstitutionClientEventDTO.getClassSchema();
+	private static final Schema SCHEMA = InstitutionClientEventDTO
+		.getClassSchema();
 
 	@TestSubject
-	private final InstitutionServiceBean institutionService = new InstitutionServiceBean();
+	private final InstitutionServiceBean institutionService =
+		new InstitutionServiceBean();
 
 	@SuppressWarnings({ "unused", "InstanceVariableMayNotBeInitialized" })
 	@Mock
@@ -70,11 +72,23 @@ public class InstitutionServiceBeanTest {
 	private Event<ExportedEvent> exportedEvent;
 
 	@Nonnull
-	private final ExternalClient client1 = new ExternalClient("1", ExternalClientType.EXCHANGE_SERVICE_USER, ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION);
+	private final ExternalClient client1 = new ExternalClient(
+		"1",
+		ExternalClientType.EXCHANGE_SERVICE_USER,
+		ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION
+	);
 	@Nonnull
-	private final ExternalClient client2 = new ExternalClient("2", ExternalClientType.EXCHANGE_SERVICE_USER, ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION);
+	private final ExternalClient client2 = new ExternalClient(
+		"2",
+		ExternalClientType.EXCHANGE_SERVICE_USER,
+		ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION
+	);
 	@Nonnull
-	private final ExternalClient client3 = new ExternalClient("3", ExternalClientType.EXCHANGE_SERVICE_USER, ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION);
+	private final ExternalClient client3 = new ExternalClient(
+		"3",
+		ExternalClientType.EXCHANGE_SERVICE_USER,
+		ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION
+	);
 
 	@Nonnull
 	private InstitutionExternalClient institutionExternalClient1;
@@ -90,7 +104,10 @@ public class InstitutionServiceBeanTest {
 
 		EasyMock.replay(institutionClientEventConverter, exportedEvent);
 
-		institutionService.saveInstitutionExternalClients(institution, Collections.emptyList());
+		institutionService.saveInstitutionExternalClients(
+			institution,
+			Collections.emptyList()
+		);
 
 		assertThat(institution.getInstitutionExternalClients(), is(empty()));
 
@@ -101,7 +118,8 @@ public class InstitutionServiceBeanTest {
 	public void testSaveExternalClients_shouldAddClient3() {
 		Institution institution = createInstitution();
 
-		InstitutionExternalClient institutionExternalClient3 = createInstitutionExternalClient(institution, client3);
+		InstitutionExternalClient institutionExternalClient3 =
+			createInstitutionExternalClient(institution, client3);
 
 		expectAddition(institution.getId(), institutionExternalClient3);
 
@@ -109,12 +127,25 @@ public class InstitutionServiceBeanTest {
 
 		institutionService.saveInstitutionExternalClients(
 			institution,
-			new ArrayList<>(Arrays.asList(institutionExternalClient1,
-				institutionExternalClient2,
-				institutionExternalClient3)));
+			new ArrayList<>(
+				Arrays.asList(
+					institutionExternalClient1,
+					institutionExternalClient2,
+					institutionExternalClient3
+				)
+			)
+		);
 
-		assertThat(institution.getInstitutionExternalClients(), is(containsInAnyOrder(institutionExternalClient1,
-			institutionExternalClient2, institutionExternalClient3)));
+		assertThat(
+			institution.getInstitutionExternalClients(),
+			is(
+				containsInAnyOrder(
+					institutionExternalClient1,
+					institutionExternalClient2,
+					institutionExternalClient3
+				)
+			)
+		);
 
 		EasyMock.verify(institutionClientEventConverter, exportedEvent);
 	}
@@ -122,19 +153,32 @@ public class InstitutionServiceBeanTest {
 	@Test
 	public void testSaveExternalClients_shouldRemoveClient2AndAddClient3() {
 		Institution institution = createInstitution();
-		InstitutionExternalClient institutionExternalClient3 = createInstitutionExternalClient(institution, client3);
+		InstitutionExternalClient institutionExternalClient3 =
+			createInstitutionExternalClient(institution, client3);
 		expectRemoval(institution.getId(), institutionExternalClient2);
 		expectAddition(institution.getId(), institutionExternalClient3);
 
 		EasyMock.replay(institutionClientEventConverter, exportedEvent);
 
-		institutionService.saveInstitutionExternalClients(institution, new ArrayList<>(Arrays.asList(
-			institutionExternalClient1,
-			institutionExternalClient3)));
+		institutionService.saveInstitutionExternalClients(
+			institution,
+			new ArrayList<>(
+				Arrays.asList(
+					institutionExternalClient1,
+					institutionExternalClient3
+				)
+			)
+		);
 
-		assertThat(institution.getInstitutionExternalClients(), is(containsInAnyOrder(
-			institutionExternalClient1,
-			institutionExternalClient3)));
+		assertThat(
+			institution.getInstitutionExternalClients(),
+			is(
+				containsInAnyOrder(
+					institutionExternalClient1,
+					institutionExternalClient3
+				)
+			)
+		);
 
 		EasyMock.verify(institutionClientEventConverter, exportedEvent);
 	}
@@ -145,13 +189,25 @@ public class InstitutionServiceBeanTest {
 
 		EasyMock.replay(institutionClientEventConverter, exportedEvent);
 
-		institutionService.saveInstitutionExternalClients(institution, new ArrayList<>(Arrays.asList(
-			institutionExternalClient1,
-			institutionExternalClient2)));
+		institutionService.saveInstitutionExternalClients(
+			institution,
+			new ArrayList<>(
+				Arrays.asList(
+					institutionExternalClient1,
+					institutionExternalClient2
+				)
+			)
+		);
 
-		assertThat(institution.getInstitutionExternalClients(), is(containsInAnyOrder(
-			institutionExternalClient1,
-			institutionExternalClient2)));
+		assertThat(
+			institution.getInstitutionExternalClients(),
+			is(
+				containsInAnyOrder(
+					institutionExternalClient1,
+					institutionExternalClient2
+				)
+			)
+		);
 
 		EasyMock.verify(institutionClientEventConverter, exportedEvent);
 	}
@@ -159,8 +215,11 @@ public class InstitutionServiceBeanTest {
 	@Test
 	public void testSaveExternalClients_shouldUpdateClient2() {
 		Institution institution = createInstitution();
-		InstitutionExternalClient newInstitutionExternalClient2 = createInstitutionExternalClient(institution,
-			client2);
+		InstitutionExternalClient newInstitutionExternalClient2 =
+			createInstitutionExternalClient(
+				institution,
+				client2
+			);
 		DateRange dateRange = new DateRange();
 		dateRange.setGueltigAb(LocalDate.of(2021, 1, 1));
 		dateRange.setGueltigBis(LocalDate.of(9999, 1, 1));
@@ -169,13 +228,25 @@ public class InstitutionServiceBeanTest {
 
 		EasyMock.replay(institutionClientEventConverter, exportedEvent);
 
-		institutionService.saveInstitutionExternalClients(institution, new ArrayList<>(Arrays.asList(
-			institutionExternalClient1,
-			newInstitutionExternalClient2)));
+		institutionService.saveInstitutionExternalClients(
+			institution,
+			new ArrayList<>(
+				Arrays.asList(
+					institutionExternalClient1,
+					newInstitutionExternalClient2
+				)
+			)
+		);
 
-		assertThat(institution.getInstitutionExternalClients(), is(containsInAnyOrder(
-			institutionExternalClient1,
-			institutionExternalClient2)));
+		assertThat(
+			institution.getInstitutionExternalClients(),
+			is(
+				containsInAnyOrder(
+					institutionExternalClient1,
+					institutionExternalClient2
+				)
+			)
+		);
 
 		EasyMock.verify(institutionClientEventConverter, exportedEvent);
 	}
@@ -183,37 +254,83 @@ public class InstitutionServiceBeanTest {
 	@Nonnull
 	private Institution createInstitution() {
 		Institution institution = new Institution();
-		institutionExternalClient1 = createInstitutionExternalClient(institution, client1);
-		institutionExternalClient2 = createInstitutionExternalClient(institution, client2);
-		institution.setInstitutionExternalClients(Sets.newHashSet(
-			institutionExternalClient1,
-			institutionExternalClient2));
+		institutionExternalClient1 = createInstitutionExternalClient(
+			institution,
+			client1
+		);
+		institutionExternalClient2 = createInstitutionExternalClient(
+			institution,
+			client2
+		);
+		institution.setInstitutionExternalClients(
+			Sets.newHashSet(
+				institutionExternalClient1,
+				institutionExternalClient2
+			)
+		);
 
 		return institution;
 	}
 
-	private void expectRemoval(@Nonnull String institutionId, @Nonnull InstitutionExternalClient client) {
-		InstitutionClientRemovedEvent event = new InstitutionClientRemovedEvent(institutionId, MOCK_BYTES, SCHEMA);
+	private void expectRemoval(
+		@Nonnull String institutionId,
+		@Nonnull InstitutionExternalClient client
+	) {
+		InstitutionClientRemovedEvent event = new InstitutionClientRemovedEvent(
+			institutionId,
+			MOCK_BYTES,
+			SCHEMA
+		);
 
-		EasyMock.expect(institutionClientEventConverter.clientRemovedEventOf(institutionId, client))
+		EasyMock.expect(
+			institutionClientEventConverter.clientRemovedEventOf(
+				institutionId,
+				client
+			)
+		)
 			.andReturn(event);
 
 		expectEvent(event);
 	}
 
-	private void expectAddition(@Nonnull String institutionId, @Nonnull InstitutionExternalClient client) {
-		InstitutionClientAddedEvent event = new InstitutionClientAddedEvent(institutionId, MOCK_BYTES, SCHEMA);
+	private void expectAddition(
+		@Nonnull String institutionId,
+		@Nonnull InstitutionExternalClient client
+	) {
+		InstitutionClientAddedEvent event = new InstitutionClientAddedEvent(
+			institutionId,
+			MOCK_BYTES,
+			SCHEMA
+		);
 
-		EasyMock.expect(institutionClientEventConverter.clientAddedEventOf(institutionId, client))
+		EasyMock.expect(
+			institutionClientEventConverter.clientAddedEventOf(
+				institutionId,
+				client
+			)
+		)
 			.andReturn(event);
 
 		expectEvent(event);
 	}
 
-	private void expectModification(@Nonnull String institutionId, @Nonnull InstitutionExternalClient client) {
-		InstitutionClientModifiedEvent event = new InstitutionClientModifiedEvent(institutionId, MOCK_BYTES, SCHEMA);
+	private void expectModification(
+		@Nonnull String institutionId,
+		@Nonnull InstitutionExternalClient client
+	) {
+		InstitutionClientModifiedEvent event =
+			new InstitutionClientModifiedEvent(
+				institutionId,
+				MOCK_BYTES,
+				SCHEMA
+			);
 
-		EasyMock.expect(institutionClientEventConverter.clientModifiedEventOf(institutionId, client))
+		EasyMock.expect(
+			institutionClientEventConverter.clientModifiedEventOf(
+				institutionId,
+				client
+			)
+		)
 			.andReturn(event);
 
 		expectEvent(event);
@@ -228,8 +345,10 @@ public class InstitutionServiceBeanTest {
 	@Nonnull
 	private InstitutionExternalClient createInstitutionExternalClient(
 		Institution institution,
-		ExternalClient externalClient) {
-		InstitutionExternalClient institutionExternalClient = new InstitutionExternalClient();
+		ExternalClient externalClient
+	) {
+		InstitutionExternalClient institutionExternalClient =
+			new InstitutionExternalClient();
 		institutionExternalClient.setExternalClient(externalClient);
 		institutionExternalClient.setInstitution(institution);
 		DateRange dateRange = new DateRange();

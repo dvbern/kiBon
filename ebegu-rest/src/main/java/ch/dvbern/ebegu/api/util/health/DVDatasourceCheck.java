@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.util.health;
@@ -20,23 +20,24 @@ package ch.dvbern.ebegu.api.util.health;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.sql.DataSource;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.dbschema.dbprovider.DBProvider;
-import org.eclipse.microprofile.health.Health;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Readiness;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-@Health
+@Readiness
 public class DVDatasourceCheck implements HealthCheck {
 
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DVDatasourceCheck.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		DVDatasourceCheck.class
+	);
 
 	@Inject
 	private DBProvider dbProvider;
@@ -44,10 +45,9 @@ public class DVDatasourceCheck implements HealthCheck {
 	@Override
 	public HealthCheckResponse call() {
 
-
 		final DataSource datasource = dbProvider.getDatasource();
 
-		 boolean datasourceWorks = false;
+		boolean datasourceWorks = false;
 		if (datasource != null) {
 			Connection connection = null;
 			try {
@@ -56,9 +56,8 @@ public class DVDatasourceCheck implements HealthCheck {
 				datasourceWorks = s != null;
 				connection.close();
 
-
 			} catch (SQLException e) {
-				LOGGER.warn("Datasource check failed" , e);
+				LOGGER.warn("Datasource check failed", e);
 			} finally {
 				if (connection != null) {
 					try {
@@ -70,9 +69,9 @@ public class DVDatasourceCheck implements HealthCheck {
 			}
 		}
 
-		return HealthCheckResponse.builder().name("dv-datasource-check")
-				.withData("datasource", datasourceWorks)
-				.state(datasourceWorks)
-				.build();
+		return HealthCheckResponse.named("dv-datasource-check")
+			.withData("datasource", datasourceWorks)
+			.status(datasourceWorks)
+			.build();
 	}
 }

@@ -30,52 +30,52 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ZahlungenDataRow {
-    @Setter
-    private String zahlungslaufTitle;
-    @Getter
-    @Setter
-    private LocalDate zahlungsFaelligkeitsDatum;
-    @Getter
-    @Setter
-    private String gemeinde;
-    @Getter
-    @Setter
-    private String institution;
-    @Getter
-    @Setter
-    private LocalDateTime timestampZahlungslauf;
-    @Getter
-    @Setter
-    private String kindVorname;
-    @Getter
-    @Setter
-    private String kindNachname;
-    @Getter
-    @Setter
-    private String referenzNummer;
-    @Getter
-    @Setter
-    private LocalDate zeitabschnittVon;
-    @Getter
-    @Setter
-    private LocalDate zeitabschnittBis;
-    @Getter
-    @Setter
-    private BigDecimal bgPensum;
-    @Getter
-    @Setter
-    private BigDecimal betrag;
-    @Getter
-    @Setter
-    private Boolean korrektur;
-    @Getter
-    @Setter
-    private Boolean ignorieren;
-    @Getter
-    @Setter
-    private String ibanEltern;
-    @Getter
-    @Setter
-    private String kontoEltern;
+	@Setter
+	private String zahlungslaufTitle;
+	@Getter
+	@Setter
+	private LocalDate zahlungsFaelligkeitsDatum;
+	@Getter
+	@Setter
+	private String gemeinde;
+	@Getter
+	@Setter
+	private String institution;
+	@Getter
+	@Setter
+	private LocalDateTime timestampZahlungslauf;
+	@Getter
+	@Setter
+	private String kindVorname;
+	@Getter
+	@Setter
+	private String kindNachname;
+	@Getter
+	@Setter
+	private String referenzNummer;
+	@Getter
+	@Setter
+	private LocalDate zeitabschnittVon;
+	@Getter
+	@Setter
+	private LocalDate zeitabschnittBis;
+	@Getter
+	@Setter
+	private BigDecimal bgPensum;
+	@Getter
+	@Setter
+	private BigDecimal betrag;
+	@Getter
+	@Setter
+	private Boolean korrektur;
+	@Getter
+	@Setter
+	private Boolean ignorieren;
+	@Getter
+	@Setter
+	private String ibanEltern;
+	@Getter
+	@Setter
+	private String kontoEltern;
 
 }

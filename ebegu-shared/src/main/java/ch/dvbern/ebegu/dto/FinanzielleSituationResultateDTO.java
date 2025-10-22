@@ -27,9 +27,11 @@ import ch.dvbern.ebegu.util.MathUtil;
 public class FinanzielleSituationResultateDTO {
 
 	@Nullable
-	private BigDecimal geschaeftsgewinnDurchschnittGesuchsteller1 = BigDecimal.ZERO;
+	private BigDecimal geschaeftsgewinnDurchschnittGesuchsteller1 =
+		BigDecimal.ZERO;
 	@Nullable
-	private BigDecimal geschaeftsgewinnDurchschnittGesuchsteller2 = BigDecimal.ZERO;
+	private BigDecimal geschaeftsgewinnDurchschnittGesuchsteller2 =
+		BigDecimal.ZERO;
 	private BigDecimal nettovermoegenXProzent = BigDecimal.ZERO;
 	private BigDecimal anrechenbaresEinkommen = BigDecimal.ZERO;
 	private BigDecimal massgebendesEinkVorAbzFamGr = BigDecimal.ZERO;
@@ -58,6 +60,9 @@ public class FinanzielleSituationResultateDTO {
 	@Nullable
 	private BigDecimal vermoegenXPercentAnrechenbarGS2 = BigDecimal.ZERO;
 
+	private BigDecimal liegenschaftsaufwandGS1 = BigDecimal.ZERO;
+	private BigDecimal liegenschaftsaufwandGS2 = BigDecimal.ZERO;
+
 	public FinanzielleSituationResultateDTO() {
 		initToZero();
 	}
@@ -65,13 +70,29 @@ public class FinanzielleSituationResultateDTO {
 	private void initToZero() {
 		// Alle Werte, die nicht null sein dürfen, auf 0 initialisieren, falls Null
 		// Wenn negativ -> 0
-		geschaeftsgewinnDurchschnittGesuchsteller1 = MathUtil.positiveNonNullAndRound(geschaeftsgewinnDurchschnittGesuchsteller1);
-		geschaeftsgewinnDurchschnittGesuchsteller2 = MathUtil.positiveNonNullAndRound(geschaeftsgewinnDurchschnittGesuchsteller2);
-		einkommenBeiderGesuchsteller = MathUtil.positiveNonNullAndRound(einkommenBeiderGesuchsteller);
-		nettovermoegenXProzent = MathUtil.positiveNonNullAndRound(nettovermoegenXProzent);
-		anrechenbaresEinkommen = MathUtil.positiveNonNullAndRound(anrechenbaresEinkommen);
-		abzuegeBeiderGesuchsteller = MathUtil.positiveNonNullAndRound(abzuegeBeiderGesuchsteller);
-		massgebendesEinkVorAbzFamGr = MathUtil.positiveNonNullAndRound(massgebendesEinkVorAbzFamGr);
+		geschaeftsgewinnDurchschnittGesuchsteller1 = MathUtil
+			.positiveNonNullAndRound(
+				geschaeftsgewinnDurchschnittGesuchsteller1
+			);
+		geschaeftsgewinnDurchschnittGesuchsteller2 = MathUtil
+			.positiveNonNullAndRound(
+				geschaeftsgewinnDurchschnittGesuchsteller2
+			);
+		einkommenBeiderGesuchsteller = MathUtil.positiveNonNullAndRound(
+			einkommenBeiderGesuchsteller
+		);
+		nettovermoegenXProzent = MathUtil.positiveNonNullAndRound(
+			nettovermoegenXProzent
+		);
+		anrechenbaresEinkommen = MathUtil.positiveNonNullAndRound(
+			anrechenbaresEinkommen
+		);
+		abzuegeBeiderGesuchsteller = MathUtil.positiveNonNullAndRound(
+			abzuegeBeiderGesuchsteller
+		);
+		massgebendesEinkVorAbzFamGr = MathUtil.positiveNonNullAndRound(
+			massgebendesEinkVorAbzFamGr
+		);
 	}
 
 	@Nullable
@@ -79,8 +100,11 @@ public class FinanzielleSituationResultateDTO {
 		return geschaeftsgewinnDurchschnittGesuchsteller1;
 	}
 
-	public void setGeschaeftsgewinnDurchschnittGesuchsteller1(@Nullable BigDecimal geschaeftsgewinnDurchschnittGesuchsteller1) {
-		this.geschaeftsgewinnDurchschnittGesuchsteller1 = geschaeftsgewinnDurchschnittGesuchsteller1;
+	public void setGeschaeftsgewinnDurchschnittGesuchsteller1(
+		@Nullable BigDecimal geschaeftsgewinnDurchschnittGesuchsteller1
+	) {
+		this.geschaeftsgewinnDurchschnittGesuchsteller1 =
+			geschaeftsgewinnDurchschnittGesuchsteller1;
 	}
 
 	@Nullable
@@ -88,8 +112,11 @@ public class FinanzielleSituationResultateDTO {
 		return geschaeftsgewinnDurchschnittGesuchsteller2;
 	}
 
-	public void setGeschaeftsgewinnDurchschnittGesuchsteller2(@Nullable BigDecimal geschaeftsgewinnDurchschnittGesuchsteller2) {
-		this.geschaeftsgewinnDurchschnittGesuchsteller2 = geschaeftsgewinnDurchschnittGesuchsteller2;
+	public void setGeschaeftsgewinnDurchschnittGesuchsteller2(
+		@Nullable BigDecimal geschaeftsgewinnDurchschnittGesuchsteller2
+	) {
+		this.geschaeftsgewinnDurchschnittGesuchsteller2 =
+			geschaeftsgewinnDurchschnittGesuchsteller2;
 	}
 
 	@Nullable
@@ -97,7 +124,9 @@ public class FinanzielleSituationResultateDTO {
 		return einkommenBeiderGesuchsteller;
 	}
 
-	public void setEinkommenBeiderGesuchsteller(@Nullable BigDecimal einkommenBeiderGesuchsteller) {
+	public void setEinkommenBeiderGesuchsteller(
+		@Nullable BigDecimal einkommenBeiderGesuchsteller
+	) {
 		this.einkommenBeiderGesuchsteller = einkommenBeiderGesuchsteller;
 	}
 
@@ -121,7 +150,9 @@ public class FinanzielleSituationResultateDTO {
 		return abzuegeBeiderGesuchsteller;
 	}
 
-	public void setAbzuegeBeiderGesuchsteller(BigDecimal abzuegeBeiderGesuchsteller) {
+	public void setAbzuegeBeiderGesuchsteller(
+		BigDecimal abzuegeBeiderGesuchsteller
+	) {
 		this.abzuegeBeiderGesuchsteller = abzuegeBeiderGesuchsteller;
 	}
 
@@ -129,7 +160,9 @@ public class FinanzielleSituationResultateDTO {
 		return massgebendesEinkVorAbzFamGr;
 	}
 
-	public void setMassgebendesEinkVorAbzFamGr(BigDecimal massgebendesEinkVorAbzFamGr) {
+	public void setMassgebendesEinkVorAbzFamGr(
+		BigDecimal massgebendesEinkVorAbzFamGr
+	) {
 		this.massgebendesEinkVorAbzFamGr = massgebendesEinkVorAbzFamGr;
 	}
 
@@ -137,7 +170,9 @@ public class FinanzielleSituationResultateDTO {
 		return massgebendesEinkVorAbzFamGrGS1;
 	}
 
-	public void setMassgebendesEinkVorAbzFamGrGS1(BigDecimal massgebendesEinkVorAbzFamGrGS1) {
+	public void setMassgebendesEinkVorAbzFamGrGS1(
+		BigDecimal massgebendesEinkVorAbzFamGrGS1
+	) {
 		this.massgebendesEinkVorAbzFamGrGS1 = massgebendesEinkVorAbzFamGrGS1;
 	}
 
@@ -145,7 +180,9 @@ public class FinanzielleSituationResultateDTO {
 		return massgebendesEinkVorAbzFamGrGS2;
 	}
 
-	public void setMassgebendesEinkVorAbzFamGrGS2(BigDecimal massgebendesEinkVorAbzFamGrGS2) {
+	public void setMassgebendesEinkVorAbzFamGrGS2(
+		BigDecimal massgebendesEinkVorAbzFamGrGS2
+	) {
 		this.massgebendesEinkVorAbzFamGrGS2 = massgebendesEinkVorAbzFamGrGS2;
 	}
 
@@ -206,7 +243,9 @@ public class FinanzielleSituationResultateDTO {
 		return vermoegenXPercentAnrechenbarGS1;
 	}
 
-	public void setVermoegenXPercentAnrechenbarGS1(@Nullable BigDecimal vermoegenXPercentAnrechenbarGS1) {
+	public void setVermoegenXPercentAnrechenbarGS1(
+		@Nullable BigDecimal vermoegenXPercentAnrechenbarGS1
+	) {
 		this.vermoegenXPercentAnrechenbarGS1 = vermoegenXPercentAnrechenbarGS1;
 	}
 
@@ -215,7 +254,9 @@ public class FinanzielleSituationResultateDTO {
 		return vermoegenXPercentAnrechenbarGS2;
 	}
 
-	public void setVermoegenXPercentAnrechenbarGS2(@Nullable BigDecimal vermoegenXPercentAnrechenbarGS2) {
+	public void setVermoegenXPercentAnrechenbarGS2(
+		@Nullable BigDecimal vermoegenXPercentAnrechenbarGS2
+	) {
 		this.vermoegenXPercentAnrechenbarGS2 = vermoegenXPercentAnrechenbarGS2;
 	}
 
@@ -259,5 +300,21 @@ public class FinanzielleSituationResultateDTO {
 		return gesuchstellerNumber == 1 ?
 			getVermoegenXPercentAnrechenbarGS1() :
 			getVermoegenXPercentAnrechenbarGS2();
+	}
+
+	public BigDecimal getLiegenschaftsaufwandGS1() {
+		return liegenschaftsaufwandGS1;
+	}
+
+	public void setLiegenschaftsaufwandGS1(BigDecimal liegenschaftsaufwandGS1) {
+		this.liegenschaftsaufwandGS1 = liegenschaftsaufwandGS1;
+	}
+
+	public BigDecimal getLiegenschaftsaufwandGS2() {
+		return liegenschaftsaufwandGS2;
+	}
+
+	public void setLiegenschaftsaufwandGS2(BigDecimal liegenschaftsaufwandGS2) {
+		this.liegenschaftsaufwandGS2 = liegenschaftsaufwandGS2;
 	}
 }

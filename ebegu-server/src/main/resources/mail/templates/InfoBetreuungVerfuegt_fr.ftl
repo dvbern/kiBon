@@ -60,7 +60,7 @@ ${templateConfiguration.mailCss}
 	</table>
 	<br/>
 	<p>
-		Pour plus de détails, cliquez <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/betreuungen/${betreuung.extractGesuch().id}">ici</a>.
+		Pour plus de détails, cliquez <a href="${frontendUrl}/gesuch/betreuungen/${betreuung.extractGesuch().id}">ici</a>.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>

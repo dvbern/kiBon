@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
 import {TSInstitutionExternalClient} from './TSInstitutionExternalClient';
-import {TSInstitutionStammdaten} from './TSInstitutionStammdaten';
 
 export class TSInstitutionUpdate {
     public name: string;

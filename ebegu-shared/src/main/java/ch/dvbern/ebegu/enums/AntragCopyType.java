@@ -28,12 +28,18 @@ public enum AntragCopyType {
 	ERNEUERUNG_AR_2023;  //Speziallfall Erneuerunggesuch in Appenzell von der Periode 22/23 zu Periode 23/24
 
 	public boolean isNeuesDossier() {
-		return EnumUtil.isOneOf(this, MUTATION_NEUES_DOSSIER, ERNEUERUNG_NEUES_DOSSIER);
+		return EnumUtil.isOneOf(
+			this,
+			MUTATION_NEUES_DOSSIER,
+			ERNEUERUNG_NEUES_DOSSIER
+		);
 	}
 
 	public boolean isGleichesDossier() {
 		return EnumUtil.isOneOf(this, MUTATION, ERNEUERUNG, ERNEUERUNG_AR_2023);
 	}
 
-	public boolean isErneuerung() {return EnumUtil.isOneOf(this, ERNEUERUNG, ERNEUERUNG_AR_2023);}
+	public boolean isErneuerung() {
+		return EnumUtil.isOneOf(this, ERNEUERUNG, ERNEUERUNG_AR_2023);
+	}
 }

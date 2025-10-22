@@ -5,11 +5,10 @@ import {
     OnInit
 } from '@angular/core';
 import {MatRadioChange} from '@angular/material/radio';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
@@ -18,20 +17,21 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractGesuchViewX} from '../../../abstractGesuchViewX';
 import {FinanzielleSituationSchwyzService} from '../finanzielle-situation-schwyz.service';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 const LOG = LogFactory.createLog('FinanzielleSituationStartSchwyzComponent');
 
 @Component({
     selector: 'dv-finanzielle-situation-start-schwyz',
     templateUrl: './finanzielle-situation-start-schwyz.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FinanzielleSituationStartSchwyzComponent
     extends AbstractGesuchViewX<TSFinanzModel>
     implements OnInit
 {
     public hasMultipleGS = false;
-    public gs2Ausgefuellt = false;
 
     private finSitGS1JAToRestore: TSFinanzielleSituation;
     private finSitGS2JAToRestore: TSFinanzielleSituation;
@@ -42,7 +42,8 @@ export class FinanzielleSituationStartSchwyzComponent
         protected ref: ChangeDetectorRef,
         protected readonly gesuchModelManager: GesuchModelManager,
         private readonly finanzielleSituationSchwyzService: FinanzielleSituationSchwyzService,
-        private readonly wizardstepManager: WizardStepManager
+        private readonly wizardstepManager: WizardStepManager,
+        protected dvShowWarningAngabenVervollstaendigenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
     ) {
         super(
             gesuchModelManager,
@@ -62,9 +63,6 @@ export class FinanzielleSituationStartSchwyzComponent
                 this.gesuchModelManager.getGesuchsperiode().gueltigkeit
                     .gueltigBis
             );
-        this.gs2Ausgefuellt = EbeguUtil.isNotNullOrUndefined(
-            this.gesuchModelManager.getGesuch().gesuchsteller2
-        );
         this.initFinanzModel();
     }
 
@@ -185,8 +183,7 @@ export class FinanzielleSituationStartSchwyzComponent
                 this.model.finanzielleSituationContainerGS1.finanzielleSituationJA;
             this.finSitGS2JAToRestore =
                 this.model.finanzielleSituationContainerGS2.finanzielleSituationJA;
-            this.model.finanzielleSituationContainerGS2.finanzielleSituationJA =
-                new TSFinanzielleSituation();
+            this.model.resetFinSitGS2();
             if (
                 this.model.finanzielleSituationContainerGS1
                     .finanzielleSituationJA.quellenbesteuert
@@ -195,6 +192,7 @@ export class FinanzielleSituationStartSchwyzComponent
                     new TSFinanzielleSituation();
             }
         } else {
+            this.model.initFinSitGS2();
             this.model.finanzielleSituationContainerGS2.finanzielleSituationJA =
                 this.finSitGS2JAToRestore
                     ? this.finSitGS2JAToRestore

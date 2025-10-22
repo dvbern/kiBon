@@ -14,8 +14,8 @@
  */
 
 import {IController, IDirective, IDirectiveFactory} from 'angular';
-import * as moment from 'moment';
-import {DateUtil} from '../../../../utils/DateUtil';
+import moment from 'moment';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import IAttributes = angular.IAttributes;
 import ILogService = angular.ILogService;
 import INgModelController = angular.INgModelController;
@@ -99,11 +99,11 @@ export class DatepickerController implements IController {
         }
         // Wenn kein Minimumdatum gesetzt ist, verwenden wir 01.01.1900 als Minimum
         if (this.dvMinDate === undefined) {
-            this.dvMinDate = DateUtil.localDateToMoment('1900-01-01');
+            this.dvMinDate = MomentUtil.localDateToMoment('1900-01-01');
         }
         if (this.dvGesuchsperiodeMinDate === undefined) {
             this.dvGesuchsperiodeMinDate =
-                DateUtil.localDateToMoment('1900-01-01');
+                MomentUtil.localDateToMoment('1900-01-01');
         }
         if (this.noFuture === undefined) {
             this.noFuture = false;

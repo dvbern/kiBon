@@ -19,8 +19,6 @@ package ch.dvbern.ebegu.docxmerger;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import ch.dvbern.ebegu.docxmerger.mergefield.AbstractMergeField;
 
 public abstract class DocxMerger<T> {
@@ -31,9 +29,13 @@ public abstract class DocxMerger<T> {
 		this.docxDocument = docxDocument;
 	}
 
-	@Nonnull
 	public void merge() {
-		this.mergeFields.forEach(mergeField -> docxDocument.replacePlaceholder(mergeField.getPlaceholder(), mergeField.getConvertedValue()));
+		this.mergeFields.forEach(
+			mergeField -> docxDocument.replacePlaceholder(
+				mergeField.getPlaceholder(),
+				mergeField.getConvertedValue()
+			)
+		);
 	}
 
 	public abstract void addMergeFields(T dto);

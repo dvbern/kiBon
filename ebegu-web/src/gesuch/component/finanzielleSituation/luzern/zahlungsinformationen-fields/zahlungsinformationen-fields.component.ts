@@ -20,7 +20,7 @@ import {ControlContainer, NgForm} from '@angular/forms';
 import {ListResourceRS} from '../../../../../app/core/service/listResourceRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {isAtLeastFreigegeben} from '../../../../../models/enums/TSAntragStatus';
-import {TSAdresse} from '../../../../../models/TSAdresse';
+import {TSAdresse} from '@kibon/shared/model/entity';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {TSLand} from '../../../../../models/types/TSLand';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
@@ -31,7 +31,8 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
     selector: 'dv-zahlungsinformationen-fields',
     templateUrl: './zahlungsinformationen-fields.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class ZahlungsinformationenFieldsComponent implements OnInit {
     @Input() public readonly: boolean;

@@ -18,13 +18,13 @@ package ch.dvbern.ebegu.api.dtos;
 import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.ZahlungStatus;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 
 /**
  * DTO fuer Zahlungen
@@ -49,7 +49,6 @@ public class JaxZahlung extends JaxAbstractDTO {
 
 	@NotNull
 	private BigDecimal betragTotalZahlung;
-
 
 	@Nonnull
 	public String getEmpfaengerName() {
@@ -92,7 +91,9 @@ public class JaxZahlung extends JaxAbstractDTO {
 		return betreuungsangebotTyp;
 	}
 
-	public void setBetreuungsangebotTyp(@Nonnull BetreuungsangebotTyp betreuungsangebotTyp) {
+	public void setBetreuungsangebotTyp(
+		@Nonnull BetreuungsangebotTyp betreuungsangebotTyp
+	) {
 		this.betreuungsangebotTyp = betreuungsangebotTyp;
 	}
 }

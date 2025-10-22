@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {SharedModule} from '../../../../app/shared/shared.module';
-import {TSBetreuungsangebotTyp} from '../../../../models/enums/betreuung/TSBetreuungsangebotTyp';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSErweiterteBetreuung} from '../../../../models/TSErweiterteBetreuung';
 
 export type ErweiterteBeduerfnisseBestaetigenEinstellungen = {
@@ -24,7 +24,6 @@ export type LabelParameters = {
 
 @Component({
     selector: 'dv-erweiterte-beduerfnisse-bestaetigung',
-    standalone: true,
     imports: [SharedModule],
     templateUrl: './erweiterte-beduerfnisse-bestaetigung.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -32,12 +31,9 @@ export type LabelParameters = {
 export class ErweiterteBeduerfnisseBestaetigungComponent {
     erweiterteBetreuungJA = input.required<TSErweiterteBetreuung>();
     einstellungenSig =
-        input.required<ErweiterteBeduerfnisseBestaetigenEinstellungen>({
-            alias: 'einstellungen'
-        });
-    angebotTypSig = input.required<TSBetreuungsangebotTyp>({
-        alias: 'angebotTyp'
-    });
+        input.required<ErweiterteBeduerfnisseBestaetigenEinstellungen>();
+    angebotTypSig = input.required<TSBetreuungsangebotTyp>();
+
     readOnly = input.required<boolean>();
 
     labelKey = computed(() => {

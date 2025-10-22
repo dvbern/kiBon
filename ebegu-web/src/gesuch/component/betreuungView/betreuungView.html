@@ -267,7 +267,7 @@
                                         'ANMELDUNG_KEINE_DETAILINFORMATIONEN'
                                             | translate
                                     }}"
-                                    ng-disabled="!vm.isEnabled()"
+                                    ng-disabled="!vm.isEnabled() || (vm.getBetreuungModel().keineDetailinformationen && !vm.isKeineDetailAnmeldungClicked)"
                                 >
                                     <span
                                         data-translate="ANMELDUNG_KEINE_DETAILINFORMATIONEN"
@@ -293,13 +293,14 @@
                                     ng-change="vm.onChangeVertrag()"
                                     dv-suppress-form-submit-on-enter
                                     aria-label="{{ vm.ariaLabel }}"
-                                    ng-disabled="!vm.isEnabled()"
+                                    ng-disabled="!vm.isEnabled() || vm.isKeinVertragAndSaved()"
                                     ng-required="true"
                                 >
                                     <md-radio-button
                                         ng-value="true"
                                         data-test="radio-value.ja"
                                         aria-label="{{ 'VERTRAG' | translate }}"
+                                        ng-disabled="!vm.isEnabled() || vm.isKeinVertragAndSaved()"
                                         class="element-ja"
                                         aria-describedby="{{
                                             vm.ariaDescribedBy
@@ -311,6 +312,7 @@
                                     <md-radio-button
                                         ng-value="false"
                                         data-test="radio-value.nein"
+                                        ng-disabled="!vm.isEnabled() || vm.isKeinVertragAndSaved()"
                                         aria-label="{{
                                             'KEIN_VERTRAG' | translate
                                         }}"
@@ -345,8 +347,10 @@
                                 is-disabled="!vm.isEnabled()"
                                 betreuungsangebot-typ="vm.betreuungsangebot.key"
                                 betreuung-input-switch-typ="vm.getBetreuungspensumAnzeigeTyp()"
+                                multiplier-kita="vm.getMultiplierKita()"
                                 vertrag="vm.getBetreuungModel().vertrag"
                                 mandant="vm.mandant"
+                                texteSz25Enabled="vm.texteSz25Enabled"
                             >
                             </dv-betreuung-input>
 
@@ -357,7 +361,7 @@
                                 >
                                     <dv-input-container class="form-group">
                                         <label
-                                            class="md-no-float"
+                                            class="md-no-float ignore-danger-font-color"
                                             for="provMonatlicheBetreuungskosten"
                                         >
                                             <span
@@ -415,7 +419,7 @@
                                     <div class="form-group">
                                         <dv-input-container class="form-group">
                                             <label
-                                                class="md-no-float"
+                                                class="md-no-float ignore-danger-font-color"
                                                 for="prov-monatlicheHauptmahlzeiten}"
                                             >
                                                 <span
@@ -459,7 +463,7 @@
                                 >
                                     <dv-input-container class="form-group">
                                         <label
-                                            class="md-no-float"
+                                            class="md-no-float ignore-danger-font-color"
                                             for="prov-kostenProMahlzeit"
                                         >
                                             <span
@@ -512,7 +516,7 @@
                                 class="col-sm-12 dv-input-container-medium form-group"
                             >
                                 <label
-                                    class="md-no-float required"
+                                    class="md-no-float required ignore-danger-font-color"
                                     data-translate="INSTITUTION"
                                     for="institution"
                                 >
@@ -542,7 +546,7 @@
                                 >
                                     <md-item-template>
                                         <span
-                                            data-test="instutions-suchtext"
+                                            data-test="institutions-suchtext"
                                             md-highlight-text="vm.searchQuery"
                                         >
                                             {{ item.getAutocompleteText() }}
@@ -565,7 +569,7 @@
                                 class="col-sm-12 dv-input-container-medium form-group"
                             >
                                 <label
-                                    class="md-no-float required"
+                                    class="md-no-float required ignore-danger-font-color"
                                     data-translate="INSTITUTION"
                                     for="institution_mobile"
                                 >
@@ -598,7 +602,7 @@
                                 class="col-sm-12 dv-input-container-medium form-group"
                             >
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="INSTITUTION"
                                     for="institution"
                                 >
@@ -739,7 +743,7 @@
                                 class="col-sm-12 dv-input-container-medium form-group"
                             >
                                 <label
-                                    class="md-no-float required"
+                                    class="md-no-float required ignore-danger-font-color"
                                     for="fachstelle"
                                 >
                                     <span data-translate="FACHSTELLE"></span>
@@ -810,7 +814,7 @@
                             >
                                 <dv-input-container class="form-group">
                                     <label
-                                        class="md-no-float required"
+                                        class="md-no-float required ignore-danger-font-color"
                                         data-translate="BESONDERE_BEDUERFNISSE_BETRAG"
                                         for="besondereBeduerfnisseAufwand"
                                     ></label>
@@ -1030,7 +1034,7 @@
                         <div class="col-sm-12 dv-input-container-medium">
                             <div class="form-group">
                                 <label
-                                    class="md-no-float margin-bottom-20"
+                                    class="md-no-float margin-bottom-20 ignore-danger-font-color"
                                     for="bedarfsstufe"
                                 >
                                     <span
@@ -1076,14 +1080,15 @@
                                     }}"
                                     ng-disabled="!vm.isEingewoehnungPeriodeEnabled()"
                                 >
-                                    <span>{{
-                                        vm.getEingewoehnungLabel()
-                                    }}</span>
+                                    <span
+                                        >{{ vm.getEingewoehnungLabel() }}
+
+                                        <dv-tooltip
+                                            input-id="eingewoehnung"
+                                            text="'EINGEWOEHNUNG_HELP' | translate"
+                                        ></dv-tooltip>
+                                    </span>
                                 </md-checkbox>
-                                <dv-tooltip
-                                    input-id="eingewoehnung"
-                                    text="'EINGEWOEHNUNG_HELP' | translate"
-                                ></dv-tooltip>
                             </div>
                         </div>
                     </div>
@@ -1184,10 +1189,20 @@
                         <div ng-if="!vm.isProvisorischeBetreuung()">
                             <fieldset
                                 dv-enable-element
-                                dv-enable-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionRoles()"
+                                dv-enable-allowed-roles="vm.getMutationAbweichungAktiviertRoles()"
                                 dv-enable-expression="vm.isPensumEditable()"
                             >
+                                <legend class="hidden">Eingewoehnung</legend>
                                 <p
+                                    ng-if="vm.texteSz25Enabled"
+                                    class="inline-hint"
+                                    ng-bind-html="
+                                        vm.getSZ25BetreuungsangebotText()
+                                   "
+                                    ng-show="vm.showHintUntermonatlich()"
+                                ></p>
+                                <p
+                                    ng-if="!vm.texteSz25Enabled"
                                     class="inline-hint"
                                     data-translate="BETREUUNG_HINT_UNTERMONATLICH"
                                     ng-show="vm.showHintUntermonatlich()"
@@ -1204,6 +1219,39 @@
                                         text="'BETREUUNG_HINT_EINGEWOEHNUNG_HELP' | translate"
                                     ></dv-tooltip>
                                 </p>
+
+                                <span
+                                    ng-if="
+                                        vm.isTabellarischeMaskeOpenable &&
+                                        vm.hasAtLeastOneBetreuungspensum(
+                                            vm.model
+                                        ) &&
+                                        ((vm.multiplierKita &&
+                                            vm.multiplierTFO) ||
+                                            vm.isBetreuungsangebotMittagstisch()) &&
+                                        vm.isAnwesenheitstageProMonatAktiviert !==
+                                            undefined
+                                    "
+                                >
+                                    <dv-open-tabellarische-maske-button
+                                        [button-disabled]="
+                                            !vm.isPensumEditable() ||
+                                            vm.model.betreuungspensumContainers
+                                                .length === 0
+                                        "
+                                        [betreuung]="vm.model"
+                                        [gesuchsperiode]="
+                                            vm.gesuchModelManager.getGesuchsperiode()
+                                        "
+                                        [multiplier-kita]="vm.multiplierKita"
+                                        [multiplier-tfo]="vm.multiplierTFO"
+                                        [form-dirty]="vm.form.$dirty"
+                                        [anwesenheitstage-monat-activated]="
+                                            vm.isAnwesenheitstageProMonatAktiviert
+                                        "
+                                    >
+                                    </dv-open-tabellarische-maske-button>
+                                </span>
 
                                 <!--Betreuungspensen-->
                                 <div
@@ -1273,8 +1321,9 @@
                                             multiplier-kita="vm.getMultiplierKita()"
                                             multiplier-tfo="vm.getMultiplierTFO()"
                                             betreuung-input-switch-typ="vm.getBetreuungspensumAnzeigeTyp()"
-                                            is-luzern="vm.isLuzern"
+                                            mandant="vm.mandant"
                                             vertrag="vm.getBetreuungModel().vertrag"
+                                            texte-sz25-enabled="vm.texteSz25Enabled"
                                         >
                                         </dv-betreuung-input>
                                     </div>
@@ -1292,7 +1341,7 @@
                                                 class="form-group"
                                             >
                                                 <label
-                                                    class="md-no-float"
+                                                    class="md-no-float ignore-danger-font-color"
                                                     for="monatlicheAnwesenheitstage-{{
                                                         $index
                                                     }}"
@@ -1304,7 +1353,19 @@
                                                         input-id="monatlicheAnwesenheitstage-{{
                                                             $index
                                                         }}"
+                                                        text="'ANWESENHEITSTAGE_PRO_MONAT_HELP_SZ_25' | translate"
+                                                        ng-if="
+                                                            vm.texteSz25Enabled
+                                                        "
+                                                    ></dv-tooltip>
+                                                    <dv-tooltip
+                                                        input-id="monatlicheAnwesenheitstage-{{
+                                                            $index
+                                                        }}"
                                                         text="'ANWESENHEITSTAGE_PRO_MONAT_HELP' | translate"
+                                                        ng-if="
+                                                            !vm.texteSz25Enabled
+                                                        "
                                                     ></dv-tooltip>
                                                 </label>
                                                 <div
@@ -1356,10 +1417,11 @@
                                             class="col-sm-12 dv-input-container-medium"
                                         >
                                             <dv-input-container
+                                                ng-if="vm.isPensumEditable()"
                                                 class="form-group"
                                             >
                                                 <label
-                                                    class="md-no-float"
+                                                    class="md-no-float ignore-danger-font-color"
                                                     for="monatlicheBetreuungskosten-{{
                                                         $index
                                                     }}"
@@ -1380,6 +1442,9 @@
                                                     class="dv-input-container-medium-label"
                                                 >
                                                     <input
+                                                        ng-if="
+                                                            vm.isPensumEditable()
+                                                        "
                                                         aria-describedby="monatlicheBetreuungskosten-{{
                                                             $index
                                                         }}-error"
@@ -1412,6 +1477,51 @@
                                                     ></dv-error-messages>
                                                 </div>
                                             </dv-input-container>
+                                            <dv-input-container
+                                                ng-if="!vm.isPensumEditable()"
+                                                class="form-group"
+                                            >
+                                                <label
+                                                    class="md-no-float ignore-danger-font-color"
+                                                    for="monatlicheBetreuungskosten-{{
+                                                        $index
+                                                    }}"
+                                                >
+                                                    <span
+                                                        data-translate="{{
+                                                            vm.getMonatlicheBetreuungkostenKey()
+                                                        }}"
+                                                    ></span>
+                                                    <dv-tooltip
+                                                        input-id="monatlicheBetreuungskosten-{{
+                                                            $index
+                                                        }}"
+                                                        text="vm.getMonatlicheBetreuungkostenHelpKey() | translate"
+                                                    ></dv-tooltip>
+                                                </label>
+                                                <div
+                                                    class="dv-input-container-medium-label"
+                                                >
+                                                    <input
+                                                        aria-describedby="monatlicheBetreuungskosten-{{
+                                                            $index
+                                                        }}-error"
+                                                        id="monatlicheBetreuungskosten-{{
+                                                            $index
+                                                        }}"
+                                                        type="text"
+                                                        name="monatlicheBetreuungskosten-{{
+                                                            $index
+                                                        }}"
+                                                        ng-disabled="true"
+                                                        ng-value="vm.getBetreuungspensum($index).betreuungspensumJA.monatlicheBetreuungskosten | thousandSeparator"
+                                                        class="form-control"
+                                                        ng-attr-data-test="monatliche-betreuungskosten#{{
+                                                            $index
+                                                        }}"
+                                                    />
+                                                </div>
+                                            </dv-input-container>
                                         </div>
                                     </div>
 
@@ -1431,7 +1541,7 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float"
+                                                            class="md-no-float ignore-danger-font-color"
                                                             for="monatlicheHauptmahlzeiten-{{
                                                                 $index
                                                             }}"
@@ -1443,6 +1553,18 @@
                                                                 input-id="monatlicheHauptmahlzeiten-tooltip-{{
                                                                     $index
                                                                 }}"
+                                                                ng-if="
+                                                                    vm.texteSz25Enabled
+                                                                "
+                                                                text="'PENSUM_MAHLZEITEN_HELP_SZ_25' | translate"
+                                                            ></dv-tooltip>
+                                                            <dv-tooltip
+                                                                input-id="monatlicheHauptmahlzeiten-tooltip-{{
+                                                                    $index
+                                                                }}"
+                                                                ng-if="
+                                                                    !vm.texteSz25Enabled
+                                                                "
                                                                 text="'PENSUM_MAHLZEITEN_HELP' | translate"
                                                             ></dv-tooltip>
                                                         </label>
@@ -1493,7 +1615,7 @@
                                                     class="form-group"
                                                 >
                                                     <label
-                                                        class="md-no-float"
+                                                        class="md-no-float ignore-danger-font-color"
                                                         for="kostenProMahlzeit-{{
                                                             $index
                                                         }}"
@@ -1505,7 +1627,19 @@
                                                             input-id="kostenProMahlzeit-{{
                                                                 $index
                                                             }}"
+                                                            text="'KOSTEN_PRO_MAHLZEIT_HELP_SZ_25' | translate"
+                                                            ng-if="
+                                                                vm.texteSz25Enabled
+                                                            "
+                                                        ></dv-tooltip>
+                                                        <dv-tooltip
+                                                            input-id="kostenProMahlzeit-{{
+                                                                $index
+                                                            }}"
                                                             text="'KOSTEN_PRO_MAHLZEIT_HELP' | translate"
+                                                            ng-if="
+                                                                !vm.texteSz25Enabled
+                                                            "
                                                         ></dv-tooltip>
                                                     </label>
                                                     <div
@@ -1560,7 +1694,7 @@
                                                 class="form-group"
                                             >
                                                 <label
-                                                    class="md-no-float"
+                                                    class="md-no-float ignore-danger-font-color"
                                                     for="stuendlicheKosten-{{
                                                         $index
                                                     }}"
@@ -1622,7 +1756,7 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float"
+                                                            class="md-no-float ignore-danger-font-color"
                                                             for="monatlicheHauptmahlzeiten-{{
                                                                 $index
                                                             }}"
@@ -1684,7 +1818,7 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float"
+                                                            class="md-no-float ignore-danger-font-color"
                                                             for="monatlicheNebenmahlzeiten-{{
                                                                 $index
                                                             }}"
@@ -1747,7 +1881,7 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float"
+                                                            class="md-no-float ignore-danger-font-color"
                                                             for="tarifProHauptmahlzeit-{{
                                                                 $index
                                                             }}"
@@ -1809,7 +1943,7 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float"
+                                                            class="md-no-float ignore-danger-font-color"
                                                             for="tarifProNebenmahlzeit-{{
                                                                 $index
                                                             }}"
@@ -1874,7 +2008,7 @@
                                                 class="form-group"
                                             >
                                                 <label
-                                                    class="md-no-float"
+                                                    class="md-no-float ignore-danger-font-color"
                                                     data-translate="VON_BETREUUNG"
                                                     for="datumAb-{{ $index }}"
                                                 >
@@ -1992,7 +2126,7 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float"
+                                                            class="md-no-float ignore-danger-font-color"
                                                             for="eingewoehnungKosten-{{
                                                                 $index
                                                             }}"
@@ -2049,7 +2183,7 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float"
+                                                            class="md-no-float ignore-danger-font-color"
                                                             data-translate="VON_BETREUUNG"
                                                             for="eingewoehnungDatumAb-{{
                                                                 $index
@@ -2088,7 +2222,7 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float"
+                                                            class="md-no-float ignore-danger-font-color"
                                                             data-translate="BIS_BETREUUNG"
                                                             for="eingewoehnungDatumBis-{{
                                                                 $index
@@ -2149,16 +2283,20 @@
                                     <!--Betreuungspensum entfernen. Wird nur angezeigt wenn status=AUSSTEHEND und es mehrere Betreuungspensen gibt und role=institution-->
                                     <div
                                         class="row margin-bottom-60 dv-input-container-medium"
-                                        dv-show-element
-                                        dv-show-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionRoles()"
-                                        dv-show-expression="($index > 0) || (vm.getBetreuungspensen().length > 1)"
+                                        ng-if="
+                                            $index > 0 ||
+                                            vm.getBetreuungspensen().length > 1
+                                        "
                                     >
                                         <div class="col-md-12">
                                             <dv-loading-button
                                                 type="button"
                                                 button-click="vm.removeBetreuungspensum(betpen)"
                                                 button-class="dv-btn-operation"
-                                                button-disabled="!vm.isPensumEditable()"
+                                                button-disabled="!vm.isPensumEditable() || !vm.hasRemoveBetreuungspensumRolePermission()"
+                                                ng-if="
+                                                    vm.isTraegerschaftInstitutionGemeindeBGRoles()
+                                                "
                                             >
                                                 <i
                                                     class="fa fa-lg fa-trash-o"
@@ -2187,7 +2325,7 @@
                                 <div
                                     class="row"
                                     dv-show-element
-                                    dv-show-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionRoles()"
+                                    dv-show-allowed-roles="vm.getMutationAbweichungAktiviertRoles()"
                                     dv-show-expression="vm.isPensumEditable()"
                                 >
                                     <div class="col-md-12">
@@ -2196,7 +2334,7 @@
                                             button-click="vm.createBetreuungspensum()"
                                             data-test="container.add-betreuungspensum"
                                             dv-enable-element
-                                            dv-enable-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionRoles()"
+                                            dv-enable-allowed-roles="vm.getMutationAbweichungAktiviertRoles()"
                                             dv-enable-expression="vm.isEnabled()"
                                             button-class="dv-btn-operation"
                                         >
@@ -2214,7 +2352,7 @@
                                 <div
                                     class="row margin-top-20"
                                     dv-show-element
-                                    dv-show-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionRoles()"
+                                    dv-show-allowed-roles="vm.getMutationAbweichungAktiviertRoles()"
                                 >
                                     <div
                                         class="col-md-12 dv-input-container-medium"
@@ -2350,11 +2488,35 @@
                             class="well well-status-warten"
                             ng-if="
                                 vm.isBetreuungsstatusWarten() &&
-                                !vm.isSavingData
+                                !vm.isSavingData &&
+                                !vm.getBetreuungModel().datumAngefordert
                             "
                         >
                             <i class="fa fa-hourglass" aria-hidden="true"></i>
                             <span data-translate="BETREUUNG_WARTEN_TEXT"></span>
+                            <span
+                                ng-if="vm.showWarningStammdaten()"
+                                data-translate="INSTITUTION_EINGELADEN_WARN_TEXT"
+                            ></span>
+                        </div>
+                        <div
+                            class="well well-status-warten"
+                            ng-if="
+                                vm.isBetreuungsstatusWarten() &&
+                                !vm.isSavingData &&
+                                vm.getBetreuungModel().datumAngefordert
+                            "
+                        >
+                            <i class="fa fa-hourglass" aria-hidden="true"></i>
+                            <span
+                                data-translate="{{
+                                    vm.getBetreuungWartenTextForRole()
+                                }}"
+                                data-translate-value-date="{{
+                                    vm.getBetreuungModel().datumAngefordert
+                                        | amDateFormat: 'DD.MM.YYYY'
+                                }}"
+                            ></span>
                             <span
                                 ng-if="vm.showWarningStammdaten()"
                                 data-translate="INSTITUTION_EINGELADEN_WARN_TEXT"
@@ -2365,7 +2527,8 @@
                             class="well well-status-abgewiesen"
                             ng-if="
                                 vm.isBetreuungsstatusAbgewiesen() &&
-                                !vm.isSavingData
+                                !vm.isSavingData &&
+                                !vm.getBetreuungModel().datumAngefordert
                             "
                         >
                             <i class="fa fa-times" aria-hidden="true"></i>
@@ -2381,6 +2544,31 @@
                             >
                             </span>
                         </div>
+                        <div
+                            class="well well-status-abgewiesen"
+                            ng-if="
+                                vm.isBetreuungsstatusAbgewiesen() &&
+                                !vm.isSavingData &&
+                                vm.getBetreuungModel().datumAngefordert
+                            "
+                        >
+                            <i class="fa fa-times" aria-hidden="true"></i>
+                            <span
+                                data-translate="BETREUUNG_ABGEWIESEN_MIT_WARTEN_TEXT"
+                                data-translate-value-grund="{{
+                                    vm.getBetreuungModel().grundAblehnung
+                                }}"
+                                data-translate-value-date="{{
+                                    vm.getBetreuungModel().datumAblehnung
+                                        | amDateFormat: 'DD.MM.YYYY'
+                                }}"
+                                data-translate-value-wartendate="{{
+                                    vm.getBetreuungModel().datumAngefordert
+                                        | amDateFormat: 'DD.MM.YYYY'
+                                }}"
+                            >
+                            </span>
+                        </div>
                         <div class="row">
                             <div
                                 class="col-md-12"
@@ -2389,13 +2577,42 @@
                                     !vm.isSavingData
                                 "
                             >
-                                <div class="well well-status-bestaetigt">
+                                <div
+                                    class="well well-status-bestaetigt"
+                                    ng-if="
+                                        !vm.getBetreuungModel().datumAngefordert
+                                    "
+                                >
                                     <i
                                         class="fa fa-check"
                                         aria-hidden="true"
                                     ></i>
                                     <span
                                         data-translate="BETREUUNG_BESTAETIGT_TEXT"
+                                        data-translate-value-date="{{
+                                            vm.getBetreuungModel()
+                                                .datumBestaetigung
+                                                | amDateFormat: 'DD.MM.YYYY'
+                                        }}"
+                                    ></span>
+                                </div>
+                                <div
+                                    class="well well-status-bestaetigt"
+                                    ng-if="
+                                        vm.getBetreuungModel().datumAngefordert
+                                    "
+                                >
+                                    <i
+                                        class="fa fa-check"
+                                        aria-hidden="true"
+                                    ></i>
+                                    <span
+                                        data-translate="BETREUUNG_BESTAETIGT_MIT_WARTEN_TEXT"
+                                        data-translate-value-wartendate="{{
+                                            vm.getBetreuungModel()
+                                                .datumAngefordert
+                                                | amDateFormat: 'DD.MM.YYYY'
+                                        }}"
                                         data-translate-value-date="{{
                                             vm.getBetreuungModel()
                                                 .datumBestaetigung
@@ -2464,14 +2681,19 @@
                         </div>
 
                         <!--Hint-->
-                        <div ng-if="vm.isProvisorischeBetreuung()">
-                            <p
-                                class="inline-hint margin-top-20"
-                                data-translate="BETREUUNGSPENSUM_HINT2"
-                                dv-show-element
-                                dv-show-allowed-roles="vm.TSRoleUtil.getGesuchstellerRoles()"
-                                dv-show-expression="!vm.isSchulamt()"
-                            ></p>
+                        <div ng-if="vm.isProvisorischeBetreuung()" class="row">
+                            <div class="col-md-12">
+                                <div
+                                    class="well well-status-warten non-full-space"
+                                >
+                                    <span
+                                        data-translate="BETREUUNGSPENSUM_HINT2"
+                                        dv-show-element
+                                        dv-show-allowed-roles="vm.TSRoleUtil.getGesuchstellerRoles()"
+                                        dv-show-expression="!vm.isSchulamt()"
+                                    ></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </fieldset>
@@ -2535,8 +2757,9 @@
 
                     <span
                         dv-show-element
-                        dv-show-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionRoles()"
-                        dv-show-expression="vm.isMutationsmeldungAllowed() && !vm.isMutationsmeldungStatus && vm.abweichungenAktiviert"
+                        dv-show-allowed-roles="vm.getMutationAbweichungAktiviertRoles()"
+                        dv-show-expression="vm.isMutationsmeldungAllowed() && !vm.isMutationsmeldungStatus && vm.abweichungenAktiviert
+&& vm.checkForGemeindeAdminMutationAbweichungEnabledOrTrue()"
                     >
                         <dv-loading-button
                             button-click="vm.gotoBetreuungAbweichungen()"
@@ -2545,7 +2768,9 @@
                         >
                             <span
                                 class="uppercase"
-                                data-translate="ABWEICHUNGEN_MELDEN"
+                                data-translate="{{
+                                    vm.getAbweichungenMeldenTk()
+                                }}"
                             ></span>
                         </dv-loading-button>
                     </span>
@@ -2553,8 +2778,8 @@
                     <!--Institution Buttons-->
                     <span
                         dv-show-element
-                        dv-show-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionRoles()"
-                        dv-show-expression="vm.isMutationsmeldungAllowed()"
+                        dv-show-allowed-roles="vm.getMutationAbweichungAktiviertRoles()"
+                        dv-show-expression="vm.isMutationsmeldungAllowed() && vm.checkForGemeindeAdminMutationAbweichungEnabledOrTrue()"
                     >
                         <dv-loading-button
                             button-click="vm.mutationsmeldungErstellen()"
@@ -2631,6 +2856,25 @@
                                 ></span>
                             </dv-loading-button>
                         </span>
+
+                        <span ng-if="!vm.isFromMutation()">
+                            <span
+                                dv-show-element
+                                dv-show-allowed-roles="vm.TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()"
+                                dv-show-expression="vm.isTabellarischeMaskeOpenable"
+                            >
+                                <dv-loading-button
+                                    button-click="vm.saveBetreuung()"
+                                    type="submit"
+                                    data-test="container.save"
+                                >
+                                    <span
+                                        class="uppercase"
+                                        data-translate="SPEICHERN"
+                                    ></span>
+                                </dv-loading-button>
+                            </span>
+                        </span>
                     </span>
 
                     <!--Platz anfordern-->
@@ -2640,7 +2884,7 @@
                         dv-show-expression="vm.isBetreuungsstatusAusstehendOrUnbekannteInstitution() && !vm.isProvisorischeBetreuung()"
                     >
                         <dv-loading-button
-                            button-click="vm.platzAnfordern()"
+                            button-click="vm.platzAnfordernIfValid()"
                             type="submit"
                             data-test="container.platzbestaetigung-anfordern"
                         >

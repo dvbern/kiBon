@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -25,8 +25,10 @@ import ch.dvbern.ebegu.enums.PensumUnits;
 
 public class KitaTagestrukturenSchwyzRechner extends AbstractSchwyzRechner {
 
-	static final BigDecimal KITA_NORMKOSTEN_PRIMARSTUFE_SCHULZEIT = new BigDecimal(65);
-	static final BigDecimal KITA_NORMKOSTEN_PRIMARSTUFE_SCHULFREIEN_ZEIT = new BigDecimal(100);
+	static final BigDecimal KITA_NORMKOSTEN_PRIMARSTUFE_SCHULZEIT =
+		new BigDecimal(65);
+	static final BigDecimal KITA_NORMKOSTEN_PRIMARSTUFE_SCHULFREIEN_ZEIT =
+		new BigDecimal(100);
 	static final BigDecimal BEDARFSSTUFE_2_BETRAG_PRO_TAG = new BigDecimal(66);
 	static final BigDecimal BEDARFSSTUFE_3_BETRAG_PRO_TAG = new BigDecimal(132);
 
@@ -34,8 +36,13 @@ public class KitaTagestrukturenSchwyzRechner extends AbstractSchwyzRechner {
 	protected BigDecimal toZeiteinheitProZeitabschnitt(
 		BGRechnerParameterDTO parameterDTO,
 		BigDecimal effektivesPensumFaktor,
-		BigDecimal anteilMonat) {
-		return toTageProZeitAbschnitt(effektivesPensumFaktor, anteilMonat, parameterDTO.getOeffnungstageKita());
+		BigDecimal anteilMonat
+	) {
+		return toTageProZeitAbschnitt(
+			effektivesPensumFaktor,
+			anteilMonat,
+			parameterDTO.getOeffnungstageKita()
+		);
 	}
 
 	@Override
@@ -59,15 +66,24 @@ public class KitaTagestrukturenSchwyzRechner extends AbstractSchwyzRechner {
 	}
 
 	@Override
-	protected BigDecimal calculateNormkosten(BGCalculationInput input, BGRechnerParameterDTO parameter) {
+	protected BigDecimal calculateNormkosten(
+		BGCalculationInput input,
+		BGRechnerParameterDTO parameter
+	) {
 		if (input.isBabyTarif()) {
 			return parameter.getMaxVerguenstigungVorschuleBabyProTg();
 		}
 
-		var eingeschult = input.getEinschulungTyp() != null && input.getEinschulungTyp().isEingeschult();
+		var eingeschult = input.getEinschulungTyp() != null
+			&& input.getEinschulungTyp().isEingeschult();
 
 		if (!eingeschult) {
 			return parameter.getMaxVerguenstigungVorschuleKindProTg();
+		}
+
+		if (!parameter
+			.isSchulergaenzendeBetreuung()) {
+			return KITA_NORMKOSTEN_PRIMARSTUFE_SCHULFREIEN_ZEIT;
 		}
 
 		var betreuungInFerienzeit = input.isBetreuungInFerienzeit();

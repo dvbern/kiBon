@@ -1,8 +1,7 @@
 package ch.dvbern.ebegu.enums;
 
 public enum GesuchstellerTyp {
-	GESUCHSTELLER_1(1),
-	GESUCHSTELLER_2(2);
+	GESUCHSTELLER_1(1), GESUCHSTELLER_2(2);
 
 	private int gesuchstellerNummer;
 
@@ -23,7 +22,10 @@ public enum GesuchstellerTyp {
 			return GESUCHSTELLER_2;
 		}
 
-		throw new IllegalArgumentException("Invalid GesuchstellerNummer " + nummer
-												   + " can not be converted to Gesuchstellertyp");
+		throw new IllegalArgumentException(
+			"Invalid GesuchstellerNummer "
+				+ nummer
+				+ " can not be converted to Gesuchstellertyp"
+		);
 	}
 }

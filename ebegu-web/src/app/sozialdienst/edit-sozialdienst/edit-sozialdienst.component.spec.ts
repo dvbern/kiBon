@@ -21,9 +21,9 @@ import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest'
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
+import {WindowRef} from '@kibon/shared-util-window-ref';
 import {MaterialModule} from '../../shared/material.module';
 import {SharedModule} from '../../shared/shared.module';
-import {WindowRef} from '../../core/service/windowRef.service';
 
 import {EditSozialdienstComponent} from './edit-sozialdienst.component';
 

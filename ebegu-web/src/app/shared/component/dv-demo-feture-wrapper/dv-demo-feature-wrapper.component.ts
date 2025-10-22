@@ -21,7 +21,8 @@ import {TSDemoFeature} from '../../../core/directive/dv-hide-feature/TSDemoFeatu
 @Component({
     selector: 'dv-dv-demo-feature-wrapper',
     templateUrl: './dv-demo-feature-wrapper.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DvDemoFeatureWrapperComponent {
     @Input() public demoFeature: TSDemoFeature;

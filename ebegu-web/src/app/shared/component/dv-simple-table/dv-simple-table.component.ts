@@ -19,7 +19,8 @@ import {DvSimpleTableConfig} from './dv-simple-table-config';
     templateUrl: './dv-simple-table.component.html',
     styleUrls: ['./dv-simple-table.component.less'],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DvSimpleTableComponent implements OnInit, OnChanges {
     @Input() public data: any[] = [];

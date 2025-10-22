@@ -28,7 +28,8 @@ import org.junit.Test;
 
 public class FinanzielleSituationServiceBeanUnitTest {
 
-	private final FinanzielleSituationServiceBean finanzielleSituationService = new FinanzielleSituationServiceBean();
+	private final FinanzielleSituationServiceBean finanzielleSituationService =
+		new FinanzielleSituationServiceBean();
 
 	@Test
 	public void testUpdateFinSitFromAufteilung() {
@@ -46,22 +47,62 @@ public class FinanzielleSituationServiceBeanUnitTest {
 		finSitGS2.setNettoertraegeErbengemeinschaft(BigDecimal.ZERO);
 		finSitGS2.setNettoVermoegen(BigDecimal.ZERO);
 
-		finanzielleSituationService.setValuesFromAufteilungDTO(finSitGS1, finSitGS2, dto);
+		finanzielleSituationService.setValuesFromAufteilungDTO(
+			finSitGS1,
+			finSitGS2,
+			dto
+		);
 
-		Assert.assertEquals(BigDecimal.valueOf(1000), finSitGS1.getBruttoertraegeVermoegen());
-		Assert.assertEquals(BigDecimal.valueOf(2000), finSitGS2.getBruttoertraegeVermoegen());
-		Assert.assertEquals(BigDecimal.valueOf(500), finSitGS1.getGeleisteteAlimente());
-		Assert.assertEquals(BigDecimal.valueOf(700), finSitGS2.getGeleisteteAlimente());
+		Assert.assertEquals(
+			BigDecimal.valueOf(1000),
+			finSitGS1.getBruttoertraegeVermoegen()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(2000),
+			finSitGS2.getBruttoertraegeVermoegen()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(500),
+			finSitGS1.getGeleisteteAlimente()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(700),
+			finSitGS2.getGeleisteteAlimente()
+		);
 
-		Assert.assertEquals(BigDecimal.valueOf(1), finSitGS1.getAbzugSchuldzinsen());
-		Assert.assertEquals(BigDecimal.valueOf(1), finSitGS1.getGewinnungskosten());
-		Assert.assertEquals(BigDecimal.valueOf(1), finSitGS1.getNettoertraegeErbengemeinschaft());
-		Assert.assertEquals(BigDecimal.valueOf(1), finSitGS1.getNettoVermoegen());
+		Assert.assertEquals(
+			BigDecimal.valueOf(1),
+			finSitGS1.getAbzugSchuldzinsen()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(1),
+			finSitGS1.getGewinnungskosten()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(1),
+			finSitGS1.getNettoertraegeErbengemeinschaft()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(1),
+			finSitGS1.getNettoVermoegen()
+		);
 
-		Assert.assertEquals(BigDecimal.valueOf(1), finSitGS2.getAbzugSchuldzinsen());
-		Assert.assertEquals(BigDecimal.valueOf(1), finSitGS2.getGewinnungskosten());
-		Assert.assertEquals(BigDecimal.valueOf(1), finSitGS2.getNettoertraegeErbengemeinschaft());
-		Assert.assertEquals(BigDecimal.valueOf(1), finSitGS2.getNettoVermoegen());
+		Assert.assertEquals(
+			BigDecimal.valueOf(1),
+			finSitGS2.getAbzugSchuldzinsen()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(1),
+			finSitGS2.getGewinnungskosten()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(1),
+			finSitGS2.getNettoertraegeErbengemeinschaft()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(1),
+			finSitGS2.getNettoVermoegen()
+		);
 
 	}
 
@@ -77,7 +118,11 @@ public class FinanzielleSituationServiceBeanUnitTest {
 		finSitGS1.setBruttoertraegeVermoegen(BigDecimal.valueOf(1500));
 		finSitGS2.setBruttoertraegeVermoegen(BigDecimal.valueOf(1499));
 
-		finanzielleSituationService.setValuesFromAufteilungDTO(finSitGS1, finSitGS2, dto);
+		finanzielleSituationService.setValuesFromAufteilungDTO(
+			finSitGS1,
+			finSitGS2,
+			dto
+		);
 	}
 
 	@Test
@@ -92,10 +137,20 @@ public class FinanzielleSituationServiceBeanUnitTest {
 		finSitGS1.setNettoertraegeErbengemeinschaft(BigDecimal.valueOf(-1500));
 		finSitGS2.setNettoertraegeErbengemeinschaft(BigDecimal.valueOf(-1500));
 
-		finanzielleSituationService.setValuesFromAufteilungDTO(finSitGS1, finSitGS2, dto);
+		finanzielleSituationService.setValuesFromAufteilungDTO(
+			finSitGS1,
+			finSitGS2,
+			dto
+		);
 
-		Assert.assertEquals(BigDecimal.valueOf(-1000), finSitGS1.getNettoertraegeErbengemeinschaft());
-		Assert.assertEquals(BigDecimal.valueOf(-2000), finSitGS2.getNettoertraegeErbengemeinschaft());
+		Assert.assertEquals(
+			BigDecimal.valueOf(-1000),
+			finSitGS1.getNettoertraegeErbengemeinschaft()
+		);
+		Assert.assertEquals(
+			BigDecimal.valueOf(-2000),
+			finSitGS2.getNettoertraegeErbengemeinschaft()
+		);
 	}
 
 	@Test(expected = EbeguRuntimeException.class)
@@ -110,11 +165,16 @@ public class FinanzielleSituationServiceBeanUnitTest {
 		finSitGS1.setBruttoertraegeVermoegen(BigDecimal.valueOf(-1500));
 		finSitGS2.setBruttoertraegeVermoegen(BigDecimal.valueOf(-1499));
 
-		finanzielleSituationService.setValuesFromAufteilungDTO(finSitGS1, finSitGS2, dto);
+		finanzielleSituationService.setValuesFromAufteilungDTO(
+			finSitGS1,
+			finSitGS2,
+			dto
+		);
 	}
 
 	private JaxFinanzielleSituationAufteilungDTO createAufteilungDTO() {
-		JaxFinanzielleSituationAufteilungDTO dto = new JaxFinanzielleSituationAufteilungDTO();
+		JaxFinanzielleSituationAufteilungDTO dto =
+			new JaxFinanzielleSituationAufteilungDTO();
 		dto.setBruttoertraegeVermoegenGS1(BigDecimal.valueOf(1000));
 		dto.setBruttoertraegeVermoegenGS2(BigDecimal.valueOf(2000));
 
@@ -137,13 +197,17 @@ public class FinanzielleSituationServiceBeanUnitTest {
 
 	private FinanzielleSituation createFinSit() {
 		FinanzielleSituation finanzielleSituation = new FinanzielleSituation();
-		finanzielleSituation.setBruttoertraegeVermoegen(BigDecimal.valueOf(1500));
+		finanzielleSituation.setBruttoertraegeVermoegen(
+			BigDecimal.valueOf(1500)
+		);
 
 		finanzielleSituation.setGeleisteteAlimente(BigDecimal.valueOf(600));
 
 		finanzielleSituation.setAbzugSchuldzinsen(BigDecimal.valueOf(1));
 		finanzielleSituation.setGewinnungskosten(BigDecimal.valueOf(1));
-		finanzielleSituation.setNettoertraegeErbengemeinschaft(BigDecimal.valueOf(1));
+		finanzielleSituation.setNettoertraegeErbengemeinschaft(
+			BigDecimal.valueOf(1)
+		);
 		finanzielleSituation.setNettoVermoegen(BigDecimal.valueOf(1));
 		return finanzielleSituation;
 	}

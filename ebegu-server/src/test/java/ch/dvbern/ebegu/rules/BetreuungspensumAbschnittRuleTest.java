@@ -13,10 +13,10 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;;
-import static org.hamcrest.Matchers.is;;
+import static org.hamcrest.Matchers.nullValue;
 
 class BetreuungspensumAbschnittRuleTest {
 
@@ -24,7 +24,8 @@ class BetreuungspensumAbschnittRuleTest {
 		new BetreuungspensumAbschnittRule(
 			Constants.DEFAULT_GUELTIGKEIT,
 			Constants.DEFAULT_LOCALE,
-			TestDataUtil.geKitaxUebergangsloesungParameter());
+			TestDataUtil.geKitaxUebergangsloesungParameter()
+		);
 
 	@Test
 	void hoehererBeitragShouldNotBeSetOnInputfNotBestaetigt() {
@@ -33,15 +34,28 @@ class BetreuungspensumAbschnittRuleTest {
 			Constants.DEFAULT_GUELTIGKEIT.getGueltigBis(),
 			BetreuungsangebotTyp.KITA,
 			20,
-			BigDecimal.valueOf(2000));
-		betreuung.getKind().getKindJA().setHoehereBeitraegeWegenBeeintraechtigungBeantragen(true);
-		Objects.requireNonNull(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA())
+			BigDecimal.valueOf(2000)
+		);
+		betreuung.initVorgaengerVerfuegungen(null, null);
+		betreuung.getKind()
+			.getKindJA()
+			.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(true);
+		Objects.requireNonNull(
+			betreuung.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA()
+		)
 			.setErweiterteBeduerfnisseBestaetigt(false);
 		betreuung.setBedarfsstufe(Bedarfsstufe.BEDARFSSTUFE_2);
 
-		final List<VerfuegungZeitabschnitt> verfuegungsZeitabschnitte = rule.createVerfuegungsZeitabschnitte(betreuung);
+		final List<VerfuegungZeitabschnitt> verfuegungsZeitabschnitte = rule
+			.createVerfuegungsZeitabschnitte(betreuung);
 
-		assertThat(verfuegungsZeitabschnitte.get(0).getRelevantBgCalculationInput().getBedarfsstufe(), nullValue());
+		assertThat(
+			verfuegungsZeitabschnitte.get(0)
+				.getRelevantBgCalculationInput()
+				.getBedarfsstufe(),
+			nullValue()
+		);
 	}
 
 	@Test
@@ -51,15 +65,30 @@ class BetreuungspensumAbschnittRuleTest {
 			Constants.DEFAULT_GUELTIGKEIT.getGueltigBis(),
 			BetreuungsangebotTyp.KITA,
 			20,
-			BigDecimal.valueOf(2000));
-		betreuung.getKind().getKindJA().setHoehereBeitraegeWegenBeeintraechtigungBeantragen(true);
-		Objects.requireNonNull(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA())
+			BigDecimal.valueOf(2000)
+		);
+		betreuung.initVorgaengerVerfuegungen(null, null);
+		betreuung.getKind()
+			.getKindJA()
+			.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(true);
+		Objects.requireNonNull(
+			betreuung.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA()
+		)
 			.setErweiterteBeduerfnisseBestaetigt(false);
 		betreuung.setBedarfsstufe(Bedarfsstufe.BEDARFSSTUFE_2);
 
-		final List<VerfuegungZeitabschnitt> verfuegungsZeitabschnitte = rule.createVerfuegungsZeitabschnitte(betreuung);
+		final List<VerfuegungZeitabschnitt> verfuegungsZeitabschnitte = rule
+			.createVerfuegungsZeitabschnitte(betreuung);
 
-		assertThat(verfuegungsZeitabschnitte.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.BEDARFSSTUFE_NICHT_VERRECHNET_MSG), is(true));
+		assertThat(
+			verfuegungsZeitabschnitte.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(
+					MsgKey.BEDARFSSTUFE_NICHT_VERRECHNET_MSG
+				),
+			is(true)
+		);
 	}
 
 	@Test
@@ -69,14 +98,27 @@ class BetreuungspensumAbschnittRuleTest {
 			Constants.DEFAULT_GUELTIGKEIT.getGueltigBis(),
 			BetreuungsangebotTyp.KITA,
 			20,
-			BigDecimal.valueOf(2000));
-		betreuung.getKind().getKindJA().setHoehereBeitraegeWegenBeeintraechtigungBeantragen(true);
-		Objects.requireNonNull(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA())
+			BigDecimal.valueOf(2000)
+		);
+		betreuung.initVorgaengerVerfuegungen(null, null);
+		betreuung.getKind()
+			.getKindJA()
+			.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(true);
+		Objects.requireNonNull(
+			betreuung.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA()
+		)
 			.setErweiterteBeduerfnisseBestaetigt(true);
 		betreuung.setBedarfsstufe(Bedarfsstufe.BEDARFSSTUFE_2);
 
-		final List<VerfuegungZeitabschnitt> verfuegungsZeitabschnitte = rule.createVerfuegungsZeitabschnitte(betreuung);
+		final List<VerfuegungZeitabschnitt> verfuegungsZeitabschnitte = rule
+			.createVerfuegungsZeitabschnitte(betreuung);
 
-		assertThat(verfuegungsZeitabschnitte.get(0).getRelevantBgCalculationInput().getBedarfsstufe(), notNullValue());
+		assertThat(
+			verfuegungsZeitabschnitte.get(0)
+				.getRelevantBgCalculationInput()
+				.getBedarfsstufe(),
+			notNullValue()
+		);
 	}
 }

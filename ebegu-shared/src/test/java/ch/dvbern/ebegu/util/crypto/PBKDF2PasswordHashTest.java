@@ -27,7 +27,9 @@ import static ch.dvbern.ebegu.util.crypto.PBKDF2PasswordHash.createHash;
 import static ch.dvbern.ebegu.util.crypto.PBKDF2PasswordHash.validatePassword;
 
 public class PBKDF2PasswordHashTest {
-	private static final Logger LOG = LoggerFactory.getLogger(PBKDF2PasswordHashTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		PBKDF2PasswordHashTest.class
+	);
 
 	@Test
 	public void testCrypto() throws Exception {
@@ -58,7 +60,8 @@ public class PBKDF2PasswordHashTest {
 	}
 
 	@Test
-	public void testCreate() throws InvalidKeySpecException, NoSuchAlgorithmException {
+	public void testCreate() throws InvalidKeySpecException,
+		NoSuchAlgorithmException {
 		String hash = createHash("password10");
 		Assert.assertNotNull(hash);
 		//		System.out.println(hash);

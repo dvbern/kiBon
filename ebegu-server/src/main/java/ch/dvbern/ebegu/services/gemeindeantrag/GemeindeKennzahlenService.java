@@ -1,0 +1,444 @@
+/*
+ * Copyright (C) 2020 DV Bern AG, Switzerland
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package ch.dvbern.ebegu.services.gemeindeantrag;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.ejb.Stateless;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
+import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gemeinde_;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlen;
+import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlenStatus;
+import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlen_;
+import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.UserRole;
+import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.outbox.ExportedEvent;
+import ch.dvbern.ebegu.outbox.gemeindekennzahlen.GemeindeKennzahlenEventConverter;
+import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.services.AbstractBaseService;
+import ch.dvbern.ebegu.services.util.PredicateHelper;
+import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.util.EnumUtil;
+import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Service fuer Gemeindeantraege
+ */
+@Stateless
+public class GemeindeKennzahlenService extends AbstractBaseService {
+
+	private static final String ID_MUSS_GESETZT_SEIN = "id muss gesetzt sein";
+
+	@Inject
+	private PrincipalBean principal;
+
+	@Inject
+	private Persistence persistence;
+
+	@Inject
+	private Event<ExportedEvent> event;
+
+	@Inject
+	private GemeindeKennzahlenEventConverter gemeindeKennzahlenEventConverter;
+
+	@Inject
+	private EinstellungService einstellungService;
+
+	private static final Logger LOG = LoggerFactory.getLogger(
+		GemeindeKennzahlenService.class
+	);
+
+	@Nonnull
+	public List<GemeindeKennzahlen> createGemeindeKennzahlen(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull List<Gemeinde> gemeindeList
+	) {
+		return gemeindeList
+			.stream()
+			.filter(
+				gemeinde -> !antragAlreadyExisting(
+					gemeinde,
+					gesuchsperiode
+				)
+			)
+			.map(gemeinde -> {
+				GemeindeKennzahlen gemeindeKennzahlen =
+					new GemeindeKennzahlen();
+				gemeindeKennzahlen.setGemeinde(gemeinde);
+				gemeindeKennzahlen.setGesuchsperiode(gesuchsperiode);
+				gemeindeKennzahlen.setStatus(
+					GemeindeKennzahlenStatus.IN_BEARBEITUNG_GEMEINDE
+				);
+				return persistence.persist(gemeindeKennzahlen);
+			})
+			.collect(Collectors.toList());
+	}
+
+	private boolean antragAlreadyExisting(
+		Gemeinde gemeinde,
+		Gesuchsperiode gesuchsperiode
+	) {
+		boolean hasAntrag = !getGemeindeKennzahlen(
+			gemeinde.getName(),
+			gesuchsperiode.getGesuchsperiodeString(),
+			null,
+			null
+		).isEmpty();
+		if (hasAntrag) {
+			LOG.info(
+				"Gemeinde {} already has an antrag in GS {}",
+				gemeinde.getName(),
+				gesuchsperiode.getGesuchsperiodeString()
+			);
+		}
+		return hasAntrag;
+	}
+
+	@Nonnull
+	public Optional<GemeindeKennzahlen> findGemeindeKennzahlen(
+		@Nonnull String id
+	) {
+		Objects.requireNonNull(id, ID_MUSS_GESETZT_SEIN);
+
+		GemeindeKennzahlen gemeindeKennzahlen = persistence.find(
+			GemeindeKennzahlen.class,
+			id
+		);
+
+		return Optional.ofNullable(gemeindeKennzahlen);
+	}
+
+	public void deleteAntragIfExistsAndIsNotAbgeschlossen(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull Gemeinde gemeinde
+	) {
+
+		if (!principal.isCallerInAnyOfRole(
+			UserRole.getMandantSuperadminRoles()
+		)) {
+			throw new EbeguRuntimeException(
+				"deleteAntragIfExistsAndIsNotAbgeschlossen",
+				"deleteAntragIfExistsAndIsNotAbgeschlossen ist nur als Mandant und SuperAdmin möglich"
+			);
+		}
+
+		var antragList =
+			this.getGemeindeKennzahlen(
+				gemeinde.getName(),
+				gesuchsperiode.getGesuchsperiodeString(),
+				null,
+				null
+			);
+		if (antragList.size() > 1) {
+			throw new EbeguRuntimeException(
+				"deleteAntragIfExistsAndIsNotAbgeschlossen",
+				"more than one GemeindeKennzahlen antrag found for gemeinde "
+					+ gemeinde.getName()
+					+ " and gesuchsperiode "
+					+ gesuchsperiode.getGesuchsperiodeString()
+			);
+		}
+		antragList.forEach(this::deleteGemeindeKennzahlenIfNotAbgeschlossen);
+	}
+
+	private void deleteGemeindeKennzahlenIfNotAbgeschlossen(
+		GemeindeKennzahlen gemeindeKennzahlen
+	) {
+		if (gemeindeKennzahlen.isAntragAbgeschlossen()) {
+			return;
+		}
+		persistence.remove(gemeindeKennzahlen);
+
+		event.fire(
+			gemeindeKennzahlenEventConverter.removeEventOf(
+				gemeindeKennzahlen
+			)
+		);
+
+		LOG.warn(
+			"Removed GemeindeKennzahlen for Gemeinde {} in GS {}",
+			gemeindeKennzahlen.getGemeinde().getName(),
+			gemeindeKennzahlen.getGesuchsperiode().getGesuchsperiodeString()
+		);
+	}
+
+	@Nonnull
+	public GemeindeKennzahlen saveGemeindeKennzahlen(
+		@Nonnull GemeindeKennzahlen gemeindeKennzahlen
+	) {
+		GemeindeKennzahlen gemeindeKennzahlenPersisted = persistence.merge(
+			gemeindeKennzahlen
+		);
+		Map<EinstellungKey, Einstellung> gemeindeKonfigurationMap =
+			einstellungService
+				.getGemeindeEinstellungenOnlyAsMap(
+					gemeindeKennzahlenPersisted.getGemeinde(),
+					gemeindeKennzahlenPersisted.getGesuchsperiode()
+				);
+
+		Einstellung einstellungBgAusstellenBisStufe =
+			gemeindeKonfigurationMap.get(
+				EinstellungKey.GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE
+			);
+		EinschulungTyp bgAusstellenBisUndMitStufe = EinschulungTyp.valueOf(
+			einstellungBgAusstellenBisStufe.getValue()
+		);
+
+		Einstellung einstellungErwerbspensumZuschlag =
+			gemeindeKonfigurationMap.get(
+				EinstellungKey.ERWERBSPENSUM_ZUSCHLAG
+			);
+		event.fire(
+			gemeindeKennzahlenEventConverter.of(
+				gemeindeKennzahlenPersisted,
+				bgAusstellenBisUndMitStufe,
+				einstellungErwerbspensumZuschlag.getValueAsBigDecimal()
+			)
+		);
+
+		return gemeindeKennzahlenPersisted;
+	}
+
+	@Nonnull
+	public GemeindeKennzahlen gemeindeKennzahlenAbschliessen(
+		@Nonnull GemeindeKennzahlen gemeindeKennzahlen
+	) {
+		checkRequiredFieldsNotNull(gemeindeKennzahlen);
+		gemeindeKennzahlen.setStatus(GemeindeKennzahlenStatus.ABGESCHLOSSEN);
+		return persistence.merge(gemeindeKennzahlen);
+	}
+
+	private void checkRequiredFieldsNotNull(
+		GemeindeKennzahlen gemeindeKennzahlen
+	) {
+		Preconditions.checkState(
+			gemeindeKennzahlen.getGemeindeKontingentiert() != null,
+			"gemeindeKontingentiert must not be null"
+		);
+		if (gemeindeKennzahlen.getGemeindeKontingentiert()) {
+			Preconditions.checkState(
+				gemeindeKennzahlen.getNachfrageErfuellt() != null,
+				"nachfrageErfuellt must not be null"
+			);
+			if (gemeindeKennzahlen.getNachfrageErfuellt()) {
+				Preconditions.checkState(
+					gemeindeKennzahlen.getNachfrageAnzahl() != null,
+					"nachfrageAnzahl must not be null"
+				);
+				Preconditions.checkState(
+					gemeindeKennzahlen.getNachfrageDauer() != null,
+					"nachfrageDauer must not be null"
+				);
+			}
+		}
+	}
+
+	@Nonnull
+	public GemeindeKennzahlen gemeindeKennzahlenZurueckAnGemeinde(
+		@Nonnull GemeindeKennzahlen gemeindeKennzahlen
+	) {
+		gemeindeKennzahlen.setStatus(
+			GemeindeKennzahlenStatus.IN_BEARBEITUNG_GEMEINDE
+		);
+		return persistence.merge(gemeindeKennzahlen);
+	}
+
+	public List<GemeindeKennzahlen> getOffeneGemeindeKennzahlen(
+		Mandant mandant,
+		GemeindeKennzahlenStatus status
+	) {
+		CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		CriteriaQuery<GemeindeKennzahlen> query = cb.createQuery(
+			GemeindeKennzahlen.class
+		);
+		Root<GemeindeKennzahlen> root = query.from(GemeindeKennzahlen.class);
+
+		Predicate mandantPredicate = cb.equal(
+			root.get(GemeindeKennzahlen_.gemeinde)
+				.get(Gemeinde_.mandant),
+			mandant
+		);
+		query.where(
+			mandantPredicate,
+			createStatusPredicate(cb, root, String.valueOf(status))
+		);
+		return persistence.getCriteriaResults(query);
+	}
+
+	@Nonnull
+	public List<GemeindeKennzahlen> getGemeindeKennzahlen(
+		@Nullable String gemeinde,
+		@Nullable String gesuchsperiode,
+		@Nullable String status,
+		@Nullable String timestampMutiert
+	) {
+
+		Mandant mandant = principal.getMandant();
+		Set<Gemeinde> gemeinden = principal.getBenutzer()
+			.extractGemeindenForUser();
+
+		Set<Predicate> predicates = new HashSet<>();
+		CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		CriteriaQuery<GemeindeKennzahlen> query = cb.createQuery(
+			GemeindeKennzahlen.class
+		);
+		Root<GemeindeKennzahlen> root = query.from(GemeindeKennzahlen.class);
+
+		Predicate mandantPredicate = cb.equal(
+			root.get(GemeindeKennzahlen_.gemeinde)
+				.get(Gemeinde_.mandant),
+			mandant
+		);
+		predicates.add(mandantPredicate);
+
+		if (!principal.isCallerInAnyOfRole(
+			UserRole.SUPER_ADMIN,
+			UserRole.ADMIN_MANDANT,
+			UserRole.SACHBEARBEITER_MANDANT
+		)) {
+			Predicate gemeindeIn =
+				root.get(GemeindeKennzahlen_.gemeinde).in(gemeinden);
+			predicates.add(gemeindeIn);
+		}
+
+		if (gemeinde != null) {
+			predicates.add(createGemeindePredicate(cb, root, gemeinde));
+		}
+
+		if (gesuchsperiode != null) {
+			predicates.add(
+				PredicateHelper.getPredicateFilterGesuchsperiode(
+					cb,
+					root.join(
+						GemeindeKennzahlen_.gesuchsperiode,
+						JoinType.INNER
+					),
+					gesuchsperiode
+				)
+			);
+		}
+
+		if (status != null) {
+			if (!EnumUtil.isOneOf(status, GemeindeKennzahlenStatus.values())) {
+				return new ArrayList<>();
+			}
+			predicates.add(createStatusPredicate(cb, root, status));
+		}
+
+		if (timestampMutiert != null) {
+			predicates.add(
+				createTimestampMutiertPredicate(cb, root, timestampMutiert)
+			);
+		}
+
+		Predicate[] predicatesArray = new Predicate[predicates.size()];
+		query.where(predicates.toArray(predicatesArray));
+
+		return persistence.getCriteriaResults(query);
+	}
+
+	private Predicate createGemeindePredicate(
+		CriteriaBuilder cb,
+		Root<GemeindeKennzahlen> root,
+		String gemeinde
+	) {
+		return cb.equal(
+			root.get(GemeindeKennzahlen_.gemeinde).get(Gemeinde_.name),
+			gemeinde
+		);
+	}
+
+	private Predicate createStatusPredicate(
+		CriteriaBuilder cb,
+		Root<GemeindeKennzahlen> root,
+		String status
+	) {
+		return cb.equal(
+			root.get(GemeindeKennzahlen_.status),
+			GemeindeKennzahlenStatus.valueOf(status)
+		);
+	}
+
+	private Predicate createTimestampMutiertPredicate(
+		CriteriaBuilder cb,
+		Root<GemeindeKennzahlen> root,
+		String timestampMutiert
+	) {
+
+		Predicate timestampMutiertPredicate;
+		try {
+			// Wir wollen ohne Zeit vergleichen
+			Expression<LocalDate> timestampAsLocalDate =
+				root.get(GemeindeKennzahlen_.timestampMutiert)
+					.as(LocalDate.class);
+			LocalDate searchDate = LocalDate.parse(
+				timestampMutiert,
+				Constants.DATE_FORMATTER
+			);
+			timestampMutiertPredicate = cb.equal(
+				timestampAsLocalDate,
+				searchDate
+			);
+		} catch (DateTimeParseException e) {
+			// no valid date. we return false, since no antrag should be found
+			timestampMutiertPredicate = cb.disjunction();
+		}
+		return timestampMutiertPredicate;
+	}
+
+	public void deleteGemeindeKennzahlenForGesuchsperiode(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
+		getGemeindeKennzahlen(
+			null,
+			gesuchsperiode.getGesuchsperiodeString(),
+			null,
+			null
+		)
+			.forEach(this::deleteGemeindeKennzahlenIfNotAbgeschlossen);
+	}
+}

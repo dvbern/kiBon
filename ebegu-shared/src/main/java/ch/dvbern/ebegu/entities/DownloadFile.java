@@ -18,14 +18,14 @@ package ch.dvbern.ebegu.entities;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.TokenLifespan;
 import ch.dvbern.ebegu.util.UploadFileInfo;
@@ -48,12 +48,11 @@ public class DownloadFile extends FileMetadata {
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, updatable = false)
-	private TokenLifespan  lifespan = TokenLifespan.SHORT;
-
+	private TokenLifespan lifespan = TokenLifespan.SHORT;
 
 	// Wert darf nicht leer sein, aber kein @NotNull, da Wert erst im @PrePersist gesetzt
 	@ManyToOne(optional = false)
-	@JoinColumn(name="benutzer_id", nullable = false)
+	@JoinColumn(name = "benutzer_id", nullable = false)
 	private Benutzer benutzer;
 
 	public DownloadFile() {

@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -26,7 +26,7 @@ import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirec
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
 import {BenutzerRSX} from '../../../core/service/benutzerRSX.rest';
-import {WindowRef} from '../../../core/service/windowRef.service';
+import {WindowRef} from '@kibon/shared-util-window-ref';
 import {SharedModule} from '../../../shared/shared.module';
 import {LastenausgleichTSService} from '../services/lastenausgleich-ts.service';
 
@@ -53,15 +53,14 @@ describe('LastenausgleichTsKommentarComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
+            declarations: [LastenausgleichTsKommentarComponent],
             imports: [
-                HttpClientModule,
                 SharedModule,
                 BrowserAnimationsModule,
                 FormsModule,
                 ReactiveFormsModule,
                 TranslateModule.forRoot()
             ],
-            declarations: [LastenausgleichTsKommentarComponent],
             providers: [
                 WindowRef,
                 {
@@ -70,7 +69,8 @@ describe('LastenausgleichTsKommentarComponent', () => {
                 },
                 {provide: ErrorService, useValue: errorServiceSpy},
                 {provide: StateService, useValue: stateServiceSpy},
-                {provide: BenutzerRSX, useValue: benuzerRSSpy}
+                {provide: BenutzerRSX, useValue: benuzerRSSpy},
+                provideHttpClient(withInterceptorsFromDi())
             ]
         })
             .overrideModule(SharedModule, SHARED_MODULE_OVERRIDES)

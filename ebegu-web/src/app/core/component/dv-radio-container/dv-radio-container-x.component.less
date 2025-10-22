@@ -34,6 +34,10 @@ dv-radio-container-x {
         display: flex;
         flex-direction: column;
 
+        &.ng-untouched {
+            background-color: transparent;
+        }
+
         &.ng-invalid.ng-touched {
             background-color: @background-error-color;
         }
@@ -67,7 +71,7 @@ dv-radio-container-x {
                 }
             }
 
-            &.mat-radio-checked {
+            &.mat-mdc-radio-checked {
                 .mdc-radio__inner-circle {
                     transform: scale(0.35);
                 }
@@ -81,6 +85,13 @@ dv-radio-container-x {
                     .mat-radio-persistent-ripple {
                         opacity: 1;
                     }
+
+                    .mdc-radio {
+                        .mdc-radio__native-control:focus
+                            + .mdc-radio__background::before {
+                            opacity: 0.1 !important;
+                        }
+                    }
                 }
             }
 
@@ -88,16 +99,23 @@ dv-radio-container-x {
                 padding: 1px;
                 width: 2rem;
 
+                &:hover {
+                    .mdc-radio__native-control:not([disabled])
+                        ~ .mdc-radio__background::before {
+                        opacity: 0.09 !important;
+                    }
+                }
+
                 .mdc-radio__background::before {
                     top: calc(
-                        -1 * (var(--mdc-radio-state-layer-size, 40px) - 20px) / 3 *
-                            2
+                        -1 * (var(--mdc-radio-state-layer-size, 40px) - 20px) /
+                            3 * 2
                     );
                     left: calc(
-                        -1 * (var(--mdc-radio-state-layer-size, 40px) - 20px) / 3 *
-                            2
+                        -1 * (var(--mdc-radio-state-layer-size, 40px) - 20px) /
+                            3 * 2 - 1px
                     );
-                    transform: scale(0.75) !important;
+                    transform: scale(0.65) !important;
                 }
 
                 .mdc-radio__native-control:checked
@@ -133,6 +151,14 @@ dv-radio-container-x {
             > mat-radio-button {
                 margin-left: 3rem;
             }
+        }
+    }
+
+    > .dv-checkbox-form-group.horizontal .mat-mdc-radio-group {
+        flex-direction: row;
+
+        & > .mat-mdc-radio-button {
+            margin-right: 1rem;
         }
     }
 

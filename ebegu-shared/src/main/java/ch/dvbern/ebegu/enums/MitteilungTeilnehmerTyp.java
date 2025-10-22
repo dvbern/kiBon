@@ -20,8 +20,6 @@ package ch.dvbern.ebegu.enums;
  */
 public enum MitteilungTeilnehmerTyp {
 
-	GESUCHSTELLER,
-	JUGENDAMT, // Auch Schulamt
-	INSTITUTION,
-	SOZIALDIENST
+	GESUCHSTELLER, JUGENDAMT, // Auch Schulamt
+	INSTITUTION, SOZIALDIENST
 }

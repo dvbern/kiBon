@@ -1,0 +1,25 @@
+{
+    "valid": {
+        "familiensituation": {
+            "familienstand": "VERHEIRATET"
+        },
+        "GS1": {
+            "geschlecht": "WEIBLICH",
+            "vorname": "Yvonne",
+            "nachname": "Feutz",
+            "geburtsdatum": "25.03.1980",
+            "adresseStrasse": "Testweg",
+            "adresseHausnummer": "10",
+            "adressePlz": "3000",
+            "adresseOrt": "Bern",
+            "mobile": "079 000 00 00"
+        },
+        "GS2": {
+            "geschlecht": "MAENNLICH",
+            "vorname": "Tizian",
+            "nachname": "Feutz",
+            "geburtsdatum": "25.03.1980",
+            "mobile": "079 000 00 00"
+        }
+    }
+}

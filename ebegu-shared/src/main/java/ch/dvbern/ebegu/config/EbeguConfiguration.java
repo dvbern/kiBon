@@ -15,13 +15,13 @@
 
 package ch.dvbern.ebegu.config;
 
+import java.util.Optional;
+
+import javax.annotation.Nonnull;
+
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Optional;
 
 /**
  * Konfiguration von kiBon
@@ -36,12 +36,8 @@ public interface EbeguConfiguration {
 	String getDocumentFilePath();
 
 	/**
-	 * Gibt an ob die Client Applikation https verwendet. Wenn true werden cookies nur bei https clients gesetzt
-	 */
-	boolean isClientUsingHTTPS();
-
-	/**
-	 * Gibt zurueck, ob E-Mails versendet werden sollen. Falls nicht, wird der entsprechende Text auf der Console ausgegeben
+	 * Gibt zurueck, ob E-Mails versendet werden sollen. Falls nicht, wird der entsprechende Text auf der Console
+	 * ausgegeben
 	 */
 	boolean isSendingOfMailsDisabled();
 
@@ -67,11 +63,18 @@ public interface EbeguConfiguration {
 	String getSenderAddress();
 
 	/**
-	 * Gibt den Hostname des Servers zurück.
+	 * Gibt den Frontend Base URL Path zurück.
 	 *
-	 * @return den Hostname oder {@code null}
+	 * @return den Frontend Base URL Path oder {@code null}
 	 */
-	String getHostname(MandantIdentifier mandantIdentifier);
+	String getFrontendBaseUrl(MandantIdentifier mandantIdentifier);
+
+	/**
+	 * @param mandantIdentifier mandant
+	 * @return application's external base URL (no path), e.g.
+	 * https://dev-be.kibon.ch
+	 */
+	String getBaseUrl(MandantIdentifier mandantIdentifier);
 
 	/**
 	 * Gibt die Hostdomain des Servers zurück.
@@ -130,29 +133,6 @@ public interface EbeguConfiguration {
 	String getPersonenSuchePassword();
 
 	/**
-	 * Gibt die URL des API Endpunkt des LoginConnectors zurueck.
-	 * Ueber diesen list  KI-TAX die URLS zum single-login und single-logout
-	 *
-	 * @return REST API Endpunkt ueber den Ki-TAX die URLS fuer login/logout requests lesen kann
-	 */
-	String getLoginProviderAPIUrl();
-
-	/**
-	 * @return true if LoginConnector may access REST interface remotly, otherwise only local access is allowed
-	 */
-	boolean isRemoteLoginConnectorAllowed();
-
-	/**
-	 * @return den Benutzernamen des internen API users
-	 */
-	String getInternalAPIUser();
-
-	/**
-	 * @return das Benutzerpasswort fuer den internen API USER
-	 */
-	String getInternalAPIPassword();
-
-	/**
 	 * @return den Benutzernamen des Schulamt API users
 	 */
 	String getKeycloackClient();
@@ -183,14 +163,6 @@ public interface EbeguConfiguration {
 	 * Admin-Email: An diese Adresse wird z.B. die Zahlungskontrolle gesendet.
 	 */
 	String getAdministratorMail();
-
-	/**
-	 *
-	 * @param mandant might be null for a malconfigured Cooki
-	 * @return a full link to the page where users can create new logins for the portal
-	 */
-	@Nullable
-	String getPortalAccountCreationPageLink(@Nullable Mandant mandant);
 
 	/**
 	 * read sentry env from system properties
@@ -228,22 +200,25 @@ public interface EbeguConfiguration {
 	 */
 	boolean isAnmeldungTagesschuleApiEnabled();
 
-
 	/**
 	 * @return TRUE, falls Daten Kafka gelesen werden dürfen.
 	 */
 	boolean isKafkaConsumerEnabled();
 
+	@Nonnull
+	Optional<String> getKafkaStatistikURL();
 
 	/**
 	 * @return Filepath zum Keystore in dem der Private Key fuer den Secure-Token-Service Webservice liegt,
-	 * sollte in einer Form sein die den Pfad vom  resource root her aufloest ist zb "/prod/sts-webservice.jks"
+	 * sollte in einer Form sein die den Pfad vom resource root her aufloest ist zb "/prod/sts-webservice.jks"
 	 * The Idea is to read the keystore from a specific place in the file System
 	 */
 	String getEbeguPersonensucheSTSKeystorePath();
 
 	/**
-	 * Passwort fuer den Keystore in dem der PrivateKey zum abholen der SAMLAssertion beim STS Webservice fuer den Batchuser mit dem wir EWK Abfragen machn liegt
+	 * Passwort fuer den Keystore in dem der PrivateKey zum abholen der SAMLAssertion beim STS Webservice fuer den
+	 * Batchuser mit dem wir EWK Abfragen machn liegt
+	 *
 	 * @return Passwort fuer den Keystore
 	 */
 	String getEbeguPersonensucheSTSKeystorePW();
@@ -264,7 +239,7 @@ public interface EbeguConfiguration {
 	 *
 	 * @return Basisurl des Webserivce Endpunkts fuer den Secure Token Service (STS) der zum erstellen eines
 	 * Asserton Tokens fuer den GERES Service gebraucht wird. Diese Angabe wird verwendet um die
-	 * finale URL des  STSToken und  des RenewalAssertion Services zu erstellen. Ausser wenn fuer diese beiden
+	 * finale URL des STSToken und des RenewalAssertion Services zu erstellen. Ausser wenn fuer diese beiden
 	 * ebenfalls eine Explizite Absolute URL angegeben wird.
 	 * So kann einfach zwischen Test und Produktion gewechselt werden
 	 * Beispiel: "https://a6hu-www-sts-b.be.ch:443/securityService"
@@ -274,6 +249,7 @@ public interface EbeguConfiguration {
 	/**
 	 * OPTIONALE Angabe zum herunterladen des WSDL Files. Wenn nicht angegeben wird die im System
 	 * mit der Applikation deployte Version des WSDL verwendet
+	 *
 	 * @return null oder wsdl url
 	 */
 	String getEbeguPersonensucheSTSWsdl();
@@ -282,21 +258,26 @@ public interface EbeguConfiguration {
 	 * OPTIONALE Angabe zur genauen Spezifikation der Endpunktangabe des STS Service. Wenn nicht angegeben
 	 * wird mit dem getEbeguPersonensucheSTSBasePath und dem aktuell bekannten Serivcepfad die URL per
 	 * default zusammengesetzt
+	 *
 	 * @return Absolute URL fuer den Endpoint des zu verwendenden STS Service.
 	 */
 	String getEbeguPersonensucheSTSEndpoint();
 
 	/**
-	 * OPTIONALE Angabe zum herunterladen des WSDL Files des Renewal Assertion Service. Wenn nicht angegeben wird die im System
+	 * OPTIONALE Angabe zum herunterladen des WSDL Files des Renewal Assertion Service. Wenn nicht angegeben wird die im
+	 * System
 	 * mit der Applikation deployte Version des WSDL verwendet
+	 *
 	 * @return null oder wsdl url
 	 */
 	String getEbeguPersonensucheSTSRenewalAssertionWsdl();
 
 	/**
-	 * OPTIONALE Angabe zur genauen Spezifikation der Endpunktangabe des STS Renewal Assertion Service. Wenn nicht angegeben
+	 * OPTIONALE Angabe zur genauen Spezifikation der Endpunktangabe des STS Renewal Assertion Service. Wenn nicht
+	 * angegeben
 	 * wird mit dem getEbeguPersonensucheSTSBasePath und dem aktuell bekannten Serivcepfad die URL per
 	 * default zusammengesetzt
+	 *
 	 * @return Absolute URL fuer den Endpoint des zu verwendenden STS Service.
 	 */
 	String getEbeguPersonensucheSTSRenewalAssertionEndpoint();
@@ -310,8 +291,10 @@ public interface EbeguConfiguration {
 
 	/**
 	 *
-	 * OPTIONALE Angabe zum herunterladen des WSDL Files des GeresWebService (ResidentInfo). Wenn nicht angegeben wird die im System
+	 * OPTIONALE Angabe zum herunterladen des WSDL Files des GeresWebService (ResidentInfo). Wenn nicht angegeben wird
+	 * die im System
 	 * mit der Applikation deployte Version des WSDL verwendet
+	 *
 	 * @return null oder wsdl url
 	 */
 	String getEbeguPersonensucheGERESWsdl();
@@ -340,15 +323,7 @@ public interface EbeguConfiguration {
 
 	boolean isClamavDisabled();
 
-	String getNotverordnungUnterschriftName();
-
-	String getNotverordnungUnterschriftPath();
-
-	String getNotverordnungEmpfaengerMail();
-
 	String getKafkaConsumerGroupId();
-
-	String getMassenmutationEmpfaengerMail();
 
 	Boolean getMultimandantEnabled();
 

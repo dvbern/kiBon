@@ -18,10 +18,10 @@ package ch.dvbern.ebegu.api.dtos;
 import java.io.Serializable;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 
@@ -30,7 +30,7 @@ import ch.dvbern.ebegu.enums.EinschulungTyp;
  */
 @XmlRootElement(name = "anmeldung")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JaxAnmeldungDTO  implements Serializable {
+public class JaxAnmeldungDTO implements Serializable {
 
 	private static final long serialVersionUID = -1227022381675937697L;
 

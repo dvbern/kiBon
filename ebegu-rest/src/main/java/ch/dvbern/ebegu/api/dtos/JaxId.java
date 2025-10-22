@@ -16,7 +16,7 @@
 package ch.dvbern.ebegu.api.dtos;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Wrapper fuer ID der DTO Klassen. Dient zum einfachen verwalten der Validierungsannotationen

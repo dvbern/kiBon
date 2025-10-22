@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.Benutzer;
+import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
@@ -66,31 +67,64 @@ public interface TestfaelleService {
 	String heirat = "1";
 
 	@Nonnull
-	StringBuilder createAndSaveTestfaelle(@Nonnull Mandant mandant, @Nonnull String fallid, boolean betreuungenBestaetigt,
-		boolean verfuegen, @Nullable String gesuchsPeriodeId, @Nonnull String gemeindeId);
+	StringBuilder createAndSaveTestfaelle(
+		@Nonnull Mandant mandant,
+		@Nonnull String fallid,
+		boolean betreuungenBestaetigt,
+		boolean verfuegen,
+		@Nullable String gesuchsPeriodeId,
+		@Nonnull String gemeindeId
+	);
 
 	@Nonnull
-	StringBuilder createAndSaveAsOnlineGesuch(@Nonnull String fallid, boolean betreuungenBestaetigt,
-		boolean verfuegen, @Nonnull String username, @Nullable String gesuchsPeriodeId, @Nonnull String gemeindeId, @Nonnull
-			Mandant mandant);
+	StringBuilder createAndSaveAsOnlineGesuch(
+		@Nonnull String fallid,
+		boolean betreuungenBestaetigt,
+		boolean verfuegen,
+		@Nonnull String username,
+		@Nullable String gesuchsPeriodeId,
+		@Nonnull String gemeindeId,
+		@Nonnull Mandant mandant
+	);
 
 	@Nonnull
 	Gesuch createAndSaveTestfaelle(
-			@Nonnull String fallid, boolean betreuungenBestaetigt, boolean verfuegen, @Nonnull String gemeindeId,
-			@Nonnull Gesuchsperiode gesuchsperiode, Mandant mandant);
+		@Nonnull String fallid,
+		boolean betreuungenBestaetigt,
+		boolean verfuegen,
+		@Nonnull String gemeindeId,
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		Mandant mandant
+	);
 
 	@Nullable
-	Gesuch mutierenHeirat(@Nonnull String dossierId, @Nonnull String gesuchsperiodeId,
-		@Nonnull LocalDate eingangsdatum, @Nonnull LocalDate aenderungPer, boolean verfuegen);
+	Gesuch mutierenHeirat(
+		@Nonnull String dossierId,
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull LocalDate eingangsdatum,
+		@Nonnull LocalDate aenderungPer,
+		boolean verfuegen
+	);
 
 	@Nonnull
-	Gesuch mutierenFinSit(@Nonnull String dossierId, @Nonnull String gesuchsperiodeId,
-		@Nonnull LocalDate eingangsdatum, @Nonnull LocalDate aenderungPer, boolean verfuegen,
-		BigDecimal nettoLohn, boolean ignorieren);
+	Gesuch mutierenFinSit(
+		@Nonnull String dossierId,
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull LocalDate eingangsdatum,
+		@Nonnull LocalDate aenderungPer,
+		boolean verfuegen,
+		BigDecimal nettoLohn,
+		boolean ignorieren
+	);
 
 	@Nullable
-	Gesuch mutierenScheidung(@Nonnull String dossierId, @Nonnull String gesuchsperiodeId,
-		@Nonnull LocalDate eingangsdatum, @Nonnull LocalDate aenderungPer, boolean verfuegen);
+	Gesuch mutierenScheidung(
+		@Nonnull String dossierId,
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull LocalDate eingangsdatum,
+		@Nonnull LocalDate aenderungPer,
+		boolean verfuegen
+	);
 
 	/**
 	 * loescht alle Gesuche des Gesuchstellers mit dem gegebenen Namen
@@ -102,31 +136,58 @@ public interface TestfaelleService {
 	/**
 	 * Gibt die Institutionsstammdaten zurück, welche in den gelieferten Testfällen verwendet werden,
 	 * also Brünnen und Weissenstein Kita und Tagi
+	 *
 	 * @param mandant
 	 */
 	@Nonnull
-	List<InstitutionStammdaten> getInstitutionsstammdatenForTestfaelle(Mandant mandant);
+	List<InstitutionStammdaten> getInstitutionsstammdatenForTestfaelle(
+		Mandant mandant
+	);
 
 	@Nonnull
-	Gesuch createAndSaveGesuch(@Nonnull AbstractTestfall fromTestfall, boolean verfuegen, @Nullable Benutzer besitzer);
+	Gesuch createAndSaveGesuch(
+		@Nonnull AbstractTestfall fromTestfall,
+		boolean verfuegen,
+		@Nullable Benutzer besitzer
+	);
 
-	void gesuchVerfuegenUndSpeichern(boolean verfuegen, @Nonnull Gesuch gesuch, boolean mutation, boolean ignorierenInZahlungslauf);
+	void gesuchVerfuegenUndSpeichern(
+		boolean verfuegen,
+		@Nonnull Gesuch gesuch,
+		boolean mutation,
+		boolean ignorierenInZahlungslauf
+	);
 
-	void testAllMails(@Nonnull String mailadresse, Mandant mandant);
+	void testAllMails(
+		@Nonnull String mailadresse,
+		Mandant mandant,
+		Gemeinde gemeinde
+	);
 
 	@Nonnull
-	Gesuch antragErneuern(@Nonnull Gesuch gesuch, @Nonnull Gesuchsperiode gesuchsperiode, @Nullable LocalDate eingangsdatum);
+	Gesuch antragErneuern(
+		@Nonnull Gesuch gesuch,
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nullable LocalDate eingangsdatum
+	);
 
 	@Nonnull
-	Gesuch antragMutieren(@Nonnull Gesuch antrag, @Nullable LocalDate eingangsdatum);
+	Gesuch antragMutieren(
+		@Nonnull Gesuch antrag,
+		@Nullable LocalDate eingangsdatum
+	);
 
 	@Nonnull
 	Collection<LastenausgleichTagesschuleAngabenGemeindeContainer> createAndSaveLATSTestdaten(
 		@Nonnull String gesuchsperiodeId,
 		@Nullable String gemeindeId,
-		@Nonnull LastenausgleichTagesschuleAngabenGemeindeStatus status);
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeStatus status
+	);
 
 	@Nonnull
 	FerienbetreuungAngabenContainer createAndSaveFerienbetreuungTestdaten(
-		@Nonnull String gesuchsperiodeId, @Nonnull String gemeindeId, @Nonnull FerienbetreuungAngabenStatus status);
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull String gemeindeId,
+		@Nonnull FerienbetreuungAngabenStatus status
+	);
 }

@@ -1,0 +1,7 @@
+failureConditions:
+    severityThresholds:
+        critical: 0
+        high: 0
+
+version: 1.0
+

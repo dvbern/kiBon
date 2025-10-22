@@ -29,7 +29,8 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     selector: 'dv-input-label-field',
     templateUrl: './dv-input-label-field.component.html',
     changeDetection: ChangeDetectionStrategy.Default,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class DvInputLabelFieldComponent {
     @Input() public inputId: string = 'inputFieldId';
@@ -49,6 +50,7 @@ export class DvInputLabelFieldComponent {
     @Input() public korrektur: any;
     @Input() public showBisher: boolean = false;
     @Input() public allowNegative: boolean = false;
+    @Input() public isMediumWith: boolean = true;
 
     @Output() public readonly modelChange: EventEmitter<any> =
         new EventEmitter();
@@ -60,6 +62,14 @@ export class DvInputLabelFieldComponent {
     public getRequiredCssClass(): string {
         if (this.inputRequired) {
             return 'required';
+        }
+
+        return '';
+    }
+
+    public getWitdhCssClass(): string {
+        if (this.isMediumWith) {
+            return 'dv-input-container-medium-select';
         }
 
         return '';

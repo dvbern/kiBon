@@ -20,7 +20,6 @@ import {
     IPromise,
     IWindowService
 } from 'angular';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
 import {TSGeneratedDokumentTyp} from '../../../models/enums/TSGeneratedDokumentTyp';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
 import {TSMahnung} from '../../../models/TSMahnung';
@@ -60,17 +59,6 @@ export class DownloadRS {
             .get(
                 `${this.serviceURL}/${encodeURIComponent(dokumentID)}/dokument`
             )
-            .then((response: any) =>
-                this.ebeguRestUtil.parseDownloadFile(
-                    new TSDownloadFile(),
-                    response.data
-                )
-            );
-    }
-
-    public getAccessTokenVorlage(vorlageID: string): IPromise<TSDownloadFile> {
-        return this.http
-            .get(`${this.serviceURL}/${encodeURIComponent(vorlageID)}/vorlage`)
             .then((response: any) =>
                 this.ebeguRestUtil.parseDownloadFile(
                     new TSDownloadFile(),
@@ -243,42 +231,6 @@ export class DownloadRS {
             );
     }
 
-    public getAccessTokenNotrechtvorlageOeffentlicheInstitutionen(
-        language: string,
-        angebotTyp: TSBetreuungsangebotTyp
-    ): IPromise<TSDownloadFile> {
-        const languageEnc = encodeURIComponent(language);
-        const angebotTypEnc = encodeURIComponent(angebotTyp);
-        return this.http
-            .get(
-                `${this.serviceURL}/NOTRECHTVORLAGEOEFFENTLICH/${languageEnc}/${angebotTypEnc}`
-            )
-            .then((response: any) =>
-                this.ebeguRestUtil.parseDownloadFile(
-                    new TSDownloadFile(),
-                    response.data
-                )
-            );
-    }
-
-    public getAccessTokenNotrechtvorlagePrivateInstitutionen(
-        language: string,
-        angebotTyp: TSBetreuungsangebotTyp
-    ): IPromise<TSDownloadFile> {
-        const languageEnc = encodeURIComponent(language);
-        const angebotTypEnc = encodeURIComponent(angebotTyp);
-        return this.http
-            .get(
-                `${this.serviceURL}/NOTRECHTVORLAGEPRIVAT/${languageEnc}/${angebotTypEnc}`
-            )
-            .then((response: any) =>
-                this.ebeguRestUtil.parseDownloadFile(
-                    new TSDownloadFile(),
-                    response.data
-                )
-            );
-    }
-
     public getServiceName(): string {
         return 'DownloadRS';
     }
@@ -287,8 +239,28 @@ export class DownloadRS {
      * Das Window muss als Parameter mitgegeben werden, damit der Popup Blocker das Oeffnen dieses Fesnters nicht als
      * Popup identifiziert.
      */
-    public startDownload(
+    public startDownloadGeneratedPDF(
         accessToken: string,
+        _dokumentName: string,
+        attachment: boolean,
+        myWindow: Window
+    ): void {
+        const href = `${this.serviceURL}/blobdata/${accessToken}`;
+        this.startDownload(href, _dokumentName, attachment, myWindow);
+    }
+
+    public openUploadedPDF(
+        blob: Blob,
+        filename: string,
+        myWindow: Window
+    ): void {
+        const url = this.$window.URL || this.$window.webkitURL;
+        const downloadUrl = url.createObjectURL(blob); // use HTML5 a[download] attribute to specify filename
+        this.startDownload(downloadUrl, filename, false, myWindow);
+    }
+
+    private startDownload(
+        href: string,
         _dokumentName: string,
         attachment: boolean,
         myWindow: Window
@@ -298,7 +270,6 @@ export class DownloadRS {
             return;
         }
 
-        let href = `${this.serviceURL}/blobdata/${accessToken}`;
         if (attachment) {
             // add MatrixParam for to download file instead of opening it inline
             href += ';attachment=true;';
@@ -428,72 +399,12 @@ export class DownloadRS {
         a.remove();
     }
 
-    public getAccessTokenRueckforderungDokument(
-        rueckForderungDokumentId: string
-    ): IPromise<TSDownloadFile> {
-        return this.http
-            .get(
-                `${this.serviceURL}/${encodeURIComponent(rueckForderungDokumentId)}/rueckforderungDokument`
-            )
-            .then((response: any) =>
-                this.ebeguRestUtil.parseDownloadFile(
-                    new TSDownloadFile(),
-                    response.data
-                )
-            );
-    }
-
-    public getAccessTokenProvisoricheVerfuegungDokument(
-        rueckforderungFormularId: string
-    ): IPromise<TSDownloadFile> {
-        return this.http
-            .get(
-                `${this.serviceURL}/${encodeURIComponent(rueckforderungFormularId)}/provisorischeVerfuegung`
-            )
-            .then((response: any) =>
-                this.ebeguRestUtil.parseDownloadFile(
-                    new TSDownloadFile(),
-                    response.data
-                )
-            );
-    }
-
-    public getAccessTokenDefinitiveVerfuegungDokument(
-        rueckforderungFormularId: string
-    ): IPromise<TSDownloadFile> {
-        return this.http
-            .get(
-                `${this.serviceURL}/${encodeURIComponent(rueckforderungFormularId)}/definitiveVerfuegung`
-            )
-            .then((response: any) =>
-                this.ebeguRestUtil.parseDownloadFile(
-                    new TSDownloadFile(),
-                    response.data
-                )
-            );
-    }
-
-    public getNotverordnungVerfuegungenAccessTokenGeneratedDokument(
-        auftragId: string
-    ): IPromise<TSDownloadFile> {
-        return this.http
-            .get(
-                `${this.serviceURL}/massenverfuegung/${encodeURIComponent(auftragId)}`
-            )
-            .then((response: any) =>
-                this.ebeguRestUtil.parseDownloadFile(
-                    new TSDownloadFile(),
-                    response.data
-                )
-            );
-    }
-
     public getAccessTokenFerienbetreuungDokument(
-        rueckForderungDokumentId: string
+        ferienBetreuungDokumentId: string
     ): IPromise<TSDownloadFile> {
         return this.http
             .get(
-                `${this.serviceURL}/${encodeURIComponent(rueckForderungDokumentId)}/ferienbetreuungDokument`
+                `${this.serviceURL}/${encodeURIComponent(ferienBetreuungDokumentId)}/ferienbetreuungDokument`
             )
             .then((response: any) =>
                 this.ebeguRestUtil.parseDownloadFile(

@@ -15,9 +15,9 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
 

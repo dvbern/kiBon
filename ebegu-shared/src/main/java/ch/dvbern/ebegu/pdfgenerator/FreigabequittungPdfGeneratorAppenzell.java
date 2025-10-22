@@ -28,33 +28,53 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 
-public class FreigabequittungPdfGeneratorAppenzell extends AbstractFreigabequittungPdfGenerator {
+public class FreigabequittungPdfGeneratorAppenzell extends
+	AbstractFreigabequittungPdfGenerator {
 
-	private static final String ERMAECHTIGUNG_EINVERSTAENDNIS_TITLE = "PdfGeneration_ErmaechtigungEinverstaendnis_Title";
-	private static final String ERMAECHTIGUNG_AR_1 = "PdfGeneration_ErmaechtigungAR_1";
-	private static final String ERMAECHTIGUNG_AR_2 = "PdfGeneration_ErmaechtigungAR_2";
-	private static final String ERMAECHTIGUNG_AR_3 = "PdfGeneration_ErmaechtigungAR_3";
-	private static final String ERMAECHTIGUNG_AR_4 = "PdfGeneration_ErmaechtigungAR_4";
-	private static final String ERMAECHTIGUNG_AR_5 = "PdfGeneration_ErmaechtigungAR_5";
-	private static final String ERMAECHTIGUNG_AR_6 = "PdfGeneration_ErmaechtigungAR_6";
-	private static final String ERMAECHTIGUNG_AR_7 = "PdfGeneration_ErmaechtigungAR_7";
-	private static final String ERMAECHTIGUNG_AR_8 = "PdfGeneration_ErmaechtigungAR_8";
-	private static final String ERMAECHTIGUNG_AR_9 = "PdfGeneration_ErmaechtigungAR_9";
-	private static final String ERMAECHTIGUNG_AR_10 = "PdfGeneration_ErmaechtigungAR_10";
-	private static final String ERMAECHTIGUNG_AR_11 = "PdfGeneration_ErmaechtigungAR_11";
-	private static final String ERMAECHTIGUNG_AR_12 = "PdfGeneration_ErmaechtigungAR_12";
-	private static final String ERMAECHTIGUNG_AR_13 = "PdfGeneration_ErmaechtigungAR_13";
+	private static final String ERMAECHTIGUNG_EINVERSTAENDNIS_TITLE =
+		"PdfGeneration_ErmaechtigungEinverstaendnis_Title";
+	private static final String ERMAECHTIGUNG_AR_1 =
+		"PdfGeneration_ErmaechtigungAR_1";
+	private static final String ERMAECHTIGUNG_AR_2 =
+		"PdfGeneration_ErmaechtigungAR_2";
+	private static final String ERMAECHTIGUNG_AR_3 =
+		"PdfGeneration_ErmaechtigungAR_3";
+	private static final String ERMAECHTIGUNG_AR_4 =
+		"PdfGeneration_ErmaechtigungAR_4";
+	private static final String ERMAECHTIGUNG_AR_5 =
+		"PdfGeneration_ErmaechtigungAR_5";
+	private static final String ERMAECHTIGUNG_AR_6 =
+		"PdfGeneration_ErmaechtigungAR_6";
+	private static final String ERMAECHTIGUNG_AR_7 =
+		"PdfGeneration_ErmaechtigungAR_7";
+	private static final String ERMAECHTIGUNG_AR_8 =
+		"PdfGeneration_ErmaechtigungAR_8";
+	private static final String ERMAECHTIGUNG_AR_9 =
+		"PdfGeneration_ErmaechtigungAR_9";
+	private static final String ERMAECHTIGUNG_AR_10 =
+		"PdfGeneration_ErmaechtigungAR_10";
+	private static final String ERMAECHTIGUNG_AR_11 =
+		"PdfGeneration_ErmaechtigungAR_11";
+	private static final String ERMAECHTIGUNG_AR_12 =
+		"PdfGeneration_ErmaechtigungAR_12";
+	private static final String ERMAECHTIGUNG_AR_13 =
+		"PdfGeneration_ErmaechtigungAR_13";
 
 	public FreigabequittungPdfGeneratorAppenzell(
 		@Nonnull Gesuch gesuch,
 		@Nonnull GemeindeStammdaten stammdaten,
-		@Nonnull List<DokumentGrund> benoetigteUnterlagen) {
+		@Nonnull List<DokumentGrund> benoetigteUnterlagen
+	) {
 		super(gesuch, stammdaten, benoetigteUnterlagen);
 	}
 
 	@Override
 	protected void createSeite2(@Nonnull Document document) {
-		document.add(PdfUtil.createSubTitle(translate(ERMAECHTIGUNG_EINVERSTAENDNIS_TITLE)));
+		document.add(
+			PdfUtil.createSubTitle(
+				translate(ERMAECHTIGUNG_EINVERSTAENDNIS_TITLE)
+			)
+		);
 		document.add(PdfUtil.createParagraph(translate(ERMAECHTIGUNG_AR_1)));
 		document.add(PdfUtil.createParagraph(translate(ERMAECHTIGUNG_AR_2)));
 
@@ -103,7 +123,9 @@ public class FreigabequittungPdfGeneratorAppenzell extends AbstractFreigabequitt
 	}
 
 	@Override
-	protected void createParagraphSofortEinrichten(List<Element> paragraphlist) {
+	protected void createParagraphSofortEinrichten(
+		List<Element> paragraphlist
+	) {
 
 	}
 

@@ -15,17 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {TSAntragStatus} from '../enums/TSAntragStatus';
-import {TSAbstractEntity} from '../TSAbstractEntity';
+import moment from 'moment';
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 import {TSBenutzer} from '../TSBenutzer';
+import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
 
 export class TSLastenausgleichTagesschulenStatusHistory extends TSAbstractEntity {
     private _containerId: string;
     private _benutzer: TSBenutzer;
     private _timestampVon: moment.Moment;
     private _timestampBis: moment.Moment;
-    private _status: TSAntragStatus;
+    private _status: TSLastenausgleichTagesschuleAngabenGemeindeStatus;
 
     public constructor() {
         super();
@@ -63,11 +63,13 @@ export class TSLastenausgleichTagesschulenStatusHistory extends TSAbstractEntity
         this._timestampBis = value;
     }
 
-    public get status(): TSAntragStatus {
+    public get status(): TSLastenausgleichTagesschuleAngabenGemeindeStatus {
         return this._status;
     }
 
-    public set status(value: TSAntragStatus) {
+    public set status(
+        value: TSLastenausgleichTagesschuleAngabenGemeindeStatus
+    ) {
         this._status = value;
     }
 }

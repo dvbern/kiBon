@@ -15,44 +15,49 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IComponentOptions} from 'angular';
-import * as moment from 'moment';
+import {PermissionKind, PERMISSIONS_KIND} from '@kibon/kind/model/permissions';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {copy, IComponentOptions} from 'angular';
+import moment from 'moment';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '../../../app/core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {EinschulungTypesVisitor} from '../../../app/core/constants/EinschulungTypesVisitor';
 import {KindGeschlechtVisitor} from '../../../app/core/constants/KindGeschlechtVisitor';
-import {KiBonMandant} from '../../../app/core/constants/MANDANTS';
+import {KiBonMandant} from '@kibon/shared-model-mandant';
 import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {MandantService} from '../../../app/shared/services/mandant.service';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
-import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
-import {TSFachstellenTyp} from '../../../models/enums/TSFachstellenTyp';
-import {TSGeschlecht} from '../../../models/enums/TSGeschlecht';
-import {TSGruendeZusatzleistung} from '../../../models/enums/TSGruendeZusatzleistung';
-import {TSIntegrationTyp} from '../../../models/enums/TSIntegrationTyp';
+import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
+import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {
-    getTSKinderabzugValues,
-    TSKinderabzug
-} from '../../../models/enums/TSKinderabzug';
+    TSFachstellenTyp,
+    TSGeschlecht,
+    TSGruendeZusatzleistung,
+    TSIntegrationTyp,
+    TSPensumAusserordentlicherAnspruch,
+    TSPensumFachstelle,
+    TSDateRange
+} from '@kibon/shared/model/entity';
 import {
     isKinderabzugTypFKJV,
     TSKinderabzugTyp
 } from '../../../models/enums/TSKinderabzugTyp';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSEinstellung} from '../../../models/TSEinstellung';
-import {TSKind} from '../../../models/TSKind';
+import {TSRole} from '@kibon/shared/model/enums';
+import {TSEinschulungTyp, TSWizardStepName} from '@kibon/shared/model/enums';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+import {
+    getTSKinderabzugValues,
+    TSKind,
+    TSKinderabzug
+} from '@kibon/kind/model/entity';
 import {TSKindContainer} from '../../../models/TSKindContainer';
-import {TSPensumAusserordentlicherAnspruch} from '../../../models/TSPensumAusserordentlicherAnspruch';
-import {TSPensumFachstelle} from '../../../models/TSPensumFachstelle';
-import {TSDateRange} from '../../../models/types/TSDateRange';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {EnumEx} from '../../../utils/EnumEx';
@@ -61,11 +66,9 @@ import {IKindStateParams} from '../../gesuch.route';
 import {BerechnungsManager} from '../../service/berechnungsManager';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {GlobalCacheService} from '../../service/globalCacheService';
-import {HybridFormBridgeService} from '../../service/hybrid-form-bridge.service';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
 import {KinderabzugExchangeService} from './service/kinderabzug-exchange.service';
-import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
 import IPromise = angular.IPromise;
 import IQService = angular.IQService;
 import IScope = angular.IScope;
@@ -124,13 +127,15 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
     private isSpracheAmtspracheDisabled: boolean;
     private isZemisDeaktiviert: boolean = false;
     private mandant: KiBonMandant;
-    public readonly demoFeature = TSDemoFeature.MEHRERE_FACHSTELLEN;
+    public readonly demoFeatureMehrereFachstellen =
+        TSDemoFeature.MEHRERE_FACHSTELLEN;
+    public readonly demoFeatureKindTerminiert = TSDemoFeature.KIND_TERMINIEREN;
     private fachstellenPensumOverlapsMessageKey: string = undefined;
     private sozialeIntegrationBisSchulstufe: TSEinschulungTyp;
     private sprachlicheIntegrationBisSchulstufe: TSEinschulungTyp;
     private isHoehereBeitraegeBeeintraechtigungAktiviert = false;
 
-    private readonly unsubscribe$ = new Subject();
+    private readonly unsubscribe$ = new Subject<void>();
 
     public constructor(
         $stateParams: IKindStateParams,
@@ -165,7 +170,7 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
                     kindNumber
                 );
             if (kindIndex >= 0) {
-                this.model = angular.copy(
+                this.model = copy(
                     this.gesuchModelManager.getGesuch().kindContainers[
                         kindIndex
                     ]
@@ -243,6 +248,7 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
         this.submitted = true;
         this.errorService.clearAll();
         this.kinderabzugExchangeService.triggerFormValidation();
+        this.hybridFormBridgeService.triggerFormValidation();
         if (
             !this.isGesuchValid() ||
             this.kinderabzugExchangeService.anyFormInvalid()
@@ -257,12 +263,7 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
             return undefined;
         }
 
-        if (
-            !this.hybridFormBridgeService.forms.reduce(
-                (prev, cur) => cur.valid && prev,
-                true
-            )
-        ) {
+        if (this.hybridFormBridgeService.hasAnyInvalidForm()) {
             return undefined;
         }
 
@@ -368,6 +369,13 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
             this.authServiceRS.isOneOfRoles(
                 TSRoleUtil.getAdministratorOrAmtRole()
             )
+        );
+    }
+
+    public isGesuchStatusBearbeitungGS() {
+        return (
+            this.getGesuch() &&
+            TSAntragStatus.IN_BEARBEITUNG_GS === this.getGesuch().status
         );
     }
 
@@ -489,12 +497,12 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
         return (
             this.getContainer()
                 .kindGS?.pensumFachstellen.map(fachstelle => {
-                    const vonText = DateUtil.momentToLocalDateFormat(
+                    const vonText = MomentUtil.momentToLocalDateFormat(
                         fachstelle.gueltigkeit.gueltigAb,
                         'DD.MM.YYYY'
                     );
                     const bisText = fachstelle.gueltigkeit.gueltigBis
-                        ? DateUtil.momentToLocalDateFormat(
+                        ? MomentUtil.momentToLocalDateFormat(
                               fachstelle.gueltigkeit.gueltigBis,
                               'DD.MM.YYYY'
                           )
@@ -892,5 +900,11 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
 
     public showHoehereBetraegeBeeintraechtigung(): boolean {
         return this.isHoehereBeitraegeBeeintraechtigungAktiviert;
+    }
+
+    public hasGueltigkeitTerminiertReadPermission(): boolean {
+        return this.authServiceRS.isOneOfRoles(
+            PERMISSIONS_KIND[PermissionKind.GUELTIGKEIT_TERMINIEREN_READ]
+        );
     }
 }

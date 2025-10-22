@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -70,10 +70,17 @@ public final class PlatzbestaetigungTestUtil {
 
 	@Nonnull
 	public static Gesuch initGesuch() {
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiodeXXYY(2020, 2021);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiodeXXYY(
+			2020,
+			2021
+		);
 
 		Testfall01_WaeltiDagmar testfall_1GS =
-			new Testfall01_WaeltiDagmar(gesuchsperiode, false, new TestDataInstitutionStammdatenBuilder(gesuchsperiode));
+			new Testfall01_WaeltiDagmar(
+				gesuchsperiode,
+				false,
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode)
+			);
 		testfall_1GS.createFall();
 		testfall_1GS.createGesuch(LocalDate.of(2016, Month.DECEMBER, 12));
 
@@ -81,7 +88,9 @@ public final class PlatzbestaetigungTestUtil {
 	}
 
 	@Nonnull
-	public static BetreuungEventDTO createBetreuungEventDTO(@Nonnull ZeitabschnittDTO... zeitabschnitte) {
+	public static BetreuungEventDTO createBetreuungEventDTO(
+		@Nonnull ZeitabschnittDTO... zeitabschnitte
+	) {
 		BetreuungEventDTO betreuungEventDTO = new BetreuungEventDTO();
 		betreuungEventDTO.setRefnr(REF_NUMMER);
 		betreuungEventDTO.setInstitutionId("1234-5678-9101-1121");
@@ -90,12 +99,20 @@ public final class PlatzbestaetigungTestUtil {
 	}
 
 	@Nonnull
-	public static ZeitabschnittDTO createZeitabschnittDTO(@Nonnull DateRange range) {
-		return createZeitabschnittDTO(range.getGueltigAb(), range.getGueltigBis());
+	public static ZeitabschnittDTO createZeitabschnittDTO(
+		@Nonnull DateRange range
+	) {
+		return createZeitabschnittDTO(
+			range.getGueltigAb(),
+			range.getGueltigBis()
+		);
 	}
 
 	@Nonnull
-	public static ZeitabschnittDTO createZeitabschnittDTO(@Nonnull LocalDate von, @Nonnull LocalDate bis) {
+	public static ZeitabschnittDTO createZeitabschnittDTO(
+		@Nonnull LocalDate von,
+		@Nonnull LocalDate bis
+	) {
 		return ZeitabschnittDTO.newBuilder()
 			.setBetreuungskosten(MathUtil.DEFAULT.from(2000))
 			.setBetreuungspensum(new BigDecimal(80))
@@ -106,7 +123,9 @@ public final class PlatzbestaetigungTestUtil {
 	}
 
 	@Nonnull
-	public static Betreuungsmitteilung createBetreuungMitteilung(@Nonnull BetreuungsmitteilungPensum... pensen) {
+	public static Betreuungsmitteilung createBetreuungMitteilung(
+		@Nonnull BetreuungsmitteilungPensum... pensen
+	) {
 		Betreuungsmitteilung betreuungsmitteilung = new Betreuungsmitteilung();
 		addAll(betreuungsmitteilung, Arrays.asList(pensen));
 
@@ -114,9 +133,14 @@ public final class PlatzbestaetigungTestUtil {
 	}
 
 	@Nonnull
-	public static BetreuungsmitteilungPensum createBetreuungsmitteilungPensum(@Nonnull DateRange range) {
-		BetreuungsmitteilungPensum betreuungsmitteilungPensum = new BetreuungsmitteilungPensum();
-		betreuungsmitteilungPensum.setMonatlicheBetreuungskosten(MathUtil.DEFAULT.from(2000));
+	public static BetreuungsmitteilungPensum createBetreuungsmitteilungPensum(
+		@Nonnull DateRange range
+	) {
+		BetreuungsmitteilungPensum betreuungsmitteilungPensum =
+			new BetreuungsmitteilungPensum();
+		betreuungsmitteilungPensum.setMonatlicheBetreuungskosten(
+			MathUtil.DEFAULT.from(2000)
+		);
 		betreuungsmitteilungPensum.setPensum(new BigDecimal(80));
 		betreuungsmitteilungPensum.setUnitForDisplay(PensumUnits.PERCENTAGE);
 		betreuungsmitteilungPensum.setGueltigkeit(range);
@@ -126,32 +150,46 @@ public final class PlatzbestaetigungTestUtil {
 
 	public static void addAll(
 		@Nonnull Betreuungsmitteilung mitteilung,
-		@Nonnull Collection<BetreuungsmitteilungPensum> pensen) {
+		@Nonnull Collection<BetreuungsmitteilungPensum> pensen
+	) {
 
 		pensen.forEach(p -> p.setBetreuungsmitteilung(mitteilung));
 		mitteilung.getBetreuungspensen().addAll(pensen);
 	}
 
 	@Nonnull
-	public static Betreuungspensum getSingleContainer(@Nonnull Betreuung betreuung) {
+	public static Betreuungspensum getSingleContainer(
+		@Nonnull Betreuung betreuung
+	) {
 		checkArgument(
 			betreuung.getBetreuungspensumContainers().size() == 1,
 			"Broken test setup: expected 1 container in %s",
-			betreuung);
+			betreuung
+		);
 
-		return betreuung.getBetreuungspensumContainers().iterator().next().getBetreuungspensumJA();
+		return betreuung.getBetreuungspensumContainers()
+			.iterator()
+			.next()
+			.getBetreuungspensumJA();
 	}
 
 	@Nonnull
-	public static Betreuung betreuungWithSingleContainer(@Nonnull Gesuch gesuch) {
-		return betreuungWithSingleContainer(gesuch, LocalDate.of(2020, 8, 1), Constants.END_OF_TIME);
+	public static Betreuung betreuungWithSingleContainer(
+		@Nonnull Gesuch gesuch
+	) {
+		return betreuungWithSingleContainer(
+			gesuch,
+			LocalDate.of(2020, 8, 1),
+			Constants.END_OF_TIME
+		);
 	}
 
 	@Nonnull
 	public static Betreuung betreuungWithSingleContainer(
 		@Nonnull Gesuch gesuch,
 		@Nonnull LocalDate von,
-		@Nonnull LocalDate bis) {
+		@Nonnull LocalDate bis
+	) {
 
 		Betreuung betreuung = requireNonNull(gesuch.getFirstBetreuung());
 		Betreuungspensum betreuungspensum = getSingleContainer(betreuung);
@@ -166,7 +204,10 @@ public final class PlatzbestaetigungTestUtil {
 		return PensumMapper.combine(
 			PensumMapper.GUELTIGKEIT_MAPPER,
 			PensumMapper.KOSTEN_MAPPER,
-			new PensumValueMapper(BigDecimal.valueOf(20), BigDecimal.valueOf(220))
+			new PensumValueMapper(
+				BigDecimal.valueOf(20),
+				BigDecimal.valueOf(220)
+			)
 		);
 	}
 
@@ -177,23 +218,38 @@ public final class PlatzbestaetigungTestUtil {
 	) {
 		Gesuch gesuch = PlatzbestaetigungTestUtil.initGesuch();
 		Betreuung betreuung = betreuungWithSingleContainer(gesuch);
-		BetreuungEventDTO betreuungEventDTO = createBetreuungEventDTO(zeitabschnitt);
+		BetreuungEventDTO betreuungEventDTO = createBetreuungEventDTO(
+			zeitabschnitt
+		);
 
 		ProcessingContextParams params = new ProcessingContextParams(
 			betreuungEventDTO,
 			einstellungen,
-			new EventMonitor(mock(BetreuungMonitoringService.class), LocalDateTime.now(), betreuungEventDTO.getRefnr(),
-				"client"),
+			new EventMonitor(
+				mock(BetreuungMonitoringService.class),
+				LocalDateTime.now(),
+				betreuungEventDTO.getRefnr(),
+				"client"
+			),
 			true,
-			getClientPeriodeGueltigkeit(betreuung));
+			getClientPeriodeGueltigkeit(betreuung)
+		);
 
 		return new ProcessingContext(betreuung, null, params);
 	}
 
 	@Nonnull
-	private static DateRange getClientPeriodeGueltigkeit(@Nonnull Betreuung betreuung) {
-		return betreuung.extractGesuchsperiode().getGueltigkeit().getOverlap(Constants.DEFAULT_GUELTIGKEIT)
-			.orElseThrow(() -> new IllegalArgumentException("client gueltigkeit & periode do not overlap"));
+	private static DateRange getClientPeriodeGueltigkeit(
+		@Nonnull Betreuung betreuung
+	) {
+		return betreuung.extractGesuchsperiode()
+			.getGueltigkeit()
+			.getOverlap(Constants.DEFAULT_GUELTIGKEIT)
+			.orElseThrow(
+				() -> new IllegalArgumentException(
+					"client gueltigkeit & periode do not overlap"
+				)
+			);
 	}
 
 	@Nonnull
@@ -202,26 +258,48 @@ public final class PlatzbestaetigungTestUtil {
 	}
 
 	@Nonnull
-	public static Matcher<Processing> failed(@Nonnull Matcher<String> messageMatcher) {
+	public static Matcher<Processing> failed(
+		@Nonnull Matcher<String> messageMatcher
+	) {
 		return pojo(Processing.class)
 			.where(Processing::getState, is(ProcessingState.FAILURE))
 			.where(Processing::getMessage, messageMatcher);
 	}
 
 	@Nonnull
-	public static Matcher<PlatzbestaetigungProcessing> ignored(@Nonnull ImportForm importForm, @Nonnull String message) {
+	public static Matcher<PlatzbestaetigungProcessing> ignored(
+		@Nonnull ImportForm importForm,
+		@Nonnull String message
+	) {
 		return pojo(PlatzbestaetigungProcessing.class)
-			.where(PlatzbestaetigungProcessing::getState, is(ProcessingState.IGNORE))
-			.where(PlatzbestaetigungProcessing::getProcessed, Matchers.hasItem(pojo(PlatzbestaetigungProcessing.class)
-				.where(PlatzbestaetigungProcessing::getImportForm, is(importForm))
-				.where(PlatzbestaetigungProcessing::getState, is(ProcessingState.IGNORE))
-				.where(PlatzbestaetigungProcessing::getMessage, is(message))
-			));
+			.where(
+				PlatzbestaetigungProcessing::getState,
+				is(ProcessingState.IGNORE)
+			)
+			.where(
+				PlatzbestaetigungProcessing::getProcessed,
+				Matchers.hasItem(
+					pojo(PlatzbestaetigungProcessing.class)
+						.where(
+							PlatzbestaetigungProcessing::getImportForm,
+							is(importForm)
+						)
+						.where(
+							PlatzbestaetigungProcessing::getState,
+							is(ProcessingState.IGNORE)
+						)
+						.where(
+							PlatzbestaetigungProcessing::getMessage,
+							is(message)
+						)
+				)
+			);
 	}
 
-
 	@Nonnull
-	public static IsPojo<AbstractMahlzeitenPensum> matches(@Nonnull ZeitabschnittDTO z) {
+	public static IsPojo<AbstractMahlzeitenPensum> matches(
+		@Nonnull ZeitabschnittDTO z
+	) {
 		return matches(z, z.getVon(), z.getBis());
 	}
 
@@ -229,7 +307,8 @@ public final class PlatzbestaetigungTestUtil {
 	public static IsPojo<AbstractMahlzeitenPensum> matches(
 		@Nonnull ZeitabschnittDTO z,
 		@Nonnull LocalDate von,
-		@Nonnull LocalDate bis) {
+		@Nonnull LocalDate bis
+	) {
 
 		return matches(z, new DateRange(von, bis));
 	}
@@ -237,7 +316,8 @@ public final class PlatzbestaetigungTestUtil {
 	@Nonnull
 	public static IsPojo<AbstractMahlzeitenPensum> matches(
 		@Nonnull ZeitabschnittDTO z,
-		@Nonnull DateRange gueltigkeit) {
+		@Nonnull DateRange gueltigkeit
+	) {
 
 		return matches(z, z.getBetreuungspensum(), gueltigkeit);
 	}
@@ -246,36 +326,66 @@ public final class PlatzbestaetigungTestUtil {
 	public static IsPojo<AbstractMahlzeitenPensum> matches(
 		@Nonnull ZeitabschnittDTO z,
 		@Nonnull BigDecimal pensum,
-		@Nonnull DateRange gueltigkeit) {
+		@Nonnull DateRange gueltigkeit
+	) {
 
 		return pojo(AbstractMahlzeitenPensum.class)
 			.where(
 				AbstractMahlzeitenPensum::getMonatlicheBetreuungskosten,
-				comparesEqualTo(z.getBetreuungskosten()))
+				comparesEqualTo(z.getBetreuungskosten())
+			)
 			.where(
 				AbstractMahlzeitenPensum::getPensum,
-				comparesEqualTo(pensum))
+				comparesEqualTo(pensum)
+			)
 			.where(
 				AbstractMahlzeitenPensum::getMonatlicheHauptmahlzeiten,
-				comparesEqualTo(coalesce(z.getAnzahlHauptmahlzeiten(), BigDecimal.ZERO)))
+				comparesEqualTo(
+					coalesce(
+						z.getAnzahlHauptmahlzeiten(),
+						BigDecimal.ZERO
+					)
+				)
+			)
 			.where(
 				AbstractMahlzeitenPensum::getMonatlicheNebenmahlzeiten,
-				comparesEqualTo(coalesce(z.getAnzahlNebenmahlzeiten(), BigDecimal.ZERO)))
+				comparesEqualTo(
+					coalesce(
+						z.getAnzahlNebenmahlzeiten(),
+						BigDecimal.ZERO
+					)
+				)
+			)
 			.where(
 				AbstractMahlzeitenPensum::getTarifProHauptmahlzeit,
-				comparesEqualTo(coalesce(z.getTarifProHauptmahlzeiten(), BigDecimal.ZERO)))
+				comparesEqualTo(
+					coalesce(
+						z.getTarifProHauptmahlzeiten(),
+						BigDecimal.ZERO
+					)
+				)
+			)
 			.where(
 				AbstractMahlzeitenPensum::getTarifProNebenmahlzeit,
-				comparesEqualTo(coalesce(z.getTarifProNebenmahlzeiten(), BigDecimal.ZERO)))
+				comparesEqualTo(
+					coalesce(
+						z.getTarifProNebenmahlzeiten(),
+						BigDecimal.ZERO
+					)
+				)
+			)
 			.where(
-				AbstractMahlzeitenPensum::getGueltigkeit, equalTo(gueltigkeit));
+				AbstractMahlzeitenPensum::getGueltigkeit,
+				equalTo(gueltigkeit)
+			);
 	}
 
 	@Nonnull
 	public static IsPojo<AbstractMahlzeitenPensum> matches(
 		@Nonnull BetreuungspensumContainer other,
 		@Nonnull LocalDate von,
-		@Nonnull LocalDate bis) {
+		@Nonnull LocalDate bis
+	) {
 
 		return matches(other.getBetreuungspensumJA(), von, bis);
 	}
@@ -284,7 +394,8 @@ public final class PlatzbestaetigungTestUtil {
 	public static IsPojo<AbstractMahlzeitenPensum> matches(
 		@Nonnull AbstractMahlzeitenPensum other,
 		@Nonnull LocalDate von,
-		@Nonnull LocalDate bis) {
+		@Nonnull LocalDate bis
+	) {
 
 		return matches(other, new DateRange(von, bis));
 	}
@@ -292,32 +403,41 @@ public final class PlatzbestaetigungTestUtil {
 	@Nonnull
 	public static IsPojo<AbstractMahlzeitenPensum> matches(
 		@Nonnull AbstractMahlzeitenPensum other,
-		@Nonnull DateRange gueltigkeit) {
+		@Nonnull DateRange gueltigkeit
+	) {
 
 		return pojo(AbstractMahlzeitenPensum.class)
 			.where(
 				AbstractMahlzeitenPensum::getMonatlicheBetreuungskosten,
-				comparesEqualTo(other.getMonatlicheBetreuungskosten()))
+				comparesEqualTo(other.getMonatlicheBetreuungskosten())
+			)
 			.where(
 				AbstractMahlzeitenPensum::getPensum,
-				comparesEqualTo(other.getPensum()))
+				comparesEqualTo(other.getPensum())
+			)
 			.where(
 				AbstractMahlzeitenPensum::getMonatlicheHauptmahlzeiten,
-				comparesEqualTo(other.getMonatlicheHauptmahlzeiten()))
+				comparesEqualTo(other.getMonatlicheHauptmahlzeiten())
+			)
 			.where(
 				AbstractMahlzeitenPensum::getMonatlicheNebenmahlzeiten,
-				comparesEqualTo(other.getMonatlicheNebenmahlzeiten()))
+				comparesEqualTo(other.getMonatlicheNebenmahlzeiten())
+			)
 			.where(
 				AbstractMahlzeitenPensum::getTarifProHauptmahlzeit,
-				comparesEqualTo(other.getTarifProHauptmahlzeit()))
+				comparesEqualTo(other.getTarifProHauptmahlzeit())
+			)
 			.where(
 				AbstractMahlzeitenPensum::getTarifProNebenmahlzeit,
-				comparesEqualTo(other.getTarifProNebenmahlzeit()))
+				comparesEqualTo(other.getTarifProNebenmahlzeit())
+			)
 			.where(
 				AbstractMahlzeitenPensum::isVollstaendig,
 				is(other.isVollstaendig())
 			)
 			.where(
-				AbstractMahlzeitenPensum::getGueltigkeit, equalTo(gueltigkeit));
+				AbstractMahlzeitenPensum::getGueltigkeit,
+				equalTo(gueltigkeit)
+			);
 	}
 }

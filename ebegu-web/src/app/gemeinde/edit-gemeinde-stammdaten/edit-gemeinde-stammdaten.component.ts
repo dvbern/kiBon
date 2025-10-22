@@ -25,27 +25,30 @@ import {
     Output
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../../models/TSBenutzer';
-import {TSGemeinde} from '../../../models/TSGemeinde';
 import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-import {LogFactory} from '../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 
 const LOG = LogFactory.createLog('EditGemeindeStammdatenComponent');
 
 @Component({
     selector: 'dv-edit-gemeinde-stammdaten',
+    styleUrl: './edit-gemeinde-stammdaten.component.less',
     templateUrl: './edit-gemeinde-stammdaten.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class EditGemeindeStammdatenComponent implements OnInit, OnDestroy {
     @Input() public stammdaten$: Observable<TSGemeindeStammdaten>;
@@ -68,8 +71,11 @@ export class EditGemeindeStammdatenComponent implements OnInit, OnDestroy {
     public showMessageKeinAngebotSelected: boolean = false;
     public minDateTSFI = moment('20200801', 'YYYYMMDD');
     public frenchEnabled: boolean = false;
+    protected isAPeriodeOffline: boolean;
 
     public isInfomazahlungen: boolean = false;
+    public isAppConfigAngebotTSActivated: boolean = false;
+    public isAppConfigAngebotFIActivated: boolean = false;
 
     private readonly unsubscribe$ = new Subject<void>();
     public ebeguUtil = EbeguUtil;
@@ -77,24 +83,26 @@ export class EditGemeindeStammdatenComponent implements OnInit, OnDestroy {
     public constructor(
         private readonly translate: TranslateService,
         private readonly authServiceRS: AuthServiceRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly einstellungRS: EinstellungRS
     ) {}
 
     public ngOnInit(): void {
         if (!this.gemeindeId) {
             return;
         }
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.isInfomazahlungen = res.infomaZahlungen;
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.isInfomazahlungen = res.infomaZahlungen;
+                this.isAppConfigAngebotTSActivated = res.angebotTSActivated;
+                this.isAppConfigAngebotFIActivated = res.angebotFIActivated;
+            });
+        this.stammdaten$.pipe(takeUntil(this.unsubscribe$)).subscribe({
+            next: stammdaten => this.initValues(stammdaten),
+            error: err => LOG.error(err)
         });
-        this.stammdaten$.pipe(takeUntil(this.unsubscribe$)).subscribe(
-            stammdaten => this.initValues(stammdaten),
-            err => LOG.error(err)
-        );
-    }
-
-    public altTSAdresseHasChange(newVal: boolean): void {
-        this.altTSAdresseChange.emit(newVal);
+        this.initAllPeriodenOnline();
     }
 
     public ngOnDestroy(): void {
@@ -128,10 +136,9 @@ export class EditGemeindeStammdatenComponent implements OnInit, OnDestroy {
     private initKorrespondenzsprache(stammdaten: TSGemeindeStammdaten): void {
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then(properties => properties.frenchEnabled)
-            .then(frenchEnabled => {
-                this.frenchEnabled = frenchEnabled;
-                if (!frenchEnabled) {
+            .subscribe(res => {
+                this.frenchEnabled = res.frenchEnabled;
+                if (!this.frenchEnabled) {
                     stammdaten.korrespondenzspracheFr = false;
                     stammdaten.korrespondenzspracheDe = true;
                 }
@@ -143,6 +150,19 @@ export class EditGemeindeStammdatenComponent implements OnInit, OnDestroy {
                     languages.push(this.translate.instant('FRANZOESISCH'));
                 }
                 this.korrespondenzsprache = languages.join(', ');
+            });
+    }
+
+    private initAllPeriodenOnline() {
+        this.einstellungRS
+            .findEinstellungByKey(TSEinstellungKey.GESUCHFREIGABE_ONLINE)
+            .subscribe(settings => {
+                if (settings) {
+                    const settingsBoolean = settings.map(value => {
+                        return value.getValueAsBoolean();
+                    });
+                    this.isAPeriodeOffline = settingsBoolean.includes(false);
+                }
             });
     }
 
@@ -170,14 +190,12 @@ export class EditGemeindeStammdatenComponent implements OnInit, OnDestroy {
         this.showMessageKeinAngebotSelected = !hasAngebot;
     }
 
-    public altGemeindeKontaktHasChange(newVal: boolean): void {
-        this.altGemeindeKontaktChange.emit(newVal);
-    }
-
-    public handleAngebotTSChange(gemeinde: TSGemeinde): void {
+    public handleAngebotTSChange(stammdaten: TSGemeindeStammdaten): void {
+        const gemeinde = stammdaten.gemeinde;
         if (!gemeinde.angebotTS) {
             gemeinde.besondereVolksschule = false;
         }
+        this.angeboteChanged(stammdaten);
     }
 
     public hasZusatzTextFreigabequittungChange(

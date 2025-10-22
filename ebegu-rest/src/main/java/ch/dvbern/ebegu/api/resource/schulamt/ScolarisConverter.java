@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.resource.schulamt;
@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 import ch.dvbern.ebegu.api.dtos.JaxExternalAnmeldungFerieninsel;
 import ch.dvbern.ebegu.api.dtos.JaxExternalAnmeldungTagesschule;
@@ -49,11 +49,11 @@ import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragStatus;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.Ferienname;
 import ch.dvbern.ebegu.enums.FinSitStatus;
 import ch.dvbern.ebegu.enums.ModulTagesschuleName;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.errors.ScolarisException;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -62,16 +62,24 @@ import org.apache.commons.collections.CollectionUtils;
 public class ScolarisConverter {
 
 	@Nonnull
-	public JaxExternalAnmeldungTagesschule anmeldungTagesschuleToScolaris(@Nonnull AnmeldungTagesschule betreuung)
+	public JaxExternalAnmeldungTagesschule anmeldungTagesschuleToScolaris(
+		@Nonnull AnmeldungTagesschule betreuung
+	)
 		throws ScolarisException {
 		Objects.requireNonNull(betreuung.getBelegungTagesschule());
 
 		List<JaxExternalModul> anmeldungen = new ArrayList<>();
 		betreuung.getBelegungTagesschule()
 			.getBelegungTagesschuleModule()
-			.forEach(modulTagesschule -> anmeldungen.add(modulToScolaris(modulTagesschule)));
+			.forEach(
+				modulTagesschule -> anmeldungen.add(
+					modulToScolaris(modulTagesschule)
+				)
+			);
 		if (CollectionUtils.isEmpty(anmeldungen)) {
-			throw new ScolarisException("No Modules found for " + betreuung.getReferenzNummer());
+			throw new ScolarisException(
+				"No Modules found for " + betreuung.getReferenzNummer()
+			);
 		}
 		return new JaxExternalAnmeldungTagesschule(
 			betreuung.getReferenzNummer(),
@@ -79,28 +87,45 @@ public class ScolarisConverter {
 			betreuung.getInstitutionStammdaten().getInstitution().getName(),
 			anmeldungen,
 			betreuung.getKind().getKindJA().getVorname(),
-			betreuung.getKind().getKindJA().getNachname());
+			betreuung.getKind().getKindJA().getNachname()
+		);
 	}
 
 	@Nonnull
-	public JaxExternalAnmeldungFerieninsel anmeldungFerieninselToScolaris(@Nonnull AnmeldungFerieninsel betreuung)
+	public JaxExternalAnmeldungFerieninsel anmeldungFerieninselToScolaris(
+		@Nonnull AnmeldungFerieninsel betreuung
+	)
 		throws ScolarisException {
 		Objects.requireNonNull(betreuung.getBelegungFerieninsel());
 
 		List<LocalDate> tage = new ArrayList<>();
 		betreuung.getBelegungFerieninsel()
 			.getTage()
-			.forEach(belegungFerieninselTag -> tage.add(belegungFerieninselTag.getTag()));
+			.forEach(
+				belegungFerieninselTag -> tage.add(
+					belegungFerieninselTag.getTag()
+				)
+			);
 
 		List<LocalDate> morgenmodule = new ArrayList<>();
 		betreuung.getBelegungFerieninsel()
 			.getTageMorgenmodul()
-			.forEach(belegungFerieninselTag -> morgenmodule.add(belegungFerieninselTag.getTag()));
+			.forEach(
+				belegungFerieninselTag -> morgenmodule.add(
+					belegungFerieninselTag.getTag()
+				)
+			);
 
 		JaxExternalFerienName jaxExternalFerienName =
-			feriennameToScolaris(betreuung.getBelegungFerieninsel().getFerienname());
+			feriennameToScolaris(
+				betreuung.getBelegungFerieninsel().getFerienname()
+			);
 		JaxExternalFerieninsel ferieninsel =
-			new JaxExternalFerieninsel(jaxExternalFerienName, tage, morgenmodule);
+			new JaxExternalFerieninsel(
+				jaxExternalFerienName,
+				tage,
+				morgenmodule
+			);
 
 		return new JaxExternalAnmeldungFerieninsel(
 			betreuung.getReferenzNummer(),
@@ -108,7 +133,8 @@ public class ScolarisConverter {
 			betreuung.getInstitutionStammdaten().getInstitution().getName(),
 			ferieninsel,
 			betreuung.getKind().getKindJA().getVorname(),
-			betreuung.getKind().getKindJA().getNachname());
+			betreuung.getKind().getKindJA().getNachname()
+		);
 	}
 
 	@Nonnull
@@ -119,33 +145,59 @@ public class ScolarisConverter {
 		Verfuegung famGroessenVerfuegung
 	) {
 
-		final Familiensituation familiensituation = neustesGesuch.extractFamiliensituation();
+		final Familiensituation familiensituation = neustesGesuch
+			.extractFamiliensituation();
 		Objects.requireNonNull(familiensituation);
 
-		if (EbeguUtil.isNotNullAndTrue(familiensituation.getSozialhilfeBezueger())
+		if (EbeguUtil.isNotNullAndTrue(
+			familiensituation.getSozialhilfeBezueger()
+		)
 			&& neustesGesuch.getFinSitStatus() == FinSitStatus.AKZEPTIERT) {
 			// SozialhilfeBezüger Ja -> Basiszahler (keine finSit!)
-			return Optional.of(convertToJaxExternalFinanzielleSituationWithoutFinDaten(
-				fallNummer, stichtag, neustesGesuch, JaxExternalTarifart.BASISZAHLER));
+			return Optional.of(
+				convertToJaxExternalFinanzielleSituationWithoutFinDaten(
+					fallNummer,
+					stichtag,
+					neustesGesuch,
+					JaxExternalTarifart.BASISZAHLER
+				)
+			);
 		}
 
-		if ((EbeguUtil.isNotNullAndFalse(familiensituation.getSozialhilfeBezueger())
-			&& EbeguUtil.isNotNullAndFalse(familiensituation.getVerguenstigungGewuenscht()))
+		if ((EbeguUtil.isNotNullAndFalse(
+			familiensituation.getSozialhilfeBezueger()
+		)
+			&& EbeguUtil.isNotNullAndFalse(
+				familiensituation.getVerguenstigungGewuenscht()
+			))
 			|| neustesGesuch.getFinSitStatus() == FinSitStatus.ABGELEHNT) {
 			// SozialhilfeBezüger Nein + Vergünstigung gewünscht Nein  -> Vollzahler (keine finSit!)
-			return Optional.of(convertToJaxExternalFinanzielleSituationWithoutFinDaten(
-				fallNummer, stichtag, neustesGesuch, JaxExternalTarifart.VOLLZAHLER));
+			return Optional.of(
+				convertToJaxExternalFinanzielleSituationWithoutFinDaten(
+					fallNummer,
+					stichtag,
+					neustesGesuch,
+					JaxExternalTarifart.VOLLZAHLER
+				)
+			);
 
 		}
 		// SozialhilfeBezüger Nein + Vergünstigung gewünscht ja  oder Kita-Betreuung vorhanden -> Detailrechnung (mit
 		// finSit!)
 		// Find and return Finanzdaten on Verfügungszeitabschnitt from Stichtag
-		List<VerfuegungZeitabschnitt> zeitabschnitten = famGroessenVerfuegung.getZeitabschnitte();
+		List<VerfuegungZeitabschnitt> zeitabschnitten = famGroessenVerfuegung
+			.getZeitabschnitte();
 		// get finanzielleSituation only for stichtag
 		for (VerfuegungZeitabschnitt zeitabschnitt : zeitabschnitten) {
 			if (zeitabschnitt.getGueltigkeit().contains(stichtag)) {
-				return Optional.of(convertToJaxExternalFinanzielleSituation(
-					fallNummer, stichtag, neustesGesuch, zeitabschnitt));
+				return Optional.of(
+					convertToJaxExternalFinanzielleSituation(
+						fallNummer,
+						stichtag,
+						neustesGesuch,
+						zeitabschnitt
+					)
+				);
 			}
 		}
 		// If no Finanzdaten found on Verfügungszeitabschnitt from Stichtag, return ErrorObject
@@ -153,7 +205,9 @@ public class ScolarisConverter {
 	}
 
 	@Nonnull
-	JaxExternalAntragstatus antragstatusToScolaris(@Nonnull AntragStatus status) {
+	JaxExternalAntragstatus antragstatusToScolaris(
+		@Nonnull AntragStatus status
+	) {
 		// Es sind in Scolaris alle Status vorhanden, ausser KEIN_KONTINGENT. Dieses behandeln wir
 		// wie GEPRUEFT
 		if (AntragStatus.KEIN_KONTINGENT == status) {
@@ -163,7 +217,9 @@ public class ScolarisConverter {
 	}
 
 	@Nonnull
-	JaxExternalBetreuungsangebotTyp betreuungsangebotTypToScolaris(@Nonnull BetreuungsangebotTyp typ)
+	JaxExternalBetreuungsangebotTyp betreuungsangebotTypToScolaris(
+		@Nonnull BetreuungsangebotTyp typ
+	)
 		throws ScolarisException {
 		// In Scolaris werden nur TAGESSCHULE und FERIENINSEL behandelt
 		if (BetreuungsangebotTyp.TAGESSCHULE == typ) {
@@ -172,11 +228,15 @@ public class ScolarisConverter {
 		if (BetreuungsangebotTyp.FERIENINSEL == typ) {
 			return JaxExternalBetreuungsangebotTyp.FERIENINSEL;
 		}
-		throw new ScolarisException("Could not convert BetreuungsangebotTyp " + typ);
+		throw new ScolarisException(
+			"Could not convert BetreuungsangebotTyp " + typ
+		);
 	}
 
 	@Nonnull
-	JaxExternalBetreuungsstatus betreuungsstatusToScolaris(@Nonnull Betreuungsstatus status) throws ScolarisException {
+	JaxExternalBetreuungsstatus betreuungsstatusToScolaris(
+		@Nonnull Betreuungsstatus status
+	) throws ScolarisException {
 		switch (status) {
 		case SCHULAMT_ANMELDUNG_ERFASST:
 			return JaxExternalBetreuungsstatus.SCHULAMT_ANMELDUNG_ERFASST;
@@ -190,7 +250,9 @@ public class ScolarisConverter {
 		case SCHULAMT_FALSCHE_INSTITUTION:
 			return JaxExternalBetreuungsstatus.SCHULAMT_FALSCHE_INSTITUTION;
 		default:
-			throw new ScolarisException("Could not convert Betreuungsstatus " + status);
+			throw new ScolarisException(
+				"Could not convert Betreuungsstatus " + status
+			);
 		}
 	}
 
@@ -200,22 +262,34 @@ public class ScolarisConverter {
 	}
 
 	@Nonnull
-	JaxExternalModulName modulnameToScolaris(@Nonnull ModulTagesschuleName modulTagesschuleName)
+	JaxExternalModulName modulnameToScolaris(
+		@Nonnull ModulTagesschuleName modulTagesschuleName
+	)
 		throws ScolarisException {
 		if (ModulTagesschuleName.DYNAMISCH == modulTagesschuleName) {
-			throw new ScolarisException("Could not convert ModulTagesschuleName " + modulTagesschuleName);
+			throw new ScolarisException(
+				"Could not convert ModulTagesschuleName "
+					+ modulTagesschuleName
+			);
 		}
 		return JaxExternalModulName.valueOf(modulTagesschuleName.name());
 	}
 
 	@Nonnull
-	JaxExternalModul modulToScolaris(@Nonnull BelegungTagesschuleModul tagesschuleModul) throws ScolarisException {
+	JaxExternalModul modulToScolaris(
+		@Nonnull BelegungTagesschuleModul tagesschuleModul
+	) throws ScolarisException {
 		ModulTagesschuleName modulTagesschuleName =
-			tagesschuleModul.getModulTagesschule().getModulTagesschuleGroup().getModulTagesschuleName();
-		JaxExternalModulName jaxModulname = modulnameToScolaris(modulTagesschuleName);
+			tagesschuleModul.getModulTagesschule()
+				.getModulTagesschuleGroup()
+				.getModulTagesschuleName();
+		JaxExternalModulName jaxModulname = modulnameToScolaris(
+			modulTagesschuleName
+		);
 		return new JaxExternalModul(
 			tagesschuleModul.getModulTagesschule().getWochentag(),
-			jaxModulname);
+			jaxModulname
+		);
 	}
 
 	@Nonnull
@@ -225,8 +299,8 @@ public class ScolarisConverter {
 		@Nonnull Gesuch neustesGesuch,
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
 	) {
-		BigDecimal abzugFamGroesse = zeitabschnitt.getAbzugFamGroesse() != null
-			? zeitabschnitt.getAbzugFamGroesse() : BigDecimal.ZERO;
+		BigDecimal abzugFamGroesse = zeitabschnitt.getAbzugFamGroesse()
+			!= null ? zeitabschnitt.getAbzugFamGroesse() : BigDecimal.ZERO;
 		return new JaxExternalFinanzielleSituation(
 			fallNummer,
 			stichtag,
@@ -234,7 +308,8 @@ public class ScolarisConverter {
 			abzugFamGroesse,
 			antragstatusToScolaris(neustesGesuch.getStatus()),
 			JaxExternalTarifart.DETAILBERECHNUNG,
-			rechnungsAdresseToScolaris(neustesGesuch, stichtag));
+			rechnungsAdresseToScolaris(neustesGesuch, stichtag)
+		);
 	}
 
 	@Nonnull
@@ -242,13 +317,15 @@ public class ScolarisConverter {
 		long fallNummer,
 		@Nonnull LocalDate stichtag,
 		@Nonnull Gesuch neustesGesuch,
-		@Nonnull JaxExternalTarifart tarifart) {
+		@Nonnull JaxExternalTarifart tarifart
+	) {
 		return new JaxExternalFinanzielleSituation(
 			fallNummer,
 			stichtag,
 			antragstatusToScolaris(neustesGesuch.getStatus()),
 			tarifart,
-			rechnungsAdresseToScolaris(neustesGesuch, stichtag));
+			rechnungsAdresseToScolaris(neustesGesuch, stichtag)
+		);
 	}
 
 	@Nonnull
@@ -256,9 +333,11 @@ public class ScolarisConverter {
 		@Nonnull Gesuch gesuch,
 		@Nonnull LocalDate stichtag
 	) {
-		final GesuchstellerContainer gesuchsteller1 = gesuch.getGesuchsteller1();
+		final GesuchstellerContainer gesuchsteller1 = gesuch
+			.getGesuchsteller1();
 		Objects.requireNonNull(gesuchsteller1);
-		final GesuchstellerAdresse rechnungsAdresse = gesuchsteller1.extractEffectiveRechnungsAdresse(stichtag);
+		final GesuchstellerAdresse rechnungsAdresse = gesuchsteller1
+			.extractEffectiveRechnungsAdresse(stichtag);
 		Objects.requireNonNull(rechnungsAdresse);
 
 		return new JaxExternalRechnungsAdresse(
@@ -270,6 +349,7 @@ public class ScolarisConverter {
 			rechnungsAdresse.getPlz(),
 			rechnungsAdresse.getOrt(),
 			rechnungsAdresse.getLand().name(),
-			rechnungsAdresse.getOrganisation());
+			rechnungsAdresse.getOrganisation()
+		);
 	}
 }

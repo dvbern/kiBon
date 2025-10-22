@@ -26,19 +26,24 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.dto.FinanzielleSituationResultateDTO;
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.NeueVeranlagungsMitteilung;
+import ch.dvbern.ebegu.entities.SteuerdatenResponse;
 import ch.dvbern.ebegu.entities.VeranlagungEventLog;
-import ch.dvbern.ebegu.enums.EinstellungKey;
+import ch.dvbern.ebegu.entities.WizardStep;
+import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.GesuchstellerTyp;
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
+import ch.dvbern.ebegu.enums.WizardStepName;
+import ch.dvbern.ebegu.enums.WizardStepStatus;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.OIDCServiceException;
 import ch.dvbern.ebegu.kafka.BaseEventHandler;
@@ -46,28 +51,40 @@ import ch.dvbern.ebegu.kafka.EventType;
 import ch.dvbern.ebegu.nesko.handler.KibonAnfrageContext;
 import ch.dvbern.ebegu.nesko.handler.KibonAnfrageHandler;
 import ch.dvbern.ebegu.nesko.utils.KibonAnfrageUtil;
-import ch.dvbern.ebegu.services.EinstellungService;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.FinanzielleSituationService;
 import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.MitteilungService;
+import ch.dvbern.ebegu.services.WizardStepService;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.kibon.exchange.commons.neskovanp.NeueVeranlagungEventDTO;
-import ch.dvbern.lib.cdipersistence.Persistence;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@ApplicationScoped
-public class NeueVeranlagungEventHandler extends BaseEventHandler<NeueVeranlagungEventDTO> {
+import static ch.dvbern.ebegu.enums.AntragStatus.FREIGABEQUITTUNG;
+import static ch.dvbern.ebegu.enums.AntragStatus.FREIGEGEBEN;
+import static ch.dvbern.ebegu.enums.AntragStatus.IN_BEARBEITUNG_GS;
 
-	private static final Logger LOG = LoggerFactory.getLogger(NeueVeranlagungEventHandler.class);
-	private static final String BETREFF_KEY = "neue_veranlagung_mitteilung_betreff";
-	private static final String BETREFF_KEY_MARKIERT = "neue_veranlagung_mitteilung_betreff_markiert";
-	private static final String MESSAGE_KEY = "neue_veranlagung_mitteilung_message";
-	private static final String MESSAGE_KEY_MARKIERT = "neue_veranlagung_mitteilung_message_markiert";
+@ApplicationScoped
+public class NeueVeranlagungEventHandler extends
+	BaseEventHandler<NeueVeranlagungEventDTO> {
+
+	private static final Logger LOG = LoggerFactory.getLogger(
+		NeueVeranlagungEventHandler.class
+	);
+	private static final String BETREFF_KEY =
+		"neue_veranlagung_mitteilung_betreff";
+	private static final String BETREFF_KEY_MARKIERT =
+		"neue_veranlagung_mitteilung_betreff_markiert";
+	private static final String MESSAGE_KEY =
+		"neue_veranlagung_mitteilung_message";
+	private static final String MESSAGE_KEY_MARKIERT =
+		"neue_veranlagung_mitteilung_message_markiert";
+	private static final String MESSAGE_KEY_ANTRAGSTELLENDE_TITEL =
+		"neue_veranlagung_mitteilung_antragstellende_titel";
 
 	@Inject
 	private GesuchService gesuchService;
@@ -90,112 +107,272 @@ public class NeueVeranlagungEventHandler extends BaseEventHandler<NeueVeranlagun
 	@Inject
 	private MitteilungService mitteilungService;
 
+	@Inject
+	private WizardStepService wizardStepService;
+
 	@Override
 	protected void processEvent(
-			@Nonnull LocalDateTime eventTime,
-			@Nonnull EventType eventType,
-			@Nonnull String key,
-			@Nonnull NeueVeranlagungEventDTO dto,
-			@Nonnull String clientName) {
+		@Nonnull LocalDateTime eventTime,
+		@Nonnull EventType eventType,
+		@Nonnull String key,
+		@Nonnull NeueVeranlagungEventDTO dto,
+		@Nonnull String clientName
+	) {
 		Processing processing = attemptProcessing(key, dto);
 		VeranlagungEventLog veranlagungEventLog = new VeranlagungEventLog(
-				key,
-				dto.getZpvNummer(),
-				dto.getGeburtsdatum(),
-				dto.getGesuchsperiodeBeginnJahr()
+			key,
+			dto.getZpvNummer(),
+			dto.getGeburtsdatum(),
+			dto.getGesuchsperiodeBeginnJahr()
 		);
 		if (!processing.isProcessingSuccess()) {
 			String message = processing.getMessage();
 			LOG.warn(
-					"NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} und Gesuch: {} nicht "
-							+ "verarbeitet: {}",
-					dto.getZpvNummer(),
-					key,
-					message);
+				"NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} und Gesuch: {} nicht "
+					+ "verarbeitet: {}",
+				dto.getZpvNummer(),
+				key,
+				message
+			);
 			veranlagungEventLog.setResult(processing.getMessage());
 		} else {
-			LOG.info("NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} und Gesuch: {} "
-							+ "verarbeitet",
-					dto.getZpvNummer(), key);
-			veranlagungEventLog.setResult("Veranlagung erfolgreich verarbeitet");
+			LOG.info(
+				"NeueVeranlagungEventHandler: Neue Veranlagung Event für ZPV-Nummer {} und Gesuch: {} "
+					+ "verarbeitet",
+				dto.getZpvNummer(),
+				key
+			);
+			veranlagungEventLog.setResult(
+				"Veranlagung erfolgreich verarbeitet"
+			);
 		}
 		persistence.persist(veranlagungEventLog);
 	}
 
 	@Nonnull
-	protected Processing attemptProcessing(@Nonnull String key, @Nonnull NeueVeranlagungEventDTO dto) {
-		Gesuch gesuch = findDetachedGesuchByKey(key);
+	protected Processing attemptProcessing(
+		@Nonnull String key,
+		@Nonnull NeueVeranlagungEventDTO dto
+	) {
+		Optional<Gesuch> gesuchOpt = gesuchService.findGesuch(key);
 
-		if (gesuch == null) {
-			return Processing.failure("Kein Gesuch für Key gefunden. Key: " + key);
-		}
-
-		if (gesuch.getStatus().isAnyOfInBearbeitungGSOrSZD()) {
-			return Processing.failure("Gesuch ist noch nicht freigegeben: " + key);
-		}
-
-		if (!KibonAnfrageUtil.hasGesuchSteuerdatenResponseWithZpvNummer(gesuch, dto.getZpvNummer())) {
+		if (gesuchOpt.isEmpty()) {
 			return Processing.failure(
-					"Die neue Veranlagung mit ZPV-Nummer: "
-							+ dto.getZpvNummer()
-							+ ", konnte nicht mit einer gueltige Antragstellende verlinkt werden.");
+				"Kein Gesuch für Key gefunden. Key: " + key
+			);
+		}
+		Gesuch gesuch = gesuchOpt.get();
+
+		if (gesuch.getStatus()
+			.equals(AntragStatus.IN_BEARBEITUNG_SOZIALDIENST)) {
+			return Processing.failure(
+				"Gesuch ist in Bearbeitung bei der Sozialdienst: " + key
+			);
 		}
 
-		GesuchstellerTyp gesuchstellerTyp = KibonAnfrageUtil.getGesuchstellerTypByGeburtsdatum(gesuch, dto.getGeburtsdatum());
+		if (!KibonAnfrageUtil.hasGesuchSteuerdatenResponseWithZpvNummer(
+			gesuch,
+			dto.getZpvNummer()
+		)) {
+			return Processing.failure(
+				"Die neue Veranlagung mit ZPV-Nummer: "
+					+ dto.getZpvNummer()
+					+ ", konnte nicht mit einer gueltige Antragstellende verlinkt werden."
+			);
+		}
+
+		GesuchstellerTyp gesuchstellerTyp = KibonAnfrageUtil
+			.getGesuchstellerTypByGeburtsdatum(
+				gesuch,
+				dto.getGeburtsdatum()
+			);
 
 		if (gesuchstellerTyp == null) {
 			return Processing.failure(
 				"Die neue Veranlagung mit Geburtsdatum: "
 					+ dto.getGeburtsdatum()
-					+ ", konnte nicht mit einer gueltige Antragstellende verlinkt werden.");
+					+ ", konnte nicht mit einer gueltige Antragstellende verlinkt werden."
+			);
+		}
+
+		if (hasNoSteuerschnittstelleZugriff(gesuchstellerTyp, gesuch)) {
+			return Processing.failure(
+				"Die Veranlagungsmitteilung wird nicht erstellt, weil die Zustimmung der Erziehungsberechtigten im aktuellen "
+					+ "Gesuch/Mutation "
+					+ gesuch.getId()
+					+ " nicht gegeben ist."
+			);
 		}
 
 		// erst die Massgegebenes Einkommens fuer das betroffenes Gesuch berechnen
-		FinanzielleSituationResultateDTO finSitOriginalResult = finanzielleSituationService.calculateResultate(gesuch);
-
+		FinanzielleSituationResultateDTO finSitOriginalResult =
+			finanzielleSituationService.calculateResultate(gesuch);
 		KibonAnfrageContext kibonAnfrageContext = null;
 		try {
-			kibonAnfrageContext = kibonAnfrageHandler.handleKibonAnfrage(gesuch, gesuchstellerTyp);
+			kibonAnfrageContext = kibonAnfrageHandler.handleKibonAnfrage(
+				gesuch,
+				gesuchstellerTyp
+			);
 		} catch (OIDCServiceException e) {
-			return Processing.failure("OIDC Server koennte nicht erreicht werden: " + key);
+			return Processing.failure(
+				"OIDC Server koennte nicht erreicht werden: " + key
+			);
 		}
 
 		if (kibonAnfrageContext.getSteuerdatenAnfrageStatus() == null
-				|| !kibonAnfrageContext.getSteuerdatenAnfrageStatus().isSteuerdatenAbfrageErfolgreich()) {
+			|| !kibonAnfrageContext.getSteuerdatenAnfrageStatus()
+				.isSteuerdatenAbfrageErfolgreich()) {
 			return Processing.failure("Keine neue Veranlagung gefunden");
 		}
 
 		// Nur RECHTSKRAEFTIGE SteuerResponse sind zu betrachten
-		if (kibonAnfrageContext.getSteuerdatenAnfrageStatus() != SteuerdatenAnfrageStatus.RECHTSKRAEFTIG) {
-			return Processing.failure("Die neue Veranlagung ist noch nicht Rechtskraeftig");
+		if (kibonAnfrageContext.getSteuerdatenAnfrageStatus()
+			!= SteuerdatenAnfrageStatus.RECHTSKRAEFTIG) {
+			return Processing.failure(
+				"Die neue Veranlagung ist noch nicht Rechtskraeftig"
+			);
 		}
 
 		FinanzielleSituationResultateDTO finSitNeuResult =
-				finanzielleSituationService.calculateResultate(kibonAnfrageContext.getGesuch());
+			finanzielleSituationService.calculateResultate(
+				kibonAnfrageContext.getGesuch()
+			);
 
 		BigDecimal minUnterschiedEinkommen =
-				getEinstelungMinUnterschiedEinkommen(kibonAnfrageContext.getGesuch().getGesuchsperiode());
+			getEinstelungMinUnterschiedEinkommen(
+				kibonAnfrageContext.getGesuch().getGesuchsperiode()
+			);
 		BigDecimal unterschiedEinkommen = MathUtil.EXACT.subtract(
-				finSitNeuResult.getMassgebendesEinkVorAbzFamGr(),
-				finSitOriginalResult.getMassgebendesEinkVorAbzFamGr());
+			finSitNeuResult.getMassgebendesEinkVorAbzFamGr(),
+			finSitOriginalResult.getMassgebendesEinkVorAbzFamGr()
+		);
 
-		boolean isMarkierFuerKontroll = kibonAnfrageContext.getGesuch().getMarkiertFuerKontroll();
-		if (!checkBenachrichtigungRequired(isMarkierFuerKontroll, unterschiedEinkommen, minUnterschiedEinkommen)) {
-			String unterschiedEinkommenString = unterschiedEinkommen.stripTrailingZeros().toPlainString();
-			return Processing.failure(String.format(
+		boolean isMarkierFuerKontroll = kibonAnfrageContext.getGesuch()
+			.getMarkiertFuerKontroll();
+		if (!checkBenachrichtigungRequired(
+			isMarkierFuerKontroll,
+			unterschiedEinkommen,
+			minUnterschiedEinkommen
+		)) {
+			String unterschiedEinkommenString = unterschiedEinkommen
+				.stripTrailingZeros()
+				.toPlainString();
+			return Processing.failure(
+				String.format(
 					"Keine Meldung erstellt. Das massgebende Einkommen hat sich um %s Franken verändert. Der "
-							+ "konfigurierte Schwellenwert zur Benachrichtigung liegt bei %s Franken",
+						+ "konfigurierte Schwellenwert zur Benachrichtigung liegt bei %s Franken",
 					unterschiedEinkommenString,
-					minUnterschiedEinkommen));
+					minUnterschiedEinkommen
+				)
+			);
+		}
+		if (isAnyOfInBearbeitungGSOrFreigegeben(gesuch.getStatus())) {
+			return updateWizardStepStatusAndGS(
+				key,
+				dto.getZpvNummer()
+			);
+		} else {
+			getAndRefreschGesuchFromDB(key);
+		}
+		return createAndSendNeueVeranlagungsMitteilung(
+			kibonAnfrageContext,
+			dto.getZpvNummer()
+		);
+	}
+
+	private Gesuch getAndRefreschGesuchFromDB(@Nonnull String gesuchId) {
+		Gesuch gesuchFromDB = persistence.find(Gesuch.class, gesuchId);
+		persistence.getEntityManager().refresh(gesuchFromDB);
+		return gesuchFromDB;
+	}
+
+	private Processing updateWizardStepStatusAndGS(
+		@Nonnull String gesuchId,
+		int zpvNummer
+	) {
+		WizardStep wizardStep = wizardStepService.findWizardStepFromGesuch(
+			gesuchId,
+			WizardStepName.FINANZIELLE_SITUATION
+		);
+		if (wizardStep.getWizardStepStatus().equals(WizardStepStatus.OK)) {
+			wizardStep.setWizardStepStatus(WizardStepStatus.IN_BEARBEITUNG);
+			wizardStepService.saveWizardStep(wizardStep);
+		}
+		Gesuch gesuchFromDB = getAndRefreschGesuchFromDB(gesuchId);
+		if (Boolean.TRUE
+			.equals(
+				gesuchFromDB.getFamiliensituationContainer()
+					.getFamiliensituationJA()
+					.getGemeinsameSteuererklaerung()
+			)
+			|| (gesuchFromDB.getGesuchsteller1()
+				.getGesuchstellerJA()
+				.getZpvNummer()
+				!= null
+				&& zpvNummer
+					==
+					Integer.parseInt(
+						gesuchFromDB.getGesuchsteller1()
+							.getGesuchstellerJA()
+							.getZpvNummer()
+					))) {
+			gesuchFromDB.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA()
+				.setSteuerdatenAbfrageStatus(
+					SteuerdatenAnfrageStatus.NEUE_VERANLAGUNG
+				);
+			persistence.merge(
+				gesuchFromDB.getGesuchsteller1()
+					.getFinanzielleSituationContainer()
+					.getFinanzielleSituationJA()
+			);
+		} else {
+			gesuchFromDB.getGesuchsteller2()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA()
+				.setSteuerdatenAbfrageStatus(
+					SteuerdatenAnfrageStatus.NEUE_VERANLAGUNG
+				);
+			persistence.merge(
+				gesuchFromDB.getGesuchsteller2()
+					.getFinanzielleSituationContainer()
+					.getFinanzielleSituationJA()
+			);
 		}
 
-		return createAndSendNeueVeranlagungsMitteilung(kibonAnfrageContext, dto.getZpvNummer());
+		return Processing.success();
+	}
+
+	private boolean hasNoSteuerschnittstelleZugriff(
+		GesuchstellerTyp gesuchstellerTyp,
+		Gesuch gesuch
+	) {
+		var current = gesuchService.getNeustesVerfuegtesGesuchFuerGesuch(gesuch)
+			.orElse(gesuch);
+		var container = gesuchstellerTyp == GesuchstellerTyp.GESUCHSTELLER_1 ?
+			current.getGesuchsteller1() :
+			current.getGesuchsteller2();
+		if (container == null) {
+			throw new EbeguRuntimeException(
+				"hasNoSteuerschnittstelleZugriff",
+				"gesuchstellerTyp must point to a existing gesuchsteller"
+			);
+		}
+		if (container.getFinanzielleSituationContainer() == null) {
+			return true;
+		}
+		return Boolean.FALSE.equals(
+			container.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA()
+				.getSteuerdatenZugriff()
+		);
 	}
 
 	private boolean checkBenachrichtigungRequired(
-			boolean isMarkierFuerKontroll,
-			@Nonnull BigDecimal unterschiedEinkommen,
-			@Nonnull BigDecimal minUnterschiedEinkommen
+		boolean isMarkierFuerKontroll,
+		@Nonnull BigDecimal unterschiedEinkommen,
+		@Nonnull BigDecimal minUnterschiedEinkommen
 	) {
 		// falls das Gesuch für die Kontrolle markiert ist, dann immer benachrichtigen
 		if (isMarkierFuerKontroll) {
@@ -211,83 +388,164 @@ public class NeueVeranlagungEventHandler extends BaseEventHandler<NeueVeranlagun
 
 	}
 
-	@SuppressWarnings("PMD.CloseResource")
-	@Nullable
-	private Gesuch findDetachedGesuchByKey(String key) {
-		Optional<Gesuch> gesuchOpt = gesuchService.findGesuch(key);
-		if (gesuchOpt.isEmpty()) {
-			return null;
-		}
-
-		Gesuch gesuch = gesuchOpt.get();
-
-		// Wir werden das Gesuch FinSit ersetzen mit die neue Steuerdaten, es muss unbedingt nicht persistiert werden
-		// deswegen ist das Gesuch als detached gesetzt
-		Session session = persistence.getEntityManager().unwrap(Session.class);
-		session.evict(gesuch);
-		return gesuch;
-	}
-
 	private Processing createAndSendNeueVeranlagungsMitteilung(
-			@Nonnull KibonAnfrageContext kibonAnfrageContext, int zpvNummer) {
+		@Nonnull KibonAnfrageContext kibonAnfrageContext,
+		int zpvNummer
+	) {
 		Gesuch gesuch = kibonAnfrageContext.getGesuch();
-		List<String> gesuchIds = gesuchService.getAllGesucheIdsForDossierAndPeriod(
+		List<String> gesuchIds = gesuchService
+			.getAllGesucheIdsForDossierAndPeriod(
 				gesuch.getDossier(),
-				gesuch.getGesuchsperiode());
+				gesuch.getGesuchsperiode()
+			);
 
 		Collection<NeueVeranlagungsMitteilung> open =
-				mitteilungService.findOffeneNeueVeranlagungsmitteilungenForGesuch(gesuchIds);
+			mitteilungService
+				.findOffeneNeueVeranlagungsmitteilungenForGesuch(
+					gesuchIds
+				);
 
-		Optional<NeueVeranlagungsMitteilung> latest = findRelevantNeueVzpveranlagungsMitteilung(open, zpvNummer);
+		Optional<NeueVeranlagungsMitteilung> latest =
+			findRelevantNeueVzpveranlagungsMitteilung(open, zpvNummer);
 
-		Locale locale = EbeguUtil.extractKorrespondenzsprache(gesuch, gemeindeService).getLocale();
+		Locale locale = EbeguUtil.extractKorrespondenzsprache(
+			gesuch,
+			gemeindeService
+		).getLocale();
 		if (latest.isPresent()) {
-			return Processing.failure("Es wurde bereits eine offene Veranlagungsmitteilung"
-					+ " zu dieser ZPV Nummer gefunden.");
+			return Processing.failure(
+				"Es wurde bereits eine offene Veranlagungsmitteilung"
+					+ " zu dieser ZPV Nummer gefunden."
+			);
 		}
 
-		NeueVeranlagungsMitteilung neueVeranlagungsMitteilung = new NeueVeranlagungsMitteilung();
+		NeueVeranlagungsMitteilung neueVeranlagungsMitteilung =
+			new NeueVeranlagungsMitteilung();
 		neueVeranlagungsMitteilung.setDossier(gesuch.getDossier());
 		Objects.requireNonNull(kibonAnfrageContext.getSteuerdatenResponse());
-		String betreffKey = gesuch.getMarkiertFuerKontroll() ? BETREFF_KEY_MARKIERT : BETREFF_KEY;
-		String messageKey = gesuch.getMarkiertFuerKontroll() ? MESSAGE_KEY_MARKIERT : MESSAGE_KEY;
-		neueVeranlagungsMitteilung.setSubject(ServerMessageUtil.getMessage(
+		String betreffKey = gesuch.getMarkiertFuerKontroll() ?
+			BETREFF_KEY_MARKIERT :
+			BETREFF_KEY;
+		String messageKey = gesuch.getMarkiertFuerKontroll() ?
+			MESSAGE_KEY_MARKIERT :
+			MESSAGE_KEY;
+		neueVeranlagungsMitteilung.setSubject(
+			ServerMessageUtil.getMessage(
 				betreffKey,
 				locale,
 				gesuch.extractMandant(),
-				gesuch.getGesuchsperiode().getGesuchsperiodeString()));
-		neueVeranlagungsMitteilung.setMessage(ServerMessageUtil.getMessage(
+				gesuch.extractGemeinde(),
+				String.valueOf(
+					kibonAnfrageContext.getGesuch()
+						.getGesuchsperiode()
+						.getBasisJahr()
+				),
+				getGesuchstellendenAlsString(
+					kibonAnfrageContext.getSteuerdatenResponse(),
+					gesuch,
+					locale
+				),
+				gesuch.getGesuchsperiode().getGesuchsperiodeString()
+			)
+		);
+		neueVeranlagungsMitteilung.setMessage(
+			ServerMessageUtil.getMessage(
 				messageKey,
 				locale,
-				gesuch.extractMandant()));
-		neueVeranlagungsMitteilung.setSteuerdatenResponse(kibonAnfrageContext.getSteuerdatenResponse());
-		mitteilungService.sendNeueVeranlagungsmitteilung(neueVeranlagungsMitteilung);
+				gesuch.extractMandant(),
+				gesuch.extractGemeinde()
+			)
+		);
+		neueVeranlagungsMitteilung.setSteuerdatenResponse(
+			kibonAnfrageContext.getSteuerdatenResponse()
+		);
+		mitteilungService.sendNeueVeranlagungsmitteilung(
+			neueVeranlagungsMitteilung
+		);
 		return Processing.success();
 	}
 
-	private Optional<NeueVeranlagungsMitteilung> findRelevantNeueVzpveranlagungsMitteilung(
-			@Nonnull Collection<NeueVeranlagungsMitteilung> open,
-			Integer zpvNummer) {
-		return open.stream()
-				.filter(neueVeranlagungsMitteilung -> zpvNummer.equals(
-						neueVeranlagungsMitteilung.getSteuerdatenResponse().getZpvNrAntragsteller()))
-				.findFirst();
+	private String getGesuchstellendenAlsString(
+		SteuerdatenResponse steuerdatenResponse,
+		Gesuch gesuch,
+		Locale locale
+	) {
+		if (Boolean.TRUE
+			.equals(
+				gesuch.getFamiliensituationContainer()
+					.getFamiliensituationJA()
+					.getGemeinsameSteuererklaerung()
+			)) {
+			return ServerMessageUtil.getMessage(
+				MESSAGE_KEY_ANTRAGSTELLENDE_TITEL,
+				locale,
+				gesuch.extractMandant(),
+				gesuch.extractGemeinde(),
+				gesuch.getGesuchsteller1().getGesuchstellerJA().getFullName(),
+				gesuch.getGesuchsteller2().getGesuchstellerJA().getFullName()
+			);
+		}
+		if (gesuch.getGesuchsteller1() != null
+			&& gesuch.getGesuchsteller1()
+				.getGesuchstellerJA()
+				.getZpvNummer()
+				!= null
+			&&
+			steuerdatenResponse.getZpvNrAntragsteller()
+				.equals(
+					Integer.parseInt(
+						gesuch.getGesuchsteller1()
+							.getGesuchstellerJA()
+							.getZpvNummer()
+					)
+				)) {
+			return gesuch.getGesuchsteller1()
+				.getGesuchstellerJA()
+				.getFullName();
+		}
+		return gesuch.getGesuchsteller2().getGesuchstellerJA().getFullName();
 	}
 
-	private BigDecimal getEinstelungMinUnterschiedEinkommen(Gesuchsperiode gesuchsperiode) {
-		List<Einstellung> einstellungList = einstellungService.findEinstellungen(
+	private Optional<NeueVeranlagungsMitteilung> findRelevantNeueVzpveranlagungsMitteilung(
+		@Nonnull Collection<NeueVeranlagungsMitteilung> open,
+		Integer zpvNummer
+	) {
+		return open.stream()
+			.filter(
+				neueVeranlagungsMitteilung -> zpvNummer.equals(
+					neueVeranlagungsMitteilung
+						.getSteuerdatenResponse()
+						.getZpvNrAntragsteller()
+				)
+			)
+			.findFirst();
+	}
+
+	private BigDecimal getEinstelungMinUnterschiedEinkommen(
+		Gesuchsperiode gesuchsperiode
+	) {
+		List<Einstellung> einstellungList = einstellungService
+			.findEinstellungen(
 				EinstellungKey.VERANLAGUNG_MIN_UNTERSCHIED_MASSGEBENDESEINK,
-				gesuchsperiode);
+				gesuchsperiode
+			);
 
 		if (einstellungList.size() != 1) {
 			throw new EbeguRuntimeException(
-					"NeueVeranlagungEventHandler: ",
-					"Es sollte exakt eine Einstellung für den VERANLAGUNG_MIN_UNTERSCHIED_MASSGEBENDESEINK und die "
-							+ "Gesuchsperiode "
-							+ gesuchsperiode.getGesuchsperiodeString()
-							+ " gefunden werden");
+				"NeueVeranlagungEventHandler: ",
+				"Es sollte exakt eine Einstellung für den VERANLAGUNG_MIN_UNTERSCHIED_MASSGEBENDESEINK und die "
+					+ "Gesuchsperiode "
+					+ gesuchsperiode.getGesuchsperiodeString()
+					+ " gefunden werden"
+			);
 		}
 
 		return einstellungList.get(0).getValueAsBigDecimal();
+	}
+
+	private boolean isAnyOfInBearbeitungGSOrFreigegeben(AntragStatus status) {
+		return status == FREIGABEQUITTUNG
+			|| status == IN_BEARBEITUNG_GS
+			|| status == FREIGEGEBEN;
 	}
 }

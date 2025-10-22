@@ -16,22 +16,21 @@
  */
 
 import {StateService} from '@uirouter/angular';
-import * as moment from 'moment';
+import moment from 'moment';
+import {TSGesuchsperiode, TSDateRange} from '@kibon/shared/model/entity';
+import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSFamilienstatus} from '../../../../models/enums/TSFamilienstatus';
 import {TSFinanzielleSituationTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
-import {TSGesuchsperiodeStatus} from '../../../../models/enums/TSGesuchsperiodeStatus';
 import {TSFamiliensituation} from '../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../models/TSFamiliensituationContainer';
 import {TSFinanzielleSituation} from '../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../models/TSFinanzModel';
 import {TSGesuch} from '../../../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../../../models/TSGesuchsperiode';
 import {TSGesuchsteller} from '../../../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../../../models/TSGesuchstellerContainer';
-import {TSDateRange} from '../../../../models/types/TSDateRange';
 import {BerechnungsManager} from '../../../service/berechnungsManager';
 import {FinanzielleSituationRS} from '../../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
@@ -39,11 +38,13 @@ import {WizardStepManager} from '../../../service/wizardStepManager';
 import {FinanzielleSituationSolothurnService} from './finanzielle-situation-solothurn.service';
 import SpyObj = jasmine.SpyObj;
 
+type MockProvider = {
+    provide: any;
+    useValue: any;
+};
+
 export class SolothurnFinSitTestHelpers {
-    public static getMockProvidersExceptGesuchModelManager(): {
-        provide: any;
-        useValue: any;
-    }[] {
+    public static getMockProvidersExceptGesuchModelManager(): MockProvider[] {
         const wizardStepManagerSpy = jasmine.createSpyObj<WizardStepManager>(
             WizardStepManager.name,
             [
@@ -52,7 +53,8 @@ export class SolothurnFinSitTestHelpers {
                 'isNextStepBesucht',
                 'isNextStepEnabled',
                 'getCurrentStepName',
-                'updateCurrentWizardStepStatusSafe'
+                'updateCurrentWizardStepStatusSafe',
+                'getStepByName'
             ]
         );
         const finanzielleSituationRSSpy =
@@ -109,15 +111,12 @@ export class SolothurnFinSitTestHelpers {
         );
     }
 
-    public static getMockProvidersExceptFinSitSolothurnServiceMock(): {
-        provide: any;
-        useValue: any;
-    }[] {
+    public static getMockProviderBerechnungsManager(): MockProvider {
         const berechnungsManagerSpy = jasmine.createSpyObj<BerechnungsManager>(
             BerechnungsManager.name,
             ['calculateFinanzielleSituationTemp']
         );
-        return [{provide: BerechnungsManager, useValue: berechnungsManagerSpy}];
+        return {provide: BerechnungsManager, useValue: berechnungsManagerSpy};
     }
 
     public static createFinSitSolothurnServiceMock(): SpyObj<FinanzielleSituationSolothurnService> {
@@ -163,5 +162,14 @@ export class SolothurnFinSitTestHelpers {
             new TSFinanzielleSituation();
         model.familienSituation = new TSFamiliensituation();
         return model;
+    }
+
+    public static extractMockProvider<T>(
+        mocks: MockProvider[],
+        preferedMock: T
+    ): MockProvider {
+        return mocks.find(value => {
+            return value.provide === preferedMock;
+        });
     }
 }

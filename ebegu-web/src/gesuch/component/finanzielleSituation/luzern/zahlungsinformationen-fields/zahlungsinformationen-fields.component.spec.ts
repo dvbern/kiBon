@@ -17,7 +17,6 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, NgForm} from '@angular/forms';
-import {of} from 'rxjs';
 import {ListResourceRS} from '../../../../../app/core/service/listResourceRS.rest';
 import {SharedModule} from '../../../../../app/shared/shared.module';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
@@ -64,7 +63,7 @@ describe('ZahlungsinformationenFieldsComponent', () => {
     });
 
     beforeEach(() => {
-        listResourceRSSpy.getLaenderList.and.returnValue(of([]).toPromise());
+        listResourceRSSpy.getLaenderList.and.returnValue(Promise.resolve([]));
         const famSit = new TSFamiliensituation();
         const gesuch = new TSGesuch();
         gesuch.familiensituationContainer = new TSFamiliensituationContainer();

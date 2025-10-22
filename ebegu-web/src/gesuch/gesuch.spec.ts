@@ -13,7 +13,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import angular from 'angular';
+import moment from 'moment';
 import {CORE_JS_MODULE} from '../app/core/core.angularjs.module';
 import {ngServicesMock} from '../hybridTools/ngServicesMocks';
 import {translationsMock} from '../hybridTools/translationsMock';

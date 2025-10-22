@@ -14,3 +14,9 @@
  */
 @import (reference) '../../../../../style/variables.less';
 @import (reference) '../../../../../style/mixins.less';
+
+// This is actually what the md style wants. If not overwritten like this though,
+// tailwinds flex-class would make this a display: flex which would not be desired here
+md-autocomplete.flex {
+    display: block;
+}

@@ -8,25 +8,29 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package ch.dvbern.ebegu.validators;
 
 import javax.annotation.Nullable;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.Auszahlungsdaten;
 import org.apache.commons.lang.StringUtils;
 
-public class CheckAnyAuszahlungskontoSetValidator implements ConstraintValidator<CheckAnyAuszahlungskontoSet, Auszahlungsdaten> {
+public class CheckAnyAuszahlungskontoSetValidator implements
+	ConstraintValidator<CheckAnyAuszahlungskontoSet, Auszahlungsdaten> {
 
 	@Override
-	public boolean isValid(Auszahlungsdaten berechtigung, @Nullable ConstraintValidatorContext context) {
+	public boolean isValid(
+		Auszahlungsdaten berechtigung,
+		@Nullable ConstraintValidatorContext context
+	) {
 		// Es muss entweder eine IBAN oder eine infomaKontonummer gesetzt sein
 		if (berechtigung.getIban() != null) {
 			return true;

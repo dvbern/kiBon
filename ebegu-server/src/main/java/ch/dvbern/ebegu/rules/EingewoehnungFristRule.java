@@ -8,28 +8,33 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.EingewoehnungTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
-
-import javax.annotation.Nonnull;
-import java.time.LocalDate;
-import java.util.*;
 
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.KITA;
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESFAMILIEN;
@@ -39,92 +44,149 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 	private final Locale locale;
 	private final Boolean eingewoehnungAktiviert;
 
-	protected EingewoehnungFristRule(@Nonnull Locale locale, boolean isDebug, EingewoehnungTyp eingewoehnungTyp) {
+	protected EingewoehnungFristRule(
+		@Nonnull Locale locale,
+		boolean isDebug,
+		EingewoehnungTyp eingewoehnungTyp
+	) {
 		super(isDebug);
 		this.locale = locale;
-		this.eingewoehnungAktiviert = eingewoehnungTyp.isEingewoehnungTypPeriode();
+		this.eingewoehnungAktiviert = eingewoehnungTyp
+			.isEingewoehnungTypPeriode();
 	}
 
 	@Nonnull
 	@Override
 	protected List<VerfuegungZeitabschnitt> execute(
 		@Nonnull AbstractPlatz platz,
-		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 
 		Betreuung betreuung = (Betreuung) platz;
 
 		if (betreuung.isEingewoehnung() && eingewoehnungAktiviert) {
-			return handleEingewoehnung(zeitabschnitte, platz.extractGesuchsperiode());
+			return handleEingewoehnung(
+				zeitabschnitte,
+				platz.extractGesuchsperiode()
+			);
 		}
 
 		return zeitabschnitte;
 	}
 
 	private List<VerfuegungZeitabschnitt> handleEingewoehnung(
-			@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte,
-			Gesuchsperiode gp) {
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte,
+		Gesuchsperiode gp
+	) {
 
-		EingewohenungAbschnittHelper eingewohenungAbschnittHelper = new EingewohenungAbschnittHelper(zeitabschnitte);
+		EingewohenungAbschnittHelper eingewohenungAbschnittHelper =
+			new EingewohenungAbschnittHelper(zeitabschnitte);
 
 		if (!eingewohenungAbschnittHelper.hasZeitabschnittForEingewoehnung()
-					|| eingewohenungAbschnittHelper.isZuSpaetEingereicht()) {
+			|| eingewohenungAbschnittHelper.isZuSpaetEingereicht()
+			|| eingewohenungAbschnittHelper.isWohnsitzNichtInGemeinde()) {
 			return zeitabschnitte;
 		}
 
-		VerfuegungZeitabschnitt eingewoehnung = createEingewoehnungAbschnitt(eingewohenungAbschnittHelper, gp);
+		VerfuegungZeitabschnitt eingewoehnung = createEingewoehnungAbschnitt(
+			eingewohenungAbschnittHelper,
+			gp
+		);
 		zeitabschnitte.add(eingewoehnung);
 		Collections.sort(zeitabschnitte);
 
-		final List<VerfuegungZeitabschnitt> mergedZeitabschnitte = mergeZeitabschnitte(zeitabschnitte);
+		final List<VerfuegungZeitabschnitt> mergedZeitabschnitte =
+			mergeZeitabschnitte(zeitabschnitte);
 
 		for (VerfuegungZeitabschnitt merged : mergedZeitabschnitte) {
-			if (merged.getGueltigkeit().intersects(eingewoehnung.getGueltigkeit())){
+			if (merged.getGueltigkeit()
+				.intersects(eingewoehnung.getGueltigkeit())) {
 				final int eingewoehnungAnspruchspensumProzent =
-					eingewoehnung.getRelevantBgCalculationInput().getAnspruchspensumProzent();
+					eingewoehnung.getRelevantBgCalculationInput()
+						.getAnspruchspensumProzent();
 
-				int originalAnspruch = merged.getRelevantBgCalculationInput().getAnspruchspensumProzent() - eingewoehnungAnspruchspensumProzent;
+				int originalAnspruch = merged.getRelevantBgCalculationInput()
+					.getAnspruchspensumProzent()
+					- eingewoehnungAnspruchspensumProzent;
 
-				merged.setAnspruchspensumProzentForAsivAndGemeinde(Math.max(originalAnspruch, eingewoehnungAnspruchspensumProzent));
+				merged.setAnspruchspensumProzentForAsivAndGemeinde(
+					Math.max(
+						originalAnspruch,
+						eingewoehnungAnspruchspensumProzent
+					)
+				);
 			}
 		}
 
-	 	return mergedZeitabschnitte;
+		return mergedZeitabschnitte;
 	}
 
 	private VerfuegungZeitabschnitt createEingewoehnungAbschnitt(
 		@Nonnull EingewohenungAbschnittHelper eingewoehenungAbschnittHelper,
-		@Nonnull Gesuchsperiode gesuchsperiode) {
-		VerfuegungZeitabschnitt abschnittMitAnspruch = eingewoehenungAbschnittHelper.zeitabschnittMitAnspruch;
-		VerfuegungZeitabschnitt abschnittOhneAnspruch = eingewoehenungAbschnittHelper.zeitabschnittOhneAnspruch;
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
+		VerfuegungZeitabschnitt abschnittMitAnspruch =
+			eingewoehenungAbschnittHelper.zeitabschnittMitAnspruch;
+		VerfuegungZeitabschnitt abschnittOhneAnspruch =
+			eingewoehenungAbschnittHelper.zeitabschnittOhneAnspruch;
 		VerfuegungZeitabschnitt eingewoehnung =
-				new VerfuegungZeitabschnitt(getGultigkeitOfEingewohenungAbschnitt(eingewoehenungAbschnittHelper, gesuchsperiode));
+			new VerfuegungZeitabschnitt(
+				getGultigkeitOfEingewohenungAbschnitt(
+					eingewoehenungAbschnittHelper,
+					gesuchsperiode
+				)
+			);
 		eingewoehnung.setEinkommensjahrForAsivAndGemeinde(
-				abschnittOhneAnspruch.getRelevantBgCalculationInput().getEinkommensjahr());
-		eingewoehnung.setAnspruchspensumProzentForAsivAndGemeinde(abschnittMitAnspruch.getRelevantBgCalculationInput()
-			.getAnspruchspensumProzent());
-		eingewoehnung.setErwerbspensumGS1ForAsivAndGemeinde(abschnittMitAnspruch.getRelevantBgCalculationInput()
-			.getErwerbspensumGS1());
-		eingewoehnung.setErwerbspensumGS2ForAsivAndGemeinde(abschnittMitAnspruch.getRelevantBgCalculationInput()
-			.getErwerbspensumGS2());
-		eingewoehnung.getRelevantBgCalculationInput().addBemerkung(MsgKey.ERWERBSPENSUM_EINGEWOEHNUNG, locale);
+			abschnittOhneAnspruch.getRelevantBgCalculationInput()
+				.getEinkommensjahr()
+		);
+		eingewoehnung.setAnspruchspensumProzentForAsivAndGemeinde(
+			abschnittMitAnspruch.getRelevantBgCalculationInput()
+				.getAnspruchspensumProzent()
+		);
+		eingewoehnung.setErwerbspensumGS1ForAsivAndGemeinde(
+			abschnittMitAnspruch.getRelevantBgCalculationInput()
+				.getErwerbspensumGS1()
+		);
+		eingewoehnung.setErwerbspensumGS2ForAsivAndGemeinde(
+			abschnittMitAnspruch.getRelevantBgCalculationInput()
+				.getErwerbspensumGS2()
+		);
+		eingewoehnung.getRelevantBgCalculationInput()
+			.addBemerkung(MsgKey.ERWERBSPENSUM_EINGEWOEHNUNG, locale);
 		return eingewoehnung;
 	}
+
 	private DateRange getGultigkeitOfEingewohenungAbschnitt(
-			EingewohenungAbschnittHelper eingewohenungAbschnittHelper,
-			Gesuchsperiode gesuchsperiode) {
+		EingewohenungAbschnittHelper eingewohenungAbschnittHelper,
+		Gesuchsperiode gesuchsperiode
+	) {
 
-		VerfuegungZeitabschnitt abschnittMitAnspruch = eingewohenungAbschnittHelper.zeitabschnittMitAnspruch;
+		VerfuegungZeitabschnitt abschnittMitAnspruch =
+			eingewohenungAbschnittHelper.zeitabschnittMitAnspruch;
 		//grundsätzlich ist die Eingewöhnung gültig von 1 Monat vor Anspruch bis ein Tag vor Anspruch
-		LocalDate eingewohenungGueltigAb = abschnittMitAnspruch.getGueltigkeit().getGueltigAb().minusMonths(1);
-		LocalDate eingewoehnungGueltigBis = abschnittMitAnspruch.getGueltigkeit().getGueltigAb().minusDays(1);
+		LocalDate eingewohenungGueltigAb = abschnittMitAnspruch.getGueltigkeit()
+			.getGueltigAb()
+			.minusMonths(1);
+		LocalDate eingewoehnungGueltigBis = abschnittMitAnspruch
+			.getGueltigkeit()
+			.getGueltigAb()
+			.minusDays(1);
 
-		if (eingewohenungGueltigAb.isBefore(gesuchsperiode.getGueltigkeit().getGueltigAb())) {
-			eingewohenungGueltigAb = gesuchsperiode.getGueltigkeit().getGueltigAb();
+		if (eingewohenungGueltigAb.isBefore(
+			gesuchsperiode.getGueltigkeit().getGueltigAb()
+		)) {
+			eingewohenungGueltigAb = gesuchsperiode.getGueltigkeit()
+				.getGueltigAb();
 		}
 
-		if (eingewohenungAbschnittHelper.anspruchGueltigAb != null &&
-			eingewohenungGueltigAb.isBefore(eingewohenungAbschnittHelper.anspruchGueltigAb)) {
-			eingewohenungGueltigAb = eingewohenungAbschnittHelper.anspruchGueltigAb;
+		if (eingewohenungAbschnittHelper.anspruchGueltigAb != null
+			&&
+			eingewohenungGueltigAb.isBefore(
+				eingewohenungAbschnittHelper.anspruchGueltigAb
+			)) {
+			eingewohenungGueltigAb =
+				eingewohenungAbschnittHelper.anspruchGueltigAb;
 		}
 
 		return new DateRange(eingewohenungGueltigAb, eingewoehnungGueltigBis);
@@ -146,22 +208,31 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 
 		LocalDate anspruchGueltigAb;
 
-		EingewohenungAbschnittHelper(List<VerfuegungZeitabschnitt> zeitabschnitte) {
+		EingewohenungAbschnittHelper(
+			List<VerfuegungZeitabschnitt> zeitabschnitte
+		) {
 			findRelevantZeitabschnitteForEingewohenung(zeitabschnitte);
 		}
 
-
-		private void findRelevantZeitabschnitteForEingewohenung(List<VerfuegungZeitabschnitt> zeitabschnitte) {
-			LinkedList<VerfuegungZeitabschnitt> zeitabschnitteOrderedByGueltigkeit = new LinkedList<>(zeitabschnitte);
-			ListIterator<VerfuegungZeitabschnitt> iterator = zeitabschnitteOrderedByGueltigkeit.listIterator(0);
+		private void findRelevantZeitabschnitteForEingewohenung(
+			List<VerfuegungZeitabschnitt> zeitabschnitte
+		) {
+			LinkedList<VerfuegungZeitabschnitt> zeitabschnitteOrderedByGueltigkeit =
+				new LinkedList<>(zeitabschnitte);
+			ListIterator<VerfuegungZeitabschnitt> iterator =
+				zeitabschnitteOrderedByGueltigkeit.listIterator(0);
 
 			//wir müssen das erste Paar aufeinander folgende Zeitabschnitte finden, bei welchem, der erste ZA keinen Anspruch
 			//aber eine Betruung und der zweite ZA Anspruch und Betreuung hat
 			while (iterator.hasNext()) {
 				VerfuegungZeitabschnitt zeitabschnittToCheck = iterator.next();
 
-				if (zeitabschnittToCheck.getRelevantBgCalculationInput().isZuSpaetEingereicht()) {
-					this.anspruchGueltigAb = zeitabschnittToCheck.getGueltigkeit().getGueltigBis().plusDays(1);
+				if (zeitabschnittToCheck.getRelevantBgCalculationInput()
+					.isZuSpaetEingereicht()) {
+					this.anspruchGueltigAb = zeitabschnittToCheck
+						.getGueltigkeit()
+						.getGueltigBis()
+						.plusDays(1);
 				}
 
 				if (hasBetreuungButNoAnspruch(zeitabschnittToCheck)) {
@@ -177,16 +248,29 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 				}
 			}
 		}
-		private boolean hasBetreuungButNoAnspruch(VerfuegungZeitabschnitt zeitabschnittToCheck) {
-			if (zeitabschnittToCheck.getRelevantBgCalculationInput().getAnspruchspensumProzent() > 0) {
+
+		private boolean hasBetreuungButNoAnspruch(
+			VerfuegungZeitabschnitt zeitabschnittToCheck
+		) {
+			if (zeitabschnittToCheck.getRelevantBgCalculationInput()
+				.getAnspruchspensumProzent()
+				> 0) {
 				return false;
 			}
 
-			return !MathUtil.isZero(zeitabschnittToCheck.getRelevantBgCalculationInput().getBetreuungspensumProzent());
+			return !MathUtil.isZero(
+				zeitabschnittToCheck.getRelevantBgCalculationInput()
+					.getBetreuungspensumProzent()
+			);
 		}
 
-		private boolean hasBetreuungAndAnspruch(VerfuegungZeitabschnitt zeitabschnittToCheck) {
-			return !MathUtil.isZero(zeitabschnittToCheck.getRelevantBgCalculationInput().getBgPensumProzent());
+		private boolean hasBetreuungAndAnspruch(
+			VerfuegungZeitabschnitt zeitabschnittToCheck
+		) {
+			return !MathUtil.isZero(
+				zeitabschnittToCheck.getRelevantBgCalculationInput()
+					.getBgPensumProzent()
+			);
 		}
 
 		boolean hasZeitabschnittForEingewoehnung() {
@@ -194,10 +278,13 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 		}
 
 		boolean isZuSpaetEingereicht() {
-			return zeitabschnittOhneAnspruch.getRelevantBgCalculationInput().isZuSpaetEingereicht();
+			return zeitabschnittOhneAnspruch.getRelevantBgCalculationInput()
+				.isZuSpaetEingereicht();
+		}
+
+		boolean isWohnsitzNichtInGemeinde() {
+			return zeitabschnittOhneAnspruch.getRelevantBgCalculationInput()
+				.isWohnsitzNichtInGemeindeGS1();
 		}
 	}
 }
-
-
-

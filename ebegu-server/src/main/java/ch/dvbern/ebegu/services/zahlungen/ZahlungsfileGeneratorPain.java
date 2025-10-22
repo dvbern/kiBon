@@ -6,8 +6,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.entities.Auszahlungsdaten;
@@ -40,7 +40,9 @@ public class ZahlungsfileGeneratorPain implements IZahlungsfileGenerator {
 		@Nonnull GemeindeStammdaten stammdaten,
 		@Nonnull Locale locale
 	) {
-		return pain001Service.getPainFileContent(wrapZahlungsauftrag(zahlungsauftrag, stammdaten, locale));
+		return pain001Service.getPainFileContent(
+			wrapZahlungsauftrag(zahlungsauftrag, stammdaten, locale)
+		);
 	}
 
 	@Override
@@ -62,7 +64,8 @@ public class ZahlungsfileGeneratorPain implements IZahlungsfileGenerator {
 				KibonLogLevel.INFO,
 				"wrapZahlungsauftrag",
 				ErrorCodeEnum.ERROR_ZAHLUNGSINFORMATIONEN_GEMEINDE_INCOMPLETE,
-				zahlungsauftrag.getGemeinde().getName());
+				zahlungsauftrag.getGemeinde().getName()
+			);
 		}
 
 		pain001DTO.setAuszahlungsDatum(zahlungsauftrag.getDatumFaellig());
@@ -71,7 +74,11 @@ public class ZahlungsfileGeneratorPain implements IZahlungsfileGenerator {
 		String debitorName = gemeindeStammdaten.getKontoinhaber();
 		String debitorBic = gemeindeStammdaten.getBic();
 		IBAN ibanGemeinde = gemeindeStammdaten.getIban();
-		Objects.requireNonNull(ibanGemeinde, "Keine IBAN fuer Gemeinde " + gemeindeStammdaten.getGemeinde().getName());
+		Objects.requireNonNull(
+			ibanGemeinde,
+			"Keine IBAN fuer Gemeinde "
+				+ gemeindeStammdaten.getGemeinde().getName()
+		);
 		String debitorIban = ibanToUnformattedString(ibanGemeinde);
 
 		pain001DTO.setSchuldnerName(debitorName);
@@ -86,52 +93,100 @@ public class ZahlungsfileGeneratorPain implements IZahlungsfileGenerator {
 
 		pain001DTO.setAuszahlungen(new ArrayList<>());
 
-		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory.getZahlungslaufHelper(zahlungsauftrag.getZahlungslaufTyp());
-		zahlungsauftrag.getZahlungen().stream()
-			.filter(zahlung -> zahlung.getBetragTotalZahlung().signum() == 1)
+		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory
+			.getZahlungslaufHelper(zahlungsauftrag.getZahlungslaufTyp());
+		zahlungsauftrag.getZahlungen()
+			.stream()
+			.filter(
+				zahlung -> zahlung.getBetragTotalZahlung().signum() == 1
+			)
 			.forEach(zahlung -> {
 				// Wenn die Zahlungsinformationen nicht komplett ausgefuellt sind, fahren wir hier nicht weiter.
-				if (!zahlung.getAuszahlungsdaten().isZahlungsinformationValid(false)) {
-					throw new EbeguRuntimeException(KibonLogLevel.INFO,
+				if (!zahlung.getAuszahlungsdaten()
+					.isZahlungsinformationValid(false)) {
+					throw new EbeguRuntimeException(
+						KibonLogLevel.INFO,
 						"wrapZahlungsauftrag",
-						zahlungsauftrag.getZahlungslaufTyp() == ZahlungslaufTyp.GEMEINDE_INSTITUTION
-							? ErrorCodeEnum.ERROR_ZAHLUNGSINFORMATIONEN_INSTITUTION_INCOMPLETE
-							: ErrorCodeEnum.ERROR_ZAHLUNGSINFORMATIONEN_ANTRAGSTELLER_INCOMPLETE,
-						zahlung.getEmpfaengerName());
+						zahlungsauftrag.getZahlungslaufTyp()
+							== ZahlungslaufTyp.GEMEINDE_INSTITUTION ?
+								ErrorCodeEnum.ERROR_ZAHLUNGSINFORMATIONEN_INSTITUTION_INCOMPLETE :
+								ErrorCodeEnum.ERROR_ZAHLUNGSINFORMATIONEN_ANTRAGSTELLER_INCOMPLETE,
+						zahlung.getEmpfaengerName()
+					);
 				}
 
 				AuszahlungDTO auszahlungDTO = new AuszahlungDTO();
-				auszahlungDTO.setBetragTotalZahlung(zahlung.getBetragTotalZahlung());
+				auszahlungDTO.setBetragTotalZahlung(
+					zahlung.getBetragTotalZahlung()
+				);
 
-				final Auszahlungsdaten auszahlungsdaten = zahlung.getAuszahlungsdaten();
-				auszahlungDTO.setZahlungsempfaegerName(auszahlungsdaten.getKontoinhaber());
+				final Auszahlungsdaten auszahlungsdaten = zahlung
+					.getAuszahlungsdaten();
+				auszahlungDTO.setZahlungsempfaengerName(
+					auszahlungsdaten.getKontoinhaber()
+				);
 
 				IBAN ibanInstitution = auszahlungsdaten.getIban();
-				Objects.requireNonNull(ibanInstitution, "Keine IBAN fuer Empfaenger " + zahlung.getEmpfaengerName());
-				auszahlungDTO.setZahlungsempfaegerIBAN(ibanToUnformattedString(ibanInstitution));
-				auszahlungDTO.setZahlungsempfaegerBankClearingNumber(ibanInstitution.extractClearingNumberWithoutLeadingZeros());
+				Objects.requireNonNull(
+					ibanInstitution,
+					"Keine IBAN fuer Empfaenger "
+						+ zahlung.getEmpfaengerName()
+				);
+				auszahlungDTO.setZahlungsempfaengerIBAN(
+					ibanToUnformattedString(ibanInstitution)
+				);
+				auszahlungDTO.setZahlungsempfaengerBankClearingNumber(
+					ibanInstitution
+						.extractClearingNumberWithoutLeadingZeros()
+				);
 
-				Adresse adresseKontoinhaber = zahlungslaufHelper.getAuszahlungsadresseOrDefaultadresse(zahlung);
+				Adresse adresseKontoinhaber = zahlungslaufHelper
+					.getAuszahlungsadresseOrDefaultadresse(zahlung);
 				Objects.requireNonNull(adresseKontoinhaber);
-				auszahlungDTO.setZahlungsempfaegerStrasse(adresseKontoinhaber.getStrasse());
-				auszahlungDTO.setZahlungsempfaegerHausnummer(adresseKontoinhaber.getHausnummer());
-				auszahlungDTO.setZahlungsempfaegerPlz(adresseKontoinhaber.getPlz());
-				auszahlungDTO.setZahlungsempfaegerOrt(adresseKontoinhaber.getOrt());
-				auszahlungDTO.setZahlungsempfaegerLand(adresseKontoinhaber.getLand().toString());
+				auszahlungDTO.setZahlungsempfaengerStrasse(
+					adresseKontoinhaber.getStrasse()
+				);
+				auszahlungDTO.setZahlungsempfaengerHausnummer(
+					adresseKontoinhaber.getHausnummer()
+				);
+				auszahlungDTO.setZahlungsempfaengerPlz(
+					adresseKontoinhaber.getPlz()
+				);
+				auszahlungDTO.setZahlungsempfaengerOrt(
+					adresseKontoinhaber.getOrt()
+				);
+				auszahlungDTO.setZahlungsempfaengerLand(
+					adresseKontoinhaber.getLand().toString()
+				);
 
-				String monat = zahlungsauftrag.getDatumFaellig().format(DateTimeFormatter.ofPattern("MMM yyyy", locale));
-				String msgKey = "ZahlungstextPainFile_" + zahlungsauftrag.getZahlungslaufTyp();
+				String monat = zahlungsauftrag.getGueltigkeit()
+					.getGueltigBis()
+					.format(
+						DateTimeFormatter.ofPattern(
+							"MMM yyyy",
+							locale
+						)
+					);
+
+				String msgKey = "ZahlungstextPainFile_"
+					+ zahlungsauftrag.getZahlungslaufTyp();
 				String zahlungstext = ServerMessageUtil.getMessage(
 					msgKey,
 					locale,
-					Objects.requireNonNull(gemeindeStammdaten.getGemeinde().getMandant()),
+					Objects.requireNonNull(
+						gemeindeStammdaten.getGemeinde()
+							.getMandant()
+					),
 					gemeindeStammdaten.getGemeinde().getName(),
 					zahlung.getEmpfaengerName(),
-					monat);
+					monat
+				);
 				auszahlungDTO.setZahlungText(zahlungstext);
 
 				// Wenn Empfänger und Auszahler dasselbe Konto sind, soll es nicht ins PAIN File. Dies ist z.B. Gemeinde-Kitas der Fall.
-				if (!debitorIban.equals(auszahlungDTO.getZahlungsempfaegerIBAN())) {
+				if (!debitorIban.equals(
+					auszahlungDTO.getZahlungsempfaengerIBAN()
+				)) {
 					pain001DTO.getAuszahlungen().add(auszahlungDTO);
 				}
 			});

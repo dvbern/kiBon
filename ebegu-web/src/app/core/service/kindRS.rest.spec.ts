@@ -13,11 +13,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IHttpBackendService, IQService} from 'angular';
+import angular, {IHttpBackendService, IQService} from 'angular';
 import {WizardStepManager} from '../../../gesuch/service/wizardStepManager';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSKind} from '../../../models/TSKind';
+import {TSKind} from '@kibon/kind/model/entity';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';

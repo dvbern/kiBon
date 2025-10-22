@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
@@ -23,10 +23,12 @@ import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.util.FinanzielleSituationTypVisitor;
 import com.sun.istack.NotNull;
 
-public class EinkommenVerschlechterungDokumenteVisitor implements FinanzielleSituationTypVisitor<AbstractDokumente<AbstractFinanzielleSituation, Familiensituation>> {
+public class EinkommenVerschlechterungDokumenteVisitor implements
+	FinanzielleSituationTypVisitor<AbstractDokumente<AbstractFinanzielleSituation, Familiensituation>> {
 
-	public AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> getEinkommenVerschlechterungDokumenteForFinSitTyp(@NotNull
-		FinanzielleSituationTyp finanzielleSituationTyp) {
+	public AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> getEinkommenVerschlechterungDokumenteForFinSitTyp(
+		@NotNull FinanzielleSituationTyp finanzielleSituationTyp
+	) {
 		return finanzielleSituationTyp.accept(this);
 	}
 
@@ -62,6 +64,11 @@ public class EinkommenVerschlechterungDokumenteVisitor implements FinanzielleSit
 
 	@Override
 	public AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> visitFinSitSchwyz() {
+		return new SchwyzEinkommensverschlechterungDokumente();
+	}
+
+	@Override
+	public AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> visitFinSitSchwyzErweitert() {
 		return new SchwyzEinkommensverschlechterungDokumente();
 	}
 }

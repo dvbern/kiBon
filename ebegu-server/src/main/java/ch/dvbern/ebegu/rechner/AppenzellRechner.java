@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner;
@@ -44,41 +44,61 @@ public class AppenzellRechner extends AbstractRechner {
 	In Appenzell wird ein Prozentsatz der Vollkosten ausgezahlt. Der Prozentsatz wird anhand des Massgebenden Einkommen
 	bestimmt. Bis zu einem massgebenden Einkommen von 40000 werde 86 % der Kosten übernommen. Von 40001 - 44000 81 % usw.
 	 */
-	private static final Map<BigDecimal, BigDecimal> EINKOMMEN_PROZENTUALLE_VERGUENSTIGUNG_MAP = new TreeMap<>() {{
-		put(BigDecimal.valueOf(40000), BigDecimal.valueOf(0.86));
-		put(BigDecimal.valueOf(44000), BigDecimal.valueOf(0.81));
-		put(BigDecimal.valueOf(48000), BigDecimal.valueOf(0.76));
-		put(BigDecimal.valueOf(52000), BigDecimal.valueOf(0.71));
-		put(BigDecimal.valueOf(56000), BigDecimal.valueOf(0.66));
-		put(BigDecimal.valueOf(60000), BigDecimal.valueOf(0.61));
-		put(BigDecimal.valueOf(64000), BigDecimal.valueOf(0.56));
-		put(BigDecimal.valueOf(68000), BigDecimal.valueOf(0.51));
-		put(BigDecimal.valueOf(72000), BigDecimal.valueOf(0.46));
-		put(BigDecimal.valueOf(76000), BigDecimal.valueOf(0.41));
-		put(BigDecimal.valueOf(80000), BigDecimal.valueOf(0.36));
-		put(BigDecimal.valueOf(84000), BigDecimal.valueOf(0.31));
-		put(BigDecimal.valueOf(88000), BigDecimal.valueOf(0.26));
-		put(BigDecimal.valueOf(92000), BigDecimal.valueOf(0.20));
-		put(BigDecimal.valueOf(96000), BigDecimal.valueOf(0.14));
-		put(BigDecimal.valueOf(100000), BigDecimal.valueOf(0.08));
-	}};
-
+	private static final Map<BigDecimal, BigDecimal> EINKOMMEN_PROZENTUALLE_VERGUENSTIGUNG_MAP =
+		new TreeMap<>() {
+			{
+				put(BigDecimal.valueOf(40000), BigDecimal.valueOf(0.86));
+				put(BigDecimal.valueOf(44000), BigDecimal.valueOf(0.81));
+				put(BigDecimal.valueOf(48000), BigDecimal.valueOf(0.76));
+				put(BigDecimal.valueOf(52000), BigDecimal.valueOf(0.71));
+				put(BigDecimal.valueOf(56000), BigDecimal.valueOf(0.66));
+				put(BigDecimal.valueOf(60000), BigDecimal.valueOf(0.61));
+				put(BigDecimal.valueOf(64000), BigDecimal.valueOf(0.56));
+				put(BigDecimal.valueOf(68000), BigDecimal.valueOf(0.51));
+				put(BigDecimal.valueOf(72000), BigDecimal.valueOf(0.46));
+				put(BigDecimal.valueOf(76000), BigDecimal.valueOf(0.41));
+				put(BigDecimal.valueOf(80000), BigDecimal.valueOf(0.36));
+				put(BigDecimal.valueOf(84000), BigDecimal.valueOf(0.31));
+				put(BigDecimal.valueOf(88000), BigDecimal.valueOf(0.26));
+				put(BigDecimal.valueOf(92000), BigDecimal.valueOf(0.20));
+				put(BigDecimal.valueOf(96000), BigDecimal.valueOf(0.14));
+				put(BigDecimal.valueOf(100000), BigDecimal.valueOf(0.08));
+			}
+		};
 
 	@Override
 	public void calculate(
 		@Nonnull VerfuegungZeitabschnitt verfuegungZeitabschnitt,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
 		input = verfuegungZeitabschnitt.getRelevantBgCalculationInput();
 		parameter = parameterDTO;
 
 		BigDecimal anspruchpensumInStunden = calculateAnspruchpensumInStunden();
-		BigDecimal betreuungspensumInStunden = calcualteBetreuungspensumInStunden();
-		BigDecimal bgPensumInStunden = anspruchpensumInStunden.min(betreuungspensumInStunden);
-		BigDecimal vollkostenGekuerzt = calculateVollkostenGekuerztByPensumAndMonatAnteil(bgPensumInStunden, betreuungspensumInStunden);
-		BigDecimal prozentsatzAnVollkosten = getProzentsatzByMassgebendemEinkommen(input.getMassgebendesEinkommen());
-		Integer prozentsatzAnVollkostenInteger = EXACT.multiply(prozentsatzAnVollkosten, BigDecimal.valueOf(100)).intValue();
-		BigDecimal gutscheinGemaessFormel = calculateGutschein(vollkostenGekuerzt, bgPensumInStunden, prozentsatzAnVollkosten);
+		BigDecimal betreuungspensumInStunden =
+			calcualteBetreuungspensumInStunden();
+		BigDecimal bgPensumInStunden = anspruchpensumInStunden.min(
+			betreuungspensumInStunden
+		);
+		BigDecimal vollkostenGekuerzt =
+			calculateVollkostenGekuerztByPensumAndMonatAnteil(
+				bgPensumInStunden,
+				betreuungspensumInStunden
+			);
+		BigDecimal prozentsatzAnVollkosten =
+			getProzentsatzByMassgebendemEinkommen(
+				input.getMassgebendesEinkommen()
+			);
+		Integer prozentsatzAnVollkostenInteger = EXACT.multiply(
+			prozentsatzAnVollkosten,
+			BigDecimal.valueOf(100)
+		).intValue();
+		BigDecimal gutscheinGemaessFormel = calculateGutschein(
+			vollkostenGekuerzt,
+			bgPensumInStunden,
+			prozentsatzAnVollkosten
+		);
 
 		BGCalculationResult result = new BGCalculationResult();
 		VerfuegungZeitabschnitt.initBGCalculationResult(this.input, result);
@@ -104,15 +124,23 @@ public class AppenzellRechner extends AbstractRechner {
 		}
 
 		BigDecimal maximalerStundensatz = getMaxStundenAnsatz();
-		BigDecimal effektiverStundensatz = EXACT.divideNullSafe(vollkostenGekuerzt, bgPensumInStunden);
+		BigDecimal effektiverStundensatz = EXACT.divideNullSafe(
+			vollkostenGekuerzt,
+			bgPensumInStunden
+		);
 
 		BigDecimal stundensatz = effektiverStundensatz;
 		if (isMaxStundenAnsatzRequired()) {
 			stundensatz = effektiverStundensatz.min(maximalerStundensatz);
 		}
-		BigDecimal vollkostenGekuerztMitMaxStundensatz = stundensatz.multiply(bgPensumInStunden);
+		BigDecimal vollkostenGekuerztMitMaxStundensatz = stundensatz.multiply(
+			bgPensumInStunden
+		);
 
-		return EXACT.multiply(vollkostenGekuerztMitMaxStundensatz, prozentsatzAnVollkosten);
+		return EXACT.multiply(
+			vollkostenGekuerztMitMaxStundensatz,
+			prozentsatzAnVollkosten
+		);
 	}
 
 	private BigDecimal getMaxStundenAnsatz() {
@@ -127,9 +155,13 @@ public class AppenzellRechner extends AbstractRechner {
 		return !input.isBesondereBeduerfnisseBestaetigt();
 	}
 
-	private BigDecimal getProzentsatzByMassgebendemEinkommen(BigDecimal massgebendesEinkommen) {
-		for (Entry<BigDecimal, BigDecimal> einkommensstufe : EINKOMMEN_PROZENTUALLE_VERGUENSTIGUNG_MAP.entrySet()) {
-			if (massgebendesEinkommen.compareTo(einkommensstufe.getKey()) <= 0) {
+	private BigDecimal getProzentsatzByMassgebendemEinkommen(
+		BigDecimal massgebendesEinkommen
+	) {
+		for (Entry<BigDecimal, BigDecimal> einkommensstufe : EINKOMMEN_PROZENTUALLE_VERGUENSTIGUNG_MAP
+			.entrySet()) {
+			if (massgebendesEinkommen.compareTo(einkommensstufe.getKey())
+				<= 0) {
 				return einkommensstufe.getValue();
 			}
 		}
@@ -137,26 +169,43 @@ public class AppenzellRechner extends AbstractRechner {
 		return BigDecimal.ZERO;
 	}
 
-	private BigDecimal calculateVollkostenGekuerztByPensumAndMonatAnteil(BigDecimal bgPensum, BigDecimal betreuungsPensum) {
+	private BigDecimal calculateVollkostenGekuerztByPensumAndMonatAnteil(
+		BigDecimal bgPensum,
+		BigDecimal betreuungsPensum
+	) {
 		if (isZero(bgPensum)) {
 			return bgPensum;
 		}
 
 		BigDecimal anteilMonat = DateUtil.calculateAnteilMonatInklWeekend(
 			input.getParent().getGueltigkeit().getGueltigAb(),
-			input.getParent().getGueltigkeit().getGueltigBis());
+			input.getParent().getGueltigkeit().getGueltigBis()
+		);
 
-		BigDecimal pensumAnteil = EXACT.divideNullSafe(bgPensum, betreuungsPensum);
+		BigDecimal pensumAnteil = EXACT.divideNullSafe(
+			bgPensum,
+			betreuungsPensum
+		);
 
-		return EXACT.multiply(input.getMonatlicheBetreuungskosten(), anteilMonat, pensumAnteil);
+		return EXACT.multiply(
+			input.getMonatlicheBetreuungskosten(),
+			anteilMonat,
+			pensumAnteil
+		);
 	}
 
 	private BigDecimal calculateAnspruchpensumInStunden() {
-		return EXACT.multiply(BigDecimal.valueOf(input.getAnspruchspensumProzent()), input.getBgStundenFaktor());
+		return EXACT.multiply(
+			BigDecimal.valueOf(input.getAnspruchspensumProzent()),
+			input.getBgStundenFaktor()
+		);
 	}
 
 	private BigDecimal calcualteBetreuungspensumInStunden() {
-		return EXACT.multiply(input.getBetreuungspensumProzent(), calculateHoursPerPercent());
+		return EXACT.multiply(
+			input.getBetreuungspensumProzent(),
+			calculateHoursPerPercent()
+		);
 	}
 
 	private BigDecimal calculateHoursPerPercent() {
@@ -164,7 +213,8 @@ public class AppenzellRechner extends AbstractRechner {
 	}
 
 	private double getBetreuungsstundenProJahr() {
-		return parameter.getOeffnungstageKita().doubleValue() * ANZAHL_STUNDEN_PRO_BETREUUNGSTAG;
+		return parameter.getOeffnungstageKita().doubleValue()
+			* ANZAHL_STUNDEN_PRO_BETREUUNGSTAG;
 	}
 
 }

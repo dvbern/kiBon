@@ -16,7 +16,7 @@ package ch.dvbern.ebegu.api.dtos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.api.dtos.sozialdienst.JaxSozialdienst;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
@@ -55,7 +55,6 @@ public class JaxBerechtigungHistory extends JaxAbstractDateRangedDTO {
 	private BenutzerStatus status;
 
 	private boolean geloescht;
-
 
 	@Nonnull
 	public String getUserErstellt() {

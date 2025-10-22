@@ -16,9 +16,10 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/angular';
+import {of} from 'rxjs';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
-import {ApplicationPropertyRS} from '../../../../../app/core/rest-services/applicationPropertyRS.rest';
 import {SharedModule} from '../../../../../app/shared/shared.module';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
@@ -28,11 +29,12 @@ import {TSFamiliensituation} from '../../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../../models/TSFamiliensituationContainer';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
-import {TSGemeinde} from '../../../../../models/TSGemeinde';
+import {TSGemeinde, TSWizardStep} from '@kibon/shared/model/entity';
+
 import {TSGesuch} from '../../../../../models/TSGesuch';
 import {TSGesuchsteller} from '../../../../../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerContainer';
-import {TSPublicAppConfig} from '../../../../../models/TSPublicAppConfig';
+import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
 import {FinanzielleSituationRS} from '../../../../service/finanzielleSituationRS.rest';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
@@ -40,6 +42,8 @@ import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern.service';
 
 import {FinanzielleSituationStartViewLuzernComponent} from './finanzielle-situation-start-view-luzern.component';
+import {TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {By} from '@angular/platform-browser';
 
 const gesuchModelManagerSpy = jasmine.createSpyObj<GesuchModelManager>(
     GesuchModelManager.name,
@@ -64,9 +68,11 @@ const wizardStepMangerSpy = jasmine.createSpyObj<WizardStepManager>(
         'isNextStepBesucht',
         'isNextStepEnabled',
         'getCurrentStepName',
-        'updateCurrentWizardStepStatusSafe'
+        'updateCurrentWizardStepStatusSafe',
+        'getStepByName'
     ]
 );
+wizardStepMangerSpy.getStepByName.and.returnValue(new TSWizardStep());
 const finanzielleSituationRSSpy = jasmine.createSpyObj<FinanzielleSituationRS>(
     FinanzielleSituationRS.name,
     ['saveFinanzielleSituationStart', 'getFinanzielleSituationTyp']
@@ -88,12 +94,13 @@ berechnungsManagerSpy.calculateFinanzielleSituationTemp.and.returnValue(
     Promise.resolve(new TSFinanzielleSituationResultateDTO())
 );
 
-const applicationPropertyRSSpy = jasmine.createSpyObj<ApplicationPropertyRS>(
-    ApplicationPropertyRS.name,
-    ['getPublicPropertiesCached']
-);
+const applicationPropertyRSSpy =
+    jasmine.createSpyObj<SharedUtilApplicationPropertyRsService>(
+        SharedUtilApplicationPropertyRsService.name,
+        ['getPublicPropertiesCached']
+    );
 applicationPropertyRSSpy.getPublicPropertiesCached.and.returnValue(
-    Promise.resolve(new TSPublicAppConfig())
+    of(new TSPublicAppConfig())
 );
 
 FinanzielleSituationLuzernService.finSitNeedsTwoSeparateAntragsteller = () =>
@@ -121,7 +128,7 @@ describe('FinanzielleSituationStartViewLuzernComponent', () => {
                 {provide: BerechnungsManager, useValue: berechnungsManagerSpy},
                 {provide: AuthServiceRS, useValue: authServiceSpy},
                 {
-                    provide: ApplicationPropertyRS,
+                    provide: SharedUtilApplicationPropertyRsService,
                     useValue: applicationPropertyRSSpy
                 }
             ],
@@ -138,13 +145,8 @@ describe('FinanzielleSituationStartViewLuzernComponent', () => {
             FinanzielleSituationStartViewLuzernComponent
         );
         component = fixture.componentInstance;
-        fixture.detectChanges();
         gesuchModelManagerSpy.getBasisjahr.and.returnValue(basisjahr);
         gesuchModelManagerSpy.getBasisjahrPlus.and.returnValue(basisjahrPlus1);
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
     });
 
     it('should test "Gemeinsame Veranlagung letztes Jahr"', () => {
@@ -296,6 +298,34 @@ describe('FinanzielleSituationStartViewLuzernComponent', () => {
             () => false;
         setFormValues(false, true, true, null);
         expect(component.getYearForDeklaration()).toBe('');
+    });
+
+    it('should show warning fill data 2nd gesuchsteller if wizardstep gesuchsteller is invalid', () => {
+        const tsWizardStepCurrent = new TSWizardStep();
+        const tsWizardStep = new TSWizardStep();
+        tsWizardStepCurrent.wizardStepStatus = TSWizardStepStatus.NOK;
+        tsWizardStep.wizardStepStatus = TSWizardStepStatus.NOK;
+        wizardStepMangerSpy.getCurrentStep.and.returnValue(tsWizardStepCurrent);
+        wizardStepMangerSpy.getStepByName.and.returnValue(tsWizardStep);
+        fixture.detectChanges();
+        const warningBanner = fixture.debugElement.query(
+            By.css('.fa.fa-exclamation-triangle')
+        );
+        expect(warningBanner).toBeTruthy();
+    });
+
+    it('should not show warning fill data 2nd gesuchsteller if wizardstep gesuchsteller is valid', () => {
+        const tsWizardStepCurrent = new TSWizardStep();
+        const tsWizardStep = new TSWizardStep();
+        tsWizardStepCurrent.wizardStepStatus = TSWizardStepStatus.NOK;
+        tsWizardStep.wizardStepStatus = TSWizardStepStatus.OK;
+        wizardStepMangerSpy.getCurrentStep.and.returnValue(tsWizardStepCurrent);
+        wizardStepMangerSpy.getStepByName.and.returnValue(tsWizardStep);
+        fixture.detectChanges();
+        const warningBanner = fixture.debugElement.query(
+            By.css('.fa.fa-exclamation-triangle')
+        );
+        expect(warningBanner).toBeFalsy();
     });
 
     function setFormValues(

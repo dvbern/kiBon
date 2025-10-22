@@ -39,6 +39,13 @@
         </div>
     </div>
 
+    @if (
+        gemeindeAntragContainer && isZweitPruefungAndSameUserAsPruefung()
+            | async
+    ) {
+        <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
+    }
+
     <div
         class="well well-with-button"
         *ngIf="angabenAusKibon && (canSeeDurchKibonAusfuellen | async)"
@@ -48,6 +55,7 @@
         <button
             class="dv-btn cancel-button"
             (click)="fillOutCalculationsFromKiBon()"
+            data-test="lats-durch-kibon-ausfuellen"
         >
             {{ 'LATS_DURCH_KIBON_AUSFUELLEN' | translate }}
         </button>
@@ -87,12 +95,16 @@
                         [disabled]="form.controls.isLehrbetrieb.disabled"
                         formControlName="isLehrbetrieb"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="tagesschule-kein-lehrbetrieb-schuljahr"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="tagesschule-kein-lehrbetrieb-schuljahr"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -145,6 +157,7 @@
                         matInput
                         formControlName="anzahlEingeschriebeneKinder"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-woche"
                     />
                     <mat-error
                         *ngIf="
@@ -205,6 +218,7 @@
                         matInput
                         formControlName="anzahlEingeschriebeneKinderBasisstufe"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-basisstufe-woche"
                     />
                     <mat-error
                         *ngIf="
@@ -259,6 +273,7 @@
                         matInput
                         formControlName="anzahlEingeschriebeneKinderKindergarten"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-kindergarten-woche"
                     />
                     <mat-error
                         *ngIf="
@@ -315,6 +330,7 @@
                         matInput
                         formControlName="anzahlEingeschriebeneKinderPrimarstufe"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-primar-woche"
                     />
                     <mat-error
                         *ngIf="
@@ -369,6 +385,7 @@
                         matInput
                         formControlName="anzahlEingeschriebeneKinderSekundarstufe"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-sekundar-woche"
                     />
                     <mat-error
                         *ngIf="
@@ -476,6 +493,7 @@
                         matInput
                         formControlName="anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-besonders-woche"
                     />
                     <mat-error
                         *ngIf="
@@ -543,6 +561,7 @@
                         matInput
                         formControlName="anzahlEingeschriebeneKinderVolksschulangebot"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-volksschule-woche"
                     />
                     <mat-error
                         *ngIf="
@@ -611,6 +630,7 @@
                         matInput
                         formControlName="durchschnittKinderProTagFruehbetreuung"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-fruehbetreuung"
                     />
                     <mat-error
                         *ngIf="
@@ -654,6 +674,7 @@
                         [specificBisherLabel]="
                             'LATS_BISHER_LABEL_INSTITUTION' | translate
                         "
+                        data-test="anzahl-kinder-woche-bisher"
                     >
                     </dv-bisher-x>
                 </mat-form-field>
@@ -676,6 +697,7 @@
                         matInput
                         formControlName="durchschnittKinderProTagMittag"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-mittagsbetreuung"
                     />
                     <mat-error
                         *ngIf="
@@ -739,6 +761,7 @@
                         matInput
                         formControlName="durchschnittKinderProTagNachmittag1"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-nachmittagsbetreuung-eins"
                     />
                     <mat-error
                         *ngIf="
@@ -804,6 +827,7 @@
                         matInput
                         formControlName="durchschnittKinderProTagNachmittag2"
                         class="form-control dv-input"
+                        data-test="anzahl-kinder-nachmittagsbetreuung-zwei"
                     />
                     <mat-error
                         *ngIf="
@@ -885,6 +909,7 @@
                         matInput
                         formControlName="betreuungsstundenEinschliesslichBesondereBeduerfnisse"
                         class="form-control dv-input"
+                        data-test="betreuungsstunden-schuljahr-inkl-kinder"
                     />
                     <mat-error
                         *ngIf="
@@ -958,12 +983,16 @@
                         "
                         formControlName="schuleAufBasisOrganisatorischesKonzept"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="tagesschul-basis-organisatorisches-konzept"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="tagesschul-basis-organisatorisches-konzept"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -1009,12 +1038,16 @@
                         "
                         formControlName="schuleAufBasisPaedagogischesKonzept"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="tagesschule-basis-paedagogisches-konzept"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="tagesschule-basis-paedagogisches-konzept"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -1062,12 +1095,16 @@
                         "
                         formControlName="raeumlicheVoraussetzungenEingehalten"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="tagesschule-raum-vorschriften-erfuellt"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="tagesschule-raum-vorschriften-erfuellt"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -1113,12 +1150,16 @@
                         "
                         formControlName="betreuungsverhaeltnisEingehalten"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="tagesschule-betreuungsverhaeltnis"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="tagesschule-betreuungsverhaeltnis"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -1164,12 +1205,16 @@
                         "
                         formControlName="ernaehrungsGrundsaetzeEingehalten"
                     >
-                        <mat-radio-button [value]="true">{{
-                            'LABEL_JA' | translate
-                        }}</mat-radio-button>
-                        <mat-radio-button [value]="false">{{
-                            'LABEL_NEIN' | translate
-                        }}</mat-radio-button>
+                        <mat-radio-button
+                            data-test="tagesschule-ausgewogene-erhaehrung"
+                            [value]="true"
+                            >{{ 'LABEL_JA' | translate }}</mat-radio-button
+                        >
+                        <mat-radio-button
+                            data-test="tagesschule-ausgewogene-erhaehrung"
+                            [value]="false"
+                            >{{ 'LABEL_NEIN' | translate }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <dv-bisher-x
                         [deklaration]="
@@ -1242,7 +1287,7 @@
                                 fruehbetreuungOeffnungszeiten.montag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1252,7 +1297,7 @@
                                 fruehbetreuungOeffnungszeiten.dienstag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1262,7 +1307,7 @@
                                 fruehbetreuungOeffnungszeiten.mittwoch =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1272,7 +1317,7 @@
                                 fruehbetreuungOeffnungszeiten.donnerstag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td class="big-border-right">
@@ -1282,7 +1327,7 @@
                                 fruehbetreuungOeffnungszeiten.freitag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                 </tr>
@@ -1303,7 +1348,7 @@
                                 mittagsbetreuungOeffnungszeiten.montag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1313,7 +1358,7 @@
                                 mittagsbetreuungOeffnungszeiten.dienstag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1323,7 +1368,7 @@
                                 mittagsbetreuungOeffnungszeiten.mittwoch =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1335,7 +1380,7 @@
                                 mittagsbetreuungOeffnungszeiten.donnerstag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td class="big-border-right">
@@ -1345,7 +1390,7 @@
                                 mittagsbetreuungOeffnungszeiten.freitag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                 </tr>
@@ -1365,7 +1410,7 @@
                                 nachmittagsbetreuung1Oeffnungszeiten.montag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1377,7 +1422,7 @@
                                 nachmittagsbetreuung1Oeffnungszeiten.dienstag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1389,7 +1434,7 @@
                                 nachmittagsbetreuung1Oeffnungszeiten.mittwoch =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1401,7 +1446,7 @@
                                 nachmittagsbetreuung1Oeffnungszeiten.donnerstag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td class="big-border-right">
@@ -1413,7 +1458,7 @@
                                 nachmittagsbetreuung1Oeffnungszeiten.freitag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                 </tr>
@@ -1433,7 +1478,7 @@
                                 nachmittagsbetreuung2Oeffnungszeiten.montag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1445,7 +1490,7 @@
                                 nachmittagsbetreuung2Oeffnungszeiten.dienstag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1457,7 +1502,7 @@
                                 nachmittagsbetreuung2Oeffnungszeiten.mittwoch =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td>
@@ -1469,7 +1514,7 @@
                                 nachmittagsbetreuung2Oeffnungszeiten.donnerstag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                     <td class="big-border-right">
@@ -1481,7 +1526,7 @@
                                 nachmittagsbetreuung2Oeffnungszeiten.freitag =
                                     $event.checked
                             "
-                            [disabled]="!canEditForm()"
+                            [disabled]="(canEditForm() | async) === false"
                         ></mat-checkbox>
                     </td>
                 </tr>
@@ -1489,23 +1534,12 @@
         </div>
 
         <div class="actions">
-            <button
-                class="dv-btn cancel-button uppercase"
-                type="button"
-                *ngIf="
-                    ((canSeeFalscheAngaben | async) && isInstiUser) ||
-                    latsAngabenInstitutionContainer?.isGeprueftGemeinde()
-                "
-                (click)="onFalscheAngaben()"
-            >
-                <span translate>FERIENBETREUUNG_ANGABEN_KORRIGIEREN</span>
-            </button>
-
             <dv-loading-button
                 class="uppercase"
                 *ngIf="canSeeFreigeben | async"
                 type="button"
                 (buttonClick)="onFreigeben()"
+                data-test="tagesschule-freigeben-gemeindeantrag"
             >
                 <span translate>FREIGEBEN</span>
             </dv-loading-button>
@@ -1515,6 +1549,7 @@
                 *ngIf="canSeeAbschliessen | async"
                 type="button"
                 (buttonClick)="onGeprueft()"
+                data-test="tagesschule-gemeindeantrag-geprueft"
             >
                 <span translate>GEPRUEFT</span>
             </dv-loading-button>
@@ -1524,6 +1559,7 @@
                 type="button"
                 *ngIf="canSeeSave | async"
                 (click)="onFormSubmit()"
+                data-test="tagesschule-gemeindeantrag-speichern"
             >
                 <span translate>SAVE</span>
             </button>
@@ -1536,20 +1572,20 @@
             >
                 <span translate>CANCEL</span>
             </button>
-
             <button
                 class="dv-btn cancel-button uppercase margin-left-5"
                 type="button"
-                *ngIf="
-                    (canSeeFalscheAngaben | async) &&
-                    !isInstiUser &&
-                    latsAngabenInstitutionContainer?.isInPruefungGemeinde()
-                "
+                *ngIf="canSeeFalscheAngaben | async"
                 (click)="onFalscheAngaben()"
+                data-test="tagesschule-angaben-korrigieren"
             >
-                <span translate
-                    >FERIENBETREUUNG_ANGABEN_ZURUECK_AN_INSTITUTION</span
-                >
+                @if (latsAngabenInstitutionContainer.isInPruefungGemeinde()) {
+                    <span translate
+                        >FERIENBETREUUNG_ANGABEN_ZURUECK_AN_INSTITUTION</span
+                    >
+                } @else {
+                    <span translate>FERIENBETREUUNG_ANGABEN_KORRIGIEREN</span>
+                }
             </button>
         </div>
     </form>

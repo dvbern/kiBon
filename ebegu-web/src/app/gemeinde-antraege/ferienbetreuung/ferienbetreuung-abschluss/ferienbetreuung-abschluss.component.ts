@@ -25,23 +25,30 @@ import {
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {
+    BehaviorSubject,
+    combineLatest,
+    firstValueFrom,
+    Observable,
+    Subject
+} from 'rxjs';
 import {filter, first, map, mergeMap, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {FerienbetreuungAngabenStatus} from '../../../../models/enums/FerienbetreuungAngabenStatus';
-import {TSRole} from '../../../../models/enums/TSRole';
-import {TSSprache} from '../../../../models/enums/TSSprache';
+import {TSRole, TSSprache} from '@kibon/shared/model/enums';
 import {TSWizardStepXTyp} from '../../../../models/enums/TSWizardStepXTyp';
 import {TSFerienbetreuungAngaben} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngaben';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
+import {DvNgOkDialogComponent} from '../../../core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {FerienbetreuungDokumentService} from '../services/ferienbetreuung-dokument.service';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
+import {FerienbetreuungPermissionUtil} from '../util/FerienbetreuungPermissionUtil';
 
 const LOG = LogFactory.createLog('FerienbetreuungAbschlussComponent');
 
@@ -50,7 +57,8 @@ const LOG = LogFactory.createLog('FerienbetreuungAbschlussComponent');
     templateUrl: './ferienbetreuung-abschluss.component.html',
     styleUrls: ['./ferienbetreuung-abschluss.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
     private static readonly FILENAME_DE = 'Verfügung Ferienbetreuung kiBon';
@@ -178,6 +186,44 @@ export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
             );
     }
 
+    public inZweitpruefungGeben(): void {
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.data = {
+            frage: this.translate.instant('ZUR_ZWEITPRUEFUNG_BESTAETIGUNG')
+        };
+        this.dialog
+            .open(DvNgConfirmDialogComponent, dialogConfig)
+            .afterClosed()
+            .pipe(
+                filter(result => !!result),
+                mergeMap(() =>
+                    this.ferienbetreuungsService
+                        .getFerienbetreuungContainer()
+                        .pipe(first())
+                ),
+                mergeMap(container =>
+                    this.ferienbetreuungsService.ferienbetreuungZurZweitpruefung(
+                        container
+                    )
+                )
+            )
+            .subscribe({
+                next: container => {
+                    this.wizardRS.updateSteps(
+                        this.WIZARD_TYPE,
+                        this.container.id
+                    );
+                    this.ferienbetreuungsService.updateFerienbetreuungContainerStores(
+                        container.id
+                    );
+                },
+                error: () =>
+                    this.errorService.addMesageAsError(
+                        this.translate.instant('ERROR_UNEXPECTED')
+                    )
+            });
+    }
+
     public geprueft(): void {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = {
@@ -199,20 +245,32 @@ export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
                     this.ferienbetreuungsService.ferienbetreuungAngabenGeprueft(
                         container
                     )
-                ),
-                takeUntil(this.unsubscribe)
+                )
             )
-            .subscribe(
-                () =>
+            .subscribe({
+                next: container => {
+                    if (container.isInZweitPruefung()) {
+                        const dialogConfigInfo = new MatDialogConfig();
+                        dialogConfigInfo.data = {
+                            title: this.translate.instant(
+                                'LATS_INFO_SELECTED_FOR_ZWEITPRUEFUNG'
+                            )
+                        };
+                        this.dialog.open(
+                            DvNgOkDialogComponent,
+                            dialogConfigInfo
+                        );
+                    }
                     this.wizardRS.updateSteps(
                         this.WIZARD_TYPE,
                         this.container.id
-                    ),
-                () =>
+                    );
+                },
+                error: () =>
                     this.errorService.addMesageAsError(
                         this.translate.instant('ERROR_UNEXPECTED')
                     )
-            );
+            });
     }
 
     public ngOnDestroy(): void {
@@ -233,6 +291,16 @@ export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
             this.container?.status === FerienbetreuungAngabenStatus.ABGELEHNT ||
             this.container?.status ===
                 FerienbetreuungAngabenStatus.ABGESCHLOSSEN
+        );
+    }
+
+    /**
+     * @return Ob der Antrag dieser Komponenten im Status "zweitprüfung" ist.
+     */
+    public isAlreadyInZweitpruefung(): boolean {
+        return (
+            this.container?.status ===
+            FerienbetreuungAngabenStatus.ZWEITPRUEFUNG
         );
     }
 
@@ -260,10 +328,11 @@ export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
         };
 
         if (
-            !(await this.dialog
-                .open(DvNgConfirmDialogComponent, dialogConfig)
-                .afterClosed()
-                .toPromise())
+            !(await firstValueFrom(
+                this.dialog
+                    .open(DvNgConfirmDialogComponent, dialogConfig)
+                    .afterClosed()
+            ))
         ) {
             return;
         }
@@ -340,10 +409,11 @@ export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
         };
 
         if (
-            !(await this.dialog
-                .open(DvNgConfirmDialogComponent, dialogConfig)
-                .afterClosed()
-                .toPromise())
+            !(await firstValueFrom(
+                this.dialog
+                    .open(DvNgConfirmDialogComponent, dialogConfig)
+                    .afterClosed()
+            ))
         ) {
             return;
         }
@@ -368,10 +438,11 @@ export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
         };
 
         if (
-            !(await this.dialog
-                .open(DvNgConfirmDialogComponent, dialogConfig)
-                .afterClosed()
-                .toPromise())
+            !(await firstValueFrom(
+                this.dialog
+                    .open(DvNgConfirmDialogComponent, dialogConfig)
+                    .afterClosed()
+            ))
         ) {
             return;
         }
@@ -406,6 +477,21 @@ export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
             'FERIENBETREUUNG.KOSTEN_EINNAHMEN',
             {},
             {absolute: true}
+        );
+    }
+
+    public isZweitPruefungAndSameUserAsPruefung() {
+        return combineLatest([
+            this.authService.principal$,
+            this.ferienbetreuungsService.getFerienbetreuungHistory()
+        ]).pipe(
+            map(([principal, history]) =>
+                FerienbetreuungPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    this.container,
+                    history
+                )
+            )
         );
     }
 }

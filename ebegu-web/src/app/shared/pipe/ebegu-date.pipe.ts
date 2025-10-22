@@ -1,9 +1,9 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import * as moment from 'moment';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-
+import moment from 'moment';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 @Pipe({
-    name: 'ebeguDate'
+    name: 'ebeguDate',
+    standalone: false
 })
 export class EbeguDatePipe implements PipeTransform {
     public transform(date: moment.Moment): string {

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner.kitax;
@@ -48,7 +48,8 @@ import static ch.dvbern.ebegu.util.MathUtil.EXACT;
  */
 public abstract class AbstractKitaxBernRechner extends AbstractBernRechner {
 
-	private final RechnerRuleParameterDTO rechnerParameter = new RechnerRuleParameterDTO();
+	private final RechnerRuleParameterDTO rechnerParameter =
+		new RechnerRuleParameterDTO();
 
 	protected KitaxUebergangsloesungParameter kitaxParameter;
 
@@ -60,7 +61,9 @@ public abstract class AbstractKitaxBernRechner extends AbstractBernRechner {
 	protected static final BigDecimal ZWOELF = MathUtil.EXACT.fromNullSafe(12);
 	protected static final BigDecimal NEUN = MathUtil.EXACT.from(9L);
 	protected static final BigDecimal ZWANZIG = MathUtil.EXACT.from(20L);
-	protected static final BigDecimal ZWEIHUNDERTVIERZIG = MathUtil.EXACT.from(240L);
+	protected static final BigDecimal ZWEIHUNDERTVIERZIG = MathUtil.EXACT.from(
+		240L
+	);
 
 	protected AbstractKitaxBernRechner(
 		@Nonnull KitaxUebergangsloesungParameter kitaxParameter,
@@ -74,7 +77,10 @@ public abstract class AbstractKitaxBernRechner extends AbstractBernRechner {
 
 	@Nonnull
 	@Override
-	protected BGCalculationResult calculateAsiv(@Nonnull BGCalculationInput input, @Nonnull BGRechnerParameterDTO parameterDTO) {
+	protected BGCalculationResult calculateAsiv(
+		@Nonnull BGCalculationInput input,
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
 		// Die ASIV Berechnung muss ausgenullt werden
 		BGCalculationResult resultAsiv = new BGCalculationResult();
@@ -90,15 +96,25 @@ public abstract class AbstractKitaxBernRechner extends AbstractBernRechner {
 	 * Stellt sicher, dass der Zeitraum innerhalb eines Monates liegt
 	 * Wenn nicht wird eine Exception geworfen
 	 */
-	protected void checkArguments(LocalDate von, LocalDate bis, BigDecimal anspruch, BigDecimal massgebendesEinkommen) {
+	protected void checkArguments(
+		LocalDate von,
+		LocalDate bis,
+		BigDecimal anspruch,
+		BigDecimal massgebendesEinkommen
+	) {
 		// Inputdaten validieren
 		Objects.requireNonNull(von, "von darf nicht null sein");
 		Objects.requireNonNull(bis, "bis darf nicht null sein");
 		Objects.requireNonNull(anspruch, "anspruch darf nicht null sein");
-		Objects.requireNonNull(massgebendesEinkommen, "massgebendesEinkommen darf nicht null sein");
+		Objects.requireNonNull(
+			massgebendesEinkommen,
+			"massgebendesEinkommen darf nicht null sein"
+		);
 		// Max. 1 Monat
 		if (von.getMonth() != bis.getMonth()) {
-			throw new IllegalArgumentException("BG Rechner duerfen nicht für monatsuebergreifende Zeitabschnitte verwendet werden!");
+			throw new IllegalArgumentException(
+				"BG Rechner duerfen nicht für monatsuebergreifende Zeitabschnitte verwendet werden!"
+			);
 		}
 	}
 
@@ -111,17 +127,26 @@ public abstract class AbstractKitaxBernRechner extends AbstractBernRechner {
 		LocalDate monatsende = bis.with(TemporalAdjusters.lastDayOfMonth());
 		long nettoarbeitstageMonat = workDaysBetween(monatsanfang, monatsende);
 		long nettoarbeitstageIntervall = workDaysBetween(von, bis);
-		return MathUtil.EXACT.divide(MathUtil.EXACT.from(nettoarbeitstageIntervall), MathUtil.EXACT.from(nettoarbeitstageMonat));
+		return MathUtil.EXACT.divide(
+			MathUtil.EXACT.from(nettoarbeitstageIntervall),
+			MathUtil.EXACT.from(nettoarbeitstageMonat)
+		);
 	}
 
 	/**
 	 * Berechnet den Anteil des Verguenstigten Pensums am effektiven Betreuungspensum
 	 */
-	protected BigDecimal calculateAnteilVerguenstigtesPensumAmBetreuungspensum(@Nonnull BGCalculationInput input) {
+	protected BigDecimal calculateAnteilVerguenstigtesPensumAmBetreuungspensum(
+		@Nonnull BGCalculationInput input
+	) {
 		BigDecimal betreuungspensum = input.getBetreuungspensumProzent();
-		BigDecimal anteilVerguenstigesPensumAmBetreuungspensum = BigDecimal.ZERO;
+		BigDecimal anteilVerguenstigesPensumAmBetreuungspensum =
+			BigDecimal.ZERO;
 		if (betreuungspensum.compareTo(BigDecimal.ZERO) > 0) {
-			anteilVerguenstigesPensumAmBetreuungspensum = EXACT.divide(input.getBgPensumProzent(), betreuungspensum);
+			anteilVerguenstigesPensumAmBetreuungspensum = EXACT.divide(
+				input.getBgPensumProzent(),
+				betreuungspensum
+			);
 		}
 		return anteilVerguenstigesPensumAmBetreuungspensum;
 	}
@@ -129,41 +154,80 @@ public abstract class AbstractKitaxBernRechner extends AbstractBernRechner {
 	/**
 	 * Berechnet die Kosten einer Betreuungsstunde (Tagi und Tageseltern)
 	 */
-	protected BigDecimal calculateKostenBetreuungsstunde(BigDecimal kostenProStundeMaximal, BigDecimal massgebendesEinkommen, BigDecimal anspruch, KitaxUebergangsloesungParameter parameterDTO) {
+	protected BigDecimal calculateKostenBetreuungsstunde(
+		BigDecimal kostenProStundeMaximal,
+		BigDecimal massgebendesEinkommen,
+		BigDecimal anspruch,
+		KitaxUebergangsloesungParameter parameterDTO
+	) {
 		// Massgebendes Einkommen: Minimum und Maximum berücksichtigen
-		BigDecimal massgebendesEinkommenBerechnet = (massgebendesEinkommen.max(parameterDTO.getMinMassgebendesEinkommen())).min(parameterDTO.getMaxMassgebendesEinkommen());
-		BigDecimal kostenProStundeMaxMinusMin = MathUtil.EXACT.subtract(kostenProStundeMaximal, parameterDTO.getKostenProStundeMinimal());
-		BigDecimal massgebendesEinkommenMaxMinusMin = MathUtil.EXACT.subtract(parameterDTO.getMaxMassgebendesEinkommen(), parameterDTO.getMinMassgebendesEinkommen());
-		BigDecimal massgebendesEinkommenMinusMin = MathUtil.EXACT.subtract(massgebendesEinkommenBerechnet, parameterDTO.getMinMassgebendesEinkommen());
-		BigDecimal zwischenresultat1 = MathUtil.EXACT.divide(kostenProStundeMaxMinusMin, massgebendesEinkommenMaxMinusMin);
-		BigDecimal zwischenresultat2 = MathUtil.EXACT.multiply(zwischenresultat1, massgebendesEinkommenMinusMin);
-		return MathUtil.EXACT.add(zwischenresultat2, parameterDTO.getKostenProStundeMinimal());
+		BigDecimal massgebendesEinkommenBerechnet = (massgebendesEinkommen.max(
+			parameterDTO.getMinMassgebendesEinkommen()
+		)).min(parameterDTO.getMaxMassgebendesEinkommen());
+		BigDecimal kostenProStundeMaxMinusMin = MathUtil.EXACT.subtract(
+			kostenProStundeMaximal,
+			parameterDTO.getKostenProStundeMinimal()
+		);
+		BigDecimal massgebendesEinkommenMaxMinusMin = MathUtil.EXACT.subtract(
+			parameterDTO.getMaxMassgebendesEinkommen(),
+			parameterDTO.getMinMassgebendesEinkommen()
+		);
+		BigDecimal massgebendesEinkommenMinusMin = MathUtil.EXACT.subtract(
+			massgebendesEinkommenBerechnet,
+			parameterDTO.getMinMassgebendesEinkommen()
+		);
+		BigDecimal zwischenresultat1 = MathUtil.EXACT.divide(
+			kostenProStundeMaxMinusMin,
+			massgebendesEinkommenMaxMinusMin
+		);
+		BigDecimal zwischenresultat2 = MathUtil.EXACT.multiply(
+			zwischenresultat1,
+			massgebendesEinkommenMinusMin
+		);
+		return MathUtil.EXACT.add(
+			zwischenresultat2,
+			parameterDTO.getKostenProStundeMinimal()
+		);
 	}
 
 	protected void prepareRechnerParameterForGemeinde(
 		@Nonnull BGCalculationInput inputGemeinde,
 		@Nonnull BGRechnerParameterDTO parameterDTO
 	) {
-		MahlzeitenverguenstigungBGRechnerRule rechnerRule = new MahlzeitenverguenstigungBGRechnerRule(locale);
+		MahlzeitenverguenstigungBGRechnerRule rechnerRule =
+			new MahlzeitenverguenstigungBGRechnerRule(locale);
 		// Diese Pruefung erfolgt eigentlich schon aussen... die Rules die reinkommen sind schon konfiguriert fuer Gemeinde
-		if (rechnerRule.isConfigueredForGemeinde(parameterDTO) && rechnerRule.isRelevantForVerfuegung(inputGemeinde, parameterDTO)) {
-			rechnerRule.prepareParameter(inputGemeinde, parameterDTO, rechnerParameter);
+		if (rechnerRule.isConfigueredForGemeinde(parameterDTO)
+			&& rechnerRule.isRelevantForVerfuegung(
+				inputGemeinde,
+				parameterDTO
+			)) {
+			rechnerRule.prepareParameter(
+				inputGemeinde,
+				parameterDTO,
+				rechnerParameter
+			);
 		}
 	}
 
 	/**
-	 * Die Mahlzeitenverguenstigungen mit dem Anteil Monat verrechnen. Die Verguenstigung wurde aufgrund der *monatlichen*
+	 * Die Mahlzeitenverguenstigungen mit dem Anteil Monat verrechnen. Die Verguenstigung wurde aufgrund der
+	 * *monatlichen*
 	 * Mahlzeiten berechnet und ist darum bei untermonatlichen Pensen zu hoch.
 	 * Beispiel: Betreuung ueber einen halben Monat:
 	 * berechneteVerguenstigung = eingegebeneVerguenstigung * 0.5
 	 */
 	protected void handleAnteileMahlzeitenverguenstigung(
-		@Nonnull BGCalculationResult result, @Nonnull BigDecimal anteilMonat
+		@Nonnull BGCalculationResult result,
+		@Nonnull BigDecimal anteilMonat
 	) {
 		// Falls der Zeitabschnitt untermonatlich ist, muessen sowohl die Anzahl Mahlzeiten wie auch die Kosten
 		// derselben mit dem Anteil des Monats korrigiert werden
-		final BigDecimal mahlzeitenTotal = rechnerParameter.getVerguenstigungMahlzeitenTotal();
-		result.setVerguenstigungMahlzeitenTotal(MathUtil.DEFAULT.multiply(mahlzeitenTotal, anteilMonat));
+		final BigDecimal mahlzeitenTotal = rechnerParameter
+			.getVerguenstigungMahlzeitenTotal();
+		result.setVerguenstigungMahlzeitenTotal(
+			MathUtil.DEFAULT.multiply(mahlzeitenTotal, anteilMonat)
+		);
 	}
 
 	/**
@@ -172,7 +236,10 @@ public abstract class AbstractKitaxBernRechner extends AbstractBernRechner {
 	private long workDaysBetween(LocalDate start, LocalDate end) {
 		return Stream.iterate(start, d -> d.plusDays(1))
 			.limit(start.until(end.plusDays(1), ChronoUnit.DAYS))
-			.filter(d -> !(DayOfWeek.SATURDAY == d.getDayOfWeek() || DayOfWeek.SUNDAY == d.getDayOfWeek()))
+			.filter(
+				d -> !(DayOfWeek.SATURDAY == d.getDayOfWeek()
+					|| DayOfWeek.SUNDAY == d.getDayOfWeek())
+			)
 			.count();
 	}
 }

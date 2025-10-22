@@ -2362,7 +2362,7 @@ mat-form-field.mat-focused.mat-warn .mat-mdc-select-arrow {
     .mdc-list-item__primary-text,
 .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled)
     .mdc-list-item__primary-text {
-    color: black;
+    color: black !important;
 }
 
 .mat-accent
@@ -2382,8 +2382,8 @@ mat-form-field.mat-focused.mat-warn .mat-mdc-select-arrow {
 }
 
 .mdc-checkbox__background {
-    width: 16px !important;
-    height: 16px !important;
+    width: 17px !important;
+    height: 17px !important;
 }
 
 .mat-mdc-checkbox,
@@ -2448,6 +2448,7 @@ mat-form-field.mat-focused.mat-warn .mat-mdc-select-arrow {
         --mdc-radio-selected-pressed-icon-color: #424242;
         --mat-mdc-radio-ripple-color: #000;
         --mat-mdc-radio-checked-ripple-color: #424242;
+        --mat-radio-checked-ripple-color: #424242;
     }
 
     .mdc-form-field .mdc-radio {
@@ -2533,7 +2534,7 @@ mat-form-field.mat-focused.mat-warn .mat-mdc-select-arrow {
 
 .mat-primary .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-full,
 .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-full {
-    background: #424242;
+    background: #424242 !important;
 }
 
 .cdk-overlay-pane .mdc-menu-surface.mat-mdc-select-panel {
@@ -2547,10 +2548,36 @@ mat-form-field.mat-focused.mat-warn .mat-mdc-select-arrow {
 .mat-mdc-radio-button,
 .mat-mdc-button {
     --mdc-form-field-label-text-font: 'Open Sans', Arial, Helvetica, sans-serif;
+    --mat-radio-label-text-font: 'Open Sans', Arial, Helvetica, sans-serif;
 }
 .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
     width: 11px !important;
     height: 3px !important;
 }
 
+.mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked,
+.mat-pseudo-checkbox-full.mat-pseudo-checkbox-indeterminate {
+    background-color: @ddgrey !important;
+}
+
+* {
+    --mdc-filled-text-field-disabled-container-color: transparent;
+}
+
+md-radio-group[disabled] md-radio-button {
+    color: #858585;
+}
+
 /* stylelint-enable */
+.mat-timepicker-panel > mat-option > .mat-pseudo-checkbox {
+    display: none;
+}
+
+.mat-mdc-autocomplete-panel > mat-option > mat-pseudo-checkbox {
+    display: none;
+}
+
+.mat-mdc-checkbox .mdc-form-field .mdc-checkbox + label {
+    display: flex;
+    align-items: center;
+}

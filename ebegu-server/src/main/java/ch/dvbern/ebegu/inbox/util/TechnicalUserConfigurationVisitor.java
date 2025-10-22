@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.util;
@@ -20,7 +20,8 @@ package ch.dvbern.ebegu.inbox.util;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import ch.dvbern.ebegu.util.mandant.MandantVisitor;
 
-public class TechnicalUserConfigurationVisitor implements MandantVisitor<TechnicalUserConfiguration> {
+public class TechnicalUserConfigurationVisitor implements
+	MandantVisitor<TechnicalUserConfiguration> {
 
 	public TechnicalUserConfiguration process(MandantIdentifier mandant) {
 		return mandant.accept(this);
@@ -39,7 +40,8 @@ public class TechnicalUserConfigurationVisitor implements MandantVisitor<Technic
 		return new TechnicalUserConfiguration(
 			"88888888-2224-2222-2222-222222222222",
 			"99999999-2224-2222-2222-222222222222"
-		);	}
+		);
+	}
 
 	@Override
 	public TechnicalUserConfiguration visitSolothurn() {
@@ -62,6 +64,22 @@ public class TechnicalUserConfigurationVisitor implements MandantVisitor<Technic
 		return new TechnicalUserConfiguration(
 			"88888888-2226-2222-2222-222222222222",
 			"99999999-2226-2222-2222-222222222222"
+		);
+	}
+
+	@Override
+	public TechnicalUserConfiguration visitZug() {
+		return new TechnicalUserConfiguration(
+			"88888888-2227-2222-2222-222222222222",
+			"99999999-2227-2222-2222-222222222222"
+		);
+	}
+
+	@Override
+	public TechnicalUserConfiguration visitDvb() {
+		return new TechnicalUserConfiguration(
+			"88888888-2228-2222-2222-222222222222",
+			"99999999-2228-2222-2222-222222222222"
 		);
 	}
 }

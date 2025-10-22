@@ -1,0 +1,19 @@
+{
+    "name": "shared-ui-remove-dialog",
+    "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/shared/ui/remove-dialog/src",
+    "prefix": "lib",
+    "projectType": "library",
+    "tags": ["type:ui", "feature:shared"],
+    "targets": {
+        "build": {
+            "executor": "nx:noop",
+            "options": {
+                "tsConfig": "libs/shared/ui/tsconfig.lib.json"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

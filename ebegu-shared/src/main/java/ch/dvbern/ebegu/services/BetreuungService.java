@@ -25,9 +25,10 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.validation.groups.ConvertGroup;
+import jakarta.validation.Valid;
+import jakarta.validation.groups.ConvertGroup;
 
+import ch.dvbern.ebegu.dto.pendenz.PendenzBetreuungDTO;
 import ch.dvbern.ebegu.entities.AbstractAnmeldung;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Abwesenheit;
@@ -48,52 +49,75 @@ import ch.dvbern.ebegu.validationgroups.BetreuungBestaetigenValidationGroup;
 public interface BetreuungService {
 
 	/**
-	 * Speichert die Betreuung neu in der DB falls der Key noch nicht existiert. Sonst wird die existierende Betreuung aktualisiert
+	 * Speichert die Betreuung neu in der DB falls der Key noch nicht existiert. Sonst wird die existierende Betreuung
+	 * aktualisiert
 	 * Bean validation wird eingeschaltet
 	 *
 	 * @param betreuung Die Betreuung als DTO
 	 */
 	@Nonnull
-	Betreuung saveBetreuung(@Valid @Nonnull Betreuung betreuung, @Nonnull Boolean isAbwesenheit, @Nullable String externalClient);
+	Betreuung saveBetreuung(
+		@Valid @Nonnull Betreuung betreuung,
+		@Nonnull Boolean isAbwesenheit,
+		@Nullable String externalClient
+	);
 
 	/**
-	 * Speichert die AnmeldungTagesschule neu in der DB falls der Key noch nicht existiert. Sonst wird die existierende AnmeldungTagesschule aktualisiert
+	 * Speichert die AnmeldungTagesschule neu in der DB falls der Key noch nicht existiert. Sonst wird die existierende
+	 * AnmeldungTagesschule aktualisiert
 	 * Bean validation wird eingeschaltet
 	 */
 	@Nonnull
-	AnmeldungTagesschule saveAnmeldungTagesschule(@Valid @Nonnull AnmeldungTagesschule anmeldungTagesschule);
+	AnmeldungTagesschule saveAnmeldungTagesschule(
+		@Valid @Nonnull AnmeldungTagesschule anmeldungTagesschule
+	);
 
 	/**
-	 * Speichert die AnmeldungFerieninsel neu in der DB falls der Key noch nicht existiert. Sonst wird die existierende AnmeldungFerieninsel aktualisiert
+	 * Speichert die AnmeldungFerieninsel neu in der DB falls der Key noch nicht existiert. Sonst wird die existierende
+	 * AnmeldungFerieninsel aktualisiert
 	 * Bean validation wird eingeschaltet
 	 */
 	@Nonnull
-	AnmeldungFerieninsel saveAnmeldungFerieninsel(@Valid @Nonnull AnmeldungFerieninsel anmeldungFerieninsel);
+	AnmeldungFerieninsel saveAnmeldungFerieninsel(
+		@Valid @Nonnull AnmeldungFerieninsel anmeldungFerieninsel
+	);
 
 	/**
 	 * Setzt die Betreuungsplatzanfrage auf ABGEWIESEN und sendet dem Gesuchsteller eine E-Mail
 	 */
 	@Nonnull
-	Betreuung betreuungPlatzAbweisen(@Valid @Nonnull Betreuung betreuung, @Nullable String externalClient);
+	Betreuung betreuungPlatzAbweisen(
+		@Valid @Nonnull Betreuung betreuung,
+		@Nullable String externalClient
+	);
 
 	/**
 	 * Setzt die Betreuungsplatzanfrage auf BESTAETIGT und sendet dem Gesuchsteller eine E-Mail,
 	 * falls damit alle Betreuungen des Gesuchs bestaetigt sind.
 	 */
 	@Nonnull
-	Betreuung betreuungPlatzBestaetigen(@Valid @ConvertGroup(to = BetreuungBestaetigenValidationGroup.class) @Nonnull Betreuung betreuung, @Nullable String externalClient);
+	Betreuung betreuungPlatzBestaetigen(
+		@Valid
+		@ConvertGroup(to = BetreuungBestaetigenValidationGroup.class)
+		@Nonnull Betreuung betreuung,
+		@Nullable String externalClient
+	);
 
 	/**
 	 * Setzt die Schulamt-Anmeldung auf SCHULAMT_ANMELDUNG_ABGELEHNT und sendet dem Gesuchsteller eine E-Mail
 	 */
 	@Nonnull
-	AbstractAnmeldung anmeldungSchulamtAblehnen(@Valid @Nonnull AbstractAnmeldung anmeldung);
+	AbstractAnmeldung anmeldungSchulamtAblehnen(
+		@Valid @Nonnull AbstractAnmeldung anmeldung
+	);
 
 	/**
 	 * Setzt die Schulamt-Anmeldung auf SCHULAMT_FALSCHE_INSTITUTION.
 	 */
 	@Nonnull
-	AbstractAnmeldung anmeldungSchulamtFalscheInstitution(@Valid @Nonnull AbstractAnmeldung anmeldung);
+	AbstractAnmeldung anmeldungSchulamtFalscheInstitution(
+		@Valid @Nonnull AbstractAnmeldung anmeldung
+	);
 
 	/**
 	 * @param key PK (id) der Betreuung
@@ -132,19 +156,26 @@ public interface BetreuungService {
 	 * @return Betreuung mit dem gegebenen key oder null falls nicht vorhanden
 	 */
 	@Nonnull
-	Optional<Betreuung> findBetreuung(@Nonnull String betreuungId, boolean doAuthCheck);
+	Optional<Betreuung> findBetreuung(
+		@Nonnull String betreuungId,
+		boolean doAuthCheck
+	);
 
 	/**
 	 * @param referenzNummer BGNummer der Anmeldung
 	 * @return Anmeldung mit der angegebenen ID (z.B. 18.000116.1.2) oder null falls nicht vorhanden
 	 */
-	List<AbstractAnmeldung> findAnmeldungenByReferenzNummer(@Nonnull String referenzNummer);
+	List<AbstractAnmeldung> findAnmeldungenByReferenzNummer(
+		@Nonnull String referenzNummer
+	);
 
 	/**
 	 * @param referenzNummer BGNummer der Anmeldung
 	 * @return Anmeldung mit der angegebenen ID (z.B. 18.000116.1.2) die AKTUELLE oder NULL ist.
 	 */
-	List<AbstractAnmeldung> findNewestAnmeldungByReferenzNummer(@Nonnull String referenzNummer);
+	List<AbstractAnmeldung> findNewestAnmeldungByReferenzNummer(
+		@Nonnull String referenzNummer
+	);
 
 	/**
 	 * Findet die entsprechende Betreuung in der uebergebenen Gesuchsperiode
@@ -154,7 +185,8 @@ public interface BetreuungService {
 		@Nonnull Gesuchsperiode gesuchsperiode,
 		@Nonnull Dossier dossier,
 		int betreuungNummer,
-		int kindNummer);
+		int kindNummer
+	);
 
 	/**
 	 * Wenn onlyGueltig = true:
@@ -163,7 +195,10 @@ public interface BetreuungService {
 	 * Wenn onlyGueltig = false:
 	 * return auch die Betreuung in andere Status (Warten Z.B.)
 	 */
-	Optional<Betreuung> findBetreuungByReferenzNummer(@Nonnull String referenzNummer, boolean onlyGueltig);
+	Optional<Betreuung> findBetreuungByReferenzNummer(
+		@Nonnull String referenzNummer,
+		boolean onlyGueltig
+	);
 
 	/**
 	 * @param betreuungId PK (id) der Betreuung
@@ -171,7 +206,9 @@ public interface BetreuungService {
 	 * {@link Betreuung#getAbwesenheitContainers()}
 	 */
 	@Nonnull
-	Optional<Betreuung> findBetreuungWithBetreuungsPensen(@Nonnull String betreuungId);
+	Optional<Betreuung> findBetreuungWithBetreuungsPensen(
+		@Nonnull String betreuungId
+	);
 
 	/**
 	 * entfernt eine Betreuung aus der Database
@@ -181,9 +218,13 @@ public interface BetreuungService {
 	void removeBetreuung(@Nonnull String betreuungId);
 
 	/**
-	 * entfernt eine Betreuuung aus der Databse. Um diese Methode aufzurufen muss man sich vorher vergewissern, dass die Betreuuung existiert
+	 * entfernt eine Betreuuung aus der Databse. Um diese Methode aufzurufen muss man sich vorher vergewissern, dass die
+	 * Betreuuung existiert
 	 */
-	void removeBetreuung(@Nonnull Betreuung betreuung, @Nullable String externalClient);
+	void removeBetreuung(
+		@Nonnull Betreuung betreuung,
+		@Nullable String externalClient
+	);
 
 	/**
 	 * Gibt die Pendenzen fuer einen Benutzer mit Rolle Institution oder Traegerschaft zurueck.
@@ -191,14 +232,16 @@ public interface BetreuungService {
 	 * und deren Status "WARTEN" ist.
 	 */
 	@Nonnull
-	Collection<AbstractPlatz> getPendenzenBetreuungen();
+	Collection<PendenzBetreuungDTO> getPendenzenBetreuungen();
 
 	/**
 	 * @param dossier Dossier, dessen verfuegte Betreuungen zurueckgegeben werden
 	 * @return BetreuungList, welche zum Dossier gehoeren oder null
 	 */
 	@Nonnull
-	List<Betreuung> findAllBetreuungenWithVerfuegungForDossier(@Nonnull Dossier dossier);
+	List<Betreuung> findAllBetreuungenWithVerfuegungForDossier(
+		@Nonnull Dossier dossier
+	);
 
 	/**
 	 * Schliesst die Betreuung (Status GESCHLOSSEN_OHNE_VERFUEGUNG) und verfügt das Gesuch wenn moeglich
@@ -250,24 +293,37 @@ public interface BetreuungService {
 	 * Setzt die Schulamt-Anmeldung auf SCHULAMT_MODULE_AKZEPTIERT und sendet dem Gesuchsteller eine E-Mail.
 	 */
 	@Nonnull
-	AbstractAnmeldung anmeldungSchulamtModuleAkzeptieren(@Valid @Nonnull AbstractAnmeldung anmeldung);
+	AbstractAnmeldung anmeldungSchulamtModuleAkzeptieren(
+		@Valid @Nonnull AbstractAnmeldung anmeldung
+	);
 
 	/**
-	 Setzt die Schulamt-Anmeldung auf SCHULAMT_MUTATION_IGNORIERT
+	 * Setzt die Schulamt-Anmeldung auf SCHULAMT_MUTATION_IGNORIERT
 	 */
 	@Nonnull
-	AbstractAnmeldung anmeldungMutationIgnorieren(@Valid @Nonnull AbstractAnmeldung anmeldung);
+	AbstractAnmeldung anmeldungMutationIgnorieren(
+		@Valid @Nonnull AbstractAnmeldung anmeldung
+	);
 
 	@Nonnull
-	AbstractAnmeldung anmeldungSchulamtStornieren(@Valid @Nonnull AbstractAnmeldung anmeldung);
+	AbstractAnmeldung anmeldungSchulamtStornieren(
+		@Valid @Nonnull AbstractAnmeldung anmeldung
+	);
 
-	void fireAnmeldungTagesschuleAddedEvent(@Nonnull AnmeldungTagesschule anmeldungTagesschule);
+	void fireAnmeldungTagesschuleAddedEvent(
+		@Nonnull AnmeldungTagesschule anmeldungTagesschule
+	);
 
 	@Nonnull
-	Optional<AnmeldungTagesschule> findAnmeldungenTagesschuleByReferenzNummer(@Nonnull String referenzNummer);
+	Optional<AnmeldungTagesschule> findAnmeldungenTagesschuleByReferenzNummer(
+		@Nonnull String referenzNummer
+	);
 
 	@Nonnull
-	Set<BetreuungsmitteilungPensum> capBetreuungspensenToGueltigkeit(@Nonnull Set<BetreuungsmitteilungPensum> pensen, @Nonnull DateRange gueltigkeit);
+	Set<BetreuungsmitteilungPensum> capBetreuungspensenToGueltigkeit(
+		@Nonnull Set<BetreuungsmitteilungPensum> pensen,
+		@Nonnull DateRange gueltigkeit
+	);
 
 	@Nonnull
 	BigDecimal getMultiplierForAbweichnungen(@Nonnull Betreuung betreuung);
@@ -278,8 +334,12 @@ public interface BetreuungService {
 	 * Findet für eine Anmeldung die letzte gültige nicht ignorierte
 	 */
 	@Nonnull
-	AbstractAnmeldung findVorgaengerAnmeldungNotIgnoriert(AbstractAnmeldung betreuung);
+	AbstractAnmeldung findVorgaengerAnmeldungNotIgnoriert(
+		AbstractAnmeldung betreuung
+	);
 
 	@Nonnull
-	List<AnmeldungTagesschule> findAnmeldungenTagesschuleByInstitution(@Nonnull Institution institution);
+	List<AnmeldungTagesschule> findAnmeldungenTagesschuleByInstitution(
+		@Nonnull Institution institution
+	);
 }

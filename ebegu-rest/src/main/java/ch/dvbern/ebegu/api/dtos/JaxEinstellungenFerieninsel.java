@@ -8,21 +8,21 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -31,7 +31,8 @@ public class JaxEinstellungenFerieninsel extends JaxAbstractDTO {
 
 	private static final long serialVersionUID = -1513774591239298994L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxGesuchsperiode gesuchsperiode;
 
 	@Nullable
@@ -64,7 +65,9 @@ public class JaxEinstellungenFerieninsel extends JaxAbstractDTO {
 		return ausweichstandortSommerferien;
 	}
 
-	public void setAusweichstandortSommerferien(@Nullable String ausweichstandortSommerferien) {
+	public void setAusweichstandortSommerferien(
+		@Nullable String ausweichstandortSommerferien
+	) {
 		this.ausweichstandortSommerferien = ausweichstandortSommerferien;
 	}
 
@@ -73,7 +76,9 @@ public class JaxEinstellungenFerieninsel extends JaxAbstractDTO {
 		return ausweichstandortHerbstferien;
 	}
 
-	public void setAusweichstandortHerbstferien(@Nullable String ausweichstandortHerbstferien) {
+	public void setAusweichstandortHerbstferien(
+		@Nullable String ausweichstandortHerbstferien
+	) {
 		this.ausweichstandortHerbstferien = ausweichstandortHerbstferien;
 	}
 
@@ -82,7 +87,9 @@ public class JaxEinstellungenFerieninsel extends JaxAbstractDTO {
 		return ausweichstandortSportferien;
 	}
 
-	public void setAusweichstandortSportferien(@Nullable String ausweichstandortSportferien) {
+	public void setAusweichstandortSportferien(
+		@Nullable String ausweichstandortSportferien
+	) {
 		this.ausweichstandortSportferien = ausweichstandortSportferien;
 	}
 
@@ -91,7 +98,10 @@ public class JaxEinstellungenFerieninsel extends JaxAbstractDTO {
 		return ausweichstandortFruehlingsferien;
 	}
 
-	public void setAusweichstandortFruehlingsferien(@Nullable String ausweichstandortFruehlingsferien) {
-		this.ausweichstandortFruehlingsferien = ausweichstandortFruehlingsferien;
+	public void setAusweichstandortFruehlingsferien(
+		@Nullable String ausweichstandortFruehlingsferien
+	) {
+		this.ausweichstandortFruehlingsferien =
+			ausweichstandortFruehlingsferien;
 	}
 }

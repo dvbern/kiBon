@@ -16,34 +16,38 @@
  */
 
 import {NgModule} from '@angular/core';
+import {AdminFeatureMeldungsfensterComponent} from '@kibon/admin-feature-meldungsfenster';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {Ng2StateDeclaration} from '@uirouter/angular';
 import {UIRouterUpgradeModule} from '@uirouter/angular-hybrid';
 import {Transition} from '@uirouter/angularjs';
 import {HookResult} from '@uirouter/core';
 import {BenutzerComponent} from '../app/benutzer/benutzer/benutzer.component';
-import {ApplicationPropertyRS} from '../app/core/rest-services/applicationPropertyRS.rest';
 import {TSRoleUtil} from '../utils/TSRoleUtil';
-import {AdminViewXComponent} from './component/admin-view-x/admin-view-x.component';
+import {AdminViewXComponent} from './einstellungen/admin-view-x/admin-view-x.component';
 import {BatchjobTriggerViewComponent} from './component/batchjobTriggerView/batchjobTriggerView.component';
 import {BenutzerListViewXComponent} from './component/benutzerListView/benutzer-list-view-x.component';
 import {BetreuungMonitoringComponent} from './component/betreuung-monitoring/betreuung-monitoring.component';
 import {DebuggingComponent} from './component/debugging/debugging.component';
 import {GesuchsperiodeListViewXComponent} from './component/gesuchsperiode-list-view-x/gesuchsperiode-list-view-x.component';
-import {GesuchsperiodeViewXComponent} from './component/gesuchsperiode-view-x/gesuchsperiode-view-x.component';
+import {GesuchsperiodeViewXComponent} from './einstellungen/gesuchsperiode-view-x/gesuchsperiode-view-x.component';
 import {TestdatenViewComponent} from './component/testdatenView/testdatenView.component';
 import {UebersichtVersendeteMailsComponent} from './component/uebersichtVersendeteMails/uebersichtVersendeteMails.component';
+import {firstValueFrom} from 'rxjs';
+import {AdminUiMeldungsfensterCreateComponent} from '@kibon/admin-ui-meldungsfenster-create';
+import {AdminUiMeldungsfensterEditComponent} from '@kibon/admin-ui-meldungsfenster-edit';
+import {AdminPatternMeldungsfensterDetailComponent} from '@kibon/admin-pattern-meldungsfenster-detail';
 
 const applicationPropertiesResolver = [
-    'ApplicationPropertyRS',
-    (applicationPropertyRS: ApplicationPropertyRS) =>
+    'SharedUtilApplicationPropertyRsService',
+    (applicationPropertyRS: SharedUtilApplicationPropertyRsService) =>
         applicationPropertyRS.getAllApplicationProperties()
 ];
 
 function assertTestfaelleEnabled(transition: Transition): HookResult {
-    const applicationPropertyRS: ApplicationPropertyRS = transition
-        .injector()
-        .get('ApplicationPropertyRS');
-    return applicationPropertyRS.isTestfaelleEnabled();
+    const applicationPropertyRS: SharedUtilApplicationPropertyRsService =
+        transition.injector().get('SharedUtilApplicationPropertyRsService');
+    return firstValueFrom(applicationPropertyRS.isTestfaelleEnabled());
 }
 assertTestfaelleEnabled.$inject = ['$transition$'];
 
@@ -84,7 +88,10 @@ const states: Ng2StateDeclaration[] = [
     {
         name: 'admin.debugging',
         url: '/debug',
-        component: DebuggingComponent
+        component: DebuggingComponent,
+        data: {
+            roles: TSRoleUtil.getSuperAdminRoles()
+        }
     },
     {
         name: 'admin.benutzer',
@@ -133,6 +140,38 @@ const states: Ng2StateDeclaration[] = [
         name: 'admin.uebersichtVersendeteMails',
         url: '/uebersichtVersendeteMails',
         component: UebersichtVersendeteMailsComponent,
+        data: {
+            roles: TSRoleUtil.getSuperAdminRoles()
+        }
+    },
+    {
+        name: 'admin.meldungfenster',
+        url: '/meldungsfenster',
+        component: AdminFeatureMeldungsfensterComponent,
+        data: {
+            roles: TSRoleUtil.getSuperAdminRoles()
+        }
+    },
+    {
+        name: 'admin.meldungfenster-create',
+        url: '/meldungsfenster/create',
+        component: AdminUiMeldungsfensterCreateComponent,
+        data: {
+            roles: TSRoleUtil.getSuperAdminRoles()
+        }
+    },
+    {
+        name: 'admin.meldungfenster-edit',
+        url: `/meldungsfenster/edit/:id`,
+        component: AdminUiMeldungsfensterEditComponent,
+        data: {
+            roles: TSRoleUtil.getSuperAdminRoles()
+        }
+    },
+    {
+        name: 'admin.meldungfenster-detail',
+        url: `/meldungsfenster/:id`,
+        component: AdminPatternMeldungsfensterDetailComponent,
         data: {
             roles: TSRoleUtil.getSuperAdminRoles()
         }

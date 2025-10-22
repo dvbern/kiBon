@@ -13,11 +13,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
+import angular from 'angular';
 import {CORE_JS_MODULE} from '../../../app/core/core.angularjs.module';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {TSKindContainer} from '../../../models/TSKindContainer';
@@ -54,9 +55,8 @@ describe('betreuungListViewTest', () => {
             const errorService: ErrorService = $injector.get('ErrorService');
             const $timeout = $injector.get('$timeout');
             const authServiceRS: AuthServiceRS = $injector.get('AuthServiceRS');
-            const applicationPropertyRS: ApplicationPropertyRS = $injector.get(
-                'ApplicationPropertyRS'
-            );
+            const applicationPropertyRS: SharedUtilApplicationPropertyRsService =
+                $injector.get('SharedUtilApplicationPropertyRsService');
 
             betreuungListView = new BetreuungListViewController(
                 $state,

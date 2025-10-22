@@ -24,8 +24,16 @@ public class InfomaStammdatenZahlung extends InfomaStammdaten {
 	}
 
 	@Nonnull
-	public static String with(@NonNull Zahlung zahlung, long belegnummer, Locale locale) {
-		InfomaStammdatenZahlung stammdaten = new InfomaStammdatenZahlung(zahlung, belegnummer, locale);
+	public static String with(
+		@NonNull Zahlung zahlung,
+		long belegnummer,
+		Locale locale
+	) {
+		InfomaStammdatenZahlung stammdaten = new InfomaStammdatenZahlung(
+			zahlung,
+			belegnummer,
+			locale
+		);
 		return stammdaten.toString();
 	}
 
@@ -38,7 +46,8 @@ public class InfomaStammdatenZahlung extends InfomaStammdaten {
 	@Override
 	@Nonnull
 	protected String getKontonummer(@Nonnull Zahlung zahlung) {
-		final String infomaKontonummer = zahlung.getAuszahlungsdaten().getInfomaKreditorennummer();
+		final String infomaKontonummer = zahlung.getAuszahlungsdaten()
+			.getInfomaKreditorennummer();
 		Objects.requireNonNull(infomaKontonummer);
 		return infomaKontonummer;
 	}
@@ -46,7 +55,8 @@ public class InfomaStammdatenZahlung extends InfomaStammdaten {
 	@Nonnull
 	@Override
 	protected String getBankCode(@Nonnull Zahlung zahlung) {
-		final String infomaBankcode = zahlung.getAuszahlungsdaten().getInfomaBankcode();
+		final String infomaBankcode = zahlung.getAuszahlungsdaten()
+			.getInfomaBankcode();
 		Objects.requireNonNull(infomaBankcode);
 		return infomaBankcode;
 	}
@@ -66,9 +76,8 @@ public class InfomaStammdatenZahlung extends InfomaStammdaten {
 	@Nullable
 	@Override
 	protected String getFaelligkeitsdatum(@Nonnull Zahlung zahlung) {
-		final LocalDate datumFaellig = zahlung.getZahlungsauftrag().getDatumFaellig();
-		return datumFaellig != null
-			? DATE_FORMAT.format(datumFaellig)
-			: "";
+		final LocalDate datumFaellig = zahlung.getZahlungsauftrag()
+			.getDatumFaellig();
+		return datumFaellig != null ? DATE_FORMAT.format(datumFaellig) : "";
 	}
 }

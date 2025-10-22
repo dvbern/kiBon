@@ -27,8 +27,7 @@ public enum RuleType {
 	/**
 	 * Regel die dazu verwendet wird die Daten die fuer die Anspruch-Berechnung relevant sind zu setzen
 	 */
-	GRUNDREGEL_DATA,
-	GRUNDREGEL_CALC,
+	GRUNDREGEL_DATA, GRUNDREGEL_CALC,
 	/**
 	 * Typ fuer Regeln die keine neuen Daten berechnen oder Zeitabschnitte einfuegen sondern nur
 	 * Reduktionen des Arbeitspensums durchfuehren.

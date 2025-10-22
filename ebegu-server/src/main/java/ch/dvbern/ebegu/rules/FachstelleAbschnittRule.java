@@ -15,18 +15,19 @@
 
 package ch.dvbern.ebegu.rules;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.annotation.Nonnull;
+
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.PensumFachstelle;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.IntegrationTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Regel für die Fachstelle. Sucht das PensumFachstelle falls vorhanden und wenn ja wird ein entsprechender
@@ -35,8 +36,17 @@ import java.util.Locale;
  */
 public class FachstelleAbschnittRule extends AbstractAbschnittRule {
 
-	public FachstelleAbschnittRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.FACHSTELLE, RuleType.GRUNDREGEL_DATA, RuleValidity.ASIV, validityPeriod, locale);
+	public FachstelleAbschnittRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.FACHSTELLE,
+			RuleType.GRUNDREGEL_DATA,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -46,11 +56,18 @@ public class FachstelleAbschnittRule extends AbstractAbschnittRule {
 
 	@Nonnull
 	@Override
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
-		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte = new ArrayList<>();
-		for (PensumFachstelle pensumFachstelle : platz.getKind().getKindJA().getPensumFachstelle()) {
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
+		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte =
+			new ArrayList<>();
+		for (PensumFachstelle pensumFachstelle : platz.getKind()
+			.getKindJA()
+			.getPensumFachstelle()) {
 			if (pensumFachstelle != null) {
-				betreuungspensumAbschnitte.add(toVerfuegungZeitabschnitt(pensumFachstelle, platz));
+				betreuungspensumAbschnitte.add(
+					toVerfuegungZeitabschnitt(pensumFachstelle, platz)
+				);
 			}
 		}
 		return betreuungspensumAbschnitte;
@@ -59,13 +76,25 @@ public class FachstelleAbschnittRule extends AbstractAbschnittRule {
 	@Nonnull
 	private VerfuegungZeitabschnitt toVerfuegungZeitabschnitt(
 		@Nonnull PensumFachstelle pensumFachstelle,
-		@Nonnull AbstractPlatz platz) {
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(pensumFachstelle.getGueltigkeit());
-		zeitabschnitt.setFachstellenpensumForAsivAndGemeinde(pensumFachstelle.getPensum());
-		zeitabschnitt.setBetreuungspensumMustBeAtLeastFachstellenpensumForAsivAndGemeinde(
-			betreuungspensumMustBeAtLeastFachstellenpensum(pensumFachstelle.getIntegrationTyp(), platz)
+		@Nonnull AbstractPlatz platz
+	) {
+		VerfuegungZeitabschnitt zeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(
+				pensumFachstelle.getGueltigkeit()
+			);
+		zeitabschnitt.setFachstellenpensumForAsivAndGemeinde(
+			pensumFachstelle.getPensum()
 		);
-		zeitabschnitt.setIntegrationTypFachstellenPensumForAsivAndGemeinde(pensumFachstelle.getIntegrationTyp());
+		zeitabschnitt
+			.setBetreuungspensumMustBeAtLeastFachstellenpensumForAsivAndGemeinde(
+				betreuungspensumMustBeAtLeastFachstellenpensum(
+					pensumFachstelle.getIntegrationTyp(),
+					platz
+				)
+			);
+		zeitabschnitt.setIntegrationTypFachstellenPensumForAsivAndGemeinde(
+			pensumFachstelle.getIntegrationTyp()
+		);
 		return zeitabschnitt;
 	}
 
@@ -80,7 +109,9 @@ public class FachstelleAbschnittRule extends AbstractAbschnittRule {
 		// diese Regel ist nur anwendbar für Betreuungen. Siehe getAnwendbareAngebote(). Hier wird eine Exception geworfen,
 		// falls nicht zu einer Betreuung gecastet werden kann.
 		var betreuung = (Betreuung) platz;
-		if (betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA() == null) {
+		if (betreuung.getErweiterteBetreuungContainer()
+			.getErweiterteBetreuungJA()
+			== null) {
 			return false;
 		}
 		// gemeinde kann manuell bestätigen, dass der BG ausbezahlt wird, auch wenn das fachstellenpensum unterschritten ist.

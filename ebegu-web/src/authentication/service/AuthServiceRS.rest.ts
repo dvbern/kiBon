@@ -13,29 +13,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import * as Sentry from '@sentry/browser';
 import * as angular from 'angular';
 
 import {Observable, ReplaySubject} from 'rxjs';
 import {Permission} from '../../app/authorisation/Permission';
 import {PERMISSIONS} from '../../app/authorisation/Permissions';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
-import {KiBonMandant} from '../../app/core/constants/MANDANTS';
-import {LogFactory} from '../../app/core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../app/core/rest-services/applicationPropertyRS.rest';
-import {BenutzerRSX} from '../../app/core/service/benutzerRSX.rest';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
-import {TSRole} from '../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../models/TSBenutzer';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
 import {AuthLifeCycleService} from './authLifeCycle.service';
-import ICookiesService = angular.cookies.ICookiesService;
 import IHttpService = angular.IHttpService;
 import IPromise = angular.IPromise;
 import IQService = angular.IQService;
-import ITimeoutService = angular.ITimeoutService;
-import * as Sentry from '@sentry/browser';
+import {StateService, TargetState} from '@uirouter/core';
 
 const LOG = LogFactory.createLog('AuthServiceRS');
 
@@ -43,12 +40,10 @@ export class AuthServiceRS {
     public static $inject = [
         '$http',
         '$q',
-        '$timeout',
-        '$cookies',
+        '$state',
         'EbeguRestUtil',
         'AuthLifeCycleService',
-        'BenutzerRS',
-        'ApplicationPropertyRS'
+        'SharedUtilApplicationPropertyRsService'
     ];
 
     private principal?: TSBenutzer;
@@ -62,22 +57,21 @@ export class AuthServiceRS {
 
     private _principal$: Observable<TSBenutzer | null> =
         this.principalSubject$.asObservable();
-    private portalAccCreationLink: string;
     private angebotTSEnabled: boolean;
 
     public constructor(
         private readonly $http: IHttpService,
         private readonly $q: IQService,
-        private readonly $timeout: ITimeoutService,
-        private readonly $cookies: ICookiesService,
+        private readonly $state: StateService,
         private readonly ebeguRestUtil: EbeguRestUtil,
         private readonly authLifeCycleService: AuthLifeCycleService,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.angebotTSEnabled = res.angebotTSActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.angebotTSEnabled = res.angebotTSActivated;
+            });
     }
 
     // Use the observable, when the state must be updated automatically, when the principal changes.
@@ -101,39 +95,8 @@ export class AuthServiceRS {
         return undefined;
     }
 
-    public loginRequest(
-        userCredentials: TSBenutzer
-    ): IPromise<TSBenutzer> | undefined {
-        if (!userCredentials) {
-            return undefined;
-        }
-
-        return this.$http
-            .post(
-                `${CONSTANTS.REST_API}auth/login`,
-                this.ebeguRestUtil.userToRestObject({}, userCredentials)
-            )
-            .then(() => {
-                // ensure that there is ALWAYS a logout-event before the login-event by throwing it right before login
-                this.authLifeCycleService.changeAuthStatus(
-                    TSAuthEvent.LOGOUT_SUCCESS,
-                    'logged out before logging in'
-                );
-                // Response cookies are not immediately accessible, so lets wait for a bit
-                return this.$timeout(() => this.initWithCookie(), 100);
-            });
-    }
-
     public initWithCookie(): IPromise<TSBenutzer> {
         LOG.debug('initWithCookie');
-
-        const authIdbase64 =
-            this.$cookies.get('authIdSuperuser') || this.$cookies.get('authId');
-        if (!authIdbase64) {
-            LOG.info('no login cookie available');
-            this.clearPrincipal();
-            return this.$q.reject(TSAuthEvent.NOT_AUTHENTICATED);
-        }
 
         try {
             // we take the complete user from Server and store it in principal
@@ -145,66 +108,9 @@ export class AuthServiceRS {
         }
     }
 
-    public getPortalAccountCreationPageLink(): IPromise<string> {
-        if (this.portalAccCreationLink) {
-            return this.$q.when(this.portalAccCreationLink);
-        }
-
-        return this.$http
-            .get(`${CONSTANTS.REST_API}auth/portalAccountPage`)
-            .then((res: any) => {
-                this.portalAccCreationLink = res.data;
-                return res.data;
-            });
-    }
-
-    public burnPortalTimeout(): IPromise<any> {
-        return this.getPortalAccountCreationPageLink().then(
-            (linktext: string) => {
-                if (EbeguUtil.isEmptyStringNullOrUndefined(linktext)) {
-                    return Promise.resolve(undefined);
-                }
-
-                if (linktext && this.isBeLoginLink(linktext)) {
-                    LOG.debug(`Burn BE-Login timeout page at ${linktext}`);
-                    // the no-cors options will prevent the browser to log an error because be-login has not
-                    // set Access-Control-Allow-Origin: * that would allow us to fetch the page from javascript
-                    // instead it will prevent js code from even trying to use the response but we don't need that anyway
-                    let fetchPromise: IPromise<any>;
-                    if ('fetch' in window) {
-                        // if available get page using fetch api to be able to use no-cors
-                        fetchPromise = fetch(linktext, {
-                            method: 'GET', // *GET, POST, PUT, DELETE, etc.
-                            mode: 'no-cors', // no-cors, *cors, same-origin
-                            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-                            credentials: 'include', // include, *same-origin, omit
-                            redirect: 'follow' // manual, *follow, error
-                        });
-                    } else {
-                        fetchPromise = this.$http.get(linktext, {
-                            withCredentials: true
-                        });
-                    }
-
-                    return fetchPromise.then(
-                        () =>
-                            LOG.debug(
-                                'retrieved portal account creation page to burn unwanted timeout warning'
-                            ),
-                        () =>
-                            LOG.debug(
-                                `failed to read ${linktext} during burnrequest but this is expected`
-                            )
-                    );
-                }
-
-                return this.$q(undefined);
-            }
-        );
-    }
-
     /**
-     * helper that checks if a link redirects to be-login by checking if it ends with .be.ch (to include testsystems)
+     * helper that checks if a link redirects to be-login by checking if it
+     * ends with .be.ch (to include testsystems)
      *
      * @param link to check
      */
@@ -216,7 +122,7 @@ export class AuthServiceRS {
                     parsedURL.hostname && parsedURL.hostname.endsWith('.be.ch')
                 );
             }
-        } catch (ignore) {
+        } catch {
             return false;
         }
         return false;
@@ -268,42 +174,52 @@ export class AuthServiceRS {
         });
     }
 
-    public logoutRequest(): any {
-        return this.$http
-            .post(`${CONSTANTS.REST_API}auth/logout`, null)
-            .then((res: any) => {
-                this.clearPrincipal();
-                Sentry.setUser(null);
-                this.authLifeCycleService.changeAuthStatus(
-                    TSAuthEvent.LOGOUT_SUCCESS,
-                    'logged out'
-                );
-                return res;
-            });
-    }
-
     public clearPrincipal(): void {
         this.principal = undefined;
         this.principalSubject$.next(null);
     }
 
-    public initSSOLogin(relayPath: string): IPromise<string> {
-        return this.initSSO(
-            `${CONSTANTS.REST_API}auth/singleSignOn`,
-            relayPath
+    public initLoginReturnToTargetState(
+        returnTo: TargetState,
+        email?: string
+    ): void {
+        const relayUrl = this.$state.href(
+            returnTo.$state(),
+            returnTo.params(),
+            {absolute: true}
         );
+
+        this.initLogin(relayUrl, email);
+    }
+
+    public initLogin(returnPath?: string, email?: string): void {
+        const queryParams = new URLSearchParams({
+            return_path: returnPath ?? window.location.hash.slice(1)
+        });
+        if (email) {
+            queryParams.append('login_hint', email);
+        }
+        const endpoint = this.isLoggedIn() ? 'logout' : 'login';
+        const url = new URL(
+            `${CONSTANTS.REST_API}auth/${endpoint}?${queryParams}`,
+            window.location.origin
+        );
+        window.location.assign(url);
+    }
+
+    public initLogout() {
+        window.location.assign(
+            new URL(`${CONSTANTS.REST_API}auth/logout`, window.location.origin)
+        );
+    }
+
+    public isLoggedIn(): boolean {
+        return !!this.getPrincipal();
     }
 
     public initConnectGSZPV(relayPath: string): IPromise<string> {
         return this.initSSO(
             `${CONSTANTS.REST_API}auth/init-connect-gs-zpv`,
-            relayPath
-        );
-    }
-
-    public initSingleLogout(relayPath: string): IPromise<string> {
-        return this.initSSO(
-            `${CONSTANTS.REST_API}auth/singleLogout`,
             relayPath
         );
     }
@@ -315,8 +231,8 @@ export class AuthServiceRS {
     }
 
     /**
-     * Gibt true zurueck, wenn der eingelogte Benutzer die gegebene Role hat. Fuer undefined Werte wird immer false
-     * zurueckgegeben.
+     * Gibt true zurueck, wenn der eingelogte Benutzer die gegebene Role hat.
+     * Fuer undefined Werte wird immer false zurueckgegeben.
      */
     public isRole(role: TSRole): boolean {
         if (role && this.principal) {
@@ -326,7 +242,8 @@ export class AuthServiceRS {
     }
 
     /**
-     * gibt true zurueck wenn der aktuelle Benutzer eine der uebergebenen Rollen innehat
+     * gibt true zurueck wenn der aktuelle Benutzer eine der uebergebenen
+     * Rollen innehat
      */
     public isOneOfRoles(roles: ReadonlyArray<TSRole>): boolean {
         if (roles !== undefined && roles !== null && this.principal) {
@@ -381,9 +298,20 @@ export class AuthServiceRS {
         }
     }
 
-    public setMandant(mandant: KiBonMandant): IPromise<any> {
-        return this.$http.post(`${CONSTANTS.REST_API}auth/set-mandant`, {
-            name: mandant.fullName
+    public initRegistration({
+        gemeindenId,
+        gemeindeBGId
+    }: {
+        gemeindenId: string[];
+        gemeindeBGId: string;
+    }): void {
+        const queryParams = new URLSearchParams({
+            return_path: `/registration/${gemeindeBGId}/${gemeindenId.join(',')}`
         });
+        const url = new URL(
+            `${CONSTANTS.REST_API}auth/register?${queryParams}`,
+            window.location.origin
+        );
+        window.location.assign(url);
     }
 }

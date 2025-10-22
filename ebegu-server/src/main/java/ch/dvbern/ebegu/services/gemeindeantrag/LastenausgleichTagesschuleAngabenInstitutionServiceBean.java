@@ -8,42 +8,85 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.gemeindeantrag;
 
-import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.entities.gemeindeantrag.*;
-import ch.dvbern.ebegu.enums.*;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
-import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeFormularStatus;
-import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitutionStatus;
-import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
-import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-import ch.dvbern.ebegu.services.*;
-import ch.dvbern.ebegu.util.MathUtil;
-import ch.dvbern.lib.cdipersistence.Persistence;
-import com.google.common.base.Preconditions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.*;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+
+import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
+import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
+import ch.dvbern.ebegu.entities.AnmeldungTagesschule_;
+import ch.dvbern.ebegu.entities.BelegungTagesschule;
+import ch.dvbern.ebegu.entities.BelegungTagesschuleModul;
+import ch.dvbern.ebegu.entities.BelegungTagesschule_;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gesuch_;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.Gesuchsperiode_;
+import ch.dvbern.ebegu.entities.InstitutionStammdaten;
+import ch.dvbern.ebegu.entities.InstitutionStammdaten_;
+import ch.dvbern.ebegu.entities.KindContainer;
+import ch.dvbern.ebegu.entities.KindContainer_;
+import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.entities.ModulTagesschule;
+import ch.dvbern.ebegu.entities.ModulTagesschuleGroup;
+import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer_;
+import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitution;
+import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitutionContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitutionContainer_;
+import ch.dvbern.ebegu.enums.BelegungTagesschuleModulIntervall;
+import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.UserRole;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
+import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeFormularStatus;
+import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitutionStatus;
+import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
+import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.services.AbstractBaseService;
+import ch.dvbern.ebegu.services.Authorizer;
+import ch.dvbern.ebegu.services.GesuchsperiodeService;
+import ch.dvbern.ebegu.services.InstitutionStammdatenService;
+import ch.dvbern.ebegu.util.MathUtil;
+import ch.dvbern.ebegu.validators.gemeindeantraege.lats.AngabenInstitutionAbschliessenGroup;
+import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static ch.dvbern.ebegu.util.Constants.LATS_NUMBER_WEEKS_PER_YEAR;
 
@@ -52,8 +95,10 @@ import static ch.dvbern.ebegu.util.Constants.LATS_NUMBER_WEEKS_PER_YEAR;
  */
 @Stateless
 @Local(LastenausgleichTagesschuleAngabenInstitutionService.class)
-public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends AbstractBaseService
-	implements LastenausgleichTagesschuleAngabenInstitutionService {
+public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends
+	AbstractBaseService
+	implements
+	LastenausgleichTagesschuleAngabenInstitutionService {
 
 	@Inject
 	private Persistence persistence;
@@ -73,8 +118,13 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 	@Inject
 	private PrincipalBean principalBean;
 
+	@Inject
+	private Validator validator;
+
 	private static final Logger LOG =
-		LoggerFactory.getLogger(LastenausgleichTagesschuleAngabenInstitutionServiceBean.class);
+		LoggerFactory.getLogger(
+			LastenausgleichTagesschuleAngabenInstitutionServiceBean.class
+		);
 
 	@Override
 	public void createLastenausgleichTagesschuleInstitution(
@@ -83,12 +133,17 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 		Objects.requireNonNull(gemeindeContainer);
 
 		final Collection<InstitutionStammdaten> institutionStammdatenList =
-			institutionStammdatenService.getAllTagesschulenForGesuchsperiodeAndGemeinde(
-				gemeindeContainer.getGesuchsperiode(),
-				gemeindeContainer.getGemeinde());
+			institutionStammdatenService
+				.getAllTagesschulenForGesuchsperiodeAndGemeinde(
+					gemeindeContainer.getGesuchsperiode(),
+					gemeindeContainer.getGemeinde()
+				);
 
 		for (InstitutionStammdaten institutionStammdaten : institutionStammdatenList) {
-			createLatsInstitutionContainerIfNotExisting(gemeindeContainer, institutionStammdaten);
+			createLatsInstitutionContainerIfNotExisting(
+				gemeindeContainer,
+				institutionStammdaten
+			);
 		}
 	}
 
@@ -107,21 +162,33 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 				"LastenausgleichTagesschule Institution Angaben existieren für Gemeinde {}, Institution {} und periode {} bereits",
 				gemeindeContainer.getGemeinde(),
 				existingOptional.get().getInstitution().getName(),
-				existingOptional.get().getGesuchsperiode().getGesuchsperiodeString());
+				existingOptional.get()
+					.getGesuchsperiode()
+					.getGesuchsperiodeString()
+			);
 			return;
 		}
 		LastenausgleichTagesschuleAngabenInstitutionContainer institutionContainer =
 			new LastenausgleichTagesschuleAngabenInstitutionContainer();
-		institutionContainer.setInstitution(institutionStammdaten.getInstitution());
-		institutionContainer.setStatus(LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN);
+		institutionContainer.setInstitution(
+			institutionStammdaten.getInstitution()
+		);
+		institutionContainer.setStatus(
+			LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN
+		);
 		institutionContainer.setAngabenKorrektur(null); // Wird bei Freigabe rueber kopiert
-		institutionContainer.setAngabenDeklaration(new LastenausgleichTagesschuleAngabenInstitution());
+		institutionContainer.setAngabenDeklaration(
+			new LastenausgleichTagesschuleAngabenInstitution()
+		);
 		institutionContainer.setAngabenGemeinde(gemeindeContainer);
 
 		final LastenausgleichTagesschuleAngabenInstitutionContainer saved =
 			saveLastenausgleichTagesschuleInstitution(institutionContainer);
 
-		gemeindeContainer.addLastenausgleichTagesschuleAngabenInstitutionContainer(saved);
+		gemeindeContainer
+			.addLastenausgleichTagesschuleAngabenInstitutionContainer(
+				saved
+			);
 	}
 
 	@Nonnull
@@ -132,7 +199,10 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 		Objects.requireNonNull(id, "id muss gesetzt sein");
 
 		LastenausgleichTagesschuleAngabenInstitutionContainer container =
-			persistence.find(LastenausgleichTagesschuleAngabenInstitutionContainer.class, id);
+			persistence.find(
+				LastenausgleichTagesschuleAngabenInstitutionContainer.class,
+				id
+			);
 		return Optional.ofNullable(container);
 	}
 
@@ -140,30 +210,63 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 	private Optional<LastenausgleichTagesschuleAngabenInstitutionContainer> findLastenausgleichTagesschuleAngabenInstitutionContainer(
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull InstitutionStammdaten institutionStammdaten) {
+		@Nonnull InstitutionStammdaten institutionStammdaten
+	) {
 		Objects.requireNonNull(gemeinde, "gemeinde muss gesetzt sein");
-		Objects.requireNonNull(gesuchsperiode, "gesuchsperiode muss gesetzt sein");
-		Objects.requireNonNull(institutionStammdaten, "institutionStammdaten müssen gesetzt sein");
+		Objects.requireNonNull(
+			gesuchsperiode,
+			"gesuchsperiode muss gesetzt sein"
+		);
+		Objects.requireNonNull(
+			institutionStammdaten,
+			"institutionStammdaten müssen gesetzt sein"
+		);
 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<LastenausgleichTagesschuleAngabenInstitutionContainer> query =
-			cb.createQuery(LastenausgleichTagesschuleAngabenInstitutionContainer.class);
+			cb.createQuery(
+				LastenausgleichTagesschuleAngabenInstitutionContainer.class
+			);
 		Root<LastenausgleichTagesschuleAngabenInstitutionContainer> root =
-			query.from(LastenausgleichTagesschuleAngabenInstitutionContainer.class);
+			query.from(
+				LastenausgleichTagesschuleAngabenInstitutionContainer.class
+			);
 
 		Predicate gemeindePredicate =
-			cb.equal(root.get(LastenausgleichTagesschuleAngabenInstitutionContainer_.angabenGemeinde)
-				.get(LastenausgleichTagesschuleAngabenGemeindeContainer_.gemeinde), gemeinde);
+			cb.equal(
+				root.get(
+					LastenausgleichTagesschuleAngabenInstitutionContainer_.angabenGemeinde
+				)
+					.get(
+						LastenausgleichTagesschuleAngabenGemeindeContainer_.gemeinde
+					),
+				gemeinde
+			);
 		Predicate gesuchsperiodePredicate =
-			cb.equal(root.get(LastenausgleichTagesschuleAngabenInstitutionContainer_.angabenGemeinde)
-				.get(LastenausgleichTagesschuleAngabenGemeindeContainer_.gesuchsperiode), gesuchsperiode);
+			cb.equal(
+				root.get(
+					LastenausgleichTagesschuleAngabenInstitutionContainer_.angabenGemeinde
+				)
+					.get(
+						LastenausgleichTagesschuleAngabenGemeindeContainer_.gesuchsperiode
+					),
+				gesuchsperiode
+			);
 		Predicate institutionPredicate =
 			cb.equal(
-				root.get(LastenausgleichTagesschuleAngabenInstitutionContainer_.institution),
+				root.get(
+					LastenausgleichTagesschuleAngabenInstitutionContainer_.institution
+				),
 				institutionStammdaten.getInstitution()
 			);
 
-		query.where(cb.and(gemeindePredicate, gesuchsperiodePredicate, institutionPredicate));
+		query.where(
+			cb.and(
+				gemeindePredicate,
+				gesuchsperiodePredicate,
+				institutionPredicate
+			)
+		);
 		return Optional.ofNullable(persistence.getCriteriaSingleResult(query));
 	}
 
@@ -188,8 +291,10 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 
 		// Nur moeglich, wenn noch nicht freigegeben
 		Preconditions.checkState(
-			institutionContainer.getStatus() == LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN,
-			"LastenausgleichAngabenInstitution muss im Status OFFEN sein");
+			institutionContainer.getStatus()
+				== LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN,
+			"LastenausgleichAngabenInstitution muss im Status OFFEN sein"
+		);
 
 		Objects.requireNonNull(institutionContainer.getAngabenDeklaration());
 		checkInstitutionAngabenComplete(
@@ -197,45 +302,63 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 		);
 
 		institutionContainer.copyForFreigabe();
-		institutionContainer.setStatus(LastenausgleichTagesschuleAngabenInstitutionStatus.IN_PRUEFUNG_GEMEINDE);
+		institutionContainer.setStatus(
+			LastenausgleichTagesschuleAngabenInstitutionStatus.IN_PRUEFUNG_GEMEINDE
+		);
 		return persistence.merge(institutionContainer);
 	}
 
 	@Nonnull
 	@Override
 	public LastenausgleichTagesschuleAngabenInstitutionContainer lastenausgleichTagesschuleInstitutionGeprueft(
-		@Nonnull
-			LastenausgleichTagesschuleAngabenInstitutionContainer institutionContainer) {
+		@Nonnull LastenausgleichTagesschuleAngabenInstitutionContainer institutionContainer
+	) {
 		Objects.requireNonNull(institutionContainer);
 		authorizer.checkWriteAuthorization(institutionContainer);
 
 		// Nur moeglich, wenn freigegeben, aber noch nicht geprüft
 		Preconditions.checkState(
-			institutionContainer.getStatus() == LastenausgleichTagesschuleAngabenInstitutionStatus.IN_PRUEFUNG_GEMEINDE,
-			"LastenausgleichAngabenInstitution muss im Status OFFEN sein");
+			institutionContainer.getStatus()
+				== LastenausgleichTagesschuleAngabenInstitutionStatus.IN_PRUEFUNG_GEMEINDE,
+			"LastenausgleichAngabenInstitution muss im Status OFFEN sein"
+		);
 
 		Objects.requireNonNull(institutionContainer.getAngabenKorrektur());
 		checkInstitutionAngabenComplete(
 			institutionContainer.getAngabenKorrektur()
 		);
 
-		institutionContainer.setStatus(LastenausgleichTagesschuleAngabenInstitutionStatus.GEPRUEFT);
+		institutionContainer.setStatus(
+			LastenausgleichTagesschuleAngabenInstitutionStatus.GEPRUEFT
+		);
 		return persistence.merge(institutionContainer);
 
 	}
 
 	@Override
 	public List<LastenausgleichTagesschuleAngabenInstitutionContainer> findLastenausgleichTagesschuleAngabenInstitutionByGemeindeAntragId(
-		String gemeindeAntragId) {
+		String gemeindeAntragId
+	) {
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		CriteriaQuery<LastenausgleichTagesschuleAngabenInstitutionContainer> query =
-			cb.createQuery(LastenausgleichTagesschuleAngabenInstitutionContainer.class);
+			cb.createQuery(
+				LastenausgleichTagesschuleAngabenInstitutionContainer.class
+			);
 		Root<LastenausgleichTagesschuleAngabenInstitutionContainer> root =
-			query.from(LastenausgleichTagesschuleAngabenInstitutionContainer.class);
+			query.from(
+				LastenausgleichTagesschuleAngabenInstitutionContainer.class
+			);
 
 		Predicate gemeindeAntrag =
-			cb.equal(root.get(LastenausgleichTagesschuleAngabenInstitutionContainer_.angabenGemeinde).get(
-				LastenausgleichTagesschuleAngabenGemeindeContainer_.id), gemeindeAntragId);
+			cb.equal(
+				root.get(
+					LastenausgleichTagesschuleAngabenInstitutionContainer_.angabenGemeinde
+				)
+					.get(
+						LastenausgleichTagesschuleAngabenGemeindeContainer_.id
+					),
+				gemeindeAntragId
+			);
 
 		query.where(gemeindeAntrag);
 
@@ -245,33 +368,47 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 	@Override
 	@Nonnull
 	public LastenausgleichTagesschuleAngabenInstitutionContainer latsAngabenInstitutionContainerWiederOeffnenGemeinde(
-		@Nonnull LastenausgleichTagesschuleAngabenInstitutionContainer fallContainer) {
+		@Nonnull LastenausgleichTagesschuleAngabenInstitutionContainer fallContainer
+	) {
 
 		authorizer.checkWriteAuthorization(fallContainer);
 		authorizer.checkWriteAuthorization(fallContainer.getAngabenGemeinde());
 
 		Preconditions.checkState(
-			fallContainer.getAngabenGemeinde().isInBearbeitungGemeinde() ||
-			fallContainer.getAngabenGemeinde().isInPruefungKanton() && principalBean.isCallerInAnyOfRole(UserRole.getMandantSuperadminRoles()) ,
+			fallContainer.getAngabenGemeinde().isInBearbeitungGemeinde()
+				||
+				fallContainer.getAngabenGemeinde().isInPruefungKanton()
+					&& principalBean.isCallerInAnyOfRole(
+						UserRole.getMandantSuperadminRoles()
+					),
 			"LastenausgleichTagesschuleAngabenGemeindeContainer muss in Bearbeitung Gemeinde sein oder vom Kanton bearbeitet werden"
 		);
 
 		Preconditions.checkState(
-			fallContainer.getAngabenGemeinde().getAngabenDeklaration() != null,
+			fallContainer.getAngabenGemeinde().getAngabenDeklaration()
+				!= null,
 			"LastenausgleichTagesschuleAngabenGemeindeContainer muss in Bearbeitung Gemeinde sein"
 		);
 
 		Preconditions.checkState(
 			fallContainer.isAntragAbgeschlossen(),
-			"LastenausgleichTagesschuleAngabenInstitutionContainer muss im Status GEPRUEFT sein");
+			"LastenausgleichTagesschuleAngabenInstitutionContainer muss im Status GEPRUEFT sein"
+		);
 
 		// gemeinde angaben have to be reopened if closed
-		if (fallContainer.getAngabenGemeinde().getAngabenDeklaration().isAbgeschlossen()) {
-			fallContainer.getAngabenGemeinde().getAngabenDeklaration().setStatus(
-				LastenausgleichTagesschuleAngabenGemeindeFormularStatus.IN_BEARBEITUNG);
+		if (fallContainer.getAngabenGemeinde()
+			.getAngabenDeklaration()
+			.isAbgeschlossen()) {
+			fallContainer.getAngabenGemeinde()
+				.getAngabenDeklaration()
+				.setStatus(
+					LastenausgleichTagesschuleAngabenGemeindeFormularStatus.IN_BEARBEITUNG
+				);
 		}
 
-		fallContainer.setStatus(LastenausgleichTagesschuleAngabenInstitutionStatus.IN_PRUEFUNG_GEMEINDE);
+		fallContainer.setStatus(
+			LastenausgleichTagesschuleAngabenInstitutionStatus.IN_PRUEFUNG_GEMEINDE
+		);
 
 		return persistence.persist(fallContainer);
 
@@ -280,7 +417,8 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 	@Override
 	@Nonnull
 	public LastenausgleichTagesschuleAngabenInstitutionContainer latsAngabenInstitutionContainerWiederOeffnenTS(
-		@Nonnull LastenausgleichTagesschuleAngabenInstitutionContainer fallContainer) {
+		@Nonnull LastenausgleichTagesschuleAngabenInstitutionContainer fallContainer
+	) {
 		authorizer.checkWriteAuthorization(fallContainer);
 
 		Preconditions.checkState(
@@ -290,46 +428,58 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 
 		Preconditions.checkState(
 			fallContainer.isAntragInPruefungGemeinde(),
-			"LastenausgleichTagesschuleAngabenInstitutionContainer muss im Status IN_PRUEFUNG_GEMEINDE sein");
+			"LastenausgleichTagesschuleAngabenInstitutionContainer muss im Status IN_PRUEFUNG_GEMEINDE sein"
+		);
 
-		fallContainer.setStatus(LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN);
+		fallContainer.setStatus(
+			LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN
+		);
 
 		return persistence.persist(fallContainer);
 	}
 
 	@Override
-	public @Nonnull
-	Map<String, Integer> calculateAnzahlEingeschriebeneKinder(
+	public @Nonnull Map<String, Integer> calculateAnzahlEingeschriebeneKinder(
 		@Nonnull LastenausgleichTagesschuleAngabenInstitutionContainer container
 	) {
 		Preconditions.checkNotNull(container);
 
 		authorizer.checkReadAuthorization(container);
 
-		InstitutionStammdaten stammdaten = institutionStammdatenService.fetchInstitutionStammdatenByInstitution(
-			container.getInstitution().getId(), false
-		);
+		InstitutionStammdaten stammdaten = institutionStammdatenService
+			.fetchInstitutionStammdatenByInstitution(
+				container.getInstitution().getId(),
+				false
+			);
 		if (stammdaten == null) {
-			throw new EbeguEntityNotFoundException("calculateAngabenFromKiBon", container.getInstitution().getId());
+			throw new EbeguEntityNotFoundException(
+				"calculateAngabenFromKiBon",
+				container.getInstitution().getId()
+			);
 		}
 
 		List<AnmeldungTagesschule> anmeldungenTagesschule =
 			findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode(
-				stammdaten, container.getGesuchsperiode()
+				stammdaten,
+				container.getGesuchsperiode()
 			);
 
 		return countAnzahlKinder(anmeldungenTagesschule);
 	}
 
 	@Nonnull
-	Map<String, Integer> countAnzahlKinder(@Nonnull List<AnmeldungTagesschule> anmeldungenTagesschule) {
+	Map<String, Integer> countAnzahlKinder(
+		@Nonnull List<AnmeldungTagesschule> anmeldungenTagesschule
+	) {
 		int countVorschulalter = 0;
 		int countKindergarten = 0;
 		int countPrimarstufe = 0;
 		int countSekundarstufe = 0;
 
 		for (AnmeldungTagesschule anmeldungTagesschule : anmeldungenTagesschule) {
-			EinschulungTyp einschulungTyp = anmeldungTagesschule.getKind().getKindJA().getEinschulungTyp();
+			EinschulungTyp einschulungTyp = anmeldungTagesschule.getKind()
+				.getKindJA()
+				.getEinschulungTyp();
 			if (einschulungTyp == null) {
 				continue;
 			}
@@ -345,7 +495,13 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 		}
 
 		HashMap<String, Integer> anzahlKinder = new HashMap<>();
-		anzahlKinder.put("overall", countVorschulalter + countKindergarten + countPrimarstufe + countSekundarstufe);
+		anzahlKinder.put(
+			"overall",
+			countVorschulalter
+				+ countKindergarten
+				+ countPrimarstufe
+				+ countSekundarstufe
+		);
 		anzahlKinder.put("vorschulalter", countVorschulalter);
 		anzahlKinder.put("kindergarten", countKindergarten);
 		anzahlKinder.put("primarstufe", countPrimarstufe);
@@ -363,18 +519,22 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 
 		authorizer.checkReadAuthorization(container);
 
-		InstitutionStammdaten stammdaten = institutionStammdatenService.fetchInstitutionStammdatenByInstitution(
-			container.getInstitution().getId(), false
-		);
+		InstitutionStammdaten stammdaten = institutionStammdatenService
+			.fetchInstitutionStammdatenByInstitution(
+				container.getInstitution().getId(),
+				false
+			);
 		if (stammdaten == null) {
 			throw new EbeguEntityNotFoundException(
 				"calculateDurchschnittKinderProTag",
-				container.getInstitution().getId());
+				container.getInstitution().getId()
+			);
 		}
 
 		List<AnmeldungTagesschule> anmeldungenTagesschule =
 			findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode(
-				stammdaten, container.getGesuchsperiode()
+				stammdaten,
+				container.getGesuchsperiode()
 			);
 
 		return calculateDurchschnittKinderProTag(anmeldungenTagesschule);
@@ -382,39 +542,63 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 	}
 
 	@Nonnull
-	protected Map<String, BigDecimal> calculateDurchschnittKinderProTag(List<AnmeldungTagesschule> anmeldungenTagesschule) {
+	protected Map<String, BigDecimal> calculateDurchschnittKinderProTag(
+		List<AnmeldungTagesschule> anmeldungenTagesschule
+	) {
 		double fruehbetreuung = 0;
 		double mittagbetreuung = 0;
 		double nachmittagbetreuung1 = 0;
 		double nachmittagbetreuung2 = 0;
 
-		Map<DayOfWeek, Boolean> fruehbetreuungWeekdaysWithBetreuung = new EnumMap<>(DayOfWeek.class);
-		Map<DayOfWeek, Boolean> mittagbetreuungWeekdaysWithBetreuung = new EnumMap<>(DayOfWeek.class);
-		Map<DayOfWeek, Boolean> nachmittagbetreuung1WeekdaysWithBetreuung = new EnumMap<>(DayOfWeek.class);
-		Map<DayOfWeek, Boolean> nachmittagbetreuung2WeekdaysWithBetreuung = new EnumMap<>(DayOfWeek.class);
+		Map<DayOfWeek, Boolean> fruehbetreuungWeekdaysWithBetreuung =
+			new EnumMap<>(DayOfWeek.class);
+		Map<DayOfWeek, Boolean> mittagbetreuungWeekdaysWithBetreuung =
+			new EnumMap<>(DayOfWeek.class);
+		Map<DayOfWeek, Boolean> nachmittagbetreuung1WeekdaysWithBetreuung =
+			new EnumMap<>(DayOfWeek.class);
+		Map<DayOfWeek, Boolean> nachmittagbetreuung2WeekdaysWithBetreuung =
+			new EnumMap<>(DayOfWeek.class);
 
 		for (AnmeldungTagesschule anmeldungTagesschule : anmeldungenTagesschule) {
-			BelegungTagesschule belegungTagesschule = anmeldungTagesschule.getBelegungTagesschule();
+			BelegungTagesschule belegungTagesschule = anmeldungTagesschule
+				.getBelegungTagesschule();
 			if (belegungTagesschule == null) {
 				continue;
 			}
-			for (BelegungTagesschuleModul modul : belegungTagesschule.getBelegungTagesschuleModule()) {
+			for (BelegungTagesschuleModul modul : belegungTagesschule
+				.getBelegungTagesschuleModule()) {
 				ModulTagesschule modulTagesschule = modul.getModulTagesschule();
-				ModulTagesschuleGroup group = modulTagesschule.getModulTagesschuleGroup();
+				ModulTagesschuleGroup group = modulTagesschule
+					.getModulTagesschuleGroup();
 				// we count Zweiwöchentliche Module as 0.5
-				double increment = (modul.getIntervall() == BelegungTagesschuleModulIntervall.WOECHENTLICH) ? 1 : 0.5;
+				double increment = (modul.getIntervall()
+					== BelegungTagesschuleModulIntervall.WOECHENTLICH) ?
+						1 :
+						0.5;
 				if (group.isFruehbetreuung()) {
 					fruehbetreuung += increment;
-					fruehbetreuungWeekdaysWithBetreuung.put(modulTagesschule.getWochentag(), true);
+					fruehbetreuungWeekdaysWithBetreuung.put(
+						modulTagesschule.getWochentag(),
+						true
+					);
 				} else if (group.isMittagsbetreuung()) {
 					mittagbetreuung += increment;
-					mittagbetreuungWeekdaysWithBetreuung.put(modulTagesschule.getWochentag(), true);
+					mittagbetreuungWeekdaysWithBetreuung.put(
+						modulTagesschule.getWochentag(),
+						true
+					);
 				} else if (group.isNachmittagbetreuung1()) {
 					nachmittagbetreuung1 += increment;
-					nachmittagbetreuung1WeekdaysWithBetreuung.put(modulTagesschule.getWochentag(), true);
+					nachmittagbetreuung1WeekdaysWithBetreuung.put(
+						modulTagesschule.getWochentag(),
+						true
+					);
 				} else if (group.isNachmittagbetreuung2()) {
 					nachmittagbetreuung2 += increment;
-					nachmittagbetreuung2WeekdaysWithBetreuung.put(modulTagesschule.getWochentag(), true);
+					nachmittagbetreuung2WeekdaysWithBetreuung.put(
+						modulTagesschule.getWochentag(),
+						true
+					);
 				}
 			}
 		}
@@ -422,21 +606,40 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 		HashMap<String, BigDecimal> durchschnittKinder = new HashMap<>();
 		durchschnittKinder.put(
 			"fruehbetreuung",
-			this.divideByWeekdaysWithBetreuung(fruehbetreuung, fruehbetreuungWeekdaysWithBetreuung));
+			this.divideByWeekdaysWithBetreuung(
+				fruehbetreuung,
+				fruehbetreuungWeekdaysWithBetreuung
+			)
+		);
 		durchschnittKinder.put(
 			"mittagsbetreuung",
-			this.divideByWeekdaysWithBetreuung(mittagbetreuung, mittagbetreuungWeekdaysWithBetreuung));
+			this.divideByWeekdaysWithBetreuung(
+				mittagbetreuung,
+				mittagbetreuungWeekdaysWithBetreuung
+			)
+		);
 		durchschnittKinder.put(
 			"nachmittagsbetreuung1",
-			this.divideByWeekdaysWithBetreuung(nachmittagbetreuung1, nachmittagbetreuung1WeekdaysWithBetreuung));
+			this.divideByWeekdaysWithBetreuung(
+				nachmittagbetreuung1,
+				nachmittagbetreuung1WeekdaysWithBetreuung
+			)
+		);
 		durchschnittKinder.put(
 			"nachmittagsbetreuung2",
-			this.divideByWeekdaysWithBetreuung(nachmittagbetreuung2, nachmittagbetreuung2WeekdaysWithBetreuung));
+			this.divideByWeekdaysWithBetreuung(
+				nachmittagbetreuung2,
+				nachmittagbetreuung2WeekdaysWithBetreuung
+			)
+		);
 
 		return durchschnittKinder;
 	}
 
-	private BigDecimal divideByWeekdaysWithBetreuung(double number, Map<DayOfWeek, Boolean> weekdaysWithBetreuung) {
+	private BigDecimal divideByWeekdaysWithBetreuung(
+		double number,
+		Map<DayOfWeek, Boolean> weekdaysWithBetreuung
+	) {
 		BigDecimal dividend = new BigDecimal(String.valueOf(number));
 		BigDecimal divisor = new BigDecimal(weekdaysWithBetreuung.size());
 		return divisor.compareTo(BigDecimal.ZERO) == 0 ?
@@ -448,35 +651,59 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 	@Override
 	public BigDecimal countBetreuungsstundenPrognoseForTagesschuleAndPeriode(
 		InstitutionStammdaten stammdaten,
-		Gesuchsperiode gesuchsperiode) {
+		Gesuchsperiode gesuchsperiode
+	) {
 		List<AnmeldungTagesschule> anmeldungenTagesschule =
-			findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriodeOneYearAfterStichtag(stammdaten, gesuchsperiode);
-		return countBetreuungsstundenForTagesschuleAnmeldungen(anmeldungenTagesschule);
+			findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriodeOneYearAfterStichtag(
+				stammdaten,
+				gesuchsperiode
+			);
+		return countBetreuungsstundenForTagesschuleAnmeldungen(
+			anmeldungenTagesschule
+		);
 	}
 
 	@Nonnull
 	@Override
 	public BigDecimal countBetreuungsstundenPerYearForTagesschuleAndPeriode(
 		InstitutionStammdaten stammdaten,
-		Gesuchsperiode gesuchsperiode) {
-		List<AnmeldungTagesschule> anmeldungenTagesschule = findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode(stammdaten, gesuchsperiode);
-		return countBetreuungsstundenForTagesschuleAnmeldungen(anmeldungenTagesschule);
+		Gesuchsperiode gesuchsperiode
+	) {
+		List<AnmeldungTagesschule> anmeldungenTagesschule =
+			findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode(
+				stammdaten,
+				gesuchsperiode
+			);
+		return countBetreuungsstundenForTagesschuleAnmeldungen(
+			anmeldungenTagesschule
+		);
 	}
 
-	private BigDecimal countBetreuungsstundenForTagesschuleAnmeldungen(List<AnmeldungTagesschule> anmeldungenTagesschule) {
+	private BigDecimal countBetreuungsstundenForTagesschuleAnmeldungen(
+		List<AnmeldungTagesschule> anmeldungenTagesschule
+	) {
 		BigDecimal hours = BigDecimal.ZERO;
 		for (AnmeldungTagesschule anmeldungTagesschule : anmeldungenTagesschule) {
-			BelegungTagesschule belegungTagesschule = anmeldungTagesschule.getBelegungTagesschule();
+			BelegungTagesschule belegungTagesschule = anmeldungTagesschule
+				.getBelegungTagesschule();
 			if (belegungTagesschule == null) {
 				continue;
 			}
-			for (BelegungTagesschuleModul modul : belegungTagesschule.getBelegungTagesschuleModule()) {
-				ModulTagesschuleGroup group = modul.getModulTagesschule().getModulTagesschuleGroup();
+			for (BelegungTagesschuleModul modul : belegungTagesschule
+				.getBelegungTagesschuleModule()) {
+				ModulTagesschuleGroup group = modul.getModulTagesschule()
+					.getModulTagesschuleGroup();
 				// we count Zweiwöchentliche Module as 0.5
-				double multiplicator = (modul.getIntervall() == BelegungTagesschuleModulIntervall.WOECHENTLICH) ? 1 : 0.5;
-				long durationInMinutes = group.getZeitVon().until(group.getZeitBis(), ChronoUnit.MINUTES);
+				double multiplicator = (modul.getIntervall()
+					== BelegungTagesschuleModulIntervall.WOECHENTLICH) ?
+						1 :
+						0.5;
+				long durationInMinutes = group.getZeitVon()
+					.until(group.getZeitBis(), ChronoUnit.MINUTES);
 				double durationInHours = (float) durationInMinutes / 60;
-				hours = hours.add(new BigDecimal(durationInHours * multiplicator));
+				hours = hours.add(
+					BigDecimal.valueOf(durationInHours * multiplicator)
+				);
 			}
 		}
 		return hours.multiply(new BigDecimal(LATS_NUMBER_WEEKS_PER_YEAR));
@@ -489,8 +716,12 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 		@Nonnull Gesuchsperiode gesuchsperiode
 	) {
 
-		LocalDate stichtag =  getLatsStichtag(gesuchsperiode);
-		return findTagesschuleAnmeldungenForStammdatenOnStichtag(stichtag, stammdaten, gesuchsperiode.getMandant());
+		LocalDate stichtag = getLatsStichtag(gesuchsperiode);
+		return findTagesschuleAnmeldungenForStammdatenOnStichtag(
+			stichtag,
+			stammdaten,
+			gesuchsperiode.getMandant()
+		);
 	}
 
 	@Nonnull
@@ -499,38 +730,59 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 		@Nonnull InstitutionStammdaten stammdaten,
 		@Nonnull Gesuchsperiode gesuchsperiode
 	) {
-		LocalDate stichtag =  getLatsStichtag(gesuchsperiode).plusYears(1);
-		return findTagesschuleAnmeldungenForStammdatenOnStichtag(stichtag, stammdaten, gesuchsperiode.getMandant());
+		LocalDate stichtag = getLatsStichtag(gesuchsperiode).plusYears(1);
+		return findTagesschuleAnmeldungenForStammdatenOnStichtag(
+			stichtag,
+			stammdaten,
+			gesuchsperiode.getMandant()
+		);
 
 	}
 
 	private LocalDate getLatsStichtag(Gesuchsperiode gesuchsperiode) {
 		List<Einstellung> einstellungList =
-			einstellungService.findEinstellungen(EinstellungKey.LATS_STICHTAG, gesuchsperiode);
+			einstellungService.findEinstellungen(
+				EinstellungKey.LATS_STICHTAG,
+				gesuchsperiode
+			);
 		if (einstellungList.size() != 1) {
 			throw new EbeguRuntimeException(
 				"findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode",
 				"Es sollte exakt eine Einstellung für den LATS_Stichtag und die Gesuchsperiode "
 					+ gesuchsperiode.getGesuchsperiodeString()
-					+ " gefunden werden");
+					+ " gefunden werden"
+			);
 		}
 		return Date.valueOf(einstellungList.get(0).getValue()).toLocalDate();
 	}
 
-	private List<AnmeldungTagesschule> findTagesschuleAnmeldungenForStammdatenOnStichtag(@Nonnull LocalDate stichtag,
-																						 @Nonnull InstitutionStammdaten stammdaten,
-																						 @Nonnull Mandant mandant) {
-		Gesuchsperiode gesuchsperiodeAmStichtag = gesuchsperiodeService.getGesuchsperiodeAm(stichtag, mandant)
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode",
-				"Keine Gesuchsperiode für Stichtag " + stichtag.toString() + " gefunden"
-			));
+	private List<AnmeldungTagesschule> findTagesschuleAnmeldungenForStammdatenOnStichtag(
+		@Nonnull LocalDate stichtag,
+		@Nonnull InstitutionStammdaten stammdaten,
+		@Nonnull Mandant mandant
+	) {
+		Gesuchsperiode gesuchsperiodeAmStichtag = gesuchsperiodeService
+			.getGesuchsperiodeAm(stichtag, mandant)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode",
+					"Keine Gesuchsperiode für Stichtag "
+						+ stichtag.toString()
+						+ " gefunden"
+				)
+			);
 
 		CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		CriteriaQuery<AnmeldungTagesschule> query = cb.createQuery(AnmeldungTagesschule.class);
-		Root<AnmeldungTagesschule> root = query.from(AnmeldungTagesschule.class);
+		CriteriaQuery<AnmeldungTagesschule> query = cb.createQuery(
+			AnmeldungTagesschule.class
+		);
+		Root<AnmeldungTagesschule> root = query.from(
+			AnmeldungTagesschule.class
+		);
 
-		Join<AnmeldungTagesschule, KindContainer> joinKindContainer = root.join(AnmeldungTagesschule_.kind);
+		Join<AnmeldungTagesschule, KindContainer> joinKindContainer = root.join(
+			AnmeldungTagesschule_.kind
+		);
 		Join<AnmeldungTagesschule, BelegungTagesschule> joinBelegungTagesschule =
 			root.join(AnmeldungTagesschule_.belegungTagesschule);
 
@@ -542,12 +794,18 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 		);
 		final Predicate predicateStammdaten = cb.equal(
 			root.get(
-				AnmeldungTagesschule_.institutionStammdaten).get(InstitutionStammdaten_.id),
+				AnmeldungTagesschule_.institutionStammdaten
+			).get(InstitutionStammdaten_.id),
 			stammdaten.getId()
 		);
-		final Predicate predicateGueltig = cb.equal(root.get(AnmeldungTagesschule_.gueltig), Boolean.TRUE);
+		final Predicate predicateGueltig = cb.equal(
+			root.get(AnmeldungTagesschule_.gueltig),
+			Boolean.TRUE
+		);
 		final Predicate predicateEingeschrieben = cb.lessThanOrEqualTo(
-			joinBelegungTagesschule.get(BelegungTagesschule_.eintrittsdatum),
+			joinBelegungTagesschule.get(
+				BelegungTagesschule_.eintrittsdatum
+			),
 			stichtag
 		);
 		final Predicate predicateUebernommen = cb.equal(
@@ -560,118 +818,188 @@ public class LastenausgleichTagesschuleAngabenInstitutionServiceBean extends Abs
 			predicateStammdaten,
 			predicateGueltig,
 			predicateEingeschrieben,
-			predicateUebernommen);
+			predicateUebernommen
+		);
 
 		return persistence.getCriteriaResults(query);
 	}
 
 	// we check this since the attributes can be cached and can be null then, but must not be when changing status
 	private void checkInstitutionAngabenComplete(
-			LastenausgleichTagesschuleAngabenInstitution institutionAngaben) {
-		final String functionName= "checkInstitutionAngabenComplete";
-		if (Objects.isNull(institutionAngaben.getLehrbetrieb())) {
+		LastenausgleichTagesschuleAngabenInstitution institutionAngaben
+	) {
+		checkRequiredValuesNotNull(institutionAngaben);
+		Set<ConstraintViolation<LastenausgleichTagesschuleAngabenInstitution>> violations =
+			validator.validate(
+				institutionAngaben,
+				AngabenInstitutionAbschliessenGroup.class
+			);
+		if (!violations.isEmpty()) {
 			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"isLehrbetrieb must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getAnzahlEingeschriebeneKinder())) {
-			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"anzahlEingeschribeneKinder must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getAnzahlEingeschriebeneKinderSekundarstufe())) {
-			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"anzahlEingeschriebeneKinderBasisstufe must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getAnzahlEingeschriebeneKinderKindergarten())) {
-			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"anzahlEingeschriebeneKinderKindergarten must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getAnzahlEingeschriebeneKinderBasisstufe())) {
-			throw new EbeguRuntimeException(
-				functionName,
+				"checkInstitutionAngabenComplete",
 				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-				"anzahlEingeschriebeneKinderBasisstufe must not be null");
+				"Validierung fehlgeschlagen: "
+					+ violations.stream().findFirst().get().getMessage()
+			);
 		}
-		if (Objects.isNull(institutionAngaben.getAnzahlEingeschriebeneKinderPrimarstufe())) {
+	}
+
+	private static void checkRequiredValuesNotNull(
+		LastenausgleichTagesschuleAngabenInstitution institutionAngaben
+	) {
+		String methodName = "checkRequiredValuesNotNull";
+		if (Objects.isNull(institutionAngaben.getIsLehrbetrieb())) {
 			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"anzahlEingeschriebeneKinderPrimarstufe must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getDurchschnittKinderProTagFruehbetreuung())) {
-			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"anzahlDurchschnittKinderProTagFruehbetreuung must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getDurchschnittKinderProTagMittag())) {
-			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"anzahlDurchschnittKinderProTagMittag must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getDurchschnittKinderProTagNachmittag1())) {
-			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"anzahlDurchschnittKinderProTagNachmittag1 must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getDurchschnittKinderProTagNachmittag2())) {
-			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"anzahlDurchschnittKinderProTagNachmittag2 must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen())) {
-			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen must not be null");
-		}
-		if (Objects.isNull(institutionAngaben.getAnzahlEingeschriebeneKinderVolksschulangebot())) {
-			throw new EbeguRuntimeException(
-				functionName,
+				methodName,
 				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-				"anzahlEingeschriebeneKinderVolksschulangebot must not be null");
+				"isLehrbetrieb must not be null"
+			);
 		}
-		if (Objects.isNull(institutionAngaben.getBetreuungsverhaeltnisEingehalten())) {
+		if (Objects.isNull(
+			institutionAngaben.getAnzahlEingeschriebeneKinder()
+		)) {
 			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"betreuungsverhaeltnisEingehalten must not be null");
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlEingeschribeneKinder must not be null"
+			);
 		}
-		if (Objects.isNull(institutionAngaben.getErnaehrungsGrundsaetzeEingehalten())) {
+		if (Objects.isNull(
+			institutionAngaben.getAnzahlEingeschriebeneKinderSekundarstufe()
+		)) {
 			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"ernaehrungsGrundsaetzeEingehalten must not be null");
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlEingeschriebeneKinderBasisstufe must not be null"
+			);
 		}
-		if (Objects.isNull(institutionAngaben.getSchuleAufBasisOrganisatorischesKonzept())) {
+		if (Objects.isNull(
+			institutionAngaben.getAnzahlEingeschriebeneKinderKindergarten()
+		)) {
 			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"schuleAufBasisOrganisatorischesKonzepts must not be null");
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlEingeschriebeneKinderKindergarten must not be null"
+			);
 		}
-		if (Objects.isNull(institutionAngaben.getRaeumlicheVoraussetzungenEingehalten())) {
+		if (Objects.isNull(
+			institutionAngaben.getAnzahlEingeschriebeneKinderBasisstufe()
+		)) {
 			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"raeumlicheVoraussetungenEingehalten must not be null");
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlEingeschriebeneKinderBasisstufe must not be null"
+			);
 		}
-		if (Objects.isNull(institutionAngaben.getSchuleAufBasisPaedagogischesKonzept())) {
+		if (Objects.isNull(
+			institutionAngaben.getAnzahlEingeschriebeneKinderPrimarstufe()
+		)) {
 			throw new EbeguRuntimeException(
-					functionName,
-					ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
-					"schuleAufBasisPaedagogischesKonzepts must not be null");
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlEingeschriebeneKinderPrimarstufe must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben.getDurchschnittKinderProTagFruehbetreuung()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlDurchschnittKinderProTagFruehbetreuung must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben.getDurchschnittKinderProTagMittag()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlDurchschnittKinderProTagMittag must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben.getDurchschnittKinderProTagNachmittag1()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlDurchschnittKinderProTagNachmittag1 must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben.getDurchschnittKinderProTagNachmittag2()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlDurchschnittKinderProTagNachmittag2 must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben
+				.getAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben
+				.getAnzahlEingeschriebeneKinderVolksschulangebot()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"anzahlEingeschriebeneKinderVolksschulangebot must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben.getBetreuungsverhaeltnisEingehalten()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"betreuungsverhaeltnisEingehalten must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben.getErnaehrungsGrundsaetzeEingehalten()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"ernaehrungsGrundsaetzeEingehalten must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben.getSchuleAufBasisOrganisatorischesKonzept()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"schuleAufBasisOrganisatorischesKonzepts must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben.getRaeumlicheVoraussetzungenEingehalten()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"raeumlicheVoraussetungenEingehalten must not be null"
+			);
+		}
+		if (Objects.isNull(
+			institutionAngaben.getSchuleAufBasisPaedagogischesKonzept()
+		)) {
+			throw new EbeguRuntimeException(
+				methodName,
+				ErrorCodeEnum.ERROR_LATS_ANGABEN_INCOMPLETE,
+				"schuleAufBasisPaedagogischesKonzepts must not be null"
+			);
 		}
 	}
 }
-
-

@@ -17,18 +17,20 @@ package ch.dvbern.ebegu.batch.jobs.report;
 
 import java.util.Properties;
 
-import javax.batch.api.partition.PartitionPlanImpl;
+import jakarta.batch.api.partition.PartitionPlanImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ReportgeneratorPartitionPlan extends PartitionPlanImpl {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ReportgeneratorPartitionPlan.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		ReportgeneratorPartitionPlan.class
+	);
 	private Properties jobProperties;
 
 	public ReportgeneratorPartitionPlan(Properties jobProperties) {
-		 //hier hat man die moeglichkeit den job in zu partitionieren um ihn parallel zu verarbeiten
+		//hier hat man die moeglichkeit den job in zu partitionieren um ihn parallel zu verarbeiten
 		this.jobProperties = jobProperties;
 	}
 
@@ -50,11 +52,13 @@ public class ReportgeneratorPartitionPlan extends PartitionPlanImpl {
 	public Properties[] getPartitionProperties() {
 		LOG.debug("getPartitionProperties");
 
-		return jobProperties.stringPropertyNames().stream()
+		return jobProperties.stringPropertyNames()
+			.stream()
 			.map(name -> {
 				Properties props = new Properties();
 				props.setProperty(name, jobProperties.getProperty(name));
 				return props;
-			}).toArray(Properties[]::new);
+			})
+			.toArray(Properties[]::new);
 	}
 }

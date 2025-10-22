@@ -27,17 +27,17 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
@@ -58,16 +58,17 @@ import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.enums.WizardStepStatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import ch.dvbern.ebegu.validationgroups.GesuchstellerSaveValidationGroup;
-import ch.dvbern.lib.cdipersistence.Persistence;
 
 /**
  * Service fuer Gesuchsteller
  */
 @Stateless
 @Local(GesuchstellerService.class)
-public class GesuchstellerServiceBean extends AbstractBaseService implements GesuchstellerService {
+public class GesuchstellerServiceBean extends AbstractBaseService implements
+	GesuchstellerService {
 
 	@Inject
 	private Persistence persistence;
@@ -77,12 +78,17 @@ public class GesuchstellerServiceBean extends AbstractBaseService implements Ges
 	private PrincipalBean principalBean;
 	@Inject
 	private CriteriaQueryHelper criteriaQueryHelper;
+	@Inject
+	private EntityIndexer entityIndexer;
 
 	@Nonnull
 	@Override
 	public GesuchstellerContainer saveGesuchsteller(
 		@Nonnull GesuchstellerContainer gesuchsteller,
-		@Nonnull final Gesuch gesuch, @Nonnull Integer gsNumber, boolean umzug) {
+		@Nonnull final Gesuch gesuch,
+		@Nonnull Integer gsNumber,
+		boolean umzug
+	) {
 		Objects.requireNonNull(gesuchsteller);
 		Objects.requireNonNull(gesuch);
 		Objects.requireNonNull(gsNumber);
@@ -94,29 +100,46 @@ public class GesuchstellerServiceBean extends AbstractBaseService implements Ges
 
 		if (!gesuchsteller.isNew()) {
 			// Den Lucene-Index manuell nachführen, da es bei unidirektionalen Relationen nicht automatisch geschieht!
-			updateLuceneIndex(GesuchstellerContainer.class, gesuchsteller.getId());
+			entityIndexer.updateSingleEntity(
+				GesuchstellerContainer.class,
+				gesuchsteller.getId()
+			);
 		}
-		final GesuchstellerContainer mergedGesuchsteller = persistence.merge(gesuchsteller);
+		final GesuchstellerContainer mergedGesuchsteller = persistence.merge(
+			gesuchsteller
+		);
 		if (gsNumber == 1) {
 			gesuch.setGesuchsteller1(mergedGesuchsteller);
 		} else if (gsNumber == 2) {
 			gesuch.setGesuchsteller2(mergedGesuchsteller);
 		}
-		updateWizStepsForGesuchstellerView(gesuch, gsNumber, umzug, mergedGesuchsteller.getGesuchstellerJA());
+		updateWizStepsForGesuchstellerView(
+			gesuch,
+			gsNumber,
+			umzug,
+			mergedGesuchsteller.getGesuchstellerJA()
+		);
 		return mergedGesuchsteller;
 	}
 
 	@Override
 	public GesuchstellerContainer updateGesuchsteller(
-			@Nonnull GesuchstellerContainer gesuchsteller) {
+		@Nonnull GesuchstellerContainer gesuchsteller
+	) {
 		return persistence.merge(gesuchsteller);
 	}
 
 	private void validateGesuchstellerSaveGroup(@Nonnull Gesuch gesuch) {
 		// Gesamt-Validierung durchführen
-		Validator validator = Validation.byDefaultProvider().configure().buildValidatorFactory().getValidator();
+		Validator validator = Validation.byDefaultProvider()
+			.configure()
+			.buildValidatorFactory()
+			.getValidator();
 		Set<ConstraintViolation<Gesuch>> constraintViolations =
-			validator.validate(gesuch, GesuchstellerSaveValidationGroup.class);
+			validator.validate(
+				gesuch,
+				GesuchstellerSaveValidationGroup.class
+			);
 		if (!constraintViolations.isEmpty()) {
 			throw new ConstraintViolationException(constraintViolations);
 		}
@@ -130,25 +153,38 @@ public class GesuchstellerServiceBean extends AbstractBaseService implements Ges
 	private void createEKVInMutationIfNotExisting(
 		@Nonnull GesuchstellerContainer gesuchsteller,
 		Gesuch gesuch,
-		Integer gsNumber) {
-		if (gesuch.isMutation() && gesuch.extractEinkommensverschlechterungInfo() == null
-			&& gsNumber == 2 && gesuchsteller.getEinkommensverschlechterungContainer() == null
+		Integer gsNumber
+	) {
+		if (gesuch.isMutation()
+			&& gesuch.extractEinkommensverschlechterungInfo() == null
+			&& gsNumber == 2
+			&& gesuchsteller.getEinkommensverschlechterungContainer()
+				== null
 			&& EbeguUtil.isFinanzielleSituationRequired(gesuch)) {
 
-			EinkommensverschlechterungContainer evContainer = new EinkommensverschlechterungContainer();
+			EinkommensverschlechterungContainer evContainer =
+				new EinkommensverschlechterungContainer();
 			evContainer.setGesuchsteller(gesuchsteller);
 			gesuchsteller.setEinkommensverschlechterungContainer(evContainer);
 			GesuchstellerContainer gs1Container = gesuch.getGesuchsteller1();
-			if (gs1Container != null && gs1Container.getEinkommensverschlechterungContainer() != null) {
-				if (gs1Container.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1()
+			if (gs1Container != null
+				&& gs1Container.getEinkommensverschlechterungContainer()
 					!= null) {
-					final Einkommensverschlechterung ekvJABasisJahrPlus1 = new Einkommensverschlechterung();
-					gesuchsteller.getEinkommensverschlechterungContainer().setEkvJABasisJahrPlus1(ekvJABasisJahrPlus1);
+				if (gs1Container.getEinkommensverschlechterungContainer()
+					.getEkvJABasisJahrPlus1()
+					!= null) {
+					final Einkommensverschlechterung ekvJABasisJahrPlus1 =
+						new Einkommensverschlechterung();
+					gesuchsteller.getEinkommensverschlechterungContainer()
+						.setEkvJABasisJahrPlus1(ekvJABasisJahrPlus1);
 				}
-				if (gs1Container.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus2()
+				if (gs1Container.getEinkommensverschlechterungContainer()
+					.getEkvJABasisJahrPlus2()
 					!= null) {
-					final Einkommensverschlechterung ekvJABasisJahrPlus2 = new Einkommensverschlechterung();
-					gesuchsteller.getEinkommensverschlechterungContainer().setEkvJABasisJahrPlus2(ekvJABasisJahrPlus2);
+					final Einkommensverschlechterung ekvJABasisJahrPlus2 =
+						new Einkommensverschlechterung();
+					gesuchsteller.getEinkommensverschlechterungContainer()
+						.setEkvJABasisJahrPlus2(ekvJABasisJahrPlus2);
 				}
 			}
 		}
@@ -161,18 +197,28 @@ public class GesuchstellerServiceBean extends AbstractBaseService implements Ges
 	private void createFinSitInMutationIfNotExisting(
 		@Nonnull GesuchstellerContainer gesuchsteller,
 		@Nonnull Gesuch gesuch,
-		@Nonnull Integer gsNumber) {
-		if (gesuch.isMutation() && gsNumber == 2 && gesuchsteller.getFinanzielleSituationContainer() == null
+		@Nonnull Integer gsNumber
+	) {
+		if (gesuch.isMutation()
+			&& gsNumber == 2
+			&& gesuchsteller.getFinanzielleSituationContainer() == null
 			&& EbeguUtil.isFinanzielleSituationRequired(gesuch)) {
 
 			// Die Felder SteuerveranlagungErhalten und SteuererklaerungAusgefuellt muessen u.U. vom GS1 kopiert werden
 			// (bei gemeinsamer Steuererklaerung)
-			Familiensituation familiensituation = gesuch.extractFamiliensituation();
+			Familiensituation familiensituation = gesuch
+				.extractFamiliensituation();
 			Objects.requireNonNull(familiensituation);
-			boolean gemeinsameStek = familiensituation.getGemeinsameSteuererklaerung() != null ?
-				familiensituation.getGemeinsameSteuererklaerung() : false;
+			boolean gemeinsameStek = familiensituation
+				.getGemeinsameSteuererklaerung()
+				!= null ?
+					familiensituation.getGemeinsameSteuererklaerung() :
+					false;
 			GesuchstellerContainer gesuchsteller1 = gesuch.getGesuchsteller1();
-			Objects.requireNonNull(gesuchsteller1, "Gesuchsteller 1 muss zu diesem Zeitpunkt gesetzt sein");
+			Objects.requireNonNull(
+				gesuchsteller1,
+				"Gesuchsteller 1 muss zu diesem Zeitpunkt gesetzt sein"
+			);
 			// fin sit was resetted
 			if (gesuchsteller1.getFinanzielleSituationContainer() == null) {
 				return;
@@ -180,22 +226,41 @@ public class GesuchstellerServiceBean extends AbstractBaseService implements Ges
 
 			boolean stvErhaltenGs2 = false; 	// by default
 			boolean stekAusgefuelltGs2 = false; // by default
-			if (gemeinsameStek && gesuchsteller1.getFinanzielleSituationContainer().getFinanzielleSituationJA() != null) {
-				stvErhaltenGs2 = gesuchsteller1.getFinanzielleSituationContainer().getFinanzielleSituationJA().getSteuerveranlagungErhalten();
-				stekAusgefuelltGs2 = gesuchsteller1.getFinanzielleSituationContainer().getFinanzielleSituationJA().getSteuererklaerungAusgefuellt();
+			if (gemeinsameStek
+				&& gesuchsteller1.getFinanzielleSituationContainer()
+					.getFinanzielleSituationJA()
+					!= null) {
+				stvErhaltenGs2 = gesuchsteller1
+					.getFinanzielleSituationContainer()
+					.getFinanzielleSituationJA()
+					.getSteuerveranlagungErhalten();
+				stekAusgefuelltGs2 = gesuchsteller1
+					.getFinanzielleSituationContainer()
+					.getFinanzielleSituationJA()
+					.getSteuererklaerungAusgefuellt();
 			}
 
-			final FinanzielleSituationContainer finanzielleSituationContainer = new FinanzielleSituationContainer();
-			final FinanzielleSituation finanzielleSituationJA = new FinanzielleSituation();
+			final FinanzielleSituationContainer finanzielleSituationContainer =
+				new FinanzielleSituationContainer();
+			final FinanzielleSituation finanzielleSituationJA =
+				new FinanzielleSituation();
 			finanzielleSituationJA.setSteuerveranlagungErhalten(stvErhaltenGs2);
-			finanzielleSituationJA.setSteuererklaerungAusgefuellt(stekAusgefuelltGs2);
-			finanzielleSituationContainer.setFinanzielleSituationJA(finanzielleSituationJA); // alle Werte by default
-			// auf null -> nichts eingetragen
-				finanzielleSituationContainer.setJahr(gesuchsteller1
-				.getFinanzielleSituationContainer()
-				.getJahr()); // copy it from GS1
+			finanzielleSituationJA.setSteuererklaerungAusgefuellt(
+				stekAusgefuelltGs2
+			);
+			finanzielleSituationContainer.setFinanzielleSituationJA(
+				finanzielleSituationJA
+			); // alle Werte by default
+																							// auf null -> nichts eingetragen
+			finanzielleSituationContainer.setJahr(
+				gesuchsteller1
+					.getFinanzielleSituationContainer()
+					.getJahr()
+			); // copy it from GS1
 			finanzielleSituationContainer.setGesuchsteller(gesuchsteller);
-			gesuchsteller.setFinanzielleSituationContainer(finanzielleSituationContainer);
+			gesuchsteller.setFinanzielleSituationContainer(
+				finanzielleSituationContainer
+			);
 		}
 	}
 
@@ -203,23 +268,45 @@ public class GesuchstellerServiceBean extends AbstractBaseService implements Ges
 		Gesuch gesuch,
 		Integer gsNumber,
 		boolean umzug,
-		Gesuchsteller gesuchsteller) {
+		Gesuchsteller gesuchsteller
+	) {
 		// Wenn beide Gesuchsteller ausgefuellt werden muessen (z.B bei einer Mutation die die Familiensituation aendert
 		// (i.e. von 1GS auf 2GS) wollen wir den Benutzer zwingen beide Gesuchsteller Seiten zu besuchen bevor wir auf
 		// ok setzten.
 		// Ansonsten setzten wir es sofort auf ok
 		if (umzug) {
-			wizardStepService.updateSteps(gesuch.getId(), null, gesuchsteller, WizardStepName.UMZUG);
+			wizardStepService.updateSteps(
+				gesuch.getId(),
+				null,
+				gesuchsteller,
+				WizardStepName.UMZUG
+			);
 		} else {
 			WizardStep existingWizStep =
-				wizardStepService.findWizardStepFromGesuch(gesuch.getId(), WizardStepName.GESUCHSTELLER);
-			WizardStepStatus gesuchStepStatus = existingWizStep != null ? existingWizStep.getWizardStepStatus() : null;
-			if (WizardStepStatus.NOK == gesuchStepStatus || WizardStepStatus.IN_BEARBEITUNG == gesuchStepStatus) {
+				wizardStepService.findWizardStepFromGesuch(
+					gesuch.getId(),
+					WizardStepName.GESUCHSTELLER
+				);
+			WizardStepStatus gesuchStepStatus = existingWizStep != null ?
+				existingWizStep.getWizardStepStatus() :
+				null;
+			if (WizardStepStatus.NOK == gesuchStepStatus
+				|| WizardStepStatus.IN_BEARBEITUNG == gesuchStepStatus) {
 				if (isSavingLastNecessaryGesuchsteller(gesuch, gsNumber)) {
-					wizardStepService.updateSteps(gesuch.getId(), null, gesuchsteller, WizardStepName.GESUCHSTELLER);
+					wizardStepService.updateSteps(
+						gesuch.getId(),
+						null,
+						gesuchsteller,
+						WizardStepName.GESUCHSTELLER
+					);
 				}
 			} else {
-				wizardStepService.updateSteps(gesuch.getId(), null, gesuchsteller, WizardStepName.GESUCHSTELLER);
+				wizardStepService.updateSteps(
+					gesuch.getId(),
+					null,
+					gesuchsteller,
+					WizardStepName.GESUCHSTELLER
+				);
 			}
 		}
 	}
@@ -228,50 +315,79 @@ public class GesuchstellerServiceBean extends AbstractBaseService implements Ges
 	 * Wenn aufgrund der Familiensituation 2 GS noetig sind kommt hier true zurueck wenn gsNumber = 2 ist. sonst false
 	 * Wenn aufgrund der Familiensitation 1 GS noetig ist kommt hier true zurueck wenn gsNumber = 1
 	 */
-	private boolean isSavingLastNecessaryGesuchsteller(Gesuch gesuch, Integer gsNumber) {
-		LocalDate bis = gesuch.getGesuchsperiode().getGueltigkeit().getGueltigBis();
-		boolean gs2 = Objects.requireNonNull(gesuch.extractFamiliensituation()).hasSecondGesuchsteller(bis);
+	private boolean isSavingLastNecessaryGesuchsteller(
+		Gesuch gesuch,
+		Integer gsNumber
+	) {
+		LocalDate bis = gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigBis();
+		boolean gs2 = Objects.requireNonNull(gesuch.extractFamiliensituation())
+			.hasSecondGesuchsteller(bis);
 		return (gs2 && gsNumber == 2) || (!gs2 && gsNumber == 1);
 	}
 
 	@Nonnull
 	@Override
-	public Optional<GesuchstellerContainer> findGesuchsteller(@Nonnull final String id) {
+	public Optional<GesuchstellerContainer> findGesuchsteller(
+		@Nonnull final String id
+	) {
 		Objects.requireNonNull(id, "id muss gesetzt sein");
-		GesuchstellerContainer a = persistence.find(GesuchstellerContainer.class, id);
+		GesuchstellerContainer a = persistence.find(
+			GesuchstellerContainer.class,
+			id
+		);
 		return Optional.ofNullable(a);
 	}
 
 	@Override
 	@Nonnull
 	public Collection<GesuchstellerContainer> getAllGesuchsteller() {
-		return new ArrayList<>(criteriaQueryHelper.getAll(GesuchstellerContainer.class));
+		return new ArrayList<>(
+			criteriaQueryHelper.getAll(GesuchstellerContainer.class)
+		);
 	}
 
 	@Override
-	public void removeGesuchsteller(@Nonnull GesuchstellerContainer gesuchsteller) {
+	public void removeGesuchsteller(
+		@Nonnull GesuchstellerContainer gesuchsteller
+	) {
 		Objects.requireNonNull(gesuchsteller);
-		GesuchstellerContainer gesuchstellerToRemove = findGesuchsteller(gesuchsteller.getId())
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"removeGesuchsteller",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				gesuchsteller));
+		GesuchstellerContainer gesuchstellerToRemove = findGesuchsteller(
+			gesuchsteller.getId()
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"removeGesuchsteller",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gesuchsteller
+				)
+			);
 		persistence.remove(gesuchstellerToRemove);
 	}
 
 	@Nullable
 	@Override
-	public List<Gesuch> findGesuchOfGesuchstellende(@Nonnull List<String> gesuchstellerContainerIDs) {
+	public List<Gesuch> findGesuchOfGesuchstellende(
+		@Nonnull List<String> gesuchstellerContainerIDs
+	) {
 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Gesuch> query = cb.createQuery(Gesuch.class);
 
 		Root<Gesuch> root = query.from(Gesuch.class);
 
-		Predicate predicateGs1 = root.get(Gesuch_.gesuchsteller1).get(AbstractEntity_.id).in(gesuchstellerContainerIDs);
-		Predicate predicateGs2 = root.get(Gesuch_.gesuchsteller2).get(AbstractEntity_.id).in(gesuchstellerContainerIDs);
+		Predicate predicateGs1 = root.get(Gesuch_.gesuchsteller1)
+			.get(AbstractEntity_.id)
+			.in(gesuchstellerContainerIDs);
+		Predicate predicateGs2 = root.get(Gesuch_.gesuchsteller2)
+			.get(AbstractEntity_.id)
+			.in(gesuchstellerContainerIDs);
 		Predicate predicateGs1OrGs2 = cb.or(predicateGs1, predicateGs2);
-		Predicate predicateMandant = cb.equal(root.get(Gesuch_.dossier).get(Dossier_.fall).get(Fall_.mandant), principalBean.getMandant());
+		Predicate predicateMandant = cb.equal(
+			root.get(Gesuch_.dossier).get(Dossier_.fall).get(Fall_.mandant),
+			principalBean.getMandant()
+		);
 
 		query.where(cb.and(predicateGs1OrGs2, predicateMandant));
 		query.distinct(true);

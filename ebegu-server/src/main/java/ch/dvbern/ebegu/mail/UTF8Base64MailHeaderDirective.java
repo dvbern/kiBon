@@ -37,15 +37,22 @@ public class UTF8Base64MailHeaderDirective implements TemplateDirectiveModel {
 	private static final String CHARSET = "UTF-8";
 
 	@Override
-	public void execute(final Environment env, final Map params, final TemplateModel[] loopVars, final TemplateDirectiveBody body) throws TemplateException, IOException {
+	public void execute(
+		final Environment env,
+		final Map params,
+		final TemplateModel[] loopVars,
+		final TemplateDirectiveBody body
+	) throws TemplateException, IOException {
 		// Check if no parameters were given:
 		if (!params.isEmpty()) {
 			throw new TemplateModelException(
-				"This directive doesn't allow parameters.");
+				"This directive doesn't allow parameters."
+			);
 		}
 		if (loopVars.length != 0) {
 			throw new TemplateModelException(
-				"This directive doesn't allow loop variables.");
+				"This directive doesn't allow loop variables."
+			);
 		}
 		// If there is non-empty nested content:
 		if (body != null) {
@@ -66,7 +73,8 @@ public class UTF8Base64MailHeaderDirective implements TemplateDirectiveModel {
 		}
 
 		@Override
-		public void write(final char[] cbuf, final int off, final int len) throws IOException {
+		public void write(final char[] cbuf, final int off, final int len)
+			throws IOException {
 			final char[] toWrite = new char[len];
 			System.arraycopy(cbuf, off, toWrite, 0, len);
 			final byte[] utf8bytes = new String(toWrite).getBytes(CHARSET);

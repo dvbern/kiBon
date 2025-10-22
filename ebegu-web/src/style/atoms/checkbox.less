@@ -19,7 +19,12 @@
 
 .checkbox {
     font-size: 0;
-    height: auto;
+    height: 16px;
+
+    &:not(.dv-ebegu-calendar--tagesschule) {
+        min-height: 1rem;
+    }
+
     &:not(.no-margin-bottom) {
         margin: 0 0 3rem;
     }
@@ -31,7 +36,6 @@
         font-size: 0;
         height: 1.7rem;
         line-height: 1.7rem;
-        margin-left: -4rem;
         vertical-align: middle;
         i {
             font-size: 1.6rem;
@@ -43,6 +47,10 @@
         margin-bottom: -3rem;
         min-height: 3rem;
         overflow: visible;
+    }
+
+    .dv-ebegu-calendar--tagesschule {
+        height: auto;
     }
 }
 
@@ -57,6 +65,7 @@ md-checkbox {
     min-width: 0;
     position: relative;
     width: auto;
+
     &:last-of-type {
         margin-right: 4rem;
     }
@@ -82,27 +91,28 @@ md-checkbox {
     &.md-focused,
     &:focus {
         .md-icon {
-            box-shadow: 0 0 0 2px @contrast-darkest;
-            //-webkit-box-shadow: 0 0 4px 0 #858585;
-            //box-shadow: 0 0 4px 0 #858585;
-            //outline: 2px solid @contrast-darkest;
             transition: none;
         }
     }
     .md-container {
         display: block;
-        height: 1.7rem;
-        width: 1.7rem;
+        height: 17px;
+        width: 17px;
+
         &:before {
             content: none !important;
         }
+    }
+    &:not(.dv-ebegu-calendar--tagesschule) {
+        transform: none !important;
+        top: calc(50% - 9px);
     }
     .md-label {
         display: inline-block;
         font-size: 0;
         height: auto;
         line-height: 1.7rem;
-        margin-left: 3rem;
+        margin-left: 3.5rem;
         min-height: 1.7rem;
         vertical-align: middle;
 
@@ -119,8 +129,12 @@ md-checkbox {
     }
     .md-icon,
     &:not(.md-checked) .md-icon {
-        border: 1px solid @contrast-darkest;
-        border-radius: 0.2rem;
+        border: 2px solid
+            var(
+                --mdc-checkbox-unselected-icon-color,
+                var(--mat-sys-on-surface-variant)
+            );
+        border-radius: 2px;
         bottom: 0;
         height: auto;
         left: 0;
@@ -129,10 +143,14 @@ md-checkbox {
         right: 0;
         top: 0;
         width: auto;
+
+        &:hover {
+            border: 2px solid rgb(28, 28, 28, 1) !important;
+        }
     }
     &.md-checked {
         .md-icon {
-            background-color: @contrast-darkest;
+            background-color: #424242;
             &:after {
                 border-radius: 0.2rem;
                 border-width: 0;

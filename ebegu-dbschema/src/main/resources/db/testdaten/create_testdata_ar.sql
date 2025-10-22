@@ -36,6 +36,8 @@ START TRANSACTION;
 SET @mandant_id_ar = UNHEX(REPLACE('5b9e6fa4-3991-11ed-a63d-b05cda43de9c', '-', ''));
 call select_gesuchsperiode('2022-08-01', @mandant_id_ar, @gesuchsperiode_22_23_id);
 call select_gesuchsperiode('2023-08-01', @mandant_id_ar, @gesuchsperiode_23_24_id);
+call select_gesuchsperiode('2024-08-01', @mandant_id_ar, @gesuchsperiode_24_25_id);
+call select_gesuchsperiode('2025-08-01', @mandant_id_ar, @gesuchsperiode_25_26_id);
 
 SET @testgemeinde_ar_id = UNHEX(REPLACE('b3e44f85-3999-11ed-a63d-b05cda43de9c', '-', ''));
 SET @testgemeinde_ar_bfs_nr = 99995;
@@ -52,29 +54,25 @@ UPDATE application_property SET value = 'true' WHERE name = 'DUMMY_LOGIN_ENABLED
 UPDATE application_property SET value = 'yellow' WHERE name = 'BACKGROUND_COLOR' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'true' WHERE name = 'GERES_ENABLED_FOR_MANDANT' and mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'false' WHERE name = 'FRENCH_ENABLED' AND mandant_id = @mandant_id_ar;
-UPDATE application_property SET value = '2022-03-29' WHERE name = 'SCHNITTSTELLE_STEUERSYSTEME_AKTIV_AB' AND mandant_id = @mandant_id_ar;
+UPDATE application_property SET value = '29.0.2022' WHERE name = 'SCHNITTSTELLE_STEUERSYSTEME_AKTIV_AB' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'false' WHERE name = 'ZUSATZINFORMATIONEN_INSTITUTION' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = '' WHERE name = 'ACTIVATED_DEMO_FEATURES' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'false' WHERE name = 'INFOMA_ZAHLUNGEN' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'false' WHERE name = 'SCHNITTSTELLE_EVENTS_AKTIVIERT' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'false' WHERE name = 'CHECKBOX_AUSZAHLEN_IN_ZUKUNFT' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'true' WHERE name = 'STADT_BERN_ASIV_CONFIGURED' AND mandant_id = @mandant_id_ar;
-UPDATE application_property SET value = 'logo-kibon-white-ar.svg' WHERE name = 'LOGO_WHITE_FILE_NAME' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'false' WHERE name = 'EVALUATOR_DEBUG_ENABLED' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'yellow' WHERE name = 'BACKGROUND_COLOR' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = '60' WHERE name = 'ANZAHL_TAGE_BIS_LOESCHUNG_NACH_WARNUNG_FREIGABE' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = '90' WHERE name = 'ANZAHL_TAGE_BIS_LOESCHUNG_NACH_WARNUNG_QUITTUNG' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'logo-kibon-ar.svg' WHERE name = 'LOGO_FILE_NAME' AND mandant_id = @mandant_id_ar;
-UPDATE application_property SET value = '01.01.2021' WHERE name = 'STADT_BERN_ASIV_START_DATUM' AND mandant_id = @mandant_id_ar;
+UPDATE application_property SET value = '2021-01-01' WHERE name = 'STADT_BERN_ASIV_START_DATUM' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = '60' WHERE name = 'ANZAHL_TAGE_BIS_WARNUNG_FREIGABE' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = '15' WHERE name = 'ANZAHL_TAGE_BIS_WARNUNG_QUITTUNG' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = '#D50025' WHERE name = 'PRIMARY_COLOR' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = '#BF0425' WHERE name = 'PRIMARY_COLOR_DARK' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, image/jpeg, image/png, application/msword, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, application/vnd.oasis.opendocument.text, image/tiff, text/plain, application/vnd.oasis.opendocument.spreadsheet, text/csv,  application/rtf' WHERE name = 'UPLOAD_FILETYPES_WHITELIST' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = '#F0C3CB' WHERE name = 'PRIMARY_COLOR_LIGHT' AND mandant_id = @mandant_id_ar;
-UPDATE application_property SET value = 'false' WHERE name = 'KANTON_NOTVERORDNUNG_PHASE_2_AKTIV' AND mandant_id = @mandant_id_ar;
-UPDATE application_property SET value = '2020-07-31' WHERE name = 'NOTVERORDNUNG_DEFAULT_EINREICHEFRIST_OEFFENTLICH' AND mandant_id = @mandant_id_ar;
-UPDATE application_property SET value = '2020-07-17' WHERE name = 'NOTVERORDNUNG_DEFAULT_EINREICHEFRIST_PRIVAT' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'false' WHERE name = 'FERIENBETREUUNG_AKTIV' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'false' WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_AKTIV' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = '0.5' WHERE name = 'LASTENAUSGLEICH_TAGESSCHULEN_ANTEIL_ZWEITPRUEFUNG_DE' AND mandant_id = @mandant_id_ar;
@@ -90,33 +88,15 @@ UPDATE application_property SET value = 'false' WHERE name = 'ANGEBOT_MITTAGSTIS
 UPDATE application_property SET value = 'false' WHERE name = 'ANGEBOT_TFO_ENABLED' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'false' WHERE name = 'AUSZAHLUNGEN_AN_ELTERN' AND mandant_id = @mandant_id_ar;
 UPDATE application_property SET value = 'true' WHERE name = 'ABWEICHUNGEN_ENABLED' AND mandant_id = @mandant_id_ar;
+UPDATE application_property SET value = 'false' WHERE name = 'ABGELOESTE_VIEW' AND mandant_id = @mandant_id_ar;
 
 UPDATE mandant SET activated = TRUE WHERE id = @mandant_id_ar;
 
 UPDATE gesuchsperiode SET status = 'AKTIV' WHERE id = @gesuchsperiode_22_23_id;
 UPDATE gesuchsperiode SET status = 'AKTIV' WHERE id = @gesuchsperiode_23_24_id;
-
-# Antragstellende Benutzer fuer e2e erstellen
-# geem
-INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, externaluuid, nachname, status, username, vorname, mandant_id, bemerkungen, zpv_nummer) VALUES (UNHEX('4DBDEFEB5E474A998E92DDEF02F45480'), '2024-01-09 15:08:10', '2024-01-09 15:08:10', 'anonymous', 'anonymous', 0, null, 'emma.gerber.ar@mailbucket.dvbern.ch', null, 'Gerber', 'AKTIV', 'geem', 'Emma', @mandant_id_ar, null, null);
-INSERT IGNORE INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('8A3062C060AA4B26AFDD370C80167A7D'), '2024-01-09 15:08:10', '2024-01-09 15:08:10', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', 'GESUCHSTELLER', UNHEX('4DBDEFEB5E474A998E92DDEF02F45480'), null, null, null);
-INSERT IGNORE INTO berechtigung_history (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, geloescht, gemeinden, role, status, username, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('C7F462DE8A2F4C47A0D00A67B171ABE8'), '2024-01-09 15:08:10', '2024-01-09 15:08:10', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', false, '', 'GESUCHSTELLER', 'AKTIV', 'geem', null, null, null);
-# bemi
-INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, externaluuid, nachname, status, username, vorname, mandant_id, bemerkungen, zpv_nummer) VALUES (UNHEX('CF619D36435A4D4AAB3DBDCDE72A099C'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, 'michael.berger.ar@mailbucket.dvbern.ch', null, 'Berger', 'AKTIV', 'bemi', 'Michael', @mandant_id_ar, null, null);
-INSERT IGNORE INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('BBB3B9C45925455A8F7C14CA454FFD48'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', 'GESUCHSTELLER', UNHEX('CF619D36435A4D4AAB3DBDCDE72A099C'), null, null, null);
-INSERT IGNORE INTO berechtigung_history (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, geloescht, gemeinden, role, status, username, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('A80918D8DEDF42C98DF87FD457D636B3'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', false, '', 'GESUCHSTELLER', 'AKTIV', 'bemi', null, null, null);
-# muhe
-INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, externaluuid, nachname, status, username, vorname, mandant_id, bemerkungen, zpv_nummer) VALUES (UNHEX('56DD546DAFA111EEA5AF00155D1D453D'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, 'heinrich.mueller.ar@mailbucket.dvbern.ch', null, 'Mueller', 'AKTIV', 'muhe', 'Heinrich', @mandant_id_ar, null, null);
-INSERT IGNORE INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('24B98044AFCF11EEAC8F0242AC1A0002'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', 'GESUCHSTELLER', UNHEX('56DD546DAFA111EEA5AF00155D1D453D'), null, null, null);
-INSERT IGNORE INTO berechtigung_history (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, geloescht, gemeinden, role, status, username, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('A38DFF96AFA111EEA5AF00155D1D453D'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', false, '', 'GESUCHSTELLER', 'AKTIV', 'muhe', null, null, null);
-# ziha
-INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, externaluuid, nachname, status, username, vorname, mandant_id, bemerkungen, zpv_nummer) VALUES (UNHEX('DEB688EEAFA111EEA5AF00155D1D453D'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, 'hans.zimmermann.ar@mailbucket.dvbern.ch', null, 'Zimmermann', 'AKTIV', 'ziha', 'Hans', @mandant_id_ar, null, null);
-INSERT IGNORE INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('E55C0C44AFA111EEA5AF00155D1D453D'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', 'GESUCHSTELLER', UNHEX('DEB688EEAFA111EEA5AF00155D1D453D'), null, null, null);
-INSERT IGNORE INTO berechtigung_history (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, geloescht, gemeinden, role, status, username, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('E55C0C44AFA111EEA5AF00155D1D453B'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', false, '', 'GESUCHSTELLER', 'AKTIV', 'ziha', null, null, null);
-# chje
-INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, externaluuid, nachname, status, username, vorname, mandant_id, bemerkungen, zpv_nummer) VALUES (UNHEX('46949E5EAFA211EEA5AF00155D1D453D'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, 'jean.chambre.ar@mailbucket.dvbern.ch', null, 'Chambre', 'AKTIV', 'chje', 'Jean', @mandant_id_ar, null, null);
-INSERT IGNORE INTO berechtigung (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, role, benutzer_id, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('4BE07774AFA211EEA5AF00155D1D453D'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', 'GESUCHSTELLER', UNHEX('46949E5EAFA211EEA5AF00155D1D453D'), null, null, null);
-INSERT IGNORE INTO berechtigung_history (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, geloescht, gemeinden, role, status, username, institution_id, traegerschaft_id, sozialdienst_id) VALUES (UNHEX('4EE78AF5AFA211EEA5AF00155D1D453D'), '2024-01-09 15:09:03', '2024-01-09 15:09:03', 'anonymous', 'anonymous', 0, null, '2024-01-09', '9999-12-31', false, '', 'GESUCHSTELLER', 'AKTIV', 'chje', null, null, null);
+UPDATE gesuchsperiode SET status = 'INAKTIV' WHERE id = @gesuchsperiode_22_23_id;
+INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_24_25_id, now(), now(), 'ebegu: ar', 'ebegu: ar', 0, 0, '2024-08-01', '2025-07-31', '2024-01-01', 'AKTIV', @mandant_id_ar);
+INSERT IGNORE INTO gesuchsperiode (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, gueltig_ab, gueltig_bis, datum_aktiviert, status, mandant_id) VALUES (@gesuchsperiode_25_26_id, now(), now(), 'ebegu: ar', 'ebegu: ar', 0, 0, '2025-08-01', '2026-07-31', '2025-01-01', 'AKTIV', @mandant_id_ar);
 
 # Benutzer System erstellen
 INSERT IGNORE INTO benutzer (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, vorgaenger_id, email, nachname, username, vorname, mandant_id, externaluuid, status) VALUES (@system_user, '2016-01-01 00:00:00', '2016-01-01 00:00:00', 'flyway', 'flyway', 0, null, 'hallo@dvbern.ch', 'System', 'system_ar', '', @mandant_id_ar, null, 'AKTIV');
@@ -143,7 +123,7 @@ UPDATE einstellung set value = '40' where (gesuchsperiode_id = @gesuchsperiode_2
 UPDATE einstellung set value = '30' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FERIENBETREUUNG_CHF_PAUSCHALBETRAG' and gemeinde_id is null;
 UPDATE einstellung set value = '60' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FERIENBETREUUNG_CHF_PAUSCHALBETRAG_SONDERSCHUELER' and gemeinde_id is null;
 UPDATE einstellung set value = 'APPENZELL' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FINANZIELLE_SITUATION_TYP' and gemeinde_id is null;
-UPDATE einstellung set value = 'null' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FKJV_EINKOMMENSVERSCHLECHTERUNG_BIS_CHF' and gemeinde_id is null;
+UPDATE einstellung set value = '99999999' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FKJV_EINKOMMENSVERSCHLECHTERUNG_BIS_CHF' and gemeinde_id is null;
 UPDATE einstellung set value = 'false' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FKJV_FAMILIENSITUATION_NEU' and gemeinde_id is null;
 UPDATE einstellung set value = '100' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FKJV_MAX_DIFFERENZ_BESCHAEFTIGUNGSPENSUM' and gemeinde_id is null;
 UPDATE einstellung set value = '100' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FKJV_MAX_PENSUM_AUSSERORDENTLICHER_ANSPRUCH' and gemeinde_id is null;
@@ -152,9 +132,9 @@ UPDATE einstellung set value = 'false' where (gesuchsperiode_id = @gesuchsperiod
 UPDATE einstellung set value = 'VORSCHULALTER' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE' and gemeinde_id is null;
 UPDATE einstellung set value = 'false' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FKJV_TEXTE' and gemeinde_id is null;
 UPDATE einstellung set value = 'true' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'FREIGABE_QUITTUNG_EINLESEN_REQUIRED' and gemeinde_id is null;
-UPDATE einstellung set value = '0' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDESPEZIFISCHE_BG_KONFIGURATIONEN' and gemeinde_id is null;
+UPDATE einstellung set value = 'false' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDESPEZIFISCHE_BG_KONFIGURATIONEN' and gemeinde_id is null;
 UPDATE einstellung set value = 'KLASSE1' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE' and gemeinde_id is null;
-UPDATE einstellung set value = '01.08.2022' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' and gemeinde_id is null;
+UPDATE einstellung set value = '2022-08-01' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB' and gemeinde_id is null;
 UPDATE einstellung set value = 'false' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_KEIN_GUTSCHEIN_FUER_SOZIALHILFE_EMPFAENGER' and gemeinde_id is null;
 UPDATE einstellung set value = 'false' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_KONTINGENTIERUNG_ENABLED' and gemeinde_id is null;
 UPDATE einstellung set value = '51000' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN' and gemeinde_id is null;
@@ -172,8 +152,8 @@ UPDATE einstellung set value = '0' where (gesuchsperiode_id = @gesuchsperiode_22
 UPDATE einstellung set value = '0' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO' and gemeinde_id is null;
 UPDATE einstellung set value = '0' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO_AB_PRIMARSCHULE' and gemeinde_id is null;
 UPDATE einstellung set value = '0' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_MAX_MASSGEBENDEN_EINKOMMEN_FUER_BERECHNUNG' and gemeinde_id is null;
-UPDATE einstellung set value = '01.08.2022' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' and gemeinde_id is null;
-UPDATE einstellung set value = '01.08.2022' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' and gemeinde_id is null;
+UPDATE einstellung set value = '2022-08-01' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB' and gemeinde_id is null;
+UPDATE einstellung set value = '2022-08-01' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG' and gemeinde_id is null;
 UPDATE einstellung set value = 'false' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_ENABLED' and gemeinde_id is null;
 UPDATE einstellung set value = '0' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_MAXPROZENT' and gemeinde_id is null;
 UPDATE einstellung set value = '0.00' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA' and gemeinde_id is null;
@@ -234,6 +214,14 @@ UPDATE einstellung set value = 'false' where (gesuchsperiode_id = @gesuchsperiod
 UPDATE einstellung set value = '6' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'ZUSCHLAG_BEHINDERUNG_PRO_STD' and gemeinde_id is null;
 UPDATE einstellung set value = '60' where (gesuchsperiode_id = @gesuchsperiode_22_23_id or gesuchsperiode_id = @gesuchsperiode_23_24_id)  and einstellung_key = 'ZUSCHLAG_BEHINDERUNG_PRO_TG' and gemeinde_id is null;
 
+# Einstellungen Periode 24/25 (Kopieren aus 22/23 und alle Änderungen updaten)
+INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
+SELECT UUID(), now(), now(), 'ebegu:ar', 'ebegu:ar', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_24_25_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_22_23_id;
+
+# Einstellungen Periode 25/26
+INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
+SELECT UUID(), now(), now(), 'ebegu:ar', 'ebegu:ar', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_25_26_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_24_25_id;
+
 # Gemeinde Testgemeinde Appenzell Ausserrhoden erstellen, inkl. Adressen und Gemeindestammdaten. Sequenz anpassen
 INSERT IGNORE INTO gemeinde (
 	id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, name, gemeinde_nummer, mandant_id, status, bfs_nummer,
@@ -260,7 +248,7 @@ INSERT IGNORE INTO gemeinde_stammdaten (id, timestamp_erstellt, timestamp_mutier
 VALUES (UNHEX(REPLACE('e7cf727f-39a8-11ed-a63d-b05cda43de9c', '-', '')), '2018-10-23 00:00:00', '2018-10-23 00:00:00', 'flyway', 'flyway', 0,
 		@system_user, @system_user,
 		@testgemeinde_ar_id, UNHEX(REPLACE('967b2041-39a8-11ed-a63d-b05cda43de9c', '-', '')),
-		'herisau@mailbucket.dvbern.ch', '+41 31 930 15 15', 'https://www.herisau.ch', null, 'DE', 'BIC', 'CH2089144969768441935',
+		'herisau@mailbucket.dvbern.ch', '+41 31 930 15 15', 'www.herisau.ch', null, 'DE', 'AAAABBCC333', 'CH2089144969768441935',
 		'Herisau Kontoinhaber', true, true, true, true, false, UNHEX(REPLACE('ae69aa8a-39a8-11ed-a63d-b05cda43de9c', '-', '')));
 
 # Test-Institutionen erstellen
@@ -297,39 +285,39 @@ INSERT IGNORE INTO institution_stammdaten_betreuungsgutscheine(id, timestamp_ers
 															   alterskategorie_baby, alterskategorie_vorschule,
 															   alterskategorie_kindergarten, alterskategorie_schule, anzahl_plaetze,
 															   anzahl_plaetze_firmen, offen_von, offen_bis,
-															   oeffnungstage_pro_jahr, auslastung_institutionen,
+															   oeffnungstage_pro_jahr,
 															   anzahl_kinder_warteliste, summe_pensum_warteliste,
 															   dauer_warteliste, frueh_eroeffnung, spaet_eroeffnung,
 															   wochenende_eroeffnung, uebernachtung_moeglich)
 VALUES (UNHEX(REPLACE('331186b0-39a9-11ed-a63d-b05cda43de9c', '-', '')), now(), now(),
 		'flyway', 'flyway', 0, UNHEX(REPLACE('2bc7aafc-39a9-11ed-a63d-b05cda43de9c', '-', '')), FALSE, FALSE, FALSE,
-		FALSE, 30, NULL, '08:00', '18:00', 0, 0.00, 0.00, 0.00, 0.00, FALSE, FALSE, FALSE, FALSE);
+		FALSE, 30, NULL, '08:00', '18:00', 0, 0.00, 0.00, 0.00, FALSE, FALSE, FALSE, FALSE);
 
 INSERT IGNORE INTO institution_stammdaten_betreuungsgutscheine(id, timestamp_erstellt, timestamp_mutiert, user_erstellt,
 															   user_mutiert, version, auszahlungsdaten_id,
 															   alterskategorie_baby, alterskategorie_vorschule,
 															   alterskategorie_kindergarten, alterskategorie_schule, anzahl_plaetze,
 															   anzahl_plaetze_firmen, offen_von, offen_bis,
-															   oeffnungstage_pro_jahr, auslastung_institutionen,
+															   oeffnungstage_pro_jahr,
 															   anzahl_kinder_warteliste, summe_pensum_warteliste,
 															   dauer_warteliste, frueh_eroeffnung, spaet_eroeffnung,
 															   wochenende_eroeffnung, uebernachtung_moeglich)
 VALUES (UNHEX(REPLACE('3909773b-39a9-11ed-a63d-b05cda43de9c', '-', '')), now(), now(),
 		'flyway', 'flyway', 0, UNHEX(REPLACE('276dd6ec-39a9-11ed-a63d-b05cda43de9c', '-', '')), FALSE, FALSE, FALSE,
-		FALSE, 35, NULL, '08:00', '18:00', 0, 0.00, 0.00, 0.00, 0.00, FALSE, FALSE, FALSE, FALSE);
+		FALSE, 35, NULL, '08:00', '18:00', 0, 0.00, 0.00, 0.00, FALSE, FALSE, FALSE, FALSE);
 
 INSERT IGNORE INTO institution_stammdaten_betreuungsgutscheine(id, timestamp_erstellt, timestamp_mutiert, user_erstellt,
 															   user_mutiert, version, auszahlungsdaten_id,
 															   alterskategorie_baby, alterskategorie_vorschule,
 															   alterskategorie_kindergarten, alterskategorie_schule, anzahl_plaetze,
 															   anzahl_plaetze_firmen, offen_von, offen_bis,
-															   oeffnungstage_pro_jahr, auslastung_institutionen,
+															   oeffnungstage_pro_jahr,
 															   anzahl_kinder_warteliste, summe_pensum_warteliste,
 															   dauer_warteliste, frueh_eroeffnung, spaet_eroeffnung,
 															   wochenende_eroeffnung, uebernachtung_moeglich)
 VALUES (UNHEX(REPLACE('3eb65ff2-39a9-11ed-a63d-b05cda43de9c', '-', '')), now(), now(),
 		'flyway', 'flyway', 0, UNHEX(REPLACE('22996c95-39a9-11ed-a63d-b05cda43de9c', '-', '')), FALSE, FALSE, FALSE,
-		FALSE, 40, NULL, '08:00', '18:00', 0, 0.00, 0.00, 0.00, 0.00, FALSE, FALSE, FALSE, FALSE);
+		FALSE, 40, NULL, '08:00', '18:00', 0, 0.00, 0.00, 0.00, FALSE, FALSE, FALSE, FALSE);
 
 INSERT IGNORE INTO institution_stammdaten (id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert,
 										   version, vorgaenger_id, gueltig_ab, gueltig_bis, betreuungsangebot_typ,

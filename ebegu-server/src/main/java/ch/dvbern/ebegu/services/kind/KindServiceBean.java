@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.kind;
@@ -27,20 +27,20 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 import ch.dvbern.ebegu.dto.KindDubletteDTO;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
@@ -65,25 +65,25 @@ import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.kind.KindResetDecisionBasis;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.AbstractBaseService;
 import ch.dvbern.ebegu.services.BenutzerService;
+import ch.dvbern.ebegu.services.EntityIndexer;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.KindService;
 import ch.dvbern.ebegu.services.WizardStepService;
 import ch.dvbern.ebegu.types.DateRange_;
-import ch.dvbern.lib.cdipersistence.Persistence;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service fuer Kind
  */
 @Stateless
 @Local(KindService.class)
-public class KindServiceBean extends AbstractBaseService implements KindService {
+public class KindServiceBean extends AbstractBaseService implements
+	KindService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(KindServiceBean.class);
 	@Inject
 	private Persistence persistence;
 	@Inject
@@ -95,33 +95,50 @@ public class KindServiceBean extends AbstractBaseService implements KindService 
 	@Inject
 	private ValidatorFactory validatorFactory;
 	@Inject
-	private KindServiceHandler kindServiceHandler;
+	private KindResetHandler kindResetHandler;
+	@Inject
+	private EntityIndexer entityIndexer;
 
 	@Nonnull
 	@Override
-	public KindContainer saveKind(@Nonnull KindContainer kind, @Nullable KindContainer dbKind) {
+	public KindContainer saveKind(
+		@Nonnull KindContainer kind,
+		@Nullable KindResetDecisionBasis dbKind
+	) {
 		Objects.requireNonNull(kind);
 		if (!kind.isNew()) {
 			// Den Lucene-Index manuell nachführen, da es bei unidirektionalen Relationen nicht automatisch geschieht!
-			updateLuceneIndex(KindContainer.class, kind.getId());
+			entityIndexer.updateSingleEntity(
+				KindContainer.class,
+				kind.getId()
+			);
 		}
-		kindServiceHandler.resetKindBetreuungenDatenOnKindSave(kind, dbKind);
+		kindResetHandler.resetKindBetreuungenDatenOnKindSave(kind, dbKind);
 		final KindContainer mergedKind = persistence.merge(kind);
 		mergedKind.getGesuch().addKindContainer(mergedKind);
 
 		// validate explicitly: If KindContainer didn't change but a PensumFachstelle did, the validation won't
 		// be automatically triggered
 		Validator validator = validatorFactory.getValidator();
-		Set<ConstraintViolation<KindContainer>> constraintViolations = validator.validate(mergedKind);
+		Set<ConstraintViolation<KindContainer>> constraintViolations = validator
+			.validate(mergedKind);
 		if (!constraintViolations.isEmpty()) {
 			throw new ConstraintViolationException(constraintViolations);
 		}
 
-		kindServiceHandler.resetGesuchDataOnKindSave(mergedKind);
+		kindResetHandler.resetGesuchDataOnKindSave(mergedKind);
 
-		kindServiceHandler.resetKindBetreuungenStatusOnKindSave(mergedKind, dbKind);
+		kindResetHandler.resetKindBetreuungenStatusOnKindSave(
+			mergedKind,
+			dbKind
+		);
 
-		wizardStepService.updateSteps(kind.getGesuch().getId(), null, mergedKind.getKindJA(), WizardStepName.KINDER);
+		wizardStepService.updateSteps(
+			kind.getGesuch().getId(),
+			null,
+			mergedKind.getKindJA(),
+			WizardStepName.KINDER
+		);
 
 		return mergedKind;
 	}
@@ -136,13 +153,19 @@ public class KindServiceBean extends AbstractBaseService implements KindService 
 
 	@Override
 	@Nonnull
-	public List<KindContainer> findAllKinderFromGesuch(@Nonnull String gesuchId) {
+	public List<KindContainer> findAllKinderFromGesuch(
+		@Nonnull String gesuchId
+	) {
 		Objects.requireNonNull(gesuchId);
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<KindContainer> query = cb.createQuery(KindContainer.class);
+		final CriteriaQuery<KindContainer> query = cb.createQuery(
+			KindContainer.class
+		);
 		Root<KindContainer> root = query.from(KindContainer.class);
 		// Kinder from Gesuch
-		Predicate predicateInstitution = root.get(KindContainer_.gesuch).get(AbstractEntity_.id).in(gesuchId);
+		Predicate predicateInstitution = root.get(KindContainer_.gesuch)
+			.get(AbstractEntity_.id)
+			.in(gesuchId);
 
 		query.where(predicateInstitution);
 		return persistence.getCriteriaResults(query);
@@ -156,30 +179,63 @@ public class KindServiceBean extends AbstractBaseService implements KindService 
 		persistence.remove(kind);
 
 		// the kind needs to be removed from the object as well
-		gesuch.getKindContainers().removeIf(k -> k.getId().equalsIgnoreCase(kind.getId()));
+		gesuch.getKindContainers()
+			.removeIf(k -> k.getId().equalsIgnoreCase(kind.getId()));
 
-		wizardStepService.updateSteps(gesuchId, null, null, WizardStepName.KINDER);
+		wizardStepService.updateSteps(
+			gesuchId,
+			null,
+			null,
+			WizardStepName.KINDER
+		);
 
 		gesuchService.updateBetreuungenStatus(gesuch);
 	}
 
 	@Override
 	@Nonnull
-	public List<KindContainer> getAllKinderWithMissingStatistics(Mandant mandant) {
+	public List<KindContainer> getAllKinderWithMissingStatistics(
+		Mandant mandant
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<KindContainer> query = cb.createQuery(KindContainer.class);
+		final CriteriaQuery<KindContainer> query = cb.createQuery(
+			KindContainer.class
+		);
 
 		Root<KindContainer> root = query.from(KindContainer.class);
-		Join<KindContainer, Gesuch> joinGesuch = root.join(KindContainer_.gesuch, JoinType.LEFT);
-		Join<Gesuch, Dossier> joinDossier = joinGesuch.join(Gesuch_.dossier, JoinType.LEFT);
-		Join<Dossier, Fall> joinFall = joinDossier.join(Dossier_.fall, JoinType.LEFT);
+		Join<KindContainer, Gesuch> joinGesuch = root.join(
+			KindContainer_.gesuch,
+			JoinType.LEFT
+		);
+		Join<Gesuch, Dossier> joinDossier = joinGesuch.join(
+			Gesuch_.dossier,
+			JoinType.LEFT
+		);
+		Join<Dossier, Fall> joinFall = joinDossier.join(
+			Dossier_.fall,
+			JoinType.LEFT
+		);
 
-		Predicate predicateMutation = cb.equal(joinGesuch.get(Gesuch_.typ), AntragTyp.MUTATION);
-		Predicate predicateFlag = cb.isNull(root.get(KindContainer_.kindMutiert));
-		Predicate predicateStatus = joinGesuch.get(Gesuch_.status).in(AntragStatus.getAllVerfuegtNotIgnoriertStates());
-		Predicate predicateMandant = cb.equal(joinFall.get(Fall_.mandant), mandant);
+		Predicate predicateMutation = cb.equal(
+			joinGesuch.get(Gesuch_.typ),
+			AntragTyp.MUTATION
+		);
+		Predicate predicateFlag = cb.isNull(
+			root.get(KindContainer_.kindMutiert)
+		);
+		Predicate predicateStatus = joinGesuch.get(Gesuch_.status)
+			.in(AntragStatus.getAllVerfuegtNotIgnoriertStates());
+		Predicate predicateMandant = cb.equal(
+			joinFall.get(Fall_.mandant),
+			mandant
+		);
 
-		query.where(predicateMutation, predicateFlag, predicateStatus, predicateMandant);
+		query.where(
+			predicateMutation,
+			predicateFlag,
+			predicateStatus,
+			predicateMandant
+		);
 		query.orderBy(cb.desc(joinGesuch.get(Gesuch_.laufnummer)));
 		return persistence.getCriteriaResults(query);
 	}
@@ -188,21 +244,35 @@ public class KindServiceBean extends AbstractBaseService implements KindService 
 	@Nonnull
 	public Set<KindDubletteDTO> getKindDubletten(@Nonnull String gesuchId) {
 		Benutzer user = benutzerService.getCurrentBenutzer()
-			.orElseThrow(() -> new EbeguRuntimeException("getKindDubletten", "No User is logged in"));
+			.orElseThrow(
+				() -> new EbeguRuntimeException(
+					"getKindDubletten",
+					"No User is logged in"
+				)
+			);
 		Set<Gemeinde> gemeinden = user.extractGemeindenForUser();
 
 		Set<KindDubletteDTO> dublettenOfAllKinder = new HashSet<>();
 		Optional<Gesuch> gesuchOptional = gesuchService.findGesuch(gesuchId);
 		if (gesuchOptional.isPresent()) {
-			Set<KindContainer> kindContainers = gesuchOptional.get().getKindContainers();
+			Set<KindContainer> kindContainers = gesuchOptional.get()
+				.getKindContainers();
 			for (KindContainer kindContainer : kindContainers) {
-				List<KindDubletteDTO> kindDubletten = getKindDubletten(kindContainer, gemeinden, user);
+				List<KindDubletteDTO> kindDubletten = getKindDubletten(
+					kindContainer,
+					gemeinden,
+					user
+				);
 				// Die Resultate sind nach Muationsdatum absteigend sortiert. Wenn also eine Fall-Id noch nicht vorkommt,
 				// dann ist dies das neueste Gesuch dieses Falls
 				dublettenOfAllKinder.addAll(kindDubletten);
 			}
 		} else {
-			throw new EbeguEntityNotFoundException("getKindDubletten", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gesuchId);
+			throw new EbeguEntityNotFoundException(
+				"getKindDubletten",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				gesuchId
+			);
 		}
 		return dublettenOfAllKinder;
 	}
@@ -215,17 +285,33 @@ public class KindServiceBean extends AbstractBaseService implements KindService 
 	) {
 		// Wir suchen nach Name, Vorname und Geburtsdatum
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<KindDubletteDTO> query = cb.createQuery(KindDubletteDTO.class);
+		final CriteriaQuery<KindDubletteDTO> query = cb.createQuery(
+			KindDubletteDTO.class
+		);
 
 		Root<KindContainer> root = query.from(KindContainer.class);
-		Join<KindContainer, Kind> joinKind = root.join(KindContainer_.kindJA, JoinType.LEFT);
-		Join<KindContainer, Gesuch> joinGesuch = root.join(KindContainer_.gesuch, JoinType.LEFT);
-		Join<Gesuch, Dossier> joinDossier = joinGesuch.join(Gesuch_.dossier, JoinType.INNER);
-		Join<Dossier, Fall> joinFall = joinDossier.join(Dossier_.fall, JoinType.INNER);
+		Join<KindContainer, Kind> joinKind = root.join(
+			KindContainer_.kindJA,
+			JoinType.LEFT
+		);
+		Join<KindContainer, Gesuch> joinGesuch = root.join(
+			KindContainer_.gesuch,
+			JoinType.LEFT
+		);
+		Join<Gesuch, Dossier> joinDossier = joinGesuch.join(
+			Gesuch_.dossier,
+			JoinType.INNER
+		);
+		Join<Dossier, Fall> joinFall = joinDossier.join(
+			Dossier_.fall,
+			JoinType.INNER
+		);
 
 		query.multiselect(
 			joinGesuch.get(AbstractEntity_.id),
-			joinGesuch.get(Gesuch_.dossier).get(Dossier_.fall).get(Fall_.fallNummer),
+			joinGesuch.get(Gesuch_.dossier)
+				.get(Dossier_.fall)
+				.get(Fall_.fallNummer),
 			cb.literal(kindContainer.getKindNummer()),
 			root.get(KindContainer_.kindNummer),
 			joinGesuch.get(AbstractEntity_.timestampErstellt)
@@ -233,29 +319,73 @@ public class KindServiceBean extends AbstractBaseService implements KindService 
 
 		ArrayList<Predicate> predicates = new ArrayList<>();
 
+		var vornameSplitted = kindContainer.getKindJA().getVorname().split(" ");
+
+		predicates.add(
+			cb.or(
+				cb.like(
+					joinKind.get(AbstractPersonEntity_.vorname),
+					vornameSplitted[0] + " %"
+				),
+				cb.equal(
+					joinKind.get(AbstractPersonEntity_.vorname),
+					vornameSplitted[0]
+				)
+			)
+		);
 		// Identische Merkmale
-		predicates.add(cb.equal(joinKind.get(AbstractPersonEntity_.nachname), kindContainer.getKindJA().getNachname()));
-		predicates.add(cb.equal(joinKind.get(AbstractPersonEntity_.vorname), kindContainer.getKindJA().getVorname()));
-		predicates.add(cb.equal(joinKind.get(AbstractPersonEntity_.geburtsdatum), kindContainer.getKindJA().getGeburtsdatum()));
+		predicates.add(
+			cb.equal(
+				joinKind.get(AbstractPersonEntity_.nachname),
+				kindContainer.getKindJA().getNachname()
+			)
+		);
+		predicates.add(
+			cb.equal(
+				joinKind.get(AbstractPersonEntity_.geburtsdatum),
+				kindContainer.getKindJA().getGeburtsdatum()
+			)
+		);
 		// Aber nicht vom selben Dossier
-		predicates.add(cb.notEqual(joinGesuch.get(Gesuch_.dossier), kindContainer.getGesuch().getDossier()));
+		predicates.add(
+			cb.notEqual(
+				joinGesuch.get(Gesuch_.dossier),
+				kindContainer.getGesuch().getDossier()
+			)
+		);
 		// Nur das zuletzt gueltige Gesuch
-		predicates.add(joinGesuch.get(Gesuch_.status).in(AntragStatus.getForKindDubletten()));
+		predicates.add(
+			joinGesuch.get(Gesuch_.status)
+				.in(AntragStatus.getForKindDubletten())
+		);
 		// Nur Gesuch mit demselben Mandant
-		predicates.add(cb.equal(joinFall.get(Fall_.mandant), kindContainer.getGesuch().getDossier().getFall().getMandant()));
+		predicates.add(
+			cb.equal(
+				joinFall.get(Fall_.mandant),
+				kindContainer.getGesuch()
+					.getDossier()
+					.getFall()
+					.getMandant()
+			)
+		);
 
 		// Eingeloggter Benutzer muss Berechtigung für die Gemeinde haben
 		// Superadmin und Mandant können alle Gemeinden sehen
 		if (!user.getRole().isRoleMandant() && !user.getRole().isSuperadmin()) {
 			// falls der Benutzer nicht Superadmin oder Mandant ist, muss zwingend mindestens eine Gemeinde gefunden werden
 			if (gemeinden.isEmpty()) {
-				throw new EbeguRuntimeException("getKindDubletten", "Keine Gemeinden für aktiven Benutzer gefunden");
+				throw new EbeguRuntimeException(
+					"getKindDubletten",
+					"Keine Gemeinden für aktiven Benutzer gefunden"
+				);
 			}
 
 			predicates.add(joinDossier.get(Dossier_.gemeinde).in(gemeinden));
 		}
 
-		query.orderBy(cb.desc(joinGesuch.get(AbstractEntity_.timestampErstellt)));
+		query.orderBy(
+			cb.desc(joinGesuch.get(AbstractEntity_.timestampErstellt))
+		);
 		query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));
 
 		return persistence.getCriteriaResults(query);
@@ -266,57 +396,63 @@ public class KindServiceBean extends AbstractBaseService implements KindService 
 	public Collection<KindContainer> findKinder(
 		@Nonnull Integer fallNummer,
 		@Nonnull Integer kindNummer,
-		int gesuchsperiodeStartJahr) {
+		int gesuchsperiodeStartJahr,
+		Mandant mandant
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<KindContainer> query = cb.createQuery(KindContainer.class);
+		final CriteriaQuery<KindContainer> query = cb.createQuery(
+			KindContainer.class
+		);
 
 		Root<KindContainer> root = query.from(KindContainer.class);
-		Join<KindContainer, Gesuch> joinGesuch = root.join(KindContainer_.gesuch);
+		Join<KindContainer, Gesuch> joinGesuch = root.join(
+			KindContainer_.gesuch
+		);
 		Join<Gesuch, Dossier> joinDossier = joinGesuch.join(Gesuch_.dossier);
 		Join<Dossier, Fall> joinFall = joinDossier.join(Dossier_.fall);
-		Join<Gesuch, Gesuchsperiode> joinGesuchsperiode = joinGesuch.join(Gesuch_.gesuchsperiode);
+		Join<Gesuch, Gesuchsperiode> joinGesuchsperiode = joinGesuch.join(
+			Gesuch_.gesuchsperiode
+		);
 
-		Predicate predicateFallNummer = cb.equal(joinFall.get(Fall_.fallNummer), fallNummer);
-		Predicate predicateKindNummer = cb.equal(root.get(KindContainer_.kindNummer), kindNummer);
+		Predicate predicateFallNummer = cb.equal(
+			joinFall.get(Fall_.fallNummer),
+			fallNummer
+		);
+		Predicate predicateKindNummer = cb.equal(
+			root.get(KindContainer_.kindNummer),
+			kindNummer
+		);
+		Predicate predicateMandant = cb.equal(
+			joinFall.get(Fall_.mandant),
+			mandant
+		);
 
-		Expression<Integer> yearExp = cb.function("YEAR", Integer.class, joinGesuchsperiode
-			.get(Gesuchsperiode_.gueltigkeit)
-			.get(DateRange_.gueltigAb)
+		Expression<Integer> yearExp = cb.function(
+			"YEAR",
+			Integer.class,
+			joinGesuchsperiode
+				.get(Gesuchsperiode_.gueltigkeit)
+				.get(DateRange_.gueltigAb)
 		);
 		Predicate predicatePeriode = cb.equal(yearExp, gesuchsperiodeStartJahr);
-		query.where(predicateFallNummer, predicateKindNummer, predicatePeriode);
+		query.where(
+			predicateFallNummer,
+			predicateKindNummer,
+			predicatePeriode,
+			predicateMandant
+		);
 
 		return persistence.getCriteriaResults(query);
 	}
 
 	@Override
 	public void updateKeinSelbstbehaltFuerGemeinde(
-		Collection<KindContainer> kindContainers,
-		@Nonnull Boolean keinSelbstbehaltFuerGemeinde) {
-		kindContainers.forEach(kindContainer -> {
-			long fallNummer = kindContainer.getGesuch().getFall().getFallNummer();
-			// Flag nur setzen, falls das Kind immer noch die Checkbox kindAusAsylwesen aktiviert hat
-			if (overrideAllowed(kindContainer)) {
-				kindContainer.setKeinSelbstbehaltDurchGemeinde(keinSelbstbehaltFuerGemeinde);
-				LOGGER.info("Updating KindContainer with id " + kindContainer.getId() +
-					", Fallnummer " + fallNummer + " and Kindnummer " + kindContainer.getKindNummer() +
-					". Set keinSelbstbehaltFuerGemeinde = " + keinSelbstbehaltFuerGemeinde);
-				persistence.persist(kindContainer);
-			} else {
-				LOGGER.info("KindContainer with id " + kindContainer.getId() +
-					", Fallnummer " + fallNummer + " and Kindnummer " + kindContainer.getKindNummer() +
-					" has kindAusAsylwesen == false or has wrong Gesuchstatus. Not setting keinSelbstbehaltFuerGemeinde");
-			}
-		});
-	}
-
-	// Nur KindContainers überschreiben die zu verfügten Gesuchen gehören und die immer noch kindAusAsylwesen == true haben.
-	private boolean overrideAllowed(@Nonnull KindContainer kindContainer) {
-		boolean kindAusAyslwesen = false;
-		if (kindContainer.getKindJA() != null && kindContainer.getKindJA().getAusAsylwesen() != null) {
-			kindAusAyslwesen = kindContainer.getKindJA().getAusAsylwesen();
-		}
-		boolean gesuchVerfuegt = kindContainer.getGesuch().getStatus().isAnyStatusOfVerfuegt();
-		return kindAusAyslwesen && gesuchVerfuegt;
+		KindContainer kindContainer,
+		@Nonnull Boolean keinSelbstbehaltFuerGemeinde
+	) {
+		kindContainer.setKeinSelbstbehaltDurchGemeinde(
+			keinSelbstbehaltFuerGemeinde
+		);
+		persistence.persist(kindContainer);
 	}
 }

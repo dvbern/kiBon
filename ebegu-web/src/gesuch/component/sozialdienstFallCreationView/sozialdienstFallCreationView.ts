@@ -15,21 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, IScope} from 'angular';
-import {MAX_FILE_SIZE} from '../../../app/core/constants/CONSTANTS';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {TSRole} from '../../../models/enums/TSRole';
+import {
+    TSDokumentUploadTyp,
+    TSRole,
+    TSSprache
+} from '@kibon/shared/model/enums';
 import {TSSozialdienstFallStatus} from '../../../models/enums/TSSozialdienstFallStatus';
-import {TSSprache} from '../../../models/enums/TSSprache';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSSozialdienstFall} from '../../../models/sozialdienst/TSSozialdienstFall';
 import {TSSozialdienstFallDokument} from '../../../models/sozialdienst/TSSozialdienstFallDokument';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
@@ -39,8 +41,8 @@ import {OkHtmlDialogController} from '../../dialog/OkHtmlDialogController';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
 import {INewFallStateParams} from '../../gesuch.route';
 import {BerechnungsManager} from '../../service/berechnungsManager';
-import {FallRS} from '../../service/fallRS.rest';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
+import {UnterstuetzungsdienstFallService} from '../../service/unterstuetzungsdienst-fall.service';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
 import ITimeoutService = angular.ITimeoutService;
@@ -61,7 +63,7 @@ export class SozialdienstFallCreationViewComponentConfig
 }
 
 export class SozialdienstFallCreationViewController extends AbstractGesuchViewController<any> {
-    public static $inject = [
+    public static readonly $inject = [
         'GesuchModelManager',
         'BerechnungsManager',
         'ErrorService',
@@ -72,7 +74,7 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
         'AuthServiceRS',
         '$state',
         'UploadRS',
-        'FallRS',
+        'UnterstuetzungsdienstFallService',
         'DownloadRS',
         'DvDialog',
         '$timeout'
@@ -82,6 +84,7 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
 
     public showAntragsteller2Error: boolean = false;
     public dokumente: TSSozialdienstFallDokument[];
+    public fileTypes = [TSDokumentUploadTyp.PDF, TSDokumentUploadTyp.WORD];
 
     public constructor(
         gesuchModelManager: GesuchModelManager,
@@ -94,7 +97,7 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
         private readonly authServiceRS: AuthServiceRS,
         private readonly $state: StateService,
         private readonly uploadRS: UploadRS,
-        private readonly fallRS: FallRS,
+        private readonly unterstuetzungsdienstFallService: UnterstuetzungsdienstFallService,
         private readonly downloadRS: DownloadRS,
         private readonly dvDialog: DvDialog,
         $timeout: ITimeoutService
@@ -128,7 +131,7 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
         if (this.gesuchModelManager.getFall().sozialdienstFall.isNew()) {
             return;
         }
-        this.fallRS
+        this.unterstuetzungsdienstFallService
             .getAllVollmachtDokumente(
                 this.gesuchModelManager.getFall().sozialdienstFall.id
             )
@@ -158,9 +161,9 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
         }
     }
 
-    private saveData(): void {
+    private saveData(): angular.IPromise<void> {
         this.errorService.clearAll();
-        this.gesuchModelManager
+        return this.gesuchModelManager
             .saveFall()
             .then(fall => {
                 if (
@@ -285,16 +288,23 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
         return false;
     }
 
-    public fallAktivieren(): void {
+    public async fallAktivieren(): Promise<void> {
         this.form.$dirty = true;
         if (
             this.validateForm() &&
             this.dokumente &&
             this.dokumente.length > 0
         ) {
-            this.gesuchModelManager.getFall().sozialdienstFall.status =
-                TSSozialdienstFallStatus.AKTIV;
-            this.save();
+            await this.saveData();
+            this.unterstuetzungsdienstFallService
+                .sozialdienstFallEroeffnen(this.gesuchModelManager.getFall().id)
+                .subscribe(sozialdienstFall => {
+                    this.gesuchModelManager.getFall().sozialdienstFall =
+                        sozialdienstFall;
+                    this.wizardStepManager.updateCurrentWizardStepStatus(
+                        TSWizardStepStatus.OK
+                    );
+                });
         }
     }
 
@@ -312,7 +322,7 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
                 }
             )
             .then(() => {
-                this.fallRS
+                this.unterstuetzungsdienstFallService
                     .sozialdienstFallEntziehen(
                         this.gesuchModelManager.getFall().id
                     )
@@ -350,9 +360,13 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
     }
 
     public removeVollmachtDokument(dokument: TSSozialdienstFallDokument): void {
-        this.fallRS.removeVollmachtDokument(dokument.id).then(() => {
-            this.dokumente = this.dokumente.filter(d => d.id !== dokument.id);
-        });
+        this.unterstuetzungsdienstFallService
+            .removeVollmachtDokument(dokument.id)
+            .then(() => {
+                this.dokumente = this.dokumente.filter(
+                    d => d.id !== dokument.id
+                );
+            });
     }
 
     public downloadVollmachtDokument(
@@ -363,7 +377,7 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
         this.downloadRS
             .getAccessTokenSozialdienstFallDokument(dokument.id)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     attachment,
@@ -376,7 +390,7 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
     }
 
     public generateVollmachtPDF(sprache: TSSprache): void {
-        this.fallRS
+        this.unterstuetzungsdienstFallService
             .getVollmachtDokumentAccessTokenGeneratedDokument(
                 this.gesuchModelManager.getFall().id,
                 sprache
@@ -438,10 +452,15 @@ export class SozialdienstFallCreationViewController extends AbstractGesuchViewCo
     }
 
     public bearbeiten(): void {
-        this.gesuchModelManager.getFall().sozialdienstFall.status =
-            TSSozialdienstFallStatus.INAKTIV;
-        this.form.$dirty = true;
-        this.save();
+        this.unterstuetzungsdienstFallService
+            .sozialdienstFallInaktivieren(this.gesuchModelManager.getFall().id)
+            .subscribe(sozialdienstFall => {
+                this.gesuchModelManager.getFall().sozialdienstFall =
+                    sozialdienstFall;
+                this.wizardStepManager.updateCurrentWizardStepStatus(
+                    TSWizardStepStatus.NOK
+                );
+            });
     }
 
     public getSozialdienstName(): string {

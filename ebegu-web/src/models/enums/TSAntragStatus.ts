@@ -16,7 +16,7 @@
  */
 
 import {TSEingangsart} from './TSEingangsart';
-import {TSRole} from './TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 
 export enum TSAntragStatus {
     IN_BEARBEITUNG_GS = 'IN_BEARBEITUNG_GS',
@@ -212,6 +212,15 @@ export function isAnyStatusOfVerfuegt(status: TSAntragStatus): boolean {
     );
 }
 
+export function isAnyStatusForGSMutation(status: TSAntragStatus): boolean {
+    return (
+        status === TSAntragStatus.NUR_SCHULAMT ||
+        status === TSAntragStatus.VERFUEGT ||
+        status === TSAntragStatus.KEIN_ANGEBOT ||
+        status === TSAntragStatus.IGNORIERT
+    );
+}
+
 export function isAnyStatusOfVerfuegtButIgnoriert(
     status: TSAntragStatus
 ): boolean {
@@ -254,7 +263,7 @@ export function isVerfuegtOrSTV(status: TSAntragStatus): boolean {
     );
 }
 
-export function isAnyStatusOfGeprueftVerfuegenVerfuegtOrAbgeschlossen(
+export function isAnyStatusOfFreigegebenGeprueftVerfuegenVerfuegtOrAbgeschlossen(
     status: TSAntragStatus
 ): boolean {
     return (
@@ -262,7 +271,8 @@ export function isAnyStatusOfGeprueftVerfuegenVerfuegtOrAbgeschlossen(
         status === TSAntragStatus.IN_BEARBEITUNG_JA ||
         status === TSAntragStatus.GEPRUEFT ||
         status === TSAntragStatus.VERFUEGEN ||
-        status === TSAntragStatus.NUR_SCHULAMT
+        status === TSAntragStatus.NUR_SCHULAMT ||
+        status == TSAntragStatus.FREIGEGEBEN
     );
 }
 

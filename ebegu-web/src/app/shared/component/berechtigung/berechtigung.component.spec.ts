@@ -15,14 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {NgForm} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {of} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../../hybridTools/mockUpgradedDirective';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBerechtigung} from '../../../../models/TSBerechtigung';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {InstitutionRS} from '../../../core/service/institutionRS.rest';
@@ -54,7 +54,7 @@ describe('BerechtigungComponent', () => {
     ]);
     const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
         I18nServiceRSRest.name,
-        ['extractPreferredLanguage']
+        ['extractPreferredLanguage', 'init']
     );
     const sozialdienstSpy = jasmine.createSpyObj<SozialdienstRS>(
         SozialdienstRS.name,

@@ -17,44 +17,100 @@
 
 package ch.dvbern.ebegu.api.resource;
 
-import ch.dvbern.ebegu.api.AuthConstants;
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
-import ch.dvbern.ebegu.api.dtos.*;
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+
+import ch.dvbern.ebegu.api.converter.institution.JaxInstitutionConverter;
+import ch.dvbern.ebegu.api.converter.institution.JaxInstitutionStammdatenConverter;
+import ch.dvbern.ebegu.api.dtos.JaxId;
+import ch.dvbern.ebegu.api.dtos.JaxInstitution;
+import ch.dvbern.ebegu.api.dtos.JaxInstitutionExternalClientAssignment;
+import ch.dvbern.ebegu.api.dtos.JaxInstitutionListDTO;
+import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdaten;
+import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdatenBetreuungsgutscheine;
+import ch.dvbern.ebegu.api.dtos.JaxInstitutionUpdate;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.einladung.Einladung;
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.*;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.entities.Adresse;
+import ch.dvbern.ebegu.entities.Benutzer;
+import ch.dvbern.ebegu.entities.ExternalClient;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Institution;
+import ch.dvbern.ebegu.entities.InstitutionExternalClient;
+import ch.dvbern.ebegu.entities.InstitutionStammdaten;
+import ch.dvbern.ebegu.entities.InstitutionStammdatenBetreuungsgutscheine;
+import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.InstitutionStatus;
+import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
-import ch.dvbern.ebegu.services.*;
+import ch.dvbern.ebegu.services.BenutzerService;
+import ch.dvbern.ebegu.services.CreateBenutzerService;
+import ch.dvbern.ebegu.services.ExternalClientService;
+import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.services.InstitutionService;
+import ch.dvbern.ebegu.services.InstitutionStammdatenInitalizerService;
+import ch.dvbern.ebegu.services.InstitutionStammdatenService;
+import ch.dvbern.ebegu.services.InstitutionUpdateMailService;
+import ch.dvbern.ebegu.services.MandantService;
+import ch.dvbern.ebegu.services.MitteilungService;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.util.EbeguUtil;
 import ch.dvbern.ebegu.util.GueltigkeitsUtil;
 import ch.dvbern.ebegu.util.InstitutionStammdatenInitalizerVisitor;
+import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
 import com.google.common.base.Preconditions;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.net.URI;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static ch.dvbern.ebegu.enums.UserRoleName.*;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_INSTITUTION;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TRAEGERSCHAFT;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -62,7 +118,6 @@ import static java.util.Objects.requireNonNull;
  */
 @Path("institutionen")
 @Stateless
-@Api(description = "Resource für Institutionen (Anbieter eines Betreuungsangebotes)")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class InstitutionResource {
 
@@ -85,7 +140,10 @@ public class InstitutionResource {
 	private PrincipalBean principalBean;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxInstitutionStammdatenConverter institutionStammdatenConverter;
+
+	@Inject
+	private JaxInstitutionConverter institutionConverter;
 
 	@Inject
 	private MandantService mandantService;
@@ -99,51 +157,98 @@ public class InstitutionResource {
 	@Inject
 	private InstitutionStammdatenInitalizerService institutionStammdatenInitalizerService;
 
-	@ApiOperation(value = "Creates a new Institution in the database.", response = JaxInstitution.class)
+	@Inject
+	private InstitutionUpdateMailService instiutionUpdateMailService;
+
+	@Inject
+	private CreateBenutzerService createBenutzerService;
+
+	@Operation(summary = "Creates a new Institution in the database.")
 	@Nullable
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, ADMIN_TRAEGERSCHAFT,
-		ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		ADMIN_TRAEGERSCHAFT,
+		ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, SACHBEARBEITER_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS })
 	public Response createInstitution(
 		@Nonnull @NotNull JaxInstitution institutionJAXP,
-		@Nonnull @NotNull @Valid @QueryParam("date") String stringDateBeguStart,
-		@Nonnull @NotNull @Valid @QueryParam("betreuung") BetreuungsangebotTyp betreuungsangebot,
+		@Nonnull
+		@NotNull
+		@Valid
+		@QueryParam("date") String stringDateBeguStart,
+		@Nonnull
+		@NotNull
+		@Valid
+		@QueryParam("betreuung") BetreuungsangebotTyp betreuungsangebot,
 		@Nonnull @NotNull @Valid @QueryParam("adminMail") String adminMail,
 		@Nullable @Valid @QueryParam("gemeindeId") String gemeindeId,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		requireNonNull(adminMail);
 		checkCreatInstitutionAllowed(betreuungsangebot);
 
-		Institution convertedInstitution = converter.institutionToNewEntity(institutionJAXP);
-		Institution persistedInstitution = this.institutionService.createInstitution(convertedInstitution);
+		Institution convertedInstitution = institutionConverter
+			.institutionToNewEntity(
+				institutionJAXP
+			);
+		Institution persistedInstitution = this.institutionService
+			.createInstitution(convertedInstitution);
 
-		LocalDate startDate = LocalDate.parse(stringDateBeguStart, Constants.SQL_DATE_FORMAT);
-		initInstitutionStammdaten(startDate, betreuungsangebot, persistedInstitution, adminMail, gemeindeId);
+		LocalDate startDate = LocalDate.parse(
+			stringDateBeguStart,
+			Constants.SQL_DATE_FORMAT
+		);
+		initInstitutionStammdaten(
+			startDate,
+			betreuungsangebot,
+			persistedInstitution,
+			adminMail,
+			gemeindeId
+		);
 
 		Mandant mandant = requireNonNull(persistedInstitution.getMandant());
 
-		if (BetreuungsangebotTyp.getBetreuungsgutscheinTypes().contains(betreuungsangebot)) {
+		if (BetreuungsangebotTyp.getBetreuungsgutscheinTypes()
+			.contains(betreuungsangebot)) {
 			Benutzer benutzer = benutzerService.findBenutzer(adminMail, mandant)
 				.map(b -> {
-					if ((b.getRole() != UserRole.ADMIN_TRAEGERSCHAFT && b.getRole() != UserRole.GESUCHSTELLER) ||
-						!Objects.equals(b.getTraegerschaft(), persistedInstitution.getTraegerschaft())) {
+					if ((b.getRole() != UserRole.ADMIN_TRAEGERSCHAFT
+						&& b.getRole() != UserRole.GESUCHSTELLER)
+						||
+						!Objects.equals(
+							b.getTraegerschaft(),
+							persistedInstitution.getTraegerschaft()
+						)) {
 						// an existing user cannot be used to create a new Institution
 						throw new EbeguRuntimeException(
 							KibonLogLevel.INFO,
 							"createInstitution",
 							ErrorCodeEnum.EXISTING_USER_MAIL,
-							adminMail);
+							adminMail
+						);
 					}
 
 					return b;
 				})
-				.orElseGet(() -> benutzerService.createAdminInstitutionByEmail(adminMail, persistedInstitution));
+				.orElseGet(
+					() -> createBenutzerService.createAdminInstitutionByEmail(
+						adminMail,
+						persistedInstitution
+					)
+				);
 
-			benutzerService.einladen(Einladung.forInstitution(benutzer, persistedInstitution, startDate), mandant);
+			benutzerService.einladen(
+				Einladung.forInstitution(
+					benutzer,
+					persistedInstitution,
+					startDate
+				),
+				mandant
+			);
 		}
 
 		URI uri = uriInfo.getBaseUriBuilder()
@@ -151,27 +256,43 @@ public class InstitutionResource {
 			.path('/' + persistedInstitution.getId())
 			.build();
 
-		JaxInstitution jaxInstitution = converter.institutionToJAX(persistedInstitution);
+		JaxInstitution jaxInstitution = institutionStammdatenConverter
+			.institutionToJAX(
+				persistedInstitution
+			);
 		return Response.created(uri).entity(jaxInstitution).build();
 	}
 
-	private void checkCreatInstitutionAllowed(@Nonnull BetreuungsangebotTyp betreuungsangebot) {
+	private void checkCreatInstitutionAllowed(
+		@Nonnull BetreuungsangebotTyp betreuungsangebot
+	) {
 		if (betreuungsangebot.isKita() || betreuungsangebot.isTagesfamilien()) {
-			boolean institutionenDurchGemeindenEinladen = Boolean.TRUE.equals(this.applicationPropertyService.findApplicationPropertyAsBoolean(
-				ApplicationPropertyKey.INSTITUTIONEN_DURCH_GEMEINDEN_EINLADEN,
-				principalBean.getMandant()
-			));
+			boolean institutionenDurchGemeindenEinladen = Boolean.TRUE.equals(
+				this.applicationPropertyService
+					.findApplicationPropertyAsBoolean(
+						ApplicationPropertyKey.INSTITUTIONEN_DURCH_GEMEINDEN_EINLADEN,
+						principalBean.getMandant()
+					)
+			);
 			// falls Einstellung deaktiviert, dass Institutionen durch Gemeinden eingeladen werden können, dürfen nur
 			// SUPERADMIN und MANDANTROLLEN Institutionen einladen
-			if (!institutionenDurchGemeindenEinladen && !principalBean.isCallerInAnyOfRole(SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT)) {
+			if (!institutionenDurchGemeindenEinladen
+				&& !principalBean.isCallerInAnyOfRole(
+					SUPER_ADMIN,
+					ADMIN_MANDANT,
+					SACHBEARBEITER_MANDANT
+				)) {
 				throw new IllegalStateException(
 					"Nur ein Superadmin oder Mandant Benutzer kann einen neuen Kita/TFO Benutzer einladen. Dies wurde "
 						+ "aber versucht durch: "
-						+ principalBean.getBenutzer().getUsername());
+						+ principalBean.getBenutzer().getUsername()
+				);
 			}
-		} else if (betreuungsangebot.isSchulamt() && principalBean.isCallerInAnyOfRole(UserRole.ADMIN_BG)) {
+		} else if (betreuungsangebot.isSchulamt()
+			&& principalBean.isCallerInAnyOfRole(UserRole.ADMIN_BG)) {
 			throw new IllegalStateException(
-				"Ein Admin BG kann keine Tagesschulen oder Ferieninseln erstellen.");
+				"Ein Admin BG kann keine Tagesschulen oder Ferieninseln erstellen."
+			);
 		}
 	}
 
@@ -183,7 +304,10 @@ public class InstitutionResource {
 		@Nullable String gemeindeId
 	) {
 		InstitutionStammdaten institutionStammdaten =
-			new InstitutionStammdatenInitalizerVisitor(institutionStammdatenInitalizerService, gemeindeId)
+			new InstitutionStammdatenInitalizerVisitor(
+				institutionStammdatenInitalizerService,
+				gemeindeId
+			)
 				.initalizeInstiutionStammdaten(betreuungsangebot);
 
 		Adresse adresse = new Adresse();
@@ -198,52 +322,98 @@ public class InstitutionResource {
 		DateRange gueltigkeit = new DateRange(startDate, Constants.END_OF_TIME);
 		institutionStammdaten.setGueltigkeit(gueltigkeit);
 
-		institutionStammdatenService.saveInstitutionStammdaten(institutionStammdaten);
+		institutionStammdatenService.saveInstitutionStammdaten(
+			institutionStammdaten
+		);
 	}
 
-	@ApiOperation(value = "Update a Institution and Stammdaten in the database.",
-		response = JaxInstitutionStammdaten.class)
+	@Operation(summary = "Update a Institution and Stammdaten in the database.")
 	@Nullable
 	@PUT
 	@Path("/{institutionId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, ADMIN_INSTITUTION, ADMIN_TRAEGERSCHAFT,
-		ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		ADMIN_INSTITUTION, ADMIN_TRAEGERSCHAFT,
+		ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, SACHBEARBEITER_GEMEINDE,
+		SACHBEARBEITER_TS })
 	public JaxInstitutionStammdaten updateInstitutionAndStammdaten(
-		@Nonnull @NotNull @PathParam("institutionId") JaxId institutionJAXPId,
-		@Nonnull @NotNull @Valid JaxInstitutionUpdate update) {
+		@Nonnull
+		@NotNull
+		@PathParam("institutionId") JaxId institutionJAXPId,
+		@Nonnull @NotNull @Valid JaxInstitutionUpdate update
+	) {
 
-		Institution institution = institutionService.findInstitution(requireNonNull(institutionJAXPId.getId()), true)
-			.orElseThrow(() -> new EbeguEntityNotFoundException("update", institutionJAXPId.getId()));
+		Institution institution = institutionService.findInstitution(
+			requireNonNull(institutionJAXPId.getId()),
+			true
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"update",
+					institutionJAXPId.getId()
+				)
+			);
 
-		InstitutionStammdaten stammdaten = Optional.ofNullable(update.getStammdaten().getId())
-			.flatMap(id -> institutionStammdatenService.findInstitutionStammdaten(id))
+		InstitutionStammdaten stammdaten = Optional.ofNullable(
+			update.getStammdaten().getId()
+		)
+			.flatMap(
+				id -> institutionStammdatenService
+					.findInstitutionStammdaten(id)
+			)
 			.orElseGet(() -> new InstitutionStammdaten(institution));
 
 		DateRange oldGueltigkeit = new DateRange(stammdaten.getGueltigkeit());
-
-		converter.institutionStammdatenToEntity(update.getStammdaten(), stammdaten);
+		boolean auszahlungsdatenChanged =
+			hasAuszahlungsdatenChanged(
+				stammdaten
+					.getInstitutionStammdatenBetreuungsgutscheine(),
+				update.getStammdaten()
+					.getInstitutionStammdatenBetreuungsgutscheine()
+			);
+		institutionStammdatenConverter.institutionStammdatenToEntity(
+			update.getStammdaten(),
+			stammdaten
+		);
 
 		Preconditions.checkArgument(
 			stammdaten.getInstitution().equals(institution),
 			"Stammdaten and Institution must belong together, but %s != %s",
 			stammdaten.getInstitution(),
-			institution);
+			institution
+		);
 
 		if (update.getInstitutionExternalClients() != null) {
 			List<InstitutionExternalClient> institutionExternalClients =
-				converter.institutionExternalClientListToEntity(update.getInstitutionExternalClients(), institution);
-			if(checkExternalClientDateOverlapping(institutionExternalClients)){
-				throw new EbeguRuntimeException("updateInstitutionAndStammdaten", ErrorCodeEnum.ERROR_INVALID_EXTERNAL_CLIENT_DATERANGE);
+				institutionStammdatenConverter
+					.institutionExternalClientListToEntity(
+						update.getInstitutionExternalClients(),
+						institution
+					);
+			if (checkExternalClientDateOverlapping(
+				institutionExternalClients
+			)) {
+				throw new EbeguRuntimeException(
+					"updateInstitutionAndStammdaten",
+					ErrorCodeEnum.ERROR_INVALID_EXTERNAL_CLIENT_DATERANGE
+				);
 			}
 
-			institutionService.saveInstitutionExternalClients(institution, institutionExternalClients);
+			institutionService.saveInstitutionExternalClients(
+				institution,
+				institutionExternalClients
+			);
 		}
 
-		boolean institutionUpdated = converter.institutionToEntity(update, institution, stammdaten);
+		boolean institutionUpdated = institutionConverter.institutionToEntity(
+			update,
+			institution,
+			stammdaten
+		);
 
-		if (institutionUpdated || update.getInstitutionExternalClients() != null) {
+		if (institutionUpdated
+			|| update.getInstitutionExternalClients() != null) {
 			institutionService.updateInstitution(institution);
 		}
 
@@ -251,19 +421,74 @@ public class InstitutionResource {
 		stammdaten.setInstitution(institution);
 
 		InstitutionStammdaten persistedInstData =
-			institutionStammdatenService.saveInstitutionStammdaten(stammdaten);
+			institutionStammdatenService.saveInstitutionStammdaten(
+				stammdaten
+			);
 
-		if (institutionStammdatenService.isGueltigkeitDecrease(oldGueltigkeit, stammdaten.getGueltigkeit())) {
-			mitteilungService.adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(stammdaten.getInstitution(), stammdaten.getGueltigkeit());
+		if (institutionStammdatenService.isGueltigkeitDecrease(
+			oldGueltigkeit,
+			stammdaten.getGueltigkeit()
+		)) {
+			mitteilungService
+				.adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(
+					stammdaten.getInstitution(),
+					stammdaten.getGueltigkeit()
+				);
 		}
 
-		institutionStammdatenService.fireStammdatenChangedEvent(persistedInstData);
+		institutionStammdatenService.fireStammdatenChangedEvent(
+			persistedInstData
+		);
 
-		return converter.institutionStammdatenToJAX(persistedInstData);
+		if (auszahlungsdatenChanged) {
+			instiutionUpdateMailService.sendAuszahlungsdatenUpdatedInfo(
+				stammdaten
+			);
+		}
+
+		return institutionStammdatenConverter.institutionStammdatenToJAX(
+			persistedInstData
+		);
 	}
 
-	@ApiOperation(value = "Find and return an Institution by his institution id as parameter",
-		response = JaxInstitution.class)
+	private boolean hasAuszahlungsdatenChanged(
+		@Nullable InstitutionStammdatenBetreuungsgutscheine existingStammdaten,
+		@Nullable JaxInstitutionStammdatenBetreuungsgutscheine updatedStammdaten
+	) {
+		if (updatedStammdaten == null) {
+			return false;
+		}
+
+		if (existingStammdaten == null
+			||
+			existingStammdaten.getAuszahlungsdaten() == null) {
+			//wenn noch keine Stammdaten existieren, aber IBAN oder Kontoinhaber erfasst wurden handelt es sich um ein update
+			return updatedStammdaten.getIban() != null
+				||
+				updatedStammdaten.getKontoinhaber() != null;
+		}
+
+		String existingIban = existingStammdaten.getAuszahlungsdaten().getIban()
+			== null ?
+				null :
+				existingStammdaten.getAuszahlungsdaten()
+					.getIban()
+					.toString();
+
+		return !EbeguUtil.contentEquals(
+			existingIban,
+			updatedStammdaten.getIban()
+		)
+			||
+			!EbeguUtil.contentEquals(
+				existingStammdaten.getAuszahlungsdaten()
+					.getKontoinhaber(),
+				updatedStammdaten.getKontoinhaber()
+			);
+	}
+
+	@Operation(
+		summary = "Find and return an Institution by his institution id as parameter")
 	@Nullable
 	@GET
 	@Path("/{institutionId}")
@@ -271,49 +496,66 @@ public class InstitutionResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public JaxInstitution findInstitution(
-		@Nonnull @NotNull @PathParam("institutionId") JaxId institutionJAXPId) {
+		@Nonnull
+		@NotNull
+		@PathParam("institutionId") JaxId institutionJAXPId
+	) {
 
 		requireNonNull(institutionJAXPId.getId());
-		String institutionID = converter.toEntityId(institutionJAXPId);
-		Optional<Institution> optional = institutionService.findInstitution(institutionID, true);
+		String institutionID = institutionStammdatenConverter.toEntityId(
+			institutionJAXPId
+		);
+		Optional<Institution> optional = institutionService.findInstitution(
+			institutionID,
+			true
+		);
 
-		return optional.map(institution -> converter.institutionToJAX(institution)).orElse(null);
+		return optional.map(
+			institution -> institutionStammdatenConverter.institutionToJAX(
+				institution
+			)
+		).orElse(null);
 	}
 
-	@ApiOperation("Remove an Institution from the DB by its institution-id as parameter")
+	@Operation(
+		summary = "Remove an Institution from the DB by its institution-id as parameter")
 	@Nullable
 	@DELETE
 	@Path("/{institutionId}")
 	@Consumes(MediaType.WILDCARD)
 	@RolesAllowed(SUPER_ADMIN)
 	public Response removeInstitution(
-		@Nonnull @NotNull @PathParam("institutionId") JaxId institutionJAXPId,
-		@Context HttpServletResponse response) {
+		@Nonnull
+		@NotNull
+		@PathParam("institutionId") JaxId institutionJAXPId,
+		@Context HttpServletResponse response
+	) {
 
 		requireNonNull(institutionJAXPId.getId());
-		institutionService.removeInstitution(converter.toEntityId(institutionJAXPId));
+		institutionService.removeInstitution(
+			institutionStammdatenConverter.toEntityId(institutionJAXPId)
+		);
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Find and return a list of all Institutionen",
-		responseContainer = "List", response = JaxInstitution.class)
+	@Operation(summary = "Find and return a list of all Institutionen")
 	@Nonnull
 	@GET
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxInstitution> getAllInstitutionen(
-			@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
 	) {
 		var mandant = mandantService.findMandantByCookie(mandantCookie);
 
-		return institutionService.getAllInstitutionen(mandant).stream()
-			.map(inst -> converter.institutionToJAX(inst))
+		return institutionService.getAllInstitutionen(mandant)
+			.stream()
+			.map(inst -> institutionStammdatenConverter.institutionToJAX(inst))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Find and return a list of all BG Institutionen",
-		responseContainer = "List", response = JaxInstitution.class)
+	@Operation(summary = "Find and return a list of all BG Institutionen")
 	@Nonnull
 	@GET
 	@Path("/bg")
@@ -321,17 +563,22 @@ public class InstitutionResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Oeffentliche Daten
 	public List<JaxInstitution> getAllBgInstitutionen(
-			@CookieParam(AuthConstants.COOKIE_MANDANT) Cookie mandantCookie
+		@CookieParam(MandantCookieUtil.MANDANT_COOKIE_NAME) Cookie mandantCookie
 	) {
 		var mandant = mandantService.findMandantByCookie(mandantCookie);
 
-		return institutionService.getAllInstitutionenByType(mandant, BetreuungsangebotTyp.getBetreuungsgutscheinTypes()).stream()
-			.map(inst -> converter.institutionToJAX(inst))
+		return institutionService.getAllInstitutionenByType(
+			mandant,
+			BetreuungsangebotTyp.getBetreuungsgutscheinTypes()
+		)
+			.stream()
+			.map(inst -> institutionStammdatenConverter.institutionToJAX(inst))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Find and return a list of all editable Institutionen of the currently logged in Benutzer. "
-		+ "Returns all for admins", responseContainer = "List", response = JaxInstitution.class)
+	@Operation(
+		summary = "Find and return a list of all editable Institutionen of the currently logged in Benutzer. "
+			+ "Returns all for admins")
 	@Nonnull
 	@GET
 	@Path("/editable/currentuser")
@@ -339,13 +586,17 @@ public class InstitutionResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public List<JaxInstitution> getInstitutionenEditableForCurrentBenutzer() {
-		return institutionService.getInstitutionenEditableForCurrentBenutzer(true).stream()
-			.map(inst -> converter.institutionToJAX(inst))
+		return institutionService.getInstitutionenEditableForCurrentBenutzer(
+			true
+		)
+			.stream()
+			.map(inst -> institutionStammdatenConverter.institutionToJAX(inst))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Find and return a list of all editable Institutionen of the currently logged in Benutzer. "
-		+ "Returns all for admins", responseContainer = "List", response = JaxInstitution.class)
+	@Operation(
+		summary = "Find and return a list of all editable Institutionen of the currently logged in Benutzer. "
+			+ "Returns all for admins")
 	@Nonnull
 	@GET
 	@Path("/editable/currentuser/listdto")
@@ -354,16 +605,20 @@ public class InstitutionResource {
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public List<JaxInstitutionListDTO> getInstitutionenListDTOEditableForCurrentBenutzer() {
 		Map<Institution, InstitutionStammdaten> institutionInstitutionStammdatenMap =
-			institutionService.getInstitutionenInstitutionStammdatenEditableForCurrentBenutzer(true);
+			institutionService
+				.getInstitutionenInstitutionStammdatenEditableForCurrentBenutzer(
+					true
+				);
 
 		return institutionInstitutionStammdatenMap.entrySet()
 			.stream()
-			.map(map -> converter.institutionListDTOToJAX(map))
+			.map(map -> institutionConverter.institutionListDTOToJAX(map))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Find and return a list of all readable Institutionen of the currently logged in Benutzer. "
-		+ "Returns all for admins", responseContainer = "List", response = JaxInstitution.class)
+	@Operation(
+		summary = "Find and return a list of all readable Institutionen of the currently logged in Benutzer. "
+			+ "Returns all for admins")
 	@Nonnull
 	@GET
 	@Path("/readable/currentuser")
@@ -371,13 +626,17 @@ public class InstitutionResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public List<JaxInstitution> getInstitutionenReadableForCurrentBenutzer() {
-		return institutionService.getInstitutionenReadableForCurrentBenutzer(false).stream()
-			.map(inst -> converter.institutionToJAX(inst))
+		return institutionService.getInstitutionenReadableForCurrentBenutzer(
+			false
+		)
+			.stream()
+			.map(inst -> institutionStammdatenConverter.institutionToJAX(inst))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Returns true, if the currently logged in Benutzer has any Institutionen in Status "
-		+ "EINGELADEN", response = Boolean.class)
+	@Operation(
+		summary = "Returns true, if the currently logged in Benutzer has any Institutionen in Status "
+			+ "EINGELADEN")
 	@Nonnull
 	@GET
 	@Path("/hasEinladungen/currentuser")
@@ -385,35 +644,57 @@ public class InstitutionResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public Response hasInstitutionenInStatusEingeladenForCurrentBenutzer() {
-		long anzahl = institutionService.getInstitutionenEditableForCurrentBenutzer(true).stream()
-			.filter(inst -> inst.getStatus() == InstitutionStatus.EINGELADEN)
+		long anzahl = institutionService
+			.getInstitutionenEditableForCurrentBenutzer(true)
+			.stream()
+			.filter(
+				inst -> inst.getStatus() == InstitutionStatus.EINGELADEN
+			)
 			.count();
 		return Response.ok(anzahl > 0).build();
 	}
 
-	@ApiOperation(value = "Returns all still available external clients and all assigned external clients",
-		response = JaxExternalClientAssignment.class)
+	@Operation(
+		summary = "Returns all still available external clients and all assigned external clients")
 	@Nonnull
 	@GET
 	@Path("/{institutionId}/externalclients")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, ADMIN_INSTITUTION, ADMIN_TRAEGERSCHAFT,
-		ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_BG, SACHBEARBEITER_TS })
-	public Response getExternalClients(@Nonnull @NotNull @PathParam("institutionId") JaxId institutionJAXPId) {
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		ADMIN_INSTITUTION, ADMIN_TRAEGERSCHAFT,
+		ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, SACHBEARBEITER_GEMEINDE,
+		SACHBEARBEITER_BG, SACHBEARBEITER_TS })
+	public Response getExternalClients(
+		@Nonnull
+		@NotNull
+		@PathParam("institutionId") JaxId institutionJAXPId
+	) {
 
 		requireNonNull(institutionJAXPId.getId());
-		String institutionID = converter.toEntityId(institutionJAXPId);
-		Institution institution = institutionService.findInstitution(institutionID, true)
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"getExternalClients",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				institutionJAXPId.getId()));
+		String institutionID = institutionStammdatenConverter.toEntityId(
+			institutionJAXPId
+		);
+		Institution institution = institutionService.findInstitution(
+			institutionID,
+			true
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getExternalClients",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					institutionJAXPId.getId()
+				)
+			);
 
-		Collection<ExternalClient> availableClients = externalClientService.getAllForInstitution(institution);
+		Collection<ExternalClient> availableClients = externalClientService
+			.getAllForInstitution(institution);
 
 		Collection<InstitutionExternalClient> institutionExternalClients =
-			externalClientService.getInstitutionExternalClientForInstitution(institution);
+			externalClientService
+				.getInstitutionExternalClientForInstitution(
+					institution
+				);
 
 		List<ExternalClient> existingExternalClient = institutionExternalClients
 			.stream()
@@ -425,34 +706,24 @@ public class InstitutionResource {
 		JaxInstitutionExternalClientAssignment jaxInstitutionExternalClientAssignment =
 			new JaxInstitutionExternalClientAssignment();
 		jaxInstitutionExternalClientAssignment.getAvailableClients()
-			.addAll(converter.externalClientsToJAX(availableClients));
+			.addAll(
+				institutionStammdatenConverter.externalClientsToJAX(
+					availableClients
+				)
+			);
 
 		jaxInstitutionExternalClientAssignment.getAssignedClients()
-			.addAll(converter.institutionExternalClientsToJAX(institutionExternalClients));
+			.addAll(
+				institutionStammdatenConverter.institutionExternalClientsToJAX(
+					institutionExternalClients
+				)
+			);
 
 		return Response.ok(jaxInstitutionExternalClientAssignment).build();
 	}
 
-	@ApiOperation(
-		value = "Returns true, if the currently logged in Benutzer has any Institutionen which Stammdaten haven't been"
-			+ " checked in the last 100 days",
-		response = Boolean.class)
-	@Nonnull
-	@GET
-	@Path("/isStammdatenCheckRequired/currentuser")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.APPLICATION_JSON)
-	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
-	public Response isStammdatenCheckRequiredForCurrentBenutzer() {
-		long anzahl = institutionService.getInstitutionenEditableForCurrentBenutzer(true).stream()
-			.filter(Institution::isStammdatenCheckRequired)
-			.count();
-		return Response.ok(anzahl > 0).build();
-	}
-
-	@ApiOperation(
-		value = "Returns true, if the currently logged in Benutzer has any Institutionen which is Tagesschule",
-		response = Boolean.class)
+	@Operation(
+		summary = "Returns true, if the currently logged in Benutzer has any Institutionen which is Tagesschule")
 	@Nonnull
 	@GET
 	@Path("/istagesschulenutzende/currentuser")
@@ -460,36 +731,22 @@ public class InstitutionResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public Response isCurrentUserTageschuleNutzende() {
-		boolean isTSNutzende = institutionService.isCurrentUserTagesschuleNutzende(false);
+		boolean isTSNutzende = institutionService
+			.isCurrentUserTagesschuleNutzende(false);
 		return Response.ok(isTSNutzende).build();
 	}
 
-	@ApiOperation(
-		value = "Returns the given institution",
-		response = Boolean.class)
-	@Nonnull
-	@PUT
-	@Path("/deactivateStammdatenCheckRequired/{institutionId}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_TRAEGERSCHAFT, ADMIN_INSTITUTION, ADMIN_GEMEINDE, ADMIN_BG
-		, ADMIN_TS, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS })
-	public Response deactivateStammdatenCheckRequired(
-		@Nonnull @NotNull @PathParam("institutionId") JaxId institutionJaxId
+	private boolean checkExternalClientDateOverlapping(
+		List<InstitutionExternalClient> institutionExternalClients
 	) {
-		requireNonNull(institutionJaxId.getId());
-		final String institutionId = converter.toEntityId(institutionJaxId);
-
-		institutionService.deactivateStammdatenCheckRequired(institutionId);
-		return Response.ok().build();
+		return GueltigkeitsUtil.hasOverlapingGueltigkeit(
+			institutionExternalClients
+		);
 	}
 
-	private boolean checkExternalClientDateOverlapping(List<InstitutionExternalClient> institutionExternalClients) {
-		return GueltigkeitsUtil.hasOverlapingGueltigkeit(institutionExternalClients);
-	}
-
-	@ApiOperation(value = "Find and return a list of all editable Institutionen of the currently logged in Benutzer. "
-		+ "Returns all for admins", responseContainer = "List", response = JaxInstitution.class)
+	@Operation(
+		summary = "Find and return a list of all editable Institutionen of the currently logged in Benutzer. "
+			+ "Returns all for admins")
 	@Nonnull
 	@GET
 	@Path("/gemeinde/listdto/{gemeindeId}")
@@ -500,58 +757,85 @@ public class InstitutionResource {
 		@Nonnull @NotNull @PathParam("gemeindeId") JaxId gemeindeJAXPId
 	) {
 		requireNonNull(gemeindeJAXPId.getId());
-		String gemeindeId = converter.toEntityId(gemeindeJAXPId);
-		Gemeinde gemeinde = gemeindeService.findGemeinde(gemeindeId).orElseThrow(
-			() -> new EbeguEntityNotFoundException(
-				"getInstitutionenForGemeinde",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				gemeindeId)
+		String gemeindeId = institutionStammdatenConverter.toEntityId(
+			gemeindeJAXPId
 		);
+		Gemeinde gemeinde = gemeindeService.findGemeinde(gemeindeId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getInstitutionenForGemeinde",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gemeindeId
+				)
+			);
 
 		Map<Institution, InstitutionStammdaten> institutionInstitutionStammdatenMap =
-			institutionService.getInstitutionenInstitutionStammdatenForGemeinde(gemeinde);
+			institutionService
+				.getInstitutionenInstitutionStammdatenForGemeinde(
+					gemeinde
+				);
 
 		return institutionInstitutionStammdatenMap.entrySet()
 			.stream()
-			.map(map -> converter.institutionListDTOToJAX(map))
+			.map(map -> institutionConverter.institutionListDTOToJAX(map))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Gibt alle Institutionen zurück, die mindestens einmal in diesem Dossier verwendet wurden",
-		responseContainer = "List", response = JaxInstitution.class)
+	@Operation(
+		summary = "Gibt alle Institutionen zurück, die mindestens einmal in diesem Dossier verwendet wurden")
 	@Nullable
 	@GET
 	@Path("/findAllInstitutionen/{dossierId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
-	public List<JaxInstitution> findAllInstitutionen(@Nonnull @NotNull @PathParam("dossierId") JaxId jaxDossierId) {
+	public List<JaxInstitution> findAllInstitutionen(
+		@Nonnull @NotNull @PathParam("dossierId") JaxId jaxDossierId
+	) {
 		Objects.requireNonNull(jaxDossierId.getId());
 
-		Collection<Institution> institutions = institutionService.findAllInstitutionen(jaxDossierId.getId());
+		Collection<Institution> institutions = institutionService
+			.findAllInstitutionen(jaxDossierId.getId());
 
 		return institutions.stream()
 			.distinct()
-			.map(institution -> converter.institutionToJAX(institution))
+			.map(
+				institution -> institutionStammdatenConverter.institutionToJAX(
+					institution
+				)
+			)
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Setzt eine Institution aus dem Status NUR_LATS in die Konfiguration", response = JaxInstitution.class)
+	@Operation(
+		summary = "Setzt eine Institution aus dem Status NUR_LATS in die Konfiguration")
 	@Nonnull
 	@PUT
 	@Path("{institutionId}/nurlatsUmwandeln")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({SUPER_ADMIN, ADMIN_TRAEGERSCHAFT, ADMIN_INSTITUTION, ADMIN_GEMEINDE, ADMIN_BG,
-		ADMIN_TS, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
-	public JaxInstitution nurLatsInstitutionUmwandeln(@Nonnull @PathParam("institutionId") JaxId jaxInstitutionId) {
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_TRAEGERSCHAFT, ADMIN_INSTITUTION,
+		ADMIN_GEMEINDE, ADMIN_BG,
+		ADMIN_TS, SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_TS, ADMIN_MANDANT,
+		SACHBEARBEITER_MANDANT })
+	public JaxInstitution nurLatsInstitutionUmwandeln(
+		@Nonnull @PathParam("institutionId") JaxId jaxInstitutionId
+	) {
 		Objects.requireNonNull(jaxInstitutionId.getId());
 
-		Institution institution = institutionService.findInstitution(jaxInstitutionId.getId(), true)
-				.orElseThrow(() -> {
-					throw new EbeguEntityNotFoundException("nurLatsInstitutionUmwandeln", jaxInstitutionId.getId());
-				});
+		Institution institution = institutionService.findInstitution(
+			jaxInstitutionId.getId(),
+			true
+		)
+			.orElseThrow(() -> {
+				throw new EbeguEntityNotFoundException(
+					"nurLatsInstitutionUmwandeln",
+					jaxInstitutionId.getId()
+				);
+			});
 
-		return converter.institutionToJAX(institutionService.nurLatsInstitutionUmwandeln(institution));
+		return institutionStammdatenConverter.institutionToJAX(
+			institutionService.nurLatsInstitutionUmwandeln(institution)
+		);
 	}
 }

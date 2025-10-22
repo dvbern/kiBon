@@ -36,7 +36,7 @@ ${templateConfiguration.mailCss}
 	<p>
 		Vous avez déposé une demande <#if isSozialdienst>pour ${gesuchsteller.fullName} </#if>via kiBon pour laquelle vos données n'ont pas encore été confirmées.
 		Le formulaire, qui peut être téléchargé
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/freigabe/${gesuch.id}">ici</a>, est à remettre dûment signé et au plus vite par courrier postal à ${adresse} faute de quoi votre demande
+		<a href="${frontendUrl}/gesuch/freigabe/${gesuch.id}">ici</a>, est à remettre dûment signé et au plus vite par courrier postal à ${adresse} faute de quoi votre demande
 		sera considérée comme non valable. Elle ne pourra pas être traitée et sera automatiquement supprimée le ${datumLoeschung}.
 	</p>
     <#if tsOnlyAntrag == false>

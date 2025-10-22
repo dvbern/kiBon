@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle.testantraege;
@@ -28,21 +28,29 @@ public class Testantrag_FerienbetreuungAngabenKostenEinnahmen {
 
 	private FerienbetreuungAngabenKostenEinnahmen kostenEinnahmen;
 
-	public Testantrag_FerienbetreuungAngabenKostenEinnahmen(FerienbetreuungAngabenStatus status) {
+	public Testantrag_FerienbetreuungAngabenKostenEinnahmen(
+		FerienbetreuungAngabenStatus status
+	) {
 		this.kostenEinnahmen = new FerienbetreuungAngabenKostenEinnahmen();
 
 		this.kostenEinnahmen.setPersonalkosten(new BigDecimal(5000));
-		this.kostenEinnahmen.setPersonalkostenLeitungAdmin(new BigDecimal(1000));
+		this.kostenEinnahmen.setPersonalkostenLeitungAdmin(
+			new BigDecimal(1000)
+		);
 		this.kostenEinnahmen.setSachkosten(new BigDecimal(8000));
 		this.kostenEinnahmen.setVerpflegungskosten(new BigDecimal(250));
 		this.kostenEinnahmen.setWeitereKosten(new BigDecimal(250));
 		this.kostenEinnahmen.setElterngebuehren(new BigDecimal(8000));
 		this.kostenEinnahmen.setWeitereEinnahmen(new BigDecimal(2000));
 
-		if(status == FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE) {
-			this.kostenEinnahmen.setStatus(FerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE);
+		if (status == FerienbetreuungAngabenStatus.IN_BEARBEITUNG_GEMEINDE) {
+			this.kostenEinnahmen.setStatus(
+				FerienbetreuungFormularStatus.IN_BEARBEITUNG
+			);
 		} else {
-			this.kostenEinnahmen.setStatus(FerienbetreuungFormularStatus.ABGESCHLOSSEN);
+			this.kostenEinnahmen.setStatus(
+				FerienbetreuungFormularStatus.ABGESCHLOSSEN
+			);
 		}
 	}
 

@@ -20,13 +20,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * This is a DTO that is used to export the relevant Information about a {@link ch.dvbern.ebegu.entities.Verfuegung}.
@@ -37,17 +37,17 @@ public class VerfuegungExportDTO {
 	private String refnr;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate von;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate bis;
 
 	private int version;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime verfuegtAm;
 
 	private KindExportDTO kind;
@@ -136,7 +136,9 @@ public class VerfuegungExportDTO {
 		return ignorierteZeitabschnitte;
 	}
 
-	public void setIgnorierteZeitabschnitte(List<ZeitabschnittExportDTO> ignorierteZeitabschnitte) {
+	public void setIgnorierteZeitabschnitte(
+		List<ZeitabschnittExportDTO> ignorierteZeitabschnitte
+	) {
 		this.ignorierteZeitabschnitte = ignorierteZeitabschnitte;
 	}
 
@@ -150,20 +152,42 @@ public class VerfuegungExportDTO {
 			return false;
 		}
 		VerfuegungExportDTO that = (VerfuegungExportDTO) o;
-		return getVersion() == that.getVersion() &&
-			Objects.equals(getRefnr(), that.getRefnr()) &&
-			Objects.equals(getVon(), that.getVon()) &&
-			Objects.equals(getBis(), that.getBis()) &&
-			Objects.equals(getVerfuegtAm(), that.getVerfuegtAm()) &&
-			Objects.equals(getKind(), that.getKind()) &&
-			Objects.equals(getGesuchsteller(), that.getGesuchsteller()) &&
-			Objects.equals(getBetreuung(), that.getBetreuung()) &&
-			Objects.equals(getZeitabschnitte(), that.getZeitabschnitte()) &&
-			Objects.equals(getIgnorierteZeitabschnitte(), that.getIgnorierteZeitabschnitte());
+		return getVersion() == that.getVersion()
+			&&
+			Objects.equals(getRefnr(), that.getRefnr())
+			&&
+			Objects.equals(getVon(), that.getVon())
+			&&
+			Objects.equals(getBis(), that.getBis())
+			&&
+			Objects.equals(getVerfuegtAm(), that.getVerfuegtAm())
+			&&
+			Objects.equals(getKind(), that.getKind())
+			&&
+			Objects.equals(getGesuchsteller(), that.getGesuchsteller())
+			&&
+			Objects.equals(getBetreuung(), that.getBetreuung())
+			&&
+			Objects.equals(getZeitabschnitte(), that.getZeitabschnitte())
+			&&
+			Objects.equals(
+				getIgnorierteZeitabschnitte(),
+				that.getIgnorierteZeitabschnitte()
+			);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(refnr, von, bis, version, verfuegtAm, kind, gesuchsteller, betreuung, zeitabschnitte);
+		return Objects.hash(
+			refnr,
+			von,
+			bis,
+			version,
+			verfuegtAm,
+			kind,
+			gesuchsteller,
+			betreuung,
+			zeitabschnitte
+		);
 	}
 }

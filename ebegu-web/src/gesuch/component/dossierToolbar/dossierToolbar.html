@@ -267,10 +267,13 @@
                     ></span>
                 </button>
                 <md-menu-content class="no-padding menu-item-container kontakt">
-                    <div ng-if="!vmx.gemeindeSozialdienstKontakteHtml">
-                        <span
+                    <div
+                        ng-if="!vmx.gemeindeSozialdienstKontakteHtml"
+                        class="gemeindeSozialdienstKontakte"
+                    >
+                        <h3
                             ng-bind="vmx.getGesuch().gesuchsteller1.extractFullName()"
-                        ></span>
+                        ></h3>
                         <a
                             href="mailto:{{
                                 vmx.getGesuch().gesuchsteller1.extractMail()
@@ -289,35 +292,14 @@
                                 vmx.getGesuch().gesuchsteller1.extractPhone()
                             }}</a
                         >
-
-                        <span
-                            ng-if="vmx.getGesuch().gesuchsteller2"
-                            class="margintop"
-                            ng-bind="vmx.getGesuch().gesuchsteller2.extractFullName()"
-                        ></span>
-                        <a
-                            ng-if="vmx.getGesuch().gesuchsteller2"
-                            href="mailto:{{
-                                vmx.getGesuch().gesuchsteller2.extractMail()
-                            }}"
-                            ng-bind="vmx.getGesuch().gesuchsteller2.extractMail()"
-                        ></a>
-                        <a
-                            ng-if="vmx.getGesuch().gesuchsteller2"
-                            href="tel:{{
-                                vmx.getGesuch().gesuchsteller2.extractPhone()
-                            }}"
-                            ng-bind="vmx.getGesuch().gesuchsteller2.extractPhone()"
-                        ></a>
                     </div>
                     <div
                         ng-if="vmx.gemeindeSozialdienstKontakteHtml"
-                        class="marginbottom"
                         ng-bind-html="vmx.gemeindeSozialdienstKontakteHtml"
                     ></div>
                     <div
                         ng-if="vmx.gemeindeInstitutionKontakteHtml"
-                        class="marginbottom"
+                        class="marginbottom gemeindeInstitutionKontakte"
                         ng-bind-html="vmx.gemeindeInstitutionKontakteHtml"
                     ></div>
                 </md-menu-content>

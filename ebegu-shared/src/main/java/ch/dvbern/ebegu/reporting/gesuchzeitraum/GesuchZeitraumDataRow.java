@@ -47,14 +47,33 @@ public class GesuchZeitraumDataRow {
 	private Integer anzahlSteueramtGeprueft;
 
 	public GesuchZeitraumDataRow(
-		String referenzNummer, String gemeinde, Integer gesuchLaufNr, String institution, String betreuungsTyp,
-		String periode, Integer anzahlGesuchOnline, Integer anzahlGesuchPapier, Integer anzahlMutationOnline,
-		Integer anzahlMutationPapier, Integer anzahlMutationAbwesenheit, Integer anzahlMutationBetreuung,
-		Integer anzahlMutationEV, Integer anzahlMutationEwerbspensum, Integer anzahlMutationFamilienSitutation,
-		Integer anzahlMutationFinanzielleSituation, Integer anzahlMutationGesuchsteller, Integer anzahlMutationKinder,
-		Integer anzahlMutationUmzug, Integer anzahlMahnungen, Integer anzahlSteueramtAusgeloest,
-		Integer anzahlSteueramtGeprueft, Integer anzahlBeschwerde, Integer anzahlVerfuegungen,
-		Integer anzahlVerfuegungenNormal, Integer anzahlVerfuegungenMaxEinkommen, Integer anzahlVerfuegungenKeinPensum,
+		String referenzNummer,
+		String gemeinde,
+		Integer gesuchLaufNr,
+		String institution,
+		String betreuungsTyp,
+		String periode,
+		Integer anzahlGesuchOnline,
+		Integer anzahlGesuchPapier,
+		Integer anzahlMutationOnline,
+		Integer anzahlMutationPapier,
+		Integer anzahlMutationAbwesenheit,
+		Integer anzahlMutationBetreuung,
+		Integer anzahlMutationEV,
+		Integer anzahlMutationEwerbspensum,
+		Integer anzahlMutationFamilienSitutation,
+		Integer anzahlMutationFinanzielleSituation,
+		Integer anzahlMutationGesuchsteller,
+		Integer anzahlMutationKinder,
+		Integer anzahlMutationUmzug,
+		Integer anzahlMahnungen,
+		Integer anzahlSteueramtAusgeloest,
+		Integer anzahlSteueramtGeprueft,
+		Integer anzahlBeschwerde,
+		Integer anzahlVerfuegungen,
+		Integer anzahlVerfuegungenNormal,
+		Integer anzahlVerfuegungenMaxEinkommen,
+		Integer anzahlVerfuegungenKeinPensum,
 		Integer anzahlVerfuegungenNichtEintreten
 	) {
 		this.referenzNummer = referenzNummer;
@@ -71,8 +90,10 @@ public class GesuchZeitraumDataRow {
 		this.anzahlMutationBetreuung = anzahlMutationBetreuung;
 		this.anzahlMutationEV = anzahlMutationEV;
 		this.anzahlMutationEwerbspensum = anzahlMutationEwerbspensum;
-		this.anzahlMutationFamilienSitutation = anzahlMutationFamilienSitutation;
-		this.anzahlMutationFinanzielleSituation = anzahlMutationFinanzielleSituation;
+		this.anzahlMutationFamilienSitutation =
+			anzahlMutationFamilienSitutation;
+		this.anzahlMutationFinanzielleSituation =
+			anzahlMutationFinanzielleSituation;
 		this.anzahlMutationGesuchsteller = anzahlMutationGesuchsteller;
 		this.anzahlMutationKinder = anzahlMutationKinder;
 		this.anzahlMutationUmzug = anzahlMutationUmzug;
@@ -82,7 +103,8 @@ public class GesuchZeitraumDataRow {
 		this.anzahlVerfuegungenNormal = anzahlVerfuegungenNormal;
 		this.anzahlVerfuegungenMaxEinkommen = anzahlVerfuegungenMaxEinkommen;
 		this.anzahlVerfuegungenKeinPensum = anzahlVerfuegungenKeinPensum;
-		this.anzahlVerfuegungenNichtEintreten = anzahlVerfuegungenNichtEintreten;
+		this.anzahlVerfuegungenNichtEintreten =
+			anzahlVerfuegungenNichtEintreten;
 		this.anzahlSteueramtAusgeloest = anzahlSteueramtAusgeloest;
 		this.anzahlSteueramtGeprueft = anzahlSteueramtGeprueft;
 	}
@@ -171,7 +193,9 @@ public class GesuchZeitraumDataRow {
 		return anzahlMutationAbwesenheit;
 	}
 
-	public void setAnzahlMutationAbwesenheit(Integer anzahlMutationAbwesenheit) {
+	public void setAnzahlMutationAbwesenheit(
+		Integer anzahlMutationAbwesenheit
+	) {
 		this.anzahlMutationAbwesenheit = anzahlMutationAbwesenheit;
 	}
 
@@ -195,7 +219,9 @@ public class GesuchZeitraumDataRow {
 		return anzahlMutationEwerbspensum;
 	}
 
-	public void setAnzahlMutationEwerbspensum(Integer anzahlMutationEwerbspensum) {
+	public void setAnzahlMutationEwerbspensum(
+		Integer anzahlMutationEwerbspensum
+	) {
 		this.anzahlMutationEwerbspensum = anzahlMutationEwerbspensum;
 	}
 
@@ -203,23 +229,31 @@ public class GesuchZeitraumDataRow {
 		return anzahlMutationFamilienSitutation;
 	}
 
-	public void setAnzahlMutationFamilienSitutation(Integer anzahlMutationFamilienSitutation) {
-		this.anzahlMutationFamilienSitutation = anzahlMutationFamilienSitutation;
+	public void setAnzahlMutationFamilienSitutation(
+		Integer anzahlMutationFamilienSitutation
+	) {
+		this.anzahlMutationFamilienSitutation =
+			anzahlMutationFamilienSitutation;
 	}
 
 	public Integer getAnzahlMutationFinanzielleSituation() {
 		return anzahlMutationFinanzielleSituation;
 	}
 
-	public void setAnzahlMutationFinanzielleSituation(Integer anzahlMutationFinanzielleSituation) {
-		this.anzahlMutationFinanzielleSituation = anzahlMutationFinanzielleSituation;
+	public void setAnzahlMutationFinanzielleSituation(
+		Integer anzahlMutationFinanzielleSituation
+	) {
+		this.anzahlMutationFinanzielleSituation =
+			anzahlMutationFinanzielleSituation;
 	}
 
 	public Integer getAnzahlMutationGesuchsteller() {
 		return anzahlMutationGesuchsteller;
 	}
 
-	public void setAnzahlMutationGesuchsteller(Integer anzahlMutationGesuchsteller) {
+	public void setAnzahlMutationGesuchsteller(
+		Integer anzahlMutationGesuchsteller
+	) {
 		this.anzahlMutationGesuchsteller = anzahlMutationGesuchsteller;
 	}
 
@@ -275,7 +309,9 @@ public class GesuchZeitraumDataRow {
 		return anzahlVerfuegungenMaxEinkommen;
 	}
 
-	public void setAnzahlVerfuegungenMaxEinkommen(Integer anzahlVerfuegungenMaxEinkommen) {
+	public void setAnzahlVerfuegungenMaxEinkommen(
+		Integer anzahlVerfuegungenMaxEinkommen
+	) {
 		this.anzahlVerfuegungenMaxEinkommen = anzahlVerfuegungenMaxEinkommen;
 	}
 
@@ -283,7 +319,9 @@ public class GesuchZeitraumDataRow {
 		return anzahlVerfuegungenKeinPensum;
 	}
 
-	public void setAnzahlVerfuegungenKeinPensum(Integer anzahlVerfuegungenKeinPensum) {
+	public void setAnzahlVerfuegungenKeinPensum(
+		Integer anzahlVerfuegungenKeinPensum
+	) {
 		this.anzahlVerfuegungenKeinPensum = anzahlVerfuegungenKeinPensum;
 	}
 
@@ -291,15 +329,20 @@ public class GesuchZeitraumDataRow {
 		return anzahlVerfuegungenNichtEintreten;
 	}
 
-	public void setAnzahlVerfuegungenNichtEintreten(Integer anzahlVerfuegungenNichtEintreten) {
-		this.anzahlVerfuegungenNichtEintreten = anzahlVerfuegungenNichtEintreten;
+	public void setAnzahlVerfuegungenNichtEintreten(
+		Integer anzahlVerfuegungenNichtEintreten
+	) {
+		this.anzahlVerfuegungenNichtEintreten =
+			anzahlVerfuegungenNichtEintreten;
 	}
 
 	public Integer getAnzahlSteueramtAusgeloest() {
 		return anzahlSteueramtAusgeloest;
 	}
 
-	public void setAnzahlSteueramtAusgeloest(Integer anzahlSteueramtAusgeloest) {
+	public void setAnzahlSteueramtAusgeloest(
+		Integer anzahlSteueramtAusgeloest
+	) {
 		this.anzahlSteueramtAusgeloest = anzahlSteueramtAusgeloest;
 	}
 

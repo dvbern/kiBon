@@ -15,13 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IHttpBackendService} from 'angular';
+import angular, {IHttpBackendService} from 'angular';
 import {CORE_JS_MODULE} from '../../app/core/core.angularjs.module';
 import {ngServicesMock} from '../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../hybridTools/translationsMock';
-import {TSRole} from '../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../models/TSBenutzer';
-import {TSGemeinde} from '../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
 import {TestDataUtil} from '../../utils/TestDataUtil.spec';
 import {GemeindeRS} from './gemeindeRS.rest';
 

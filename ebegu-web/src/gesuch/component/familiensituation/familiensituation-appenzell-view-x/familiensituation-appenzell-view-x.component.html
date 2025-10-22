@@ -23,7 +23,9 @@
                 <span *ngIf="isMutation()" translate
                     >MUTATION_FAMSITUATION_TITLE</span
                 >
-                <span *ngIf="!isMutation()" translate>FAMILIENSITUATION</span>
+                <span data-test="page-title" *ngIf="!isMutation()" translate
+                    >FAMILIENSITUATION</span
+                >
             </h2>
             <hr class="header" />
             <p
@@ -107,6 +109,7 @@
                                 </span>
                                 <dv-radio-container-x>
                                     <mat-radio-group
+                                        data-test="geteilteObhut"
                                         [(ngModel)]="
                                             getFamiliensituation().geteilteObhut
                                         "
@@ -127,12 +130,20 @@
                                         "
                                         aria-described-by="geteilteObhut-error"
                                     >
-                                        <mat-radio-button [value]="false">{{
-                                            'LABEL_JA' | translate
-                                        }}</mat-radio-button>
-                                        <mat-radio-button [value]="true">{{
-                                            'LABEL_NEIN' | translate
-                                        }}</mat-radio-button>
+                                        <mat-radio-button
+                                            data-test="radio-value.JA"
+                                            [value]="false"
+                                            >{{
+                                                'LABEL_JA' | translate
+                                            }}</mat-radio-button
+                                        >
+                                        <mat-radio-button
+                                            data-test="radio-value.NEIN"
+                                            [value]="true"
+                                            >{{
+                                                'LABEL_NEIN' | translate
+                                            }}</mat-radio-button
+                                        >
                                     </mat-radio-group>
                                 </dv-radio-container-x>
                                 <dv-error-messages
@@ -178,6 +189,7 @@
                                 </span>
                                 <dv-radio-container-x>
                                     <mat-radio-group
+                                        data-test="gemeinsamerHaushalt"
                                         [(ngModel)]="
                                             getFamiliensituation()
                                                 .gemeinsamerHaushaltMitObhutsberechtigterPerson
@@ -201,12 +213,20 @@
                                         "
                                         aria-described-by="gemeinsamerHaushalt-error"
                                     >
-                                        <mat-radio-button [value]="true">{{
-                                            'LABEL_JA' | translate
-                                        }}</mat-radio-button>
-                                        <mat-radio-button [value]="false">{{
-                                            'LABEL_NEIN' | translate
-                                        }}</mat-radio-button>
+                                        <mat-radio-button
+                                            data-test="radio-value.JA"
+                                            [value]="true"
+                                            >{{
+                                                'LABEL_JA' | translate
+                                            }}</mat-radio-button
+                                        >
+                                        <mat-radio-button
+                                            data-test="radio-value.NEIN"
+                                            [value]="false"
+                                            >{{
+                                                'LABEL_NEIN' | translate
+                                            }}</mat-radio-button
+                                        >
                                     </mat-radio-group>
                                 </dv-radio-container-x>
                                 <dv-error-messages

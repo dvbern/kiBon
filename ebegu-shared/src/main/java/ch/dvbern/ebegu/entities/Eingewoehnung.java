@@ -3,9 +3,9 @@ package ch.dvbern.ebegu.entities;
 import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.MathUtil;
@@ -45,10 +45,16 @@ public class Eingewoehnung extends AbstractDateRangedEntity {
 		final Eingewoehnung otherEingewoehnung = (Eingewoehnung) other;
 
 		return super.isSame(other)
-			&& MathUtil.isSame(this.getKosten(), otherEingewoehnung.getKosten());
+			&& MathUtil.isSame(
+				this.getKosten(),
+				otherEingewoehnung.getKosten()
+			);
 	}
 
-	public Eingewoehnung copyEingewohnungEntity(@Nonnull Eingewoehnung target, @Nonnull AntragCopyType copyType) {
+	public Eingewoehnung copyEingewohnungEntity(
+		@Nonnull Eingewoehnung target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractDateRangedEntity(target, copyType);
 		target.setKosten(this.getKosten());
 		return target;

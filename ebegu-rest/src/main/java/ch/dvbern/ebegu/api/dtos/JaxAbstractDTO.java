@@ -22,16 +22,18 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
 
 @XmlTransient
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class JaxAbstractDTO implements Serializable, Comparable<JaxAbstractDTO> {
+public abstract class JaxAbstractDTO implements
+	Serializable,
+	Comparable<JaxAbstractDTO> {
 
 	private static final long serialVersionUID = 7069586216789441112L;
 
@@ -41,11 +43,11 @@ public abstract class JaxAbstractDTO implements Serializable, Comparable<JaxAbst
 	private long version;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime timestampErstellt;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime timestampMutiert;
 
 	@Nullable
@@ -86,7 +88,9 @@ public abstract class JaxAbstractDTO implements Serializable, Comparable<JaxAbst
 		return timestampErstellt;
 	}
 
-	public void setTimestampErstellt(@Nullable LocalDateTime timestampErstellt) {
+	public void setTimestampErstellt(
+		@Nullable LocalDateTime timestampErstellt
+	) {
 		this.timestampErstellt = timestampErstellt;
 	}
 

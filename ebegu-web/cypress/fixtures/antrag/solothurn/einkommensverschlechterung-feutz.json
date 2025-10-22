@@ -1,0 +1,63 @@
+{
+    "valid": {
+        "start": {
+            "einkommensverschlechterung": "ja",
+            "ekvFuerBasisJahrPlus1": 1,
+            "ekvFuerBasisJahrPlus2": 2
+        },
+        "jahr1": {
+            "GS1": {
+                "bruttoLohn1": "2900",
+                "bruttoLohn2": "2900",
+                "bruttoLohn3": "2900",
+                "extraLohn": "ja",
+                "bruttoLohnJahr": "34'800",
+                "nettovermoegen": "0",
+                "massgebendesEinkVorAbzFamGrGSX": "26'100"
+            },
+            "GS2": {
+                "bruttoLohn1": "3000",
+                "bruttoLohn2": "3000",
+                "bruttoLohn3": "3000",
+                "extraLohn": "ja",
+                "bruttoLohnJahr": "36'000",
+                "nettovermoegen": "0",
+                "massgebendesEinkVorAbzFamGrGSX": "27'000"
+            },
+            "Resultate": {
+                "massgebendesEinkVorAbzFamGr": "87'000",
+                "massgebendesEinkVorAbzFamGrGS1": "26'100",
+                "massgebendesEinkVorAbzFamGrGS2": "27'000",
+                "massgebendesEinkVorAbzFamGrYear": "53'100",
+                "resultatProzent": "-38"
+            }
+        },
+        "jahr2": {
+            "GS1": {
+                "bruttoLohn1": "2900",
+                "bruttoLohn2": "2900",
+                "bruttoLohn3": "2900",
+                "extraLohn": "ja",
+                "bruttoLohnJahr": "34'800",
+                "nettovermoegen": "0",
+                "massgebendesEinkVorAbzFamGrGSX": "26'100"
+            },
+            "GS2": {
+                "bruttoLohn1": "3000",
+                "bruttoLohn2": "3000",
+                "bruttoLohn3": "3000",
+                "extraLohn": "ja",
+                "bruttoLohnJahr": "36'000",
+                "nettovermoegen": "0",
+                "massgebendesEinkVorAbzFamGrGSX": "27'000"
+            },
+            "Resultate": {
+                "massgebendesEinkVorAbzFamGr": "87'000",
+                "massgebendesEinkVorAbzFamGrGS1": "26'100",
+                "massgebendesEinkVorAbzFamGrGS2": "27'000",
+                "massgebendesEinkVorAbzFamGrYear": "53'100",
+                "resultatProzent": "-38"
+            }
+        }
+    }
+}

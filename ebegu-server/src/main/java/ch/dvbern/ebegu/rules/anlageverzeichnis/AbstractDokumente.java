@@ -41,7 +41,10 @@ abstract class AbstractDokumente<T1, T2> {
 		@Nonnull Locale locale
 	);
 
-	public abstract boolean isDokumentNeeded(@Nonnull DokumentTyp dokumentTyp, @Nullable T1 dataForDocument);
+	public abstract boolean isDokumentNeeded(
+		@Nonnull DokumentTyp dokumentTyp,
+		@Nullable T1 dataForDocument
+	);
 
 	public boolean isDokumentNeeded(
 		@Nonnull DokumentTyp dokumentTyp,
@@ -52,7 +55,10 @@ abstract class AbstractDokumente<T1, T2> {
 		return isDokumentNeeded(dokumentTyp, dataForDocument1);
 	}
 
-	void add(@Nullable DokumentGrund dokumentGrund, @Nonnull Set<DokumentGrund> anlageVerzeichnis) {
+	void add(
+		@Nullable DokumentGrund dokumentGrund,
+		@Nonnull Set<DokumentGrund> anlageVerzeichnis
+	) {
 		if (dokumentGrund != null) {
 			anlageVerzeichnis.add(dokumentGrund);
 		}
@@ -65,26 +71,45 @@ abstract class AbstractDokumente<T1, T2> {
 		@Nullable String tag,
 		@Nullable DokumentGrundPersonType personType,
 		@Nullable Integer personNumber,
-		@Nonnull DokumentGrundTyp dokumentGrundTyp) {
+		@Nonnull DokumentGrundTyp dokumentGrundTyp
+	) {
 
 		return isDokumentNeeded(dokumentTyp, dataForDocument) ?
-			new DokumentGrund(dokumentGrundTyp, tag, personType, personNumber, dokumentTyp) :
+			new DokumentGrund(
+				dokumentGrundTyp,
+				tag,
+				personType,
+				personNumber,
+				dokumentTyp
+			) :
 			null;
 	}
 
 	@Nullable
 	DokumentGrund getDokument(
 		@Nonnull DokumentTyp dokumentTyp,
-		@Nonnull T1 dataForDocument1,
+		@Nullable T1 dataForDocument1,
 		@Nullable T2 dataForDocument2,
 		@Nullable String tag,
 		@Nullable DokumentGrundPersonType personType,
 		@Nullable Integer personNumber,
 		@Nonnull DokumentGrundTyp dokumentGrundTyp,
-		@Nullable LocalDate stichtag) {
+		@Nullable LocalDate stichtag
+	) {
 
-		return isDokumentNeeded(dokumentTyp, dataForDocument1, dataForDocument2, stichtag) ?
-			new DokumentGrund(dokumentGrundTyp, tag, personType, personNumber, dokumentTyp) :
+		return isDokumentNeeded(
+			dokumentTyp,
+			dataForDocument1,
+			dataForDocument2,
+			stichtag
+		) ?
+			new DokumentGrund(
+				dokumentGrundTyp,
+				tag,
+				personType,
+				personNumber,
+				dokumentTyp
+			) :
 			null;
 	}
 
@@ -92,13 +117,17 @@ abstract class AbstractDokumente<T1, T2> {
 		return FamiliensituationUtil.isGemeinsameSteuererklaerung(gesuch);
 	}
 
-	protected boolean isVerguenstigungGewuenscht(@Nullable Familiensituation familiensituation) {
+	protected boolean isVerguenstigungGewuenscht(
+		@Nullable Familiensituation familiensituation
+	) {
 		return familiensituation != null
 			&& familiensituation.getVerguenstigungGewuenscht() != null
 			&& familiensituation.getVerguenstigungGewuenscht();
 	}
 
-	protected boolean isSozialhilfeempfaenger(@Nullable Familiensituation familiensituation) {
+	protected boolean isSozialhilfeempfaenger(
+		@Nullable Familiensituation familiensituation
+	) {
 		return familiensituation != null
 			&& familiensituation.getSozialhilfeBezueger() != null
 			&& familiensituation.getSozialhilfeBezueger();

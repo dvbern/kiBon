@@ -20,13 +20,14 @@ import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.re
 import {TSPostEingangEvent} from '../../../../models/enums/TSPostEingangEvent';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {PosteingangService} from '../../../posteingang/service/posteingang.service';
-import {Log, LogFactory} from '../../logging/LogFactory';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {MitteilungRS} from '../../service/mitteilungRS.rest';
 
 @Component({
     selector: 'dv-posteingang',
     templateUrl: './dv-posteingang.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DvPosteingangComponent implements OnDestroy {
     private readonly log: Log = LogFactory.createLog('DvPosteingangComponent');

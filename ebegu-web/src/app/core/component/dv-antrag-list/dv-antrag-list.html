@@ -13,7 +13,7 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class="dv-antrag-list">
+<div class="dv-table">
     <div
         class="row"
         dv-st-persist-antraege="{{ vm.tableId }}"
@@ -23,19 +23,30 @@
     >
         <div class="col-md-12">
             <div class="row">
-                <div class="col-md-10">
+                <div class="col-md-10 margin-bottom-10">
                     <div id="titleText">
-                        <h3 data-translate="{{ vm.tableTitle }}"></h3>
-                    </div>
-                    <div id="refreshIcon">
-                        <i class="fa fa-undo" dv-st-reset-search></i>
+                        <h2
+                            style="display: inline-block"
+                            data-translate="{{ vm.tableTitle }}"
+                        ></h2>
+                        <h2
+                            style="display: inline-block"
+                            ng-if="vm.totalResultCount > 0"
+                        >
+                            ({{ vm.totalResultCount }})
+                        </h2>
                     </div>
                 </div>
-                <div class="col-md-2 text-right">
-                    <h3 ng-bind="vm.totalResultCount"></h3>
-                </div>
+                <div class="col-md-2 text-right"></div>
             </div>
         </div>
+        <div class="col-md-12">
+            <button dv-st-reset-search class="dv-btn" id="refreshIcon">
+                <i class="fa fa-undo"></i>
+                {{ 'FILTER_ZURUECKSETZEN' | translate }}
+            </button>
+        </div>
+
         <div class="col-md-12 table-responsive">
             <!--Tabelle-->
             <table class="table fixedtable table-hover" id="{{ vm.tableId }}">
@@ -45,84 +56,164 @@
                         <th
                             st-sort="fallNummer"
                             class="sortable row-fallnr uppercase"
-                            data-translate="FALL"
-                        ></th>
+                        >
+                            <span data-translate="FALL"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="gemeinde"
                             class="sortable row-name uppercase"
-                            data-translate="GEMEINDE"
-                        ></th>
+                        >
+                            <span data-translate="GEMEINDE"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="familienName"
                             class="sortable row-name uppercase"
-                            data-translate="FAMILIE"
-                        ></th>
+                        >
+                            <span data-translate="FAMILIE"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="kinder"
                             class="sortable row-name uppercase"
-                            data-translate="KINDER"
                             dv-display-element
                             dv-display-allowed-roles="vm.TSRoleUtil.getAllRolesButSteueramt()"
-                        ></th>
+                        >
+                            <span data-translate="KINDER"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="antragTyp"
                             class="sortable row-antrag uppercase"
-                            data-translate="TYP"
-                        ></th>
+                        >
+                            <span data-translate="TYP"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="gesuchsperiode"
                             class="sortable row-periode uppercase"
-                            data-translate="PERIODE"
-                        ></th>
+                        >
+                            <span data-translate="PERIODE"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="aenderungsdatum"
                             class="sortable row-geandert uppercase"
-                            data-translate="GEANDERT"
                             dv-display-element
                             dv-display-allowed-roles="vm.TSRoleUtil.getAllRolesButSteueramt()"
                             dv-display-expression="!vm.pendenz"
-                        ></th>
+                        >
+                            <span data-translate="GEANDERT"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="eingangsdatum"
                             class="sortable row-geandert uppercase"
-                            data-translate="EINGANG"
                             dv-display-element
                             dv-display-allowed-roles="vm.TSRoleUtil.getAllRolesButSteueramt()"
                             dv-display-expression="vm.pendenz"
-                        ></th>
+                        >
+                            <span data-translate="EINGANG"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="eingangsdatumSTV"
                             class="sortable row-geandert uppercase"
-                            data-translate="EINGANG"
                             dv-display-element
                             dv-display-allowed-roles="vm.TSRoleUtil.getSteueramtOnlyRoles()"
-                        ></th>
+                        >
+                            <span data-translate="EINGANG"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="status"
                             class="sortable row-status uppercase"
-                            data-translate="STATUS"
-                        ></th>
+                        >
+                            <span data-translate="STATUS"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="dokumenteHochgeladen"
                             class="sortable row-dokumente-hochgeladen uppercase"
-                            data-translate="DOKUMENTE_HOCHGELADEN_KURZ"
                             dv-display-element
                             dv-display-allowed-roles="vm.TSRoleUtil.getAdministratorJugendamtSchulamtRoles()"
-                        ></th>
+                        >
+                            <span
+                                data-translate="DOKUMENTE_HOCHGELADEN_KURZ"
+                            ></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="angebote"
                             class="sortable row-angebot uppercase"
-                            data-translate="ANGEBOT"
                             dv-display-element
                             dv-display-allowed-roles="vm.TSRoleUtil.getAllRolesButSteueramt()"
-                        ></th>
+                        >
+                            <span data-translate="ANGEBOT"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <th
                             st-sort="institutionen"
                             class="sortable row-inst uppercase"
-                            data-translate="INSTITUTION"
                             dv-display-element
                             dv-display-allowed-roles="vm.TSRoleUtil.getAllRolesButSteueramt()"
-                        ></th>
+                        >
+                            <span data-translate="INSTITUTION"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <!-- Titel Verantwortlicher ohne Schulamt -->
                         <th
                             st-sort="verantwortlicherBG"
@@ -135,7 +226,14 @@
                             dv-display-element
                             dv-display-allowed-roles="vm.TSRoleUtil.getAllRolesButSteueramt()"
                             title="{{ 'VERANTWORTLICH' | translate }}"
-                        ></th>
+                        >
+                            <span data-translate="FALL"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                         <!-- Verantwortlicher bei NUR-TS -->
                         <th
                             st-sort="verantwortlicherTS"
@@ -151,7 +249,12 @@
                             }}"
                         >
                             <i class="fa fa-graduation-cap"></i>
-                            {{ 'VERANTWORTLICH' | translate }}
+                            <span data-translate="VERANTWORTLICH"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
                         </th>
                         <!-- Verantwortlicher bei NUR-BG -->
                         <th
@@ -168,18 +271,29 @@
                             }}"
                         >
                             <i class="fa fa-gift"></i>
-                            {{ 'VERANTWORTLICH' | translate }}
+                            <span data-translate="VERANTWORTLICH"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
                         </th>
                         <!-- Verantwortlicher: Kombinierte Spalte fuer Gemeinde-Rollen -->
                         <th
                             ng-if="vm.isPendenzGemeindeRolle()"
                             st-sort="verantwortlicherGemeinde"
                             class="sortable row-ver uppercase"
-                            data-translate="VERANTWORTLICH"
                             dv-display-element
                             dv-display-allowed-roles="vm.TSRoleUtil.getAllRolesButSteueramt()"
                             title="{{ 'VERANTWORTLICH' | translate }}"
-                        ></th>
+                        >
+                            <span data-translate="VERANTWORTLICH"></span>
+                            <svg viewBox="0 -960 960 960">
+                                <path
+                                    d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"
+                                ></path>
+                            </svg>
+                        </th>
                     </tr>
                     <!--Filterspalten-->
                     <tr>
@@ -374,9 +488,6 @@
                                 md-no-cache="true"
                                 md-delay="0"
                                 md-require-exact-match="true"
-                                ng-attr-placeholder="{{
-                                    'SUCHBEGRIFF_EINGEBEN' | translate
-                                }}"
                                 md-class="form-control"
                                 md-select-on-focus="true"
                                 md-selected-item="vm.selectedInstitution"

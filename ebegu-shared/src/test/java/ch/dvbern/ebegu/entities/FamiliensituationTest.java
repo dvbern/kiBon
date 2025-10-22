@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -29,8 +29,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class FamiliensituationTest {
 
@@ -42,26 +42,43 @@ class FamiliensituationTest {
 
 		//ALLEINERZIEHEND
 		LocalDate referenzDatum = LocalDate.of(2021, 8, 1);
-		Assertions.assertEquals(false, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertEquals(
+			false,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		//VERHEIRATET
 		familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
-		Assertions.assertEquals(true, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertEquals(
+			true,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		//KONKUBINAT
 		familiensituation.setFamilienstatus(EnumFamilienstatus.KONKUBINAT);
-		Assertions.assertEquals(true, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertEquals(
+			true,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		//KONKUBINAT_KEIN_KIND
-		familiensituation.setFamilienstatus(EnumFamilienstatus.KONKUBINAT_KEIN_KIND);
+		familiensituation.setFamilienstatus(
+			EnumFamilienstatus.KONKUBINAT_KEIN_KIND
+		);
 		familiensituation.setMinDauerKonkubinat(2);
 		familiensituation.setStartKonkubinat(referenzDatum);
 
-		Assertions.assertEquals(false, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertEquals(
+			false,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		LocalDate startKonkubinat = LocalDate.of(2019, 7, 1);
 		familiensituation.setStartKonkubinat(startKonkubinat);
-		Assertions.assertEquals(true, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertEquals(
+			true,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 	}
 
 	@Test
@@ -72,30 +89,54 @@ class FamiliensituationTest {
 
 		//PFLEGEFAMILIE
 		familiensituation.setFamilienstatus(EnumFamilienstatus.PFLEGEFAMILIE);
-		familiensituation.setGesuchstellerKardinalitaet(EnumGesuchstellerKardinalitaet.ZU_ZWEIT);
-		Assertions.assertEquals(true, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		familiensituation.setGesuchstellerKardinalitaet(
+			EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+		);
+		Assertions.assertEquals(
+			true,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
-		familiensituation.setGesuchstellerKardinalitaet(EnumGesuchstellerKardinalitaet.ALLEINE);
-		Assertions.assertEquals(false, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		familiensituation.setGesuchstellerKardinalitaet(
+			EnumGesuchstellerKardinalitaet.ALLEINE
+		);
+		Assertions.assertEquals(
+			false,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		//VERHEIRATET
 		familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
-		Assertions.assertEquals(true, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertEquals(
+			true,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		//KONKUBINAT
 		familiensituation.setFamilienstatus(EnumFamilienstatus.KONKUBINAT);
-		Assertions.assertEquals(true, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertEquals(
+			true,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		//KONKUBINAT_KEIN_KIND
-		familiensituation.setFamilienstatus(EnumFamilienstatus.KONKUBINAT_KEIN_KIND);
+		familiensituation.setFamilienstatus(
+			EnumFamilienstatus.KONKUBINAT_KEIN_KIND
+		);
 		familiensituation.setMinDauerKonkubinat(2);
 		familiensituation.setStartKonkubinat(referenzDatum);
 
-		Assertions.assertEquals(false, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertEquals(
+			false,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		LocalDate startKonkubinat = LocalDate.of(2019, 7, 1);
 		familiensituation.setStartKonkubinat(startKonkubinat);
-		Assertions.assertEquals(true, familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertEquals(
+			true,
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 	}
 
 	@Test
@@ -103,34 +144,62 @@ class FamiliensituationTest {
 		Familiensituation familiensituation = new Familiensituation();
 		familiensituation.setFkjvFamSit(true);
 		familiensituation.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
-		familiensituation.setGesuchstellerKardinalitaet(EnumGesuchstellerKardinalitaet.ALLEINE);
+		familiensituation.setGesuchstellerKardinalitaet(
+			EnumGesuchstellerKardinalitaet.ALLEINE
+		);
 		familiensituation.setGeteilteObhut(true);
 		LocalDate referenzDatum = LocalDate.of(2021, 8, 1);
 
 		//GETEILTE OBHUT
-		Assertions.assertFalse(familiensituation.hasSecondGesuchsteller(referenzDatum));
-		familiensituation.setGesuchstellerKardinalitaet(EnumGesuchstellerKardinalitaet.ZU_ZWEIT);
-		Assertions.assertTrue(familiensituation.hasSecondGesuchsteller(referenzDatum));
+		Assertions.assertFalse(
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
+		familiensituation.setGesuchstellerKardinalitaet(
+			EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+		);
+		Assertions.assertTrue(
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		//NICHT GETEILTE OBHUT ABER UNTERHALTSVEREINBARUNG
 		familiensituation.setGeteilteObhut(false);
 		familiensituation.setGesuchstellerKardinalitaet(null);
-		familiensituation.setUnterhaltsvereinbarung(UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG);
-		Assertions.assertFalse(familiensituation.hasSecondGesuchsteller(referenzDatum));
+		familiensituation.setUnterhaltsvereinbarung(
+			UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG
+		);
+		Assertions.assertFalse(
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 
 		//NICHT GETEILTE OBHUT UND KEINE UNTERHALTSVEREINBARUNG
-		familiensituation.setUnterhaltsvereinbarung(UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG);
-		Assertions.assertTrue(familiensituation.hasSecondGesuchsteller(referenzDatum));
+		familiensituation.setUnterhaltsvereinbarung(
+			UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+		);
+		Assertions.assertTrue(
+			familiensituation.hasSecondGesuchsteller(referenzDatum)
+		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("startKonkubinatSource")
-	void shouldNotBeReachingMinDauerOfInGP2IfStartKonkubinatIs(LocalDate startKonkubinat) {
+	void shouldNotBeReachingMinDauerOfInGP2IfStartKonkubinatIs(
+		LocalDate startKonkubinat
+	) {
 		Familiensituation familiensituation = new Familiensituation();
 		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
-		gesuchsperiode.setGueltigkeit(new DateRange(LocalDate.of(2024, 8, 1), LocalDate.of(2025, 7, 31)));
+		gesuchsperiode.setGueltigkeit(
+			new DateRange(
+				LocalDate.of(2024, 8, 1),
+				LocalDate.of(2025, 7, 31)
+			)
+		);
 		familiensituation.setStartKonkubinat(startKonkubinat);
-		assertThat(familiensituation.isKonkubinatReachingMinDauerIn(gesuchsperiode), is(false));
+		assertThat(
+			familiensituation.isKonkubinatReachingMinDauerIn(
+				gesuchsperiode
+			),
+			is(false)
+		);
 	}
 
 	static Stream<LocalDate> startKonkubinatSource() {

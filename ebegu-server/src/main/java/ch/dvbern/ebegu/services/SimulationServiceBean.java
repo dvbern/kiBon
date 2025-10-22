@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gesuch;
@@ -38,13 +38,15 @@ import ch.dvbern.ebegu.util.MathUtil;
  */
 @Stateless
 @Local(SimulationService.class)
-public class SimulationServiceBean extends AbstractBaseService implements SimulationService {
+public class SimulationServiceBean extends AbstractBaseService implements
+	SimulationService {
 	@Inject
 	private VerfuegungService verfuegungService;
 
 	@Override
 	public String simulateNewVerfuegung(@Nonnull Gesuch gesuch) {
-		Map<String, BigDecimal> initialBgs = storeInitialBGsAndResetBetreuungsstatus(gesuch);
+		Map<String, BigDecimal> initialBgs =
+			storeInitialBGsAndResetBetreuungsstatus(gesuch);
 		var newGesuch = verfuegungService.calculateVerfuegung(gesuch);
 
 		var log = new StringBuilder();
@@ -65,21 +67,35 @@ public class SimulationServiceBean extends AbstractBaseService implements Simula
 		return log.toString();
 	}
 
-	private static void logDifference(StringBuilder log, Betreuung b, BigDecimal sumNew, BigDecimal sumOld) {
+	private static void logDifference(
+		StringBuilder log,
+		Betreuung b,
+		BigDecimal sumNew,
+		BigDecimal sumOld
+	) {
 		log
 			.append("RefNr: ")
 			.append(b.getReferenzNummer())
 			.append("; Gemeinde: ")
-			.append(b.getKind().getGesuch().getDossier().getGemeinde().getName())
+			.append(
+				b.getKind()
+					.getGesuch()
+					.getDossier()
+					.getGemeinde()
+					.getName()
+			)
 			.append("; Betreuung mit id ")
 			.append(b.getId())
 			.append(" nicht identisch. Alt: ")
-			.append(sumOld).append(" Neu: ")
+			.append(sumOld)
+			.append(" Neu: ")
 			.append(sumNew)
 			.append("\n");
 	}
 
-	private Map<String, BigDecimal> storeInitialBGsAndResetBetreuungsstatus(Gesuch gesuch) {
+	private Map<String, BigDecimal> storeInitialBGsAndResetBetreuungsstatus(
+		Gesuch gesuch
+	) {
 		var initialBgs = new HashMap<String, BigDecimal>();
 		gesuch.getKindContainers().forEach(kindContainer -> {
 			kindContainer.getBetreuungen().forEach(betreuung -> {
@@ -107,7 +123,9 @@ public class SimulationServiceBean extends AbstractBaseService implements Simula
 		return true;
 	}
 
-	private BigDecimal calculateSumBG(@Nonnull List< VerfuegungZeitabschnitt > zeitabschnitte) {
+	private BigDecimal calculateSumBG(
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		var sum = BigDecimal.ZERO;
 		for (var z : zeitabschnitte) {
 			sum = MathUtil.DEFAULT.add(sum, z.getVerguenstigung());
@@ -115,7 +133,4 @@ public class SimulationServiceBean extends AbstractBaseService implements Simula
 		return sum;
 	}
 
-
 }
-
-

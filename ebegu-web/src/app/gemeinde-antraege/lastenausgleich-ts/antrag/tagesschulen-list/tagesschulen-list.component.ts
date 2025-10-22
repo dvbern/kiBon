@@ -24,17 +24,26 @@ import {
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {
+    combineLatest,
+    mergeMap,
+    Observable,
+    ReplaySubject,
+    Subject
+} from 'rxjs';
+import {filter, map, startWith} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSLastenausgleichTagesschuleAngabenInstitutionContainer} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenInstitutionContainer';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DvSimpleTableColumnDefinition} from '../../../../shared/component/dv-simple-table/dv-simple-table-column-definition';
-import {GemeindeAntragService} from '../../../services/gemeinde-antrag.service';
 import {LastenausgleichTSService} from '../../services/lastenausgleich-ts.service';
+import {TagesschuleAngabenRS} from '../../services/tagesschule-angaben.service.rest';
+import {LATSPermissionUtil} from '../../util/LATSPermissionUtil';
+import {TSLastenausgleichTagesschulenStatusHistory} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschulenStatusHistory';
+import {PERMISSION_LATS} from '../../lastenausgleich-tagesschulen.permissions';
 
 const LOG = LogFactory.createLog('TagesschulenListComponent');
 
@@ -42,7 +51,8 @@ const LOG = LogFactory.createLog('TagesschulenListComponent');
     selector: 'dv-tagesschulen-list',
     templateUrl: './tagesschulen-list.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TagesschulenListComponent implements OnInit {
     @Input() public lastenausgleichId: string;
@@ -53,9 +63,12 @@ export class TagesschulenListComponent implements OnInit {
         kontrollfragenOk: boolean;
     }[];
     public tableColumns: DvSimpleTableColumnDefinition[];
+    private latsHistory$: Subject<
+        TSLastenausgleichTagesschulenStatusHistory[]
+    > = new ReplaySubject(1);
 
     public constructor(
-        private readonly gemeindeAntragService: GemeindeAntragService,
+        private readonly tagesschuleAngabenService: TagesschuleAngabenRS,
         private readonly lastenausgleichTSService: LastenausgleichTSService,
         private readonly cd: ChangeDetectorRef,
         private readonly translate: TranslateService,
@@ -78,16 +91,28 @@ export class TagesschulenListComponent implements OnInit {
 
     public ngOnInit(): void {
         this.getAllVisibleTagesschulenAngabenForTSLastenausgleich();
+        this.authService.principal$
+            .pipe(
+                filter(principal =>
+                    principal.hasOneOfRoles(PERMISSION_LATS.LOAD_VERLAUF)
+                ),
+                mergeMap(() =>
+                    this.lastenausgleichTSService.getVerlauf(
+                        this.lastenausgleichId
+                    )
+                )
+            )
+            .subscribe(history => this.latsHistory$.next(history));
         this.initTableColumns();
     }
 
     private getAllVisibleTagesschulenAngabenForTSLastenausgleich(): void {
-        this.gemeindeAntragService
+        this.tagesschuleAngabenService
             .getAllVisibleTagesschulenAngabenForTSLastenausgleich(
                 this.lastenausgleichId
             )
-            .subscribe(
-                data => {
+            .subscribe({
+                next: data => {
                     this.data = data.map(latsInstitutionContainer => ({
                         id: latsInstitutionContainer.id,
                         institutionName:
@@ -100,13 +125,13 @@ export class TagesschulenListComponent implements OnInit {
                     }));
                     this.cd.markForCheck();
                 },
-                () => {
+                error: () => {
                     this.translate.get('DATA_RETRIEVAL_ERROR').subscribe(
                         msg => this.errorService.addMesageAsError(msg),
                         err => console.error('Error loading translation', err)
                     );
                 }
-            );
+            });
     }
 
     public navigate($event: any): void {
@@ -119,8 +144,8 @@ export class TagesschulenListComponent implements OnInit {
     public createMissingTagesschuleFormulare(): void {
         this.lastenausgleichTSService
             .createMissingTagesschuleFormulare(this.lastenausgleichId)
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     // since we changed institutions of angabenGemeinde Object, we have to reload store
                     this.lastenausgleichTSService.updateLATSAngabenGemeindeContainerStore(
                         this.lastenausgleichId
@@ -130,10 +155,10 @@ export class TagesschulenListComponent implements OnInit {
                         'ALL_TAGESSCHULE_FORMULARE_CREATED'
                     );
                 },
-                err => {
+                error: err => {
                     LOG.error(err);
                 }
-            );
+            });
     }
 
     public isGemeindeOrSuperadmin(): boolean {
@@ -143,8 +168,8 @@ export class TagesschulenListComponent implements OnInit {
     private initTableColumns(): void {
         this.lastenausgleichTSService
             .getLATSAngabenGemeindeContainer()
-            .subscribe(
-                container => {
+            .subscribe({
+                next: container => {
                     if (
                         container.isAtLeastInBearbeitungKanton() &&
                         this.authService.isOneOfRoles(
@@ -180,13 +205,30 @@ export class TagesschulenListComponent implements OnInit {
                         {displayedName: 'STATUS', attributeName: 'status'}
                     ];
                 },
-                error => console.error(error)
-            );
+                error: error => console.error(error)
+            });
     }
 
     public isInBearbeitungGemeinde(): Observable<boolean> {
         return this.lastenausgleichTSService
             .getLATSAngabenGemeindeContainer()
             .pipe(map(container => container.isInBearbeitungGemeinde()));
+    }
+
+    public isZweitPruefungAndSameUserAsPruefung() {
+        return combineLatest([
+            this.authService.principal$,
+            this.lastenausgleichTSService.getLATSAngabenGemeindeContainer(),
+            this.latsHistory$
+        ]).pipe(
+            map(([principal, container, history]) => {
+                return LATSPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    container,
+                    history
+                );
+            }),
+            startWith(false)
+        );
     }
 }

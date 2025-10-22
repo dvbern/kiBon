@@ -45,25 +45,55 @@ import static org.junit.Assert.assertNotNull;
  */
 public class AbstractEbeguRuleTest {
 
-	private final DateRange defaultGueltigkeit = new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME);
+	private final DateRange defaultGueltigkeit = new DateRange(
+		Constants.START_OF_TIME,
+		Constants.END_OF_TIME
+	);
 	private final ErwerbspensumAsivAbschnittRule erwerbspensumRule =
-		new ErwerbspensumAsivAbschnittRule(defaultGueltigkeit, 20, Constants.DEFAULT_LOCALE);
+		new ErwerbspensumAsivAbschnittRule(
+			defaultGueltigkeit,
+			20,
+			Constants.DEFAULT_LOCALE
+		);
 
-	private static final LocalDate DATUM_1 = LocalDate.of(TestDataUtil.PERIODE_JAHR_1, Month.APRIL, 1);
-	private static final LocalDate DATUM_2 = LocalDate.of(TestDataUtil.PERIODE_JAHR_1, Month.SEPTEMBER, 1);
-	private static final LocalDate DATUM_3 = LocalDate.of(TestDataUtil.PERIODE_JAHR_1, Month.OCTOBER, 1);
-	private static final LocalDate DATUM_4 = LocalDate.of(TestDataUtil.PERIODE_JAHR_1, Month.DECEMBER, 1);
+	private static final LocalDate DATUM_1 = LocalDate.of(
+		TestDataUtil.PERIODE_JAHR_1,
+		Month.APRIL,
+		1
+	);
+	private static final LocalDate DATUM_2 = LocalDate.of(
+		TestDataUtil.PERIODE_JAHR_1,
+		Month.SEPTEMBER,
+		1
+	);
+	private static final LocalDate DATUM_3 = LocalDate.of(
+		TestDataUtil.PERIODE_JAHR_1,
+		Month.OCTOBER,
+		1
+	);
+	private static final LocalDate DATUM_4 = LocalDate.of(
+		TestDataUtil.PERIODE_JAHR_1,
+		Month.DECEMBER,
+		1
+	);
 
 	@Test
 	public void testErwerbspensenUndBetreuungspensen() {
 
 		List<VerfuegungZeitabschnitt> betreuungspensen = new ArrayList<>();
-		betreuungspensen.add(createBetreuungspensum(
-			Constants.START_OF_TIME,
-			Constants.END_OF_TIME,
-			BigDecimal.valueOf(50)));
-		betreuungspensen.add(createBetreuungspensum(DATUM_2, DATUM_4, BigDecimal.valueOf(20)));
-		betreuungspensen = erwerbspensumRule.mergeZeitabschnitte(betreuungspensen);
+		betreuungspensen.add(
+			createBetreuungspensum(
+				Constants.START_OF_TIME,
+				Constants.END_OF_TIME,
+				BigDecimal.valueOf(50)
+			)
+		);
+		betreuungspensen.add(
+			createBetreuungspensum(DATUM_2, DATUM_4, BigDecimal.valueOf(20))
+		);
+		betreuungspensen = erwerbspensumRule.mergeZeitabschnitte(
+			betreuungspensen
+		);
 		for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : betreuungspensen) {
 			verfuegungZeitabschnitt.initBGCalculationResult();
 		}
@@ -81,7 +111,8 @@ public class AbstractEbeguRuleTest {
 		List<VerfuegungZeitabschnitt> alles = new ArrayList<>();
 		alles.addAll(betreuungspensen);
 		alles.addAll(erwerbspensen);
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.mergeZeitabschnitte(alles);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule
+			.mergeZeitabschnitte(alles);
 		for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : result) {
 			verfuegungZeitabschnitt.initBGCalculationResult();
 		}
@@ -95,26 +126,57 @@ public class AbstractEbeguRuleTest {
 		VerfuegungZeitabschnitt fourth = result.get(3);
 		VerfuegungZeitabschnitt fifth = result.get(4);
 
-		Assert.assertEquals(Constants.START_OF_TIME, first.getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_1.minusDays(1), first.getGueltigkeit().getGueltigBis());
+		Assert.assertEquals(
+			Constants.START_OF_TIME,
+			first.getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			DATUM_1.minusDays(1),
+			first.getGueltigkeit().getGueltigBis()
+		);
 
 		Assert.assertEquals(DATUM_1, second.getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_2.minusDays(1), second.getGueltigkeit().getGueltigBis());
+		Assert.assertEquals(
+			DATUM_2.minusDays(1),
+			second.getGueltigkeit().getGueltigBis()
+		);
 
 		Assert.assertEquals(DATUM_2, third.getGueltigkeit().getGueltigAb());
 		Assert.assertEquals(DATUM_3, third.getGueltigkeit().getGueltigBis());
 
-		Assert.assertEquals(DATUM_3.plusDays(1), fourth.getGueltigkeit().getGueltigAb());
+		Assert.assertEquals(
+			DATUM_3.plusDays(1),
+			fourth.getGueltigkeit().getGueltigAb()
+		);
 		Assert.assertEquals(DATUM_4, fourth.getGueltigkeit().getGueltigBis());
 
-		Assert.assertEquals(DATUM_4.plusDays(1), fifth.getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(Constants.END_OF_TIME, fifth.getGueltigkeit().getGueltigBis());
+		Assert.assertEquals(
+			DATUM_4.plusDays(1),
+			fifth.getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			Constants.END_OF_TIME,
+			fifth.getGueltigkeit().getGueltigBis()
+		);
 
-		Assert.assertNull(first.getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(40), second.getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(100), third.getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(60), fourth.getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertNull(fifth.getBgCalculationInputAsiv().getErwerbspensumGS1());
+		Assert.assertNull(
+			first.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			second.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(100),
+			third.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(60),
+			fourth.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertNull(
+			fifth.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
 
 		Assert.assertEquals(50, first.getBetreuungspensumProzent().intValue());
 		Assert.assertEquals(50, second.getBetreuungspensumProzent().intValue());
@@ -127,14 +189,18 @@ public class AbstractEbeguRuleTest {
 	public void testNurEinZeitraum() {
 		List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
 		zeitabschnitte.add(createErwerbspensum(DATUM_1, DATUM_3, 40));
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.mergeZeitabschnitte(zeitabschnitte);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule
+			.mergeZeitabschnitte(zeitabschnitte);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(1, result.size());
 		VerfuegungZeitabschnitt next = result.iterator().next();
 		Assert.assertEquals(DATUM_1, next.getGueltigkeit().getGueltigAb());
 		Assert.assertEquals(DATUM_3, next.getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(40), next.getBgCalculationInputAsiv().getErwerbspensumGS1());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			next.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
 	}
 
 	@Test
@@ -142,7 +208,8 @@ public class AbstractEbeguRuleTest {
 		List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
 		zeitabschnitte.add(createErwerbspensum(DATUM_1, DATUM_3, 40));
 		zeitabschnitte.add(createErwerbspensum(DATUM_2, DATUM_4, 60));
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.mergeZeitabschnitte(zeitabschnitte);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule
+			.mergeZeitabschnitte(zeitabschnitte);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(3, result.size());
@@ -150,25 +217,46 @@ public class AbstractEbeguRuleTest {
 		VerfuegungZeitabschnitt second = result.get(1);
 		VerfuegungZeitabschnitt third = result.get(2);
 		Assert.assertEquals(DATUM_1, first.getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_2.minusDays(1), first.getGueltigkeit().getGueltigBis());
+		Assert.assertEquals(
+			DATUM_2.minusDays(1),
+			first.getGueltigkeit().getGueltigBis()
+		);
 		Assert.assertEquals(DATUM_2, second.getGueltigkeit().getGueltigAb());
 		Assert.assertEquals(DATUM_3, second.getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(DATUM_3.plusDays(1), third.getGueltigkeit().getGueltigAb());
+		Assert.assertEquals(
+			DATUM_3.plusDays(1),
+			third.getGueltigkeit().getGueltigAb()
+		);
 		Assert.assertEquals(DATUM_4, third.getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(40), first.getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(100), second.getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(60), third.getBgCalculationInputAsiv().getErwerbspensumGS1());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			first.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(100),
+			second.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(60),
+			third.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
 	}
 
 	@Test
 	public void testSchnittmenge() {
 		List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
-		zeitabschnitte.add(createBetreuungspensum(
-			Constants.START_OF_TIME,
-			Constants.END_OF_TIME,
-			BigDecimal.valueOf(50)));
-		zeitabschnitte.add(createBetreuungspensum(DATUM_2, DATUM_4, BigDecimal.valueOf(20)));
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.mergeZeitabschnitte(zeitabschnitte);
+		zeitabschnitte.add(
+			createBetreuungspensum(
+				Constants.START_OF_TIME,
+				Constants.END_OF_TIME,
+				BigDecimal.valueOf(50)
+			)
+		);
+		zeitabschnitte.add(
+			createBetreuungspensum(DATUM_2, DATUM_4, BigDecimal.valueOf(20))
+		);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule
+			.mergeZeitabschnitte(zeitabschnitte);
 		for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : result) {
 			verfuegungZeitabschnitt.initBGCalculationResult();
 		}
@@ -178,12 +266,24 @@ public class AbstractEbeguRuleTest {
 		VerfuegungZeitabschnitt first = result.get(0);
 		VerfuegungZeitabschnitt second = result.get(1);
 		VerfuegungZeitabschnitt third = result.get(2);
-		Assert.assertEquals(Constants.START_OF_TIME, first.getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_2.minusDays(1), first.getGueltigkeit().getGueltigBis());
+		Assert.assertEquals(
+			Constants.START_OF_TIME,
+			first.getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			DATUM_2.minusDays(1),
+			first.getGueltigkeit().getGueltigBis()
+		);
 		Assert.assertEquals(DATUM_2, second.getGueltigkeit().getGueltigAb());
 		Assert.assertEquals(DATUM_4, second.getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(DATUM_4.plusDays(1), third.getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(Constants.END_OF_TIME, third.getGueltigkeit().getGueltigBis());
+		Assert.assertEquals(
+			DATUM_4.plusDays(1),
+			third.getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			Constants.END_OF_TIME,
+			third.getGueltigkeit().getGueltigBis()
+		);
 		Assert.assertEquals(50, first.getBetreuungspensumProzent().intValue());
 		Assert.assertEquals(70, second.getBetreuungspensumProzent().intValue());
 		Assert.assertEquals(50, third.getBetreuungspensumProzent().intValue());
@@ -194,7 +294,8 @@ public class AbstractEbeguRuleTest {
 		List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
 		zeitabschnitte.add(createErwerbspensum(DATUM_1, DATUM_4, 80));
 		zeitabschnitte.add(createErwerbspensum(DATUM_1, DATUM_2, 40));
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.mergeZeitabschnitte(zeitabschnitte);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule
+			.mergeZeitabschnitte(zeitabschnitte);
 
 		// Es sollte neu zwei geben
 		Assert.assertNotNull(result);
@@ -204,10 +305,19 @@ public class AbstractEbeguRuleTest {
 
 		Assert.assertEquals(DATUM_1, first.getGueltigkeit().getGueltigAb());
 		Assert.assertEquals(DATUM_2, first.getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(DATUM_2.plusDays(1), second.getGueltigkeit().getGueltigAb());
+		Assert.assertEquals(
+			DATUM_2.plusDays(1),
+			second.getGueltigkeit().getGueltigAb()
+		);
 		Assert.assertEquals(DATUM_4, second.getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(120), first.getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(80), second.getBgCalculationInputAsiv().getErwerbspensumGS1());
+		Assert.assertEquals(
+			Integer.valueOf(120),
+			first.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(80),
+			second.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
 	}
 
 	@Test
@@ -215,7 +325,8 @@ public class AbstractEbeguRuleTest {
 		List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
 		zeitabschnitte.add(createErwerbspensum(DATUM_1, DATUM_4, 80));
 		zeitabschnitte.add(createErwerbspensum(DATUM_2, DATUM_4, 40));
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.mergeZeitabschnitte(zeitabschnitte);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule
+			.mergeZeitabschnitte(zeitabschnitte);
 
 		// Es sollte neu zwei geben
 		Assert.assertNotNull(result);
@@ -224,11 +335,20 @@ public class AbstractEbeguRuleTest {
 		VerfuegungZeitabschnitt second = result.get(1);
 
 		Assert.assertEquals(DATUM_1, first.getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_2.minusDays(1), first.getGueltigkeit().getGueltigBis());
+		Assert.assertEquals(
+			DATUM_2.minusDays(1),
+			first.getGueltigkeit().getGueltigBis()
+		);
 		Assert.assertEquals(DATUM_2, second.getGueltigkeit().getGueltigAb());
 		Assert.assertEquals(DATUM_4, second.getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(80), first.getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(120), second.getBgCalculationInputAsiv().getErwerbspensumGS1());
+		Assert.assertEquals(
+			Integer.valueOf(80),
+			first.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(120),
+			second.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
 	}
 
 	@Test
@@ -236,7 +356,8 @@ public class AbstractEbeguRuleTest {
 		List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
 		zeitabschnitte.add(createErwerbspensum(DATUM_1, DATUM_4, 80));
 		zeitabschnitte.add(createErwerbspensum(DATUM_1, DATUM_4, 40));
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.mergeZeitabschnitte(zeitabschnitte);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule
+			.mergeZeitabschnitte(zeitabschnitte);
 
 		// Es sollte neu zwei geben
 		Assert.assertNotNull(result);
@@ -245,37 +366,60 @@ public class AbstractEbeguRuleTest {
 
 		Assert.assertEquals(DATUM_1, first.getGueltigkeit().getGueltigAb());
 		Assert.assertEquals(DATUM_4, first.getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(120), first.getBgCalculationInputAsiv().getErwerbspensumGS1());
+		Assert.assertEquals(
+			Integer.valueOf(120),
+			first.getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
 	}
 
 	@Test
 	public void testBegrenzungAufGesuchsperiode() {
-		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(true);
+		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(
+			true
+		);
 		Gesuch gesuch = betreuung.extractGesuch();
 
 		List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
-		zeitabschnitte.add(createErwerbspensum(Constants.START_OF_TIME, Constants.END_OF_TIME, 80));
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.calculate(betreuung, zeitabschnitte);
+		zeitabschnitte.add(
+			createErwerbspensum(
+				Constants.START_OF_TIME,
+				Constants.END_OF_TIME,
+				80
+			)
+		);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.calculate(
+			betreuung,
+			zeitabschnitte
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(1, result.size());
 		Assert.assertEquals(
 			gesuch.getGesuchsperiode().getGueltigkeit().getGueltigAb(),
-			result.get(0).getGueltigkeit().getGueltigAb());
+			result.get(0).getGueltigkeit().getGueltigAb()
+		);
 		Assert.assertEquals(
 			gesuch.getGesuchsperiode().getGueltigkeit().getGueltigBis(),
-			result.get(0).getGueltigkeit().getGueltigBis());
+			result.get(0).getGueltigkeit().getGueltigBis()
+		);
 	}
 
 	@Test
 	public void testZusammenlegenVonIdentischenPerioden() {
-		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(true);
+		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(
+			true
+		);
 		// 2*20%, direkt gefolgt von 1*40% sollte 1 Abschnitt mit 40% geben
 		List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
 		zeitabschnitte.add(createErwerbspensum(DATUM_2, DATUM_3, 20));
 		zeitabschnitte.add(createErwerbspensum(DATUM_2, DATUM_3, 20));
-		zeitabschnitte.add(createErwerbspensum(DATUM_3.plusDays(1), DATUM_4, 40));
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.calculate(betreuung, zeitabschnitte);
+		zeitabschnitte.add(
+			createErwerbspensum(DATUM_3.plusDays(1), DATUM_4, 40)
+		);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.calculate(
+			betreuung,
+			zeitabschnitte
+		);
 
 		Assert.assertNotNull(result);
 		// Es sind 3 Abschnitte weil es fuer die ganze Periode Zeitabschintte macht, auch fuer die Zeit in der keine
@@ -283,34 +427,79 @@ public class AbstractEbeguRuleTest {
 		Assert.assertEquals(3, result.size());
 
 		Assert.assertEquals(
-			betreuung.extractGesuch().getGesuchsperiode().getGueltigkeit().getGueltigAb(),
-			result.get(0).getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_2.minusDays(1), result.get(0).getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(0), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(0), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS2());
-
-		Assert.assertEquals(DATUM_2, result.get(1).getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_4, result.get(1).getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(40), result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(0), result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS2());
-
-		Assert.assertEquals(DATUM_4.plusDays(1), result.get(2).getGueltigkeit().getGueltigAb());
+			betreuung.extractGesuch()
+				.getGesuchsperiode()
+				.getGueltigkeit()
+				.getGueltigAb(),
+			result.get(0).getGueltigkeit().getGueltigAb()
+		);
 		Assert.assertEquals(
-			betreuung.extractGesuch().getGesuchsperiode().getGueltigkeit().getGueltigBis(),
-			result.get(2).getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(0), result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(0), result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS2());
+			DATUM_2.minusDays(1),
+			result.get(0).getGueltigkeit().getGueltigBis()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS2()
+		);
+
+		Assert.assertEquals(
+			DATUM_2,
+			result.get(1).getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			DATUM_4,
+			result.get(1).getGueltigkeit().getGueltigBis()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS2()
+		);
+
+		Assert.assertEquals(
+			DATUM_4.plusDays(1),
+			result.get(2).getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			betreuung.extractGesuch()
+				.getGesuchsperiode()
+				.getGueltigkeit()
+				.getGueltigBis(),
+			result.get(2).getGueltigkeit().getGueltigBis()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS2()
+		);
 	}
 
 	@Test
 	public void testNichtZusammenlegenVonIdentischenPeriodenMitAbstand() {
-		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(true);
+		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(
+			true
+		);
 		// 2*20%, direkt gefolgt von 1*40% sollte 1 Abschnitt mit 40% geben
 		List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
 		zeitabschnitte.add(createErwerbspensum(DATUM_2, DATUM_3, 20));
 		zeitabschnitte.add(createErwerbspensum(DATUM_2, DATUM_3, 20));
-		zeitabschnitte.add(createErwerbspensum(DATUM_3.plusDays(2), DATUM_4, 40));
-		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.calculate(betreuung, zeitabschnitte);
+		zeitabschnitte.add(
+			createErwerbspensum(DATUM_3.plusDays(2), DATUM_4, 40)
+		);
+		List<VerfuegungZeitabschnitt> result = erwerbspensumRule.calculate(
+			betreuung,
+			zeitabschnitte
+		);
 
 		Assert.assertNotNull(result);
 		// Es sind 5 Abschnitte: 1. kein EP, 2. 20+20, 3. wieder kein EP (02.10.), 4. 40 und 5. kein EP
@@ -318,45 +507,120 @@ public class AbstractEbeguRuleTest {
 		Assert.assertEquals(5, result.size());
 
 		Assert.assertEquals(
-			betreuung.extractGesuch().getGesuchsperiode().getGueltigkeit().getGueltigAb(),
-			result.get(0).getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_2.minusDays(1), result.get(0).getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(0), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(0), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS2());
-
-		Assert.assertEquals(DATUM_2, result.get(1).getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_3, result.get(1).getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(40), result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(0), result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS2());
-
-		Assert.assertEquals(DATUM_3.plusDays(1), result.get(2).getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_3.plusDays(1), result.get(2).getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(0), result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(0), result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS2());
-
-		Assert.assertEquals(DATUM_3.plusDays(2), result.get(3).getGueltigkeit().getGueltigAb());
-		Assert.assertEquals(DATUM_4, result.get(3).getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(40), result.get(3).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(0), result.get(3).getBgCalculationInputAsiv().getErwerbspensumGS2());
-
-		Assert.assertEquals(DATUM_4.plusDays(1), result.get(4).getGueltigkeit().getGueltigAb());
+			betreuung.extractGesuch()
+				.getGesuchsperiode()
+				.getGueltigkeit()
+				.getGueltigAb(),
+			result.get(0).getGueltigkeit().getGueltigAb()
+		);
 		Assert.assertEquals(
-			betreuung.extractGesuch().getGesuchsperiode().getGueltigkeit().getGueltigBis(),
-			result.get(4).getGueltigkeit().getGueltigBis());
-		Assert.assertEquals(Integer.valueOf(0), result.get(4).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(Integer.valueOf(0), result.get(4).getBgCalculationInputAsiv().getErwerbspensumGS2());
+			DATUM_2.minusDays(1),
+			result.get(0).getGueltigkeit().getGueltigBis()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS2()
+		);
+
+		Assert.assertEquals(
+			DATUM_2,
+			result.get(1).getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			DATUM_3,
+			result.get(1).getGueltigkeit().getGueltigBis()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS2()
+		);
+
+		Assert.assertEquals(
+			DATUM_3.plusDays(1),
+			result.get(2).getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			DATUM_3.plusDays(1),
+			result.get(2).getGueltigkeit().getGueltigBis()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS2()
+		);
+
+		Assert.assertEquals(
+			DATUM_3.plusDays(2),
+			result.get(3).getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			DATUM_4,
+			result.get(3).getGueltigkeit().getGueltigBis()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(3).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(3).getBgCalculationInputAsiv().getErwerbspensumGS2()
+		);
+
+		Assert.assertEquals(
+			DATUM_4.plusDays(1),
+			result.get(4).getGueltigkeit().getGueltigAb()
+		);
+		Assert.assertEquals(
+			betreuung.extractGesuch()
+				.getGesuchsperiode()
+				.getGueltigkeit()
+				.getGueltigBis(),
+			result.get(4).getGueltigkeit().getGueltigBis()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(4).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			Integer.valueOf(0),
+			result.get(4).getBgCalculationInputAsiv().getErwerbspensumGS2()
+		);
 	}
 
-	private VerfuegungZeitabschnitt createErwerbspensum(LocalDate von, LocalDate bis, int pensum) {
-		VerfuegungZeitabschnitt zeitabschnitt1 = new VerfuegungZeitabschnitt(new DateRange(von, bis));
+	private VerfuegungZeitabschnitt createErwerbspensum(
+		LocalDate von,
+		LocalDate bis,
+		int pensum
+	) {
+		VerfuegungZeitabschnitt zeitabschnitt1 = new VerfuegungZeitabschnitt(
+			new DateRange(von, bis)
+		);
 		zeitabschnitt1.getBgCalculationInputAsiv().setErwerbspensumGS1(pensum);
 		zeitabschnitt1.getBgCalculationInputAsiv().setErwerbspensumGS2(0);
 		return zeitabschnitt1;
 	}
 
-	private VerfuegungZeitabschnitt createBetreuungspensum(LocalDate von, LocalDate bis, BigDecimal pensum) {
-		VerfuegungZeitabschnitt zeitabschnitt1 = new VerfuegungZeitabschnitt(new DateRange(von, bis));
-		zeitabschnitt1.getBgCalculationInputAsiv().setBetreuungspensumProzent(pensum);
+	private VerfuegungZeitabschnitt createBetreuungspensum(
+		LocalDate von,
+		LocalDate bis,
+		BigDecimal pensum
+	) {
+		VerfuegungZeitabschnitt zeitabschnitt1 = new VerfuegungZeitabschnitt(
+			new DateRange(von, bis)
+		);
+		zeitabschnitt1.getBgCalculationInputAsiv()
+			.setBetreuungspensumProzent(pensum);
 		return zeitabschnitt1;
 	}
 
@@ -366,28 +630,55 @@ public class AbstractEbeguRuleTest {
 		int expectedBetreuungspensum,
 		int expectedAnspruchsPensum,
 		int expectedBgPensum,
-		@Nullable MsgKey expectedBemerkungIfAny) {
+		@Nullable MsgKey expectedBemerkungIfAny
+	) {
 
-		assertThat(zeitabschnitt, pojo(VerfuegungZeitabschnitt.class)
-			.where(
-				VerfuegungZeitabschnitt::getBetreuungspensumProzent,
-				comparesEqualTo(BigDecimal.valueOf(expectedBetreuungspensum)))
-			.where(
-				VerfuegungZeitabschnitt::getAnspruchberechtigtesPensum,
-				comparesEqualTo(expectedAnspruchsPensum))
-			.where(VerfuegungZeitabschnitt::getBgPensum, comparesEqualTo(BigDecimal.valueOf(expectedBgPensum)))
+		assertThat(
+			zeitabschnitt,
+			pojo(VerfuegungZeitabschnitt.class)
+				.where(
+					VerfuegungZeitabschnitt::getBetreuungspensumProzent,
+					comparesEqualTo(
+						BigDecimal.valueOf(
+							expectedBetreuungspensum
+						)
+					)
+				)
+				.where(
+					VerfuegungZeitabschnitt::getAnspruchberechtigtesPensum,
+					comparesEqualTo(expectedAnspruchsPensum)
+				)
+				.where(
+					VerfuegungZeitabschnitt::getBgPensum,
+					comparesEqualTo(
+						BigDecimal.valueOf(expectedBgPensum)
+					)
+				)
 		);
 
-		final List<VerfuegungZeitabschnittBemerkung> bemerkungen = zeitabschnitt.getVerfuegungZeitabschnittBemerkungList();
+		final List<VerfuegungZeitabschnittBemerkung> bemerkungen = zeitabschnitt
+			.getVerfuegungZeitabschnittBemerkungList();
 		if (expectedBemerkungIfAny != null) {
 			Assert.assertFalse(zeitabschnitt.getBemerkungenDTOList().isEmpty());
-			Assert.assertTrue(zeitabschnitt.getBemerkungenDTOList().containsMsgKey(expectedBemerkungIfAny));
+			Assert.assertTrue(
+				zeitabschnitt.getBemerkungenDTOList()
+					.containsMsgKey(expectedBemerkungIfAny)
+			);
 		} else {
 			assertNotNull(bemerkungen);
 			Assert.assertFalse(zeitabschnitt.getBemerkungenDTOList().isEmpty());
-			Assert.assertEquals(2, zeitabschnitt.getBemerkungenDTOList().uniqueSize());
-			Assert.assertTrue(zeitabschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-			Assert.assertTrue(zeitabschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
+			Assert.assertEquals(
+				2,
+				zeitabschnitt.getBemerkungenDTOList().uniqueSize()
+			);
+			Assert.assertTrue(
+				zeitabschnitt.getBemerkungenDTOList()
+					.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
+			);
+			Assert.assertTrue(
+				zeitabschnitt.getBemerkungenDTOList()
+					.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
+			);
 		}
 	}
 }

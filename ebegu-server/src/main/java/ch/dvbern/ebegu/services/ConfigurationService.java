@@ -8,22 +8,24 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.Einstellung;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
 import ch.dvbern.ebegu.pdfgenerator.verfuegung.VerfuegungPdfGeneratorKonfiguration;
 
@@ -37,36 +39,55 @@ public class ConfigurationService {
 	private ApplicationPropertyService applicationPropertyService;
 
 	public VerfuegungPdfGeneratorKonfiguration getVerfuegungPdfGeneratorKonfiguration(
-		@Nonnull Betreuung betreuung, boolean writeProtected) {
+		@Nonnull Betreuung betreuung,
+		boolean writeProtected
+	) {
 		// Falls die Gemeinde Kontingentierung eingeschaltet hat *und* es sich um einen Entwurf handelt
 		// wird auf der Verfügung ein Vermerk zur Kontingentierung gedruckt
 		boolean showInfoKontingentierung = false;
 		if (!writeProtected) {
-			Einstellung einstellungKontingentierung = einstellungService.findEinstellung(
-				EinstellungKey.GEMEINDE_KONTINGENTIERUNG_ENABLED,
-				betreuung.extractGesuch().extractGemeinde(),
-				betreuung.extractGesuchsperiode());
-			showInfoKontingentierung = einstellungKontingentierung.getValueAsBoolean();
+			Einstellung einstellungKontingentierung = einstellungService
+				.findEinstellung(
+					EinstellungKey.GEMEINDE_KONTINGENTIERUNG_ENABLED,
+					betreuung.extractGesuch().extractGemeinde(),
+					betreuung.extractGesuchsperiode()
+				);
+			showInfoKontingentierung = einstellungKontingentierung
+				.getValueAsBoolean();
 		}
 
 		return VerfuegungPdfGeneratorKonfiguration.builder()
 			.kontingentierungEnabledAndEntwurf(showInfoKontingentierung)
-			.stadtBernAsivConfigured(applicationPropertyService.isStadtBernAsivConfigured(betreuung.extractGesuch().extractGemeinde().getMandant()))
+			.stadtBernAsivConfigured(
+				applicationPropertyService.isStadtBernAsivConfigured(
+					betreuung.extractGesuch()
+						.extractGemeinde()
+						.getMandant()
+				)
+			)
 			.FKJVTexte(getEinstellungFKJVTexte(betreuung))
-			.betreuungspensumAnzeigeTyp(getEinstellungBetreuungspensumAnzeigeTyp(betreuung))
-			.isHoehereBeitraegeConfigured(getEinstellungHoehereBeitraegeConfigured(betreuung))
+			.betreuungspensumAnzeigeTyp(
+				getEinstellungBetreuungspensumAnzeigeTyp(betreuung)
+			)
+			.isHoehereBeitraegeConfigured(
+				getEinstellungHoehereBeitraegeConfigured(betreuung)
+			)
 			.build();
 	}
 
-
 	public VerfuegungPdfGeneratorKonfiguration getVerfuegungPdfGeneratorKonfigurationNichtEintretten(
-		@Nonnull Betreuung betreuung) {
+		@Nonnull Betreuung betreuung
+	) {
 		return VerfuegungPdfGeneratorKonfiguration.builder()
 			.kontingentierungEnabledAndEntwurf(false)
 			.stadtBernAsivConfigured(false)
 			.FKJVTexte(getEinstellungFKJVTexte(betreuung))
-			.betreuungspensumAnzeigeTyp(getEinstellungBetreuungspensumAnzeigeTyp(betreuung))
-			.isHoehereBeitraegeConfigured(getEinstellungHoehereBeitraegeConfigured(betreuung))
+			.betreuungspensumAnzeigeTyp(
+				getEinstellungBetreuungspensumAnzeigeTyp(betreuung)
+			)
+			.isHoehereBeitraegeConfigured(
+				getEinstellungHoehereBeitraegeConfigured(betreuung)
+			)
 			.build();
 	}
 
@@ -78,16 +99,22 @@ public class ConfigurationService {
 		).getValueAsBoolean();
 	}
 
-	private BetreuungspensumAnzeigeTyp getEinstellungBetreuungspensumAnzeigeTyp(@Nonnull Betreuung betreuung) {
-		return BetreuungspensumAnzeigeTyp.valueOf(einstellungService.findEinstellung(
-			EinstellungKey.PENSUM_ANZEIGE_TYP,
-			betreuung.extractGesuch().extractGemeinde(),
-			betreuung.extractGesuchsperiode()
-		).getValue());
+	private BetreuungspensumAnzeigeTyp getEinstellungBetreuungspensumAnzeigeTyp(
+		@Nonnull Betreuung betreuung
+	) {
+		return BetreuungspensumAnzeigeTyp.valueOf(
+			einstellungService.findEinstellung(
+				EinstellungKey.PENSUM_ANZEIGE_TYP,
+				betreuung.extractGesuch().extractGemeinde(),
+				betreuung.extractGesuchsperiode()
+			).getValue()
+		);
 
 	}
 
-	private boolean getEinstellungHoehereBeitraegeConfigured(@Nonnull Betreuung betreuung) {
+	private boolean getEinstellungHoehereBeitraegeConfigured(
+		@Nonnull Betreuung betreuung
+	) {
 		return einstellungService.findEinstellung(
 			EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
 			betreuung.extractGesuch().extractGemeinde(),

@@ -51,6 +51,12 @@ export class DvAhvCheck implements IDirective {
                 }
                 const ahvlenght = 13;
                 const START_DIGITS = '756';
+                const maxStringLength = 16;
+
+                if (viewValue.length > maxStringLength) {
+                    return false;
+                }
+
                 const digits = viewValue
                     .replace(/\./g, '')
                     .split('')

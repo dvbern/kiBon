@@ -15,9 +15,9 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer EinkommensverschlechterungInfoContainer
@@ -36,15 +36,21 @@ public class JaxEinkommensverschlechterungInfoContainer extends JaxAbstractDTO {
 		return einkommensverschlechterungInfoGS;
 	}
 
-	public void setEinkommensverschlechterungInfoGS(JaxEinkommensverschlechterungInfo einkommensverschlechterungInfoGS) {
-		this.einkommensverschlechterungInfoGS = einkommensverschlechterungInfoGS;
+	public void setEinkommensverschlechterungInfoGS(
+		JaxEinkommensverschlechterungInfo einkommensverschlechterungInfoGS
+	) {
+		this.einkommensverschlechterungInfoGS =
+			einkommensverschlechterungInfoGS;
 	}
 
 	public JaxEinkommensverschlechterungInfo getEinkommensverschlechterungInfoJA() {
 		return einkommensverschlechterungInfoJA;
 	}
 
-	public void setEinkommensverschlechterungInfoJA(JaxEinkommensverschlechterungInfo einkommensverschlechterungInfoJA) {
-		this.einkommensverschlechterungInfoJA = einkommensverschlechterungInfoJA;
+	public void setEinkommensverschlechterungInfoJA(
+		JaxEinkommensverschlechterungInfo einkommensverschlechterungInfoJA
+	) {
+		this.einkommensverschlechterungInfoJA =
+			einkommensverschlechterungInfoJA;
 	}
 }

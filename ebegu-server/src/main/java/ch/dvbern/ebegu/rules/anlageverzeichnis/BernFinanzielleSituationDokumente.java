@@ -15,17 +15,24 @@
 
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
-import ch.dvbern.ebegu.enums.DokumentGrundTyp;
-import ch.dvbern.ebegu.enums.DokumentTyp;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import ch.dvbern.ebegu.entities.AbstractFinanzielleSituation;
+import ch.dvbern.ebegu.entities.DokumentGrund;
+import ch.dvbern.ebegu.entities.Familiensituation;
+import ch.dvbern.ebegu.entities.FinanzielleSituation;
+import ch.dvbern.ebegu.entities.FinanzielleSituationContainer;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
+import ch.dvbern.ebegu.enums.DokumentGrundTyp;
+import ch.dvbern.ebegu.enums.DokumentTyp;
 
 /**
  * Dokumente für FinanzielleSituation:
@@ -75,7 +82,8 @@ import java.util.Set;
  * Notwendig, wenn Steuererklärung ausgefüllt
  * <p>
  **/
-public class BernFinanzielleSituationDokumente extends AbstractFinanzielleSituationDokumente {
+public class BernFinanzielleSituationDokumente extends
+	AbstractFinanzielleSituationDokumente {
 
 	public BernFinanzielleSituationDokumente(boolean isFKJV) {
 		super(isFKJV);
@@ -88,15 +96,24 @@ public class BernFinanzielleSituationDokumente extends AbstractFinanzielleSituat
 		@Nonnull Locale locale
 	) {
 
-		final Familiensituation familiensituation = gesuch.extractFamiliensituation();
-		final boolean gemeinsam = familiensituation != null &&
-			familiensituation.getGemeinsameSteuererklaerung() != null &&
+		final Familiensituation familiensituation = gesuch
+			.extractFamiliensituation();
+		final boolean gemeinsam = familiensituation != null
+			&&
+			familiensituation.getGemeinsameSteuererklaerung() != null
+			&&
 			familiensituation.getGemeinsameSteuererklaerung();
 
-		final int basisJahr = gesuch.getGesuchsperiode().getGueltigkeit().calculateEndOfPreviousYear().getYear();
-		LocalDate stichtag = gesuch.getGesuchsperiode().getGueltigkeit().getGueltigBis();
+		final int basisJahr = gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.calculateEndOfPreviousYear()
+			.getYear();
+		LocalDate stichtag = gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigBis();
 
-		final GesuchstellerContainer gesuchsteller1 = gesuch.getGesuchsteller1();
+		final GesuchstellerContainer gesuchsteller1 = gesuch
+			.getGesuchsteller1();
 		getAllDokumenteGesuchsteller(
 			anlageVerzeichnis,
 			gesuchsteller1,
@@ -104,10 +121,12 @@ public class BernFinanzielleSituationDokumente extends AbstractFinanzielleSituat
 			1,
 			basisJahr,
 			stichtag,
-			familiensituation);
+			familiensituation
+		);
 
 		if (gesuch.hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode()) {
-			final GesuchstellerContainer gesuchsteller2 = gesuch.getGesuchsteller2();
+			final GesuchstellerContainer gesuchsteller2 = gesuch
+				.getGesuchsteller2();
 			getAllDokumenteGesuchsteller(
 				anlageVerzeichnis,
 				gesuchsteller2,
@@ -115,32 +134,43 @@ public class BernFinanzielleSituationDokumente extends AbstractFinanzielleSituat
 				2,
 				basisJahr,
 				stichtag,
-				familiensituation);
+				familiensituation
+			);
 		}
 	}
 
 	private void getAllDokumenteGesuchsteller(
 		Set<DokumentGrund> anlageVerzeichnis,
 		@Nullable GesuchstellerContainer gesuchsteller,
-		boolean gemeinsam, int gesuchstellerNumber, int basisJahr,
-		@Nonnull LocalDate stichtag, @Nullable Familiensituation familiensituation
+		boolean gemeinsam,
+		int gesuchstellerNumber,
+		int basisJahr,
+		@Nonnull LocalDate stichtag,
+		@Nullable Familiensituation familiensituation
 	) {
 
-		if (gesuchsteller == null || gesuchsteller.getFinanzielleSituationContainer() == null) {
+		if (gesuchsteller == null
+			|| gesuchsteller.getFinanzielleSituationContainer() == null) {
 			return;
 		}
 
-		if (isSozialhilfeempfaenger(familiensituation) || !isVerguenstigungGewuenscht(familiensituation)) {
+		if (isSozialhilfeempfaenger(familiensituation)
+			|| !isVerguenstigungGewuenscht(familiensituation)) {
 			return;
 		}
 
 		final FinanzielleSituationContainer finanzielleSituationContainer =
 			gesuchsteller.getFinanzielleSituationContainer();
 
-		final FinanzielleSituation finanzielleSituationJA = finanzielleSituationContainer.getFinanzielleSituationJA();
+		final FinanzielleSituation finanzielleSituationJA =
+			finanzielleSituationContainer.getFinanzielleSituationJA();
 
-		if (this.isFKJV() && finanzielleSituationJA.getEinkommenInVereinfachtemVerfahrenAbgerechnet() != null
-			&& finanzielleSituationJA.getEinkommenInVereinfachtemVerfahrenAbgerechnet()) {
+		if (this.isFKJV()
+			&& finanzielleSituationJA
+				.getEinkommenInVereinfachtemVerfahrenAbgerechnet()
+				!= null
+			&& finanzielleSituationJA
+				.getEinkommenInVereinfachtemVerfahrenAbgerechnet()) {
 			add(
 				getDokument(
 					DokumentTyp.NACHWEIS_EINKOMMEN_VERFAHREN,
@@ -168,7 +198,7 @@ public class BernFinanzielleSituationDokumente extends AbstractFinanzielleSituat
 		if (Boolean.TRUE.equals(finanzielleSituationJA.getSteuerdatenZugriff())
 			&& finanzielleSituationJA.getSteuerdatenAbfrageStatus() != null
 			&& finanzielleSituationJA.getSteuerdatenAbfrageStatus()
-			.isSteuerdatenAbfrageErfolgreich()) {
+				.isSteuerdatenAbfrageErfolgreich()) {
 			return;
 		}
 
@@ -253,13 +283,20 @@ public class BernFinanzielleSituationDokumente extends AbstractFinanzielleSituat
 	}
 
 	@Override
-	protected boolean isJahresLohnausweisNeeded(@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation) {
+	protected boolean isJahresLohnausweisNeeded(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation
+	) {
 		if (abstractFinanzielleSituation instanceof FinanzielleSituation) {
-			FinanzielleSituation finanzielleSituation = (FinanzielleSituation) abstractFinanzielleSituation;
+			FinanzielleSituation finanzielleSituation =
+				(FinanzielleSituation) abstractFinanzielleSituation;
 
-			return !finanzielleSituation.getSteuerveranlagungErhalten() &&
-				finanzielleSituation.getNettolohn() != null &&
-				finanzielleSituation.getNettolohn().compareTo(BigDecimal.ZERO) > 0;
+			return !finanzielleSituation.getSteuerveranlagungErhalten()
+				&&
+				finanzielleSituation.getNettolohn() != null
+				&&
+				finanzielleSituation.getNettolohn()
+					.compareTo(BigDecimal.ZERO)
+					> 0;
 		}
 		return false;
 	}
@@ -267,19 +304,47 @@ public class BernFinanzielleSituationDokumente extends AbstractFinanzielleSituat
 	@Override
 	protected boolean isErfolgsrechnungNeeded(
 		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation,
-		int minus) {
+		int minus
+	) {
 		if (abstractFinanzielleSituation instanceof FinanzielleSituation) {
-			FinanzielleSituation finanzielleSituation = (FinanzielleSituation) abstractFinanzielleSituation;
+			FinanzielleSituation finanzielleSituation =
+				(FinanzielleSituation) abstractFinanzielleSituation;
 			switch (minus) {
 			case 0:
-				return !finanzielleSituation.getSteuerveranlagungErhalten()
-					&& (finanzielleSituation.getGeschaeftsgewinnBasisjahr() != null);
+				return finanzielleSituation.getGeschaeftsgewinnBasisjahr()
+					!= null;
 			case 1:
-				return !finanzielleSituation.getSteuerveranlagungErhalten()
-					&& (finanzielleSituation.getGeschaeftsgewinnBasisjahrMinus1() != null);
+				return finanzielleSituation
+					.getGeschaeftsgewinnBasisjahrMinus1()
+					!= null;
 			case 2:
-				return !finanzielleSituation.getSteuerveranlagungErhalten()
-					&& (finanzielleSituation.getGeschaeftsgewinnBasisjahrMinus2() != null);
+				return finanzielleSituation
+					.getGeschaeftsgewinnBasisjahrMinus2()
+					!= null;
+			default:
+				return false;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	protected boolean isErfolgsrechnungNeededForSteuerveranlagung(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation,
+		int basisJahrMinus
+	) {
+		if (abstractFinanzielleSituation instanceof FinanzielleSituation) {
+			FinanzielleSituation finanzielleSituation =
+				(FinanzielleSituation) abstractFinanzielleSituation;
+			switch (basisJahrMinus) {
+			case 1:
+				return finanzielleSituation
+					.getGeschaeftsgewinnBasisjahrMinus1()
+					!= null;
+			case 2:
+				return finanzielleSituation
+					.getGeschaeftsgewinnBasisjahrMinus2()
+					!= null;
 			default:
 				return false;
 			}
@@ -290,18 +355,29 @@ public class BernFinanzielleSituationDokumente extends AbstractFinanzielleSituat
 	@Override
 	protected boolean isNachweisErsatzeinkommenSelbststaendigkeitNeeded(
 		AbstractFinanzielleSituation abstractFinanzielleSituation,
-		int basisjahr) {
+		int basisjahr
+	) {
 		if (abstractFinanzielleSituation instanceof FinanzielleSituation) {
-			FinanzielleSituation finanzielleSituation = (FinanzielleSituation) abstractFinanzielleSituation;
+			FinanzielleSituation finanzielleSituation =
+				(FinanzielleSituation) abstractFinanzielleSituation;
 			switch (basisjahr) {
-				case 0:
-					return hasValueBigerThanZero(finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahr());
-				case 1:
-					return hasValueBigerThanZero(finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1());
-				case 2:
-					return hasValueBigerThanZero(finanzielleSituation.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2());
-				default:
-					return false;
+			case 0:
+				return hasValueBigerThanZero(
+					finanzielleSituation
+						.getErsatzeinkommenSelbststaendigkeitBasisjahr()
+				);
+			case 1:
+				return hasValueBigerThanZero(
+					finanzielleSituation
+						.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus1()
+				);
+			case 2:
+				return hasValueBigerThanZero(
+					finanzielleSituation
+						.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2()
+				);
+			default:
+				return false;
 			}
 		}
 		return false;

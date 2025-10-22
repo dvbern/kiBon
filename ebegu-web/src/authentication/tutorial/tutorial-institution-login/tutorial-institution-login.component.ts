@@ -16,86 +16,37 @@
  */
 
 import {Component, Input} from '@angular/core';
-import {StateService, TargetState} from '@uirouter/core';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSBenutzer} from '../../../models/TSBenutzer';
-import {TSInstitution} from '../../../models/TSInstitution';
-import {TSMandant} from '../../../models/TSMandant';
-import {returnToOriginalState} from '../../../utils/AuthenticationUtil';
+import {TargetState} from '@uirouter/core';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
+import {MandantService} from '@kibon/shared-util-mandant-service';
+import {KiBonMandant} from '@kibon/shared-model-mandant';
 
 @Component({
     selector: 'dv-tutorial-institution-login',
     templateUrl: './tutorial-institution-login.component.html',
-    styleUrls: ['../tutorial-login.component.less']
+    styleUrls: ['../tutorial-login.component.less'],
+    standalone: false
 })
 export class TutorialInstitutionLoginComponent {
-    private static readonly ID_KITA_TUTORIAL =
-        '22222222-1111-1111-1111-444444444444';
-
     @Input() public returnTo: TargetState;
 
-    // Only the role Sachbearbeiter. This simplifies the tutorial and gives the user a restricted access
-    public sachbearbeiterInstitutionKitaTutorial: TSBenutzer;
-
-    private readonly mandant: TSMandant;
-    private readonly institutionTutorial: TSInstitution;
+    private mandant: KiBonMandant;
 
     public constructor(
         private readonly authServiceRS: AuthServiceRS,
-        private readonly stateService: StateService
+        private readonly mandantService: MandantService
     ) {
-        this.mandant = TutorialInstitutionLoginComponent.getMandant();
-        this.institutionTutorial = this.getInsitution();
-
-        this.initUsers();
-    }
-
-    /**
-     * Der Mandant wird direkt gegeben. Diese Daten und die Daten der DB muessen uebereinstimmen
-     */
-    private static getMandant(): TSMandant {
-        const mandant = new TSMandant();
-        mandant.name = 'TestMandant';
-        mandant.id = 'e3736eb8-6eef-40ef-9e52-96ab48d8f220';
-        return mandant;
-    }
-
-    private initUsers(): void {
-        this.createInstitutionUsers();
-    }
-
-    private createInstitutionUsers(): void {
-        this.sachbearbeiterInstitutionKitaTutorial = new TSBenutzer(
-            'Sophie',
-            'Tutorial',
-            'tuso',
-            'password9',
-            'sophie.tutorial@example.com',
-            this.mandant,
-            TSRole.SACHBEARBEITER_INSTITUTION,
-            undefined,
-            this.institutionTutorial
-        );
-    }
-
-    /**
-     * Die Institution wird direkt gegeben. Diese Daten und die Daten der DB muessen uebereinstimmen
-     */
-    private getInsitution(): TSInstitution {
-        const institution = new TSInstitution();
-        institution.name = 'Kita kiBon';
-        institution.id = TutorialInstitutionLoginComponent.ID_KITA_TUTORIAL;
-        institution.traegerschaft = undefined;
-        institution.mandant = this.mandant;
-        return institution;
+        this.mandantService.mandant$.subscribe(mandant => {
+            this.mandant = mandant;
+        });
     }
 
     public logIn(): void {
-        this.authServiceRS
-            .loginRequest(this.sachbearbeiterInstitutionKitaTutorial)
-            .then(() =>
-                returnToOriginalState(this.stateService, this.returnTo)
-            );
+        const hostname = this.mandant.hostname;
+
+        this.authServiceRS.initLoginReturnToTargetState(
+            this.returnTo,
+            `sophie.tutorial.${hostname}.persona@mailbucket.dvbern.ch`
+        );
     }
 }

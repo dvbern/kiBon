@@ -15,19 +15,24 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Kinderabzug;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * DTO fuer Stammdaten der Kinder
@@ -47,7 +52,7 @@ public class JaxKind extends JaxAbstractPersonDTO {
 	private Kinderabzug kinderabzugZweitesHalbjahr;
 
 	@Nullable
-	private Boolean isPflegekind;
+	private Boolean pflegekind;
 
 	@Nullable
 	private Boolean pflegeEntschaedigungErhalten;
@@ -83,7 +88,8 @@ public class JaxKind extends JaxAbstractPersonDTO {
 	private Boolean keinPlatzInSchulhort = false;
 
 	@Nonnull
-	private Collection<@Valid JaxPensumFachstelle> pensumFachstellen = new LinkedHashSet<>();
+	private Collection<@Valid JaxPensumFachstelle> pensumFachstellen =
+		new LinkedHashSet<>();
 
 	@Nullable
 	private JaxPensumAusserordentlicherAnspruch pensumAusserordentlicherAnspruch;
@@ -108,12 +114,29 @@ public class JaxKind extends JaxAbstractPersonDTO {
 	@Nullable
 	private Boolean hoehereBeitraegeUnterlagenDigital;
 
+	@Getter
+	@Setter
+	private boolean gueltigkeitTerminiert;
+
+	@Getter
+	@Setter
+	@Nullable
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
+	private LocalDate gueltigkeitTerminiertPer;
+
+	@Getter
+	@Setter
+	@Nullable
+	private String gueltigkeitTerminiertKommentar;
+
 	@Nullable
 	public Kinderabzug getKinderabzugErstesHalbjahr() {
 		return kinderabzugErstesHalbjahr;
 	}
 
-	public void setKinderabzugErstesHalbjahr(@Nullable Kinderabzug kinderabzugErstesHalbjahr) {
+	public void setKinderabzugErstesHalbjahr(
+		@Nullable Kinderabzug kinderabzugErstesHalbjahr
+	) {
 		this.kinderabzugErstesHalbjahr = kinderabzugErstesHalbjahr;
 	}
 
@@ -122,17 +145,19 @@ public class JaxKind extends JaxAbstractPersonDTO {
 		return kinderabzugZweitesHalbjahr;
 	}
 
-	public void setKinderabzugZweitesHalbjahr(@Nullable Kinderabzug kinderabzugZweitesHalbjahr) {
+	public void setKinderabzugZweitesHalbjahr(
+		@Nullable Kinderabzug kinderabzugZweitesHalbjahr
+	) {
 		this.kinderabzugZweitesHalbjahr = kinderabzugZweitesHalbjahr;
 	}
 
 	@Nullable
 	public Boolean getPflegekind() {
-		return isPflegekind;
+		return pflegekind;
 	}
 
-	public void setPflegekind(@Nullable Boolean pflegekind) {
-		isPflegekind = pflegekind;
+	public void setPflegekind(@Nullable Boolean setPflegekind) {
+		pflegekind = setPflegekind;
 	}
 
 	@Nullable
@@ -140,7 +165,9 @@ public class JaxKind extends JaxAbstractPersonDTO {
 		return pflegeEntschaedigungErhalten;
 	}
 
-	public void setPflegeEntschaedigungErhalten(@Nullable Boolean pflegeEntschaedigungErhalten) {
+	public void setPflegeEntschaedigungErhalten(
+		@Nullable Boolean pflegeEntschaedigungErhalten
+	) {
 		this.pflegeEntschaedigungErhalten = pflegeEntschaedigungErhalten;
 	}
 
@@ -149,7 +176,9 @@ public class JaxKind extends JaxAbstractPersonDTO {
 		return obhutAlternierendAusueben;
 	}
 
-	public void setObhutAlternierendAusueben(@Nullable Boolean obhutAlternierendAusueben) {
+	public void setObhutAlternierendAusueben(
+		@Nullable Boolean obhutAlternierendAusueben
+	) {
 		this.obhutAlternierendAusueben = obhutAlternierendAusueben;
 	}
 
@@ -176,7 +205,9 @@ public class JaxKind extends JaxAbstractPersonDTO {
 		return lebtKindAlternierend;
 	}
 
-	public void setLebtKindAlternierend(@Nullable Boolean lebtKindAlternierend) {
+	public void setLebtKindAlternierend(
+		@Nullable Boolean lebtKindAlternierend
+	) {
 		this.lebtKindAlternierend = lebtKindAlternierend;
 	}
 
@@ -202,7 +233,9 @@ public class JaxKind extends JaxAbstractPersonDTO {
 		return familienErgaenzendeBetreuung;
 	}
 
-	public void setFamilienErgaenzendeBetreuung(Boolean familienErgaenzendeBetreuung) {
+	public void setFamilienErgaenzendeBetreuung(
+		Boolean familienErgaenzendeBetreuung
+	) {
 		this.familienErgaenzendeBetreuung = familienErgaenzendeBetreuung;
 	}
 
@@ -215,13 +248,14 @@ public class JaxKind extends JaxAbstractPersonDTO {
 		this.sprichtAmtssprache = sprichtAmtssprache;
 	}
 
-
 	@Nonnull
 	public Collection<JaxPensumFachstelle> getPensumFachstellen() {
 		return pensumFachstellen;
 	}
 
-	public void setPensumFachstellen(@Nonnull Collection<JaxPensumFachstelle> pensumFachstellen) {
+	public void setPensumFachstellen(
+		@Nonnull Collection<JaxPensumFachstelle> pensumFachstellen
+	) {
 		this.pensumFachstellen = pensumFachstellen;
 	}
 
@@ -240,8 +274,10 @@ public class JaxKind extends JaxAbstractPersonDTO {
 	}
 
 	public void setPensumAusserordentlicherAnspruch(
-		@Nullable JaxPensumAusserordentlicherAnspruch pensumAusserordentlicherAnspruch) {
-		this.pensumAusserordentlicherAnspruch = pensumAusserordentlicherAnspruch;
+		@Nullable JaxPensumAusserordentlicherAnspruch pensumAusserordentlicherAnspruch
+	) {
+		this.pensumAusserordentlicherAnspruch =
+			pensumAusserordentlicherAnspruch;
 	}
 
 	@Nullable
@@ -313,8 +349,10 @@ public class JaxKind extends JaxAbstractPersonDTO {
 	}
 
 	public void setHoehereBeitraegeWegenBeeintraechtigungBeantragen(
-		boolean hoehereBeitraegeWegenBeeintraechtigungBeantragen) {
-		this.hoehereBeitraegeWegenBeeintraechtigungBeantragen = hoehereBeitraegeWegenBeeintraechtigungBeantragen;
+		boolean hoehereBeitraegeWegenBeeintraechtigungBeantragen
+	) {
+		this.hoehereBeitraegeWegenBeeintraechtigungBeantragen =
+			hoehereBeitraegeWegenBeeintraechtigungBeantragen;
 	}
 
 	@Nullable
@@ -322,7 +360,10 @@ public class JaxKind extends JaxAbstractPersonDTO {
 		return hoehereBeitraegeUnterlagenDigital;
 	}
 
-	public void setHoehereBeitraegeUnterlagenDigital(@Nullable Boolean hoehereBeitraegeUnterlagenDigital) {
-		this.hoehereBeitraegeUnterlagenDigital = hoehereBeitraegeUnterlagenDigital;
+	public void setHoehereBeitraegeUnterlagenDigital(
+		@Nullable Boolean hoehereBeitraegeUnterlagenDigital
+	) {
+		this.hoehereBeitraegeUnterlagenDigital =
+			hoehereBeitraegeUnterlagenDigital;
 	}
 }

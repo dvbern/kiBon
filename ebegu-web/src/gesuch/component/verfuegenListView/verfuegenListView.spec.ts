@@ -14,20 +14,24 @@
  */
 
 import {StateService} from '@uirouter/core';
-import {IHttpBackendService, IQService, IScope} from 'angular';
+import angular, {IHttpBackendService, IQService, IScope} from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {CORE_JS_MODULE} from '../../../app/core/core.angularjs.module';
+import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
 import {TSFinanzielleSituationResultateDTO} from '../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
+import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSDossier} from '../../../models/TSDossier';
-import {TSEinstellung} from '../../../models/TSEinstellung';
-import {TSGemeinde} from '../../../models/TSGemeinde';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+import {TSGemeindeStammdatenLite} from '../../../models/TSGemeindeStammdatenLite';
+import {TSGemeinde} from '@kibon/shared/model/entity';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSGesuchsteller} from '../../../models/TSGesuchsteller';
+import {TSGesuchstellerContainer} from '../../../models/TSGesuchstellerContainer';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {GESUCH_JS_MODULE} from '../../gesuch.module';
@@ -35,6 +39,7 @@ import {BerechnungsManager} from '../../service/berechnungsManager';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {VerfuegenListViewController} from './verfuegenListView';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 
 describe('verfuegenListViewTest', () => {
     const verfuegenView = 'gesuch.verfuegenView';
@@ -48,6 +53,8 @@ describe('verfuegenListViewTest', () => {
     let $rootScope: IScope;
     let $httpBackend: IHttpBackendService;
     let einstellungRS: EinstellungRS;
+    let gesuchsperiodeRS: GesuchsperiodeRS;
+    let appPropRs: SharedUtilApplicationPropertyRsService;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
     beforeEach(angular.mock.module(GESUCH_JS_MODULE.name));
@@ -64,6 +71,8 @@ describe('verfuegenListViewTest', () => {
             $rootScope = $injector.get('$rootScope');
             $httpBackend = $injector.get('$httpBackend');
             einstellungRS = $injector.get('EinstellungRS');
+            gesuchsperiodeRS = $injector.get('GesuchsperiodeRS');
+            appPropRs = $injector.get('SharedUtilApplicationPropertyRsService');
             tsKindContainer = new TSKindContainer();
             tsKindContainer.kindNummer = 1;
             const wizardStepManager: WizardStepManager =
@@ -75,6 +84,9 @@ describe('verfuegenListViewTest', () => {
                 gesuchModelManager,
                 'getKinderWithBetreuungList'
             ).and.returnValue([tsKindContainer]);
+            spyOn(gesuchsperiodeRS, 'existDokument').and.returnValue(
+                $q.resolve(true)
+            );
             spyOn(gesuchModelManager, 'calculateVerfuegungen').and.returnValue(
                 $q.resolve()
             );
@@ -84,6 +96,10 @@ describe('verfuegenListViewTest', () => {
             gesuchMock.dossier.gemeinde = new TSGemeinde();
             const gemeindeId = 'mock-gemeinde-id';
             gesuchMock.dossier.gemeinde.id = gemeindeId;
+            gesuchMock.gesuchsteller1 = new TSGesuchstellerContainer();
+            gesuchMock.gesuchsteller1.gesuchstellerJA = new TSGesuchsteller();
+            gesuchModelManager.gemeindeStammdaten =
+                new TSGemeindeStammdatenLite();
             spyOn(gesuchModelManager, 'getGesuch').and.returnValue(gesuchMock);
             spyOn(gesuchModelManager, 'getDossier').and.returnValue(
                 gesuchMock.dossier
@@ -126,7 +142,9 @@ describe('verfuegenListViewTest', () => {
                 $injector.get('$timeout'),
                 $injector.get('$translate'),
                 einstellungRS,
-                null
+                gesuchsperiodeRS,
+                null,
+                appPropRs
             );
             $rootScope.$apply();
         })

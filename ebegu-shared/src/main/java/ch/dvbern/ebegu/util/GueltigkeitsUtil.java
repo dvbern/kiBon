@@ -38,7 +38,8 @@ public final class GueltigkeitsUtil {
 	@Nonnull
 	public static <T extends Gueltigkeit> Optional<T> findAnyAtStichtag(
 		@Nonnull Collection<T> entities,
-		@Nonnull LocalDate stichtag) {
+		@Nonnull LocalDate stichtag
+	) {
 
 		return entities.stream()
 			.filter(e -> e.getGueltigkeit().contains(stichtag))
@@ -50,20 +51,32 @@ public final class GueltigkeitsUtil {
 	 * zurueck gegeben.
 	 */
 	@Nonnull
-	public static <T extends Gueltigkeit> Optional<T> findLast(@Nonnull Collection<T> existingEntities) {
+	public static <T extends Gueltigkeit> Optional<T> findLast(
+		@Nonnull Collection<T> existingEntities
+	) {
 		return existingEntities.stream().max(Gueltigkeit.GUELTIG_AB_COMPARATOR);
 	}
 
 	@Nonnull
-	public static <T extends Gueltigkeit> Optional<T> findFirst(@Nonnull List<T> entities) {
+	public static <T extends Gueltigkeit> Optional<T> findFirst(
+		@Nonnull List<T> entities
+	) {
 		checkNotNull(entities);
 		Optional<T> first = entities.stream()
-			.reduce((a, b) -> a.getGueltigkeit().getGueltigAb().isBefore(b.getGueltigkeit().getGueltigAb()) ? a : b);
+			.reduce(
+				(a, b) -> a.getGueltigkeit()
+					.getGueltigAb()
+					.isBefore(b.getGueltigkeit().getGueltigAb()) ?
+						a :
+						b
+			);
 
 		return first;
 	}
 
-	public static <T extends Gueltigkeit> boolean hasOverlapingGueltigkeit(@Nonnull Collection<T> entities) {
+	public static <T extends Gueltigkeit> boolean hasOverlapingGueltigkeit(
+		@Nonnull Collection<T> entities
+	) {
 		List<DateRange> collect = entities.stream()
 			.map(Gueltigkeit::getGueltigkeit)
 			.collect(Collectors.toList());
@@ -88,6 +101,8 @@ public final class GueltigkeitsUtil {
 		@Nonnull DateRange requireIntersection
 	) {
 		return entities.stream()
-			.allMatch(e -> e.getGueltigkeit().intersects(requireIntersection));
+			.allMatch(
+				e -> e.getGueltigkeit().intersects(requireIntersection)
+			);
 	}
 }

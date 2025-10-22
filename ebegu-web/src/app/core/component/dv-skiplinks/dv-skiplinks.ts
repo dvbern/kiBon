@@ -14,7 +14,7 @@
  */
 
 import {StateService, UIRouterGlobals} from '@uirouter/core';
-import {IComponentOptions} from 'angular';
+import {IComponentOptions, element} from 'angular';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {IDVFocusableController} from '../IDVFocusableController';
 
@@ -63,24 +63,23 @@ export class DvSkiplinksController implements IDVFocusableController {
     }
 
     public focusLink(a: string): void {
-        angular.element(a).focus();
+        element(a).focus();
     }
 
     public focusToolbar(): void {
-        angular
-            .element('.dossier-toolbar-gesuchsteller.desktop button')
+        element('.dossier-toolbar-gesuchsteller.desktop button')
             .first()
             .focus();
     }
 
     public focusSidenav(): void {
-        angular.element('.sidenav.gesuch-menu button').first().focus();
+        element('.sidenav.gesuch-menu button').first().focus();
     }
 
     /**
      * Sets the focus back to the Kontakt icon.
      */
     public setFocusBack(): void {
-        angular.element('#SKIP_4').first().focus();
+        element('#SKIP_4').first().focus();
     }
 }

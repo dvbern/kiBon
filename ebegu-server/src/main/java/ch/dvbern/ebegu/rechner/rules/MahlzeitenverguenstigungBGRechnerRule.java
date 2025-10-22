@@ -8,14 +8,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner.rules;
+
+import java.math.BigDecimal;
+import java.util.Locale;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.enums.MsgKey;
@@ -23,17 +28,15 @@ import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
 import ch.dvbern.ebegu.rechner.RechnerRuleParameterDTO;
 import ch.dvbern.ebegu.util.MathUtil;
 
-import javax.annotation.Nonnull;
-import java.math.BigDecimal;
-import java.util.Locale;
-
 /**
  * Regel die angewendet wird um die Mahlzeitenvergünstigung zu berechnen
  */
-public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule {
+public final class MahlzeitenverguenstigungBGRechnerRule implements
+	RechnerRule {
 
 	private static final MathUtil MATH = MathUtil.DEFAULT;
-	private static final BigDecimal MAX_TAGE_MAHLZEITENVERGUENSTIGUNG = MATH.fromNullSafe(20);
+	private static final BigDecimal MAX_TAGE_MAHLZEITENVERGUENSTIGUNG = MATH
+		.fromNullSafe(20);
 	private final Locale locale;
 
 	public MahlzeitenverguenstigungBGRechnerRule(
@@ -43,16 +46,30 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 	}
 
 	private void addBemerkung(
-			@Nonnull BGCalculationInput inputData,
-			BGRechnerParameterDTO parameterDTO) {
-		inputData.addBemerkung(MsgKey.MAHLZEITENVERGUENSTIGUNG_BG, locale, parameterDTO.getMahlzeitenverguenstigungParameter().getMinimalerElternbeitragMahlzeit());
+		@Nonnull BGCalculationInput inputData,
+		BGRechnerParameterDTO parameterDTO
+	) {
+		inputData.addBemerkung(
+			MsgKey.MAHLZEITENVERGUENSTIGUNG_BG,
+			locale,
+			parameterDTO.getMahlzeitenverguenstigungParameter()
+				.getMinimalerElternbeitragMahlzeit()
+		);
 	}
 
 	private boolean validateInput(@Nonnull BGCalculationInput inputData) {
-		return (inputData.getAnzahlHauptmahlzeiten().compareTo(BigDecimal.ZERO) > 0 &&
-			inputData.getTarifHauptmahlzeit().compareTo(BigDecimal.ZERO) > 0) ||
-			(inputData.getAnzahlNebenmahlzeiten().compareTo(BigDecimal.ZERO) > 0 &&
-			inputData.getTarifNebenmahlzeit().compareTo(BigDecimal.ZERO) > 0);
+		return (inputData.getAnzahlHauptmahlzeiten().compareTo(BigDecimal.ZERO)
+			> 0
+			&&
+			inputData.getTarifHauptmahlzeit().compareTo(BigDecimal.ZERO)
+				> 0)
+			||
+			(inputData.getAnzahlNebenmahlzeiten().compareTo(BigDecimal.ZERO)
+				> 0
+				&&
+				inputData.getTarifNebenmahlzeit()
+					.compareTo(BigDecimal.ZERO)
+					> 0);
 	}
 
 	@Nonnull
@@ -66,63 +83,98 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 		@Nonnull BigDecimal bgPensumProzent
 	) {
 		// Ausgangslage fuer die Berechnung der maximalen Tage ist das BG-Pensum auf 5% gerundet.
-		BigDecimal anspruchForCalcMaxTage = MathUtil.roundToFivesUp(bgPensumProzent);
+		BigDecimal anspruchForCalcMaxTage = MathUtil.roundToFivesUp(
+			bgPensumProzent
+		);
 		// Das Maximum der Tage fuer einen 100% Platz muss aufgrund des effektiven Betreuungspensums umgerechnet werden:
 		final BigDecimal maxTageForBetreuungspensum = MATH.multiply(
 			MAX_TAGE_MAHLZEITENVERGUENSTIGUNG,
-			MATH.pctToFraction(anspruchForCalcMaxTage));
+			MATH.pctToFraction(anspruchForCalcMaxTage)
+		);
 
 		// Ein vollständiger Kita Tag besteht aus 2 Nebenmahlzeiten und 1 Hauptmahlzeit
 		BigDecimal anzahlNebenmahlzeitenStandardTag = new BigDecimal("2.00");
 
-		BigDecimal maxVerguenstigungProTagNebenmahlzeiten = getMaxVerguenstigungProTagNebenmahlzeiten(
-			tarifProNebenmahlzeit,
-			minElternbeitragProTag,
-			verguenstigungMahlzeit,
-			anzahlNebenmahlzeitenStandardTag);
+		BigDecimal maxVerguenstigungProTagNebenmahlzeiten =
+			getMaxVerguenstigungProTagNebenmahlzeiten(
+				tarifProNebenmahlzeit,
+				minElternbeitragProTag,
+				verguenstigungMahlzeit,
+				anzahlNebenmahlzeitenStandardTag
+			);
 
 		// Es duerfen insgesamt max. 20 Tage beruecksichtigt werden. Wir limitieren zuerst die Anzahl Hauptmahlzeiten
 		BigDecimal anzahlHauptmahlzeiten = MathUtil
-			.maximum(anzahlHauptmahlzeitenUngekuerzt, maxTageForBetreuungspensum);
+			.maximum(
+				anzahlHauptmahlzeitenUngekuerzt,
+				maxTageForBetreuungspensum
+			);
 		// Berechnen, wieviele Tage fuer eventuelle nicht beruecksichtigte Nebenmahlzeiten uebrigbleiben (min 0)
 		BigDecimal maxZusaetzlicheTageFuerNebenmahlzeiten =
 			MathUtil.minimum(
-				MATH.subtract(maxTageForBetreuungspensum, anzahlHauptmahlzeiten),
-				BigDecimal.ZERO);
+				MATH.subtract(
+					maxTageForBetreuungspensum,
+					anzahlHauptmahlzeiten
+				),
+				BigDecimal.ZERO
+			);
 
 		// Nicht in HMZ berechnete NMZ
-		BigDecimal nichtBerechneteNebenmahlzeitenUngekuerzt = getNichtInHauptmahlzeitenBerechneteNebenmahlzeiten(
-			anzahlHauptmahlzeiten, anzahlNebenmahlzeitenUngekuerzt, anzahlNebenmahlzeitenStandardTag);
-		BigDecimal nichtBerechneteNebenmahlzeiten = MathUtil.maximum(nichtBerechneteNebenmahlzeitenUngekuerzt,
-			MATH.multiply(maxZusaetzlicheTageFuerNebenmahlzeiten, anzahlNebenmahlzeitenStandardTag));
+		BigDecimal nichtBerechneteNebenmahlzeitenUngekuerzt =
+			getNichtInHauptmahlzeitenBerechneteNebenmahlzeiten(
+				anzahlHauptmahlzeiten,
+				anzahlNebenmahlzeitenUngekuerzt,
+				anzahlNebenmahlzeitenStandardTag
+			);
+		BigDecimal nichtBerechneteNebenmahlzeiten = MathUtil.maximum(
+			nichtBerechneteNebenmahlzeitenUngekuerzt,
+			MATH.multiply(
+				maxZusaetzlicheTageFuerNebenmahlzeiten,
+				anzahlNebenmahlzeitenStandardTag
+			)
+		);
 
 		// Tasächlicher Betrag MZV HMZ/ pro Tag
-		BigDecimal tatsaechlicherBetragProTagHauptmahlzeiten = getTatsaechlicherBetragProTag(
-			tarifProHauptmahlzeit, minElternbeitragProTag, verguenstigungMahlzeit);
+		BigDecimal tatsaechlicherBetragProTagHauptmahlzeiten =
+			getTatsaechlicherBetragProTag(
+				tarifProHauptmahlzeit,
+				minElternbeitragProTag,
+				verguenstigungMahlzeit
+			);
 
 		//Minimaler Betrag MZV NMZ/ pro Tag
-		BigDecimal minBetragProTagNebenmahlzeiten = getMinimaleVerguenstigungProTagNebenmahlzeiten(
-			tarifProNebenmahlzeit, minElternbeitragProTag, maxVerguenstigungProTagNebenmahlzeiten);
+		BigDecimal minBetragProTagNebenmahlzeiten =
+			getMinimaleVerguenstigungProTagNebenmahlzeiten(
+				tarifProNebenmahlzeit,
+				minElternbeitragProTag,
+				maxVerguenstigungProTagNebenmahlzeiten
+			);
 
 		// Vergünstigung HMZ:
-		BigDecimal verguenstigungHauptmahlzeiten = getVerguenstigungHauptmahlzeiten(
-			anzahlHauptmahlzeiten,
-			tatsaechlicherBetragProTagHauptmahlzeiten);
+		BigDecimal verguenstigungHauptmahlzeiten =
+			getVerguenstigungHauptmahlzeiten(
+				anzahlHauptmahlzeiten,
+				tatsaechlicherBetragProTagHauptmahlzeiten
+			);
 
 		// Vergünstigung der in HMZ nicht enthaltene NMZ:
 		BigDecimal verguenstigungNebenmahlzeiten = BigDecimal.ZERO;
-		if (nichtBerechneteNebenmahlzeiten.compareTo(BigDecimal.ZERO ) > 0) {
+		if (nichtBerechneteNebenmahlzeiten.compareTo(BigDecimal.ZERO) > 0) {
 			verguenstigungNebenmahlzeiten = getVerguenstigungNebenmahlzeiten(
-			anzahlNebenmahlzeitenStandardTag,
-			nichtBerechneteNebenmahlzeiten,
-			maxVerguenstigungProTagNebenmahlzeiten,
-			minBetragProTagNebenmahlzeiten);
+				anzahlNebenmahlzeitenStandardTag,
+				nichtBerechneteNebenmahlzeiten,
+				maxVerguenstigungProTagNebenmahlzeiten,
+				minBetragProTagNebenmahlzeiten
+			);
 		}
 
 		// Vergünstigung:
 		// =Q2+R2
 		// =Q2+R2
-		BigDecimal verguenstigung = MATH.addNullSafe(verguenstigungHauptmahlzeiten, verguenstigungNebenmahlzeiten);
+		BigDecimal verguenstigung = MATH.addNullSafe(
+			verguenstigungHauptmahlzeiten,
+			verguenstigungNebenmahlzeiten
+		);
 		return verguenstigung;
 	}
 
@@ -138,12 +190,20 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 		BigDecimal maxVerguenstigungProTagNebenmahlzeiten = MATH.subtract(
 			MATH.multiply(
 				anzahlNebenmahlzeitenStandardTag,
-				tarifProNebenmahlzeit),
-			minElternbeitragProTag);
+				tarifProNebenmahlzeit
+			),
+			minElternbeitragProTag
+		);
 		// aber maximal die definierte Verguenstigung aufgrund Einkommen
-		maxVerguenstigungProTagNebenmahlzeiten = MathUtil.maximum(maxVerguenstigungProTagNebenmahlzeiten, verguenstigungMahlzeit);
+		maxVerguenstigungProTagNebenmahlzeiten = MathUtil.maximum(
+			maxVerguenstigungProTagNebenmahlzeiten,
+			verguenstigungMahlzeit
+		);
 		// darf nicht negativ sein
-		maxVerguenstigungProTagNebenmahlzeiten = MathUtil.minimum(maxVerguenstigungProTagNebenmahlzeiten, BigDecimal.ZERO);
+		maxVerguenstigungProTagNebenmahlzeiten = MathUtil.minimum(
+			maxVerguenstigungProTagNebenmahlzeiten,
+			BigDecimal.ZERO
+		);
 		return maxVerguenstigungProTagNebenmahlzeiten;
 	}
 
@@ -157,8 +217,15 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 		// =WENN((anzahlNebenmahlzeiten-anzahlHauptmahlzeiten*2)<0;0;anzahlNebenmahlzeiten-anzahlHauptmahlzeiten*2)
 		BigDecimal nichtBerechneteNebenmahlzeiten = MATH.subtract(
 			anzahlNebenmahlzeiten,
-			MATH.multiply(anzahlHauptmahlzeiten, anzahlNebenmahlzeitenStandardTag));
-		nichtBerechneteNebenmahlzeiten = MathUtil.minimum(nichtBerechneteNebenmahlzeiten, BigDecimal.ZERO);
+			MATH.multiply(
+				anzahlHauptmahlzeiten,
+				anzahlNebenmahlzeitenStandardTag
+			)
+		);
+		nichtBerechneteNebenmahlzeiten = MathUtil.minimum(
+			nichtBerechneteNebenmahlzeiten,
+			BigDecimal.ZERO
+		);
 		return nichtBerechneteNebenmahlzeiten;
 	}
 
@@ -170,8 +237,14 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 	) {
 		// =WENN(MIN(F2-L2;K2)<0;0;MIN(F2-L2;K2))
 		// =WENN(MIN(tarifProHauptmahlzeit-minElternbeitragProTag;maxVerguenstigungProTag)<0;0;MIN(tarifProHauptmahlzeit-minElternbeitragProTag;maxVerguenstigungProTag))
-		BigDecimal tatsaechlicherBetragProTag = MathUtil.maximum(MATH.subtract(tarifProHauptmahlzeit, minElternbeitragProTag), maxVerguenstigungProTag);
-		tatsaechlicherBetragProTag = MathUtil.minimum(tatsaechlicherBetragProTag, BigDecimal.ZERO);
+		BigDecimal tatsaechlicherBetragProTag = MathUtil.maximum(
+			MATH.subtract(tarifProHauptmahlzeit, minElternbeitragProTag),
+			maxVerguenstigungProTag
+		);
+		tatsaechlicherBetragProTag = MathUtil.minimum(
+			tatsaechlicherBetragProTag,
+			BigDecimal.ZERO
+		);
 		return tatsaechlicherBetragProTag;
 	}
 
@@ -183,7 +256,10 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 	) {
 		// =WENN(MIN(H2-L2;K2)<0;0;MIN(H2-L2;K2))
 		// =WENN(MIN(tarifProNebenmahlzeit-minElternbeitragProTag;maxVerguenstigungProTag)<0;0;MIN(tarifProNebenmahlzeit-minElternbeitragProTag;maxVerguenstigungProTag))
-		BigDecimal minBetragProTag = MathUtil.maximum(MATH.subtract(tarifProNebenmahlzeit, minElternbeitragProTag), maxVerguenstigungProTag);
+		BigDecimal minBetragProTag = MathUtil.maximum(
+			MATH.subtract(tarifProNebenmahlzeit, minElternbeitragProTag),
+			maxVerguenstigungProTag
+		);
 		minBetragProTag = MathUtil.minimum(minBetragProTag, BigDecimal.ZERO);
 		return minBetragProTag;
 	}
@@ -195,7 +271,10 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 	) {
 		// =RUNDEN(M2*G2;2)
 		// =RUNDEN(tatsaechlicherBetragProTag*anzahlHauptmahlzeiten;2)
-		BigDecimal verguenstigungHauptmahlzeiten = MATH.multiply(tatsaechlicherBetragProTag, anzahlHauptmahlzeiten);
+		BigDecimal verguenstigungHauptmahlzeiten = MATH.multiply(
+			tatsaechlicherBetragProTag,
+			anzahlHauptmahlzeiten
+		);
 		return verguenstigungHauptmahlzeiten;
 	}
 
@@ -208,58 +287,84 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 	) {
 		// =WENN(ISTGERADE(J2);O2*J2/2;(O2*(J2-1)/2)+N2)
 		// =WENN(ISTGERADE(nichtBerechneteNebenmahlzeiten);maxBetragProTag*nichtBerechneteNebenmahlzeiten/2;(maxBetragProTag*(nichtBerechneteNebenmahlzeiten-1)/2)+N2)
-		boolean isEven = MathUtil.isEven(nichtBerechneteNebenmahlzeiten.intValue());
+		boolean isEven = MathUtil.isEven(
+			nichtBerechneteNebenmahlzeiten.intValue()
+		);
 
-		BigDecimal zuberuecksichtigendeAnzahlNebenmahlzeiten = nichtBerechneteNebenmahlzeiten;
+		BigDecimal zuberuecksichtigendeAnzahlNebenmahlzeiten =
+			nichtBerechneteNebenmahlzeiten;
 		if (!isEven) {
-			zuberuecksichtigendeAnzahlNebenmahlzeiten = MATH.subtract(zuberuecksichtigendeAnzahlNebenmahlzeiten, BigDecimal.ONE);
+			zuberuecksichtigendeAnzahlNebenmahlzeiten = MATH.subtract(
+				zuberuecksichtigendeAnzahlNebenmahlzeiten,
+				BigDecimal.ONE
+			);
 		}
 		BigDecimal verguenstigungNebenmahlzeiten = MATH.divide(
 			MATH.multiply(
 				zuberuecksichtigendeAnzahlNebenmahlzeiten,
-				maxBetragProTag),
-			anzahlNebenmahlzeitenStandardTag);
+				maxBetragProTag
+			),
+			anzahlNebenmahlzeitenStandardTag
+		);
 		if (!isEven) {
-			verguenstigungNebenmahlzeiten = MATH.add(verguenstigungNebenmahlzeiten, minBetragProTag);
+			verguenstigungNebenmahlzeiten = MATH.add(
+				verguenstigungNebenmahlzeiten,
+				minBetragProTag
+			);
 		}
 		return verguenstigungNebenmahlzeiten;
 	}
 
 	@Override
-	public boolean isConfigueredForGemeinde(@Nonnull BGRechnerParameterDTO parameterDTO) {
+	public boolean isConfigueredForGemeinde(
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 		return parameterDTO.getMahlzeitenverguenstigungEnabled();
 	}
 
 	@Override
 	public boolean isRelevantForVerfuegung(
 		@Nonnull BGCalculationInput inputGemeinde,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
-		if(!inputGemeinde.getBetreuungsangebotTyp().isAngebotJugendamtKleinkind()){
+		if (!inputGemeinde.getBetreuungsangebotTyp()
+			.isAngebotJugendamtKleinkind()) {
 			return false;
 		}
 
-		if (!parameterDTO.getMahlzeitenverguenstigungParameter().isEnabled() ||
+		if (!parameterDTO.getMahlzeitenverguenstigungParameter().isEnabled()
+			||
 			!validateInput(inputGemeinde)) {
 			return false;
 		}
 
 		if (!inputGemeinde.getVerguenstigungMahlzeitenBeantragt()) {
-			inputGemeinde.addBemerkung(MsgKey.MAHLZEITENVERGUENSTIGUNG_BG_NEIN, locale);
+			inputGemeinde.addBemerkung(
+				MsgKey.MAHLZEITENVERGUENSTIGUNG_BG_NEIN,
+				locale
+			);
 			return false;
 		}
 
-		final BigDecimal massgebendesEinkommen = inputGemeinde.getMassgebendesEinkommen();
-		final boolean sozialhilfeempfaenger = inputGemeinde.isSozialhilfeempfaenger();
+		final BigDecimal massgebendesEinkommen = inputGemeinde
+			.getMassgebendesEinkommen();
+		final boolean sozialhilfeempfaenger = inputGemeinde
+			.isSozialhilfeempfaenger();
 
 		// Bemerkung, wenn keine Verguenstigung aufgrund Einkommen
-		if (!parameterDTO.getMahlzeitenverguenstigungParameter().hasAnspruch(massgebendesEinkommen, sozialhilfeempfaenger)) {
-			inputGemeinde.addBemerkung(MsgKey.MAHLZEITENVERGUENSTIGUNG_BG_NEIN, locale);
+		if (!parameterDTO.getMahlzeitenverguenstigungParameter()
+			.hasAnspruch(massgebendesEinkommen, sozialhilfeempfaenger)) {
+			inputGemeinde.addBemerkung(
+				MsgKey.MAHLZEITENVERGUENSTIGUNG_BG_NEIN,
+				locale
+			);
 			return false;
 		}
 
 		// Bei Abwesenheiten wird keine MZV ausbezahlt
-		if (inputGemeinde.isLongAbwesenheit() && inputGemeinde.isBezahltKompletteVollkosten()) {
+		if (inputGemeinde.isLongAbwesenheit()
+			&& inputGemeinde.isBezahltKompletteVollkosten()) {
 			return false;
 		}
 
@@ -270,14 +375,23 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 	public void prepareParameter(
 		@Nonnull BGCalculationInput inputGemeinde,
 		@Nonnull BGRechnerParameterDTO parameterDTO,
-		@Nonnull RechnerRuleParameterDTO rechnerParameter) {
+		@Nonnull RechnerRuleParameterDTO rechnerParameter
+	) {
 
-		final BigDecimal massgebendesEinkommen = inputGemeinde.getMassgebendesEinkommen();
-		final boolean sozialhilfeempfaenger = inputGemeinde.isSozialhilfeempfaenger();
+		final BigDecimal massgebendesEinkommen = inputGemeinde
+			.getMassgebendesEinkommen();
+		final boolean sozialhilfeempfaenger = inputGemeinde
+			.isSozialhilfeempfaenger();
 
 		BigDecimal verguenstigungMahlzeit =
-			parameterDTO.getMahlzeitenverguenstigungParameter().getVerguenstigungProMahlzeitWithParam(massgebendesEinkommen, sozialhilfeempfaenger);
-		BigDecimal selbstbehaltProTag = parameterDTO.getMahlzeitenverguenstigungParameter().getMinimalerElternbeitragMahlzeit();
+			parameterDTO.getMahlzeitenverguenstigungParameter()
+				.getVerguenstigungProMahlzeitWithParam(
+					massgebendesEinkommen,
+					sozialhilfeempfaenger
+				);
+		BigDecimal selbstbehaltProTag = parameterDTO
+			.getMahlzeitenverguenstigungParameter()
+			.getMinimalerElternbeitragMahlzeit();
 
 		final BigDecimal verguenstigung = berechneMahlzeitenverguenstigung(
 			inputGemeinde.getAnzahlHauptmahlzeiten(),
@@ -297,7 +411,9 @@ public final class MahlzeitenverguenstigungBGRechnerRule implements RechnerRule 
 	}
 
 	@Override
-	public void resetParameter(@Nonnull RechnerRuleParameterDTO rechnerParameter) {
+	public void resetParameter(
+		@Nonnull RechnerRuleParameterDTO rechnerParameter
+	) {
 		rechnerParameter.setVerguenstigungMahlzeitenTotal(BigDecimal.ZERO);
 	}
 }

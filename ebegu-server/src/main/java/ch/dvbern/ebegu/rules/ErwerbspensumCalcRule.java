@@ -15,34 +15,39 @@
 
 package ch.dvbern.ebegu.rules;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Mandant;
-import ch.dvbern.ebegu.enums.*;
+import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.Taetigkeit;
+import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nonnull;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
 import static java.util.Objects.requireNonNull;
 
 /**
- * Berechnet die hoehe des ErwerbspensumRule eines bestimmten Erwerbspensums
- * Diese Rule muss immer am Anfang kommen, d.h. sie setzt den initialen Anspruch
- * Die weiteren Rules müssen diesen Wert gegebenenfalls korrigieren.
- * ACHTUNG! Diese Regel gilt nur fuer Angebote vom Typ isAngebotJugendamtKleinkind
- * Verweis 16.9.2
+ * Berechnet die hoehe des ErwerbspensumRule eines bestimmten Erwerbspensums Diese Rule muss immer am Anfang kommen,
+ * d.h. sie
+ * setzt den initialen Anspruch Die weiteren Rules müssen diesen Wert gegebenenfalls korrigieren. ACHTUNG! Diese Regel
+ * gilt nur
+ * fuer Angebote vom Typ isAngebotJugendamtKleinkind Verweis 16.9.2
  */
-public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRule {
+public abstract class ErwerbspensumCalcRule extends
+	AbstractErwerbspensumCalcRule {
 
 	private final int minErwerbspensumNichtEingeschult;
 	private final int minErwerbspensumEingeschult;
@@ -56,8 +61,15 @@ public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRul
 		int paramMinDauerKonkubinat,
 		@Nonnull Locale locale
 	) {
-		super(RuleKey.ERWERBSPENSUM, RuleType.GRUNDREGEL_CALC, ruleValidity, validityPeriod, locale);
-		this.minErwerbspensumNichtEingeschult = minErwerbspensumNichtEingeschult;
+		super(
+			RuleKey.ERWERBSPENSUM,
+			RuleType.GRUNDREGEL_CALC,
+			ruleValidity,
+			validityPeriod,
+			locale
+		);
+		this.minErwerbspensumNichtEingeschult =
+			minErwerbspensumNichtEingeschult;
 		this.minErwerbspensumEingeschult = minErwerbspensumEingeschult;
 		this.paramMinDauerKonkubinat = paramMinDauerKonkubinat;
 	}
@@ -73,54 +85,88 @@ public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRul
 		@Nonnull BGCalculationInput inputData
 	) {
 		requireNonNull(platz.extractGesuch(), "Gesuch muss gesetzt sein");
-		requireNonNull(platz.extractGesuch().extractFamiliensituation(), "Familiensituation muss gesetzt sein");
-		boolean isErwerbspensumRelevantForGS2 = isErwerbspensumRelevantForGS2(platz, inputData);
+		requireNonNull(
+			platz.extractGesuch().extractFamiliensituation(),
+			"Familiensituation muss gesetzt sein"
+		);
+		boolean isErwerbspensumRelevantForGS2 = isErwerbspensumRelevantForGS2(
+			platz,
+			inputData
+		);
 		int erwerbspensumOffset = isErwerbspensumRelevantForGS2 ? 100 : 0;
 		// Erwerbspensum ist immer die erste Rule, d.h. es wird das Erwerbspensum mal als Anspruch angenommen
 		// Das Erwerbspensum muss PRO GESUCHSTELLER auf 100% limitiert werden
-		Integer erwerbspensum1 = calculateErwerbspensumGS1(inputData, getLocale());
+		Integer erwerbspensum1 = calculateErwerbspensumGS1(
+			inputData,
+			getLocale()
+		);
 		Integer erwerbspensum2 = 0;
 		if (isErwerbspensumRelevantForGS2) {
 			erwerbspensum2 = calculateErwerbspensumGS2(inputData, getLocale());
 		}
 		int anspruch = erwerbspensum1 + erwerbspensum2 - erwerbspensumOffset;
 		int minimum = getMinimumErwerbspensum(platz);
-		int roundedAnspruch = checkAndRoundAnspruch(inputData, anspruch, minimum, erwerbspensumOffset, getLocale(), platz.extractGesuch().extractMandant());
+		int roundedAnspruch = checkAndRoundAnspruch(
+			inputData,
+			anspruch,
+			minimum,
+			erwerbspensumOffset,
+			getLocale(),
+			platz.extractGesuch().extractMandant()
+		);
 		inputData.setAnspruchspensumProzent(roundedAnspruch);
 		inputData.setMinimalErforderlichesPensum(minimum);
 	}
 
-	protected boolean isErwerbspensumRelevantForGS2(@Nonnull AbstractPlatz platz, @Nonnull BGCalculationInput inputData) {
+	protected boolean isErwerbspensumRelevantForGS2(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull BGCalculationInput inputData
+	) {
 		final Gesuch gesuch = platz.extractGesuch();
 
-		if(!hasSecondGSForZeit(gesuch, inputData.getParent().getGueltigkeit())) {
+		if (!hasSecondGSForZeit(
+			gesuch,
+			inputData.getParent().getGueltigkeit()
+		)) {
 			return false;
 		}
 
-		final Familiensituation familiensituation = requireNonNull(gesuch.extractFamiliensituation());
-		return isErwerbspensumRelevantForExistingGS2(familiensituation, inputData.getParent().getGueltigkeit());
+		final Familiensituation familiensituation = requireNonNull(
+			gesuch.extractFamiliensituation()
+		);
+		return isErwerbspensumRelevantForExistingGS2(
+			familiensituation,
+			inputData.getParent().getGueltigkeit()
+		);
 	}
 
 	private int getMinimumErwerbspensum(@Nonnull AbstractPlatz betreuung) {
-		EinschulungTyp einschulungTyp = betreuung.getKind().getKindJA().getEinschulungTyp();
+		EinschulungTyp einschulungTyp = betreuung.getKind()
+			.getKindJA()
+			.getEinschulungTyp();
 		Objects.requireNonNull(einschulungTyp);
-		int mininum = einschulungTyp.isEingeschult() ? minErwerbspensumEingeschult : minErwerbspensumNichtEingeschult;
+		int mininum = einschulungTyp.isEingeschult() ?
+			minErwerbspensumEingeschult :
+			minErwerbspensumNichtEingeschult;
 		return mininum;
 	}
 
 	/**
-	 * Sollte der Anspruch weniger als 0 sein, wird dieser auf 0 gesetzt und eine Bemerkung eingefuegt.
-	 * Wenn der Anspruch groesser als 100 ist, wird dieser auf 100 gesetzt. Hier braucht es keine Bemerkung, denn sie
-	 * wurde bereits in calculateErwerbspensum eingefuegt.
-	 * Am Ende wird der Wert gerundet und zurueckgegeben
+	 * Sollte der Anspruch weniger als 0 sein, wird dieser auf 0 gesetzt und eine Bemerkung eingefuegt. Wenn der
+	 * Anspruch
+	 * groesser
+	 * als 100 ist, wird dieser auf 100 gesetzt. Hier braucht es keine Bemerkung, denn sie wurde bereits in
+	 * calculateErwerbspensum
+	 * eingefuegt. Am Ende wird der Wert gerundet und zurueckgegeben
 	 */
 	private int checkAndRoundAnspruch(
-			@Nonnull BGCalculationInput inputData,
-			int anspruch,
-			int minimum,
-			int erwerbspensumOffset,
-			@Nonnull Locale locale,
-			Mandant mandant) {
+		@Nonnull BGCalculationInput inputData,
+		int anspruch,
+		int minimum,
+		int erwerbspensumOffset,
+		@Nonnull Locale locale,
+		Mandant mandant
+	) {
 		if (anspruch <= 0) {
 			anspruch = 0;
 			inputData.setMinimalesEwpUnterschritten(true);
@@ -130,9 +176,17 @@ public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRul
 		if (anspruch < minimum) {
 			anspruch = 0;
 			// Falls schon eine Bemerkung mit einem eventuell anderen Minimum erstellt wurde, dieses zuerst entfernen
-			inputData.getParent().getBemerkungenDTOList().removeBemerkungByMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH);
+			inputData.getParent()
+				.getBemerkungenDTOList()
+				.removeBemerkungByMsgKey(
+					MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH
+				);
 			// Fuer die Bemerkung muss das Minimum fuer 2 GS 100 + x betragen!
-			inputData.addBemerkung(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH, locale, minimum + erwerbspensumOffset);
+			inputData.addBemerkung(
+				MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH,
+				locale,
+				minimum + erwerbspensumOffset
+			);
 			inputData.setMinimalesEwpUnterschritten(true);
 		} else {
 			// Wir haben das Minimum erreicht. Der Anspruch wird daher um den Default-Zuschlag erhöht
@@ -144,7 +198,11 @@ public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRul
 			// Falls durch eine vorherige Erwerbspensum-Regel bereits auf KEIN-ANSPRUCH gesetzt war, muss sowohl
 			// das Flag wie auch die Bemerkung zurueckgesetzt werden (umgekehrt kann es nicht vorkommen)
 			inputData.setMinimalesEwpUnterschritten(false);
-			inputData.getParent().getBemerkungenDTOList().removeBemerkungByMsgKey(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH);
+			inputData.getParent()
+				.getBemerkungenDTOList()
+				.removeBemerkungByMsgKey(
+					MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH
+				);
 		}
 		if (anspruch > 100) { // das Ergebniss darf nie mehr als 100 sein
 			anspruch = 100;
@@ -154,10 +212,19 @@ public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRul
 	}
 
 	protected void addVerfuegungsBemerkung(
-			@Nonnull BGCalculationInput inputData,
-			Mandant mandant) {
-		String vorhandeneBeschaeftigungen = getBeschaeftigungsTypen(inputData, getLocale(), mandant);
-		inputData.addBemerkung(MsgKey.ERWERBSPENSUM_ANSPRUCH, getLocale(), vorhandeneBeschaeftigungen);
+		@Nonnull BGCalculationInput inputData,
+		Mandant mandant
+	) {
+		String vorhandeneBeschaeftigungen = getBeschaeftigungsTypen(
+			inputData,
+			getLocale(),
+			mandant
+		);
+		inputData.addBemerkung(
+			MsgKey.ERWERBSPENSUM_ANSPRUCH,
+			getLocale(),
+			vorhandeneBeschaeftigungen
+		);
 	}
 
 	@Nonnull
@@ -165,8 +232,15 @@ public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRul
 		@Nonnull BGCalculationInput inputData,
 		@Nonnull Locale locale
 	) {
-		Integer erwerbspensum = inputData.getErwerbspensumGS1() != null ? inputData.getErwerbspensumGS1() : 0;
-		return calculateErwerbspensum(inputData, erwerbspensum, MsgKey.ERWERBSPENSUM_GS1_MSG, locale);
+		Integer erwerbspensum = inputData.getErwerbspensumGS1() != null ?
+			inputData.getErwerbspensumGS1() :
+			0;
+		return calculateErwerbspensum(
+			inputData,
+			erwerbspensum,
+			MsgKey.ERWERBSPENSUM_GS1_MSG,
+			locale
+		);
 	}
 
 	@Nonnull
@@ -174,13 +248,24 @@ public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRul
 		@Nonnull BGCalculationInput inputData,
 		@Nonnull Locale locale
 	) {
-		Integer erwerbspensum = inputData.getErwerbspensumGS2() != null ? inputData.getErwerbspensumGS2() : 0;
-		return calculateErwerbspensum(inputData, erwerbspensum, MsgKey.ERWERBSPENSUM_GS2_MSG, locale);
+		Integer erwerbspensum = inputData.getErwerbspensumGS2() != null ?
+			inputData.getErwerbspensumGS2() :
+			0;
+		return calculateErwerbspensum(
+			inputData,
+			erwerbspensum,
+			MsgKey.ERWERBSPENSUM_GS2_MSG,
+			locale
+		);
 	}
 
 	@Nonnull
-	private Integer calculateErwerbspensum(@Nonnull BGCalculationInput inputData, @Nonnull Integer erwerbspensum, @Nonnull MsgKey bemerkung,
-		@Nonnull Locale locale) {
+	private Integer calculateErwerbspensum(
+		@Nonnull BGCalculationInput inputData,
+		@Nonnull Integer erwerbspensum,
+		@Nonnull MsgKey bemerkung,
+		@Nonnull Locale locale
+	) {
 		if (erwerbspensum > 100) {
 			erwerbspensum = 100;
 			inputData.addBemerkung(bemerkung, locale);
@@ -191,13 +276,19 @@ public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRul
 	/**
 	 * Grundsätzlich ist das EWP für GS2 relevant.
 	 *
-	 * Einzige Ausnahme bietet folgender Spezialfall innerhalb einer FKJV Periode:
-	 * Die elterliche Obhut findet nicht in zwei Haushalten statt (Familiensituation#geteilteObhut)
-	 * und es wurde keine Unterhaltsvereinbarung abgeschlossen (Familiensituation#unterhaltsvereinbarung).
-	 * Sind diese Bedinungen erfüllt gibt es zwei Gesuschsteller, es ist allerdings nur das Erwerbspensum von GS1 relevant
+	 * Einzige Ausnahme bietet folgender Spezialfall innerhalb einer FKJV Periode: Die elterliche Obhut findet nicht in
+	 * zwei
+	 * Haushalten statt (Familiensituation#geteilteObhut) und es wurde keine Unterhaltsvereinbarung abgeschlossen
+	 * (Familiensituation#unterhaltsvereinbarung). Sind diese Bedinungen erfüllt gibt es zwei Gesuschsteller, es ist
+	 * allerdings
+	 * nur das Erwerbspensum von GS1 relevant
 	 */
-	private boolean isErwerbspensumRelevantForExistingGS2(@Nonnull Familiensituation familiensituation, DateRange zeitabschnitt) {
-		if (familiensituation.getUnterhaltsvereinbarung() != UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG) {
+	private boolean isErwerbspensumRelevantForExistingGS2(
+		@Nonnull Familiensituation familiensituation,
+		DateRange zeitabschnitt
+	) {
+		if (familiensituation.getUnterhaltsvereinbarung()
+			!= UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG) {
 			return true;
 		}
 
@@ -207,23 +298,37 @@ public abstract class ErwerbspensumCalcRule extends AbstractErwerbspensumCalcRul
 			return false;
 		}
 
-		LocalDate dateKonkubinatMinDauerReached = familiensituation.getStartKonkubinat().plusYears(paramMinDauerKonkubinat);
-		return dateKonkubinatMinDauerReached.isBefore(zeitabschnitt.getGueltigAb());
+		LocalDate dateKonkubinatMinDauerReached = familiensituation
+			.getStartKonkubinat()
+			.plusYears(paramMinDauerKonkubinat);
+		return dateKonkubinatMinDauerReached.isBefore(
+			zeitabschnitt.getGueltigAb()
+		);
 	}
 
 	@Nonnull
 	private String getBeschaeftigungsTypen(
-			@Nonnull BGCalculationInput inputData,
-			@Nonnull Locale locale,
-			Mandant mandant) {
+		@Nonnull BGCalculationInput inputData,
+		@Nonnull Locale locale,
+		Mandant mandant
+	) {
 		StringBuilder sb = new StringBuilder();
 		for (Taetigkeit taetigkeit : inputData.getTaetigkeiten()) {
-			sb.append(ServerMessageUtil.translateEnumValue(taetigkeit, locale, requireNonNull(mandant)));
+			sb.append(
+				ServerMessageUtil.translateEnumValue(
+					taetigkeit,
+					locale,
+					requireNonNull(mandant)
+				)
+			);
 			sb.append(", ");
 		}
 		// Das letzte Komma entfernen
 		String taetigkeitenAsString = sb.toString();
-		taetigkeitenAsString = StringUtils.removeEnd(taetigkeitenAsString, ", ");
+		taetigkeitenAsString = StringUtils.removeEnd(
+			taetigkeitenAsString,
+			", "
+		);
 		return taetigkeitenAsString;
 	}
 }

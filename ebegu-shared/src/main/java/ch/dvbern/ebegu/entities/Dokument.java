@@ -15,15 +15,20 @@
 
 package ch.dvbern.ebegu.entities;
 
-import ch.dvbern.ebegu.enums.AntragCopyType;
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
-import org.hibernate.envers.Audited;
+import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import ch.dvbern.ebegu.enums.AntragCopyType;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
+import org.hibernate.envers.Audited;
 
 /**
  * Entitaet zum Speichern von Dokumente in der Datenbank.
@@ -36,12 +41,13 @@ public class Dokument extends FileMetadata {
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dokument_dokumentgrund_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dokument_dokumentgrund_id"),
+		nullable = false)
 	private DokumentGrund dokumentGrund;
 
 	@NotNull
 	@Column(nullable = false)
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime timestampUpload;
 
 	public Dokument() {
@@ -69,15 +75,29 @@ public class Dokument extends FileMetadata {
 
 	@Override
 	public String toString() {
-		return "Dokument{" +
-			"dokumentName='" + getFilename() + '\'' +
-			", dokumentPfad='" + getFilepfad() + '\'' +
-			", dokumentSize='" + getFilesize() + '\'' +
+		return "Dokument{"
+			+
+			"dokumentName='"
+			+ getFilename()
+			+ '\''
+			+
+			", dokumentPfad='"
+			+ getFilepfad()
+			+ '\''
+			+
+			", dokumentSize='"
+			+ getFilesize()
+			+ '\''
+			+
 			'}';
 	}
 
 	@Nonnull
-	public Dokument copyDokument(@Nonnull Dokument target, @Nonnull AntragCopyType copyType, @Nonnull DokumentGrund targetDokumentGrund) {
+	public Dokument copyDokument(
+		@Nonnull Dokument target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull DokumentGrund targetDokumentGrund
+	) {
 		super.copyFileMetadata(target, copyType);
 		switch (copyType) {
 		case MUTATION:

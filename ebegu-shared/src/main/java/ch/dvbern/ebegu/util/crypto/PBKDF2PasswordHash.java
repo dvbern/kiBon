@@ -140,7 +140,12 @@ public final class PBKDF2PasswordHash {
 	 * @param bytes the length of the hash to compute in bytes
 	 * @return the PBDKF2 hash of the password
 	 */
-	private static byte[] pbkdf2(char[] password, byte[] salt, int iterations, int bytes)
+	private static byte[] pbkdf2(
+		char[] password,
+		byte[] salt,
+		int iterations,
+		int bytes
+	)
 		throws NoSuchAlgorithmException, InvalidKeySpecException {
 		PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, bytes * 8);
 		SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
@@ -156,7 +161,10 @@ public final class PBKDF2PasswordHash {
 	private static byte[] fromHex(String hex) {
 		byte[] binary = new byte[hex.length() / 2];
 		for (int i = 0; i < binary.length; i++) {
-			binary[i] = (byte) Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+			binary[i] = (byte) Integer.parseInt(
+				hex.substring(2 * i, 2 * i + 2),
+				16
+			);
 		}
 		return binary;
 	}

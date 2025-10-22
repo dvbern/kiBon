@@ -30,15 +30,46 @@ public class ZahlungAuftragExcelConverterTest {
 		BigDecimal sameBetragInverted = BigDecimal.valueOf(-1451.3);
 
 		List<Zahlungsposition> zahlungspositionen = new LinkedList<>();
-		zahlungspositionen.add(createZahlungsposition(sameBG, sameAb, sameBis, sameBgPensum, sameBetrag));
-		zahlungspositionen.add(createZahlungsposition(sameBG, sameAb, sameBis, sameBgPensum, sameBetragInverted));
-		Zahlungsposition notInvertedZahlungsposition = createZahlungsposition("11111", sameAb, sameBis,
-			sameBgPensum, sameBetragInverted);
+		zahlungspositionen.add(
+			createZahlungsposition(
+				sameBG,
+				sameAb,
+				sameBis,
+				sameBgPensum,
+				sameBetrag
+			)
+		);
+		zahlungspositionen.add(
+			createZahlungsposition(
+				sameBG,
+				sameAb,
+				sameBis,
+				sameBgPensum,
+				sameBetragInverted
+			)
+		);
+		Zahlungsposition notInvertedZahlungsposition = createZahlungsposition(
+			"11111",
+			sameAb,
+			sameBis,
+			sameBgPensum,
+			sameBetragInverted
+		);
 		zahlungspositionen.add(notInvertedZahlungsposition);
-		zahlungspositionen.add(createZahlungsposition(sameBG, sameAb, sameBis, sameBgPensum, BigDecimal.valueOf(1)));
+		zahlungspositionen.add(
+			createZahlungsposition(
+				sameBG,
+				sameAb,
+				sameBis,
+				sameBgPensum,
+				BigDecimal.valueOf(1)
+			)
+		);
 
-		ZahlungAuftragDetailsExcelConverter converter = new ZahlungAuftragDetailsExcelConverter();
-		List<Zahlungsposition> filteredList = converter.filterZahlungspositionenMitSummeUngleich0(zahlungspositionen);
+		ZahlungAuftragDetailsExcelConverter converter =
+			new ZahlungAuftragDetailsExcelConverter();
+		List<Zahlungsposition> filteredList = converter
+			.filterZahlungspositionenMitSummeUngleich0(zahlungspositionen);
 		Assert.assertEquals(2, filteredList.size());
 		Assert.assertEquals(notInvertedZahlungsposition, filteredList.get(0));
 	}
@@ -50,22 +81,38 @@ public class ZahlungAuftragExcelConverterTest {
 		BigDecimal bgPensum,
 		BigDecimal betragCHF
 	) {
-		Zahlungsposition zahlungsposition = EasyMock.createMock(Zahlungsposition.class);
-		VerfuegungZeitabschnitt verfuegungZeitabschnitt = EasyMock.createMock(VerfuegungZeitabschnitt.class);
+		Zahlungsposition zahlungsposition = EasyMock.createMock(
+			Zahlungsposition.class
+		);
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt = EasyMock.createMock(
+			VerfuegungZeitabschnitt.class
+		);
 		Verfuegung verfuegung = EasyMock.createMock(Verfuegung.class);
 		Betreuung betreuung = EasyMock.createMock(Betreuung.class);
-		EasyMock.expect(betreuung.getReferenzNummer()).andStubReturn(referenzNummer);
+		EasyMock.expect(betreuung.getReferenzNummer())
+			.andStubReturn(referenzNummer);
 		EasyMock.expect(verfuegung.getBetreuung()).andStubReturn(betreuung);
-		EasyMock.expect(verfuegungZeitabschnitt.getVerfuegung()).andStubReturn(verfuegung);
-		EasyMock.expect(zahlungsposition.getVerfuegungZeitabschnitt()).andStubReturn(verfuegungZeitabschnitt);
+		EasyMock.expect(verfuegungZeitabschnitt.getVerfuegung())
+			.andStubReturn(verfuegung);
+		EasyMock.expect(zahlungsposition.getVerfuegungZeitabschnitt())
+			.andStubReturn(verfuegungZeitabschnitt);
 		DateRange dateRange = EasyMock.createMock(DateRange.class);
 		EasyMock.expect(dateRange.getGueltigAb()).andStubReturn(ab);
 		EasyMock.expect(dateRange.getGueltigBis()).andStubReturn(bis);
-		EasyMock.expect(verfuegungZeitabschnitt.getGueltigkeit()).andStubReturn(dateRange);
-		EasyMock.expect(verfuegungZeitabschnitt.getBgPensum()).andStubReturn(bgPensum);
+		EasyMock.expect(verfuegungZeitabschnitt.getGueltigkeit())
+			.andStubReturn(dateRange);
+		EasyMock.expect(verfuegungZeitabschnitt.getBgPensum())
+			.andStubReturn(bgPensum);
 		EasyMock.expect(zahlungsposition.getBetrag()).andStubReturn(betragCHF);
-		EasyMock.expect(zahlungsposition.getStatus()).andStubReturn(ZahlungspositionStatus.KORREKTUR);
-		EasyMock.replay(zahlungsposition, verfuegungZeitabschnitt, verfuegung, betreuung, dateRange);
+		EasyMock.expect(zahlungsposition.getStatus())
+			.andStubReturn(ZahlungspositionStatus.KORREKTUR);
+		EasyMock.replay(
+			zahlungsposition,
+			verfuegungZeitabschnitt,
+			verfuegung,
+			betreuung,
+			dateRange
+		);
 		return zahlungsposition;
 	}
 }

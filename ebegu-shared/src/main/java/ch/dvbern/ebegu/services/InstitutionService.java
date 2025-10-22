@@ -55,14 +55,19 @@ public interface InstitutionService {
 	 * @return Institution mit dem gegebenen key oder null falls nicht vorhanden
 	 */
 	@Nonnull
-	Optional<Institution> findInstitution(@Nonnull String id, boolean doAuthCheck);
+	Optional<Institution> findInstitution(
+		@Nonnull String id,
+		boolean doAuthCheck
+	);
 
 	/**
 	 * @param traegerschaftId Der ID der Traegerschaft, fuer welche die Institutionen gesucht werden muessen
 	 * @return Liste mit allen Institutionen der gegebenen Traegerschaft
 	 */
 	@Nonnull
-	Collection<Institution> getAllInstitutionenFromTraegerschaft(String traegerschaftId);
+	Collection<Institution> getAllInstitutionenFromTraegerschaft(
+		String traegerschaftId
+	);
 
 	/**
 	 * @return Alle Institutionen in der DB
@@ -73,67 +78,69 @@ public interface InstitutionService {
 	/**
 	 * @return Alle Institutionen in der DB gefiltert bei BetreuungsangebotTyp
 	 */
-	Collection<Institution> getAllInstitutionenByType(@Nonnull Mandant mandant, @Nonnull List<BetreuungsangebotTyp> typen);
+	Collection<Institution> getAllInstitutionenByType(
+		@Nonnull Mandant mandant,
+		@Nonnull List<BetreuungsangebotTyp> typen
+	);
 
-		/**
-		 * @return Alle Institutionen in der DB ohne Berechtigungspruefung, nur fuer Batchjob.
-		 */
+	/**
+	 * @return Alle Institutionen in der DB ohne Berechtigungspruefung, nur fuer Batchjob.
+	 */
 	@Nonnull
-	Collection<Institution> getAllInstitutionenForBatchjobs();
+	Collection<Institution> getAllInstitutionenForBatchjobs(
+		@Nonnull Mandant mandant
+	);
 
 	/**
 	 * Gibt alle aktiven Institutionen zurueck, fuer welche der aktuell eingeloggte Benutzer *schreib*-berechtigt ist.
 	 *
 	 * @param restrictedForSCH true wenn nur die Institutionen der Art TAGESSCHULE oder FERIENINSEL geholt werden.
-	 *                            Dieses Parameter
-	 *                         gilt nur fuer die Rolen vom Schulamt
+	 * Dieses Parameter
+	 * gilt nur fuer die Rolen vom Schulamt
 	 */
-	Collection<Institution> getInstitutionenEditableForCurrentBenutzer(boolean restrictedForSCH);
+	Collection<Institution> getInstitutionenEditableForCurrentBenutzer(
+		boolean restrictedForSCH
+	);
 
 	/**
 	 * Gibt alle aktiven Institutionen zurueck, fuer welche der aktuell eingeloggte Benutzer *lese*-berechtigt ist.
 	 *
 	 * @param restrictedForSCH true wenn nur die Institutionen der Art TAGESSCHULE oder FERIENINSEL geholt werden.
-	 *                            Dieses Parameter
-	 *                         gilt nur fuer die Rolen vom Schulamt
+	 * Dieses Parameter
+	 * gilt nur fuer die Rolen vom Schulamt
 	 */
-	Collection<Institution> getInstitutionenReadableForCurrentBenutzer(boolean restrictedForSCH);
+	Collection<Institution> getInstitutionenReadableForCurrentBenutzer(
+		boolean restrictedForSCH
+	);
 
 	/**
 	 * returns all types of Angebot that are offered by this Institution
 	 */
-	BetreuungsangebotTyp getAngebotFromInstitution(@Nonnull String institutionId);
+	BetreuungsangebotTyp getAngebotFromInstitution(
+		@Nonnull String institutionId
+	);
 
-	/**
-	 * Will set stammdatenCheckRequired Flag to true.
-	 */
-	void updateAllStammdatenCheckRequired();
-
-	/**
-	 * Updates the Flag stammdatenCheckRequired to false and updates the Stammdaten so timestamp_mutiert gets updated
-	 */
-	void deactivateStammdatenCheckRequired(@Nonnull String institutionId);
-
-	/**
-	 * Updates the Flag stammdatenCheckRequired to the given value
-	 */
-	void updateStammdatenCheckRequired(@Nonnull String institutionId, boolean isCheckRequired);
+	boolean checkZusatzinformationenInstitutionenActiv(Mandant mandant);
 
 	/**
 	 * Removes the institution given by the id totally from the DB if this isn't linked to any other object
 	 */
 	void removeInstitution(@Nonnull String institutionId);
 
-	void saveInstitutionExternalClients(@Nonnull Institution institution,
-		@Nonnull Collection<InstitutionExternalClient> institutionExternalClients);
+	void saveInstitutionExternalClients(
+		@Nonnull Institution institution,
+		@Nonnull Collection<InstitutionExternalClient> institutionExternalClients
+	);
 
-	Map<Institution, InstitutionStammdaten> getInstitutionenInstitutionStammdatenEditableForCurrentBenutzer(boolean restrictedForSCH);
+	Map<Institution, InstitutionStammdaten> getInstitutionenInstitutionStammdatenEditableForCurrentBenutzer(
+		boolean restrictedForSCH
+	);
 
+	boolean isCurrentUserTagesschuleNutzende(boolean restrictedForSCH);
 
-	@Nonnull
-	boolean isCurrentUserTagesschuleNutzende(@Nonnull boolean restrictedForSCH);
-
-	Map<Institution, InstitutionStammdaten> getInstitutionenInstitutionStammdatenForGemeinde(Gemeinde gemeinde);
+	Map<Institution, InstitutionStammdaten> getInstitutionenInstitutionStammdatenForGemeinde(
+		Gemeinde gemeinde
+	);
 
 	Collection<Institution> findAllInstitutionen(@Nonnull String dossierId);
 

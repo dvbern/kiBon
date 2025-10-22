@@ -15,15 +15,21 @@
   ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
   -->
 <div class="dv-table">
-    <div class="row">
+    <div class="row view-title">
+        <div class="col-md-12">
+            @if (title) {
+                <h2>{{ title }} ({{ totalItems }})</h2>
+            } @else {
+                <h2>{{ 'FAELLE_LIST' | translate }} ({{ totalItems }})</h2>
+            }
+        </div>
+    </div>
+    <div class="row margin-top-10">
         <div class="col-md-8">
-            <div id="titleText" data-test="page-title">
-                <h3 class="ng-scope" *ngIf="title">{{ title }}</h3>
-                <h3 class="ng-scope" *ngIf="!title" translate>FAELLE_LIST</h3>
-            </div>
-            <div id="refreshIcon">
-                <i class="fa fa-undo" (click)="resetFilter()"></i>
-            </div>
+            <button (click)="resetFilter()" class="dv-btn" id="refreshIcon">
+                <i class="fa fa-undo"></i>
+                {{ 'FILTER_ZURUECKSETZEN' | translate }}
+            </button>
         </div>
         <div class="col-md-4">
             <div id="box-right">
@@ -36,7 +42,6 @@
                     [label]="'SEARCH_INAKTIVE_PERIODEN' | translate"
                 >
                 </dv-checkbox-x>
-                <h3>{{ totalItems }}</h3>
             </div>
         </div>
     </div>
@@ -45,6 +50,8 @@
         <mat-table
             [dataSource]="datasource"
             matSort
+            [matSortActive]="'aenderungsdatum'"
+            [matSortDirection]="'asc'"
             (matSortChange)="sortData($event)"
         >
             <ng-container matColumnDef="fallNummer">
@@ -161,6 +168,19 @@
                             element.aenderungsdatum.format('DD.MM.YYYY')
                         }}</span
                     ></mat-cell
+                >
+            </ng-container>
+
+            <ng-container matColumnDef="gemeindeAntragFirstEinreichedatum">
+                <mat-header-cell
+                    mat-sort-header="gemeindeAntragFirstEinreichedatum"
+                    *matHeaderCellDef
+                    ><span translate>EINGEREICHT_AM</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <span [title]="element.gemeindeAntragFirstEinreichedatum">{{
+                        element.gemeindeAntragFirstEinreichedatum
+                    }}</span></mat-cell
                 >
             </ng-container>
 
@@ -353,6 +373,7 @@
                             disableOptionCentering
                             panelClass="mat-select-panel1"
                             [placeholder]="'ALLE' | translate"
+                            data-test="gemeindeantraege-gemeinde-tabelle"
                         >
                             <mat-option><span translate>ALLE</span></mat-option>
                             <mat-option
@@ -376,6 +397,7 @@
                             (selectionChange)="filterType($event.value)"
                             panelClass="mat-select-panel1"
                             [placeholder]="'ALLE' | translate"
+                            data-test="gemeindeantraege-typ-tabelle"
                         >
                             <mat-option selected
                                 ><span translate>ALLE</span></mat-option
@@ -383,6 +405,7 @@
                             <mat-option
                                 *ngFor="let type of getAntragTypen()"
                                 [value]="type"
+                                [attr.data-test]="type"
                             >
                                 <span translate>{{ type }}</span></mat-option
                             >
@@ -456,6 +479,7 @@
                             (selectionChange)="filterPeriode($event.value)"
                             panelClass="mat-select-panel1"
                             [placeholder]="'ALLE' | translate"
+                            data-test="gemeindeantraege-periode-tabelle"
                         >
                             <mat-option selected
                                 ><span translate>ALLE</span></mat-option
@@ -463,6 +487,7 @@
                             <mat-option
                                 *ngFor="let periode of gesuchsperiodenList"
                                 [value]="periode"
+                                [attr.data-test]="'periode-' + periode"
                                 >{{ periode }}</mat-option
                             >
                         </mat-select>
@@ -557,6 +582,27 @@
                             [value]="filterPredicate.aenderungsdatum || null"
                             matInput
                             (keyup)="filterGeaendert($event.target.value)"
+                        />
+                    </mat-form-field>
+                </mat-header-cell>
+            </ng-container>
+
+            <ng-container
+                matColumnDef="gemeindeAntragFirstEinreichedatum-filter"
+            >
+                <mat-header-cell *matHeaderCellDef="let column">
+                    <mat-form-field class="dv-faelle-mat-form-field">
+                        <input
+                            [value]="
+                                filterPredicate.gemeindeAntragFirstEinreichedatum ||
+                                null
+                            "
+                            matInput
+                            (keyup)="
+                                filterGemeindeAntragFirstEinreichedatum(
+                                    $event.target.value
+                                )
+                            "
                         />
                     </mat-form-field>
                 </mat-header-cell>

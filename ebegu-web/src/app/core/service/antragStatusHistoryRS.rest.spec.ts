@@ -13,13 +13,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IHttpBackendService} from 'angular';
+import angular, {IHttpBackendService} from 'angular';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSAntragStatusHistory} from '../../../models/TSAntragStatusHistory';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
@@ -61,7 +61,7 @@ describe('antragStatusHistoryRS', () => {
             const antragStatusHistory = new TSAntragStatusHistory(
                 gesuch.id,
                 undefined,
-                DateUtil.today(),
+                MomentUtil.today(),
                 undefined,
                 TSAntragStatus.VERFUEGEN
             );
@@ -96,19 +96,19 @@ describe('antragStatusHistoryRS', () => {
         });
         it('should return undefined if the gesuch is undefined', () => {
             antragStatusHistoryRS.loadLastStatusChange(undefined);
-            antragStatusHistoryRS.lastChange$.subscribe(
-                value => expect(value).toBeUndefined(),
-                fail
-            );
+            antragStatusHistoryRS.lastChange$.subscribe({
+                next: value => expect(value).toBeUndefined(),
+                error: fail
+            });
         });
         it('should return undefined if the gesuch id is undefined', () => {
             const gesuch = new TSGesuch();
             gesuch.id = undefined;
             antragStatusHistoryRS.loadLastStatusChange(gesuch);
-            antragStatusHistoryRS.lastChange$.subscribe(
-                value => expect(value).toBeUndefined(),
-                fail
-            );
+            antragStatusHistoryRS.lastChange$.subscribe({
+                next: value => expect(value).toBeUndefined(),
+                error: fail
+            });
         });
     });
 });

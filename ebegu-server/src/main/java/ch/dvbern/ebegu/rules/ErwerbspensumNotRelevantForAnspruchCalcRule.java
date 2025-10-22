@@ -17,23 +17,34 @@
 
 package ch.dvbern.ebegu.rules;
 
+import java.util.List;
+import java.util.Locale;
+
+import javax.annotation.Nonnull;
+
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.Locale;
+public class ErwerbspensumNotRelevantForAnspruchCalcRule extends
+	AbstractErwerbspensumCalcRule {
 
-public class ErwerbspensumNotRelevantForAnspruchCalcRule extends AbstractErwerbspensumCalcRule {
-
-	protected ErwerbspensumNotRelevantForAnspruchCalcRule(@Nonnull RuleKey ruleKey, @Nonnull RuleType ruleType, @Nonnull RuleValidity ruleValidity, @Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
+	protected ErwerbspensumNotRelevantForAnspruchCalcRule(
+		@Nonnull RuleKey ruleKey,
+		@Nonnull RuleType ruleType,
+		@Nonnull RuleValidity ruleValidity,
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
 		super(ruleKey, ruleType, ruleValidity, validityPeriod, locale);
 	}
 
 	@Override
-	void executeRule(@Nonnull AbstractPlatz platz, @Nonnull BGCalculationInput inputData) {
+	protected void executeRule(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull BGCalculationInput inputData
+	) {
 		inputData.setAnspruchspensumProzent(100);
 		inputData.setMinimalErforderlichesPensum(0);
 	}

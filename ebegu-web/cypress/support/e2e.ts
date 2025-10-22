@@ -105,3 +105,11 @@ Cypress.SelectorPlayground.defaults({
         return undefined;
     }
 });
+
+before(() => {
+    // root-level hook
+    // runs once before all tests
+
+    // used to preload app. We had the issue that the inital tests are failing because the first page load took too long
+    cy.visitRootPage();
+});

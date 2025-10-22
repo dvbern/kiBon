@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.resource;
@@ -26,39 +26,38 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
 import ch.dvbern.ebegu.api.dtos.JaxEinstellung;
 import ch.dvbern.ebegu.api.dtos.JaxId;
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.api.property.converter.JaxConfigurationConverter;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.GesuchsperiodeService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
@@ -72,7 +71,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("einstellung")
 @Stateless
-@Api(description = "Resource fuer Einstellungen")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class EinstellungResource {
 
@@ -86,39 +84,49 @@ public class EinstellungResource {
 	private GemeindeService gemeindeService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxConfigurationConverter converter;
 
-	@ApiOperation(value = "Create a new or update an existing kiBon parameter with the given key and value",
-		response = JaxEinstellung.class,
-		consumes = MediaType.APPLICATION_JSON)
+	@Operation(
+		summary = "Create a new or update an existing kiBon parameter with the given key and value")
 	@Nullable
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_GEMEINDE, ADMIN_BG, ADMIN_TS,
+		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public Response saveEinstellung(
 		@Nonnull @NotNull @Valid JaxEinstellung jaxEinstellung,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		Einstellung einstellung;
 		if (jaxEinstellung.getId() != null) {
-			Optional<Einstellung> optional = einstellungService.findEinstellung(jaxEinstellung.getId());
+			Optional<Einstellung> optional = einstellungService.findEinstellung(
+				jaxEinstellung.getId()
+			);
 			einstellung = optional.orElse(new Einstellung());
 		} else {
 			einstellung = new Einstellung();
 		}
-		Einstellung convertedEinstellung = converter.einstellungToEntity(jaxEinstellung, einstellung);
-		Einstellung persistedEinstellung = einstellungService.saveEinstellung(convertedEinstellung);
+		Einstellung convertedEinstellung = converter.einstellungToEntity(
+			jaxEinstellung,
+			einstellung
+		);
+		Einstellung persistedEinstellung = einstellungService.saveEinstellung(
+			convertedEinstellung
+		);
 
 		URI uri = uriInfo.getBaseUriBuilder()
 			.path(EinstellungResource.class)
 			.path("/" + persistedEinstellung.getKey())
 			.build();
-		return Response.created(uri).entity(converter.einstellungToJAX(persistedEinstellung)).build();
+		return Response.created(uri)
+			.entity(converter.einstellungToJAX(persistedEinstellung))
+			.build();
 	}
 
-	@ApiOperation(value = "Get a specific kiBon parameter by key and date", response = JaxEinstellung.class)
+	@Operation(summary = "Get a specific kiBon parameter by key and date")
 	@Nullable
 	@GET
 	@Path("/key/{key}/gemeinde/{gemeindeId}/gp/{gesuchsperiodeId}")
@@ -128,35 +136,59 @@ public class EinstellungResource {
 	public JaxEinstellung findEinstellung(
 		@Nonnull @PathParam("key") String key,
 		@Nonnull @PathParam("gemeindeId") String gemeindeId,
-		@Nonnull @PathParam("gesuchsperiodeId") String gesuchsperiodeId) {
+		@Nonnull @PathParam("gesuchsperiodeId") String gesuchsperiodeId
+	) {
 
 		EinstellungKey einstellungKey = EinstellungKey.valueOf(key);
-		Gemeinde gemeinde = gemeindeService.findGemeinde(gemeindeId).orElseThrow(() -> new EbeguEntityNotFoundException("findEinstellung",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gemeindeId));
-		Gesuchsperiode gp = gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeId).orElseThrow(() -> new EbeguEntityNotFoundException("findEinstellung",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gesuchsperiodeId));
+		Gemeinde gemeinde = gemeindeService.findGemeinde(gemeindeId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"findEinstellung",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gemeindeId
+				)
+			);
+		Gesuchsperiode gp = gesuchsperiodeService.findGesuchsperiode(
+			gesuchsperiodeId
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"findEinstellung",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gesuchsperiodeId
+				)
+			);
 
-		return converter.einstellungToJAX(einstellungService.findEinstellung(einstellungKey, gemeinde, gp));
+		return converter.einstellungToJAX(
+			einstellungService.findEinstellung(einstellungKey, gemeinde, gp)
+		);
 	}
 
-	@ApiOperation(value = "Get a specific kiBon parameter by key", response = JaxEinstellung.class)
+	@Operation(summary = "Get a specific kiBon parameter by key")
 	@Nullable
 	@GET
 	@Path("/key/{key}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
-	public List<JaxEinstellung> findEinstellung(@Nonnull @PathParam("key") String key) {
+	public List<JaxEinstellung> findEinstellung(
+		@Nonnull @PathParam("key") String key
+	) {
 
 		EinstellungKey einstellungKey = EinstellungKey.valueOf(key);
-		List<Einstellung> einstellungen = einstellungService.findEinstellungen(einstellungKey, null);
+		List<Einstellung> einstellungen = einstellungService.findEinstellungen(
+			einstellungKey,
+			null
+		);
 		return einstellungen.stream()
 			.map(einstellung -> converter.einstellungToJAX(einstellung))
 			.collect(Collectors.toList());
 	}
 
-	@ApiOperation(value = "Get all kiBon parameter for a specific Gesuchsperiode. The id of the gesuchsperiode is " +
-		"passed  as a pathParam", responseContainer = "List", response = JaxEinstellung.class)
+	@Operation(
+		summary = "Get all kiBon parameter for a specific Gesuchsperiode. The id of the gesuchsperiode is "
+			+
+			"passed  as a pathParam")
 	@Nonnull
 	@GET
 	@Path("/gesuchsperiode/{id}")
@@ -164,20 +196,32 @@ public class EinstellungResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public List<JaxEinstellung> getAllEinstellungenBySystem(
-		@Nonnull @NotNull @PathParam("id") JaxId id) {
+		@Nonnull @NotNull @PathParam("id") JaxId id
+	) {
 
 		Objects.requireNonNull(id.getId());
 		String gesuchsperiodeId = converter.toEntityId(id);
-		Optional<Gesuchsperiode> gesuchsperiode = gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeId);
+		Optional<Gesuchsperiode> gesuchsperiode = gesuchsperiodeService
+			.findGesuchsperiode(gesuchsperiodeId);
 		return gesuchsperiode
-			.map(value -> einstellungService.getAllEinstellungenBySystem(value)
-				.stream()
-				.map(einstellung -> converter.einstellungToJAX(einstellung))
-				.collect(Collectors.toList())).orElse(Collections.emptyList());
+			.map(
+				value -> einstellungService.getAllEinstellungenBySystem(
+					value
+				)
+					.stream()
+					.map(
+						einstellung -> converter
+							.einstellungToJAX(einstellung)
+					)
+					.collect(Collectors.toList())
+			)
+			.orElse(Collections.emptyList());
 	}
 
-	@ApiOperation(value = "Get all kiBon parameter for a specific Gesuchsperiode. The id of the gesuchsperiode is " +
-		"passed  as a pathParam", responseContainer = "List", response = JaxEinstellung.class)
+	@Operation(
+		summary = "Get all kiBon parameter for a specific Gesuchsperiode. The id of the gesuchsperiode is "
+			+
+			"passed  as a pathParam")
 	@Nonnull
 	@GET
 	@Path("gesuchsperiode/{id}/mandant-active")
@@ -185,16 +229,30 @@ public class EinstellungResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll
 	public List<JaxEinstellung> getAllEinstellungenActiveByMandant(
-		@Nonnull @NotNull @PathParam("id") JaxId id) {
+		@Nonnull @NotNull @PathParam("id") JaxId id
+	) {
 
 		Objects.requireNonNull(id.getId());
 		String gesuchsperiodeId = converter.toEntityId(id);
-		Optional<Gesuchsperiode> gesuchsperiode = gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeId);
+		Optional<Gesuchsperiode> gesuchsperiode = gesuchsperiodeService
+			.findGesuchsperiode(gesuchsperiodeId);
 		return gesuchsperiode
-			.map(gp -> einstellungService.getAllEinstellungenBySystem(gp)
-				.stream()
-				.filter(einstellung -> einstellung.getKey().isEinstellungActivForMandant(gp.getMandant().getMandantIdentifier()))
-				.map(einstellung -> converter.einstellungToJAX(einstellung))
-				.collect(Collectors.toList())).orElse(Collections.emptyList());
+			.map(
+				gp -> einstellungService.getAllEinstellungenBySystem(gp)
+					.stream()
+					.filter(
+						einstellung -> einstellung.getKey()
+							.isEinstellungActivForMandant(
+								gp.getMandant()
+									.getMandantIdentifier()
+							)
+					)
+					.map(
+						einstellung -> converter
+							.einstellungToJAX(einstellung)
+					)
+					.collect(Collectors.toList())
+			)
+			.orElse(Collections.emptyList());
 	}
 }

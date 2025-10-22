@@ -59,6 +59,10 @@
                         class="dokument-grund-row"
                         title="{{ 'GS_DOKUMENT_HOCHLADEN' | translate }}"
                         aria-label="{{ 'GS_DOKUMENT_HOCHLADEN' | translate }}"
+                        ng-class="{
+                            dokumenteUploadDisabled:
+                                vm.isDokumenteUploadDisabled()
+                        }"
                         ng-disabled="vm.isDokumenteUploadDisabled()"
                     >
                         <!--with and without tag-->

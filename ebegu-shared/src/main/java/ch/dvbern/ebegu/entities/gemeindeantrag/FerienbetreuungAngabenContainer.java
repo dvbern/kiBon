@@ -17,6 +17,7 @@
 
 package ch.dvbern.ebegu.entities.gemeindeantrag;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -24,19 +25,19 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -44,13 +45,19 @@ import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungAngabenStatus;
 import ch.dvbern.ebegu.enums.gemeindeantrag.GemeindeAntragTyp;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 import static ch.dvbern.ebegu.util.Constants.DB_TEXTAREA_LENGTH;
 
 @Entity
 @Audited
-public class FerienbetreuungAngabenContainer extends AbstractEntity implements GemeindeAntrag {
+@Getter
+@Setter
+public class FerienbetreuungAngabenContainer extends AbstractEntity implements
+	GemeindeAntrag,
+	WithEinreichedatum {
 
 	private static final long serialVersionUID = -3872331984799085800L;
 
@@ -63,25 +70,35 @@ public class FerienbetreuungAngabenContainer extends AbstractEntity implements G
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_container_gemeinde_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_container_gemeinde_id"),
+		nullable = false,
+		updatable = false)
 	private Gemeinde gemeinde;
 
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_container_gesuchsperiode_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_container_gesuchsperiode_id"),
+		nullable = false,
+		updatable = false)
 	private Gesuchsperiode gesuchsperiode;
 
 	@Nonnull
 	@Valid
 	@OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_container_deklaration_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_container_deklaration_id"),
+		nullable = true)
 	private FerienbetreuungAngaben angabenDeklaration;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_container_korrektur_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_container_korrektur_id"),
+		nullable = true)
 	private FerienbetreuungAngaben angabenKorrektur;
 
 	@Nullable
@@ -91,7 +108,8 @@ public class FerienbetreuungAngabenContainer extends AbstractEntity implements G
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_container_verantwortlicher_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_container_verantwortlicher_id"))
 	private Benutzer verantwortlicher = null;
 
 	@Nullable
@@ -99,33 +117,14 @@ public class FerienbetreuungAngabenContainer extends AbstractEntity implements G
 	@OneToMany(mappedBy = "ferienbetreuungAngabenContainer")
 	private Set<FerienbetreuungDokument> dokumente;
 
-	@Nonnull
-	public FerienbetreuungAngabenStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(@Nonnull FerienbetreuungAngabenStatus status) {
-		this.status = status;
-	}
+	@Nullable
+	@Column()
+	private LocalDate einreichedatum;
 
 	@Nonnull
 	@Override
 	public GemeindeAntragTyp getGemeindeAntragTyp() {
 		return GemeindeAntragTyp.FERIENBETREUUNG;
-	}
-
-	@Nonnull
-	public Gemeinde getGemeinde() {
-		return gemeinde;
-	}
-
-	public void setGemeinde(@Nonnull Gemeinde gemeinde) {
-		this.gemeinde = gemeinde;
-	}
-
-	@Nonnull
-	public Gesuchsperiode getGesuchsperiode() {
-		return gesuchsperiode;
 	}
 
 	@Nonnull
@@ -140,82 +139,41 @@ public class FerienbetreuungAngabenContainer extends AbstractEntity implements G
 			|| status == FerienbetreuungAngabenStatus.ABGELEHNT;
 	}
 
-	public void setGesuchsperiode(@Nonnull Gesuchsperiode gesuchsperiode) {
-		this.gesuchsperiode = gesuchsperiode;
-	}
-
-	@Nonnull
-	public FerienbetreuungAngaben getAngabenDeklaration() {
-		return angabenDeklaration;
-	}
-
-	public void setAngabenDeklaration(@Nonnull FerienbetreuungAngaben angabenDeklaration) {
-		this.angabenDeklaration = angabenDeklaration;
-	}
-
-	@Nullable
-	public FerienbetreuungAngaben getAngabenKorrektur() {
-		return angabenKorrektur;
-	}
-
-	public void setAngabenKorrektur(@Nullable FerienbetreuungAngaben angabenKorrektur) {
-		this.angabenKorrektur = angabenKorrektur;
-	}
-
-	@Nullable
-	public String getInternerKommentar() {
-		return internerKommentar;
-	}
-
-	public void setInternerKommentar(@Nullable String internerKommentar) {
-		this.internerKommentar = internerKommentar;
-	}
-
 	@Override
 	public boolean isSame(AbstractEntity other) {
 		return getId().equals(other.getId());
 	}
 
 	public boolean isAtLeastInPruefungKantonOrZurueckAnGemeinde() {
-		return status == FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON ||
-			status == FerienbetreuungAngabenStatus.GEPRUEFT ||
-			status == FerienbetreuungAngabenStatus.ABGESCHLOSSEN ||
-			status == FerienbetreuungAngabenStatus.ABGELEHNT ||
-			status == FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE;
+		return status == FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON
+			||
+			status == FerienbetreuungAngabenStatus.GEPRUEFT
+			||
+			status == FerienbetreuungAngabenStatus.ABGESCHLOSSEN
+			||
+			status == FerienbetreuungAngabenStatus.ABGELEHNT
+			||
+			status == FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE
+			||
+			status == FerienbetreuungAngabenStatus.ZWEITPRUEFUNG;
 	}
 
-	public boolean isReadyForGeprueft() {
-		if(getAngabenKorrektur() == null) {
-			return false;
-		}
-
-		return getAngabenKorrektur().getFerienbetreuungAngabenStammdaten().isAbgeschlossen() &&
-			getAngabenKorrektur().getFerienbetreuungAngabenAngebot().isAbgeschlossen() &&
-			getAngabenKorrektur().getFerienbetreuungAngabenNutzung().isAbgeschlossen() &&
-			getAngabenKorrektur().getFerienbetreuungAngabenKostenEinnahmen().isAbgeschlossen();
-	}
-
-	@Nullable
-	public Set<FerienbetreuungDokument> getDokumente() {
-		return dokumente;
-	}
-
-	public void setDokumente(@Nullable Set<FerienbetreuungDokument> dokumente) {
-		this.dokumente = dokumente;
-	}
-
-	public boolean isInPruefungKanton() {
-		return status == FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON;
+	public boolean isInPruefungKantonOrZweitpruefung() {
+		return status == FerienbetreuungAngabenStatus.IN_PRUEFUNG_KANTON
+			|| status == FerienbetreuungAngabenStatus.ZWEITPRUEFUNG;
 	}
 
 	public boolean isAtLeastGeprueft() {
-		return status == FerienbetreuungAngabenStatus.GEPRUEFT ||
-			status == FerienbetreuungAngabenStatus.ABGESCHLOSSEN ||
+		return status == FerienbetreuungAngabenStatus.GEPRUEFT
+			||
+			status == FerienbetreuungAngabenStatus.ABGESCHLOSSEN
+			||
 			status == FerienbetreuungAngabenStatus.ABGELEHNT;
 	}
 
 	public boolean isAbgeschlossen() {
-		return status == FerienbetreuungAngabenStatus.ABGELEHNT ||
+		return status == FerienbetreuungAngabenStatus.ABGELEHNT
+			||
 			status == FerienbetreuungAngabenStatus.ABGESCHLOSSEN;
 	}
 
@@ -233,26 +191,38 @@ public class FerienbetreuungAngabenContainer extends AbstractEntity implements G
 	}
 
 	public boolean isInBearbeitungOrZurueckAnGemeinde() {
-		return this.isInBearbeitungGemeinde() || status == FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE;
+		return this.isInBearbeitungGemeinde()
+			|| status == FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE;
 	}
 
 	public void copyForErneuerung(FerienbetreuungAngabenContainer target) {
-		final FerienbetreuungAngaben angabenVorjahr = isAtLeastInPruefungKantonOrZurueckAnGemeinde()
-			? getAngabenKorrektur()
-			: getAngabenDeklaration();
+		final FerienbetreuungAngaben angabenVorjahr =
+			isAtLeastInPruefungKantonOrZurueckAnGemeinde() ?
+				getAngabenKorrektur() :
+				getAngabenDeklaration();
 		Objects.requireNonNull(angabenVorjahr);
 
 		angabenVorjahr.copyForErneuerung(target.getAngabenDeklaration());
 		copyDokumenteForErneuerung(target);
 	}
 
-	private void copyDokumenteForErneuerung(FerienbetreuungAngabenContainer target) {
+	private void copyDokumenteForErneuerung(
+		FerienbetreuungAngabenContainer target
+	) {
 		Set<FerienbetreuungDokument> dokumentCopies = new HashSet<>();
 		if (getDokumente() != null && !getDokumente().isEmpty()) {
-			dokumentCopies.addAll(getDokumente()
+			dokumentCopies.addAll(
+				getDokumente()
 					.stream()
-					.map(ferienbetreuungDokument -> ferienbetreuungDokument.copyDokument(new FerienbetreuungDokument(), target))
-					.collect(Collectors.toSet()));
+					.map(
+						ferienbetreuungDokument -> ferienbetreuungDokument
+							.copyDokument(
+								new FerienbetreuungDokument(),
+								target
+							)
+					)
+					.collect(Collectors.toSet())
+			);
 		}
 		target.setDokumente(dokumentCopies);
 	}
@@ -265,5 +235,10 @@ public class FerienbetreuungAngabenContainer extends AbstractEntity implements G
 
 	public void setVerantwortlicher(@Nullable Benutzer verantwortlicher) {
 		this.verantwortlicher = verantwortlicher;
+	}
+
+	public boolean isInZweitpruefung() {
+		return status
+			== FerienbetreuungAngabenStatus.ZWEITPRUEFUNG;
 	}
 }

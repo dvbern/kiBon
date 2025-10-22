@@ -14,7 +14,7 @@
  */
 
 import {IComponentOptions, IController} from 'angular';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import INgModelController = angular.INgModelController;
 
@@ -31,7 +31,8 @@ export class DvRadioContainerComponentConfig implements IComponentOptions {
         ariaDescribedBy: '@',
         ariaLabel: '@',
         trueOptionLabel: '@',
-        falseOptionLabel: '@'
+        falseOptionLabel: '@',
+        onClick: '&?'
     };
     public template = require('./dv-radio-container.html');
     public controller = DvRadioContainerController;
@@ -48,6 +49,7 @@ export class DvRadioContainerController implements IController {
     // immer mit den Werten von dv-enable-allowed-roles und dv-enable-expression. Wenn die Direktive nicht gesetzt
     // werden muss, bekommen diese attributen die Werte by default allRoles und true, sodass es immer angezeigt wird.
     public allRoles: ReadonlyArray<TSRole>;
+    public onClick?: () => void;
 
     public $onInit(): void {
         this.modelToPassOn = this.ngModelCtrl.$viewValue;
@@ -58,6 +60,12 @@ export class DvRadioContainerController implements IController {
         this.allRoles = TSRoleUtil.getAllRoles();
     }
 
+    private handleClick(): void {
+        if (this.onClick) {
+            this.onClick();
+        }
+    }
+
     public onBlur(): void {
         // parent model touched setzten on blur vom Kind damit fehlerhandlich richtig funktioniert
         this.ngModelCtrl.$setTouched();
@@ -65,5 +73,6 @@ export class DvRadioContainerController implements IController {
 
     public onChange(): void {
         this.ngModelCtrl.$setViewValue(this.modelToPassOn);
+        this.handleClick();
     }
 }

@@ -33,7 +33,10 @@ public interface TraegerschaftService {
 	 * Erstellt die Traegerschaft in der DB und erstellt einen Administrator mit der angegebenen E-Mail Adresse
 	 */
 	@Nonnull
-	Traegerschaft createTraegerschaft(@Nonnull Traegerschaft traegerschaft, @Nonnull String adminEmail);
+	Traegerschaft createTraegerschaft(
+		@Nonnull Traegerschaft traegerschaft,
+		@Nonnull String adminEmail
+	);
 
 	/**
 	 * Speichert die Traegerschaft neu in der DB falls der Key noch nicht existiert.
@@ -70,5 +73,7 @@ public interface TraegerschaftService {
 	/**
 	 * returns all types of Angebot that are offered by at least one of the Institutions of this Traegerschaft
 	 */
-	EnumSet<BetreuungsangebotTyp> getAllAngeboteFromTraegerschaft(@Nonnull String traegerschaftId);
+	EnumSet<BetreuungsangebotTyp> getAllAngeboteFromTraegerschaft(
+		@Nonnull String traegerschaftId
+	);
 }

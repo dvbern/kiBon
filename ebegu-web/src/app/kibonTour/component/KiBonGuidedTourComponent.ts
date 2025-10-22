@@ -26,7 +26,8 @@ import {
 @Component({
     selector: 'kibon-guided-tour',
     templateUrl: './kibon-guided-tour.component.html',
-    styleUrls: ['./kibon-guided-tour.component.less']
+    styleUrls: ['./kibon-guided-tour.component.less'],
+    standalone: false
 })
 export class KiBonGuidedTourComponent extends GuidedTourComponent {
     public tourStepWidth = 500;

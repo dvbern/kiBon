@@ -19,10 +19,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer InstitutionStammdatenFerieninsel
@@ -37,10 +37,10 @@ public class JaxInstitutionStammdatenFerieninsel extends JaxAbstractDTO {
 	@Nonnull
 	private JaxGemeinde gemeinde;
 
-
-	@NotNull @Nonnull
-	private Set<JaxEinstellungenFerieninsel> einstellungenFerieninsel = new HashSet<>();
-
+	@NotNull
+	@Nonnull
+	private Set<JaxEinstellungenFerieninsel> einstellungenFerieninsel =
+		new HashSet<>();
 
 	@Nonnull
 	public JaxGemeinde getGemeinde() {
@@ -56,7 +56,9 @@ public class JaxInstitutionStammdatenFerieninsel extends JaxAbstractDTO {
 		return einstellungenFerieninsel;
 	}
 
-	public void setEinstellungenFerieninsel(@Nonnull Set<JaxEinstellungenFerieninsel> einstellungenFerieninsel) {
+	public void setEinstellungenFerieninsel(
+		@Nonnull Set<JaxEinstellungenFerieninsel> einstellungenFerieninsel
+	) {
 		this.einstellungenFerieninsel = einstellungenFerieninsel;
 	}
 }

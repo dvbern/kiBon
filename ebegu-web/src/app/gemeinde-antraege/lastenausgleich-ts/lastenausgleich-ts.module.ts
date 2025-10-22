@@ -33,6 +33,7 @@ import {LastenausgleichTsKommentarComponent} from './lastenausgleich-ts-kommenta
 import {LastenausgleichTsRoutingModule} from './lastenausgleich-ts-routing/lastenausgleich-ts-routing.module';
 import {LastenausgleichTSComponent} from './lastenausgleich-ts/lastenausgleich-ts.component';
 import {TagesschulenUiViewComponent} from './tagesschulen-ui-view/tagesschulen-ui-view.component';
+import {WarningComponent} from '../../shared/component/warning/warning.component';
 
 @NgModule({
     declarations: [
@@ -54,7 +55,8 @@ import {TagesschulenUiViewComponent} from './tagesschulen-ui-view/tagesschulen-u
         UIRouterModule,
         SharedModule,
         ReactiveFormsModule,
-        WizardstepXModule
+        WizardstepXModule,
+        WarningComponent
     ]
 })
 export class LastenausgleichTSModule {}

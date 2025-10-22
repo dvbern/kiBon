@@ -8,23 +8,25 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.gemeindeantrag;
 
-import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
-import ch.dvbern.ebegu.dto.gemeindeantrag.OeffnungszeitenTagesschuleDTO;
-
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstractDTO {
+import javax.annotation.Nullable;
+
+import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
+import ch.dvbern.ebegu.dto.gemeindeantrag.OeffnungszeitenTagesschuleDTO;
+
+public class JaxLastenausgleichTagesschuleAngabenInstitution extends
+	JaxAbstractDTO {
 
 	private static final long serialVersionUID = -3807424667612896592L;
 
@@ -94,15 +96,15 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 	private String bemerkungen;
 
 	@Nullable
-	private  List<OeffnungszeitenTagesschuleDTO> oeffnungszeiten;
+	private List<OeffnungszeitenTagesschuleDTO> oeffnungszeiten;
 
 	@Nullable
-	public Boolean getLehrbetrieb() {
+	public Boolean getIsLehrbetrieb() {
 		return isLehrbetrieb;
 	}
 
-	public void setLehrbetrieb(@Nullable Boolean lehrbetrieb) {
-		isLehrbetrieb = lehrbetrieb;
+	public void setIsLehrbetrieb(@Nullable Boolean islehrbetrieb) {
+		isLehrbetrieb = islehrbetrieb;
 	}
 
 	@Nullable
@@ -110,7 +112,9 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return anzahlEingeschriebeneKinder;
 	}
 
-	public void setAnzahlEingeschriebeneKinder(@Nullable BigDecimal anzahlEingeschriebeneKinder) {
+	public void setAnzahlEingeschriebeneKinder(
+		@Nullable BigDecimal anzahlEingeschriebeneKinder
+	) {
 		this.anzahlEingeschriebeneKinder = anzahlEingeschriebeneKinder;
 	}
 
@@ -119,8 +123,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return anzahlEingeschriebeneKinderKindergarten;
 	}
 
-	public void setAnzahlEingeschriebeneKinderKindergarten(@Nullable BigDecimal anzahlEingeschriebeneKinderKindergarten) {
-		this.anzahlEingeschriebeneKinderKindergarten = anzahlEingeschriebeneKinderKindergarten;
+	public void setAnzahlEingeschriebeneKinderKindergarten(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderKindergarten
+	) {
+		this.anzahlEingeschriebeneKinderKindergarten =
+			anzahlEingeschriebeneKinderKindergarten;
 	}
 
 	@Nullable
@@ -128,8 +135,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return anzahlEingeschriebeneKinderSekundarstufe;
 	}
 
-	public void setAnzahlEingeschriebeneKinderSekundarstufe(@Nullable BigDecimal anzahlEingeschriebeneKinderSekundarstufe) {
-		this.anzahlEingeschriebeneKinderSekundarstufe = anzahlEingeschriebeneKinderSekundarstufe;
+	public void setAnzahlEingeschriebeneKinderSekundarstufe(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderSekundarstufe
+	) {
+		this.anzahlEingeschriebeneKinderSekundarstufe =
+			anzahlEingeschriebeneKinderSekundarstufe;
 	}
 
 	@Nullable
@@ -137,8 +147,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return anzahlEingeschriebeneKinderPrimarstufe;
 	}
 
-	public void setAnzahlEingeschriebeneKinderPrimarstufe(@Nullable BigDecimal anzahlEingeschriebeneKinderPrimarstufe) {
-		this.anzahlEingeschriebeneKinderPrimarstufe = anzahlEingeschriebeneKinderPrimarstufe;
+	public void setAnzahlEingeschriebeneKinderPrimarstufe(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderPrimarstufe
+	) {
+		this.anzahlEingeschriebeneKinderPrimarstufe =
+			anzahlEingeschriebeneKinderPrimarstufe;
 	}
 
 	@Nullable
@@ -146,8 +159,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen;
 	}
 
-	public void setAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen(@Nullable BigDecimal anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen) {
-		this.anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen = anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen;
+	public void setAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen
+	) {
+		this.anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen =
+			anzahlEingeschriebeneKinderMitBesonderenBeduerfnissen;
 	}
 
 	@Nullable
@@ -155,8 +171,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return durchschnittKinderProTagFruehbetreuung;
 	}
 
-	public void setDurchschnittKinderProTagFruehbetreuung(@Nullable BigDecimal durchschnittKinderProTagFruehbetreuung) {
-		this.durchschnittKinderProTagFruehbetreuung = durchschnittKinderProTagFruehbetreuung;
+	public void setDurchschnittKinderProTagFruehbetreuung(
+		@Nullable BigDecimal durchschnittKinderProTagFruehbetreuung
+	) {
+		this.durchschnittKinderProTagFruehbetreuung =
+			durchschnittKinderProTagFruehbetreuung;
 	}
 
 	@Nullable
@@ -164,7 +183,9 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return durchschnittKinderProTagMittag;
 	}
 
-	public void setDurchschnittKinderProTagMittag(@Nullable BigDecimal durchschnittKinderProTagMittag) {
+	public void setDurchschnittKinderProTagMittag(
+		@Nullable BigDecimal durchschnittKinderProTagMittag
+	) {
 		this.durchschnittKinderProTagMittag = durchschnittKinderProTagMittag;
 	}
 
@@ -173,8 +194,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return durchschnittKinderProTagNachmittag1;
 	}
 
-	public void setDurchschnittKinderProTagNachmittag1(@Nullable BigDecimal durchschnittKinderProTagNachmittag1) {
-		this.durchschnittKinderProTagNachmittag1 = durchschnittKinderProTagNachmittag1;
+	public void setDurchschnittKinderProTagNachmittag1(
+		@Nullable BigDecimal durchschnittKinderProTagNachmittag1
+	) {
+		this.durchschnittKinderProTagNachmittag1 =
+			durchschnittKinderProTagNachmittag1;
 	}
 
 	@Nullable
@@ -182,8 +206,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return durchschnittKinderProTagNachmittag2;
 	}
 
-	public void setDurchschnittKinderProTagNachmittag2(@Nullable BigDecimal durchschnittKinderProTagNachmittag2) {
-		this.durchschnittKinderProTagNachmittag2 = durchschnittKinderProTagNachmittag2;
+	public void setDurchschnittKinderProTagNachmittag2(
+		@Nullable BigDecimal durchschnittKinderProTagNachmittag2
+	) {
+		this.durchschnittKinderProTagNachmittag2 =
+			durchschnittKinderProTagNachmittag2;
 	}
 
 	@Nullable
@@ -191,8 +218,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return schuleAufBasisOrganisatorischesKonzept;
 	}
 
-	public void setSchuleAufBasisOrganisatorischesKonzept(@Nullable Boolean schuleAufBasisOrganisatorischesKonzept) {
-		this.schuleAufBasisOrganisatorischesKonzept = schuleAufBasisOrganisatorischesKonzept;
+	public void setSchuleAufBasisOrganisatorischesKonzept(
+		@Nullable Boolean schuleAufBasisOrganisatorischesKonzept
+	) {
+		this.schuleAufBasisOrganisatorischesKonzept =
+			schuleAufBasisOrganisatorischesKonzept;
 	}
 
 	@Nullable
@@ -200,8 +230,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return schuleAufBasisPaedagogischesKonzept;
 	}
 
-	public void setSchuleAufBasisPaedagogischesKonzept(@Nullable Boolean schuleAufBasisPaedagogischesKonzept) {
-		this.schuleAufBasisPaedagogischesKonzept = schuleAufBasisPaedagogischesKonzept;
+	public void setSchuleAufBasisPaedagogischesKonzept(
+		@Nullable Boolean schuleAufBasisPaedagogischesKonzept
+	) {
+		this.schuleAufBasisPaedagogischesKonzept =
+			schuleAufBasisPaedagogischesKonzept;
 	}
 
 	@Nullable
@@ -209,8 +242,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return raeumlicheVoraussetzungenEingehalten;
 	}
 
-	public void setRaeumlicheVoraussetzungenEingehalten(@Nullable Boolean raeumlicheVoraussetzungenEingehalten) {
-		this.raeumlicheVoraussetzungenEingehalten = raeumlicheVoraussetzungenEingehalten;
+	public void setRaeumlicheVoraussetzungenEingehalten(
+		@Nullable Boolean raeumlicheVoraussetzungenEingehalten
+	) {
+		this.raeumlicheVoraussetzungenEingehalten =
+			raeumlicheVoraussetzungenEingehalten;
 	}
 
 	@Nullable
@@ -218,8 +254,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return betreuungsverhaeltnisEingehalten;
 	}
 
-	public void setBetreuungsverhaeltnisEingehalten(@Nullable Boolean betreuungsverhaeltnisEingehalten) {
-		this.betreuungsverhaeltnisEingehalten = betreuungsverhaeltnisEingehalten;
+	public void setBetreuungsverhaeltnisEingehalten(
+		@Nullable Boolean betreuungsverhaeltnisEingehalten
+	) {
+		this.betreuungsverhaeltnisEingehalten =
+			betreuungsverhaeltnisEingehalten;
 	}
 
 	@Nullable
@@ -227,8 +266,11 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return ernaehrungsGrundsaetzeEingehalten;
 	}
 
-	public void setErnaehrungsGrundsaetzeEingehalten(@Nullable Boolean ernaehrungsGrundsaetzeEingehalten) {
-		this.ernaehrungsGrundsaetzeEingehalten = ernaehrungsGrundsaetzeEingehalten;
+	public void setErnaehrungsGrundsaetzeEingehalten(
+		@Nullable Boolean ernaehrungsGrundsaetzeEingehalten
+	) {
+		this.ernaehrungsGrundsaetzeEingehalten =
+			ernaehrungsGrundsaetzeEingehalten;
 	}
 
 	@Nullable
@@ -246,7 +288,8 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 	}
 
 	public void setBetreuungsstundenEinschliesslichBesondereBeduerfnisse(
-		@Nullable BigDecimal betreuungsstundenEinschliesslichBesondereBeduerfnisse) {
+		@Nullable BigDecimal betreuungsstundenEinschliesslichBesondereBeduerfnisse
+	) {
 		this.betreuungsstundenEinschliesslichBesondereBeduerfnisse =
 			betreuungsstundenEinschliesslichBesondereBeduerfnisse;
 	}
@@ -257,8 +300,10 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 	}
 
 	public void setAnzahlEingeschriebeneKinderVolksschulangebot(
-		@Nullable BigDecimal anzahlEingeschriebeneKinderVolksschulangebot) {
-		this.anzahlEingeschriebeneKinderVolksschulangebot = anzahlEingeschriebeneKinderVolksschulangebot;
+		@Nullable BigDecimal anzahlEingeschriebeneKinderVolksschulangebot
+	) {
+		this.anzahlEingeschriebeneKinderVolksschulangebot =
+			anzahlEingeschriebeneKinderVolksschulangebot;
 	}
 
 	@Nullable
@@ -266,7 +311,9 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return oeffnungszeiten;
 	}
 
-	public void setOeffnungszeiten(@Nullable  List<OeffnungszeitenTagesschuleDTO> oeffnungszeiten) {
+	public void setOeffnungszeiten(
+		@Nullable List<OeffnungszeitenTagesschuleDTO> oeffnungszeiten
+	) {
 		this.oeffnungszeiten = oeffnungszeiten;
 	}
 
@@ -275,7 +322,10 @@ public class JaxLastenausgleichTagesschuleAngabenInstitution extends JaxAbstract
 		return anzahlEingeschriebeneKinderBasisstufe;
 	}
 
-	public void setAnzahlEingeschriebeneKinderBasisstufe(@Nullable BigDecimal anzahlEingeschriebeneKinderBasisstufe) {
-		this.anzahlEingeschriebeneKinderBasisstufe = anzahlEingeschriebeneKinderBasisstufe;
+	public void setAnzahlEingeschriebeneKinderBasisstufe(
+		@Nullable BigDecimal anzahlEingeschriebeneKinderBasisstufe
+	) {
+		this.anzahlEingeschriebeneKinderBasisstufe =
+			anzahlEingeschriebeneKinderBasisstufe;
 	}
 }

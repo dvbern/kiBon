@@ -25,7 +25,7 @@ import {IPromise} from 'angular';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {TSEinkommensverschlechterung} from '../../../../../models/TSEinkommensverschlechterung';
 import {TSEinkommensverschlechterungContainer} from '../../../../../models/TSEinkommensverschlechterungContainer';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
@@ -37,7 +37,8 @@ import {AbstractEinkommensverschlechterungResultat} from '../../AbstractEinkomme
     selector: 'dv-einkommensverschlechterung-resultate-view',
     templateUrl: './einkommensverschlechterung-resultate-view.component.html',
     styleUrls: ['./einkommensverschlechterung-resultate-view.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EinkommensverschlechterungResultateViewComponent extends AbstractEinkommensverschlechterungResultat {
     public resultatBasisjahr?: TSFinanzielleSituationResultateDTO;
@@ -93,7 +94,7 @@ export class EinkommensverschlechterungResultateViewComponent extends AbstractEi
             // If there are no changes in form we don't need anything to update on Server and we could return the
             // promise immediately
             // Update wizardStepStatus also if the form is empty and not dirty
-            return this.updateStatus(false).then(onResult(true));
+            return this.updateStatus().then(onResult(true));
         }
 
         this.model.copyEkvSitDataToGesuch(this.gesuchModelManager.getGesuch());
@@ -112,14 +113,12 @@ export class EinkommensverschlechterungResultateViewComponent extends AbstractEi
                     this.gesuchModelManager.setGesuchstellerNumber(2);
                     return this.gesuchModelManager
                         .saveEinkommensverschlechterungContainer()
-                        .then(() =>
-                            this.updateStatus(true).then(onResult(true))
-                        );
+                        .then(() => this.updateStatus().then(onResult(true)));
                 });
         }
         return this.gesuchModelManager
             .saveEinkommensverschlechterungContainer()
-            .then(() => this.updateStatus(true).then(onResult(true)));
+            .then(() => this.updateStatus().then(onResult(true)));
     }
 
     public onValueChangeFunction = (): void => {

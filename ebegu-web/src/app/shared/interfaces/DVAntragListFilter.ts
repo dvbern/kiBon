@@ -35,4 +35,5 @@ export interface DVAntragListFilter {
     verantwortlicherBG?: string;
     verantwortlicherGemeinde?: string;
     verantwortlicherGemeindeantraege?: TSBenutzerNoDetails;
+    gemeindeAntragFirstEinreichedatum?: string;
 }

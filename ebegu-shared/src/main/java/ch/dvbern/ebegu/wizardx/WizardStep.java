@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.wizardx;
@@ -28,18 +28,21 @@ public interface WizardStep<T extends Wizard> {
 
 	/**
 	 * Next Step of the wizard - can be the same if none
+	 * 
 	 * @param wizard
 	 */
 	void next(@Nonnull T wizard);
 
 	/**
 	 * Previous Step of the wizard - can be the same if first
+	 * 
 	 * @param wizard
 	 */
 	void prev(@Nonnull T wizard);
 
 	/**
 	 * Status of the wizard
+	 * 
 	 * @param t
 	 * @return
 	 */
@@ -47,12 +50,14 @@ public interface WizardStep<T extends Wizard> {
 
 	/**
 	 * Typ of Wizard, used for routing with Step Name
+	 * 
 	 * @return
 	 */
 	WizardTyp getWizardTyp();
 
 	/**
 	 * Name of the wizard step, used for routing
+	 * 
 	 * @return
 	 */
 	String getWizardStepName();

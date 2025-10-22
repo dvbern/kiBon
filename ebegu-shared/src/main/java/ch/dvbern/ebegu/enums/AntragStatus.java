@@ -22,32 +22,14 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-
 /**
  * Enum fuer den Status vom Gesuch.
  */
 public enum AntragStatus {
-	IN_BEARBEITUNG_GS,
-	IN_BEARBEITUNG_SOZIALDIENST,
-	FREIGABEQUITTUNG,   // = GS hat Freigabequittung gedruckt, bzw. den Antrag freigegeben (auch wenn keine
+	IN_BEARBEITUNG_GS, IN_BEARBEITUNG_SOZIALDIENST, FREIGABEQUITTUNG,   // = GS hat Freigabequittung gedruckt, bzw. den Antrag freigegeben (auch wenn keine
 	// Freigabequittung notwendig ist)
-	NUR_SCHULAMT,
-	FREIGEGEBEN,        // Freigabequittung im Jugendamt eingelesen ODER keine Quittung notwendig
-	IN_BEARBEITUNG_JA,
-	ERSTE_MAHNUNG,
-	ERSTE_MAHNUNG_ABGELAUFEN,
-	ZWEITE_MAHNUNG,
-	ZWEITE_MAHNUNG_ABGELAUFEN,
-	GEPRUEFT,
-	KEIN_KONTINGENT,
-	VERFUEGEN,
-	VERFUEGT,
-	KEIN_ANGEBOT,
-	BESCHWERDE_HAENGIG,
-	PRUEFUNG_STV,
-	IN_BEARBEITUNG_STV,
-	GEPRUEFT_STV,
-	IGNORIERT;
+	NUR_SCHULAMT, FREIGEGEBEN,        // Freigabequittung im Jugendamt eingelesen ODER keine Quittung notwendig
+	IN_BEARBEITUNG_JA, ERSTE_MAHNUNG, ERSTE_MAHNUNG_ABGELAUFEN, ZWEITE_MAHNUNG, ZWEITE_MAHNUNG_ABGELAUFEN, GEPRUEFT, KEIN_KONTINGENT, VERFUEGEN, VERFUEGT, KEIN_ANGEBOT, BESCHWERDE_HAENGIG, PRUEFUNG_STV, IN_BEARBEITUNG_STV, GEPRUEFT_STV, IGNORIERT;
 
 	private static final Set<AntragStatus> FOR_ADMIN_ROLE = EnumSet.of(
 		FREIGEGEBEN,        // Freigabequittung im Jugendamt eingelesen ODER keine Quittung notwendig
@@ -71,6 +53,7 @@ public enum AntragStatus {
 
 	private static final Set<AntragStatus> FOR_INSTITUTION_ROLE = EnumSet.of(
 		IN_BEARBEITUNG_GS,
+		IN_BEARBEITUNG_SOZIALDIENST,
 		FREIGABEQUITTUNG,
 		// = GS hat Freigabequittung gedruckt, bzw. den Antrag freigegeben (auch wenn keine Freigabequittung notwendig
 		// ist)
@@ -90,11 +73,13 @@ public enum AntragStatus {
 		PRUEFUNG_STV,
 		IN_BEARBEITUNG_STV,
 		GEPRUEFT_STV,
-		IGNORIERT);
+		IGNORIERT
+	);
 
 	private static final Set<AntragStatus> FOR_STEUERAMT_ROLE = EnumSet.of(
 		PRUEFUNG_STV,
-		IN_BEARBEITUNG_STV);
+		IN_BEARBEITUNG_STV
+	);
 
 	private static final Set<AntragStatus> FOR_JURIST_REVISOR_ROLE = EnumSet.of(
 		NUR_SCHULAMT,
@@ -113,7 +98,8 @@ public enum AntragStatus {
 		PRUEFUNG_STV,
 		IN_BEARBEITUNG_STV,
 		GEPRUEFT_STV,
-		IGNORIERT);
+		IGNORIERT
+	);
 
 	private static final Set<AntragStatus> FOR_SOZIALDIENST_ROLE = EnumSet.of(
 		FREIGABEQUITTUNG,
@@ -137,36 +123,41 @@ public enum AntragStatus {
 		IGNORIERT
 	);
 
-
-
 	// range ist etwas gefaehrlich, da man sehr vorsichtig sein muss, in welcher Reihenfolge man die Werte schreibt.
 	// Ausserdem kann man
 	// kein range mit Ausnahmen machen. In diesem Fall ist es deshalb besser ein .of zu benutzen
 
-	private static final Set<AntragStatus> FOR_SACHBEARBEITER_JUGENDAMT_PENDENZEN = EnumSet.of(
-		FREIGEGEBEN,
-		IN_BEARBEITUNG_JA,
-		ERSTE_MAHNUNG,
-		ERSTE_MAHNUNG_ABGELAUFEN,
-		ZWEITE_MAHNUNG,
-		ZWEITE_MAHNUNG_ABGELAUFEN,
-		GEPRUEFT,
-		VERFUEGEN,
-		BESCHWERDE_HAENGIG,
-		GEPRUEFT_STV);
+	private static final Set<AntragStatus> FOR_SACHBEARBEITER_JUGENDAMT_PENDENZEN =
+		EnumSet.of(
+			FREIGEGEBEN,
+			IN_BEARBEITUNG_JA,
+			ERSTE_MAHNUNG,
+			ERSTE_MAHNUNG_ABGELAUFEN,
+			ZWEITE_MAHNUNG,
+			ZWEITE_MAHNUNG_ABGELAUFEN,
+			GEPRUEFT,
+			VERFUEGEN,
+			BESCHWERDE_HAENGIG,
+			GEPRUEFT_STV
+		);
 
-	private static final Set<AntragStatus> FOR_SACHBEARBEITER_SCHULAMT_PENDENZEN = EnumSet.of(
-		FREIGEGEBEN,
-		IN_BEARBEITUNG_JA,
-		ERSTE_MAHNUNG,
-		ERSTE_MAHNUNG_ABGELAUFEN,
-		ZWEITE_MAHNUNG,
-		ZWEITE_MAHNUNG_ABGELAUFEN,
-		GEPRUEFT,
-		BESCHWERDE_HAENGIG,
-		GEPRUEFT_STV);
+	private static final Set<AntragStatus> FOR_SACHBEARBEITER_SCHULAMT_PENDENZEN =
+		EnumSet.of(
+			FREIGEGEBEN,
+			IN_BEARBEITUNG_JA,
+			ERSTE_MAHNUNG,
+			ERSTE_MAHNUNG_ABGELAUFEN,
+			ZWEITE_MAHNUNG,
+			ZWEITE_MAHNUNG_ABGELAUFEN,
+			GEPRUEFT,
+			BESCHWERDE_HAENGIG,
+			GEPRUEFT_STV
+		);
 
-	private static final Set<AntragStatus> IN_BEARBEITUNG = EnumSet.range(IN_BEARBEITUNG_GS, IN_BEARBEITUNG_JA);
+	private static final Set<AntragStatus> IN_BEARBEITUNG = EnumSet.range(
+		IN_BEARBEITUNG_GS,
+		IN_BEARBEITUNG_JA
+	);
 
 	private static final Set<AntragStatus> FOR_ADMIN_ROLE_WRITE = EnumSet.of(
 		FREIGABEQUITTUNG,
@@ -186,55 +177,61 @@ public enum AntragStatus {
 		IN_BEARBEITUNG_STV,
 		GEPRUEFT_STV,
 		NUR_SCHULAMT,
-		IGNORIERT);
-
-	private static final Set<AntragStatus> FOR_INSTITUTION_ROLE_WRITE = EnumSet.of(
-		IN_BEARBEITUNG_GS,
-		FREIGABEQUITTUNG,
-		// = GS hat Freigabequittung gedruckt, bzw. den Antrag freigegeben (auch wenn keine Freigabequittung notwendig
-		// ist)
-		FREIGEGEBEN,
-		// Freigabequittung im Jugendamt eingelesen ODER keine Quittung notwendig
-		IN_BEARBEITUNG_JA,
-		ERSTE_MAHNUNG,
-		ERSTE_MAHNUNG_ABGELAUFEN,
-		ZWEITE_MAHNUNG,
-		ZWEITE_MAHNUNG_ABGELAUFEN,
-		GEPRUEFT,
-		KEIN_KONTINGENT,
-		VERFUEGEN);
-
-	private static final Set<AntragStatus> FOR_GESUCHSTELLER_ROLE_WRITE = EnumSet.of(
-		IN_BEARBEITUNG_GS,
-		NUR_SCHULAMT, // Damit eine Mutation erstellt werden kann
-		FREIGABEQUITTUNG,
-		ERSTE_MAHNUNG,
-		ERSTE_MAHNUNG_ABGELAUFEN,
-		ZWEITE_MAHNUNG,
-		ZWEITE_MAHNUNG_ABGELAUFEN,
-		VERFUEGT, // Damit eine Mutation erstellt werden kann
-		IGNORIERT // Damit eine Mutation erstellt werden kann
+		IGNORIERT
 	);
 
-	private static final Set<AntragStatus> FOR_STEUERAMT_ROLE_WRITE = EnumSet.of(
-		PRUEFUNG_STV,
-		IN_BEARBEITUNG_STV,
-		GEPRUEFT_STV
-		// Der Status wird schon vor dem Speichern gesetzt. Falls dies mal in eine separate Methode kommt, kann dieser
-		// Status entfernt werden
-	);
+	private static final Set<AntragStatus> FOR_INSTITUTION_ROLE_WRITE = EnumSet
+		.of(
+			IN_BEARBEITUNG_GS,
+			FREIGABEQUITTUNG,
+			// = GS hat Freigabequittung gedruckt, bzw. den Antrag freigegeben (auch wenn keine Freigabequittung notwendig
+			// ist)
+			FREIGEGEBEN,
+			// Freigabequittung im Jugendamt eingelesen ODER keine Quittung notwendig
+			IN_BEARBEITUNG_JA,
+			ERSTE_MAHNUNG,
+			ERSTE_MAHNUNG_ABGELAUFEN,
+			ZWEITE_MAHNUNG,
+			ZWEITE_MAHNUNG_ABGELAUFEN,
+			GEPRUEFT,
+			KEIN_KONTINGENT,
+			VERFUEGEN
+		);
 
-	private static final Set<AntragStatus> FOR_SOZIALDIENSTE_ROLE_WRITE = EnumSet.of(
-		IN_BEARBEITUNG_SOZIALDIENST,
-		NUR_SCHULAMT, // Damit eine Mutation erstellt werden kann
-		FREIGABEQUITTUNG,
-		ERSTE_MAHNUNG,
-		ERSTE_MAHNUNG_ABGELAUFEN,
-		ZWEITE_MAHNUNG,
-		ZWEITE_MAHNUNG_ABGELAUFEN,
-		VERFUEGT, // Damit eine Mutation erstellt werden kann
-		IGNORIERT // Damit eine Mutation erstellt werden kann
-	);
+	private static final Set<AntragStatus> FOR_GESUCHSTELLER_ROLE_WRITE =
+		EnumSet.of(
+			IN_BEARBEITUNG_GS,
+			NUR_SCHULAMT, // Damit eine Mutation erstellt werden kann
+			FREIGABEQUITTUNG,
+			ERSTE_MAHNUNG,
+			ERSTE_MAHNUNG_ABGELAUFEN,
+			ZWEITE_MAHNUNG,
+			ZWEITE_MAHNUNG_ABGELAUFEN,
+			VERFUEGT, // Damit eine Mutation erstellt werden kann
+			IGNORIERT // Damit eine Mutation erstellt werden kann
+		);
+
+	private static final Set<AntragStatus> FOR_STEUERAMT_ROLE_WRITE = EnumSet
+		.of(
+			PRUEFUNG_STV,
+			IN_BEARBEITUNG_STV,
+			GEPRUEFT_STV
+			// Der Status wird schon vor dem Speichern gesetzt. Falls dies mal in eine separate Methode kommt, kann dieser
+			// Status entfernt werden
+		);
+
+	private static final Set<AntragStatus> FOR_SOZIALDIENSTE_ROLE_WRITE =
+		EnumSet.of(
+			IN_BEARBEITUNG_SOZIALDIENST,
+			NUR_SCHULAMT, // Damit eine Mutation erstellt werden kann
+			FREIGABEQUITTUNG,
+			ERSTE_MAHNUNG,
+			ERSTE_MAHNUNG_ABGELAUFEN,
+			ZWEITE_MAHNUNG,
+			ZWEITE_MAHNUNG_ABGELAUFEN,
+			VERFUEGT, // Damit eine Mutation erstellt werden kann
+			IGNORIERT // Damit eine Mutation erstellt werden kann
+		);
 
 	/**
 	 * Implementierung eines Berechtigungskonzepts fuer die Antragssuche.
@@ -331,17 +328,39 @@ public enum AntragStatus {
 	}
 
 	public static Collection<AntragStatus> getAllVerfuegtStates() {
-		return Arrays.asList(VERFUEGT, NUR_SCHULAMT, BESCHWERDE_HAENGIG,
-			PRUEFUNG_STV, IN_BEARBEITUNG_STV, GEPRUEFT_STV, KEIN_ANGEBOT, IGNORIERT);
+		return Arrays.asList(
+			VERFUEGT,
+			NUR_SCHULAMT,
+			BESCHWERDE_HAENGIG,
+			PRUEFUNG_STV,
+			IN_BEARBEITUNG_STV,
+			GEPRUEFT_STV,
+			KEIN_ANGEBOT,
+			IGNORIERT
+		);
 	}
 
 	public static Collection<AntragStatus> getAllVerfuegtNotIgnoriertStates() {
-		return Arrays.asList(VERFUEGT, NUR_SCHULAMT, BESCHWERDE_HAENGIG,
-			PRUEFUNG_STV, IN_BEARBEITUNG_STV, GEPRUEFT_STV, KEIN_ANGEBOT);
+		return Arrays.asList(
+			VERFUEGT,
+			NUR_SCHULAMT,
+			BESCHWERDE_HAENGIG,
+			PRUEFUNG_STV,
+			IN_BEARBEITUNG_STV,
+			GEPRUEFT_STV,
+			KEIN_ANGEBOT
+		);
 	}
 
 	public static Collection<AntragStatus> getVerfuegtAbgeschlossenIgnoriertAndSTVStates() {
-		return Arrays.asList(VERFUEGT, NUR_SCHULAMT, PRUEFUNG_STV, IN_BEARBEITUNG_STV, GEPRUEFT_STV, IGNORIERT);
+		return Arrays.asList(
+			VERFUEGT,
+			NUR_SCHULAMT,
+			PRUEFUNG_STV,
+			IN_BEARBEITUNG_STV,
+			GEPRUEFT_STV,
+			IGNORIERT
+		);
 	}
 
 	public static Collection<AntragStatus> getInBearbeitungGSStates() {
@@ -387,8 +406,15 @@ public enum AntragStatus {
 	}
 
 	public static Set<AntragStatus> getAllErledigtePendenzStatus() {
-		return EnumSet.of(VERFUEGT, NUR_SCHULAMT, KEIN_ANGEBOT, IGNORIERT);
+		return EnumSet.of(
+			VERFUEGT,
+			NUR_SCHULAMT,
+			KEIN_ANGEBOT,
+			IGNORIERT,
+			KEIN_KONTINGENT
+		);
 	}
+
 	public static Set<AntragStatus> getFirstStatusOfVerfuegt() {
 		return EnumSet.of(VERFUEGT, NUR_SCHULAMT, KEIN_ANGEBOT);
 	}
@@ -407,11 +433,16 @@ public enum AntragStatus {
 			VERFUEGT,
 			KEIN_ANGEBOT,
 			BESCHWERDE_HAENGIG,
-			IGNORIERT);
+			IGNORIERT
+		);
 	}
 
-	private static final Set<AntragStatus> FOR_SOZIALDIENST_PENDENZEN = EnumSet.of(
-		IN_BEARBEITUNG_SOZIALDIENST, ERSTE_MAHNUNG, ZWEITE_MAHNUNG);
+	private static final Set<AntragStatus> FOR_SOZIALDIENST_PENDENZEN = EnumSet
+		.of(
+			IN_BEARBEITUNG_SOZIALDIENST,
+			ERSTE_MAHNUNG,
+			ZWEITE_MAHNUNG
+		);
 
 	/**
 	 * Ein verfuegtes Gesuch kann mehrere Status haben. Diese Methode immer anwenden um herauszufinden
@@ -434,7 +465,9 @@ public enum AntragStatus {
 	}
 
 	public boolean isAnyOfInBearbeitungGSOrSZD() {
-		return this == FREIGABEQUITTUNG || this == IN_BEARBEITUNG_GS || this == IN_BEARBEITUNG_SOZIALDIENST;
+		return this == FREIGABEQUITTUNG
+			|| this == IN_BEARBEITUNG_GS
+			|| this == IN_BEARBEITUNG_SOZIALDIENST;
 	}
 
 	/**

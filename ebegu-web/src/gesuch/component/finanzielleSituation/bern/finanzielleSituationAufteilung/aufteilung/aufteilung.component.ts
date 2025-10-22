@@ -27,7 +27,8 @@ import {GesuchModelManager} from '../../../../../service/gesuchModelManager';
     templateUrl: './aufteilung.component.html',
     styleUrls: ['./aufteilung.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class AufteilungComponent implements OnInit {
     @Input()

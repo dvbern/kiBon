@@ -29,7 +29,8 @@ public interface GesuchsperiodeEmailService {
 	 */
 	void getAndSaveGesuchsperiodeEmailCandidates(
 		@Nonnull Gesuchsperiode lastGesuchsperiode,
-		@Nonnull Gesuchsperiode nextGesuchsperiode);
+		@Nonnull Gesuchsperiode nextGesuchsperiode
+	);
 
 	void sendMailsForNCandidates(@Nonnull Integer numberOfCandidates);
 }

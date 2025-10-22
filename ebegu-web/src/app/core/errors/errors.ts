@@ -16,6 +16,7 @@
 import {DvErrorMessagesPanelComponentConfig} from './directive/dvb-error-messages/dvb-error-messages-panel';
 import {ErrorService} from './service/ErrorService';
 import {HttpErrorInterceptor} from './service/HttpErrorInterceptor';
+import angular from 'angular';
 
 export const ERRORS_JS_MODULE = angular
     .module('dvbAngular.errors', ['ui.bootstrap', 'ui.router', 'ngAnimate'])

@@ -22,13 +22,14 @@ import {
     Input,
     Output
 } from '@angular/core';
+import {TranslateModule} from '@ngx-translate/core';
 import {Observable, of} from 'rxjs';
-import {MANDANTS, KiBonMandant} from '../app/core/constants/MANDANTS';
+import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {NewUserSelectDirective} from '../app/core/new-antrag-list/new-user-select.directive';
-import {WindowRef} from '../app/core/service/windowRef.service';
+import {WindowRef} from '@kibon/shared-util-window-ref';
 import {LoadingButtonDirective} from '../app/shared/directive/loading-button.directive';
 import {TooltipDirective} from '../app/shared/directive/TooltipDirective';
-import {MandantService} from '../app/shared/services/mandant.service';
 import {TSBenutzerNoDetails} from '../models/TSBenutzerNoDetails';
 
 /**
@@ -36,7 +37,8 @@ import {TSBenutzerNoDetails} from '../models/TSBenutzerNoDetails';
  * to avoid conflicts with dependencies
  */
 @Directive({
-    selector: 'dv-loading-button'
+    selector: 'dv-loading-button',
+    standalone: false
 })
 export class MockDvLoadingButtonDirective {
     @Input() public type: string;
@@ -52,7 +54,8 @@ export class MockDvLoadingButtonDirective {
 }
 
 @Directive({
-    selector: 'dv-tooltip'
+    selector: 'dv-tooltip',
+    standalone: false
 })
 export class MockTooltipDirective {
     @Input() public inputId: string;
@@ -60,7 +63,8 @@ export class MockTooltipDirective {
 }
 
 @Directive({
-    selector: 'dv-tooltip'
+    selector: 'dv-tooltip',
+    standalone: false
 })
 export class MockNewUserSelectDirective {
     @Input()
@@ -102,6 +106,7 @@ class MockMandantService {
 
 export const SHARED_MODULE_OVERRIDES = {
     remove: {
+        imports: [TranslateModule],
         declarations: [
             LoadingButtonDirective,
             TooltipDirective,
@@ -115,6 +120,7 @@ export const SHARED_MODULE_OVERRIDES = {
         providers: [MandantService]
     },
     add: {
+        imports: [TranslateModule.forRoot()],
         declarations: [
             MockDvLoadingButtonDirective,
             MockTooltipDirective,
@@ -123,7 +129,8 @@ export const SHARED_MODULE_OVERRIDES = {
         exports: [
             MockDvLoadingButtonDirective,
             MockTooltipDirective,
-            MockNewUserSelectDirective
+            MockNewUserSelectDirective,
+            TranslateModule
         ],
         providers: [
             WindowRef,

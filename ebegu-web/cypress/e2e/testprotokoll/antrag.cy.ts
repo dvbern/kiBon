@@ -15,23 +15,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {FixtureFinSit} from '@dv-e2e/fixtures';
 import {
-    AntragCreationPO,
-    AntragPapierPO,
+    AntragBeschaeftigungspensumPO,
+    AntragBetreuungPO,
     AntragFamSitPO,
     AntragKindPO,
-    AntragBetreuungPO,
-    AntragBeschaeftigungspensumPO,
+    AntragPapierPO,
     FinanzielleSituationPO,
-    FinanzielleSituationStartPO,
     FinanzielleSituationResultatePO,
+    FinanzielleSituationStartPO,
     NavigationPO,
     SidenavPO,
-    VerfuegenPO,
-    ConfirmDialogPO
+    VerfuegenPO
 } from '@dv-e2e/page-objects';
-import {FixtureFinSit} from '@dv-e2e/fixtures';
 import {GemeindeTestFall, getUser} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 import {VerfuegungPO} from '../../page-objects/antrag/verfuegung.po';
 
@@ -69,17 +68,29 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
     const userSB = getUser('[6-L-SB-Gemeinde] Stefan Weibel');
     const userKita = getUser('[3-SB-Institution-Kita-Brünnen] Sophie Bergmann');
 
+    beforeEach(() => {
+        cy.ignoreUncaughtException();
+        cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
+    });
+
+    before(() => {
+        cy.changeMandant(MANDANTS.BERN);
+    });
+
+    it("signs in user and lands on 'HomePage'", () => {
+        cy.login(userSB);
+        cy.visit('/');
+        cy.url().should('include', 'kibon');
+    });
+
     it('should correctly create a new Papier Antrag', () => {
-        // cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
         cy.login(userSB);
         cy.visit('/');
 
         // INIT
-
         AntragPapierPO.createPapierGesuch('withValid');
 
         // FAMILIENSITUATION
-
         AntragFamSitPO.fillFamiliensituationForm('withValid');
         cy.wait(1500);
         cy.waitForRequest('POST', '**/wizard-steps', () => {
@@ -91,7 +102,6 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
         });
 
         // KINDER
-
         createNewKindWithAllSettings();
         AntragKindPO.getPageTitle().should('include.text', 'Kinder');
 
@@ -100,7 +110,6 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
         });
 
         // BETREUUNG
-
         createNewBetreuungWithAllSettings();
         AntragBetreuungPO.getPageTitle().should('include.text', 'Betreuung');
 
@@ -109,7 +118,6 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
         });
 
         // BESCHAEFTIGUNGSPENSUM
-
         AntragBeschaeftigungspensumPO.createBeschaeftigungspensum(
             'GS1',
             'withValid'
@@ -122,29 +130,21 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
         NavigationPO.saveAndGoNext();
 
         // FINANZIELLE VERHAELTNISSE
-
         // Config
-
         FinanzielleSituationStartPO.fillFinanzielleSituationStartForm(
             'withValid'
         );
         FinanzielleSituationStartPO.saveForm();
 
         // Finanzielle Situation - GS 1
-
-        // TODO: update EinkommensverschlechterungPO and update it to also support Finanzielle Situation
         FinanzielleSituationPO.fillFinanzielleSituationForm('withValid', 'GS1');
         FinanzielleSituationPO.saveFormAndGoNext();
 
         // Finanzielle Situation - GS 2
-
-        // TODO: update EinkommensverschlechterungPO and update it to also support Finanzielle Situation
         FinanzielleSituationPO.fillFinanzielleSituationForm('withValid', 'GS2');
         FinanzielleSituationPO.saveFormAndGoNext();
 
         // Resultate
-
-        // TODO: update EinkommensverschlechterungPO and update it to also support Finanzielle Situation
         FixtureFinSit.withValid(({Resultate}) => {
             FinanzielleSituationResultatePO.getEinkommenBeiderGesuchsteller()
                 .find('input')
@@ -190,7 +190,6 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
         });
 
         // DOKUMENTE
-
         // Test upload file
         cy.fixture('documents/small.png').as('smallPng');
 
@@ -207,21 +206,6 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
             );
             return cy.wait(`@${upload}`);
         });
-
-        // TODO: Is flaky, some download requests seem to cancelled
-        // cy.get('[data-test^="download-file"').each(($el, index) => {
-        //     cy.wrap($el).click();
-        // });
-        //
-        // cy.get('[data-test^="download-file"').each(($el, index) => {
-        //     const downloadsFolder = Cypress.config('downloadsFolder');
-        //     const fileName = `small-${index}.png`;
-        //     const fullPath = path.join(downloadsFolder, fileName);
-        //     cy.readFile(fullPath).should('exist');
-        //     cy.log('FULL PATH?', fullPath);
-        //     cy.task('deleteDownload', { dirPath: downloadsFolder, fileName }, { custom: true });
-        //     return cy.readFile(fullPath).should('not.exist');
-        // });
 
         cy.waitForRequest('POST', '**/wizard-steps', () => {
             NavigationPO.saveAndGoNext();

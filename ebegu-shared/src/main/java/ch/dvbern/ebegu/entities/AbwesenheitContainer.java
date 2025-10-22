@@ -19,14 +19,14 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.EbeguUtil;
@@ -39,24 +39,30 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class AbwesenheitContainer extends AbstractMutableEntity implements Comparable<AbwesenheitContainer> {
+public class AbwesenheitContainer extends AbstractMutableEntity implements
+	Comparable<AbwesenheitContainer> {
 
 	private static final long serialVersionUID = -8876987863152535840L;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_abwesenheit_container_betreuung_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_abwesenheit_container_betreuung_id"),
+		nullable = false,
+		updatable = false)
 	private Betreuung betreuung;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_abwesenheit_container_abwesenheit_gs"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_abwesenheit_container_abwesenheit_gs"))
 	private Abwesenheit abwesenheitGS;
 
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_abwesenheit_container_abwesenheit_ja"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_abwesenheit_container_abwesenheit_ja"))
 	private Abwesenheit abwesenheitJA;
 
 	public AbwesenheitContainer() {
@@ -94,7 +100,7 @@ public class AbwesenheitContainer extends AbstractMutableEntity implements Compa
 	 * Betreuungen just by the BetreuungNummer.
 	 */
 	@Override
-	@SuppressWarnings({"OverlyComplexMethod", "PMD.CompareObjectsWithEquals"})
+	@SuppressWarnings({ "OverlyComplexMethod", "PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -104,29 +110,51 @@ public class AbwesenheitContainer extends AbstractMutableEntity implements Compa
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final AbwesenheitContainer otherAbwesenheitContainer = (AbwesenheitContainer) other;
-		return EbeguUtil.isSame(getAbwesenheitGS(), otherAbwesenheitContainer.getAbwesenheitGS()) &&
-			EbeguUtil.isSame(getAbwesenheitJA(), otherAbwesenheitContainer.getAbwesenheitJA()) &&
-			Objects.equals(this.getBetreuung().getBetreuungNummer(), otherAbwesenheitContainer.getBetreuung().getBetreuungNummer());
+		final AbwesenheitContainer otherAbwesenheitContainer =
+			(AbwesenheitContainer) other;
+		return EbeguUtil.isSame(
+			getAbwesenheitGS(),
+			otherAbwesenheitContainer.getAbwesenheitGS()
+		)
+			&&
+			EbeguUtil.isSame(
+				getAbwesenheitJA(),
+				otherAbwesenheitContainer.getAbwesenheitJA()
+			)
+			&&
+			Objects.equals(
+				this.getBetreuung().getBetreuungNummer(),
+				otherAbwesenheitContainer.getBetreuung()
+					.getBetreuungNummer()
+			);
 	}
 
 	@Override
 	public int compareTo(AbwesenheitContainer o) {
 		CompareToBuilder builder = new CompareToBuilder();
 		builder.append(this.getAbwesenheitJA(), o.getAbwesenheitJA());
-		builder.append(this.getAbwesenheitJA().getId(), o.getAbwesenheitJA().getId());
+		builder.append(
+			this.getAbwesenheitJA().getId(),
+			o.getAbwesenheitJA().getId()
+		);
 		return builder.toComparison();
 	}
 
 	@Nonnull
 	public AbwesenheitContainer copyAbwesenheitContainer(
-			@Nonnull AbwesenheitContainer target, @Nonnull AntragCopyType copyType, @Nonnull Betreuung targetAbwesenheit) {
+		@Nonnull AbwesenheitContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull Betreuung targetAbwesenheit
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
 			target.setBetreuung(targetAbwesenheit);
 			target.setAbwesenheitGS(null);
-			target.setAbwesenheitJA(this.getAbwesenheitJA().copyAbwesenheit(new Abwesenheit(), copyType));
+			target.setAbwesenheitJA(
+				this.getAbwesenheitJA()
+					.copyAbwesenheit(new Abwesenheit(), copyType)
+			);
 			break;
 		case ERNEUERUNG:
 		case ERNEUERUNG_AR_2023:

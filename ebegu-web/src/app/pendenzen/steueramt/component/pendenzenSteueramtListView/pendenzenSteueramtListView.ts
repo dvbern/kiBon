@@ -23,6 +23,7 @@ import {SearchRS} from '../../../../../gesuch/service/searchRS.rest';
 import {TSAntragDTO} from '../../../../../models/TSAntragDTO';
 import {TSAntragSearchresultDTO} from '../../../../../models/TSAntragSearchresultDTO';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
+import {firstValueFrom} from 'rxjs';
 
 export class PendenzenSteueramtListViewComponentConfig
     implements IComponentOptions
@@ -65,16 +66,14 @@ export class PendenzenSteueramtListViewController implements IController {
             'Triggering ServerFiltering with Filter Object',
             tableFilterState
         );
-        this.searchRS
-            .countAntraege(tableFilterState)
-            .toPromise()
-            .then((response: any) => {
+        firstValueFrom(this.searchRS.countAntraege(tableFilterState)).then(
+            (response: any) => {
                 this.totalResultCount = response ? response.toString() : '0';
-            });
-        return this.searchRS
-            .searchAntraege(tableFilterState)
-            .toPromise()
-            .then((response: TSAntragSearchresultDTO) => response);
+            }
+        );
+        return firstValueFrom(
+            this.searchRS.searchAntraege(tableFilterState)
+        ).then((response: TSAntragSearchresultDTO) => response);
     };
 
     private openPendenz(pendenz: TSAntragDTO, isCtrlKeyPressed: boolean): void {

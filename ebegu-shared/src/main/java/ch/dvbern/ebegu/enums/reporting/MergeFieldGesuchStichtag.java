@@ -26,27 +26,45 @@ import static ch.dvbern.oss.lib.excelmerger.converters.StandardConverters.STRING
 
 public enum MergeFieldGesuchStichtag implements MergeFieldProvider {
 
-	gemeindeTitle(new SimpleMergeField<>("gemeindeTitle", STRING_CONVERTER)),
-	referenzNummerTitle(new SimpleMergeField<>("bgNummerTitle", STRING_CONVERTER)),
-	institutionTitle(new SimpleMergeField<>("institutionTitle", STRING_CONVERTER)),
-	angebotTitle(new SimpleMergeField<>("angebotTitle", STRING_CONVERTER)),
-	periodeTitle(new SimpleMergeField<>("periodeTitle", STRING_CONVERTER)),
-	gesuchLaufNrTitle(new SimpleMergeField<>("gesuchLaufNrTitle", STRING_CONVERTER)),
-	nichtFreigegebenTitle(new SimpleMergeField<>("nichtFreigegebenTitle", STRING_CONVERTER)),
-	mahnungenTitle(new SimpleMergeField<>("mahnungenTitle", STRING_CONVERTER)),
-	beschwerdeTitle(new SimpleMergeField<>("beschwerdeTitle", STRING_CONVERTER)),
+	gemeindeTitle(
+		new SimpleMergeField<>("gemeindeTitle", STRING_CONVERTER)
+	), referenzNummerTitle(
+		new SimpleMergeField<>("bgNummerTitle", STRING_CONVERTER)
+	), institutionTitle(
+		new SimpleMergeField<>("institutionTitle", STRING_CONVERTER)
+	), angebotTitle(
+		new SimpleMergeField<>("angebotTitle", STRING_CONVERTER)
+	), periodeTitle(
+		new SimpleMergeField<>("periodeTitle", STRING_CONVERTER)
+	), gesuchLaufNrTitle(
+		new SimpleMergeField<>("gesuchLaufNrTitle", STRING_CONVERTER)
+	), nichtFreigegebenTitle(
+		new SimpleMergeField<>("nichtFreigegebenTitle", STRING_CONVERTER)
+	), mahnungenTitle(
+		new SimpleMergeField<>("mahnungenTitle", STRING_CONVERTER)
+	), beschwerdeTitle(
+		new SimpleMergeField<>("beschwerdeTitle", STRING_CONVERTER)
+	),
 
 	repeatGesuchStichtagRow(new RepeatRowMergeField("repeatGesuchStichtagRow")),
 
-	gemeinde(new SimpleMergeField<>("gemeinde", STRING_CONVERTER)),
-	referenzNummer(new SimpleMergeField<>("bgNummer", STRING_CONVERTER)),
-	gesuchLaufNr(new SimpleMergeField<>("gesuchLaufNr", INTEGER_CONVERTER)),
-	institution(new SimpleMergeField<>("institution", STRING_CONVERTER)),
-	betreuungsTyp(new SimpleMergeField<>("betreuungsTyp", STRING_CONVERTER)),
-	periode(new SimpleMergeField<>("periode", STRING_CONVERTER)),
-	nichtFreigegeben(new SimpleMergeField<>("nichtFreigegeben", INTEGER_CONVERTER)),
-	mahnungen(new SimpleMergeField<>("mahnungen", INTEGER_CONVERTER)),
-	beschwerde(new SimpleMergeField<>("beschwerde", INTEGER_CONVERTER));
+	gemeinde(
+		new SimpleMergeField<>("gemeinde", STRING_CONVERTER)
+	), referenzNummer(
+		new SimpleMergeField<>("bgNummer", STRING_CONVERTER)
+	), gesuchLaufNr(
+		new SimpleMergeField<>("gesuchLaufNr", INTEGER_CONVERTER)
+	), institution(
+		new SimpleMergeField<>("institution", STRING_CONVERTER)
+	), betreuungsTyp(
+		new SimpleMergeField<>("betreuungsTyp", STRING_CONVERTER)
+	), periode(
+		new SimpleMergeField<>("periode", STRING_CONVERTER)
+	), nichtFreigegeben(
+		new SimpleMergeField<>("nichtFreigegeben", INTEGER_CONVERTER)
+	), mahnungen(
+		new SimpleMergeField<>("mahnungen", INTEGER_CONVERTER)
+	), beschwerde(new SimpleMergeField<>("beschwerde", INTEGER_CONVERTER));
 
 	@Nonnull
 	private final MergeField<?> mergeField;

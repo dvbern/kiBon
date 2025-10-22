@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle.testantraege;
@@ -27,22 +27,49 @@ public class Testantrag_LastenausgleichTagesschuleAngabenInstitution {
 	private LastenausgleichTagesschuleAngabenInstitution angabenInstitution;
 
 	public Testantrag_LastenausgleichTagesschuleAngabenInstitution() {
-		this.angabenInstitution = new LastenausgleichTagesschuleAngabenInstitution();
+		this.angabenInstitution =
+			new LastenausgleichTagesschuleAngabenInstitution();
 		// A
-		this.angabenInstitution.setLehrbetrieb(true);
+		this.angabenInstitution.setIsLehrbetrieb(true);
 		// B
-		this.angabenInstitution.setAnzahlEingeschriebeneKinder(new BigDecimal(25));
-		this.angabenInstitution.setAnzahlEingeschriebeneKinderKindergarten(BigDecimal.TEN);
-		this.angabenInstitution.setAnzahlEingeschriebeneKinder(BigDecimal.ZERO);
-		this.angabenInstitution.setAnzahlEingeschriebeneKinderSekundarstufe(BigDecimal.TEN);
-		this.angabenInstitution.setAnzahlEingeschriebeneKinderPrimarstufe(new BigDecimal(5));
-		this.angabenInstitution.setAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen(new BigDecimal(5));
-		this.angabenInstitution.setAnzahlEingeschriebeneKinderVolksschulangebot(BigDecimal.ZERO);
-		this.angabenInstitution.setDurchschnittKinderProTagFruehbetreuung(new BigDecimal(5));
-		this.angabenInstitution.setDurchschnittKinderProTagMittag(new BigDecimal(5));
-		this.angabenInstitution.setDurchschnittKinderProTagNachmittag1(new BigDecimal(5));
-		this.angabenInstitution.setDurchschnittKinderProTagNachmittag2(new BigDecimal(5));
-		this.angabenInstitution.setBetreuungsstundenEinschliesslichBesondereBeduerfnisse(new BigDecimal(150));
+		this.angabenInstitution.setAnzahlEingeschriebeneKinder(
+			new BigDecimal(25)
+		);
+		this.angabenInstitution.setAnzahlEingeschriebeneKinderKindergarten(
+			BigDecimal.TEN
+		);
+		this.angabenInstitution.setAnzahlEingeschriebeneKinderBasisstufe(
+			BigDecimal.ZERO
+		);
+		this.angabenInstitution.setAnzahlEingeschriebeneKinderSekundarstufe(
+			BigDecimal.TEN
+		);
+		this.angabenInstitution.setAnzahlEingeschriebeneKinderPrimarstufe(
+			new BigDecimal(5)
+		);
+		this.angabenInstitution
+			.setAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen(
+				new BigDecimal(5)
+			);
+		this.angabenInstitution.setAnzahlEingeschriebeneKinderVolksschulangebot(
+			BigDecimal.ZERO
+		);
+		this.angabenInstitution.setDurchschnittKinderProTagFruehbetreuung(
+			new BigDecimal(5)
+		);
+		this.angabenInstitution.setDurchschnittKinderProTagMittag(
+			new BigDecimal(5)
+		);
+		this.angabenInstitution.setDurchschnittKinderProTagNachmittag1(
+			new BigDecimal(5)
+		);
+		this.angabenInstitution.setDurchschnittKinderProTagNachmittag2(
+			new BigDecimal(5)
+		);
+		this.angabenInstitution
+			.setBetreuungsstundenEinschliesslichBesondereBeduerfnisse(
+				new BigDecimal(150)
+			);
 		// C
 		this.angabenInstitution.setSchuleAufBasisOrganisatorischesKonzept(true);
 		this.angabenInstitution.setSchuleAufBasisPaedagogischesKonzept(true);

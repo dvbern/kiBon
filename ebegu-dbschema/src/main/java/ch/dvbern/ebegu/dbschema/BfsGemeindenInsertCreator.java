@@ -8,14 +8,28 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.dbschema;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.util.Constants;
 import org.apache.poi.ss.usermodel.Cell;
@@ -26,21 +40,18 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.io.*;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.UUID;
-
 /**
  * Liest die Liste der Gemeinden gemaess BFS ein.
  */
-@SuppressWarnings({ "CallToPrintStackTrace", "IOResourceOpenedButNotSafelyClosed", "UseOfSystemOutOrSystemErr", "TooBroadScope", "PMD.AvoidDuplicateLiterals", "StringBufferReplaceableByString" })
+@SuppressWarnings({ "CallToPrintStackTrace",
+	"IOResourceOpenedButNotSafelyClosed", "UseOfSystemOutOrSystemErr",
+	"TooBroadScope", "PMD.AvoidDuplicateLiterals",
+	"StringBufferReplaceableByString" })
 public class BfsGemeindenInsertCreator {
 
-	private static final Logger LOG = LoggerFactory.getLogger(BfsGemeindenInsertCreator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		BfsGemeindenInsertCreator.class
+	);
 
 	private PrintWriter printWriter;
 	private static final String INPUT_FILE = "/gemeinden/Gemeindestand.xlsx";
@@ -57,8 +68,11 @@ public class BfsGemeindenInsertCreator {
 
 	private void readExcel() throws IOException {
 		try (
-			InputStream resourceAsStream = BfsGemeindenInsertCreator.class.getResourceAsStream(INPUT_FILE);
-			XSSFWorkbook myWorkBook = new XSSFWorkbook(Objects.requireNonNull(resourceAsStream));
+			InputStream resourceAsStream = BfsGemeindenInsertCreator.class
+				.getResourceAsStream(INPUT_FILE);
+			XSSFWorkbook myWorkBook = new XSSFWorkbook(
+				Objects.requireNonNull(resourceAsStream)
+			);
 		) {
 			XSSFSheet mySheet = myWorkBook.getSheetAt(0);
 			Iterator<Row> rowIterator = mySheet.iterator();
@@ -85,12 +99,16 @@ public class BfsGemeindenInsertCreator {
 		Long bfsNummer = readLong(row, 4);
 		String gemeinde = readString(row, 5);
 		LocalDate gueltigAb = readDate(row, 6);
-		String gueltigAbAsString = gueltigAb != null ? Constants.SQL_DATE_FORMAT.format(gueltigAb) : "";
+		String gueltigAbAsString = gueltigAb != null ?
+			Constants.SQL_DATE_FORMAT.format(gueltigAb) :
+			"";
 
 		if ("BE".equals(kanton)) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO bfs_gemeinde ");
-			sb.append("(id, mandant_id, hist_nummer, kanton, bezirk_nummer, bezirk, bfs_nummer, name, gueltig_ab) ");
+			sb.append(
+				"(id, mandant_id, hist_nummer, kanton, bezirk_nummer, bezirk, bfs_nummer, name, gueltig_ab) "
+			);
 			sb.append("VALUES (");
 			sb.append('\'').append(id).append("', ");    		// id
 			sb.append('\'').append(mandant).append("', ");      // mandant
@@ -130,18 +148,23 @@ public class BfsGemeindenInsertCreator {
 	private LocalDate readDate(Row row, int columnIndex) {
 		Cell cell = row.getCell(columnIndex);
 		if (cell != null) {
-			return cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			return cell.getDateCellValue()
+				.toInstant()
+				.atZone(ZoneId.systemDefault())
+				.toLocalDate();
 		}
 		return null;
 	}
 
 	// this class is not really a part of the software itself. For this reason it is not important that some code is duplicated
-	@SuppressWarnings({"Duplicates", "PMD.CloseResource"})
+	@SuppressWarnings({ "Duplicates", "PMD.CloseResource" })
 	private PrintWriter getPrintWriter() {
 		if (printWriter == null) {
 			try {
 				File output = new File(OUTPUT_FILE);
-				FileOutputStream fos = new FileOutputStream(output.getAbsolutePath());
+				FileOutputStream fos = new FileOutputStream(
+					output.getAbsolutePath()
+				);
 				printWriter = new PrintWriter(fos);
 				LOG.info("File generiert: {}", output.getAbsolutePath());
 			} catch (FileNotFoundException e) {
@@ -155,7 +178,7 @@ public class BfsGemeindenInsertCreator {
 	private void println(String s) {
 		LOG.info(s);
 		PrintWriter printWriter = getPrintWriter();
-		if(printWriter != null){
+		if (printWriter != null) {
 			printWriter.println(s);
 		}
 	}

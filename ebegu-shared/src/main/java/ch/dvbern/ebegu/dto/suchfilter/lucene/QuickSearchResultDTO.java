@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.dto.JaxAbstractAntragDTO;
 import ch.dvbern.ebegu.dto.JaxAntragDTO;
@@ -37,14 +37,18 @@ public class QuickSearchResultDTO implements Serializable {
 	private List<SearchResultEntryDTO> resultEntities = new ArrayList<>();
 
 	/**
-	 * This number is the sum of the combined lucene matches. It may not be equal to the size of the actually loaded {@link SearchResultEntryDTO} list
+	 * This number is the sum of the combined lucene matches. It may not be equal to the size of the actually loaded
+	 * {@link SearchResultEntryDTO} list
 	 */
 	private int numberOfResults;
 
 	public QuickSearchResultDTO() {
 	}
 
-	public QuickSearchResultDTO(List<SearchResultEntryDTO> resultEntities, int numberOfResults) {
+	public QuickSearchResultDTO(
+		List<SearchResultEntryDTO> resultEntities,
+		int numberOfResults
+	) {
 		this.resultEntities = resultEntities;
 		this.numberOfResults = numberOfResults;
 	}
@@ -62,7 +66,8 @@ public class QuickSearchResultDTO implements Serializable {
 	}
 
 	/**
-	 * merges this result object with the passed object by adding the number of results and adding all entries in the entry list
+	 * merges this result object with the passed object by adding the number of results and adding all entries in the
+	 * entry list
 	 */
 	public void addSubResult(QuickSearchResultDTO subResult) {
 		resultEntities.addAll(subResult.getResultEntities());
@@ -70,9 +75,13 @@ public class QuickSearchResultDTO implements Serializable {
 	}
 
 	/**
-	 * It adds the given dossier to the existing resultlist, but only if the fallID is not already present in an existing result
+	 * It adds the given dossier to the existing resultlist, but only if the fallID is not already present in an
+	 * existing result
 	 */
-	public void addSubResultDossier(SearchResultEntryDTO resultFall, @NotNull Dossier dossier) {
+	public void addSubResultDossier(
+		SearchResultEntryDTO resultFall,
+		@NotNull Dossier dossier
+	) {
 		if (!fallAlreadyInResultEntities(dossier.getId())) {
 			addResult(createFakeAntragDTO(resultFall, dossier));
 		}
@@ -82,14 +91,19 @@ public class QuickSearchResultDTO implements Serializable {
 	 * Since for some results we do not really have a visible Antrag yet we create a fake one that compriese essentially
 	 * the dossier id and besitzer name
 	 */
-	private SearchResultEntryDTO createFakeAntragDTO(@NotNull SearchResultEntryDTO searchResultEntryDTO, @NotNull Dossier dossier) {
+	private SearchResultEntryDTO createFakeAntragDTO(
+		@NotNull SearchResultEntryDTO searchResultEntryDTO,
+		@NotNull Dossier dossier
+	) {
 		if (searchResultEntryDTO.getAntragDTO() == null) {
 			final JaxFallAntragDTO antragDTO = new JaxFallAntragDTO();
 			antragDTO.setFallId(dossier.getFall().getId());
 			antragDTO.setDossierId(dossier.getId());
 			antragDTO.setFallNummer(dossier.getFall().getFallNummer());
 			if (dossier.getFall().getBesitzer() != null) {
-				antragDTO.setFamilienName(dossier.getFall().getBesitzer().getFullName());
+				antragDTO.setFamilienName(
+					dossier.getFall().getBesitzer().getFullName()
+				);
 			}
 			searchResultEntryDTO.setAntragDTO(antragDTO);
 		}
@@ -113,24 +127,37 @@ public class QuickSearchResultDTO implements Serializable {
 	 *
 	 * @return Returns a NEW {@link QuickSearchResultDTO}
 	 */
-	public static QuickSearchResultDTO reduceToSingleEntyPerAntrag(QuickSearchResultDTO quickSearch) {
-		ArrayListMultimap<String, SearchResultEntryDTO> antragIdToEntryMultimap = ArrayListMultimap.create();
+	public static QuickSearchResultDTO reduceToSingleEntyPerAntrag(
+		QuickSearchResultDTO quickSearch
+	) {
+		ArrayListMultimap<String, SearchResultEntryDTO> antragIdToEntryMultimap =
+			ArrayListMultimap.create();
 		quickSearch.getResultEntities()
 			.forEach(searchResultEntryDTO -> {
-				JaxAbstractAntragDTO antragDTO = searchResultEntryDTO.getAntragDTO();
+				JaxAbstractAntragDTO antragDTO = searchResultEntryDTO
+					.getAntragDTO();
 				if (antragDTO instanceof JaxAntragDTO) {
-					antragIdToEntryMultimap.put(((JaxAntragDTO) antragDTO).getAntragId(), searchResultEntryDTO);
+					antragIdToEntryMultimap.put(
+						((JaxAntragDTO) antragDTO).getAntragId(),
+						searchResultEntryDTO
+					);
 				}
 			});
 
 		List<SearchResultEntryDTO> mergedEntries = new ArrayList<>();
 		//wir nehmen mal nur das erste resultat fuer ein bestimmtes gesuch
 		for (String gesuchId : antragIdToEntryMultimap.keySet()) {
-			Optional<SearchResultEntryDTO> first = antragIdToEntryMultimap.get(gesuchId).stream().findFirst();
+			Optional<SearchResultEntryDTO> first = antragIdToEntryMultimap.get(
+				gesuchId
+			).stream().findFirst();
 			first.ifPresent(mergedEntries::add);
 		}
-		int numOfOmittedAntraege = quickSearch.getResultEntities().size() - mergedEntries.size();
-		return new QuickSearchResultDTO(mergedEntries, quickSearch.numberOfResults - numOfOmittedAntraege);
+		int numOfOmittedAntraege = quickSearch.getResultEntities().size()
+			- mergedEntries.size();
+		return new QuickSearchResultDTO(
+			mergedEntries,
+			quickSearch.numberOfResults - numOfOmittedAntraege
+		);
 
 	}
 
@@ -139,6 +166,10 @@ public class QuickSearchResultDTO implements Serializable {
 	 */
 	private boolean fallAlreadyInResultEntities(@NotNull String fallID) {
 		return resultEntities.stream()
-			.anyMatch(searchResultEntryDTO -> fallID.equalsIgnoreCase(searchResultEntryDTO.getFallId()));
+			.anyMatch(
+				searchResultEntryDTO -> fallID.equalsIgnoreCase(
+					searchResultEntryDTO.getFallId()
+				)
+			);
 	}
 }

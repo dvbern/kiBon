@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -21,15 +21,15 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -53,25 +53,28 @@ public class SteuerdatenAnfrageLog extends AbstractEntity {
 	@Column(nullable = true)
 	private String faultReceived;
 
-
 	@NotNull
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_steuerdaten_anfrage_log_request"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_steuerdaten_anfrage_log_request"))
 	private SteuerdatenRequest request;
 
 	@Nullable
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_steuerdaten_anfrage_log_response"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_steuerdaten_anfrage_log_response"))
 	private SteuerdatenResponse response;
 
-	public SteuerdatenAnfrageLog(){}
+	public SteuerdatenAnfrageLog() {
+	}
 
 	public SteuerdatenAnfrageLog(
 		LocalDateTime timestampSent,
 		SteuerdatenAnfrageStatus status,
 		@Nullable String faultReceived,
 		SteuerdatenRequest request,
-		@Nullable SteuerdatenResponse response) {
+		@Nullable SteuerdatenResponse response
+	) {
 		this.timestampSent = timestampSent;
 		this.status = status;
 		this.faultReceived = faultReceived;
@@ -104,8 +107,7 @@ public class SteuerdatenAnfrageLog extends AbstractEntity {
 		this.faultReceived = faultReceived;
 	}
 
-	public @Nullable
-	SteuerdatenResponse getResponse() {
+	public @Nullable SteuerdatenResponse getResponse() {
 		return response;
 	}
 
@@ -132,11 +134,19 @@ public class SteuerdatenAnfrageLog extends AbstractEntity {
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final SteuerdatenAnfrageLog otherAnfrage = (SteuerdatenAnfrageLog) other;
-		return StringUtils.equals(this.faultReceived, otherAnfrage.faultReceived) &&
-			this.timestampSent.equals(otherAnfrage.timestampSent) &&
-			Objects.equals(this.request, otherAnfrage.request) &&
-			Objects.equals(this.response, otherAnfrage.response) &&
+		final SteuerdatenAnfrageLog otherAnfrage =
+			(SteuerdatenAnfrageLog) other;
+		return StringUtils.equals(
+			this.faultReceived,
+			otherAnfrage.faultReceived
+		)
+			&&
+			this.timestampSent.equals(otherAnfrage.timestampSent)
+			&&
+			Objects.equals(this.request, otherAnfrage.request)
+			&&
+			Objects.equals(this.response, otherAnfrage.response)
+			&&
 			this.status == otherAnfrage.status;
 	}
 }

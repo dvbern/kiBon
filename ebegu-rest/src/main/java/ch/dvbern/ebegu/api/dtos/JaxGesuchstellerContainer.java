@@ -21,11 +21,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.api.dtos.finanziellesituation.JaxFinanzielleSituationContainer;
 
@@ -64,10 +64,8 @@ public class JaxGesuchstellerContainer extends JaxAbstractDTO {
 	private JaxEinkommensverschlechterungContainer einkommensverschlechterungContainer;
 
 	@Nullable
-	private Collection<JaxErwerbspensumContainer> erwerbspensenContainers = new LinkedHashSet<>();
-
-
-
+	private Collection<JaxErwerbspensumContainer> erwerbspensenContainers =
+		new LinkedHashSet<>();
 
 	public JaxGesuchsteller getGesuchstellerGS() {
 		return gesuchstellerGS;
@@ -97,7 +95,9 @@ public class JaxGesuchstellerContainer extends JaxAbstractDTO {
 		return alternativeAdresse;
 	}
 
-	public void setAlternativeAdresse(final JaxAdresseContainer alternativeAdresse) {
+	public void setAlternativeAdresse(
+		final JaxAdresseContainer alternativeAdresse
+	) {
 		this.alternativeAdresse = alternativeAdresse;
 	}
 
@@ -114,7 +114,9 @@ public class JaxGesuchstellerContainer extends JaxAbstractDTO {
 		return finanzielleSituationContainer;
 	}
 
-	public void setFinanzielleSituationContainer(@Nullable final JaxFinanzielleSituationContainer finanzielleSituationContainer) {
+	public void setFinanzielleSituationContainer(
+		@Nullable final JaxFinanzielleSituationContainer finanzielleSituationContainer
+	) {
 		this.finanzielleSituationContainer = finanzielleSituationContainer;
 	}
 
@@ -123,7 +125,9 @@ public class JaxGesuchstellerContainer extends JaxAbstractDTO {
 		return erwerbspensenContainers;
 	}
 
-	public void setErwerbspensenContainers(@Nullable final Collection<JaxErwerbspensumContainer> erwerbspensenContainers) {
+	public void setErwerbspensenContainers(
+		@Nullable final Collection<JaxErwerbspensumContainer> erwerbspensenContainers
+	) {
 		this.erwerbspensenContainers = erwerbspensenContainers;
 	}
 
@@ -132,8 +136,11 @@ public class JaxGesuchstellerContainer extends JaxAbstractDTO {
 		return einkommensverschlechterungContainer;
 	}
 
-	public void setEinkommensverschlechterungContainer(@Nullable JaxEinkommensverschlechterungContainer einkommensverschlechterungContainer) {
-		this.einkommensverschlechterungContainer = einkommensverschlechterungContainer;
+	public void setEinkommensverschlechterungContainer(
+		@Nullable JaxEinkommensverschlechterungContainer einkommensverschlechterungContainer
+	) {
+		this.einkommensverschlechterungContainer =
+			einkommensverschlechterungContainer;
 	}
 
 	public void addAdresse(JaxAdresseContainer adresse) {

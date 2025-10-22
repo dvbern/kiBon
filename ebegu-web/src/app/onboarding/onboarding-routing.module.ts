@@ -19,13 +19,12 @@ import {
     UIRouterUpgradeModule
 } from '@uirouter/angular-hybrid';
 import {HookResult, Transition} from '@uirouter/core';
-import {map, take} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {getRoleBasedTargetState} from '../../utils/AuthenticationUtil';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
 import {UiViewComponent} from '../shared/ui-view/ui-view.component';
-import {InitZpvNrComponent} from './init-zpv-nr/init-zpv-nr.component';
 import {OnboardingBeLoginComponent} from './onboarding-be-login/onboarding-be-login.component';
 import {OnboardingGsAbschliessenComponent} from './onboarding-gs-abschliessen/onboarding-gs-abschliessen.component';
 import {OnboardingInfoGemeindeComponent} from './onboarding-info-gemeinde/onboarding-info-gemeinde.component';
@@ -35,6 +34,7 @@ import {OnboardingNeuBenutzerComponent} from './onboarding-neu-benutzer/onboardi
 import {OnboardingComponent} from './onboarding/onboarding.component';
 import {PortalSelectionComponent} from './portal-selection/portal-selection.component';
 import {ZpvNrSuccessComponent} from './zpv-nr-success/zpv-nr-success.component';
+import {firstValueFrom} from 'rxjs';
 
 export function nextState(): string {
     return 'onboarding.gesuchsteller.registration';
@@ -126,19 +126,11 @@ export const STATES: NgHybridStateDeclaration[] = [
         }
     },
     {
-        name: 'onboarding.initzpv',
-        url: '/init-zpv/:gesuchstellerId',
-        component: InitZpvNrComponent,
-        data: {
-            roles: [TSRole.ANONYMOUS]
-        }
-    },
-    {
         name: 'onboarding.zpvgssuccess',
-        url: '/zpv-gs-success/?gesuchstellerId',
+        url: '/zpv-gs-success/:gesuchstellerId',
         component: ZpvNrSuccessComponent,
         data: {
-            roles: [TSRole.ANONYMOUS, TSRole.GESUCHSTELLER]
+            roles: [TSRole.ANONYMOUS]
         }
     }
 ];
@@ -150,9 +142,8 @@ export function redirectToLandingPage(transition: Transition): HookResult {
         .injector()
         .get('AuthServiceRS');
 
-    return authService.principal$
-        .pipe(
-            take(1),
+    return firstValueFrom(
+        authService.principal$.pipe(
             map(principal => {
                 if (!principal) {
                     return getRoleBasedTargetState(
@@ -168,7 +159,7 @@ export function redirectToLandingPage(transition: Transition): HookResult {
                 );
             })
         )
-        .toPromise();
+    );
 }
 
 disableWhenDossierExists.$inject = ['$transition$'];

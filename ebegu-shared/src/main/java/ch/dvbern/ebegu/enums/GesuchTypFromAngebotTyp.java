@@ -16,8 +16,5 @@
 package ch.dvbern.ebegu.enums;
 
 public enum GesuchTypFromAngebotTyp {
-	NO_ANGEBOT_GESUCH,
-	BG_GESUCH,
-	MISCH_GESUCH,
-	TS_GESUCH,
+	NO_ANGEBOT_GESUCH, BG_GESUCH, MISCH_GESUCH, TS_GESUCH,
 }

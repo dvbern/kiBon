@@ -53,6 +53,7 @@ public enum KinderabzugTyp {
 	};
 
 	public abstract <T> T accept(KinderabzugTypVisitor<T> visitor);
+
 	public boolean isFKJV() {
 		return this == FKJV || this == FKJV_2;
 	}

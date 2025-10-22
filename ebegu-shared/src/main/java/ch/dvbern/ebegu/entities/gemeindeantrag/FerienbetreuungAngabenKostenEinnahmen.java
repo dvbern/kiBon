@@ -25,11 +25,11 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungFormularStatus;
@@ -94,12 +94,15 @@ public class FerienbetreuungAngabenKostenEinnahmen extends AbstractEntity {
 	@Nonnull
 	@Column()
 	@Enumerated(EnumType.STRING)
-	private FerienbetreuungFormularStatus status = FerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE;
+	private FerienbetreuungFormularStatus status =
+		FerienbetreuungFormularStatus.IN_BEARBEITUNG;
 
 	public FerienbetreuungAngabenKostenEinnahmen() {
 	}
 
-	public FerienbetreuungAngabenKostenEinnahmen(FerienbetreuungAngabenKostenEinnahmen toCopy) {
+	public FerienbetreuungAngabenKostenEinnahmen(
+		FerienbetreuungAngabenKostenEinnahmen toCopy
+	) {
 		this.personalkosten = toCopy.personalkosten;
 		this.personalkostenLeitungAdmin = toCopy.personalkostenLeitungAdmin;
 		this.sachkosten = toCopy.sachkosten;
@@ -110,7 +113,8 @@ public class FerienbetreuungAngabenKostenEinnahmen extends AbstractEntity {
 		this.weitereEinnahmen = toCopy.weitereEinnahmen;
 		this.sockelbeitrag = toCopy.sockelbeitrag;
 		this.beitraegeNachAnmeldungen = toCopy.beitraegeNachAnmeldungen;
-		this.vorfinanzierteKantonsbeitraege = toCopy.vorfinanzierteKantonsbeitraege;
+		this.vorfinanzierteKantonsbeitraege =
+			toCopy.vorfinanzierteKantonsbeitraege;
 		this.eigenleistungenGemeinde = toCopy.eigenleistungenGemeinde;
 	}
 
@@ -128,7 +132,9 @@ public class FerienbetreuungAngabenKostenEinnahmen extends AbstractEntity {
 		return personalkostenLeitungAdmin;
 	}
 
-	public void setPersonalkostenLeitungAdmin(@Nullable BigDecimal personalkostenLeitungAdmin) {
+	public void setPersonalkostenLeitungAdmin(
+		@Nullable BigDecimal personalkostenLeitungAdmin
+	) {
 		this.personalkostenLeitungAdmin = personalkostenLeitungAdmin;
 	}
 
@@ -200,7 +206,9 @@ public class FerienbetreuungAngabenKostenEinnahmen extends AbstractEntity {
 		return beitraegeNachAnmeldungen;
 	}
 
-	public void setBeitraegeNachAnmeldungen(@Nullable BigDecimal beitraegeNachAnmeldungen) {
+	public void setBeitraegeNachAnmeldungen(
+		@Nullable BigDecimal beitraegeNachAnmeldungen
+	) {
 		this.beitraegeNachAnmeldungen = beitraegeNachAnmeldungen;
 	}
 
@@ -209,7 +217,9 @@ public class FerienbetreuungAngabenKostenEinnahmen extends AbstractEntity {
 		return vorfinanzierteKantonsbeitraege;
 	}
 
-	public void setVorfinanzierteKantonsbeitraege(@Nullable BigDecimal vorfinanzierteKantonsbeitraege) {
+	public void setVorfinanzierteKantonsbeitraege(
+		@Nullable BigDecimal vorfinanzierteKantonsbeitraege
+	) {
 		this.vorfinanzierteKantonsbeitraege = vorfinanzierteKantonsbeitraege;
 	}
 
@@ -218,7 +228,9 @@ public class FerienbetreuungAngabenKostenEinnahmen extends AbstractEntity {
 		return eigenleistungenGemeinde;
 	}
 
-	public void setEigenleistungenGemeinde(@Nullable BigDecimal eigenleistungenGemeinde) {
+	public void setEigenleistungenGemeinde(
+		@Nullable BigDecimal eigenleistungenGemeinde
+	) {
 		this.eigenleistungenGemeinde = eigenleistungenGemeinde;
 	}
 
@@ -228,7 +240,8 @@ public class FerienbetreuungAngabenKostenEinnahmen extends AbstractEntity {
 	}
 
 	public boolean isReadyForFreigeben() {
-		return checkPropertiesNotNull() && status == FerienbetreuungFormularStatus.ABGESCHLOSSEN;
+		return checkPropertiesNotNull()
+			&& status == FerienbetreuungFormularStatus.ABGESCHLOSSEN;
 	}
 
 	public boolean isReadyForAbschluss() {

@@ -20,8 +20,8 @@ import {map} from 'rxjs/operators';
 import {TSEWKPerson} from '../../../models/TSEWKPerson';
 import {TSEWKResultat} from '../../../models/TSEWKResultat';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '../constants/CONSTANTS';
-import {LogFactory} from '../logging/LogFactory';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 @Injectable({
     providedIn: 'root'

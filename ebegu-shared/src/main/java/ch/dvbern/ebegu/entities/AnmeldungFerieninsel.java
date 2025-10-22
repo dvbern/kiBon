@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -21,16 +21,16 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.AssociationOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.Eingangsart;
@@ -47,57 +47,77 @@ import org.hibernate.envers.Audited;
 @CheckPlatzAndAngebottyp
 // Der ForeignKey-Name wird leider nicht richtig generiert, muss von Hand angepasst werden!
 @AssociationOverrides({
-	@AssociationOverride(name="kind", joinColumns=@JoinColumn(name="kind_id"), foreignKey = @ForeignKey(name = "FK_anmeldung_ferieninsel_kind_id")),
-	@AssociationOverride(name="institutionStammdaten", joinColumns=@JoinColumn(name="institutionStammdaten_id"), foreignKey = @ForeignKey(name = "FK_anmeldung_ferieninsel_institution_stammdaten_id"))
+	@AssociationOverride(name = "kind",
+		joinColumns = @JoinColumn(name = "kind_id"),
+		foreignKey = @ForeignKey(
+			name = "FK_anmeldung_ferieninsel_kind_id")),
+	@AssociationOverride(name = "institutionStammdaten",
+		joinColumns = @JoinColumn(name = "institutionStammdaten_id"),
+		foreignKey = @ForeignKey(
+			name = "FK_anmeldung_ferieninsel_institution_stammdaten_id"))
 })
 
 @Table(
-	uniqueConstraints =
-	@UniqueConstraint(columnNames = { "betreuungNummer", "kind_id" }, name = "UK_anmeldung_ferieninsel_kind_betreuung_nummer")
+	uniqueConstraints = @UniqueConstraint(columnNames = { "betreuungNummer",
+		"kind_id" },
+		name = "UK_anmeldung_ferieninsel_kind_betreuung_nummer")
 )
 public class AnmeldungFerieninsel extends AbstractAnmeldung {
 
 	private static final long serialVersionUID = -9037857320548372570L;
 
 	@Nullable
-	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_anmeldung_ferieninsel_belegung_ferieninsel_id"), nullable = true)
+	@OneToOne(optional = true,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		fetch = FetchType.EAGER)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_anmeldung_ferieninsel_belegung_ferieninsel_id"),
+		nullable = true)
 	private BelegungFerieninsel belegungFerieninsel;
-
 
 	public AnmeldungFerieninsel() {
 	}
-
 
 	@Nullable
 	public BelegungFerieninsel getBelegungFerieninsel() {
 		return belegungFerieninsel;
 	}
 
-	public void setBelegungFerieninsel(@Nullable BelegungFerieninsel belegungFerieninsel) {
+	public void setBelegungFerieninsel(
+		@Nullable BelegungFerieninsel belegungFerieninsel
+	) {
 		this.belegungFerieninsel = belegungFerieninsel;
 	}
 
 	@Nullable
 	@Override
 	public Verfuegung getVerfuegung() {
-		throw new NotImplementedException("Ferieninseln werden aktuell nicht verfügt");
+		throw new NotImplementedException(
+			"Ferieninseln werden aktuell nicht verfügt"
+		);
 	}
 
 	@Override
 	public void setVerfuegung(@Nullable Verfuegung verfuegung) {
-		throw new NotImplementedException("Ferieninseln werden aktuell nicht verfügt");
+		throw new NotImplementedException(
+			"Ferieninseln werden aktuell nicht verfügt"
+		);
 	}
 
 	@Nullable
 	@Override
 	public Verfuegung getVerfuegungPreview() {
-		throw new NotImplementedException("Ferieninseln werden aktuell nicht berechnet");
+		throw new NotImplementedException(
+			"Ferieninseln werden aktuell nicht berechnet"
+		);
 	}
 
 	@Override
 	public void setVerfuegungPreview(@Nullable Verfuegung verfuegung) {
-		throw new NotImplementedException("Ferieninseln werden aktuell nicht berechnet");
+		throw new NotImplementedException(
+			"Ferieninseln werden aktuell nicht berechnet"
+		);
 	}
 
 	@Override
@@ -114,8 +134,12 @@ public class AnmeldungFerieninsel extends AbstractAnmeldung {
 		if (!super.isSame(other)) {
 			return false;
 		}
-		final AnmeldungFerieninsel otherBetreuung = (AnmeldungFerieninsel) other;
-		return Objects.equals(this.getBelegungFerieninsel(), otherBetreuung.getBelegungFerieninsel());
+		final AnmeldungFerieninsel otherBetreuung =
+			(AnmeldungFerieninsel) other;
+		return Objects.equals(
+			this.getBelegungFerieninsel(),
+			otherBetreuung.getBelegungFerieninsel()
+		);
 	}
 
 	@Nonnull
@@ -125,15 +149,28 @@ public class AnmeldungFerieninsel extends AbstractAnmeldung {
 		@Nonnull KindContainer targetKindContainer,
 		@Nonnull Eingangsart targetEingangsart
 	) {
-		super.copyAbstractAnmeldung(target, copyType, targetKindContainer, targetEingangsart);
+		super.copyAbstractAnmeldung(
+			target,
+			copyType,
+			targetKindContainer,
+			targetEingangsart
+		);
 		switch (copyType) {
 		case MUTATION:
 			if (belegungFerieninsel != null) {
-				target.setBelegungFerieninsel(belegungFerieninsel.copyBelegungFerieninsel(new BelegungFerieninsel(), copyType));
+				target.setBelegungFerieninsel(
+					belegungFerieninsel.copyBelegungFerieninsel(
+						new BelegungFerieninsel(),
+						copyType
+					)
+				);
 			}
 			if (this.getBetreuungsstatus().isIgnoriert()) {
 				var oldStatus = this.getStatusVorIgnorieren();
-				Objects.requireNonNull(oldStatus, "statusVorIgnorieren darf nicht null sein, falls ignoriert wurde");
+				Objects.requireNonNull(
+					oldStatus,
+					"statusVorIgnorieren darf nicht null sein, falls ignoriert wurde"
+				);
 				target.setBetreuungsstatus(oldStatus);
 			}
 			break;
@@ -149,10 +186,17 @@ public class AnmeldungFerieninsel extends AbstractAnmeldung {
 	@Override
 	public void copyAnmeldung(@Nonnull AbstractAnmeldung betreuung) {
 		super.copyAnmeldung(betreuung);
-		if (this.getBetreuungsstatus() != betreuung.getBetreuungsstatus() && betreuung instanceof AnmeldungFerieninsel) {
+		if (this.getBetreuungsstatus() != betreuung.getBetreuungsstatus()
+			&& betreuung instanceof AnmeldungFerieninsel) {
 			AnmeldungFerieninsel that = (AnmeldungFerieninsel) betreuung;
 			if (that.getBelegungFerieninsel() != null) {
-				this.setBelegungFerieninsel(that.getBelegungFerieninsel().copyBelegungFerieninsel(new BelegungFerieninsel(), AntragCopyType.MUTATION));
+				this.setBelegungFerieninsel(
+					that.getBelegungFerieninsel()
+						.copyBelegungFerieninsel(
+							new BelegungFerieninsel(),
+							AntragCopyType.MUTATION
+						)
+				);
 			}
 		}
 	}

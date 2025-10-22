@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IComponentOptions} from 'angular';
+import {element, IComponentOptions} from 'angular';
 import {ShowTooltipController} from '../../../../gesuch/dialog/ShowTooltipController';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
 import {IDVFocusableController} from '../IDVFocusableController';
@@ -61,6 +61,6 @@ export class DvTooltipController implements IDVFocusableController {
      * Sets the focus back to the tooltip icon.
      */
     public setFocusBack(): void {
-        angular.element(`#${this.inputId}.fa.fa-info-circle`).first().focus();
+        element(`#${this.inputId}.fa.fa-info-circle`).first().focus();
     }
 }

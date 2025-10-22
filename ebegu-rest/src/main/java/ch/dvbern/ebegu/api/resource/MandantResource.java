@@ -16,38 +16,35 @@
 package ch.dvbern.ebegu.api.resource;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.PermitAll;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.annotation.security.PermitAll;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.JaxBaseConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxMandant;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.services.MandantService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 /**
  * REST Resource fuer Mandanten
  */
 @Path("mandanten")
 @Stateless
-@Api(description = "Resource für Mandanten")
 @PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 public class MandantResource {
 
@@ -55,23 +52,26 @@ public class MandantResource {
 	private MandantService mandantService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxBaseConverter converter;
 
-	@ApiOperation(value = "Gibt den Mandanten mit der angegebenen id zurueck.", response = JaxMandant.class)
+	@Operation(summary = "Gibt den Mandanten mit der angegebenen id zurueck.")
 	@Nullable
 	@GET
 	@Path("/id/{mandantId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	public JaxMandant findMandant(@Nonnull @NotNull @PathParam("mandantId") JaxId mandantJAXPId) {
+	public JaxMandant findMandant(
+		@Nonnull @NotNull @PathParam("mandantId") JaxId mandantJAXPId
+	) {
 		Objects.requireNonNull(mandantJAXPId.getId());
 		String mandantID = converter.toEntityId(mandantJAXPId);
 		Optional<Mandant> optional = mandantService.findMandant(mandantID);
 
-		return optional.map(mandant -> converter.mandantToJAX(mandant)).orElse(null);
+		return optional.map(mandant -> converter.mandantToJAX(mandant))
+			.orElse(null);
 	}
 
-	@ApiOperation(value = "Gibt alle aktiven Mandanten zurueck.")
+	@Operation(summary = "Gibt alle aktiven Mandanten zurueck.")
 	@Nullable
 	@GET
 	@Path("/all")
@@ -81,9 +81,9 @@ public class MandantResource {
 		Collection<Mandant> all = mandantService.getAll();
 
 		return all.stream()
-				.filter(Mandant::isActivated)
-				.map(mandant -> converter.mandantToJAX(mandant))
-				.collect(Collectors.toList());
+			.filter(Mandant::isActivated)
+			.map(mandant -> converter.mandantToJAX(mandant))
+			.collect(Collectors.toList());
 	}
 
 }

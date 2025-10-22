@@ -20,7 +20,10 @@ import {DemoFeatureRS} from '../../service/demoFeatureRS.rest';
 import {TSDemoFeature} from './TSDemoFeature';
 
 // Directive decorator
-@Directive({selector: '[dvDemoFeature]'})
+@Directive({
+    selector: '[dvDemoFeature]',
+    standalone: false
+})
 // Directive class
 export class DvDemoFeatureDirective implements OnInit {
     @Input() public dvDemoFeature: TSDemoFeature;
@@ -39,7 +42,7 @@ export class DvDemoFeatureDirective implements OnInit {
     public checkIfAllowed(): void {
         this.demofeatureRS
             .isDemoFeatureAllowed(this.dvDemoFeature)
-            .then(isAllowed => {
+            .subscribe(isAllowed => {
                 if (isAllowed && !this.hideIfDemoFeatureActive) {
                     this.setElementDisplayValue('block');
                 } else if (!isAllowed && this.hideIfDemoFeatureActive) {

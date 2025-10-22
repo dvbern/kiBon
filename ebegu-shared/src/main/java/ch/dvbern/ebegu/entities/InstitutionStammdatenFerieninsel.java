@@ -19,14 +19,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -35,25 +35,32 @@ import org.hibernate.envers.Audited;
 
 /**
  * Entitaet zum Speichern von InstitutionStammdatenFerieninsel in der Datenbank.
- * Es hat 4 Felder, ein Feld pro Feriensequenz. Wir koennen davon ausgehen, dass die Ferien immer so bleiben, wie sie jetzt definiert sind,
+ * Es hat 4 Felder, ein Feld pro Feriensequenz. Wir koennen davon ausgehen, dass die Ferien immer so bleiben, wie sie
+ * jetzt definiert sind,
  * deswegen kann man es statisch machen.
  */
 @Audited
 @Entity
-public class InstitutionStammdatenFerieninsel extends AbstractEntity implements Comparable<InstitutionStammdatenFerieninsel> {
+public class InstitutionStammdatenFerieninsel extends AbstractEntity implements
+	Comparable<InstitutionStammdatenFerieninsel> {
 
 	private static final long serialVersionUID = 3991623541799162523L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_stammdaten_fi_gemeinde_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_institution_stammdaten_fi_gemeinde_id"), updatable = false)
 	private Gemeinde gemeinde;
 
 	@Nonnull
 	@Valid
 	@SortNatural
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "institutionStammdatenFerieninsel")
-	private Set<EinstellungenFerieninsel> einstellungenFerieninsel = new TreeSet<>();
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "institutionStammdatenFerieninsel")
+	private Set<EinstellungenFerieninsel> einstellungenFerieninsel =
+		new TreeSet<>();
 
 	public InstitutionStammdatenFerieninsel() {
 	}
@@ -93,7 +100,9 @@ public class InstitutionStammdatenFerieninsel extends AbstractEntity implements 
 		return einstellungenFerieninsel;
 	}
 
-	public void setEinstellungenFerieninsel(@Nonnull Set<EinstellungenFerieninsel> einstellungenFerieninsel) {
+	public void setEinstellungenFerieninsel(
+		@Nonnull Set<EinstellungenFerieninsel> einstellungenFerieninsel
+	) {
 		this.einstellungenFerieninsel = einstellungenFerieninsel;
 	}
 }

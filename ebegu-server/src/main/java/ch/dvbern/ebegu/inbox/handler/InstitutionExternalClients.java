@@ -19,7 +19,8 @@ public class InstitutionExternalClients {
 
 	public InstitutionExternalClients(
 		@Nullable InstitutionExternalClient relevantClient,
-		@Nonnull Collection<InstitutionExternalClient> other) {
+		@Nonnull Collection<InstitutionExternalClient> other
+	) {
 		this.relevantClient = relevantClient;
 		this.other = other;
 	}

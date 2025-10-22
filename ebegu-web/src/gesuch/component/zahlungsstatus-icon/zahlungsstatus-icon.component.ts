@@ -18,7 +18,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSVerfuegungZeitabschnittZahlungsstatus} from '../../../models/enums/TSVerfuegungZeitabschnittZahlungsstatus';
 import {TSZahlungsstatusIconLabel} from './TSZahlungsstatusIconLabel';
 
@@ -26,7 +26,8 @@ import {TSZahlungsstatusIconLabel} from './TSZahlungsstatusIconLabel';
     selector: 'dv-zahlungsstatus-icon',
     templateUrl: './zahlungsstatus-icon.component.html',
     styleUrls: ['./zahlungsstatus-icon.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ZahlungsstatusIconComponent implements OnInit {
     @Input()

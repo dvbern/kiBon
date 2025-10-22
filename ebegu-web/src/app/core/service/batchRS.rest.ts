@@ -19,8 +19,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSWorkJob} from '../../../models/TSWorkJob';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '../constants/CONSTANTS';
-
+import {CONSTANTS} from '@kibon/shared/model/constants';
 /**
  * liest information ueber batch jobs aus
  */

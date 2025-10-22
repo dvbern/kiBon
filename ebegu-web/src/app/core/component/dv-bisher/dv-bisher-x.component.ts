@@ -36,18 +36,18 @@
 
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Moment} from 'moment';
-import {TSAbstractMutableEntity} from '../../../../models/TSAbstractMutableEntity';
-import {DateUtil} from '../../../../utils/DateUtil';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
-import {CONSTANTS} from '../../constants/CONSTANTS';
-
+import {CONSTANTS} from '@kibon/shared/model/constants';
 @Component({
     selector: 'dv-bisher-x',
     templateUrl: './dv-bisher-x.component.html',
     styleUrls: ['./dv-bisher-x.component.less'],
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class DvBisherXComponent {
     /**
@@ -102,7 +102,7 @@ export class DvBisherXComponent {
         }
         if (this.deklaration instanceof moment) {
             return [
-                DateUtil.momentToLocalDateFormat(
+                MomentUtil.momentToLocalDateFormat(
                     this.deklaration as Moment,
                     CONSTANTS.DATE_FORMAT
                 )
@@ -127,11 +127,11 @@ export class DvBisherXComponent {
     public equals(deklaration: any, korrektur: any): boolean {
         if (deklaration instanceof moment) {
             return this.equals(
-                DateUtil.momentToLocalDateFormat(
+                MomentUtil.momentToLocalDateFormat(
                     deklaration as Moment,
                     CONSTANTS.DATE_FORMAT
                 ),
-                DateUtil.momentToLocalDateFormat(
+                MomentUtil.momentToLocalDateFormat(
                     korrektur,
                     CONSTANTS.DATE_FORMAT
                 )

@@ -20,7 +20,6 @@ package ch.dvbern.ebegu.enums;
  */
 public enum AbholungTagesschule {
 
-	ABHOLUNG,
-	ALLEINE_NACH_HAUSE
+	ABHOLUNG, ALLEINE_NACH_HAUSE
 
 }

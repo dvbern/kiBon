@@ -22,9 +22,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
 import ch.dvbern.ebegu.entities.EinstellungenTagesschule;
@@ -36,7 +36,7 @@ import ch.dvbern.ebegu.entities.ModulTagesschuleGroup;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 import static java.util.Objects.requireNonNull;
 
@@ -45,7 +45,8 @@ import static java.util.Objects.requireNonNull;
  */
 @Stateless
 @Local(ModulTagesschuleService.class)
-public class ModulTagesschuleServiceBean extends AbstractBaseService implements ModulTagesschuleService {
+public class ModulTagesschuleServiceBean extends AbstractBaseService implements
+	ModulTagesschuleService {
 
 	@Inject
 	private Persistence persistence;
@@ -55,41 +56,64 @@ public class ModulTagesschuleServiceBean extends AbstractBaseService implements 
 
 	@Nonnull
 	@Override
-	public ModulTagesschule saveModul(@Nonnull ModulTagesschule modulTagesschule) {
+	public ModulTagesschule saveModul(
+		@Nonnull ModulTagesschule modulTagesschule
+	) {
 		Objects.requireNonNull(modulTagesschule);
 		return persistence.merge(modulTagesschule);
 	}
 
 	@Nonnull
 	@Override
-	public Optional<ModulTagesschule> findModul(@Nonnull String modulTagesschuleId) {
+	public Optional<ModulTagesschule> findModul(
+		@Nonnull String modulTagesschuleId
+	) {
 		Objects.requireNonNull(modulTagesschuleId, "id muss gesetzt sein");
-		ModulTagesschule modul = persistence.find(ModulTagesschule.class, modulTagesschuleId);
+		ModulTagesschule modul = persistence.find(
+			ModulTagesschule.class,
+			modulTagesschuleId
+		);
 		return Optional.ofNullable(modul);
 	}
 
 	@Nonnull
 	@Override
-	public Optional<ModulTagesschuleGroup> findModulTagesschuleGroup(@Nonnull String modulTagesschuleGroupId) {
+	public Optional<ModulTagesschuleGroup> findModulTagesschuleGroup(
+		@Nonnull String modulTagesschuleGroupId
+	) {
 		Objects.requireNonNull(modulTagesschuleGroupId, "id muss gesetzt sein");
-		ModulTagesschuleGroup modul = persistence.find(ModulTagesschuleGroup.class, modulTagesschuleGroupId);
+		ModulTagesschuleGroup modul = persistence.find(
+			ModulTagesschuleGroup.class,
+			modulTagesschuleGroupId
+		);
 		return Optional.ofNullable(modul);
 	}
 
 	@Override
 	public void removeModul(@Nonnull String modulTagesschuleId) {
 		Objects.requireNonNull(modulTagesschuleId);
-		Optional<ModulTagesschule> modulOptional = findModul(modulTagesschuleId);
-		ModulTagesschule modulToRemove = modulOptional.orElseThrow(() -> new EbeguEntityNotFoundException("removeModul", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			modulTagesschuleId));
+		Optional<ModulTagesschule> modulOptional = findModul(
+			modulTagesschuleId
+		);
+		ModulTagesschule modulToRemove = modulOptional.orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"removeModul",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				modulTagesschuleId
+			)
+		);
 		persistence.remove(modulToRemove);
 	}
 
 	@Override
-	public Collection<EinstellungenTagesschule> findEinstellungenTagesschuleByGesuchsperiode(@Nonnull Gesuchsperiode gesuchsperiode) {
-		return
-			criteriaQueryHelper.getEntitiesByAttribute(
-				EinstellungenTagesschule.class, gesuchsperiode, EinstellungenTagesschule_.gesuchsperiode);
+	public Collection<EinstellungenTagesschule> findEinstellungenTagesschuleByGesuchsperiode(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
+		return criteriaQueryHelper.getEntitiesByAttribute(
+			EinstellungenTagesschule.class,
+			gesuchsperiode,
+			EinstellungenTagesschule_.gesuchsperiode
+		);
 	}
 
 	@Override
@@ -98,20 +122,28 @@ public class ModulTagesschuleServiceBean extends AbstractBaseService implements 
 		@Nonnull Gesuchsperiode lastGesuchsperiode
 	) {
 		Collection<EinstellungenTagesschule> lastEinstellungenTagesschule =
-			findEinstellungenTagesschuleByGesuchsperiode(lastGesuchsperiode);
+			findEinstellungenTagesschuleByGesuchsperiode(
+				lastGesuchsperiode
+			);
 		lastEinstellungenTagesschule.forEach(lastEinstellung -> {
-			EinstellungenTagesschule newEinstellung = lastEinstellung.copyForGesuchsperiode(gesuchsperiodeToCreate);
+			EinstellungenTagesschule newEinstellung = lastEinstellung
+				.copyForGesuchsperiode(gesuchsperiodeToCreate);
 			persistence.merge(newEinstellung);
 		});
 	}
 
 	@Nonnull
 	@Override
-	public Set<ModulTagesschuleGroup> findModulTagesschuleGroup(@Nonnull AnmeldungTagesschule anmeldung) {
+	public Set<ModulTagesschuleGroup> findModulTagesschuleGroup(
+		@Nonnull AnmeldungTagesschule anmeldung
+	) {
 		Gesuchsperiode gesuchsperiode = anmeldung.extractGesuchsperiode();
 
 		InstitutionStammdatenTagesschule institutionStammdatenTagesschule =
-			requireNonNull(anmeldung.getInstitutionStammdaten().getInstitutionStammdatenTagesschule());
+			requireNonNull(
+				anmeldung.getInstitutionStammdaten()
+					.getInstitutionStammdatenTagesschule()
+			);
 
 		Set<ModulTagesschuleGroup> available = institutionStammdatenTagesschule
 			.getEinstellungenTagesschule()

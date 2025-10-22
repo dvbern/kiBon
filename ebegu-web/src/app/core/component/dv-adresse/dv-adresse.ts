@@ -18,7 +18,8 @@ import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.re
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSAdresseContainer} from '../../../../models/TSAdresseContainer';
-import {TSGemeinde} from '../../../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
 import {TSLand} from '../../../../models/types/TSLand';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {AdresseRS} from '../../service/adresseRS.rest';
@@ -85,6 +86,75 @@ export class DvAdresseController {
 
     public resetForm(): void {
         this.adresse = undefined;
+    }
+
+    public updateOrganisation() {
+        const org = this.getModel().adresseJA.organisation;
+        // Convert the string to an array
+        const resultArray = org.split('');
+
+        // If the string is empty or just one character, handle this case
+        if (resultArray.length <= 1) {
+            const tmp = resultArray[0];
+
+            // Ensure the first four elements are ["c", "/", "o", " "]
+            if (resultArray[0] !== 'c') {
+                resultArray.unshift('c');
+            }
+            if (resultArray[1] !== '/') {
+                resultArray[1] = '/';
+            }
+            if (resultArray[2] !== 'o') {
+                resultArray[2] = 'o';
+            }
+            if (resultArray[3] !== ' ') {
+                resultArray[3] = ' ';
+            }
+            resultArray[4] = tmp; // Needed otherwise the first char doesn't appear
+        } else {
+            let firstTypedChar = '';
+            if (
+                resultArray.length > 0 &&
+                resultArray[0] !== 'c' &&
+                resultArray[1] !== '/' &&
+                resultArray[2] !== 'o' &&
+                resultArray[3] !== ' '
+            ) {
+                firstTypedChar = resultArray.shift(); // Remove and preserve the first character
+            }
+
+            // Step 2: Ensure the first four elements are ["c", "/", "o", " "]
+            if (resultArray[0] !== 'c') {
+                resultArray[0] = 'c'; // Correct the first character
+            }
+            if (resultArray[1] !== '/') {
+                resultArray[1] = '/'; // Correct the second character
+            }
+            if (resultArray[2] !== 'o') {
+                resultArray[2] = 'o'; // Correct the third character
+            }
+            if (resultArray[3] !== ' ') {
+                resultArray[3] = ' '; // Correct the fourth character
+            }
+
+            // Step 3: Reinsert the preserved typed character (if it exists)
+            if (firstTypedChar) {
+                resultArray.push(firstTypedChar); // Place the first typed character at the end
+            }
+        }
+        // Convert the array back to string
+        const updatedString = resultArray.join('');
+
+        // Only update the model if the string has changed
+        if (org !== updatedString) {
+            this.getModel().adresseJA.organisation = updatedString;
+        }
+    }
+
+    public restorePlaceholder() {
+        if (this.getModel().adresseJA.organisation === 'c/o ') {
+            this.getModel().adresseJA.organisation = ''; // Remove "c/o " if nothing else is typed
+        }
     }
 
     public isGesuchReadonly(): boolean {

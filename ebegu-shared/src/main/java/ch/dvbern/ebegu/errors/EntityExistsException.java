@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.errors;
@@ -29,9 +29,16 @@ public class EntityExistsException extends EbeguRuntimeException {
 	public <T extends AbstractEntity> EntityExistsException(
 		@Nonnull Class<T> entityClass,
 		@Nonnull String constraintName,
-		@Nonnull String duplicateValue) {
+		@Nonnull String duplicateValue
+	) {
 
-		super(null, ErrorCodeEnum.ERROR_ENTITY_EXISTS, entityClass.getSimpleName(), constraintName, duplicateValue);
+		super(
+			null,
+			ErrorCodeEnum.ERROR_ENTITY_EXISTS,
+			entityClass.getSimpleName(),
+			constraintName,
+			duplicateValue
+		);
 	}
 
 	public <T extends AbstractEntity> EntityExistsException(
@@ -39,8 +46,16 @@ public class EntityExistsException extends EbeguRuntimeException {
 		@Nonnull Class<T> entityClass,
 		@Nonnull String constraintName,
 		@Nonnull String duplicateValue,
-		@Nonnull ErrorCodeEnum errorCodeEnum) {
+		@Nonnull ErrorCodeEnum errorCodeEnum
+	) {
 
-		super(logLevel, null, errorCodeEnum, entityClass.getSimpleName(), constraintName, duplicateValue);
+		super(
+			logLevel,
+			null,
+			errorCodeEnum,
+			entityClass.getSimpleName(),
+			constraintName,
+			duplicateValue
+		);
 	}
 }

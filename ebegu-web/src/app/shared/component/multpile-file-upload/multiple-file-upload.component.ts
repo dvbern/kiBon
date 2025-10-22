@@ -24,11 +24,14 @@ import {
     Output,
     SimpleChanges
 } from '@angular/core';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {Moment} from 'moment';
 import {TSFile} from '../../../../models/TSFile';
-import {DateUtil} from '../../../../utils/DateUtil';
-import {ApplicationPropertyRS} from '../../../core/rest-services/applicationPropertyRS.rest';
 import {TSUploadFile} from '../../../../models/TSUploadFile';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {TSDokumentUploadTyp} from '@kibon/shared/model/enums';
+import {FileUtil} from '@kibon/shared-util-fn-file';
+import {ErrorServiceX} from '../../../core/errors/service/ErrorServiceX';
 
 export interface HTMLInputEvent extends Event {
     target: HTMLInputElement & EventTarget;
@@ -38,7 +41,8 @@ export interface HTMLInputEvent extends Event {
     selector: 'dv-multiple-file-upload',
     templateUrl: './multiple-file-upload.component.html',
     styleUrls: ['./multiple-file-upload.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MultipleFileUploadComponent<T extends TSFile>
     implements OnChanges, OnInit
@@ -47,6 +51,7 @@ export class MultipleFileUploadComponent<T extends TSFile>
     @Input() public readOnly: boolean;
     @Input() public readOnlyDelete: boolean;
     @Input() public tooltipText: string;
+    @Input() public fileTypes = [TSDokumentUploadTyp.ANY];
     @Output() public readonly download: EventEmitter<[T, boolean]> =
         new EventEmitter();
     @Output() public readonly delete: EventEmitter<T> = new EventEmitter();
@@ -59,11 +64,12 @@ export class MultipleFileUploadComponent<T extends TSFile>
     public allowedMimetypes: string = '';
 
     public constructor(
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly errorService: ErrorServiceX
     ) {}
 
     public ngOnInit(): void {
-        this.applicationPropertyRS.getAllowedMimetypes().then(response => {
+        this.applicationPropertyRS.getAllowedMimetypes().subscribe(response => {
             if (response !== undefined) {
                 this.allowedMimetypes = response;
             }
@@ -78,14 +84,22 @@ export class MultipleFileUploadComponent<T extends TSFile>
         this.delete.emit(file);
     }
 
-    public onUploadFile(event: Event): void {
-        this.uploadFile.emit(event as HTMLInputEvent);
+    public onUploadFile(event: HTMLInputEvent): void {
+        const files = Array.from(event.target.files);
+        if (!FileUtil.areAllFileEndingsMatchingTypes(files, this.fileTypes)) {
+            this.errorService.addMesageAsError('ERROR_WRONG_UPLOAD_FILETYPE');
+            return;
+        }
+        this.uploadFile.emit(event);
         // reset the value of the input field to allow multiple uploads of a file with the same name
         this.uploadInputValue = null;
     }
 
     public formatDate(timestampUpload: Moment): string {
-        return DateUtil.momentToLocalDateFormat(timestampUpload, 'DD.MM.YYYY');
+        return MomentUtil.momentToLocalDateFormat(
+            timestampUpload,
+            'DD.MM.YYYY'
+        );
     }
 
     public ngOnChanges(changes: SimpleChanges): void {

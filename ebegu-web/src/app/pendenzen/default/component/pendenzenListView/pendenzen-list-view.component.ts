@@ -31,7 +31,7 @@ import {SearchRS} from '../../../../../gesuch/service/searchRS.rest';
 import {TSAntragStatus} from '../../../../../models/enums/TSAntragStatus';
 import {TSAntragDTO} from '../../../../../models/TSAntragDTO';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
-import {LogFactory} from '../../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DVAntragListFilter} from '../../../../shared/interfaces/DVAntragListFilter';
 import {DVAntragListItem} from '../../../../shared/interfaces/DVAntragListItem';
 import {DVPaginationEvent} from '../../../../shared/interfaces/DVPaginationEvent';
@@ -41,7 +41,8 @@ const LOG = LogFactory.createLog('PendenzenListViewComponent');
 @Component({
     selector: 'pendenzen-list-view',
     templateUrl: './pendenzen-list-view.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PendenzenListViewComponent implements OnInit, OnDestroy {
     public hasGemeindenInStatusAngemeldet: boolean = false;
@@ -86,18 +87,18 @@ export class PendenzenListViewComponent implements OnInit, OnDestroy {
         this.authServiceRS.principal$
             .pipe(filter(principal => !!principal))
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                principal => {
+            .subscribe({
+                next: principal => {
                     this.initialFilter.verantwortlicherGemeinde =
                         principal.getFullName();
                     this.search.predicateObject = this.initialFilter;
                     this.countData();
                     this.loadData();
                 },
-                error => {
+                error: error => {
                     LOG.error(error);
                 }
-            );
+            });
         this.initHasGemeindenInStatusAngemeldet();
     }
 
@@ -113,11 +114,11 @@ export class PendenzenListViewComponent implements OnInit, OnDestroy {
                 search: this.search,
                 sort: this.sort
             })
-            .subscribe(
-                response =>
+            .subscribe({
+                next: response =>
                     (this.pagination.totalItemCount = response ? response : 0),
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     private loadData(): void {
@@ -129,8 +130,8 @@ export class PendenzenListViewComponent implements OnInit, OnDestroy {
                 search: this.search,
                 sort: this.sort
             })
-            .subscribe(
-                response => {
+            .subscribe({
+                next: response => {
                     // we lose the "this" if we don't map here
                     this.data$.next(
                         response.antragDTOs.map(antragDto => ({
@@ -159,8 +160,8 @@ export class PendenzenListViewComponent implements OnInit, OnDestroy {
                         }))
                     );
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public onFilterChange(listFilter: DVAntragListFilter): void {

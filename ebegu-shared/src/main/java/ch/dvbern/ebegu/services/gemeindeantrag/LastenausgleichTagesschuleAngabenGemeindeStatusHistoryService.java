@@ -8,21 +8,23 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.gemeindeantrag;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatusHistory;
+import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatus;
 
 /**
  * Service fuer den Lastenausgleich der Tagesschulen, StatusHistory
@@ -31,9 +33,16 @@ public interface LastenausgleichTagesschuleAngabenGemeindeStatusHistoryService {
 
 	@Nonnull
 	LastenausgleichTagesschuleAngabenGemeindeStatusHistory saveLastenausgleichTagesschuleStatusChange(
-		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer fallContainer);
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer fallContainer
+	);
 
 	List<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> findHistoryForContainer(
 		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer container
 	);
+
+	Optional<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> findLastHistoryOfStatus(
+		LastenausgleichTagesschuleAngabenGemeindeContainer container,
+		LastenausgleichTagesschuleAngabenGemeindeStatus lastenausgleichTagesschuleAngabenGemeindeStatus
+	);
+
 }

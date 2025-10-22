@@ -8,20 +8,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.types.DateRange;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -29,14 +24,33 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.entities.AbstractDateRangedEntity;
+import ch.dvbern.ebegu.entities.AbstractPlatz;
+import ch.dvbern.ebegu.entities.FamiliensituationContainer;
+import ch.dvbern.ebegu.entities.SozialhilfeZeitraumContainer;
+import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.types.DateRange;
+
 /**
  * Setzt die Information ueber Sozialhilfe in die benoetigten Zeitabschnitte.
  * Das Massgebende Einkommen wird fruehestens auf den Beginn des Folgemonats nach dem Ereignis angepasst.
  */
 public class SozialhilfeAbschnittRule extends AbstractAbschnittRule {
 
-	public SozialhilfeAbschnittRule(DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.SOZIALHILFE, RuleType.GRUNDREGEL_DATA, RuleValidity.ASIV, validityPeriod, locale);
+	public SozialhilfeAbschnittRule(
+		DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.SOZIALHILFE,
+			RuleType.GRUNDREGEL_DATA,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -46,18 +60,32 @@ public class SozialhilfeAbschnittRule extends AbstractAbschnittRule {
 
 	@Nonnull
 	@Override
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
-		FamiliensituationContainer familiensituation = platz.extractGesuch().getFamiliensituationContainer();
-		if (familiensituation == null || familiensituation.getFamiliensituationJA() == null) {
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
+		FamiliensituationContainer familiensituation = platz.extractGesuch()
+			.getFamiliensituationContainer();
+		if (familiensituation == null
+			|| familiensituation.getFamiliensituationJA() == null) {
 			return new ArrayList<>();
 		}
 
-		if (Boolean.TRUE.equals(familiensituation.getFamiliensituationJA().getSozialhilfeBezueger()) &&
-			familiensituation.getSozialhilfeZeitraumContainers().isEmpty()) {
-			return Stream.of(createZeitabschnitt(platz.extractGesuchsperiode().getGueltigkeit())).collect(Collectors.toList());
+		if (Boolean.TRUE.equals(
+			familiensituation.getFamiliensituationJA()
+				.getSozialhilfeBezueger()
+		)
+			&&
+			familiensituation.getSozialhilfeZeitraumContainers()
+				.isEmpty()) {
+			return Stream.of(
+				createZeitabschnitt(
+					platz.extractGesuchsperiode().getGueltigkeit()
+				)
+			).collect(Collectors.toList());
 		}
 
-		return familiensituation.getSozialhilfeZeitraumContainers().stream()
+		return familiensituation.getSozialhilfeZeitraumContainers()
+			.stream()
 			.map(SozialhilfeZeitraumContainer::getSozialhilfeZeitraumJA)
 			.filter(Objects::nonNull)
 			.map(AbstractDateRangedEntity::getGueltigkeit)
@@ -66,10 +94,15 @@ public class SozialhilfeAbschnittRule extends AbstractAbschnittRule {
 	}
 
 	@Nonnull
-	private VerfuegungZeitabschnitt createZeitabschnitt(@Nonnull DateRange gueltigkeit) {
-		final VerfuegungZeitabschnitt verfuegungZeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
+	private VerfuegungZeitabschnitt createZeitabschnitt(
+		@Nonnull DateRange gueltigkeit
+	) {
+		final VerfuegungZeitabschnitt verfuegungZeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
 		verfuegungZeitabschnitt.setGueltigkeit(gueltigkeit);
-		verfuegungZeitabschnitt.setSozialhilfeempfaengerForAsivAndGemeinde(true);
+		verfuegungZeitabschnitt.setSozialhilfeempfaengerForAsivAndGemeinde(
+			true
+		);
 		return verfuegungZeitabschnitt;
 	}
 }

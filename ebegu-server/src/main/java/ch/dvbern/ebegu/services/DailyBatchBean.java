@@ -22,18 +22,18 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import javax.ejb.AsyncResult;
-import javax.ejb.Asynchronous;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
+import jakarta.ejb.AsyncResult;
+import jakarta.ejb.Asynchronous;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.Constants;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,9 @@ import org.slf4j.LoggerFactory;
 @Local(DailyBatch.class)
 public class DailyBatchBean implements DailyBatch {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DailyBatchBean.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		DailyBatchBean.class
+	);
 
 	@Inject
 	private DownloadFileService downloadFileService;
@@ -73,13 +75,7 @@ public class DailyBatchBean implements DailyBatch {
 	private BenutzerService benutzerService;
 
 	@Inject
-	private AuthService authService;
-
-	@Inject
 	private BetreuungService betreuungService;
-
-	@Inject
-	private InstitutionService institutionService;
 
 	@Inject
 	private InstitutionStammdatenService institutionStammdatenService;
@@ -104,7 +100,10 @@ public class DailyBatchBean implements DailyBatch {
 			LOGGER.info("... Job Cleanup Download-Files finished");
 			return new AsyncResult<>(Boolean.TRUE);
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job Cleanup Download-Files konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job Cleanup Download-Files konnte nicht durchgefuehrt werden!",
+				e
+			);
 			return new AsyncResult<>(Boolean.FALSE);
 		}
 	}
@@ -116,7 +115,10 @@ public class DailyBatchBean implements DailyBatch {
 			workjobService.removeOldWorkjobs();
 			LOGGER.info("... Job Cleanup Old Workjobs finished");
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch- Job Cleanup Old Workjobs konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch- Job Cleanup Old Workjobs konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 
@@ -127,7 +129,9 @@ public class DailyBatchBean implements DailyBatch {
 		try {
 			LOGGER.info("Starting Job Fristablauf...");
 			mahnungService.fristAblaufTimer();
-			AsyncResult<Boolean> booleanAsyncResult = new AsyncResult<>(Boolean.TRUE);
+			AsyncResult<Boolean> booleanAsyncResult = new AsyncResult<>(
+				Boolean.TRUE
+			);
 			// Hier hat's evtl. einen Bug im Wildfly 10, koennte aber auch korrekt sein:
 			// Ohne dieses explizite Flush wird der EM erst so spaet geflusht,
 			// dass der Request-Scope nicht mehr aktiv ist und somit das @RequestScoped PrincipalBean fuer die validierung
@@ -136,7 +140,10 @@ public class DailyBatchBean implements DailyBatch {
 			LOGGER.info("... Job Fristablauf finished");
 			return booleanAsyncResult;
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job Fristablauf konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job Fristablauf konnte nicht durchgefuehrt werden!",
+				e
+			);
 			return new AsyncResult<>(Boolean.FALSE);
 		}
 	}
@@ -148,12 +155,19 @@ public class DailyBatchBean implements DailyBatch {
 			LOGGER.info("Starting Job WarnungGesuchNichtFreigegeben...");
 			mandantService.getAll().forEach(mandant -> {
 				LOGGER.info("Gesuche für Mandant {}", mandant.getName());
-				final int anzahl = gesuchService.findGesucheNichtFreigegebenAndWarn(mandant);
-				LOGGER.info("Es wurden {} Gesuche gefunden, die noch nicht freigegeben wurden", anzahl);
+				final int anzahl = gesuchService
+					.findGesucheNichtFreigegebenAndWarn(mandant);
+				LOGGER.info(
+					"Es wurden {} Gesuche gefunden, die noch nicht freigegeben wurden",
+					anzahl
+				);
 			});
 			LOGGER.info("... Job WarnungGesuchNichtFreigegeben finished");
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job WarnungGesuchNichtFreigegeben konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job WarnungGesuchNichtFreigegeben konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 
@@ -164,12 +178,20 @@ public class DailyBatchBean implements DailyBatch {
 			LOGGER.info("Starting Job WarnungFreigabequittungFehlt...");
 			mandantService.getAll().forEach(mandant -> {
 				LOGGER.info("Gesuche für Mandant {}", mandant.getName());
-				final int anzahl = gesuchService.findGesucheWithoutFreigabequittungenAndWarn(mandant);
-				LOGGER.info("Es wurden {} Gesuche für {}, gefunden, bei denen die Freigabequittung fehlt", anzahl, mandant.getName());
+				final int anzahl = gesuchService
+					.findGesucheWithoutFreigabequittungenAndWarn(mandant);
+				LOGGER.info(
+					"Es wurden {} Gesuche für {}, gefunden, bei denen die Freigabequittung fehlt",
+					anzahl,
+					mandant.getName()
+				);
 			});
 			LOGGER.info("... Job WarnungFreigabequittungFehlt finished");
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job WarnungFreigabequittungFehlt konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job WarnungFreigabequittungFehlt konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 
@@ -180,12 +202,19 @@ public class DailyBatchBean implements DailyBatch {
 			LOGGER.info("Starting Job GesucheLoeschen...");
 			mandantService.getAll().forEach(mandant -> {
 				LOGGER.info("Gesuche für Mandant {}", mandant.getName());
-				final int anzahl = gesuchService.deleteGesucheOhneFreigabeOderQuittung(mandant);
-				LOGGER.info("Es wurden {} Gesuche ohne Freigabe oder Quittung gefunden, die geloescht werden muessen", anzahl);
+				final int anzahl = gesuchService
+					.deleteGesucheOhneFreigabeOderQuittung(mandant);
+				LOGGER.info(
+					"Es wurden {} Gesuche ohne Freigabe oder Quittung gefunden, die geloescht werden muessen",
+					anzahl
+				);
 			});
 			LOGGER.info("... Job GesucheLoeschen finished");
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job GesucheLoeschen konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job GesucheLoeschen konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 
@@ -194,14 +223,26 @@ public class DailyBatchBean implements DailyBatch {
 		try {
 			LOGGER.info("Starting Job GesuchsperiodeLoeschen...");
 			LocalDate stichtag = LocalDate.now().minusYears(10);
-			LOGGER.info("... Deleting Gesuchsperioden older than {}", Constants.DATE_FORMATTER.format(stichtag));
-			Collection<Gesuchsperiode> gesuchsperiodenBetween = gesuchsperiodeService.getGesuchsperiodenBetween(LocalDate.of(1900, Month.JANUARY, 1), stichtag);
+			LOGGER.info(
+				"... Deleting Gesuchsperioden older than {}",
+				Constants.DATE_FORMATTER.format(stichtag)
+			);
+			Collection<Gesuchsperiode> gesuchsperiodenBetween =
+				gesuchsperiodeService.getGesuchsperiodenBetween(
+					LocalDate.of(1900, Month.JANUARY, 1),
+					stichtag
+				);
 			for (Gesuchsperiode gesuchsperiode : gesuchsperiodenBetween) {
-				gesuchsperiodeService.removeGesuchsperiode(gesuchsperiode.getId());
+				gesuchsperiodeService.removeGesuchsperiode(
+					gesuchsperiode.getId()
+				);
 			}
 			LOGGER.info("... Job GesuchsperiodeLoeschen finished");
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job GesuchsperiodeLoeschen konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job GesuchsperiodeLoeschen konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 
@@ -209,55 +250,36 @@ public class DailyBatchBean implements DailyBatch {
 	public void runBatchAbgelaufeneRollen() {
 		try {
 			LOGGER.info("Starting Job AbgelaufeneRollen...");
-			int abgelaufeneRollen = benutzerService.handleAbgelaufeneRollen(LocalDate.now());
-			LOGGER.info("... Job AbgelaufeneRollen finished. Es wurden {} Benutzer zurückgesetzt", abgelaufeneRollen);
+			int abgelaufeneRollen = benutzerService.handleAbgelaufeneRollen(
+				LocalDate.now()
+			);
+			LOGGER.info(
+				"... Job AbgelaufeneRollen finished. Es wurden {} Benutzer zurückgesetzt",
+				abgelaufeneRollen
+			);
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job AbgelaufeneRollen konnte nicht durchgefuehrt werden!", e);
-		}
-	}
-
-	@Override
-	public void runBatchDeleteInvalidAuthTokens() {
-		try {
-			LOGGER.info("Starting Job DeleteInvalidAuthTokens...");
-			int deletedTokens = authService.deleteInvalidAuthTokens();
-			LOGGER.info("... Job DeleteInvalidAuthTokens finished. Es wurden {} Tokens gelöscht", deletedTokens);
-		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job DeleteInvalidAuthTokens konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job AbgelaufeneRollen konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 
 	@Override
 	public void runBatchInfoOffenePendenzenNeueMitteilungInstitution() {
 		try {
-			LOGGER.info("Starting Job InfoOffenePendenzenNeueMitteilungInstitution...");
+			LOGGER.info(
+				"Starting Job InfoOffenePendenzenNeueMitteilungInstitution..."
+			);
 			betreuungService.sendInfoOffenePendenzenNeuMitteilungInstitution();
-			LOGGER.info("... Job InfoOffenePendenzenNeueMitteilungInstitution finished");
+			LOGGER.info(
+				"... Job InfoOffenePendenzenNeueMitteilungInstitution finished"
+			);
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job InfoOffenePendenzenNeueMitteilungInstitution konnte nicht durchgefuehrt werden!", e);
-		}
-	}
-
-	@Override
-	public void deleteInstitutionKennzahlenFields() {
-		try {
-			LOGGER.info("Starting Job DeleteInstitutionKennzahlenFields...");
-			institutionStammdatenService.deleteInstitutionKennzahlenFields();
-			LOGGER.info("... Job DeleteInstitutionKennzahlenFields finished");
-		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job DeleteInstitutionKennzahlenFields konnte nicht durchgefuehrt werden!", e);
-		}
-	}
-
-
-	@Override
-	public void runBatchInstitutionCheckRequired() {
-		try {
-			LOGGER.info("Starting Job InstitutionCheckRequired...");
-			institutionService.updateAllStammdatenCheckRequired();
-			LOGGER.info("... Job InstitutionCheckRequired finished");
-		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job InstitutionCheckRequired konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job InfoOffenePendenzenNeueMitteilungInstitution konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 
@@ -268,17 +290,24 @@ public class DailyBatchBean implements DailyBatch {
 	public Future<Integer> runBatchUpdateGemeindeForBGInstitutionen() {
 		try {
 			LOGGER.info("Starting Job UpdateGemeindeForBGInstitutionen...");
-			Set<InstitutionStammdaten> changed = institutionStammdatenService.updateGemeindeForBGInstitutionen();
+			Set<InstitutionStammdaten> changed = institutionStammdatenService
+				.updateGemeindeForBGInstitutionen();
 			LOGGER.info("... Job UpdateGemeindeForBGInstitutionen finished");
 
 			if (!changed.isEmpty()) {
 				LOGGER.info("Starting InstitutionChangedEvent export...");
-				changed.forEach(s -> institutionStammdatenService.fireStammdatenChangedEvent(s));
+				changed.forEach(
+					s -> institutionStammdatenService
+						.fireStammdatenChangedEvent(s)
+				);
 			}
 
 			return new AsyncResult<>(changed.size());
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job UpdateGemeindeForBGInstitutionen konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job UpdateGemeindeForBGInstitutionen konnte nicht durchgefuehrt werden!",
+				e
+			);
 			return new AsyncResult<>(-1);
 		}
 	}
@@ -292,7 +321,10 @@ public class DailyBatchBean implements DailyBatch {
 			gesuchsperiodeEmailService.sendMailsForNCandidates(200);
 			LOGGER.info("... Job SendEmailsForNewGesuchsperiode finished");
 		} catch (RuntimeException e) {
-			LOGGER.error("Batch-Job SendEmailsForNewGesuchsperiode konnte nicht durchgefuehrt werden!", e);
+			LOGGER.error(
+				"Batch-Job SendEmailsForNewGesuchsperiode konnte nicht durchgefuehrt werden!",
+				e
+			);
 		}
 	}
 }

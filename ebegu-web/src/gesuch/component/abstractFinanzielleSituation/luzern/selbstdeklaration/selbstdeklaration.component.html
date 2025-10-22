@@ -92,6 +92,7 @@
                           ?.selbstdeklaration?.einkunftErwerb
             "
             [korrektur]="model.selbstdeklaration?.einkunftErwerb"
+            data-test="einkunftErwerb"
         >
         </dv-input-label-field>
     </div>
@@ -136,6 +137,7 @@
                           ?.selbstdeklaration?.einkunftVersicherung
             "
             [korrektur]="model.selbstdeklaration?.einkunftVersicherung"
+            data-test="einkunftVersicherung"
         >
         </dv-input-label-field>
     </div>
@@ -180,6 +182,7 @@
                           ?.selbstdeklaration?.einkunftWertschriften
             "
             [korrektur]="model.selbstdeklaration?.einkunftWertschriften"
+            data-test="einkunftWertschriften"
         >
         </dv-input-label-field>
     </div>
@@ -228,6 +231,7 @@
             [korrektur]="
                 model.selbstdeklaration?.einkunftUnterhaltsbeitragKinder
             "
+            data-test="einkunftUnterhaltsbeitragKinder"
         >
         </dv-input-label-field>
     </div>
@@ -272,6 +276,7 @@
                           ?.selbstdeklaration?.einkunftUeberige
             "
             [korrektur]="model.selbstdeklaration?.einkunftUeberige"
+            data-test="einkunftUeberige"
         >
         </dv-input-label-field>
     </div>
@@ -316,6 +321,7 @@
                           ?.selbstdeklaration?.einkunftLiegenschaften
             "
             [korrektur]="model.selbstdeklaration?.einkunftLiegenschaften"
+            data-test="einkunftLiegenschaften"
         >
         </dv-input-label-field>
     </div>
@@ -326,6 +332,7 @@
             [model]="getEinkommenForCurrentAntragsteller()"
             [labelMessageKey]="'FINANZIELLE_SITUATION_EINKOMMEN_EIN_GS'"
             [inputDisabled]="true"
+            data-test="FINANZIELLE_SITUATION_EINKOMMEN_EIN_GS"
         >
         </dv-input-label-field>
     </div>
@@ -374,6 +381,7 @@
                           ?.selbstdeklaration?.abzugBerufsauslagen
             "
             [korrektur]="model.selbstdeklaration?.abzugBerufsauslagen"
+            data-test="abzugBerufsauslagen"
         >
         </dv-input-label-field>
     </div>
@@ -418,6 +426,7 @@
                           ?.abzugSchuldzinsen
             "
             [korrektur]="model.selbstdeklaration?.abzugSchuldzinsen"
+            data-test="abzug-schuldzinsen"
         >
         </dv-input-label-field>
     </div>
@@ -462,6 +471,7 @@
                           ?.selbstdeklaration?.abzugUnterhaltsbeitragKinder
             "
             [korrektur]="model.selbstdeklaration?.abzugUnterhaltsbeitragKinder"
+            data-test="abzugUnterhaltsbeitragKinder"
         >
         </dv-input-label-field>
     </div>
@@ -506,6 +516,7 @@
                           ?.selbstdeklaration?.abzugSaeule3A
             "
             [korrektur]="model.selbstdeklaration?.abzugSaeule3A"
+            data-test="abzugSaeule3A"
         >
         </dv-input-label-field>
     </div>
@@ -550,6 +561,7 @@
                           ?.selbstdeklaration?.abzugVersicherungspraemien
             "
             [korrektur]="model.selbstdeklaration?.abzugVersicherungspraemien"
+            data-test="abzugVersicherungspraemien"
         >
         </dv-input-label-field>
     </div>
@@ -594,6 +606,7 @@
                           ?.selbstdeklaration?.abzugKrankheitsUnfallKosten
             "
             [korrektur]="model.selbstdeklaration?.abzugKrankheitsUnfallKosten"
+            data-test="abzugKrankheitsUnfallKosten"
         >
         </dv-input-label-field>
     </div>
@@ -646,6 +659,7 @@
             [korrektur]="
                 model.selbstdeklaration?.sonderabzugErwerbstaetigkeitEhegatten
             "
+            data-test="sonderabzugErwerbstaetigkeitEhegatten"
         >
         </dv-input-label-field>
     </div>
@@ -690,6 +704,7 @@
                           ?.selbstdeklaration?.abzugKinderVorschule
             "
             [korrektur]="model.selbstdeklaration?.abzugKinderVorschule"
+            data-test="abzugKinderVorschule"
         >
         </dv-input-label-field>
     </div>
@@ -734,6 +749,7 @@
                           ?.selbstdeklaration?.abzugKinderSchule
             "
             [korrektur]="model.selbstdeklaration?.abzugKinderSchule"
+            data-test="abzugKinderSchule"
         >
         </dv-input-label-field>
     </div>
@@ -778,6 +794,7 @@
                           ?.selbstdeklaration?.abzugEigenbetreuung
             "
             [korrektur]="model.selbstdeklaration?.abzugEigenbetreuung"
+            data-test="abzugEigenbetreuung"
         >
         </dv-input-label-field>
     </div>
@@ -822,6 +839,7 @@
                           ?.selbstdeklaration?.abzugFremdbetreuung
             "
             [korrektur]="model.selbstdeklaration?.abzugFremdbetreuung"
+            data-test="abzugFremdbetreuung"
         >
         </dv-input-label-field>
     </div>
@@ -866,6 +884,7 @@
                           ?.selbstdeklaration?.abzugErwerbsunfaehigePersonen
             "
             [korrektur]="model.selbstdeklaration?.abzugErwerbsunfaehigePersonen"
+            data-test="abzugErwerbsunfaehigePersonen"
         >
         </dv-input-label-field>
     </div>
@@ -876,6 +895,7 @@
             [model]="getAbzuegeForCurrentAntragsteller()"
             [labelMessageKey]="'FINANZIELLE_SITUATION_TOTAL_ABZUEGE'"
             [inputDisabled]="true"
+            data-test="FINANZIELLE_SITUATION_TOTAL_ABZUEGE"
         >
         </dv-input-label-field>
     </div>
@@ -924,6 +944,7 @@
                           ?.selbstdeklaration?.vermoegen
             "
             [korrektur]="model.selbstdeklaration?.vermoegen"
+            data-test="vermoegen"
         >
         </dv-input-label-field>
     </div>
@@ -974,6 +995,7 @@
             [korrektur]="
                 model.selbstdeklaration?.abzugSteuerfreierBetragErwachsene
             "
+            data-test="abzugSteuerfreierBetragErwachsene"
         >
         </dv-input-label-field>
     </div>
@@ -1018,6 +1040,7 @@
                           ?.selbstdeklaration?.abzugSteuerfreierBetragKinder
             "
             [korrektur]="model.selbstdeklaration?.abzugSteuerfreierBetragKinder"
+            data-test="abzugSteuerfreierBetragKinder"
         >
         </dv-input-label-field>
     </div>
@@ -1034,6 +1057,7 @@
                 'ANRECHENBARES_VERMOEGEN_GEMAESS_SELBSTDEKLARATION_HINT'
             "
             [inputDisabled]="true"
+            data-test="ANRECHENBARES_VERMOEGEN_GEMAESS_SELBSTDEKLARATION"
         >
         </dv-input-label-field>
     </div>

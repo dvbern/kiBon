@@ -8,19 +8,25 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
 package ch.dvbern.ebegu.rechner;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
@@ -28,65 +34,124 @@ import ch.dvbern.ebegu.util.DateUtil;
 import ch.dvbern.ebegu.util.MathUtil;
 import org.apache.commons.lang.NotImplementedException;
 
-import javax.annotation.Nonnull;
-import java.math.BigDecimal;
-import java.util.Objects;
-
 import static ch.dvbern.ebegu.util.MathUtil.EXACT;
 
 abstract class AbstractSchwyzRechner extends AbstractRechner {
-	private static final BigDecimal HOHERE_BEITRAG_BASIS_BETRAG_PRO_MONAT = new BigDecimal(352);
+	private static final BigDecimal HOHERE_BEITRAG_BASIS_BETRAG_PRO_MONAT =
+		new BigDecimal(352);
 
 	@Override
-	@SuppressWarnings("PMD.NcssMethodCount")
 	public void calculate(
 		@Nonnull VerfuegungZeitabschnitt verfuegungZeitabschnitt,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 		var input = verfuegungZeitabschnitt.getRelevantBgCalculationInput();
 
 		var normKosten = calculateNormkosten(input, parameterDTO);
 
 		var minimalTarif = getMinimalTarif(parameterDTO);
 		var geschwisterBonus = calculateGeschwisterBonus(input);
-		var u = EXACT.multiply(EXACT.divide(minimalTarif, normKosten), EXACT.subtract(BigDecimal.ONE, geschwisterBonus));
+		var u = EXACT.multiply(
+			EXACT.divide(minimalTarif, normKosten),
+			EXACT.subtract(BigDecimal.ONE, geschwisterBonus)
+		);
 
 		var obergrenze = parameterDTO.getMaxMassgebendesEinkommen();
 		var untergrenze = parameterDTO.getMinMassgebendesEinkommen();
-		var z = EXACT.divide(EXACT.subtract(BigDecimal.ONE, u), EXACT.subtract(obergrenze, untergrenze));
+		var z = EXACT.divide(
+			EXACT.subtract(BigDecimal.ONE, u),
+			EXACT.subtract(obergrenze, untergrenze)
+		);
 
-		var effektivesPensumFaktor = EXACT.pctToFraction(input.getBetreuungspensumProzent());
-		var tagesTarif = calculateTarifProZeiteinheit(parameterDTO, effektivesPensumFaktor, input);
+		var effektivesPensumFaktor = EXACT.pctToFraction(
+			input.getBetreuungspensumProzent()
+		);
+		var tagesTarif = calculateTarifProZeiteinheit(
+			parameterDTO,
+			effektivesPensumFaktor,
+			input
+		);
 		var tarif = tagesTarif.min(normKosten);
 
 		var anspruchsberechtigtesEinkommen = input.getMassgebendesEinkommen();
-		var selbstbehaltFaktor = calculateSelbstbehaltFaktor(u, z, anspruchsberechtigtesEinkommen, untergrenze);
-		var selbstbehaltProZeiteinheit = EXACT.multiply(tarif, selbstbehaltFaktor);
+		var selbstbehaltFaktor = calculateSelbstbehaltFaktor(
+			u,
+			z,
+			anspruchsberechtigtesEinkommen,
+			untergrenze
+		);
+		var selbstbehaltProZeiteinheit = EXACT.multiply(
+			tarif,
+			selbstbehaltFaktor
+		);
 
 		var minimalerBeitragDerErziehungsberechtigtenProZeiteinheit =
-			BigDecimal.ZERO.max(EXACT.subtract(minimalTarif, selbstbehaltProZeiteinheit));
-		var beitragProZeiteinheitVorAbzug = EXACT.multiply(tarif, EXACT.subtract(BigDecimal.ONE, selbstbehaltFaktor));
+			getMinimalerBeitragDerErziehungsberechtigtenProZeiteinheit(
+				minimalTarif,
+				selbstbehaltProZeiteinheit,
+				geschwisterBonus,
+				parameterDTO.getGeschwisterbonusTyp()
+			);
+		var beitragProZeiteinheitVorAbzug = EXACT.multiply(
+			tarif,
+			EXACT.subtract(BigDecimal.ONE, selbstbehaltFaktor)
+		);
 
 		var totalBetreuungsbeitragProZeiteinheit =
-			BigDecimal.ZERO.max(EXACT.subtract(
-				beitragProZeiteinheitVorAbzug,
-				minimalerBeitragDerErziehungsberechtigtenProZeiteinheit));
+			BigDecimal.ZERO.max(
+				EXACT.subtract(
+					beitragProZeiteinheitVorAbzug,
+					minimalerBeitragDerErziehungsberechtigtenProZeiteinheit
+				)
+			);
 
 		var bgPensumFaktor = EXACT.pctToFraction(input.getBgPensumProzent());
 		var anteilMonat = calculateAnteilMonat(verfuegungZeitabschnitt);
 		var bgBetreuungsZeiteinheitProZeitabschnitt =
-			toZeiteinheitProZeitabschnitt(parameterDTO, bgPensumFaktor, anteilMonat);
+			toZeiteinheitProZeitabschnitt(
+				parameterDTO,
+				bgPensumFaktor,
+				anteilMonat
+			);
 
-		var hoehererBeitrag = calculateHoereBeitragProZeitAbschnitt(input, bgBetreuungsZeiteinheitProZeitabschnitt, anteilMonat);
+		var hoehererBeitrag = calculateHoereBeitragProZeitAbschnitt(
+			input,
+			bgBetreuungsZeiteinheitProZeitabschnitt,
+			anteilMonat
+		);
 
-		var gutscheinOhneHoehererBeitrag = EXACT.multiply(totalBetreuungsbeitragProZeiteinheit, bgBetreuungsZeiteinheitProZeitabschnitt);
-		var gutschein = EXACT.add(hoehererBeitrag, gutscheinOhneHoehererBeitrag);
-		var vollkosten = EXACT.multiply(input.getMonatlicheBetreuungskosten(), anteilMonat);
+		var gutscheinOhneHoehererBeitrag = EXACT.multiply(
+			totalBetreuungsbeitragProZeiteinheit,
+			bgBetreuungsZeiteinheitProZeitabschnitt
+		);
+		var gutschein = EXACT.add(
+			hoehererBeitrag,
+			gutscheinOhneHoehererBeitrag
+		);
+		var vollkosten = EXACT.multiply(
+			input.getMonatlicheBetreuungskosten(),
+			anteilMonat
+		);
 		var gutscheinVorAbzugSelbstbehalt =
-			Objects.requireNonNull(EXACT.multiply(beitragProZeiteinheitVorAbzug, bgBetreuungsZeiteinheitProZeitabschnitt));
-		var minimalerBeitragProZeitAbschnitt = EXACT.multiply(minimalTarif, bgBetreuungsZeiteinheitProZeitabschnitt);
-		var elternbeitrag = EXACT.multiply(selbstbehaltProZeiteinheit, bgBetreuungsZeiteinheitProZeitabschnitt);
+			Objects.requireNonNull(
+				EXACT.multiply(
+					beitragProZeiteinheitVorAbzug,
+					bgBetreuungsZeiteinheitProZeitabschnitt
+				)
+			);
+		var minimalerBeitragProZeitAbschnitt = EXACT.multiply(
+			minimalTarif,
+			bgBetreuungsZeiteinheitProZeitabschnitt
+		);
+		var elternbeitrag = EXACT.multiply(
+			selbstbehaltProZeiteinheit,
+			bgBetreuungsZeiteinheitProZeitabschnitt
+		);
 		var minimalerElternbeitragGekuerzt =
-			EXACT.multiply(minimalerBeitragDerErziehungsberechtigtenProZeiteinheit, bgBetreuungsZeiteinheitProZeitabschnitt);
+			EXACT.multiply(
+				minimalerBeitragDerErziehungsberechtigtenProZeiteinheit,
+				bgBetreuungsZeiteinheitProZeitabschnitt
+			);
 
 		BGCalculationResult result = new BGCalculationResult();
 		VerfuegungZeitabschnitt.initBGCalculationResult(input, result);
@@ -96,26 +161,52 @@ abstract class AbstractSchwyzRechner extends AbstractRechner {
 		result.setBetreuungspensumProzent(input.getBetreuungspensumProzent());
 
 		var effektiveBetreuungsZeiteinheitProZeitabschnitt =
-			toZeiteinheitProZeitabschnitt(parameterDTO, effektivesPensumFaktor, anteilMonat);
-		result.setBetreuungspensumZeiteinheit(effektiveBetreuungsZeiteinheitProZeitabschnitt);
+			toZeiteinheitProZeitabschnitt(
+				parameterDTO,
+				effektivesPensumFaktor,
+				anteilMonat
+			);
+		result.setBetreuungspensumZeiteinheit(
+			effektiveBetreuungsZeiteinheitProZeitabschnitt
+		);
 
 		// Punkt II
 		result.setAnspruchspensumProzent(input.getAnspruchspensumProzent());
 
-		var anspruchsPensumFaktor = EXACT.pctToFraction(BigDecimal.valueOf(input.getAnspruchspensumProzent()));
+		var anspruchsPensumFaktor = EXACT.pctToFraction(
+			BigDecimal.valueOf(input.getAnspruchspensumProzent())
+		);
 		var anspruchsberechtigteBetreuungsZeiteinheitProZeitabschnitt =
-			toZeiteinheitProZeitabschnitt(parameterDTO, anspruchsPensumFaktor, anteilMonat);
-		result.setAnspruchspensumZeiteinheit(anspruchsberechtigteBetreuungsZeiteinheitProZeitabschnitt);
+			toZeiteinheitProZeitabschnitt(
+				parameterDTO,
+				anspruchsPensumFaktor,
+				anteilMonat
+			);
+		result.setAnspruchspensumZeiteinheit(
+			anspruchsberechtigteBetreuungsZeiteinheitProZeitabschnitt
+		);
 
 		// Punkt III
 		result.setBgPensumZeiteinheit(bgBetreuungsZeiteinheitProZeitabschnitt);
 		// Punkt IV
-		result.setVollkosten(vollkosten);
+		result.setVollkosten(
+			RechnerUtil.calculateVollkostenFuerVerguenstigtesPensum(
+				input.getBetreuungspensumProzent(),
+				input.getBgPensumProzent(),
+				vollkosten
+			)
+		);
 		// Punkt V
-		result.setVerguenstigungOhneBeruecksichtigungVollkosten(gutscheinVorAbzugSelbstbehalt);
-		result.setVerguenstigungOhneBeruecksichtigungMinimalbeitrag(gutscheinVorAbzugSelbstbehalt);
+		result.setVerguenstigungOhneBeruecksichtigungVollkosten(
+			gutscheinVorAbzugSelbstbehalt
+		);
+		result.setVerguenstigungOhneBeruecksichtigungMinimalbeitrag(
+			gutscheinVorAbzugSelbstbehalt
+		);
 		// Punkt VI
-		result.setMinimalerElternbeitragGekuerzt(minimalerElternbeitragGekuerzt);
+		result.setMinimalerElternbeitragGekuerzt(
+			minimalerElternbeitragGekuerzt
+		);
 		// Punkt VII
 		result.setVerguenstigung(gutschein);
 		// Punkt VIII
@@ -131,99 +222,203 @@ abstract class AbstractSchwyzRechner extends AbstractRechner {
 		verfuegungZeitabschnitt.setBgCalculationResultGemeinde(result);
 	}
 
-	private static void handleHoehererBeitrag(BGCalculationResult result, BigDecimal hoehererBeitrag,
-		VerfuegungZeitabschnitt zeitabschnitt) {
+	private static BigDecimal getMinimalerBeitragDerErziehungsberechtigtenProZeiteinheit(
+		BigDecimal minimalTarif,
+		BigDecimal selbstbehaltProZeiteinheit,
+		BigDecimal geschwisterBonus,
+		GeschwisterbonusTyp geschwisterbonusTyp
+	) {
+
+		if (geschwisterbonusTyp == GeschwisterbonusTyp.SCHWYZ_2
+			&& BigDecimal.ZERO.compareTo(geschwisterBonus) < 0) {
+			return BigDecimal.ZERO.max(
+				minimalTarif.multiply(
+					geschwisterBonus.subtract(BigDecimal.ONE).negate()
+				)
+					.subtract(selbstbehaltProZeiteinheit)
+			);
+		}
+
+		return BigDecimal.ZERO.max(
+			EXACT.subtract(minimalTarif, selbstbehaltProZeiteinheit)
+		);
+	}
+
+	private static void handleHoehererBeitrag(
+		BGCalculationResult result,
+		BigDecimal hoehererBeitrag,
+		VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		result.setHoehererBeitrag(hoehererBeitrag);
-		if (hoehererBeitrag != null && result.getAnspruchspensumProzent() <= 0) {
-			zeitabschnitt.getBemerkungenDTOList().removeBemerkungByMsgKey(MsgKey.BEDARFSSTUFE_MSG);
-			zeitabschnitt.getBemerkungenDTOList().removeBemerkungByMsgKey(MsgKey.BEDARFSSTUFE_NICHT_GEWAEHRT_MSG);
-			zeitabschnitt.getBemerkungenDTOList().removeBemerkungByMsgKey(MsgKey.BEDARFSSTUFE_AENDERUNG_MSG);
+		if (hoehererBeitrag != null
+			&& !zeitabschnitt.getRelevantBgCalculationInput().hasAnspruch()) {
+			zeitabschnitt.getBemerkungenDTOList()
+				.removeBemerkungByMsgKey(MsgKey.BEDARFSSTUFE_MSG);
+			zeitabschnitt.getBemerkungenDTOList()
+				.removeBemerkungByMsgKey(
+					MsgKey.BEDARFSSTUFE_NICHT_GEWAEHRT_MSG
+				);
+			zeitabschnitt.getBemerkungenDTOList()
+				.removeBemerkungByMsgKey(MsgKey.BEDARFSSTUFE_AENDERUNG_MSG);
 		}
 	}
 
 	private BigDecimal calculateHoereBeitragProZeitAbschnitt(
 		BGCalculationInput input,
 		BigDecimal bgBetreuungsZeiteinheitProZeitabschnitt,
-		BigDecimal anteilMonat) {
-		if (input.getBedarfsstufe() == null || input.getBedarfsstufe().equals(Bedarfsstufe.KEINE)
-		|| bgBetreuungsZeiteinheitProZeitabschnitt.compareTo(BigDecimal.ZERO) == 0) {
+		BigDecimal anteilMonat
+	) {
+		if (input.getBedarfsstufe() == null
+			|| input.getBedarfsstufe() == Bedarfsstufe.KEINE
+			|| !input.hasAnspruch()) {
 			return BigDecimal.ZERO;
 		}
-		var basisBetragProZeitabschnitt = EXACT.multiply(HOHERE_BEITRAG_BASIS_BETRAG_PRO_MONAT, anteilMonat); // nur wenn bgBetreuungsZeiteinheitProZeitabschnitt > 0
+		var basisBetragProZeitabschnitt = EXACT.multiply(
+			HOHERE_BEITRAG_BASIS_BETRAG_PRO_MONAT,
+			anteilMonat
+		); // nur wenn bgBetreuungsZeiteinheitProZeitabschnitt > 0
 		switch (input.getBedarfsstufe()) {
 		case BEDARFSSTUFE_1:
 			return basisBetragProZeitabschnitt;
 		case BEDARFSSTUFE_2:
-			return calculateHoereBeitragFuerBedarfsstufeZwei(basisBetragProZeitabschnitt, bgBetreuungsZeiteinheitProZeitabschnitt);
+			return calculateHoereBeitragFuerBedarfsstufeZwei(
+				basisBetragProZeitabschnitt,
+				bgBetreuungsZeiteinheitProZeitabschnitt
+			);
 		case BEDARFSSTUFE_3:
-			return calculateHoereBeitragFuerBedarfsstufeDrei(basisBetragProZeitabschnitt, bgBetreuungsZeiteinheitProZeitabschnitt);
+			return calculateHoereBeitragFuerBedarfsstufeDrei(
+				basisBetragProZeitabschnitt,
+				bgBetreuungsZeiteinheitProZeitabschnitt
+			);
 		default:
-			throw new NotImplementedException("Bedarfsstufe " + input.getBedarfsstufe() + " is not implemented");
+			throw new NotImplementedException(
+				"Bedarfsstufe "
+					+ input.getBedarfsstufe()
+					+ " is not implemented"
+			);
 		}
 	}
 
-	private  BigDecimal calculateHoereBeitragFuerBedarfsstufeZwei(BigDecimal basisBetragProZeitabschnitt, BigDecimal bgBetreuungsZeiteinheitProZeitabschnitt) {
-		return EXACT.add(basisBetragProZeitabschnitt, EXACT.multiply(bgBetreuungsZeiteinheitProZeitabschnitt, getBedarfsstufeZweiBetragForAngebot()));
+	private BigDecimal calculateHoereBeitragFuerBedarfsstufeZwei(
+		BigDecimal basisBetragProZeitabschnitt,
+		BigDecimal bgBetreuungsZeiteinheitProZeitabschnitt
+	) {
+		return EXACT.add(
+			basisBetragProZeitabschnitt,
+			EXACT.multiply(
+				bgBetreuungsZeiteinheitProZeitabschnitt,
+				getBedarfsstufeZweiBetragForAngebot()
+			)
+		);
 	}
 
-	private  BigDecimal calculateHoereBeitragFuerBedarfsstufeDrei(BigDecimal basisBetragProZeitabschnitt, BigDecimal bgBetreuungsZeiteinheitProZeitabschnitt) {
-		return EXACT.add(basisBetragProZeitabschnitt, EXACT.multiply(bgBetreuungsZeiteinheitProZeitabschnitt, getBedarfsstufeDreiBetragForAngebot()));
+	private BigDecimal calculateHoereBeitragFuerBedarfsstufeDrei(
+		BigDecimal basisBetragProZeitabschnitt,
+		BigDecimal bgBetreuungsZeiteinheitProZeitabschnitt
+	) {
+		return EXACT.add(
+			basisBetragProZeitabschnitt,
+			EXACT.multiply(
+				bgBetreuungsZeiteinheitProZeitabschnitt,
+				getBedarfsstufeDreiBetragForAngebot()
+			)
+		);
 	}
 
 	protected static BigDecimal toTageProZeitAbschnitt(
 		BigDecimal pensumFaktor,
 		BigDecimal anteilMonat,
-		BigDecimal oeffnungstageProJahr) {
-		var oeffnungsTageProMonat = EXACT.divide(oeffnungstageProJahr, BigDecimal.valueOf(12));
-		return Objects.requireNonNull(EXACT.multiply(oeffnungsTageProMonat, anteilMonat, pensumFaktor));
+		BigDecimal oeffnungstageProJahr
+	) {
+		var oeffnungsTageProMonat = EXACT.divide(
+			oeffnungstageProJahr,
+			BigDecimal.valueOf(12)
+		);
+		return Objects.requireNonNull(
+			EXACT.multiply(oeffnungsTageProMonat, anteilMonat, pensumFaktor)
+		);
 	}
 
 	protected static BigDecimal calculateSelbstbehaltFaktor(
 		BigDecimal u,
 		BigDecimal z,
 		BigDecimal anspruchsberechtigtesEinkommen,
-		BigDecimal untergrenze) {
+		BigDecimal untergrenze
+	) {
 		return MathUtil.minimumMaximum(
-			EXACT.add(u, EXACT.multiply(z, EXACT.subtract(anspruchsberechtigtesEinkommen, untergrenze))),
+			EXACT.add(
+				u,
+				EXACT.multiply(
+					z,
+					EXACT.subtract(
+						anspruchsberechtigtesEinkommen,
+						untergrenze
+					)
+				)
+			),
 			BigDecimal.ZERO,
-			BigDecimal.ONE);
+			BigDecimal.ONE
+		);
 	}
 
-	protected static BigDecimal calculateAnteilMonat(VerfuegungZeitabschnitt verfuegungZeitabschnitt) {
+	protected static BigDecimal calculateAnteilMonat(
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt
+	) {
 		return DateUtil.calculateAnteilMonatInklWeekend(
 			verfuegungZeitabschnitt.getGueltigkeit().getGueltigAb(),
-			verfuegungZeitabschnitt.getGueltigkeit().getGueltigBis());
+			verfuegungZeitabschnitt.getGueltigkeit().getGueltigBis()
+		);
 	}
 
-	protected static BigDecimal calculateGeschwisterBonus(BGCalculationInput input) {
-		var anzahlGeschwister = BigDecimal.valueOf(input.getAnzahlGeschwister());
+	protected static BigDecimal calculateGeschwisterBonus(
+		BGCalculationInput input
+	) {
+		var anzahlGeschwister = BigDecimal.valueOf(
+			input.getAnzahlGeschwister()
+		);
 		return EXACT.divide(anzahlGeschwister, BigDecimal.TEN);
 	}
 
 	protected BigDecimal calculateTarifProZeiteinheit(
 		BGRechnerParameterDTO parameterDTO,
 		BigDecimal effektivesPensumFaktor,
-		BGCalculationInput input) {
+		BGCalculationInput input
+	) {
 		var effektiveBetreuungsZeiteinheitenProMonat =
-			toZeiteinheitProZeitabschnitt(parameterDTO, effektivesPensumFaktor, BigDecimal.ONE);
+			toZeiteinheitProZeitabschnitt(
+				parameterDTO,
+				effektivesPensumFaktor,
+				BigDecimal.ONE
+			);
 
-		if (effektiveBetreuungsZeiteinheitenProMonat.compareTo(BigDecimal.ZERO) == 0) {
+		if (effektiveBetreuungsZeiteinheitenProMonat.compareTo(BigDecimal.ZERO)
+			== 0) {
 			return BigDecimal.ZERO;
 		}
 
-		return EXACT.divide(input.getMonatlicheBetreuungskosten(), effektiveBetreuungsZeiteinheitenProMonat);
+		return EXACT.divide(
+			input.getMonatlicheBetreuungskosten(),
+			effektiveBetreuungsZeiteinheitenProMonat
+		);
 	}
 
-	protected abstract BigDecimal calculateNormkosten(BGCalculationInput input, BGRechnerParameterDTO parameterDTO);
+	protected abstract BigDecimal calculateNormkosten(
+		BGCalculationInput input,
+		BGRechnerParameterDTO parameterDTO
+	);
 
 	protected abstract BigDecimal toZeiteinheitProZeitabschnitt(
 		BGRechnerParameterDTO parameterDTO,
 		BigDecimal effektivesPensumFaktor,
-		BigDecimal anteilMonat);
+		BigDecimal anteilMonat
+	);
 
-	protected abstract BigDecimal getMinimalTarif(BGRechnerParameterDTO parameterDTO);
+	protected abstract BigDecimal getMinimalTarif(
+		BGRechnerParameterDTO parameterDTO
+	);
 
 	protected abstract PensumUnits getZeiteinheit();
+
 	protected abstract BigDecimal getBedarfsstufeZweiBetragForAngebot();
 
 	protected abstract BigDecimal getBedarfsstufeDreiBetragForAngebot();

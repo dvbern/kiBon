@@ -128,43 +128,15 @@
                                 }}"
                                 *ngIf="gemeinde.angebotBG"
                             >
-                                <div class="form-group">
-                                    <label
-                                        class="md-no-float"
-                                        translate
-                                        for="begu_start_ID"
-                                        >BEGU_START</label
-                                    >
-                                    <input
-                                        class="dv-mat-datepicker"
-                                        type="text"
-                                        name="begu_start"
-                                        id="begu_start_ID"
-                                        [(ngModel)]="
-                                            gemeinde.betreuungsgutscheineStartdatum
-                                        "
-                                        [matDatepicker]="begu_start"
-                                        placeholder="{{
-                                            'DATE_PLACEHOLDER_FIRSTOFMONTH'
-                                                | translate
-                                        }}"
-                                        required
-                                    />
-                                    <mat-datepicker-toggle
-                                        matSuffix
-                                        [for]="begu_start"
-                                    ></mat-datepicker-toggle>
-                                    <mat-datepicker
-                                        #begu_start
-                                    ></mat-datepicker>
-                                    <dv-error-messages
-                                        input-id="begu_start_ID"
-                                        [errorObject]="
-                                            form.controls.begu_start?.errors
-                                        "
-                                    >
-                                    </dv-error-messages>
-                                </div>
+                                <dv-date-picker-x
+                                    id="begu_start_ID"
+                                    [label]="'BEGU_START'"
+                                    [(date)]="
+                                        gemeinde.betreuungsgutscheineStartdatum
+                                    "
+                                    [datePickerEnabled]="true"
+                                    [required]="true"
+                                ></dv-date-picker-x>
                             </div>
 
                             <mat-checkbox
@@ -183,42 +155,17 @@
                                 *ngIf="gemeinde.angebotTS"
                                 class="inner-option"
                             >
-                                <div class="form-group">
-                                    <label
-                                        class="md-no-float"
-                                        translate
-                                        for="ts_start_ID"
-                                        >TS_START</label
-                                    >
-                                    <input
-                                        class="dv-mat-datepicker"
-                                        type="text"
-                                        name="ts_start"
-                                        id="ts_start_ID"
-                                        [(ngModel)]="
-                                            gemeinde.tagesschulanmeldungenStartdatum
-                                        "
-                                        [matDatepicker]="ts_start"
-                                        [min]="minDateTSFI"
-                                        placeholder="{{
-                                            'DATE_PLACEHOLDER_FIRSTOFMONTH'
-                                                | translate
-                                        }}"
-                                        required
-                                    />
-                                    <mat-datepicker-toggle
-                                        matSuffix
-                                        [for]="ts_start"
-                                    ></mat-datepicker-toggle>
-                                    <mat-datepicker #ts_start></mat-datepicker>
-                                    <dv-error-messages
-                                        input-id="ts_start_ID"
-                                        [errorObject]="
-                                            form.controls.ts_start?.errors
-                                        "
-                                    >
-                                    </dv-error-messages>
-                                </div>
+                                <dv-date-picker-x
+                                    id="ts_start_ID"
+                                    [label]="'TS_START'"
+                                    [(date)]="
+                                        gemeinde.tagesschulanmeldungenStartdatum
+                                    "
+                                    [datePickerEnabled]="true"
+                                    [minDate]="minDateTSFI"
+                                    [required]="true"
+                                >
+                                </dv-date-picker-x>
 
                                 <mat-checkbox
                                     id="besondereVolksschule"
@@ -290,40 +237,17 @@
                                 class="form-group inner-option"
                                 *ngIf="gemeinde.angebotFI"
                             >
-                                <label
-                                    class="md-no-float"
-                                    translate
-                                    for="fi_start_ID"
-                                    >FI_START</label
-                                >
-                                <input
-                                    class="dv-mat-datepicker"
-                                    type="text"
-                                    name="fi_start"
+                                <dv-date-picker-x
                                     id="fi_start_ID"
-                                    [(ngModel)]="
+                                    [label]="'FI_START'"
+                                    [required]="true"
+                                    [datePickerEnabled]="true"
+                                    [minDate]="minDateTSFI"
+                                    [(date)]="
                                         gemeinde.ferieninselanmeldungenStartdatum
                                     "
-                                    [matDatepicker]="fi_start"
-                                    [min]="minDateTSFI"
-                                    placeholder="{{
-                                        'DATE_PLACEHOLDER_FIRSTOFMONTH'
-                                            | translate
-                                    }}"
-                                    required
-                                />
-                                <mat-datepicker-toggle
-                                    matSuffix
-                                    [for]="fi_start"
-                                ></mat-datepicker-toggle>
-                                <mat-datepicker #fi_start></mat-datepicker>
-                                <dv-error-messages
-                                    input-id="fi_start_ID"
-                                    [errorObject]="
-                                        form.controls.fi_start?.errors
-                                    "
                                 >
-                                </dv-error-messages>
+                                </dv-date-picker-x>
                             </div>
 
                             <div
@@ -339,13 +263,17 @@
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label translate for="admin_mail_ID"
+                            <label
+                                class="required"
+                                translate
+                                for="admin_mail_ID"
                                 >ADMIN_MAIL</label
                             >
                             <input
                                 id="admin_mail_ID"
                                 type="email"
                                 name="admin_mail"
+                                placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
                                 [(ngModel)]="adminMail"
                                 email
                                 data-test="admin-mail"

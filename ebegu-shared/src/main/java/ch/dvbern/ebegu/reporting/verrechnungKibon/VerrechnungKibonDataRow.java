@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.verrechnungKibon;
@@ -23,7 +23,8 @@ import java.util.Objects;
 /**
  * DTO für die Verrechnung von KiBon für eine Gemeinde in einer Gesuchsperiode
  */
-public class VerrechnungKibonDataRow implements Comparable<VerrechnungKibonDataRow> {
+public class VerrechnungKibonDataRow implements
+	Comparable<VerrechnungKibonDataRow> {
 
 	private BigDecimal betragProKind;
 	private String gemeinde;
@@ -80,7 +81,9 @@ public class VerrechnungKibonDataRow implements Comparable<VerrechnungKibonDataR
 		return kinderKantonBereitsVerrechnet;
 	}
 
-	public void setKinderKantonBereitsVerrechnet(Long kinderKantonBereitsVerrechnet) {
+	public void setKinderKantonBereitsVerrechnet(
+		Long kinderKantonBereitsVerrechnet
+	) {
 		this.kinderKantonBereitsVerrechnet = kinderKantonBereitsVerrechnet;
 	}
 
@@ -128,8 +131,11 @@ public class VerrechnungKibonDataRow implements Comparable<VerrechnungKibonDataR
 		return kinderKeinAngebotBereitsVerrechnet;
 	}
 
-	public void setKinderKeinAngebotBereitsVerrechnet(Long kinderKeinAngebotBereitsVerrechnet) {
-		this.kinderKeinAngebotBereitsVerrechnet = kinderKeinAngebotBereitsVerrechnet;
+	public void setKinderKeinAngebotBereitsVerrechnet(
+		Long kinderKeinAngebotBereitsVerrechnet
+	) {
+		this.kinderKeinAngebotBereitsVerrechnet =
+			kinderKeinAngebotBereitsVerrechnet;
 	}
 
 	public Long getKinderGemeindeTotal() {
@@ -144,7 +150,9 @@ public class VerrechnungKibonDataRow implements Comparable<VerrechnungKibonDataR
 		return kinderGemeindeBereitsVerrechnet;
 	}
 
-	public void setKinderGemeindeBereitsVerrechnet(Long kinderGemeindeBereitsVerrechnet) {
+	public void setKinderGemeindeBereitsVerrechnet(
+		Long kinderGemeindeBereitsVerrechnet
+	) {
 		this.kinderGemeindeBereitsVerrechnet = kinderGemeindeBereitsVerrechnet;
 	}
 
@@ -176,7 +184,9 @@ public class VerrechnungKibonDataRow implements Comparable<VerrechnungKibonDataR
 		return kinderTagiBereitsVerrechnet;
 	}
 
-	public void setKinderTagiBereitsVerrechnet(Long kinderTagiBereitsVerrechnet) {
+	public void setKinderTagiBereitsVerrechnet(
+		Long kinderTagiBereitsVerrechnet
+	) {
 		this.kinderTagiBereitsVerrechnet = kinderTagiBereitsVerrechnet;
 	}
 
@@ -198,7 +208,8 @@ public class VerrechnungKibonDataRow implements Comparable<VerrechnungKibonDataR
 			return false;
 		}
 		VerrechnungKibonDataRow that = (VerrechnungKibonDataRow) o;
-		return Objects.equals(gemeinde, that.gemeinde) &&
+		return Objects.equals(gemeinde, that.gemeinde)
+			&&
 			Objects.equals(gesuchsperiode, that.gesuchsperiode);
 	}
 

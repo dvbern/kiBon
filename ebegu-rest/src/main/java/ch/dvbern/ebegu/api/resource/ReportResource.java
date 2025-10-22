@@ -20,26 +20,25 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
-import ch.dvbern.ebegu.api.dtos.JaxDownloadFile;
+import ch.dvbern.ebegu.api.converter.JaxBaseConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.entities.DownloadFile;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
@@ -48,8 +47,7 @@ import ch.dvbern.ebegu.reporting.ReportService;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.UploadFileInfo;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergeException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
@@ -71,7 +69,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("reporting")
 @Stateless
-@Api(description = "Resource für Statistiken und Reports")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class ReportResource {
 
@@ -82,60 +79,80 @@ public class ReportResource {
 	private DownloadResource downloadResource;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxBaseConverter converter;
 
-
-	@ApiOperation(value = "Erstellt ein Excel mit der Statistik 'Zahlungsauftrag'", response = JaxDownloadFile.class)
+	@Operation(
+		summary = "Erstellt ein Excel mit der Statistik 'Zahlungsauftrag'")
 	@Nonnull
 	@GET
 	@Path("/excel/zahlungsauftrag")
-	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE,
 		ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION,
-		ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT, JURIST, REVISOR, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+		ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT, JURIST, REVISOR,
+		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public Response getZahlungsauftragReportExcel(
 		@QueryParam("zahlungsauftragID") @Nonnull @Valid JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo)
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	)
 		throws ExcelMergeException, EbeguRuntimeException, IOException {
 
 		Objects.requireNonNull(jaxId);
 		String ip = downloadResource.getIP(request);
 		String id = converter.toEntityId(jaxId);
 
-		UploadFileInfo uploadFileInfo = reportService.generateExcelReportZahlungAuftrag(id, LocaleThreadLocal.get());
+		UploadFileInfo uploadFileInfo = reportService
+			.generateExcelReportZahlungAuftrag(id, LocaleThreadLocal.get());
 
 		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
 
-		return downloadResource.getFileDownloadResponse(uriInfo, ip, downloadFileInfo);
+		return downloadResource.getFileDownloadResponse(
+			uriInfo,
+			ip,
+			downloadFileInfo
+		);
 	}
 
-	@ApiOperation(value = "Erstellt ein Excel mit der Statistik 'Zahlung'", response = JaxDownloadFile.class)
+	@Operation(summary = "Erstellt ein Excel mit der Statistik 'Zahlung'")
 	@Nonnull
 	@GET
 	@Path("/excel/zahlung")
-	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE,
 		ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION,
-		ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT, JURIST, REVISOR, ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+		ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT, JURIST, REVISOR,
+		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public Response getZahlungReportExcel(
 		@QueryParam("zahlungID") @Nonnull @Valid JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo)
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	)
 		throws ExcelMergeException, EbeguRuntimeException, IOException {
 
 		Objects.requireNonNull(jaxId);
 		String ip = downloadResource.getIP(request);
 		String id = converter.toEntityId(jaxId);
 
-		UploadFileInfo uploadFileInfo = reportService.generateExcelReportZahlung(id, LocaleThreadLocal.get());
+		UploadFileInfo uploadFileInfo = reportService
+			.generateExcelReportZahlung(id, LocaleThreadLocal.get());
 
 		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
 
-		return downloadResource.getFileDownloadResponse(uriInfo, ip, downloadFileInfo);
+		return downloadResource.getFileDownloadResponse(
+			uriInfo,
+			ip,
+			downloadFileInfo
+		);
 	}
 }

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -49,15 +49,25 @@ public class EventMonitor {
 	@CanIgnoreReturnValue
 	@Nonnull
 	public BetreuungMonitoring record(@Nonnull String msg) {
-		BetreuungMonitoring betreuungMonitoring = new BetreuungMonitoring(refnr, clientName, msg, LocalDateTime.now());
+		BetreuungMonitoring betreuungMonitoring = new BetreuungMonitoring(
+			refnr,
+			clientName,
+			msg,
+			LocalDateTime.now()
+		);
 
-		return betreuungMonitoringService.saveBetreuungMonitoring(betreuungMonitoring);
+		return betreuungMonitoringService.saveBetreuungMonitoring(
+			betreuungMonitoring
+		);
 	}
 
 	@SuppressWarnings("OverloadedVarargsMethod")
 	@CanIgnoreReturnValue
 	@Nonnull
-	public BetreuungMonitoring record(@Nonnull String format, @Nonnull Object... args) {
+	public BetreuungMonitoring record(
+		@Nonnull String format,
+		@Nonnull Object... args
+	) {
 		return record(String.format(format, args));
 	}
 }

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
@@ -32,83 +32,101 @@ import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 
-public class SolothurnEinkommensverschlechterungDokumente extends AbstractDokumente<AbstractFinanzielleSituation, Familiensituation>  {
+public class SolothurnEinkommensverschlechterungDokumente extends
+	AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> {
 
 	@Override
 	public void getAllDokumente(
 		@Nonnull Gesuch gesuch,
 		@Nonnull Set<DokumentGrund> anlageVerzeichnis,
-		@Nonnull Locale locale) {
+		@Nonnull Locale locale
+	) {
 
 		final EinkommensverschlechterungInfo einkommensverschlechterungInfo =
 			gesuch.extractEinkommensverschlechterungInfo();
 
-		if(einkommensverschlechterungInfo == null) {
+		if (einkommensverschlechterungInfo == null) {
 			return;
 		}
 
-		if (einkommensverschlechterungInfo.getEkvFuerBasisJahrPlus1())  {
+		if (einkommensverschlechterungInfo.getEkvFuerBasisJahrPlus1()) {
 			addDokuemnteEKV(gesuch, anlageVerzeichnis);
 		}
 
 		if (!einkommensverschlechterungInfo.getEkvFuerBasisJahrPlus1()
-				&& einkommensverschlechterungInfo.getEkvFuerBasisJahrPlus2()) {
+			&& einkommensverschlechterungInfo.getEkvFuerBasisJahrPlus2()) {
 			addDokuemnteEKV(gesuch, anlageVerzeichnis);
 		}
 	}
 
-	private void addDokuemnteEKV(Gesuch gesuch, Set<DokumentGrund> anlageVerzeichnis) {
+	private void addDokuemnteEKV(
+		Gesuch gesuch,
+		Set<DokumentGrund> anlageVerzeichnis
+	) {
 		addDokuemnteEKV(1, anlageVerzeichnis);
 
-		if(gesuch.hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode()) {
+		if (gesuch.hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode()) {
 			addDokuemnteEKV(2, anlageVerzeichnis);
 		}
 	}
 
 	private void addDokuemnteEKV(
 		int personNumber,
-		Set<DokumentGrund> anlageVerzeichnis) {
+		Set<DokumentGrund> anlageVerzeichnis
+	) {
 
-		add(getDokument
-					(DokumentTyp.NACHWEIS_VERMOEGEN,
-							null,
-							null,
-							DokumentGrundPersonType.GESUCHSTELLER,
-							personNumber,
-							DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG),
-				anlageVerzeichnis);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_VERMOEGEN,
+				null,
+				null,
+				DokumentGrundPersonType.GESUCHSTELLER,
+				personNumber,
+				DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+			),
+			anlageVerzeichnis
+		);
 
-
-		add(getDokument
-				(DokumentTyp.NACHWEIS_LOHNAUSWEIS_1,
-					null,
-					null,
-					DokumentGrundPersonType.GESUCHSTELLER,
-					personNumber,
-					DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG),
-			anlageVerzeichnis);
-		add(getDokument
-				(DokumentTyp.NACHWEIS_LOHNAUSWEIS_2,
-					null,
-					null,
-					DokumentGrundPersonType.GESUCHSTELLER,
-					personNumber,
-					DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG),
-			anlageVerzeichnis);
-		add(getDokument
-				(DokumentTyp.NACHWEIS_LOHNAUSWEIS_3,
-					null,
-					null,
-					DokumentGrundPersonType.GESUCHSTELLER,
-					personNumber,
-					DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG),
-			anlageVerzeichnis);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_LOHNAUSWEIS_1,
+				null,
+				null,
+				DokumentGrundPersonType.GESUCHSTELLER,
+				personNumber,
+				DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+			),
+			anlageVerzeichnis
+		);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_LOHNAUSWEIS_2,
+				null,
+				null,
+				DokumentGrundPersonType.GESUCHSTELLER,
+				personNumber,
+				DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+			),
+			anlageVerzeichnis
+		);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_LOHNAUSWEIS_3,
+				null,
+				null,
+				DokumentGrundPersonType.GESUCHSTELLER,
+				personNumber,
+				DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+			),
+			anlageVerzeichnis
+		);
 	}
 
 	@Override
 	public boolean isDokumentNeeded(
 		@Nonnull DokumentTyp dokumentTyp,
-		@Nullable AbstractFinanzielleSituation dataForDocument) {
+		@Nullable AbstractFinanzielleSituation dataForDocument
+	) {
 		return true;
 	}
 }

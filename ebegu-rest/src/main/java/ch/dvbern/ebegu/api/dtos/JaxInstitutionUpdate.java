@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -22,8 +22,8 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 public class JaxInstitutionUpdate {
 
@@ -34,10 +34,13 @@ public class JaxInstitutionUpdate {
 	private String traegerschaftId;
 
 	@Nonnull
-	private @Valid @NotNull JaxInstitutionStammdaten stammdaten = new JaxInstitutionStammdaten();
+	private @Valid
+	@NotNull JaxInstitutionStammdaten stammdaten =
+		new JaxInstitutionStammdaten();
 
 	@Nullable
-	private @Valid List<JaxInstitutionExternalClient> institutionExternalClients = null;
+	private @Valid List<JaxInstitutionExternalClient> institutionExternalClients =
+		null;
 
 	@Nonnull
 	public Optional<String> getName() {
@@ -71,7 +74,9 @@ public class JaxInstitutionUpdate {
 		return institutionExternalClients;
 	}
 
-	public void setInstitutionExternalClients(@Nullable List<JaxInstitutionExternalClient> institutionExternalClients) {
+	public void setInstitutionExternalClients(
+		@Nullable List<JaxInstitutionExternalClient> institutionExternalClients
+	) {
 		this.institutionExternalClients = institutionExternalClients;
 	}
 }

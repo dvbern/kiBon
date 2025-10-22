@@ -15,9 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {TSAbstractEntity} from './TSAbstractEntity';
-
+import moment from 'moment';
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 export class TSLastenausgleich extends TSAbstractEntity {
     private _jahr: number;
     private _totalAlleGemeinden: moment.Moment;

@@ -52,101 +52,200 @@ public class DokumenteUtilTest {
 
 		Collection<DokumentGrund> persistedDokumentGrunds = new HashSet<>();
 
-		createGrundNeeded(dokumentGrundsNeeded, DokumentGrundTyp.FAMILIENSITUATION, DokumentTyp.JAHRESLOHNAUSWEISE);
-		createGrundNeeded(dokumentGrundsNeeded, DokumentGrundTyp.FAMILIENSITUATION, DokumentTyp.STEUERERKLAERUNG);
-		createGrundNeeded(dokumentGrundsNeeded, DokumentGrundTyp.ERWERBSPENSUM, DokumentTyp.NACHWEIS_AUSBILDUNG);
+		createGrundNeeded(
+			dokumentGrundsNeeded,
+			DokumentGrundTyp.FAMILIENSITUATION,
+			DokumentTyp.JAHRESLOHNAUSWEISE
+		);
+		createGrundNeeded(
+			dokumentGrundsNeeded,
+			DokumentGrundTyp.FAMILIENSITUATION,
+			DokumentTyp.STEUERERKLAERUNG
+		);
+		createGrundNeeded(
+			dokumentGrundsNeeded,
+			DokumentGrundTyp.ERWERBSPENSUM,
+			DokumentTyp.NACHWEIS_AUSBILDUNG
+		);
 
-		createGrundPersisted(persistedDokumentGrunds, DokumentGrundTyp.FAMILIENSITUATION, DokumentTyp.JAHRESLOHNAUSWEISE, 3);
+		createGrundPersisted(
+			persistedDokumentGrunds,
+			DokumentGrundTyp.FAMILIENSITUATION,
+			DokumentTyp.JAHRESLOHNAUSWEISE,
+			3
+		);
 
-		final Set<DokumentGrund> mergeNeededAndPersisted = DokumenteUtil.mergeNeededAndPersisted(dokumentGrundsNeeded, persistedDokumentGrunds);
+		final Set<DokumentGrund> mergeNeededAndPersisted = DokumenteUtil
+			.mergeNeededAndPersisted(
+				dokumentGrundsNeeded,
+				persistedDokumentGrunds
+			);
 
-		Set<DokumentGrund> mergedFamsit = getByGrundTyp(mergeNeededAndPersisted, DokumentGrundTyp.FAMILIENSITUATION);
+		Set<DokumentGrund> mergedFamsit = getByGrundTyp(
+			mergeNeededAndPersisted,
+			DokumentGrundTyp.FAMILIENSITUATION
+		);
 
 		Assert.assertNotNull(mergedFamsit);
 		Assert.assertEquals(2, mergedFamsit.size());
 
-		Assert.assertEquals(3, getByDokumentType(mergedFamsit, DokumentTyp.JAHRESLOHNAUSWEISE).size());
-		Assert.assertEquals(1, getByDokumentType(mergedFamsit, DokumentTyp.STEUERERKLAERUNG).size());
+		Assert.assertEquals(
+			3,
+			getByDokumentType(mergedFamsit, DokumentTyp.JAHRESLOHNAUSWEISE)
+				.size()
+		);
+		Assert.assertEquals(
+			1,
+			getByDokumentType(mergedFamsit, DokumentTyp.STEUERERKLAERUNG)
+				.size()
+		);
 
-		Set<DokumentGrund> mergedERWERBSPENSUM = getByGrundTyp(mergeNeededAndPersisted, DokumentGrundTyp.ERWERBSPENSUM);
+		Set<DokumentGrund> mergedERWERBSPENSUM = getByGrundTyp(
+			mergeNeededAndPersisted,
+			DokumentGrundTyp.ERWERBSPENSUM
+		);
 		Assert.assertNotNull(mergedERWERBSPENSUM);
 		Assert.assertEquals(1, mergedERWERBSPENSUM.size());
-		Assert.assertEquals(1, getByDokumentType(mergedERWERBSPENSUM, DokumentTyp.NACHWEIS_AUSBILDUNG).size());
+		Assert.assertEquals(
+			1,
+			getByDokumentType(
+				mergedERWERBSPENSUM,
+				DokumentTyp.NACHWEIS_AUSBILDUNG
+			).size()
+		);
 	}
 
 	@Test
 	public void testGetFileNameForGeneratedDokumentTypBEGLEITSCHREIBEN() {
-		Assert.assertEquals("Deckblatt_16.000001.pdf", DokumenteUtil
-			.getFileNameForGeneratedDokumentTyp(
-				GeneratedDokumentTyp.BEGLEITSCHREIBEN,
-				"16.000001",
-				Constants.DEFAULT_LOCALE,
-				mandant
-			)
+		Assert.assertEquals(
+			"Deckblatt_16.000001.pdf",
+			DokumenteUtil
+				.getFileNameForGeneratedDokumentTyp(
+					GeneratedDokumentTyp.BEGLEITSCHREIBEN,
+					"16.000001",
+					Constants.DEFAULT_LOCALE,
+					mandant
+				)
 		);
 	}
 
 	@Test
 	public void testGetFileNameForGeneratedDokumentTypFINANZIELLE_SITUATION() {
-		Assert.assertEquals("Finanzielle_Verhaeltnisse_16.000001.pdf", DokumenteUtil
-			.getFileNameForGeneratedDokumentTyp(
-				GeneratedDokumentTyp.FINANZIELLE_SITUATION,
-				"16.000001",
-				Constants.DEFAULT_LOCALE,
-				mandant
-			)
+		Assert.assertEquals(
+			"Finanzielle_Verhaeltnisse_16.000001.pdf",
+			DokumenteUtil
+				.getFileNameForGeneratedDokumentTyp(
+					GeneratedDokumentTyp.FINANZIELLE_SITUATION,
+					"16.000001",
+					Constants.DEFAULT_LOCALE,
+					mandant
+				)
 		);
 	}
 
 	@Test
 	public void testGetFileNameForGeneratedDokumentTypVERFUEGUNG_KITA() {
-		Assert.assertEquals("Verfuegung_16.000001.1.1.pdf", DokumenteUtil
-			.getFileNameForGeneratedDokumentTyp(
-				GeneratedDokumentTyp.VERFUEGUNG,
-				"16.000001.1.1",
-				Constants.DEFAULT_LOCALE,
-				mandant
-			)
+		Assert.assertEquals(
+			"Verfuegung_16.000001.1.1.pdf",
+			DokumenteUtil
+				.getFileNameForGeneratedDokumentTyp(
+					GeneratedDokumentTyp.VERFUEGUNG,
+					"16.000001.1.1",
+					Constants.DEFAULT_LOCALE,
+					mandant
+				)
 		);
 	}
 
 	@Test
 	public void testCompareDokumentGrundNewVersionSameDoks() {
-		DokumentGrund persistedDok = new DokumentGrund(DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG, "tag",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentTyp.BESTAETIGUNG_ARZT);
-		DokumentGrund neededDok = new DokumentGrund(DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG, "tag",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentTyp.BESTAETIGUNG_ARZT);
-		int result = DokumenteUtil.compareDokumentGrunds(persistedDok, neededDok);
+		DokumentGrund persistedDok = new DokumentGrund(
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,
+			"tag",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentTyp.BESTAETIGUNG_ARZT
+		);
+		DokumentGrund neededDok = new DokumentGrund(
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,
+			"tag",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentTyp.BESTAETIGUNG_ARZT
+		);
+		int result = DokumenteUtil.compareDokumentGrunds(
+			persistedDok,
+			neededDok
+		);
 		Assert.assertEquals(0, result);
 	}
 
 	@Test
 	public void testCompareDokumentGrundNewVersionDifferentPersonNumber() {
-		DokumentGrund persistedDok = new DokumentGrund(DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG, "tag",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentTyp.BESTAETIGUNG_ARZT);
-		DokumentGrund neededDok = new DokumentGrund(DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG, "tag",
-			DokumentGrundPersonType.GESUCHSTELLER, 2, DokumentTyp.BESTAETIGUNG_ARZT);
-		int result = DokumenteUtil.compareDokumentGrunds(persistedDok, neededDok);
+		DokumentGrund persistedDok = new DokumentGrund(
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,
+			"tag",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentTyp.BESTAETIGUNG_ARZT
+		);
+		DokumentGrund neededDok = new DokumentGrund(
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,
+			"tag",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			2,
+			DokumentTyp.BESTAETIGUNG_ARZT
+		);
+		int result = DokumenteUtil.compareDokumentGrunds(
+			persistedDok,
+			neededDok
+		);
 		Assert.assertNotEquals(0, result);
 	}
 
 	@Test
 	public void testCompareDokumentGrundNewVersionDifferentPersonTypes() {
-		DokumentGrund persistedDok = new DokumentGrund(DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG, "tag",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentTyp.BESTAETIGUNG_ARZT);
-		DokumentGrund neededDok = new DokumentGrund(DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG, "tag",
-			DokumentGrundPersonType.KIND, 1, DokumentTyp.BESTAETIGUNG_ARZT);
-		int result = DokumenteUtil.compareDokumentGrunds(persistedDok, neededDok);
+		DokumentGrund persistedDok = new DokumentGrund(
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,
+			"tag",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentTyp.BESTAETIGUNG_ARZT
+		);
+		DokumentGrund neededDok = new DokumentGrund(
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,
+			"tag",
+			DokumentGrundPersonType.KIND,
+			1,
+			DokumentTyp.BESTAETIGUNG_ARZT
+		);
+		int result = DokumenteUtil.compareDokumentGrunds(
+			persistedDok,
+			neededDok
+		);
 		Assert.assertNotEquals(0, result);
 	}
 
 	@Test
 	public void testCompareDokumentGrundNewVersionDifferentDokumentGrundTypes() {
-		DokumentGrund persistedDok = new DokumentGrund(DokumentGrundTyp.FINANZIELLESITUATION, "tag",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentTyp.BESTAETIGUNG_ARZT);
-		DokumentGrund neededDok = new DokumentGrund(DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG, "tag",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentTyp.BESTAETIGUNG_ARZT);
-		int result = DokumenteUtil.compareDokumentGrunds(persistedDok, neededDok);
+		DokumentGrund persistedDok = new DokumentGrund(
+			DokumentGrundTyp.FINANZIELLESITUATION,
+			"tag",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentTyp.BESTAETIGUNG_ARZT
+		);
+		DokumentGrund neededDok = new DokumentGrund(
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG,
+			"tag",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentTyp.BESTAETIGUNG_ARZT
+		);
+		int result = DokumenteUtil.compareDokumentGrunds(
+			persistedDok,
+			neededDok
+		);
 		Assert.assertNotEquals(0, result);
 	}
 
@@ -155,7 +254,10 @@ public class DokumenteUtilTest {
 		String directoryPath = "/server/data/uploads";
 		String pathWithTraversalStart = "/server/data/uploads/./../filename";
 
-		DokumenteUtil.validateDokumentDirectory(pathWithTraversalStart, directoryPath);
+		DokumenteUtil.validateDokumentDirectory(
+			pathWithTraversalStart,
+			directoryPath
+		);
 	}
 
 	@Test(expected = EbeguRuntimeException.class)
@@ -163,15 +265,22 @@ public class DokumenteUtilTest {
 		String directoryPath = "/server/data/uploads";
 		String pathWithTraversalStart = "/server/data/uploads/../filename";
 
-		DokumenteUtil.validateDokumentDirectory(pathWithTraversalStart, directoryPath);
+		DokumenteUtil.validateDokumentDirectory(
+			pathWithTraversalStart,
+			directoryPath
+		);
 	}
 
 	@Test(expected = EbeguRuntimeException.class)
 	public void pathWithMultipleTraversalShouldNotBeValid() {
 		String directoryPath = "/server/data/uploads";
-		String pathWithTraversalStart = "/server/data/uploads/../../../../filename";
+		String pathWithTraversalStart =
+			"/server/data/uploads/../../../../filename";
 
-		DokumenteUtil.validateDokumentDirectory(pathWithTraversalStart, directoryPath);
+		DokumenteUtil.validateDokumentDirectory(
+			pathWithTraversalStart,
+			directoryPath
+		);
 	}
 
 	@Test()
@@ -179,10 +288,16 @@ public class DokumenteUtilTest {
 		String directoryPath = "/server/data/uploads";
 		String pathWithTraversalStart = "/server/data/uploads/filename";
 
-		DokumenteUtil.validateDokumentDirectory(pathWithTraversalStart, directoryPath);
+		DokumenteUtil.validateDokumentDirectory(
+			pathWithTraversalStart,
+			directoryPath
+		);
 	}
 
-	private Set<Dokument> getByDokumentType(Set<DokumentGrund> dokumentGrunds, DokumentTyp dokumentTyp) {
+	private Set<Dokument> getByDokumentType(
+		Set<DokumentGrund> dokumentGrunds,
+		DokumentTyp dokumentTyp
+	) {
 		Set<Dokument> dokumente = new HashSet<>();
 
 		for (DokumentGrund dokumentGrund : dokumentGrunds) {
@@ -194,7 +309,10 @@ public class DokumenteUtilTest {
 
 	}
 
-	private Set<DokumentGrund> getByGrundTyp(Set<DokumentGrund> dokumentGrundsNeeded, DokumentGrundTyp dokumentGrundTyp) {
+	private Set<DokumentGrund> getByGrundTyp(
+		Set<DokumentGrund> dokumentGrundsNeeded,
+		DokumentGrundTyp dokumentGrundTyp
+	) {
 
 		Set<DokumentGrund> dokumentGrundsNeededMerged = new HashSet<>();
 		for (DokumentGrund dokumentGrund : dokumentGrundsNeeded) {
@@ -205,7 +323,11 @@ public class DokumenteUtilTest {
 		return dokumentGrundsNeededMerged;
 	}
 
-	private void createGrundNeeded(Set<DokumentGrund> dokumentGrundsNeeded, DokumentGrundTyp dokumentGrundTyp, DokumentTyp dokumentTyp) {
+	private void createGrundNeeded(
+		Set<DokumentGrund> dokumentGrundsNeeded,
+		DokumentGrundTyp dokumentGrundTyp,
+		DokumentTyp dokumentTyp
+	) {
 
 		DokumentGrund dokumentGrund = new DokumentGrund();
 		dokumentGrund.setDokumentGrundTyp(dokumentGrundTyp);

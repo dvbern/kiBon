@@ -7,11 +7,11 @@ import {
     OnInit
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {TSLastenausgleichTagesschulenStatusHistory} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschulenStatusHistory';
-import {CONSTANTS} from '../../../core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DvSimpleTableColumnDefinition} from '../../../shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {DvSimpleTableConfig} from '../../../shared/component/dv-simple-table/dv-simple-table-config';
 import {LastenausgleichTSService} from '../services/lastenausgleich-ts.service';
@@ -22,7 +22,8 @@ const LOG = LogFactory.createLog('VerlaufComponent');
     selector: 'dv-verlauf',
     templateUrl: './verlauf.component.html',
     styleUrls: ['./verlauf.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class VerlaufComponent implements OnInit {
     @Input() public lastenausgleichId: string;
@@ -57,16 +58,16 @@ export class VerlaufComponent implements OnInit {
     public ngOnInit(): void {
         this.lastenausgleichTSService
             .getVerlauf(this.lastenausgleichId)
-            .subscribe(
-                data => {
+            .subscribe({
+                next: data => {
                     console.log(data);
                     this.mapHistoryForSimpleTable(data);
                     this.cd.markForCheck();
                 },
-                error => {
+                error: error => {
                     LOG.error(error);
                 }
-            );
+            });
     }
 
     private mapHistoryForSimpleTable(

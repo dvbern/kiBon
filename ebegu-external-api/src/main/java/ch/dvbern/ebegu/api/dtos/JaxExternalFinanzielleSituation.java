@@ -20,12 +20,12 @@ import java.time.LocalDate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.api.enums.JaxExternalAntragstatus;
 import ch.dvbern.ebegu.api.enums.JaxExternalTarifart;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO für die Finanzielle Situation für die externe Schnittstelle
@@ -39,7 +39,7 @@ public class JaxExternalFinanzielleSituation implements Serializable {
 	private Long fallNummer;
 
 	@Nonnull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate stichtag;
 
 	@Nullable
@@ -64,7 +64,8 @@ public class JaxExternalFinanzielleSituation implements Serializable {
 		@Nonnull BigDecimal abzug,
 		@Nonnull JaxExternalAntragstatus antragStatus,
 		@Nonnull JaxExternalTarifart tarifart,
-		@Nonnull JaxExternalRechnungsAdresse rechnungsAdresse) {
+		@Nonnull JaxExternalRechnungsAdresse rechnungsAdresse
+	) {
 
 		this.fallNummer = fallNummer;
 		this.stichtag = stichtag;
@@ -80,7 +81,8 @@ public class JaxExternalFinanzielleSituation implements Serializable {
 		@Nonnull LocalDate stichtag,
 		@Nonnull JaxExternalAntragstatus antragStatus,
 		@Nonnull JaxExternalTarifart tarifart,
-		@Nonnull JaxExternalRechnungsAdresse rechnungsAdresse) {
+		@Nonnull JaxExternalRechnungsAdresse rechnungsAdresse
+	) {
 
 		this.fallNummer = fallNummer;
 		this.stichtag = stichtag;
@@ -88,7 +90,6 @@ public class JaxExternalFinanzielleSituation implements Serializable {
 		this.tarifart = tarifart;
 		this.rechnungsAdresse = rechnungsAdresse;
 	}
-
 
 	@Nonnull
 	public Long getFallNummer() {
@@ -131,7 +132,9 @@ public class JaxExternalFinanzielleSituation implements Serializable {
 		return rechnungsAdresse;
 	}
 
-	public void setRechnungsAdresse(@Nonnull JaxExternalRechnungsAdresse rechnungsAdresse) {
+	public void setRechnungsAdresse(
+		@Nonnull JaxExternalRechnungsAdresse rechnungsAdresse
+	) {
 		this.rechnungsAdresse = rechnungsAdresse;
 	}
 
@@ -140,7 +143,9 @@ public class JaxExternalFinanzielleSituation implements Serializable {
 		return massgebendesEinkommenVorAbzug;
 	}
 
-	public void setMassgebendesEinkommenVorAbzug(@Nullable BigDecimal massgebendesEinkommenVorAbzug) {
+	public void setMassgebendesEinkommenVorAbzug(
+		@Nullable BigDecimal massgebendesEinkommenVorAbzug
+	) {
 		this.massgebendesEinkommenVorAbzug = massgebendesEinkommenVorAbzug;
 	}
 

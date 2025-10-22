@@ -26,7 +26,7 @@ ${templateConfiguration.mailCss}
 	</p>
 	<p>
 		Die Gemeinde ${mitteilung.dossier.gemeinde.name} hat Ihnen eine
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/mitteilungen/${mitteilung.dossier.fall.id}/${mitteilung.dossier.id}/">Nachricht</a>
+		<a href="${frontendUrl}/mitteilungen/${mitteilung.dossier.fall.id}/${mitteilung.dossier.id}/">Nachricht</a>
 		geschrieben.
 	</p>
 	<p>

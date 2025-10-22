@@ -15,10 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {TSSozialdienstFallStatus} from '../enums/TSSozialdienstFallStatus';
-import {TSAbstractEntity} from '../TSAbstractEntity';
-import {TSAdresse} from '../TSAdresse';
+import {TSAbstractEntity, TSAdresse} from '@kibon/shared/model/entity';
 import {TSSozialdienst} from './TSSozialdienst';
 
 export class TSSozialdienstFall extends TSAbstractEntity {

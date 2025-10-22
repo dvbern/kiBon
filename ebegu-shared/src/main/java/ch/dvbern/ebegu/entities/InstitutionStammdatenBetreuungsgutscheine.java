@@ -8,34 +8,46 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
 
-import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import ch.dvbern.ebegu.validators.CheckEmail;
+import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.hibernate.envers.Audited;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 import static ch.dvbern.ebegu.util.Constants.DB_TEXTAREA_LENGTH;
@@ -46,15 +58,21 @@ import static ch.dvbern.ebegu.util.Constants.DB_TEXTAREA_LENGTH;
  */
 @Audited
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "auszahlungsdaten_id", name = "UK_institution_stammdaten_bg_auszahlungsdaten_id"))
-public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity implements Comparable<InstitutionStammdatenBetreuungsgutscheine> {
+@Table(uniqueConstraints = @UniqueConstraint(
+	columnNames = "auszahlungsdaten_id",
+	name = "UK_institution_stammdaten_bg_auszahlungsdaten_id"))
+public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity
+	implements
+	Comparable<InstitutionStammdatenBetreuungsgutscheine> {
 
 	private static final long serialVersionUID = -5937387773922925929L;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_stammdaten_bg_auszahlungsdaten_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_institution_stammdaten_bg_auszahlungsdaten_id"),
+		nullable = true)
 	private Auszahlungsdaten auszahlungsdaten;
 
 	@NotNull
@@ -92,7 +110,8 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 	@ElementCollection(targetClass = DayOfWeek.class, fetch = FetchType.EAGER)
 	@CollectionTable(
 		name = "institutionStammdatenBetreuungsgutscheineOeffnungstag",
-		joinColumns = @JoinColumn(name = "insitutionStammdatenBetreuungsgutscheine")
+		joinColumns = @JoinColumn(
+			name = "insitutionStammdatenBetreuungsgutscheine")
 	)
 	@Column(nullable = true)
 	@Enumerated(EnumType.STRING)
@@ -113,21 +132,13 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 
 	@Nullable
 	@Column(nullable = true)
-	@Email
+	@CheckEmail
 	@Size(min = 5, max = DB_DEFAULT_MAX_LENGTH)
 	private String alternativeEmailFamilienportal;
-
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "institutionStammdatenBetreuungsgutscheine", fetch = FetchType.EAGER)
-	@Nonnull
-	private Set<Betreuungsstandort> betreuungsstandorte = new HashSet<>();
 
 	@Nullable
 	@Column(nullable = true)
 	private Integer oeffnungstageProJahr;
-
-	@Nullable
-	@Column(nullable = true)
-	private BigDecimal auslastungInstitutionen;
 
 	@Nullable
 	@Column(nullable = true)
@@ -157,7 +168,6 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 	@Column(nullable = false)
 	private boolean uebernachtungMoeglich = false;
 
-
 	public InstitutionStammdatenBetreuungsgutscheine() {
 	}
 
@@ -166,7 +176,9 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return auszahlungsdaten;
 	}
 
-	public void setAuszahlungsdaten(@Nullable Auszahlungsdaten auszahlungsdaten) {
+	public void setAuszahlungsdaten(
+		@Nullable Auszahlungsdaten auszahlungsdaten
+	) {
 		this.auszahlungsdaten = auszahlungsdaten;
 	}
 
@@ -230,7 +242,9 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return alterskategorieKindergarten;
 	}
 
-	public void setAlterskategorieKindergarten(boolean alterskategorieKindergarten) {
+	public void setAlterskategorieKindergarten(
+		boolean alterskategorieKindergarten
+	) {
 		this.alterskategorieKindergarten = alterskategorieKindergarten;
 	}
 
@@ -256,7 +270,9 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return anzahlPlaetzeFirmen;
 	}
 
-	public void setAnzahlPlaetzeFirmen(@Nullable BigDecimal anzahlPlaetzeFirmen) {
+	public void setAnzahlPlaetzeFirmen(
+		@Nullable BigDecimal anzahlPlaetzeFirmen
+	) {
 		this.anzahlPlaetzeFirmen = anzahlPlaetzeFirmen;
 	}
 
@@ -265,7 +281,9 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return tarifProHauptmahlzeit;
 	}
 
-	public void setTarifProHauptmahlzeit(@Nullable BigDecimal tarifProHauptmahlzeit) {
+	public void setTarifProHauptmahlzeit(
+		@Nullable BigDecimal tarifProHauptmahlzeit
+	) {
 		this.tarifProHauptmahlzeit = tarifProHauptmahlzeit;
 	}
 
@@ -274,7 +292,9 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return tarifProNebenmahlzeit;
 	}
 
-	public void setTarifProNebenmahlzeit(@Nullable BigDecimal tarifProNebenmahlzeit) {
+	public void setTarifProNebenmahlzeit(
+		@Nullable BigDecimal tarifProNebenmahlzeit
+	) {
 		this.tarifProNebenmahlzeit = tarifProNebenmahlzeit;
 	}
 
@@ -292,7 +312,9 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return oeffnungsAbweichungen;
 	}
 
-	public void setOeffnungsAbweichungen(@Nullable String oeffnungsAbweichungen) {
+	public void setOeffnungsAbweichungen(
+		@Nullable String oeffnungsAbweichungen
+	) {
 		this.oeffnungsAbweichungen = oeffnungsAbweichungen;
 	}
 
@@ -319,17 +341,11 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return alternativeEmailFamilienportal;
 	}
 
-	public void setAlternativeEmailFamilienportal(@Nullable String alternativeEmailFuerFamilienportal) {
-		this.alternativeEmailFamilienportal = alternativeEmailFuerFamilienportal;
-	}
-
-	@Nonnull
-	public Set<Betreuungsstandort> getBetreuungsstandorte() {
-		return betreuungsstandorte;
-	}
-
-	public void setBetreuungsstandorte(@Nonnull Set<Betreuungsstandort> betreuungsstandorte) {
-		this.betreuungsstandorte = betreuungsstandorte;
+	public void setAlternativeEmailFamilienportal(
+		@Nullable String alternativeEmailFuerFamilienportal
+	) {
+		this.alternativeEmailFamilienportal =
+			alternativeEmailFuerFamilienportal;
 	}
 
 	@Override
@@ -343,8 +359,12 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final InstitutionStammdatenBetreuungsgutscheine otherInstStammdaten = (InstitutionStammdatenBetreuungsgutscheine) other;
-		return Objects.equals(getAuszahlungsdaten(), otherInstStammdaten.getAuszahlungsdaten());
+		final InstitutionStammdatenBetreuungsgutscheine otherInstStammdaten =
+			(InstitutionStammdatenBetreuungsgutscheine) other;
+		return Objects.equals(
+			getAuszahlungsdaten(),
+			otherInstStammdaten.getAuszahlungsdaten()
+		);
 	}
 
 	@Override
@@ -359,17 +379,10 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return oeffnungstageProJahr;
 	}
 
-	public void setOeffnungstageProJahr(@Nullable Integer oeffnungstageProJahr) {
+	public void setOeffnungstageProJahr(
+		@Nullable Integer oeffnungstageProJahr
+	) {
 		this.oeffnungstageProJahr = oeffnungstageProJahr;
-	}
-
-	@Nullable
-	public BigDecimal getAuslastungInstitutionen() {
-		return auslastungInstitutionen;
-	}
-
-	public void setAuslastungInstitutionen(@Nullable BigDecimal auslastungInstitutionen) {
-		this.auslastungInstitutionen = auslastungInstitutionen;
 	}
 
 	@Nullable
@@ -377,7 +390,9 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return anzahlKinderWarteliste;
 	}
 
-	public void setAnzahlKinderWarteliste(@Nullable BigDecimal anzahlKinderWarteliste) {
+	public void setAnzahlKinderWarteliste(
+		@Nullable BigDecimal anzahlKinderWarteliste
+	) {
 		this.anzahlKinderWarteliste = anzahlKinderWarteliste;
 	}
 
@@ -386,7 +401,9 @@ public class InstitutionStammdatenBetreuungsgutscheine extends AbstractEntity im
 		return summePensumWarteliste;
 	}
 
-	public void setSummePensumWarteliste(@Nullable BigDecimal summePensumWarteliste) {
+	public void setSummePensumWarteliste(
+		@Nullable BigDecimal summePensumWarteliste
+	) {
 		this.summePensumWarteliste = summePensumWarteliste;
 	}
 

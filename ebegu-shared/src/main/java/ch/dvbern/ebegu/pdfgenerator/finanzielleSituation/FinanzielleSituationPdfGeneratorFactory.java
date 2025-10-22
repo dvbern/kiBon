@@ -53,8 +53,15 @@ public final class FinanzielleSituationPdfGeneratorFactory {
 				stammdaten,
 				erstesEinreichungsdatum
 			);
+		case SCHWYZ_ERWEITERT:
+			return new FinanzielleSituationPdfGeneratorSchwyzErweitert(
+				gesuch,
+				verfuegungFuerMassgEinkommen,
+				stammdaten,
+				erstesEinreichungsdatum
+			);
 		case SOLOTHURN:
-				return new FinanzielleSituationPdfGeneratorSolothurn(
+			return new FinanzielleSituationPdfGeneratorSolothurn(
 				gesuch,
 				verfuegungFuerMassgEinkommen,
 				stammdaten,
@@ -75,8 +82,12 @@ public final class FinanzielleSituationPdfGeneratorFactory {
 				stammdaten,
 				erstesEinreichungsdatum
 			);
-			default:
-			throw new EbeguRuntimeException("getGenerator", "No PDF Generator found for finSitTyp: " + gesuch.getFinSitTyp());
+		default:
+			throw new EbeguRuntimeException(
+				"getGenerator",
+				"No PDF Generator found for finSitTyp: "
+					+ gesuch.getFinSitTyp()
+			);
 		}
 	}
 }

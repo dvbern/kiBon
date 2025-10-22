@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -20,10 +20,10 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -81,7 +81,11 @@ public class PensumAusserordentlicherAnspruch extends AbstractIntegerPensum {
 		if (!super.isSame(other)) {
 			return false;
 		}
-		final PensumAusserordentlicherAnspruch otherPensumFachstelle = (PensumAusserordentlicherAnspruch) other;
-		return Objects.equals(this.getBegruendung(), otherPensumFachstelle.getBegruendung());
+		final PensumAusserordentlicherAnspruch otherPensumFachstelle =
+			(PensumAusserordentlicherAnspruch) other;
+		return Objects.equals(
+			this.getBegruendung(),
+			otherPensumFachstelle.getBegruendung()
+		);
 	}
 }

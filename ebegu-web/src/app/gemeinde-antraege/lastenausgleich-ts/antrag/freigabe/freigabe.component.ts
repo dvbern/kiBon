@@ -17,6 +17,7 @@
 
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     Input,
     OnInit,
@@ -25,11 +26,11 @@ import {
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, firstValueFrom, Observable} from 'rxjs';
 import {filter, first, map, mergeMap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSLastenausgleichTagesschuleAngabenGemeindeStatus} from '../../../../../models/enums/TSLastenausgleichTagesschuleAngabenGemeindeStatus';
-import {TSRole} from '../../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {TSExceptionReport} from '../../../../../models/TSExceptionReport';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
@@ -37,20 +38,24 @@ import {DvNgConfirmDialogComponent} from '../../../../core/component/dv-ng-confi
 import {DvNgOkDialogComponent} from '../../../../core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {ErrorService} from '../../../../core/errors/service/ErrorService';
 import {LastenausgleichTSService} from '../../services/lastenausgleich-ts.service';
+import {LATSPermissionUtil} from '../../util/LATSPermissionUtil';
+import {TSLastenausgleichTagesschulenStatusHistory} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschulenStatusHistory';
 
 @Component({
     selector: 'dv-freigabe',
     templateUrl: './freigabe.component.html',
     styleUrls: ['./freigabe.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class FreigabeComponent implements OnInit {
     private readonly ROUTING_DELAY = 3000; // ms
 
     @Input() public lastenausgleichID: string;
 
-    private container: TSLastenausgleichTagesschuleAngabenGemeindeContainer;
+    container: TSLastenausgleichTagesschuleAngabenGemeindeContainer;
+    history: TSLastenausgleichTagesschulenStatusHistory[];
 
     public canSeeFreigabeButton: BehaviorSubject<boolean> =
         new BehaviorSubject<boolean>(false);
@@ -71,16 +76,19 @@ export class FreigabeComponent implements OnInit {
         private readonly latsService: LastenausgleichTSService,
         private readonly dialog: MatDialog,
         private readonly $state: StateService,
-        private readonly authService: AuthServiceRS
+        private readonly authService: AuthServiceRS,
+        private readonly cd: ChangeDetectorRef
     ) {}
 
     public ngOnInit(): void {
         combineLatest([
             this.latsService.getLATSAngabenGemeindeContainer(),
-            this.authService.principal$
-        ]).subscribe(
-            ([container, principal]) => {
+            this.authService.principal$,
+            this.getVerlauf()
+        ]).subscribe({
+            next: ([container, principal, history]) => {
                 this.container = container;
+                this.history = history;
                 if (container.isAbgeschlossen()) {
                     this.canSeeAbgeschlossenText.next(true);
                 }
@@ -97,11 +105,25 @@ export class FreigabeComponent implements OnInit {
                     principal.hasOneOfRoles(TSRoleUtil.getMandantRoles()) &&
                     container.isInBearbeitungKanton()
                 ) {
-                    this.canSeeFreigabeButton.next(false);
-                    this.canSeeGeprueftButton.next(true);
-                    this.canSeeZurueckGemeindeButton.next(true);
-                    this.canSeeZurueckInPruefungButton.next(false);
-                    this.canSeeFreigegebenText.next(false);
+                    if (
+                        LATSPermissionUtil.isInZweitpruefungAndSameUser(
+                            principal,
+                            container,
+                            history
+                        )
+                    ) {
+                        this.canSeeFreigabeButton.next(false);
+                        this.canSeeGeprueftButton.next(false);
+                        this.canSeeZurueckGemeindeButton.next(false);
+                        this.canSeeZurueckInPruefungButton.next(false);
+                        this.canSeeFreigegebenText.next(false);
+                    } else {
+                        this.canSeeFreigabeButton.next(false);
+                        this.canSeeGeprueftButton.next(true);
+                        this.canSeeZurueckGemeindeButton.next(true);
+                        this.canSeeZurueckInPruefungButton.next(false);
+                        this.canSeeFreigegebenText.next(false);
+                    }
                 }
                 if (
                     principal.hasOneOfRoles(
@@ -130,12 +152,13 @@ export class FreigabeComponent implements OnInit {
                         )
                     );
                 }
+                this.cd.markForCheck();
             },
-            () =>
+            error: () =>
                 this.errorService.addMesageAsInfo(
                     this.translate.instant('DATA_RETRIEVAL_ERROR')
                 )
-        );
+        });
     }
 
     public freigeben(): void {
@@ -157,11 +180,11 @@ export class FreigabeComponent implements OnInit {
                     this.latsService.latsGemeindeAntragFreigeben(container)
                 )
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.$state.go('gemeindeantraege.view');
                 },
-                (errors: TSExceptionReport[]) => {
+                error: (errors: TSExceptionReport[]) => {
                     errors.forEach(error => {
                         if (
                             error.customMessage.includes('angabenDeklaration')
@@ -200,7 +223,7 @@ export class FreigabeComponent implements OnInit {
                         }
                     });
                 }
-            );
+            });
     }
 
     public isInBearbeitungGemeinde(): Observable<boolean> {
@@ -232,8 +255,8 @@ export class FreigabeComponent implements OnInit {
                     this.latsService.latsGemeindeAntragGeprueft(container)
                 )
             )
-            .subscribe(
-                container => {
+            .subscribe({
+                next: container => {
                     if (container.isInZweitPruefung()) {
                         const dialogConfigInfo = new MatDialogConfig();
                         dialogConfigInfo.data = {
@@ -247,11 +270,45 @@ export class FreigabeComponent implements OnInit {
                         );
                     }
                 },
-                () =>
+                error: () =>
                     this.errorService.addMesageAsError(
                         this.translate.instant('ERROR_UNEXPECTED')
                     )
-            );
+            });
+    }
+
+    public inZweitpruefungGeben(): void {
+        const dialogConfig = new MatDialogConfig();
+        dialogConfig.data = {
+            frage: this.translate.instant('ZUR_ZWEITPRUEFUNG_BESTAETIGUNG')
+        };
+        this.dialog
+            .open(DvNgConfirmDialogComponent, dialogConfig)
+            .afterClosed()
+            .pipe(
+                filter(result => !!result),
+                mergeMap(() =>
+                    this.latsService
+                        .getLATSAngabenGemeindeContainer()
+                        .pipe(first())
+                ),
+                mergeMap(container =>
+                    this.latsService.latsGemeindeAntragZurZweitpruefung(
+                        container
+                    )
+                )
+            )
+            .subscribe({
+                next: container => {
+                    this.latsService.updateLATSAngabenGemeindeContainerStore(
+                        container.id
+                    );
+                },
+                error: () =>
+                    this.errorService.addMesageAsError(
+                        this.translate.instant('ERROR_UNEXPECTED')
+                    )
+            });
     }
 
     public async zurueckAnGemeinde(): Promise<void> {
@@ -260,24 +317,25 @@ export class FreigabeComponent implements OnInit {
             frage: this.translate.instant('ZURUECK_AN_GEMEINDE_GEBEN')
         };
         if (
-            !(await this.dialog
-                .open(DvNgConfirmDialogComponent, dialogConfig)
-                .afterClosed()
-                .toPromise())
+            !(await firstValueFrom(
+                this.dialog
+                    .open(DvNgConfirmDialogComponent, dialogConfig)
+                    .afterClosed()
+            ))
         ) {
             return;
         }
-        this.latsService.zurueckAnGemeinde(this.container).subscribe(
-            () =>
+        this.latsService.zurueckAnGemeinde(this.container).subscribe({
+            next: () =>
                 this.$state.go(
                     'LASTENAUSGLEICH_TAGESSCHULEN.ANGABEN_GEMEINDE',
                     {id: this.container.id}
                 ),
-            () =>
+            error: () =>
                 this.errorService.addMesageAsError(
                     this.translate.instant('ERROR_UNEXPECTED')
                 )
-        );
+        });
     }
 
     public isInPruefungKanton(): Observable<boolean> {
@@ -307,25 +365,53 @@ export class FreigabeComponent implements OnInit {
             .pipe(map(container => container.isGeprueft()));
     }
 
+    public isAlreadyInZweitpruefung(): boolean {
+        return (
+            this.container?.status ===
+            TSLastenausgleichTagesschuleAngabenGemeindeStatus.ZWEITPRUEFUNG
+        );
+    }
+
     public async zurueckInPruefung(): Promise<void> {
         const dialogConfig = new MatDialogConfig();
         dialogConfig.data = {
             frage: this.translate.instant('ZURUECK_IN_PRUEFUNG')
         };
         if (
-            !(await this.dialog
-                .open(DvNgConfirmDialogComponent, dialogConfig)
-                .afterClosed()
-                .toPromise())
+            !(await firstValueFrom(
+                this.dialog
+                    .open(DvNgConfirmDialogComponent, dialogConfig)
+                    .afterClosed()
+            ))
         ) {
             return;
         }
-        this.latsService.zurueckInPruefung(this.container).subscribe(
-            () => {},
-            () =>
+        this.latsService.zurueckInPruefung(this.container).subscribe({
+            next: () => {},
+            error: () =>
                 this.errorService.addMesageAsError(
                     this.translate.instant('ERROR_UNEXPECTED')
                 )
+        });
+    }
+
+    public isZweitPruefungAndSameUserAsPruefung() {
+        return combineLatest([this.authService.principal$]).pipe(
+            map(([principal]) =>
+                LATSPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    this.container,
+                    this.history
+                )
+            )
         );
+    }
+
+    private getVerlauf() {
+        return this.latsService
+            .getLATSAngabenGemeindeContainer()
+            .pipe(
+                mergeMap(container => this.latsService.getVerlauf(container.id))
+            );
     }
 }

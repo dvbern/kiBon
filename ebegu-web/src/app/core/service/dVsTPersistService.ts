@@ -15,7 +15,7 @@
 
 import {AuthLifeCycleService} from '../../../authentication/service/authLifeCycle.service';
 import {TSAuthEvent} from '../../../models/enums/TSAuthEvent';
-import {LogFactory} from '../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 const LOG = LogFactory.createLog('DVsTPersistService');
 
@@ -34,10 +34,10 @@ export class DVsTPersistService {
     ) {
         this.clearAll();
 
-        this.authLifeCycleService.get$(TSAuthEvent.LOGIN_SUCCESS).subscribe(
-            () => this.clearAll(),
-            err => LOG.error(err)
-        );
+        this.authLifeCycleService.get$(TSAuthEvent.LOGIN_SUCCESS).subscribe({
+            next: () => this.clearAll(),
+            error: err => LOG.error(err)
+        });
     }
 
     private clearAll(): void {

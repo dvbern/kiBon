@@ -21,11 +21,12 @@ import {
     Transition,
     TransitionService
 } from '@uirouter/core';
-import {map, take} from 'rxjs/operators';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {TSRole} from '../../../models/enums/TSRole';
+import {map} from 'rxjs/operators';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {TSRole} from '@kibon/shared/model/enums';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
 import {OnBeforePriorities} from './onBeforePriorities';
+import {firstValueFrom} from 'rxjs';
 
 const LOG = LogFactory.createLog('authenticationHookRunBlockX');
 
@@ -66,9 +67,8 @@ function redirectToLogin(
 ): HookResult {
     const $state = transition.router.stateService;
 
-    return authService.principal$
-        .pipe(
-            take(1),
+    return firstValueFrom(
+        authService.principal$.pipe(
             map(principal => {
                 LOG.debug('checking authentication of principal', principal);
 
@@ -84,5 +84,5 @@ function redirectToLogin(
                 return true;
             })
         )
-        .toPromise();
+    );
 }

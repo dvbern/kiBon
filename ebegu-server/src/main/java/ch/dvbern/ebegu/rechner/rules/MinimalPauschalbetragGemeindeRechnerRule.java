@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner.rules;
@@ -37,25 +37,32 @@ public class MinimalPauschalbetragGemeindeRechnerRule implements RechnerRule {
 	}
 
 	@Override
-	public boolean isConfigueredForGemeinde(@Nonnull BGRechnerParameterDTO parameterDTO) {
-		return parameterDTO.getGemeindeParameter().getGemeindePauschalbetragEnabled();
+	public boolean isConfigueredForGemeinde(
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
+		return parameterDTO.getGemeindeParameter()
+			.getGemeindePauschalbetragEnabled();
 	}
 
 	@Override
 	public boolean isRelevantForVerfuegung(
 		@Nonnull BGCalculationInput inputGemeinde,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 		if (!inputGemeinde.isAbschnittLiegtNachBEGUStartdatum()) {
 			return false;
 		}
 
 		// Wenn kein Betreuungspensum gibt es auch kein pauschalbetrag ausbezahlt
-		if ((inputGemeinde.getBetreuungspensumProzent().compareTo(BigDecimal.ZERO) == 0)) {
+		if ((inputGemeinde.getBetreuungspensumProzent()
+			.compareTo(BigDecimal.ZERO)
+			== 0)) {
 			return false;
 		}
 
 		// Nur Kita und TFO
-		if (!inputGemeinde.getBetreuungsangebotTyp().isAngebotJugendamtKleinkind()) {
+		if (!inputGemeinde.getBetreuungsangebotTyp()
+			.isAngebotJugendamtKleinkind()) {
 			return false;
 		}
 
@@ -71,15 +78,20 @@ public class MinimalPauschalbetragGemeindeRechnerRule implements RechnerRule {
 	public void prepareParameter(
 		@Nonnull BGCalculationInput inputGemeinde,
 		@Nonnull BGRechnerParameterDTO parameterDTO,
-		@Nonnull RechnerRuleParameterDTO rechnerParameter) {
+		@Nonnull RechnerRuleParameterDTO rechnerParameter
+	) {
 		BigDecimal minimalPauschalbetrag;
 		MsgKey msgKey;
 
 		if (inputGemeinde.getBetreuungsangebotTyp().isKita()) {
-			minimalPauschalbetrag = parameterDTO.getGemeindeParameter().getGemeindePauschalbetragKita();
+			minimalPauschalbetrag = parameterDTO.getGemeindeParameter()
+				.getGemeindePauschalbetragKita();
 			msgKey = MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_KITA;
 		} else {
-			minimalPauschalbetrag = getMinimalBetragTFO(inputGemeinde.getEinschulungTyp(), parameterDTO);
+			minimalPauschalbetrag = getMinimalBetragTFO(
+				inputGemeinde.getEinschulungTyp(),
+				parameterDTO
+			);
 			msgKey = MsgKey.MINIMAL_PAUSCHALBETRAG_GESICHERT_TFO;
 		}
 
@@ -87,20 +99,30 @@ public class MinimalPauschalbetragGemeindeRechnerRule implements RechnerRule {
 		inputGemeinde.addBemerkung(msgKey, locale, minimalPauschalbetrag);
 	}
 
-	private BigDecimal getMinimalBetragTFO(EinschulungTyp einschulungTyp, BGRechnerParameterDTO parameterDTO) {
+	private BigDecimal getMinimalBetragTFO(
+		EinschulungTyp einschulungTyp,
+		BGRechnerParameterDTO parameterDTO
+	) {
 		if (einschulungTyp == null) {
-			throw new IllegalArgumentException("Einschulungstyp darf nicht null sein zur Berrechnung des Gutscheins");
+			throw new IllegalArgumentException(
+				"Einschulungstyp darf nicht null sein zur Berrechnung des Gutscheins"
+			);
 		}
 
-		if (einschulungTyp.isPrimarstufe() || einschulungTyp.isSekundarstufe()) {
-			return parameterDTO.getGemeindeParameter().getGemeindePauschalbetragTfoPrimarschule();
+		if (einschulungTyp.isPrimarstufe()
+			|| einschulungTyp.isSekundarstufe()) {
+			return parameterDTO.getGemeindeParameter()
+				.getGemeindePauschalbetragTfoPrimarschule();
 		}
 
-		return parameterDTO.getGemeindeParameter().getGemeindePauschalbetragTfo();
+		return parameterDTO.getGemeindeParameter()
+			.getGemeindePauschalbetragTfo();
 	}
 
 	@Override
-	public void resetParameter(@Nonnull RechnerRuleParameterDTO rechnerParameter) {
+	public void resetParameter(
+		@Nonnull RechnerRuleParameterDTO rechnerParameter
+	) {
 		rechnerParameter.setMinimalPauschalBetrag(BigDecimal.ZERO);
 	}
 }

@@ -15,8 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {KiBonMandant} from './MANDANTS';
-import {MandantVisitor} from './MandantVisitor';
+import {KiBonMandant, MandantVisitor} from '@kibon/shared-model-mandant';
 
 export class UnknownTFOIdVisitor implements MandantVisitor<string> {
     public process(mandant: KiBonMandant): string {
@@ -41,5 +40,13 @@ export class UnknownTFOIdVisitor implements MandantVisitor<string> {
 
     public visitSchwyz(): string {
         return '00000000-0000-0000-0000-000000000013';
+    }
+
+    public visitZug(): string {
+        throw new Error('Zug has no TFO');
+    }
+
+    public visitDvb(): string {
+        return '00000000-0000-0000-0000-000000000021';
     }
 }

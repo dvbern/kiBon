@@ -8,16 +8,20 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Entitaet zum Speichern von Verrechnungen in der Datenbank.
@@ -27,6 +31,11 @@ public class VerrechnungKibon extends AbstractEntity {
 
 	private static final long serialVersionUID = -7687613920281069860L;
 
+	@NotNull
+	@ManyToOne(optional = false)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gemeinde_mandant_id"),
+		updatable = false)
+	private Mandant mandant;
 
 	public VerrechnungKibon() {
 	}
@@ -34,5 +43,13 @@ public class VerrechnungKibon extends AbstractEntity {
 	@Override
 	public boolean isSame(AbstractEntity other) {
 		return getId().equals(other.getId());
+	}
+
+	public Mandant getMandant() {
+		return mandant;
+	}
+
+	public void setMandant(Mandant mandant) {
+		this.mandant = mandant;
 	}
 }

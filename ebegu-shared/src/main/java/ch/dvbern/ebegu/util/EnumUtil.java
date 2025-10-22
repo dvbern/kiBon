@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
  */
 public final class EnumUtil {
 
-
 	private EnumUtil() {
 		// prevent instantiation
 	}
@@ -36,7 +35,10 @@ public final class EnumUtil {
 	 * entspricht
 	 */
 	@SafeVarargs
-	public static <T extends Enum<T>> boolean isOneOf(@Nullable final T toTest, @Nonnull final T... otherValues) {
+	public static <T extends Enum<T>> boolean isOneOf(
+		@Nullable final T toTest,
+		@Nonnull final T... otherValues
+	) {
 		return isOneOf(toTest, Arrays.asList(otherValues));
 	}
 
@@ -44,7 +46,10 @@ public final class EnumUtil {
 	 * Gibt true{@code true} zurück wenn der Parameter <tt>toTest</tt> einem der Werte <tt>otherValues</tt>
 	 * entspricht
 	 */
-	public static <T extends Enum<T>> boolean isOneOf(@Nullable final T toTest, @Nonnull final List<T> otherValues) {
+	public static <T extends Enum<T>> boolean isOneOf(
+		@Nullable final T toTest,
+		@Nonnull final List<T> otherValues
+	) {
 		if (toTest == null) {
 			return false;
 		}
@@ -61,7 +66,10 @@ public final class EnumUtil {
 	 * entspricht
 	 */
 	@SafeVarargs
-	public static <T extends Enum<T>> boolean isOneOf(@Nullable final String toTest, @Nonnull final T... otherValues) {
+	public static <T extends Enum<T>> boolean isOneOf(
+		@Nullable final String toTest,
+		@Nonnull final T... otherValues
+	) {
 		return isOneOf(toTest, Arrays.asList(otherValues));
 	}
 
@@ -69,7 +77,10 @@ public final class EnumUtil {
 	 * Gibt true{@code true} zurück wenn der Parameter <tt>toTest</tt> einem der Werte <tt>otherValues</tt>
 	 * entspricht
 	 */
-	public static <T extends Enum<T>> boolean isOneOf(@Nullable final String toTest, @Nonnull final List<T> otherValues) {
+	public static <T extends Enum<T>> boolean isOneOf(
+		@Nullable final String toTest,
+		@Nonnull final List<T> otherValues
+	) {
 		if (toTest == null) {
 			return false;
 		}
@@ -86,7 +97,10 @@ public final class EnumUtil {
 	 * entspricht
 	 */
 	@SafeVarargs
-	public static <T extends Enum<T>> boolean isNoneOf(@Nullable final T toTest, @Nonnull final T... otherValues) {
+	public static <T extends Enum<T>> boolean isNoneOf(
+		@Nullable final T toTest,
+		@Nonnull final T... otherValues
+	) {
 		return !isOneOf(toTest, otherValues);
 	}
 }

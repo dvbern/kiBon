@@ -15,17 +15,18 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.math.BigDecimal;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
 import ch.dvbern.ebegu.util.MathUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import java.math.BigDecimal;
 
 /**
  * Entität für die Einkommensverschlechterung
@@ -84,7 +85,9 @@ public class Einkommensverschlechterung extends AbstractFinanzielleSituation {
 		return bruttolohnAbrechnung1;
 	}
 
-	public void setBruttolohnAbrechnung1(@Nullable BigDecimal bruttolohnAbrechnung1) {
+	public void setBruttolohnAbrechnung1(
+		@Nullable BigDecimal bruttolohnAbrechnung1
+	) {
 		this.bruttolohnAbrechnung1 = bruttolohnAbrechnung1;
 	}
 
@@ -93,7 +96,9 @@ public class Einkommensverschlechterung extends AbstractFinanzielleSituation {
 		return bruttolohnAbrechnung2;
 	}
 
-	public void setBruttolohnAbrechnung2(@Nullable BigDecimal bruttolohnAbrechnung2) {
+	public void setBruttolohnAbrechnung2(
+		@Nullable BigDecimal bruttolohnAbrechnung2
+	) {
 		this.bruttolohnAbrechnung2 = bruttolohnAbrechnung2;
 	}
 
@@ -102,7 +107,9 @@ public class Einkommensverschlechterung extends AbstractFinanzielleSituation {
 		return bruttolohnAbrechnung3;
 	}
 
-	public void setBruttolohnAbrechnung3(@Nullable BigDecimal bruttolohnAbrechnung3) {
+	public void setBruttolohnAbrechnung3(
+		@Nullable BigDecimal bruttolohnAbrechnung3
+	) {
 		this.bruttolohnAbrechnung3 = bruttolohnAbrechnung3;
 	}
 
@@ -118,7 +125,8 @@ public class Einkommensverschlechterung extends AbstractFinanzielleSituation {
 	@Nonnull
 	public Einkommensverschlechterung copyEinkommensverschlechterung(
 		@Nonnull Einkommensverschlechterung target,
-		@Nonnull AntragCopyType copyType) {
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
@@ -130,8 +138,13 @@ public class Einkommensverschlechterung extends AbstractFinanzielleSituation {
 			target.setBruttolohnAbrechnung3(this.getBruttolohnAbrechnung3());
 			target.setExtraLohn(this.getExtraLohn());
 			if (this.getFinSitZusatzangabenAppenzell() != null) {
-				target.setFinSitZusatzangabenAppenzell(this.getFinSitZusatzangabenAppenzell()
-					.copyFinSitZusatzangabenAppenzell(new FinSitZusatzangabenAppenzell(), copyType));
+				target.setFinSitZusatzangabenAppenzell(
+					this.getFinSitZusatzangabenAppenzell()
+						.copyFinSitZusatzangabenAppenzell(
+							new FinSitZusatzangabenAppenzell(),
+							copyType
+						)
+				);
 			}
 			break;
 		case ERNEUERUNG:
@@ -142,7 +155,8 @@ public class Einkommensverschlechterung extends AbstractFinanzielleSituation {
 	}
 
 	@Override
-	@SuppressWarnings({ "OverlyComplexBooleanExpression", "PMD.CompareObjectsWithEquals" })
+	@SuppressWarnings({ "OverlyComplexBooleanExpression",
+		"PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -155,10 +169,23 @@ public class Einkommensverschlechterung extends AbstractFinanzielleSituation {
 		if (!super.isSame(other)) {
 			return false;
 		}
-		final Einkommensverschlechterung otherEinkommensverschlechterung = (Einkommensverschlechterung) other;
-		return
-			MathUtil.isSame(getBruttolohnAbrechnung1(), otherEinkommensverschlechterung.getBruttolohnAbrechnung1()) &&
-			MathUtil.isSame(getBruttolohnAbrechnung2(), otherEinkommensverschlechterung.getBruttolohnAbrechnung2()) &&
-			MathUtil.isSame(getBruttolohnAbrechnung3(), otherEinkommensverschlechterung.getBruttolohnAbrechnung3());
+		final Einkommensverschlechterung otherEinkommensverschlechterung =
+			(Einkommensverschlechterung) other;
+		return MathUtil.isSame(
+			getBruttolohnAbrechnung1(),
+			otherEinkommensverschlechterung.getBruttolohnAbrechnung1()
+		)
+			&&
+			MathUtil.isSame(
+				getBruttolohnAbrechnung2(),
+				otherEinkommensverschlechterung
+					.getBruttolohnAbrechnung2()
+			)
+			&&
+			MathUtil.isSame(
+				getBruttolohnAbrechnung3(),
+				otherEinkommensverschlechterung
+					.getBruttolohnAbrechnung3()
+			);
 	}
 }

@@ -15,18 +15,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {KiBonMandant} from './MANDANTS';
-import {MandantVisitor} from './MandantVisitor';
+import {
+    AbstractMandantDefaultVisitor,
+    KiBonMandant
+} from '@kibon/shared-model-mandant';
 
-export class YoutubeLinkVisitor implements MandantVisitor<string | null> {
+export class YoutubeLinkVisitor extends AbstractMandantDefaultVisitor<
+    string | null
+> {
     private readonly _isGerman: boolean;
 
     public constructor(isGerman: boolean) {
+        super();
         this._isGerman = isGerman;
     }
 
     public process(mandant: KiBonMandant): string | null {
         return mandant.accept(this);
+    }
+
+    protected visitDefault(): string {
+        return null;
     }
 
     public visitBern(): string {
@@ -46,9 +55,5 @@ export class YoutubeLinkVisitor implements MandantVisitor<string | null> {
 
     public visitSolothurn(): string {
         return this.visitBern();
-    }
-
-    public visitSchwyz(): string | null {
-        return null;
     }
 }

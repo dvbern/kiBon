@@ -35,9 +35,17 @@ import ch.dvbern.ebegu.types.DateRange;
  */
 public class AuszahlungAnAbschnittRule extends AbstractAbschnittRule {
 
-
-	public AuszahlungAnAbschnittRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.BETREUUNGSPENSUM, RuleType.GRUNDREGEL_DATA, RuleValidity.ASIV, validityPeriod, locale);
+	public AuszahlungAnAbschnittRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.BETREUUNGSPENSUM,
+			RuleType.GRUNDREGEL_DATA,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 
 	}
 
@@ -48,12 +56,16 @@ public class AuszahlungAnAbschnittRule extends AbstractAbschnittRule {
 
 	@Nonnull
 	@Override
-	@SuppressWarnings("PMD.NcssMethodCount")
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
 		Betreuung betreuung = (Betreuung) platz;
 		Gesuchsperiode gesuchsperiode = platz.extractGesuchsperiode();
 
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(gesuchsperiode.getGueltigkeit());
+		VerfuegungZeitabschnitt zeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(
+				gesuchsperiode.getGueltigkeit()
+			);
 		zeitabschnitt.setAuszahlungAnEltern(betreuung.isAuszahlungAnEltern());
 
 		return new ArrayList<>(Collections.singleton(zeitabschnitt));

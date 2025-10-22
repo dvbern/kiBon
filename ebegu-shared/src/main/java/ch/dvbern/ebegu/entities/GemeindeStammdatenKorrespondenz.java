@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -22,11 +22,11 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -109,6 +109,16 @@ public class GemeindeStammdatenKorrespondenz extends AbstractEntity {
 	@Column(nullable = true)
 	private String alternativesLogoTagesschuleType;
 
+	@NotNull
+	@Nonnull
+	@Column(nullable = false)
+	private Integer barcodeSpacingLeft = 20;
+
+	@NotNull
+	@Nonnull
+	@Column(nullable = false)
+	private Integer barcodeSpacingTop = 14;
+
 	@Override
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	public boolean isSame(AbstractEntity other) {
@@ -122,7 +132,8 @@ public class GemeindeStammdatenKorrespondenz extends AbstractEntity {
 		if (!super.equals(other)) {
 			return false;
 		}
-		GemeindeStammdatenKorrespondenz gemeindeStammdaten = (GemeindeStammdatenKorrespondenz) other;
+		GemeindeStammdatenKorrespondenz gemeindeStammdaten =
+			(GemeindeStammdatenKorrespondenz) other;
 		return Objects.equals(this.getId(), gemeindeStammdaten.getId());
 	}
 
@@ -148,15 +159,23 @@ public class GemeindeStammdatenKorrespondenz extends AbstractEntity {
 		if (alternativesLogoTagesschuleContent == null) {
 			return EMPTY_BYTE_ARRAY;
 		}
-		return Arrays.copyOf(alternativesLogoTagesschuleContent, alternativesLogoTagesschuleContent.length);
+		return Arrays.copyOf(
+			alternativesLogoTagesschuleContent,
+			alternativesLogoTagesschuleContent.length
+		);
 	}
 
-	public void setAlternativesLogoTagesschuleContent(@Nullable byte[] alternativesLogoTagesschuleContent) {
+	public void setAlternativesLogoTagesschuleContent(
+		@Nullable byte[] alternativesLogoTagesschuleContent
+	) {
 		if (alternativesLogoTagesschuleContent == null) {
 			//noinspection ConstantConditions
 			this.alternativesLogoTagesschuleContent = null;
 		} else {
-			this.alternativesLogoTagesschuleContent = Arrays.copyOf(alternativesLogoTagesschuleContent, alternativesLogoTagesschuleContent.length);
+			this.alternativesLogoTagesschuleContent = Arrays.copyOf(
+				alternativesLogoTagesschuleContent,
+				alternativesLogoTagesschuleContent.length
+			);
 		}
 	}
 }

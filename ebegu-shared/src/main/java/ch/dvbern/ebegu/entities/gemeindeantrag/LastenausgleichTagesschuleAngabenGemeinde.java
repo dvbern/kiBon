@@ -8,30 +8,31 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.gemeindeantrag;
+
+import java.math.BigDecimal;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeFormularStatus;
 import ch.dvbern.ebegu.util.Constants;
 import com.google.common.base.Preconditions;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.math.BigDecimal;
 
 @Audited
 @Entity
@@ -101,7 +102,6 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 	@Column(nullable = true)
 	private BigDecimal rueckerstattungenElterngebuehrenSchliessung;
 
-
 	@Nullable
 	@Column(nullable = true)
 	private BigDecimal ersteRateAusbezahlt;
@@ -125,10 +125,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 	private Boolean ueberschussErzielt;
 
 	@Nullable
-	@Column(nullable = true)
-	private String ueberschussVerwendung;
-
-
+	@Column(nullable = true, length = Constants.DB_TEXTAREA_XL_LENGTH)
+	private @Size(
+		max = Constants.DB_TEXTAREA_XL_LENGTH) String ueberschussVerwendung;
 
 	// D: Angaben zu weiteren Kosten und Ertraegen
 
@@ -181,7 +180,8 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 
 	@Nullable
 	@Size(max = Constants.DB_TEXTAREA_LENGTH)
-	@Column(name="mindestens50prozent_betreuungszeit_bemerkung", nullable = true)
+	@Column(name = "mindestens50prozent_betreuungszeit_bemerkung",
+		nullable = true)
 	private String mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung;
 
 	@Nullable
@@ -211,11 +211,13 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 	private BigDecimal lastenausgleichberechtigteBetreuungsstunden;
 
 	@Nullable
-	@Column(name="stunden_mehr_als_50_prozent_ausgebildete_berechnet", nullable = true)
+	@Column(name = "stunden_mehr_als_50_prozent_ausgebildete_berechnet",
+		nullable = true)
 	private BigDecimal davonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet;
 
 	@Nullable
-	@Column(name="stunden_weniger_als_50_prozent_ausgebildete_berechnet", nullable = true)
+	@Column(name = "stunden_weniger_als_50_prozent_ausgebildete_berechnet",
+		nullable = true)
 	private BigDecimal davonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet;
 
 	@Nullable
@@ -242,29 +244,42 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 	@Column(nullable = true)
 	private BigDecimal schlusszahlung;
 
-
 	public LastenausgleichTagesschuleAngabenGemeinde() {
 
 	}
 
-	public LastenausgleichTagesschuleAngabenGemeinde(@Nonnull LastenausgleichTagesschuleAngabenGemeinde source) {
-		this.status = LastenausgleichTagesschuleAngabenGemeindeFormularStatus.IN_BEARBEITUNG;
+	public LastenausgleichTagesschuleAngabenGemeinde(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeinde source
+	) {
+		this.status =
+			LastenausgleichTagesschuleAngabenGemeindeFormularStatus.IN_BEARBEITUNG;
 		// A: Allgemeine Angaben
 		this.bedarfBeiElternAbgeklaert = source.bedarfBeiElternAbgeklaert;
-		this.angebotFuerFerienbetreuungVorhanden = source.angebotFuerFerienbetreuungVorhanden;
-		this.angebotVerfuegbarFuerAlleSchulstufen = source.angebotVerfuegbarFuerAlleSchulstufen;
-		this.begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen = source.begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen;
-		this.tagesschuleTeilweiseGeschlossen = source.tagesschuleTeilweiseGeschlossen;
-		this.rueckerstattungenElterngebuehrenSchliessung = source.rueckerstattungenElterngebuehrenSchliessung;
+		this.angebotFuerFerienbetreuungVorhanden =
+			source.angebotFuerFerienbetreuungVorhanden;
+		this.angebotVerfuegbarFuerAlleSchulstufen =
+			source.angebotVerfuegbarFuerAlleSchulstufen;
+		this.begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen =
+			source.begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen;
+		this.tagesschuleTeilweiseGeschlossen =
+			source.tagesschuleTeilweiseGeschlossen;
+		this.rueckerstattungenElterngebuehrenSchliessung =
+			source.rueckerstattungenElterngebuehrenSchliessung;
 		// B: Abrechnung
-		this.geleisteteBetreuungsstundenOhneBesondereBeduerfnisse = source.geleisteteBetreuungsstundenOhneBesondereBeduerfnisse;
-		this.geleisteteBetreuungsstundenBesondereBeduerfnisse = source.geleisteteBetreuungsstundenBesondereBeduerfnisse;
-		this.davonStundenZuNormlohnMehrAls50ProzentAusgebildete = source.davonStundenZuNormlohnMehrAls50ProzentAusgebildete;
-		this.davonStundenZuNormlohnWenigerAls50ProzentAusgebildete = source.davonStundenZuNormlohnWenigerAls50ProzentAusgebildete;
+		this.geleisteteBetreuungsstundenOhneBesondereBeduerfnisse =
+			source.geleisteteBetreuungsstundenOhneBesondereBeduerfnisse;
+		this.geleisteteBetreuungsstundenBesondereBeduerfnisse =
+			source.geleisteteBetreuungsstundenBesondereBeduerfnisse;
+		this.davonStundenZuNormlohnMehrAls50ProzentAusgebildete =
+			source.davonStundenZuNormlohnMehrAls50ProzentAusgebildete;
+		this.davonStundenZuNormlohnWenigerAls50ProzentAusgebildete =
+			source.davonStundenZuNormlohnWenigerAls50ProzentAusgebildete;
 		this.ersteRateAusbezahlt = source.ersteRateAusbezahlt;
 		this.einnahmenElterngebuehren = source.einnahmenElterngebuehren;
-		this.geleisteteBetreuungsstundenBesondereVolksschulangebot = source.geleisteteBetreuungsstundenBesondereVolksschulangebot;
-		this.einnahmenElterngebuehrenVolksschulangebot = source.einnahmenElterngebuehrenVolksschulangebot;
+		this.geleisteteBetreuungsstundenBesondereVolksschulangebot =
+			source.geleisteteBetreuungsstundenBesondereVolksschulangebot;
+		this.einnahmenElterngebuehrenVolksschulangebot =
+			source.einnahmenElterngebuehrenVolksschulangebot;
 		// C: Kostenbeteiligung Gemeinde
 		this.gesamtKostenTagesschule = source.gesamtKostenTagesschule;
 		this.einnnahmenVerpflegung = source.einnnahmenVerpflegung;
@@ -272,20 +287,30 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		this.ueberschussErzielt = source.ueberschussErzielt;
 		this.ueberschussVerwendung = source.ueberschussVerwendung;
 		// D: Angaben zu weiteren Kosten und Ertraegen
-		this.bemerkungenWeitereKostenUndErtraege = source.bemerkungenWeitereKostenUndErtraege;
+		this.bemerkungenWeitereKostenUndErtraege =
+			source.bemerkungenWeitereKostenUndErtraege;
 		// E: Kontrollfragen
-		this.betreuungsstundenDokumentiertUndUeberprueft = source.betreuungsstundenDokumentiertUndUeberprueft;
-		this.betreuungsstundenDokumentiertUndUeberprueftBemerkung = source.betreuungsstundenDokumentiertUndUeberprueftBemerkung;
-		this.elterngebuehrenGemaessVerordnungBerechnet = source.elterngebuehrenGemaessVerordnungBerechnet;
-		this.elterngebuehrenGemaessVerordnungBerechnetBemerkung = source.elterngebuehrenGemaessVerordnungBerechnetBemerkung;
+		this.betreuungsstundenDokumentiertUndUeberprueft =
+			source.betreuungsstundenDokumentiertUndUeberprueft;
+		this.betreuungsstundenDokumentiertUndUeberprueftBemerkung =
+			source.betreuungsstundenDokumentiertUndUeberprueftBemerkung;
+		this.elterngebuehrenGemaessVerordnungBerechnet =
+			source.elterngebuehrenGemaessVerordnungBerechnet;
+		this.elterngebuehrenGemaessVerordnungBerechnetBemerkung =
+			source.elterngebuehrenGemaessVerordnungBerechnetBemerkung;
 		this.einkommenElternBelegt = source.einkommenElternBelegt;
-		this.einkommenElternBelegtBemerkung = source.einkommenElternBelegtBemerkung;
+		this.einkommenElternBelegtBemerkung =
+			source.einkommenElternBelegtBemerkung;
 		this.maximalTarif = source.maximalTarif;
 		this.maximalTarifBemerkung = source.maximalTarifBemerkung;
-		this.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal = source.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal;
-		this.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung = source.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung;
-		this.ausbildungenMitarbeitendeBelegt = source.ausbildungenMitarbeitendeBelegt;
-		this.ausbildungenMitarbeitendeBelegtBemerkung = source.ausbildungenMitarbeitendeBelegtBemerkung;
+		this.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal =
+			source.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal;
+		this.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung =
+			source.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung;
+		this.ausbildungenMitarbeitendeBelegt =
+			source.ausbildungenMitarbeitendeBelegt;
+		this.ausbildungenMitarbeitendeBelegtBemerkung =
+			source.ausbildungenMitarbeitendeBelegtBemerkung;
 		// Bemerkungen
 		this.bemerkungen = source.bemerkungen;
 		this.bemerkungStarkeVeraenderung = source.bemerkungStarkeVeraenderung;
@@ -296,7 +321,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return bedarfBeiElternAbgeklaert;
 	}
 
-	public void setBedarfBeiElternAbgeklaert(@Nonnull Boolean bedarfBeiElternAbgeklaert) {
+	public void setBedarfBeiElternAbgeklaert(
+		@Nonnull Boolean bedarfBeiElternAbgeklaert
+	) {
 		this.bedarfBeiElternAbgeklaert = bedarfBeiElternAbgeklaert;
 	}
 
@@ -305,8 +332,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return angebotFuerFerienbetreuungVorhanden;
 	}
 
-	public void setAngebotFuerFerienbetreuungVorhanden(@Nonnull Boolean angebotFuerFerienbetreuungVorhanden) {
-		this.angebotFuerFerienbetreuungVorhanden = angebotFuerFerienbetreuungVorhanden;
+	public void setAngebotFuerFerienbetreuungVorhanden(
+		@Nonnull Boolean angebotFuerFerienbetreuungVorhanden
+	) {
+		this.angebotFuerFerienbetreuungVorhanden =
+			angebotFuerFerienbetreuungVorhanden;
 	}
 
 	@Nullable
@@ -314,8 +344,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return angebotVerfuegbarFuerAlleSchulstufen;
 	}
 
-	public void setAngebotVerfuegbarFuerAlleSchulstufen(@Nonnull Boolean angebotVerfuegbarFuerAlleSchulstufen) {
-		this.angebotVerfuegbarFuerAlleSchulstufen = angebotVerfuegbarFuerAlleSchulstufen;
+	public void setAngebotVerfuegbarFuerAlleSchulstufen(
+		@Nonnull Boolean angebotVerfuegbarFuerAlleSchulstufen
+	) {
+		this.angebotVerfuegbarFuerAlleSchulstufen =
+			angebotVerfuegbarFuerAlleSchulstufen;
 	}
 
 	@Nullable
@@ -323,8 +356,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen;
 	}
 
-	public void setBegruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen(@Nullable String begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen) {
-		this.begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen = begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen;
+	public void setBegruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen(
+		@Nullable String begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen
+	) {
+		this.begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen =
+			begruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen;
 	}
 
 	@Nullable
@@ -332,8 +368,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return geleisteteBetreuungsstundenOhneBesondereBeduerfnisse;
 	}
 
-	public void setGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse(@Nonnull BigDecimal geleisteteBetreuungsstundenOhneBesondereBeduerfnisse) {
-		this.geleisteteBetreuungsstundenOhneBesondereBeduerfnisse = geleisteteBetreuungsstundenOhneBesondereBeduerfnisse;
+	public void setGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse(
+		@Nonnull BigDecimal geleisteteBetreuungsstundenOhneBesondereBeduerfnisse
+	) {
+		this.geleisteteBetreuungsstundenOhneBesondereBeduerfnisse =
+			geleisteteBetreuungsstundenOhneBesondereBeduerfnisse;
 	}
 
 	@Nullable
@@ -341,8 +380,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return geleisteteBetreuungsstundenBesondereBeduerfnisse;
 	}
 
-	public void setGeleisteteBetreuungsstundenBesondereBeduerfnisse(@Nonnull BigDecimal geleisteteBetreuungsstundenBesondereBeduerfnisse) {
-		this.geleisteteBetreuungsstundenBesondereBeduerfnisse = geleisteteBetreuungsstundenBesondereBeduerfnisse;
+	public void setGeleisteteBetreuungsstundenBesondereBeduerfnisse(
+		@Nonnull BigDecimal geleisteteBetreuungsstundenBesondereBeduerfnisse
+	) {
+		this.geleisteteBetreuungsstundenBesondereBeduerfnisse =
+			geleisteteBetreuungsstundenBesondereBeduerfnisse;
 	}
 
 	@Nullable
@@ -350,8 +392,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return davonStundenZuNormlohnMehrAls50ProzentAusgebildete;
 	}
 
-	public void setDavonStundenZuNormlohnMehrAls50ProzentAusgebildete(@Nonnull BigDecimal davonStundenZuNormlohnMehrAls50ProzentAusgebildetesPersonal) {
-		this.davonStundenZuNormlohnMehrAls50ProzentAusgebildete = davonStundenZuNormlohnMehrAls50ProzentAusgebildetesPersonal;
+	public void setDavonStundenZuNormlohnMehrAls50ProzentAusgebildete(
+		@Nonnull BigDecimal davonStundenZuNormlohnMehrAls50ProzentAusgebildetesPersonal
+	) {
+		this.davonStundenZuNormlohnMehrAls50ProzentAusgebildete =
+			davonStundenZuNormlohnMehrAls50ProzentAusgebildetesPersonal;
 	}
 
 	@Nullable
@@ -359,8 +404,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return davonStundenZuNormlohnWenigerAls50ProzentAusgebildete;
 	}
 
-	public void setDavonStundenZuNormlohnWenigerAls50ProzentAusgebildete(@Nonnull BigDecimal davonStundenZuNormlohnWenigerAls50ProzentAusgebildetesPersonal) {
-		this.davonStundenZuNormlohnWenigerAls50ProzentAusgebildete = davonStundenZuNormlohnWenigerAls50ProzentAusgebildetesPersonal;
+	public void setDavonStundenZuNormlohnWenigerAls50ProzentAusgebildete(
+		@Nonnull BigDecimal davonStundenZuNormlohnWenigerAls50ProzentAusgebildetesPersonal
+	) {
+		this.davonStundenZuNormlohnWenigerAls50ProzentAusgebildete =
+			davonStundenZuNormlohnWenigerAls50ProzentAusgebildetesPersonal;
 	}
 
 	@Nullable
@@ -368,7 +416,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return einnahmenElterngebuehren;
 	}
 
-	public void setEinnahmenElterngebuehren(@Nonnull BigDecimal einnahmenElterngebuehren) {
+	public void setEinnahmenElterngebuehren(
+		@Nonnull BigDecimal einnahmenElterngebuehren
+	) {
 		this.einnahmenElterngebuehren = einnahmenElterngebuehren;
 	}
 
@@ -377,7 +427,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return gesamtKostenTagesschule;
 	}
 
-	public void setGesamtKostenTagesschule(@Nonnull BigDecimal gesamtKostenTagesschule) {
+	public void setGesamtKostenTagesschule(
+		@Nonnull BigDecimal gesamtKostenTagesschule
+	) {
 		this.gesamtKostenTagesschule = gesamtKostenTagesschule;
 	}
 
@@ -386,7 +438,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return einnnahmenVerpflegung;
 	}
 
-	public void setEinnnahmenVerpflegung(@Nonnull BigDecimal einnnahmenVerpflegung) {
+	public void setEinnnahmenVerpflegung(
+		@Nonnull BigDecimal einnnahmenVerpflegung
+	) {
 		this.einnnahmenVerpflegung = einnnahmenVerpflegung;
 	}
 
@@ -395,7 +449,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return einnahmenSubventionenDritter;
 	}
 
-	public void setEinnahmenSubventionenDritter(@Nonnull BigDecimal einnahmenSubventionenDritter) {
+	public void setEinnahmenSubventionenDritter(
+		@Nonnull BigDecimal einnahmenSubventionenDritter
+	) {
 		this.einnahmenSubventionenDritter = einnahmenSubventionenDritter;
 	}
 
@@ -404,8 +460,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return bemerkungenWeitereKostenUndErtraege;
 	}
 
-	public void setBemerkungenWeitereKostenUndErtraege(@Nullable String bemerkungenWeitereKostenUndErtraege) {
-		this.bemerkungenWeitereKostenUndErtraege = bemerkungenWeitereKostenUndErtraege;
+	public void setBemerkungenWeitereKostenUndErtraege(
+		@Nullable String bemerkungenWeitereKostenUndErtraege
+	) {
+		this.bemerkungenWeitereKostenUndErtraege =
+			bemerkungenWeitereKostenUndErtraege;
 	}
 
 	@Nullable
@@ -413,8 +472,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return betreuungsstundenDokumentiertUndUeberprueft;
 	}
 
-	public void setBetreuungsstundenDokumentiertUndUeberprueft(@Nonnull Boolean betreuungsstundenDokumentiertUndUeberprueft) {
-		this.betreuungsstundenDokumentiertUndUeberprueft = betreuungsstundenDokumentiertUndUeberprueft;
+	public void setBetreuungsstundenDokumentiertUndUeberprueft(
+		@Nonnull Boolean betreuungsstundenDokumentiertUndUeberprueft
+	) {
+		this.betreuungsstundenDokumentiertUndUeberprueft =
+			betreuungsstundenDokumentiertUndUeberprueft;
 	}
 
 	@Nullable
@@ -422,8 +484,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return elterngebuehrenGemaessVerordnungBerechnet;
 	}
 
-	public void setElterngebuehrenGemaessVerordnungBerechnet(@Nonnull Boolean elterngebuehrenGemaessVerordnungBerechnet) {
-		this.elterngebuehrenGemaessVerordnungBerechnet = elterngebuehrenGemaessVerordnungBerechnet;
+	public void setElterngebuehrenGemaessVerordnungBerechnet(
+		@Nonnull Boolean elterngebuehrenGemaessVerordnungBerechnet
+	) {
+		this.elterngebuehrenGemaessVerordnungBerechnet =
+			elterngebuehrenGemaessVerordnungBerechnet;
 	}
 
 	@Nullable
@@ -431,7 +496,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return einkommenElternBelegt;
 	}
 
-	public void setEinkommenElternBelegt(@Nonnull Boolean einkommenElternBelegt) {
+	public void setEinkommenElternBelegt(
+		@Nonnull Boolean einkommenElternBelegt
+	) {
 		this.einkommenElternBelegt = einkommenElternBelegt;
 	}
 
@@ -449,8 +516,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal;
 	}
 
-	public void setMindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal(@Nonnull Boolean mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal) {
-		this.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal = mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal;
+	public void setMindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal(
+		@Nonnull Boolean mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal
+	) {
+		this.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal =
+			mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal;
 	}
 
 	@Nullable
@@ -458,7 +528,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return ausbildungenMitarbeitendeBelegt;
 	}
 
-	public void setAusbildungenMitarbeitendeBelegt(@Nonnull Boolean ausbildungenMitarbeitendeBelegt) {
+	public void setAusbildungenMitarbeitendeBelegt(
+		@Nonnull Boolean ausbildungenMitarbeitendeBelegt
+	) {
 		this.ausbildungenMitarbeitendeBelegt = ausbildungenMitarbeitendeBelegt;
 	}
 
@@ -481,7 +553,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return status;
 	}
 
-	public void setStatus(@Nonnull LastenausgleichTagesschuleAngabenGemeindeFormularStatus status) {
+	public void setStatus(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeFormularStatus status
+	) {
 		this.status = status;
 	}
 
@@ -491,7 +565,8 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 			"geleisteteBetreuungsstundenBesondereBeduerfnisse darf nicht null sein"
 		);
 		Preconditions.checkState(
-			getGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse() != null,
+			getGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse()
+				!= null,
 			"geleisteteBetreuungsstundenOhneBesondereBeduerfnisse darf nicht null sein"
 		);
 		Preconditions.checkState(
@@ -499,20 +574,29 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 			"davonStundenZuNormlohnMehrAls50ProzentAusgebildete darf nicht null sein"
 		);
 		Preconditions.checkState(
-			getDavonStundenZuNormlohnWenigerAls50ProzentAusgebildete() != null,
+			getDavonStundenZuNormlohnWenigerAls50ProzentAusgebildete()
+				!= null,
 			"davonStundenZuNormlohnWenigerAls50ProzentAusgebildete darf nicht null sein"
 		);
-		assert getGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse() != null;
+		assert getGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse()
+			!= null;
 		assert getGeleisteteBetreuungsstundenBesondereBeduerfnisse() != null;
 
-		final BigDecimal angabenStunden = getGeleisteteBetreuungsstundenBesondereBeduerfnisse().add(
-				getGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse()).add(
-				getGeleisteteBetreuungsstundenBesondereVolksschulangebot());
-		final BigDecimal angabenStundenSplittedByNormlohn = getDavonStundenZuNormlohnMehrAls50ProzentAusgebildete().add(
-				getDavonStundenZuNormlohnWenigerAls50ProzentAusgebildete());
+		final BigDecimal angabenStunden =
+			getGeleisteteBetreuungsstundenBesondereBeduerfnisse().add(
+				getGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse()
+			)
+				.add(
+					getGeleisteteBetreuungsstundenBesondereVolksschulangebot()
+				);
+		final BigDecimal angabenStundenSplittedByNormlohn =
+			getDavonStundenZuNormlohnMehrAls50ProzentAusgebildete().add(
+				getDavonStundenZuNormlohnWenigerAls50ProzentAusgebildete()
+			);
 
 		return angabenStunden
-				.compareTo(angabenStundenSplittedByNormlohn) == 0;
+			.compareTo(angabenStundenSplittedByNormlohn)
+			== 0;
 	}
 
 	@Nullable
@@ -520,7 +604,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return tagesschuleTeilweiseGeschlossen;
 	}
 
-	public void setTagesschuleTeilweiseGeschlossen(@Nullable Boolean tagesschuleTeilweiseGeschlossen) {
+	public void setTagesschuleTeilweiseGeschlossen(
+		@Nullable Boolean tagesschuleTeilweiseGeschlossen
+	) {
 		this.tagesschuleTeilweiseGeschlossen = tagesschuleTeilweiseGeschlossen;
 	}
 
@@ -530,8 +616,10 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 	}
 
 	public void setRueckerstattungenElterngebuehrenSchliessung(
-		@Nullable BigDecimal rueckerstattungenElterngebuehrenSchliesseung) {
-		this.rueckerstattungenElterngebuehrenSchliessung = rueckerstattungenElterngebuehrenSchliesseung;
+		@Nullable BigDecimal rueckerstattungenElterngebuehrenSchliesseung
+	) {
+		this.rueckerstattungenElterngebuehrenSchliessung =
+			rueckerstattungenElterngebuehrenSchliesseung;
 	}
 
 	@Nullable
@@ -539,7 +627,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return ersteRateAusbezahlt;
 	}
 
-	public void setErsteRateAusbezahlt(@Nullable BigDecimal ersteRateAusbezahlt) {
+	public void setErsteRateAusbezahlt(
+		@Nullable BigDecimal ersteRateAusbezahlt
+	) {
 		this.ersteRateAusbezahlt = ersteRateAusbezahlt;
 	}
 
@@ -557,12 +647,15 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return ueberschussVerwendung;
 	}
 
-	public void setUeberschussVerwendung(@Nullable String ueberschussVerwendung) {
+	public void setUeberschussVerwendung(
+		@Nullable String ueberschussVerwendung
+	) {
 		this.ueberschussVerwendung = ueberschussVerwendung;
 	}
 
 	public boolean isAbgeschlossen() {
-		return status == LastenausgleichTagesschuleAngabenGemeindeFormularStatus.ABGESCHLOSSEN;
+		return status
+			== LastenausgleichTagesschuleAngabenGemeindeFormularStatus.ABGESCHLOSSEN;
 	}
 
 	@Nullable
@@ -570,8 +663,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return lastenausgleichberechtigteBetreuungsstunden;
 	}
 
-	public void setLastenausgleichberechtigteBetreuungsstunden(@Nullable BigDecimal lastenausgleichberechtigteBetreuungsstunden) {
-		this.lastenausgleichberechtigteBetreuungsstunden = lastenausgleichberechtigteBetreuungsstunden;
+	public void setLastenausgleichberechtigteBetreuungsstunden(
+		@Nullable BigDecimal lastenausgleichberechtigteBetreuungsstunden
+	) {
+		this.lastenausgleichberechtigteBetreuungsstunden =
+			lastenausgleichberechtigteBetreuungsstunden;
 	}
 
 	@Nullable
@@ -579,8 +675,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return davonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet;
 	}
 
-	public void setDavonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet(@Nullable BigDecimal davonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet) {
-		this.davonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet = davonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet;
+	public void setDavonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet(
+		@Nullable BigDecimal davonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet
+	) {
+		this.davonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet =
+			davonStundenZuNormlohnMehrAls50ProzentAusgebildeteBerechnet;
 	}
 
 	@Nullable
@@ -588,8 +687,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return davonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet;
 	}
 
-	public void setDavonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet(@Nullable BigDecimal davonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet) {
-		this.davonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet = davonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet;
+	public void setDavonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet(
+		@Nullable BigDecimal davonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet
+	) {
+		this.davonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet =
+			davonStundenZuNormlohnWenigerAls50ProzentAusgebildeteBerechnet;
 	}
 
 	@Nullable
@@ -597,8 +699,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return normlohnkostenBetreuungBerechnet;
 	}
 
-	public void setNormlohnkostenBetreuungBerechnet(@Nullable BigDecimal normlohnkostenBetreuungBerechnet) {
-		this.normlohnkostenBetreuungBerechnet = normlohnkostenBetreuungBerechnet;
+	public void setNormlohnkostenBetreuungBerechnet(
+		@Nullable BigDecimal normlohnkostenBetreuungBerechnet
+	) {
+		this.normlohnkostenBetreuungBerechnet =
+			normlohnkostenBetreuungBerechnet;
 	}
 
 	@Nullable
@@ -606,8 +711,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return lastenausgleichsberechtigerBetrag;
 	}
 
-	public void setLastenausgleichsberechtigerBetrag(@Nullable BigDecimal lastenausgleichsberechtigerBetrag) {
-		this.lastenausgleichsberechtigerBetrag = lastenausgleichsberechtigerBetrag;
+	public void setLastenausgleichsberechtigerBetrag(
+		@Nullable BigDecimal lastenausgleichsberechtigerBetrag
+	) {
+		this.lastenausgleichsberechtigerBetrag =
+			lastenausgleichsberechtigerBetrag;
 	}
 
 	@Nullable
@@ -615,7 +723,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return kostenbeitragGemeinde;
 	}
 
-	public void setKostenbeitragGemeinde(@Nullable BigDecimal kostenbeitragGemeinde) {
+	public void setKostenbeitragGemeinde(
+		@Nullable BigDecimal kostenbeitragGemeinde
+	) {
 		this.kostenbeitragGemeinde = kostenbeitragGemeinde;
 	}
 
@@ -624,7 +734,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return kostenueberschussGemeinde;
 	}
 
-	public void setKostenueberschussGemeinde(@Nullable BigDecimal kostenueberschussGemeinde) {
+	public void setKostenueberschussGemeinde(
+		@Nullable BigDecimal kostenueberschussGemeinde
+	) {
 		this.kostenueberschussGemeinde = kostenueberschussGemeinde;
 	}
 
@@ -633,7 +745,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return erwarteterKostenbeitragGemeinde;
 	}
 
-	public void setErwarteterKostenbeitragGemeinde(@Nullable BigDecimal erwarteterKostenbeitragGemeinde) {
+	public void setErwarteterKostenbeitragGemeinde(
+		@Nullable BigDecimal erwarteterKostenbeitragGemeinde
+	) {
 		this.erwarteterKostenbeitragGemeinde = erwarteterKostenbeitragGemeinde;
 	}
 
@@ -652,7 +766,8 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 	}
 
 	public void setBetreuungsstundenDokumentiertUndUeberprueftBemerkung(
-		@Nullable String betreuungsstundenDokumentiertUndUeberprueftBemerkung) {
+		@Nullable String betreuungsstundenDokumentiertUndUeberprueftBemerkung
+	) {
 		this.betreuungsstundenDokumentiertUndUeberprueftBemerkung =
 			betreuungsstundenDokumentiertUndUeberprueftBemerkung;
 	}
@@ -663,7 +778,8 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 	}
 
 	public void setGeleisteteBetreuungsstundenBesondereVolksschulangebot(
-		@Nullable BigDecimal geleisteteBetreuungsstundenBesondereVolksschulangebot) {
+		@Nullable BigDecimal geleisteteBetreuungsstundenBesondereVolksschulangebot
+	) {
 		this.geleisteteBetreuungsstundenBesondereVolksschulangebot =
 			geleisteteBetreuungsstundenBesondereVolksschulangebot;
 	}
@@ -674,8 +790,10 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 	}
 
 	public void setElterngebuehrenGemaessVerordnungBerechnetBemerkung(
-		@Nullable String elterngebuehrenGemaessVerordnungBerechnetBemerkung) {
-		this.elterngebuehrenGemaessVerordnungBerechnetBemerkung = elterngebuehrenGemaessVerordnungBerechnetBemerkung;
+		@Nullable String elterngebuehrenGemaessVerordnungBerechnetBemerkung
+	) {
+		this.elterngebuehrenGemaessVerordnungBerechnetBemerkung =
+			elterngebuehrenGemaessVerordnungBerechnetBemerkung;
 	}
 
 	@Nullable
@@ -683,7 +801,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return einkommenElternBelegtBemerkung;
 	}
 
-	public void setEinkommenElternBelegtBemerkung(@Nullable String einkommenElternBelegtBemerkung) {
+	public void setEinkommenElternBelegtBemerkung(
+		@Nullable String einkommenElternBelegtBemerkung
+	) {
 		this.einkommenElternBelegtBemerkung = einkommenElternBelegtBemerkung;
 	}
 
@@ -692,7 +812,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return maximalTarifBemerkung;
 	}
 
-	public void setMaximalTarifBemerkung(@Nullable String maximalTarifBemerkung) {
+	public void setMaximalTarifBemerkung(
+		@Nullable String maximalTarifBemerkung
+	) {
 		this.maximalTarifBemerkung = maximalTarifBemerkung;
 	}
 
@@ -702,7 +824,8 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 	}
 
 	public void setMindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung(
-		@Nullable String mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung) {
+		@Nullable String mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung
+	) {
 		this.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung =
 			mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung;
 	}
@@ -712,8 +835,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return ausbildungenMitarbeitendeBelegtBemerkung;
 	}
 
-	public void setAusbildungenMitarbeitendeBelegtBemerkung(@Nullable String ausbildungenMitarbeitendeBelegtBemerkung) {
-		this.ausbildungenMitarbeitendeBelegtBemerkung = ausbildungenMitarbeitendeBelegtBemerkung;
+	public void setAusbildungenMitarbeitendeBelegtBemerkung(
+		@Nullable String ausbildungenMitarbeitendeBelegtBemerkung
+	) {
+		this.ausbildungenMitarbeitendeBelegtBemerkung =
+			ausbildungenMitarbeitendeBelegtBemerkung;
 	}
 
 	@Nullable
@@ -721,8 +847,11 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return einnahmenElterngebuehrenVolksschulangebot;
 	}
 
-	public void setEinnahmenElterngebuehrenVolksschulangebot(@Nullable BigDecimal einnahmenElterngebuehrenVolksschulangebot) {
-		this.einnahmenElterngebuehrenVolksschulangebot = einnahmenElterngebuehrenVolksschulangebot;
+	public void setEinnahmenElterngebuehrenVolksschulangebot(
+		@Nullable BigDecimal einnahmenElterngebuehrenVolksschulangebot
+	) {
+		this.einnahmenElterngebuehrenVolksschulangebot =
+			einnahmenElterngebuehrenVolksschulangebot;
 	}
 
 	@Nullable
@@ -730,7 +859,9 @@ public class LastenausgleichTagesschuleAngabenGemeinde extends AbstractEntity {
 		return bemerkungStarkeVeraenderung;
 	}
 
-	public void setBemerkungStarkeVeraenderung(@Nullable String bemerkungStarkeVeraenderung) {
+	public void setBemerkungStarkeVeraenderung(
+		@Nullable String bemerkungStarkeVeraenderung
+	) {
 		this.bemerkungStarkeVeraenderung = bemerkungStarkeVeraenderung;
 	}
 }

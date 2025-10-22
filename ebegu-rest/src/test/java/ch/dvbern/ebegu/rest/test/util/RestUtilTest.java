@@ -15,6 +15,15 @@
 
 package ch.dvbern.ebegu.rest.test.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import jakarta.servlet.http.HttpServletRequest;
+
 import ch.dvbern.ebegu.api.dtos.JaxBetreuung;
 import ch.dvbern.ebegu.api.dtos.JaxInstitution;
 import ch.dvbern.ebegu.api.dtos.JaxKindContainer;
@@ -25,19 +34,19 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.mock;
+import static org.easymock.EasyMock.replay;
 
 /**
  * Test fuer RestUtil
  */
 public class RestUtilTest {
 
-	public static final String institutionID1 = "11111111-1111-1111-1111-111111111103";
-	public static final String institutionID2 = "11111111-1111-1111-1111-111111111104";
+	public static final String institutionID1 =
+		"11111111-1111-1111-1111-111111111103";
+	public static final String institutionID2 =
+		"11111111-1111-1111-1111-111111111104";
 
 	@Test
 	public void purgeKinderAndBetreuungenOfInstitutionenTestNoInstitution() {
@@ -45,7 +54,10 @@ public class RestUtilTest {
 		Collection<JaxKindContainer> kinder = new ArrayList<>();
 		kinder.add(kind);
 
-		RestUtil.purgeKinderAndBetreuungenOfInstitutionen(kinder, new ArrayList<>());
+		RestUtil.purgeKinderAndBetreuungenOfInstitutionen(
+			kinder,
+			new ArrayList<>()
+		);
 
 		Assert.assertNotNull(kinder);
 		Assert.assertEquals(0, kinder.size());
@@ -58,22 +70,35 @@ public class RestUtilTest {
 		kinder.add(kind);
 		Collection<Institution> institutionen = createArrayWithOneInstitution();
 
-		RestUtil.purgeKinderAndBetreuungenOfInstitutionen(kinder, institutionen);
+		RestUtil.purgeKinderAndBetreuungenOfInstitutionen(
+			kinder,
+			institutionen
+		);
 
 		Assert.assertNotNull(kinder);
 		Assert.assertEquals(1, kinder.size());
 		Assert.assertNotNull(kind.getBetreuungen());
 		final JaxKindContainer kindContainer = kinder.iterator().next();
 		Assert.assertEquals(1, kindContainer.getBetreuungen().size());
-		Assert.assertEquals(institutionID1,
-			kindContainer.getBetreuungen().iterator().next().getInstitutionStammdaten().getInstitution().getId());
+		Assert.assertEquals(
+			institutionID1,
+			kindContainer.getBetreuungen()
+				.iterator()
+				.next()
+				.getInstitutionStammdaten()
+				.getInstitution()
+				.getId()
+		);
 	}
 
 	@Test
 	public void purgeSingleKindAndBetreuungenOfInstitutionenTestNoInstitution() {
 		final JaxKindContainer kind = prepareKindData();
 
-		RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(kind, new ArrayList<>());
+		RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(
+			kind,
+			new ArrayList<>()
+		);
 
 		Assert.assertNotNull(kind.getBetreuungen());
 		Assert.assertEquals(0, kind.getBetreuungen().size());
@@ -86,39 +111,73 @@ public class RestUtilTest {
 
 		Collection<Institution> institutionen = createArrayWithOneInstitution();
 
-		RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(kind, institutionen);
+		RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(
+			kind,
+			institutionen
+		);
 
 		Assert.assertNotNull(kind.getBetreuungen());
 		Assert.assertEquals(1, kind.getBetreuungen().size());
-		Assert.assertEquals(institutionID1,
-			kind.getBetreuungen().iterator().next().getInstitutionStammdaten().getInstitution().getId());
+		Assert.assertEquals(
+			institutionID1,
+			kind.getBetreuungen()
+				.iterator()
+				.next()
+				.getInstitutionStammdaten()
+				.getInstitution()
+				.getId()
+		);
 	}
 
 	@Test
 	public void purgeSingleKindAndBetreuungenOfInstitutionenTestTwoOfTwoInstitution() {
 		final JaxKindContainer kind = prepareKindData();
 
-		Collection<Institution> institutionen = createArrayWithTwoInstitutions();
+		Collection<Institution> institutionen =
+			createArrayWithTwoInstitutions();
 
-		RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(kind, institutionen);
+		RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(
+			kind,
+			institutionen
+		);
 
 		Assert.assertNotNull(kind.getBetreuungen());
 		Assert.assertEquals(2, kind.getBetreuungen().size());
-		final Iterator<JaxBetreuung> iterator = kind.getBetreuungen().iterator();
-		Assert.assertEquals(institutionID2,
-			iterator.next().getInstitutionStammdaten().getInstitution().getId());
-		Assert.assertEquals(institutionID1,
-			iterator.next().getInstitutionStammdaten().getInstitution().getId());
+		final Iterator<JaxBetreuung> iterator = kind.getBetreuungen()
+			.iterator();
+		Assert.assertEquals(
+			institutionID2,
+			iterator.next()
+				.getInstitutionStammdaten()
+				.getInstitution()
+				.getId()
+		);
+		Assert.assertEquals(
+			institutionID1,
+			iterator.next()
+				.getInstitutionStammdaten()
+				.getInstitution()
+				.getId()
+		);
 	}
 
 	@Test
 	public void purgeSingleKindAndBetreuungenOfInstitutionenTestStatusSCHULAMT() {
 		// Neu sehen grundsätzlich alle alles!
 		final JaxKindContainer kind = prepareKindData();
-		kind.getBetreuungen().iterator().next().setBetreuungsstatus(Betreuungsstatus.SCHULAMT_MODULE_AKZEPTIERT);
-		Collection<Institution> institutionen = createArrayWithTwoInstitutions();
+		kind.getBetreuungen()
+			.iterator()
+			.next()
+			.setBetreuungsstatus(
+				Betreuungsstatus.SCHULAMT_MODULE_AKZEPTIERT
+			);
+		Collection<Institution> institutionen =
+			createArrayWithTwoInstitutions();
 
-		RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(kind, institutionen);
+		RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(
+			kind,
+			institutionen
+		);
 
 		Assert.assertNotNull(kind.getBetreuungen());
 		Assert.assertEquals(2, kind.getBetreuungen().size());
@@ -138,7 +197,9 @@ public class RestUtilTest {
 
 	@Test
 	public void isFileDownloadRequestAlternativLogoDownload() {
-		HttpServletRequest request = mockRequest("/gemeinde/alternativeLogo/data/");
+		HttpServletRequest request = mockRequest(
+			"/gemeinde/alternativeLogo/data/"
+		);
 		Assert.assertTrue(RestUtil.isFileDownloadRequest(request));
 	}
 
@@ -160,18 +221,23 @@ public class RestUtilTest {
 
 	@Nonnull
 	private JaxKindContainer prepareKindData() {
-		final JaxKindContainer kind = TestJaxDataUtil.createTestJaxKindContainer();
+		final JaxKindContainer kind = TestJaxDataUtil
+			.createTestJaxKindContainer();
 		Set<JaxBetreuung> betreuungen = new HashSet<>();
 
-		final JaxBetreuung betreuung1 = TestJaxDataUtil.createTestJaxBetreuung();
-		JaxInstitution institution1 = TestJaxDataUtil.createTestJaxInstitution();
+		final JaxBetreuung betreuung1 = TestJaxDataUtil
+			.createTestJaxBetreuung();
+		JaxInstitution institution1 = TestJaxDataUtil
+			.createTestJaxInstitution();
 		institution1.setId(institutionID1);
 		betreuung1.setId("11111111-1111-1111-1111-789456123256");
 		betreuung1.getInstitutionStammdaten().setInstitution(institution1);
 		betreuungen.add(betreuung1);
 
-		final JaxBetreuung betreuung2 = TestJaxDataUtil.createTestJaxBetreuung();
-		JaxInstitution institution2 = TestJaxDataUtil.createTestJaxInstitution();
+		final JaxBetreuung betreuung2 = TestJaxDataUtil
+			.createTestJaxBetreuung();
+		JaxInstitution institution2 = TestJaxDataUtil
+			.createTestJaxInstitution();
 		institution2.setId(institutionID2);
 		betreuung2.setId("11111111-1111-1111-1111-789456123288");
 		betreuung2.setBetreuungNummer(2);
@@ -195,7 +261,8 @@ public class RestUtilTest {
 	@Nonnull
 	private Collection<Institution> createArrayWithTwoInstitutions() {
 		Collection<Institution> institutionen = createArrayWithOneInstitution();
-		final Institution institution2 = TestDataUtil.createDefaultInstitution();
+		final Institution institution2 = TestDataUtil
+			.createDefaultInstitution();
 		institution2.setId(institutionID2);
 		institutionen.add(institution2);
 		return institutionen;

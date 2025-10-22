@@ -15,23 +15,27 @@
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.dto.BGCalculationInput;
-import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.MsgKey;
-import ch.dvbern.ebegu.types.DateRange;
-
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
+
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.entities.AbstractPlatz;
+import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.types.DateRange;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * Regel für Abwesenheiten. Sie beachtet:
- * - Ab dem 31. Tag einer Abwesenheit (Krankheit oder Unfall des Kinds und bei Mutterschaft ausgeschlossen) entfällt der Gutschein.
- * Der Anspruch bleibt in dieser Zeit bestehen. D.h. ab dem 31. Tag einer Abwesenheit, wird den Eltern der Volltarif verrechnet.
- * - Hier wird mit Tagen und nicht mit Nettoarbeitstage gerechnet. D.h. eine Abwesenheit von 30 Tagen ist ok. Beim 31. Tag entfällt der Gutschein.
+ * - Ab dem 31. Tag einer Abwesenheit (Krankheit oder Unfall des Kinds und bei Mutterschaft ausgeschlossen) entfällt der
+ * Gutschein.
+ * Der Anspruch bleibt in dieser Zeit bestehen. D.h. ab dem 31. Tag einer Abwesenheit, wird den Eltern der Volltarif
+ * verrechnet.
+ * - Hier wird mit Tagen und nicht mit Nettoarbeitstage gerechnet. D.h. eine Abwesenheit von 30 Tagen ist ok. Beim 31.
+ * Tag entfällt der Gutschein.
  * - Wann dieses Ereignis gemeldet wird, spielt keine Rolle.
  * Verweis 16.14.4
  */
@@ -39,8 +43,18 @@ public class AbwesenheitCalcRule extends AbstractCalcRule {
 
 	private Integer abwesenheitMaxDaysValue;
 
-	public AbwesenheitCalcRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale, @Nonnull Integer abwesenheitMaxDaysValue) {
-		super(RuleKey.ABWESENHEIT, RuleType.REDUKTIONSREGEL, RuleValidity.ASIV, validityPeriod, locale);
+	public AbwesenheitCalcRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale,
+		@Nonnull Integer abwesenheitMaxDaysValue
+	) {
+		super(
+			RuleKey.ABWESENHEIT,
+			RuleType.REDUKTIONSREGEL,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 		this.abwesenheitMaxDaysValue = abwesenheitMaxDaysValue;
 	}
 
@@ -52,11 +66,16 @@ public class AbwesenheitCalcRule extends AbstractCalcRule {
 	@Override
 	protected void executeRule(
 		@Nonnull AbstractPlatz platz,
-		@Nonnull BGCalculationInput inputData) {
+		@Nonnull BGCalculationInput inputData
+	) {
 		requireNonNull(platz.getBetreuungsangebotTyp());
 		if (inputData.isLongAbwesenheit()) {
 			inputData.setBezahltVollkostenKomplett();
-			inputData.addBemerkung(MsgKey.ABWESENHEIT_MSG, getLocale(), abwesenheitMaxDaysValue);
+			inputData.addBemerkung(
+				MsgKey.ABWESENHEIT_MSG,
+				getLocale(),
+				abwesenheitMaxDaysValue
+			);
 		}
 	}
 }

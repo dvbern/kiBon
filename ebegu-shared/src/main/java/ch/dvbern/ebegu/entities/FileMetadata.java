@@ -15,20 +15,21 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.UploadFileInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.Objects;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 import static ch.dvbern.ebegu.util.Constants.DB_TEXTAREA_LENGTH;
@@ -112,7 +113,10 @@ public abstract class FileMetadata extends AbstractMutableEntity {
 	}
 
 	@Nonnull
-	public FileMetadata copyFileMetadata(@Nonnull FileMetadata target, @Nonnull AntragCopyType copyType) {
+	public FileMetadata copyFileMetadata(
+		@Nonnull FileMetadata target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
@@ -141,8 +145,10 @@ public abstract class FileMetadata extends AbstractMutableEntity {
 			return false;
 		}
 		final FileMetadata otherFileMetadata = (FileMetadata) other;
-		return Objects.equals(getFilename(), otherFileMetadata.getFilename()) &&
-			Objects.equals(getFilepfad(), otherFileMetadata.getFilepfad()) &&
+		return Objects.equals(getFilename(), otherFileMetadata.getFilename())
+			&&
+			Objects.equals(getFilepfad(), otherFileMetadata.getFilepfad())
+			&&
 			Objects.equals(getFilesize(), otherFileMetadata.getFilesize());
 	}
 }

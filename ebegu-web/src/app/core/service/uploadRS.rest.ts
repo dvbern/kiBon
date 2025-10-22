@@ -13,13 +13,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IHttpService, ILogService, IPromise, IQService} from 'angular';
+import {TSSprache} from '@kibon/shared/model/enums';
+import angular, {IHttpService, ILogService, IPromise, IQService} from 'angular';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
-import {TSRueckforderungDokumentTyp} from '../../../models/enums/TSRueckforderungDokumentTyp';
-import {TSSprache} from '../../../models/enums/TSSprache';
 import {TSFerienbetreuungDokument} from '../../../models/gemeindeantrag/TSFerienbetreuungDokument';
 import {TSDokumentGrund} from '../../../models/TSDokumentGrund';
-import {TSRueckforderungDokument} from '../../../models/TSRueckforderungDokument';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 
 export class UploadRS {
@@ -33,13 +31,12 @@ export class UploadRS {
         'base64'
     ];
     public serviceURL: string;
-    private readonly NOT_SUCCESS = 'Upload File: NOT SUCCESS';
 
     public constructor(
         public http: IHttpService,
         REST_API: string,
         public log: ILogService,
-        private readonly upload: any,
+        private readonly upload: angular.angularFileUpload.IUploadService,
         public ebeguRestUtil: EbeguRestUtil,
         public q: IQService,
         private readonly base64: any
@@ -47,37 +44,44 @@ export class UploadRS {
         this.serviceURL = `${REST_API}upload`;
     }
 
+    private changeFilesNames(files: File[] | FileList): File[] {
+        // Convert FileList to an array if necessary, for example Luzern Ausweis Kopie upload
+        const fileArray: File[] = Array.isArray(files)
+            ? files
+            : Array.from(files);
+
+        return fileArray.map((file: File) => {
+            return this.changeSingleFileName(file);
+        });
+    }
+
+    private changeSingleFileName(file: File): File {
+        const encodedName = this.base64.encode(file.name);
+        return new File([file], encodedName, {type: file.type});
+    }
+
     public uploadFile(
-        files: any,
+        files: File[],
         dokumentGrund: TSDokumentGrund,
         gesuchID: string
     ): IPromise<TSDokumentGrund> {
-        let restDokumentGrund = {};
-        restDokumentGrund = this.ebeguRestUtil.dokumentGrundToRestObject(
-            restDokumentGrund,
+        const restDokumentGrund = this.ebeguRestUtil.dokumentGrundToRestObject(
+            {},
             dokumentGrund
         );
         const restDokumentString = this.upload.json(restDokumentGrund);
-
-        const names: string[] = [];
-        for (const file of files) {
-            if (file) {
-                const encodedFilename = this.base64.encode(file.name);
-                names.push(encodedFilename);
-            }
-        }
-
         return this.upload
             .upload({
-                url: this.serviceURL,
                 method: 'POST',
-                headers: {
-                    'x-filename': names.join(';'),
-                    'x-gesuchID': gesuchID
-                },
                 data: {
-                    file: files,
+                    file: this.changeFilesNames(files),
                     dokumentGrund: restDokumentString
+                },
+                url: this.serviceURL,
+                headers: {
+                    'x-gesuchID': gesuchID,
+                    'x-filename': this.encodeFileNames(files).join(';'),
+                    'Content-Type': 'multipart/form-data; charset=UTF-8'
                 }
             })
             .then(
@@ -87,40 +91,6 @@ export class UploadRS {
                         response.data
                     ),
                 (response: any) => {
-                    console.log(this.NOT_SUCCESS);
-                    return this.q.reject(response);
-                },
-                (evt: any) => {
-                    this.notifyCallbackByUpload(evt);
-                }
-            );
-    }
-
-    public uploadRueckforderungsDokumente(
-        files: any,
-        rueckforderungFormularId: string,
-        rueckforderungDokumentTyp: TSRueckforderungDokumentTyp
-    ): IPromise<TSRueckforderungDokument[]> {
-        const names = this.encodeFileNames(files);
-        const url = `${this.serviceURL}/uploadRueckforderungsDokument/${encodeURIComponent(rueckforderungFormularId)}/${rueckforderungDokumentTyp}`;
-        return this.upload
-            .upload({
-                url,
-                method: 'POST',
-                headers: {
-                    'x-filename': names.join(';')
-                },
-                data: {
-                    file: files
-                }
-            })
-            .then(
-                (response: any) =>
-                    this.ebeguRestUtil.parseRueckforderungDokumente(
-                        response.data
-                    ),
-                (response: any) => {
-                    console.log(this.NOT_SUCCESS);
                     return this.q.reject(response);
                 },
                 (evt: any) => {
@@ -134,6 +104,7 @@ export class UploadRS {
         ferienbetreuungContainerId: string
     ): IPromise<TSFerienbetreuungDokument[]> {
         const names = this.encodeFileNames(files);
+        const fileWithEncodedName = this.changeFilesNames(files);
         return this.upload
             .upload({
                 url: `${this.serviceURL}/ferienbetreuungDokumente/${encodeURIComponent(ferienbetreuungContainerId)}`,
@@ -142,7 +113,7 @@ export class UploadRS {
                     'x-filename': names.join(';')
                 },
                 data: {
-                    file: files
+                    file: fileWithEncodedName
                 }
             })
             .then(
@@ -151,7 +122,6 @@ export class UploadRS {
                         response.data
                     ),
                 (response: any) => {
-                    console.log(this.NOT_SUCCESS);
                     return this.q.reject(response);
                 },
                 (evt: any) => {
@@ -172,6 +142,7 @@ export class UploadRS {
     }
 
     public uploadZemisExcel(file: File): IPromise<void> {
+        const fileWithEncodedName = this.changeSingleFileName(file);
         return this.upload
             .upload({
                 url: `${this.serviceURL}/zemisExcel`,
@@ -180,13 +151,12 @@ export class UploadRS {
                     'x-filename': this.base64.encode(file.name)
                 },
                 data: {
-                    file
+                    file: fileWithEncodedName
                 }
             })
             .then(
                 (response: any) => response.data,
                 (response: any) => {
-                    console.log(this.NOT_SUCCESS);
                     return this.q.reject(response);
                 }
             );
@@ -198,18 +168,19 @@ export class UploadRS {
         periodeID: string,
         dokumentTyp: TSDokumentTyp
     ): IPromise<any> {
+        const fileWithEncodedName = this.changeSingleFileName(file);
+
         return this.upload
             .upload({
                 url: `${this.serviceURL}/gesuchsperiodeDokument/${sprache}/${periodeID}/${dokumentTyp}`,
                 method: 'POST',
                 data: {
-                    file
+                    file: fileWithEncodedName
                 }
             })
             .then(
                 (response: any) => response.data,
                 (response: any) => {
-                    console.log(this.NOT_SUCCESS);
                     return this.q.reject(response);
                 }
             );
@@ -222,6 +193,8 @@ export class UploadRS {
         periodeID: string,
         dokumentTyp: TSDokumentTyp
     ): IPromise<any> {
+        const fileWithEncodedName = this.changeSingleFileName(file);
+
         return this.upload
             .upload({
                 url: `${this.serviceURL}/gemeindeGesuchsperiodeDoku/${encodeURIComponent(gemeindeId)}/${encodeURIComponent(
@@ -229,22 +202,15 @@ export class UploadRS {
                 )}/${sprache}/${dokumentTyp}`,
                 method: 'POST',
                 data: {
-                    file
+                    file: fileWithEncodedName
                 }
             })
             .then(
                 (response: any) => response.data,
                 (response: any) => {
-                    console.log(
-                        'Upload Gesuchsperiode Gemeinde File: NOT SUCCESS'
-                    );
                     return this.q.reject(response);
                 }
             );
-    }
-
-    public getServiceName(): string {
-        return 'UploadRS';
     }
 
     public uploadVollmachtDokument(
@@ -252,14 +218,16 @@ export class UploadRS {
         fallId: string
     ): IPromise<any> {
         const encodedFilename = this.base64.encode(vollmacht.name);
+        const fileWithEncodedName = this.changeSingleFileName(vollmacht);
         return this.upload
             .upload({
+                method: 'POST',
                 url: `${this.serviceURL}/uploadSozialdienstFallsDokument/${encodeURIComponent(fallId)}`,
                 headers: {
                     'x-filename': encodedFilename
                 },
                 data: {
-                    file: vollmacht
+                    file: fileWithEncodedName
                 }
             })
             .then(

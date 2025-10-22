@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.enums.Ferienname;
 import ch.dvbern.ebegu.util.Constants;
@@ -70,7 +70,9 @@ public class JaxBelegungFerieninsel extends JaxAbstractDTO {
 		return tageMorgenmodul;
 	}
 
-	public void setTageMorgenmodul(List<JaxBelegungFerieninselTag> tageMorgenmodul) {
+	public void setTageMorgenmodul(
+		List<JaxBelegungFerieninselTag> tageMorgenmodul
+	) {
 		this.tageMorgenmodul = tageMorgenmodul;
 	}
 

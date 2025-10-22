@@ -15,30 +15,35 @@
 
 package ch.dvbern.ebegu.services;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.ErrorCodeEnum;
-import ch.dvbern.ebegu.enums.WizardStepName;
-import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
-import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
-import ch.dvbern.ebegu.services.famsitchangehandler.FamSitChangeHandler;
-import ch.dvbern.lib.cdipersistence.Persistence;
-
-import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+
+import ch.dvbern.ebegu.entities.Familiensituation;
+import ch.dvbern.ebegu.entities.FamiliensituationContainer;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.SozialhilfeZeitraumContainer;
+import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.WizardStepName;
+import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
+import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
+import ch.dvbern.ebegu.services.famsitchangehandler.FamSitChangeHandler;
 
 /**
  * Service fuer familiensituation
  */
 @Stateless
 @Local(FamiliensituationService.class)
-public class FamiliensituationServiceBean extends AbstractBaseService implements FamiliensituationService {
+public class FamiliensituationServiceBean extends AbstractBaseService implements
+	FamiliensituationService {
 
 	@Inject
 	private Persistence persistence;
@@ -52,74 +57,141 @@ public class FamiliensituationServiceBean extends AbstractBaseService implements
 	@Inject
 	private FamSitChangeHandler famSitChangeHandler;
 
-	@Override
-	public FamiliensituationContainer saveFamiliensituation(
-		Gesuch gesuch,
-		FamiliensituationContainer familiensituationContainer,
-		Familiensituation loadedFamiliensituation //OLD Familiensituation
-	) {
-		Objects.requireNonNull(familiensituationContainer);
-		Objects.requireNonNull(gesuch);
-
-		// Falls noch nicht vorhanden, werden die GemeinsameSteuererklaerung fuer FS und EV auf false gesetzt
-		Familiensituation newFamiliensituation = familiensituationContainer.extractFamiliensituation();
-		Objects.requireNonNull(newFamiliensituation);
-		famSitChangeHandler.adaptFinSitDataOnFamSitChange(gesuch, familiensituationContainer, loadedFamiliensituation);
-
-		final FamiliensituationContainer mergedFamiliensituationContainer = persistence.merge(familiensituationContainer);
-		gesuch.setFamiliensituationContainer(mergedFamiliensituationContainer);
-
-		// get old FamSit to compare with
-		Familiensituation oldFamiliensituation = getOldFamiliensituation(loadedFamiliensituation, mergedFamiliensituationContainer);
-
-		famSitChangeHandler.handleFamSitChangeAfterSave(gesuch, newFamiliensituation, mergedFamiliensituationContainer, oldFamiliensituation);
-
-		wizardStepService.updateSteps(gesuch.getId(), oldFamiliensituation, newFamiliensituation, WizardStepName
-			.FAMILIENSITUATION);
-		return mergedFamiliensituationContainer;
-	}
-
-	private static Familiensituation getOldFamiliensituation(
-		Familiensituation loadedFamiliensituation,
-		FamiliensituationContainer mergedFamiliensituationContainer) {
-		Familiensituation oldFamiliensituation;
-		if (mergedFamiliensituationContainer != null
-			&& mergedFamiliensituationContainer.getFamiliensituationErstgesuch() != null) {
-			// Bei Mutation immer die Situation vom Erstgesuch als  Basis fuer Wizardstepanpassung
-			oldFamiliensituation = mergedFamiliensituationContainer.getFamiliensituationErstgesuch();
-		} else {
-			oldFamiliensituation = loadedFamiliensituation;
-		}
-		return oldFamiliensituation;
-	}
-
-
-
 	@Nonnull
 	@Override
-	public Optional<FamiliensituationContainer> findFamiliensituation(@Nonnull String key) {
+	public Optional<FamiliensituationContainer> findFamiliensituation(
+		@Nonnull String key
+	) {
 		Objects.requireNonNull(key, "id muss gesetzt sein");
-		FamiliensituationContainer a = persistence.find(FamiliensituationContainer.class, key);
+		FamiliensituationContainer a = persistence.find(
+			FamiliensituationContainer.class,
+			key
+		);
 		return Optional.ofNullable(a);
 	}
 
 	@Nonnull
 	@Override
 	public Collection<FamiliensituationContainer> getAllFamiliensituatione() {
-		return new ArrayList<>(criteriaQueryHelper.getAll(FamiliensituationContainer.class));
+		return new ArrayList<>(
+			criteriaQueryHelper.getAll(FamiliensituationContainer.class)
+		);
 	}
 
 	@Override
-	public void removeFamiliensituation(@Nonnull FamiliensituationContainer familiensituation) {
+	public void removeFamiliensituation(
+		@Nonnull FamiliensituationContainer familiensituation
+	) {
 		Objects.requireNonNull(familiensituation);
 		FamiliensituationContainer familiensituationToRemove =
-			findFamiliensituation(familiensituation.getId()).orElseThrow(() -> new EbeguEntityNotFoundException(
-				"removeFall", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, familiensituation));
-		for (SozialhilfeZeitraumContainer sozialhilfeZeitraumCtn :
-			familiensituationToRemove.getSozialhilfeZeitraumContainers()) {
-			sozialhilfeZeitraumService.removeSozialhilfeZeitraum(sozialhilfeZeitraumCtn.getId());
+			findFamiliensituation(familiensituation.getId()).orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"removeFall",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					familiensituation
+				)
+			);
+		for (SozialhilfeZeitraumContainer sozialhilfeZeitraumCtn : familiensituationToRemove
+			.getSozialhilfeZeitraumContainers()) {
+			sozialhilfeZeitraumService.removeSozialhilfeZeitraum(
+				sozialhilfeZeitraumCtn.getId()
+			);
 		}
 		persistence.remove(familiensituationToRemove);
 	}
 
+	@Override
+	public FamiliensituationContainer saveFamiliensituationAndHandleChange(
+		Gesuch gesuch,
+		FamiliensituationContainer familiensituationContainer,
+		@Nullable Familiensituation loadedFamiliensituation
+	) {
+		return saveFamiliensituation(
+			gesuch,
+			familiensituationContainer,
+			loadedFamiliensituation,
+			true
+		);
+	}
+
+	@Override
+	public FamiliensituationContainer saveFamiliensituation(
+		Gesuch gesuch,
+		FamiliensituationContainer familiensituationContainer,
+		@Nullable Familiensituation loadedFamiliensituation
+	) {
+		return saveFamiliensituation(
+			gesuch,
+			familiensituationContainer,
+			loadedFamiliensituation,
+			false
+		);
+	}
+
+	private FamiliensituationContainer saveFamiliensituation(
+		Gesuch gesuch,
+		FamiliensituationContainer familiensituationContainer,
+		Familiensituation loadedFamiliensituation,
+		boolean handleChange
+	) {
+		Objects.requireNonNull(familiensituationContainer);
+		Objects.requireNonNull(gesuch);
+
+		// Falls noch nicht vorhanden, werden die GemeinsameSteuererklaerung fuer FS und EV auf false gesetzt
+		Familiensituation newFamiliensituation = familiensituationContainer
+			.extractFamiliensituation();
+		Objects.requireNonNull(newFamiliensituation);
+		if (handleChange) {
+			famSitChangeHandler.adaptFinSitDataOnFamSitChange(
+				gesuch,
+				familiensituationContainer,
+				loadedFamiliensituation
+			);
+		}
+
+		final FamiliensituationContainer mergedFamiliensituationContainer =
+			persistence.merge(familiensituationContainer);
+		gesuch.setFamiliensituationContainer(mergedFamiliensituationContainer);
+
+		// get FamSit Erst Antrag, it will be the same famsit if we are in the Erst Antrag
+		Familiensituation familiensituationErstgesuch =
+			getFamiliensituationErstgesuch(
+				loadedFamiliensituation,
+				mergedFamiliensituationContainer
+			);
+		if (handleChange) {
+			famSitChangeHandler.handleFamSitChangeAfterSave(
+				gesuch,
+				newFamiliensituation,
+				mergedFamiliensituationContainer,
+				familiensituationErstgesuch
+			);
+		}
+
+		wizardStepService.updateSteps(
+			gesuch.getId(),
+			familiensituationErstgesuch,
+			newFamiliensituation,
+			WizardStepName.FAMILIENSITUATION
+		);
+		return mergedFamiliensituationContainer;
+	}
+
+	private static Familiensituation getFamiliensituationErstgesuch(
+		Familiensituation loadedFamiliensituation,
+		FamiliensituationContainer mergedFamiliensituationContainer
+	) {
+		Familiensituation oldFamiliensituation;
+		if (mergedFamiliensituationContainer != null
+			&& mergedFamiliensituationContainer
+				.getFamiliensituationErstgesuch()
+				!= null) {
+			// Bei Mutation immer die Situation vom Erstgesuch als  Basis fuer Wizardstepanpassung
+			oldFamiliensituation = mergedFamiliensituationContainer
+				.getFamiliensituationErstgesuch();
+		} else {
+			oldFamiliensituation = loadedFamiliensituation;
+		}
+		return oldFamiliensituation;
+	}
 }

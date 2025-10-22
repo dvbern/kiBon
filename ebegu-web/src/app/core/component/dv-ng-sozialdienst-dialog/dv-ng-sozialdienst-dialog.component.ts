@@ -27,7 +27,8 @@ import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
  */
 @Component({
     selector: 'dv-ng-sozialdienst-dialog',
-    templateUrl: './dv-ng-sozialdienst-dialog.template.html'
+    templateUrl: './dv-ng-sozialdienst-dialog.template.html',
+    standalone: false
 })
 export class DvNgSozialdienstDialogComponent {
     public selectedSozialdienst: TSSozialdienst;

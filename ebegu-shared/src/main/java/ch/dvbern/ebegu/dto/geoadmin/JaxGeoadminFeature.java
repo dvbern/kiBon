@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,7 +42,8 @@ public class JaxGeoadminFeature implements Serializable {
 
 	@NotNull
 	@Nonnull
-	private JaxGeoadminFeatureAttributes attributes = new JaxGeoadminFeatureAttributes();
+	private JaxGeoadminFeatureAttributes attributes =
+		new JaxGeoadminFeatureAttributes();
 
 	@NotNull
 	@Nonnull
@@ -74,7 +75,9 @@ public class JaxGeoadminFeature implements Serializable {
 		return attributes;
 	}
 
-	public void setAttributes(@Nonnull JaxGeoadminFeatureAttributes attributes) {
+	public void setAttributes(
+		@Nonnull JaxGeoadminFeatureAttributes attributes
+	) {
 		this.attributes = attributes;
 	}
 

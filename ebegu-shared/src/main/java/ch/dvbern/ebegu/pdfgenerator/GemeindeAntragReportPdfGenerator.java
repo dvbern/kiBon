@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -31,7 +31,8 @@ import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.pdfgenerator.PdfGenerator.CustomGenerator;
 import ch.dvbern.lib.invoicegenerator.errors.InvoiceGeneratorException;
 
-public abstract class GemeindeAntragReportPdfGenerator extends MandantPdfGenerator {
+public abstract class GemeindeAntragReportPdfGenerator extends
+	MandantPdfGenerator {
 
 	protected static final float TABLE_SPACING_AFTER = 20;
 	protected static final float SUB_HEADER_SPACING_AFTER = 10;
@@ -40,8 +41,8 @@ public abstract class GemeindeAntragReportPdfGenerator extends MandantPdfGenerat
 	private NoAdressPdfGenerator pdfGenerator;
 
 	public GemeindeAntragReportPdfGenerator(
-			@Nonnull GemeindeAntrag gemeindeAntrag,
-			@Nonnull Sprache sprache
+		@Nonnull GemeindeAntrag gemeindeAntrag,
+		@Nonnull Sprache sprache
 	) {
 		super(sprache, gemeindeAntrag.getGemeinde().getMandant());
 		this.locale = sprache.getLocale();
@@ -50,7 +51,7 @@ public abstract class GemeindeAntragReportPdfGenerator extends MandantPdfGenerat
 
 	private void initGenerator() {
 		this.pdfGenerator =
-				NoAdressPdfGenerator.create();
+			NoAdressPdfGenerator.create();
 	}
 
 	@Override
@@ -64,8 +65,14 @@ public abstract class GemeindeAntragReportPdfGenerator extends MandantPdfGenerat
 	}
 
 	@Override
-	public void generate(@Nonnull final OutputStream outputStream) throws InvoiceGeneratorException {
-		getPdfGenerator().generate(outputStream, getDocumentTitle(), getEmpfaengerAdresse(), getCustomGenerator());
+	public void generate(@Nonnull final OutputStream outputStream)
+		throws InvoiceGeneratorException {
+		getPdfGenerator().generate(
+			outputStream,
+			getDocumentTitle(),
+			getEmpfaengerAdresse(),
+			getCustomGenerator()
+		);
 	}
 
 	@Override
@@ -94,7 +101,6 @@ public abstract class GemeindeAntragReportPdfGenerator extends MandantPdfGenerat
 		return value == null ? null : value.intValue();
 	}
 
-
 	@Nonnull
 	protected final List<String> getAbsenderAdresse() {
 		List<String> absender = new ArrayList<>();
@@ -106,7 +112,7 @@ public abstract class GemeindeAntragReportPdfGenerator extends MandantPdfGenerat
 	@Nonnull
 	protected List<String> getGemeindeAdresse() {
 		List<String> gemeindeHeader = Arrays.asList(
-				""
+			""
 		);
 		return gemeindeHeader;
 	}
@@ -114,8 +120,8 @@ public abstract class GemeindeAntragReportPdfGenerator extends MandantPdfGenerat
 	@Nonnull
 	protected List<String> getGemeindeKontaktdaten() {
 		return Arrays.asList(
-				"",
-				""
+			"",
+			""
 		);
 	}
 }

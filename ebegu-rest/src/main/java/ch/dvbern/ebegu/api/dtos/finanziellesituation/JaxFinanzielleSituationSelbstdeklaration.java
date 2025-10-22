@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.finanziellesituation;
@@ -20,8 +20,8 @@ package ch.dvbern.ebegu.api.dtos.finanziellesituation;
 import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 
@@ -107,7 +107,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return einkunftVersicherung;
 	}
 
-	public void setEinkunftVersicherung(@Nullable BigDecimal einkunftVersicherung) {
+	public void setEinkunftVersicherung(
+		@Nullable BigDecimal einkunftVersicherung
+	) {
 		this.einkunftVersicherung = einkunftVersicherung;
 	}
 
@@ -116,7 +118,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return einkunftWertschriften;
 	}
 
-	public void setEinkunftWertschriften(@Nullable BigDecimal einkunftWertschriften) {
+	public void setEinkunftWertschriften(
+		@Nullable BigDecimal einkunftWertschriften
+	) {
 		this.einkunftWertschriften = einkunftWertschriften;
 	}
 
@@ -125,7 +129,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return einkunftUnterhaltsbeitragKinder;
 	}
 
-	public void setEinkunftUnterhaltsbeitragKinder(@Nullable BigDecimal einkunftUnterhaltsbeitragKinder) {
+	public void setEinkunftUnterhaltsbeitragKinder(
+		@Nullable BigDecimal einkunftUnterhaltsbeitragKinder
+	) {
 		this.einkunftUnterhaltsbeitragKinder = einkunftUnterhaltsbeitragKinder;
 	}
 
@@ -143,7 +149,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return einkunftLiegenschaften;
 	}
 
-	public void setEinkunftLiegenschaften(@Nullable BigDecimal einkunftLiegenschaften) {
+	public void setEinkunftLiegenschaften(
+		@Nullable BigDecimal einkunftLiegenschaften
+	) {
 		this.einkunftLiegenschaften = einkunftLiegenschaften;
 	}
 
@@ -152,7 +160,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugBerufsauslagen;
 	}
 
-	public void setAbzugBerufsauslagen(@Nullable BigDecimal abzugBerufsauslagen) {
+	public void setAbzugBerufsauslagen(
+		@Nullable BigDecimal abzugBerufsauslagen
+	) {
 		this.abzugBerufsauslagen = abzugBerufsauslagen;
 	}
 
@@ -170,7 +180,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugUnterhaltsbeitragKinder;
 	}
 
-	public void setAbzugUnterhaltsbeitragKinder(@Nullable BigDecimal abzugUnterhaltsbeitragKinder) {
+	public void setAbzugUnterhaltsbeitragKinder(
+		@Nullable BigDecimal abzugUnterhaltsbeitragKinder
+	) {
 		this.abzugUnterhaltsbeitragKinder = abzugUnterhaltsbeitragKinder;
 	}
 
@@ -188,7 +200,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugVersicherungspraemien;
 	}
 
-	public void setAbzugVersicherungspraemien(@Nullable BigDecimal abzugVersicherungspraemien) {
+	public void setAbzugVersicherungspraemien(
+		@Nullable BigDecimal abzugVersicherungspraemien
+	) {
 		this.abzugVersicherungspraemien = abzugVersicherungspraemien;
 	}
 
@@ -197,7 +211,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugKrankheitsUnfallKosten;
 	}
 
-	public void setAbzugKrankheitsUnfallKosten(@Nullable BigDecimal abzugKrankheitsUnfallKosten) {
+	public void setAbzugKrankheitsUnfallKosten(
+		@Nullable BigDecimal abzugKrankheitsUnfallKosten
+	) {
 		this.abzugKrankheitsUnfallKosten = abzugKrankheitsUnfallKosten;
 	}
 
@@ -206,8 +222,11 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return sonderabzugErwerbstaetigkeitEhegatten;
 	}
 
-	public void setSonderabzugErwerbstaetigkeitEhegatten(@Nullable BigDecimal sonderabzugErwerbstaetigkeitEhegatten) {
-		this.sonderabzugErwerbstaetigkeitEhegatten = sonderabzugErwerbstaetigkeitEhegatten;
+	public void setSonderabzugErwerbstaetigkeitEhegatten(
+		@Nullable BigDecimal sonderabzugErwerbstaetigkeitEhegatten
+	) {
+		this.sonderabzugErwerbstaetigkeitEhegatten =
+			sonderabzugErwerbstaetigkeitEhegatten;
 	}
 
 	@Nullable
@@ -215,7 +234,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugKinderVorschule;
 	}
 
-	public void setAbzugKinderVorschule(@Nullable BigDecimal abzugKinderVorschule) {
+	public void setAbzugKinderVorschule(
+		@Nullable BigDecimal abzugKinderVorschule
+	) {
 		this.abzugKinderVorschule = abzugKinderVorschule;
 	}
 
@@ -233,7 +254,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugEigenbetreuung;
 	}
 
-	public void setAbzugEigenbetreuung(@Nullable BigDecimal abzugEigenbetreuung) {
+	public void setAbzugEigenbetreuung(
+		@Nullable BigDecimal abzugEigenbetreuung
+	) {
 		this.abzugEigenbetreuung = abzugEigenbetreuung;
 	}
 
@@ -242,7 +265,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugFremdbetreuung;
 	}
 
-	public void setAbzugFremdbetreuung(@Nullable BigDecimal abzugFremdbetreuung) {
+	public void setAbzugFremdbetreuung(
+		@Nullable BigDecimal abzugFremdbetreuung
+	) {
 		this.abzugFremdbetreuung = abzugFremdbetreuung;
 	}
 
@@ -251,7 +276,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugErwerbsunfaehigePersonen;
 	}
 
-	public void setAbzugErwerbsunfaehigePersonen(@Nullable BigDecimal abzugErwerbsunfaehigePersonen) {
+	public void setAbzugErwerbsunfaehigePersonen(
+		@Nullable BigDecimal abzugErwerbsunfaehigePersonen
+	) {
 		this.abzugErwerbsunfaehigePersonen = abzugErwerbsunfaehigePersonen;
 	}
 
@@ -269,8 +296,11 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugSteuerfreierBetragErwachsene;
 	}
 
-	public void setAbzugSteuerfreierBetragErwachsene(@Nullable BigDecimal abzugSteuerfreierBetragErwachsene) {
-		this.abzugSteuerfreierBetragErwachsene = abzugSteuerfreierBetragErwachsene;
+	public void setAbzugSteuerfreierBetragErwachsene(
+		@Nullable BigDecimal abzugSteuerfreierBetragErwachsene
+	) {
+		this.abzugSteuerfreierBetragErwachsene =
+			abzugSteuerfreierBetragErwachsene;
 	}
 
 	@Nullable
@@ -278,7 +308,9 @@ public class JaxFinanzielleSituationSelbstdeklaration extends JaxAbstractDTO {
 		return abzugSteuerfreierBetragKinder;
 	}
 
-	public void setAbzugSteuerfreierBetragKinder(@Nullable BigDecimal abzugSteuerfreierBetragKinder) {
+	public void setAbzugSteuerfreierBetragKinder(
+		@Nullable BigDecimal abzugSteuerfreierBetragKinder
+	) {
 		this.abzugSteuerfreierBetragKinder = abzugSteuerfreierBetragKinder;
 	}
 }

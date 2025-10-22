@@ -20,12 +20,12 @@ package ch.dvbern.ebegu.api.dtos.gemeindeantrag;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.api.dtos.JaxFile;
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JaxFerienbetreuungDokument extends JaxFile {
@@ -33,7 +33,7 @@ public class JaxFerienbetreuungDokument extends JaxFile {
 	private static final long serialVersionUID = 1305872888106857238L;
 
 	@Nonnull
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime timestampUpload;
 
 	@Nonnull

@@ -27,6 +27,17 @@ export class TSAbstractMahlzeitenPensum extends TSAbstractDecimalPensumEntity {
         super();
     }
 
+    public override deepCopyTo(
+        target: TSAbstractMahlzeitenPensum
+    ): TSAbstractMahlzeitenPensum {
+        super.deepCopyTo(target);
+        target.monatlicheHauptmahlzeiten = this.monatlicheHauptmahlzeiten;
+        target.monatlicheNebenmahlzeiten = this.monatlicheNebenmahlzeiten;
+        target.tarifProHauptmahlzeit = this.tarifProHauptmahlzeit;
+        target.tarifProNebenmahlzeit = this.tarifProNebenmahlzeit;
+        return target;
+    }
+
     public get monatlicheHauptmahlzeiten(): number {
         return this._monatlicheHauptmahlzeiten;
     }

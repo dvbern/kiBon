@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
@@ -23,9 +23,12 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
-import javax.validation.Validator;
+import jakarta.validation.Validator;
 
 import ch.dvbern.ebegu.betreuung.BetreuungEinstellungen;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractBetreuungsPensum;
 import ch.dvbern.ebegu.entities.AbstractMahlzeitenPensum;
 import ch.dvbern.ebegu.entities.Betreuung;
@@ -33,17 +36,15 @@ import ch.dvbern.ebegu.entities.BetreuungsmitteilungPensum;
 import ch.dvbern.ebegu.entities.Betreuungspensum;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
 import ch.dvbern.ebegu.entities.Eingewoehnung;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.containers.PensumUtil;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.EingewoehnungTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.PensumUnits;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.inbox.handler.ProcessingContext;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.kibon.exchange.commons.platzbestaetigung.EingewoehnungDTO;
 import ch.dvbern.kibon.exchange.commons.platzbestaetigung.ZeitabschnittDTO;
 import com.spotify.hamcrest.pojo.IsPojo;
@@ -55,7 +56,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static ch.dvbern.ebegu.enums.EinstellungKey.EINGEWOEHNUNG_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.EINGEWOEHNUNG_TYP;
 import static ch.dvbern.ebegu.inbox.handler.PlatzbestaetigungTestUtil.createZeitabschnittDTO;
 import static ch.dvbern.ebegu.inbox.handler.PlatzbestaetigungTestUtil.initProcessingContext;
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
@@ -84,7 +85,8 @@ class PensumMapperFactoryTest extends EasyMockSupport {
 		// EinstellungMock is initialized too late when trying to do field initializers instead.
 		factory = new PensumMapperFactory(
 			new PensumValueMapperFactory(einstellungService),
-			new EingewoehnungMapperFactory(einstellungService, validator)
+			new EingewoehnungMapperFactory(einstellungService, validator),
+			einstellungService
 		);
 	}
 
@@ -95,12 +97,17 @@ class PensumMapperFactoryTest extends EasyMockSupport {
 
 	@Test
 	void importHauptMahlzeitenWhenBetreuungsAngebotMittagstisch() {
-		ZeitabschnittDTO z = createZeitabschnittDTO(Constants.DEFAULT_GUELTIGKEIT);
+		ZeitabschnittDTO z = createZeitabschnittDTO(
+			Constants.DEFAULT_GUELTIGKEIT
+		);
 		z.setAnzahlHauptmahlzeiten(BigDecimal.valueOf(4));
 		z.setTarifProHauptmahlzeiten(BigDecimal.valueOf(12.25));
 		z.setAnzahlNebenmahlzeiten(BigDecimal.TEN);
 
-		ProcessingContext ctx = initProcessingContext(z, BetreuungEinstellungen.builder().build());
+		ProcessingContext ctx = initProcessingContext(
+			z,
+			BetreuungEinstellungen.builder().build()
+		);
 
 		BigDecimal monatlicheHauptmahlzeiten = BigDecimal.valueOf(5);
 		BigDecimal tarifProHauptmahlzeit = BigDecimal.valueOf(10.5);
@@ -108,24 +115,76 @@ class PensumMapperFactoryTest extends EasyMockSupport {
 		Betreuung betreuung = ctx.getBetreuung();
 
 		// setup a MITTAGSTISCH
-		betreuung.getInstitutionStammdaten().setBetreuungsangebotTyp(BetreuungsangebotTyp.MITTAGSTISCH);
-		BetreuungspensumContainer container = betreuung.getBetreuungspensumContainers().iterator().next();
-		Betreuungspensum betreuungspensum = requireNonNull(container.getBetreuungspensumJA());
-		betreuungspensum.setMonatlicheHauptmahlzeiten(monatlicheHauptmahlzeiten);
+		betreuung.getInstitutionStammdaten()
+			.setBetreuungsangebotTyp(BetreuungsangebotTyp.MITTAGSTISCH);
+		BetreuungspensumContainer container = betreuung
+			.getBetreuungspensumContainers()
+			.iterator()
+			.next();
+		Betreuungspensum betreuungspensum = requireNonNull(
+			container.getBetreuungspensumJA()
+		);
+		betreuungspensum.setMonatlicheHauptmahlzeiten(
+			monatlicheHauptmahlzeiten
+		);
 		betreuungspensum.setTarifProHauptmahlzeit(tarifProHauptmahlzeit);
-		PensumUtil.transformMittagstischPensum(betreuungspensum);
+		PensumUtil.transformMittagstischPensum(
+			betreuungspensum,
+			BigDecimal.valueOf(246)
+		);
+		expect(
+			einstellungService.getEinstellungAsBigDecimal(
+				anyObject(),
+				anyObject()
+			)
+		)
+			.andReturn(
+				BigDecimal.valueOf(246)
+			);
 
 		replayAll();
-		PensumMapper<BetreuungsmitteilungPensum> pensumMapper = factory.createPensumMapper(ctx);
-		BetreuungsmitteilungPensum actual = convert(pensumMapper, z, BetreuungsmitteilungPensum::new);
+		PensumMapper<BetreuungsmitteilungPensum> pensumMapper = factory
+			.createPensumMapper(ctx);
+		BetreuungsmitteilungPensum actual = convert(
+			pensumMapper,
+			z,
+			BetreuungsmitteilungPensum::new
+		);
 
-		assertThat(actual, pojo(AbstractMahlzeitenPensum.class)
-			.where(AbstractMahlzeitenPensum::getMonatlicheHauptmahlzeiten, comparesEqualTo(BigDecimal.valueOf(4)))
-			.where(AbstractMahlzeitenPensum::getMonatlicheNebenmahlzeiten, comparesEqualTo(BigDecimal.ZERO))
-			.where(AbstractMahlzeitenPensum::getTarifProHauptmahlzeit, comparesEqualTo(BigDecimal.valueOf(12.25)))
-			.where(AbstractMahlzeitenPensum::getTarifProNebenmahlzeit, comparesEqualTo(BigDecimal.ZERO))
-			.where(AbstractMahlzeitenPensum::getPensum, closeTo(BigDecimal.valueOf(4 * 100 / 20.5), BigDecimal.valueOf(1.0e-8)))
-			.where(AbstractMahlzeitenPensum::getMonatlicheBetreuungskosten, comparesEqualTo(BigDecimal.valueOf(4 * 12.25))));
+		assertThat(
+			actual,
+			pojo(AbstractMahlzeitenPensum.class)
+				.where(
+					AbstractMahlzeitenPensum::getMonatlicheHauptmahlzeiten,
+					comparesEqualTo(BigDecimal.valueOf(4))
+				)
+				.where(
+					AbstractMahlzeitenPensum::getMonatlicheNebenmahlzeiten,
+					comparesEqualTo(BigDecimal.ZERO)
+				)
+				.where(
+					AbstractMahlzeitenPensum::getTarifProHauptmahlzeit,
+					comparesEqualTo(BigDecimal.valueOf(12.25))
+				)
+				.where(
+					AbstractMahlzeitenPensum::getTarifProNebenmahlzeit,
+					comparesEqualTo(BigDecimal.ZERO)
+				)
+				.where(
+					AbstractMahlzeitenPensum::getPensum,
+					closeTo(
+						MathUtil.EXACT.divide(
+							BigDecimal.valueOf(4),
+							BigDecimal.valueOf(0.6833333333)
+						),
+						BigDecimal.valueOf(1.0e-8)
+					)
+				)
+				.where(
+					AbstractMahlzeitenPensum::getMonatlicheBetreuungskosten,
+					comparesEqualTo(BigDecimal.valueOf(4 * 12.25))
+				)
+		);
 	}
 
 	@Test
@@ -135,8 +194,14 @@ class PensumMapperFactoryTest extends EasyMockSupport {
 		permissiveMocks();
 		replayAll();
 		PensumMapper<BetreuungsmitteilungPensum> pensumMapper =
-			factory.createPensumMapper(initProcessingContext(z, betreuungEinstellungen()));
-		BetreuungsmitteilungPensum actual = convert(pensumMapper, z, BetreuungsmitteilungPensum::new);
+			factory.createPensumMapper(
+				initProcessingContext(z, betreuungEinstellungen())
+			);
+		BetreuungsmitteilungPensum actual = convert(
+			pensumMapper,
+			z,
+			BetreuungsmitteilungPensum::new
+		);
 
 		assertThat(actual, matches(z));
 	}
@@ -147,8 +212,14 @@ class PensumMapperFactoryTest extends EasyMockSupport {
 
 		permissiveMocks();
 		replayAll();
-		var forPlatzbestaetigung = factory.createForPlatzbestaetigung(initProcessingContext(z, betreuungEinstellungen()));
-		Betreuungspensum actual = convert(forPlatzbestaetigung, z, Betreuungspensum::new);
+		var forPlatzbestaetigung = factory.createForPlatzbestaetigung(
+			initProcessingContext(z, betreuungEinstellungen())
+		);
+		Betreuungspensum actual = convert(
+			forPlatzbestaetigung,
+			z,
+			Betreuungspensum::new
+		);
 
 		assertThat(actual, matches(z));
 	}
@@ -159,8 +230,14 @@ class PensumMapperFactoryTest extends EasyMockSupport {
 
 		permissiveMocks();
 		replayAll();
-		var pensumMapper = factory.createForBetreuungsmitteilung(initProcessingContext(z, betreuungEinstellungen()));
-		BetreuungsmitteilungPensum actual = convert(pensumMapper, z, BetreuungsmitteilungPensum::new);
+		var pensumMapper = factory.createForBetreuungsmitteilung(
+			initProcessingContext(z, betreuungEinstellungen())
+		);
+		BetreuungsmitteilungPensum actual = convert(
+			pensumMapper,
+			z,
+			BetreuungsmitteilungPensum::new
+		);
 
 		assertThat(actual, matches(z));
 	}
@@ -187,54 +264,136 @@ class PensumMapperFactoryTest extends EasyMockSupport {
 
 	@Nonnull
 	private ZeitabschnittDTO createZeitabschnitt() {
-		ZeitabschnittDTO z = createZeitabschnittDTO(Constants.DEFAULT_GUELTIGKEIT);
+		ZeitabschnittDTO z = createZeitabschnittDTO(
+			Constants.DEFAULT_GUELTIGKEIT
+		);
 		z.setAnzahlHauptmahlzeiten(BigDecimal.valueOf(4));
 		z.setTarifProHauptmahlzeiten(BigDecimal.valueOf(12.25));
 		z.setAnzahlNebenmahlzeiten(BigDecimal.TEN);
 		z.setTarifProNebenmahlzeiten(BigDecimal.valueOf(9.5));
 		z.setBetreuungInFerienzeit(false);
-		z.setEingewoehnung(new EingewoehnungDTO(BigDecimal.valueOf(400), LocalDate.of(2024, 1, 10), LocalDate.of(2024, 1, 12)));
+		z.setEingewoehnung(
+			new EingewoehnungDTO(
+				BigDecimal.valueOf(400),
+				LocalDate.of(2024, 1, 10),
+				LocalDate.of(2024, 1, 12)
+			)
+		);
 
 		return z;
 	}
 
 	private IsPojo<AbstractBetreuungsPensum> matches(ZeitabschnittDTO z) {
 		return pojo(AbstractBetreuungsPensum.class)
-			.where(AbstractBetreuungsPensum::getGueltigkeit, pojo(DateRange.class)
-				.where(DateRange::getGueltigAb, is(z.getVon()))
-				.where(DateRange::getGueltigBis, is(z.getBis()))
+			.where(
+				AbstractBetreuungsPensum::getGueltigkeit,
+				pojo(DateRange.class)
+					.where(DateRange::getGueltigAb, is(z.getVon()))
+					.where(DateRange::getGueltigBis, is(z.getBis()))
 			)
-			.where(AbstractBetreuungsPensum::getPensum, comparesEqualTo(z.getBetreuungspensum()))
-			.where(AbstractBetreuungsPensum::getUnitForDisplay, is(PensumUnits.valueOf(z.getPensumUnit().name())))
-			.where(AbstractBetreuungsPensum::getMonatlicheBetreuungskosten, comparesEqualTo(z.getBetreuungskosten()))
-			.where(AbstractBetreuungsPensum::getEingewoehnung, pojo(Eingewoehnung.class)
-				.where(Eingewoehnung::getKosten, comparesEqualTo(z.getEingewoehnung().getKosten()))
-				.where(Eingewoehnung::getGueltigkeit, pojo(DateRange.class)
-					.where(DateRange::getGueltigAb, is(z.getEingewoehnung().getVon()))
-					.where(DateRange::getGueltigBis, is(z.getEingewoehnung().getBis()))
-				))
-			.where(AbstractBetreuungsPensum::getMonatlicheHauptmahlzeiten, comparesEqualTo(z.getAnzahlHauptmahlzeiten()))
-			.where(AbstractBetreuungsPensum::getMonatlicheNebenmahlzeiten, comparesEqualTo(z.getAnzahlNebenmahlzeiten()))
-			.where(AbstractBetreuungsPensum::getTarifProHauptmahlzeit, comparesEqualTo(z.getTarifProHauptmahlzeiten()))
-			.where(AbstractBetreuungsPensum::getTarifProNebenmahlzeit, comparesEqualTo(z.getTarifProNebenmahlzeiten()))
-			.where(AbstractBetreuungsPensum::getBetreuungInFerienzeit, comparesEqualTo(z.getBetreuungInFerienzeit()));
+			.where(
+				AbstractBetreuungsPensum::getPensum,
+				comparesEqualTo(z.getBetreuungspensum())
+			)
+			.where(
+				AbstractBetreuungsPensum::getUnitForDisplay,
+				is(PensumUnits.valueOf(z.getPensumUnit().name()))
+			)
+			.where(
+				AbstractBetreuungsPensum::getMonatlicheBetreuungskosten,
+				comparesEqualTo(z.getBetreuungskosten())
+			)
+			.where(
+				AbstractBetreuungsPensum::getEingewoehnung,
+				pojo(Eingewoehnung.class)
+					.where(
+						Eingewoehnung::getKosten,
+						comparesEqualTo(
+							z.getEingewoehnung().getKosten()
+						)
+					)
+					.where(
+						Eingewoehnung::getGueltigkeit,
+						pojo(DateRange.class)
+							.where(
+								DateRange::getGueltigAb,
+								is(
+									z.getEingewoehnung()
+										.getVon()
+								)
+							)
+							.where(
+								DateRange::getGueltigBis,
+								is(
+									z.getEingewoehnung()
+										.getBis()
+								)
+							)
+					)
+			)
+			.where(
+				AbstractBetreuungsPensum::getMonatlicheHauptmahlzeiten,
+				comparesEqualTo(z.getAnzahlHauptmahlzeiten())
+			)
+			.where(
+				AbstractBetreuungsPensum::getMonatlicheNebenmahlzeiten,
+				comparesEqualTo(z.getAnzahlNebenmahlzeiten())
+			)
+			.where(
+				AbstractBetreuungsPensum::getTarifProHauptmahlzeit,
+				comparesEqualTo(z.getTarifProHauptmahlzeiten())
+			)
+			.where(
+				AbstractBetreuungsPensum::getTarifProNebenmahlzeit,
+				comparesEqualTo(z.getTarifProNebenmahlzeiten())
+			)
+			.where(
+				AbstractBetreuungsPensum::getBetreuungInFerienzeit,
+				comparesEqualTo(z.getBetreuungInFerienzeit())
+			);
 	}
 
 	private void permissiveMocks() {
-		expect(einstellungService.getEinstellungAsBigDecimal(eq(EinstellungKey.OEFFNUNGSTAGE_KITA), anyObject()))
+		expect(
+			einstellungService.getEinstellungAsBigDecimal(
+				eq(EinstellungKey.OEFFNUNGSTAGE_KITA),
+				anyObject()
+			)
+		)
 			.andReturn(BigDecimal.valueOf(240))
 			.anyTimes();
 
-		expect(einstellungService.getEinstellungAsBigDecimal(eq(EinstellungKey.OEFFNUNGSTAGE_TFO), anyObject()))
+		expect(
+			einstellungService.getEinstellungAsBigDecimal(
+				eq(EinstellungKey.OEFFNUNGSTAGE_TFO),
+				anyObject()
+			)
+		)
 			.andReturn(BigDecimal.valueOf(240))
 			.anyTimes();
 
-		expect(einstellungService.getEinstellungAsBigDecimal(eq(EinstellungKey.OEFFNUNGSSTUNDEN_TFO), anyObject()))
+		expect(
+			einstellungService.getEinstellungAsBigDecimal(
+				eq(EinstellungKey.OEFFNUNGSSTUNDEN_TFO),
+				anyObject()
+			)
+		)
 			.andReturn(BigDecimal.valueOf(11))
 			.anyTimes();
 
-		expect(einstellungService.findEinstellung(eq(EINGEWOEHNUNG_TYP), anyObject()))
-			.andReturn(new Einstellung(EINGEWOEHNUNG_TYP, EingewoehnungTyp.PAUSCHALE.name(), mock(Gesuchsperiode.class)))
+		expect(
+			einstellungService.findEinstellung(
+				eq(EINGEWOEHNUNG_TYP),
+				anyObject()
+			)
+		)
+			.andReturn(
+				new Einstellung(
+					EINGEWOEHNUNG_TYP,
+					EingewoehnungTyp.PAUSCHALE.name(),
+					mock(Gesuchsperiode.class)
+				)
+			)
 			.anyTimes();
 
 		expect(validator.validate(anyObject()))

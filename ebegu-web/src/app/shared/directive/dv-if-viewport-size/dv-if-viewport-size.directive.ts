@@ -26,7 +26,8 @@ const config = {
 };
 
 @Directive({
-    selector: '[dvIfViewportSize]'
+    selector: '[dvIfViewportSize]',
+    standalone: false
 })
 export class DvIfViewportSizeDirective implements OnDestroy {
     private subscription = new Subscription();

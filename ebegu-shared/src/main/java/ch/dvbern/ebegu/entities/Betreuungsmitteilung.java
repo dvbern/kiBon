@@ -22,11 +22,11 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
-import javax.validation.Valid;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
+import jakarta.validation.Valid;
 
 import ch.dvbern.ebegu.entities.containers.BetreuungAndPensumContainer;
 import ch.dvbern.ebegu.validators.betreuungspensum.CheckBetreuungsmitteilung;
@@ -46,12 +46,15 @@ import org.hibernate.envers.Audited;
 @CheckBetreuungZeitraumInstitutionsStammdatenZeitraum
 @Audited
 @Entity
-public class Betreuungsmitteilung extends Mitteilung implements BetreuungAndPensumContainer {
+public class Betreuungsmitteilung extends Mitteilung implements
+	BetreuungAndPensumContainer {
 
 	private static final long serialVersionUID = 489324250868016126L;
 
 	@Valid
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "betreuungsmitteilung")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "betreuungsmitteilung")
 	private Set<BetreuungsmitteilungPensum> betreuungspensen = new TreeSet<>();
 
 	private boolean applied;
@@ -85,7 +88,9 @@ public class Betreuungsmitteilung extends Mitteilung implements BetreuungAndPens
 		return betreuungspensen;
 	}
 
-	public void setBetreuungspensen(Set<BetreuungsmitteilungPensum> betreuungspensen) {
+	public void setBetreuungspensen(
+		Set<BetreuungsmitteilungPensum> betreuungspensen
+	) {
 		this.betreuungspensen = betreuungspensen;
 	}
 
@@ -120,7 +125,8 @@ public class Betreuungsmitteilung extends Mitteilung implements BetreuungAndPens
 		if (!super.isSame(other)) {
 			return false;
 		}
-		final Betreuungsmitteilung otherBetreuungsmitteilung = (Betreuungsmitteilung) other;
+		final Betreuungsmitteilung otherBetreuungsmitteilung =
+			(Betreuungsmitteilung) other;
 		return isApplied() == otherBetreuungsmitteilung.isApplied();
 	}
 
@@ -128,7 +134,7 @@ public class Betreuungsmitteilung extends Mitteilung implements BetreuungAndPens
 		return betreuungStornieren;
 	}
 
-	public void setBetreuungStornieren(@Nonnull boolean betreuungStornieren) {
+	public void setBetreuungStornieren(boolean betreuungStornieren) {
 		this.betreuungStornieren = betreuungStornieren;
 	}
 }

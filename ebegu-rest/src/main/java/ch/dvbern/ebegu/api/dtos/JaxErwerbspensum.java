@@ -16,11 +16,11 @@
 package ch.dvbern.ebegu.api.dtos;
 
 import javax.annotation.Nullable;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.enums.Taetigkeit;
 
@@ -51,7 +51,6 @@ public class JaxErwerbspensum extends JaxAbstractIntegerPensumDTO {
 	@Nullable
 	private String wegzeit;
 
-
 	public Taetigkeit getTaetigkeit() {
 		return taetigkeit;
 	}
@@ -74,7 +73,9 @@ public class JaxErwerbspensum extends JaxAbstractIntegerPensumDTO {
 		return unbezahlterUrlaub;
 	}
 
-	public void setUnbezahlterUrlaub(@Nullable JaxUnbezahlterUrlaub unbezahlterUrlaub) {
+	public void setUnbezahlterUrlaub(
+		@Nullable JaxUnbezahlterUrlaub unbezahlterUrlaub
+	) {
 		this.unbezahlterUrlaub = unbezahlterUrlaub;
 	}
 
@@ -83,7 +84,9 @@ public class JaxErwerbspensum extends JaxAbstractIntegerPensumDTO {
 		return unregelmaessigeArbeitszeiten;
 	}
 
-	public void setUnregelmaessigeArbeitszeiten(@Nullable Boolean unregelmaessigeArbeitszeiten) {
+	public void setUnregelmaessigeArbeitszeiten(
+		@Nullable Boolean unregelmaessigeArbeitszeiten
+	) {
 		this.unregelmaessigeArbeitszeiten = unregelmaessigeArbeitszeiten;
 	}
 
@@ -92,7 +95,9 @@ public class JaxErwerbspensum extends JaxAbstractIntegerPensumDTO {
 		return erwerbspensumInstitution;
 	}
 
-	public void setErwerbspensumInstitution(@Nullable String erwerbspensumInstitution) {
+	public void setErwerbspensumInstitution(
+		@Nullable String erwerbspensumInstitution
+	) {
 		this.erwerbspensumInstitution = erwerbspensumInstitution;
 	}
 

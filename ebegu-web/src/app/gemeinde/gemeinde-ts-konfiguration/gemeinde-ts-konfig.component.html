@@ -185,8 +185,8 @@
                                             {{
                                                 'TAGESSCHULE_TAGIS_ENABLED'
                                                     | translate
-                                            }}</mat-checkbox
-                                        >
+                                            }}
+                                        </mat-checkbox>
                                     </div>
 
                                     <div class="form-group">
@@ -221,76 +221,40 @@
                                         </mat-checkbox>
                                     </div>
 
-                                    <label
-                                        class="required"
-                                        translate
-                                        for="tsAktivierungsdatum_{{ i }}"
-                                        >TAGESSCHULE_AKTIVIERUNGSDATUM</label
-                                    >
-                                    <input
-                                        class="dv-mat-datepicker"
-                                        type="text"
-                                        name="tsAktivierungsdatum"
+                                    <dv-date-picker-x
                                         id="tsAktivierungsdatum_{{ i }}"
-                                        [(ngModel)]="
+                                        [label]="
+                                            'TAGESSCHULE_AKTIVIERUNGSDATUM'
+                                        "
+                                        [(date)]="
                                             konfigurationsListe[i]
                                                 .konfigTagesschuleAktivierungsdatum
                                         "
-                                        [matDatepicker]="tsAktivierungsdatum"
+                                        [datePickerEnabled]="true"
+                                        [required]="true"
                                         (dateChange)="
                                             tagesschuleAktivierungsdatumChanged(
                                                 konfigurationsListe[i]
                                             )
                                         "
-                                        placeholder="{{
-                                            'DATE_PLACEHOLDER' | translate
-                                        }}"
-                                        required
-                                    />
-                                    <mat-datepicker-toggle
-                                        matSuffix
-                                        [for]="tsAktivierungsdatum"
-                                    ></mat-datepicker-toggle>
-                                    <mat-datepicker
-                                        #tsAktivierungsdatum
-                                    ></mat-datepicker>
+                                    ></dv-date-picker-x>
                                 </div>
                                 <!-- Erster Schultag -->
-                                <div class="form-group">
-                                    <label
-                                        class="required"
-                                        translate
-                                        for="tsErsterSchultag_{{ i }}"
-                                        >TAGESSCHULE_ERSTER_SCHULTAG</label
-                                    >
-                                    <input
-                                        class="dv-mat-datepicker"
-                                        type="text"
-                                        name="tsErsterSchultag"
-                                        id="tsErsterSchultag_{{ i }}"
-                                        [(ngModel)]="
+                                <dv-date-picker-x
+                                    id="tsErsterSchultag_{{ i }}"
+                                    [label]="'TAGESSCHULE_ERSTER_SCHULTAG'"
+                                    [(date)]="
+                                        konfigurationsListe[i]
+                                            .konfigTagesschuleErsterSchultag
+                                    "
+                                    [datePickerEnabled]="true"
+                                    [required]="true"
+                                    (dateChange)="
+                                        tagesschuleErsterSchultagChanged(
                                             konfigurationsListe[i]
-                                                .konfigTagesschuleErsterSchultag
-                                        "
-                                        [matDatepicker]="tsErsterSchultag"
-                                        (dateChange)="
-                                            tagesschuleErsterSchultagChanged(
-                                                konfigurationsListe[i]
-                                            )
-                                        "
-                                        placeholder="{{
-                                            'DATE_PLACEHOLDER' | translate
-                                        }}"
-                                        required
-                                    />
-                                    <mat-datepicker-toggle
-                                        matSuffix
-                                        [for]="tsErsterSchultag"
-                                    ></mat-datepicker-toggle>
-                                    <mat-datepicker
-                                        #tsErsterSchultag
-                                    ></mat-datepicker>
-                                </div>
+                                        )
+                                    "
+                                ></dv-date-picker-x>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
@@ -343,6 +307,7 @@
                                                         (click)="
                                                             fileInput.click()
                                                         "
+                                                        [disabled]="!editMode"
                                                         class="dv-btn fa fa-upload dv-btn-operation"
                                                         title="{{
                                                             'GS_DOKUMENT_HOCHLADEN'
@@ -413,6 +378,7 @@
                                                             $event.stopPropagation()
                                                         "
                                                         [disabled]="
+                                                            !editMode ||
                                                             !merkblattAnmeldungTSDE[
                                                                 konfigurationsListe[
                                                                     i
@@ -506,6 +472,7 @@
                                                         (click)="
                                                             fileInput.click()
                                                         "
+                                                        [disabled]="!editMode"
                                                         class="dv-btn fa fa-upload dv-btn-operation"
                                                         title="{{
                                                             'GS_DOKUMENT_HOCHLADEN'

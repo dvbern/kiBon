@@ -1,26 +1,11 @@
-# Let git decide which line-ending to check out with
-* text eol=lf
+# Ensures line endings are normalized to LF in repo
+# see https://git-scm.com/docs/gitattributes#_end_of_line_conversion
+* text=auto
 
-# Unix-Newlines required
-Dockerfile text eol=lf
-*.sh       text eol=lf
+# Make sure, that at least Shell-Script have Unix line endings
+*.sh text eol=lf
 
-# Windows-Newlines required
+# Exceptions where Windows line endings required:
 *.bat      text eol=crlf
 *.ps1      text eol=crlf
-
-# Java Snapshot testing
-*.snap	     text eol=lf
-*.snap.debug text eol=lf
-
-*.xlsx binary
-*.xlsm binary
-*.xls binary
-*.doc binary
-*.docx binary
-*.pdf binary
-*.png binary
-*.jpg binary
-*.ttf binary
-*.ico binary
-*.gif binary
+*.cmd      text eol=crlf

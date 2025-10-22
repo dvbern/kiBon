@@ -5,12 +5,12 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.MathUtil;
@@ -30,7 +30,8 @@ public class ErweiterteBetreuung extends AbstractMutableEntity {
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_erweiterte_betreuung_fachstelle_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_erweiterte_betreuung_fachstelle_id"))
 	private Fachstelle fachstelle;
 
 	@Column(nullable = false)
@@ -74,7 +75,9 @@ public class ErweiterteBetreuung extends AbstractMutableEntity {
 		return erweiterteBeduerfnisse;
 	}
 
-	public void setErweiterteBeduerfnisse(@Nonnull Boolean erweiterteBeduerfnisse) {
+	public void setErweiterteBeduerfnisse(
+		@Nonnull Boolean erweiterteBeduerfnisse
+	) {
 		this.erweiterteBeduerfnisse = erweiterteBeduerfnisse;
 	}
 
@@ -91,8 +94,11 @@ public class ErweiterteBetreuung extends AbstractMutableEntity {
 		return erweiterteBeduerfnisseBestaetigt;
 	}
 
-	public void setErweiterteBeduerfnisseBestaetigt(boolean erweiterteBeduerfnisseBestaetigt) {
-		this.erweiterteBeduerfnisseBestaetigt = erweiterteBeduerfnisseBestaetigt;
+	public void setErweiterteBeduerfnisseBestaetigt(
+		boolean erweiterteBeduerfnisseBestaetigt
+	) {
+		this.erweiterteBeduerfnisseBestaetigt =
+			erweiterteBeduerfnisseBestaetigt;
 	}
 
 	@Nonnull
@@ -118,7 +124,9 @@ public class ErweiterteBetreuung extends AbstractMutableEntity {
 		return erweitereteBeduerfnisseBetrag;
 	}
 
-	public void setErweitereteBeduerfnisseBetrag(@Nullable BigDecimal erweitereteBeduerfnisseBetrag) {
+	public void setErweitereteBeduerfnisseBetrag(
+		@Nullable BigDecimal erweitereteBeduerfnisseBetrag
+	) {
 		this.erweitereteBeduerfnisseBetrag = erweitereteBeduerfnisseBetrag;
 	}
 
@@ -126,15 +134,20 @@ public class ErweiterteBetreuung extends AbstractMutableEntity {
 		return anspruchFachstelleWennPensumUnterschritten;
 	}
 
-	public void setAnspruchFachstelleWennPensumUnterschritten(boolean anspruchFachstelleWennPensumUnterschritten) {
-		this.anspruchFachstelleWennPensumUnterschritten = anspruchFachstelleWennPensumUnterschritten;
+	public void setAnspruchFachstelleWennPensumUnterschritten(
+		boolean anspruchFachstelleWennPensumUnterschritten
+	) {
+		this.anspruchFachstelleWennPensumUnterschritten =
+			anspruchFachstelleWennPensumUnterschritten;
 	}
 
 	public boolean isSprachfoerderungBestaetigt() {
 		return sprachfoerderungBestaetigt;
 	}
 
-	public void setSprachfoerderungBestaetigt(boolean sprachfoerderungBestaetigt) {
+	public void setSprachfoerderungBestaetigt(
+		boolean sprachfoerderungBestaetigt
+	) {
 		this.sprachfoerderungBestaetigt = sprachfoerderungBestaetigt;
 	}
 
@@ -152,56 +165,81 @@ public class ErweiterteBetreuung extends AbstractMutableEntity {
 		final ErweiterteBetreuung otherErwBetr = (ErweiterteBetreuung) other;
 		boolean erwBeduerfnisseSame = Objects.equals(
 			getErweiterteBeduerfnisse(),
-			otherErwBetr.getErweiterteBeduerfnisse());
+			otherErwBetr.getErweiterteBeduerfnisse()
+		);
 
 		boolean bestAussBetrAufwand = Objects.equals(
 			isErweiterteBeduerfnisseBestaetigt(),
-			otherErwBetr.isErweiterteBeduerfnisseBestaetigt());
+			otherErwBetr.isErweiterteBeduerfnisseBestaetigt()
+		);
 
 		boolean fachstelleSame = Objects.equals(
 			getFachstelle(),
-			otherErwBetr.getFachstelle());
+			otherErwBetr.getFachstelle()
+		);
 
 		boolean kesbSame = Objects.equals(
 			getKeineKesbPlatzierung(),
-			otherErwBetr.getKeineKesbPlatzierung());
+			otherErwBetr.getKeineKesbPlatzierung()
+		);
 
 		boolean kitaPlusSame = Objects.equals(
 			getKitaPlusZuschlag(),
-			otherErwBetr.getKitaPlusZuschlag());
+			otherErwBetr.getKitaPlusZuschlag()
+		);
 
 		boolean erweitereteBeduerfnisseSame = MathUtil.isSame(
 			getErweitereteBeduerfnisseBetrag(),
-			otherErwBetr.getErweitereteBeduerfnisseBetrag());
+			otherErwBetr.getErweitereteBeduerfnisseBetrag()
+		);
 
 		boolean anspruchUnterschrittenSame =
-			isAnspruchFachstelleWennPensumUnterschritten() ==
-			otherErwBetr.isAnspruchFachstelleWennPensumUnterschritten();
+			isAnspruchFachstelleWennPensumUnterschritten()
+				==
+				otherErwBetr
+					.isAnspruchFachstelleWennPensumUnterschritten();
 
-		boolean sprachfoerderungBestaetigt = isSprachfoerderungBestaetigt() == otherErwBetr.isSprachfoerderungBestaetigt();
+		boolean sprachfoerderungBestaetigt = isSprachfoerderungBestaetigt()
+			== otherErwBetr.isSprachfoerderungBestaetigt();
 
-		return erwBeduerfnisseSame && bestAussBetrAufwand && fachstelleSame && kesbSame && kitaPlusSame
-				&& erweitereteBeduerfnisseSame && anspruchUnterschrittenSame && sprachfoerderungBestaetigt;
+		return erwBeduerfnisseSame
+			&& bestAussBetrAufwand
+			&& fachstelleSame
+			&& kesbSame
+			&& kitaPlusSame
+			&& erweitereteBeduerfnisseSame
+			&& anspruchUnterschrittenSame
+			&& sprachfoerderungBestaetigt;
 	}
 
 	@Nonnull
 	public ErweiterteBetreuung copyErweiterteBetreuung(
 		@Nonnull ErweiterteBetreuung target,
-		@Nonnull AntragCopyType copyType) {
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
 			target.setErweiterteBeduerfnisse(this.getErweiterteBeduerfnisse());
 			target.setErweiterteBeduerfnisseBestaetigt(
-				this.isErweiterteBeduerfnisseBestaetigt());
+				this.isErweiterteBeduerfnisseBestaetigt()
+			);
 			target.setFachstelle(this.getFachstelle());
 			target.setKeineKesbPlatzierung(this.getKeineKesbPlatzierung());
 			target.setBetreuungInGemeinde(this.getBetreuungInGemeinde());
 			target.setKitaPlusZuschlag(this.getKitaPlusZuschlag());
-			target.setKitaPlusZuschlagBestaetigt(this.isKitaPlusZuschlagBestaetigt());
-			target.setErweitereteBeduerfnisseBetrag(this.getErweitereteBeduerfnisseBetrag());
-			target.setAnspruchFachstelleWennPensumUnterschritten(this.isAnspruchFachstelleWennPensumUnterschritten());
-			target.setSprachfoerderungBestaetigt(this.isSprachfoerderungBestaetigt());
+			target.setKitaPlusZuschlagBestaetigt(
+				this.isKitaPlusZuschlagBestaetigt()
+			);
+			target.setErweitereteBeduerfnisseBetrag(
+				this.getErweitereteBeduerfnisseBetrag()
+			);
+			target.setAnspruchFachstelleWennPensumUnterschritten(
+				this.isAnspruchFachstelleWennPensumUnterschritten()
+			);
+			target.setSprachfoerderungBestaetigt(
+				this.isSprachfoerderungBestaetigt()
+			);
 			break;
 		case ERNEUERUNG:
 		case ERNEUERUNG_AR_2023:
@@ -216,7 +254,9 @@ public class ErweiterteBetreuung extends AbstractMutableEntity {
 		return kitaPlusZuschlagBestaetigt;
 	}
 
-	public void setKitaPlusZuschlagBestaetigt(boolean kitaPlusZuschlagBestaetigt) {
+	public void setKitaPlusZuschlagBestaetigt(
+		boolean kitaPlusZuschlagBestaetigt
+	) {
 		this.kitaPlusZuschlagBestaetigt = kitaPlusZuschlagBestaetigt;
 	}
 }

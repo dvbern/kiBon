@@ -15,13 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {TranslateModule} from '@ngx-translate/core';
 import {UIRouterModule} from '@uirouter/angular';
 import {of} from 'rxjs';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
-import {WindowRef} from '../../core/service/windowRef.service';
+import {WindowRef} from '@kibon/shared-util-window-ref';
 import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
 import {SharedModule} from '../../shared/shared.module';
 
@@ -36,7 +36,7 @@ describe('WizardSideNavComponent', () => {
             getAllSteps: of([])
         }
     );
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             providers: [
                 WindowRef,

@@ -28,14 +28,15 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {TSRole} from '@kibon/shared/model/enums';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TranslateService} from '@ngx-translate/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {BehaviorSubject, Subscription} from 'rxjs';
-import {DvNgRemoveDialogComponent} from '../../../../../app/core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../../../models/enums/TSRole';
+import {TSAntragStatus} from '../../../../../models/enums/TSAntragStatus';
 import {
     isSteuerdatenAnfrageStatusErfolgreich,
     TSSteuerdatenAnfrageStatus
@@ -54,7 +55,8 @@ const LOG = LogFactory.createLog('SteuerabfrageResponseHintsComponent');
     templateUrl: './steuerabfrage-response-hints.component.html',
     styleUrls: ['./steuerabfrage-response-hints.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class SteuerabfrageResponseHintsComponent
     implements OnInit, OnDestroy, OnChanges
@@ -260,7 +262,10 @@ export class SteuerabfrageResponseHintsComponent
     }
 
     public showRetry(): boolean {
-        return this.status === TSSteuerdatenAnfrageStatus.RETRY;
+        return (
+            this.status === TSSteuerdatenAnfrageStatus.RETRY &&
+            !this.isGesuchReadonly()
+        );
     }
 
     public showRetryForGemeinde(): boolean {
@@ -356,7 +361,8 @@ export class SteuerabfrageResponseHintsComponent
     public tryAgainPossible(): boolean {
         return (
             !this.gesuchModelManager.isGesuchReadonly() &&
-            this.status === TSSteuerdatenAnfrageStatus.PROVISORISCH
+            (this.status === TSSteuerdatenAnfrageStatus.PROVISORISCH ||
+                this.status === TSSteuerdatenAnfrageStatus.NEUE_VERANLAGUNG)
         );
     }
 
@@ -372,6 +378,23 @@ export class SteuerabfrageResponseHintsComponent
         return (
             this.isGemeindeOrSuperadmin() &&
             this.status === TSSteuerdatenAnfrageStatus.PROVISORISCH
+        );
+    }
+
+    public showWarningNeueVeranlagung(): boolean {
+        return (
+            !this.gesuchModelManager.isGesuchReadonly() &&
+            this.status === TSSteuerdatenAnfrageStatus.NEUE_VERANLAGUNG &&
+            this.gesuchModelManager.getGesuch().status !==
+                TSAntragStatus.FREIGABEQUITTUNG
+        );
+    }
+
+    public showWarningNeueVeranlagungInStatusFreigegeben() {
+        return (
+            this.gesuchModelManager.getGesuch().status ===
+                TSAntragStatus.FREIGABEQUITTUNG &&
+            this.status === TSSteuerdatenAnfrageStatus.NEUE_VERANLAGUNG
         );
     }
 }

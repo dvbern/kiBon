@@ -83,7 +83,9 @@ public class JaxFerienbetreuungAngabenContainer extends JaxAbstractDTO {
 		return angabenDeklaration;
 	}
 
-	public void setAngabenDeklaration(@Nonnull JaxFerienbetreuungAngaben angabenDeklaration) {
+	public void setAngabenDeklaration(
+		@Nonnull JaxFerienbetreuungAngaben angabenDeklaration
+	) {
 		this.angabenDeklaration = angabenDeklaration;
 	}
 
@@ -92,7 +94,9 @@ public class JaxFerienbetreuungAngabenContainer extends JaxAbstractDTO {
 		return angabenKorrektur;
 	}
 
-	public void setAngabenKorrektur(@Nullable JaxFerienbetreuungAngaben angabenKorrektur) {
+	public void setAngabenKorrektur(
+		@Nullable JaxFerienbetreuungAngaben angabenKorrektur
+	) {
 		this.angabenKorrektur = angabenKorrektur;
 	}
 
@@ -110,7 +114,9 @@ public class JaxFerienbetreuungAngabenContainer extends JaxAbstractDTO {
 		return verantwortlicher;
 	}
 
-	public void setVerantwortlicher(@Nullable JaxBenutzerNoDetails verantwortlicher) {
+	public void setVerantwortlicher(
+		@Nullable JaxBenutzerNoDetails verantwortlicher
+	) {
 		this.verantwortlicher = verantwortlicher;
 	}
 }

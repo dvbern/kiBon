@@ -26,7 +26,16 @@ public class OIDCServiceException extends EbeguException {
 		super(methodName, message, ErrorCodeEnum.ERROR_KIBON_ANFRAGE_TECHNICAL);
 	}
 
-	public OIDCServiceException(final String methodName, final String message, final Throwable cause) {
-		super(methodName, message, ErrorCodeEnum.ERROR_KIBON_ANFRAGE_TECHNICAL, cause);
+	public OIDCServiceException(
+		final String methodName,
+		final String message,
+		final Throwable cause
+	) {
+		super(
+			methodName,
+			message,
+			ErrorCodeEnum.ERROR_KIBON_ANFRAGE_TECHNICAL,
+			cause
+		);
 	}
 }

@@ -26,7 +26,8 @@ import {UpgradeComponent} from '@angular/upgrade/static';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
 
 @Directive({
-    selector: '[dvNewUserSelect]'
+    selector: '[dvNewUserSelect]',
+    standalone: false
 })
 export class NewUserSelectDirective extends UpgradeComponent {
     @Input()
@@ -49,6 +50,9 @@ export class NewUserSelectDirective extends UpgradeComponent {
 
     @Input()
     public sachbearbeiterGemeinde: boolean;
+
+    @Input()
+    public bgAndTs: boolean;
 
     @Input()
     public schulamt: boolean;

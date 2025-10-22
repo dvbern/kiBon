@@ -19,13 +19,13 @@ import {Injectable} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
-import {TSSprache} from '../../../../models/enums/TSSprache';
+import {TSSprache} from '@kibon/shared/model/enums';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {TSLastenausgleichTagesschulenStatusHistory} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschulenStatusHistory';
 import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
-import {CONSTANTS} from '../../../core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 
 const LOG = LogFactory.createLog('LastenausgleichTSService');
 
@@ -51,12 +51,12 @@ export class LastenausgleichTSService {
         const url = `${this.API_BASE_URL}/find/${encodeURIComponent(id)}`;
         this.http
             .get<TSLastenausgleichTagesschuleAngabenGemeindeContainer>(url)
-            .subscribe(
-                container => {
+            .subscribe({
+                next: container => {
                     this.next(container);
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public getLATSAngabenGemeindeContainer(): Observable<TSLastenausgleichTagesschuleAngabenGemeindeContainer> {
@@ -74,12 +74,12 @@ export class LastenausgleichTSService {
                     container
                 )
             )
-            .subscribe(
-                result => {
+            .subscribe({
+                next: result => {
                     this.next(result);
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public saveLATSAngabenGemeindeContainer(
@@ -94,17 +94,17 @@ export class LastenausgleichTSService {
                     container
                 )
             )
-            .subscribe(
-                result => {
+            .subscribe({
+                next: result => {
                     this.errorService.addMesageAsInfo(
                         this.translate.instant('SAVED')
                     );
                     this.next(result);
                 },
-                error => {
+                error: error => {
                     LOG.error(error);
                 }
-            );
+            });
     }
 
     public saveLATSKommentar(
@@ -202,6 +202,27 @@ export class LastenausgleichTSService {
             );
     }
 
+    public latsGemeindeAntragZurZweitpruefung(
+        container: TSLastenausgleichTagesschuleAngabenGemeindeContainer
+    ): Observable<TSLastenausgleichTagesschuleAngabenGemeindeContainer> {
+        return this.http
+            .put(
+                `${this.API_BASE_URL}/zur-zweitpruefung/${encodeURIComponent(container.id)}`,
+                this.ebeguRestUtil.lastenausgleichTagesschuleAngabenGemeindeContainerToRestObject(
+                    {},
+                    container
+                )
+            )
+            .pipe(
+                map(result =>
+                    this.ebeguRestUtil.parseLastenausgleichTagesschuleAngabenGemeindeContainer(
+                        new TSLastenausgleichTagesschuleAngabenGemeindeContainer(),
+                        result
+                    )
+                )
+            );
+    }
+
     public latsAngabenGemeindeFormularAbschliessen(
         container: TSLastenausgleichTagesschuleAngabenGemeindeContainer
     ): Observable<TSLastenausgleichTagesschuleAngabenGemeindeContainer> {
@@ -235,13 +256,13 @@ export class LastenausgleichTSService {
                     container
                 )
             )
-            .subscribe(
-                reopenendContainer => {
+            .subscribe({
+                next: reopenendContainer => {
                     this.errorService.clearAll();
                     this.next(reopenendContainer);
                 },
-                err => console.error(err)
-            );
+                error: err => console.error(err)
+            });
     }
 
     public zurueckAnGemeinde(
@@ -381,10 +402,10 @@ export class LastenausgleichTSService {
                     container
                 )
             )
-            .subscribe(
-                result => this.next(result),
-                error => LOG.error(error)
-            );
+            .subscribe({
+                next: result => this.next(result),
+                error: error => LOG.error(error)
+            });
     }
 
     public createMissingTagesschuleFormulare(

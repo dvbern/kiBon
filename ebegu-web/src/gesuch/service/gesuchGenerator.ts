@@ -17,7 +17,7 @@
 
 import {Injectable} from '@angular/core';
 import {IPromise} from 'angular';
-import {LogFactory} from '../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AntragStatusHistoryRS} from '../../app/core/service/antragStatusHistoryRS.rest';
 import {GesuchsperiodeRS} from '../../app/core/service/gesuchsperiodeRS.rest';
 import {SozialdienstRS} from '../../app/core/service/SozialdienstRS.rest';
@@ -42,6 +42,7 @@ import {FallRS} from './fallRS.rest';
 import {GemeindeRS} from './gemeindeRS.rest';
 import {GesuchRS} from './gesuchRS.rest';
 import {WizardStepManager} from './wizardStepManager';
+import {firstValueFrom} from 'rxjs';
 
 const LOG = LogFactory.createLog('GesuchGenerator');
 
@@ -79,20 +80,19 @@ export class GesuchGenerator {
         gesuchsperiodeId: string
     ): IPromise<TSGesuch> {
         if (EbeguUtil.isNotNullOrUndefined(sozialdienstId)) {
-            return this.sozialdienstRS
-                .getSozialdienstStammdaten(sozialdienstId)
-                .toPromise()
-                .then(sozialdienstStammdaten =>
-                    this.initDossier(
-                        eingangsart,
-                        gemeindeId,
-                        TSCreationAction.CREATE_NEW_FALL,
-                        undefined,
-                        undefined,
-                        sozialdienstStammdaten.sozialdienst,
-                        gesuchsperiodeId
-                    )
-                );
+            return firstValueFrom(
+                this.sozialdienstRS.getSozialdienstStammdaten(sozialdienstId)
+            ).then(sozialdienstStammdaten =>
+                this.initDossier(
+                    eingangsart,
+                    gemeindeId,
+                    TSCreationAction.CREATE_NEW_FALL,
+                    undefined,
+                    undefined,
+                    sozialdienstStammdaten.sozialdienst,
+                    gesuchsperiodeId
+                )
+            );
         }
         return this.initDossier(
             eingangsart,

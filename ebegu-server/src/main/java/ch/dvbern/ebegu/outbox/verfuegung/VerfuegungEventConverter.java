@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.verfuegung;
@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gemeinde;
@@ -65,48 +65,70 @@ import static java.util.Objects.requireNonNullElse;
 @ApplicationScoped
 public class VerfuegungEventConverter {
 
-	private static final Comparator<ZeitabschnittDTO> ZEITABSCHNITT_COMPARATOR = Comparator
-		.comparing(ZeitabschnittDTO::getVon)
-		.thenComparing(ZeitabschnittDTO::getBis);
+	private static final Comparator<ZeitabschnittDTO> ZEITABSCHNITT_COMPARATOR =
+		Comparator
+			.comparing(ZeitabschnittDTO::getVon)
+			.thenComparing(ZeitabschnittDTO::getBis);
 
 	@Inject
 	private VerfuegungService verfuegungService;
 
 	@Nonnull
-	public Optional<VerfuegungVerfuegtEvent> of(@Nonnull Verfuegung verfuegung) {
+	public Optional<VerfuegungVerfuegtEvent> of(
+		@Nonnull Verfuegung verfuegung
+	) {
 		VerfuegungEventDTO dto = toVerfuegungEventDTO(verfuegung);
 		if (dto == null) {
 			return Optional.empty();
 		}
 		byte[] payload = AvroConverter.toAvroBinary(dto);
 
-		return Optional.of(new VerfuegungVerfuegtEvent(
-			requireNonNull(verfuegung.getBetreuung()).getReferenzNummer(),
-			payload,
-			dto.getSchema()));
+		return Optional.of(
+			new VerfuegungVerfuegtEvent(
+				requireNonNull(verfuegung.getBetreuung())
+					.getReferenzNummer(),
+				payload,
+				dto.getSchema()
+			)
+		);
 	}
 
 	@Nullable
-	private VerfuegungEventDTO toVerfuegungEventDTO(@Nonnull Verfuegung verfuegung) {
+	private VerfuegungEventDTO toVerfuegungEventDTO(
+		@Nonnull Verfuegung verfuegung
+	) {
 		Betreuung betreuung = verfuegung.getBetreuung();
 		if (betreuung == null) {
 			return null;
 		}
 		Gesuch gesuch = betreuung.extractGesuch();
 		Gemeinde gemeinde = gesuch.extractGemeinde();
-		Gesuchsteller gesuchsteller = requireNonNull(gesuch.getGesuchsteller1()).getGesuchstellerJA();
+		Gesuchsteller gesuchsteller = requireNonNull(gesuch.getGesuchsteller1())
+			.getGesuchstellerJA();
 		KindContainer kindContainer = betreuung.getKind();
 
 		DateRange periode = betreuung.extractGesuchsperiode().getGueltigkeit();
 		LocalDateTime timestampErstellt = verfuegung.getTimestampErstellt();
-		Instant verfuegtAm = requireNonNull(timestampErstellt).atZone(ZoneId.systemDefault()).toInstant();
+		Instant verfuegtAm = requireNonNull(timestampErstellt).atZone(
+			ZoneId.systemDefault()
+		).toInstant();
 
 		VerfuegungEventDTO.Builder builder = VerfuegungEventDTO.newBuilder()
 			.setKind(toKindDTO(kindContainer))
 			.setGesuchsteller(toGesuchstellerDTO(gesuchsteller))
-			.setBetreuungsArt(BetreuungsangebotTyp.valueOf(requireNonNull(betreuung.getBetreuungsangebotTyp()).name()))
+			.setBetreuungsArt(
+				BetreuungsangebotTyp.valueOf(
+					requireNonNull(
+						betreuung.getBetreuungsangebotTyp()
+					).name()
+				)
+			)
 			.setRefnr(betreuung.getReferenzNummer())
-			.setInstitutionId(betreuung.getInstitutionStammdaten().getInstitution().getId())
+			.setInstitutionId(
+				betreuung.getInstitutionStammdaten()
+					.getInstitution()
+					.getId()
+			)
 			.setVon(periode.getGueltigAb())
 			.setBis(periode.getGueltigBis())
 			.setVersion(gesuch.getLaufnummer())
@@ -114,7 +136,13 @@ public class VerfuegungEventConverter {
 			.setGemeindeBfsNr(gemeinde.getBfsNummer())
 			.setGemeindeName(gemeinde.getName())
 			.setAuszahlungAnEltern(betreuung.isAuszahlungAnEltern())
-			.setMandant(Mandant.valueOf(gemeinde.getMandant().getMandantIdentifier().name()));
+			.setMandant(
+				Mandant.valueOf(
+					gemeinde.getMandant()
+						.getMandantIdentifier()
+						.name()
+				)
+			);
 
 		setZeitabschnitte(verfuegung, builder);
 
@@ -129,18 +157,33 @@ public class VerfuegungEventConverter {
 			.setVorname(kind.getVorname())
 			.setNachname(kind.getNachname())
 			.setGeburtsdatum(kind.getGeburtsdatum())
-			.setEinschulungTyp(EinschulungTyp.valueOf(requireNonNull(kind.getEinschulungTyp()).name()))
+			.setEinschulungTyp(
+				EinschulungTyp.valueOf(
+					requireNonNull(kind.getEinschulungTyp()).name()
+				)
+			)
 			.setSozialeIndikation(hatSozialeIndikation(kind))
 			.setSprachlicheIndikation(hatSprachlicheIndikation(kind))
-			.setSprichtMuttersprache(requireNonNull(kind.getSprichtAmtssprache()))
-			.setAusserordentlicherAnspruch(kind.getPensumAusserordentlicherAnspruch() != null)
+			.setSprichtMuttersprache(
+				requireNonNull(kind.getSprichtAmtssprache())
+			)
+			.setAusserordentlicherAnspruch(
+				kind.getPensumAusserordentlicherAnspruch() != null
+			)
 			.setKindAusAsylwesenAngabeElternGemeinde(isAusAsylwesen(kind))
-			.setKeinSelbstbehaltDurchGemeinde(isKeinSelbstbehaltDurchGemeinde(kindContainer))
+			.setKeinSelbstbehaltDurchGemeinde(
+				isKeinSelbstbehaltDurchGemeinde(kindContainer)
+			)
 			.build();
 	}
 
-	private static boolean isKeinSelbstbehaltDurchGemeinde(@Nonnull KindContainer kindContainer) {
-		return requireNonNullElse(kindContainer.getKeinSelbstbehaltDurchGemeinde(), false);
+	private static boolean isKeinSelbstbehaltDurchGemeinde(
+		@Nonnull KindContainer kindContainer
+	) {
+		return requireNonNullElse(
+			kindContainer.getKeinSelbstbehaltDurchGemeinde(),
+			false
+		);
 	}
 
 	private static boolean isAusAsylwesen(@Nonnull Kind kind) {
@@ -158,7 +201,8 @@ public class VerfuegungEventConverter {
 
 	private static boolean hatSprachlicheIndikation(@Nonnull Kind kind) {
 		for (PensumFachstelle pf : kind.getPensumFachstelle()) {
-			if (pf.getIntegrationTyp() == IntegrationTyp.SPRACHLICHE_INTEGRATION) {
+			if (pf.getIntegrationTyp()
+				== IntegrationTyp.SPRACHLICHE_INTEGRATION) {
 				return true;
 			}
 		}
@@ -166,7 +210,9 @@ public class VerfuegungEventConverter {
 	}
 
 	@Nonnull
-	private GesuchstellerDTO toGesuchstellerDTO(@Nonnull Gesuchsteller gesuchsteller) {
+	private GesuchstellerDTO toGesuchstellerDTO(
+		@Nonnull Gesuchsteller gesuchsteller
+	) {
 		//noinspection ConstantConditions
 		return GesuchstellerDTO.newBuilder()
 			.setVorname(gesuchsteller.getVorname())
@@ -175,46 +221,68 @@ public class VerfuegungEventConverter {
 			.build();
 	}
 
-	private void setZeitabschnitte(@Nonnull Verfuegung verfuegung, @Nonnull VerfuegungEventDTO.Builder builder) {
+	private void setZeitabschnitte(
+		@Nonnull Verfuegung verfuegung,
+		@Nonnull VerfuegungEventDTO.Builder builder
+	) {
 
-		Map<Boolean, List<VerfuegungZeitabschnitt>> abschnitteByIgnored = verfuegung.getZeitabschnitte().stream()
-			.collect(Collectors.partitioningBy(z -> z.getZahlungsstatusInstitution().isIgnoriertIgnorierend()));
+		Map<Boolean, List<VerfuegungZeitabschnitt>> abschnitteByIgnored =
+			verfuegung.getZeitabschnitte()
+				.stream()
+				.collect(
+					Collectors.partitioningBy(
+						z -> z.getZahlungsstatusInstitution()
+							.isIgnoriertIgnorierend()
+					)
+				);
 
-		List<VerfuegungZeitabschnitt> ignoredAbschnitte = abschnitteByIgnored.getOrDefault(true, emptyList());
-		List<VerfuegungZeitabschnitt> verrechnetAbschnitte = abschnitteByIgnored.getOrDefault(false, emptyList());
+		List<VerfuegungZeitabschnitt> ignoredAbschnitte = abschnitteByIgnored
+			.getOrDefault(true, emptyList());
+		List<VerfuegungZeitabschnitt> verrechnetAbschnitte = abschnitteByIgnored
+			.getOrDefault(false, emptyList());
 
 		// Verrechnete Zeitabschnitte
 		Betreuung betreuung = verfuegung.getBetreuung();
 		Objects.requireNonNull(betreuung);
-		List<VerfuegungZeitabschnitt> allVerrechnet = findVorgaengerZeitabschnitte(betreuung, ignoredAbschnitte);
+		List<VerfuegungZeitabschnitt> allVerrechnet =
+			findVorgaengerZeitabschnitte(betreuung, ignoredAbschnitte);
 		allVerrechnet.addAll(verrechnetAbschnitte);
 
 		//noinspection ResultOfMethodCallIgnored
 		builder
 			.setZeitabschnitte(convertZeitabschnitte(allVerrechnet))
-			.setIgnorierteZeitabschnitte(convertZeitabschnitte(ignoredAbschnitte));
+			.setIgnorierteZeitabschnitte(
+				convertZeitabschnitte(ignoredAbschnitte)
+			);
 	}
 
 	@Nonnull
 	private List<VerfuegungZeitabschnitt> findVorgaengerZeitabschnitte(
 		@Nonnull Betreuung betreuung,
-		@Nonnull List<VerfuegungZeitabschnitt> ignoredAbschnitte) {
+		@Nonnull List<VerfuegungZeitabschnitt> ignoredAbschnitte
+	) {
 		// Zusätzlich zu den Abschnitten der aktuellen Verfuegung müssen auch eventuell noch gueltige Abschnitte
 		// von frueheren Verfuegungen exportiert werden: immer dann, wenn in der aktuellen Verfuegung ignoriert wurde!
-		List<VerfuegungZeitabschnitt> nochGueltigeZeitabschnitte = new ArrayList<>();
+		List<VerfuegungZeitabschnitt> nochGueltigeZeitabschnitte =
+			new ArrayList<>();
 
-		ignoredAbschnitte.forEach(z -> verfuegungService
-			.findVerrechnetenZeitabschnittOnVorgaengerVerfuegung(
-				ZahlungslaufTyp.GEMEINDE_INSTITUTION,
-				z,
-				betreuung,
-				nochGueltigeZeitabschnitte));
+		ignoredAbschnitte.forEach(
+			z -> verfuegungService
+				.findVerrechnetenZeitabschnittOnVorgaengerVerfuegung(
+					ZahlungslaufTyp.GEMEINDE_INSTITUTION,
+					z,
+					betreuung,
+					nochGueltigeZeitabschnitte
+				)
+		);
 
 		return nochGueltigeZeitabschnitte;
 	}
 
 	@Nonnull
-	private List<ZeitabschnittDTO> convertZeitabschnitte(@Nonnull List<VerfuegungZeitabschnitt> abschnitte) {
+	private List<ZeitabschnittDTO> convertZeitabschnitte(
+		@Nonnull List<VerfuegungZeitabschnitt> abschnitte
+	) {
 		return abschnitte.stream()
 			.map(this::toZeitabschnittDTO)
 			.sorted(ZEITABSCHNITT_COMPARATOR)
@@ -222,7 +290,9 @@ public class VerfuegungEventConverter {
 	}
 
 	@Nonnull
-	private ZeitabschnittDTO toZeitabschnittDTO(@Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	private ZeitabschnittDTO toZeitabschnittDTO(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		MathUtil ROUND = MathUtil.ZWEI_NACHKOMMASTELLE;
 
 		Betreuung betreuung = zeitabschnitt.getVerfuegung().getBetreuung();
@@ -231,24 +301,63 @@ public class VerfuegungEventConverter {
 			.setVon(zeitabschnitt.getGueltigkeit().getGueltigAb())
 			.setBis(zeitabschnitt.getGueltigkeit().getGueltigBis())
 			.setVerfuegungNr(betreuung.extractGesuch().getLaufnummer())
-			.setEffektiveBetreuungPct(ROUND.from(zeitabschnitt.getBetreuungspensumProzent()))
+			.setEffektiveBetreuungPct(
+				ROUND.from(zeitabschnitt.getBetreuungspensumProzent())
+			)
 			.setAnspruchPct(zeitabschnitt.getAnspruchberechtigtesPensum())
 			.setVerguenstigtPct(ROUND.from(zeitabschnitt.getBgPensum()))
 			.setVollkosten(ROUND.from(zeitabschnitt.getVollkosten()))
-			.setBetreuungsgutschein(ROUND.from(zeitabschnitt.getVerguenstigungOhneBeruecksichtigungMinimalbeitrag()))
-			.setMinimalerElternbeitrag(ROUND.from(zeitabschnitt.getMinimalerElternbeitragGekuerzt()))
-			.setVerguenstigung(ROUND.from(zeitabschnitt.getVerguenstigung()))
-			.setVerfuegteAnzahlZeiteinheiten(ROUND.from(zeitabschnitt.getVerfuegteAnzahlZeiteinheiten()))
-			.setAnspruchsberechtigteAnzahlZeiteinheiten(ROUND.from(zeitabschnitt.getAnspruchsberechtigteAnzahlZeiteinheiten()))
-			.setZeiteinheit(Zeiteinheit.valueOf(zeitabschnitt.getZeiteinheit().name()))
-			.setRegelwerk(Regelwerk.valueOf(zeitabschnitt.getRegelwerk().name()))
+			.setBetreuungsgutschein(
+				ROUND.from(
+					zeitabschnitt
+						.getVerguenstigungOhneBeruecksichtigungMinimalbeitrag()
+				)
+			)
+			.setMinimalerElternbeitrag(
+				ROUND.from(
+					zeitabschnitt
+						.getMinimalerElternbeitragGekuerzt()
+				)
+			)
+			.setVerguenstigung(
+				ROUND.from(zeitabschnitt.getVerguenstigung())
+			)
+			.setVerfuegteAnzahlZeiteinheiten(
+				ROUND.from(
+					zeitabschnitt.getVerfuegteAnzahlZeiteinheiten()
+				)
+			)
+			.setAnspruchsberechtigteAnzahlZeiteinheiten(
+				ROUND.from(
+					zeitabschnitt
+						.getAnspruchsberechtigteAnzahlZeiteinheiten()
+				)
+			)
+			.setZeiteinheit(
+				Zeiteinheit.valueOf(
+					zeitabschnitt.getZeiteinheit().name()
+				)
+			)
+			.setRegelwerk(
+				Regelwerk.valueOf(zeitabschnitt.getRegelwerk().name())
+			)
 			.setAuszahlungAnEltern(zeitabschnitt.isAuszahlungAnEltern())
-			.setBesondereBeduerfnisse(zeitabschnitt.isBesondereBeduerfnisseBestaetigt())
-			.setMassgebendesEinkommen(zeitabschnitt.getMassgebendesEinkommen())
-			.setBetreuungsgutscheinKanton(zeitabschnitt.getBgCalculationResultAsiv()
-				.getVerguenstigungOhneBeruecksichtigungMinimalbeitrag())
-			.setBabyTarif(zeitabschnitt.getBgCalculationResultAsiv().isBabyTarif())
-			.setBetreuungspensumZeiteinheit(zeitabschnitt.getBetreuungspensumZeiteinheit())
+			.setBesondereBeduerfnisse(
+				zeitabschnitt.isBesondereBeduerfnisseBestaetigt()
+			)
+			.setMassgebendesEinkommen(
+				zeitabschnitt.getMassgebendesEinkommen()
+			)
+			.setBetreuungsgutscheinKanton(
+				zeitabschnitt.getBgCalculationResultAsiv()
+					.getVerguenstigungOhneBeruecksichtigungMinimalbeitrag()
+			)
+			.setBabyTarif(
+				zeitabschnitt.getBgCalculationResultAsiv().isBabyTarif()
+			)
+			.setBetreuungspensumZeiteinheit(
+				zeitabschnitt.getBetreuungspensumZeiteinheit()
+			)
 			.setElternbeitrag(zeitabschnitt.getElternbeitrag())
 			.build();
 	}

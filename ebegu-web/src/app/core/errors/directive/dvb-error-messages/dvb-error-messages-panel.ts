@@ -15,7 +15,7 @@
 
 import IComponentOptions = angular.IComponentOptions;
 import IScope = angular.IScope;
-import {IController, ILogService, IOnInit} from 'angular';
+import {IController, ILogService, IOnInit, element} from 'angular';
 import {RemoveDialogController} from '../../../../../gesuch/dialog/RemoveDialogController';
 import {GesuchRS} from '../../../../../gesuch/service/gesuchRS.rest';
 import {WizardStepManager} from '../../../../../gesuch/service/wizardStepManager';
@@ -84,25 +84,25 @@ export class DvErrorMessagesPanelComponent implements IController, IOnInit {
 
         this.broadcastService
             .on$(TSMessageEvent[TSMessageEvent.ERROR_UPDATE])
-            .subscribe(
-                message => this.displayMessagesX(message),
-                error => this.$log.error(error)
-            );
+            .subscribe({
+                next: message => this.displayMessagesX(message),
+                error: error => this.$log.error(error)
+            });
         this.broadcastService
             .on$(TSMessageEvent[TSMessageEvent.INFO_UPDATE])
-            .subscribe(
-                message => this.displayMessagesX(message),
-                error => this.$log.error(error)
-            );
+            .subscribe({
+                next: message => this.displayMessagesX(message),
+                error: error => this.$log.error(error)
+            });
         this.broadcastService
             .on$(TSMessageEvent[TSMessageEvent.CLEAR])
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.errors = [];
                     this.hide();
                 },
-                error => this.$log.error(error)
-            );
+                error: error => this.$log.error(error)
+            });
     }
 
     public displayMessages = (
@@ -220,11 +220,11 @@ export class DvErrorMessagesPanelComponent implements IController, IOnInit {
     }
 
     public show(): void {
-        angular.element('dvb-error-messages-panel').show(); // besser als $element injection fuer tests
+        element('dvb-error-messages-panel').show(); // besser als $element injection fuer tests
     }
 
     public hide(): void {
-        angular.element('dvb-error-messages-panel').hide();
+        element('dvb-error-messages-panel').hide();
     }
 
     public clear(): void {

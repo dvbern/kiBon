@@ -8,20 +8,20 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
 
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.StringUtils;
@@ -47,13 +47,15 @@ public class SteuerdatenRequest extends AbstractEntity {
 	@Column(nullable = false)
 	private int gesuchsperiodeBeginnJahr;
 
-	public SteuerdatenRequest() {}
+	public SteuerdatenRequest() {
+	}
 
 	public SteuerdatenRequest(
 		int zpvNummer,
 		LocalDate geburtsdatumAntragsteller,
 		String antragId,
-		int gesuchsperiodeBeginnJahr) {
+		int gesuchsperiodeBeginnJahr
+	) {
 		this.zpvNummer = zpvNummer;
 		this.geburtsdatumAntragsteller = geburtsdatumAntragsteller;
 		this.antragId = antragId;
@@ -88,7 +90,9 @@ public class SteuerdatenRequest extends AbstractEntity {
 		return geburtsdatumAntragsteller;
 	}
 
-	public void setGeburtsdatumAntragsteller(LocalDate geburtsdatumAntragsteller) {
+	public void setGeburtsdatumAntragsteller(
+		LocalDate geburtsdatumAntragsteller
+	) {
 		this.geburtsdatumAntragsteller = geburtsdatumAntragsteller;
 	}
 
@@ -104,9 +108,15 @@ public class SteuerdatenRequest extends AbstractEntity {
 			return false;
 		}
 		SteuerdatenRequest otherRequest = (SteuerdatenRequest) other;
-		return this.geburtsdatumAntragsteller.equals(otherRequest.geburtsdatumAntragsteller) &&
-			StringUtils.equals(this.antragId, otherRequest.antragId) &&
-			this.gesuchsperiodeBeginnJahr == otherRequest.gesuchsperiodeBeginnJahr &&
+		return this.geburtsdatumAntragsteller.equals(
+			otherRequest.geburtsdatumAntragsteller
+		)
+			&&
+			StringUtils.equals(this.antragId, otherRequest.antragId)
+			&&
+			this.gesuchsperiodeBeginnJahr
+				== otherRequest.gesuchsperiodeBeginnJahr
+			&&
 			this.zpvNummer == otherRequest.zpvNummer;
 
 	}

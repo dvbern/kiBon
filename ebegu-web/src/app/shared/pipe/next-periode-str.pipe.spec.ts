@@ -1,6 +1,6 @@
-import * as moment from 'moment';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {TSDateRange} from '../../../models/types/TSDateRange';
+import moment from 'moment';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSDateRange} from '@kibon/shared/model/entity';
 import {NextPeriodeStrPipe} from './next-periode-str.pipe';
 
 describe('NextPeriodeStrPipe', () => {

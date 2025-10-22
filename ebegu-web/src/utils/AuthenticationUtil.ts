@@ -14,8 +14,7 @@
  */
 
 import {StateService, TargetState, TransitionPromise} from '@uirouter/core';
-import {TSRole} from '../models/enums/TSRole';
-
+import {TSRole} from '@kibon/shared/model/enums';
 /**
  *  Navigiert basierend auf der Rolle zu einer anderen Startseite
  */
@@ -72,15 +71,4 @@ export function getRoleBasedTargetState(
     };
 
     return $state.target(stateByRole[currentRole]);
-}
-
-export function returnToOriginalState(
-    $state: StateService,
-    returnTo: TargetState
-): TransitionPromise {
-    const state = returnTo.state();
-    const params = returnTo.params();
-    const options = {...returnTo.options(), ...{reload: true}};
-
-    return $state.go(state, params, options);
 }

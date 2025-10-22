@@ -1,12 +1,11 @@
+import moment from 'moment';
 import {TSFile} from './TSFile';
-import * as moment from 'moment';
 
 export class TSUploadFile extends TSFile {
     private _timestampUpload: moment.Moment;
 
     public constructor(timestampUpload?: moment.Moment) {
         super();
-        console.log(timestampUpload);
         this._timestampUpload = timestampUpload;
     }
 

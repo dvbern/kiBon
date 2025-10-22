@@ -15,9 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IPromise, IQService} from 'angular';
+import {copy, IPromise, IQService} from 'angular';
+import {TSWizardStep} from '@kibon/shared/model/entity';
+import {WizardStepRS} from '@kibon/shared/util/wizard-step-manager';
+import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';
+import {
+    getTSWizardStepNameValues,
+    TSWizardStepName,
+    TSWizardStepStatus,
+    TSBetreuungsstatus
+} from '@kibon/shared/model/enums';
 import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
-import {LogFactory} from '../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthLifeCycleService} from '../../authentication/service/authLifeCycle.service';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
 import {
@@ -26,20 +35,14 @@ import {
 } from '../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../models/enums/TSAntragTyp';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
-import {TSBetreuungsstatus} from '../../models/enums/betreuung/TSBetreuungsstatus';
-import {TSEinstellungKey} from '../../models/enums/TSEinstellungKey';
-import {TSFinanzielleSituationTyp} from '../../models/enums/TSFinanzielleSituationTyp';
-import {TSRole} from '../../models/enums/TSRole';
 import {
-    getTSWizardStepNameValues,
-    TSWizardStepName
-} from '../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../models/enums/TSWizardStepStatus';
+    getSchwyzFinSitTyp,
+    TSFinanzielleSituationTyp
+} from '../../models/enums/TSFinanzielleSituationTyp';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSGesuch} from '../../models/TSGesuch';
-import {TSWizardStep} from '../../models/TSWizardStep';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
-import {WizardStepRS} from './WizardStepRS.rest';
 
 const LOG = LogFactory.createLog('WizardStepManager');
 
@@ -325,6 +328,40 @@ export class WizardStepManager {
         );
     }
 
+    public selfUpdateFinSitStepStatus(): IPromise<TSWizardStep> {
+        if (!this.getCurrentStepName().includes('FINANZIELLE_SITUATION')) {
+            throw new Error(
+                'Method must not be used for other step than FINANZIELLE_SITUATION'
+            );
+        }
+        return this.wizardStepRS
+            .selfUpdateFinSitWizardStep(this.getCurrentStep())
+            .then(updated => {
+                const idx = this.wizardSteps.findIndex(
+                    step => step.id === updated.id
+                );
+                this.wizardSteps.splice(idx, 1, updated);
+                return updated;
+            });
+    }
+
+    public selfUpdateEKVStepStatus(): IPromise<TSWizardStep> {
+        if (!this.getCurrentStepName().includes('EINKOMMENSVERSCHLECHTERUNG')) {
+            throw new Error(
+                'Method must not be used for other step than EINKOMMENSVERSCHLECHTERUNG'
+            );
+        }
+        return this.wizardStepRS
+            .selfUpdateEKVWizardStep(this.getCurrentStep())
+            .then(updated => {
+                const idx = this.wizardSteps.findIndex(
+                    step => step.id === updated.id
+                );
+                this.wizardSteps.splice(idx, 1, updated);
+                return updated;
+            });
+    }
+
     /**
      * Like updateCurrentWizardStepStatus but it will only execute the action when the currentStep has the given
      * stepName. Use this method to avoid changing the status of a different Step than the one you have to change.
@@ -367,9 +404,7 @@ export class WizardStepManager {
      * den Kommentaren und speichern dieses nochmal.
      */
     public updateFirstWizardStep(gesuchId: string): IPromise<void> {
-        const firstStepBemerkungen = angular.copy(
-            this.getCurrentStep().bemerkungen
-        );
+        const firstStepBemerkungen = copy(this.getCurrentStep().bemerkungen);
         return this.findStepsFromGesuch(gesuchId).then(() => {
             this.getCurrentStep().bemerkungen = firstStepBemerkungen;
             return this.updateCurrentWizardStep();
@@ -580,7 +615,7 @@ export class WizardStepManager {
     }
 
     public backupCurrentSteps(): void {
-        this.wizardStepsSnapshot = angular.copy(this.wizardSteps);
+        this.wizardStepsSnapshot = copy(this.wizardSteps);
     }
 
     public restorePreviousSteps(): void {
@@ -694,7 +729,7 @@ export class WizardStepManager {
             gesuch.finSitTyp === TSFinanzielleSituationTyp.APPENZELL_FOLGEMONAT
         ) {
             this.unhideStep(TSWizardStepName.FINANZIELLE_SITUATION_APPENZELL);
-        } else if (gesuch.finSitTyp === TSFinanzielleSituationTyp.SCHWYZ) {
+        } else if (getSchwyzFinSitTyp().includes(gesuch.finSitTyp)) {
             this.unhideStep(TSWizardStepName.FINANZIELLE_SITUATION_SCHWYZ);
         } else {
             throw new Error(`wrong FinSitTyp ${gesuch.finSitTyp}`);
@@ -728,7 +763,7 @@ export class WizardStepManager {
             this.unhideStep(
                 TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG_APPENZELL
             );
-        } else if (gesuch.finSitTyp === TSFinanzielleSituationTyp.SCHWYZ) {
+        } else if (getSchwyzFinSitTyp().includes(gesuch.finSitTyp)) {
             this.unhideStep(TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG_SCHWYZ);
         } else {
             throw new Error(`wrong FinSitTyp ${gesuch.finSitTyp}`);
@@ -742,7 +777,7 @@ export class WizardStepManager {
         if (gesuch.finSitTyp === TSFinanzielleSituationTyp.SOLOTHURN) {
             return TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG_SOLOTHURN;
         }
-        if (gesuch.finSitTyp === TSFinanzielleSituationTyp.SCHWYZ) {
+        if (getSchwyzFinSitTyp().includes(gesuch.finSitTyp)) {
             return TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG_SCHWYZ;
         }
         if (

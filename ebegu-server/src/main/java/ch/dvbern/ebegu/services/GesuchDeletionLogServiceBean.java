@@ -20,21 +20,22 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.GesuchDeletionLog;
 import ch.dvbern.ebegu.entities.GesuchDeletionLog_;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 /**
  * Service zum Verwalten von GesuchDeletionLogs
  */
 @Stateless
 @Local(GesuchDeletionLogService.class)
-public class GesuchDeletionLogServiceBean extends AbstractBaseService implements GesuchDeletionLogService {
+public class GesuchDeletionLogServiceBean extends AbstractBaseService implements
+	GesuchDeletionLogService {
 
 	@Inject
 	private Persistence persistence;
@@ -44,16 +45,25 @@ public class GesuchDeletionLogServiceBean extends AbstractBaseService implements
 
 	@Nonnull
 	@Override
-	public GesuchDeletionLog saveGesuchDeletionLog(@Nonnull GesuchDeletionLog logEintrag) {
+	public GesuchDeletionLog saveGesuchDeletionLog(
+		@Nonnull GesuchDeletionLog logEintrag
+	) {
 		Objects.requireNonNull(logEintrag);
 		return persistence.persist(logEintrag);
 	}
 
 	@Nonnull
 	@Override
-	public Optional<GesuchDeletionLog> findGesuchDeletionLogByGesuch(@Nonnull String gesuchId) {
+	public Optional<GesuchDeletionLog> findGesuchDeletionLogByGesuch(
+		@Nonnull String gesuchId
+	) {
 		Objects.requireNonNull(gesuchId, "id muss gesetzt sein");
-		Collection<GesuchDeletionLog> logs = criteriaQueryHelper.getEntitiesByAttribute(GesuchDeletionLog.class, gesuchId, GesuchDeletionLog_.gesuchId);
+		Collection<GesuchDeletionLog> logs = criteriaQueryHelper
+			.getEntitiesByAttribute(
+				GesuchDeletionLog.class,
+				gesuchId,
+				GesuchDeletionLog_.gesuchId
+			);
 		if (logs.isEmpty()) {
 			return Optional.empty();
 		}

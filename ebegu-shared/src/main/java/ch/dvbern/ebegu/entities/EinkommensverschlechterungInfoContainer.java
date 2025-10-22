@@ -15,16 +15,20 @@
 
 package ch.dvbern.ebegu.entities;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 /**
  * Entity für die Erfassung von Einkommensverschlechterungen für das Gesuch
@@ -36,36 +40,51 @@ import javax.validation.constraints.NotNull;
  */
 @Audited
 @Entity
-public class EinkommensverschlechterungInfoContainer extends AbstractMutableEntity {
+public class EinkommensverschlechterungInfoContainer extends
+	AbstractMutableEntity {
 
 	private static final long serialVersionUID = 7458803905310712257L;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ekvinfocontainer_einkommensverschlechterunginfogs_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ekvinfocontainer_einkommensverschlechterunginfogs_id"),
+		nullable = true)
 	private EinkommensverschlechterungInfo einkommensverschlechterungInfoGS;
 
 	@Valid
 	@Nonnull
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ekvinfocontainer_einkommensverschlechterunginfoja_id"), nullable = true)
-	private EinkommensverschlechterungInfo einkommensverschlechterungInfoJA = new EinkommensverschlechterungInfo();
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ekvinfocontainer_einkommensverschlechterunginfoja_id"),
+		nullable = true)
+	private EinkommensverschlechterungInfo einkommensverschlechterungInfoJA =
+		new EinkommensverschlechterungInfo();
 
 	@NotNull
 	@Valid
-	@OneToOne(optional = false, mappedBy = "einkommensverschlechterungInfoContainer")
+	@OneToOne(optional = false,
+		mappedBy = "einkommensverschlechterungInfoContainer")
 	private Gesuch gesuch;
 
 	public EinkommensverschlechterungInfoContainer() {
 	}
 
-	public EinkommensverschlechterungInfoContainer(EinkommensverschlechterungInfoContainer other) {
+	public EinkommensverschlechterungInfoContainer(
+		EinkommensverschlechterungInfoContainer other
+	) {
 		if (other != null) {
 			if (other.getEinkommensverschlechterungInfoGS() != null) {
-				this.einkommensverschlechterungInfoGS = new EinkommensverschlechterungInfo(other.getEinkommensverschlechterungInfoGS());
+				this.einkommensverschlechterungInfoGS =
+					new EinkommensverschlechterungInfo(
+						other.getEinkommensverschlechterungInfoGS()
+					);
 			}
-			this.einkommensverschlechterungInfoJA = new EinkommensverschlechterungInfo(other.getEinkommensverschlechterungInfoJA());
+			this.einkommensverschlechterungInfoJA =
+				new EinkommensverschlechterungInfo(
+					other.getEinkommensverschlechterungInfoJA()
+				);
 			this.gesuch = other.getGesuch();
 		}
 	}
@@ -75,8 +94,11 @@ public class EinkommensverschlechterungInfoContainer extends AbstractMutableEnti
 		return einkommensverschlechterungInfoGS;
 	}
 
-	public void setEinkommensverschlechterungInfoGS(@Nullable EinkommensverschlechterungInfo einkommensverschlechterungInfoGS) {
-		this.einkommensverschlechterungInfoGS = einkommensverschlechterungInfoGS;
+	public void setEinkommensverschlechterungInfoGS(
+		@Nullable EinkommensverschlechterungInfo einkommensverschlechterungInfoGS
+	) {
+		this.einkommensverschlechterungInfoGS =
+			einkommensverschlechterungInfoGS;
 	}
 
 	@Nonnull
@@ -84,8 +106,11 @@ public class EinkommensverschlechterungInfoContainer extends AbstractMutableEnti
 		return einkommensverschlechterungInfoJA;
 	}
 
-	public void setEinkommensverschlechterungInfoJA(@Nonnull EinkommensverschlechterungInfo einkommensverschlechterungInfoJA) {
-		this.einkommensverschlechterungInfoJA = einkommensverschlechterungInfoJA;
+	public void setEinkommensverschlechterungInfoJA(
+		@Nonnull EinkommensverschlechterungInfo einkommensverschlechterungInfoJA
+	) {
+		this.einkommensverschlechterungInfoJA =
+			einkommensverschlechterungInfoJA;
 	}
 
 	public Gesuch getGesuch() {
@@ -95,15 +120,21 @@ public class EinkommensverschlechterungInfoContainer extends AbstractMutableEnti
 	public void setGesuch(Gesuch gesuch) {
 		this.gesuch = gesuch;
 
-		if (gesuch != null &&
-			(gesuch.getEinkommensverschlechterungInfoContainer() == null || !gesuch.getEinkommensverschlechterungInfoContainer().equals(this))) {
+		if (gesuch != null
+			&&
+			(gesuch.getEinkommensverschlechterungInfoContainer() == null
+				|| !gesuch.getEinkommensverschlechterungInfoContainer()
+					.equals(this))) {
 			gesuch.setEinkommensverschlechterungInfoContainer(this);
 		}
 	}
 
 	@Nonnull
 	public EinkommensverschlechterungInfoContainer copyEinkommensverschlechterungInfoContainer(
-			@Nonnull EinkommensverschlechterungInfoContainer target, @Nonnull AntragCopyType copyType, @Nonnull Gesuch targetGesuch) {
+		@Nonnull EinkommensverschlechterungInfoContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull Gesuch targetGesuch
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
@@ -111,8 +142,13 @@ public class EinkommensverschlechterungInfoContainer extends AbstractMutableEnti
 		case MUTATION_NEUES_DOSSIER:
 			target.setGesuch(targetGesuch);
 			target.setEinkommensverschlechterungInfoGS(null);
-			target.setEinkommensverschlechterungInfoJA(getEinkommensverschlechterungInfoJA().copyEinkommensverschlechterungInfo(
-				new EinkommensverschlechterungInfo(), copyType));
+			target.setEinkommensverschlechterungInfoJA(
+				getEinkommensverschlechterungInfoJA()
+					.copyEinkommensverschlechterungInfo(
+						new EinkommensverschlechterungInfo(),
+						copyType
+					)
+			);
 			break;
 		case ERNEUERUNG:
 		case ERNEUERUNG_NEUES_DOSSIER:
@@ -132,7 +168,11 @@ public class EinkommensverschlechterungInfoContainer extends AbstractMutableEnti
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final EinkommensverschlechterungInfoContainer otherEKVInfoContainer = (EinkommensverschlechterungInfoContainer) other;
-		return EbeguUtil.isSame(getEinkommensverschlechterungInfoJA(), otherEKVInfoContainer.getEinkommensverschlechterungInfoJA());
+		final EinkommensverschlechterungInfoContainer otherEKVInfoContainer =
+			(EinkommensverschlechterungInfoContainer) other;
+		return EbeguUtil.isSame(
+			getEinkommensverschlechterungInfoJA(),
+			otherEKVInfoContainer.getEinkommensverschlechterungInfoJA()
+		);
 	}
 }

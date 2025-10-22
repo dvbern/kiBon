@@ -8,17 +8,17 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.platzbestaetigung;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gesuchsteller;
@@ -39,28 +39,59 @@ public class BetreuungAnfrageEventConverter {
 		BetreuungAnfrageEventDTO dto = toBetreuungAnfrageEvent(betreuung);
 		byte[] payload = AvroConverter.toAvroBinary(dto);
 
-		return new BetreuungAnfrageAddedEvent(betreuung.getReferenzNummer(), payload, dto.getSchema());
+		return new BetreuungAnfrageAddedEvent(
+			betreuung.getReferenzNummer(),
+			payload,
+			dto.getSchema()
+		);
 	}
 
 	/**
 	 * Convert einen Kibon Betreuung Entity in einer BetreuungAnfrageEventDTO
 	 */
 	@Nonnull
-	private BetreuungAnfrageEventDTO toBetreuungAnfrageEvent(@Nonnull Betreuung betreuung) {
+	private BetreuungAnfrageEventDTO toBetreuungAnfrageEvent(
+		@Nonnull Betreuung betreuung
+	) {
 		return BetreuungAnfrageEventDTO.newBuilder()
 			.setRefnr(betreuung.getReferenzNummer())
-			.setInstitutionId(betreuung.getInstitutionStammdaten().getInstitution().getId())
-			.setGesuchsteller(toGesuchstellerDTO(requireNonNull(betreuung.extractGesuch().getGesuchsteller1()).getGesuchstellerJA()))
+			.setInstitutionId(
+				betreuung.getInstitutionStammdaten()
+					.getInstitution()
+					.getId()
+			)
+			.setGesuchsteller(
+				toGesuchstellerDTO(
+					requireNonNull(
+						betreuung.extractGesuch()
+							.getGesuchsteller1()
+					).getGesuchstellerJA()
+				)
+			)
 			.setKind(toKindDTO(betreuung.getKind().getKindJA()))
-			.setPeriodeVon(betreuung.extractGesuchsperiode().getGueltigkeit().getGueltigAb())  //Gesuschperiode von bis
-			.setPeriodeBis(betreuung.extractGesuchsperiode().getGueltigkeit().getGueltigBis())
-			.setBetreuungsArt(toBetreuungsangebotTyp(betreuung.getBetreuungsangebotTyp()))
+			.setPeriodeVon(
+				betreuung.extractGesuchsperiode()
+					.getGueltigkeit()
+					.getGueltigAb()
+			)  //Gesuschperiode von bis
+			.setPeriodeBis(
+				betreuung.extractGesuchsperiode()
+					.getGueltigkeit()
+					.getGueltigBis()
+			)
+			.setBetreuungsArt(
+				toBetreuungsangebotTyp(
+					betreuung.getBetreuungsangebotTyp()
+				)
+			)
 			.setAbgelehntVonGesuchsteller(false) //ist immer false bei erstellung, sonst kann man mit Datum überprüfen
 			.build();
 	}
 
 	@Nonnull
-	private GesuchstellerDTO toGesuchstellerDTO(@Nonnull Gesuchsteller gesuchsteller) {
+	private GesuchstellerDTO toGesuchstellerDTO(
+		@Nonnull Gesuchsteller gesuchsteller
+	) {
 		return GesuchstellerDTO.newBuilder()
 			.setVorname(gesuchsteller.getVorname())
 			.setNachname(gesuchsteller.getNachname())
@@ -78,10 +109,10 @@ public class BetreuungAnfrageEventConverter {
 	}
 
 	@Nonnull
-	private ch.dvbern.kibon.exchange.commons.types.BetreuungsangebotTyp toBetreuungsangebotTyp(@Nonnull BetreuungsangebotTyp betreuungsangebotTyp) {
-		if (betreuungsangebotTyp.isKita()) {
-			return ch.dvbern.kibon.exchange.commons.types.BetreuungsangebotTyp.KITA;
-		}
-		return ch.dvbern.kibon.exchange.commons.types.BetreuungsangebotTyp.TAGESFAMILIEN;
+	private ch.dvbern.kibon.exchange.commons.types.BetreuungsangebotTyp toBetreuungsangebotTyp(
+		@Nonnull BetreuungsangebotTyp betreuungsangebotTyp
+	) {
+		return ch.dvbern.kibon.exchange.commons.types.BetreuungsangebotTyp
+			.valueOf(betreuungsangebotTyp.name());
 	}
 }

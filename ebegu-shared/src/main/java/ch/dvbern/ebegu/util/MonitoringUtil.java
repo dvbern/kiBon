@@ -31,7 +31,8 @@ public final class MonitoringUtil {
 
 	/**
 	 * Monitored einen einzelnen Methodenaufruf.
-	 * JavaMelody braucht eigentlich immer ein Interface fuer seinen Proxy, da es intern die normale Java-Proxy Klasse nutzt.
+	 * JavaMelody braucht eigentlich immer ein Interface fuer seinen Proxy, da es intern die normale Java-Proxy Klasse
+	 * nutzt.
 	 * Aber: mit Java8 gibts mit {@link Supplier} das (fuer diesen Zweck) simpelst moegliche Interface fuer Wrapper :)
 	 *
 	 * Die uebergebene Methode wird sofort(!) aufgerufen.
@@ -39,37 +40,61 @@ public final class MonitoringUtil {
 	 * Usage:
 	 * <pre>
 	 * Ohne Monitoring: MyStuff result = myMethod(asdf);
-	 * Mit Monitoring:  MyStuff result = monitor(FooClass.class, "monitoring of myMethod", () -> myMethod(asdf));
+	 * Mit Monitoring: MyStuff result = monitor(FooClass.class, "monitoring of myMethod", () -> myMethod(asdf));
 	 * </pre>
 	 *
-	 * @param monitoredClass Dient ausschliesslich zum generieren des Monitor-Namens, damit die einzelnen Monitor-Namen moeglichst ohne grossen Aufwand eindeutig sind.
+	 * @param monitoredClass Dient ausschliesslich zum generieren des Monitor-Namens, damit die einzelnen Monitor-Namen
+	 * moeglichst ohne grossen Aufwand eindeutig sind.
 	 * @param monitorNameSuffix Wird (durch ":" getrennt) an den Namen der uebergebenen Klasse angehaengt.
 	 */
-	public static <T> T monitor(@Nonnull Class<?> monitoredClass, @Nonnull String monitorNameSuffix, @Nonnull Supplier<T> call) {
+	public static <T> T monitor(
+		@Nonnull Class<?> monitoredClass,
+		@Nonnull String monitorNameSuffix,
+		@Nonnull Supplier<T> call
+	) {
 		requireNonNull(monitorNameSuffix);
 		requireNonNull(call);
 
 		// JavaMelody
 		return MonitoringProxy
-			.createProxy(call, monitoredClass.getSimpleName() + ':' + monitorNameSuffix)
+			.createProxy(
+				call,
+				monitoredClass.getSimpleName() + ':' + monitorNameSuffix
+			)
 			.get();
 	}
 
-	public static <T extends Exception> void monitor(@Nonnull Class<?> monitoredClass, @Nonnull String monitorNameSuffix, @Nonnull Procedure<T> call) throws T {
+	public static <T extends Exception> void monitor(
+		@Nonnull Class<?> monitoredClass,
+		@Nonnull String monitorNameSuffix,
+		@Nonnull Procedure<T> call
+	) throws T {
 		requireNonNull(monitorNameSuffix);
 		requireNonNull(call);
 
 		// JavaMelody
 		MonitoringProxy
-			.createProxy(call, monitoredClass.getSimpleName() + ':' + monitorNameSuffix)
+			.createProxy(
+				call,
+				monitoredClass.getSimpleName() + ':' + monitorNameSuffix
+			)
 			.execute();
 	}
 
 	/**
-	 * Convenience: reicht den Aufruf an {@link #monitor(Class, String, Supplier)} weiter mit monitoredClassInstance.getClass().
+	 * Convenience: reicht den Aufruf an {@link #monitor(Class, String, Supplier)} weiter mit
+	 * monitoredClassInstance.getClass().
 	 * Dadurch kann meistens einfach &quot;this&quot; uebergeben werden.
 	 */
-	public static <T> T monitor(@Nonnull Object monitoredClassInstance, @Nonnull String monitorNameSuffix, @Nonnull Supplier<T> call) {
-		return monitor(monitoredClassInstance.getClass(), monitorNameSuffix, call);
+	public static <T> T monitor(
+		@Nonnull Object monitoredClassInstance,
+		@Nonnull String monitorNameSuffix,
+		@Nonnull Supplier<T> call
+	) {
+		return monitor(
+			monitoredClassInstance.getClass(),
+			monitorNameSuffix,
+			call
+		);
 	}
 }

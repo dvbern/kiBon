@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -25,18 +25,25 @@ import ch.dvbern.ebegu.enums.PensumUnits;
 
 public class MittagstischSchwyzRechner extends AbstractSchwyzRechner {
 
-	public static final BigDecimal OEFFNUNGSTAGE = new BigDecimal("246");
+	public static final BigDecimal ANZAHL_MITTAGSTISCH_PRO_JAHR =
+		new BigDecimal("820");
 
-	static final BigDecimal BEDARFSSTUFE_2_BETRAG_PRO_MITTAGSTISCH = new BigDecimal("9.90");
-	static final BigDecimal BEDARFSSTUFE_3_BETRAG_PRO_MITTAGSTISCH = new BigDecimal("19.80");
-
+	static final BigDecimal BEDARFSSTUFE_2_BETRAG_PRO_MITTAGSTISCH =
+		new BigDecimal("9.90");
+	static final BigDecimal BEDARFSSTUFE_3_BETRAG_PRO_MITTAGSTISCH =
+		new BigDecimal("19.80");
 
 	@Override
 	protected BigDecimal toZeiteinheitProZeitabschnitt(
 		BGRechnerParameterDTO parameterDTO,
 		BigDecimal effektivesPensumFaktor,
-		BigDecimal anteilMonat) {
-		return toTageProZeitAbschnitt(effektivesPensumFaktor, anteilMonat, OEFFNUNGSTAGE);
+		BigDecimal anteilMonat
+	) {
+		return toTageProZeitAbschnitt(
+			effektivesPensumFaktor,
+			anteilMonat,
+			ANZAHL_MITTAGSTISCH_PRO_JAHR
+		);
 	}
 
 	@Override
@@ -60,7 +67,10 @@ public class MittagstischSchwyzRechner extends AbstractSchwyzRechner {
 	}
 
 	@Override
-	protected BigDecimal calculateNormkosten(BGCalculationInput input, BGRechnerParameterDTO parameterDTO) {
+	protected BigDecimal calculateNormkosten(
+		BGCalculationInput input,
+		BGRechnerParameterDTO parameterDTO
+	) {
 		return new BigDecimal("17");
 	}
 
@@ -68,7 +78,8 @@ public class MittagstischSchwyzRechner extends AbstractSchwyzRechner {
 	protected BigDecimal calculateTarifProZeiteinheit(
 		BGRechnerParameterDTO parameterDTO,
 		BigDecimal effektivesPensumFaktor,
-		BGCalculationInput input) {
+		BGCalculationInput input
+	) {
 		return input.getTarifHauptmahlzeit();
 	}
 

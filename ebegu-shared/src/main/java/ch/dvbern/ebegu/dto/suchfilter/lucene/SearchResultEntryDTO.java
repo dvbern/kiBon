@@ -57,7 +57,8 @@ public class SearchResultEntryDTO implements Serializable {
 		@Nullable String additionalInformation,
 		@Nullable String gesuchID,
 		@Nullable String fallId,
-		@Nullable String dossierID) {
+		@Nullable String dossierID
+	) {
 
 		this.entity = entity;
 		this.resultId = resultId;
@@ -117,16 +118,23 @@ public class SearchResultEntryDTO implements Serializable {
 		this.dossierId = dossierId;
 	}
 
-	public static List<SearchResultEntryDTO> convertSearchResult(SearchFilter filter, List<Searchable> results) {
-		return results.stream().map(result -> new SearchResultEntryDTO(
-			filter.getSearchEntityType(),
-			result.getSearchResultId(),
-			result.getSearchResultSummary(),
-			result.getSearchResultAdditionalInformation(),
-			result.getOwningGesuchId(),
-			result.getOwningFallId(),
-			result.getOwningDossierId())
-		).collect(Collectors.toList());
+	public static List<SearchResultEntryDTO> convertSearchResult(
+		SearchFilter filter,
+		List<Searchable> results
+	) {
+		return results.stream()
+			.map(
+				result -> new SearchResultEntryDTO(
+					filter.getSearchEntityType(),
+					result.getSearchResultId(),
+					result.getSearchResultSummary(),
+					result.getSearchResultAdditionalInformation(),
+					result.getOwningGesuchId(),
+					result.getOwningFallId(),
+					result.getOwningDossierId()
+				)
+			)
+			.collect(Collectors.toList());
 	}
 
 	@Nullable

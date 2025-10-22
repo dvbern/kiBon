@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -22,14 +22,14 @@ import java.util.StringJoiner;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 
 import com.google.common.base.Objects;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -41,7 +41,8 @@ import static ch.dvbern.ebegu.util.Constants.TEN_MB;
 	@Index(columnList = "eventId", name = "IX_received_event_event_id"),
 	@Index(columnList = "eventKey", name = "IX_received_event_event_key"),
 	@Index(columnList = "eventType", name = "IX_received_event_event_type"),
-	@Index(columnList = "eventTimestamp", name = "IX_received_event_event_timestamp"),
+	@Index(columnList = "eventTimestamp",
+		name = "IX_received_event_event_timestamp"),
 	@Index(columnList = "success", name = "IX_received_event_success")
 })
 public class ReceivedEvent extends AbstractEntity {
@@ -81,7 +82,8 @@ public class ReceivedEvent extends AbstractEntity {
 	 * just for JPA
 	 */
 	@SuppressWarnings("ConstantConditions")
-	@SuppressFBWarnings(value = "NP_STORE_INTO_NONNULL_FIELD", justification = "just for JPA")
+	@SuppressFBWarnings(value = "NP_STORE_INTO_NONNULL_FIELD",
+		justification = "just for JPA")
 	protected ReceivedEvent() {
 		this.eventId = "";
 		this.eventKey = "";
@@ -95,7 +97,8 @@ public class ReceivedEvent extends AbstractEntity {
 		@Nonnull @NotEmpty String eventKey,
 		@Nonnull @NotEmpty String eventType,
 		@Nonnull LocalDateTime eventTimestamp,
-		@Nonnull String eventDto) {
+		@Nonnull String eventDto
+	) {
 		this.eventId = eventId;
 		this.eventKey = eventKey;
 		this.eventType = eventType;
@@ -124,11 +127,16 @@ public class ReceivedEvent extends AbstractEntity {
 
 		ReceivedEvent that = (ReceivedEvent) o;
 
-		return Objects.equal(getEventDto(), that.getEventDto()) &&
-			Objects.equal(getEventId(), that.getEventId()) &&
-			Objects.equal(getEventType(), that.getEventType()) &&
-			Objects.equal(getEventTimestamp(), that.getEventTimestamp()) &&
-			Objects.equal(getEventKey(), that.getEventKey()) &&
+		return Objects.equal(getEventDto(), that.getEventDto())
+			&&
+			Objects.equal(getEventId(), that.getEventId())
+			&&
+			Objects.equal(getEventType(), that.getEventType())
+			&&
+			Objects.equal(getEventTimestamp(), that.getEventTimestamp())
+			&&
+			Objects.equal(getEventKey(), that.getEventKey())
+			&&
 			Objects.equal(isSuccess(), that.isSuccess());
 	}
 
@@ -141,13 +149,18 @@ public class ReceivedEvent extends AbstractEntity {
 			getEventTimestamp(),
 			getEventKey(),
 			getEventDto(),
-			isSuccess());
+			isSuccess()
+		);
 	}
 
 	@Override
 	@Nonnull
 	public String toString() {
-		return new StringJoiner(", ", ReceivedEvent.class.getSimpleName() + '[', "]")
+		return new StringJoiner(
+			", ",
+			ReceivedEvent.class.getSimpleName() + '[',
+			"]"
+		)
 			.add("eventId='" + eventId + '\'')
 			.add("eventKey='" + eventKey + '\'')
 			.add("eventType='" + eventType + '\'')

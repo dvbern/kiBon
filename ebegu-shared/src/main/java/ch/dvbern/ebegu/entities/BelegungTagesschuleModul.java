@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -20,14 +20,14 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.BelegungTagesschuleModulIntervall;
@@ -36,59 +36,75 @@ import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
-public class BelegungTagesschuleModul extends AbstractEntity implements Comparable<BelegungTagesschuleModul> {
+public class BelegungTagesschuleModul extends AbstractEntity implements
+	Comparable<BelegungTagesschuleModul> {
 
 	private static final long serialVersionUID = -2101736417147986784L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
 	// es darf nicht cascadeAll sein, da sonst die Module geloescht werden, wenn die Belegung geloescht wird, obwohl das Modul eigentlich zur Institutione gehoert
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_belegung_ts_modul_modul_ts"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_belegung_ts_modul_modul_ts"), nullable = false)
 	private ModulTagesschule modulTagesschule;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Enumerated(value = EnumType.STRING)
 	@Column(nullable = false)
 	private BelegungTagesschuleModulIntervall intervall;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_belegung_ts_modul_belegung_ts"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_belegung_ts_modul_belegung_ts"), nullable = false)
 	private BelegungTagesschule belegungTagesschule;
-
 
 	@Override
 	public boolean isSame(AbstractEntity other) {
 		return false;
 	}
 
+	@Nonnull
 	public ModulTagesschule getModulTagesschule() {
 		return modulTagesschule;
 	}
 
-	public void setModulTagesschule(ModulTagesschule modulTagesschule) {
+	public void setModulTagesschule(
+		@Nonnull ModulTagesschule modulTagesschule
+	) {
 		this.modulTagesschule = modulTagesschule;
 	}
 
+	@Nonnull
 	public BelegungTagesschuleModulIntervall getIntervall() {
 		return intervall;
 	}
 
-	public void setIntervall(BelegungTagesschuleModulIntervall intervall) {
+	public void setIntervall(
+		@Nonnull BelegungTagesschuleModulIntervall intervall
+	) {
 		this.intervall = intervall;
 	}
 
+	@Nonnull
 	public BelegungTagesschule getBelegungTagesschule() {
 		return belegungTagesschule;
 	}
 
-	public void setBelegungTagesschule(BelegungTagesschule belegungTagesschule) {
+	public void setBelegungTagesschule(
+		@Nonnull BelegungTagesschule belegungTagesschule
+	) {
 		this.belegungTagesschule = belegungTagesschule;
 	}
 
 	@Nonnull
-	public BelegungTagesschuleModul copyBelegungTagesschuleModul(@Nonnull BelegungTagesschuleModul target,
-		@Nonnull AntragCopyType copyType) {
+	public BelegungTagesschuleModul copyBelegungTagesschuleModul(
+		@Nonnull BelegungTagesschuleModul target,
+		@Nonnull AntragCopyType copyType
+	) {
 		switch (copyType) {
 		case MUTATION:
 			target.setIntervall(this.getIntervall());
@@ -124,13 +140,25 @@ public class BelegungTagesschuleModul extends AbstractEntity implements Comparab
 			return false;
 		}
 		BelegungTagesschuleModul that = (BelegungTagesschuleModul) o;
-		return Objects.equals(this.getModulTagesschule(), that.getModulTagesschule()) &&
-			Objects.equals(this.getModulTagesschule().getModulTagesschuleGroup(), that.getModulTagesschule().getModulTagesschuleGroup()) &&
+		return Objects.equals(
+			this.getModulTagesschule(),
+			that.getModulTagesschule()
+		)
+			&&
+			Objects.equals(
+				this.getModulTagesschule().getModulTagesschuleGroup(),
+				that.getModulTagesschule().getModulTagesschuleGroup()
+			)
+			&&
 			this.getIntervall() == that.getIntervall();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), getModulTagesschule(), getIntervall());
+		return Objects.hash(
+			super.hashCode(),
+			getModulTagesschule(),
+			getIntervall()
+		);
 	}
 }

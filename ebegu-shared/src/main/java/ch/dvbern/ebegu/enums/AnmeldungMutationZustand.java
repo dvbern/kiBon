@@ -20,9 +20,5 @@ package ch.dvbern.ebegu.enums;
  */
 public enum AnmeldungMutationZustand {
 
-	NOCH_NICHT_FREIGEGEBEN,
-	MUTIERT,
-	IGNORIERT,
-	AKTUELLE_ANMELDUNG
+	NOCH_NICHT_FREIGEGEBEN, MUTIERT, IGNORIERT, AKTUELLE_ANMELDUNG
 }
-

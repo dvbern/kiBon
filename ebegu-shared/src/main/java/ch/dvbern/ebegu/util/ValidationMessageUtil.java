@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util;
@@ -34,8 +34,20 @@ public final class ValidationMessageUtil {
 	static final Map<String, ResourceBundle> BUNDLES = new HashMap<>();
 
 	static {
-		BUNDLES.put(Constants.DEUTSCH_LOCALE.getLanguage(), ResourceBundle.getBundle(Constants.VALIDATION_MESSAGE_BUNDLE_NAME, Constants.DEUTSCH_LOCALE));
-		BUNDLES.put(Constants.FRENCH_LOCALE.getLanguage(), ResourceBundle.getBundle(Constants.VALIDATION_MESSAGE_BUNDLE_NAME, Constants.FRENCH_LOCALE));
+		BUNDLES.put(
+			Constants.DEUTSCH_LOCALE.getLanguage(),
+			ResourceBundle.getBundle(
+				Constants.VALIDATION_MESSAGE_BUNDLE_NAME,
+				Constants.DEUTSCH_LOCALE
+			)
+		);
+		BUNDLES.put(
+			Constants.FRENCH_LOCALE.getLanguage(),
+			ResourceBundle.getBundle(
+				Constants.VALIDATION_MESSAGE_BUNDLE_NAME,
+				Constants.FRENCH_LOCALE
+			)
+		);
 	}
 
 	private ValidationMessageUtil() {
@@ -43,21 +55,29 @@ public final class ValidationMessageUtil {
 
 	public static String getMessage(String key) {
 		Locale clientLocale = LocaleThreadLocal.get();
-		ResourceBundle clientLocaleBundle = BUNDLES.get(clientLocale.getLanguage());
+		ResourceBundle clientLocaleBundle = BUNDLES.get(
+			clientLocale.getLanguage()
+		);
 		if (clientLocaleBundle == null) {
-			clientLocaleBundle = BUNDLES.get(Constants.DEFAULT_LOCALE.getLanguage());
+			clientLocaleBundle = BUNDLES.get(
+				Constants.DEFAULT_LOCALE.getLanguage()
+			);
 		}
 		return readStringFromBundleOrReturnKey(clientLocaleBundle, key);
 	}
 
 	/**
-	 * Da wir aller wahrscheinlichkeit eine Exceptionmessage uebersetzten wollen macht es nicht gross Sinn hier falls ein
+	 * Da wir aller wahrscheinlichkeit eine Exceptionmessage uebersetzten wollen macht es nicht gross Sinn hier falls
+	 * ein
 	 * Key fehlt MissingResourceException werfen zu lassen.
 	 */
-	private static String readStringFromBundleOrReturnKey(ResourceBundle bundle, String key) {
+	private static String readStringFromBundleOrReturnKey(
+		ResourceBundle bundle,
+		String key
+	) {
 		try {
 			if (key.startsWith("{") && key.endsWith("}")) {
-				key = key.substring(1, key.length()-1);
+				key = key.substring(1, key.length() - 1);
 			}
 			return bundle.getString(key);
 		} catch (MissingResourceException ignore) {

@@ -106,17 +106,6 @@ export class GesuchRS implements IEntityRS {
                 )
             );
     }
-
-    public findGesuchForInstitution(gesuchID: string): IPromise<TSGesuch> {
-        return this.$http
-            .get(
-                `${this.serviceURL}/institution/${encodeURIComponent(gesuchID)}`
-            )
-            .then((response: any) =>
-                this.ebeguRestUtil.parseGesuch(new TSGesuch(), response.data)
-            );
-    }
-
     public getNeustesVerfuegtesGesuchFuerGesuch(
         gesuchID: string
     ): IPromise<string> {
@@ -444,19 +433,7 @@ export class GesuchRS implements IEntityRS {
             .then((response: any) =>
                 this.ebeguRestUtil.parseKitaxResponse(response.data)
             )
-            .catch(() => undefined);
-    }
-
-    public findGesuchOfGesuchsteller(
-        gesuchstellerId: string
-    ): IPromise<TSGesuch> {
-        return this.$http
-            .get(
-                `${this.serviceURL}/gesuchsteller/${encodeURIComponent(gesuchstellerId)}`
-            )
-            .then(response =>
-                this.ebeguRestUtil.parseGesuch(new TSGesuch(), response.data)
-            );
+            .catch((): undefined => undefined);
     }
 
     public zpvNummerErfolgreichVerknuepft(

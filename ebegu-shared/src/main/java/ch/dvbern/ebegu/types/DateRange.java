@@ -31,9 +31,9 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.validators.dateranges.CheckDateRange;
@@ -57,7 +57,10 @@ public class DateRange implements Serializable, Comparable<DateRange> {
 	@Column(nullable = false)
 	private LocalDate gueltigBis;
 
-	public DateRange(@Nonnull LocalDate gueltigAb, @Nonnull LocalDate gueltigBis) {
+	public DateRange(
+		@Nonnull LocalDate gueltigAb,
+		@Nonnull LocalDate gueltigBis
+	) {
 		this.gueltigAb = Objects.requireNonNull(gueltigAb);
 		this.gueltigBis = Objects.requireNonNull(gueltigBis);
 	}
@@ -87,21 +90,26 @@ public class DateRange implements Serializable, Comparable<DateRange> {
 	 * DateRange für ein ganzes Kalender-Jahr
 	 */
 	public DateRange(@Nonnull Integer jahr) {
-		this(LocalDate.of(jahr, Month.JANUARY, 1), LocalDate.of(jahr, Month.DECEMBER, 31));
+		this(
+			LocalDate.of(jahr, Month.JANUARY, 1),
+			LocalDate.of(jahr, Month.DECEMBER, 31)
+		);
 	}
 
 	/**
 	 * true, when the other DateRange is completely contained in this DateRange
 	 */
 	public boolean contains(@Nonnull DateRange other) {
-		return !gueltigAb.isAfter(other.getGueltigAb()) && !gueltigBis.isBefore(other.getGueltigBis());
+		return !gueltigAb.isAfter(other.getGueltigAb())
+			&& !gueltigBis.isBefore(other.getGueltigBis());
 	}
 
 	/**
 	 * gueltigAb <= date <= gueltigBis
 	 */
 	public boolean contains(@Nonnull ChronoLocalDate date) {
-		return !(date.isBefore(getGueltigAb()) || date.isAfter(getGueltigBis()));
+		return !(date.isBefore(getGueltigAb())
+			|| date.isAfter(getGueltigBis()));
 	}
 
 	/**
@@ -250,14 +258,19 @@ public class DateRange implements Serializable, Comparable<DateRange> {
 	 */
 	@Nonnull
 	public DateRange withFullWeeks() {
-		LocalDate montag = getGueltigAb().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-		LocalDate sonntag = getGueltigBis().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+		LocalDate montag = getGueltigAb().with(
+			TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
+		);
+		LocalDate sonntag = getGueltigBis().with(
+			TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)
+		);
 		return new DateRange(montag, sonntag);
 	}
 
 	@Nonnull
 	public List<DateRange> toFullWeekRanges() {
-		if (gueltigAb.getDayOfWeek() == DayOfWeek.MONDAY && gueltigBis.getDayOfWeek() == DayOfWeek.SUNDAY) {
+		if (gueltigAb.getDayOfWeek() == DayOfWeek.MONDAY
+			&& gueltigBis.getDayOfWeek() == DayOfWeek.SUNDAY) {
 			//noinspection ArraysAsListWithZeroOrOneArgument
 			return Arrays.asList(new DateRange(gueltigAb, gueltigBis));
 		}
@@ -276,8 +289,12 @@ public class DateRange implements Serializable, Comparable<DateRange> {
 			return Arrays.asList(gueltigAbWeek, gueltigBisWeek);
 		}
 
-		LocalDate ab = gueltigAb.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
-		LocalDate bis = gueltigBis.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+		LocalDate ab = gueltigAb.with(
+			TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)
+		);
+		LocalDate bis = gueltigBis.with(
+			TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)
+		);
 		List<DateRange> result = new ArrayList<>();
 
 		if (ab.isAfter(gueltigAb)) {
@@ -300,8 +317,12 @@ public class DateRange implements Serializable, Comparable<DateRange> {
 	 */
 	@Nonnull
 	public DateRange withFullMonths() {
-		LocalDate firstDay = getGueltigAb().with(TemporalAdjusters.firstDayOfMonth());
-		LocalDate lastDay = getGueltigBis().with(TemporalAdjusters.lastDayOfMonth());
+		LocalDate firstDay = getGueltigAb().with(
+			TemporalAdjusters.firstDayOfMonth()
+		);
+		LocalDate lastDay = getGueltigBis().with(
+			TemporalAdjusters.lastDayOfMonth()
+		);
 		return new DateRange(firstDay, lastDay);
 	}
 
@@ -312,22 +333,33 @@ public class DateRange implements Serializable, Comparable<DateRange> {
 	 */
 	@Nonnull
 	public DateRange withFullYears() {
-		LocalDate firstDay = getGueltigAb().with(TemporalAdjusters.firstDayOfYear());
-		LocalDate lastDay = getGueltigBis().with(TemporalAdjusters.lastDayOfYear());
+		LocalDate firstDay = getGueltigAb().with(
+			TemporalAdjusters.firstDayOfYear()
+		);
+		LocalDate lastDay = getGueltigBis().with(
+			TemporalAdjusters.lastDayOfYear()
+		);
 		return new DateRange(firstDay, lastDay);
 	}
 
 	/**
-	 * @return Falls es zwischen dieser DateRange und otherRange eine zeitliche ueberlappung gibt, so wird diese zurueck gegeben
+	 * @return Falls es zwischen dieser DateRange und otherRange eine zeitliche ueberlappung gibt, so wird diese zurueck
+	 * gegeben
 	 */
 	@Nonnull
 	public Optional<DateRange> getOverlap(@Nonnull DateRange otherRange) {
-		if (this.getGueltigAb().isAfter(otherRange.getGueltigBis()) || this.getGueltigBis().isBefore(otherRange.getGueltigAb())) {
+		if (this.getGueltigAb().isAfter(otherRange.getGueltigBis())
+			|| this.getGueltigBis().isBefore(otherRange.getGueltigAb())) {
 			return Optional.empty();
 		}
 
-		LocalDate ab = otherRange.getGueltigAb().isAfter(this.getGueltigAb()) ? otherRange.getGueltigAb() : this.getGueltigAb();
-		LocalDate bis = otherRange.getGueltigBis().isBefore(this.getGueltigBis()) ? otherRange.getGueltigBis() : this.getGueltigBis();
+		LocalDate ab = otherRange.getGueltigAb().isAfter(this.getGueltigAb()) ?
+			otherRange.getGueltigAb() :
+			this.getGueltigAb();
+		LocalDate bis = otherRange.getGueltigBis()
+			.isBefore(this.getGueltigBis()) ?
+				otherRange.getGueltigBis() :
+				this.getGueltigBis();
 
 		return Optional.of(new DateRange(ab, bis));
 	}

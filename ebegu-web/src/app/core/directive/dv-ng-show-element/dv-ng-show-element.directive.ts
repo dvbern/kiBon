@@ -21,8 +21,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../../models/enums/TSRole';
-
+import {TSRole} from '@kibon/shared/model/enums';
 /**
  * dvNgShowElement
  *
@@ -47,7 +46,10 @@ import {TSRole} from '../../../../models/enums/TSRole';
  * ADMIN_BG when getBooleanValue() evaluates to true
  *
  */
-@Directive({selector: '[dvNgShowElement]'})
+@Directive({
+    selector: '[dvNgShowElement]',
+    standalone: false
+})
 export class DvNgShowElementDirective implements OnInit {
     private hasView = false;
     private _roles: ReadonlyArray<TSRole>;

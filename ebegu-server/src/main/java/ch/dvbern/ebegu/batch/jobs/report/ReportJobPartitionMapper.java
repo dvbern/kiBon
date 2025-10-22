@@ -15,18 +15,17 @@
 
 package ch.dvbern.ebegu.batch.jobs.report;
 
-import javax.batch.api.partition.PartitionMapper;
-import javax.batch.api.partition.PartitionPlan;
-import javax.batch.runtime.context.JobContext;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
+import jakarta.batch.api.partition.PartitionMapper;
+import jakarta.batch.api.partition.PartitionPlan;
+import jakarta.batch.runtime.context.JobContext;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 
 @Named("reportJobPartitionMapper")
 @Dependent
 public class ReportJobPartitionMapper implements PartitionMapper {
-
 
 	@Inject
 	private JobContext ctx;

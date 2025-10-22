@@ -36,7 +36,8 @@ import {MitteilungRS} from '../../service/mitteilungRS.rest';
  */
 @Component({
     selector: 'dv-ng-mitteilung-delegation-dialog',
-    templateUrl: './dv-ng-mitteilung-delegation-dialog.component.html'
+    templateUrl: './dv-ng-mitteilung-delegation-dialog.component.html',
+    standalone: false
 })
 export class DvNgMitteilungDelegationDialogComponent {
     public benutzerList: TSBenutzer[];

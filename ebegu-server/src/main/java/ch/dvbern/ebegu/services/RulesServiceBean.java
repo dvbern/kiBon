@@ -21,15 +21,17 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.DemoFeatureTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.rules.BetreuungsgutscheinConfigurator;
 import ch.dvbern.ebegu.rules.Rule;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
@@ -40,7 +42,8 @@ import ch.dvbern.ebegu.util.RuleParameterUtil;
  */
 @Stateless
 @Local(RulesService.class)
-public class RulesServiceBean extends AbstractBaseService implements RulesService {
+public class RulesServiceBean extends AbstractBaseService implements
+	RulesService {
 
 	@Inject
 	private EinstellungService einstellungService;
@@ -60,14 +63,30 @@ public class RulesServiceBean extends AbstractBaseService implements RulesServic
 		@Nonnull KitaxUebergangsloesungParameter kitaxParameterDTO,
 		@Nonnull Locale locale
 	) {
-		BetreuungsgutscheinConfigurator ruleConfigurator = new BetreuungsgutscheinConfigurator();
-		Set<EinstellungKey> keysToLoad = ruleConfigurator.getRequiredParametersForGemeinde();
+		BetreuungsgutscheinConfigurator ruleConfigurator =
+			new BetreuungsgutscheinConfigurator();
+		Set<EinstellungKey> keysToLoad = ruleConfigurator
+			.getRequiredParametersForGemeinde();
 		Map<EinstellungKey, Einstellung> einstellungen =
-				einstellungService.loadRuleParameters(gemeinde, gesuchsperiode, keysToLoad);
+			einstellungService.loadRuleParameters(
+				gemeinde,
+				gesuchsperiode,
+				keysToLoad
+			);
 		List<DemoFeatureTyp> activatedDemoFeatures =
-				applicationPropertyService.getActivatedDemoFeatures(gesuchsperiode.getMandant());
+			applicationPropertyService.getActivatedDemoFeatures(
+				gesuchsperiode.getMandant()
+			);
 		RuleParameterUtil ruleParameterUtil =
-				new RuleParameterUtil(einstellungen, activatedDemoFeatures, kitaxParameterDTO, locale);
-		return ruleConfigurator.configureRulesForMandant(gemeinde, ruleParameterUtil);
+			new RuleParameterUtil(
+				einstellungen,
+				activatedDemoFeatures,
+				kitaxParameterDTO,
+				locale
+			);
+		return ruleConfigurator.configureRulesForMandant(
+			gemeinde,
+			ruleParameterUtil
+		);
 	}
 }

@@ -1,22 +1,30 @@
 package ch.dvbern.ebegu.services;
 
-import ch.dvbern.ebegu.entities.*;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+
+import ch.dvbern.ebegu.entities.EinstellungenFerieninsel;
+import ch.dvbern.ebegu.entities.EinstellungenTagesschule;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.InstitutionStammdaten;
+import ch.dvbern.ebegu.entities.InstitutionStammdatenBetreuungsgutscheine;
+import ch.dvbern.ebegu.entities.InstitutionStammdatenFerieninsel;
+import ch.dvbern.ebegu.entities.InstitutionStammdatenTagesschule;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.ModulTagesschuleTyp;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Stateless
 @Local(InstitutionStammdatenInitalizerService.class)
-public class InstitutionStammdatenInitializerServiceBean implements InstitutionStammdatenInitalizerService {
+public class InstitutionStammdatenInitializerServiceBean implements
+	InstitutionStammdatenInitalizerService {
 
 	@Inject
 	private GemeindeService gemeindeService;
@@ -26,28 +34,48 @@ public class InstitutionStammdatenInitializerServiceBean implements InstitutionS
 
 	@Override
 	public InstitutionStammdaten initInstitutionStammdatenBetreuungsgutschein() {
-		InstitutionStammdaten institutionStammdaten = new InstitutionStammdaten();
-		InstitutionStammdatenBetreuungsgutscheine bgStammdaten = new InstitutionStammdatenBetreuungsgutscheine();
-		institutionStammdaten.setInstitutionStammdatenBetreuungsgutscheine(bgStammdaten);
+		InstitutionStammdaten institutionStammdaten =
+			new InstitutionStammdaten();
+		InstitutionStammdatenBetreuungsgutscheine bgStammdaten =
+			new InstitutionStammdatenBetreuungsgutscheine();
+		institutionStammdaten.setInstitutionStammdatenBetreuungsgutscheine(
+			bgStammdaten
+		);
 		return institutionStammdaten;
 	}
 
 	@Override
-	public InstitutionStammdaten initInstitutionStammdatenTagesschule(@Nullable String gemeindeId) {
-		InstitutionStammdaten institutionStammdaten = new InstitutionStammdaten();
-		InstitutionStammdatenTagesschule stammdatenTS = new InstitutionStammdatenTagesschule();
+	public InstitutionStammdaten initInstitutionStammdatenTagesschule(
+		@Nullable String gemeindeId
+	) {
+		InstitutionStammdaten institutionStammdaten =
+			new InstitutionStammdaten();
+		InstitutionStammdatenTagesschule stammdatenTS =
+			new InstitutionStammdatenTagesschule();
 		stammdatenTS.setGemeinde(getGemeindeOrThrowException(gemeindeId));
 
 		Set<EinstellungenTagesschule> einstellungenTagesschuleSet =
-			gesuchsperiodeService.getAllNichtAbgeschlosseneGesuchsperioden().stream().map(
-				gesuchsperiode -> {
-					EinstellungenTagesschule einstellungenTagesschule = new EinstellungenTagesschule();
-					einstellungenTagesschule.setInstitutionStammdatenTagesschule(stammdatenTS);
-					einstellungenTagesschule.setGesuchsperiode(gesuchsperiode);
-					einstellungenTagesschule.setModulTagesschuleTyp(ModulTagesschuleTyp.DYNAMISCH);
-					return einstellungenTagesschule;
-				}
-			).collect(Collectors.toSet());
+			gesuchsperiodeService.getAllNichtAbgeschlosseneGesuchsperioden()
+				.stream()
+				.map(
+					gesuchsperiode -> {
+						EinstellungenTagesschule einstellungenTagesschule =
+							new EinstellungenTagesschule();
+						einstellungenTagesschule
+							.setInstitutionStammdatenTagesschule(
+								stammdatenTS
+							);
+						einstellungenTagesschule.setGesuchsperiode(
+							gesuchsperiode
+						);
+						einstellungenTagesschule
+							.setModulTagesschuleTyp(
+								ModulTagesschuleTyp.DYNAMISCH
+							);
+						return einstellungenTagesschule;
+					}
+				)
+				.collect(Collectors.toSet());
 
 		stammdatenTS.setEinstellungenTagesschule(einstellungenTagesschuleSet);
 		institutionStammdaten.setInstitutionStammdatenTagesschule(stammdatenTS);
@@ -55,20 +83,33 @@ public class InstitutionStammdatenInitializerServiceBean implements InstitutionS
 	}
 
 	@Override
-	public InstitutionStammdaten initInstitutionStammdatenFerieninsel(@Nullable String gemeindeId) {
-		InstitutionStammdaten institutionStammdaten = new InstitutionStammdaten();
-		InstitutionStammdatenFerieninsel stammdatenFI = new InstitutionStammdatenFerieninsel();
+	public InstitutionStammdaten initInstitutionStammdatenFerieninsel(
+		@Nullable String gemeindeId
+	) {
+		InstitutionStammdaten institutionStammdaten =
+			new InstitutionStammdaten();
+		InstitutionStammdatenFerieninsel stammdatenFI =
+			new InstitutionStammdatenFerieninsel();
 		stammdatenFI.setGemeinde(getGemeindeOrThrowException(gemeindeId));
 
 		Set<EinstellungenFerieninsel> einstellungenFerieninselSet =
-			gesuchsperiodeService.getAllNichtAbgeschlosseneGesuchsperioden().stream().map(
-				gesuchsperiode -> {
-					EinstellungenFerieninsel einstellungenFerieninsel = new EinstellungenFerieninsel();
-					einstellungenFerieninsel.setInstitutionStammdatenFerieninsel(stammdatenFI);
-					einstellungenFerieninsel.setGesuchsperiode(gesuchsperiode);
-					return einstellungenFerieninsel;
-				}
-			).collect(Collectors.toSet());
+			gesuchsperiodeService.getAllNichtAbgeschlosseneGesuchsperioden()
+				.stream()
+				.map(
+					gesuchsperiode -> {
+						EinstellungenFerieninsel einstellungenFerieninsel =
+							new EinstellungenFerieninsel();
+						einstellungenFerieninsel
+							.setInstitutionStammdatenFerieninsel(
+								stammdatenFI
+							);
+						einstellungenFerieninsel.setGesuchsperiode(
+							gesuchsperiode
+						);
+						return einstellungenFerieninsel;
+					}
+				)
+				.collect(Collectors.toSet());
 
 		stammdatenFI.setEinstellungenFerieninsel(einstellungenFerieninselSet);
 		institutionStammdaten.setInstitutionStammdatenFerieninsel(stammdatenFI);
@@ -76,13 +117,21 @@ public class InstitutionStammdatenInitializerServiceBean implements InstitutionS
 	}
 
 	@Nonnull
-	private Gemeinde getGemeindeOrThrowException(@Nullable  String gemeindeId) {
+	private Gemeinde getGemeindeOrThrowException(@Nullable String gemeindeId) {
 		if (gemeindeId == null) {
-			throw new EbeguRuntimeException("initInstitutionStammdaten()", "missing gemeindeId");
+			throw new EbeguRuntimeException(
+				"initInstitutionStammdaten()",
+				"missing gemeindeId"
+			);
 		}
 
 		return gemeindeService.findGemeinde(gemeindeId)
-			.orElseThrow(() -> new EbeguEntityNotFoundException("initInstitutionStammdaten",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, "GemeindeId invalid: " + gemeindeId));
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"initInstitutionStammdaten",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"GemeindeId invalid: " + gemeindeId
+				)
+			);
 	}
 }

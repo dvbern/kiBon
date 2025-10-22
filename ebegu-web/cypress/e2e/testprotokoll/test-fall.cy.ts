@@ -17,11 +17,13 @@
 
 import {TestFaellePO} from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 
 describe('Kibon - generate Testfälle [Superadmin]', () => {
-    const adminUser = getUser('[1-Superadmin] E-BEGU Superuser');
+    const adminUser = getUser('[1-Superadmin] Super User');
 
     beforeEach(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
         cy.login(adminUser);
         cy.visit('/#/faelle');

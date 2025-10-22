@@ -13,12 +13,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {TSFerienname} from './enums/TSFerienname';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import moment from 'moment';
+import {TSFerienname} from '@kibon/shared/model/enums';
+import {
+    TSAbstractMutableEntity,
+    TSGesuchsperiode
+} from '@kibon/shared/model/entity';
 import {TSBelegungFerieninselTag} from './TSBelegungFerieninselTag';
 import {TSFerieninselZeitraum} from './TSFerieninselZeitraum';
-import {TSGesuchsperiode} from './TSGesuchsperiode';
 
 export class TSFerieninselStammdaten extends TSAbstractMutableEntity {
     private _ferienname: TSFerienname;

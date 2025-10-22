@@ -26,11 +26,18 @@ public final class StreamsUtil {
 	}
 
 	public static <T> BinaryOperator<T> toOnlyElement() {
-		return toOnlyElementThrowing(() -> new EbeguRuntimeException("toOnlyElement", ErrorCodeEnum.ERROR_TOO_MANY_RESULTS, ""));
+		return toOnlyElementThrowing(
+			() -> new EbeguRuntimeException(
+				"toOnlyElement",
+				ErrorCodeEnum.ERROR_TOO_MANY_RESULTS,
+				""
+			)
+		);
 	}
 
-	public static <T, E extends RuntimeException> BinaryOperator<T>
-	toOnlyElementThrowing(Supplier<E> exception) {
+	public static <T, E extends RuntimeException> BinaryOperator<T> toOnlyElementThrowing(
+		Supplier<E> exception
+	) {
 		return (element, otherElement) -> {
 			throw exception.get();
 		};

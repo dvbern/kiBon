@@ -44,7 +44,8 @@ public interface FinanzielleSituationService {
 	Gesuch saveFinanzielleSituationStart(
 		@Nonnull FinanzielleSituationContainer finanzielleSituation,
 		@Nonnull FinanzielleSituationStartDTO finSitStartDTO,
-		@Nonnull String gesuchId);
+		@Nonnull String gesuchId
+	);
 
 	/**
 	 * Speichert die Finanzielle Situation für einen Gesuchsteller
@@ -52,14 +53,17 @@ public interface FinanzielleSituationService {
 	@Nonnull
 	FinanzielleSituationContainer saveFinanzielleSituation(
 		@Nonnull FinanzielleSituationContainer finanzielleSituation,
-		@Nonnull String gesuchId);
+		@Nonnull String gesuchId
+	);
 
 	/**
 	 * @param id PK (id) der FinanzielleSituation
 	 * @return FinanzielleSituation mit dem gegebenen key oder null falls nicht vorhanden
 	 */
 	@Nonnull
-	Optional<FinanzielleSituationContainer> findFinanzielleSituation(@Nonnull String id);
+	Optional<FinanzielleSituationContainer> findFinanzielleSituation(
+		@Nonnull String id
+	);
 
 	/**
 	 * Berechnet die Finanzielle Situation beider Gesuchsteller
@@ -79,15 +83,23 @@ public interface FinanzielleSituationService {
 	 * @param finanzielleSituation
 	 */
 	@Nonnull
-	FinanzielleSituationContainer saveFinanzielleSituationTemp(FinanzielleSituationContainer finanzielleSituation);
+	FinanzielleSituationContainer saveFinanzielleSituationTemp(
+		FinanzielleSituationContainer finanzielleSituation
+	);
 
-	void setValuesFromAufteilungDTO(@Nonnull FinanzielleSituation finSitGs1, @Nonnull FinanzielleSituation finSitGs2, @Nonnull JaxFinanzielleSituationAufteilungDTO dto);
+	void setValuesFromAufteilungDTO(
+		@Nonnull FinanzielleSituation finSitGs1,
+		@Nonnull FinanzielleSituation finSitGs2,
+		@Nonnull JaxFinanzielleSituationAufteilungDTO dto
+	);
 
 	@Nullable
-    FinanzielleSituation findFinanzielleSituationForNeueVeranlagungsMitteilung(@Nonnull
-		NeueVeranlagungsMitteilung persistedMitteilung);
+	FinanzielleSituation findFinanzielleSituationForNeueVeranlagungsMitteilung(
+		@Nonnull NeueVeranlagungsMitteilung persistedMitteilung
+	);
 
 	void resetCompleteSchwyzFinSitData(
 		AbstractFinanzielleSituation finSit,
-		GesuchstellerContainer gesuchstellerContainer);
+		GesuchstellerContainer gesuchstellerContainer
+	);
 }

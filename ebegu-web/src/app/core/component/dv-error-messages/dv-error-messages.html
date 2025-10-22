@@ -138,6 +138,11 @@
             data-translate="ERROR_QR_IBAN"
         ></div>
         <div
+            ng-message="swiftBicCode"
+            id="{{ vm.inputid + '-error' }}"
+            data-translate="ERROR_BIC_SWIFT_CODE"
+        ></div>
+        <div
             ng-message="md-require-match"
             id="{{ vm.inputid + '-error' }}"
             data-translate="AUTOCOMPLETE_REQUIRE_EXACT_MATCH"

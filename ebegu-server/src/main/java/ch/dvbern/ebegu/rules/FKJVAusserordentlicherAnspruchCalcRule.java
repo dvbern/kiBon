@@ -8,79 +8,93 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.dto.BGCalculationInput;
-import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.entities.Einstellung;
-import ch.dvbern.ebegu.entities.Kind;
-import ch.dvbern.ebegu.enums.AusserordentlicherAnspruchTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
-import ch.dvbern.ebegu.enums.MsgKey;
-import ch.dvbern.ebegu.types.DateRange;
-
-import javax.annotation.Nonnull;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.entities.AbstractPlatz;
+import ch.dvbern.ebegu.entities.Kind;
+import ch.dvbern.ebegu.enums.AusserordentlicherAnspruchTyp;
+import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.types.DateRange;
 
 import static ch.dvbern.ebegu.enums.AusserordentlicherAnspruchTyp.FKJV;
 
 /**
  * Regel für den ausserordentlichen Anspruch. Sie beachtet:
  * Ausserordentliches Pensum übersteuert den Anspruch, der aus anderen Reglen berechnet wurde, AUSSER dieser wäre
- * höher. Die maximale Differenz zwischen dem effektiven Anspruch und dem ausserodentlichen Anspruch, darf nicht mehr als der
+ * höher. Die maximale Differenz zwischen dem effektiven Anspruch und dem ausserodentlichen Anspruch, darf nicht mehr
+ * als der
  * konfigurierte Wert sein. Das Beschäftigungspensum muss eine minimale Grenze übersteigen, damit der ausserordentliche
  * Anspruch angewandt werden kann.
  * Diese Regel kann also den Anspruch nur hinaufsetzen, nie hinunter.
  */
-public class FKJVAusserordentlicherAnspruchCalcRule extends AbstractAusserordentlicherAnspruchCalcRule {
+public class FKJVAusserordentlicherAnspruchCalcRule extends
+	AbstractAusserordentlicherAnspruchCalcRule {
 
 	private int minBeschaeftigungsPensumVorschule;
 	private int minBeschaeftigungsPensumEingeschult;
 	private int maxDifferenzBeschaeftigungsPensum;
 
 	public FKJVAusserordentlicherAnspruchCalcRule(
-			int minBeschaeftigungsPensumVorschule,
-			int minBeschaeftigungsPensumEingeschult,
-			int maxDifferenzBeschaeftigungsPensum,
-			@Nonnull DateRange validityPeriod,
-			@Nonnull Locale locale) {
+		int minBeschaeftigungsPensumVorschule,
+		int minBeschaeftigungsPensumEingeschult,
+		int maxDifferenzBeschaeftigungsPensum,
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
 		super(validityPeriod, locale);
-		this.minBeschaeftigungsPensumVorschule = minBeschaeftigungsPensumVorschule;
-		this.minBeschaeftigungsPensumEingeschult = minBeschaeftigungsPensumEingeschult;
-		this.maxDifferenzBeschaeftigungsPensum = maxDifferenzBeschaeftigungsPensum;
+		this.minBeschaeftigungsPensumVorschule =
+			minBeschaeftigungsPensumVorschule;
+		this.minBeschaeftigungsPensumEingeschult =
+			minBeschaeftigungsPensumEingeschult;
+		this.maxDifferenzBeschaeftigungsPensum =
+			maxDifferenzBeschaeftigungsPensum;
 	}
 
 	@Override
 	public boolean isRelevantForGemeinde(
-			@Nonnull Map<EinstellungKey, Einstellung> einstellungMap) {
-	    AusserordentlicherAnspruchTyp anspruchTyp = getAusserordentlicherAnspruchTypeFromEinstellungen(einstellungMap);
+		@Nonnull Map<EinstellungKey, Einstellung> einstellungMap
+	) {
+		AusserordentlicherAnspruchTyp anspruchTyp =
+			getAusserordentlicherAnspruchTypeFromEinstellungen(
+				einstellungMap
+			);
 		return anspruchTyp == FKJV;
 	}
 
 	@Override
 	protected void executeRule(
 		@Nonnull AbstractPlatz platz,
-		@Nonnull BGCalculationInput inputData) {
-		int ausserordentlicherAnspruch = inputData.getAusserordentlicherAnspruch();
+		@Nonnull BGCalculationInput inputData
+	) {
+		int ausserordentlicherAnspruch = inputData
+			.getAusserordentlicherAnspruch();
 		int pensumAnspruch = inputData.getAnspruchspensumProzent();
 
-		if (ausserordentlicherAnspruch == 0)  {
+		if (ausserordentlicherAnspruch == 0) {
 			return;
 		}
 
-		if(!beschaeftigungspensumSufficient(platz, inputData)) {
+		if (!beschaeftigungspensumSufficient(platz, inputData)) {
 			inputData.setAusserordentlicherAnspruch(0);
 			inputData.addBemerkung(
-					MsgKey.KEIN_AUSSERORDENTLICHER_ANSPRUCH_MSG,
-					getLocale());
+				MsgKey.KEIN_AUSSERORDENTLICHER_ANSPRUCH_MSG,
+				getLocale()
+			);
 			return;
 		}
 
@@ -89,62 +103,91 @@ public class FKJVAusserordentlicherAnspruchCalcRule extends AbstractAusserordent
 			inputData.setAnspruchspensumProzent(ausserordentlicherAnspruch);
 			inputData.addBemerkung(
 				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG,
-				getLocale());
+				getLocale()
+			);
 		}
 	}
 
-	private boolean beschaeftigungspensumSufficient(AbstractPlatz platz, BGCalculationInput inputData) {
-		if(hasSecondGesuchsteller(platz)) {
-			return beschaeftigungspensumSufficientForTwoGesuchstellende(platz, inputData.getErwerbspensumGS1(), inputData.getErwerbspensumGS2());
+	private boolean beschaeftigungspensumSufficient(
+		AbstractPlatz platz,
+		BGCalculationInput inputData
+	) {
+		if (hasSecondGesuchsteller(platz)) {
+			return beschaeftigungspensumSufficientForTwoGesuchstellende(
+				platz,
+				inputData.getErwerbspensumGS1(),
+				inputData.getErwerbspensumGS2()
+			);
 		}
 
-		return beschaeftigungspensumSufficientForOneGesuchstellende(platz, inputData.getErwerbspensumGS1());
+		return beschaeftigungspensumSufficientForOneGesuchstellende(
+			platz,
+			inputData.getErwerbspensumGS1()
+		);
 	}
-
 
 	private boolean hasSecondGesuchsteller(AbstractPlatz platz) {
 		return platz.extractGesuch().getGesuchsteller2() != null;
 	}
 
 	private boolean beschaeftigungspensumSufficientForTwoGesuchstellende(
-			AbstractPlatz platz,
-			Integer erwerbspensumGS1,
-			Integer erwerbspensumGS2) {
+		AbstractPlatz platz,
+		Integer erwerbspensumGS1,
+		Integer erwerbspensumGS2
+	) {
 		Kind kind = platz.getKind().getKindJA();
 		assert kind.getEinschulungTyp() != null;
 		erwerbspensumGS1 = getValueOrZero(erwerbspensumGS1);
 		erwerbspensumGS2 = getValueOrZero(erwerbspensumGS2);
 
-		final int totalBeschaeftigungspensum = erwerbspensumGS1 + erwerbspensumGS2;
+		final int totalBeschaeftigungspensum = erwerbspensumGS1
+			+ erwerbspensumGS2;
 		if (kind.getEinschulungTyp().isEingeschult()) {
-			return erwerbspensumSufficient(totalBeschaeftigungspensum - 100, this.minBeschaeftigungsPensumEingeschult);
+			return erwerbspensumSufficient(
+				totalBeschaeftigungspensum - 100,
+				this.minBeschaeftigungsPensumEingeschult
+			);
 		}
-		return erwerbspensumSufficient(totalBeschaeftigungspensum - 100, this.minBeschaeftigungsPensumVorschule);
+		return erwerbspensumSufficient(
+			totalBeschaeftigungspensum - 100,
+			this.minBeschaeftigungsPensumVorschule
+		);
 	}
 
 	private Integer getValueOrZero(Integer i) {
 		return i != null ? i : 0;
 	}
 
-	private boolean erwerbspensumSufficient(int beschaeftigungspensum, int minBeschaeftigungspensum) {
+	private boolean erwerbspensumSufficient(
+		int beschaeftigungspensum,
+		int minBeschaeftigungspensum
+	) {
 		if (beschaeftigungspensum > minBeschaeftigungspensum) {
 			return true;
 		}
-		return Math.abs(beschaeftigungspensum - minBeschaeftigungspensum) <= this.maxDifferenzBeschaeftigungsPensum;
+		return Math.abs(beschaeftigungspensum - minBeschaeftigungspensum)
+			<= this.maxDifferenzBeschaeftigungsPensum;
 	}
 
 	private boolean beschaeftigungspensumSufficientForOneGesuchstellende(
-			AbstractPlatz platz,
-			Integer beschaeftigungsPensumGS) {
+		AbstractPlatz platz,
+		Integer beschaeftigungsPensumGS
+	) {
 		Kind kind = platz.getKind().getKindJA();
 		assert kind.getEinschulungTyp() != null;
 		if (beschaeftigungsPensumGS == null || beschaeftigungsPensumGS == 0) {
 			return false;
 		}
 		if (kind.getEinschulungTyp().isEingeschult()) {
-			return erwerbspensumSufficient(beschaeftigungsPensumGS, this.minBeschaeftigungsPensumEingeschult);
+			return erwerbspensumSufficient(
+				beschaeftigungsPensumGS,
+				this.minBeschaeftigungsPensumEingeschult
+			);
 		}
-		return  erwerbspensumSufficient(beschaeftigungsPensumGS, this.minBeschaeftigungsPensumVorschule);
+		return erwerbspensumSufficient(
+			beschaeftigungsPensumGS,
+			this.minBeschaeftigungsPensumVorschule
+		);
 	}
 
 }

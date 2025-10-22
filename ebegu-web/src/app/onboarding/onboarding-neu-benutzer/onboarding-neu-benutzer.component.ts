@@ -22,15 +22,17 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
-import {from, Observable} from 'rxjs';
+import {firstValueFrom, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSGemeinde} from '../../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {DvNgCancelDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-cancel-dialog.component';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
 import {OnboardingHelpDialogComponent} from '../onboarding-help-dialog/onboarding-help-dialog.component';
 
 @Component({
@@ -40,7 +42,8 @@ import {OnboardingHelpDialogComponent} from '../onboarding-help-dialog/onboardin
     styleUrls: [
         './onboarding-neu-benutzer.component.less',
         '../onboarding.less'
-    ]
+    ],
+    standalone: false
 })
 export class OnboardingNeuBenutzerComponent {
     @Input() public nextState: string = 'onboarding.be-login';
@@ -61,7 +64,8 @@ export class OnboardingNeuBenutzerComponent {
     public constructor(
         private readonly gemeindeRS: GemeindeRS,
         private readonly stateService: StateService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly authServiceRS: AuthServiceRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly cd: ChangeDetectorRef,
         private readonly dialog: MatDialog,
         private readonly translate: TranslateService
@@ -92,9 +96,10 @@ export class OnboardingNeuBenutzerComponent {
                 gemeinden.filter(gemeinde => gemeinde.besondereVolksschule)
             )
         );
+
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then(properties => {
+            .subscribe(properties => {
                 this.isTSAngebotEnabled = properties.angebotTSActivated;
                 this.cd.markForCheck();
             });
@@ -117,10 +122,19 @@ export class OnboardingNeuBenutzerComponent {
                 listIds.push(gemeinde.key);
             }
         });
-        this.stateService.go(this.nextState, {
-            gemeindeBGId: this.gemeinde !== undefined ? this.gemeinde.id : null,
-            gemeindenId: listIds
-        });
+        console.log(this.nextState);
+        if (this.authServiceRS.isLoggedIn()) {
+            this.stateService.go(this.nextState, {
+                gemeindeBGId:
+                    this.gemeinde !== undefined ? this.gemeinde.id : null,
+                gemeindenId: listIds
+            });
+        } else {
+            this.authServiceRS.initRegistration({
+                gemeindeBGId: this.gemeinde?.id,
+                gemeindenId: listIds
+            });
+        }
     }
 
     public showPopupAfterRegistrierenIfNecessary(): Promise<boolean> {
@@ -136,10 +150,11 @@ export class OnboardingNeuBenutzerComponent {
         dialogConfig.data = {
             frage: popupText
         };
-        return this.dialog
-            .open(DvNgCancelDialogComponent, dialogConfig)
-            .afterClosed()
-            .toPromise();
+        return firstValueFrom(
+            this.dialog
+                .open(DvNgCancelDialogComponent, dialogConfig)
+                .afterClosed()
+        );
     }
 
     public set gemeindeList(value: Array<TSGemeinde>) {

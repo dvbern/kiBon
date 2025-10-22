@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Jax wrapper um Mitteilungen-Liste zurueckgeben zu koennen. Ohne den Wrapper verliert man die Information
@@ -37,7 +37,7 @@ public class JaxMitteilungen implements Serializable {
 	public JaxMitteilungen() {
 	}
 
-	public JaxMitteilungen(Collection<JaxMitteilung> mitteilungen) {
+	public JaxMitteilungen(@Nonnull Collection<JaxMitteilung> mitteilungen) {
 		this.mitteilungen = mitteilungen;
 	}
 
@@ -46,7 +46,9 @@ public class JaxMitteilungen implements Serializable {
 		return mitteilungen;
 	}
 
-	public void setMitteilungen(@Nonnull Collection<JaxMitteilung> mitteilungen) {
+	public void setMitteilungen(
+		@Nonnull Collection<JaxMitteilung> mitteilungen
+	) {
 		this.mitteilungen = mitteilungen;
 	}
 }

@@ -8,93 +8,56 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.gemeindeantrag;
 
+import java.time.LocalDate;
+
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
+import javax.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 import ch.dvbern.ebegu.api.dtos.JaxBenutzerNoDetails;
 import ch.dvbern.ebegu.api.dtos.JaxGemeinde;
 import ch.dvbern.ebegu.api.dtos.JaxGesuchsperiode;
 import ch.dvbern.ebegu.enums.gemeindeantrag.GemeindeAntragTyp;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class JaxGemeindeAntrag extends JaxAbstractDTO {
 
 	private static final long serialVersionUID = 4099969051581833190L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private GemeindeAntragTyp gemeindeAntragTyp;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxGemeinde gemeinde;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxGesuchsperiode gesuchsperiode;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private String statusString;
 
 	private boolean antragAbgeschlossen;
 
 	private JaxBenutzerNoDetails verantwortlicher;
 
-	@Nonnull
-	public GemeindeAntragTyp getGemeindeAntragTyp() {
-		return gemeindeAntragTyp;
-	}
+	@Nullable
+	private LocalDate einreichedatum;
 
-	public void setGemeindeAntragTyp(@Nonnull GemeindeAntragTyp gemeindeAntragTyp) {
-		this.gemeindeAntragTyp = gemeindeAntragTyp;
-	}
-
-	@Nonnull
-	public JaxGemeinde getGemeinde() {
-		return gemeinde;
-	}
-
-	public void setGemeinde(@Nonnull JaxGemeinde gemeinde) {
-		this.gemeinde = gemeinde;
-	}
-
-	@Nonnull
-	public JaxGesuchsperiode getGesuchsperiode() {
-		return gesuchsperiode;
-	}
-
-	public void setGesuchsperiode(@Nonnull JaxGesuchsperiode gesuchsperiode) {
-		this.gesuchsperiode = gesuchsperiode;
-	}
-
-	@Nonnull
-	public String getStatusString() {
-		return statusString;
-	}
-
-	public void setStatusString(@Nonnull String statusString) {
-		this.statusString = statusString;
-	}
-
-	public boolean isAntragAbgeschlossen() {
-		return antragAbgeschlossen;
-	}
-
-	public void setAntragAbgeschlossen(boolean antragAbgeschlossen) {
-		this.antragAbgeschlossen = antragAbgeschlossen;
-	}
-
-	public JaxBenutzerNoDetails getVerantwortlicher() {
-		return verantwortlicher;
-	}
-
-	public void setVerantwortlicher(JaxBenutzerNoDetails verantwortlicher) {
-		this.verantwortlicher = verantwortlicher;
-	}
 }

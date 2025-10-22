@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.tests.validations;
@@ -28,9 +28,17 @@ import org.junit.jupiter.api.Test;
 
 class ExternalClientOfTypeValidatorTest extends AbstractValidatorTest {
 
-	private static final ExternalClient VALID = new ExternalClient("foo", ExternalClientType.EXCHANGE_SERVICE_USER, ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION);
+	private static final ExternalClient VALID = new ExternalClient(
+		"foo",
+		ExternalClientType.EXCHANGE_SERVICE_USER,
+		ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION
+	);
 	@SuppressWarnings("ConstantConditions")
-	private static final ExternalClient INVALID = new ExternalClient("bar", null, ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION);
+	private static final ExternalClient INVALID = new ExternalClient(
+		"bar",
+		null,
+		ExternalClientInstitutionType.EXCHANGE_SERVICE_INSTITUTION
+	);
 
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
@@ -51,7 +59,9 @@ class ExternalClientOfTypeValidatorTest extends AbstractValidatorTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	void testMatchesTypeInSet() {
-		TestSetProperty test = new TestSetProperty(Sets.newHashSet(VALID, VALID));
+		TestSetProperty test = new TestSetProperty(
+			Sets.newHashSet(VALID, VALID)
+		);
 
 		assertValid(test);
 	}
@@ -59,14 +69,16 @@ class ExternalClientOfTypeValidatorTest extends AbstractValidatorTest {
 	@SuppressWarnings("JUnitTestMethodWithNoAssertions")
 	@Test
 	void testViolatesInvalidTypeInSet() {
-		TestSetProperty test = new TestSetProperty(Sets.newHashSet(VALID, INVALID));
+		TestSetProperty test = new TestSetProperty(
+			Sets.newHashSet(VALID, INVALID)
+		);
 
 		assertInvalid(test);
 	}
 
 	private static final class TestSetProperty {
-		private final Set<@ExternalClientOfType(type = ExternalClientType.EXCHANGE_SERVICE_USER) ExternalClient>
-			clients;
+		private final Set<@ExternalClientOfType(
+			type = ExternalClientType.EXCHANGE_SERVICE_USER) ExternalClient> clients;
 
 		private TestSetProperty(Set<ExternalClient> clients) {
 			this.clients = clients;

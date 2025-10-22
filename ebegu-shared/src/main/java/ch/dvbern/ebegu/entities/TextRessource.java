@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -21,8 +21,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 
 import ch.dvbern.ebegu.util.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -42,20 +42,21 @@ public class TextRessource extends AbstractMutableEntity {
 	@Column(nullable = true, length = Constants.DB_TEXTAREA_LENGTH)
 	private String textFranzoesisch;
 
-
+	@Nullable
 	public String getTextDeutsch() {
 		return textDeutsch;
 	}
 
-	public void setTextDeutsch(String textDeutsch) {
+	public void setTextDeutsch(@Nullable String textDeutsch) {
 		this.textDeutsch = textDeutsch;
 	}
 
+	@Nullable
 	public String getTextFranzoesisch() {
 		return textFranzoesisch;
 	}
 
-	public void setTextFranzoesisch(String textFranzoesisch) {
+	public void setTextFranzoesisch(@Nullable String textFranzoesisch) {
 		this.textFranzoesisch = textFranzoesisch;
 	}
 
@@ -84,8 +85,15 @@ public class TextRessource extends AbstractMutableEntity {
 			return false;
 		}
 		final TextRessource otherTextRessource = (TextRessource) other;
-		return Objects.equals(getTextDeutsch(), otherTextRessource.getTextDeutsch()) &&
-			Objects.equals(getTextFranzoesisch(), otherTextRessource.getTextFranzoesisch());
+		return Objects.equals(
+			getTextDeutsch(),
+			otherTextRessource.getTextDeutsch()
+		)
+			&&
+			Objects.equals(
+				getTextFranzoesisch(),
+				otherTextRessource.getTextFranzoesisch()
+			);
 	}
 
 	public TextRessource copyTextRessource() {

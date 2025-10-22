@@ -15,14 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {
     HookMatchCriteria,
     HookResult,
     Transition,
     TransitionService
 } from '@uirouter/core';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {OnBeforePriorities} from './onBeforePriorities';
+import {firstValueFrom} from 'rxjs';
 
 dummyLoginHookRunBlock.$inject = ['$transitions'];
 
@@ -44,9 +45,8 @@ export function dummyLoginHookRunBlock($transitions: TransitionService): void {
 }
 
 function checkDummyLogin(transition: Transition): HookResult {
-    const applicationPropertyRS: ApplicationPropertyRS = transition
-        .injector()
-        .get('ApplicationPropertyRS');
+    const applicationPropertyRS: SharedUtilApplicationPropertyRsService =
+        transition.injector().get('SharedUtilApplicationPropertyRsService');
 
-    return applicationPropertyRS.isDummyMode() as Promise<boolean>;
+    return firstValueFrom(applicationPropertyRS.isDummyMode());
 }

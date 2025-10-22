@@ -1,0 +1,149 @@
+{
+    "$schema": "node_modules/nx/schemas/project-schema.json",
+    "name": "ebegu",
+    "sourceRoot": "src",
+    "projectType": "application",
+    "targets": {
+        "build": {
+            "executor": "@angular-builders/custom-webpack:browser",
+            "options": {
+                "outputPath": "dist",
+                "index": "src/index.html",
+                "main": "src/main.ts",
+                "tsConfig": "src/tsconfig.app.json",
+                "polyfills": "src/polyfills.ts",
+                "assets": [
+                    "src/assets",
+                    "src/favicon.ico",
+                    {
+                        "glob": "**/*",
+                        "input": "node_modules/@kolkov/angular-editor/assets/icons",
+                        "output": "assets/ae-icons/"
+                    }
+                ],
+                "styles": [
+                    "src/styles.less",
+                    "src/style/lib-imports.css",
+                    "node_modules/@kolkov/angular-editor/themes/default.scss"
+                ],
+                "scripts": ["node_modules/jquery/dist/jquery.min.js"],
+                "extractLicenses": true,
+                "customWebpackConfig": {
+                    "path": "./extra-webpack.config.js"
+                },
+                "allowedCommonJsDependencies": [
+                    "lodash",
+                    "iban",
+                    "angular",
+                    "randomcolor"
+                ]
+            },
+            "configurations": {
+                "production": {
+                    "baseHref": "/web/",
+                    "optimization": {
+                        "scripts": true,
+                        "styles": {
+                            "minify": true,
+                            "inlineCritical": false
+                        },
+                        "fonts": {
+                            "inline": false
+                        }
+                    },
+                    "outputHashing": "all",
+                    "sourceMap": true,
+                    "namedChunks": false,
+                    "aot": true,
+                    "extractLicenses": true,
+                    "vendorChunk": false,
+                    "buildOptimizer": true,
+                    "fileReplacements": [
+                        {
+                            "replace": "src/environments/environment.ts",
+                            "with": "src/environments/environment.prod.ts"
+                        }
+                    ]
+                },
+                "development": {
+                    "optimization": {
+                        "fonts": false,
+                        "scripts": false,
+                        "styles": false
+                    },
+                    "vendorChunk": true,
+                    "extractLicenses": false,
+                    "sourceMap": true,
+                    "namedChunks": true,
+                    "buildOptimizer": false
+                },
+                "es5": {
+                    "tsConfig": "./tsconfig.es5.json"
+                },
+                "hmr": {
+                    "fileReplacements": [
+                        {
+                            "replace": "src/environments/environment.ts",
+                            "with": "src/environments/environment.hmr.ts"
+                        }
+                    ]
+                }
+            },
+            "defaultConfiguration": "development",
+            "outputs": ["{options.outputPath}"]
+        },
+        "serve": {
+            "executor": "@angular-builders/custom-webpack:dev-server",
+            "options": {
+                "buildTarget": "ebegu:build",
+                "proxyConfig": "src/proxy.conf.mjs",
+                "port": 4200,
+                "host": "0.0.0.0",
+                "ssl": true
+            },
+            "configurations": {
+                "production": {
+                    "buildTarget": "ebegu:build:production"
+                },
+                "development": {
+                    "buildTarget": "ebegu:build:development"
+                }
+            },
+            "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+            "executor": "@angular/build:extract-i18n",
+            "options": {
+                "buildTarget": "ebegu:build"
+            }
+        },
+        "test": {
+            "executor": "@angular-builders/custom-webpack:karma",
+            "options": {
+                "main": "src/test.ts",
+                "customWebpackConfig": {
+                    "path": "./extra-webpack.config.js"
+                },
+                "karmaConfig": "./karma.conf.js",
+                "polyfills": "src/polyfills.ts",
+                "tsConfig": "src/tsconfig.spec.json",
+                "scripts": [],
+                "styles": ["src/styles.less"],
+                "assets": ["src/assets", "src/favicon.ico"],
+                "fileReplacements": [
+                    {
+                        "replace": "src/environments/environment.ts",
+                        "with": "src/environments/environment.test.ts"
+                    }
+                ]
+            }
+        },
+        "lint": {
+            "executor": "@angular-eslint/builder:lint",
+            "options": {
+                "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            },
+            "outputs": ["{options.outputFile}"]
+        }
+    }
+}

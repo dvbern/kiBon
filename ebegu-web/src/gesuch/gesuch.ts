@@ -17,7 +17,7 @@ import {IController} from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {EinstellungRS} from '../admin/service/einstellungRS.rest';
-import {LogFactory} from '../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AntragStatusHistoryRS} from '../app/core/service/antragStatusHistoryRS.rest';
 import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
 import {
@@ -26,15 +26,14 @@ import {
     TSAntragStatus
 } from '../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../models/enums/TSAntragTyp';
-import {TSEinstellungKey} from '../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../admin/einstellungen/TSEinstellungKey';
 import {TSGesuchBetreuungenStatus} from '../models/enums/TSGesuchBetreuungenStatus';
-import {TSRole} from '../models/enums/TSRole';
-import {TSWizardStepName} from '../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../models/enums/TSWizardStepStatus';
+import {TSRole} from '@kibon/shared/model/enums';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSDossier} from '../models/TSDossier';
 import {TSFall} from '../models/TSFall';
 import {TSGesuch} from '../models/TSGesuch';
-import {DateUtil} from '../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../utils/EbeguUtil';
 import {TSRoleUtil} from '../utils/TSRoleUtil';
 import {GesuchModelManager} from './service/gesuchModelManager';
@@ -119,7 +118,7 @@ export class GesuchRouteController implements IController {
 
     public getDateFromGesuch(): string {
         if (this.gesuchModelManager && this.gesuchModelManager.getGesuch()) {
-            return DateUtil.momentToLocalDateFormat(
+            return MomentUtil.momentToLocalDateFormat(
                 this.gesuchModelManager.getGesuch().eingangsdatum,
                 'DD.MM.YYYY'
             );

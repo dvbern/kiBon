@@ -18,12 +18,13 @@
     <div class="dv-table">
         <div class="row">
             <div class="col-md-10">
-                <div id="titleText">
-                    <h3 class="ng-scope">{{ tableTitle | translate }}</h3>
-                </div>
-                <div id="refreshIcon">
-                    <i class="fa fa-undo" (click)="resetSearch()"></i>
-                </div>
+                <button
+                    class="dv-btn posteingang-reset"
+                    (click)="resetSearch()"
+                >
+                    <i class="fa fa-undo"></i>
+                    {{ 'FILTER_ZURUECKSETZEN' | translate }}
+                </button>
             </div>
             <div class="col-md-2 text-right">
                 <h3>{{ totalResultCount }}</h3>

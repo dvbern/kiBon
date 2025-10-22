@@ -13,7 +13,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {copy} from 'angular';
 import {TSAdresseContainer} from './TSAdresseContainer';
 import {TSEinkommensverschlechterungContainer} from './TSEinkommensverschlechterungContainer';
 import {TSErwerbspensumContainer} from './TSErwerbspensumContainer';
@@ -144,7 +145,7 @@ export class TSGesuchstellerContainer extends TSAbstractMutableEntity {
      */
     public getUmzugAdressen(): Array<TSAdresseContainer> {
         if (this.adressen && this.adressen.length > 0) {
-            const adressenCopy = angular.copy(this.adressen);
+            const adressenCopy = copy(this.adressen);
             adressenCopy.splice(0, 1);
             return adressenCopy;
         }

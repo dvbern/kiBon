@@ -8,33 +8,36 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 
 @XmlRootElement(name = "institutionStammdatenSummary")
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class JaxAbstractInstitutionStammdaten extends JaxAbstractDateRangedDTO {
+public abstract class JaxAbstractInstitutionStammdaten extends
+	JaxAbstractDateRangedDTO {
 
 	private static final long serialVersionUID = -1893677808322218626L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private BetreuungsangebotTyp betreuungsangebotTyp;
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxInstitution institution;
 	@Nullable
 	private JaxInstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine;
@@ -42,7 +45,8 @@ public abstract class JaxAbstractInstitutionStammdaten extends JaxAbstractDateRa
 	private JaxInstitutionStammdatenTagesschule institutionStammdatenTagesschule;
 	@Nullable
 	private JaxInstitutionStammdatenFerieninsel institutionStammdatenFerieninsel;
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private String mail;
 	@Nullable
 	private String telefon;
@@ -51,7 +55,8 @@ public abstract class JaxAbstractInstitutionStammdaten extends JaxAbstractDateRa
 	// Wird nur noch read-only verwendet, um die Daten-Migration durch die Institutions-Admins zu vereinfachen
 	@Nullable
 	private String oeffnungszeiten;
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxAdresse adresse;
 	@Nullable
 	private String grundSchliessung;
@@ -60,13 +65,14 @@ public abstract class JaxAbstractInstitutionStammdaten extends JaxAbstractDateRa
 
 	private boolean sendMailWennOffenePendenzen = true;
 
-
 	@Nonnull
 	public BetreuungsangebotTyp getBetreuungsangebotTyp() {
 		return betreuungsangebotTyp;
 	}
 
-	public void setBetreuungsangebotTyp(@Nonnull BetreuungsangebotTyp betreuungsangebotTyp) {
+	public void setBetreuungsangebotTyp(
+		@Nonnull BetreuungsangebotTyp betreuungsangebotTyp
+	) {
 		this.betreuungsangebotTyp = betreuungsangebotTyp;
 	}
 
@@ -93,8 +99,11 @@ public abstract class JaxAbstractInstitutionStammdaten extends JaxAbstractDateRa
 		return institutionStammdatenBetreuungsgutscheine;
 	}
 
-	public void setInstitutionStammdatenBetreuungsgutscheine(@Nullable JaxInstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine) {
-		this.institutionStammdatenBetreuungsgutscheine = institutionStammdatenBetreuungsgutscheine;
+	public void setInstitutionStammdatenBetreuungsgutscheine(
+		@Nullable JaxInstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine
+	) {
+		this.institutionStammdatenBetreuungsgutscheine =
+			institutionStammdatenBetreuungsgutscheine;
 	}
 
 	@Nullable
@@ -102,8 +111,11 @@ public abstract class JaxAbstractInstitutionStammdaten extends JaxAbstractDateRa
 		return institutionStammdatenTagesschule;
 	}
 
-	public void setInstitutionStammdatenTagesschule(@Nullable JaxInstitutionStammdatenTagesschule institutionStammdatenTagesschule) {
-		this.institutionStammdatenTagesschule = institutionStammdatenTagesschule;
+	public void setInstitutionStammdatenTagesschule(
+		@Nullable JaxInstitutionStammdatenTagesschule institutionStammdatenTagesschule
+	) {
+		this.institutionStammdatenTagesschule =
+			institutionStammdatenTagesschule;
 	}
 
 	@Nullable
@@ -111,8 +123,11 @@ public abstract class JaxAbstractInstitutionStammdaten extends JaxAbstractDateRa
 		return institutionStammdatenFerieninsel;
 	}
 
-	public void setInstitutionStammdatenFerieninsel(@Nullable JaxInstitutionStammdatenFerieninsel institutionStammdatenFerieninsel) {
-		this.institutionStammdatenFerieninsel = institutionStammdatenFerieninsel;
+	public void setInstitutionStammdatenFerieninsel(
+		@Nullable JaxInstitutionStammdatenFerieninsel institutionStammdatenFerieninsel
+	) {
+		this.institutionStammdatenFerieninsel =
+			institutionStammdatenFerieninsel;
 	}
 
 	@Nonnull
@@ -155,7 +170,9 @@ public abstract class JaxAbstractInstitutionStammdaten extends JaxAbstractDateRa
 		return sendMailWennOffenePendenzen;
 	}
 
-	public void setSendMailWennOffenePendenzen(boolean sendMailWennOffenePendenzen) {
+	public void setSendMailWennOffenePendenzen(
+		boolean sendMailWennOffenePendenzen
+	) {
 		this.sendMailWennOffenePendenzen = sendMailWennOffenePendenzen;
 	}
 

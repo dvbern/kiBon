@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -21,33 +21,38 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.util.Constants;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
 @Entity
-public class BfsGemeinde  implements Serializable, HasMandant {
+public class BfsGemeinde implements Serializable, HasMandant {
 
 	private static final long serialVersionUID = -6976259296646006855L;
 
 	@Id
-	@Column(unique = true, nullable = false, updatable = false, length = Constants.UUID_LENGTH)
+	@Column(unique = true,
+		nullable = false,
+		updatable = false,
+		length = Constants.UUID_LENGTH)
 	@Size(min = Constants.UUID_LENGTH, max = Constants.UUID_LENGTH)
 	private String id;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_bfs_gemeinde_mandant_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_bfs_gemeinde_mandant_id"),
+		updatable = false)
 	private Mandant mandant;
 
 	@NotNull
@@ -70,14 +75,15 @@ public class BfsGemeinde  implements Serializable, HasMandant {
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_bfsgemeinde_verbund_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_bfsgemeinde_verbund_id"),
+		nullable = true)
 	private BfsGemeinde verbund;
-
 
 	public BfsGemeinde() {
 		id = UUID.randomUUID().toString();
 	}
 
+	@Nonnull
 	public String getId() {
 		return id;
 	}
@@ -135,7 +141,6 @@ public class BfsGemeinde  implements Serializable, HasMandant {
 		this.verbund = verbund;
 	}
 
-
 	// Alle Schulverbund Gemeinden haben einen BFS Nummer höher als 10'000 aber kleiner als 11'000. Die neue Range für die "Spezielles Gemeinde" wie École
 	// cantonale de langue française sind ab 100'000 definiert.
 
@@ -143,7 +148,8 @@ public class BfsGemeinde  implements Serializable, HasMandant {
 		if (bfsNummer == null) {
 			return false;
 		}
-		return !isBfsNummerGemeinde(bfsNummer) && !isBfsNummerSpezialgemeinde(bfsNummer);
+		return !isBfsNummerGemeinde(bfsNummer)
+			&& !isBfsNummerSpezialgemeinde(bfsNummer);
 	}
 
 	public static boolean isBfsNummerGemeinde(@Nullable Long bfsNummer) {

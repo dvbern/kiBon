@@ -17,14 +17,15 @@
 
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DvNgMitteilungDelegationDialogComponent} from '../dv-ng-mitteilung-delegation-dialog/dv-ng-mitteilung-delegation-dialog.component';
-import {LogFactory} from '../../logging/LogFactory';
 
 const LOG = LogFactory.createLog('DvMitteilungDelegationComponent');
 
 @Component({
     selector: 'dv-mitteilung-delegation',
-    templateUrl: './dv-mitteilung-delegation.component.html'
+    templateUrl: './dv-mitteilung-delegation.component.html',
+    standalone: false
 })
 export class DvMitteilungDelegationComponent {
     @Input() public mitteilungId: string;
@@ -42,13 +43,13 @@ export class DvMitteilungDelegationComponent {
         this.dialog
             .open(DvNgMitteilungDelegationDialogComponent, dialogConfig)
             .afterClosed()
-            .subscribe(
-                result => {
+            .subscribe({
+                next: result => {
                     if (result) {
                         this.valueChange.emit();
                     }
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 }

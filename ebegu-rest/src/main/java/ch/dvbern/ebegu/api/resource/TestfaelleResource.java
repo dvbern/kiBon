@@ -15,40 +15,51 @@
 
 package ch.dvbern.ebegu.api.resource;
 
-import ch.dvbern.ebegu.api.dtos.JaxGemeindeAntraegeFBTestdatenDTO;
-import ch.dvbern.ebegu.api.dtos.JaxGemeindeAntraegeLATSTestdatenDTO;
-import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.config.EbeguConfiguration;
-import ch.dvbern.ebegu.entities.AbstractEntity;
-import ch.dvbern.ebegu.entities.Gesuch;
-import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
-import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
-import ch.dvbern.ebegu.enums.ErrorCodeEnum;
-import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-import ch.dvbern.ebegu.services.SchulungService;
-import ch.dvbern.ebegu.services.TestfaelleService;
-import ch.dvbern.ebegu.util.DateUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ch.dvbern.ebegu.enums.UserRoleName.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
+import ch.dvbern.ebegu.api.dtos.JaxGemeindeAntraegeFBTestdatenDTO;
+import ch.dvbern.ebegu.api.dtos.JaxGemeindeAntraegeLATSTestdatenDTO;
+import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.config.EbeguConfiguration;
+import ch.dvbern.ebegu.entities.AbstractEntity;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
+import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
+import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
+import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.services.SchulungService;
+import ch.dvbern.ebegu.services.TestfaelleService;
+import ch.dvbern.ebegu.util.DateUtil;
+import ch.dvbern.ebegu.validators.CheckEmail;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 
 /**
  * REST Resource zur Erstellung von (vordefinierten) Testfaellen.
@@ -57,7 +68,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.*;
  */
 @Path("testfaelle")
 @Stateless
-@Api(description = "Resource zur Erstellung von (vordefinierten) Testfaellen")
 @RolesAllowed(SUPER_ADMIN)
 public class TestfaelleResource {
 
@@ -75,8 +85,13 @@ public class TestfaelleResource {
 	@Inject
 	private PrincipalBean principal;
 
-	@ApiOperation(value = "Erstellt einen Testfall aus mehreren vordefinierten Testfaellen. Folgende Einstellungen " +
-		"sind moeglich: Gesuchsperiode, Gemeinde, Status der Betreuungen, Gesuch verfuegen", response = String.class)
+	@Inject
+	private GemeindeService gemeindeService;
+
+	@Operation(
+		summary = "Erstellt einen Testfall aus mehreren vordefinierten Testfaellen. Folgende Einstellungen "
+			+
+			"sind moeglich: Gesuchsperiode, Gemeinde, Status der Betreuungen, Gesuch verfuegen")
 	@GET
 	@Path("/testfall/{fallid}/{gesuchsperiodeId}/{gemeindeId}/{betreuungenBestaetigt}/{verfuegen}")
 	@Consumes(MediaType.WILDCARD)
@@ -86,24 +101,29 @@ public class TestfaelleResource {
 		@PathParam("gesuchsperiodeId") String gesuchsperiodeId,
 		@PathParam("gemeindeId") String gemeindeId,
 		@PathParam("betreuungenBestaetigt") boolean betreuungenBestaetigt,
-		@PathParam("verfuegen") boolean verfuegen) {
+		@PathParam("verfuegen") boolean verfuegen
+	) {
 
 		assertTestfaelleAccessAllowed();
-		StringBuilder responseString = testfaelleService.createAndSaveTestfaelle(Objects.requireNonNull(principal.getMandant()),
-			fallid,
-			betreuungenBestaetigt,
-			verfuegen,
-			gesuchsperiodeId,
-			gemeindeId);
+		StringBuilder responseString = testfaelleService
+			.createAndSaveTestfaelle(
+				Objects.requireNonNull(principal.getMandant()),
+				fallid,
+				betreuungenBestaetigt,
+				verfuegen,
+				gesuchsperiodeId,
+				gemeindeId
+			);
 		return Response.ok(responseString.toString()).build();
 	}
 
-	@ApiOperation(value = "Erstellt einen Testfall aus mehreren vordefinierten Testfaellen fuer einen Gesuchsteller "
-		+
-		"(Online Gesuch). Folgende Einstellungen sind moeglich: Gesuchsperiode, Gemeinde, Status der Betreuungen, "
-		+ "Gesuch "
-		+
-		"verfuegen, gewuenschter Gesuchsteller", response = String.class)
+	@Operation(
+		summary = "Erstellt einen Testfall aus mehreren vordefinierten Testfaellen fuer einen Gesuchsteller "
+			+
+			"(Online Gesuch). Folgende Einstellungen sind moeglich: Gesuchsperiode, Gemeinde, Status der Betreuungen, "
+			+ "Gesuch "
+			+
+			"verfuegen, gewuenschter Gesuchsteller")
 	@GET
 	@Path("/testfallgs/{fallid}/{gesuchsperiodeId}/{gemeindeId}/{betreuungenBestaetigt}/{verfuegen}/{username}")
 	@Consumes(MediaType.WILDCARD)
@@ -114,33 +134,42 @@ public class TestfaelleResource {
 		@PathParam("gemeindeId") String gemeindeId,
 		@PathParam("betreuungenBestaetigt") boolean betreuungenBestaetigt,
 		@PathParam("verfuegen") boolean verfuegen,
-		@PathParam("username") String username) {
+		@PathParam("username") String username
+	) {
 
 		assertTestfaelleAccessAllowed();
-		StringBuilder responseString = testfaelleService.createAndSaveAsOnlineGesuch(fallid,
-			betreuungenBestaetigt,
-			verfuegen,
-			username,
-			gesuchsperiodeId,
-			gemeindeId,
-			Objects.requireNonNull(principal.getMandant()));
+		StringBuilder responseString = testfaelleService
+			.createAndSaveAsOnlineGesuch(
+				fallid,
+				betreuungenBestaetigt,
+				verfuegen,
+				username,
+				gesuchsperiodeId,
+				gemeindeId,
+				Objects.requireNonNull(principal.getMandant())
+			);
 		return Response.ok(responseString.toString()).build();
 	}
 
-	@ApiOperation(value = "Loescht alle Antraege des uebergebenen Gesuchstellers.", response = String.class)
+	@Operation(
+		summary = "Loescht alle Antraege des uebergebenen Gesuchstellers.")
 	@SuppressWarnings("NonBooleanMethodNameMayNotStartWithQuestion")
 	@DELETE
 	@Path("/testfallgs/{username}")
 	@Consumes(MediaType.WILDCARD)
 	public Response removeFaelleOfGS(
-		@PathParam("username") String username) {
+		@PathParam("username") String username
+	) {
 
 		assertTestfaelleAccessAllowed();
-		testfaelleService.removeGesucheOfGS(username, Objects.requireNonNull(principal.getMandant()));
+		testfaelleService.removeGesucheOfGS(
+			username,
+			Objects.requireNonNull(principal.getMandant())
+		);
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Simuliert fuer den uebergebenen Testfall eine Heirat", response = String.class)
+	@Operation(summary = "Simuliert fuer den uebergebenen Testfall eine Heirat")
 	@GET
 	@Path("/mutationHeirat/{dossierId}/{gesuchsperiodeid}")
 	@Consumes(MediaType.WILDCARD)
@@ -149,21 +178,37 @@ public class TestfaelleResource {
 		@PathParam("dossierId") String dossierId,
 		@PathParam("gesuchsperiodeid") String gesuchsperiodeid,
 		@Nullable @QueryParam("mutationsdatum") String stringMutationsdatum,
-		@Nullable @QueryParam("aenderungper") String stringAenderungPer) {
+		@Nullable @QueryParam("aenderungper") String stringAenderungPer
+	) {
 
 		assertTestfaelleAccessAllowed();
-		LocalDate mutationsdatum = DateUtil.parseStringToDateOrReturnNow(stringMutationsdatum);
-		LocalDate aenderungPer = DateUtil.parseStringToDateOrReturnNow(stringAenderungPer);
+		LocalDate mutationsdatum = DateUtil.parseStringToDateOrReturnNow(
+			stringMutationsdatum
+		);
+		LocalDate aenderungPer = DateUtil.parseStringToDateOrReturnNow(
+			stringAenderungPer
+		);
 
 		final Gesuch gesuch =
-			testfaelleService.mutierenHeirat(dossierId, gesuchsperiodeid, mutationsdatum, aenderungPer, false);
+			testfaelleService.mutierenHeirat(
+				dossierId,
+				gesuchsperiodeid,
+				mutationsdatum,
+				aenderungPer,
+				false
+			);
 		if (gesuch != null) {
-			return Response.ok(FALL + gesuch.getFall().getFallNummer() + " mutiert zu heirat").build();
+			return Response.ok(
+				FALL
+					+ gesuch.getFall().getFallNummer()
+					+ " mutiert zu heirat"
+			).build();
 		}
 		return Response.ok(FALL + dossierId + " konnte nicht mutiert").build();
 	}
 
-	@ApiOperation(value = "Simuliert fuer den uebergebenen Testfall eine Scheidung", response = String.class)
+	@Operation(
+		summary = "Simuliert fuer den uebergebenen Testfall eine Scheidung")
 	@GET
 	@Path("/mutationScheidung/{dossierId}/{gesuchsperiodeid}")
 	@Consumes(MediaType.WILDCARD)
@@ -172,57 +217,37 @@ public class TestfaelleResource {
 		@PathParam("dossierId") String dossierId,
 		@PathParam("gesuchsperiodeid") String gesuchsperiodeid,
 		@Nullable @QueryParam("mutationsdatum") String stringMutationsdatum,
-		@Nullable @QueryParam("aenderungper") String stringAenderungPer) {
+		@Nullable @QueryParam("aenderungper") String stringAenderungPer
+	) {
 
 		assertTestfaelleAccessAllowed();
-		LocalDate mutationsdatum = DateUtil.parseStringToDateOrReturnNow(stringMutationsdatum);
-		LocalDate aenderungPer = DateUtil.parseStringToDateOrReturnNow(stringAenderungPer);
+		LocalDate mutationsdatum = DateUtil.parseStringToDateOrReturnNow(
+			stringMutationsdatum
+		);
+		LocalDate aenderungPer = DateUtil.parseStringToDateOrReturnNow(
+			stringAenderungPer
+		);
 
 		final Gesuch gesuch =
-			testfaelleService.mutierenScheidung(dossierId, gesuchsperiodeid, mutationsdatum, aenderungPer, false);
+			testfaelleService.mutierenScheidung(
+				dossierId,
+				gesuchsperiodeid,
+				mutationsdatum,
+				aenderungPer,
+				false
+			);
 		if (gesuch != null) {
-			return Response.ok(FALL + gesuch.getFall().getFallNummer() + " mutiert zu scheidung").build();
+			return Response.ok(
+				FALL
+					+ gesuch.getFall().getFallNummer()
+					+ " mutiert zu scheidung"
+			).build();
 		}
 		return Response.ok(FALL + dossierId + " konnte nicht mutiert").build();
 	}
 
-	@ApiOperation(value = "Setzt die Schulungsdaten zurueck", response = String.class)
-	@GET
-	@Path("/schulung/reset")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.TEXT_PLAIN)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_GEMEINDE })
-	public Response resetSchulungsdaten() {
-		assertTestfaelleAccessAllowed();
-		schulungService.resetSchulungsdaten(Objects.requireNonNull(principal.getMandant()));
-		return Response.ok("Schulungsdaten zurückgesetzt").build();
-	}
-
-	@ApiOperation(value = "Loescht alle in der Schulung erstellten Daten.", response = String.class)
-	@DELETE
-	@Path("/schulung/delete")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.TEXT_PLAIN)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_GEMEINDE })
-	public Response deleteSchulungsdaten() {
-		assertTestfaelleAccessAllowed();
-		schulungService.deleteSchulungsdaten(Objects.requireNonNull(principal.getMandant()));
-		return Response.ok("Schulungsdaten gelöscht").build();
-	}
-
-	@ApiOperation(value = "Erstellt die Schulungsdaten", response = String.class)
-	@GET
-	@Path("/schulung/create")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.TEXT_PLAIN)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_GEMEINDE })
-	public Response createSchulungsdaten() {
-		assertTestfaelleAccessAllowed();
-		schulungService.createSchulungsdaten(Objects.requireNonNull(principal.getMandant()));
-		return Response.ok("Schulungsdaten erstellt").build();
-	}
-
-	@ApiOperation(value = "Setzt die Tutorialdaten zurueck. Gemeinde und Institution", response = String.class)
+	@Operation(
+		summary = "Setzt die Tutorialdaten zurueck. Gemeinde und Institution")
 	@GET
 	@Path("/schulung/tutorial/create")
 	@Consumes(MediaType.WILDCARD)
@@ -230,67 +255,97 @@ public class TestfaelleResource {
 	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_GEMEINDE })
 	public Response createTutorialdaten() {
 		assertTestfaelleAccessAllowed();
-		schulungService.createTutorialdaten(Objects.requireNonNull(principal.getMandant()));
+		schulungService.createTutorialdaten(
+			Objects.requireNonNull(principal.getMandant())
+		);
 		return Response.ok("Tutorialdaten erstellt").build();
 	}
 
-	@ApiOperation(value = "Gibt eine Liste der Schulungsbenutzer zurueck",
-		responseContainer = "Array", response = String.class)
+	@Operation(
+		summary = "Sendet ein Beispiel aller Mails an die uebergebene Adresse")
 	@GET
-	@Path("/schulung/public/user")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.WILDCARD)
-	@PermitAll
-	public Response getSchulungBenutzer() {
-		assertTestfaelleAccessAllowed();
-		String[] schulungBenutzer = schulungService.getSchulungBenutzer();
-		return Response.ok(schulungBenutzer).build();
-	}
-
-	@ApiOperation(value = "Sendet ein Beispiel aller Mails an die uebergebene Adresse", response = String.class)
-	@GET
-	@Path("/mailtest/{mailadresse}")
+	@Path("/mailtest")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response testAllMails(
-		@PathParam("mailadresse") @Email String mailadresse) {
+		@QueryParam("mailadresse") @CheckEmail String mailadresse,
+		@QueryParam("gemeindeId") String gemeindeId
+	) {
 
 		assertTestfaelleAccessAllowed();
 
-		testfaelleService.testAllMails(mailadresse, Objects.requireNonNull(principal.getMandant()));
+		Gemeinde gemeinde = gemeindeService.findGemeinde(gemeindeId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"testAllMails",
+					gemeindeId
+				)
+			);
+
+		testfaelleService.testAllMails(
+			mailadresse,
+			Objects.requireNonNull(principal.getMandant()),
+			gemeinde
+		);
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Erstellt LATS testdaten", response = String.class)
+	@Operation(summary = "Erstellt LATS testdaten")
 	@POST
 	@Path("/gemeinde-antraege/LASTENAUSGLEICH_TAGESSCHULEN")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response createTestdatenLATS(
-		@Nonnull @NotNull @Valid JaxGemeindeAntraegeLATSTestdatenDTO jaxGemeindeAntraegeTestdatenDTO) {
+		@Nonnull
+		@NotNull
+		@Valid JaxGemeindeAntraegeLATSTestdatenDTO jaxGemeindeAntraegeTestdatenDTO
+	) {
 		assertTestfaelleAccessAllowed();
-		final String gemeindeId = jaxGemeindeAntraegeTestdatenDTO.getGemeinde() != null ? jaxGemeindeAntraegeTestdatenDTO.getGemeinde().getId() : null;
+		final String gemeindeId = jaxGemeindeAntraegeTestdatenDTO.getGemeinde()
+			!= null ?
+				jaxGemeindeAntraegeTestdatenDTO.getGemeinde().getId() :
+				null;
 		final Collection<LastenausgleichTagesschuleAngabenGemeindeContainer> latsContainers =
 			testfaelleService.createAndSaveLATSTestdaten(
-				Objects.requireNonNull(jaxGemeindeAntraegeTestdatenDTO.getGesuchsperiode().getId()),
+				Objects.requireNonNull(
+					jaxGemeindeAntraegeTestdatenDTO
+						.getGesuchsperiode()
+						.getId()
+				),
 				gemeindeId,
-				jaxGemeindeAntraegeTestdatenDTO.getStatus());
-		return Response.ok(latsContainers.stream().map(AbstractEntity::getId).collect(Collectors.joining(","))).build();
+				jaxGemeindeAntraegeTestdatenDTO.getStatus()
+			);
+		return Response.ok(
+			latsContainers.stream()
+				.map(AbstractEntity::getId)
+				.collect(Collectors.joining(","))
+		).build();
 	}
 
-	@ApiOperation(value = "Erstellt FB testdaten", response = String.class)
+	@Operation(summary = "Erstellt FB testdaten")
 	@POST
 	@Path("/gemeinde-antraege/FERIENBETREUUNG")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response createTestdatenFerienbetreuung(
-		@Nonnull @NotNull @Valid JaxGemeindeAntraegeFBTestdatenDTO jaxGemeindeAntraegeTestdatenDTO) {
+		@Nonnull
+		@NotNull
+		@Valid JaxGemeindeAntraegeFBTestdatenDTO jaxGemeindeAntraegeTestdatenDTO
+	) {
 		assertTestfaelleAccessAllowed();
 		final FerienbetreuungAngabenContainer ferienbetreuungContainer =
 			testfaelleService.createAndSaveFerienbetreuungTestdaten(
-				Objects.requireNonNull(jaxGemeindeAntraegeTestdatenDTO.getGesuchsperiode().getId()),
-				Objects.requireNonNull(jaxGemeindeAntraegeTestdatenDTO.getGemeinde().getId()),
-				jaxGemeindeAntraegeTestdatenDTO.getStatus());
+				Objects.requireNonNull(
+					jaxGemeindeAntraegeTestdatenDTO
+						.getGesuchsperiode()
+						.getId()
+				),
+				Objects.requireNonNull(
+					jaxGemeindeAntraegeTestdatenDTO.getGemeinde()
+						.getId()
+				),
+				jaxGemeindeAntraegeTestdatenDTO.getStatus()
+			);
 		return Response.ok(ferienbetreuungContainer.getId()).build();
 	}
 
@@ -301,14 +356,16 @@ public class TestfaelleResource {
 				"assertTestfaelleAccessAllowed",
 				ErrorCodeEnum.ERROR_TESTFAELLE_DISABLED,
 				"Testfaelle duerfen nur verwendet werden,"
-					+ " wenn das DummyLogin fuer diese Umgebung eingeschaltet ist");
+					+ " wenn das DummyLogin fuer diese Umgebung eingeschaltet ist"
+			);
 		}
 		if (!ebeguConfiguration.isTestfaelleEnabled()) {
 			throw new EbeguRuntimeException(
 				"assertTestfaelleAccessAllowed",
 				ErrorCodeEnum.ERROR_TESTFAELLE_DISABLED,
 				"Testfaelle duerfen nur verwendet "
-					+ "werden, wenn diese ueber ein SystemProperty eingeschaltet sind");
+					+ "werden, wenn diese ueber ein SystemProperty eingeschaltet sind"
+			);
 		}
 	}
 }

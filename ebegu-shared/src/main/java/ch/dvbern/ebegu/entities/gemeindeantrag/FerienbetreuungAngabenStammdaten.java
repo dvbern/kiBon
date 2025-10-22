@@ -17,24 +17,40 @@
 
 package ch.dvbern.ebegu.entities.gemeindeantrag;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Adresse;
 import ch.dvbern.ebegu.entities.Auszahlungsdaten;
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungFormularStatus;
 import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.validators.CheckEmail;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.*;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -64,7 +80,8 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_stammdaten_adresse_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_stammdaten_adresse_id"))
 	private Adresse stammdatenAdresse;
 
 	@Nullable
@@ -85,11 +102,12 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 	@Nullable
 	@Size(max = DB_DEFAULT_MAX_LENGTH)
 	@Column()
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{error_invalid_phonenumber.message}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{error_invalid_phonenumber.message}")
 	private String stammdatenKontaktpersonTelefon;
 
 	@Nullable
-	@Email
+	@CheckEmail
 	@Size(max = DB_DEFAULT_MAX_LENGTH)
 	@Column()
 	private String stammdatenKontaktpersonEmail;
@@ -97,7 +115,8 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_angaben_auszahlungsdaten_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_angaben_auszahlungsdaten_id"))
 	private Auszahlungsdaten auszahlungsdaten;
 
 	@Nullable
@@ -108,36 +127,56 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private FerienbetreuungFormularStatus status = FerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE;
+	private FerienbetreuungFormularStatus status =
+		FerienbetreuungFormularStatus.IN_BEARBEITUNG;
 
 	public FerienbetreuungAngabenStammdaten() {
 	}
 
-	public FerienbetreuungAngabenStammdaten(FerienbetreuungAngabenStammdaten ferienbetreuungAngabenStammdatenToCopy) {
+	public FerienbetreuungAngabenStammdaten(
+		FerienbetreuungAngabenStammdaten ferienbetreuungAngabenStammdatenToCopy
+	) {
 		this.amAngebotBeteiligteGemeinden =
-			new TreeSet<>(ferienbetreuungAngabenStammdatenToCopy.getAmAngebotBeteiligteGemeinden());
-		this.seitWannFerienbetreuungen = ferienbetreuungAngabenStammdatenToCopy.seitWannFerienbetreuungen;
-		this.traegerschaft = ferienbetreuungAngabenStammdatenToCopy.traegerschaft;
+			new TreeSet<>(
+				ferienbetreuungAngabenStammdatenToCopy
+					.getAmAngebotBeteiligteGemeinden()
+			);
+		this.seitWannFerienbetreuungen =
+			ferienbetreuungAngabenStammdatenToCopy.seitWannFerienbetreuungen;
+		this.traegerschaft =
+			ferienbetreuungAngabenStammdatenToCopy.traegerschaft;
 		// Stammdaten adresse
 		if (ferienbetreuungAngabenStammdatenToCopy.stammdatenAdresse != null) {
-			this.stammdatenAdresse = ferienbetreuungAngabenStammdatenToCopy.stammdatenAdresse.copyAdresse(
-				new Adresse(),
-				AntragCopyType.MUTATION);
+			this.stammdatenAdresse =
+				ferienbetreuungAngabenStammdatenToCopy.stammdatenAdresse
+					.copyAdresse(
+						new Adresse(),
+						AntragCopyType.MUTATION
+					);
 		}
 		// Kontaktperson
-		this.stammdatenKontaktpersonVorname = ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonVorname;
-		this.stammdatenKontaktpersonNachname = ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonNachname;
-		this.stammdatenKontaktpersonFunktion = ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonFunktion;
-		this.stammdatenKontaktpersonEmail = ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonEmail;
-		this.stammdatenKontaktpersonTelefon = ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonTelefon;
+		this.stammdatenKontaktpersonVorname =
+			ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonVorname;
+		this.stammdatenKontaktpersonNachname =
+			ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonNachname;
+		this.stammdatenKontaktpersonFunktion =
+			ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonFunktion;
+		this.stammdatenKontaktpersonEmail =
+			ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonEmail;
+		this.stammdatenKontaktpersonTelefon =
+			ferienbetreuungAngabenStammdatenToCopy.stammdatenKontaktpersonTelefon;
 		// Auszahlungsdaten
 		if (ferienbetreuungAngabenStammdatenToCopy.auszahlungsdaten != null) {
-			this.auszahlungsdaten = ferienbetreuungAngabenStammdatenToCopy.auszahlungsdaten.copyAuszahlungsdaten(
-				new Auszahlungsdaten(),
-				AntragCopyType.MUTATION);
+			this.auszahlungsdaten =
+				ferienbetreuungAngabenStammdatenToCopy.auszahlungsdaten
+					.copyAuszahlungsdaten(
+						new Auszahlungsdaten(),
+						AntragCopyType.MUTATION
+					);
 		}
 
-		this.vermerkAuszahlung = ferienbetreuungAngabenStammdatenToCopy.vermerkAuszahlung;
+		this.vermerkAuszahlung =
+			ferienbetreuungAngabenStammdatenToCopy.vermerkAuszahlung;
 
 	}
 
@@ -146,7 +185,9 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 		return amAngebotBeteiligteGemeinden;
 	}
 
-	public void setAmAngebotBeteiligteGemeinden(@Nonnull Set<String> amAngebotBeteiligteGemeinden) {
+	public void setAmAngebotBeteiligteGemeinden(
+		@Nonnull Set<String> amAngebotBeteiligteGemeinden
+	) {
 		this.amAngebotBeteiligteGemeinden = amAngebotBeteiligteGemeinden;
 	}
 
@@ -155,7 +196,9 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 		return seitWannFerienbetreuungen;
 	}
 
-	public void setSeitWannFerienbetreuungen(@Nullable LocalDate seitWannFerienbetreuungen) {
+	public void setSeitWannFerienbetreuungen(
+		@Nullable LocalDate seitWannFerienbetreuungen
+	) {
 		this.seitWannFerienbetreuungen = seitWannFerienbetreuungen;
 	}
 
@@ -182,7 +225,9 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 		return stammdatenKontaktpersonVorname;
 	}
 
-	public void setStammdatenKontaktpersonVorname(@Nullable String stammdatenKontaktpersonVorname) {
+	public void setStammdatenKontaktpersonVorname(
+		@Nullable String stammdatenKontaktpersonVorname
+	) {
 		this.stammdatenKontaktpersonVorname = stammdatenKontaktpersonVorname;
 	}
 
@@ -191,7 +236,9 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 		return stammdatenKontaktpersonNachname;
 	}
 
-	public void setStammdatenKontaktpersonNachname(@Nullable String stammdatenKontaktpersonNachname) {
+	public void setStammdatenKontaktpersonNachname(
+		@Nullable String stammdatenKontaktpersonNachname
+	) {
 		this.stammdatenKontaktpersonNachname = stammdatenKontaktpersonNachname;
 	}
 
@@ -200,7 +247,9 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 		return stammdatenKontaktpersonFunktion;
 	}
 
-	public void setStammdatenKontaktpersonFunktion(@Nullable String stammdatenKontaktpersonFunktion) {
+	public void setStammdatenKontaktpersonFunktion(
+		@Nullable String stammdatenKontaktpersonFunktion
+	) {
 		this.stammdatenKontaktpersonFunktion = stammdatenKontaktpersonFunktion;
 	}
 
@@ -209,7 +258,9 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 		return stammdatenKontaktpersonTelefon;
 	}
 
-	public void setStammdatenKontaktpersonTelefon(@Nullable String stammdatenKontaktpersonTelefon) {
+	public void setStammdatenKontaktpersonTelefon(
+		@Nullable String stammdatenKontaktpersonTelefon
+	) {
 		this.stammdatenKontaktpersonTelefon = stammdatenKontaktpersonTelefon;
 	}
 
@@ -218,7 +269,9 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 		return stammdatenKontaktpersonEmail;
 	}
 
-	public void setStammdatenKontaktpersonEmail(@Nullable String stammdatenKontaktpersonEmail) {
+	public void setStammdatenKontaktpersonEmail(
+		@Nullable String stammdatenKontaktpersonEmail
+	) {
 		this.stammdatenKontaktpersonEmail = stammdatenKontaktpersonEmail;
 	}
 
@@ -227,7 +280,9 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 		return auszahlungsdaten;
 	}
 
-	public void setAuszahlungsdaten(@Nullable Auszahlungsdaten auszahlungsdaten) {
+	public void setAuszahlungsdaten(
+		@Nullable Auszahlungsdaten auszahlungsdaten
+	) {
 		this.auszahlungsdaten = auszahlungsdaten;
 	}
 
@@ -246,7 +301,8 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 	}
 
 	public boolean isReadyForFreigeben() {
-		return checkPropertiesNotNull() && status == FerienbetreuungFormularStatus.ABGESCHLOSSEN;
+		return checkPropertiesNotNull()
+			&& status == FerienbetreuungFormularStatus.ABGESCHLOSSEN;
 	}
 
 	public boolean isReadyForAbschluss() {
@@ -281,22 +337,44 @@ public class FerienbetreuungAngabenStammdaten extends AbstractEntity {
 
 	public void copyForErneuerung(FerienbetreuungAngabenStammdaten target) {
 		target.setTraegerschaft(getTraegerschaft());
-		target.setAmAngebotBeteiligteGemeinden(new HashSet<>(getAmAngebotBeteiligteGemeinden()));
+		target.setAmAngebotBeteiligteGemeinden(
+			new HashSet<>(getAmAngebotBeteiligteGemeinden())
+		);
 		target.setSeitWannFerienbetreuungen(getSeitWannFerienbetreuungen());
 		// Adresse
 		if (getStammdatenAdresse() != null) {
-			target.setStammdatenAdresse(getStammdatenAdresse().copyAdresse(new Adresse(), AntragCopyType.ERNEUERUNG));
+			target.setStammdatenAdresse(
+				getStammdatenAdresse().copyAdresse(
+					new Adresse(),
+					AntragCopyType.ERNEUERUNG
+				)
+			);
 		}
 		// Kontaktperson
-		target.setStammdatenKontaktpersonEmail(getStammdatenKontaktpersonEmail());
-		target.setStammdatenKontaktpersonVorname(getStammdatenKontaktpersonVorname());
-		target.setStammdatenKontaktpersonNachname(getStammdatenKontaktpersonNachname());
-		target.setStammdatenKontaktpersonTelefon(getStammdatenKontaktpersonTelefon());
-		target.setStammdatenKontaktpersonFunktion(getStammdatenKontaktpersonFunktion());
+		target.setStammdatenKontaktpersonEmail(
+			getStammdatenKontaktpersonEmail()
+		);
+		target.setStammdatenKontaktpersonVorname(
+			getStammdatenKontaktpersonVorname()
+		);
+		target.setStammdatenKontaktpersonNachname(
+			getStammdatenKontaktpersonNachname()
+		);
+		target.setStammdatenKontaktpersonTelefon(
+			getStammdatenKontaktpersonTelefon()
+		);
+		target.setStammdatenKontaktpersonFunktion(
+			getStammdatenKontaktpersonFunktion()
+		);
 		target.setVermerkAuszahlung(getVermerkAuszahlung());
 		// Auszahlung
 		if (getAuszahlungsdaten() != null) {
-			target.setAuszahlungsdaten(getAuszahlungsdaten().copyAuszahlungsdaten(new Auszahlungsdaten(), AntragCopyType.ERNEUERUNG));
+			target.setAuszahlungsdaten(
+				getAuszahlungsdaten().copyAuszahlungsdaten(
+					new Auszahlungsdaten(),
+					AntragCopyType.ERNEUERUNG
+				)
+			);
 		}
 
 	}

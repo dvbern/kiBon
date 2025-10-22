@@ -28,7 +28,8 @@ import ch.dvbern.ebegu.types.DateRange;
 /**
  * Wir teilen die Regeln noch auf so dass eine einzelne Regel grundsaetzlich entweder nur neue Abschnitte macht oder
  * nur Daten berechnet und setzt. Dadurch bekommen wir mehr Kontrolle wann was gemacht wird.
- * Die AbstractEbeguRule definiert aber jeweils beide Schritte. Daher machen wir jeweils noch eine Abstract rule die nichts macht
+ * Die AbstractEbeguRule definiert aber jeweils beide Schritte. Daher machen wir jeweils noch eine Abstract rule die
+ * nichts macht
  * fuer den nicht benoetigten Schritt
  */
 public abstract class AbstractCalcRule extends AbstractEbeguRule {
@@ -45,7 +46,9 @@ public abstract class AbstractCalcRule extends AbstractEbeguRule {
 
 	@Nonnull
 	@Override
-	protected final List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
+	protected final List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
 		return new ArrayList<>();
 	}
 }

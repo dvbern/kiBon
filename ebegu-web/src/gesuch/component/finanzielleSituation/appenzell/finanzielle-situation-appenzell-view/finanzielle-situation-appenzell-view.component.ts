@@ -24,14 +24,13 @@ import {MatRadioChange} from '@angular/material/radio';
 import {TranslateService} from '@ngx-translate/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
-import {Observable, of} from 'rxjs';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
+import {Observable} from 'rxjs';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSRole} from '../../../../../models/enums/TSRole';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {TSRole} from '@kibon/shared/model/enums';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
@@ -47,6 +46,7 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractGesuchViewX} from '../../../abstractGesuchViewX';
 import {FinanzielleSituationAppenzellService} from '../finanzielle-situation-appenzell.service';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 const LOG = LogFactory.createLog('FinanzielleSituationAppenzellViewComponent');
 
@@ -54,7 +54,8 @@ const LOG = LogFactory.createLog('FinanzielleSituationAppenzellViewComponent');
     selector: 'dv-finanzielle-situation-appenzell-view',
     templateUrl: './finanzielle-situation-appenzell-view.component.html',
     styleUrls: ['./finanzielle-situation-appenzell-view.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FinanzielleSituationAppenzellViewComponent extends AbstractGesuchViewX<TSFinanzModel> {
     private readonly gesuchstellerNumber: number;
@@ -67,7 +68,8 @@ export class FinanzielleSituationAppenzellViewComponent extends AbstractGesuchVi
         private readonly finanzielleSituationService: FinanzielleSituationAppenzellService,
         private readonly translate: TranslateService,
         private readonly finSitRS: FinanzielleSituationRS,
-        private readonly authService: AuthServiceRS
+        private readonly authService: AuthServiceRS,
+        protected dvShowWarningAngabenVervollstaendigenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
     ) {
         super(
             gesuchModelManager,
@@ -203,7 +205,7 @@ export class FinanzielleSituationAppenzellViewComponent extends AbstractGesuchVi
         if (this.getSubStepIndex() === 1) {
             return this.gesuchModelManager.saveFinanzielleSituationStart();
         }
-        return of().toPromise();
+        return Promise.resolve();
     }
 
     /**
@@ -249,16 +251,6 @@ export class FinanzielleSituationAppenzellViewComponent extends AbstractGesuchVi
         }
         LOG.error('wrong antragstellerNumber');
         return '';
-    }
-
-    // bei einem Wechsel von ein auf zwei Antragstellenden müssen zuerst die Stammdaten ausgefüllt werden
-    // damit die FinSit korrekt ausgefüllt werden kann. Es wird eine Warnung gezeigt, falls die Stammdaten noch
-    // ungültig sind
-    public showWarningAngabenVervollstaendigen(): boolean {
-        return (
-            this.wizardStepManager.getStepByName(TSWizardStepName.GESUCHSTELLER)
-                .wizardStepStatus === TSWizardStepStatus.NOK
-        );
     }
 
     // bei einem Wechsel auf gemeinsam muss der Container von GS2 gelöscht werden.

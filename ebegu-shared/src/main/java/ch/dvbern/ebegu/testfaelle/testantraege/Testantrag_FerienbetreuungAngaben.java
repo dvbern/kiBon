@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle.testantraege;
@@ -26,20 +26,25 @@ public class Testantrag_FerienbetreuungAngaben {
 	private FerienbetreuungAngaben angaben;
 
 	public Testantrag_FerienbetreuungAngaben(
-		FerienbetreuungAngabenStatus status) {
+		FerienbetreuungAngabenStatus status
+	) {
 		this.angaben = new FerienbetreuungAngaben();
 
 		this.angaben.setFerienbetreuungAngabenAngebot(
-			(new Testantrag_FerienbetreuungAngabenAngebot(status)).getAngebot()
+			(new Testantrag_FerienbetreuungAngabenAngebot(status))
+				.getAngebot()
 		);
 		this.angaben.setFerienbetreuungAngabenNutzung(
-			(new Testantrag_FerienbetreuungAngabenNutzung(status)).getNutzung()
+			(new Testantrag_FerienbetreuungAngabenNutzung(status))
+				.getNutzung()
 		);
 		this.angaben.setFerienbetreuungAngabenKostenEinnahmen(
-			(new Testantrag_FerienbetreuungAngabenKostenEinnahmen(status)).getKostenEinnahmen()
+			(new Testantrag_FerienbetreuungAngabenKostenEinnahmen(status))
+				.getKostenEinnahmen()
 		);
 		this.angaben.setFerienbetreuungAngabenStammdaten(
-			(new Testantrag_FerienbetreuungAngabenStammdaten(status)).getStammdaten()
+			(new Testantrag_FerienbetreuungAngabenStammdaten(status))
+				.getStammdaten()
 		);
 	}
 

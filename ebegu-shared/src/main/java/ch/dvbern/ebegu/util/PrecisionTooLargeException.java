@@ -27,8 +27,19 @@ public class PrecisionTooLargeException extends RuntimeException {
 
 	private final int expectedPrecision;
 
-	PrecisionTooLargeException(@Nonnull BigDecimal value, int expectedPrecision) {
-		super("Resulting precision > max-precision for value " + value + '(' + value.precision() + " > " + expectedPrecision + ')');
+	PrecisionTooLargeException(
+		@Nonnull BigDecimal value,
+		int expectedPrecision
+	) {
+		super(
+			"Resulting precision > max-precision for value "
+				+ value
+				+ '('
+				+ value.precision()
+				+ " > "
+				+ expectedPrecision
+				+ ')'
+		);
 		this.value = value;
 		this.expectedPrecision = expectedPrecision;
 	}

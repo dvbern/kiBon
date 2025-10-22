@@ -17,10 +17,10 @@ package ch.dvbern.ebegu.dto;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer AbstractAntragDTO
@@ -45,7 +45,7 @@ public class JaxAbstractAntragDTO implements Serializable {
 
 	private String clazz;
 
-	private String Bemerkungen;
+	private String bemerkungen;
 
 	public JaxAbstractAntragDTO(String clazz) {
 		this.clazz = clazz;
@@ -92,10 +92,10 @@ public class JaxAbstractAntragDTO implements Serializable {
 	}
 
 	public String getBemerkungen() {
-		return Bemerkungen;
+		return bemerkungen;
 	}
 
 	public void setBemerkungen(final String bemerkungen) {
-		Bemerkungen = bemerkungen;
+		this.bemerkungen = bemerkungen;
 	}
 }

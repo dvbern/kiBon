@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -20,14 +20,18 @@ package ch.dvbern.ebegu.entities;
 import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
+import org.hibernate.envers.Audited;
 
+@Audited
 @MappedSuperclass
-public abstract class AbstractMahlzeitenPensum extends AbstractDecimalPensum {
+public abstract class AbstractMahlzeitenPensum
+	extends
+	AbstractDecimalPensum {
 
 	private static final long serialVersionUID = 7183887010325524679L;
 
@@ -55,7 +59,9 @@ public abstract class AbstractMahlzeitenPensum extends AbstractDecimalPensum {
 		return monatlicheHauptmahlzeiten;
 	}
 
-	public void setMonatlicheHauptmahlzeiten(@Nonnull BigDecimal monatlicheHauptmahlzeiten) {
+	public void setMonatlicheHauptmahlzeiten(
+		@Nonnull BigDecimal monatlicheHauptmahlzeiten
+	) {
 		this.monatlicheHauptmahlzeiten = monatlicheHauptmahlzeiten;
 	}
 
@@ -64,7 +70,9 @@ public abstract class AbstractMahlzeitenPensum extends AbstractDecimalPensum {
 		return monatlicheNebenmahlzeiten;
 	}
 
-	public void setMonatlicheNebenmahlzeiten(@Nonnull BigDecimal monatlicheNebenmahlzeiten) {
+	public void setMonatlicheNebenmahlzeiten(
+		@Nonnull BigDecimal monatlicheNebenmahlzeiten
+	) {
 		this.monatlicheNebenmahlzeiten = monatlicheNebenmahlzeiten;
 	}
 
@@ -96,15 +104,20 @@ public abstract class AbstractMahlzeitenPensum extends AbstractDecimalPensum {
 
 	public void copyAbstractBetreuungspensumMahlzeitenEntity(
 		@Nonnull AbstractMahlzeitenPensum target,
-		@Nonnull AntragCopyType copyType) {
+		@Nonnull AntragCopyType copyType
+	) {
 
 		super.copyAbstractBetreuungspensumEntity(target, copyType);
 		target.setVollstaendig(this.isVollstaendig());
 
 		switch (copyType) {
 		case MUTATION:
-			target.setMonatlicheHauptmahlzeiten(this.getMonatlicheHauptmahlzeiten());
-			target.setMonatlicheNebenmahlzeiten(this.getMonatlicheNebenmahlzeiten());
+			target.setMonatlicheHauptmahlzeiten(
+				this.getMonatlicheHauptmahlzeiten()
+			);
+			target.setMonatlicheNebenmahlzeiten(
+				this.getMonatlicheNebenmahlzeiten()
+			);
 			target.setTarifProHauptmahlzeit(this.getTarifProHauptmahlzeit());
 			target.setTarifProNebenmahlzeit(this.getTarifProNebenmahlzeit());
 			break;

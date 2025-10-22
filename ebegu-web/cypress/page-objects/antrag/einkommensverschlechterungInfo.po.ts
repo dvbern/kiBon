@@ -22,11 +22,11 @@ const getHasEinkommensverschlechterung = (answer: string) => {
     return cy.getByData('einkommensverschlechterung.radio-value.' + answer);
 };
 
-// !! -- PAGE ACTIONS -- !!
 const getHasEKVFuerBasisJahrPlus = (plus: number) => {
     return cy.getByData('ekv-fuer-basis-jahr-plus#' + plus);
 };
 
+// !! -- PAGE ACTIONS -- !!
 const fillEinkommensverschlechterungInfoForm = (
     dataset: keyof typeof FixtureEinkommensverschlechterungInfo
 ) => {

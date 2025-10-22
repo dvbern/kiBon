@@ -28,7 +28,7 @@ import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.re
 import {TSWizardStepXTyp} from '../../../../models/enums/TSWizardStepXTyp';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
@@ -39,7 +39,8 @@ const LOG = LogFactory.createLog('FerienbetreuungComponent');
     selector: 'dv-ferienbetreuung',
     templateUrl: './ferienbetreuung.component.html',
     styleUrls: ['./ferienbetreuung.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FerienbetreuungComponent implements OnInit, OnDestroy {
     @Input()

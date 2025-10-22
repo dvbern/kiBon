@@ -36,9 +36,16 @@ public interface GesuchstellerService {
 	 * @param gsNumber Die Gesuchersteller-Nummer
 	 */
 	@Nonnull
-	GesuchstellerContainer saveGesuchsteller(@Nonnull GesuchstellerContainer gesuchsteller, @Nonnull final Gesuch gesuch, @Nonnull Integer gsNumber, boolean umzug);
+	GesuchstellerContainer saveGesuchsteller(
+		@Nonnull GesuchstellerContainer gesuchsteller,
+		@Nonnull final Gesuch gesuch,
+		@Nonnull Integer gsNumber,
+		boolean umzug
+	);
 
-	GesuchstellerContainer updateGesuchsteller(@Nonnull GesuchstellerContainer gesuchsteller);
+	GesuchstellerContainer updateGesuchsteller(
+		@Nonnull GesuchstellerContainer gesuchsteller
+	);
 
 	/**
 	 * @param id PK (id) der Gesuchsteller
@@ -60,5 +67,7 @@ public interface GesuchstellerService {
 	 */
 	void removeGesuchsteller(@Nonnull GesuchstellerContainer gesuchsteller);
 
-	List<Gesuch> findGesuchOfGesuchstellende(@Nonnull List<String> gesuchstellerContainerIDs);
+	List<Gesuch> findGesuchOfGesuchstellende(
+		@Nonnull List<String> gesuchstellerContainerIDs
+	);
 }

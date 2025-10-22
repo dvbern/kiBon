@@ -8,21 +8,36 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util;
 
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
+import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import ch.dvbern.ebegu.util.mandant.MandantVisitor;
 
+/**
+ * Die Locale von kiBon haben drei moegliche Stuffen
+ * 1. server-messages[_SPRACHE].properties => Default Uebersetungen, alles muss dort vorhanden sein
+ * 2. server-messages_SPRACHE_KANTON.properties => Uebersetzungen die man pro Kanton ueberschreiben kann
+ * 3. server-messages_SPRACHE_KANTON_BFSNUMMER => Uebersetzungen die man pro Gemeiende ueberschreiben kann
+ *
+ * Der Fallback Strategy laeuft in der oben gegebene Ordnung von unter nach oben
+ * - Erst wird wenn die Gemeinde ist gegeben die Uebersetung in der Gemeinde server-messages gesucht
+ * - Wenn die Datei oder die MSG_KEY nicht gefunden ist dann ist die Uebersetzung in der server-messages des Kanton
+ * gesucht
+ * - Wenn die Datei oder die MSG_KEY nicht gefunden ist dann ist die Uebersetzung in der basis server-messages gesucht
+ */
 public class MandantLocaleVisitor implements MandantVisitor<Locale> {
 
 	private static final String VARIANT_BE = "be";
@@ -30,11 +45,20 @@ public class MandantLocaleVisitor implements MandantVisitor<Locale> {
 	private static final String VARIANT_SO = "so";
 	private static final String VARIANT_APPENZELL_AUSSERRHODEN = "ar";
 	private static final String VARIANT_SCHWYZ = "sz";
+	private static final String VARIANT_ZUG = "zg";
+	private static final String VARIANT_DVB = "dv";
 
 	private final Locale locale;
+	@Nullable
+	private Gemeinde gemeinde;
 
 	public MandantLocaleVisitor(Locale locale) {
 		this.locale = locale;
+	}
+
+	public MandantLocaleVisitor(Locale locale, @Nullable Gemeinde gemeinde) {
+		this.locale = locale;
+		this.gemeinde = gemeinde;
 	}
 
 	public Locale process(Mandant mandant) {
@@ -47,26 +71,53 @@ public class MandantLocaleVisitor implements MandantVisitor<Locale> {
 
 	@Override
 	public Locale visitBern() {
-		return new Locale(locale.getLanguage(), locale.getCountry(), VARIANT_BE);
+		return createMandantGemeindeLocale(VARIANT_BE, gemeinde);
 	}
 
 	@Override
 	public Locale visitLuzern() {
-		return new Locale(locale.getLanguage(), locale.getCountry(), VARIANT_LU);
+		return createMandantGemeindeLocale(VARIANT_LU, gemeinde);
 	}
 
 	@Override
 	public Locale visitSolothurn() {
-		return new Locale(locale.getLanguage(), locale.getCountry(), VARIANT_SO);
+		return createMandantGemeindeLocale(VARIANT_SO, gemeinde);
 	}
 
 	@Override
 	public Locale visitAppenzellAusserrhoden() {
-		return new Locale(locale.getLanguage(), locale.getCountry(), VARIANT_APPENZELL_AUSSERRHODEN);
+		return createMandantGemeindeLocale(
+			VARIANT_APPENZELL_AUSSERRHODEN,
+			gemeinde
+		);
+	}
+
+	private Locale createMandantGemeindeLocale(
+		String kantonVariant,
+		@Nullable Gemeinde gemeinde
+	) {
+		if (gemeinde != null) {
+			return new Locale(
+				locale.getLanguage(),
+				kantonVariant,
+				gemeinde.getBfsNummer().toString()
+			);
+		}
+		return new Locale(locale.getLanguage(), kantonVariant);
 	}
 
 	@Override
 	public Locale visitSchwyz() {
-		return new Locale(locale.getLanguage(), locale.getCountry(), VARIANT_SCHWYZ);
+		return createMandantGemeindeLocale(VARIANT_SCHWYZ, gemeinde);
+	}
+
+	@Override
+	public Locale visitZug() {
+		return createMandantGemeindeLocale(VARIANT_ZUG, gemeinde);
+	}
+
+	@Override
+	public Locale visitDvb() {
+		return createMandantGemeindeLocale(VARIANT_DVB, gemeinde);
 	}
 }

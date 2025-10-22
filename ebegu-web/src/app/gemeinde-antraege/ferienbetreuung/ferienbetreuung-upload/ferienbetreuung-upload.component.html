@@ -27,6 +27,10 @@
         <hr class="header" />
     </div>
 </div>
+
+@if (isZweitPruefungAndSameUserAsPruefung() | async) {
+    <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
+}
 <div class="row">
     <div class="col-sm-12">
         <dv-multiple-file-upload
@@ -35,8 +39,8 @@
             (delete)="onDelete($event)"
             (uploadFile)="onUpload($event)"
             [files]="dokumente"
-            [readOnly]="isReadonly()"
-            [readOnlyDelete]="isReadonly()"
+            [readOnly]="isReadonly() | async"
+            [readOnlyDelete]="isReadonly() | async"
         >
         </dv-multiple-file-upload>
         <div class="dv-error-messages" *ngFor="let file of filesTooBig">

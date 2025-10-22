@@ -1,9 +1,8 @@
 import {Directive} from '@angular/core';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
-import {TSGesuchsperiodeStatus} from '../models/enums/TSGesuchsperiodeStatus';
-import {TSGesuchsperiode} from '../models/TSGesuchsperiode';
+import {TSGesuchsperiodeStatus, TSRole} from '@kibon/shared/model/enums';
 import {TSRoleUtil} from '../utils/TSRoleUtil';
-import {TSRole} from '../models/enums/TSRole';
 
 @Directive()
 export class AbstractAdminViewX {

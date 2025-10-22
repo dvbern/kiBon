@@ -31,6 +31,8 @@ public interface PensumFachstelleService {
 	 * @return PensumFachstelle mit dem gegebenen key oder null falls nicht vorhanden
 	 */
 	@Nonnull
-	Optional<PensumFachstelle> findPensumFachstelle(@Nonnull String pensumFachstelleId);
+	Optional<PensumFachstelle> findPensumFachstelle(
+		@Nonnull String pensumFachstelleId
+	);
 
 }

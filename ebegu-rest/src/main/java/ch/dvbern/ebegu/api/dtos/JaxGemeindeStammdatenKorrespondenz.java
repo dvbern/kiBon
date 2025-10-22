@@ -3,10 +3,10 @@ package ch.dvbern.ebegu.api.dtos;
 import java.util.Arrays;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.entities.GemeindeStammdatenKorrespondenz;
 import lombok.AllArgsConstructor;
@@ -52,7 +52,15 @@ public class JaxGemeindeStammdatenKorrespondenz extends JaxAbstractDTO {
 	private boolean hasAlternativeLogoTagesschule;
 
 	@NotNull
-	public static JaxGemeindeStammdatenKorrespondenz from(@NotNull GemeindeStammdatenKorrespondenz stammdaten) {
+	private Integer barcodeSpacingLeft;
+
+	@NotNull
+	private Integer barcodeSpacingTop;
+
+	@NotNull
+	public static JaxGemeindeStammdatenKorrespondenz from(
+		@NotNull GemeindeStammdatenKorrespondenz stammdaten
+	) {
 		return new JaxGemeindeStammdatenKorrespondenz(
 			stammdaten.getSenderAddressSpacingLeft(),
 			stammdaten.getSenderAddressSpacingTop(),
@@ -62,9 +70,16 @@ public class JaxGemeindeStammdatenKorrespondenz extends JaxAbstractDTO {
 			stammdaten.getLogoSpacingLeft(),
 			stammdaten.getLogoSpacingTop(),
 			stammdaten.getStandardSignatur(),
-			!Arrays.equals(stammdaten.getAlternativesLogoTagesschuleContent(), GemeindeStammdatenKorrespondenz.EMPTY_BYTE_ARRAY)
-				&& stammdaten.getAlternativesLogoTagesschuleName() != null
-				&& stammdaten.getAlternativesLogoTagesschuleType() != null
+			!Arrays.equals(
+				stammdaten.getAlternativesLogoTagesschuleContent(),
+				GemeindeStammdatenKorrespondenz.EMPTY_BYTE_ARRAY
+			)
+				&& stammdaten.getAlternativesLogoTagesschuleName()
+					!= null
+				&& stammdaten.getAlternativesLogoTagesschuleType()
+					!= null,
+			stammdaten.getBarcodeSpacingLeft(),
+			stammdaten.getBarcodeSpacingTop()
 		);
 	}
 
@@ -77,5 +92,7 @@ public class JaxGemeindeStammdatenKorrespondenz extends JaxAbstractDTO {
 		entity.setLogoSpacingLeft(logoSpacingLeft);
 		entity.setLogoSpacingTop(logoSpacingTop);
 		entity.setStandardSignatur(standardSignatur);
+		entity.setBarcodeSpacingLeft(barcodeSpacingLeft);
+		entity.setBarcodeSpacingTop(barcodeSpacingTop);
 	}
 }

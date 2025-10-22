@@ -15,10 +15,10 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer Familiensituationen
@@ -48,7 +48,9 @@ public class JaxEinkommensverschlechterungInfo extends JaxAbstractDTO {
 		return einkommensverschlechterung;
 	}
 
-	public void setEinkommensverschlechterung(final Boolean einkommensverschlechterung) {
+	public void setEinkommensverschlechterung(
+		final Boolean einkommensverschlechterung
+	) {
 		this.einkommensverschlechterung = einkommensverschlechterung;
 	}
 
@@ -72,7 +74,9 @@ public class JaxEinkommensverschlechterungInfo extends JaxAbstractDTO {
 		return ekvBasisJahrPlus1Annulliert;
 	}
 
-	public void setEkvBasisJahrPlus1Annulliert(Boolean ekvBasisJahrPlus1Annulliert) {
+	public void setEkvBasisJahrPlus1Annulliert(
+		Boolean ekvBasisJahrPlus1Annulliert
+	) {
 		this.ekvBasisJahrPlus1Annulliert = ekvBasisJahrPlus1Annulliert;
 	}
 
@@ -80,7 +84,9 @@ public class JaxEinkommensverschlechterungInfo extends JaxAbstractDTO {
 		return ekvBasisJahrPlus2Annulliert;
 	}
 
-	public void setEkvBasisJahrPlus2Annulliert(Boolean ekvBasisJahrPlus2Annulliert) {
+	public void setEkvBasisJahrPlus2Annulliert(
+		Boolean ekvBasisJahrPlus2Annulliert
+	) {
 		this.ekvBasisJahrPlus2Annulliert = ekvBasisJahrPlus2Annulliert;
 	}
 }

@@ -40,8 +40,11 @@ public class ErstgesuchConfig {
 	private ErstgesuchConfig() {
 	}
 
-	public static ErstgesuchConfig createErstgesuchVerfuegt(@Nonnull TestfallName testfallName, @Nonnull LocalDate eingangsdatum, @Nonnull LocalDateTime
-		timestampVerfuegt) {
+	public static ErstgesuchConfig createErstgesuchVerfuegt(
+		@Nonnull TestfallName testfallName,
+		@Nonnull LocalDate eingangsdatum,
+		@Nonnull LocalDateTime timestampVerfuegt
+	) {
 		ErstgesuchConfig config = new ErstgesuchConfig();
 		config.setTestfallName(testfallName);
 		config.setEingangsdatum(eingangsdatum);
@@ -51,9 +54,12 @@ public class ErstgesuchConfig {
 		return config;
 	}
 
-	public static ErstgesuchConfig createErstgesuchVerfuegt(@Nonnull TestfallName testfallName, @Nonnull Gesuchsperiode gesuchsperiode, @Nonnull LocalDate
-		eingangsdatum, @Nonnull LocalDateTime
-		timestampVerfuegt) {
+	public static ErstgesuchConfig createErstgesuchVerfuegt(
+		@Nonnull TestfallName testfallName,
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull LocalDate eingangsdatum,
+		@Nonnull LocalDateTime timestampVerfuegt
+	) {
 		ErstgesuchConfig config = new ErstgesuchConfig();
 		config.setTestfallName(testfallName);
 		config.setGesuchsperiode(gesuchsperiode);
@@ -64,8 +70,11 @@ public class ErstgesuchConfig {
 		return config;
 	}
 
-	public static ErstgesuchConfig createErstgesuch(@Nonnull TestfallName testfallName, @Nonnull Gesuchsperiode gesuchsperiode, @Nonnull LocalDate
-		eingangsdatum) {
+	public static ErstgesuchConfig createErstgesuch(
+		@Nonnull TestfallName testfallName,
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull LocalDate eingangsdatum
+	) {
 		ErstgesuchConfig config = new ErstgesuchConfig();
 		config.setTestfallName(testfallName);
 		config.setGesuchsperiode(gesuchsperiode);

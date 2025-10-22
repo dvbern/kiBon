@@ -42,10 +42,42 @@ class CheckVerantwortlicherValidatorTest extends AbstractValidatorTest {
 	@BeforeEach
 	void setUp() {
 		Mandant mandant = TestDataUtil.getMandantKantonBern();
-		schUser = TestDataUtil.createBenutzer(UserRole.SACHBEARBEITER_TS, "userSCH", null, null, mandant, null, null);
-		jaUser = TestDataUtil.createBenutzer(UserRole.SACHBEARBEITER_BG, "userJA", null, null, mandant, null, null);
-		jaAdmin = TestDataUtil.createBenutzer(UserRole.ADMIN_BG, "adminJA", null, null, mandant, null, null);
-		schAdmin = TestDataUtil.createBenutzer(UserRole.ADMIN_TS, "adminSCH", null, null, mandant, null, null);
+		schUser = TestDataUtil.createBenutzer(
+			UserRole.SACHBEARBEITER_TS,
+			"userSCH",
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
+		jaUser = TestDataUtil.createBenutzer(
+			UserRole.SACHBEARBEITER_BG,
+			"userJA",
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
+		jaAdmin = TestDataUtil.createBenutzer(
+			UserRole.ADMIN_BG,
+			"adminJA",
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
+		schAdmin = TestDataUtil.createBenutzer(
+			UserRole.ADMIN_TS,
+			"adminSCH",
+			null,
+			null,
+			mandant,
+			null,
+			null
+		);
 	}
 
 	@Test
@@ -58,17 +90,28 @@ class CheckVerantwortlicherValidatorTest extends AbstractValidatorTest {
 		testCheckVerantwortlicherUsers(jaAdmin, schAdmin);
 	}
 
-	private void testCheckVerantwortlicherUsers(Benutzer user1, Benutzer user2) {
+	private void testCheckVerantwortlicherUsers(
+		Benutzer user1,
+		Benutzer user2
+	) {
 		final Dossier dossier = new Dossier();
 		dossier.setVerantwortlicherBG(user1);
 		dossier.setVerantwortlicherTS(user2);
 
 		assertThat(
-			validate(dossier, ChangeVerantwortlicherBGValidationGroup.class),
-			not(violatesAnnotation(CheckVerantwortlicherBG.class)));
+			validate(
+				dossier,
+				ChangeVerantwortlicherBGValidationGroup.class
+			),
+			not(violatesAnnotation(CheckVerantwortlicherBG.class))
+		);
 		assertThat(
-			validate(dossier, ChangeVerantwortlicherTSValidationGroup.class),
-			not(violatesAnnotation(CheckVerantwortlicherTS.class)));
+			validate(
+				dossier,
+				ChangeVerantwortlicherTSValidationGroup.class
+			),
+			not(violatesAnnotation(CheckVerantwortlicherTS.class))
+		);
 	}
 
 	@Test
@@ -78,11 +121,19 @@ class CheckVerantwortlicherValidatorTest extends AbstractValidatorTest {
 		dossier.setVerantwortlicherTS(null);
 
 		assertThat(
-			validate(dossier, ChangeVerantwortlicherBGValidationGroup.class),
-			not(violatesAnnotation(CheckVerantwortlicherBG.class)));
+			validate(
+				dossier,
+				ChangeVerantwortlicherBGValidationGroup.class
+			),
+			not(violatesAnnotation(CheckVerantwortlicherBG.class))
+		);
 		assertThat(
-			validate(dossier, ChangeVerantwortlicherTSValidationGroup.class),
-			not(violatesAnnotation(CheckVerantwortlicherTS.class)));
+			validate(
+				dossier,
+				ChangeVerantwortlicherTSValidationGroup.class
+			),
+			not(violatesAnnotation(CheckVerantwortlicherTS.class))
+		);
 	}
 
 	@Test
@@ -92,11 +143,19 @@ class CheckVerantwortlicherValidatorTest extends AbstractValidatorTest {
 		dossier.setVerantwortlicherTS(schAdmin);
 
 		assertThat(
-			validate(dossier, ChangeVerantwortlicherBGValidationGroup.class),
-			violatesAnnotation(CheckVerantwortlicherBG.class));
+			validate(
+				dossier,
+				ChangeVerantwortlicherBGValidationGroup.class
+			),
+			violatesAnnotation(CheckVerantwortlicherBG.class)
+		);
 		assertThat(
-			validate(dossier, ChangeVerantwortlicherTSValidationGroup.class),
-			not(violatesAnnotation(CheckVerantwortlicherTS.class)));
+			validate(
+				dossier,
+				ChangeVerantwortlicherTSValidationGroup.class
+			),
+			not(violatesAnnotation(CheckVerantwortlicherTS.class))
+		);
 	}
 
 	@Test
@@ -106,10 +165,18 @@ class CheckVerantwortlicherValidatorTest extends AbstractValidatorTest {
 		dossier.setVerantwortlicherTS(jaAdmin);
 
 		assertThat(
-			validate(dossier, ChangeVerantwortlicherBGValidationGroup.class),
-			not(violatesAnnotation(CheckVerantwortlicherBG.class)));
+			validate(
+				dossier,
+				ChangeVerantwortlicherBGValidationGroup.class
+			),
+			not(violatesAnnotation(CheckVerantwortlicherBG.class))
+		);
 		assertThat(
-			validate(dossier, ChangeVerantwortlicherTSValidationGroup.class),
-			violatesAnnotation(CheckVerantwortlicherTS.class));
+			validate(
+				dossier,
+				ChangeVerantwortlicherTSValidationGroup.class
+			),
+			violatesAnnotation(CheckVerantwortlicherTS.class)
+		);
 	}
 }

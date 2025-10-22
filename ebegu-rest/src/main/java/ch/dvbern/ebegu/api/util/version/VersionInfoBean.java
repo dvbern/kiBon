@@ -22,10 +22,10 @@ import java.util.jar.Manifest;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.servlet.ServletContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletContext;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
@@ -34,7 +34,9 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class VersionInfoBean {
 
-	private static final Logger LOG = LoggerFactory.getLogger(VersionInfoBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		VersionInfoBean.class
+	);
 
 	@Inject
 	private ServletContext context;
@@ -48,10 +50,13 @@ public class VersionInfoBean {
 	}
 
 	@Nullable
-	@SuppressFBWarnings({"NP_LOAD_OF_KNOWN_NULL_VALUE", "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE"})
+	@SuppressFBWarnings({ "NP_LOAD_OF_KNOWN_NULL_VALUE",
+		"RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE" })
 	private VersionInfo readVersionInfo() {
 		try (
-			InputStream is = context.getResourceAsStream("META-INF/MANIFEST.MF");
+			InputStream is = context.getResourceAsStream(
+				"META-INF/MANIFEST.MF"
+			);
 		) {
 			if (is == null) {
 				LOG.warn("Could not read versionInfo. InputStream is NULL.");

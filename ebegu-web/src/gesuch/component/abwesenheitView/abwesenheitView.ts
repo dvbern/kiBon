@@ -13,15 +13,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {isBgInstitutionenBetreuungsangebot} from '@kibon/shared/util-fn/betreuungsangebot-typ';
 import {IComponentOptions, IPromise} from 'angular';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {isBgInstitutionenBetreuungsangebot} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSAbwesenheitContainer} from '../../../models/TSAbwesenheitContainer';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSKindContainer} from '../../../models/TSKindContainer';

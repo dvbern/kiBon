@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util.betreuungsmitteilung.messages;
@@ -34,7 +34,8 @@ public interface BetreuungsmitteilungPensumMessageFactory {
 
 	static BetreuungsmitteilungPensumMessageFactory combine(
 		String trennzeichen,
-		BetreuungsmitteilungPensumMessageFactory... factories) {
+		BetreuungsmitteilungPensumMessageFactory... factories
+	) {
 		return (index, pensum) -> Arrays.stream(factories)
 			.map(factory -> factory.messageForPensum(index, pensum))
 			.filter(Predicate.not(String::isEmpty))
@@ -42,11 +43,15 @@ public interface BetreuungsmitteilungPensumMessageFactory {
 	}
 
 	default String formatAb(Gueltigkeit pensum) {
-		return Constants.DATE_FORMATTER.format(pensum.getGueltigkeit().getGueltigAb());
+		return Constants.DATE_FORMATTER.format(
+			pensum.getGueltigkeit().getGueltigAb()
+		);
 	}
 
 	default String formatBis(Gueltigkeit pensum) {
-		return Constants.DATE_FORMATTER.format(pensum.getGueltigkeit().getGueltigBis());
+		return Constants.DATE_FORMATTER.format(
+			pensum.getGueltigkeit().getGueltigBis()
+		);
 	}
 
 	String messageForPensum(int index, BetreuungsmitteilungPensum pensum);

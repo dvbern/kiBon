@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import angular from 'angular';
 import {CORE_JS_MODULE} from '../core/core.angularjs.module';
 import {FaelleListViewComponentConfig} from './component/faelleListView';
 import {faelleRun} from './faelle.route';

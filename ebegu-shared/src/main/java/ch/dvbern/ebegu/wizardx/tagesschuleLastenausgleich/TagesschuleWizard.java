@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.wizardx.tagesschuleLastenausgleich;
@@ -34,11 +34,15 @@ public class TagesschuleWizard extends Wizard {
 	public TagesschuleWizard(
 		@Nonnull UserRole roleToUse,
 		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer lastenausgleichTagesschuleAngabenGemeindeContainer,
-		@Nonnull Collection<Institution> readableInstitutionsOfUser) {
+		@Nonnull Collection<Institution> readableInstitutionsOfUser
+	) {
 		this.role = roleToUse;
-		this.lastenausgleichTagesschuleAngabenGemeindeContainer = lastenausgleichTagesschuleAngabenGemeindeContainer;
+		this.lastenausgleichTagesschuleAngabenGemeindeContainer =
+			lastenausgleichTagesschuleAngabenGemeindeContainer;
 		this.readableInstitutionsOfUser = readableInstitutionsOfUser;
-		if (role.isRoleGemeindeOrTS() || role.isRoleMandant() || role.isSuperadmin()) {
+		if (role.isRoleGemeindeOrTS()
+			|| role.isRoleMandant()
+			|| role.isSuperadmin()) {
 			this.setStep(new AngabenGemeindeStep());
 		} else {
 			this.setStep(new AngabenTagesschuleStep());

@@ -20,7 +20,7 @@
     .gesuch-modul {
         &.betreuung-view {
             padding: 5rem 3rem 10rem;
-            .well {
+            .well:not(.non-full-space) {
                 margin-left: -3rem;
                 margin-right: -3rem;
             }
@@ -62,9 +62,6 @@
                 &--margin {
                     margin-bottom: 5rem;
                     margin-top: 5rem;
-                }
-                &--ansehen {
-                    margin-bottom: -5rem;
                 }
                 &--margin + .gdashboard-panel-text {
                     margin-top: -5rem;
@@ -137,7 +134,7 @@
         &.betreuung-view {
             padding: 5rem 2.5rem 10rem 5rem;
 
-            .well {
+            .well:not(.non-full-space) {
                 margin-left: -5rem;
                 margin-right: -2.5rem;
             }

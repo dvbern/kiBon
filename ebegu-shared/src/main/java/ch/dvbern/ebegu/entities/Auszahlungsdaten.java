@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -21,16 +21,16 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.Constants;
@@ -80,7 +80,9 @@ public class Auszahlungsdaten extends AbstractEntity {
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_auszahlungsdaten_adressekontoinhaber_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_auszahlungsdaten_adressekontoinhaber_id"),
+		nullable = true)
 	private Adresse adresseKontoinhaber;
 
 	@Nullable
@@ -140,19 +142,41 @@ public class Auszahlungsdaten extends AbstractEntity {
 			return false;
 		}
 		final Auszahlungsdaten otherZahlung = (Auszahlungsdaten) other;
-		return Objects.equals(getIban(), otherZahlung.getIban()) &&
-			Objects.equals(getInfomaKreditorennummer(), otherZahlung.getInfomaKreditorennummer()) &&
-			Objects.equals(getInfomaBankcode(), otherZahlung.getInfomaBankcode()) &&
-			Objects.equals(getKontoinhaber(), otherZahlung.getKontoinhaber()) &&
-			Objects.equals(getAdresseKontoinhaber(), otherZahlung.getAdresseKontoinhaber());
+		return Objects.equals(getIban(), otherZahlung.getIban())
+			&&
+			Objects.equals(
+				getInfomaKreditorennummer(),
+				otherZahlung.getInfomaKreditorennummer()
+			)
+			&&
+			Objects.equals(
+				getInfomaBankcode(),
+				otherZahlung.getInfomaBankcode()
+			)
+			&&
+			Objects.equals(
+				getKontoinhaber(),
+				otherZahlung.getKontoinhaber()
+			)
+			&&
+			Objects.equals(
+				getAdresseKontoinhaber(),
+				otherZahlung.getAdresseKontoinhaber()
+			);
 	}
 
 	@Nonnull
-	public Auszahlungsdaten copyAuszahlungsdaten(@Nonnull Auszahlungsdaten target, @Nonnull AntragCopyType copyType) {
+	public Auszahlungsdaten copyAuszahlungsdaten(
+		@Nonnull Auszahlungsdaten target,
+		@Nonnull AntragCopyType copyType
+	) {
 		target.setIban(this.getIban());
 		target.setKontoinhaber(this.getKontoinhaber());
 		if (this.getAdresseKontoinhaber() != null) {
-			target.setAdresseKontoinhaber(this.getAdresseKontoinhaber().copyAdresse(new Adresse(), copyType));
+			target.setAdresseKontoinhaber(
+				this.getAdresseKontoinhaber()
+					.copyAdresse(new Adresse(), copyType)
+			);
 		}
 		target.setInfomaKreditorennummer(this.getInfomaKreditorennummer());
 		target.setInfomaBankcode(this.getInfomaBankcode());
@@ -163,7 +187,9 @@ public class Auszahlungsdaten extends AbstractEntity {
 		final boolean valid = StringUtils.isNotEmpty(kontoinhaber)
 			&& StringUtils.isNotEmpty(getIbanOrInfomaKreditorennummer());
 		if (isInfomaZahlung) {
-			final boolean validForInfomaZahlung = StringUtils.isNotEmpty(infomaKreditorennummer);
+			final boolean validForInfomaZahlung = StringUtils.isNotEmpty(
+				infomaKreditorennummer
+			);
 			return valid && validForInfomaZahlung;
 		}
 		return valid;

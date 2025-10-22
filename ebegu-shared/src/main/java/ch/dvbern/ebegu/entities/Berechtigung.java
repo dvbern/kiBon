@@ -23,19 +23,19 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.enums.UserRole;
@@ -58,7 +58,8 @@ import org.hibernate.envers.Audited;
 @CheckBerechtigungSozialdienst
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Berechtigung extends AbstractDateRangedEntity implements Comparable<Berechtigung> {
+public class Berechtigung extends AbstractDateRangedEntity implements
+	Comparable<Berechtigung> {
 
 	private static final long serialVersionUID = 6372688971894279665L;
 
@@ -75,30 +76,39 @@ public class Berechtigung extends AbstractDateRangedEntity implements Comparable
 	@NotNull
 	@ManyToMany
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "berechtigung_id", nullable = false),
-		inverseJoinColumns = @JoinColumn(name = "gemeinde_id", nullable = false),
-		foreignKey = @ForeignKey(name = "FK_berechtigung_gemeinde_gemeinde_id"),
-		inverseForeignKey = @ForeignKey(name = "FK_berechtigung_gemeinde_berechtigung_id"),
+		joinColumns = @JoinColumn(name = "berechtigung_id",
+			nullable = false),
+		inverseJoinColumns = @JoinColumn(name = "gemeinde_id",
+			nullable = false),
+		foreignKey = @ForeignKey(
+			name = "FK_berechtigung_gemeinde_gemeinde_id"),
+		inverseForeignKey = @ForeignKey(
+			name = "FK_berechtigung_gemeinde_berechtigung_id"),
 		indexes = {
-			@Index(name = "IX_berechtigung_gemeinde_berechtigung_id", columnList = "berechtigung_id"),
-			@Index(name = "IX_berechtigung_gemeinde_gemeinde_id", columnList = "gemeinde_id"),
+			@Index(name = "IX_berechtigung_gemeinde_berechtigung_id",
+				columnList = "berechtigung_id"),
+			@Index(name = "IX_berechtigung_gemeinde_gemeinde_id",
+				columnList = "gemeinde_id"),
 		}
 	)
 	private Set<Gemeinde> gemeindeList = new TreeSet<>();
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_Berechtigung_institution_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_Berechtigung_institution_id"))
 	private Institution institution = null;
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_Berechtigung_traegerschaft_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_Berechtigung_traegerschaft_id"))
 	private Traegerschaft traegerschaft = null;
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_berechtigung_sozialdienst_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_berechtigung_sozialdienst_id"))
 	private Sozialdienst sozialdienst = null;
 
 	public Benutzer getBenutzer() {
@@ -168,16 +178,31 @@ public class Berechtigung extends AbstractDateRangedEntity implements Comparable
 		final Berechtigung otherBerechtigung = (Berechtigung) other;
 		return Objects.equals(getBenutzer(), otherBerechtigung.getBenutzer())
 			&& getRole() == otherBerechtigung.getRole()
-			&& Objects.equals(getInstitution(), otherBerechtigung.getInstitution())
-			&& Objects.equals(getTraegerschaft(), otherBerechtigung.getTraegerschaft())
-			&& Objects.equals(getGueltigkeit(), otherBerechtigung.getGueltigkeit())
-			&& Objects.equals(getSozialdienst(), otherBerechtigung.getSozialdienst());
+			&& Objects.equals(
+				getInstitution(),
+				otherBerechtigung.getInstitution()
+			)
+			&& Objects.equals(
+				getTraegerschaft(),
+				otherBerechtigung.getTraegerschaft()
+			)
+			&& Objects.equals(
+				getGueltigkeit(),
+				otherBerechtigung.getGueltigkeit()
+			)
+			&& Objects.equals(
+				getSozialdienst(),
+				otherBerechtigung.getSozialdienst()
+			);
 	}
 
 	@Override
 	public int compareTo(@Nonnull Berechtigung o) {
 		CompareToBuilder builder = new CompareToBuilder();
-		builder.append(this.getGueltigkeit().getGueltigAb(), o.getGueltigkeit().getGueltigAb());
+		builder.append(
+			this.getGueltigkeit().getGueltigAb(),
+			o.getGueltigkeit().getGueltigAb()
+		);
 		builder.append(this.getId(), o.getId());
 		return builder.toComparison();
 	}

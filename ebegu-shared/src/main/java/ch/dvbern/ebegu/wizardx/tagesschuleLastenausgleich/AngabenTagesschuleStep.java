@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.wizardx.tagesschuleLastenausgleich;
@@ -20,6 +20,7 @@ package ch.dvbern.ebegu.wizardx.tagesschuleLastenausgleich;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitutionContainer;
 import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatus;
 import ch.dvbern.ebegu.wizardx.WizardStateEnum;
@@ -28,21 +29,26 @@ import ch.dvbern.ebegu.wizardx.WizardTyp;
 
 public class AngabenTagesschuleStep implements WizardStep<TagesschuleWizard> {
 
-
 	@Override
 	public void next(
-		@Nonnull TagesschuleWizard wizard) {
-		if (wizard.getRole().isRoleGemeindeOrTS() || wizard.getRole().isRoleMandant() || wizard.getRole()
-			.isSuperadmin()) {
+		@Nonnull TagesschuleWizard wizard
+	) {
+		if (wizard.getRole().isRoleGemeindeOrTS()
+			|| wizard.getRole().isRoleMandant()
+			|| wizard.getRole()
+				.isSuperadmin()) {
 			wizard.setStep(new FreigabeStep());
 		}
 	}
 
 	@Override
 	public void prev(
-		@Nonnull TagesschuleWizard wizard) {
-		if (wizard.getRole().isRoleGemeindeOrTS() || wizard.getRole().isRoleMandant() || wizard.getRole()
-			.isSuperadmin()) {
+		@Nonnull TagesschuleWizard wizard
+	) {
+		if (wizard.getRole().isRoleGemeindeOrTS()
+			|| wizard.getRole().isRoleMandant()
+			|| wizard.getRole()
+				.isSuperadmin()) {
 			wizard.setStep(new AngabenGemeindeStep());
 		}
 	}
@@ -50,7 +56,8 @@ public class AngabenTagesschuleStep implements WizardStep<TagesschuleWizard> {
 	@Override
 	public WizardStateEnum getStatus(@Nonnull TagesschuleWizard wizard) {
 		final Set<LastenausgleichTagesschuleAngabenInstitutionContainer> containerList =
-			wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer().getAngabenInstitutionContainers();
+			wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer()
+				.getAngabenInstitutionContainers();
 
 		//Solange keine Tagesschulen-Angaben erfasst sind, soll der Wizard-Step nicht auf OK wechseln
 		if (containerList.isEmpty()) {
@@ -60,22 +67,41 @@ public class AngabenTagesschuleStep implements WizardStep<TagesschuleWizard> {
 		if (wizard.getRole().isInstitutionRole()) {
 			boolean userInstitutionsAbgeschlossen =
 				containerList.stream()
-					.filter(container -> wizard.getReadableInstitutionsOfUser()
-						.stream()
-						.anyMatch(institution -> institution.equals(container.getInstitution())))
-				.reduce(true, (prev, cur) -> prev && cur.isAntragAtLeastInPruefungGemeinde(), Boolean::logicalAnd);
+					.filter(
+						container -> wizard
+							.getReadableInstitutionsOfUser()
+							.stream()
+							.anyMatch(
+								institution -> institution
+									.equals(
+										container
+											.getInstitution()
+									)
+							)
+					)
+					.reduce(
+						true,
+						(prev, cur) -> prev
+							&& cur.isAntragAtLeastInPruefungGemeinde(),
+						Boolean::logicalAnd
+					);
 
-			return userInstitutionsAbgeschlossen? WizardStateEnum.OK : WizardStateEnum.IN_BEARBEITUNG;
+			return userInstitutionsAbgeschlossen ?
+				WizardStateEnum.OK :
+				WizardStateEnum.IN_BEARBEITUNG;
 		}
 
-		if (wizard.getRole().isRoleGemeindeOrTS() &&
-			wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer().isInPruefungKanton()) {
+		if (wizard.getRole().isRoleGemeindeOrTS()
+			&&
+			wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer()
+				.isInPruefungKanton()) {
 			return WizardStateEnum.OK;
 		}
 
-		return wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer().allInstitutionenGeprueft() ?
-			WizardStateEnum.OK :
-			WizardStateEnum.IN_BEARBEITUNG;
+		return wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer()
+			.allInstitutionenGeprueft() ?
+				WizardStateEnum.OK :
+				WizardStateEnum.IN_BEARBEITUNG;
 	}
 
 	@Override
@@ -86,8 +112,11 @@ public class AngabenTagesschuleStep implements WizardStep<TagesschuleWizard> {
 	@Override
 	public boolean isDisabled(@Nonnull TagesschuleWizard wizard) {
 		LastenausgleichTagesschuleAngabenGemeindeStatus status =
-			wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer().getStatus();
-		return status.equals(LastenausgleichTagesschuleAngabenGemeindeStatus.NEU);
+			wizard.getLastenausgleichTagesschuleAngabenGemeindeContainer()
+				.getStatus();
+		return status.equals(
+			LastenausgleichTagesschuleAngabenGemeindeStatus.NEU
+		);
 	}
 
 	@Override

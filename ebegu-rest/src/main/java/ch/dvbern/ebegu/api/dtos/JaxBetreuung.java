@@ -21,20 +21,20 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.enums.AnmeldungMutationZustand;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.util.Constants;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO fuer Daten der Betreuungen,
@@ -58,12 +58,14 @@ public class JaxBetreuung extends JaxAbstractDTO {
 	private JaxBelegungFerieninsel belegungFerieninsel;
 
 	@NotNull
-	private List<JaxBetreuungspensumContainer> betreuungspensumContainers = new ArrayList<>();
+	private List<JaxBetreuungspensumContainer> betreuungspensumContainers =
+		new ArrayList<>();
 
 	@NotNull
-	private List<JaxAbwesenheitContainer> abwesenheitContainers = new ArrayList<>();
+	private List<JaxAbwesenheitContainer> abwesenheitContainers =
+		new ArrayList<>();
 
-	@NotNull
+	@Nullable
 	private JaxErweiterteBetreuungContainer erweiterteBetreuungContainer;
 
 	@Size(max = Constants.DB_TEXTAREA_LENGTH)
@@ -80,12 +82,16 @@ public class JaxBetreuung extends JaxAbstractDTO {
 	private Boolean vertrag;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate datumAblehnung = null;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate datumBestaetigung = null;
+
+	@Nullable
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
+	private LocalDate datumAngefordert = null;
 
 	@Nullable
 	private String kindFullname;
@@ -115,12 +121,14 @@ public class JaxBetreuung extends JaxAbstractDTO {
 	private AnmeldungMutationZustand anmeldungMutationZustand;
 
 	@NotNull
-	private List<JaxBetreuungspensumAbweichung> betreuungspensumAbweichungen = new ArrayList<>();
+	private List<JaxBetreuungspensumAbweichung> betreuungspensumAbweichungen =
+		new ArrayList<>();
 
 	private boolean keineDetailinformationen = false;
 
 	@NotNull
-	private List<JaxAnmeldungTagesschuleZeitabschnitt> anmeldungTagesschuleZeitabschnitts = new ArrayList<>();
+	private List<JaxAnmeldungTagesschuleZeitabschnitt> anmeldungTagesschuleZeitabschnitts =
+		new ArrayList<>();
 
 	private boolean eingewoehnung = false;
 
@@ -139,12 +147,13 @@ public class JaxBetreuung extends JaxAbstractDTO {
 	@Nullable
 	private Bedarfsstufe bedarfsstufe;
 
-
 	public JaxInstitutionStammdatenSummary getInstitutionStammdaten() {
 		return institutionStammdaten;
 	}
 
-	public void setInstitutionStammdaten(JaxInstitutionStammdatenSummary institutionStammdaten) {
+	public void setInstitutionStammdaten(
+		JaxInstitutionStammdatenSummary institutionStammdaten
+	) {
 		this.institutionStammdaten = institutionStammdaten;
 	}
 
@@ -160,7 +169,9 @@ public class JaxBetreuung extends JaxAbstractDTO {
 		return betreuungspensumContainers;
 	}
 
-	public void setBetreuungspensumContainers(List<JaxBetreuungspensumContainer> betreuungspensumContainers) {
+	public void setBetreuungspensumContainers(
+		List<JaxBetreuungspensumContainer> betreuungspensumContainers
+	) {
 		this.betreuungspensumContainers = betreuungspensumContainers;
 	}
 
@@ -168,17 +179,20 @@ public class JaxBetreuung extends JaxAbstractDTO {
 		return abwesenheitContainers;
 	}
 
-	public void setAbwesenheitContainers(List<JaxAbwesenheitContainer> abwesenheiten) {
+	public void setAbwesenheitContainers(
+		List<JaxAbwesenheitContainer> abwesenheiten
+	) {
 		this.abwesenheitContainers = abwesenheiten;
 	}
 
-	@Nonnull
+	@Nullable
 	public JaxErweiterteBetreuungContainer getErweiterteBetreuungContainer() {
 		return erweiterteBetreuungContainer;
 	}
 
 	public void setErweiterteBetreuungContainer(
-		@Nonnull JaxErweiterteBetreuungContainer erweiterteBetreuungContainer) {
+		@Nullable JaxErweiterteBetreuungContainer erweiterteBetreuungContainer
+	) {
 		this.erweiterteBetreuungContainer = erweiterteBetreuungContainer;
 	}
 
@@ -239,7 +253,7 @@ public class JaxBetreuung extends JaxAbstractDTO {
 		return kindFullname;
 	}
 
-	public void setKindFullname(String kindFullname) {
+	public void setKindFullname(@Nullable String kindFullname) {
 		this.kindFullname = kindFullname;
 	}
 
@@ -310,7 +324,9 @@ public class JaxBetreuung extends JaxAbstractDTO {
 		return belegungTagesschule;
 	}
 
-	public void setBelegungTagesschule(@Nullable JaxBelegungTagesschule belegungTagesschule) {
+	public void setBelegungTagesschule(
+		@Nullable JaxBelegungTagesschule belegungTagesschule
+	) {
 		this.belegungTagesschule = belegungTagesschule;
 	}
 
@@ -319,7 +335,9 @@ public class JaxBetreuung extends JaxAbstractDTO {
 		return belegungFerieninsel;
 	}
 
-	public void setBelegungFerieninsel(@Nullable JaxBelegungFerieninsel belegungFerieninsel) {
+	public void setBelegungFerieninsel(
+		@Nullable JaxBelegungFerieninsel belegungFerieninsel
+	) {
 		this.belegungFerieninsel = belegungFerieninsel;
 	}
 
@@ -328,7 +346,9 @@ public class JaxBetreuung extends JaxAbstractDTO {
 		return anmeldungMutationZustand;
 	}
 
-	public void setAnmeldungMutationZustand(@Nullable AnmeldungMutationZustand anmeldungMutationZustand) {
+	public void setAnmeldungMutationZustand(
+		@Nullable AnmeldungMutationZustand anmeldungMutationZustand
+	) {
 		this.anmeldungMutationZustand = anmeldungMutationZustand;
 	}
 
@@ -354,7 +374,9 @@ public class JaxBetreuung extends JaxAbstractDTO {
 		return betreuungspensumAbweichungen;
 	}
 
-	public void setBetreuungspensumAbweichungen(@Nonnull List<JaxBetreuungspensumAbweichung> betreuungspensumAbweichungen) {
+	public void setBetreuungspensumAbweichungen(
+		@Nonnull List<JaxBetreuungspensumAbweichung> betreuungspensumAbweichungen
+	) {
 		this.betreuungspensumAbweichungen = betreuungspensumAbweichungen;
 	}
 
@@ -371,8 +393,11 @@ public class JaxBetreuung extends JaxAbstractDTO {
 		return anmeldungTagesschuleZeitabschnitts;
 	}
 
-	public void setAnmeldungTagesschuleZeitabschnitts(List<JaxAnmeldungTagesschuleZeitabschnitt> anmeldungTagesschuleZeitabschnitts) {
-		this.anmeldungTagesschuleZeitabschnitts = anmeldungTagesschuleZeitabschnitts;
+	public void setAnmeldungTagesschuleZeitabschnitts(
+		List<JaxAnmeldungTagesschuleZeitabschnitt> anmeldungTagesschuleZeitabschnitts
+	) {
+		this.anmeldungTagesschuleZeitabschnitts =
+			anmeldungTagesschuleZeitabschnitts;
 	}
 
 	public boolean isEingewoehnung() {
@@ -397,16 +422,22 @@ public class JaxBetreuung extends JaxAbstractDTO {
 		return begruendungAuszahlungAnInstitution;
 	}
 
-	public void setBegruendungAuszahlungAnInstitution(@Nullable String begruendungAuszahlungAnInstitution) {
-		this.begruendungAuszahlungAnInstitution = begruendungAuszahlungAnInstitution;
+	public void setBegruendungAuszahlungAnInstitution(
+		@Nullable String begruendungAuszahlungAnInstitution
+	) {
+		this.begruendungAuszahlungAnInstitution =
+			begruendungAuszahlungAnInstitution;
 	}
 
 	public boolean isFinSitRueckwirkendKorrigiertInThisMutation() {
 		return finSitRueckwirkendKorrigiertInThisMutation;
 	}
 
-	public void setFinSitRueckwirkendKorrigiertInThisMutation(boolean finSitRueckwirkendKorrigiertInThisMutation) {
-		this.finSitRueckwirkendKorrigiertInThisMutation = finSitRueckwirkendKorrigiertInThisMutation;
+	public void setFinSitRueckwirkendKorrigiertInThisMutation(
+		boolean finSitRueckwirkendKorrigiertInThisMutation
+	) {
+		this.finSitRueckwirkendKorrigiertInThisMutation =
+			finSitRueckwirkendKorrigiertInThisMutation;
 	}
 
 	@Nullable
@@ -416,5 +447,14 @@ public class JaxBetreuung extends JaxAbstractDTO {
 
 	public void setBedarfsstufe(@Nullable Bedarfsstufe bedarfsstufe) {
 		this.bedarfsstufe = bedarfsstufe;
+	}
+
+	@Nullable
+	public LocalDate getDatumAngefordert() {
+		return datumAngefordert;
+	}
+
+	public void setDatumAngefordert(@Nullable LocalDate datumAngefordert) {
+		this.datumAngefordert = datumAngefordert;
 	}
 }

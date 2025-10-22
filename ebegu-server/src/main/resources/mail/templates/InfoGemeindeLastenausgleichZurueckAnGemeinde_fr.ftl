@@ -25,7 +25,7 @@ Content-Type: text/html;charset=utf-8
 	</p>
 	<p>
 		Nous vous informons que le canton vous a renvoyé votre formulaire pour la compensation des charges pour les écoles à journée continue pour le traiter à nouveau.
-		Vous pouvez le consulter <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/lastenausgleich-ts/${id}/angaben-gemeinde">ici</a>.
+		Vous pouvez le consulter <a href="${frontendUrl}/lastenausgleich-ts/${id}/angaben-gemeinde">ici</a>.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>

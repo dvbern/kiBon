@@ -15,6 +15,26 @@
 
 package ch.dvbern.ebegu.test;
 
+import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.AntragPredicateObjectDTO;
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.AntragSearchDTO;
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.AntragTableFilterDTO;
@@ -22,6 +42,8 @@ import ch.dvbern.ebegu.dto.suchfilter.smarttable.MitteilungSearchDTO;
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.MitteilungTableFilterDTO;
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.PaginationDTO;
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.SortDTO;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Abwesenheit;
 import ch.dvbern.ebegu.entities.AbwesenheitContainer;
@@ -48,7 +70,6 @@ import ch.dvbern.ebegu.entities.Einkommensverschlechterung;
 import ch.dvbern.ebegu.entities.EinkommensverschlechterungContainer;
 import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfo;
 import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfoContainer;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.EinstellungenTagesschule;
 import ch.dvbern.ebegu.entities.ErweiterteBetreuung;
 import ch.dvbern.ebegu.entities.ErweiterteBetreuungContainer;
@@ -105,7 +126,6 @@ import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 import ch.dvbern.ebegu.enums.EingewoehnungTyp;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.FachstelleName;
 import ch.dvbern.ebegu.enums.Ferienname;
@@ -135,6 +155,7 @@ import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeFormularStatus;
 import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatus;
 import ch.dvbern.ebegu.finanzielleSituationRechner.AbstractFinanzielleSituationRechner;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.BetreuungService;
 import ch.dvbern.ebegu.services.FallService;
 import ch.dvbern.ebegu.services.GesuchService;
@@ -147,36 +168,139 @@ import ch.dvbern.ebegu.testfaelle.Testfall02_FeutzYvonne;
 import ch.dvbern.ebegu.testfaelle.Testfall04_WaltherLaura;
 import ch.dvbern.ebegu.testfaelle.Testfall06_BeckerNora;
 import ch.dvbern.ebegu.testfaelle.Testfall11_SchulamtOnly;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.util.DateUtil;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.math.BigDecimal;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static ch.dvbern.ebegu.enums.EinstellungKey.*;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ABWESENHEIT_AKTIV;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANGEBOT_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANSPRUCH_AB_X_MONATEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANSPRUCH_MONATSWEISE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANWESENHEITSTAGE_PRO_MONAT_AKTIVIERT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.AUSSERORDENTLICHER_ANSPRUCH_RULE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.AUSWEIS_NACHWEIS_REQUIRED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.BEGRUENDUNG_MUTATION_AKTIVIERT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.BESONDERE_BEDUERFNISSE_LUZERN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.DAUER_BABYTARIF;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.DIPLOMATENSTATUS_DEAKTIVIERT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.EINGEWOEHNUNG_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ERWERBSPENSUM_ZUSCHLAG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLEN_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLE_MAX_PENSUM_SOZIALE_INTEGRATION;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLE_MAX_PENSUM_SPRACHLICHE_INTEGRATION;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLE_MIN_PENSUM_SOZIALE_INTEGRATION;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLE_MIN_PENSUM_SPRACHLICHE_INTEGRATION;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FERIENBETREUUNG_CHF_PAUSCHALBETRAG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FERIENBETREUUNG_CHF_PAUSCHALBETRAG_SONDERSCHUELER;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FINANZIELLE_SITUATION_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_EINKOMMENSVERSCHLECHTERUNG_BIS_CHF;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_FAMILIENSITUATION_NEU;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_MAX_DIFFERENZ_BESCHAEFTIGUNGSPENSUM;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_MAX_PENSUM_AUSSERORDENTLICHER_ANSPRUCH;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_PAUSCHALE_BEI_ANSPRUCH;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_TEXTE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FREIGABE_QUITTUNG_EINLESEN_REQUIRED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDESPEZIFISCHE_BG_KONFIGURATIONEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_KEIN_GUTSCHEIN_FUER_SOZIALHILFE_EMPFAENGER;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_KONTINGENTIERUNG_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_FUER_SOZIALHILFEBEZUEGER_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MIN_ERWERBSPENSUM_EINGESCHULT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MIN_ERWERBSPENSUM_NICHT_EINGESCHULT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_AKTIVIERT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_KITA;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO_AB_PRIMARSCHULE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_MAX_MASSGEBENDEN_EINKOMMEN_FUER_BERECHNUNG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_SCHNITTSTELLE_KITAX_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_TAGESSCHULE_TAGIS_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_MAXPROZENT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_KITA;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_TFO;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_KITA;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_TFO;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GESCHWISTERNBONUS_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GESUCH_BEENDEN_BEI_TAUSCH_GS2;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.KESB_PLATZIERUNG_DEAKTIVIEREN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.KINDERABZUG_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.KITAPLUS_ZUSCHLAG_AKTIVIERT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.KITA_STUNDEN_PRO_TAG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.LATS_LOHNNORMKOSTEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.LATS_LOHNNORMKOSTEN_LESS_THAN_50;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.LATS_STICHTAG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_MASSGEBENDES_EINKOMMEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_TARIF_OHNE_PAEDAGOGISCHER_BETREUUNG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_TG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_PRIMAR_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_TG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_TG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MINIMALDAUER_KONKUBINAT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_ERWERBSPENSUM_EINGESCHULT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_ERWERBSPENSUM_NICHT_EINGESCHULT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_MASSGEBENDES_EINKOMMEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_TARIF;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_VERGUENSTIGUNG_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.MIN_VERGUENSTIGUNG_PRO_TG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSSTUNDEN_TFO;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_KITA;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_TFO;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_GRENZWERT_EINKOMMENSVERSCHLECHTERUNG;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_MAX_TAGE_ABWESENHEIT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_3;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_4;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_5;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_6;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PENSUM_KITA_MIN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PENSUM_TAGESELTERN_MIN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PENSUM_TAGESSCHULE_MIN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PENSUM_ANZEIGE_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SCHNITTSTELLE_STEUERN_AKTIV;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SCHULERGAENZENDE_BETREUUNGEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SOZIALABZUG_PRO_KIND;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SOZIALVERSICHERUNGSNUMMER_PERIODE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SPRACHE_AMTSPRACHE_DISABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SPRACHFOERDERUNG_BESTAETIGEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.UNBEZAHLTER_URLAUB_AKTIV;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.VERANLAGUNG_MIN_UNTERSCHIED_MASSGEBENDESEINK;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.VERFUEGUNG_EINGESCHRIEBEN_VERSENDEN_AKTIVIERT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.VERFUEGUNG_EXPORT_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.WEGZEIT_ERWERBSPENSUM;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ZAHLUNGSANGABEN_ANTRAGSTELLER_REQUIRED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ZEMIS_DISABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ZUSATZLICHE_FELDER_ERSATZEINKOMMEN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ZUSCHLAG_BEHINDERUNG_PRO_STD;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ZUSCHLAG_BEHINDERUNG_PRO_TG;
 import static ch.dvbern.ebegu.util.Constants.PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_3_FUER_TESTS;
 import static ch.dvbern.ebegu.util.Constants.PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_4_FUER_TESTS;
 import static ch.dvbern.ebegu.util.Constants.PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_5_FUER_TESTS;
@@ -185,7 +309,6 @@ import static ch.dvbern.ebegu.util.Constants.PAUSCHALABZUG_PRO_PERSON_FAMILIENGR
 /**
  * comments homa
  */
-@SuppressWarnings("PMD.NcssTypeCount")
 @CanIgnoreReturnValue
 public final class TestDataUtil {
 
@@ -197,30 +320,50 @@ public final class TestDataUtil {
 	public static final int PERIODE_JAHR_1 = 2017;
 	public static final int PERIODE_JAHR_2 = 2018;
 
-	public static final LocalDate START_PERIODE = LocalDate.of(PERIODE_JAHR_1, Month.AUGUST, 1);
-	public static final LocalDate ENDE_PERIODE = LocalDate.of(PERIODE_JAHR_2, Month.JULY, 31);
+	public static final LocalDate START_PERIODE = LocalDate.of(
+		PERIODE_JAHR_1,
+		Month.AUGUST,
+		1
+	);
+	public static final LocalDate ENDE_PERIODE = LocalDate.of(
+		PERIODE_JAHR_2,
+		Month.JULY,
+		31
+	);
 
 	public static final String TEST_STRASSE = "Nussbaumstrasse";
 
-	public static final String GEMEINDE_PARIS_ID = "4c453263-f992-48af-86b5-dc04cd7e8bb8";
-	public static final String GEMEINDE_LONDON_ID = "4c453263-f992-48af-86b5-dc04cd7e8777";
+	public static final String GEMEINDE_PARIS_ID =
+		"4c453263-f992-48af-86b5-dc04cd7e8bb8";
+	public static final String GEMEINDE_LONDON_ID =
+		"4c453263-f992-48af-86b5-dc04cd7e8777";
 
 	public static final AtomicLong SEQUENCE = new AtomicLong();
 
 	private TestDataUtil() {
 	}
 
-	public static GesuchstellerAdresseContainer createDefaultGesuchstellerAdresseContainer(@Nonnull GesuchstellerContainer gsContainer) {
-		final GesuchstellerAdresseContainer gsAdressCont = new GesuchstellerAdresseContainer();
+	public static GesuchstellerAdresseContainer createDefaultGesuchstellerAdresseContainer(
+		@Nonnull GesuchstellerContainer gsContainer
+	) {
+		final GesuchstellerAdresseContainer gsAdressCont =
+			new GesuchstellerAdresseContainer();
 		gsAdressCont.setGesuchstellerContainer(gsContainer);
-		gsAdressCont.setGesuchstellerAdresseJA(createDefaultGesuchstellerAdresse());
+		gsAdressCont.setGesuchstellerAdresseJA(
+			createDefaultGesuchstellerAdresse()
+		);
 		return gsAdressCont;
 	}
 
-	public static GesuchstellerAdresseContainer createDefaultGesuchstellerAdresseContainerGS(@Nonnull GesuchstellerContainer gsContainer) {
-		final GesuchstellerAdresseContainer gsAdressCont = new GesuchstellerAdresseContainer();
+	public static GesuchstellerAdresseContainer createDefaultGesuchstellerAdresseContainerGS(
+		@Nonnull GesuchstellerContainer gsContainer
+	) {
+		final GesuchstellerAdresseContainer gsAdressCont =
+			new GesuchstellerAdresseContainer();
 		gsAdressCont.setGesuchstellerContainer(gsContainer);
-		gsAdressCont.setGesuchstellerAdresseGS(createDefaultGesuchstellerAdresse());
+		gsAdressCont.setGesuchstellerAdresseGS(
+			createDefaultGesuchstellerAdresse()
+		);
 		return gsAdressCont;
 	}
 
@@ -231,7 +374,9 @@ public final class TestDataUtil {
 		gesuchstellerAdresse.setZusatzzeile("c/o Uwe Untermieter");
 		gesuchstellerAdresse.setPlz("3006");
 		gesuchstellerAdresse.setOrt("Bern");
-		gesuchstellerAdresse.setGueltigkeit(new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME));
+		gesuchstellerAdresse.setGueltigkeit(
+			new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME)
+		);
 		gesuchstellerAdresse.setAdresseTyp(AdresseTyp.WOHNADRESSE);
 		return gesuchstellerAdresse;
 	}
@@ -244,13 +389,20 @@ public final class TestDataUtil {
 		adresse.setZusatzzeile("c/o Uwe Untermieter");
 		adresse.setPlz("3006");
 		adresse.setOrt("Bern");
-		adresse.setGueltigkeit(new DateRange(LocalDate.now(), Constants.END_OF_TIME));
+		adresse.setGueltigkeit(
+			new DateRange(LocalDate.now(), Constants.END_OF_TIME)
+		);
 		return adresse;
 	}
 
 	public static GesuchstellerContainer createDefaultGesuchstellerContainer() {
-		final GesuchstellerContainer gesuchstellerContainer = new GesuchstellerContainer();
-		gesuchstellerContainer.addAdresse(createDefaultGesuchstellerAdresseContainer(gesuchstellerContainer));
+		final GesuchstellerContainer gesuchstellerContainer =
+			new GesuchstellerContainer();
+		gesuchstellerContainer.addAdresse(
+			createDefaultGesuchstellerAdresseContainer(
+				gesuchstellerContainer
+			)
+		);
 		gesuchstellerContainer.setGesuchstellerJA(createDefaultGesuchsteller());
 		return gesuchstellerContainer;
 	}
@@ -271,32 +423,49 @@ public final class TestDataUtil {
 		EinkommensverschlechterungContainer einkommensverschlechterungContainer =
 			new EinkommensverschlechterungContainer();
 
-		einkommensverschlechterungContainer.setEkvGSBasisJahrPlus1(createDefaultEinkommensverschlechterung());
+		einkommensverschlechterungContainer.setEkvGSBasisJahrPlus1(
+			createDefaultEinkommensverschlechterung()
+		);
 
-		final Einkommensverschlechterung ekvGSBasisJahrPlus2 = createDefaultEinkommensverschlechterung();
+		final Einkommensverschlechterung ekvGSBasisJahrPlus2 =
+			createDefaultEinkommensverschlechterung();
 		ekvGSBasisJahrPlus2.setNettolohn(BigDecimal.valueOf(2));
-		einkommensverschlechterungContainer.setEkvGSBasisJahrPlus2(ekvGSBasisJahrPlus2);
+		einkommensverschlechterungContainer.setEkvGSBasisJahrPlus2(
+			ekvGSBasisJahrPlus2
+		);
 
-		final Einkommensverschlechterung ekvJABasisJahrPlus1 = createDefaultEinkommensverschlechterung();
+		final Einkommensverschlechterung ekvJABasisJahrPlus1 =
+			createDefaultEinkommensverschlechterung();
 		ekvJABasisJahrPlus1.setNettolohn(BigDecimal.valueOf(3));
-		einkommensverschlechterungContainer.setEkvJABasisJahrPlus1(ekvJABasisJahrPlus1);
+		einkommensverschlechterungContainer.setEkvJABasisJahrPlus1(
+			ekvJABasisJahrPlus1
+		);
 
-		final Einkommensverschlechterung ekvJABasisJahrPlus2 = createDefaultEinkommensverschlechterung();
+		final Einkommensverschlechterung ekvJABasisJahrPlus2 =
+			createDefaultEinkommensverschlechterung();
 		ekvJABasisJahrPlus2.setNettolohn(BigDecimal.valueOf(4));
-		einkommensverschlechterungContainer.setEkvJABasisJahrPlus2(ekvJABasisJahrPlus2);
+		einkommensverschlechterungContainer.setEkvJABasisJahrPlus2(
+			ekvJABasisJahrPlus2
+		);
 
 		return einkommensverschlechterungContainer;
 	}
 
 	public static Einkommensverschlechterung createDefaultEinkommensverschlechterung() {
-		Einkommensverschlechterung einkommensverschlechterung = new Einkommensverschlechterung();
-		einkommensverschlechterung.setNettolohn(MathUtil.DEFAULT.from(BigDecimal.ONE));
+		Einkommensverschlechterung einkommensverschlechterung =
+			new Einkommensverschlechterung();
+		einkommensverschlechterung.setNettolohn(
+			MathUtil.DEFAULT.from(BigDecimal.ONE)
+		);
 		return einkommensverschlechterung;
 	}
 
 	public static FamiliensituationContainer createDefaultFamiliensituationContainer() {
-		FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
-		familiensituationContainer.setFamiliensituationJA(createDefaultFamiliensituation());
+		FamiliensituationContainer familiensituationContainer =
+			new FamiliensituationContainer();
+		familiensituationContainer.setFamiliensituationJA(
+			createDefaultFamiliensituation()
+		);
 		return familiensituationContainer;
 	}
 
@@ -319,7 +488,9 @@ public final class TestDataUtil {
 		gesuch.setGesuchsperiode(createGesuchsperiode1718());
 		gesuch.setDossier(createDefaultDossier());
 		gesuch.setEingangsdatum(LocalDate.now());
-		gesuch.setFamiliensituationContainer(createDefaultFamiliensituationContainer());
+		gesuch.setFamiliensituationContainer(
+			createDefaultFamiliensituationContainer()
+		);
 		if (status != null) {
 			gesuch.setStatus(status);
 		} else {
@@ -370,8 +541,13 @@ public final class TestDataUtil {
 	}
 
 	@Nonnull
-	public static Mandant getMandantKantonBernAndPersist(@Nonnull Persistence persistence) {
-		Mandant mandant = persistence.find(Mandant.class, AbstractTestfall.ID_MANDANT_KANTON_BERN);
+	public static Mandant getMandantKantonBernAndPersist(
+		@Nonnull Persistence persistence
+	) {
+		Mandant mandant = persistence.find(
+			Mandant.class,
+			AbstractTestfall.ID_MANDANT_KANTON_BERN
+		);
 		if (mandant == null) {
 			mandant = getMandantKantonBern();
 			return persistence.persist(mandant);
@@ -379,8 +555,14 @@ public final class TestDataUtil {
 		return mandant;
 	}
 
-	public static Mandant persistMandantIfNecessary(@Nonnull Mandant mandant, @Nonnull Persistence persistence) {
-		Mandant mandantFromDB = persistence.find(Mandant.class, mandant.getId());
+	public static Mandant persistMandantIfNecessary(
+		@Nonnull Mandant mandant,
+		@Nonnull Persistence persistence
+	) {
+		Mandant mandantFromDB = persistence.find(
+			Mandant.class,
+			mandant.getId()
+		);
 		if (mandantFromDB == null) {
 			return persistence.persist(mandant);
 		}
@@ -388,8 +570,13 @@ public final class TestDataUtil {
 	}
 
 	@Nonnull
-	public static Mandant getMandantKantonLuzernAndPersist(@Nonnull Persistence persistence) {
-		Mandant mandant = persistence.find(Mandant.class, AbstractTestfall.ID_MANDANT_KANTON_LUZERN);
+	public static Mandant getMandantKantonLuzernAndPersist(
+		@Nonnull Persistence persistence
+	) {
+		Mandant mandant = persistence.find(
+			Mandant.class,
+			AbstractTestfall.ID_MANDANT_KANTON_LUZERN
+		);
 		if (mandant == null) {
 			mandant = getMandantLuzern();
 			return persistence.persist(mandant);
@@ -427,9 +614,15 @@ public final class TestDataUtil {
 			gemeinde.setStatus(GemeindeStatus.AKTIV);
 			gemeinde.setMandant(getMandantKantonBernAndPersist(persistence));
 			gemeinde.setAngebotBG(true);
-			gemeinde.setBetreuungsgutscheineStartdatum(LocalDate.of(2016, 1, 1));
-			gemeinde.setTagesschulanmeldungenStartdatum(LocalDate.of(2020, 8, 1));
-			gemeinde.setFerieninselanmeldungenStartdatum(LocalDate.of(2020, 8, 1));
+			gemeinde.setBetreuungsgutscheineStartdatum(
+				LocalDate.of(2016, 1, 1)
+			);
+			gemeinde.setTagesschulanmeldungenStartdatum(
+				LocalDate.of(2020, 8, 1)
+			);
+			gemeinde.setFerieninselanmeldungenStartdatum(
+				LocalDate.of(2020, 8, 1)
+			);
 			return persistence.persist(gemeinde);
 		}
 		return gemeinde;
@@ -437,25 +630,37 @@ public final class TestDataUtil {
 
 	@Nonnull
 	public static Gemeinde getGemeindeParis(@Nonnull Persistence persistence) {
-		GemeindeStammdaten stammdatenParis = getGemeindeStammdatenParis(persistence);
+		GemeindeStammdaten stammdatenParis = getGemeindeStammdatenParis(
+			persistence
+		);
 		return stammdatenParis.getGemeinde();
 	}
 
 	@Nonnull
 	public static Gemeinde getGemeindeLondon(@Nonnull Persistence persistence) {
-		GemeindeStammdaten stammdatenLondon = getGemeindeStammdatenLondon(persistence);
+		GemeindeStammdaten stammdatenLondon = getGemeindeStammdatenLondon(
+			persistence
+		);
 		return stammdatenLondon.getGemeinde();
 	}
 
-	public static GemeindeStammdaten getGemeindeStammdatenParis(@Nonnull Persistence persistence) {
+	public static GemeindeStammdaten getGemeindeStammdatenParis(
+		@Nonnull Persistence persistence
+	) {
 		Gemeinde gemeinde = persistence.find(Gemeinde.class, GEMEINDE_PARIS_ID);
 		if (gemeinde == null) {
 			gemeinde = createGemeindeParis();
 			Objects.requireNonNull(gemeinde.getMandant());
-			TestDataUtil.persistMandantIfNecessary(gemeinde.getMandant(), persistence);
+			TestDataUtil.persistMandantIfNecessary(
+				gemeinde.getMandant(),
+				persistence
+			);
 			gemeinde = persistence.persist(gemeinde);
 		}
-		GemeindeStammdaten stammdaten = persistence.find(GemeindeStammdaten.class, GEMEINDE_PARIS_ID);
+		GemeindeStammdaten stammdaten = persistence.find(
+			GemeindeStammdaten.class,
+			GEMEINDE_PARIS_ID
+		);
 		if (stammdaten == null) {
 			stammdaten = createGemeindeStammdaten(gemeinde);
 			stammdaten.setId(GEMEINDE_PARIS_ID);
@@ -464,15 +669,26 @@ public final class TestDataUtil {
 		return stammdaten;
 	}
 
-	public static GemeindeStammdaten getGemeindeStammdatenLondon(@Nonnull Persistence persistence) {
-		Gemeinde gemeinde = persistence.find(Gemeinde.class, GEMEINDE_LONDON_ID);
+	public static GemeindeStammdaten getGemeindeStammdatenLondon(
+		@Nonnull Persistence persistence
+	) {
+		Gemeinde gemeinde = persistence.find(
+			Gemeinde.class,
+			GEMEINDE_LONDON_ID
+		);
 		if (gemeinde == null) {
 			gemeinde = createGemeindeLondon();
 			Objects.requireNonNull(gemeinde.getMandant());
-			TestDataUtil.persistMandantIfNecessary(gemeinde.getMandant(), persistence);
+			TestDataUtil.persistMandantIfNecessary(
+				gemeinde.getMandant(),
+				persistence
+			);
 			gemeinde = persistence.persist(gemeinde);
 		}
-		GemeindeStammdaten stammdaten = persistence.find(GemeindeStammdaten.class, GEMEINDE_LONDON_ID);
+		GemeindeStammdaten stammdaten = persistence.find(
+			GemeindeStammdaten.class,
+			GEMEINDE_LONDON_ID
+		);
 		if (stammdaten == null) {
 			stammdaten = createGemeindeStammdaten(gemeinde);
 			stammdaten.setId(GEMEINDE_LONDON_ID);
@@ -545,7 +761,8 @@ public final class TestDataUtil {
 	}
 
 	public static FinanzielleSituationContainer createFinanzielleSituationContainer() {
-		FinanzielleSituationContainer container = new FinanzielleSituationContainer();
+		FinanzielleSituationContainer container =
+			new FinanzielleSituationContainer();
 		container.setJahr(LocalDate.now().minusYears(1).getYear());
 		return container;
 	}
@@ -582,7 +799,9 @@ public final class TestDataUtil {
 		Institution institution = new Institution();
 		institution.setName("Institution1");
 		institution.setMandant(getMandantKantonBern());
-		institution.setTraegerschaft(createDefaultTraegerschaft(institution.getMandant()));
+		institution.setTraegerschaft(
+			createDefaultTraegerschaft(institution.getMandant())
+		);
 		return institution;
 	}
 
@@ -590,7 +809,9 @@ public final class TestDataUtil {
 		Institution institution = new Institution();
 		institution.setName("Institution1");
 		institution.setMandant(mandant);
-		institution.setTraegerschaft(createDefaultTraegerschaft(institution.getMandant()));
+		institution.setTraegerschaft(
+			createDefaultTraegerschaft(institution.getMandant())
+		);
 		return institution;
 	}
 
@@ -598,86 +819,130 @@ public final class TestDataUtil {
 		return createInstitutionStammdaten(
 			UUID.randomUUID().toString(),
 			"Testinstitution",
-			BetreuungsangebotTyp.KITA);
+			BetreuungsangebotTyp.KITA
+		);
 	}
 
-	public static InstitutionStammdaten createDefaultInstitutionStammdaten(Mandant mandant) {
+	public static InstitutionStammdaten createDefaultInstitutionStammdaten(
+		Mandant mandant
+	) {
 		return createInstitutionStammdaten(
 			UUID.randomUUID().toString(),
 			"Testinstitution",
 			BetreuungsangebotTyp.KITA,
-			mandant);
+			mandant
+		);
 	}
 
 	public static InstitutionStammdaten createInstitutionStammdatenKitaWeissenstein() {
 		return createInstitutionStammdaten(
 			AbstractTestfall.ID_INSTITUTION_STAMMDATEN_WEISSENSTEIN_KITA,
 			"Kita Aaregg",
-			BetreuungsangebotTyp.KITA);
+			BetreuungsangebotTyp.KITA
+		);
 	}
 
 	public static InstitutionStammdaten createInstitutionStammdatenTagesfamilien() {
 		return createInstitutionStammdaten(
 			AbstractTestfall.ID_INSTITUTION_STAMMDATEN_TAGESFAMILIEN,
 			"Tagesfamilien",
-			BetreuungsangebotTyp.TAGESFAMILIEN);
+			BetreuungsangebotTyp.TAGESFAMILIEN
+		);
 	}
 
 	public static InstitutionStammdaten createInstitutionStammdatenKitaBruennen() {
 		return createInstitutionStammdaten(
 			AbstractTestfall.ID_INSTITUTION_STAMMDATEN_BRUENNEN_KITA,
 			"Kita Brünnen",
-			BetreuungsangebotTyp.KITA);
+			BetreuungsangebotTyp.KITA
+		);
 	}
 
-	public static InstitutionStammdaten createInstitutionStammdatenTagesschuleBern(Gesuchsperiode gesuchsperiode) {
+	public static InstitutionStammdaten createInstitutionStammdatenTagesschuleBern(
+		Gesuchsperiode gesuchsperiode
+	) {
 		return createTagesschuleInstitutionStammdaten(
 			AbstractTestfall.ID_INSTITUTION_STAMMDATEN_BERN_TAGESSCULHE,
-			"Tagesschule Bern", gesuchsperiode
-			);
+			"Tagesschule Bern",
+			gesuchsperiode
+		);
 	}
 
-	private static InstitutionStammdaten createTagesschuleInstitutionStammdaten(@Nonnull String id,
-		@Nonnull String name,@Nonnull Gesuchsperiode gesuchsperiode) {
+	private static InstitutionStammdaten createTagesschuleInstitutionStammdaten(
+		@Nonnull String id,
+		@Nonnull String name,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		InstitutionStammdaten instStammdaten = new InstitutionStammdaten();
 		instStammdaten.setId(id);
 		instStammdaten.setMail(TESTMAIL);
 		instStammdaten.setGueltigkeit(Constants.DEFAULT_GUELTIGKEIT);
-		instStammdaten.setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESSCHULE);
+		instStammdaten.setBetreuungsangebotTyp(
+			BetreuungsangebotTyp.TAGESSCHULE
+		);
 		instStammdaten.setInstitution(createDefaultInstitution());
 		instStammdaten.getInstitution().setName(name);
 		instStammdaten.setAdresse(createDefaultAdresse());
 
-		InstitutionStammdatenTagesschule institutionStammdatenTagesschule = new InstitutionStammdatenTagesschule();
+		InstitutionStammdatenTagesschule institutionStammdatenTagesschule =
+			new InstitutionStammdatenTagesschule();
 		institutionStammdatenTagesschule.setGemeinde(createGemeindeParis());
 
 		//modul Tagesschule Group Vormittag
 		TextRessource vormittagText = new TextRessource();
 		vormittagText.setTextDeutsch("Vormittag");
 		vormittagText.setTextFranzoesisch("Matin");
-		ModulTagesschuleGroup vormittag = createModulTagesschuleGroup(vormittagText ,
+		ModulTagesschuleGroup vormittag = createModulTagesschuleGroup(
+			vormittagText,
 			ModulTagesschuleIntervall.WOECHENTLICH,
-			"4y69g9PhD9mXguXcPAwlFinnfo6RTdyuzWuX", "3.00", 8, 0, 12,0);
+			"4y69g9PhD9mXguXcPAwlFinnfo6RTdyuzWuX",
+			"3.00",
+			8,
+			0,
+			12,
+			0
+		);
 
 		//modul Tagesschule Group Nachmittag
 		TextRessource nachmittagText = new TextRessource();
 		nachmittagText.setTextDeutsch("Nachmittag");
 		nachmittagText.setTextFranzoesisch("Après-midi");
-		ModulTagesschuleGroup nachmittag = createModulTagesschuleGroup(nachmittagText, ModulTagesschuleIntervall.WOECHENTLICH,
-			"4y69g9PhD9mXguXcPAwlFinnfo6RTdyuzWuY", null, 13, 0, 16,0);
+		ModulTagesschuleGroup nachmittag = createModulTagesschuleGroup(
+			nachmittagText,
+			ModulTagesschuleIntervall.WOECHENTLICH,
+			"4y69g9PhD9mXguXcPAwlFinnfo6RTdyuzWuY",
+			null,
+			13,
+			0,
+			16,
+			0
+		);
 
 		//modul Tagesschule Group Mittag
 		TextRessource mittagText = new TextRessource();
 		mittagText.setTextDeutsch("Mittag");
 		mittagText.setTextFranzoesisch("Midi");
-		ModulTagesschuleGroup mittag = createModulTagesschuleGroup(mittagText, ModulTagesschuleIntervall.WOECHENTLICH,
-			"4y69g9PhD9mXguXcPAwlFinnfo6RTdyuzWuZ", "10.00", 12, 0, 13,0);
+		ModulTagesschuleGroup mittag = createModulTagesschuleGroup(
+			mittagText,
+			ModulTagesschuleIntervall.WOECHENTLICH,
+			"4y69g9PhD9mXguXcPAwlFinnfo6RTdyuzWuZ",
+			"10.00",
+			12,
+			0,
+			13,
+			0
+		);
 
 		//Einstellungen Tagesschule
-		EinstellungenTagesschule einstellungenTagesschule = new EinstellungenTagesschule();
+		EinstellungenTagesschule einstellungenTagesschule =
+			new EinstellungenTagesschule();
 		einstellungenTagesschule.setGesuchsperiode(gesuchsperiode);
-		einstellungenTagesschule.setModulTagesschuleTyp(ModulTagesschuleTyp.DYNAMISCH);
-		einstellungenTagesschule.setInstitutionStammdatenTagesschule(institutionStammdatenTagesschule);
+		einstellungenTagesschule.setModulTagesschuleTyp(
+			ModulTagesschuleTyp.DYNAMISCH
+		);
+		einstellungenTagesschule.setInstitutionStammdatenTagesschule(
+			institutionStammdatenTagesschule
+		);
 
 		vormittag.setEinstellungenTagesschule(einstellungenTagesschule);
 		nachmittag.setEinstellungenTagesschule(einstellungenTagesschule);
@@ -690,30 +955,42 @@ public final class TestDataUtil {
 
 		einstellungenTagesschule.setModulTagesschuleGroups(modulTSGroupSet);
 
-		Set<EinstellungenTagesschule> einstellungenTagesschuleSet = new TreeSet<>();
+		Set<EinstellungenTagesschule> einstellungenTagesschuleSet =
+			new TreeSet<>();
 		einstellungenTagesschuleSet.add(einstellungenTagesschule);
-		institutionStammdatenTagesschule.setEinstellungenTagesschule(einstellungenTagesschuleSet);
+		institutionStammdatenTagesschule.setEinstellungenTagesschule(
+			einstellungenTagesschuleSet
+		);
 
-		instStammdaten.setInstitutionStammdatenTagesschule(institutionStammdatenTagesschule);
+		instStammdaten.setInstitutionStammdatenTagesschule(
+			institutionStammdatenTagesschule
+		);
 
 		return instStammdaten;
 	}
 
-	private static ModulTagesschuleGroup createModulTagesschuleGroup(@Nonnull TextRessource bezeichnung,
-		@Nonnull ModulTagesschuleIntervall intervall, @Nonnull String identifier,@Nullable String verpflegungskosten, @Nonnull int startHour,
-		@Nonnull int startMinute, @Nonnull int stopHour, @Nonnull int stopMinute){
+	private static ModulTagesschuleGroup createModulTagesschuleGroup(
+		@Nonnull TextRessource bezeichnung,
+		@Nonnull ModulTagesschuleIntervall intervall,
+		@Nonnull String identifier,
+		@Nullable String verpflegungskosten,
+		int startHour,
+		int startMinute,
+		int stopHour,
+		int stopMinute
+	) {
 		ModulTagesschuleGroup mtg = new ModulTagesschuleGroup();
 		mtg.setBezeichnung(bezeichnung);
 		mtg.setIntervall(intervall);
 		mtg.setIdentifier(identifier);
 		mtg.setReihenfolge(0);
 		mtg.setModulTagesschuleName(ModulTagesschuleName.DYNAMISCH);
-		if(verpflegungskosten != null) {
+		if (verpflegungskosten != null) {
 			mtg.setVerpflegungskosten(new BigDecimal(verpflegungskosten));
 		}
 		mtg.setWirdPaedagogischBetreut(false);
-		mtg.setZeitVon(LocalTime.of(startHour,startMinute));
-		mtg.setZeitBis(LocalTime.of(stopHour,stopMinute));
+		mtg.setZeitVon(LocalTime.of(startHour, startMinute));
+		mtg.setZeitBis(LocalTime.of(stopHour, stopMinute));
 
 		//modul Tagesschule
 		Set<ModulTagesschule> modulTSSet = new TreeSet<>();
@@ -746,10 +1023,15 @@ public final class TestDataUtil {
 		return createInstitutionStammdaten(
 			AbstractTestfall.ID_INSTITUTION_STAMMDATEN_GUARDA_FERIENINSEL,
 			"Ferieninsel Guarda",
-			BetreuungsangebotTyp.FERIENINSEL);
+			BetreuungsangebotTyp.FERIENINSEL
+		);
 	}
 
-	private static InstitutionStammdaten createInstitutionStammdaten(@Nonnull String id, @Nonnull String name, @Nonnull BetreuungsangebotTyp angebotTyp) {
+	private static InstitutionStammdaten createInstitutionStammdaten(
+		@Nonnull String id,
+		@Nonnull String name,
+		@Nonnull BetreuungsangebotTyp angebotTyp
+	) {
 		InstitutionStammdaten instStammdaten = new InstitutionStammdaten();
 		instStammdaten.setId(id);
 		instStammdaten.setMail(TESTMAIL);
@@ -758,17 +1040,29 @@ public final class TestDataUtil {
 		instStammdaten.setInstitution(createDefaultInstitution());
 		instStammdaten.getInstitution().setName(name);
 		instStammdaten.setAdresse(createDefaultAdresse());
-		InstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine = new InstitutionStammdatenBetreuungsgutscheine();
-		institutionStammdatenBetreuungsgutscheine.setAnzahlPlaetze(BigDecimal.TEN);
+		InstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine =
+			new InstitutionStammdatenBetreuungsgutscheine();
+		institutionStammdatenBetreuungsgutscheine.setAnzahlPlaetze(
+			BigDecimal.TEN
+		);
 		Auszahlungsdaten auszahlungsdaten = new Auszahlungsdaten();
 		auszahlungsdaten.setIban(new IBAN(iban));
 		auszahlungsdaten.setKontoinhaber("Kontoinhaber " + name);
-		institutionStammdatenBetreuungsgutscheine.setAuszahlungsdaten(auszahlungsdaten);
-		instStammdaten.setInstitutionStammdatenBetreuungsgutscheine(institutionStammdatenBetreuungsgutscheine);
+		institutionStammdatenBetreuungsgutscheine.setAuszahlungsdaten(
+			auszahlungsdaten
+		);
+		instStammdaten.setInstitutionStammdatenBetreuungsgutscheine(
+			institutionStammdatenBetreuungsgutscheine
+		);
 		return instStammdaten;
 	}
 
-	private static InstitutionStammdaten createInstitutionStammdaten(@Nonnull String id, @Nonnull String name, @Nonnull BetreuungsangebotTyp angebotTyp, Mandant mandant) {
+	private static InstitutionStammdaten createInstitutionStammdaten(
+		@Nonnull String id,
+		@Nonnull String name,
+		@Nonnull BetreuungsangebotTyp angebotTyp,
+		Mandant mandant
+	) {
 		InstitutionStammdaten instStammdaten = new InstitutionStammdaten();
 		instStammdaten.setId(id);
 		instStammdaten.setMail(TESTMAIL);
@@ -777,43 +1071,94 @@ public final class TestDataUtil {
 		instStammdaten.setInstitution(createDefaultInstitution(mandant));
 		instStammdaten.getInstitution().setName(name);
 		instStammdaten.setAdresse(createDefaultAdresse());
-		InstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine = new InstitutionStammdatenBetreuungsgutscheine();
-		institutionStammdatenBetreuungsgutscheine.setAnzahlPlaetze(BigDecimal.TEN);
+		InstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine =
+			new InstitutionStammdatenBetreuungsgutscheine();
+		institutionStammdatenBetreuungsgutscheine.setAnzahlPlaetze(
+			BigDecimal.TEN
+		);
 		Auszahlungsdaten auszahlungsdaten = new Auszahlungsdaten();
 		auszahlungsdaten.setIban(new IBAN(iban));
 		auszahlungsdaten.setKontoinhaber("Kontoinhaber " + name);
-		institutionStammdatenBetreuungsgutscheine.setAuszahlungsdaten(auszahlungsdaten);
-		instStammdaten.setInstitutionStammdatenBetreuungsgutscheine(institutionStammdatenBetreuungsgutscheine);
+		institutionStammdatenBetreuungsgutscheine.setAuszahlungsdaten(
+			auszahlungsdaten
+		);
+		instStammdaten.setInstitutionStammdatenBetreuungsgutscheine(
+			institutionStammdatenBetreuungsgutscheine
+		);
 		return instStammdaten;
 	}
 
-	public static Collection<InstitutionStammdaten> saveInstitutionsstammdatenForTestfaelle(@Nonnull Persistence persistence, Gesuchsperiode gesuchsperiode) {
-		final InstitutionStammdaten institutionStammdatenKitaAaregg = createInstitutionStammdatenKitaWeissenstein();
-		final InstitutionStammdaten institutionStammdatenKitaBruennen = createInstitutionStammdatenKitaBruennen();
-		final InstitutionStammdaten institutionStammdatenTagesfamilien = createInstitutionStammdatenTagesfamilien();
-		final InstitutionStammdaten institutionStammdatenTagesschuleBruennen = createInstitutionStammdatenTagesschuleBern(gesuchsperiode);
-		final InstitutionStammdaten institutionStammdatenFerieninselBruennen = createInstitutionStammdatenFerieninselGuarda();
+	public static Collection<InstitutionStammdaten> saveInstitutionsstammdatenForTestfaelle(
+		@Nonnull Persistence persistence,
+		Gesuchsperiode gesuchsperiode
+	) {
+		final InstitutionStammdaten institutionStammdatenKitaAaregg =
+			createInstitutionStammdatenKitaWeissenstein();
+		final InstitutionStammdaten institutionStammdatenKitaBruennen =
+			createInstitutionStammdatenKitaBruennen();
+		final InstitutionStammdaten institutionStammdatenTagesfamilien =
+			createInstitutionStammdatenTagesfamilien();
+		final InstitutionStammdaten institutionStammdatenTagesschuleBruennen =
+			createInstitutionStammdatenTagesschuleBern(gesuchsperiode);
+		final InstitutionStammdaten institutionStammdatenFerieninselBruennen =
+			createInstitutionStammdatenFerieninselGuarda();
 		final Mandant mandant = getMandantKantonBern();
 
 		institutionStammdatenKitaAaregg.getInstitution().setMandant(mandant);
 		institutionStammdatenKitaBruennen.getInstitution().setMandant(mandant);
 		institutionStammdatenTagesfamilien.getInstitution().setMandant(mandant);
-		institutionStammdatenTagesschuleBruennen.getInstitution().setMandant(mandant);
-		institutionStammdatenFerieninselBruennen.getInstitution().setMandant(mandant);
+		institutionStammdatenTagesschuleBruennen.getInstitution()
+			.setMandant(mandant);
+		institutionStammdatenFerieninselBruennen.getInstitution()
+			.setMandant(mandant);
 
 		Collection<InstitutionStammdaten> list = new ArrayList<>();
-		list.add(saveInstitutionStammdatenIfNecessary(persistence, institutionStammdatenKitaAaregg));
-		list.add(saveInstitutionStammdatenIfNecessary(persistence, institutionStammdatenTagesfamilien));
-		list.add(saveInstitutionStammdatenIfNecessary(persistence, institutionStammdatenKitaBruennen));
-		list.add(saveInstitutionStammdatenIfNecessary(persistence, institutionStammdatenTagesschuleBruennen));
-		list.add(saveInstitutionStammdatenIfNecessary(persistence, institutionStammdatenFerieninselBruennen));
+		list.add(
+			saveInstitutionStammdatenIfNecessary(
+				persistence,
+				institutionStammdatenKitaAaregg
+			)
+		);
+		list.add(
+			saveInstitutionStammdatenIfNecessary(
+				persistence,
+				institutionStammdatenTagesfamilien
+			)
+		);
+		list.add(
+			saveInstitutionStammdatenIfNecessary(
+				persistence,
+				institutionStammdatenKitaBruennen
+			)
+		);
+		list.add(
+			saveInstitutionStammdatenIfNecessary(
+				persistence,
+				institutionStammdatenTagesschuleBruennen
+			)
+		);
+		list.add(
+			saveInstitutionStammdatenIfNecessary(
+				persistence,
+				institutionStammdatenFerieninselBruennen
+			)
+		);
 		return list;
 	}
 
 	@Nonnull
-	public static InstitutionStammdaten saveInstitutionStammdatenIfNecessary(@Nonnull Persistence persistence, @Nonnull InstitutionStammdaten institutionStammdaten) {
-		Institution institution = saveInstitutionIfNecessary(persistence, institutionStammdaten.getInstitution());
-		InstitutionStammdaten found = persistence.find(InstitutionStammdaten.class, institutionStammdaten.getId());
+	public static InstitutionStammdaten saveInstitutionStammdatenIfNecessary(
+		@Nonnull Persistence persistence,
+		@Nonnull InstitutionStammdaten institutionStammdaten
+	) {
+		Institution institution = saveInstitutionIfNecessary(
+			persistence,
+			institutionStammdaten.getInstitution()
+		);
+		InstitutionStammdaten found = persistence.find(
+			InstitutionStammdaten.class,
+			institutionStammdaten.getId()
+		);
 		if (found == null) {
 			institutionStammdaten.setInstitution(institution);
 			return persistence.merge(institutionStammdaten);
@@ -821,37 +1166,60 @@ public final class TestDataUtil {
 		return found;
 	}
 
-	public static void saveInstitutionStammdatenTagesschule(@Nonnull Persistence persistence,
-		@Nonnull InstitutionStammdatenTagesschule institutionStammdatenTagesschule) {
+	public static void saveInstitutionStammdatenTagesschule(
+		@Nonnull Persistence persistence,
+		@Nonnull InstitutionStammdatenTagesschule institutionStammdatenTagesschule
+	) {
 		InstitutionStammdatenTagesschule foundStammdatenTagesschule =
-			persistence.find(InstitutionStammdatenTagesschule.class, institutionStammdatenTagesschule.getId());
-		if(foundStammdatenTagesschule == null){
+			persistence.find(
+				InstitutionStammdatenTagesschule.class,
+				institutionStammdatenTagesschule.getId()
+			);
+		if (foundStammdatenTagesschule == null) {
 			persistence.merge(institutionStammdatenTagesschule);
 		}
 	}
 
 	@Nonnull
-	private static Institution saveInstitutionIfNecessary(@Nonnull Persistence persistence, @Nonnull Institution institution) {
-		saveTraegerschaftIfNecessary(persistence, institution.getTraegerschaft());
+	private static Institution saveInstitutionIfNecessary(
+		@Nonnull Persistence persistence,
+		@Nonnull Institution institution
+	) {
+		saveTraegerschaftIfNecessary(
+			persistence,
+			institution.getTraegerschaft()
+		);
 		saveMandantIfNecessary(persistence, institution.getMandant());
-		Institution found = persistence.find(Institution.class, institution.getId());
+		Institution found = persistence.find(
+			Institution.class,
+			institution.getId()
+		);
 		if (found == null) {
 			found = persistEntity(persistence, institution);
 		}
 		return found;
 	}
 
-	private static void saveTraegerschaftIfNecessary(@Nonnull Persistence persistence, @Nullable Traegerschaft traegerschaft) {
+	private static void saveTraegerschaftIfNecessary(
+		@Nonnull Persistence persistence,
+		@Nullable Traegerschaft traegerschaft
+	) {
 		if (traegerschaft != null) {
 			saveMandantIfNecessary(persistence, traegerschaft.getMandant());
-			Traegerschaft found = persistence.find(Traegerschaft.class, traegerschaft.getId());
+			Traegerschaft found = persistence.find(
+				Traegerschaft.class,
+				traegerschaft.getId()
+			);
 			if (found == null) {
 				persistEntity(persistence, traegerschaft);
 			}
 		}
 	}
 
-	public static void saveMandantIfNecessary(@Nonnull Persistence persistence, @Nullable Mandant mandant) {
+	public static void saveMandantIfNecessary(
+		@Nonnull Persistence persistence,
+		@Nullable Mandant mandant
+	) {
 		if (mandant != null) {
 			Mandant found = persistence.find(Mandant.class, mandant.getId());
 			if (found == null) {
@@ -878,22 +1246,36 @@ public final class TestDataUtil {
 		return kind;
 	}
 
-	public static PensumFachstelle createDefaultPensumFachstelle(@Nullable Kind kind) {
+	public static PensumFachstelle createDefaultPensumFachstelle(
+		@Nullable Kind kind
+	) {
 		PensumFachstelle pensumFachstelle = new PensumFachstelle();
 		pensumFachstelle.setPensum(50);
-		pensumFachstelle.setGueltigkeit(new DateRange(LocalDate.now(), Constants.END_OF_TIME));
+		pensumFachstelle.setGueltigkeit(
+			new DateRange(LocalDate.now(), Constants.END_OF_TIME)
+		);
 		pensumFachstelle.setFachstelle(createDefaultFachstelle());
 		pensumFachstelle.setIntegrationTyp(IntegrationTyp.SOZIALE_INTEGRATION);
-		pensumFachstelle.setKind(Objects.requireNonNullElseGet(kind, () -> createDefaultKind(false)));
+		pensumFachstelle.setKind(
+			Objects.requireNonNullElseGet(
+				kind,
+				() -> createDefaultKind(false)
+			)
+		);
 		pensumFachstelle.getKind().getPensumFachstelle().add(pensumFachstelle);
 		return pensumFachstelle;
 	}
 
-	public static PensumAusserordentlicherAnspruch createAusserordentlicherAnspruch(int anspruch) {
-		PensumAusserordentlicherAnspruch pensum = new PensumAusserordentlicherAnspruch();
+	public static PensumAusserordentlicherAnspruch createAusserordentlicherAnspruch(
+		int anspruch
+	) {
+		PensumAusserordentlicherAnspruch pensum =
+			new PensumAusserordentlicherAnspruch();
 		pensum.setPensum(anspruch);
 		pensum.setBegruendung("Test");
-		pensum.setGueltigkeit(new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME));
+		pensum.setGueltigkeit(
+			new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME)
+		);
 		return pensum;
 	}
 
@@ -928,12 +1310,22 @@ public final class TestDataUtil {
 		return epCont;
 	}
 
-	public static ErwerbspensumContainer createErwerbspensum(LocalDate von, LocalDate bis, int pensum) {
+	public static ErwerbspensumContainer createErwerbspensum(
+		LocalDate von,
+		LocalDate bis,
+		int pensum
+	) {
 		return createErwerbspensum(von, bis, pensum, Taetigkeit.ANGESTELLT);
 	}
 
-	public static ErwerbspensumContainer createErwerbspensum(LocalDate von, LocalDate bis, int pensum, @Nonnull Taetigkeit taetigkeit) {
-		ErwerbspensumContainer erwerbspensumContainer = new ErwerbspensumContainer();
+	public static ErwerbspensumContainer createErwerbspensum(
+		LocalDate von,
+		LocalDate bis,
+		int pensum,
+		@Nonnull Taetigkeit taetigkeit
+	) {
+		ErwerbspensumContainer erwerbspensumContainer =
+			new ErwerbspensumContainer();
 		Erwerbspensum erwerbspensum = new Erwerbspensum();
 		erwerbspensum.setTaetigkeit(taetigkeit);
 		erwerbspensum.setPensum(pensum);
@@ -942,8 +1334,12 @@ public final class TestDataUtil {
 		return erwerbspensumContainer;
 	}
 
-	public static ErwerbspensumContainer createErwerbspensum(int pensum, @Nonnull Taetigkeit taetigkeit) {
-		ErwerbspensumContainer erwerbspensumContainer = new ErwerbspensumContainer();
+	public static ErwerbspensumContainer createErwerbspensum(
+		int pensum,
+		@Nonnull Taetigkeit taetigkeit
+	) {
+		ErwerbspensumContainer erwerbspensumContainer =
+			new ErwerbspensumContainer();
 		Erwerbspensum erwerbspensum = new Erwerbspensum();
 		erwerbspensum.setTaetigkeit(taetigkeit);
 		erwerbspensum.setPensum(pensum);
@@ -959,45 +1355,82 @@ public final class TestDataUtil {
 		return ep;
 	}
 
-	public static void addUnbezahlterUrlaubToErwerbspensum(Erwerbspensum erwerbspensum, LocalDate von, LocalDate bis) {
+	public static void addUnbezahlterUrlaubToErwerbspensum(
+		Erwerbspensum erwerbspensum,
+		LocalDate von,
+		LocalDate bis
+	) {
 		UnbezahlterUrlaub urlaub = new UnbezahlterUrlaub();
 		urlaub.setGueltigkeit(new DateRange(von, bis));
 		erwerbspensum.setUnbezahlterUrlaub(urlaub);
 	}
 
-	public static AnmeldungTagesschule createAnmeldungTagesschuleWithModules(KindContainer kind, Gesuchsperiode gesuchsperiode) {
+	public static AnmeldungTagesschule createAnmeldungTagesschuleWithModules(
+		KindContainer kind,
+		Gesuchsperiode gesuchsperiode
+	) {
 		AnmeldungTagesschule anmeldung = new AnmeldungTagesschule();
-		anmeldung.setInstitutionStammdaten(createInstitutionStammdatenTagesschuleBern(gesuchsperiode));
-		anmeldung.setBetreuungsstatus(Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST);
+		anmeldung.setInstitutionStammdaten(
+			createInstitutionStammdatenTagesschuleBern(gesuchsperiode)
+		);
+		anmeldung.setBetreuungsstatus(
+			Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST
+		);
 		anmeldung.setKind(kind);
-		anmeldung.setBelegungTagesschule(createDefaultBelegungTagesschule(true, false));
+		anmeldung.setBelegungTagesschule(
+			createDefaultBelegungTagesschule(true, false)
+		);
 		kind.getAnmeldungenTagesschule().add(anmeldung);
 		return anmeldung;
 	}
 
-	public static AnmeldungTagesschule createKesbAnmeldungTagesschuleWithModules(KindContainer kind, Gesuchsperiode gesuchsperiode) {
+	public static AnmeldungTagesschule createKesbAnmeldungTagesschuleWithModules(
+		KindContainer kind,
+		Gesuchsperiode gesuchsperiode
+	) {
 		AnmeldungTagesschule anmeldung = new AnmeldungTagesschule();
-		anmeldung.setInstitutionStammdaten(createInstitutionStammdatenTagesschuleBern(gesuchsperiode));
-		anmeldung.setBetreuungsstatus(Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST);
+		anmeldung.setInstitutionStammdaten(
+			createInstitutionStammdatenTagesschuleBern(gesuchsperiode)
+		);
+		anmeldung.setBetreuungsstatus(
+			Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST
+		);
 		anmeldung.setKind(kind);
-		anmeldung.setBelegungTagesschule(createDefaultBelegungTagesschule(true, true));
+		anmeldung.setBelegungTagesschule(
+			createDefaultBelegungTagesschule(true, true)
+		);
 		kind.getAnmeldungenTagesschule().add(anmeldung);
 		return anmeldung;
 	}
 
-	public static AnmeldungTagesschule createAnmeldungTagesschule(KindContainer kind, Gesuchsperiode gesuchsperiode) {
+	public static AnmeldungTagesschule createAnmeldungTagesschule(
+		KindContainer kind,
+		Gesuchsperiode gesuchsperiode
+	) {
 		AnmeldungTagesschule anmeldung = new AnmeldungTagesschule();
-		anmeldung.setInstitutionStammdaten(createInstitutionStammdatenTagesschuleBern(gesuchsperiode));
-		anmeldung.setBetreuungsstatus(Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST);
+		anmeldung.setInstitutionStammdaten(
+			createInstitutionStammdatenTagesschuleBern(gesuchsperiode)
+		);
+		anmeldung.setBetreuungsstatus(
+			Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST
+		);
 		anmeldung.setKind(kind);
-		anmeldung.setBelegungTagesschule(createDefaultBelegungTagesschule(false, false));
+		anmeldung.setBelegungTagesschule(
+			createDefaultBelegungTagesschule(false, false)
+		);
 		return anmeldung;
 	}
 
-	public static AnmeldungFerieninsel createAnmeldungFerieninsel(KindContainer kind) {
+	public static AnmeldungFerieninsel createAnmeldungFerieninsel(
+		KindContainer kind
+	) {
 		AnmeldungFerieninsel betreuung = new AnmeldungFerieninsel();
-		betreuung.setInstitutionStammdaten(createInstitutionStammdatenFerieninselGuarda());
-		betreuung.setBetreuungsstatus(Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST);
+		betreuung.setInstitutionStammdaten(
+			createInstitutionStammdatenFerieninselGuarda()
+		);
+		betreuung.setBetreuungsstatus(
+			Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST
+		);
 		betreuung.setKind(kind);
 		betreuung.setBelegungFerieninsel(createDefaultBelegungFerieninsel());
 		return betreuung;
@@ -1005,36 +1438,52 @@ public final class TestDataUtil {
 
 	public static AnmeldungFerieninsel createDefaultAnmeldungFerieninsel() {
 		AnmeldungFerieninsel betreuung = new AnmeldungFerieninsel();
-		betreuung.setInstitutionStammdaten(createInstitutionStammdatenFerieninselGuarda());
-		betreuung.setBetreuungsstatus(Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST);
+		betreuung.setInstitutionStammdaten(
+			createInstitutionStammdatenFerieninselGuarda()
+		);
+		betreuung.setBetreuungsstatus(
+			Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST
+		);
 		betreuung.setKind(createDefaultKindContainer());
 		betreuung.setBelegungFerieninsel(createDefaultBelegungFerieninsel());
 		return betreuung;
 	}
 
 	public static Betreuung createDefaultBetreuung() {
-		return createDefaultBetreuungOhneBetreuungPensum(createDefaultKindContainer());
+		return createDefaultBetreuungOhneBetreuungPensum(
+			createDefaultKindContainer()
+		);
 	}
 
-	public static Betreuung createDefaultBetreuungOhneBetreuungPensum(KindContainer kindContainer) {
+	public static Betreuung createDefaultBetreuungOhneBetreuungPensum(
+		KindContainer kindContainer
+	) {
 		Betreuung betreuung = new Betreuung();
-		betreuung.setInstitutionStammdaten(createDefaultInstitutionStammdaten());
+		betreuung.setInstitutionStammdaten(
+			createDefaultInstitutionStammdaten()
+		);
 		betreuung.setBetreuungsstatus(Betreuungsstatus.BESTAETIGT);
 		betreuung.setBetreuungspensumContainers(new TreeSet<>());
 		betreuung.setAbwesenheitContainers(new HashSet<>());
 		betreuung.setKind(kindContainer);
 
-		ErweiterteBetreuungContainer erweitContainer = TestDataUtil.createDefaultErweiterteBetreuungContainer();
+		ErweiterteBetreuungContainer erweitContainer = TestDataUtil
+			.createDefaultErweiterteBetreuungContainer();
 		erweitContainer.setBetreuung(betreuung);
 		betreuung.setErweiterteBetreuungContainer(erweitContainer);
 
 		return betreuung;
 	}
 
-	public static Betreuung createDefaultBetreuung(int betreuungspensum, LocalDate von, LocalDate bis) {
+	public static Betreuung createDefaultBetreuung(
+		int betreuungspensum,
+		LocalDate von,
+		LocalDate bis
+	) {
 		Betreuung betreuung = createDefaultBetreuung();
 
-		BetreuungspensumContainer betPensContainer = TestDataUtil.createBetPensContainer(betreuung);
+		BetreuungspensumContainer betPensContainer = TestDataUtil
+			.createBetPensContainer(betreuung);
 		Betreuungspensum pensum = createBetreuungspensum();
 		pensum.setPensum(BigDecimal.valueOf(betreuungspensum));
 		pensum.setMonatlicheBetreuungskosten(BigDecimal.valueOf(2000));
@@ -1047,59 +1496,106 @@ public final class TestDataUtil {
 	}
 
 	public static BelegungTagesschule createDefaultBelegungTagesschule(
-			boolean withModulBelegung,
-			boolean isKesbPlatzierung) {
-		final BelegungTagesschule belegungTagesschule = new BelegungTagesschule();
+		boolean withModulBelegung,
+		boolean isKesbPlatzierung
+	) {
+		final BelegungTagesschule belegungTagesschule =
+			new BelegungTagesschule();
 		belegungTagesschule.setBemerkung("Dies ist eine Bemerkung!");
 		belegungTagesschule.setEintrittsdatum(LocalDate.now());
 		belegungTagesschule.setKeineKesbPlatzierung(!isKesbPlatzierung);
 		if (withModulBelegung) {
 			belegungTagesschule.setBelegungTagesschuleModule(new TreeSet<>());
-			belegungTagesschule.setAbholungTagesschule(AbholungTagesschule.ALLEINE_NACH_HAUSE);
-			Set<ModulTagesschule> modulTagesschuleSet = createDefaultModuleTagesschuleSet(true,
-				LocalTime.of(12,0), LocalTime.of(14,0), "Mittag", "Midi");
+			belegungTagesschule.setAbholungTagesschule(
+				AbholungTagesschule.ALLEINE_NACH_HAUSE
+			);
+			Set<ModulTagesschule> modulTagesschuleSet =
+				createDefaultModuleTagesschuleSet(
+					true,
+					LocalTime.of(12, 0),
+					LocalTime.of(14, 0),
+					"Mittag",
+					"Midi"
+				);
 			modulTagesschuleSet.forEach(
 				modulTagesschule -> {
-					BelegungTagesschuleModul belegungTagesschuleModul = new BelegungTagesschuleModul();
-					belegungTagesschuleModul.setModulTagesschule(modulTagesschule);
-					belegungTagesschuleModul.setBelegungTagesschule(belegungTagesschule);
-					belegungTagesschuleModul.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
-					belegungTagesschule.getBelegungTagesschuleModule().add(belegungTagesschuleModul);
+					BelegungTagesschuleModul belegungTagesschuleModul =
+						new BelegungTagesschuleModul();
+					belegungTagesschuleModul.setModulTagesschule(
+						modulTagesschule
+					);
+					belegungTagesschuleModul.setBelegungTagesschule(
+						belegungTagesschule
+					);
+					belegungTagesschuleModul.setIntervall(
+						BelegungTagesschuleModulIntervall.WOECHENTLICH
+					);
+					belegungTagesschule.getBelegungTagesschuleModule()
+						.add(belegungTagesschuleModul);
 				}
 			);
 
-			Set<ModulTagesschule> modulTagesschuleSetOhneBetreuung = createDefaultModuleTagesschuleSet(false,
-				LocalTime.of(7,0), LocalTime.of(8,0), "Frühmorgens", "Matin");
+			Set<ModulTagesschule> modulTagesschuleSetOhneBetreuung =
+				createDefaultModuleTagesschuleSet(
+					false,
+					LocalTime.of(7, 0),
+					LocalTime.of(8, 0),
+					"Frühmorgens",
+					"Matin"
+				);
 			modulTagesschuleSetOhneBetreuung.forEach(
 				modulTagesschule -> {
-					BelegungTagesschuleModul belegungTagesschuleModul = new BelegungTagesschuleModul();
-					belegungTagesschuleModul.setModulTagesschule(modulTagesschule);
-					belegungTagesschuleModul.setIntervall(BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN);
-					belegungTagesschuleModul.setBelegungTagesschule(belegungTagesschule);
-					belegungTagesschule.getBelegungTagesschuleModule().add(belegungTagesschuleModul);
+					BelegungTagesschuleModul belegungTagesschuleModul =
+						new BelegungTagesschuleModul();
+					belegungTagesschuleModul.setModulTagesschule(
+						modulTagesschule
+					);
+					belegungTagesschuleModul.setIntervall(
+						BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN
+					);
+					belegungTagesschuleModul.setBelegungTagesschule(
+						belegungTagesschule
+					);
+					belegungTagesschule.getBelegungTagesschuleModule()
+						.add(belegungTagesschuleModul);
 				}
 			);
 		}
 		return belegungTagesschule;
 	}
 
-	private static Set<ModulTagesschule> createDefaultModuleTagesschuleSet(boolean wirdPedagogischBetreut, LocalTime von, LocalTime bis, String bezeichnungDeutsch, String bezeichnungFranzösisch){
-		ModulTagesschuleGroup modulTagesschuleGroupPedagogischBetreut = new ModulTagesschuleGroup();
+	private static Set<ModulTagesschule> createDefaultModuleTagesschuleSet(
+		boolean wirdPedagogischBetreut,
+		LocalTime von,
+		LocalTime bis,
+		String bezeichnungDeutsch,
+		String bezeichnungFranzösisch
+	) {
+		ModulTagesschuleGroup modulTagesschuleGroupPedagogischBetreut =
+			new ModulTagesschuleGroup();
 		modulTagesschuleGroupPedagogischBetreut.setZeitVon(von);
 		modulTagesschuleGroupPedagogischBetreut.setZeitBis(bis);
-		modulTagesschuleGroupPedagogischBetreut.setVerpflegungskosten(MathUtil.DEFAULT.from(10));
-		modulTagesschuleGroupPedagogischBetreut.setWirdPaedagogischBetreut(wirdPedagogischBetreut);
+		modulTagesschuleGroupPedagogischBetreut.setVerpflegungskosten(
+			MathUtil.DEFAULT.from(10)
+		);
+		modulTagesschuleGroupPedagogischBetreut.setWirdPaedagogischBetreut(
+			wirdPedagogischBetreut
+		);
 		TextRessource vormittagText = new TextRessource();
 		vormittagText.setTextDeutsch(bezeichnungDeutsch);
 		vormittagText.setTextFranzoesisch(bezeichnungFranzösisch);
 		modulTagesschuleGroupPedagogischBetreut.setBezeichnung(vormittagText);
 
 		ModulTagesschule modulTagesschuleMonday = new ModulTagesschule();
-		modulTagesschuleMonday.setModulTagesschuleGroup(modulTagesschuleGroupPedagogischBetreut);
+		modulTagesschuleMonday.setModulTagesschuleGroup(
+			modulTagesschuleGroupPedagogischBetreut
+		);
 		modulTagesschuleMonday.setWochentag(DayOfWeek.MONDAY);
 
-		ModulTagesschule modulTagesschuleFriday= new ModulTagesschule();
-		modulTagesschuleFriday.setModulTagesschuleGroup(modulTagesschuleGroupPedagogischBetreut);
+		ModulTagesschule modulTagesschuleFriday = new ModulTagesschule();
+		modulTagesschuleFriday.setModulTagesschuleGroup(
+			modulTagesschuleGroupPedagogischBetreut
+		);
 		modulTagesschuleFriday.setWochentag(DayOfWeek.FRIDAY);
 
 		Set<ModulTagesschule> modulTagesschuleSet = new TreeSet<>();
@@ -1111,7 +1607,9 @@ public final class TestDataUtil {
 		return modulTagesschuleSet;
 	}
 
-	public static BetreuungspensumContainer createBetPensContainer(Betreuung betreuung) {
+	public static BetreuungspensumContainer createBetPensContainer(
+		Betreuung betreuung
+	) {
 		BetreuungspensumContainer container = new BetreuungspensumContainer();
 		container.setBetreuung(betreuung);
 		container.setBetreuungspensumGS(TestDataUtil.createBetreuungspensum());
@@ -1125,7 +1623,10 @@ public final class TestDataUtil {
 		return betreuungspensum;
 	}
 
-	public static Betreuungspensum createBetreuungspensumMittagstisch(BigDecimal anzahlMahlzeiten, BigDecimal tarifProMahlzeit) {
+	public static Betreuungspensum createBetreuungspensumMittagstisch(
+		BigDecimal anzahlMahlzeiten,
+		BigDecimal tarifProMahlzeit
+	) {
 		Betreuungspensum betreuungspensum = new Betreuungspensum();
 		betreuungspensum.setMonatlicheHauptmahlzeiten(anzahlMahlzeiten);
 		betreuungspensum.setTarifProHauptmahlzeit(tarifProMahlzeit);
@@ -1140,63 +1641,119 @@ public final class TestDataUtil {
 		return createGesuchsperiodeXXYY(2017, 2018, mandant);
 	}
 
-	public static Gesuchsperiode createAndPersistGesuchsperiode1718(Persistence persistence) {
+	public static Gesuchsperiode createAndPersistGesuchsperiode1718(
+		Persistence persistence
+	) {
 		return createGesuchsperiodeXXYYAndPersist(2017, 2018, persistence);
 	}
 
-	public static Gesuchsperiode createAndPersistCustomGesuchsperiode(Persistence persistence, int yearFrom, int yearTo) {
-		return createGesuchsperiodeXXYYAndPersist(yearFrom, yearTo, persistence);
+	public static Gesuchsperiode createAndPersistCustomGesuchsperiode(
+		Persistence persistence,
+		int yearFrom,
+		int yearTo
+	) {
+		return createGesuchsperiodeXXYYAndPersist(
+			yearFrom,
+			yearTo,
+			persistence
+		);
 	}
 
 	public static Gesuchsperiode createGesuchsperiode1617() {
 		return createGesuchsperiodeXXYY(2016, 2017);
 	}
 
-	public static Gesuchsperiode createGesuchsperiode1617AndPersist(Persistence persistence) {
+	public static Gesuchsperiode createGesuchsperiode1617AndPersist(
+		Persistence persistence
+	) {
 		return createGesuchsperiodeXXYYAndPersist(2016, 2017, persistence);
 	}
 
 	@Nonnull
-	public static Gesuchsperiode createGesuchsperiodeXXYYAndPersist(int yearFrom, int yearTo, Persistence persistence) {
+	public static Gesuchsperiode createGesuchsperiodeXXYYAndPersist(
+		int yearFrom,
+		int yearTo,
+		Persistence persistence
+	) {
 		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
 		gesuchsperiode.setStatus(GesuchsperiodeStatus.AKTIV);
 		gesuchsperiode.setMandant(getMandantKantonBernAndPersist(persistence));
-		gesuchsperiode.setGueltigkeit(new DateRange(LocalDate.of(yearFrom, Month.AUGUST, 1), LocalDate.of(yearTo,
-			Month.JULY, 31)));
+		gesuchsperiode.setGueltigkeit(
+			new DateRange(
+				LocalDate.of(yearFrom, Month.AUGUST, 1),
+				LocalDate.of(
+					yearTo,
+					Month.JULY,
+					31
+				)
+			)
+		);
 		return persistence.persist(gesuchsperiode);
 	}
 
 	@Nonnull
-	public static Gesuchsperiode createGesuchsperiodeXXYY(int yearFrom, int yearTo) {
+	public static Gesuchsperiode createGesuchsperiodeXXYY(
+		int yearFrom,
+		int yearTo
+	) {
 		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
 		gesuchsperiode.setStatus(GesuchsperiodeStatus.AKTIV);
 		gesuchsperiode.setMandant(getMandantKantonBern());
-		gesuchsperiode.setGueltigkeit(new DateRange(LocalDate.of(yearFrom, Month.AUGUST, 1), LocalDate.of(yearTo,
-			Month.JULY, 31)));
+		gesuchsperiode.setGueltigkeit(
+			new DateRange(
+				LocalDate.of(yearFrom, Month.AUGUST, 1),
+				LocalDate.of(
+					yearTo,
+					Month.JULY,
+					31
+				)
+			)
+		);
 		return gesuchsperiode;
 	}
 
 	@Nonnull
-	public static Gesuchsperiode createGesuchsperiodeXXYY(int yearFrom, int yearTo, Mandant mandant) {
+	public static Gesuchsperiode createGesuchsperiodeXXYY(
+		int yearFrom,
+		int yearTo,
+		Mandant mandant
+	) {
 		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
 		gesuchsperiode.setStatus(GesuchsperiodeStatus.AKTIV);
 		gesuchsperiode.setMandant(mandant);
-		gesuchsperiode.setGueltigkeit(new DateRange(LocalDate.of(yearFrom, Month.AUGUST, 1), LocalDate.of(yearTo,
-			Month.JULY, 31)));
+		gesuchsperiode.setGueltigkeit(
+			new DateRange(
+				LocalDate.of(yearFrom, Month.AUGUST, 1),
+				LocalDate.of(
+					yearTo,
+					Month.JULY,
+					31
+				)
+			)
+		);
 		return gesuchsperiode;
 	}
 
-	public static Gesuchsperiode createCustomGesuchsperiode(int firstYear, int secondYear) {
+	public static Gesuchsperiode createCustomGesuchsperiode(
+		int firstYear,
+		int secondYear
+	) {
 		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
 		gesuchsperiode.setMandant(TestDataUtil.getMandantKantonBern());
 		gesuchsperiode.setStatus(GesuchsperiodeStatus.AKTIV);
-		gesuchsperiode.setGueltigkeit(new DateRange(
-			LocalDate.of(firstYear, Month.AUGUST, 1),
-			LocalDate.of(secondYear, Month.JULY, 31)));
+		gesuchsperiode.setGueltigkeit(
+			new DateRange(
+				LocalDate.of(firstYear, Month.AUGUST, 1),
+				LocalDate.of(secondYear, Month.JULY, 31)
+			)
+		);
 		return gesuchsperiode;
 	}
 
-	public static Einstellung createDefaultEinstellung(EinstellungKey key, @Nonnull Gesuchsperiode gesuchsperiode) {
+	public static Einstellung createDefaultEinstellung(
+		EinstellungKey key,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		Einstellung instStammdaten = new Einstellung();
 		instStammdaten.setKey(key);
 		instStammdaten.setValue("1");
@@ -1204,38 +1761,52 @@ public final class TestDataUtil {
 		return instStammdaten;
 	}
 
-	public static EinkommensverschlechterungInfoContainer createDefaultEinkommensverschlechterungsInfoContainer(Gesuch gesuch) {
+	public static EinkommensverschlechterungInfoContainer createDefaultEinkommensverschlechterungsInfoContainer(
+		Gesuch gesuch
+	) {
 		final EinkommensverschlechterungInfoContainer einkommensverschlechterungInfoContainer =
 			new EinkommensverschlechterungInfoContainer();
-		einkommensverschlechterungInfoContainer.setEinkommensverschlechterungInfoJA(
-			createDefaultEinkommensverschlechterungsInfo());
+		einkommensverschlechterungInfoContainer
+			.setEinkommensverschlechterungInfoJA(
+				createDefaultEinkommensverschlechterungsInfo()
+			);
 		einkommensverschlechterungInfoContainer.setGesuch(gesuch);
-		gesuch.setEinkommensverschlechterungInfoContainer(einkommensverschlechterungInfoContainer);
+		gesuch.setEinkommensverschlechterungInfoContainer(
+			einkommensverschlechterungInfoContainer
+		);
 
 		return einkommensverschlechterungInfoContainer;
 	}
 
 	public static EinkommensverschlechterungInfo createDefaultEinkommensverschlechterungsInfo() {
-		final EinkommensverschlechterungInfo einkommensverschlechterungInfo = new EinkommensverschlechterungInfo();
+		final EinkommensverschlechterungInfo einkommensverschlechterungInfo =
+			new EinkommensverschlechterungInfo();
 		einkommensverschlechterungInfo.setEinkommensverschlechterung(true);
 		einkommensverschlechterungInfo.setEkvFuerBasisJahrPlus1(true);
 		einkommensverschlechterungInfo.setEkvFuerBasisJahrPlus2(false);
 		return einkommensverschlechterungInfo;
 	}
 
-	public static EinkommensverschlechterungInfoContainer createEinkommensverschlechterungsInfoContainerOhneVerschlechterung(Gesuch gesuch) {
+	public static EinkommensverschlechterungInfoContainer createEinkommensverschlechterungsInfoContainerOhneVerschlechterung(
+		Gesuch gesuch
+	) {
 		final EinkommensverschlechterungInfoContainer einkommensverschlechterungInfoContainer =
 			new EinkommensverschlechterungInfoContainer();
-		einkommensverschlechterungInfoContainer.setEinkommensverschlechterungInfoJA(
-			createEinkommensverschlechterungsInfoOhneVerschlechterung());
+		einkommensverschlechterungInfoContainer
+			.setEinkommensverschlechterungInfoJA(
+				createEinkommensverschlechterungsInfoOhneVerschlechterung()
+			);
 		einkommensverschlechterungInfoContainer.setGesuch(gesuch);
-		gesuch.setEinkommensverschlechterungInfoContainer(einkommensverschlechterungInfoContainer);
+		gesuch.setEinkommensverschlechterungInfoContainer(
+			einkommensverschlechterungInfoContainer
+		);
 
 		return einkommensverschlechterungInfoContainer;
 	}
 
 	public static EinkommensverschlechterungInfo createEinkommensverschlechterungsInfoOhneVerschlechterung() {
-		final EinkommensverschlechterungInfo einkommensverschlechterungInfo = new EinkommensverschlechterungInfo();
+		final EinkommensverschlechterungInfo einkommensverschlechterungInfo =
+			new EinkommensverschlechterungInfo();
 		einkommensverschlechterungInfo.setEinkommensverschlechterung(false);
 		einkommensverschlechterungInfo.setEkvFuerBasisJahrPlus1(false);
 		einkommensverschlechterungInfo.setEkvFuerBasisJahrPlus2(false);
@@ -1243,8 +1814,11 @@ public final class TestDataUtil {
 	}
 
 	public static GesuchstellerContainer createDefaultGesuchstellerWithEinkommensverschlechterung() {
-		final GesuchstellerContainer gesuchsteller = createDefaultGesuchstellerContainer();
-		gesuchsteller.setEinkommensverschlechterungContainer(createDefaultEinkommensverschlechterungsContainer());
+		final GesuchstellerContainer gesuchsteller =
+			createDefaultGesuchstellerContainer();
+		gesuchsteller.setEinkommensverschlechterungContainer(
+			createDefaultEinkommensverschlechterungsContainer()
+		);
 		return gesuchsteller;
 	}
 
@@ -1269,24 +1843,40 @@ public final class TestDataUtil {
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	public static Betreuung createGesuchWithBetreuungspensum(boolean zweiGesuchsteller) {
+	public static Betreuung createGesuchWithBetreuungspensum(
+		boolean zweiGesuchsteller
+	) {
 		Gesuch gesuch = new Gesuch();
 		gesuch.setGesuchsperiode(TestDataUtil.createGesuchsperiode1718());
 		gesuch.setDossier(createDefaultDossier());
-		gesuch.setFamiliensituationContainer(createDefaultFamiliensituationContainer());
+		gesuch.setFamiliensituationContainer(
+			createDefaultFamiliensituationContainer()
+		);
 		if (zweiGesuchsteller) {
-			gesuch.extractFamiliensituation().setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
+			gesuch.extractFamiliensituation()
+				.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
 		} else {
-			gesuch.extractFamiliensituation().setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
+			gesuch.extractFamiliensituation()
+				.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
 		}
-		gesuch.setGesuchsteller1(TestDataUtil.createDefaultGesuchstellerContainer());
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(new FinanzielleSituationContainer());
+		gesuch.setGesuchsteller1(
+			TestDataUtil.createDefaultGesuchstellerContainer()
+		);
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				new FinanzielleSituationContainer()
+			);
 		gesuch.getGesuchsteller1()
 			.getFinanzielleSituationContainer()
 			.setFinanzielleSituationJA(new FinanzielleSituation());
 		if (zweiGesuchsteller) {
-			gesuch.setGesuchsteller2(TestDataUtil.createDefaultGesuchstellerContainer());
-			gesuch.getGesuchsteller2().setFinanzielleSituationContainer(new FinanzielleSituationContainer());
+			gesuch.setGesuchsteller2(
+				TestDataUtil.createDefaultGesuchstellerContainer()
+			);
+			gesuch.getGesuchsteller2()
+				.setFinanzielleSituationContainer(
+					new FinanzielleSituationContainer()
+				);
 			gesuch.getGesuchsteller2()
 				.getFinanzielleSituationContainer()
 				.setFinanzielleSituationJA(new FinanzielleSituation());
@@ -1297,34 +1887,60 @@ public final class TestDataUtil {
 		createBetPensContainer(betreuung);
 		kindContainer.getBetreuungen().add(betreuung);
 		betreuung.setKind(kindContainer);
-		betreuung.getKind().getKindJA().setEinschulungTyp(EinschulungTyp.VORSCHULALTER);
+		betreuung.getKind()
+			.getKindJA()
+			.setEinschulungTyp(EinschulungTyp.VORSCHULALTER);
 		betreuung.getKind().setGesuch(gesuch);
 		gesuch.getKindContainers().add(betreuung.getKind());
-		betreuung.setInstitutionStammdaten(createDefaultInstitutionStammdaten());
-		betreuung.setErweiterteBetreuungContainer(TestDataUtil.createDefaultErweiterteBetreuungContainer());
+		betreuung.setInstitutionStammdaten(
+			createDefaultInstitutionStammdaten()
+		);
+		betreuung.setErweiterteBetreuungContainer(
+			TestDataUtil.createDefaultErweiterteBetreuungContainer()
+		);
 		return betreuung;
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	public static Betreuung createGesuchWithBetreuungspensum(boolean zweiGesuchsteller, Mandant mandant) {
+	public static Betreuung createGesuchWithBetreuungspensum(
+		boolean zweiGesuchsteller,
+		Mandant mandant
+	) {
 		Gesuch gesuch = new Gesuch();
-		gesuch.setGesuchsperiode(TestDataUtil.createGesuchsperiode1718(mandant));
+		gesuch.setGesuchsperiode(
+			TestDataUtil.createGesuchsperiode1718(mandant)
+		);
 		gesuch.setDossier(createDefaultDossier(mandant));
-		gesuch.setFamiliensituationContainer(createDefaultFamiliensituationContainer());
+		gesuch.setFamiliensituationContainer(
+			createDefaultFamiliensituationContainer()
+		);
 		if (zweiGesuchsteller) {
-			gesuch.extractFamiliensituation().setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
+			gesuch.extractFamiliensituation()
+				.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
 		} else {
-			gesuch.extractFamiliensituation().setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
+			gesuch.extractFamiliensituation()
+				.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
 		}
 		gesuch.setGesuchsteller1(new GesuchstellerContainer());
-		gesuch.getGesuchsteller1().addAdresse(TestDataUtil.createDefaultGesuchstellerAdresseContainer(gesuch.getGesuchsteller1()));
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(new FinanzielleSituationContainer());
+		gesuch.getGesuchsteller1()
+			.addAdresse(
+				TestDataUtil.createDefaultGesuchstellerAdresseContainer(
+					gesuch.getGesuchsteller1()
+				)
+			);
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				new FinanzielleSituationContainer()
+			);
 		gesuch.getGesuchsteller1()
 			.getFinanzielleSituationContainer()
 			.setFinanzielleSituationJA(new FinanzielleSituation());
 		if (zweiGesuchsteller) {
 			gesuch.setGesuchsteller2(new GesuchstellerContainer());
-			gesuch.getGesuchsteller2().setFinanzielleSituationContainer(new FinanzielleSituationContainer());
+			gesuch.getGesuchsteller2()
+				.setFinanzielleSituationContainer(
+					new FinanzielleSituationContainer()
+				);
 			gesuch.getGesuchsteller2()
 				.getFinanzielleSituationContainer()
 				.setFinanzielleSituationJA(new FinanzielleSituation());
@@ -1334,12 +1950,18 @@ public final class TestDataUtil {
 		KindContainer kindContainer = createDefaultKindContainer();
 		kindContainer.getBetreuungen().add(betreuung);
 		betreuung.setKind(kindContainer);
-		betreuung.getKind().getKindJA().setEinschulungTyp(EinschulungTyp.VORSCHULALTER);
+		betreuung.getKind()
+			.getKindJA()
+			.setEinschulungTyp(EinschulungTyp.VORSCHULALTER);
 		createBetPensContainer(betreuung);
 		betreuung.getKind().setGesuch(gesuch);
 		gesuch.getKindContainers().add(betreuung.getKind());
-		betreuung.setInstitutionStammdaten(createDefaultInstitutionStammdaten(mandant));
-		betreuung.setErweiterteBetreuungContainer(TestDataUtil.createDefaultErweiterteBetreuungContainer());
+		betreuung.setInstitutionStammdaten(
+			createDefaultInstitutionStammdaten(mandant)
+		);
+		betreuung.setErweiterteBetreuungContainer(
+			TestDataUtil.createDefaultErweiterteBetreuungContainer()
+		);
 		return betreuung;
 	}
 
@@ -1348,34 +1970,56 @@ public final class TestDataUtil {
 		Gesuch gesuch = new Gesuch();
 		gesuch.setGesuchsperiode(TestDataUtil.createGesuchsperiode1718());
 		gesuch.setDossier(createDefaultDossier());
-		gesuch.setFamiliensituationContainer(createDefaultFamiliensituationContainer());
-		gesuch.extractFamiliensituation().setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
+		gesuch.setFamiliensituationContainer(
+			createDefaultFamiliensituationContainer()
+		);
+		gesuch.extractFamiliensituation()
+			.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
 		gesuch.setGesuchsteller1(new GesuchstellerContainer());
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(new FinanzielleSituationContainer());
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				new FinanzielleSituationContainer()
+			);
 		gesuch.getGesuchsteller1()
 			.getFinanzielleSituationContainer()
 			.setFinanzielleSituationJA(new FinanzielleSituation());
 		final KindContainer kindContainer = createDefaultKindContainer();
 		kindContainer.setGesuch(gesuch);
 		gesuch.getKindContainers().add(kindContainer);
-		final AnmeldungTagesschule anmeldung = createAnmeldungTagesschuleWithModules(kindContainer, gesuch.getGesuchsperiode());
+		final AnmeldungTagesschule anmeldung =
+			createAnmeldungTagesschuleWithModules(
+				kindContainer,
+				gesuch.getGesuchsperiode()
+			);
 		anmeldung.setKind(kindContainer);
 		kindContainer.getAnmeldungenTagesschule().add(anmeldung);
+		anmeldung.initVorgaengerVerfuegungen(null, null);
 		return anmeldung;
 	}
 
-	public static void calculateFinanzDaten(Gesuch gesuch,
-		AbstractFinanzielleSituationRechner finanzielleSituationRechner) {
+	public static void calculateFinanzDaten(
+		Gesuch gesuch,
+		AbstractFinanzielleSituationRechner finanzielleSituationRechner
+	) {
 		if (gesuch.getGesuchsperiode() == null) {
 			gesuch.setGesuchsperiode(createGesuchsperiode1718());
 		}
-		finanzielleSituationRechner.calculateFinanzDaten(gesuch, BigDecimal.valueOf(20));
+		finanzielleSituationRechner.calculateFinanzDaten(
+			gesuch,
+			BigDecimal.valueOf(20)
+		);
 	}
 
-	public static Gesuch createTestgesuchDagmar(AbstractFinanzielleSituationRechner finanzielleSituationRechner) {
+	public static Gesuch createTestgesuchDagmar(
+		AbstractFinanzielleSituationRechner finanzielleSituationRechner
+	) {
 		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718();
-		InstitutionStammdatenBuilder institutionStammdatenBuilder = TestDataUtil.getInstititutionStammdatenBuilder(gesuchsperiode);
-		Testfall01_WaeltiDagmar testfall = new Testfall01_WaeltiDagmar(gesuchsperiode, institutionStammdatenBuilder);
+		InstitutionStammdatenBuilder institutionStammdatenBuilder = TestDataUtil
+			.getInstititutionStammdatenBuilder(gesuchsperiode);
+		Testfall01_WaeltiDagmar testfall = new Testfall01_WaeltiDagmar(
+			gesuchsperiode,
+			institutionStammdatenBuilder
+		);
 		testfall.createGesuch(LocalDate.of(1980, Month.MARCH, 25));
 		Gesuch gesuch = testfall.fillInGesuch();
 		TestDataUtil.calculateFinanzDaten(gesuch, finanzielleSituationRechner);
@@ -1383,18 +2027,23 @@ public final class TestDataUtil {
 		return gesuch;
 	}
 
-	public static Gesuch createTestfall11_SchulamtOnly(){
+	public static Gesuch createTestfall11_SchulamtOnly() {
 		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718();
-		InstitutionStammdatenBuilder institutionStammdatenBuilder = TestDataUtil.getInstititutionStammdatenBuilder(gesuchsperiode);
-		Testfall11_SchulamtOnly testfall = new Testfall11_SchulamtOnly(gesuchsperiode,
-				institutionStammdatenBuilder);
+		InstitutionStammdatenBuilder institutionStammdatenBuilder = TestDataUtil
+			.getInstititutionStammdatenBuilder(gesuchsperiode);
+		Testfall11_SchulamtOnly testfall = new Testfall11_SchulamtOnly(
+			gesuchsperiode,
+			institutionStammdatenBuilder
+		);
 		testfall.createGesuch(LocalDate.of(2017, Month.MARCH, 25));
 		Gesuch gesuch = testfall.fillInGesuch();
 		gesuch.setGesuchsperiode(gesuchsperiode);
 		return gesuch;
 	}
 
-	private static InstitutionStammdatenBuilder getInstititutionStammdatenBuilder(Gesuchsperiode gesuchsperiode) {
+	private static InstitutionStammdatenBuilder getInstititutionStammdatenBuilder(
+		Gesuchsperiode gesuchsperiode
+	) {
 		return new TestDataInstitutionStammdatenBuilder(gesuchsperiode);
 	}
 
@@ -1402,20 +2051,33 @@ public final class TestDataUtil {
 	 * Hilfsmethode die den Testfall Waelti Dagmar erstellt und speichert
 	 */
 	public static Gesuch createAndPersistTestfall11_SchulamtOnly(
-		@Nonnull Persistence persistence, @Nullable LocalDate eingangsdatum,
-		@Nullable AntragStatus status, @Nonnull Gesuchsperiode gesuchsperiode) {
-		InstitutionStammdatenBuilder institutionStammdatenBuilder = TestDataUtil.getInstititutionStammdatenBuilder(gesuchsperiode);
-		Testfall11_SchulamtOnly testfall = new Testfall11_SchulamtOnly(gesuchsperiode,
-				institutionStammdatenBuilder);
+		@Nonnull Persistence persistence,
+		@Nullable LocalDate eingangsdatum,
+		@Nullable AntragStatus status,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
+		InstitutionStammdatenBuilder institutionStammdatenBuilder = TestDataUtil
+			.getInstititutionStammdatenBuilder(gesuchsperiode);
+		Testfall11_SchulamtOnly testfall = new Testfall11_SchulamtOnly(
+			gesuchsperiode,
+			institutionStammdatenBuilder
+		);
 		testfall.createGesuch(LocalDate.of(1980, Month.MARCH, 25));
 		return persistAllEntities(persistence, eingangsdatum, testfall, status);
 	}
 
-	public static Gesuch createTestgesuchYvonneFeuz(AbstractFinanzielleSituationRechner finanzielleSituationRechner) {
-		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
-		InstitutionStammdatenBuilder institutionStammdatenBuilder = TestDataUtil.getInstititutionStammdatenBuilder(gesuchsperiode1718);
+	public static Gesuch createTestgesuchYvonneFeuz(
+		AbstractFinanzielleSituationRechner finanzielleSituationRechner
+	) {
+		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+			.createGesuchsperiode1718();
+		InstitutionStammdatenBuilder institutionStammdatenBuilder = TestDataUtil
+			.getInstititutionStammdatenBuilder(gesuchsperiode1718);
 		Testfall02_FeutzYvonne testfall =
-			new Testfall02_FeutzYvonne(gesuchsperiode1718, institutionStammdatenBuilder);
+			new Testfall02_FeutzYvonne(
+				gesuchsperiode1718,
+				institutionStammdatenBuilder
+			);
 		testfall.createGesuch(LocalDate.of(1980, Month.MARCH, 25));
 		Gesuch gesuch = testfall.fillInGesuch();
 		TestDataUtil.calculateFinanzDaten(gesuch, finanzielleSituationRechner);
@@ -1423,11 +2085,19 @@ public final class TestDataUtil {
 		return gesuch;
 	}
 
-	public static Gesuch createTestgesuchLauraWalther(@Nonnull Gesuchsperiode gesuchsperiode, AbstractFinanzielleSituationRechner finanzielleSituationRechner) {
+	public static Gesuch createTestgesuchLauraWalther(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		AbstractFinanzielleSituationRechner finanzielleSituationRechner
+	) {
 		List<InstitutionStammdaten> insttStammdaten = new ArrayList<>();
-		insttStammdaten.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
+		insttStammdaten.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
 		Testfall04_WaltherLaura testfall =
-			new Testfall04_WaltherLaura(gesuchsperiode, getInstititutionStammdatenBuilder(gesuchsperiode));
+			new Testfall04_WaltherLaura(
+				gesuchsperiode,
+				getInstititutionStammdatenBuilder(gesuchsperiode)
+			);
 		testfall.createGesuch(LocalDate.of(1980, Month.MARCH, 25));
 		Gesuch gesuch = testfall.fillInGesuch();
 		TestDataUtil.calculateFinanzDaten(gesuch, finanzielleSituationRechner);
@@ -1435,10 +2105,18 @@ public final class TestDataUtil {
 		return gesuch;
 	}
 
-	public static void setFinanzielleSituation(Gesuch gesuch, BigDecimal einkommen) {
+	public static void setFinanzielleSituation(
+		Gesuch gesuch,
+		BigDecimal einkommen
+	) {
 		Objects.requireNonNull(gesuch.getGesuchsteller1());
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(new FinanzielleSituationContainer());
-		Objects.requireNonNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				new FinanzielleSituationContainer()
+			);
+		Objects.requireNonNull(
+			gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+		);
 		gesuch.getGesuchsteller1()
 			.getFinanzielleSituationContainer()
 			.setFinanzielleSituationJA(new FinanzielleSituation());
@@ -1452,12 +2130,17 @@ public final class TestDataUtil {
 		Gesuch gesuch,
 		GesuchstellerContainer gesuchsteller,
 		BigDecimal einkommen,
-		boolean basisJahrPlus1) {
+		boolean basisJahrPlus1
+	) {
 		if (gesuchsteller.getEinkommensverschlechterungContainer() == null) {
-			gesuchsteller.setEinkommensverschlechterungContainer(new EinkommensverschlechterungContainer());
+			gesuchsteller.setEinkommensverschlechterungContainer(
+				new EinkommensverschlechterungContainer()
+			);
 		}
 		if (gesuch.extractEinkommensverschlechterungInfo() == null) {
-			gesuch.setEinkommensverschlechterungInfoContainer(new EinkommensverschlechterungInfoContainer());
+			gesuch.setEinkommensverschlechterungInfoContainer(
+				new EinkommensverschlechterungInfoContainer()
+			);
 			EinkommensverschlechterungInfo einkommensverschlechterungInfo =
 				gesuch.extractEinkommensverschlechterungInfo();
 			Objects.requireNonNull(einkommensverschlechterungInfo);
@@ -1468,7 +2151,9 @@ public final class TestDataUtil {
 		if (basisJahrPlus1) {
 			gesuchsteller.getEinkommensverschlechterungContainer()
 				.setEkvJABasisJahrPlus1(new Einkommensverschlechterung());
-			gesuchsteller.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1().setNettolohn(einkommen);
+			gesuchsteller.getEinkommensverschlechterungContainer()
+				.getEkvJABasisJahrPlus1()
+				.setNettolohn(einkommen);
 			EinkommensverschlechterungInfo einkommensverschlechterungInfo =
 				gesuch.extractEinkommensverschlechterungInfo();
 			Objects.requireNonNull(einkommensverschlechterungInfo);
@@ -1477,7 +2162,9 @@ public final class TestDataUtil {
 		} else {
 			gesuchsteller.getEinkommensverschlechterungContainer()
 				.setEkvJABasisJahrPlus2(new Einkommensverschlechterung());
-			gesuchsteller.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus2().setNettolohn(einkommen);
+			gesuchsteller.getEinkommensverschlechterungContainer()
+				.getEkvJABasisJahrPlus2()
+				.setNettolohn(einkommen);
 			EinkommensverschlechterungInfo einkommensverschlechterungInfo =
 				gesuch.extractEinkommensverschlechterungInfo();
 			Objects.requireNonNull(einkommensverschlechterungInfo);
@@ -1488,7 +2175,9 @@ public final class TestDataUtil {
 
 	public static DokumentGrund createDefaultDokumentGrund() {
 		DokumentGrund dokumentGrund = new DokumentGrund();
-		dokumentGrund.setDokumentGrundTyp(DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG);
+		dokumentGrund.setDokumentGrundTyp(
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+		);
 		dokumentGrund.setTag("tag");
 		dokumentGrund.setDokumentTyp(DokumentTyp.JAHRESLOHNAUSWEISE);
 		dokumentGrund.setDokumente(new HashSet<>());
@@ -1507,32 +2196,49 @@ public final class TestDataUtil {
 	 * Hilfsmethode die den Testfall Waelti Dagmar erstellt und speichert
 	 */
 	private static Gesuch createAndPersistWaeltiDagmarGesuch(
-		InstitutionService instService, Persistence persistence,
-		@Nullable LocalDate eingangsdatum, @Nullable AntragStatus status) {
+		InstitutionService instService,
+		Persistence persistence,
+		@Nullable LocalDate eingangsdatum,
+		@Nullable AntragStatus status
+	) {
 
 		return createAndPersistWaeltiDagmarGesuch(
 			instService,
 			persistence,
 			eingangsdatum,
 			status,
-			TestDataUtil.createGesuchsperiode1718());
+			TestDataUtil.createGesuchsperiode1718()
+		);
 	}
 
 	/**
 	 * Hilfsmethode die den Testfall Waelti Dagmar erstellt und speichert
 	 */
 	public static Gesuch createAndPersistWaeltiDagmarGesuch(
-		@Nonnull InstitutionService instService, @Nonnull Persistence persistence, @Nullable LocalDate eingangsdatum,
-		@Nullable AntragStatus status, @Nonnull Gesuchsperiode gesuchsperiode) {
+		@Nonnull InstitutionService instService,
+		@Nonnull Persistence persistence,
+		@Nullable LocalDate eingangsdatum,
+		@Nullable AntragStatus status,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 
 		instService.getAllInstitutionen(gesuchsperiode.getMandant());
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaBruennen());
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaBruennen()
+		);
 		institutionStammdatenList.forEach(institutionStammdaten -> {
-			institutionStammdaten.getInstitution().setMandant(gesuchsperiode.getMandant());
+			institutionStammdaten.getInstitution()
+				.setMandant(gesuchsperiode.getMandant());
 		});
-		Testfall01_WaeltiDagmar testfall = new Testfall01_WaeltiDagmar(gesuchsperiode, new TestDataInstitutionStammdatenBuilder(gesuchsperiode));
+		Testfall01_WaeltiDagmar testfall = new Testfall01_WaeltiDagmar(
+			gesuchsperiode,
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode)
+		);
 
 		return persistAllEntities(persistence, eingangsdatum, testfall, status);
 	}
@@ -1540,33 +2246,65 @@ public final class TestDataUtil {
 	public static Gesuch createAndPersistWaeltiDagmarGesuch(
 		InstitutionService instService,
 		Persistence persistence,
-		@Nullable LocalDate eingangsdatum) {
+		@Nullable LocalDate eingangsdatum
+	) {
 
-		return createAndPersistWaeltiDagmarGesuch(instService, persistence, eingangsdatum, null);
+		return createAndPersistWaeltiDagmarGesuch(
+			instService,
+			persistence,
+			eingangsdatum,
+			null
+		);
 	}
 
-	private static void ensureFachstelleAndInstitutionsExist(Persistence persistence, Gesuch gesuch) {
+	private static void ensureFachstelleAndInstitutionsExist(
+		Persistence persistence,
+		Gesuch gesuch
+	) {
 		for (KindContainer kindContainer : gesuch.getKindContainers()) {
 			for (Betreuung betreuung : kindContainer.getBetreuungen()) {
-				InstitutionStammdaten institutionStammdaten = betreuung.getInstitutionStammdaten();
-				saveInstitutionStammdatenIfNecessary(persistence, institutionStammdaten);
-				if (!betreuung.getKind().getKindJA().getPensumFachstelle().isEmpty()) {
-					for (PensumFachstelle pensumFachstelle : betreuung.getKind().getKindJA().getPensumFachstelle()) {
+				InstitutionStammdaten institutionStammdaten = betreuung
+					.getInstitutionStammdaten();
+				saveInstitutionStammdatenIfNecessary(
+					persistence,
+					institutionStammdaten
+				);
+				if (!betreuung.getKind()
+					.getKindJA()
+					.getPensumFachstelle()
+					.isEmpty()) {
+					for (PensumFachstelle pensumFachstelle : betreuung.getKind()
+						.getKindJA()
+						.getPensumFachstelle()) {
 						persistence.merge(pensumFachstelle.getFachstelle());
 					}
 				}
 			}
-			for(AnmeldungTagesschule anmeldungTagesschule: kindContainer.getAnmeldungenTagesschule()){
-				InstitutionStammdaten institutionStammdaten = anmeldungTagesschule.getInstitutionStammdaten();
-				saveInstitutionStammdatenIfNecessary(persistence, institutionStammdaten);
+			for (AnmeldungTagesschule anmeldungTagesschule : kindContainer
+				.getAnmeldungenTagesschule()) {
+				InstitutionStammdaten institutionStammdaten =
+					anmeldungTagesschule.getInstitutionStammdaten();
+				saveInstitutionStammdatenIfNecessary(
+					persistence,
+					institutionStammdaten
+				);
 				InstitutionStammdatenTagesschule institutionStammdatenTagesschule =
-					institutionStammdaten.getInstitutionStammdatenTagesschule();
+					institutionStammdaten
+						.getInstitutionStammdatenTagesschule();
 				Objects.requireNonNull(institutionStammdatenTagesschule);
-				saveInstitutionStammdatenTagesschule(persistence, institutionStammdatenTagesschule);
+				saveInstitutionStammdatenTagesschule(
+					persistence,
+					institutionStammdatenTagesschule
+				);
 			}
-			for(AnmeldungFerieninsel anmeldungFerieninsel: kindContainer.getAnmeldungenFerieninsel()){
-				InstitutionStammdaten institutionStammdaten = anmeldungFerieninsel.getInstitutionStammdaten();
-				saveInstitutionStammdatenIfNecessary(persistence, institutionStammdaten);
+			for (AnmeldungFerieninsel anmeldungFerieninsel : kindContainer
+				.getAnmeldungenFerieninsel()) {
+				InstitutionStammdaten institutionStammdaten =
+					anmeldungFerieninsel.getInstitutionStammdaten();
+				saveInstitutionStammdatenIfNecessary(
+					persistence,
+					institutionStammdaten
+				);
 			}
 		}
 	}
@@ -1574,19 +2312,35 @@ public final class TestDataUtil {
 	public static Gesuch createAndPersistFeutzYvonneGesuch(
 		Persistence persistence,
 		@Nullable LocalDate eingangsdatum,
-		Gesuchsperiode gesuchsperiode) {
+		Gesuchsperiode gesuchsperiode
+	) {
 
 		Collection<InstitutionStammdaten> institutionStammdatenList =
-			saveInstitutionsstammdatenForTestfaelle(persistence, gesuchsperiode);
-		Testfall02_FeutzYvonne testfall = new Testfall02_FeutzYvonne(gesuchsperiode, new TestDataInstitutionStammdatenBuilder(gesuchsperiode, institutionStammdatenList));
+			saveInstitutionsstammdatenForTestfaelle(
+				persistence,
+				gesuchsperiode
+			);
+		Testfall02_FeutzYvonne testfall = new Testfall02_FeutzYvonne(
+			gesuchsperiode,
+			new TestDataInstitutionStammdatenBuilder(
+				gesuchsperiode,
+				institutionStammdatenList
+			)
+		);
 		return persistAllEntities(persistence, eingangsdatum, testfall, null);
 	}
 
 	public static Gesuch createAndPersistBeckerNoraGesuch(
-		 Persistence persistence, @Nullable LocalDate eingangsdatum,
-		@Nullable AntragStatus status, @Nonnull Gesuchsperiode gesuchsperiode) {
+		Persistence persistence,
+		@Nullable LocalDate eingangsdatum,
+		@Nullable AntragStatus status,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 
-		Testfall06_BeckerNora testfall = new Testfall06_BeckerNora(gesuchsperiode, getInstititutionStammdatenBuilder(gesuchsperiode));
+		Testfall06_BeckerNora testfall = new Testfall06_BeckerNora(
+			gesuchsperiode,
+			getInstititutionStammdatenBuilder(gesuchsperiode)
+		);
 		return persistAllEntities(persistence, eingangsdatum, testfall, status);
 	}
 
@@ -1598,19 +2352,35 @@ public final class TestDataUtil {
 		@Nonnull Gesuchsperiode gesuchsperiode
 	) {
 		instService.getAllInstitutionen(gesuchsperiode.getMandant());
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenTagesschuleBern(gesuchsperiode));
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		TestFall12_Mischgesuch testfall = new TestFall12_Mischgesuch(gesuchsperiode,
-				new TestDataInstitutionStammdatenBuilder(gesuchsperiode));
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenTagesschuleBern(
+				gesuchsperiode
+			)
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		TestFall12_Mischgesuch testfall = new TestFall12_Mischgesuch(
+			gesuchsperiode,
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode)
+		);
 
 		if (status != null) {
-			return persistAllEntities(persistence, eingangsdatum, testfall, status);
+			return persistAllEntities(
+				persistence,
+				eingangsdatum,
+				testfall,
+				status
+			);
 		}
 		return persistAllEntities(persistence, eingangsdatum, testfall, null);
 	}
 
-	public static Institution createAndPersistDefaultInstitution(Persistence persistence) {
+	public static Institution createAndPersistDefaultInstitution(
+		Persistence persistence
+	) {
 		Institution inst = createDefaultInstitution();
 		TestDataUtil.saveMandantIfNecessary(persistence, inst.getMandant());
 		persistence.merge(inst.getTraegerschaft());
@@ -1621,7 +2391,8 @@ public final class TestDataUtil {
 		@Nonnull Persistence persistence,
 		@Nullable LocalDate eingangsdatum,
 		@Nonnull AbstractTestfall testfall,
-		@Nullable AntragStatus status) {
+		@Nullable AntragStatus status
+	) {
 		Benutzer verantwortlicher = createAndPersistBenutzer(persistence);
 		testfall.createFall(verantwortlicher);
 		if (status != null) {
@@ -1632,7 +2403,12 @@ public final class TestDataUtil {
 		testfall.getDossier().setGemeinde(getGemeindeParis(persistence));
 		persistence.persist(testfall.getGesuch().getFall());
 		persistence.persist(testfall.getGesuch().getDossier());
-		persistEntity(persistence, testfall.getGesuch().getGesuchsperiode());
+		if (testfall.getGesuch().getGesuchsperiode().isNew()) {
+			persistEntity(
+				persistence,
+				testfall.getGesuch().getGesuchsperiode()
+			);
+		}
 		persistence.persist(testfall.getGesuch());
 		Gesuch gesuch = testfall.fillInGesuch();
 		ensureFachstelleAndInstitutionsExist(persistence, gesuch);
@@ -1640,7 +2416,10 @@ public final class TestDataUtil {
 		return gesuch;
 	}
 
-	private static <T extends AbstractEntity> T persistEntity(Persistence persistence, @Nonnull T entity) {
+	private static <T extends AbstractEntity> T persistEntity(
+		Persistence persistence,
+		@Nonnull T entity
+	) {
 		if (entity.isNew()) {
 			return persistence.persist(entity);
 		}
@@ -1648,10 +2427,20 @@ public final class TestDataUtil {
 	}
 
 	@Nonnull
-	private static Benutzer createAndPersistBenutzer(Persistence persistence, Gemeinde persistedGemeinde) {
+	private static Benutzer createAndPersistBenutzer(
+		Persistence persistence,
+		Gemeinde persistedGemeinde
+	) {
 		Benutzer verantwortlicher = TestDataUtil.createDefaultBenutzer();
-		verantwortlicher.getBerechtigungen().iterator().next().getGemeindeList().add(persistedGemeinde);
-		TestDataUtil.persistMandantIfNecessary(verantwortlicher.getMandant(), persistence);
+		verantwortlicher.getBerechtigungen()
+			.iterator()
+			.next()
+			.getGemeindeList()
+			.add(persistedGemeinde);
+		TestDataUtil.persistMandantIfNecessary(
+			verantwortlicher.getMandant(),
+			persistence
+		);
 		persistence.persist(verantwortlicher);
 		return verantwortlicher;
 	}
@@ -1659,8 +2448,15 @@ public final class TestDataUtil {
 	@Nonnull
 	private static Benutzer createAndPersistBenutzer(Persistence persistence) {
 		Benutzer verantwortlicher = TestDataUtil.createDefaultBenutzer();
-		TestDataUtil.persistMandantIfNecessary(verantwortlicher.getMandant(), persistence);
-		verantwortlicher.getBerechtigungen().iterator().next().getGemeindeList().add(getGemeindeParis(persistence));
+		TestDataUtil.persistMandantIfNecessary(
+			verantwortlicher.getMandant(),
+			persistence
+		);
+		verantwortlicher.getBerechtigungen()
+			.iterator()
+			.next()
+			.getGemeindeList()
+			.add(getGemeindeParis(persistence));
 		persistence.persist(verantwortlicher);
 		return verantwortlicher;
 	}
@@ -1674,8 +2470,13 @@ public final class TestDataUtil {
 		gesuch.getDossier().setVerantwortlicherBG(verantwortlicher);
 		persistence.persist(gesuch.getFall());
 		persistence.persist(gesuch.getDossier());
-		gesuch.setGesuchsteller1(TestDataUtil.createDefaultGesuchstellerContainer());
-		TestDataUtil.saveMandantIfNecessary(persistence, gesuch.getGesuchsperiode().getMandant());
+		gesuch.setGesuchsteller1(
+			TestDataUtil.createDefaultGesuchstellerContainer()
+		);
+		TestDataUtil.saveMandantIfNecessary(
+			persistence,
+			gesuch.getGesuchsperiode().getMandant()
+		);
 		persistence.persist(gesuch.getGesuchsperiode());
 
 		Set<KindContainer> kindContainers = new TreeSet<>();
@@ -1687,21 +2488,32 @@ public final class TestDataUtil {
 		kind.setBetreuungen(betreuungen);
 
 		Objects.requireNonNull(kind.getKindGS());
-		for (PensumFachstelle pensumFachstelle : kind.getKindGS().getPensumFachstelle()) {
+		for (PensumFachstelle pensumFachstelle : kind.getKindGS()
+			.getPensumFachstelle()) {
 			Objects.requireNonNull(pensumFachstelle.getFachstelle());
-			TestDataUtil.saveMandantIfNecessary(persistence, pensumFachstelle.getFachstelle().getMandant());
+			TestDataUtil.saveMandantIfNecessary(
+				persistence,
+				pensumFachstelle.getFachstelle().getMandant()
+			);
 			persistence.persist(pensumFachstelle.getFachstelle());
 		}
-		for (PensumFachstelle pensumFachstelle : kind.getKindJA().getPensumFachstelle()) {
+		for (PensumFachstelle pensumFachstelle : kind.getKindJA()
+			.getPensumFachstelle()) {
 			Objects.requireNonNull(pensumFachstelle.getFachstelle());
-			TestDataUtil.saveMandantIfNecessary(persistence, pensumFachstelle.getFachstelle().getMandant());
+			TestDataUtil.saveMandantIfNecessary(
+				persistence,
+				pensumFachstelle.getFachstelle().getMandant()
+			);
 			persistence.persist(pensumFachstelle.getFachstelle());
 		}
 		kind.setGesuch(gesuch);
 		kindContainers.add(kind);
 		gesuch.setKindContainers(kindContainers);
 
-		saveInstitutionStammdatenIfNecessary(persistence, betreuung.getInstitutionStammdaten());
+		saveInstitutionStammdatenIfNecessary(
+			persistence,
+			betreuung.getInstitutionStammdaten()
+		);
 		TestDataUtil.prepareParameters(gesuch.getGesuchsperiode(), persistence);
 		persistence.persist(gesuch);
 	}
@@ -1741,9 +2553,15 @@ public final class TestDataUtil {
 		return gesuch;
 	}
 
-	public static Gesuch createAndPersistGesuch(Persistence persistence, Gemeinde gemeinde) {
+	public static Gesuch createAndPersistGesuch(
+		Persistence persistence,
+		Gemeinde gemeinde
+	) {
 		Gesuch gesuch = TestDataUtil.createDefaultGesuch();
-		saveMandantIfNecessary(persistence, gesuch.getGesuchsperiode().getMandant());
+		saveMandantIfNecessary(
+			persistence,
+			gesuch.getGesuchsperiode().getMandant()
+		);
 		Benutzer benutzer = createAndPersistBenutzer(persistence, gemeinde);
 		gesuch.getDossier().setGemeinde(gemeinde);
 		gesuch.getDossier().setVerantwortlicherBG(benutzer);
@@ -1759,11 +2577,15 @@ public final class TestDataUtil {
 
 	public static Gesuch createAndPersistGesuch(Persistence persistence) {
 		Gesuch gesuch = TestDataUtil.createDefaultGesuch();
-		saveMandantIfNecessary(persistence, gesuch.getGesuchsperiode().getMandant());
+		saveMandantIfNecessary(
+			persistence,
+			gesuch.getGesuchsperiode().getMandant()
+		);
 		Benutzer benutzer = createAndPersistBenutzer(persistence);
 		gesuch.getDossier().setGemeinde(getTestGemeinde(persistence));
 		gesuch.getDossier().setVerantwortlicherBG(benutzer);
-		gesuch.getGesuchsperiode().setMandant(getMandantKantonBernAndPersist(persistence));
+		gesuch.getGesuchsperiode()
+			.setMandant(getMandantKantonBernAndPersist(persistence));
 		persistence.persist(gesuch.getFall());
 
 		persistence.persist(gesuch.getDossier());
@@ -1774,10 +2596,14 @@ public final class TestDataUtil {
 		return gesuch;
 	}
 
-	public static Gesuch createAndPersistGesuch(Persistence persistence, AntragStatus status) {
+	public static Gesuch createAndPersistGesuch(
+		Persistence persistence,
+		AntragStatus status
+	) {
 		Gesuch gesuch = TestDataUtil.createDefaultGesuch(status);
 		gesuch.getDossier().setGemeinde(getTestGemeinde(persistence));
-		gesuch.getGesuchsperiode().setMandant(getMandantKantonBernAndPersist(persistence));
+		gesuch.getGesuchsperiode()
+			.setMandant(getMandantKantonBernAndPersist(persistence));
 		persistence.persist(gesuch.getFall());
 		persistence.persist(gesuch.getDossier());
 		persistence.persist(gesuch.getGesuchsperiode());
@@ -1785,7 +2611,9 @@ public final class TestDataUtil {
 		return gesuch;
 	}
 
-	public static Dossier createAndPersistDossierAndFall(Persistence persistence) {
+	public static Dossier createAndPersistDossierAndFall(
+		Persistence persistence
+	) {
 		final Fall fall = persistence.persist(TestDataUtil.createDefaultFall());
 		Dossier dossier = new Dossier();
 		dossier.setFall(fall);
@@ -1797,7 +2625,8 @@ public final class TestDataUtil {
 	public static WizardStep createWizardStepObject(
 		Gesuch gesuch,
 		WizardStepName wizardStepName,
-		WizardStepStatus stepStatus) {
+		WizardStepStatus stepStatus
+	) {
 		final WizardStep jaxWizardStep = new WizardStep();
 		jaxWizardStep.setGesuch(gesuch);
 		jaxWizardStep.setWizardStepName(wizardStepName);
@@ -1806,159 +2635,709 @@ public final class TestDataUtil {
 		return jaxWizardStep;
 	}
 
-	@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.NcssMethodCount"})
-	public static void prepareParameters(Gesuchsperiode gesuchsperiode, Persistence persistence) {
+	@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+	public static void prepareParameters(
+		Gesuchsperiode gesuchsperiode,
+		Persistence persistence
+	) {
 		saveEinstellung(
 			PARAM_PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_3,
 			PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_3_FUER_TESTS,
 			gesuchsperiode,
-			persistence);
+			persistence
+		);
 		saveEinstellung(
 			PARAM_PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_4,
 			PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_4_FUER_TESTS,
 			gesuchsperiode,
-			persistence);
+			persistence
+		);
 		saveEinstellung(
 			PARAM_PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_5,
 			PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_5_FUER_TESTS,
 			gesuchsperiode,
-			persistence);
+			persistence
+		);
 		saveEinstellung(
 			PARAM_PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_6,
 			PAUSCHALABZUG_PRO_PERSON_FAMILIENGROESSE_6_FUER_TESTS,
 			gesuchsperiode,
-			persistence);
-		saveEinstellung(PARAM_GRENZWERT_EINKOMMENSVERSCHLECHTERUNG, "20", gesuchsperiode, persistence);
-		saveEinstellung(PARAM_PENSUM_KITA_MIN, "0", gesuchsperiode, persistence);
-		saveEinstellung(PARAM_PENSUM_TAGESELTERN_MIN, "0", gesuchsperiode, persistence);
-		saveEinstellung(PARAM_PENSUM_TAGESSCHULE_MIN, "0", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_KONTINGENTIERUNG_ENABLED, "false", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE, EinschulungTyp.VORSCHULALTER.name(), gesuchsperiode, persistence);
-		saveEinstellung(ANGEBOT_SCHULSTUFE, BetreuungsangebotTyp.KITA.name(), gesuchsperiode, persistence);
-		saveEinstellung(PARAM_MAX_TAGE_ABWESENHEIT, "30", gesuchsperiode, persistence);
-		saveEinstellung(MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_TG, "150", gesuchsperiode, persistence);
-		saveEinstellung(MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_TG, "100", gesuchsperiode, persistence);
-		saveEinstellung(MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_TG, "75", gesuchsperiode, persistence);
-		saveEinstellung(MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_STD, "11.90", gesuchsperiode, persistence);
-		saveEinstellung(MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_STD, "8.50", gesuchsperiode, persistence);
-		saveEinstellung(MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_STD, "8.50", gesuchsperiode, persistence);
-		saveEinstellung(MAX_VERGUENSTIGUNG_PRIMAR_PRO_STD, "8.50", gesuchsperiode, persistence);
-		saveEinstellung(MAX_MASSGEBENDES_EINKOMMEN, "160000", gesuchsperiode, persistence);
-		saveEinstellung(MIN_MASSGEBENDES_EINKOMMEN, "43000", gesuchsperiode, persistence);
+			persistence
+		);
+		saveEinstellung(
+			PARAM_GRENZWERT_EINKOMMENSVERSCHLECHTERUNG,
+			"20",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			PARAM_PENSUM_KITA_MIN,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			PARAM_PENSUM_TAGESELTERN_MIN,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			PARAM_PENSUM_TAGESSCHULE_MIN,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_KONTINGENTIERUNG_ENABLED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE,
+			EinschulungTyp.VORSCHULALTER.name(),
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ANGEBOT_SCHULSTUFE,
+			BetreuungsangebotTyp.KITA.name(),
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			PARAM_MAX_TAGE_ABWESENHEIT,
+			"30",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_TG,
+			"150",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_TG,
+			"100",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_TG,
+			"75",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_VERGUENSTIGUNG_VORSCHULE_BABY_PRO_STD,
+			"11.90",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_VERGUENSTIGUNG_VORSCHULE_KIND_PRO_STD,
+			"8.50",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_VERGUENSTIGUNG_KINDERGARTEN_PRO_STD,
+			"8.50",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_VERGUENSTIGUNG_PRIMAR_PRO_STD,
+			"8.50",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_MASSGEBENDES_EINKOMMEN,
+			"160000",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MIN_MASSGEBENDES_EINKOMMEN,
+			"43000",
+			gesuchsperiode,
+			persistence
+		);
 		saveEinstellung(OEFFNUNGSTAGE_KITA, "240", gesuchsperiode, persistence);
 		saveEinstellung(OEFFNUNGSTAGE_TFO, "240", gesuchsperiode, persistence);
-		saveEinstellung(OEFFNUNGSSTUNDEN_TFO, "11", gesuchsperiode, persistence);
-		saveEinstellung(ZUSCHLAG_BEHINDERUNG_PRO_TG, "50", gesuchsperiode, persistence);
-		saveEinstellung(ZUSCHLAG_BEHINDERUNG_PRO_STD, "4.25", gesuchsperiode, persistence);
-		saveEinstellung(MIN_VERGUENSTIGUNG_PRO_TG, "7", gesuchsperiode, persistence);
-		saveEinstellung(MIN_VERGUENSTIGUNG_PRO_STD, "0.70", gesuchsperiode, persistence);
-		saveEinstellung(MIN_ERWERBSPENSUM_NICHT_EINGESCHULT, "20", gesuchsperiode, persistence);
-		saveEinstellung(MIN_ERWERBSPENSUM_EINGESCHULT, "40", gesuchsperiode, persistence);
-		saveEinstellung(ERWERBSPENSUM_ZUSCHLAG, "20", gesuchsperiode, persistence);
-		saveEinstellung(FACHSTELLE_MIN_PENSUM_SOZIALE_INTEGRATION, "20", gesuchsperiode, persistence);
-		saveEinstellung(FACHSTELLE_MAX_PENSUM_SOZIALE_INTEGRATION, "60", gesuchsperiode, persistence);
-		saveEinstellung(FACHSTELLE_MIN_PENSUM_SPRACHLICHE_INTEGRATION, "40", gesuchsperiode, persistence);
-		saveEinstellung(FACHSTELLE_MAX_PENSUM_SPRACHLICHE_INTEGRATION, "40", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB,
-			Constants.DATE_FORMATTER.format(gesuchsperiode.getGueltigkeit().getGueltigAb()), gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB,
-			Constants.DATE_FORMATTER.format(gesuchsperiode.getGueltigkeit().getGueltigAb()), gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG,
-			Constants.DATE_FORMATTER.format(gesuchsperiode.getGueltigkeit().getGueltigAb()), gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_TAGESSCHULE_TAGIS_ENABLED, "false", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG, "false", gesuchsperiode, persistence);
-		saveEinstellung(MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG, "12.24", gesuchsperiode, persistence);
-		saveEinstellung(MAX_TARIF_OHNE_PAEDAGOGISCHER_BETREUUNG, "6.11", gesuchsperiode, persistence);
+		saveEinstellung(
+			OEFFNUNGSSTUNDEN_TFO,
+			"11",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ZUSCHLAG_BEHINDERUNG_PRO_TG,
+			"50",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ZUSCHLAG_BEHINDERUNG_PRO_STD,
+			"4.25",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MIN_VERGUENSTIGUNG_PRO_TG,
+			"7",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MIN_VERGUENSTIGUNG_PRO_STD,
+			"0.70",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MIN_ERWERBSPENSUM_NICHT_EINGESCHULT,
+			"20",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MIN_ERWERBSPENSUM_EINGESCHULT,
+			"40",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ERWERBSPENSUM_ZUSCHLAG,
+			"20",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FACHSTELLE_MIN_PENSUM_SOZIALE_INTEGRATION,
+			"20",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FACHSTELLE_MAX_PENSUM_SOZIALE_INTEGRATION,
+			"60",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FACHSTELLE_MIN_PENSUM_SPRACHLICHE_INTEGRATION,
+			"40",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FACHSTELLE_MAX_PENSUM_SPRACHLICHE_INTEGRATION,
+			"40",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_FERIENINSEL_ANMELDUNGEN_DATUM_AB,
+			DateUtil.parseDateToString(
+				gesuchsperiode.getGueltigkeit().getGueltigAb()
+			),
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_TAGESSCHULE_ANMELDUNGEN_DATUM_AB,
+			DateUtil.parseDateToString(
+				gesuchsperiode.getGueltigkeit().getGueltigAb()
+			),
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_TAGESSCHULE_ERSTER_SCHULTAG,
+			DateUtil.parseDateToString(
+				gesuchsperiode.getGueltigkeit().getGueltigAb()
+			),
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_TAGESSCHULE_TAGIS_ENABLED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_TARIF_MIT_PAEDAGOGISCHER_BETREUUNG,
+			"12.24",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MAX_TARIF_OHNE_PAEDAGOGISCHER_BETREUUNG,
+			"6.11",
+			gesuchsperiode,
+			persistence
+		);
 		saveEinstellung(MIN_TARIF, "0.78", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED, "false", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_KITA, "0.00", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_TFO, "0.00", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_KITA, EinschulungTyp.VORSCHULALTER.name(), gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_TFO, EinschulungTyp.VORSCHULALTER.name(), gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED, "false", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA, "0.00", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO, "0.00", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_ENABLED, "false", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_MAXPROZENT, "0", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED, "true", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT, "6",
-			gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN, "50000", gesuchsperiode,
-			persistence);
-		saveEinstellung(GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT, "3",
-			gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN, "70000", gesuchsperiode,
-			persistence);
-		saveEinstellung(GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT, "0",
-			gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_MAHLZEITENVERGUENSTIGUNG_FUER_SOZIALHILFEBEZUEGER_ENABLED, "true", gesuchsperiode,
-			persistence);
-		saveEinstellung(GEMEINDE_SCHNITTSTELLE_KITAX_ENABLED, "false", gesuchsperiode,
-			persistence);
-		saveEinstellung(GEMEINDE_MIN_ERWERBSPENSUM_NICHT_EINGESCHULT, "20", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_MIN_ERWERBSPENSUM_EINGESCHULT, "40", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT, "2",
-			gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_AKTIVIERT, "false", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_KITA, "0", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO, "0", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO_AB_PRIMARSCHULE, "0", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_MAX_MASSGEBENDEN_EINKOMMEN_FUER_BERECHNUNG, "160000", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDE_KEIN_GUTSCHEIN_FUER_SOZIALHILFE_EMPFAENGER, "false", gesuchsperiode, persistence);
-		saveEinstellung(LATS_LOHNNORMKOSTEN, "10.39",	gesuchsperiode, persistence);
-		saveEinstellung(LATS_LOHNNORMKOSTEN_LESS_THAN_50, "5.2",	gesuchsperiode, persistence);
-		String stichtag = gesuchsperiode.getGueltigkeit().getGueltigAb().getYear() + "-09-15";
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_KITA,
+			"0.00",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BETRAG_TFO,
+			"0.00",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_KITA,
+			EinschulungTyp.VORSCHULALTER.name(),
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_BIS_UND_MIT_SCHULSTUFE_TFO,
+			EinschulungTyp.VORSCHULALTER.name(),
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA,
+			"0.00",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO,
+			"0.00",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_ENABLED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_MAXPROZENT,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED,
+			"true",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_VERGUENSTIGUNG_MAHLZEIT,
+			"6",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN,
+			"50000",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT,
+			"3",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_MAX_EINKOMMEN,
+			"70000",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_FUER_SOZIALHILFEBEZUEGER_ENABLED,
+			"true",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_SCHNITTSTELLE_KITAX_ENABLED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MIN_ERWERBSPENSUM_NICHT_EINGESCHULT,
+			"20",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MIN_ERWERBSPENSUM_EINGESCHULT,
+			"40",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT,
+			"2",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_AKTIVIERT,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_KITA,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO_AB_PRIMARSCHULE,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_PAUSCHALBETRAG_HOHE_EINKOMMENSKLASSEN_MAX_MASSGEBENDEN_EINKOMMEN_FUER_BERECHNUNG,
+			"160000",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDE_KEIN_GUTSCHEIN_FUER_SOZIALHILFE_EMPFAENGER,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			LATS_LOHNNORMKOSTEN,
+			"10.39",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			LATS_LOHNNORMKOSTEN_LESS_THAN_50,
+			"5.2",
+			gesuchsperiode,
+			persistence
+		);
+		String stichtag = gesuchsperiode.getGueltigkeit()
+			.getGueltigAb()
+			.getYear()
+			+ "-09-15";
 		saveEinstellung(LATS_STICHTAG, stichtag, gesuchsperiode, persistence);
-		saveEinstellung(EINGEWOEHNUNG_TYP, EingewoehnungTyp.KEINE.toString(), gesuchsperiode, persistence);
-		saveEinstellung(FKJV_MAX_DIFFERENZ_BESCHAEFTIGUNGSPENSUM, "100", gesuchsperiode, persistence);
-		saveEinstellung(FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE, "VORSCHULALTER", gesuchsperiode, persistence);
-		saveEinstellung(SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE, "VORSCHULALTER", gesuchsperiode, persistence);
-		saveEinstellung(FKJV_PAUSCHALE_BEI_ANSPRUCH, "false", gesuchsperiode, persistence);
-		saveEinstellung(FKJV_EINKOMMENSVERSCHLECHTERUNG_BIS_CHF, "null", gesuchsperiode, persistence);
-		saveEinstellung(FKJV_PAUSCHALE_RUECKWIRKEND, "false", gesuchsperiode, persistence);
-		saveEinstellung(ANSPRUCH_MONATSWEISE, "false", gesuchsperiode, persistence);
-		saveEinstellung(SCHNITTSTELLE_STEUERN_AKTIV, "false", gesuchsperiode, persistence);
-		saveEinstellung(FERIENBETREUUNG_CHF_PAUSCHALBETRAG, "30",gesuchsperiode, persistence);
-		saveEinstellung(FERIENBETREUUNG_CHF_PAUSCHALBETRAG_SONDERSCHUELER, "60",gesuchsperiode, persistence);
-		saveEinstellung(FKJV_FAMILIENSITUATION_NEU, "false", gesuchsperiode, persistence);
-		saveEinstellung(MINIMALDAUER_KONKUBINAT, "5", gesuchsperiode, persistence);
-		saveEinstellung(FINANZIELLE_SITUATION_TYP, "BERN", gesuchsperiode, persistence);
-		saveEinstellung(KITAPLUS_ZUSCHLAG_AKTIVIERT, "false", gesuchsperiode, persistence);
-		saveEinstellung(GEMEINDESPEZIFISCHE_BG_KONFIGURATIONEN, "false", gesuchsperiode, persistence);
-		saveEinstellung(ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM,
-			AnspruchBeschaeftigungAbhaengigkeitTyp.ABHAENGING.name(), gesuchsperiode, persistence);
+		saveEinstellung(
+			EINGEWOEHNUNG_TYP,
+			EingewoehnungTyp.KEINE.toString(),
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FKJV_MAX_DIFFERENZ_BESCHAEFTIGUNGSPENSUM,
+			"100",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+			"VORSCHULALTER",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,
+			"VORSCHULALTER",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FKJV_PAUSCHALE_BEI_ANSPRUCH,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FKJV_EINKOMMENSVERSCHLECHTERUNG_BIS_CHF,
+			"null",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FKJV_PAUSCHALE_RUECKWIRKEND,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ANSPRUCH_MONATSWEISE,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			SCHNITTSTELLE_STEUERN_AKTIV,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FERIENBETREUUNG_CHF_PAUSCHALBETRAG,
+			"30",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FERIENBETREUUNG_CHF_PAUSCHALBETRAG_SONDERSCHUELER,
+			"60",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FKJV_FAMILIENSITUATION_NEU,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			MINIMALDAUER_KONKUBINAT,
+			"5",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FINANZIELLE_SITUATION_TYP,
+			"BERN",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			KITAPLUS_ZUSCHLAG_AKTIVIERT,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GEMEINDESPEZIFISCHE_BG_KONFIGURATIONEN,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM,
+			AnspruchBeschaeftigungAbhaengigkeitTyp.ABHAENGING.name(),
+			gesuchsperiode,
+			persistence
+		);
 		saveEinstellung(KINDERABZUG_TYP, "ASIV", gesuchsperiode, persistence);
-		saveEinstellung(FKJV_MAX_PENSUM_AUSSERORDENTLICHER_ANSPRUCH, "100", gesuchsperiode, persistence);
-		saveEinstellung(AUSSERORDENTLICHER_ANSPRUCH_RULE, "ASIV", gesuchsperiode, persistence);
-		saveEinstellung(KESB_PLATZIERUNG_DEAKTIVIEREN, "false", gesuchsperiode, persistence);
-		saveEinstellung(BESONDERE_BEDUERFNISSE_LUZERN, "false", gesuchsperiode, persistence);
-		saveEinstellung(GESCHWISTERNBONUS_TYP, "NONE", gesuchsperiode, persistence);
+		saveEinstellung(
+			FKJV_MAX_PENSUM_AUSSERORDENTLICHER_ANSPRUCH,
+			"100",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			AUSSERORDENTLICHER_ANSPRUCH_RULE,
+			"ASIV",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			KESB_PLATZIERUNG_DEAKTIVIEREN,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			BESONDERE_BEDUERFNISSE_LUZERN,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GESCHWISTERNBONUS_TYP,
+			"NONE",
+			gesuchsperiode,
+			persistence
+		);
 		saveEinstellung(DAUER_BABYTARIF, "12", gesuchsperiode, persistence);
 		saveEinstellung(FKJV_TEXTE, "false", gesuchsperiode, persistence);
-		saveEinstellung(DIPLOMATENSTATUS_DEAKTIVIERT, "false", gesuchsperiode, persistence);
+		saveEinstellung(
+			DIPLOMATENSTATUS_DEAKTIVIERT,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
 		saveEinstellung(ZEMIS_DISABLED, "false", gesuchsperiode, persistence);
-		saveEinstellung(SPRACHE_AMTSPRACHE_DISABLED, "false", gesuchsperiode, persistence);
-		saveEinstellung(FREIGABE_QUITTUNG_EINLESEN_REQUIRED, "true", gesuchsperiode, persistence);
-		saveEinstellung(UNBEZAHLTER_URLAUB_AKTIV, "true", gesuchsperiode, persistence);
+		saveEinstellung(
+			SPRACHE_AMTSPRACHE_DISABLED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			FREIGABE_QUITTUNG_EINLESEN_REQUIRED,
+			"true",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			UNBEZAHLTER_URLAUB_AKTIV,
+			"true",
+			gesuchsperiode,
+			persistence
+		);
 		saveEinstellung(FACHSTELLEN_TYP, "BERN", gesuchsperiode, persistence);
-		saveEinstellung(AUSWEIS_NACHWEIS_REQUIRED, "false", gesuchsperiode, persistence);
-		saveEinstellung(PENSUM_ANZEIGE_TYP, "ZEITEINHEIT_UND_PROZENT", gesuchsperiode, persistence);
-		saveEinstellung(VERFUEGUNG_EINGESCHRIEBEN_VERSENDEN_AKTIVIERT, "true", gesuchsperiode, persistence);
+		saveEinstellung(
+			AUSWEIS_NACHWEIS_REQUIRED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			PENSUM_ANZEIGE_TYP,
+			"ZEITEINHEIT_UND_PROZENT",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			VERFUEGUNG_EINGESCHRIEBEN_VERSENDEN_AKTIVIERT,
+			"true",
+			gesuchsperiode,
+			persistence
+		);
 		saveEinstellung(ABWESENHEIT_AKTIV, "true", gesuchsperiode, persistence);
-		saveEinstellung(BEGRUENDUNG_MUTATION_AKTIVIERT, "false", gesuchsperiode, persistence);
-		saveEinstellung(VERFUEGUNG_EXPORT_ENABLED, "false", gesuchsperiode, persistence);
-		saveEinstellung(ZAHLUNGSANGABEN_ANTRAGSTELLER_REQUIRED, "false", gesuchsperiode, persistence);
-		saveEinstellung(VERANLAGUNG_MIN_UNTERSCHIED_MASSGEBENDESEINK, "0", gesuchsperiode,persistence);
-		saveEinstellung(ANSPRUCH_AB_X_MONATEN, "0", gesuchsperiode,persistence);
-		saveEinstellung(KITA_STUNDEN_PRO_TAG, "10", gesuchsperiode, persistence);
-		saveEinstellung(ZUSATZLICHE_FELDER_ERSATZEINKOMMEN, "false", gesuchsperiode, persistence);
-		saveEinstellung(SPRACHFOERDERUNG_BESTAETIGEN, "false", gesuchsperiode, persistence);
-		saveEinstellung(GESUCH_BEENDEN_BEI_TAUSCH_GS2, "false", gesuchsperiode, persistence);
-		saveEinstellung(SCHULERGAENZENDE_BETREUUNGEN, "false", gesuchsperiode, persistence);
-		saveEinstellung(WEGZEIT_ERWERBSPENSUM, "false", gesuchsperiode, persistence);
-		saveEinstellung(ANWESENHEITSTAGE_PRO_MONAT_AKTIVIERT, "false", gesuchsperiode, persistence);
-		saveEinstellung(SOZIALVERSICHERUNGSNUMMER_PERIODE, "false", gesuchsperiode, persistence);
-		saveEinstellung(HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT, "false", gesuchsperiode, persistence);
+		saveEinstellung(
+			BEGRUENDUNG_MUTATION_AKTIVIERT,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			VERFUEGUNG_EXPORT_ENABLED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ZAHLUNGSANGABEN_ANTRAGSTELLER_REQUIRED,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			VERANLAGUNG_MIN_UNTERSCHIED_MASSGEBENDESEINK,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ANSPRUCH_AB_X_MONATEN,
+			"0",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			KITA_STUNDEN_PRO_TAG,
+			"10",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ZUSATZLICHE_FELDER_ERSATZEINKOMMEN,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			SPRACHFOERDERUNG_BESTAETIGEN,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			GESUCH_BEENDEN_BEI_TAUSCH_GS2,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			SCHULERGAENZENDE_BETREUUNGEN,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			WEGZEIT_ERWERBSPENSUM,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			ANWESENHEITSTAGE_PRO_MONAT_AKTIVIERT,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			SOZIALVERSICHERUNGSNUMMER_PERIODE,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
+			"false",
+			gesuchsperiode,
+			persistence
+		);
+		saveEinstellung(
+			SOZIALABZUG_PRO_KIND,
+			"6700",
+			gesuchsperiode,
+			persistence
+		);
 	}
 
 	public static void saveEinstellung(
@@ -1984,9 +3363,12 @@ public final class TestDataUtil {
 	public static void createStammdatenDefaultVerantwortlicheParis(
 		@Nonnull Persistence persistence,
 		@Nonnull Benutzer verantwortlicherTS,
-		@Nonnull Benutzer verantwortlicherBG) {
+		@Nonnull Benutzer verantwortlicherBG
+	) {
 
-		GemeindeStammdaten stammdatenParis = getGemeindeStammdatenParis(persistence);
+		GemeindeStammdaten stammdatenParis = getGemeindeStammdatenParis(
+			persistence
+		);
 		stammdatenParis.setDefaultBenutzer(verantwortlicherBG);
 		stammdatenParis.setDefaultBenutzerBG(verantwortlicherBG);
 		stammdatenParis.setDefaultBenutzerTS(verantwortlicherTS);
@@ -1997,7 +3379,9 @@ public final class TestDataUtil {
 		return createGemeindeStammdaten(createGemeindeParis());
 	}
 
-	public static GemeindeStammdaten createGemeindeStammdaten(@Nonnull Gemeinde gemeinde) {
+	public static GemeindeStammdaten createGemeindeStammdaten(
+		@Nonnull Gemeinde gemeinde
+	) {
 		GemeindeStammdaten stammdaten = new GemeindeStammdaten();
 		stammdaten.setAdresse(createDefaultAdresse());
 		stammdaten.setGemeinde(gemeinde);
@@ -2008,12 +3392,15 @@ public final class TestDataUtil {
 		stammdaten.setIban(new IBAN("CH93 0076 2011 6238 5295 7"));
 		stammdaten.setBic("BIC123");
 		stammdaten.setKontoinhaber("Inhaber");
-		stammdaten.setGemeindeStammdatenKorrespondenz(createGemeindeStammdatenKorrespondenz());
+		stammdaten.setGemeindeStammdatenKorrespondenz(
+			createGemeindeStammdatenKorrespondenz()
+		);
 		return stammdaten;
 	}
 
 	public static GemeindeStammdatenKorrespondenz createGemeindeStammdatenKorrespondenz() {
-		GemeindeStammdatenKorrespondenz config = new GemeindeStammdatenKorrespondenz();
+		GemeindeStammdatenKorrespondenz config =
+			new GemeindeStammdatenKorrespondenz();
 		config.setSenderAddressSpacingLeft(20);
 		config.setSenderAddressSpacingTop(47);
 		config.setReceiverAddressSpacingLeft(123);
@@ -2025,8 +3412,13 @@ public final class TestDataUtil {
 		return config;
 	}
 
-	public static GemeindeStammdaten createGemeindeStammdaten(@Nonnull Gemeinde gemeinde, @Nonnull Persistence persistence) {
-		GemeindeStammdaten gemeindeStammdaten = createGemeindeStammdaten(gemeinde);
+	public static GemeindeStammdaten createGemeindeStammdaten(
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull Persistence persistence
+	) {
+		GemeindeStammdaten gemeindeStammdaten = createGemeindeStammdaten(
+			gemeinde
+		);
 		if (gemeinde.isNew()) {
 			persistence.persist(gemeinde);
 		}
@@ -2034,33 +3426,61 @@ public final class TestDataUtil {
 	}
 
 	public static Benutzer createBenutzerWithDefaultGemeinde(
-		UserRole role, String userName,
+		UserRole role,
+		String userName,
 		@Nullable Traegerschaft traegerschaft,
 		@Nullable Institution institution,
 		@Nonnull Mandant mandant,
 		@Nonnull Persistence persistence,
 		@Nullable String name,
-		@Nullable String vorname) {
-		Benutzer benutzer = createBenutzer(role, userName, traegerschaft, institution, mandant, name, vorname);
+		@Nullable String vorname
+	) {
+		Benutzer benutzer = createBenutzer(
+			role,
+			userName,
+			traegerschaft,
+			institution,
+			mandant,
+			name,
+			vorname
+		);
 		if (role.isRoleGemeindeabhaengig()) {
-			benutzer.getBerechtigungen().iterator().next().getGemeindeList().add(getGemeindeParis(persistence));
+			benutzer.getBerechtigungen()
+				.iterator()
+				.next()
+				.getGemeindeList()
+				.add(getGemeindeParis(persistence));
 		}
 		return benutzer;
 	}
 
 	public static Benutzer createBenutzerWithDefaultGemeinde(
-		UserRole role, String userName,
+		UserRole role,
+		String userName,
 		@Nullable Traegerschaft traegerschaft,
 		@Nullable Institution institution,
 		@Nonnull Mandant mandant,
 		@Nonnull Persistence persistence,
 		@Nullable String name,
 		@Nullable String vorname,
-		@Nonnull String userId) {
-		Benutzer benutzer = createBenutzer(role, userName, traegerschaft, institution, mandant, name, vorname);
+		@Nonnull String userId
+	) {
+		Benutzer benutzer = createBenutzer(
+			role,
+			userName,
+			traegerschaft,
+			institution,
+			mandant,
+			name,
+			vorname
+		);
 		benutzer.setId(userId);
 		if (role.isRoleGemeindeabhaengig()) {
-			benutzer.getBerechtigungen().iterator().next().getGemeindeList().add(getGemeindeParis(persistence));
+			benutzer.getBerechtigungen()
+				.iterator()
+				.next()
+				.getGemeindeList()
+				.add(getGemeindeParis(persistence));
 		}
 		return persistence.persist(benutzer);
 	}
@@ -2076,8 +3496,12 @@ public final class TestDataUtil {
 	) {
 		final Benutzer benutzer = new Benutzer();
 		benutzer.setUsername(userName);
-		benutzer.setNachname(nachname != null ? nachname : Constants.ANONYMOUS_USER_USERNAME);
-		benutzer.setVorname(vorname != null ? vorname : Constants.ANONYMOUS_USER_USERNAME);
+		benutzer.setNachname(
+			nachname != null ? nachname : Constants.ANONYMOUS_USER_USERNAME
+		);
+		benutzer.setVorname(
+			vorname != null ? vorname : Constants.ANONYMOUS_USER_USERNAME
+		);
 		benutzer.setEmail("e@e");
 		Berechtigung berechtigung = new Berechtigung();
 		berechtigung.setTraegerschaft(traegerschaft);
@@ -2089,30 +3513,52 @@ public final class TestDataUtil {
 		return benutzer;
 	}
 
-	public static Benutzer createAndPersistJABenutzer(Persistence persistence, Mandant mandant) {
+	public static Benutzer createAndPersistJABenutzer(
+		Persistence persistence,
+		Mandant mandant
+	) {
 		final Benutzer benutzer =
-			TestDataUtil.createBenutzerWithDefaultGemeinde(UserRole.SACHBEARBEITER_BG, UUID.randomUUID().toString(),
-				null, null, mandant, persistence, null, null);
+			TestDataUtil.createBenutzerWithDefaultGemeinde(
+				UserRole.SACHBEARBEITER_BG,
+				UUID.randomUUID().toString(),
+				null,
+				null,
+				mandant,
+				persistence,
+				null,
+				null
+			);
 		persistence.persist(benutzer);
 		return benutzer;
 	}
 
-	public static Benutzer createAndPersistTraegerschaftBenutzer(Persistence persistence) {
-		final Mandant mandant = TestDataUtil.getMandantKantonBernAndPersist(persistence);
-		final Traegerschaft traegerschaft = TestDataUtil.createDefaultTraegerschaft(mandant);
+	public static Benutzer createAndPersistTraegerschaftBenutzer(
+		Persistence persistence
+	) {
+		final Mandant mandant = TestDataUtil.getMandantKantonBernAndPersist(
+			persistence
+		);
+		final Traegerschaft traegerschaft = TestDataUtil
+			.createDefaultTraegerschaft(mandant);
 		persistence.persist(traegerschaft);
-		final Benutzer benutzer = TestDataUtil.createBenutzerWithDefaultGemeinde(
-			UserRole.SACHBEARBEITER_TRAEGERSCHAFT,
-			UUID.randomUUID().toString(),
-			traegerschaft,
-			null,
-			mandant,
-			persistence, null, null);
+		final Benutzer benutzer = TestDataUtil
+			.createBenutzerWithDefaultGemeinde(
+				UserRole.SACHBEARBEITER_TRAEGERSCHAFT,
+				UUID.randomUUID().toString(),
+				traegerschaft,
+				null,
+				mandant,
+				persistence,
+				null,
+				null
+			);
 		persistence.persist(benutzer);
 		return benutzer;
 	}
 
-	public static GeneratedDokument createGeneratedDokument(final Gesuch gesuch) {
+	public static GeneratedDokument createGeneratedDokument(
+		final Gesuch gesuch
+	) {
 		final GeneratedDokument dokument = new GeneratedDokument();
 		dokument.setGesuch(gesuch);
 		dokument.setTyp(GeneratedDokumentTyp.VERFUEGUNG);
@@ -2132,13 +3578,28 @@ public final class TestDataUtil {
 		if (mandant == null) {
 			mandant = TestDataUtil.getMandantKantonBernAndPersist(persistence);
 		}
-		final Benutzer benutzer = TestDataUtil.createBenutzerWithDefaultGemeinde(UserRole.SUPER_ADMIN, "superadmin",
-			null, null, mandant, persistence, name, vorname);
+		final Benutzer benutzer = TestDataUtil
+			.createBenutzerWithDefaultGemeinde(
+				UserRole.SUPER_ADMIN,
+				"superadmin",
+				null,
+				null,
+				mandant,
+				persistence,
+				name,
+				vorname
+			);
 		persistence.merge(benutzer);
 		return benutzer;
 	}
 
-	public static Benutzer createDummySuperAdmin(Persistence persistence, Mandant mandant, String name, String vorname, String id) {
+	public static Benutzer createDummySuperAdmin(
+		Persistence persistence,
+		Mandant mandant,
+		String name,
+		String vorname,
+		String id
+	) {
 		//machmal brauchen wir einen dummy admin in der DB
 		Benutzer potentiallyExisting = persistence.find(Benutzer.class, id);
 		if (potentiallyExisting != null) {
@@ -2147,13 +3608,21 @@ public final class TestDataUtil {
 		if (mandant == null) {
 			mandant = TestDataUtil.getMandantKantonBernAndPersist(persistence);
 		}
-		final Benutzer benutzer = TestDataUtil.createBenutzerWithDefaultGemeinde(UserRole.SUPER_ADMIN, "superadmin",
-				null, null, mandant, persistence, name, vorname, id);
+		final Benutzer benutzer = TestDataUtil
+			.createBenutzerWithDefaultGemeinde(
+				UserRole.SUPER_ADMIN,
+				"superadmin",
+				null,
+				null,
+				mandant,
+				persistence,
+				name,
+				vorname,
+				id
+			);
 		persistence.merge(benutzer);
 		return benutzer;
 	}
-
-
 
 	public static AntragTableFilterDTO createAntragTableFilterDTO() {
 		AntragTableFilterDTO filterDTO = new AntragTableFilterDTO();
@@ -2169,7 +3638,12 @@ public final class TestDataUtil {
 		return createMahnung(typ, gesuch, LocalDate.now().plusWeeks(2), 3);
 	}
 
-	public static Mahnung createMahnung(MahnungTyp typ, Gesuch gesuch, LocalDate firstAblauf, int numberOfDocuments) {
+	public static Mahnung createMahnung(
+		MahnungTyp typ,
+		Gesuch gesuch,
+		LocalDate firstAblauf,
+		int numberOfDocuments
+	) {
 		Mahnung mahnung = new Mahnung();
 		mahnung.setMahnungTyp(typ);
 		mahnung.setTimestampAbgeschlossen(null);
@@ -2185,35 +3659,69 @@ public final class TestDataUtil {
 		return mahnung;
 	}
 
-	public static AbwesenheitContainer createShortAbwesenheitContainer(final Gesuchsperiode gesuchsperiode) {
-		final AbwesenheitContainer abwesenheitContainer = new AbwesenheitContainer();
-		abwesenheitContainer.setAbwesenheitJA(createShortAbwesenheit(gesuchsperiode));
+	public static AbwesenheitContainer createShortAbwesenheitContainer(
+		final Gesuchsperiode gesuchsperiode
+	) {
+		final AbwesenheitContainer abwesenheitContainer =
+			new AbwesenheitContainer();
+		abwesenheitContainer.setAbwesenheitJA(
+			createShortAbwesenheit(gesuchsperiode)
+		);
 		return abwesenheitContainer;
 	}
 
-	private static Abwesenheit createShortAbwesenheit(final Gesuchsperiode gesuchsperiode) {
+	private static Abwesenheit createShortAbwesenheit(
+		final Gesuchsperiode gesuchsperiode
+	) {
 		final Abwesenheit abwesenheit = new Abwesenheit();
-		abwesenheit.setGueltigkeit(new DateRange(
-			gesuchsperiode.getGueltigkeit().getGueltigAb().plusMonths(1),
-			gesuchsperiode.getGueltigkeit().getGueltigAb().plusMonths(1).plusDays(ABWESENHEIT_DAYS_LIMIT - 1)));
+		abwesenheit.setGueltigkeit(
+			new DateRange(
+				gesuchsperiode.getGueltigkeit()
+					.getGueltigAb()
+					.plusMonths(1),
+				gesuchsperiode.getGueltigkeit()
+					.getGueltigAb()
+					.plusMonths(1)
+					.plusDays(ABWESENHEIT_DAYS_LIMIT - 1)
+			)
+		);
 		return abwesenheit;
 	}
 
-	public static AbwesenheitContainer createLongAbwesenheitContainer(final Gesuchsperiode gesuchsperiode) {
-		final AbwesenheitContainer abwesenheitContainer = new AbwesenheitContainer();
-		abwesenheitContainer.setAbwesenheitJA(createLongAbwesenheit(gesuchsperiode));
+	public static AbwesenheitContainer createLongAbwesenheitContainer(
+		final Gesuchsperiode gesuchsperiode
+	) {
+		final AbwesenheitContainer abwesenheitContainer =
+			new AbwesenheitContainer();
+		abwesenheitContainer.setAbwesenheitJA(
+			createLongAbwesenheit(gesuchsperiode)
+		);
 		return abwesenheitContainer;
 	}
 
-	private static Abwesenheit createLongAbwesenheit(final Gesuchsperiode gesuchsperiode) {
+	private static Abwesenheit createLongAbwesenheit(
+		final Gesuchsperiode gesuchsperiode
+	) {
 		final Abwesenheit abwesenheit = new Abwesenheit();
-		abwesenheit.setGueltigkeit(new DateRange(
-			gesuchsperiode.getGueltigkeit().getGueltigAb().plusMonths(1),
-			gesuchsperiode.getGueltigkeit().getGueltigAb().plusMonths(1).plusDays(ABWESENHEIT_DAYS_LIMIT)));
+		abwesenheit.setGueltigkeit(
+			new DateRange(
+				gesuchsperiode.getGueltigkeit()
+					.getGueltigAb()
+					.plusMonths(1),
+				gesuchsperiode.getGueltigkeit()
+					.getGueltigAb()
+					.plusMonths(1)
+					.plusDays(ABWESENHEIT_DAYS_LIMIT)
+			)
+		);
 		return abwesenheit;
 	}
 
-	public static Gesuch createGesuch(Dossier dossier, Gesuchsperiode periodeToUpdate, AntragStatus status) {
+	public static Gesuch createGesuch(
+		Dossier dossier,
+		Gesuchsperiode periodeToUpdate,
+		AntragStatus status
+	) {
 		Gesuch gesuch = new Gesuch();
 		gesuch.setDossier(dossier);
 		gesuch.setGesuchsperiode(periodeToUpdate);
@@ -2221,7 +3729,12 @@ public final class TestDataUtil {
 		return gesuch;
 	}
 
-	public static Gesuch createMutation(Dossier dossier, Gesuchsperiode periodeToUpdate, AntragStatus status, int laufnummer) {
+	public static Gesuch createMutation(
+		Dossier dossier,
+		Gesuchsperiode periodeToUpdate,
+		AntragStatus status,
+		int laufnummer
+	) {
 		Gesuch gesuch = new Gesuch();
 		gesuch.setDossier(dossier);
 		gesuch.setGesuchsperiode(periodeToUpdate);
@@ -2233,16 +3746,29 @@ public final class TestDataUtil {
 
 	@SuppressWarnings("MagicNumber")
 	public static Betreuungsmitteilung createBetreuungmitteilung(
-		Dossier dossier, Benutzer empfaenger, MitteilungTeilnehmerTyp empfaengerTyp,
-		Benutzer sender, MitteilungTeilnehmerTyp senderTyp) {
+		Dossier dossier,
+		Benutzer empfaenger,
+		MitteilungTeilnehmerTyp empfaengerTyp,
+		Benutzer sender,
+		MitteilungTeilnehmerTyp senderTyp
+	) {
 		final Betreuungsmitteilung mitteilung = new Betreuungsmitteilung();
-		fillOutMitteilung(dossier, empfaenger, empfaengerTyp, sender, senderTyp, mitteilung);
+		fillOutMitteilung(
+			dossier,
+			empfaenger,
+			empfaengerTyp,
+			sender,
+			senderTyp,
+			mitteilung
+		);
 
 		Set<BetreuungsmitteilungPensum> betPensen = new HashSet<>();
 
 		BetreuungsmitteilungPensum pensum = new BetreuungsmitteilungPensum();
 		pensum.setBetreuungsmitteilung(mitteilung);
-		pensum.setGueltigkeit(new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME));
+		pensum.setGueltigkeit(
+			new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME)
+		);
 		pensum.setPensum(MathUtil.DEFAULT.from(30));
 
 		betPensen.add(pensum);
@@ -2252,18 +3778,41 @@ public final class TestDataUtil {
 	}
 
 	public static Mitteilung createMitteilung(
-		Dossier dossier, Benutzer empfaenger, MitteilungTeilnehmerTyp empfaengerTyp,
-		Benutzer sender, MitteilungTeilnehmerTyp senderTyp) {
+		Dossier dossier,
+		Benutzer empfaenger,
+		MitteilungTeilnehmerTyp empfaengerTyp,
+		Benutzer sender,
+		MitteilungTeilnehmerTyp senderTyp
+	) {
 		Mitteilung mitteilung = new Mitteilung();
-		fillOutMitteilung(dossier, empfaenger, empfaengerTyp, sender, senderTyp, mitteilung);
+		fillOutMitteilung(
+			dossier,
+			empfaenger,
+			empfaengerTyp,
+			sender,
+			senderTyp,
+			mitteilung
+		);
 		return mitteilung;
 	}
 
 	public static Mitteilung createMitteilungForInstitution(
-		Dossier dossier, Benutzer empfaenger, MitteilungTeilnehmerTyp empfaengerTyp,
-		Benutzer sender, MitteilungTeilnehmerTyp senderTyp, Institution institution) {
+		Dossier dossier,
+		Benutzer empfaenger,
+		MitteilungTeilnehmerTyp empfaengerTyp,
+		Benutzer sender,
+		MitteilungTeilnehmerTyp senderTyp,
+		Institution institution
+	) {
 		Mitteilung mitteilung = new Mitteilung();
-		fillOutMitteilung(dossier, empfaenger, empfaengerTyp, sender, senderTyp, mitteilung);
+		fillOutMitteilung(
+			dossier,
+			empfaenger,
+			empfaengerTyp,
+			sender,
+			senderTyp,
+			mitteilung
+		);
 		mitteilung.setInstitution(institution);
 		return mitteilung;
 	}
@@ -2273,9 +3822,9 @@ public final class TestDataUtil {
 		Benutzer empfaenger,
 		MitteilungTeilnehmerTyp empfaengerTyp,
 		Benutzer sender,
-		MitteilungTeilnehmerTyp
-			senderTyp,
-		Mitteilung mitteilung) {
+		MitteilungTeilnehmerTyp senderTyp,
+		Mitteilung mitteilung
+	) {
 		mitteilung.setDossier(dossier);
 		mitteilung.setEmpfaenger(empfaenger);
 		mitteilung.setSender(sender);
@@ -2289,7 +3838,12 @@ public final class TestDataUtil {
 	public static MitteilungTableFilterDTO createMitteilungTableFilterDTO() {
 		MitteilungTableFilterDTO filterDTO = new MitteilungTableFilterDTO();
 		filterDTO.setSearch(new MitteilungSearchDTO());
-		filterDTO.getSearch().getPredicateObject().setMessageTypes(new MessageTypes[]{MessageTypes.MITTEILUNG, MessageTypes.BETREUUNGSMITTEILUNG});
+		filterDTO.getSearch()
+			.getPredicateObject()
+			.setMessageTypes(
+				new MessageTypes[] { MessageTypes.MITTEILUNG,
+					MessageTypes.BETREUUNGSMITTEILUNG }
+			);
 		return filterDTO;
 	}
 
@@ -2299,32 +3853,56 @@ public final class TestDataUtil {
 		@Nullable Gesuchsperiode gesuchsperiode
 	) {
 		Betreuung betreuung = TestDataUtil.createDefaultBetreuung();
-		for (BetreuungspensumContainer container : betreuung.getBetreuungspensumContainers()) {
+		for (BetreuungspensumContainer container : betreuung
+			.getBetreuungspensumContainers()) {
 			persistence.persist(container);
 		}
-		for (AbwesenheitContainer abwesenheit : betreuung.getAbwesenheitContainers()) {
+		for (AbwesenheitContainer abwesenheit : betreuung
+			.getAbwesenheitContainers()) {
 			persistence.persist(abwesenheit);
 		}
-		saveInstitutionStammdatenIfNecessary(persistence, betreuung.getInstitutionStammdaten());
+		saveInstitutionStammdatenIfNecessary(
+			persistence,
+			betreuung.getInstitutionStammdaten()
+		);
 		Objects.requireNonNull(betreuung.getKind().getKindGS());
 
-		for (PensumFachstelle pensumFachstelle : betreuung.getKind().getKindGS().getPensumFachstelle()) {
+		for (PensumFachstelle pensumFachstelle : betreuung.getKind()
+			.getKindGS()
+			.getPensumFachstelle()) {
 			Objects.requireNonNull(pensumFachstelle.getFachstelle());
-			TestDataUtil.saveMandantIfNecessary(persistence, pensumFachstelle.getFachstelle().getMandant());
+			TestDataUtil.saveMandantIfNecessary(
+				persistence,
+				pensumFachstelle.getFachstelle().getMandant()
+			);
 			persistence.persist(pensumFachstelle.getFachstelle());
 		}
-		for (PensumFachstelle pensumFachstelle : betreuung.getKind().getKindJA().getPensumFachstelle()) {
+		for (PensumFachstelle pensumFachstelle : betreuung.getKind()
+			.getKindJA()
+			.getPensumFachstelle()) {
 			Objects.requireNonNull(pensumFachstelle.getFachstelle());
-			TestDataUtil.saveMandantIfNecessary(persistence, pensumFachstelle.getFachstelle().getMandant());
+			TestDataUtil.saveMandantIfNecessary(
+				persistence,
+				pensumFachstelle.getFachstelle().getMandant()
+			);
 			persistence.persist(pensumFachstelle.getFachstelle());
 		}
 
-		Gesuch gesuch = TestDataUtil.createAndPersistGesuch(persistence, null, null, gesuchsperiode);
+		Gesuch gesuch = TestDataUtil.createAndPersistGesuch(
+			persistence,
+			null,
+			null,
+			gesuchsperiode
+		);
 		betreuung.getKind().setGesuch(gesuch);
 		persistence.persist(betreuung.getKind());
 
 		betreuung.setBetreuungsstatus(Betreuungsstatus.WARTEN);
-		final Betreuung savedBetreuung = betreuungService.saveBetreuung(betreuung, false, null);
+		final Betreuung savedBetreuung = betreuungService.saveBetreuung(
+			betreuung,
+			false,
+			null
+		);
 
 		return savedBetreuung;
 
@@ -2333,57 +3911,86 @@ public final class TestDataUtil {
 	/**
 	 * Verfuegt das uebergebene Gesuch. Dies muss in Status IN_BEARBEITUNG_JA uebergeben werden.
 	 */
-	public static Gesuch gesuchVerfuegen(@Nonnull Gesuch gesuch, @Nonnull GesuchService gesuchService) {
+	public static Gesuch gesuchVerfuegen(
+		@Nonnull Gesuch gesuch,
+		@Nonnull GesuchService gesuchService
+	) {
 		gesuch.setStatus(AntragStatus.GEPRUEFT);
-		final Gesuch gesuchToVerfuegt = gesuchService.updateGesuch(gesuch, true, null);
+		final Gesuch gesuchToVerfuegt = gesuchService.updateGesuch(
+			gesuch,
+			true,
+			null
+		);
 		gesuchToVerfuegt.setStatus(AntragStatus.VERFUEGEN);
-		final Gesuch verfuegenGesuch = gesuchService.updateGesuch(gesuchToVerfuegt, true, null);
+		final Gesuch verfuegenGesuch = gesuchService.updateGesuch(
+			gesuchToVerfuegt,
+			true,
+			null
+		);
 		verfuegenGesuch.setStatus(AntragStatus.VERFUEGT);
 		return gesuchService.updateGesuch(verfuegenGesuch, true, null);
 	}
 
 	public static Gesuch persistNewCompleteGesuchInStatus(
-		@Nonnull AntragStatus status, @Nonnull Persistence persistence,
-		@Nonnull GesuchService gesuchService, @Nonnull Gesuchsperiode gesuchsperiode) {
+		@Nonnull AntragStatus status,
+		@Nonnull Persistence persistence,
+		@Nonnull GesuchService gesuchService,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 
 		final Gesuch gesuch = TestDataUtil.createDefaultGesuch();
 		gesuch.getDossier().setGemeinde(getTestGemeinde(persistence));
 		gesuch.setStatus(status);
 		gesuch.setGesuchsperiode(persistEntity(persistence, gesuchsperiode));
-		gesuch.getDossier().setFall(persistence.persist(gesuch.getDossier().getFall()));
+		gesuch.getDossier()
+			.setFall(persistence.persist(gesuch.getDossier().getFall()));
 		gesuch.setDossier(persistence.persist(gesuch.getDossier()));
-		GesuchstellerContainer gesuchsteller1 = TestDataUtil.createDefaultGesuchstellerContainer();
+		GesuchstellerContainer gesuchsteller1 = TestDataUtil
+			.createDefaultGesuchstellerContainer();
 		gesuch.setGesuchsteller1(gesuchsteller1);
 		Objects.requireNonNull(gesuch.getGesuchsteller1());
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(TestDataUtil.createFinanzielleSituationContainer());
-		Objects.requireNonNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				TestDataUtil.createFinanzielleSituationContainer()
+			);
+		Objects.requireNonNull(
+			gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+		);
 		gesuch.getGesuchsteller1()
 			.getFinanzielleSituationContainer()
-			.setFinanzielleSituationJA(TestDataUtil.createDefaultFinanzielleSituation());
-		TestDataUtil.createEinkommensverschlechterungsInfoContainerOhneVerschlechterung(gesuch);
+			.setFinanzielleSituationJA(
+				TestDataUtil.createDefaultFinanzielleSituation()
+			);
+		TestDataUtil
+			.createEinkommensverschlechterungsInfoContainerOhneVerschlechterung(
+				gesuch
+			);
 
 		Gesuch createdGesuch = gesuchService.createGesuch(gesuch);
 
 		//Kind und kindContainer und Betreuung sonst gewisse Status sind nicht erlaubt
 		Betreuung betreuung = TestDataUtil.createDefaultBetreuung();
 
-		saveInstitutionStammdatenIfNecessary(persistence, betreuung.getInstitutionStammdaten());
+		saveInstitutionStammdatenIfNecessary(
+			persistence,
+			betreuung.getInstitutionStammdaten()
+		);
 		Objects.requireNonNull(betreuung.getKind().getKindGS());
 		//
 		betreuung.getKind().getKindGS().getPensumFachstelle().clear();
 		betreuung.getKind().getKindJA().getPensumFachstelle().clear();
-	/*	for (PensumFachstelle pensumFachstelle : betreuung.getKind().getKindGS().getPensumFachstelle()) {
-			Objects.requireNonNull(pensumFachstelle.getFachstelle());
-			TestDataUtil.saveMandantIfNecessary(persistence, pensumFachstelle.getFachstelle().getMandant());
-			persistence.persist(pensumFachstelle.getFachstelle());
-			pensumFachstelle.setKind(betreuung.getKind().getKindGS());
-		}
-		for (PensumFachstelle pensumFachstelle : betreuung.getKind().getKindJA().getPensumFachstelle()) {
-			Objects.requireNonNull(pensumFachstelle.getFachstelle());
-			TestDataUtil.saveMandantIfNecessary(persistence, pensumFachstelle.getFachstelle().getMandant());
-			persistence.persist(pensumFachstelle.getFachstelle());
-			pensumFachstelle.setKind(betreuung.getKind().getKindJA());
-		}*/
+		/*	for (PensumFachstelle pensumFachstelle : betreuung.getKind().getKindGS().getPensumFachstelle()) {
+				Objects.requireNonNull(pensumFachstelle.getFachstelle());
+				TestDataUtil.saveMandantIfNecessary(persistence, pensumFachstelle.getFachstelle().getMandant());
+				persistence.persist(pensumFachstelle.getFachstelle());
+				pensumFachstelle.setKind(betreuung.getKind().getKindGS());
+			}
+			for (PensumFachstelle pensumFachstelle : betreuung.getKind().getKindJA().getPensumFachstelle()) {
+				Objects.requireNonNull(pensumFachstelle.getFachstelle());
+				TestDataUtil.saveMandantIfNecessary(persistence, pensumFachstelle.getFachstelle().getMandant());
+				persistence.persist(pensumFachstelle.getFachstelle());
+				pensumFachstelle.setKind(betreuung.getKind().getKindJA());
+			}*/
 
 		KindContainer kindContainer = betreuung.getKind();
 		kindContainer.getBetreuungen().add(betreuung);
@@ -2400,23 +4007,35 @@ public final class TestDataUtil {
 	}
 
 	public static Gesuch persistNewGesuchInStatus(
-		@Nonnull AntragStatus status, @Nonnull Persistence persistence,
-		@Nonnull GesuchService gesuchService, @Nonnull Gesuchsperiode gesuchsperiode) {
+		@Nonnull AntragStatus status,
+		@Nonnull Persistence persistence,
+		@Nonnull GesuchService gesuchService,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 
 		final Gesuch gesuch = TestDataUtil.createDefaultGesuch();
 		gesuch.getDossier().setGemeinde(getTestGemeinde(persistence));
 		gesuch.setStatus(status);
 		gesuch.setGesuchsperiode(persistEntity(persistence, gesuchsperiode));
-		gesuch.getDossier().setFall(persistence.persist(gesuch.getDossier().getFall()));
+		gesuch.getDossier()
+			.setFall(persistence.persist(gesuch.getDossier().getFall()));
 		gesuch.setDossier(persistence.persist(gesuch.getDossier()));
-		GesuchstellerContainer gesuchsteller1 = TestDataUtil.createDefaultGesuchstellerContainer();
+		GesuchstellerContainer gesuchsteller1 = TestDataUtil
+			.createDefaultGesuchstellerContainer();
 		gesuch.setGesuchsteller1(gesuchsteller1);
 		Objects.requireNonNull(gesuch.getGesuchsteller1());
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(TestDataUtil.createFinanzielleSituationContainer());
-		Objects.requireNonNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				TestDataUtil.createFinanzielleSituationContainer()
+			);
+		Objects.requireNonNull(
+			gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+		);
 		gesuch.getGesuchsteller1()
 			.getFinanzielleSituationContainer()
-			.setFinanzielleSituationJA(TestDataUtil.createDefaultFinanzielleSituation());
+			.setFinanzielleSituationJA(
+				TestDataUtil.createDefaultFinanzielleSituation()
+			);
 		Gesuch createdGesuch = gesuchService.createGesuch(gesuch);
 		// Achtung: im createGesuch wird die Eingangsart und der Status aufgrund des eingeloggten Benutzers nochmals neu berechnet!
 		createdGesuch.setStatus(status);
@@ -2424,23 +4043,36 @@ public final class TestDataUtil {
 	}
 
 	public static Gesuch persistNewGesuchInStatus(
-		@Nonnull AntragStatus status, @Nonnull Persistence persistence,
-		@Nonnull GesuchService gesuchService) {
+		@Nonnull AntragStatus status,
+		@Nonnull Persistence persistence,
+		@Nonnull GesuchService gesuchService
+	) {
 
 		final Gesuch gesuch = TestDataUtil.createDefaultGesuch();
 		gesuch.getDossier().setGemeinde(getTestGemeinde(persistence));
 		gesuch.setStatus(status);
-		gesuch.setGesuchsperiode(persistence.persist(gesuch.getGesuchsperiode()));
-		gesuch.getDossier().setFall(persistence.persist(gesuch.getDossier().getFall()));
+		gesuch.setGesuchsperiode(
+			persistence.persist(gesuch.getGesuchsperiode())
+		);
+		gesuch.getDossier()
+			.setFall(persistence.persist(gesuch.getDossier().getFall()));
 		gesuch.setDossier(persistence.persist(gesuch.getDossier()));
-		GesuchstellerContainer gesuchsteller1 = TestDataUtil.createDefaultGesuchstellerContainer();
+		GesuchstellerContainer gesuchsteller1 = TestDataUtil
+			.createDefaultGesuchstellerContainer();
 		gesuch.setGesuchsteller1(gesuchsteller1);
 		Objects.requireNonNull(gesuch.getGesuchsteller1());
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(TestDataUtil.createFinanzielleSituationContainer());
-		Objects.requireNonNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				TestDataUtil.createFinanzielleSituationContainer()
+			);
+		Objects.requireNonNull(
+			gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+		);
 		gesuch.getGesuchsteller1()
 			.getFinanzielleSituationContainer()
-			.setFinanzielleSituationJA(TestDataUtil.createDefaultFinanzielleSituation());
+			.setFinanzielleSituationJA(
+				TestDataUtil.createDefaultFinanzielleSituation()
+			);
 		Gesuch createdGesuch = gesuchService.createGesuch(gesuch);
 		// Achtung: im createGesuch wird die Eingangsart und der Status aufgrund des eingeloggten Benutzers nochmals neu berechnet!
 		createdGesuch.setStatus(status);
@@ -2466,22 +4098,38 @@ public final class TestDataUtil {
 		BelegungFerieninsel belegungFerieninsel = new BelegungFerieninsel();
 		belegungFerieninsel.setFerienname(Ferienname.SOMMERFERIEN);
 		belegungFerieninsel.setTage(new ArrayList<>());
-		belegungFerieninsel.getTage().add(createBelegungFerieninselTag(LocalDate.now().plusMonths(3)));
+		belegungFerieninsel.getTage()
+			.add(
+				createBelegungFerieninselTag(
+					LocalDate.now().plusMonths(3)
+				)
+			);
 		belegungFerieninsel.setTageMorgenmodul(new ArrayList<>());
-		belegungFerieninsel.getTageMorgenmodul().add(createBelegungFerieninselTag(LocalDate.now().plusMonths(3)));
+		belegungFerieninsel.getTageMorgenmodul()
+			.add(
+				createBelegungFerieninselTag(
+					LocalDate.now().plusMonths(3)
+				)
+			);
 		return belegungFerieninsel;
 	}
 
-	public static BelegungFerieninselTag createBelegungFerieninselTag(LocalDate date) {
+	public static BelegungFerieninselTag createBelegungFerieninselTag(
+		LocalDate date
+	) {
 		BelegungFerieninselTag tag = new BelegungFerieninselTag();
 		tag.setTag(date);
 		return tag;
 	}
 
-	public static VerfuegungZeitabschnitt createDefaultZeitabschnitt(Verfuegung verfuegung) {
+	public static VerfuegungZeitabschnitt createDefaultZeitabschnitt(
+		Verfuegung verfuegung
+	) {
 		VerfuegungZeitabschnitt zeitabschnitt = new VerfuegungZeitabschnitt();
 		zeitabschnitt.setVerfuegung(verfuegung);
-		zeitabschnitt.setBetreuungspensumProzentForAsivAndGemeinde(BigDecimal.valueOf(10));
+		zeitabschnitt.setBetreuungspensumProzentForAsivAndGemeinde(
+			BigDecimal.valueOf(10)
+		);
 		zeitabschnitt.setAnspruchspensumProzentForAsivAndGemeinde(50);
 		zeitabschnitt.setEinkommensjahrForAsivAndGemeinde(PERIODE_JAHR_1);
 		zeitabschnitt.setZuSpaetEingereichtForAsivAndGemeinde(false);
@@ -2489,7 +4137,8 @@ public final class TestDataUtil {
 	}
 
 	public static ErweiterteBetreuungContainer createDefaultErweiterteBetreuungContainer() {
-		ErweiterteBetreuungContainer erwBetContainer = new ErweiterteBetreuungContainer();
+		ErweiterteBetreuungContainer erwBetContainer =
+			new ErweiterteBetreuungContainer();
 		ErweiterteBetreuung erwBet = new ErweiterteBetreuung();
 		erwBet.setErweiterteBeduerfnisse(false);
 		erwBet.setKeineKesbPlatzierung(true);
@@ -2499,38 +4148,53 @@ public final class TestDataUtil {
 	}
 
 	/**
-	 * This method must be called before creating a Zahlung for the a new mutation. This is needed because to check abschnitte that have alreadz
-	 * been paied we take the las Betreuung that has been paid using the TimestampVerfuegt form Gesuch and the datumGeneriert of the zahlung
+	 * This method must be called before creating a Zahlung for the a new mutation. This is needed because to check
+	 * abschnitte that have alreadz
+	 * been paied we take the las Betreuung that has been paid using the TimestampVerfuegt form Gesuch and the
+	 * datumGeneriert of the zahlung
 	 */
-	public static Gesuch correctTimestampVerfuegt(Gesuch gesuch, LocalDateTime date, Persistence persistence) {
+	public static Gesuch correctTimestampVerfuegt(
+		Gesuch gesuch,
+		LocalDateTime date,
+		Persistence persistence
+	) {
 		gesuch.setTimestampVerfuegt(date.minusDays(1));
 		return persistence.merge(gesuch);
 	}
 
-	public static void initVorgaengerVerfuegungenWithNULL(@Nonnull Gesuch gesuch) {
-		gesuch.getKindContainers().stream()
+	public static void initVorgaengerVerfuegungenWithNULL(
+		@Nonnull Gesuch gesuch
+	) {
+		gesuch.getKindContainers()
+			.stream()
 			.flatMap(k -> k.getBetreuungen().stream())
 			.forEach(b -> b.initVorgaengerVerfuegungen(null, null));
 	}
 
 	@Nonnull
 	public static KitaxUebergangsloesungParameter geKitaxUebergangsloesungParameter() {
-		Collection<KitaxUebergangsloesungInstitutionOeffnungszeiten> collection = new ArrayList<>();
+		Collection<KitaxUebergangsloesungInstitutionOeffnungszeiten> collection =
+			new ArrayList<>();
 		collection.add(createKitaxOeffnungszeiten("Kita Brünnen"));
 		collection.add(createKitaxOeffnungszeiten("Kita Weissenstein"));
 		collection.add(createKitaxOeffnungszeiten("Kita Aaregg"));
 		collection.add(createKitaxOeffnungszeiten("Testinstitution"));
 		// Fuer Tests gehen wir im Allgemeinen davon aus, dass Bern (Paris) bereits in der Vergangenheit zu ASIV gewechselt hat
-		KitaxUebergangsloesungParameter parameter = new KitaxUebergangsloesungParameter(
-			LocalDate.of(2000, Month.JANUARY, 1),
-			true,
-			collection);
+		KitaxUebergangsloesungParameter parameter =
+			new KitaxUebergangsloesungParameter(
+				LocalDate.of(2000, Month.JANUARY, 1),
+				true,
+				collection
+			);
 		return parameter;
 	}
 
 	@Nonnull
-	private static KitaxUebergangsloesungInstitutionOeffnungszeiten createKitaxOeffnungszeiten(@Nonnull String name) {
-		KitaxUebergangsloesungInstitutionOeffnungszeiten oeffnungszeiten = new KitaxUebergangsloesungInstitutionOeffnungszeiten();
+	private static KitaxUebergangsloesungInstitutionOeffnungszeiten createKitaxOeffnungszeiten(
+		@Nonnull String name
+	) {
+		KitaxUebergangsloesungInstitutionOeffnungszeiten oeffnungszeiten =
+			new KitaxUebergangsloesungInstitutionOeffnungszeiten();
 		oeffnungszeiten.setOeffnungstage(MathUtil.DEFAULT.from(240));
 		oeffnungszeiten.setOeffnungsstunden(MathUtil.DEFAULT.from(11.5));
 		oeffnungszeiten.setNameKibon(name);
@@ -2542,9 +4206,13 @@ public final class TestDataUtil {
 		@Nonnull Gesuchsperiode gesuchsperiode,
 		@Nonnull Gemeinde gemeinde
 	) {
-		LastenausgleichTagesschuleAngabenGemeindeContainer cnt = new LastenausgleichTagesschuleAngabenGemeindeContainer();
-		LastenausgleichTagesschuleAngabenGemeinde angabenDeklaration = new LastenausgleichTagesschuleAngabenGemeinde();
-		angabenDeklaration.setStatus(LastenausgleichTagesschuleAngabenGemeindeFormularStatus.IN_BEARBEITUNG);
+		LastenausgleichTagesschuleAngabenGemeindeContainer cnt =
+			new LastenausgleichTagesschuleAngabenGemeindeContainer();
+		LastenausgleichTagesschuleAngabenGemeinde angabenDeklaration =
+			new LastenausgleichTagesschuleAngabenGemeinde();
+		angabenDeklaration.setStatus(
+			LastenausgleichTagesschuleAngabenGemeindeFormularStatus.IN_BEARBEITUNG
+		);
 		cnt.setStatus(LastenausgleichTagesschuleAngabenGemeindeStatus.NEU);
 		cnt.setGesuchsperiode(gesuchsperiode);
 		cnt.setAngabenDeklaration(angabenDeklaration);
@@ -2553,54 +4221,97 @@ public final class TestDataUtil {
 	}
 
 	public static LastenausgleichTagesschuleAngabenGemeinde createLastenausgleichTagesschuleAngabenGemeinde() {
-		LastenausgleichTagesschuleAngabenGemeinde angabenGemeinde = new LastenausgleichTagesschuleAngabenGemeinde();
+		LastenausgleichTagesschuleAngabenGemeinde angabenGemeinde =
+			new LastenausgleichTagesschuleAngabenGemeinde();
 		// A: Allgemeine Angaben
 		angabenGemeinde.setBedarfBeiElternAbgeklaert(true);
 		angabenGemeinde.setAngebotFuerFerienbetreuungVorhanden(true);
 		angabenGemeinde.setAngebotVerfuegbarFuerAlleSchulstufen(true);
-		angabenGemeinde.setBegruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen(null);
+		angabenGemeinde
+			.setBegruendungWennAngebotNichtVerfuegbarFuerAlleSchulstufen(
+				null
+			);
 		// B: Abrechnung
-		angabenGemeinde.setGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse(BigDecimal.TEN);
-		angabenGemeinde.setGeleisteteBetreuungsstundenBesondereBeduerfnisse(BigDecimal.TEN);
-		angabenGemeinde.setDavonStundenZuNormlohnMehrAls50ProzentAusgebildete(BigDecimal.TEN);
-		angabenGemeinde.setDavonStundenZuNormlohnWenigerAls50ProzentAusgebildete(BigDecimal.TEN);
+		angabenGemeinde.setGeleisteteBetreuungsstundenOhneBesondereBeduerfnisse(
+			BigDecimal.TEN
+		);
+		angabenGemeinde.setGeleisteteBetreuungsstundenBesondereBeduerfnisse(
+			BigDecimal.TEN
+		);
+		angabenGemeinde.setDavonStundenZuNormlohnMehrAls50ProzentAusgebildete(
+			BigDecimal.TEN
+		);
+		angabenGemeinde
+			.setDavonStundenZuNormlohnWenigerAls50ProzentAusgebildete(
+				BigDecimal.TEN
+			);
 		angabenGemeinde.setEinnahmenElterngebuehren(BigDecimal.TEN);
-		angabenGemeinde.setGeleisteteBetreuungsstundenBesondereVolksschulangebot(BigDecimal.ZERO);
+		angabenGemeinde
+			.setGeleisteteBetreuungsstundenBesondereVolksschulangebot(
+				BigDecimal.ZERO
+			);
 		// C: Kostenbeteiligung Gemeinde
 		angabenGemeinde.setGesamtKostenTagesschule(BigDecimal.TEN);
 		angabenGemeinde.setEinnnahmenVerpflegung(BigDecimal.TEN);
 		angabenGemeinde.setEinnahmenSubventionenDritter(BigDecimal.TEN);
 		// D: Angaben zu weiteren Kosten und Ertraegen
-		angabenGemeinde.setBemerkungenWeitereKostenUndErtraege("Meine Bemerkungen");
+		angabenGemeinde.setBemerkungenWeitereKostenUndErtraege(
+			"Meine Bemerkungen"
+		);
 		// E: Kontrollfragen
 		angabenGemeinde.setBetreuungsstundenDokumentiertUndUeberprueft(true);
 		angabenGemeinde.setElterngebuehrenGemaessVerordnungBerechnet(true);
 		angabenGemeinde.setEinkommenElternBelegt(true);
 		angabenGemeinde.setMaximalTarif(true);
-		angabenGemeinde.setMindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal(true);
+		angabenGemeinde
+			.setMindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal(
+				true
+			);
 		angabenGemeinde.setAusbildungenMitarbeitendeBelegt(true);
 		// Bemerkungen
 		angabenGemeinde.setBemerkungen(null);
-		angabenGemeinde.setStatus(LastenausgleichTagesschuleAngabenGemeindeFormularStatus.ABGESCHLOSSEN);
+		angabenGemeinde.setStatus(
+			LastenausgleichTagesschuleAngabenGemeindeFormularStatus.ABGESCHLOSSEN
+		);
 		return angabenGemeinde;
 	}
 
 	public static LastenausgleichTagesschuleAngabenInstitution createLastenausgleichTagesschuleAngabenInstitution() {
-		LastenausgleichTagesschuleAngabenInstitution angabenInstitution = new LastenausgleichTagesschuleAngabenInstitution();
+		LastenausgleichTagesschuleAngabenInstitution angabenInstitution =
+			new LastenausgleichTagesschuleAngabenInstitution();
 		// A: Informationen zur Tagesschule
-		angabenInstitution.setLehrbetrieb(true);
+		angabenInstitution.setIsLehrbetrieb(true);
 		// B: Quantitative Angaben
 		angabenInstitution.setAnzahlEingeschriebeneKinder(BigDecimal.TEN);
-		angabenInstitution.setAnzahlEingeschriebeneKinderKindergarten(BigDecimal.TEN);
-		angabenInstitution.setAnzahlEingeschriebeneKinderSekundarstufe(BigDecimal.TEN);
-		angabenInstitution.setAnzahlEingeschriebeneKinderPrimarstufe(BigDecimal.TEN);
-		angabenInstitution.setAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen(BigDecimal.TEN);
-		angabenInstitution.setAnzahlEingeschriebeneKinderVolksschulangebot(BigDecimal.ZERO);
-		angabenInstitution.setAnzahlEingeschriebeneKinderBasisstufe(BigDecimal.ZERO);
-		angabenInstitution.setDurchschnittKinderProTagFruehbetreuung(BigDecimal.TEN);
+		angabenInstitution.setAnzahlEingeschriebeneKinderKindergarten(
+			BigDecimal.TEN
+		);
+		angabenInstitution.setAnzahlEingeschriebeneKinderSekundarstufe(
+			BigDecimal.TEN
+		);
+		angabenInstitution.setAnzahlEingeschriebeneKinderPrimarstufe(
+			BigDecimal.TEN
+		);
+		angabenInstitution
+			.setAnzahlEingeschriebeneKinderMitBesonderenBeduerfnissen(
+				BigDecimal.TEN
+			);
+		angabenInstitution.setAnzahlEingeschriebeneKinderVolksschulangebot(
+			BigDecimal.ZERO
+		);
+		angabenInstitution.setAnzahlEingeschriebeneKinderBasisstufe(
+			BigDecimal.ZERO
+		);
+		angabenInstitution.setDurchschnittKinderProTagFruehbetreuung(
+			BigDecimal.TEN
+		);
 		angabenInstitution.setDurchschnittKinderProTagMittag(BigDecimal.TEN);
-		angabenInstitution.setDurchschnittKinderProTagNachmittag1(BigDecimal.TEN);
-		angabenInstitution.setDurchschnittKinderProTagNachmittag2(BigDecimal.TEN);
+		angabenInstitution.setDurchschnittKinderProTagNachmittag1(
+			BigDecimal.TEN
+		);
+		angabenInstitution.setDurchschnittKinderProTagNachmittag2(
+			BigDecimal.TEN
+		);
 		// C: Qualitative Vorgaben der Tagesschuleverordnung
 		angabenInstitution.setSchuleAufBasisOrganisatorischesKonzept(true);
 		angabenInstitution.setSchuleAufBasisPaedagogischesKonzept(true);
@@ -2613,13 +4324,20 @@ public final class TestDataUtil {
 		return angabenInstitution;
 	}
 
-	public static Fall addSozialdienstToFall(Persistence persistence, FallService fallService, Fall fall) {
-		SozialdienstStammdaten sozialdienstStammdaten = createDefaultSozialdienstStammdaten(fall);
+	public static Fall addSozialdienstToFall(
+		Persistence persistence,
+		FallService fallService,
+		Fall fall
+	) {
+		SozialdienstStammdaten sozialdienstStammdaten =
+			createDefaultSozialdienstStammdaten(fall);
 		persistence.persist(sozialdienstStammdaten);
 		return fallService.saveFall(fall);
 	}
 
-	public static SozialdienstStammdaten createDefaultSozialdienstStammdaten(@Nonnull Fall fall) {
+	public static SozialdienstStammdaten createDefaultSozialdienstStammdaten(
+		@Nonnull Fall fall
+	) {
 		SozialdienstFall sozialdienstFall = new SozialdienstFall();
 		sozialdienstFall.setName("SozialName");
 		sozialdienstFall.setVorname("SozialVorname");
@@ -2639,7 +4357,8 @@ public final class TestDataUtil {
 		sozialdienst.setMandant(fall.getMandant());
 		sozialdienstFall.setSozialdienst(sozialdienst);
 		fall.setSozialdienstFall(sozialdienstFall);
-		SozialdienstStammdaten sozialdienstStammdaten = new SozialdienstStammdaten();
+		SozialdienstStammdaten sozialdienstStammdaten =
+			new SozialdienstStammdaten();
 		sozialdienstStammdaten.setSozialdienst(sozialdienst);
 		sozialdienstStammdaten.setAdresse(adresse);
 		sozialdienstStammdaten.setMail("sozialmail@mailbucket.dvbern.ch");
@@ -2648,17 +4367,23 @@ public final class TestDataUtil {
 		return sozialdienstStammdaten;
 	}
 
-	public static void persistFachstelle(@Nonnull Persistence persistence, @Nonnull Fachstelle fachstelle) {
+	public static void persistFachstelle(
+		@Nonnull Persistence persistence,
+		@Nonnull Fachstelle fachstelle
+	) {
 		saveMandantIfNecessary(persistence, fachstelle.getMandant());
 		persistence.persist(fachstelle);
 	}
 
 	public static void addSecondGesuchsteller(@Nonnull Gesuch gesuch) {
-		final Familiensituation familiensituation = gesuch.extractFamiliensituation();
+		final Familiensituation familiensituation = gesuch
+			.extractFamiliensituation();
 		Objects.requireNonNull(familiensituation);
 		familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
-		final GesuchstellerContainer gs2 = TestDataUtil.createDefaultGesuchstellerContainer();
-		final FinanzielleSituationContainer finsitGs2 = new FinanzielleSituationContainer();
+		final GesuchstellerContainer gs2 = TestDataUtil
+			.createDefaultGesuchstellerContainer();
+		final FinanzielleSituationContainer finsitGs2 =
+			new FinanzielleSituationContainer();
 		gs2.setFinanzielleSituationContainer(finsitGs2);
 		finsitGs2.setFinanzielleSituationJA(new FinanzielleSituation());
 		gesuch.setGesuchsteller2(gs2);

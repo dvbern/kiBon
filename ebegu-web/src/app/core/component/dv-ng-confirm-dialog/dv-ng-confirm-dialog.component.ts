@@ -23,7 +23,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
  */
 @Component({
     selector: 'dv-ng-confirm-dialog',
-    templateUrl: './dv-ng-confirm-dialog.template.html'
+    templateUrl: './dv-ng-confirm-dialog.template.html',
+    standalone: false
 })
 export class DvNgConfirmDialogComponent {
     public frage: string = '';

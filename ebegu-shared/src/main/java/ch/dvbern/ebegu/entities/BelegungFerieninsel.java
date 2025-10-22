@@ -15,22 +15,32 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.Ferienname;
 import ch.dvbern.ebegu.util.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Entity for the Belegung of a Ferieninsel in a Betreuung.
@@ -51,13 +61,19 @@ public class BelegungFerieninsel extends AbstractMutableEntity {
 	@SortNatural
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "belegung_ferieninsel_id", nullable = false),
-		inverseJoinColumns = @JoinColumn(name = "tage_id", nullable = false),
-		foreignKey = @ForeignKey(name = "FK_belegung_ferieninsel_belegung_ferieninsel_id"),
-		inverseForeignKey = @ForeignKey(name = "FK_belegung_ferieninsel_tage_id"),
+		joinColumns = @JoinColumn(name = "belegung_ferieninsel_id",
+			nullable = false),
+		inverseJoinColumns = @JoinColumn(name = "tage_id",
+			nullable = false),
+		foreignKey = @ForeignKey(
+			name = "FK_belegung_ferieninsel_belegung_ferieninsel_id"),
+		inverseForeignKey = @ForeignKey(
+			name = "FK_belegung_ferieninsel_tage_id"),
 		indexes = {
-			@Index(name = "IX_belegung_ferieninsel_belegung_ferieninsel_id", columnList = "belegung_ferieninsel_id"),
-			@Index(name = "IX_belegung_ferieninsel_tage_id", columnList = "tage_id"),
+			@Index(name = "IX_belegung_ferieninsel_belegung_ferieninsel_id",
+				columnList = "belegung_ferieninsel_id"),
+			@Index(name = "IX_belegung_ferieninsel_tage_id",
+				columnList = "tage_id"),
 		}
 	)
 	private List<BelegungFerieninselTag> tage = new ArrayList<>();
@@ -68,13 +84,20 @@ public class BelegungFerieninsel extends AbstractMutableEntity {
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(
 		name = "belegung_ferieninsel_morgen_belegung_ferieninsel_tag",
-		joinColumns = @JoinColumn(name = "belegung_ferieninsel_morgen_id", nullable = false),
-		inverseJoinColumns = @JoinColumn(name = "tage_id", nullable = false),
-		foreignKey = @ForeignKey(name = "FK_belegung_ferieninsel_belegung_morgen_ferieninsel_id"),
-		inverseForeignKey = @ForeignKey(name = "FK_belegung_morgen_ferieninsel_tage_id"),
+		joinColumns = @JoinColumn(name = "belegung_ferieninsel_morgen_id",
+			nullable = false),
+		inverseJoinColumns = @JoinColumn(name = "tage_id",
+			nullable = false),
+		foreignKey = @ForeignKey(
+			name = "FK_belegung_ferieninsel_belegung_morgen_ferieninsel_id"),
+		inverseForeignKey = @ForeignKey(
+			name = "FK_belegung_morgen_ferieninsel_tage_id"),
 		indexes = {
-			@Index(name = "IX_belegung_ferieninsel_belegung_morgen_ferieninsel_id", columnList = "belegung_ferieninsel_morgen_id"),
-			@Index(name = "IX_belegung_morgen_ferieninsel_tage_id", columnList = "tage_id"),
+			@Index(
+				name = "IX_belegung_ferieninsel_belegung_morgen_ferieninsel_id",
+				columnList = "belegung_ferieninsel_morgen_id"),
+			@Index(name = "IX_belegung_morgen_ferieninsel_tage_id",
+				columnList = "tage_id"),
 		}
 	)
 	private List<BelegungFerieninselTag> tageMorgenmodul = new ArrayList<>();
@@ -97,12 +120,23 @@ public class BelegungFerieninsel extends AbstractMutableEntity {
 		}
 		BelegungFerieninsel that = (BelegungFerieninsel) other;
 
-		boolean tageSame = this.getTage().stream().allMatch(
-			(tageList) -> that.getTage().stream().anyMatch(otherPensenCont -> otherPensenCont.isSame(tageList)));
+		boolean tageSame = this.getTage()
+			.stream()
+			.allMatch(
+				(tageList) -> that.getTage()
+					.stream()
+					.anyMatch(
+						otherPensenCont -> otherPensenCont
+							.isSame(tageList)
+					)
+			);
 
-		return tageSame && Objects.equals(ferienname, that.ferienname) && Objects.equals(
-			notfallAngaben,
-			that.notfallAngaben);
+		return tageSame
+			&& Objects.equals(ferienname, that.ferienname)
+			&& Objects.equals(
+				notfallAngaben,
+				that.notfallAngaben
+			);
 	}
 
 	public Ferienname getFerienname() {
@@ -125,7 +159,9 @@ public class BelegungFerieninsel extends AbstractMutableEntity {
 		return tageMorgenmodul;
 	}
 
-	public void setTageMorgenmodul(List<BelegungFerieninselTag> tageMorgenmodul) {
+	public void setTageMorgenmodul(
+		List<BelegungFerieninselTag> tageMorgenmodul
+	) {
 		this.tageMorgenmodul = tageMorgenmodul;
 	}
 
@@ -141,7 +177,8 @@ public class BelegungFerieninsel extends AbstractMutableEntity {
 	@Nonnull
 	public BelegungFerieninsel copyBelegungFerieninsel(
 		@Nonnull BelegungFerieninsel target,
-		@Nonnull AntragCopyType copyType) {
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
@@ -149,7 +186,13 @@ public class BelegungFerieninsel extends AbstractMutableEntity {
 			target.setNotfallAngaben(notfallAngaben);
 			for (BelegungFerieninselTag belegungFerieninselTag : tage) {
 				target.getTage()
-					.add(belegungFerieninselTag.copyBelegungFerieninselTag(new BelegungFerieninselTag(), copyType));
+					.add(
+						belegungFerieninselTag
+							.copyBelegungFerieninselTag(
+								new BelegungFerieninselTag(),
+								copyType
+							)
+					);
 			}
 			break;
 		case ERNEUERUNG:

@@ -26,27 +26,35 @@ import javax.annotation.Nonnull;
 
 public enum UserRole {
 
-	SUPER_ADMIN(RollenAbhaengigkeit.NONE),
-	ADMIN_BG(RollenAbhaengigkeit.GEMEINDE),
-	SACHBEARBEITER_BG(RollenAbhaengigkeit.GEMEINDE),
-	SACHBEARBEITER_TRAEGERSCHAFT(RollenAbhaengigkeit.TRAEGERSCHAFT),
-	ADMIN_TRAEGERSCHAFT(RollenAbhaengigkeit.TRAEGERSCHAFT),
-	ADMIN_INSTITUTION(RollenAbhaengigkeit.INSTITUTION),
-	SACHBEARBEITER_INSTITUTION(RollenAbhaengigkeit.INSTITUTION),
-	JURIST(RollenAbhaengigkeit.GEMEINDE),
-	REVISOR(RollenAbhaengigkeit.GEMEINDE),
-	STEUERAMT(RollenAbhaengigkeit.GEMEINDE),
-	ADMIN_TS(RollenAbhaengigkeit.GEMEINDE),
-	ADMIN_GEMEINDE(RollenAbhaengigkeit.GEMEINDE),
-	SACHBEARBEITER_TS(RollenAbhaengigkeit.GEMEINDE),
-	SACHBEARBEITER_GEMEINDE(RollenAbhaengigkeit.GEMEINDE),
-	ADMIN_MANDANT(RollenAbhaengigkeit.KANTON),
-	SACHBEARBEITER_MANDANT(RollenAbhaengigkeit.KANTON),
-	ADMIN_SOZIALDIENST(RollenAbhaengigkeit.SOZIALDIENST),
-	SACHBEARBEITER_SOZIALDIENST(RollenAbhaengigkeit.SOZIALDIENST),
-	ADMIN_FERIENBETREUUNG(RollenAbhaengigkeit.GEMEINDE),
-	SACHBEARBEITER_FERIENBETREUUNG(RollenAbhaengigkeit.GEMEINDE),
-	GESUCHSTELLER(RollenAbhaengigkeit.NONE);
+	SUPER_ADMIN(RollenAbhaengigkeit.NONE), ADMIN_BG(
+		RollenAbhaengigkeit.GEMEINDE
+	), SACHBEARBEITER_BG(
+		RollenAbhaengigkeit.GEMEINDE
+	), SACHBEARBEITER_TRAEGERSCHAFT(
+		RollenAbhaengigkeit.TRAEGERSCHAFT
+	), ADMIN_TRAEGERSCHAFT(
+		RollenAbhaengigkeit.TRAEGERSCHAFT
+	), ADMIN_INSTITUTION(
+		RollenAbhaengigkeit.INSTITUTION
+	), SACHBEARBEITER_INSTITUTION(RollenAbhaengigkeit.INSTITUTION), JURIST(
+		RollenAbhaengigkeit.GEMEINDE
+	), REVISOR(RollenAbhaengigkeit.GEMEINDE), STEUERAMT(
+		RollenAbhaengigkeit.GEMEINDE
+	), ADMIN_TS(RollenAbhaengigkeit.GEMEINDE), ADMIN_GEMEINDE(
+		RollenAbhaengigkeit.GEMEINDE
+	), SACHBEARBEITER_TS(RollenAbhaengigkeit.GEMEINDE), SACHBEARBEITER_GEMEINDE(
+		RollenAbhaengigkeit.GEMEINDE
+	), ADMIN_MANDANT(RollenAbhaengigkeit.KANTON), SACHBEARBEITER_MANDANT(
+		RollenAbhaengigkeit.KANTON
+	), ADMIN_SOZIALDIENST(
+		RollenAbhaengigkeit.SOZIALDIENST
+	), SACHBEARBEITER_SOZIALDIENST(
+		RollenAbhaengigkeit.SOZIALDIENST
+	), ADMIN_FERIENBETREUUNG(
+		RollenAbhaengigkeit.GEMEINDE
+	), SACHBEARBEITER_FERIENBETREUUNG(
+		RollenAbhaengigkeit.GEMEINDE
+	), GESUCHSTELLER(RollenAbhaengigkeit.NONE);
 
 	@Nonnull
 	private final RollenAbhaengigkeit rollenAbhaengigkeit;
@@ -76,11 +84,11 @@ public enum UserRole {
 	}
 
 	public boolean isRoleGemeinde() {
-		return  ADMIN_GEMEINDE == this || SACHBEARBEITER_GEMEINDE == this;
+		return ADMIN_GEMEINDE == this || SACHBEARBEITER_GEMEINDE == this;
 	}
 
 	public boolean isRoleMandant() {
-		return  ADMIN_MANDANT == this || SACHBEARBEITER_MANDANT == this;
+		return ADMIN_MANDANT == this || SACHBEARBEITER_MANDANT == this;
 	}
 
 	public boolean isSuperadmin() {
@@ -88,11 +96,12 @@ public enum UserRole {
 	}
 
 	public boolean isRoleFerienbetreuung() {
-		return ADMIN_FERIENBETREUUNG == this || SACHBEARBEITER_FERIENBETREUUNG == this;
+		return ADMIN_FERIENBETREUUNG == this
+			|| SACHBEARBEITER_FERIENBETREUUNG == this;
 	}
 
 	public boolean isRoleAdminTraegerschaftInstitution() {
-		return  getInstitutionTraegerschaftAdminRoles().contains(this);
+		return getInstitutionTraegerschaftAdminRoles().contains(this);
 	}
 
 	public boolean isRoleTraegerschaftInstitution() {
@@ -100,13 +109,30 @@ public enum UserRole {
 	}
 
 	public static List<UserRole> getAllAdminSuperAdminRevisorRoles() {
-		return Arrays.asList(SUPER_ADMIN, ADMIN_BG, ADMIN_TS, ADMIN_GEMEINDE, ADMIN_MANDANT, ADMIN_INSTITUTION,
-			ADMIN_TRAEGERSCHAFT, REVISOR);
+		return Arrays.asList(
+			SUPER_ADMIN,
+			ADMIN_BG,
+			ADMIN_TS,
+			ADMIN_GEMEINDE,
+			ADMIN_MANDANT,
+			ADMIN_INSTITUTION,
+			ADMIN_TRAEGERSCHAFT,
+			REVISOR
+		);
 	}
 
 	public static List<UserRole> getAllAdminRoles() {
-		return Arrays.asList(SUPER_ADMIN, ADMIN_BG, ADMIN_TS, ADMIN_GEMEINDE, ADMIN_MANDANT, ADMIN_INSTITUTION,
-			ADMIN_TRAEGERSCHAFT, ADMIN_FERIENBETREUUNG, ADMIN_SOZIALDIENST);
+		return Arrays.asList(
+			SUPER_ADMIN,
+			ADMIN_BG,
+			ADMIN_TS,
+			ADMIN_GEMEINDE,
+			ADMIN_MANDANT,
+			ADMIN_INSTITUTION,
+			ADMIN_TRAEGERSCHAFT,
+			ADMIN_FERIENBETREUUNG,
+			ADMIN_SOZIALDIENST
+		);
 	}
 
 	/**
@@ -127,21 +153,38 @@ public enum UserRole {
 	 * Returns the roles of BG and Gemeinde
 	 */
 	public static List<UserRole> getBgAndGemeindeRoles() {
-		return Arrays.asList(ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE);
+		return Arrays.asList(
+			ADMIN_BG,
+			SACHBEARBEITER_BG,
+			ADMIN_GEMEINDE,
+			SACHBEARBEITER_GEMEINDE
+		);
 	}
 
 	/**
 	 * Returns the roles of BG, TS and Gemeinde
 	 */
 	public static List<UserRole> getTsBgAndGemeindeRoles() {
-		return Arrays.asList(ADMIN_TS, SACHBEARBEITER_TS, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE);
+		return Arrays.asList(
+			ADMIN_TS,
+			SACHBEARBEITER_TS,
+			ADMIN_BG,
+			SACHBEARBEITER_BG,
+			ADMIN_GEMEINDE,
+			SACHBEARBEITER_GEMEINDE
+		);
 	}
 
 	/**
 	 * Returns the roles of TS and Gemeinde
 	 */
 	public static List<UserRole> getTsAndGemeindeRoles() {
-		return Arrays.asList(ADMIN_TS, SACHBEARBEITER_TS, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE);
+		return Arrays.asList(
+			ADMIN_TS,
+			SACHBEARBEITER_TS,
+			ADMIN_GEMEINDE,
+			SACHBEARBEITER_GEMEINDE
+		);
 	}
 
 	public static List<UserRole> getMandantRoles() {
@@ -149,20 +192,30 @@ public enum UserRole {
 	}
 
 	public static List<UserRole> getMandantSuperadminRoles() {
-		return Arrays.asList(SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT);
+		return Arrays.asList(
+			SUPER_ADMIN,
+			ADMIN_MANDANT,
+			SACHBEARBEITER_MANDANT
+		);
 	}
 
 	public static List<UserRole> getJugendamtSuperadminRoles() {
-		return Arrays.asList(ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, SUPER_ADMIN);
+		return Arrays.asList(
+			ADMIN_BG,
+			SACHBEARBEITER_BG,
+			ADMIN_GEMEINDE,
+			SACHBEARBEITER_GEMEINDE,
+			SUPER_ADMIN
+		);
 	}
 
 	public static List<UserRole> getInstitutionTraegerschaftRoles() {
-		return Arrays.asList(ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT, ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION);
-	}
-
-	public static List<UserRole> getAllRolesForCoronaRueckforderung() {
-		return Arrays.asList(SUPER_ADMIN, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
-			ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT, ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION);
+		return Arrays.asList(
+			ADMIN_TRAEGERSCHAFT,
+			SACHBEARBEITER_TRAEGERSCHAFT,
+			ADMIN_INSTITUTION,
+			SACHBEARBEITER_INSTITUTION
+		);
 	}
 
 	public static List<UserRole> getInstitutionTraegerschaftAdminRoles() {
@@ -170,7 +223,15 @@ public enum UserRole {
 	}
 
 	public static List<UserRole> getSuperadminAllGemeindeRoles() {
-		return Arrays.asList(SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, ADMIN_TS, SACHBEARBEITER_TS);
+		return Arrays.asList(
+			SUPER_ADMIN,
+			ADMIN_BG,
+			SACHBEARBEITER_BG,
+			ADMIN_GEMEINDE,
+			SACHBEARBEITER_GEMEINDE,
+			ADMIN_TS,
+			SACHBEARBEITER_TS
+		);
 	}
 
 	public static List<UserRole> getAllGemeindeAdminRoles() {
@@ -178,12 +239,24 @@ public enum UserRole {
 	}
 
 	public static List<UserRole> getAllGemeindeSachbearbeiterRoles() {
-		return Arrays.asList(SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_BG, SACHBEARBEITER_TS);
+		return Arrays.asList(
+			SACHBEARBEITER_GEMEINDE,
+			SACHBEARBEITER_BG,
+			SACHBEARBEITER_TS
+		);
 	}
 
 	public static List<UserRole> getAllGemeindeFerienbetreuungRoles() {
-		return Arrays.asList(ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, ADMIN_BG, SACHBEARBEITER_BG,
-			ADMIN_TS, SACHBEARBEITER_TS, ADMIN_FERIENBETREUUNG, SACHBEARBEITER_FERIENBETREUUNG);
+		return Arrays.asList(
+			ADMIN_GEMEINDE,
+			SACHBEARBEITER_GEMEINDE,
+			ADMIN_BG,
+			SACHBEARBEITER_BG,
+			ADMIN_TS,
+			SACHBEARBEITER_TS,
+			ADMIN_FERIENBETREUUNG,
+			SACHBEARBEITER_FERIENBETREUUNG
+		);
 	}
 
 	public static List<UserRole> getAllGemeindeFerienbetreuungMandantSuperadminRoles() {
@@ -199,7 +272,10 @@ public enum UserRole {
 	}
 
 	public static List<UserRole> getAllInstitutionSachbearbeiterRoles() {
-		return Arrays.asList(SACHBEARBEITER_INSTITUTION, SACHBEARBEITER_TRAEGERSCHAFT);
+		return Arrays.asList(
+			SACHBEARBEITER_INSTITUTION,
+			SACHBEARBEITER_TRAEGERSCHAFT
+		);
 	}
 
 	public static List<UserRole> getMandantBgGemeindeRoles() {
@@ -216,21 +292,37 @@ public enum UserRole {
 		return roles;
 	}
 
-	public static List<UserRole> getRolesByAbhaengigkeit(RollenAbhaengigkeit abhaengigkeit) {
+	public static List<UserRole> getRolesByAbhaengigkeit(
+		RollenAbhaengigkeit abhaengigkeit
+	) {
 		return Arrays.stream(UserRole.values())
-			.filter(userRole -> userRole.getRollenAbhaengigkeit() == abhaengigkeit)
+			.filter(
+				userRole -> userRole.getRollenAbhaengigkeit()
+					== abhaengigkeit
+			)
 			.collect(Collectors.toList());
 	}
 
-	public static List<UserRole> getRolesWithoutAbhaengigkeit(RollenAbhaengigkeit abhaengigkeit) {
+	public static List<UserRole> getRolesWithoutAbhaengigkeit(
+		RollenAbhaengigkeit abhaengigkeit
+	) {
 		return Arrays.stream(UserRole.values())
-			.filter(userRole -> userRole.getRollenAbhaengigkeit() != abhaengigkeit)
+			.filter(
+				userRole -> userRole.getRollenAbhaengigkeit()
+					!= abhaengigkeit
+			)
 			.collect(Collectors.toList());
 	}
 
-	public static List<UserRole> getRolesByAbhaengigkeiten(List<RollenAbhaengigkeit> abhaengigkeitList) {
+	public static List<UserRole> getRolesByAbhaengigkeiten(
+		List<RollenAbhaengigkeit> abhaengigkeitList
+	) {
 		return Arrays.stream(UserRole.values())
-			.filter(userRole -> abhaengigkeitList.contains(userRole.getRollenAbhaengigkeit()))
+			.filter(
+				userRole -> abhaengigkeitList.contains(
+					userRole.getRollenAbhaengigkeit()
+				)
+			)
 			.collect(Collectors.toList());
 	}
 
@@ -238,11 +330,11 @@ public enum UserRole {
 		return Arrays.asList(ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST);
 	}
 
-	public boolean isRoleGemeindeabhaengig(){
+	public boolean isRoleGemeindeabhaengig() {
 		return this.rollenAbhaengigkeit == RollenAbhaengigkeit.GEMEINDE;
 	}
 
-	public boolean isRoleSozialdienstabhaengig(){
+	public boolean isRoleSozialdienstabhaengig() {
 		return this.rollenAbhaengigkeit == RollenAbhaengigkeit.SOZIALDIENST;
 	}
 

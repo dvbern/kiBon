@@ -8,29 +8,30 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.mutationsmerger;
+
+import java.time.LocalDate;
+import java.util.Locale;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.BGCalculationResult;
 import ch.dvbern.ebegu.types.DateRange;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.time.LocalDate;
-import java.util.Locale;
-
 public abstract class AbstractMutationsMergerAnspruchHandler {
 
 	protected final Locale locale;
 
-	public AbstractMutationsMergerAnspruchHandler(Locale locale) {
+	protected AbstractMutationsMergerAnspruchHandler(Locale locale) {
 		this.locale = locale;
 	}
 
@@ -40,7 +41,12 @@ public abstract class AbstractMutationsMergerAnspruchHandler {
 		@Nonnull LocalDate mutationsEingansdatum
 	);
 
-	protected boolean isMeldungZuSpaet(@Nonnull DateRange gueltigkeit, @Nonnull LocalDate mutationsEingansdatum) {
-		return !gueltigkeit.getGueltigAb().withDayOfMonth(1).isAfter((mutationsEingansdatum));
+	protected boolean isMeldungZuSpaet(
+		@Nonnull DateRange gueltigkeit,
+		@Nonnull LocalDate mutationsEingansdatum
+	) {
+		return !gueltigkeit.getGueltigAb()
+			.withDayOfMonth(1)
+			.isAfter((mutationsEingansdatum));
 	}
 }

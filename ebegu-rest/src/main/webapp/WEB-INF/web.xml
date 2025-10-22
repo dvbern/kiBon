@@ -15,11 +15,11 @@
   -->
 
 <!--suppress WebProperties -->
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-		 version="3.1">
-
+		 xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+		 version="6.0">
+	<distributable/>
 	<display-name>ebegu-rest</display-name>
 
 	<security-constraint>
@@ -37,24 +37,25 @@
 		</user-data-constraint>
 	</security-constraint>
 
+	<session-config>
+		<!-- session will expire after 120 minutes of inactivity. Any user activity will reset the timer. --> 
+		<session-timeout>120</session-timeout>
+		<cookie-config>
+			<http-only>true</http-only>
+			<secure>true</secure>
+		</cookie-config>
+	</session-config>
+
 	<!--Achtung diese 2. Security constraint erlaubt wieder einige url-patterns die in der ersten geschuetzt wurden-->
 	<security-constraint>
 		<display-name>SecurityConstraint</display-name>
 		<web-resource-collection>
 			<web-resource-name>ebegu-web-allowed-pattern</web-resource-name>
+			<url-pattern>/api/v1/locallogin/*</url-pattern>
 			<url-pattern>/api/v1/swagger.json</url-pattern>
-			<url-pattern>/api/v1/login</url-pattern>
-			<url-pattern>/api/v1/auth/login</url-pattern>
 			<url-pattern>/api/v1/auth/set-mandant</url-pattern>
 			<url-pattern>/api/v1/auth/set-mandant-redirect</url-pattern>
-			<url-pattern>/api/v1/auth/connectorPing</url-pattern>
-			<url-pattern>/api/v1/connector/heartbeat</url-pattern>
-			<url-pattern>/api/v1/schulamt/heartbeat</url-pattern>
-			<url-pattern>/api/v1/auth/logout</url-pattern>
-			<url-pattern>/api/v1/auth/singleSignOn</url-pattern>
 			<url-pattern>/api/v1/auth/init-connect-gs-zpv</url-pattern>
-			<url-pattern>/api/v1/auth/singleLogout</url-pattern>
-			<url-pattern>/api/v1/auth/portalAccountPage</url-pattern>
 			<url-pattern>/api/v1/application-properties/public/*</url-pattern>
 			<url-pattern>/api/v1/testfaelle/schulung/public/*</url-pattern>
 			<url-pattern>/api/v1/gemeinde/active</url-pattern>
@@ -64,64 +65,10 @@
 			<url-pattern>/api/v1/mandanten/all</url-pattern>
 			<url-pattern>/api/v1/gemeinde/activeAndSchulverbund</url-pattern>
 			<url-pattern>/api/v1/gesuche/zpvNummerSuccess/*</url-pattern>
+			<url-pattern>/api/v1/meldungsfenster/public/*</url-pattern>
 		</web-resource-collection>
 	</security-constraint>
-	<security-role>
-		<description>pseude token for any role</description>
-		<role-name>*</role-name>
-	</security-role>
-	<security-role>
-		<role-name>SUPER_ADMIN</role-name>
-	</security-role>
-	<security-role>
-		<role-name>ADMIN_BG</role-name>
-	</security-role>
-	<security-role>
-		<role-name>SACHBEARBEITER_BG</role-name>
-	</security-role>
-	<security-role>
-		<role-name>ADMIN_GEMEINDE</role-name>
-	</security-role>
-	<security-role>
-		<role-name>SACHBEARBEITER_GEMEINDE</role-name>
-	</security-role>
-	<security-role>
-		<role-name>ADMIN_INSTITUTION</role-name>
-	</security-role>
-	<security-role>
-		<role-name>SACHBEARBEITER_INSTITUTION</role-name>
-	</security-role>
-	<security-role>
-		<role-name>ADMIN_TRAEGERSCHAFT</role-name>
-	</security-role>
-	<security-role>
-		<role-name>SACHBEARBEITER_TRAEGERSCHAFT</role-name>
-	</security-role>
-	<security-role>
-		<role-name>GESUCHSTELLER</role-name>
-	</security-role>
-	<security-role>
-		<role-name>JURIST</role-name>
-	</security-role>
-	<security-role>
-		<role-name>REVISOR</role-name>
-	</security-role>
-	<security-role>
-		<role-name>STEUERAMT</role-name>
-	</security-role>
-	<security-role>
-		<role-name>ADMIN_TS</role-name>
-	</security-role>
-	<security-role>
-		<role-name>SACHBEARBEITER_TS</role-name>
-	</security-role>
-	<security-role>
-		<role-name>ADMIN_MANDANT</role-name>
-	</security-role>
-	<security-role>
-		<role-name>SACHBEARBEITER_MANDANT</role-name>
-	</security-role>
-
+	<!-- Roles are declared with @DeclareRoles in EbeguApplicationV1 -->
 	<filter>
 		<filter-name>javamelody</filter-name>
 		<!-- Der Filter stellt aktuelle Monitoring-Infos unter /monitoring zur Verfuegung -->

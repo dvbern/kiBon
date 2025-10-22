@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.finanzielleSituationRechner;
@@ -24,7 +24,8 @@ import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.AbstractFinanzielleSituation;
 
-public class FinanzielleSituationFKJVRechner extends FinanzielleSituationBernRechner {
+public class FinanzielleSituationFKJVRechner extends
+	FinanzielleSituationBernRechner {
 
 	@Override
 	@Nullable
@@ -35,14 +36,37 @@ public class FinanzielleSituationFKJVRechner extends FinanzielleSituationBernRec
 	) {
 		if (abstractFinanzielleSituation != null) {
 			total = add(total, abstractFinanzielleSituation.getNettolohn());
-			total = add(total, calcErsatzeinkommen(abstractFinanzielleSituation));
-			total = add(total, abstractFinanzielleSituation.getErhalteneAlimente());
-			total = add(total, abstractFinanzielleSituation.getFamilienzulage());
+			total = add(
+				total,
+				calcErsatzeinkommen(abstractFinanzielleSituation)
+			);
+			total = add(
+				total,
+				abstractFinanzielleSituation.getErhalteneAlimente()
+			);
+			total = add(
+				total,
+				abstractFinanzielleSituation.getFamilienzulage()
+			);
 			total = add(total, geschaeftsgewinnDurchschnitt);
-			total = add(total, abstractFinanzielleSituation.getBruttoertraegeVermoegen());
-			total = add(total, abstractFinanzielleSituation.getNettoertraegeErbengemeinschaft());
-			if (Boolean.TRUE.equals(abstractFinanzielleSituation.getEinkommenInVereinfachtemVerfahrenAbgerechnet())) {
-				total = add(total, abstractFinanzielleSituation.getAmountEinkommenInVereinfachtemVerfahrenAbgerechnet());
+			total = add(
+				total,
+				abstractFinanzielleSituation.getBruttoertraegeVermoegen()
+			);
+			total = add(
+				total,
+				abstractFinanzielleSituation
+					.getNettoertraegeErbengemeinschaft()
+			);
+			if (Boolean.TRUE.equals(
+				abstractFinanzielleSituation
+					.getEinkommenInVereinfachtemVerfahrenAbgerechnet()
+			)) {
+				total = add(
+					total,
+					abstractFinanzielleSituation
+						.getAmountEinkommenInVereinfachtemVerfahrenAbgerechnet()
+				);
 			}
 		}
 		return total;
@@ -55,26 +79,47 @@ public class FinanzielleSituationFKJVRechner extends FinanzielleSituationBernRec
 	) {
 		BigDecimal totalAbzuege = BigDecimal.ZERO;
 		if (finanzielleSituationGS1 != null) {
-			totalAbzuege = calcAbzuegeGesuchstellende(totalAbzuege, finanzielleSituationGS1);
+			totalAbzuege = calcAbzuegeGesuchstellende(
+				totalAbzuege,
+				finanzielleSituationGS1
+			);
 		}
 		if (finanzielleSituationGS2 != null) {
-			totalAbzuege = calcAbzuegeGesuchstellende(totalAbzuege, finanzielleSituationGS2);
+			totalAbzuege = calcAbzuegeGesuchstellende(
+				totalAbzuege,
+				finanzielleSituationGS2
+			);
 		}
 		return totalAbzuege;
 	}
 
 	private BigDecimal calcAbzuegeGesuchstellende(
 		BigDecimal totalAbzuege,
-		AbstractFinanzielleSituation finanzielleSituationGS) {
-		totalAbzuege = add(totalAbzuege, finanzielleSituationGS.getGeleisteteAlimente());
-		totalAbzuege = add(totalAbzuege, finanzielleSituationGS.getAbzugSchuldzinsen());
-		totalAbzuege = add(totalAbzuege, finanzielleSituationGS.getGewinnungskosten());
+		AbstractFinanzielleSituation finanzielleSituationGS
+	) {
+		totalAbzuege = add(
+			totalAbzuege,
+			finanzielleSituationGS.getGeleisteteAlimente()
+		);
+		totalAbzuege = add(
+			totalAbzuege,
+			finanzielleSituationGS.getAbzugSchuldzinsen()
+		);
+		totalAbzuege = add(
+			totalAbzuege,
+			finanzielleSituationGS.getGewinnungskosten()
+		);
 		return totalAbzuege;
 	}
 
 	@Override
 	@Nonnull
-	public BigDecimal getZwischetotalAbzuege(@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation) {
-		return calcAbzuegeGesuchstellende(BigDecimal.ZERO, abstractFinanzielleSituation);
+	public BigDecimal getZwischetotalAbzuege(
+		@Nonnull AbstractFinanzielleSituation abstractFinanzielleSituation
+	) {
+		return calcAbzuegeGesuchstellende(
+			BigDecimal.ZERO,
+			abstractFinanzielleSituation
+		);
 	}
 }

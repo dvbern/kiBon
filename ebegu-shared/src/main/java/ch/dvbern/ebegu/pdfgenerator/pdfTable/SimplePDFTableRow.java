@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.pdfTable;
@@ -35,50 +35,80 @@ public class SimplePDFTableRow {
 	@Nonnull
 	private String value;
 
-	private final SimplePDFTableRowConfiguration configuration = new SimplePDFTableRowConfiguration();
+	private final SimplePDFTableRowConfiguration configuration =
+		new SimplePDFTableRowConfiguration();
 
 	public SimplePDFTableRow(@Nonnull String label, @Nonnull String value) {
 		this.label = label;
 		this.value = value;
 	}
 
-	public SimplePDFTableRow(@Nonnull String label, @Nonnull String value, int ident) {
+	public SimplePDFTableRow(
+		@Nonnull String label,
+		@Nonnull String value,
+		int ident
+	) {
 		this.label = label;
 		this.value = value;
 		this.configuration.setIdent(ident);
 	}
 
-	public SimplePDFTableRow(@Nonnull String label, @Nonnull String value, boolean isHeader) {
+	public SimplePDFTableRow(
+		@Nonnull String label,
+		@Nonnull String value,
+		boolean isHeader
+	) {
 		this.label = label;
 		this.value = value;
 		this.configuration.setHeader(isHeader);
 	}
 
-	public SimplePDFTableRow(@Nonnull String label, @Nonnull String value, boolean isHeader, int ident) {
+	public SimplePDFTableRow(
+		@Nonnull String label,
+		@Nonnull String value,
+		boolean isHeader,
+		int ident
+	) {
 		this.label = label;
 		this.value = value;
 		this.configuration.setHeader(isHeader);
 		this.configuration.setIdent(ident);
 	}
 
-	public SimplePDFTableRow(@Nonnull String label, @Nullable BigDecimal value) {
+	public SimplePDFTableRow(
+		@Nonnull String label,
+		@Nullable BigDecimal value
+	) {
 		this.label = label;
 		this.value = PdfUtil.printBigDecimal(value);
 	}
 
-	public SimplePDFTableRow(@Nonnull String label, @Nullable BigDecimal value, boolean isHeader) {
+	public SimplePDFTableRow(
+		@Nonnull String label,
+		@Nullable BigDecimal value,
+		boolean isHeader
+	) {
 		this.label = label;
 		this.value = PdfUtil.printBigDecimal(value);
 		this.configuration.setHeader(isHeader);
 	}
 
-	public SimplePDFTableRow(@Nonnull String label, @Nullable BigDecimal value, int ident) {
+	public SimplePDFTableRow(
+		@Nonnull String label,
+		@Nullable BigDecimal value,
+		int ident
+	) {
 		this.label = label;
 		this.value = PdfUtil.printBigDecimal(value);
 		this.configuration.setIdent(ident);
 	}
 
-	public SimplePDFTableRow(@Nonnull String label, @Nullable BigDecimal value, boolean isHeader, int ident) {
+	public SimplePDFTableRow(
+		@Nonnull String label,
+		@Nullable BigDecimal value,
+		boolean isHeader,
+		int ident
+	) {
 		this.label = label;
 		this.value = PdfUtil.printBigDecimal(value);
 		this.configuration.setHeader(isHeader);
@@ -87,12 +117,16 @@ public class SimplePDFTableRow {
 
 	public SimplePDFTableRow(@Nonnull String label, @Nullable Integer value) {
 		this.label = label;
-		this.value = value != null? String.valueOf(value) : "";
+		this.value = value != null ? String.valueOf(value) : "";
 	}
 
-	public SimplePDFTableRow(@Nonnull String label, @Nullable Integer value, int ident) {
+	public SimplePDFTableRow(
+		@Nonnull String label,
+		@Nullable Integer value,
+		int ident
+	) {
 		this.label = label;
-		this.value = value != null? String.valueOf(value) : "";
+		this.value = value != null ? String.valueOf(value) : "";
 		this.configuration.setIdent(ident);
 	}
 

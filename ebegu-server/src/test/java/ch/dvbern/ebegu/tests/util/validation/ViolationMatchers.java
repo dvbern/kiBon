@@ -15,9 +15,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import javax.annotation.Nonnull;
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
-import javax.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
+import jakarta.validation.metadata.ConstraintDescriptor;
 
 import lombok.experimental.UtilityClass;
 import org.hamcrest.FeatureMatcher;
@@ -38,7 +38,8 @@ import static org.hamcrest.Matchers.not;
  * {@link ConstraintViolation}s.
  *
  * @see
- * <a href="https://github.com/testinfected/hamcrest-matchers/tree/master/validation-matchers/src/main/java/org/testinfected/hamcrest/validation">source</a>
+ * <a
+ * href="https://github.com/testinfected/hamcrest-matchers/tree/master/validation-matchers/src/main/java/org/testinfected/hamcrest/validation">source</a>
  */
 @UtilityClass
 public final class ViolationMatchers {
@@ -51,7 +52,8 @@ public final class ViolationMatchers {
 	@SuppressWarnings("OverloadedVarargsMethod")
 	@Nonnull
 	public static <T> Matcher<Iterable<ConstraintViolation<T>>> violates(
-		@Nonnull Matcher<? super ConstraintViolation<T>>... matchers) {
+		@Nonnull Matcher<? super ConstraintViolation<T>>... matchers
+	) {
 
 		return violates(Arrays.asList(matchers));
 	}
@@ -62,10 +64,12 @@ public final class ViolationMatchers {
 	 */
 	@Nonnull
 	public static <T> Matcher<Iterable<ConstraintViolation<T>>> violates(
-		@Nonnull Collection<Matcher<? super ConstraintViolation<T>>> matchers) {
+		@Nonnull Collection<Matcher<? super ConstraintViolation<T>>> matchers
+	) {
 
-		return Matchers.<Iterable<ConstraintViolation<T>>>
-			both(ViolationMatchers.fails())
+		return Matchers.<Iterable<ConstraintViolation<T>>>both(
+			ViolationMatchers.fails()
+		)
 			.and(IsIterableContaining.hasItems(violation(matchers)));
 	}
 
@@ -86,8 +90,12 @@ public final class ViolationMatchers {
 	}
 
 	@Nonnull
-	public static <T> Matcher<Iterable<? extends ConstraintViolation<T>>> succeedsOn(@Nonnull String pathExpression) {
-		return Matchers.everyItem(Matchers.not(ViolationMatchers.on(pathExpression)));
+	public static <T> Matcher<Iterable<? extends ConstraintViolation<T>>> succeedsOn(
+		@Nonnull String pathExpression
+	) {
+		return Matchers.everyItem(
+			Matchers.not(ViolationMatchers.on(pathExpression))
+		);
 	}
 
 	/**
@@ -95,7 +103,8 @@ public final class ViolationMatchers {
 	 */
 	@Nonnull
 	public static <T> Matcher<ConstraintViolation<T>> violation(
-		@Nonnull Collection<Matcher<? super ConstraintViolation<T>>> matchers) {
+		@Nonnull Collection<Matcher<? super ConstraintViolation<T>>> matchers
+	) {
 
 		return allOf(matchers);
 	}
@@ -108,10 +117,14 @@ public final class ViolationMatchers {
 	 * by the {@code foo} property.
 	 */
 	@Nonnull
-	public static <T> Matcher<ConstraintViolation<T>> on(@Nonnull String pathExpression) {
+	public static <T> Matcher<ConstraintViolation<T>> on(
+		@Nonnull String pathExpression
+	) {
 		return new FeatureMatcher<>(path(pathExpression), "on path", "path") {
 			@Override
-			protected Path featureValueOf(@Nonnull ConstraintViolation<T> actual) {
+			protected Path featureValueOf(
+				@Nonnull ConstraintViolation<T> actual
+			) {
 				return actual.getPropertyPath();
 			}
 		};
@@ -121,13 +134,18 @@ public final class ViolationMatchers {
 	 * Checks that a violation's error message template contains a given string.
 	 */
 	@Nonnull
-	public static <T> Matcher<ConstraintViolation<T>> withError(@Nonnull String messagePart) {
+	public static <T> Matcher<ConstraintViolation<T>> withError(
+		@Nonnull String messagePart
+	) {
 		return new FeatureMatcher<>(
 			containsString(messagePart),
 			"with message",
-			"message") {
+			"message"
+		) {
 			@Override
-			protected String featureValueOf(@Nonnull ConstraintViolation<T> actual) {
+			protected String featureValueOf(
+				@Nonnull ConstraintViolation<T> actual
+			) {
 				return actual.getMessageTemplate();
 			}
 		};
@@ -138,10 +156,23 @@ public final class ViolationMatchers {
 	 * and that each of the given matchers matches at least one of its elements.
 	 */
 	@Nonnull
-	public static <T> Matcher<Iterable<ConstraintViolation<T>>> violatesAnnotation(@Nonnull Class<?> annotation) {
-		return violates(pojo(ConstraintViolation.class)
-			.where(ConstraintViolation::getConstraintDescriptor, pojo(ConstraintDescriptor.class)
-				.where(ConstraintDescriptor::getAnnotation, pojo(Annotation.class)
-					.where(Annotation::annotationType, is(annotation)))));
+	public static <T> Matcher<Iterable<ConstraintViolation<T>>> violatesAnnotation(
+		@Nonnull Class<?> annotation
+	) {
+		return violates(
+			pojo(ConstraintViolation.class)
+				.where(
+					ConstraintViolation::getConstraintDescriptor,
+					pojo(ConstraintDescriptor.class)
+						.where(
+							ConstraintDescriptor::getAnnotation,
+							pojo(Annotation.class)
+								.where(
+									Annotation::annotationType,
+									is(annotation)
+								)
+						)
+				)
+		);
 	}
 }

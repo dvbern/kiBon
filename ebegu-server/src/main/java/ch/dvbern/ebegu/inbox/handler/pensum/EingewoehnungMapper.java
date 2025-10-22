@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
@@ -20,8 +20,8 @@ package ch.dvbern.ebegu.inbox.handler.pensum;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 
 import ch.dvbern.ebegu.entities.AbstractMahlzeitenPensum;
 import ch.dvbern.ebegu.entities.Eingewoehnung;
@@ -33,9 +33,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value
-public class EingewoehnungMapper implements PensumMapper<AbstractMahlzeitenPensum> {
+public class EingewoehnungMapper implements
+	PensumMapper<AbstractMahlzeitenPensum> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(EingewoehnungMapper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		EingewoehnungMapper.class
+	);
 
 	private final ProcessingContext ctx;
 
@@ -57,15 +60,22 @@ public class EingewoehnungMapper implements PensumMapper<AbstractMahlzeitenPensu
 		eingewoehnung.setKosten(dto.getKosten());
 		eingewoehnung.getGueltigkeit().setGueltigAb(dto.getVon());
 		eingewoehnung.getGueltigkeit().setGueltigBis(dto.getBis());
-		Set<ConstraintViolation<Eingewoehnung>> constraintViolations = validator.validate(eingewoehnung);
+		Set<ConstraintViolation<Eingewoehnung>> constraintViolations = validator
+			.validate(eingewoehnung);
 		if (constraintViolations.isEmpty()) {
 			target.setEingewoehnung(eingewoehnung);
 		} else {
 			target.setVollstaendig(false);
 			ctx.requireHumanConfirmation();
-			ctx.addHumanConfirmationMessage("Die Eingewöhnung-Daten sind ungültig: " + constraintViolations);
+			ctx.addHumanConfirmationMessage(
+				"Die Eingewöhnung-Daten sind ungültig: "
+					+ constraintViolations
+			);
 			String refnr = ctx.getDto().getRefnr();
-			LOG.info("PlatzbestaetigungEvent fuer Betreuung mit RefNr: {} hat eine ungültige Eingewöhnung", refnr);
+			LOG.info(
+				"PlatzbestaetigungEvent fuer Betreuung mit RefNr: {} hat eine ungültige Eingewöhnung",
+				refnr
+			);
 		}
 	}
 }

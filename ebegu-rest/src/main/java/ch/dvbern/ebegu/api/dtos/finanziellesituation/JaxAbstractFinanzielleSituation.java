@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.finanziellesituation;
@@ -20,8 +20,8 @@ package ch.dvbern.ebegu.api.dtos.finanziellesituation;
 import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 
@@ -57,6 +57,8 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 	private BigDecimal steuerbaresEinkommen;
 
 	private BigDecimal steuerbaresVermoegen;
+
+	private BigDecimal liegenschaftsErtraege;
 
 	private BigDecimal abzuegeLiegenschaft;
 
@@ -150,16 +152,22 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 		return geschaeftsgewinnBasisjahr;
 	}
 
-	public void setGeschaeftsgewinnBasisjahr(final BigDecimal geschaeftsgewinnBasisjahr) {
+	public void setGeschaeftsgewinnBasisjahr(
+		final BigDecimal geschaeftsgewinnBasisjahr
+	) {
 		this.geschaeftsgewinnBasisjahr = geschaeftsgewinnBasisjahr;
 	}
+
 	public BigDecimal getGeschaeftsgewinnBasisjahrMinus1() {
 		return geschaeftsgewinnBasisjahrMinus1;
 	}
 
-	public void setGeschaeftsgewinnBasisjahrMinus1(final BigDecimal geschaeftsgewinnBasisjahrMinus1) {
+	public void setGeschaeftsgewinnBasisjahrMinus1(
+		final BigDecimal geschaeftsgewinnBasisjahrMinus1
+	) {
 		this.geschaeftsgewinnBasisjahrMinus1 = geschaeftsgewinnBasisjahrMinus1;
 	}
+
 	public BigDecimal getGeleisteteAlimente() {
 		return geleisteteAlimente;
 	}
@@ -182,6 +190,14 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 
 	public void setSteuerbaresVermoegen(BigDecimal steuerbaresVermoegen) {
 		this.steuerbaresVermoegen = steuerbaresVermoegen;
+	}
+
+	public BigDecimal getLiegenschaftsErtraege() {
+		return liegenschaftsErtraege;
+	}
+
+	public void setLiegenschaftsErtraege(BigDecimal liegenschaftsErtraege) {
+		this.liegenschaftsErtraege = liegenschaftsErtraege;
 	}
 
 	public BigDecimal getAbzuegeLiegenschaft() {
@@ -213,7 +229,9 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 		return bruttoertraegeVermoegen;
 	}
 
-	public void setBruttoertraegeVermoegen(@Nullable BigDecimal bruttoertraegeVermoegen) {
+	public void setBruttoertraegeVermoegen(
+		@Nullable BigDecimal bruttoertraegeVermoegen
+	) {
 		this.bruttoertraegeVermoegen = bruttoertraegeVermoegen;
 	}
 
@@ -222,7 +240,9 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 		return nettoertraegeErbengemeinschaft;
 	}
 
-	public void setNettoertraegeErbengemeinschaft(@Nullable BigDecimal nettoertraegeErbengemeinschaft) {
+	public void setNettoertraegeErbengemeinschaft(
+		@Nullable BigDecimal nettoertraegeErbengemeinschaft
+	) {
 		this.nettoertraegeErbengemeinschaft = nettoertraegeErbengemeinschaft;
 	}
 
@@ -241,8 +261,10 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 	}
 
 	public void setEinkommenInVereinfachtemVerfahrenAbgerechnet(
-			@Nullable Boolean einkommenInVereinfachtemVerfahrenAbgerechnet) {
-		this.einkommenInVereinfachtemVerfahrenAbgerechnet = einkommenInVereinfachtemVerfahrenAbgerechnet;
+		@Nullable Boolean einkommenInVereinfachtemVerfahrenAbgerechnet
+	) {
+		this.einkommenInVereinfachtemVerfahrenAbgerechnet =
+			einkommenInVereinfachtemVerfahrenAbgerechnet;
 	}
 
 	@Nullable
@@ -251,8 +273,10 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 	}
 
 	public void setAmountEinkommenInVereinfachtemVerfahrenAbgerechnet(
-			@Nullable BigDecimal amountEinkommenInVereinfachtemVerfahrenAbgerechnet) {
-		this.amountEinkommenInVereinfachtemVerfahrenAbgerechnet = amountEinkommenInVereinfachtemVerfahrenAbgerechnet;
+		@Nullable BigDecimal amountEinkommenInVereinfachtemVerfahrenAbgerechnet
+	) {
+		this.amountEinkommenInVereinfachtemVerfahrenAbgerechnet =
+			amountEinkommenInVereinfachtemVerfahrenAbgerechnet;
 	}
 
 	@Nullable
@@ -278,7 +302,9 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 		return selbstdeklaration;
 	}
 
-	public void setSelbstdeklaration(@Nullable JaxFinanzielleSituationSelbstdeklaration selbstdeklaration) {
+	public void setSelbstdeklaration(
+		@Nullable JaxFinanzielleSituationSelbstdeklaration selbstdeklaration
+	) {
 		this.selbstdeklaration = selbstdeklaration;
 	}
 
@@ -287,18 +313,22 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 		return finSitZusatzangabenAppenzell;
 	}
 
-	public void setFinSitZusatzangabenAppenzell(@Nullable JaxFinSitZusatzangabenAppenzell finSitZusatzangabenAppenzell) {
+	public void setFinSitZusatzangabenAppenzell(
+		@Nullable JaxFinSitZusatzangabenAppenzell finSitZusatzangabenAppenzell
+	) {
 		this.finSitZusatzangabenAppenzell = finSitZusatzangabenAppenzell;
 	}
-
 
 	@Nullable
 	public BigDecimal getErsatzeinkommenSelbststaendigkeitBasisjahr() {
 		return ersatzeinkommenSelbststaendigkeitBasisjahr;
 	}
 
-	public void setErsatzeinkommenSelbststaendigkeitBasisjahr(@Nullable BigDecimal ersatzeinkommenSelbststaendigkeitBasisjahr) {
-		this.ersatzeinkommenSelbststaendigkeitBasisjahr = ersatzeinkommenSelbststaendigkeitBasisjahr;
+	public void setErsatzeinkommenSelbststaendigkeitBasisjahr(
+		@Nullable BigDecimal ersatzeinkommenSelbststaendigkeitBasisjahr
+	) {
+		this.ersatzeinkommenSelbststaendigkeitBasisjahr =
+			ersatzeinkommenSelbststaendigkeitBasisjahr;
 	}
 
 	@Nullable
@@ -307,9 +337,12 @@ public class JaxAbstractFinanzielleSituation extends JaxAbstractDTO {
 	}
 
 	public void setErsatzeinkommenSelbststaendigkeitBasisjahrMinus1(
-		@Nullable BigDecimal ersatzeinkommenSelbststaendigkeitBasisjahrMinus1) {
-		this.ersatzeinkommenSelbststaendigkeitBasisjahrMinus1 = ersatzeinkommenSelbststaendigkeitBasisjahrMinus1;
+		@Nullable BigDecimal ersatzeinkommenSelbststaendigkeitBasisjahrMinus1
+	) {
+		this.ersatzeinkommenSelbststaendigkeitBasisjahrMinus1 =
+			ersatzeinkommenSelbststaendigkeitBasisjahrMinus1;
 	}
+
 	@Nullable
 	public BigDecimal getBruttoLohn() {
 		return bruttoLohn;

@@ -22,6 +22,10 @@
     </div>
 </div>
 
+@if (isZweitPruefungAndSameUserAsPruefung() | async) {
+    <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
+}
+
 <dv-simple-table
     *ngIf="tableColumns"
     [data]="data"

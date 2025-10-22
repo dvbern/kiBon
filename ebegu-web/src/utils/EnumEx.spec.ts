@@ -16,8 +16,8 @@
  *
  */
 
+import {TSGeschlecht} from '@kibon/shared/model/entity';
 import {TSFinSitStatus} from '../models/enums/TSFinSitStatus';
-import {TSGeschlecht} from '../models/enums/TSGeschlecht';
 import {EnumEx} from './EnumEx';
 
 describe('getNames', () => {

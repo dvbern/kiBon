@@ -16,12 +16,12 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {isMoment} from 'moment';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-
+import {CONSTANTS} from '@kibon/shared/model/constants';
 @Pipe({
-    name: 'ebeguDateTime'
+    name: 'ebeguDateTime',
+    standalone: false
 })
 export class EbeguDateTimePipe implements PipeTransform {
     public transform(date: moment.Moment): unknown {

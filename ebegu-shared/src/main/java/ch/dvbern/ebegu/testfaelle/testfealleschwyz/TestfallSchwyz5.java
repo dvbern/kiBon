@@ -1,30 +1,45 @@
 package ch.dvbern.ebegu.testfaelle.testfealleschwyz;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.EinschulungTyp;
-import ch.dvbern.ebegu.enums.Geschlecht;
-import ch.dvbern.ebegu.enums.Kinderabzug;
-import ch.dvbern.ebegu.enums.Taetigkeit;
-import ch.dvbern.ebegu.testfaelle.AbstractSZTestfall;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
-import ch.dvbern.ebegu.types.DateRange;
-import ch.dvbern.ebegu.util.Constants;
-import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
-
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
+import ch.dvbern.ebegu.entities.FinanzielleSituationContainer;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.entities.KindContainer;
+import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.Geschlecht;
+import ch.dvbern.ebegu.enums.Kinderabzug;
+import ch.dvbern.ebegu.enums.Taetigkeit;
+import ch.dvbern.ebegu.testfaelle.AbstractSZTestfall;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.types.DateRange;
+import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
 
 public class TestfallSchwyz5 extends AbstractSZTestfall {
 
 	private static final String NACHNAME = "Bauer";
 
-
-	public TestfallSchwyz5(@Nonnull Gesuchsperiode gesuchsperiode, boolean betreuungenBestaetigt, @Nonnull Gemeinde gemeinde, InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, gemeinde, institutionStammdatenBuilder);
+	public TestfallSchwyz5(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		@Nonnull Gemeinde gemeinde,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			gemeinde,
+			institutionStammdatenBuilder
+		);
 	}
 
 	@Override
@@ -37,8 +52,13 @@ public class TestfallSchwyz5 extends AbstractSZTestfall {
 		Gesuch erstgesuch = createVerheiratet();
 		erstgesuch.setEingangsdatum(LocalDate.of(2024, Month.JUNE, 5));
 		Objects.requireNonNull(erstgesuch.getFamiliensituationContainer());
-		Objects.requireNonNull(erstgesuch.getFamiliensituationContainer().getFamiliensituationJA());
-		erstgesuch.getFamiliensituationContainer().getFamiliensituationJA().setGemeinsameSteuererklaerung(false);
+		Objects.requireNonNull(
+			erstgesuch.getFamiliensituationContainer()
+				.getFamiliensituationJA()
+		);
+		erstgesuch.getFamiliensituationContainer()
+			.getFamiliensituationJA()
+			.setGemeinsameSteuererklaerung(false);
 
 		GesuchstellerData gs1 = createGS1Data();
 		GesuchstellerContainer gesuchsteller1 = createGesuchsteller(gs1);
@@ -58,18 +78,26 @@ public class TestfallSchwyz5 extends AbstractSZTestfall {
 		erstgesuch.getKindContainers().add(kind2);
 
 		// Erwerbspensum
-		ErwerbspensumContainer erwerbspensum = createErwerbspensumContainer(gs1);
+		ErwerbspensumContainer erwerbspensum = createErwerbspensumContainer(
+			gs1
+		);
 		gesuchsteller1.addErwerbspensumContainer(erwerbspensum);
 
 		//FinSit
-		FinanzielleSituationContainer finanzielleSituationContainer = createFinSit(gs1);
+		FinanzielleSituationContainer finanzielleSituationContainer =
+			createFinSit(gs1);
 		finanzielleSituationContainer.setGesuchsteller(gesuchsteller1);
-		gesuchsteller1.setFinanzielleSituationContainer(finanzielleSituationContainer);
+		gesuchsteller1.setFinanzielleSituationContainer(
+			finanzielleSituationContainer
+		);
 		setAuszahlungsdaten(erstgesuch, gs1);
 
-		FinanzielleSituationContainer finanzielleSituationContainer2 = createFinSit(gs2);
+		FinanzielleSituationContainer finanzielleSituationContainer2 =
+			createFinSit(gs2);
 		finanzielleSituationContainer2.setGesuchsteller(gesuchsteller2);
-		gesuchsteller2.setFinanzielleSituationContainer(finanzielleSituationContainer2);
+		gesuchsteller2.setFinanzielleSituationContainer(
+			finanzielleSituationContainer2
+		);
 
 		//EKV
 		createEmptyEKVInfoContainer(erstgesuch);
@@ -92,7 +120,12 @@ public class TestfallSchwyz5 extends AbstractSZTestfall {
 			.setErwerbspensum(60)
 			.setErwerbsBezeichnung("Projektleitung")
 			.setTaetigkeit(Taetigkeit.ANGESTELLT)
-			.setErwerbGueltigkeit(new DateRange(LocalDate.of(2023, Month.MARCH, 1), Constants.END_OF_TIME))
+			.setErwerbGueltigkeit(
+				new DateRange(
+					LocalDate.of(2023, Month.MARCH, 1),
+					Constants.END_OF_TIME
+				)
+			)
 			.setQuellenbesteuert(true)
 			.setBruttoLohn(BigDecimal.valueOf(72000))
 			.setIban(new IBAN("CH8189144657532686446"))
@@ -129,30 +162,108 @@ public class TestfallSchwyz5 extends AbstractSZTestfall {
 	private BetreuungData createBeteruungKind1() {
 		BetreuungData betreuungData = new BetreuungData()
 			.setAuszahlungAnEltern(true)
-			.setInstiutionId(institutionStammdatenBuilder.getIdInstitutionStammdatenBruennen())
+			.setInstiutionId(
+				institutionStammdatenBuilder
+					.getIdInstitutionStammdatenBruennen()
+			)
 			.setBestaetigt(betreuungenBestaetigt);
 
-		betreuungData.getBetreuungspensum().add(new PensumData()
-			.setPensum(50)
-			.setMonatlicheBetreuungskosten(BigDecimal.valueOf(1000))
-			.setGueltigAb(LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.AUGUST, 1))
-			.setGueltigBis(LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.SEPTEMBER, 30)));
-		betreuungData.getBetreuungspensum().add(new PensumData()
-			.setPensum(60)
-			.setMonatlicheBetreuungskosten(BigDecimal.valueOf(1200))
-			.setGueltigAb(LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.OCTOBER, 1))
-			.setGueltigBis(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JANUARY, 31)));
-		betreuungData.getBetreuungspensum().add(new PensumData()
-			.setPensum(70)
-			.setMonatlicheBetreuungskosten(BigDecimal.valueOf(1400))
-			.setGueltigAb(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.FEBRUARY, 1))
-			.setGueltigBis(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.MARCH, 31)));
-		betreuungData.getBetreuungspensum().add(new PensumData()
-			.setPensum(50)
-			.setMonatlicheBetreuungskosten(BigDecimal.valueOf(1000))
-			.setGueltigAb(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.APRIL, 1))
-			.setGueltigBis(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JULY, 31)));
-
+		betreuungData.getBetreuungspensum()
+			.add(
+				new PensumData()
+					.setPensum(50)
+					.setMonatlicheBetreuungskosten(
+						BigDecimal.valueOf(1000)
+					)
+					.setGueltigAb(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus1(),
+							Month.AUGUST,
+							1
+						)
+					)
+					.setGueltigBis(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus1(),
+							Month.SEPTEMBER,
+							30
+						)
+					)
+			);
+		betreuungData.getBetreuungspensum()
+			.add(
+				new PensumData()
+					.setPensum(60)
+					.setMonatlicheBetreuungskosten(
+						BigDecimal.valueOf(1200)
+					)
+					.setGueltigAb(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus1(),
+							Month.OCTOBER,
+							1
+						)
+					)
+					.setGueltigBis(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.JANUARY,
+							31
+						)
+					)
+			);
+		betreuungData.getBetreuungspensum()
+			.add(
+				new PensumData()
+					.setPensum(70)
+					.setMonatlicheBetreuungskosten(
+						BigDecimal.valueOf(1400)
+					)
+					.setGueltigAb(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.FEBRUARY,
+							1
+						)
+					)
+					.setGueltigBis(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.MARCH,
+							31
+						)
+					)
+			);
+		betreuungData.getBetreuungspensum()
+			.add(
+				new PensumData()
+					.setPensum(50)
+					.setMonatlicheBetreuungskosten(
+						BigDecimal.valueOf(1000)
+					)
+					.setGueltigAb(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.APRIL,
+							1
+						)
+					)
+					.setGueltigBis(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.JULY,
+							31
+						)
+					)
+			);
 
 		return betreuungData;
 	}
@@ -174,29 +285,108 @@ public class TestfallSchwyz5 extends AbstractSZTestfall {
 	private BetreuungData createBeteruungKind2() {
 		BetreuungData betreuung = new BetreuungData()
 			.setAuszahlungAnEltern(true)
-			.setInstiutionId(institutionStammdatenBuilder.getIdInstitutionStammdatenBruennen())
+			.setInstiutionId(
+				institutionStammdatenBuilder
+					.getIdInstitutionStammdatenBruennen()
+			)
 			.setBestaetigt(betreuungenBestaetigt);
 
-		betreuung.getBetreuungspensum().add(new PensumData()
-			.setPensum(50)
-			.setMonatlicheBetreuungskosten(BigDecimal.valueOf(1000))
-			.setGueltigAb(LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.AUGUST, 1))
-			.setGueltigBis(LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.SEPTEMBER, 30)));
-		betreuung.getBetreuungspensum().add(new PensumData()
-			.setPensum(60)
-			.setMonatlicheBetreuungskosten(BigDecimal.valueOf(1200))
-			.setGueltigAb(LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.OCTOBER, 1))
-			.setGueltigBis(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JANUARY, 31)));
-		betreuung.getBetreuungspensum().add(new PensumData()
-			.setPensum(70)
-			.setMonatlicheBetreuungskosten(BigDecimal.valueOf(1400))
-			.setGueltigAb(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.FEBRUARY, 1))
-			.setGueltigBis(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.MARCH, 31)));
-		betreuung.getBetreuungspensum().add(new PensumData()
-			.setPensum(50)
-			.setMonatlicheBetreuungskosten(BigDecimal.valueOf(1000))
-			.setGueltigAb(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.APRIL, 1))
-			.setGueltigBis(LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JULY, 31)));
+		betreuung.getBetreuungspensum()
+			.add(
+				new PensumData()
+					.setPensum(50)
+					.setMonatlicheBetreuungskosten(
+						BigDecimal.valueOf(1000)
+					)
+					.setGueltigAb(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus1(),
+							Month.AUGUST,
+							1
+						)
+					)
+					.setGueltigBis(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus1(),
+							Month.SEPTEMBER,
+							30
+						)
+					)
+			);
+		betreuung.getBetreuungspensum()
+			.add(
+				new PensumData()
+					.setPensum(60)
+					.setMonatlicheBetreuungskosten(
+						BigDecimal.valueOf(1200)
+					)
+					.setGueltigAb(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus1(),
+							Month.OCTOBER,
+							1
+						)
+					)
+					.setGueltigBis(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.JANUARY,
+							31
+						)
+					)
+			);
+		betreuung.getBetreuungspensum()
+			.add(
+				new PensumData()
+					.setPensum(70)
+					.setMonatlicheBetreuungskosten(
+						BigDecimal.valueOf(1400)
+					)
+					.setGueltigAb(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.FEBRUARY,
+							1
+						)
+					)
+					.setGueltigBis(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.MARCH,
+							31
+						)
+					)
+			);
+		betreuung.getBetreuungspensum()
+			.add(
+				new PensumData()
+					.setPensum(50)
+					.setMonatlicheBetreuungskosten(
+						BigDecimal.valueOf(1000)
+					)
+					.setGueltigAb(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.APRIL,
+							1
+						)
+					)
+					.setGueltigBis(
+						LocalDate.of(
+							gesuchsperiode
+								.getBasisJahrPlus2(),
+							Month.JULY,
+							31
+						)
+					)
+			);
 		return betreuung;
 	}
 

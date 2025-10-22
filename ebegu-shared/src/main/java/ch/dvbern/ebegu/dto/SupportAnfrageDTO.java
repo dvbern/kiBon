@@ -8,44 +8,41 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.dto;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * DTO fuer Faelle
  */
 @XmlRootElement(name = "supportAnfrage")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+@Setter
 public class SupportAnfrageDTO {
-
 	// Diese ID wird auch in der Console geloggt, so dass wir weitere Informationen aus Sentry erfahren koennen
 	private String id;
 
+	@NotNull
 	private String beschreibung;
 
-	public String getId() {
-		return id;
-	}
+	@Nullable
+	private String betroffeneFaelle;
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getBeschreibung() {
-		return beschreibung;
-	}
-
-	public void setBeschreibung(String beschreibung) {
-		this.beschreibung = beschreibung;
-	}
+	@Nullable
+	private String betroffenePeriode;
 }

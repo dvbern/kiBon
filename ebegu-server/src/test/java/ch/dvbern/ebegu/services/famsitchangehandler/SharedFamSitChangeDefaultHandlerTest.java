@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.famsitchangehandler;
@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.FamiliensituationContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
@@ -32,7 +33,6 @@ import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.services.GesuchstellerService;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
@@ -66,7 +66,10 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 
 	@BeforeEach
 	void setupTestee() {
-		handler = new SharedFamSitChangeDefaultHandler(gesuchstellerService, einstellungService);
+		handler = new SharedFamSitChangeDefaultHandler(
+			gesuchstellerService,
+			einstellungService
+		);
 	}
 
 	@TestInstance(Lifecycle.PER_CLASS)
@@ -78,15 +81,19 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 		@ParameterizedTest(name = "to {0}")
 		@MethodSource("provideFamiliensituationWithGS2NotToRemove")
 		@DisplayName("GS2 should not be removed on change from Verheiratet")
-		void testParameterizedChangeShouldNotRemove(FamSitChangeTestConfiguration configuration) {
+		void testParameterizedChangeShouldNotRemove(
+			FamSitChangeTestConfiguration configuration
+		) {
 			Gesuch gesuch = setupGesuchWith2GS();
-			getFamiliensituationContainerNullSafe(gesuch).setFamiliensituationJA(configuration.newFamiliensituation);
+			getFamiliensituationContainerNullSafe(gesuch)
+				.setFamiliensituationJA(configuration.newFamiliensituation);
 
 			handler.removeGS2DataOnChangeFrom2To1GS(
 				gesuch,
 				configuration.newFamiliensituation,
 				getFamiliensituationContainerNullSafe(gesuch),
-				configuration.oldFamiliensituation);
+				configuration.oldFamiliensituation
+			);
 
 			assertThat(gesuch.getGesuchsteller2(), notNullValue());
 		}
@@ -94,161 +101,315 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 		@ParameterizedTest(name = "{0}")
 		@MethodSource("provideFamiliensituationWithGS2ToRemove")
 		@DisplayName("GS2 should be removed on change from")
-		void testParameterizedChangeShouldRemove(FamSitChangeTestConfiguration configuration) {
+		void testParameterizedChangeShouldRemove(
+			FamSitChangeTestConfiguration configuration
+		) {
 			Gesuch gesuch = setupGesuchWith2GS();
-			getFamiliensituationContainerNullSafe(gesuch).setFamiliensituationJA(configuration.newFamiliensituation);
+			getFamiliensituationContainerNullSafe(gesuch)
+				.setFamiliensituationJA(configuration.newFamiliensituation);
 
 			handler.removeGS2DataOnChangeFrom2To1GS(
 				gesuch,
 				configuration.newFamiliensituation,
 				getFamiliensituationContainerNullSafe(gesuch),
-				configuration.oldFamiliensituation);
+				configuration.oldFamiliensituation
+			);
 
 			assertThat(gesuch.getGesuchsteller2(), nullValue());
 		}
 
 		private Stream<Arguments> provideFamiliensituationWithGS2NotToRemove() {
 			return Stream.of(
-				FamSitChangeTestConfiguration.of("Verheiratet", setupFamiliensituation(EnumFamilienstatus.VERHEIRATET)),
+				FamSitChangeTestConfiguration.of(
+					"Verheiratet",
+					setupFamiliensituation(
+						EnumFamilienstatus.VERHEIRATET
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Alleinerziehend mit geteilter Obhut zu zweit",
-					setupAlleinerziehenddGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
+					setupAlleinerziehenddGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Konkubinat ohne Kind mit geteilter Obhut zu zweit",
-					setupKonkubinatOhneKindGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
+					setupKonkubinatOhneKindGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Alleinerziehend alleinige Obhut ohne Unterhaltsvereinbarung",
 					setupAlleinerziehendNichtGeteilteObhut(
 						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG)),
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Konkubinat ohne Kind alleinige Obhut ohne Unterhaltsvereinbarung",
 					setupKonkubinatOhneKindNichtGeteilteObhut(
 						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
-			).flatMap(config -> Stream.of(
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "] to Konkubinat mit Kind")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupFamiliensituation(EnumFamilienstatus.KONKUBINAT))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Konkubinat ohne Kind mit geteilter Obhut und gemeinsamen Gesuch")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ZU_ZWEIT))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Konkubinat ohne Kind ohne geteilte Obhut ohne Unterhaltsvereinbarung")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend mit geteilter Obhut und gemeinsamen Gesuch")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehenddGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ZU_ZWEIT))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend ohne geteilte Obhut ohne Unterhaltsvereinbarung")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehendNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Long Konkubinat Ohne Kind")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupLongKonkubinat())
-					.build()
-			)).map(Arguments::of);
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				)
+			)
+				.flatMap(
+					config -> Stream.of(
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "] to Konkubinat mit Kind"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupFamiliensituation(
+									EnumFamilienstatus.KONKUBINAT
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Konkubinat ohne Kind mit geteilter Obhut und gemeinsamen Gesuch"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupKonkubinatOhneKindGeteilteObhut(
+									eingangsdatum,
+									EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Konkubinat ohne Kind ohne geteilte Obhut ohne Unterhaltsvereinbarung"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupKonkubinatOhneKindNichtGeteilteObhut(
+									eingangsdatum,
+									UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Alleinerziehend mit geteilter Obhut und gemeinsamen Gesuch"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupAlleinerziehenddGeteilteObhut(
+									eingangsdatum,
+									EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Alleinerziehend ohne geteilte Obhut ohne Unterhaltsvereinbarung"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupAlleinerziehendNichtGeteilteObhut(
+									eingangsdatum,
+									UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Long Konkubinat Ohne Kind"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupLongKonkubinat()
+							)
+							.build()
+					)
+				)
+				.map(Arguments::of);
 		}
 
 		private Stream<Arguments> provideFamiliensituationWithGS2ToRemove() {
 			return Stream.of(
-					FamSitChangeTestConfiguration.of("Verheiratet", setupFamiliensituation(EnumFamilienstatus.VERHEIRATET)),
-					FamSitChangeTestConfiguration.of(
-						"Alleinerziehend mit geteilter Obhut zu zweit",
-						setupAlleinerziehenddGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
-					FamSitChangeTestConfiguration.of(
-						"Konkubinat ohne Kind mit geteilter Obhut zu zweit",
-						setupKonkubinatOhneKindGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
-					FamSitChangeTestConfiguration.of(
-						"Alleinerziehend alleinige Obhut ohne Unterhaltsvereinbarung",
-						setupAlleinerziehendNichtGeteilteObhut(
-							eingangsdatum,
-							UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG)),
-					FamSitChangeTestConfiguration.of(
-						"Konkubinat ohne Kind alleinige Obhut ohne Unterhaltsvereinbarung",
-						setupKonkubinatOhneKindNichtGeteilteObhut(
-							eingangsdatum,
-							UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
-				).flatMap(this::getFamSitWithGS2ToRemoveTestConfigurations)
+				FamSitChangeTestConfiguration.of(
+					"Verheiratet",
+					setupFamiliensituation(
+						EnumFamilienstatus.VERHEIRATET
+					)
+				),
+				FamSitChangeTestConfiguration.of(
+					"Alleinerziehend mit geteilter Obhut zu zweit",
+					setupAlleinerziehenddGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
+				FamSitChangeTestConfiguration.of(
+					"Konkubinat ohne Kind mit geteilter Obhut zu zweit",
+					setupKonkubinatOhneKindGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
+				FamSitChangeTestConfiguration.of(
+					"Alleinerziehend alleinige Obhut ohne Unterhaltsvereinbarung",
+					setupAlleinerziehendNichtGeteilteObhut(
+						eingangsdatum,
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				),
+				FamSitChangeTestConfiguration.of(
+					"Konkubinat ohne Kind alleinige Obhut ohne Unterhaltsvereinbarung",
+					setupKonkubinatOhneKindNichtGeteilteObhut(
+						eingangsdatum,
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				)
+			)
+				.flatMap(this::getFamSitWithGS2ToRemoveTestConfigurations)
 				.map(Arguments::of);
 		}
 
 		@Nonnull
-		private Stream<FamSitChangeTestConfiguration> getFamSitWithGS2ToRemoveTestConfigurations(FamSitChangeTestConfiguration oldConfig) {
+		private Stream<FamSitChangeTestConfiguration> getFamSitWithGS2ToRemoveTestConfigurations(
+			FamSitChangeTestConfiguration oldConfig
+		) {
 			return Stream.of(
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + oldConfig.name + "] to Konkubinat ohne Kind mit geteilter Obhut und alleinigem Gesuch")
-					.oldFamiliensituation(oldConfig.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ALLEINE))
+					.name(
+						'['
+							+ oldConfig.name
+							+ "] to Konkubinat ohne Kind mit geteilter Obhut und alleinigem Gesuch"
+					)
+					.oldFamiliensituation(
+						oldConfig.oldFamiliensituation
+					)
+					.newFamiliensituation(
+						setupKonkubinatOhneKindGeteilteObhut(
+							eingangsdatum,
+							EnumGesuchstellerKardinalitaet.ALLEINE
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + oldConfig.name + "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung")
-					.oldFamiliensituation(oldConfig.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG))
+					.name(
+						'['
+							+ oldConfig.name
+							+ "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung"
+					)
+					.oldFamiliensituation(
+						oldConfig.oldFamiliensituation
+					)
+					.newFamiliensituation(
+						setupKonkubinatOhneKindNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('['
-						+ oldConfig.name
-						+ "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich")
-					.oldFamiliensituation(oldConfig.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH))
+					.name(
+						'['
+							+ oldConfig.name
+							+ "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich"
+					)
+					.oldFamiliensituation(
+						oldConfig.oldFamiliensituation
+					)
+					.newFamiliensituation(
+						setupKonkubinatOhneKindNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + oldConfig.name + "]  to Alleinerziehend mit geteilter Obhut und alleinigem Gesuch")
-					.oldFamiliensituation(oldConfig.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehenddGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ALLEINE))
+					.name(
+						'['
+							+ oldConfig.name
+							+ "]  to Alleinerziehend mit geteilter Obhut und alleinigem Gesuch"
+					)
+					.oldFamiliensituation(
+						oldConfig.oldFamiliensituation
+					)
+					.newFamiliensituation(
+						setupAlleinerziehenddGeteilteObhut(
+							eingangsdatum,
+							EnumGesuchstellerKardinalitaet.ALLEINE
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + oldConfig.name + "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung")
-					.oldFamiliensituation(oldConfig.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehendNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG))
+					.name(
+						'['
+							+ oldConfig.name
+							+ "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung"
+					)
+					.oldFamiliensituation(
+						oldConfig.oldFamiliensituation
+					)
+					.newFamiliensituation(
+						setupAlleinerziehendNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('['
-						+ oldConfig.name
-						+ "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich")
-					.oldFamiliensituation(oldConfig.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehendNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH))
+					.name(
+						'['
+							+ oldConfig.name
+							+ "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich"
+					)
+					.oldFamiliensituation(
+						oldConfig.oldFamiliensituation
+					)
+					.newFamiliensituation(
+						setupAlleinerziehendNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH
+						)
+					)
 					.build()
 			);
 		}
+
 		@Nonnull
 		private Gesuch setupGesuchWith2GS() {
 			Gesuch gesuch = TestDataUtil.createDefaultGesuch();
-			final GesuchstellerContainer gs1Container = TestDataUtil.createDefaultGesuchstellerContainer();
-			gs1Container.getErwerbspensenContainers().add(TestDataUtil.createErwerbspensumContainer());
-			final GesuchstellerContainer gs2Container = TestDataUtil.createDefaultGesuchstellerContainer();
-			gs2Container.getErwerbspensenContainers().add(TestDataUtil.createErwerbspensumContainer());
+			final GesuchstellerContainer gs1Container = TestDataUtil
+				.createDefaultGesuchstellerContainer();
+			gs1Container.getErwerbspensenContainers()
+				.add(TestDataUtil.createErwerbspensumContainer());
+			final GesuchstellerContainer gs2Container = TestDataUtil
+				.createDefaultGesuchstellerContainer();
+			gs2Container.getErwerbspensenContainers()
+				.add(TestDataUtil.createErwerbspensumContainer());
 			gesuch.setGesuchsteller1(gs1Container);
 			gesuch.setGesuchsteller2(gs2Container);
 			gesuch.setFinSitTyp(FinanzielleSituationTyp.BERN_FKJV);
@@ -260,143 +421,289 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 	@Nested
 	class MutationDuringGPTest {
 
-		private final LocalDate eingangsdatum = TestDataUtil.START_PERIODE.plusMonths(1);
+		private final LocalDate eingangsdatum = TestDataUtil.START_PERIODE
+			.plusMonths(1);
 
 		@ParameterizedTest(name = "to {0}")
 		@MethodSource("provideFamiliensituationWithGS2NotToRemove")
 		@DisplayName("GS2 should not be removed on change from")
-		void testParameterizedChangeShouldNotRemove(FamSitChangeTestConfiguration configuration) {
+		void testParameterizedChangeShouldNotRemove(
+			FamSitChangeTestConfiguration configuration
+		) {
 			Gesuch gesuch = setupMutationWith2GS();
-			getFamiliensituationContainerNullSafe(gesuch).setFamiliensituationJA(configuration.newFamiliensituation);
+			getFamiliensituationContainerNullSafe(gesuch)
+				.setFamiliensituationJA(configuration.newFamiliensituation);
 
 			handler.removeGS2DataOnChangeFrom2To1GS(
 				gesuch,
 				configuration.newFamiliensituation,
 				getFamiliensituationContainerNullSafe(gesuch),
-				configuration.oldFamiliensituation);
+				configuration.oldFamiliensituation
+			);
 
 			assertThat(gesuch.getGesuchsteller2(), notNullValue());
 		}
 
 		private Stream<Arguments> provideFamiliensituationWithGS2NotToRemove() {
 			return Stream.of(
-				FamSitChangeTestConfiguration.of("Verheiratet", setupFamiliensituation(EnumFamilienstatus.VERHEIRATET)),
+				FamSitChangeTestConfiguration.of(
+					"Verheiratet",
+					setupFamiliensituation(
+						EnumFamilienstatus.VERHEIRATET
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Alleinerziehend mit geteilter Obhut zu zweit",
-					setupAlleinerziehenddGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
+					setupAlleinerziehenddGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Konkubinat ohne Kind mit geteilter Obhut zu zweit",
-					setupKonkubinatOhneKindGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
+					setupKonkubinatOhneKindGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Alleinerziehend alleinige Obhut ohne Unterhaltsvereinbarung",
 					setupAlleinerziehendNichtGeteilteObhut(
 						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG)),
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Konkubinat ohne Kind alleinige Obhut ohne Unterhaltsvereinbarung",
 					setupKonkubinatOhneKindNichtGeteilteObhut(
 						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
-			).flatMap(config -> Stream.of(
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "] to Konkubinat ohne Kind mit geteilter Obhut und alleinigem Gesuch")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ALLEINE))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('['
-						+ config.name
-						+ "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend mit geteilter Obhut und alleinigem Gesuch")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehenddGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ALLEINE))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehendNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('['
-						+ config.name
-						+ "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehendNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Konkubinat ohne Kind mit geteilter Obhut und gemeinsamen Gesuch")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ZU_ZWEIT))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Konkubinat ohne Kind ohne geteilte Obhut ohne Unterhaltsvereinbarung")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend mit geteilter Obhut und gemeinsamen Gesuch")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehenddGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ZU_ZWEIT))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend ohne geteilte Obhut ohne Unterhaltsvereinbarung")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehendNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "] to Konkubinat mit Kind")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupFamiliensituation(EnumFamilienstatus.KONKUBINAT))
-					.build(),
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Long Konkubinat Ohne Kind")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupLongKonkubinat())
-					.build()
-			)).map(Arguments::of);
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				)
+			)
+				.flatMap(
+					config -> Stream.of(
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "] to Konkubinat ohne Kind mit geteilter Obhut und alleinigem Gesuch"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupKonkubinatOhneKindGeteilteObhut(
+									eingangsdatum,
+									EnumGesuchstellerKardinalitaet.ALLEINE
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupKonkubinatOhneKindNichtGeteilteObhut(
+									eingangsdatum,
+									UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupKonkubinatOhneKindNichtGeteilteObhut(
+									eingangsdatum,
+									UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Alleinerziehend mit geteilter Obhut und alleinigem Gesuch"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupAlleinerziehenddGeteilteObhut(
+									eingangsdatum,
+									EnumGesuchstellerKardinalitaet.ALLEINE
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupAlleinerziehendNichtGeteilteObhut(
+									eingangsdatum,
+									UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupAlleinerziehendNichtGeteilteObhut(
+									eingangsdatum,
+									UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Konkubinat ohne Kind mit geteilter Obhut und gemeinsamen Gesuch"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupKonkubinatOhneKindGeteilteObhut(
+									eingangsdatum,
+									EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Konkubinat ohne Kind ohne geteilte Obhut ohne Unterhaltsvereinbarung"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupKonkubinatOhneKindNichtGeteilteObhut(
+									eingangsdatum,
+									UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Alleinerziehend mit geteilter Obhut und gemeinsamen Gesuch"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupAlleinerziehenddGeteilteObhut(
+									eingangsdatum,
+									EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Alleinerziehend ohne geteilte Obhut ohne Unterhaltsvereinbarung"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupAlleinerziehendNichtGeteilteObhut(
+									eingangsdatum,
+									UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "] to Konkubinat mit Kind"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupFamiliensituation(
+									EnumFamilienstatus.KONKUBINAT
+								)
+							)
+							.build(),
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "]  to Long Konkubinat Ohne Kind"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupLongKonkubinat()
+							)
+							.build()
+					)
+				)
+				.map(Arguments::of);
 		}
 
 		@Nonnull
 		private Gesuch setupMutationWith2GS() {
 			Gesuch gesuch = TestDataUtil.createDefaultGesuch();
 			Gesuch mutation =
-				TestDataUtil.createMutation(gesuch.getDossier(), gesuch.getGesuchsperiode(), AntragStatus.IN_BEARBEITUNG_GS, 1);
-			mutation.setFamiliensituationContainer(new FamiliensituationContainer());
-			mutation.setEingangsdatum(gesuch.getGesuchsperiode().getGueltigkeit().getGueltigAb().plusMonths(1));
+				TestDataUtil.createMutation(
+					gesuch.getDossier(),
+					gesuch.getGesuchsperiode(),
+					AntragStatus.IN_BEARBEITUNG_GS,
+					1
+				);
+			mutation.setFamiliensituationContainer(
+				new FamiliensituationContainer()
+			);
+			mutation.setEingangsdatum(
+				gesuch.getGesuchsperiode()
+					.getGueltigkeit()
+					.getGueltigAb()
+					.plusMonths(1)
+			);
 			mutation.setRegelnGueltigAb(mutation.getEingangsdatum());
-			final GesuchstellerContainer gs1Container = TestDataUtil.createDefaultGesuchstellerContainer();
-			gs1Container.getErwerbspensenContainers().add(TestDataUtil.createErwerbspensumContainer());
-			final GesuchstellerContainer gs2Container = TestDataUtil.createDefaultGesuchstellerContainer();
-			gs2Container.getErwerbspensenContainers().add(TestDataUtil.createErwerbspensumContainer());
+			final GesuchstellerContainer gs1Container = TestDataUtil
+				.createDefaultGesuchstellerContainer();
+			gs1Container.getErwerbspensenContainers()
+				.add(TestDataUtil.createErwerbspensumContainer());
+			final GesuchstellerContainer gs2Container = TestDataUtil
+				.createDefaultGesuchstellerContainer();
+			gs2Container.getErwerbspensenContainers()
+				.add(TestDataUtil.createErwerbspensumContainer());
 			mutation.setGesuchsteller1(gs1Container);
 			mutation.setGesuchsteller2(gs2Container);
 			mutation.setFinSitTyp(FinanzielleSituationTyp.BERN_FKJV);
@@ -408,20 +715,25 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 	@Nested
 	class MutationBeforeGPTest {
 
-		private final LocalDate eingangsdatum = TestDataUtil.START_PERIODE.minusMonths(1);
+		private final LocalDate eingangsdatum = TestDataUtil.START_PERIODE
+			.minusMonths(1);
 
 		@ParameterizedTest(name = "to {0}")
 		@MethodSource("provideFamiliensituationWithGS2NotToRemove")
 		@DisplayName("GS2 should not be removed on change from Verheiratet")
-		void testParameterizedChangeShouldNotRemove(FamSitChangeTestConfiguration configuration) {
+		void testParameterizedChangeShouldNotRemove(
+			FamSitChangeTestConfiguration configuration
+		) {
 			Gesuch gesuch = setupMutationWith2GS();
-			getFamiliensituationContainerNullSafe(gesuch).setFamiliensituationJA(configuration.newFamiliensituation);
+			getFamiliensituationContainerNullSafe(gesuch)
+				.setFamiliensituationJA(configuration.newFamiliensituation);
 
 			handler.removeGS2DataOnChangeFrom2To1GS(
 				gesuch,
 				configuration.newFamiliensituation,
 				getFamiliensituationContainerNullSafe(gesuch),
-				configuration.oldFamiliensituation);
+				configuration.oldFamiliensituation
+			);
 
 			assertThat(gesuch.getGesuchsteller2(), notNullValue());
 		}
@@ -429,148 +741,274 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 		@ParameterizedTest(name = "{0}")
 		@MethodSource("provideFamiliensituationWithGS2ToRemove")
 		@DisplayName("GS2 should be removed on change from")
-		void testParameterizedChangeShouldRemove(FamSitChangeTestConfiguration configuration) {
+		void testParameterizedChangeShouldRemove(
+			FamSitChangeTestConfiguration configuration
+		) {
 			Gesuch gesuch = setupMutationWith2GS();
-			getFamiliensituationContainerNullSafe(gesuch).setFamiliensituationJA(configuration.newFamiliensituation);
+			getFamiliensituationContainerNullSafe(gesuch)
+				.setFamiliensituationJA(configuration.newFamiliensituation);
 
 			handler.removeGS2DataOnChangeFrom2To1GS(
 				gesuch,
 				configuration.newFamiliensituation,
 				getFamiliensituationContainerNullSafe(gesuch),
-				configuration.oldFamiliensituation);
+				configuration.oldFamiliensituation
+			);
 
 			assertThat(gesuch.getGesuchsteller2(), nullValue());
 		}
 
 		private Stream<Arguments> provideFamiliensituationWithGS2NotToRemove() {
 			return Stream.of(
-				FamSitChangeTestConfiguration.of("Verheiratet", setupFamiliensituation(EnumFamilienstatus.VERHEIRATET)),
+				FamSitChangeTestConfiguration.of(
+					"Verheiratet",
+					setupFamiliensituation(
+						EnumFamilienstatus.VERHEIRATET
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Alleinerziehend mit geteilter Obhut zu zweit",
-					setupAlleinerziehenddGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
+					setupAlleinerziehenddGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Konkubinat ohne Kind mit geteilter Obhut zu zweit",
-					setupKonkubinatOhneKindGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
+					setupKonkubinatOhneKindGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Alleinerziehend alleinige Obhut ohne Unterhaltsvereinbarung",
 					setupAlleinerziehendNichtGeteilteObhut(
 						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG)),
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				),
 				FamSitChangeTestConfiguration.of(
 					"Konkubinat ohne Kind alleinige Obhut ohne Unterhaltsvereinbarung",
 					setupKonkubinatOhneKindNichtGeteilteObhut(
 						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
-			).flatMap(config -> Stream.of(
-				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "] to Konkubinat mit Kind")
-					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupFamiliensituation(EnumFamilienstatus.KONKUBINAT))
-					.build()
-			)).map(Arguments::of);
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				)
+			)
+				.flatMap(
+					config -> Stream.of(
+						FamSitChangeTestConfiguration.builder()
+							.name(
+								'['
+									+ config.name
+									+ "] to Konkubinat mit Kind"
+							)
+							.oldFamiliensituation(
+								config.oldFamiliensituation
+							)
+							.newFamiliensituation(
+								setupFamiliensituation(
+									EnumFamilienstatus.KONKUBINAT
+								)
+							)
+							.build()
+					)
+				)
+				.map(Arguments::of);
 		}
 
 		private Stream<Arguments> provideFamiliensituationWithGS2ToRemove() {
 			return Stream.of(
-					FamSitChangeTestConfiguration.of("Verheiratet", setupFamiliensituation(EnumFamilienstatus.VERHEIRATET)),
-					FamSitChangeTestConfiguration.of(
-						"Alleinerziehend mit geteilter Obhut zu zweit",
-						setupAlleinerziehenddGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
-					FamSitChangeTestConfiguration.of(
-						"Konkubinat ohne Kind mit geteilter Obhut zu zweit",
-						setupKonkubinatOhneKindGeteilteObhut(eingangsdatum, EnumGesuchstellerKardinalitaet.ZU_ZWEIT)),
-					FamSitChangeTestConfiguration.of(
-						"Alleinerziehend alleinige Obhut ohne Unterhaltsvereinbarung",
-						setupAlleinerziehendNichtGeteilteObhut(
-							eingangsdatum,
-							UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG)),
-					FamSitChangeTestConfiguration.of(
-						"Konkubinat ohne Kind alleinige Obhut ohne Unterhaltsvereinbarung",
-						setupKonkubinatOhneKindNichtGeteilteObhut(
-							eingangsdatum,
-							UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
-				).flatMap(this::getFamSitWithGS2ToRemoveTestConfigurations)
+				FamSitChangeTestConfiguration.of(
+					"Verheiratet",
+					setupFamiliensituation(
+						EnumFamilienstatus.VERHEIRATET
+					)
+				),
+				FamSitChangeTestConfiguration.of(
+					"Alleinerziehend mit geteilter Obhut zu zweit",
+					setupAlleinerziehenddGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
+				FamSitChangeTestConfiguration.of(
+					"Konkubinat ohne Kind mit geteilter Obhut zu zweit",
+					setupKonkubinatOhneKindGeteilteObhut(
+						eingangsdatum,
+						EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+					)
+				),
+				FamSitChangeTestConfiguration.of(
+					"Alleinerziehend alleinige Obhut ohne Unterhaltsvereinbarung",
+					setupAlleinerziehendNichtGeteilteObhut(
+						eingangsdatum,
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				),
+				FamSitChangeTestConfiguration.of(
+					"Konkubinat ohne Kind alleinige Obhut ohne Unterhaltsvereinbarung",
+					setupKonkubinatOhneKindNichtGeteilteObhut(
+						eingangsdatum,
+						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+					)
+				)
+			)
+				.flatMap(this::getFamSitWithGS2ToRemoveTestConfigurations)
 				.map(Arguments::of);
 		}
 
 		@Nonnull
-		private Stream<FamSitChangeTestConfiguration> getFamSitWithGS2ToRemoveTestConfigurations(FamSitChangeTestConfiguration config) {
+		private Stream<FamSitChangeTestConfiguration> getFamSitWithGS2ToRemoveTestConfigurations(
+			FamSitChangeTestConfiguration config
+		) {
 			return Stream.of(
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "] to Konkubinat ohne Kind mit geteilter Obhut und alleinigem Gesuch")
+					.name(
+						'['
+							+ config.name
+							+ "] to Konkubinat ohne Kind mit geteilter Obhut und alleinigem Gesuch"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ALLEINE))
+					.newFamiliensituation(
+						setupKonkubinatOhneKindGeteilteObhut(
+							eingangsdatum,
+							EnumGesuchstellerKardinalitaet.ALLEINE
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG))
+					.newFamiliensituation(
+						setupKonkubinatOhneKindNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('['
-						+ config.name
-						+ "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Konkubinat ohne Kind ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH))
+					.newFamiliensituation(
+						setupKonkubinatOhneKindNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend mit geteilter Obhut und alleinigem Gesuch")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Alleinerziehend mit geteilter Obhut und alleinigem Gesuch"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehenddGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ALLEINE))
+					.newFamiliensituation(
+						setupAlleinerziehenddGeteilteObhut(
+							eingangsdatum,
+							EnumGesuchstellerKardinalitaet.ALLEINE
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehendNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG))
+					.newFamiliensituation(
+						setupAlleinerziehendNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.JA_UNTERHALTSVEREINBARUNG
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('['
-						+ config.name
-						+ "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Alleinerziehend ohne geteilte Obhut mit Unterhaltsvereinbarung nicht möglich"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehendNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH))
+					.newFamiliensituation(
+						setupAlleinerziehendNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.UNTERHALTSVEREINBARUNG_NICHT_MOEGLICH
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Konkubinat ohne Kind mit geteilter Obhut und gemeinsamen Gesuch")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Konkubinat ohne Kind mit geteilter Obhut und gemeinsamen Gesuch"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ZU_ZWEIT))
+					.newFamiliensituation(
+						setupKonkubinatOhneKindGeteilteObhut(
+							eingangsdatum,
+							EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Konkubinat ohne Kind ohne geteilte Obhut ohne Unterhaltsvereinbarung")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Konkubinat ohne Kind ohne geteilte Obhut ohne Unterhaltsvereinbarung"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupKonkubinatOhneKindNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG))
+					.newFamiliensituation(
+						setupKonkubinatOhneKindNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend mit geteilter Obhut und gemeinsamen Gesuch")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Alleinerziehend mit geteilter Obhut und gemeinsamen Gesuch"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehenddGeteilteObhut(
-						eingangsdatum,
-						EnumGesuchstellerKardinalitaet.ZU_ZWEIT))
+					.newFamiliensituation(
+						setupAlleinerziehenddGeteilteObhut(
+							eingangsdatum,
+							EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+						)
+					)
 					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Alleinerziehend ohne geteilte Obhut ohne Unterhaltsvereinbarung")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Alleinerziehend ohne geteilte Obhut ohne Unterhaltsvereinbarung"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
-					.newFamiliensituation(setupAlleinerziehendNichtGeteilteObhut(
-						eingangsdatum,
-						UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG)).build(),
+					.newFamiliensituation(
+						setupAlleinerziehendNichtGeteilteObhut(
+							eingangsdatum,
+							UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG
+						)
+					)
+					.build(),
 				FamSitChangeTestConfiguration.builder()
-					.name('[' + config.name + "]  to Long Konkubinat Ohne Kind")
+					.name(
+						'['
+							+ config.name
+							+ "]  to Long Konkubinat Ohne Kind"
+					)
 					.oldFamiliensituation(config.oldFamiliensituation)
 					.newFamiliensituation(setupLongKonkubinat())
 					.build()
@@ -581,14 +1019,25 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 		private Gesuch setupMutationWith2GS() {
 			Gesuch gesuch = TestDataUtil.createDefaultGesuch();
 			Gesuch mutation =
-				TestDataUtil.createMutation(gesuch.getDossier(), gesuch.getGesuchsperiode(), AntragStatus.IN_BEARBEITUNG_GS, 1);
-			mutation.setFamiliensituationContainer(new FamiliensituationContainer());
+				TestDataUtil.createMutation(
+					gesuch.getDossier(),
+					gesuch.getGesuchsperiode(),
+					AntragStatus.IN_BEARBEITUNG_GS,
+					1
+				);
+			mutation.setFamiliensituationContainer(
+				new FamiliensituationContainer()
+			);
 			mutation.setEingangsdatum(eingangsdatum);
 			mutation.setRegelnGueltigAb(mutation.getEingangsdatum());
-			final GesuchstellerContainer gs1Container = TestDataUtil.createDefaultGesuchstellerContainer();
-			gs1Container.getErwerbspensenContainers().add(TestDataUtil.createErwerbspensumContainer());
-			final GesuchstellerContainer gs2Container = TestDataUtil.createDefaultGesuchstellerContainer();
-			gs2Container.getErwerbspensenContainers().add(TestDataUtil.createErwerbspensumContainer());
+			final GesuchstellerContainer gs1Container = TestDataUtil
+				.createDefaultGesuchstellerContainer();
+			gs1Container.getErwerbspensenContainers()
+				.add(TestDataUtil.createErwerbspensumContainer());
+			final GesuchstellerContainer gs2Container = TestDataUtil
+				.createDefaultGesuchstellerContainer();
+			gs2Container.getErwerbspensenContainers()
+				.add(TestDataUtil.createErwerbspensumContainer());
 			mutation.setGesuchsteller1(gs1Container);
 			mutation.setGesuchsteller2(gs2Container);
 			mutation.setFinSitTyp(FinanzielleSituationTyp.BERN_FKJV);
@@ -599,20 +1048,28 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 	@Nonnull
 	private static Familiensituation setupKonkubinatOhneKindGeteilteObhut(
 		LocalDate konkubinatStart,
-		EnumGesuchstellerKardinalitaet gesuchstellerKardinalitaet) {
-		final Familiensituation newFamiliensituation = setupFamiliensituation(EnumFamilienstatus.KONKUBINAT_KEIN_KIND);
+		EnumGesuchstellerKardinalitaet gesuchstellerKardinalitaet
+	) {
+		final Familiensituation newFamiliensituation = setupFamiliensituation(
+			EnumFamilienstatus.KONKUBINAT_KEIN_KIND
+		);
 		newFamiliensituation.setStartKonkubinat(konkubinatStart);
 		newFamiliensituation.setAenderungPer(konkubinatStart);
 		newFamiliensituation.setGeteilteObhut(true);
-		newFamiliensituation.setGesuchstellerKardinalitaet(gesuchstellerKardinalitaet);
+		newFamiliensituation.setGesuchstellerKardinalitaet(
+			gesuchstellerKardinalitaet
+		);
 		return newFamiliensituation;
 	}
 
 	@Nonnull
 	private static Familiensituation setupKonkubinatOhneKindNichtGeteilteObhut(
 		LocalDate konkubinatStart,
-		UnterhaltsvereinbarungAnswer unterhaltsvereinbarung) {
-		final Familiensituation newFamiliensituation = setupFamiliensituation(EnumFamilienstatus.KONKUBINAT_KEIN_KIND);
+		UnterhaltsvereinbarungAnswer unterhaltsvereinbarung
+	) {
+		final Familiensituation newFamiliensituation = setupFamiliensituation(
+			EnumFamilienstatus.KONKUBINAT_KEIN_KIND
+		);
 		newFamiliensituation.setStartKonkubinat(konkubinatStart);
 		newFamiliensituation.setAenderungPer(konkubinatStart);
 		newFamiliensituation.setGeteilteObhut(false);
@@ -623,20 +1080,28 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 	@Nonnull
 	private static Familiensituation setupAlleinerziehenddGeteilteObhut(
 		LocalDate konkubinatStart,
-		EnumGesuchstellerKardinalitaet gesuchstellerKardinalitaet) {
-		final Familiensituation newFamiliensituation = setupFamiliensituation(EnumFamilienstatus.KONKUBINAT_KEIN_KIND);
+		EnumGesuchstellerKardinalitaet gesuchstellerKardinalitaet
+	) {
+		final Familiensituation newFamiliensituation = setupFamiliensituation(
+			EnumFamilienstatus.KONKUBINAT_KEIN_KIND
+		);
 		newFamiliensituation.setStartKonkubinat(konkubinatStart);
 		newFamiliensituation.setAenderungPer(konkubinatStart);
 		newFamiliensituation.setGeteilteObhut(true);
-		newFamiliensituation.setGesuchstellerKardinalitaet(gesuchstellerKardinalitaet);
+		newFamiliensituation.setGesuchstellerKardinalitaet(
+			gesuchstellerKardinalitaet
+		);
 		return newFamiliensituation;
 	}
 
 	@Nonnull
 	private static Familiensituation setupAlleinerziehendNichtGeteilteObhut(
 		LocalDate konkubinatStart,
-		UnterhaltsvereinbarungAnswer unterhaltsvereinbarung) {
-		final Familiensituation newFamiliensituation = setupFamiliensituation(EnumFamilienstatus.KONKUBINAT_KEIN_KIND);
+		UnterhaltsvereinbarungAnswer unterhaltsvereinbarung
+	) {
+		final Familiensituation newFamiliensituation = setupFamiliensituation(
+			EnumFamilienstatus.KONKUBINAT_KEIN_KIND
+		);
 		newFamiliensituation.setStartKonkubinat(konkubinatStart);
 		newFamiliensituation.setAenderungPer(konkubinatStart);
 		newFamiliensituation.setGeteilteObhut(false);
@@ -645,12 +1110,16 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 	}
 
 	@Nonnull
-	private static FamiliensituationContainer getFamiliensituationContainerNullSafe(Gesuch gesuch) {
+	private static FamiliensituationContainer getFamiliensituationContainerNullSafe(
+		Gesuch gesuch
+	) {
 		return Objects.requireNonNull(gesuch.getFamiliensituationContainer());
 	}
 
 	@Nonnull
-	private static Familiensituation setupFamiliensituation(EnumFamilienstatus familienstatus) {
+	private static Familiensituation setupFamiliensituation(
+		EnumFamilienstatus familienstatus
+	) {
 		Familiensituation familiensituation = new Familiensituation();
 		familiensituation.setFkjvFamSit(true);
 		familiensituation.setFamilienstatus(familienstatus);
@@ -660,7 +1129,9 @@ class SharedFamSitChangeDefaultHandlerTest extends EasyMockSupport {
 	private static Familiensituation setupLongKonkubinat() {
 		Familiensituation familiensituation = new Familiensituation();
 		familiensituation.setFkjvFamSit(true);
-		familiensituation.setFamilienstatus(EnumFamilienstatus.KONKUBINAT_KEIN_KIND);
+		familiensituation.setFamilienstatus(
+			EnumFamilienstatus.KONKUBINAT_KEIN_KIND
+		);
 		familiensituation.setStartKonkubinat(Constants.START_OF_TIME);
 		familiensituation.setAenderungPer(Constants.START_OF_TIME);
 		return familiensituation;

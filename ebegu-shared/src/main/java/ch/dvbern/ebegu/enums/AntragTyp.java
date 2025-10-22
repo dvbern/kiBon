@@ -23,9 +23,7 @@ import java.util.List;
  */
 public enum AntragTyp {
 
-	ERSTGESUCH,
-	MUTATION,
-	ERNEUERUNGSGESUCH;
+	ERSTGESUCH, MUTATION, ERNEUERUNGSGESUCH;
 
 	public boolean isGesuch() {
 		return ERSTGESUCH.equals(this) || ERNEUERUNGSGESUCH.equals(this);

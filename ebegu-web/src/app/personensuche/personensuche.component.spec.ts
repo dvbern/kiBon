@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import {TSEWKAdresse} from '../../models/TSEWKAdresse';
 import {TSEWKPerson} from '../../models/TSEWKPerson';
 

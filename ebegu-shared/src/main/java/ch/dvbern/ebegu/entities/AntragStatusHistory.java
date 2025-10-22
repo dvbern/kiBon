@@ -18,14 +18,14 @@ package ch.dvbern.ebegu.entities;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragStatus;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -37,18 +37,25 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class AntragStatusHistory extends AbstractMutableEntity implements Comparable<AntragStatusHistory> {
+public class AntragStatusHistory extends AbstractMutableEntity implements
+	Comparable<AntragStatusHistory> {
 
 	private static final long serialVersionUID = -9032257320864372570L;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_antragstatus_history_antrag_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_antragstatus_history_antrag_id"),
+		nullable = false,
+		updatable = false)
 	private Gesuch gesuch;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_antragstatus_history_benutzer_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_antragstatus_history_benutzer_id"),
+		nullable = false,
+		updatable = false)
 	private Benutzer benutzer = null;
 
 	@NotNull
@@ -122,12 +129,32 @@ public class AntragStatusHistory extends AbstractMutableEntity implements Compar
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final AntragStatusHistory otherAntragStatusHistory = (AntragStatusHistory) other;
-		return Objects.equals(getGesuch().getId(), otherAntragStatusHistory.getGesuch().getId()) && // the content is not relevant
-			Objects.equals(getBenutzer().getId(), otherAntragStatusHistory.getBenutzer().getId()) && // the content is not relevant
-			Objects.equals(getTimestampVon(), otherAntragStatusHistory.getTimestampVon()) &&
-			Objects.equals(getTimestampBis(), otherAntragStatusHistory.getTimestampBis()) &&
-			Objects.equals(getStatus(), otherAntragStatusHistory.getStatus());
+		final AntragStatusHistory otherAntragStatusHistory =
+			(AntragStatusHistory) other;
+		return Objects.equals(
+			getGesuch().getId(),
+			otherAntragStatusHistory.getGesuch().getId()
+		)
+			&& // the content is not relevant
+			Objects.equals(
+				getBenutzer().getId(),
+				otherAntragStatusHistory.getBenutzer().getId()
+			)
+			&& // the content is not relevant
+			Objects.equals(
+				getTimestampVon(),
+				otherAntragStatusHistory.getTimestampVon()
+			)
+			&&
+			Objects.equals(
+				getTimestampBis(),
+				otherAntragStatusHistory.getTimestampBis()
+			)
+			&&
+			Objects.equals(
+				getStatus(),
+				otherAntragStatusHistory.getStatus()
+			);
 	}
 
 	@Override

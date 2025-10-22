@@ -8,17 +8,17 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.gemeinde;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.kibon.exchange.commons.gemeinde.GemeindeEventDTO;
@@ -37,7 +37,10 @@ public class GemeindeEventConverter {
 	}
 
 	@Nonnull
-	private GemeindeChangedEvent toEvent(@Nonnull String gemeindeId, GemeindeEventDTO dto) {
+	private GemeindeChangedEvent toEvent(
+		@Nonnull String gemeindeId,
+		GemeindeEventDTO dto
+	) {
 		byte[] payload = AvroConverter.toAvroBinary(dto);
 
 		return new GemeindeChangedEvent(gemeindeId, payload, dto.getSchema());
@@ -50,9 +53,17 @@ public class GemeindeEventConverter {
 			.setGemeindeUUID(gemeinde.getId())
 			.setName(gemeinde.getName())
 			.setBfsNummer(gemeinde.getBfsNummer())
-			.setBetreuungsgutscheineAnbietenAb(gemeinde.getBetreuungsgutscheineStartdatum())
+			.setBetreuungsgutscheineAnbietenAb(
+				gemeinde.getBetreuungsgutscheineStartdatum()
+			)
 			.setGueltigBis(gemeinde.getGueltigBis())
-			.setMandant(Mandant.valueOf(gemeinde.getMandant().getMandantIdentifier().name()))
+			.setMandant(
+				Mandant.valueOf(
+					gemeinde.getMandant()
+						.getMandantIdentifier()
+						.name()
+				)
+			)
 			.setAngebotBG(gemeinde.isAngebotBG())
 			.setAngebotTS(gemeinde.isAngebotTS())
 			.setAngebotFI(gemeinde.isAngebotFI());

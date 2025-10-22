@@ -17,21 +17,28 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
 import ch.dvbern.ebegu.util.MathUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * Entität für die Finanzielle Situation
@@ -110,7 +117,8 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 
 	@Nullable
 	@OneToOne(optional = true, orphanRemoval = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_finanzielle_situation_stuerdaten_response"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_finanzielle_situation_stuerdaten_response"))
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	private SteuerdatenResponse steuerdatenResponse;
 
@@ -122,7 +130,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return steuerveranlagungErhalten;
 	}
 
-	public void setSteuerveranlagungErhalten(final Boolean steuerveranlagungErhalten) {
+	public void setSteuerveranlagungErhalten(
+		final Boolean steuerveranlagungErhalten
+	) {
 		this.steuerveranlagungErhalten = steuerveranlagungErhalten;
 	}
 
@@ -131,7 +141,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return steuererklaerungAusgefuellt;
 	}
 
-	public void setSteuererklaerungAusgefuellt(final Boolean steuererklaerungAusgefuellt) {
+	public void setSteuererklaerungAusgefuellt(
+		final Boolean steuererklaerungAusgefuellt
+	) {
 		this.steuererklaerungAusgefuellt = steuererklaerungAusgefuellt;
 	}
 
@@ -150,7 +162,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return geschaeftsgewinnBasisjahrMinus2;
 	}
 
-	public void setGeschaeftsgewinnBasisjahrMinus2(@Nullable final BigDecimal geschaeftsgewinnBasisjahrMinus2) {
+	public void setGeschaeftsgewinnBasisjahrMinus2(
+		@Nullable final BigDecimal geschaeftsgewinnBasisjahrMinus2
+	) {
 		this.geschaeftsgewinnBasisjahrMinus2 = geschaeftsgewinnBasisjahrMinus2;
 	}
 
@@ -168,7 +182,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return gemeinsameStekVorjahr;
 	}
 
-	public void setGemeinsameStekVorjahr(@Nullable Boolean gemeinsameStekVorjahr) {
+	public void setGemeinsameStekVorjahr(
+		@Nullable Boolean gemeinsameStekVorjahr
+	) {
 		this.gemeinsameStekVorjahr = gemeinsameStekVorjahr;
 	}
 
@@ -177,7 +193,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return alleinigeStekVorjahr;
 	}
 
-	public void setAlleinigeStekVorjahr(@Nullable Boolean alleinigeStekVorjahr) {
+	public void setAlleinigeStekVorjahr(
+		@Nullable Boolean alleinigeStekVorjahr
+	) {
 		this.alleinigeStekVorjahr = alleinigeStekVorjahr;
 	}
 
@@ -204,7 +222,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return unterhaltsBeitraege;
 	}
 
-	public void setUnterhaltsBeitraege(@Nullable BigDecimal unterhaltsBeitraege) {
+	public void setUnterhaltsBeitraege(
+		@Nullable BigDecimal unterhaltsBeitraege
+	) {
 		this.unterhaltsBeitraege = unterhaltsBeitraege;
 	}
 
@@ -213,10 +233,11 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return abzuegeKinderAusbildung;
 	}
 
-	public void setAbzuegeKinderAusbildung(@Nullable BigDecimal abzuegeKinderAusbildung) {
+	public void setAbzuegeKinderAusbildung(
+		@Nullable BigDecimal abzuegeKinderAusbildung
+	) {
 		this.abzuegeKinderAusbildung = abzuegeKinderAusbildung;
 	}
-
 
 	@Override
 	@Nullable
@@ -224,7 +245,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return steuerdatenAbfrageStatus;
 	}
 
-	public void setSteuerdatenAbfrageStatus(@Nullable SteuerdatenAnfrageStatus steuerdatenAbfrageStatus) {
+	public void setSteuerdatenAbfrageStatus(
+		@Nullable SteuerdatenAnfrageStatus steuerdatenAbfrageStatus
+	) {
 		this.steuerdatenAbfrageStatus = steuerdatenAbfrageStatus;
 	}
 
@@ -233,7 +256,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return steuerdatenAbfrageTimestamp;
 	}
 
-	public void setSteuerdatenAbfrageTimestamp(@Nullable LocalDateTime steuerdatenAbfrageTimestamp) {
+	public void setSteuerdatenAbfrageTimestamp(
+		@Nullable LocalDateTime steuerdatenAbfrageTimestamp
+	) {
 		this.steuerdatenAbfrageTimestamp = steuerdatenAbfrageTimestamp;
 	}
 
@@ -242,7 +267,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return automatischePruefungErlaubt;
 	}
 
-	public void setAutomatischePruefungErlaubt(@Nullable Boolean automatischePruefungErlaubt) {
+	public void setAutomatischePruefungErlaubt(
+		@Nullable Boolean automatischePruefungErlaubt
+	) {
 		this.automatischePruefungErlaubt = automatischePruefungErlaubt;
 	}
 
@@ -251,7 +278,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return momentanSelbststaendig;
 	}
 
-	public void setMomentanSelbststaendig(@Nullable Boolean momentanSelbststaendig) {
+	public void setMomentanSelbststaendig(
+		@Nullable Boolean momentanSelbststaendig
+	) {
 		this.momentanSelbststaendig = momentanSelbststaendig;
 	}
 
@@ -261,20 +290,31 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 	}
 
 	public void setErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(
-		@Nullable BigDecimal ersatzeinkommenSelbststaendigkeitBasisjahrMinus2) {
-		this.ersatzeinkommenSelbststaendigkeitBasisjahrMinus2 = ersatzeinkommenSelbststaendigkeitBasisjahrMinus2;
+		@Nullable BigDecimal ersatzeinkommenSelbststaendigkeitBasisjahrMinus2
+	) {
+		this.ersatzeinkommenSelbststaendigkeitBasisjahrMinus2 =
+			ersatzeinkommenSelbststaendigkeitBasisjahrMinus2;
 	}
 
 	@Nonnull
-	public FinanzielleSituation copyFinanzielleSituation(@Nonnull FinanzielleSituation target, @Nonnull AntragCopyType copyType) {
+	public FinanzielleSituation copyFinanzielleSituation(
+		@Nonnull FinanzielleSituation target,
+		@Nonnull AntragCopyType copyType
+	) {
 		switch (copyType) {
 		case MUTATION:
 		case MUTATION_NEUES_DOSSIER:
 		case ERNEUERUNG_AR_2023:
 			super.copyAbstractFinanzielleSituation(target, copyType);
-			target.setSteuerveranlagungErhalten(this.getSteuerveranlagungErhalten());
-			target.setSteuererklaerungAusgefuellt(this.getSteuererklaerungAusgefuellt());
-			target.setGeschaeftsgewinnBasisjahrMinus2(this.getGeschaeftsgewinnBasisjahrMinus2());
+			target.setSteuerveranlagungErhalten(
+				this.getSteuerveranlagungErhalten()
+			);
+			target.setSteuererklaerungAusgefuellt(
+				this.getSteuererklaerungAusgefuellt()
+			);
+			target.setGeschaeftsgewinnBasisjahrMinus2(
+				this.getGeschaeftsgewinnBasisjahrMinus2()
+			);
 			target.setSteuerdatenZugriff(this.getSteuerdatenZugriff());
 			target.setGemeinsameStekVorjahr(this.getGemeinsameStekVorjahr());
 			target.setAlleinigeStekVorjahr(this.getAlleinigeStekVorjahr());
@@ -282,12 +322,22 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 			target.setVeranlagt(this.getVeranlagt());
 			target.setVeranlagtVorjahr(this.getVeranlagtVorjahr());
 			target.setUnterhaltsBeitraege(this.getUnterhaltsBeitraege());
-			target.setAbzuegeKinderAusbildung(this.getAbzuegeKinderAusbildung());
-			target.setSteuerdatenAbfrageStatus(this.getSteuerdatenAbfrageStatus());
-			target.setSteuerdatenAbfrageTimestamp(this.getSteuerdatenAbfrageTimestamp());
-			target.setAutomatischePruefungErlaubt(this.getAutomatischePruefungErlaubt());
+			target.setAbzuegeKinderAusbildung(
+				this.getAbzuegeKinderAusbildung()
+			);
+			target.setSteuerdatenAbfrageStatus(
+				this.getSteuerdatenAbfrageStatus()
+			);
+			target.setSteuerdatenAbfrageTimestamp(
+				this.getSteuerdatenAbfrageTimestamp()
+			);
+			target.setAutomatischePruefungErlaubt(
+				this.getAutomatischePruefungErlaubt()
+			);
 			target.setMomentanSelbststaendig(this.getMomentanSelbststaendig());
-			target.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(this.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2());
+			target.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(
+				this.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2()
+			);
 			break;
 		case ERNEUERUNG:
 		case ERNEUERUNG_NEUES_DOSSIER:
@@ -311,21 +361,83 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 			return false;
 		}
 		final FinanzielleSituation otherFinSit = (FinanzielleSituation) other;
-		return Objects.equals(getSteuerveranlagungErhalten(), otherFinSit.getSteuerveranlagungErhalten()) &&
-				Objects.equals(getSteuererklaerungAusgefuellt(), otherFinSit.getSteuererklaerungAusgefuellt()) &&
-				Objects.equals(getSteuerdatenZugriff(), otherFinSit.getSteuerdatenZugriff()) &&
-				Objects.equals(getAutomatischePruefungErlaubt(), otherFinSit.getAutomatischePruefungErlaubt()) &&
-			MathUtil.isSame(getGeschaeftsgewinnBasisjahrMinus2(), otherFinSit.getGeschaeftsgewinnBasisjahrMinus2()) &&
-			Objects.equals(getAlleinigeStekVorjahr(), otherFinSit.getAlleinigeStekVorjahr()) &&
-			Objects.equals(getGemeinsameStekVorjahr(), otherFinSit.getGemeinsameStekVorjahr()) &&
-			Objects.equals(getQuellenbesteuert(), otherFinSit.getQuellenbesteuert()) &&
-			Objects.equals(getVeranlagt(), otherFinSit.getVeranlagt()) &&
-			Objects.equals(getVeranlagtVorjahr(), otherFinSit.getVeranlagtVorjahr()) &&
-			Objects.equals(getSelbstdeklaration(), otherFinSit.getSelbstdeklaration()) &&
-			MathUtil.isSame(getAbzuegeKinderAusbildung(), otherFinSit.getAbzuegeKinderAusbildung()) &&
-			MathUtil.isSame(getUnterhaltsBeitraege(), otherFinSit.getUnterhaltsBeitraege()) &&
-			Objects.equals(getMomentanSelbststaendig(), otherFinSit.getMomentanSelbststaendig()) &&
-			MathUtil.isSame(getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(), otherFinSit.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2());
+		return Objects.equals(
+			getSteuerveranlagungErhalten(),
+			otherFinSit.getSteuerveranlagungErhalten()
+		)
+			&&
+			Objects.equals(
+				getSteuererklaerungAusgefuellt(),
+				otherFinSit.getSteuererklaerungAusgefuellt()
+			)
+			&&
+			Objects.equals(
+				getSteuerdatenZugriff(),
+				otherFinSit.getSteuerdatenZugriff()
+			)
+			&&
+			Objects.equals(
+				getAutomatischePruefungErlaubt(),
+				otherFinSit.getAutomatischePruefungErlaubt()
+			)
+			&&
+			Objects.equals(
+				getSteuerdatenAbfrageStatus(),
+				otherFinSit.getSteuerdatenAbfrageStatus()
+			)
+			&&
+			Objects.equals(
+				getSteuerdatenAbfrageTimestamp(),
+				otherFinSit.getSteuerdatenAbfrageTimestamp()
+			)
+			&&
+			MathUtil.isSame(
+				getGeschaeftsgewinnBasisjahrMinus2(),
+				otherFinSit.getGeschaeftsgewinnBasisjahrMinus2()
+			)
+			&&
+			Objects.equals(
+				getQuellenbesteuert(),
+				otherFinSit.getQuellenbesteuert()
+			)
+			&&
+			Objects.equals(
+				getAlleinigeStekVorjahr(),
+				otherFinSit.getAlleinigeStekVorjahr()
+			)
+			&&
+			Objects.equals(
+				getGemeinsameStekVorjahr(),
+				otherFinSit.getGemeinsameStekVorjahr()
+			)
+			&&
+			Objects.equals(getVeranlagt(), otherFinSit.getVeranlagt())
+			&&
+			Objects.equals(
+				getVeranlagtVorjahr(),
+				otherFinSit.getVeranlagtVorjahr()
+			)
+			&&
+			MathUtil.isSame(
+				getUnterhaltsBeitraege(),
+				otherFinSit.getUnterhaltsBeitraege()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzuegeKinderAusbildung(),
+				otherFinSit.getAbzuegeKinderAusbildung()
+			)
+			&&
+			Objects.equals(
+				getMomentanSelbststaendig(),
+				otherFinSit.getMomentanSelbststaendig()
+			)
+			&&
+			MathUtil.isSame(
+				getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(),
+				otherFinSit
+					.getErsatzeinkommenSelbststaendigkeitBasisjahrMinus2()
+			);
 	}
 
 	@Nullable
@@ -333,7 +445,9 @@ public class FinanzielleSituation extends AbstractFinanzielleSituation {
 		return steuerdatenResponse;
 	}
 
-	public void setSteuerdatenResponse(@Nullable SteuerdatenResponse steuerdatenResponse) {
+	public void setSteuerdatenResponse(
+		@Nullable SteuerdatenResponse steuerdatenResponse
+	) {
 		this.steuerdatenResponse = steuerdatenResponse;
 	}
 }

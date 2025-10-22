@@ -16,8 +16,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
-
+import {CONSTANTS} from '@kibon/shared/model/constants';
 @Injectable({
     providedIn: 'root'
 })

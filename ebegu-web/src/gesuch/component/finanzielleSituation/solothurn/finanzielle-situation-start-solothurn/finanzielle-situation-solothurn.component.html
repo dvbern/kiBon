@@ -32,62 +32,81 @@
             <hr class="header" />
         </div>
     </div>
-    <form #form="ngForm" class="gesuch">
-        <dv-finanzielle-situation-require-x
-            [hideVerguenstigungGewunscht]="true"
-            [(sozialhilfeBezueger)]="
-                model.familienSituation.sozialhilfeBezueger
-            "
-            (sozialhilfeBezuegerChange)="onSozialhilfeBezuegerChange($event)"
-        >
-        </dv-finanzielle-situation-require-x>
-        <div *ngIf="finanzielleSituationRequired && !isGemeinsam()">
-            <dv-steuerveranlagung-erhalten
-                [model]="getModel()"
-                (steuerveranlagungErhaltenChange)="
-                    steuerveranlagungErhaltenChange($event)
+    <div
+        *ngIf="
+            dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
+        "
+        class="well well-status-warten"
+    >
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        <span translate>WARNUNG_GS2_AUSFUELLEN</span>
+    </div>
+    <div
+        *ngIf="
+            !dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
+        "
+    >
+        <form #form="ngForm" class="gesuch">
+            <dv-finanzielle-situation-require-x
+                class="finsit-exception"
+                [hideVerguenstigungGewunscht]="true"
+                [disabled]="readonly"
+                [(sozialhilfeBezueger)]="
+                    model.familienSituation.sozialhilfeBezueger
                 "
-            ></dv-steuerveranlagung-erhalten>
-            <div *ngIf="isSelbststaendigErwerbendAnswered()">
-                <dv-veranlagung-solothurn
-                    *ngIf="hasSteuerveranlagungErhalten()"
+                (sozialhilfeBezuegerChange)="
+                    onSozialhilfeBezuegerChange($event)
+                "
+            >
+            </dv-finanzielle-situation-require-x>
+            <div *ngIf="finanzielleSituationRequired && !isGemeinsam()">
+                <dv-steuerveranlagung-erhalten
                     [model]="getModel()"
-                    [dvValueChange]="onValueChangeFunction"
-                    [readOnly]="gesuchModelManager.isGesuchReadonly()"
-                ></dv-veranlagung-solothurn>
-                <dv-bruttolohn
-                    *ngIf="!hasSteuerveranlagungErhalten()"
-                    [model]="getModel()"
-                    [dvValueChange]="onValueChangeFunction"
-                ></dv-bruttolohn>
-                <dv-massgebendes-einkommen
-                    [massgebendesEinkommen$]="getMassgebendesEinkommen$()"
-                    [nameGS1]="extractFullNameGS1()"
-                    [nameGS2]="extractFullNameGS2()"
-                    [isGemeinsam]="isGemeinsam()"
-                    [antragstellerNummer]="getAntragstellerNummer()"
-                >
-                </dv-massgebendes-einkommen>
+                    (steuerveranlagungErhaltenChange)="
+                        steuerveranlagungErhaltenChange($event)
+                    "
+                ></dv-steuerveranlagung-erhalten>
+                <div *ngIf="isSelbststaendigErwerbendAnswered()">
+                    <dv-veranlagung-solothurn
+                        *ngIf="hasSteuerveranlagungErhalten()"
+                        [model]="getModel()"
+                        [dvValueChange]="onValueChangeFunction"
+                        [readOnly]="gesuchModelManager.isGesuchReadonly()"
+                    ></dv-veranlagung-solothurn>
+                    <dv-bruttolohn
+                        *ngIf="!hasSteuerveranlagungErhalten()"
+                        [model]="getModel()"
+                        [dvValueChange]="onValueChangeFunction"
+                    ></dv-bruttolohn>
+                    <dv-massgebendes-einkommen
+                        [massgebendesEinkommen$]="getMassgebendesEinkommen$()"
+                        [nameGS1]="extractFullNameGS1()"
+                        [nameGS2]="extractFullNameGS2()"
+                        [isGemeinsam]="isGemeinsam()"
+                        [antragstellerNummer]="getAntragstellerNummer()"
+                    >
+                    </dv-massgebendes-einkommen>
+                </div>
             </div>
-        </div>
-        <div *ngIf="finanzielleSituationRequired && isGemeinsam()">
-            <dv-steuerveranlagung-gemeinsam
-                [model]="model"
-            ></dv-steuerveranlagung-gemeinsam>
-            <dv-steuerveranlagung-erhalten
-                *ngIf="isSteuerveranlagungGemeinsam()"
-                (steuerveranlagungErhaltenChange)="
-                    steuerveranlagungErhaltenChange($event)
-                "
-                [model]="getModel()"
-            ></dv-steuerveranlagung-erhalten>
-        </div>
-        <dv-navigation-x
-            (dvSave)="prepareSave($event.onResult)"
-            [dvNext]="true"
-            [dvPrevious]="true"
-            [dvSubStep]="getSubStepIndex()"
-            [dvSubStepName]="getSubStepName()"
-        ></dv-navigation-x>
-    </form>
+            <div *ngIf="finanzielleSituationRequired && isGemeinsam()">
+                <dv-steuerveranlagung-gemeinsam
+                    [model]="model"
+                ></dv-steuerveranlagung-gemeinsam>
+                <dv-steuerveranlagung-erhalten
+                    *ngIf="isSteuerveranlagungGemeinsam()"
+                    (steuerveranlagungErhaltenChange)="
+                        steuerveranlagungErhaltenChange($event)
+                    "
+                    [model]="getModel()"
+                ></dv-steuerveranlagung-erhalten>
+            </div>
+            <dv-navigation-x
+                (dvSave)="prepareSave($event.onResult)"
+                [dvNext]="true"
+                [dvPrevious]="true"
+                [dvSubStep]="getSubStepIndex()"
+                [dvSubStepName]="getSubStepName()"
+            ></dv-navigation-x>
+        </form>
+    </div>
 </div>

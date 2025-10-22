@@ -14,22 +14,25 @@
  */
 
 import {StateService} from '@uirouter/core';
-import {IComponentOptions} from 'angular';
-import * as moment from 'moment';
+import {element, IComponentOptions} from 'angular';
+import moment from 'moment';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {IDVFocusableController} from '../../../app/core/component/IDVFocusableController';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSFamilienstatus} from '../../../models/enums/TSFamilienstatus';
-import {TSRole} from '../../../models/enums/TSRole';
+import {
+    TSRole,
+    TSWizardStepName,
+    TSWizardStepStatus
+} from '@kibon/shared/model/enums';
 import {TSUnterhaltsvereinbarungAnswer} from '../../../models/enums/TSUnterhaltsvereinbarungAnswer';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
-import {TSEinstellung} from '../../../models/TSEinstellung';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSErwerbspensumContainer} from '../../../models/TSErwerbspensumContainer';
 import {TSFamiliensituation} from '../../../models/TSFamiliensituation';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
@@ -39,6 +42,8 @@ import {BerechnungsManager} from '../../service/berechnungsManager';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
+import {KiBonMandant} from '@kibon/shared-model-mandant';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;
@@ -70,7 +75,9 @@ export class ErwerbspensumListViewController
         '$timeout',
         '$translate',
         'EinstellungRS',
-        'EbeguRestUtil'
+        'EbeguRestUtil',
+        'MandantService',
+        'SharedUtilDvShowWarningAngabenVervollstaendingenService'
     ];
 
     public erwerbspensenGS1: Array<TSErwerbspensumContainer> = undefined;
@@ -80,6 +87,7 @@ export class ErwerbspensumListViewController
     public showInfoAusserordentlichenAnspruch: boolean;
     public gemeindeTelefon: string = '';
     public gemeindeEmail: string = '';
+    public mandant: KiBonMandant;
     private isGesuchBeendenFamSitActive = false;
     private anspruchBeschaeftigungAbhaengigkeit: TSAnspruchBeschaeftigungAbhaengigkeitTyp;
 
@@ -95,7 +103,9 @@ export class ErwerbspensumListViewController
         $timeout: ITimeoutService,
         private readonly $translate: ITranslateService,
         private readonly einstellungRS: EinstellungRS,
-        private readonly ebeguRestUtil: EbeguRestUtil
+        private readonly ebeguRestUtil: EbeguRestUtil,
+        private readonly mandantService: MandantService,
+        private readonly sharedUtilDvShowWarningAngabenVervollstaendingenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
     ) {
         super(
             gesuchModelManager,
@@ -137,9 +147,9 @@ export class ErwerbspensumListViewController
     }
 
     private initViewModel(): void {
-        this.erwerbspensumNotAllowed = !(
-            this.getGesuch() && this.getGesuch().hasAnyJugendamtAngebot()
-        );
+        this.erwerbspensumNotAllowed =
+            !(this.getGesuch() && this.getGesuch().hasAnyJugendamtAngebot()) &&
+            this.getGesuch()?.isThereAnyBetreuung();
         if (EbeguUtil.isNotNullOrUndefined(this.getGesuchId())) {
             this.gesuchModelManager
                 .isErwerbspensumRequired(this.getGesuchId())
@@ -173,6 +183,19 @@ export class ErwerbspensumListViewController
             this.gemeindeEmail =
                 this.gesuchModelManager.gemeindeStammdaten.mail;
         }
+
+        // KIBONBE-109 need to know we are in bern
+        this.mandantService.mandant$.subscribe(res => {
+            this.mandant = res;
+        });
+    }
+
+    public isBern() {
+        return this.mandant.hostname === 'be';
+    }
+
+    public showWarningAngabenVervollstaendigen(): boolean {
+        return this.sharedUtilDvShowWarningAngabenVervollstaendingenService.showWarningAngabenVervollstaendigen();
     }
 
     private setShowInfoAusserordentlichenAnspruchIfPossible(): void {
@@ -244,14 +267,6 @@ export class ErwerbspensumListViewController
         index: any
     ): void {
         // Spezielle Meldung, wenn es ein GS ist, der in einer Mutation loescht
-        const principalRole = this.authServiceRS.getPrincipalRole();
-        const gsInMutation =
-            principalRole === TSRole.GESUCHSTELLER &&
-            pensum.vorgaengerId !== undefined;
-        const pensumLaufendOderVergangen =
-            pensum.erwerbspensumJA.gueltigkeit.gueltigAb.isBefore(
-                moment(moment.now())
-            );
         this.errorService.clearAll();
         this.dvDialog
             .showRemoveDialog(
@@ -259,10 +274,7 @@ export class ErwerbspensumListViewController
                 this.form,
                 RemoveDialogController,
                 {
-                    deleteText:
-                        gsInMutation && pensumLaufendOderVergangen
-                            ? 'ERWERBSPENSUM_LOESCHEN_GS_MUTATION'
-                            : '',
+                    deleteText: this.getPopupRemoveBeschaeftigungText(pensum),
                     title: 'ERWERBSPENSUM_LOESCHEN',
                     parentController: this,
                     elementID: elementId + String(index)
@@ -277,6 +289,24 @@ export class ErwerbspensumListViewController
                     this.setShowInfoAusserordentlichenAnspruchIfPossible();
                 });
             });
+    }
+
+    private getPopupRemoveBeschaeftigungText(pensum: TSErwerbspensumContainer) {
+        const principalRole = this.authServiceRS.getPrincipalRole();
+        const gesuchstellerRole = principalRole === TSRole.GESUCHSTELLER;
+        const gsInMutation = this.gesuchModelManager.getGesuch().isMutation();
+        const pensumLaufendOderVergangen =
+            pensum.erwerbspensumJA.gueltigkeit.gueltigAb.isBefore(
+                moment(moment.now())
+            );
+
+        if (gsInMutation && gesuchstellerRole && pensumLaufendOderVergangen) {
+            return 'ERWERBSPENSUM_LOESCHEN_GS_MUTATION';
+        }
+
+        return gsInMutation && pensumLaufendOderVergangen
+            ? 'ERWERBSPENSUM_LOESCHEN_GEMEINDE_MUTATION'
+            : '';
     }
 
     public editPensum(pensum: any, gesuchstellerNumber: any): void {
@@ -333,7 +363,7 @@ export class ErwerbspensumListViewController
     }
 
     public setFocusBack(elementID: string): void {
-        angular.element(`#${elementID}`).first().focus();
+        element(`#${elementID}`).first().focus();
     }
 
     public getErwerbspensumNotRequired(): string {
@@ -365,7 +395,7 @@ export class ErwerbspensumListViewController
     public isErwerbspensumGS2Required(): boolean {
         const hasGS2 = this.gesuchModelManager
             .getFamiliensituation()
-            .hasSecondGesuchsteller(
+            ?.hasSecondGesuchsteller(
                 this.gesuchModelManager.getGesuchsperiode().gueltigkeit
                     .gueltigBis
             );
@@ -442,11 +472,19 @@ export class ErwerbspensumListViewController
         ) {
             return false;
         }
-        return this.isGesuchBeendenFamSitActive
-            ? familiensituation.konkuinatOhneKindBecomesXYearsDuringPeriode(
-                  this.gesuchModelManager.getGesuchsperiode()
-              )
-            : this.isShortKonkubinat(familiensituation);
+
+        if (this.isGesuchBeendenFamSitActive) {
+            return (
+                familiensituation.konkubinatOhneKindBecomesXYearsDuringPeriode(
+                    this.gesuchModelManager.getGesuchsperiode()
+                ) ||
+                familiensituation.konkubinatIsShorterThanXYearsAtAnyTimeAfterStartOfPeriode(
+                    this.gesuchModelManager.getGesuchsperiode()
+                )
+            );
+        }
+
+        return this.isShortKonkubinat(familiensituation);
     }
 
     private isShortKonkubinat(familiensituation: TSFamiliensituation): boolean {

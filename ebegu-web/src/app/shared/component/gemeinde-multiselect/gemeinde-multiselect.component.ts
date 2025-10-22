@@ -21,7 +21,7 @@ import {MatOptionSelectionChange} from '@angular/material/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
-import {TSGemeinde} from '../../../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
 
 let nextId = 0;
 
@@ -36,7 +36,8 @@ let nextId = 0;
     templateUrl: './gemeinde-multiselect.component.html',
     styleUrls: ['./gemeinde-multiselect.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class GemeindeMultiselectComponent implements OnInit {
     @Input() public required: boolean = false;

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {
     ChangeDetectionStrategy,
     CUSTOM_ELEMENTS_SCHEMA,
@@ -32,20 +32,20 @@ import {
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {UpgradeModule} from '@angular/upgrade/static';
+import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateModule} from '@ngx-translate/core';
 import {StateService, UIRouterModule} from '@uirouter/angular';
 import {BehaviorSubject, of} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBerechtigung} from '../../../models/TSBerechtigung';
-import {TSPublicAppConfig} from '../../../models/TSPublicAppConfig';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
 import {GesuchsperiodeRS} from '../../core/service/gesuchsperiodeRS.rest';
-import {WindowRef} from '../../core/service/windowRef.service';
+import {WindowRef} from '@kibon/shared-util-window-ref';
 import {MaterialModule} from '../../shared/material.module';
 import {GemeindeAntragService} from '../services/gemeinde-antrag.service';
 
@@ -89,16 +89,18 @@ const gemeindeRSSpy = jasmine.createSpyObj<GemeindeRS>(GemeindeRS.name, [
     'getGemeindenWithPreExistingLATS'
 ]);
 
-const applicationPropertyRSSpy = jasmine.createSpyObj<ApplicationPropertyRS>(
-    ApplicationPropertyRS.name,
-    ['getPublicPropertiesCached', 'isDevMode']
-);
+const applicationPropertyRSSpy =
+    jasmine.createSpyObj<SharedUtilApplicationPropertyRsService>(
+        SharedUtilApplicationPropertyRsService.name,
+        ['getPublicPropertiesCached', 'isDevMode']
+    );
 
 authServiceSpy.principal$ = new BehaviorSubject(user);
 
 // We mock the dv loading buttondirective to make the setup easier since these are unit tests
 @Directive({
-    selector: '[dvLoadingButtonX]'
+    selector: '[dvLoadingButtonX]',
+    standalone: false
 })
 export class MockDvLoadingButtonXDirective {
     @Input() public type: any;
@@ -119,8 +121,12 @@ describe('GemeindeAntraegeComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            declarations: [
+                GemeindeAntraegeComponent,
+                MockDvLoadingButtonXDirective
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
             imports: [
-                HttpClientModule,
                 UIRouterModule,
                 ReactiveFormsModule,
                 FormsModule,
@@ -129,11 +135,6 @@ describe('GemeindeAntraegeComponent', () => {
                 UpgradeModule,
                 BrowserAnimationsModule
             ],
-            declarations: [
-                GemeindeAntraegeComponent,
-                MockDvLoadingButtonXDirective
-            ],
-            schemas: [CUSTOM_ELEMENTS_SCHEMA],
             providers: [
                 WindowRef,
                 {provide: GesuchsperiodeRS, useValue: gesuchPeriodeSpy},
@@ -147,9 +148,10 @@ describe('GemeindeAntraegeComponent', () => {
                     useValue: gemeindeAntragServiceSpy
                 },
                 {
-                    provide: ApplicationPropertyRS,
+                    provide: SharedUtilApplicationPropertyRsService,
                     useValue: applicationPropertyRSSpy
-                }
+                },
+                provideHttpClient(withInterceptorsFromDi())
             ]
         })
             .overrideComponent(GemeindeAntraegeComponent, {
@@ -178,11 +180,9 @@ describe('GemeindeAntraegeComponent', () => {
         properties.lastenausgleichTagesschulenAktiv = true;
         properties.ferienbetreuungAktiv = true;
         applicationPropertyRSSpy.getPublicPropertiesCached.and.returnValue(
-            of(properties).toPromise()
+            of(properties)
         );
-        applicationPropertyRSSpy.isDevMode.and.returnValue(
-            Promise.resolve(true)
-        );
+        applicationPropertyRSSpy.isDevMode.and.returnValue(of(true));
     });
 
     beforeEach(() => {

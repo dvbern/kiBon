@@ -22,34 +22,35 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.PensumFachstelle;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.IntegrationTyp;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.ValidationMessageUtil;
 
 /**
- *  Fachstellen dürfen nur im Vorschulalter gesetzt werden: Eine soziale oder sprachliche Indikation
- *  nach Artikel 34d Absatz 1 Buchstabe f ASIV liegt vor bei einem Kind, das noch nicht in die Volksschule
- *  eingetreten ist. Dies wird mit diesem Validator überprüft.
+ * Fachstellen dürfen nur im Vorschulalter gesetzt werden: Eine soziale oder sprachliche Indikation
+ * nach Artikel 34d Absatz 1 Buchstabe f ASIV liegt vor bei einem Kind, das noch nicht in die Volksschule
+ * eingetreten ist. Dies wird mit diesem Validator überprüft.
  */
-public class CheckFachstellenValidator implements ConstraintValidator<CheckFachstellen, KindContainer> {
+public class CheckFachstellenValidator implements
+	ConstraintValidator<CheckFachstellen, KindContainer> {
 
 	@Inject
 	private EinstellungService einstellungService;
@@ -63,47 +64,76 @@ public class CheckFachstellenValidator implements ConstraintValidator<CheckFachs
 	public CheckFachstellenValidator() {
 	}
 
-	public CheckFachstellenValidator(@Nonnull EinstellungService einstellungService) {
+	public CheckFachstellenValidator(
+		@Nonnull EinstellungService einstellungService
+	) {
 		this.einstellungService = einstellungService;
 	}
 
 	@Override
-	public boolean isValid(@Nonnull KindContainer kindContainer, ConstraintValidatorContext context) {
+	public boolean isValid(
+		@Nonnull KindContainer kindContainer,
+		ConstraintValidatorContext context
+	) {
 		if (kindContainer.getKindJA() == null
 			|| kindContainer.getKindJA().getPensumFachstelle().isEmpty()
 		) {
 			// Kein PensumFachstelle
 			return true;
 		}
-		for (PensumFachstelle pensumFachstelle: kindContainer.getKindJA().getPensumFachstelle()) {
-			if (pensumFachstelle.getIntegrationTyp() == IntegrationTyp.SOZIALE_INTEGRATION) {
+		for (PensumFachstelle pensumFachstelle : kindContainer.getKindJA()
+			.getPensumFachstelle()) {
+			if (pensumFachstelle.getIntegrationTyp()
+				== IntegrationTyp.SOZIALE_INTEGRATION) {
 				if (!validateSozialeIndikation(kindContainer, context)) {
 					return false;
 				}
 			} else {
 				if (!validateSprachlicheIndikation(kindContainer, context)) {
-					return  false;
+					return false;
 				}
 			}
 		}
 		return true;
 	}
 
-	private boolean validateSozialeIndikation(@Nonnull KindContainer kindContainer, @Nonnull ConstraintValidatorContext context) {
+	private boolean validateSozialeIndikation(
+		@Nonnull KindContainer kindContainer,
+		@Nonnull ConstraintValidatorContext context
+	) {
 		var gemeinde = kindContainer.getGesuch().extractGemeinde();
 		var gesuchsperiode = kindContainer.getGesuch().getGesuchsperiode();
 		var mandant = kindContainer.getGesuch().extractMandant();
-		Einstellung schulstufeEinstellung = findSchulstufeEinstellungFor(EinstellungKey.FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE, gemeinde, gesuchsperiode);
-		var maxEinschulungTyp= convertEinstellungToEinschulungTyp(schulstufeEinstellung);
+		Einstellung schulstufeEinstellung = findSchulstufeEinstellungFor(
+			EinstellungKey.FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+			gemeinde,
+			gesuchsperiode
+		);
+		var maxEinschulungTyp = convertEinstellungToEinschulungTyp(
+			schulstufeEinstellung
+		);
 		Objects.requireNonNull(kindContainer.getKindJA().getEinschulungTyp());
-		if (maxEinschulungTyp.getOrdinalitaet() >= kindContainer.getKindJA().getEinschulungTyp().getOrdinalitaet()) {
+		if (maxEinschulungTyp.getOrdinalitaet()
+			>= kindContainer.getKindJA()
+				.getEinschulungTyp()
+				.getOrdinalitaet()) {
 			return true;
 		}
-		createConstraintViolation("invalid_fachstellen_sozial", maxEinschulungTyp, context, mandant);
+		createConstraintViolation(
+			"invalid_fachstellen_sozial",
+			maxEinschulungTyp,
+			context,
+			mandant
+		);
 		return false;
 	}
 
-	private Einstellung findSchulstufeEinstellungFor(@Nonnull EinstellungKey einstellungKey, @Nonnull Gemeinde gemeinde, @Nonnull Gesuchsperiode gesuchsperiode) {
+	@SuppressWarnings("PMD.CloseResource")
+	private Einstellung findSchulstufeEinstellungFor(
+		@Nonnull EinstellungKey einstellungKey,
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		var em = createEntityManager();
 		Einstellung schulstufeEinstellung = this.einstellungService
 			.findEinstellung(einstellungKey, gemeinde, gesuchsperiode, em);
@@ -125,21 +155,38 @@ public class CheckFachstellenValidator implements ConstraintValidator<CheckFachs
 		}
 	}
 
-	private boolean validateSprachlicheIndikation(@Nonnull KindContainer kindContainer, @Nonnull ConstraintValidatorContext context) {
+	private boolean validateSprachlicheIndikation(
+		@Nonnull KindContainer kindContainer,
+		@Nonnull ConstraintValidatorContext context
+	) {
 		var gemeinde = kindContainer.getGesuch().extractGemeinde();
 		var gesuchsperiode = kindContainer.getGesuch().getGesuchsperiode();
-		Einstellung schulstufeEinstellung = findSchulstufeEinstellungFor(EinstellungKey.SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE, gemeinde, gesuchsperiode);
-		var maxEinschulungTyp= convertEinstellungToEinschulungTyp(schulstufeEinstellung);
+		Einstellung schulstufeEinstellung = findSchulstufeEinstellungFor(
+			EinstellungKey.SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,
+			gemeinde,
+			gesuchsperiode
+		);
+		var maxEinschulungTyp = convertEinstellungToEinschulungTyp(
+			schulstufeEinstellung
+		);
 		Objects.requireNonNull(kindContainer.getKindJA().getEinschulungTyp());
-		if (maxEinschulungTyp.ordinal() >= kindContainer.getKindJA().getEinschulungTyp().ordinal()) {
+		if (maxEinschulungTyp.ordinal()
+			>= kindContainer.getKindJA().getEinschulungTyp().ordinal()) {
 			return true;
 		}
-		createConstraintViolation("invalid_fachstellen_sprachlich", maxEinschulungTyp, context, kindContainer.getGesuch().extractMandant());
+		createConstraintViolation(
+			"invalid_fachstellen_sprachlich",
+			maxEinschulungTyp,
+			context,
+			kindContainer.getGesuch().extractMandant()
+		);
 		return false;
 	}
 
 	@Nonnull
-	private EinschulungTyp convertEinstellungToEinschulungTyp(Einstellung einstellung) {
+	private EinschulungTyp convertEinstellungToEinschulungTyp(
+		Einstellung einstellung
+	) {
 		EinschulungTyp einschulungTyp = null;
 		for (EinschulungTyp typ : EinschulungTyp.values()) {
 			if (typ.name().equals(einstellung.getValue())) {
@@ -147,21 +194,30 @@ public class CheckFachstellenValidator implements ConstraintValidator<CheckFachs
 			}
 		}
 		if (einschulungTyp == null) {
-			throw new EbeguRuntimeException("convertEinstellungToEinschulungTyp", "einschulungtyp "
-				+ einstellung.getValue()
-				+ "nicht gefunden");
+			throw new EbeguRuntimeException(
+				"convertEinstellungToEinschulungTyp",
+				"einschulungtyp "
+					+ einstellung.getValue()
+					+ "nicht gefunden"
+			);
 		}
 		return einschulungTyp;
 	}
 
 	private void createConstraintViolation(
-			@Nonnull String translationKey,
-			@Nonnull EinschulungTyp einschulungTyp,
-			@Nonnull ConstraintValidatorContext context,
-			Mandant mandant) {
+		@Nonnull String translationKey,
+		@Nonnull EinschulungTyp einschulungTyp,
+		@Nonnull ConstraintValidatorContext context,
+		Mandant mandant
+	) {
 		if (context != null) {
 			String message = ValidationMessageUtil.getMessage(translationKey);
-			String einschulungTypTranslated = ServerMessageUtil.translateEnumValue(einschulungTyp, LocaleThreadLocal.get(), mandant);
+			String einschulungTypTranslated = ServerMessageUtil
+				.translateEnumValue(
+					einschulungTyp,
+					LocaleThreadLocal.get(),
+					mandant
+				);
 			message = MessageFormat.format(message, einschulungTypTranslated);
 
 			context.disableDefaultConstraintViolation();

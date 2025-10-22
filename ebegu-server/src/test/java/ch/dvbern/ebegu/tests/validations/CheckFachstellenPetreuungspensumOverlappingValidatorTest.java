@@ -18,7 +18,7 @@ package ch.dvbern.ebegu.tests.validations;
 import java.time.LocalDate;
 
 import javax.annotation.Nonnull;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Fachstelle;
@@ -47,12 +47,32 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 
 	private static final int BASIS_JAHR = 2023;
 	private static final int BASIS_JAHR_PLUS = 2024;
-	private static final LocalDate AUGUST_FIRST = LocalDate.of(BASIS_JAHR, 8, 1);
-	private static final LocalDate OCTOBER_31 = LocalDate.of(BASIS_JAHR, 10, 31);
+	private static final LocalDate AUGUST_FIRST = LocalDate.of(
+		BASIS_JAHR,
+		8,
+		1
+	);
+	private static final LocalDate OCTOBER_31 = LocalDate.of(
+		BASIS_JAHR,
+		10,
+		31
+	);
 	private static final LocalDate NOV_FIRST = LocalDate.of(BASIS_JAHR, 11, 1);
-	private static final LocalDate JAN_FIRST = LocalDate.of(BASIS_JAHR_PLUS, 1, 1);
-	private static final LocalDate FEB_FIRST = LocalDate.of(BASIS_JAHR_PLUS, 2, 1);
-	private static final LocalDate JUL_31 = LocalDate.of(BASIS_JAHR_PLUS, 7, 31);
+	private static final LocalDate JAN_FIRST = LocalDate.of(
+		BASIS_JAHR_PLUS,
+		1,
+		1
+	);
+	private static final LocalDate FEB_FIRST = LocalDate.of(
+		BASIS_JAHR_PLUS,
+		2,
+		1
+	);
+	private static final LocalDate JUL_31 = LocalDate.of(
+		BASIS_JAHR_PLUS,
+		7,
+		31
+	);
 
 	@BeforeEach
 	void setUp() {
@@ -63,7 +83,10 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 	void testCheckBetreuungspensumTwoDatesOverlapping() {
 		DateRange augTilJan = new DateRange(AUGUST_FIRST, JAN_FIRST);
 		DateRange augTilOct = new DateRange(AUGUST_FIRST, OCTOBER_31);
-		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(augTilJan, augTilOct); //overlapping
+		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(
+			augTilJan,
+			augTilOct
+		); //overlapping
 		Assertions.assertFalse(validator.isValid(kindContainer, contextMock));
 	}
 
@@ -71,7 +94,10 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 	void testCheckBetreuungspensumTwoDatesOneDayOverlapping() {
 		DateRange augTilOct = new DateRange(AUGUST_FIRST, OCTOBER_31);
 		DateRange octTilJan = new DateRange(OCTOBER_31, JAN_FIRST);
-		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(augTilOct, octTilJan); //overlapping
+		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(
+			augTilOct,
+			octTilJan
+		); //overlapping
 		Assertions.assertFalse(validator.isValid(kindContainer, contextMock));
 	}
 
@@ -80,13 +106,18 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 		DateRange augTilJan = new DateRange(AUGUST_FIRST, OCTOBER_31);
 		DateRange augTilOct = new DateRange(NOV_FIRST, JAN_FIRST);
 		DateRange octTilJan = new DateRange(OCTOBER_31, JAN_FIRST);
-		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(augTilJan, augTilOct, octTilJan); //overlapping
+		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(
+			augTilJan,
+			augTilOct,
+			octTilJan
+		); //overlapping
 		Assertions.assertFalse(validator.isValid(kindContainer, contextMock));
 	}
 
 	@Test
 	void testCheckBetreuungspensumEmptyNotOverlapping() {
-		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(); //overlapping
+		KindContainer kindContainer =
+			createBetreuungWithFachstellenFachstellen(); //overlapping
 		Assertions.assertTrue(validator.isValid(kindContainer, contextMock));
 	}
 
@@ -94,7 +125,10 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 	void testCheckPensumFachstellenTwoDatesNotOverlapping() {
 		DateRange augTilOct = new DateRange(AUGUST_FIRST, OCTOBER_31);
 		DateRange novTilJan = new DateRange(NOV_FIRST, JAN_FIRST);
-		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(augTilOct, novTilJan); // not overlapping
+		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(
+			augTilOct,
+			novTilJan
+		); // not overlapping
 		Assertions.assertTrue(validator.isValid(kindContainer, contextMock));
 	}
 
@@ -103,7 +137,11 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 		DateRange augTilOct = new DateRange(AUGUST_FIRST, OCTOBER_31);
 		DateRange novTilJan = new DateRange(NOV_FIRST, JAN_FIRST);
 		DateRange febTilJul = new DateRange(FEB_FIRST, JUL_31);
-		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(augTilOct, novTilJan, febTilJul); // not overlapping
+		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(
+			augTilOct,
+			novTilJan,
+			febTilJul
+		); // not overlapping
 		Assertions.assertTrue(validator.isValid(kindContainer, contextMock));
 	}
 
@@ -111,27 +149,37 @@ class CheckFachstellenPetreuungspensumOverlappingValidatorTest {
 	void testCheckPensumFachstellenTwoDateSameOverlapping() {
 		DateRange augTilOct = new DateRange(AUGUST_FIRST, OCTOBER_31);
 		DateRange novTilJan = new DateRange(AUGUST_FIRST, OCTOBER_31);
-		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(augTilOct, novTilJan); // not overlapping
+		KindContainer kindContainer = createBetreuungWithFachstellenFachstellen(
+			augTilOct,
+			novTilJan
+		); // not overlapping
 		Assertions.assertFalse(validator.isValid(kindContainer, contextMock));
 	}
 
 	@Nonnull
-	private KindContainer createBetreuungWithFachstellenFachstellen(DateRange ... gueltigkeiten) {
+	private KindContainer createBetreuungWithFachstellenFachstellen(
+		DateRange... gueltigkeiten
+	) {
 		Betreuung betreuung = TestDataUtil.createDefaultBetreuung();
 		final KindContainer kindContainer = betreuung.getKind();
 		kindContainer.getKindJA().getPensumFachstelle().clear();
 
 		for (DateRange gueltigkeit : gueltigkeiten) {
-			final PensumFachstelle pensumFachstelle = createPensumFachstelle(gueltigkeit);
-			kindContainer.getKindJA().getPensumFachstelle().add(pensumFachstelle);
+			final PensumFachstelle pensumFachstelle = createPensumFachstelle(
+				gueltigkeit
+			);
+			kindContainer.getKindJA()
+				.getPensumFachstelle()
+				.add(pensumFachstelle);
 		}
-
 
 		return kindContainer;
 	}
 
 	@Nonnull
-	private static PensumFachstelle createPensumFachstelle(DateRange gueltigkeit) {
+	private static PensumFachstelle createPensumFachstelle(
+		DateRange gueltigkeit
+	) {
 		final PensumFachstelle pensumFachstelle = new PensumFachstelle();
 		pensumFachstelle.setFachstelle(new Fachstelle());
 		pensumFachstelle.setPensum(40);

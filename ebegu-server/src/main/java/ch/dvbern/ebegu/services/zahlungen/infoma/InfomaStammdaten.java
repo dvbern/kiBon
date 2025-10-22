@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.Zahlung;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
@@ -39,10 +39,16 @@ public abstract class InfomaStammdaten {
 	private final String bankcode;
 	private final String kundenspezifischesFeld2;
 
-	protected InfomaStammdaten(@NonNull Zahlung zahlung, long belegnummer, Locale locale) {
+	protected InfomaStammdaten(
+		@NonNull Zahlung zahlung,
+		long belegnummer,
+		Locale locale
+	) {
 		this.belegnummer = BELEGNUMMER_PRAEFIX + belegnummer;
 		this.externeNummer = getExterneNummer(zahlung, locale);
-		this.buchungsdatum = DATE_FORMAT.format(zahlung.getZahlungsauftrag().getDatumFaellig());
+		this.buchungsdatum = DATE_FORMAT.format(
+			zahlung.getZahlungsauftrag().getDatumFaellig()
+		);
 		this.kontoart = getKontoart();
 		this.kontonummer = getKontonummer(zahlung);
 		this.buchungstext = getBuchungstext(zahlung);
@@ -74,9 +80,11 @@ public abstract class InfomaStammdaten {
 	@Nonnull
 	private String getBuchungstext(Zahlung zahlung) {
 		final String kontoinhaber =
-			zahlung.getZahlungsauftrag().getZahlungslaufTyp() == ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER ?
-				zahlung.getAuszahlungsdaten().getKontoinhaber() :
-				zahlung.getEmpfaengerName();
+			zahlung.getZahlungsauftrag().getZahlungslaufTyp()
+				== ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER ?
+					zahlung.getAuszahlungsdaten()
+						.getKontoinhaber() :
+					zahlung.getEmpfaengerName();
 
 		Objects.requireNonNull(zahlung.getZahlungsauftrag().getMandant());
 		return kontoinhaber + ", Betreuungsgutscheine Stadt Luzern";
@@ -100,7 +108,8 @@ public abstract class InfomaStammdaten {
 			.getPlatz()
 			.getReferenzNummer();
 
-		final String month = zahlung.getZahlungsauftrag().getDatumGeneriert()
+		final String month = zahlung.getZahlungsauftrag()
+			.getDatumGeneriert()
 			.format(DateTimeFormatter.ofPattern("_MM_dd", locale));
 		return formatReferenzNummer(referenzNummer) + month;
 	}
@@ -112,7 +121,10 @@ public abstract class InfomaStammdaten {
 	@Nonnull
 	private String formatReferenzNummer(@Nonnull String referenzNummer) {
 		String[] splittedReferenzNummer = referenzNummer.split("\\.", 3);
-		return splittedReferenzNummer[0] + splittedReferenzNummer[1] + "." + splittedReferenzNummer[2].replace(".", "");
+		return splittedReferenzNummer[0]
+			+ splittedReferenzNummer[1]
+			+ "."
+			+ splittedReferenzNummer[2].replace(".", "");
 	}
 
 	@Nonnull

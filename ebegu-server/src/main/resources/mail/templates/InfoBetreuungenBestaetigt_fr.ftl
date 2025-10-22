@@ -31,7 +31,7 @@ ${templateConfiguration.mailCss}
 	</p>
 	<p>
 		L'ensemble des offres de prise en charge sont approuvées. <#if isSozialdienst>La demande pour ${gesuchsteller.fullName}<#else>La demande</#if> kiBon peut être validée
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/freigabe/${gesuch.id}">ici</a>
+		<a href="${frontendUrl}/gesuch/freigabe/${gesuch.id}">ici</a>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>
 		${gruss}

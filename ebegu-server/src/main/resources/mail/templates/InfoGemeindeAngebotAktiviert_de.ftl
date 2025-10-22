@@ -22,7 +22,7 @@ ${templateConfiguration.mailCss}
 
 <div>
 	<p>Das Angebot ${angebotNameDe} wurde für die Gemeinde ${gemeinde.name} aktiviert.</p>
-	<p>Vervollständigen Sie das Profil für ${angebotNameDe} <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gemeinde/edit/${gemeinde.id}/0">hier</a>.</p>
+	<p>Vervollständigen Sie das Profil für ${angebotNameDe} <a href="${frontendUrl}/gemeinde/edit/${gemeinde.id}/0">hier</a>.</p>
 </div>
 
 </body>

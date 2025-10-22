@@ -20,24 +20,24 @@ import {
     IHttpRequestTransformer,
     IHttpService,
     ILogService,
-    IPromise
+    IPromise,
+    copy
 } from 'angular';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSRole, TSSprache} from '@kibon/shared/model/enums';
 import {IEntityRS} from '../../app/core/service/iEntityRS.rest';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
 import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
 import {TSDokumentTyp} from '../../models/enums/TSDokumentTyp';
-import {TSRole} from '../../models/enums/TSRole';
-import {TSSprache} from '../../models/enums/TSSprache';
+import {TSMusterDokumentTyp} from '../../models/enums/TSMusterDokumentTyp';
 import {TSBenutzer} from '../../models/TSBenutzer';
 import {TSBfsGemeinde} from '../../models/TSBfsGemeinde';
 import {TSExternalClientAssignment} from '../../models/TSExternalClientAssignment';
-import {TSGemeinde} from '../../models/TSGemeinde';
 import {TSGemeindeRegistrierung} from '../../models/TSGemeindeRegistrierung';
 import {TSGemeindeStammdaten} from '../../models/TSGemeindeStammdaten';
 import {TSGemeindeStammdatenLite} from '../../models/TSGemeindeStammdatenLite';
-import {TSGesuchsperiode} from '../../models/TSGesuchsperiode';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
 import {GlobalCacheService} from './globalCacheService';
@@ -146,13 +146,13 @@ export class GemeindeRS implements IEntityRS {
                 gemeinden => {
                     this.principalGemeindenSubject$.next(gemeinden);
 
-                    const gemeindenTS = angular.copy(
+                    const gemeindenTS = copy(
                         gemeinden.filter(g => g.angebotTS)
                     );
-                    const gemeindenFI = angular.copy(
+                    const gemeindenFI = copy(
                         gemeinden.filter(g => g.angebotFI)
                     );
-                    const gemeindenBG = angular.copy(
+                    const gemeindenBG = copy(
                         gemeinden.filter(g => g.angebotBG)
                     );
 
@@ -175,7 +175,7 @@ export class GemeindeRS implements IEntityRS {
             TSRoleUtil.isGemeindeRole(user.getCurrentRole()) &&
             TSRole.SUPER_ADMIN !== user.getCurrentRole()
         ) {
-            return of(angular.copy(user.extractCurrentGemeinden()));
+            return of(copy(user.extractCurrentGemeinden()));
         }
 
         return from(this.getAllGemeinden());
@@ -481,10 +481,13 @@ export class GemeindeRS implements IEntityRS {
             .then(response => response.data as number);
     }
 
-    public downloadMusterDokument(gemeindeId: string): IPromise<BlobPart> {
+    public downloadMusterDokument(
+        gemeindeId: string,
+        dokumentTyp: TSMusterDokumentTyp
+    ): IPromise<BlobPart> {
         return this.$http
             .get(
-                `${this.serviceURL}/musterdokument/${encodeURIComponent(gemeindeId)}`,
+                `${this.serviceURL}/musterdokument/${encodeURIComponent(gemeindeId)}/${encodeURIComponent(dokumentTyp)}`,
                 {responseType: 'blob'}
             )
             .then((response: any) => response.data);

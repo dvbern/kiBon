@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {HttpStatusCode} from '@angular/common/http';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -24,26 +25,28 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {AdminUtilKeycloakAdminRsService} from '@kibon/admin-util-keycloak-admin-rs';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {of} from 'rxjs';
 import {filter, mergeMap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSBenutzerStatus} from '../../../models/enums/TSBenutzerStatus';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBerechtigung} from '../../../models/TSBerechtigung';
 import {TSBerechtigungHistory} from '../../../models/TSBerechtigungHistory';
-import {TSDateRange} from '../../../models/types/TSDateRange';
-import {DateUtil} from '../../../utils/DateUtil';
+import {TSDateRange} from '@kibon/shared/model/entity';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {Permission} from '../../authorisation/Permission';
 import {PERMISSIONS} from '../../authorisation/Permissions';
-import {DvNgRemoveDialogComponent} from '../../core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {Log, LogFactory} from '../../core/logging/LogFactory';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 
 const LOG = LogFactory.createLog('BenutzerComponent');
@@ -52,7 +55,8 @@ const LOG = LogFactory.createLog('BenutzerComponent');
     selector: 'dv-benutzer',
     templateUrl: './benutzer.component.html',
     styleUrls: ['./benutzer.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BenutzerComponent implements OnInit {
     @ViewChild(NgForm) private readonly form: NgForm;
@@ -62,7 +66,7 @@ export class BenutzerComponent implements OnInit {
     public readonly TSRoleUtil = TSRoleUtil;
     public readonly TSBenutzerStatus = TSBenutzerStatus;
 
-    public readonly tomorrow: moment.Moment = DateUtil.today().add(1, 'days');
+    public readonly tomorrow: moment.Moment = MomentUtil.today().add(1, 'days');
 
     public selectedUser: TSBenutzer;
 
@@ -71,7 +75,7 @@ export class BenutzerComponent implements OnInit {
     public isDefaultVerantwortlicher: boolean = false;
     public isDisabled = true;
 
-    private _berechtigungHistoryList: TSBerechtigungHistory[];
+    berechtigungHistoryList: TSBerechtigungHistory[];
 
     public constructor(
         private readonly $transition$: Transition,
@@ -81,12 +85,9 @@ export class BenutzerComponent implements OnInit {
         private readonly authServiceRS: AuthServiceRS,
         private readonly benutzerRS: BenutzerRSX,
         private readonly dialog: MatDialog,
-        private readonly errorService: ErrorService
+        private readonly errorService: ErrorService,
+        private readonly adminUtilKeycloakAdminService: AdminUtilKeycloakAdminRsService
     ) {}
-
-    public get berechtigungHistoryList(): TSBerechtigungHistory[] {
-        return this._berechtigungHistoryList;
-    }
 
     // noinspection JSMethodCanBeStatic
     /**
@@ -146,6 +147,7 @@ export class BenutzerComponent implements OnInit {
         }
 
         if (!this.isMoreThanGesuchstellerRole()) {
+            this.deleteMitarbeiterAccessRole();
             this.doSaveBenutzer();
 
             return;
@@ -181,10 +183,47 @@ export class BenutzerComponent implements OnInit {
                         .pipe(filter(userAccepted => !!userAccepted));
                 })
             )
-            .subscribe(
-                () => this.doSaveBenutzer(),
-                err => LOG.error(err)
-            );
+            .subscribe({
+                next: () => {
+                    this.addMitarbeiterAccessRole();
+                    this.doSaveBenutzer();
+                },
+                error: err => LOG.error(err)
+            });
+    }
+
+    private deleteMitarbeiterAccessRole(): void {
+        this.adminUtilKeycloakAdminService
+            .deleteMitarbeiterAccessRole(this.selectedUser.externalUUID)
+            .subscribe(response => {
+                if (HttpStatusCode.Ok === response.status) {
+                    this.isDisabled = true;
+                    this.navigateBackToUsersList();
+                } else {
+                    LOG.error(
+                        'Failed to delete MITARBEITER_ACCESS role. Caused by: ' +
+                            response.body
+                    );
+                    this.initSelectedUser();
+                }
+            });
+    }
+
+    private addMitarbeiterAccessRole(): void {
+        this.adminUtilKeycloakAdminService
+            .addMitarbeiterAccessRole(this.selectedUser.externalUUID)
+            .subscribe(response => {
+                if (HttpStatusCode.Ok === response.status) {
+                    this.isDisabled = true;
+                    this.navigateBackToUsersList();
+                } else {
+                    LOG.error(
+                        'Failed to add MITARBEITER_ACCESS role. Caused by: ' +
+                            response.body
+                    );
+                    this.initSelectedUser();
+                }
+            });
     }
 
     public inactivateBenutzer(): void {
@@ -196,6 +235,7 @@ export class BenutzerComponent implements OnInit {
             .inactivateBenutzer(this.selectedUser)
             .then(changedUser => {
                 this.selectedUser = changedUser;
+                this.initSelectedUser();
                 this.changeDetectorRef.markForCheck();
             });
     }
@@ -209,6 +249,7 @@ export class BenutzerComponent implements OnInit {
             .reactivateBenutzer(this.selectedUser)
             .then(changedUser => {
                 this.selectedUser = changedUser;
+                this.initSelectedUser();
                 this.changeDetectorRef.markForCheck();
             });
     }
@@ -246,12 +287,14 @@ export class BenutzerComponent implements OnInit {
     private initSelectedUser(): void {
         this.currentBerechtigung = this.selectedUser.berechtigungen[0];
         this.futureBerechtigung = this.selectedUser.berechtigungen[1];
-        this.benutzerRS
-            .getBerechtigungHistoriesForBenutzer(this.selectedUser.username)
-            .then(result => {
-                this._berechtigungHistoryList = result;
-                this.changeDetectorRef.markForCheck();
-            });
+        if (this.isSuperAdmin()) {
+            this.benutzerRS
+                .getBerechtigungHistoriesForBenutzer(this.selectedUser.username)
+                .then(result => {
+                    this.berechtigungHistoryList = result;
+                    this.changeDetectorRef.markForCheck();
+                });
+        }
     }
 
     private isAdminRole(): boolean {
@@ -329,8 +372,8 @@ export class BenutzerComponent implements OnInit {
         this.dialog
             .open(DvNgRemoveDialogComponent, dialogConfig)
             .afterClosed()
-            .subscribe(
-                userAccepted => {
+            .subscribe({
+                next: userAccepted => {
                     // User confirmed removal
                     if (!userAccepted) {
                         return;
@@ -357,39 +400,10 @@ export class BenutzerComponent implements OnInit {
                             }
                         });
                 },
-                () => {
+                error: () => {
                     this.log.error('error in observable. deleteBenutzer');
                 }
-            );
-    }
-
-    public deleteExternalUuidForBenutzer(): void {
-        const dialogConfig = new MatDialogConfig();
-        dialogConfig.data = {
-            title: 'BENUTZER_RESET_CONFIRMATION_TITLE',
-            text: 'BENUTZER_RESET_CONFIRMATION_TEXT'
-        };
-        this.dialog
-            .open(DvNgRemoveDialogComponent, dialogConfig)
-            .afterClosed()
-            .subscribe(
-                userAccepted => {
-                    // User confirmed removal
-                    if (!userAccepted) {
-                        return;
-                    }
-                    this.benutzerRS
-                        .deleteExternalUuidForBenutzer(this.selectedUser)
-                        .then(() => {
-                            this.gotoBenutzerlist('BENUTZER_RESETTED_MESSAGE');
-                        });
-                },
-                () => {
-                    this.log.error(
-                        'error in observable. deleteExternalUuidForBenutzer'
-                    );
-                }
-            );
+            });
     }
 
     private gotoBenutzerlist(infoMessageKey: string): void {
@@ -404,4 +418,6 @@ export class BenutzerComponent implements OnInit {
             );
         });
     }
+
+    protected readonly CONSTANTS = CONSTANTS;
 }

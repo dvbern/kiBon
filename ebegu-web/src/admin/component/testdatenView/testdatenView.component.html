@@ -13,13 +13,17 @@
   ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class="testdaten-view testdatenModul">
+<div class="testdaten-view testdatenModul admin-modul">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <div class="view-title margin-top-10">
-                <h2 [textContent]="'TESTFAELLE_EINFUEGEN' | translate"></h2>
+            <div class="view-title">
+                <h2>{{ 'TESTFAELLE_EINFUEGEN' | translate }}</h2>
+                <hr class="header" />
             </div>
-
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
             <!--selecton fuer parameter die bestimmen wie die testfaelle erzeugt werden-->
             <div class="row margin-top-10">
                 <div class="col-sm-3">
@@ -456,15 +460,13 @@
                             </mat-select>
                         </div>
                         <div class="col-sm-3">
-                            <button
-                                dvNgDebounceClick
-                                (debounceClick)="
-                                    createGemeindeAntragTestDaten()
-                                "
-                                class="dv-btn testfall-button"
+                            <dv-loading-button
+                                type="button"
+                                (buttonClick)="createGemeindeAntragTestDaten()"
+                                class="testfall-button"
                             >
                                 Test-Gemeindeanträge erstellen
-                            </button>
+                            </dv-loading-button>
                         </div>
                     </div>
                 </div>
@@ -497,14 +499,14 @@
                     </mat-select>
                 </div>
                 <div class="col-sm-4">
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="removeGesucheGS()"
-                        class="dv-btn testfall-button"
+                    <dv-loading-button
+                        type="button"
+                        (buttonClick)="removeGesucheGS()"
+                        class="testfall-button"
                         data-test="delete-gesuche"
                     >
                         <span [textContent]="'DELETE' | translate"></span>
-                    </button>
+                    </dv-loading-button>
                 </div>
             </div>
 
@@ -529,13 +531,13 @@
                     </mat-select>
                 </div>
                 <div class="col-sm-4">
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="removeGesuchsperiode()"
-                        class="dv-btn testfall-button"
+                    <dv-loading-button
+                        type="button"
+                        (buttonClick)="removeGesuchsperiode()"
+                        class="testfall-button"
                     >
                         <span [textContent]="'DELETE' | translate"></span>
-                    </button>
+                    </dv-loading-button>
                 </div>
             </div>
 
@@ -591,20 +593,20 @@
                     <mat-datepicker #dpDatumHeirat></mat-datepicker>
                 </div>
                 <div class="col-sm-2 dv-input-container-small">
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="mutiereFallHeirat()"
-                        class="dv-btn testfall-button testfall-button-duo"
+                    <dv-loading-button
+                        type="button"
+                        (buttonClick)="mutiereFallHeirat()"
+                        class="testfall-button"
                     >
                         Heirat
-                    </button>
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="mutiereFallScheidung()"
-                        class="dv-btn testfall-button testfall-button-duo"
+                    </dv-loading-button>
+                    <dv-loading-button
+                        type="button"
+                        (buttonClick)="mutiereFallScheidung()"
+                        class="testfall-button"
                     >
                         Scheidung
-                    </button>
+                    </dv-loading-button>
                 </div>
             </div>
 
@@ -624,38 +626,33 @@
                         class="input-testfall"
                     />
                 </div>
+                <div class="col-md-3">
+                    <label class="md-no-float" for="periode"> Gemeinde: </label>
+                    <mat-select
+                        [(ngModel)]="gemeindeMails"
+                        id="gemeindeMails"
+                        name="gemeindeMails"
+                        class="input-testfall"
+                        data-test="gemeindeMails"
+                    >
+                        <mat-option
+                            *ngFor="let gem of gemeindeList"
+                            [value]="gem"
+                            [attr.data-test]="'gemeindeMails.' + gem.name"
+                        >
+                            {{ gem.name }}
+                        </mat-option>
+                    </mat-select>
+                </div>
                 <div>
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="testAllMails()"
+                    <dv-loading-button
+                        type="button"
+                        (buttonClick)="testAllMails()"
                         data-test="test-all-mails"
-                        class="dv-btn testfall-button testfall-button"
+                        class="testfall-button"
                     >
                         Mails senden
-                    </button>
-                </div>
-            </div>
-
-            <!-- Schulungsdaten -->
-            <h2 class="margin-top-20">Schulung</h2>
-            <div class="row">
-                <div class="col-md-12">
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="resetSchulungsdaten()"
-                        data-test="reset-schulungs-daten"
-                        class="dv-btn testfall-button-duo"
-                    >
-                        Schulungsdaten erstellen
-                    </button>
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="deleteSchulungsdaten()"
-                        data-test="delete-schulungs-daten"
-                        class="dv-btn testfall-button-duo"
-                    >
-                        Schulungsdaten löschen
-                    </button>
+                    </dv-loading-button>
                 </div>
             </div>
 
@@ -663,21 +660,20 @@
             <h2 class="margin-top-20" translate>TUTORIAL_TITLE</h2>
             <div class="row">
                 <div class="col-md-12">
-                    <button
-                        dvNgDebounceClick
-                        (debounceClick)="createTutorialdaten()"
+                    <dv-loading-button
+                        type="button"
+                        (buttonClick)="createTutorialdaten()"
                         data-test="create-tutorial-daten"
-                        class="dv-btn testfall-button-duo"
+                        class="testfall-button testfall-button-thin-margin"
                     >
                         Tutorialdaten erstellen
-                    </button>
+                    </dv-loading-button>
                 </div>
             </div>
 
             <!-- KiBon Anfrage Schnittstelle Testen -->
             <div *ngIf="this.kibonAnfrageTestEnabled">
-                <h2 clas="margin-top-20" translate>KIBON_ANFRAGE</h2>
-
+                <h2 class="margin-top-20" translate>KIBON_ANFRAGE</h2>
                 <div class="row">
                     <div class="col-sm-2 dv-input-container-small">
                         <label class="md-no-float" for="zpvNummer"
@@ -719,8 +715,7 @@
                     </div>
                     <div class="col-sm-2 dv-input-container-small">
                         <label
-                            class="required"
-                            class="md-no-float"
+                            class="required md-no-float"
                             translate
                             for="begu_start_ID"
                             >GEBURTSDATUM</label
@@ -746,13 +741,13 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <button
-                            dvNgDebounceClick
-                            (debounceClick)="testKibonAnfrageResponse()"
-                            class="dv-btn testfall-button-duo"
+                        <dv-loading-button
+                            id="anfrage-schnittstelle-loading-button"
+                            (buttonClick)="testKibonAnfrageResponse()"
+                            class="testfall-button"
                         >
                             KiBon Anfrage Schnittstelle testen
-                        </button>
+                        </dv-loading-button>
                     </div>
                 </div>
             </div>

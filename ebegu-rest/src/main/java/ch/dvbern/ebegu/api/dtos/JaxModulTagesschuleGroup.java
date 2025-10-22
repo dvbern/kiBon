@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -23,9 +23,9 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.enums.ModulTagesschuleIntervall;
 import ch.dvbern.ebegu.enums.ModulTagesschuleName;
@@ -38,31 +38,37 @@ public class JaxModulTagesschuleGroup extends JaxAbstractDTO {
 
 	private static final long serialVersionUID = -1893537808325618626L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private ModulTagesschuleName modulTagesschuleName;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private String identifier;
 
 	@Nullable
 	private String fremdId;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxTextRessource bezeichnung = new JaxTextRessource();
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private String zeitVon;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private String zeitBis;
 
 	@Nullable
 	private BigDecimal verpflegungskosten;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private ModulTagesschuleIntervall intervall;
 
-	@NotNull @Nonnull
+	@NotNull
 	private boolean wirdPaedagogischBetreut;
 
 	private int reihenfolge;
@@ -74,7 +80,9 @@ public class JaxModulTagesschuleGroup extends JaxAbstractDTO {
 		return modulTagesschuleName;
 	}
 
-	public void setModulTagesschuleName(@Nonnull ModulTagesschuleName modulTagesschuleName) {
+	public void setModulTagesschuleName(
+		@Nonnull ModulTagesschuleName modulTagesschuleName
+	) {
 		this.modulTagesschuleName = modulTagesschuleName;
 	}
 
@@ -96,11 +104,12 @@ public class JaxModulTagesschuleGroup extends JaxAbstractDTO {
 		this.zeitBis = bis;
 	}
 
+	@Nonnull
 	public String getIdentifier() {
 		return identifier;
 	}
 
-	public void setIdentifier(String identifier) {
+	public void setIdentifier(@Nonnull String identifier) {
 		this.identifier = identifier;
 	}
 

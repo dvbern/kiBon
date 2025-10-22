@@ -7,8 +7,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
@@ -34,7 +34,6 @@ public class ZahlungsfileGeneratorInfoma implements IZahlungsfileGenerator {
 	@Inject
 	private EbeguConfiguration ebeguConfiguration;
 
-
 	@Override
 	@Nonnull
 	public byte[] generateZahlungfile(
@@ -42,43 +41,71 @@ public class ZahlungsfileGeneratorInfoma implements IZahlungsfileGenerator {
 		@Nonnull GemeindeStammdaten stammdaten,
 		@Nonnull Locale locale
 	) {
-		final String currentUsername = principalBean.getBenutzer().getUsername();
+		final String currentUsername = principalBean.getBenutzer()
+			.getUsername();
 		final boolean isDevmode = ebeguConfiguration.getIsDevmode();
 		Objects.requireNonNull(zahlungsauftrag.getMandant());
 		// Die nextInfomaBelegnummer darf erst bei der Freigabe der Zahlung auf dem Mandant
 		// hochgezaehlt werden!
-		long nextInfomaBelegnummer = zahlungsauftrag.getMandant().getNextInofmaBelegnummer(zahlungsauftrag.getZahlungslaufTyp());
+		long nextInfomaBelegnummer = zahlungsauftrag.getMandant()
+			.getNextInofmaBelegnummer(zahlungsauftrag.getZahlungslaufTyp());
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(InfomaHeader.with(isDevmode, currentUsername));
 		final List<Zahlung> zahlungenSorted = zahlungsauftrag.getZahlungen()
 			.stream()
-			.filter(zahlung -> zahlung.getBetragTotalZahlung().signum() == 1)
+			.filter(
+				zahlung -> zahlung.getBetragTotalZahlung().signum() == 1
+			)
 			.sorted()
 			.collect(Collectors.toList());
 		for (Zahlung zahlung : zahlungenSorted) {
 			// Wenn die Zahlungsinformationen nicht komplett ausgefuellt sind, fahren wir hier nicht weiter.
-			if (!zahlung.getAuszahlungsdaten().isZahlungsinformationValid(true)) {
-				throw new EbeguRuntimeException(KibonLogLevel.INFO,
+			if (!zahlung.getAuszahlungsdaten()
+				.isZahlungsinformationValid(true)) {
+				throw new EbeguRuntimeException(
+					KibonLogLevel.INFO,
 					"wrapZahlungsauftrag",
-					zahlungsauftrag.getZahlungslaufTyp() == ZahlungslaufTyp.GEMEINDE_INSTITUTION
-						? ErrorCodeEnum.ERROR_ZAHLUNGSINFORMATIONEN_INSTITUTION_INCOMPLETE
-						: ErrorCodeEnum.ERROR_ZAHLUNGSINFORMATIONEN_ANTRAGSTELLER_INCOMPLETE,
-					zahlung.getEmpfaengerName());
+					zahlungsauftrag.getZahlungslaufTyp()
+						== ZahlungslaufTyp.GEMEINDE_INSTITUTION ?
+							ErrorCodeEnum.ERROR_ZAHLUNGSINFORMATIONEN_INSTITUTION_INCOMPLETE :
+							ErrorCodeEnum.ERROR_ZAHLUNGSINFORMATIONEN_ANTRAGSTELLER_INCOMPLETE,
+					zahlung.getEmpfaengerName()
+				);
 			}
 
-			sb.append(InfomaStammdatenZahlung.with(zahlung, nextInfomaBelegnummer, locale));
-			sb.append(InfomaStammdatenFinanzbuchhaltung.with(zahlung, nextInfomaBelegnummer, locale));
+			sb.append(
+				InfomaStammdatenZahlung.with(
+					zahlung,
+					nextInfomaBelegnummer,
+					locale
+				)
+			);
+			sb.append(
+				InfomaStammdatenFinanzbuchhaltung.with(
+					zahlung,
+					nextInfomaBelegnummer,
+					locale
+				)
+			);
 			nextInfomaBelegnummer++;
 
-			if (zahlungsauftrag.getZahlungslaufTyp().isBelegnummerHigherThanMax(nextInfomaBelegnummer)) {
-				throw new EbeguRuntimeException(KibonLogLevel.ERROR,
+			if (zahlungsauftrag.getZahlungslaufTyp()
+				.isBelegnummerHigherThanMax(nextInfomaBelegnummer)) {
+				throw new EbeguRuntimeException(
+					KibonLogLevel.ERROR,
 					"infomaBelegNummerMaxReached",
-					ErrorCodeEnum.ERROR_INFOMA_BELEGNUMMER_MAX_REACHED);
+					ErrorCodeEnum.ERROR_INFOMA_BELEGNUMMER_MAX_REACHED
+				);
 			}
 		}
-		sb.append(InfomaFooter.with(zahlungenSorted.size(), zahlungsauftrag.getBetragTotalAuftrag()));
-		return sb.toString().getBytes(StandardCharsets.ISO_8859_1);
+		sb.append(
+			InfomaFooter.with(
+				zahlungenSorted.size(),
+				zahlungsauftrag.getBetragTotalAuftrag()
+			)
+		);
+		return sb.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
 	@Override

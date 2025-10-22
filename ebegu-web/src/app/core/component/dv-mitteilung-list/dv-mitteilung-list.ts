@@ -26,7 +26,8 @@ import {GesuchRS} from '../../../../gesuch/service/gesuchRS.rest';
 import {TSMitteilungEvent} from '../../../../models/enums/TSMitteilungEvent';
 import {TSMitteilungStatus} from '../../../../models/enums/TSMitteilungStatus';
 import {TSMitteilungTeilnehmerTyp} from '../../../../models/enums/TSMitteilungTeilnehmerTyp';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSMitteilungTyp} from '../../../../models/enums/TSMitteilungTyp';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBetreuung} from '../../../../models/TSBetreuung';
 import {TSBetreuungsmitteilung} from '../../../../models/TSBetreuungsmitteilung';
 import {TSDossier} from '../../../../models/TSDossier';
@@ -38,8 +39,8 @@ import {IMitteilungenStateParams} from '../../../mitteilungen/mitteilungen.route
 import {PosteingangService} from '../../../posteingang/service/posteingang.service';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
 import {TSDemoFeature} from '../../directive/dv-hide-feature/TSDemoFeature';
-import {LogFactory} from '../../logging/LogFactory';
-import {BetreuungRS} from '../../service/betreuungRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
 import {InstitutionRS} from '../../service/institutionRS.rest';
 import {MitteilungRS} from '../../service/mitteilungRS.rest';
 import IFormController = angular.IFormController;
@@ -261,8 +262,8 @@ export class DVMitteilungListController implements IOnInit {
                     : this.ebeguUtil.translateString('GESUCHSTELLER')
             });
         }
-        this.institutionRS.findAllInstitutionen(this.dossier.id).subscribe(
-            institutionen => {
+        this.institutionRS.findAllInstitutionen(this.dossier.id).subscribe({
+            next: institutionen => {
                 institutionen.forEach(institution =>
                     this.empfaengerValues.push({
                         key: institution,
@@ -270,8 +271,8 @@ export class DVMitteilungListController implements IOnInit {
                     })
                 );
             },
-            error => LOG.error(error)
-        );
+            error: error => LOG.error(error)
+        });
     }
 
     public getCurrentMitteilung(): TSMitteilung {
@@ -734,13 +735,15 @@ export class DVMitteilungListController implements IOnInit {
     }
 
     private isBetreuungsmitteilung(mitteilung: TSMitteilung): boolean {
-        return mitteilung instanceof TSBetreuungsmitteilung;
+        return (
+            mitteilung.mitteilungTyp === TSMitteilungTyp.BETREUUNGSMITTEILUNG
+        );
     }
 
     private isNeueVeranlagungsmitteilung(mitteilung: TSMitteilung): boolean {
         return (
-            mitteilung.empfaengerTyp === TSMitteilungTeilnehmerTyp.JUGENDAMT &&
-            mitteilung.senderTyp === TSMitteilungTeilnehmerTyp.JUGENDAMT
+            mitteilung.mitteilungTyp ===
+            TSMitteilungTyp.NEUE_VERANLAGUNGS_MITTEILUNG
         );
     }
 

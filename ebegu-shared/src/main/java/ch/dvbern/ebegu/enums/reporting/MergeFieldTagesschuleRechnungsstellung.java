@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.enums.reporting;
@@ -29,65 +29,179 @@ import static ch.dvbern.oss.lib.excelmerger.converters.StandardConverters.BOOLEA
 import static ch.dvbern.oss.lib.excelmerger.converters.StandardConverters.DATE_CONVERTER;
 import static ch.dvbern.oss.lib.excelmerger.converters.StandardConverters.STRING_CONVERTER;
 
-public enum MergeFieldTagesschuleRechnungsstellung implements MergeFieldProvider {
+public enum MergeFieldTagesschuleRechnungsstellung implements
+	MergeFieldProvider {
 
-	tagesschuleRechungsstellungTitle(new SimpleMergeField<>("tagesschuleRechungsstellungTitle", STRING_CONVERTER)),
-	datumErstelltTitle(new SimpleMergeField<>("datumErstelltTitle", STRING_CONVERTER)),
-	tagesschuleTitle(new SimpleMergeField<>("tagesschuleTitle", STRING_CONVERTER)),
-	kindTitle(new SimpleMergeField<>("kindTitle", STRING_CONVERTER)),
-	nachnameKindTitle(new SimpleMergeField<>("nachnameKindTitle", STRING_CONVERTER)),
-	vornameKindTitle(new SimpleMergeField<>("vornameKindTitle", STRING_CONVERTER)),
-	geburtsdatumTitle(new SimpleMergeField<>("geburtsdatumTitle", STRING_CONVERTER)),
-	referenzNummerTitle(new SimpleMergeField<>("referenznummerTitle", STRING_CONVERTER)),
-	rechungsadresseTitle(new SimpleMergeField<>("rechungsadresseTitle", STRING_CONVERTER)),
-	rechnungsadresseVornameTitle(new SimpleMergeField<>("rechnungsadresseVornameTitle", STRING_CONVERTER)),
-	rechnungsadresseNachnameTitle(new SimpleMergeField<>("rechnungsadresseNachnameTitle", STRING_CONVERTER)),
-	rechnungsadresseOrganisationTitle(new SimpleMergeField<>("rechnungsadresseOrganisationTitle", STRING_CONVERTER)),
-	rechnungsadresseStrasseTitle(new SimpleMergeField<>("rechnungsadresseStrasseTitle", STRING_CONVERTER)),
-	rechnungsadresseHausnummerTitle(new SimpleMergeField<>("rechnungsadresseHausnummerTitle", STRING_CONVERTER)),
-	rechnungsadressePlzTitle(new SimpleMergeField<>("rechnungsadressePlzTitle", STRING_CONVERTER)),
-	rechnungsadresseOrtTitle(new SimpleMergeField<>("rechnungsadresseOrtTitle", STRING_CONVERTER)),
-	monatTitle(new SimpleMergeField<>("monatTitle", STRING_CONVERTER)),
-	massgebendesEinkommenVorFamAbzugTitle(new SimpleMergeField<>("massgebendesEinkommenVorFamAbzugTitle", STRING_CONVERTER)),
-	famGroesseTitle(new SimpleMergeField<>("famGroesseTitle", STRING_CONVERTER)),
-	massgebendesEinkommenNachFamAbzugTitle(new SimpleMergeField<>("massgebendesEinkommenNachFamAbzugTitle", STRING_CONVERTER)),
-	einkommensverschlechterungTitle(new SimpleMergeField<>("einkommensverschlechterungTitle", STRING_CONVERTER)),
-	einkommensverschlechterungAnnuliertTitle(new SimpleMergeField<>("einkommensverschlechterungAnnuliertTitle", STRING_CONVERTER)),
-	erklaerungEinkommenTitle(new SimpleMergeField<>("erklaerungEinkommenTitle", STRING_CONVERTER)),
-	eintrittsdatumTitle(new SimpleMergeField<>("eintrittsdatumTitle", STRING_CONVERTER)),
-	gebuehrProStundeMitBetreuungTitle(new SimpleMergeField<>("gebuehrProStundeMitBetreuungTitle", STRING_CONVERTER)),
-	gebuehrProStundeOhneBetreuungTitle(new SimpleMergeField<>("gebuehrProStundeOhneBetreuungTitle", STRING_CONVERTER)),
+	tagesschuleRechungsstellungTitle(
+		new SimpleMergeField<>(
+			"tagesschuleRechungsstellungTitle",
+			STRING_CONVERTER
+		)
+	), datumErstelltTitle(
+		new SimpleMergeField<>("datumErstelltTitle", STRING_CONVERTER)
+	), tagesschuleTitle(
+		new SimpleMergeField<>("tagesschuleTitle", STRING_CONVERTER)
+	), kindTitle(
+		new SimpleMergeField<>("kindTitle", STRING_CONVERTER)
+	), nachnameKindTitle(
+		new SimpleMergeField<>("nachnameKindTitle", STRING_CONVERTER)
+	), vornameKindTitle(
+		new SimpleMergeField<>("vornameKindTitle", STRING_CONVERTER)
+	), geburtsdatumTitle(
+		new SimpleMergeField<>("geburtsdatumTitle", STRING_CONVERTER)
+	), referenzNummerTitle(
+		new SimpleMergeField<>("referenznummerTitle", STRING_CONVERTER)
+	), rechungsadresseTitle(
+		new SimpleMergeField<>("rechungsadresseTitle", STRING_CONVERTER)
+	), rechnungsadresseVornameTitle(
+		new SimpleMergeField<>(
+			"rechnungsadresseVornameTitle",
+			STRING_CONVERTER
+		)
+	), rechnungsadresseNachnameTitle(
+		new SimpleMergeField<>(
+			"rechnungsadresseNachnameTitle",
+			STRING_CONVERTER
+		)
+	), rechnungsadresseOrganisationTitle(
+		new SimpleMergeField<>(
+			"rechnungsadresseOrganisationTitle",
+			STRING_CONVERTER
+		)
+	), rechnungsadresseStrasseTitle(
+		new SimpleMergeField<>(
+			"rechnungsadresseStrasseTitle",
+			STRING_CONVERTER
+		)
+	), rechnungsadresseHausnummerTitle(
+		new SimpleMergeField<>(
+			"rechnungsadresseHausnummerTitle",
+			STRING_CONVERTER
+		)
+	), rechnungsadressePlzTitle(
+		new SimpleMergeField<>("rechnungsadressePlzTitle", STRING_CONVERTER)
+	), rechnungsadresseOrtTitle(
+		new SimpleMergeField<>("rechnungsadresseOrtTitle", STRING_CONVERTER)
+	), monatTitle(
+		new SimpleMergeField<>("monatTitle", STRING_CONVERTER)
+	), massgebendesEinkommenVorFamAbzugTitle(
+		new SimpleMergeField<>(
+			"massgebendesEinkommenVorFamAbzugTitle",
+			STRING_CONVERTER
+		)
+	), famGroesseTitle(
+		new SimpleMergeField<>("famGroesseTitle", STRING_CONVERTER)
+	), massgebendesEinkommenNachFamAbzugTitle(
+		new SimpleMergeField<>(
+			"massgebendesEinkommenNachFamAbzugTitle",
+			STRING_CONVERTER
+		)
+	), einkommensverschlechterungTitle(
+		new SimpleMergeField<>(
+			"einkommensverschlechterungTitle",
+			STRING_CONVERTER
+		)
+	), einkommensverschlechterungAnnuliertTitle(
+		new SimpleMergeField<>(
+			"einkommensverschlechterungAnnuliertTitle",
+			STRING_CONVERTER
+		)
+	), erklaerungEinkommenTitle(
+		new SimpleMergeField<>("erklaerungEinkommenTitle", STRING_CONVERTER)
+	), eintrittsdatumTitle(
+		new SimpleMergeField<>("eintrittsdatumTitle", STRING_CONVERTER)
+	), gebuehrProStundeMitBetreuungTitle(
+		new SimpleMergeField<>(
+			"gebuehrProStundeMitBetreuungTitle",
+			STRING_CONVERTER
+		)
+	), gebuehrProStundeOhneBetreuungTitle(
+		new SimpleMergeField<>(
+			"gebuehrProStundeOhneBetreuungTitle",
+			STRING_CONVERTER
+		)
+	),
 
-	datumErstellt(new SimpleMergeField<>("datumErstellt", DATE_CONVERTER)),
-	tagesschule(new SimpleMergeField<>("tagesschule", STRING_CONVERTER)),
-	nachnameKind(new SimpleMergeField<>("nachnameKind", STRING_CONVERTER)),
-	vornameKind(new SimpleMergeField<>("vornameKind", STRING_CONVERTER)),
-	geburtsdatumKind(new SimpleMergeField<>("geburtsdatumKind", DATE_CONVERTER)),
-	referenzNummer(new SimpleMergeField<>("referenznummer", STRING_CONVERTER)),
-	rechnungsadresseVorname(new SimpleMergeField<>("rechnungsadresseVorname", STRING_CONVERTER)),
-	rechnungsadresseNachname(new SimpleMergeField<>("rechnungsadresseNachname", STRING_CONVERTER)),
-	rechnungsadresseOrganisation(new SimpleMergeField<>("rechnungsadresseOrganisation", STRING_CONVERTER)),
-	rechnungsadresseStrasse(new SimpleMergeField<>("rechnungsadresseStrasse", STRING_CONVERTER)),
-	rechnungsadresseHausnummer(new SimpleMergeField<>("rechnungsadresseHausnummer", STRING_CONVERTER)),
-	rechnungsadressePlz(new SimpleMergeField<>("rechnungsadressePlz", STRING_CONVERTER)),
-	rechnungsadresseOrt(new SimpleMergeField<>("rechnungsadresseOrt", STRING_CONVERTER)),
-	monat(new SimpleMergeField<>("monat", DATE_CONVERTER)),
-	massgebendesEinkommenVorFamAbzug(new SimpleMergeField<>("massgebendesEinkommenVorFamAbzug", BIGDECIMAL_CONVERTER)),
-	famGroesse(new SimpleMergeField<>("famGroesse", BIGDECIMAL_CONVERTER)),
-	massgebendesEinkommenNachFamAbzug(new SimpleMergeField<>("massgebendesEinkommenNachFamAbzug", BIGDECIMAL_CONVERTER)),
-	einkommensverschlechterung(new SimpleMergeField<>("einkommensverschlechterung", BOOLEAN_X_CONVERTER)),
-	einkommensverschlechterungAnnuliert(new SimpleMergeField<>("einkommensverschlechterungAnnuliert", BOOLEAN_X_CONVERTER)),
-	erklaerungEinkommen(new SimpleMergeField<>("erklaerungEinkommen", STRING_CONVERTER)),
-	eintrittsdatum(new SimpleMergeField<>("eintrittsdatum", DATE_CONVERTER)),
-	gebuehrProStundeMitBetreuung(new SimpleMergeField<>("gebuehrProStundeMitBetreuung", BIGDECIMAL_CONVERTER)),
-	gebuehrProStundeOhneBetreuung(new SimpleMergeField<>("gebuehrProStundeOhneBetreuung", BIGDECIMAL_CONVERTER)),
+	datumErstellt(
+		new SimpleMergeField<>("datumErstellt", DATE_CONVERTER)
+	), tagesschule(
+		new SimpleMergeField<>("tagesschule", STRING_CONVERTER)
+	), nachnameKind(
+		new SimpleMergeField<>("nachnameKind", STRING_CONVERTER)
+	), vornameKind(
+		new SimpleMergeField<>("vornameKind", STRING_CONVERTER)
+	), geburtsdatumKind(
+		new SimpleMergeField<>("geburtsdatumKind", DATE_CONVERTER)
+	), referenzNummer(
+		new SimpleMergeField<>("referenznummer", STRING_CONVERTER)
+	), rechnungsadresseVorname(
+		new SimpleMergeField<>("rechnungsadresseVorname", STRING_CONVERTER)
+	), rechnungsadresseNachname(
+		new SimpleMergeField<>("rechnungsadresseNachname", STRING_CONVERTER)
+	), rechnungsadresseOrganisation(
+		new SimpleMergeField<>(
+			"rechnungsadresseOrganisation",
+			STRING_CONVERTER
+		)
+	), rechnungsadresseStrasse(
+		new SimpleMergeField<>("rechnungsadresseStrasse", STRING_CONVERTER)
+	), rechnungsadresseHausnummer(
+		new SimpleMergeField<>(
+			"rechnungsadresseHausnummer",
+			STRING_CONVERTER
+		)
+	), rechnungsadressePlz(
+		new SimpleMergeField<>("rechnungsadressePlz", STRING_CONVERTER)
+	), rechnungsadresseOrt(
+		new SimpleMergeField<>("rechnungsadresseOrt", STRING_CONVERTER)
+	), monat(
+		new SimpleMergeField<>("monat", DATE_CONVERTER)
+	), massgebendesEinkommenVorFamAbzug(
+		new SimpleMergeField<>(
+			"massgebendesEinkommenVorFamAbzug",
+			BIGDECIMAL_CONVERTER
+		)
+	), famGroesse(
+		new SimpleMergeField<>("famGroesse", BIGDECIMAL_CONVERTER)
+	), massgebendesEinkommenNachFamAbzug(
+		new SimpleMergeField<>(
+			"massgebendesEinkommenNachFamAbzug",
+			BIGDECIMAL_CONVERTER
+		)
+	), einkommensverschlechterung(
+		new SimpleMergeField<>(
+			"einkommensverschlechterung",
+			BOOLEAN_X_CONVERTER
+		)
+	), einkommensverschlechterungAnnuliert(
+		new SimpleMergeField<>(
+			"einkommensverschlechterungAnnuliert",
+			BOOLEAN_X_CONVERTER
+		)
+	), erklaerungEinkommen(
+		new SimpleMergeField<>("erklaerungEinkommen", STRING_CONVERTER)
+	), eintrittsdatum(
+		new SimpleMergeField<>("eintrittsdatum", DATE_CONVERTER)
+	), gebuehrProStundeMitBetreuung(
+		new SimpleMergeField<>(
+			"gebuehrProStundeMitBetreuung",
+			BIGDECIMAL_CONVERTER
+		)
+	), gebuehrProStundeOhneBetreuung(
+		new SimpleMergeField<>(
+			"gebuehrProStundeOhneBetreuung",
+			BIGDECIMAL_CONVERTER
+		)
+	),
 
 	repeatRow(new RepeatRowMergeField("repeatRow"));
 
 	@Nonnull
 	private final MergeField<?> mergeField;
 
-	<V> MergeFieldTagesschuleRechnungsstellung(@Nonnull MergeField<V> mergeField) {
+	<V> MergeFieldTagesschuleRechnungsstellung(
+		@Nonnull MergeField<V> mergeField
+	) {
 		this.mergeField = mergeField;
 	}
 

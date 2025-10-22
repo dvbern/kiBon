@@ -14,13 +14,15 @@
  */
 
 import {IComponentOptions, IController, IRootScopeService} from 'angular';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {BUILDTSTAMP, VERSION} from '../../../../environments/version';
-import {DateUtil} from '../../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {TSVersionCheckEvent} from '../../events/TSVersionCheckEvent';
-import {LogFactory} from '../../logging/LogFactory';
-import {ApplicationPropertyRS} from '../../rest-services/applicationPropertyRS.rest';
 import {HttpVersionInterceptor} from '../../service/version/HttpVersionInterceptor';
 import {VersionService} from '../../service/version/version.service';
 import IWindowService = angular.IWindowService;
@@ -41,10 +43,11 @@ export class DVVersionController implements IController {
         '$rootScope',
         'HttpVersionInterceptor',
         '$window',
-        'ApplicationPropertyRS',
+        'SharedUtilApplicationPropertyRsService',
         '$translate',
         'AuthServiceRS',
-        'VersionService'
+        'VersionService',
+        'MandantService'
     ];
 
     public backendVersion: string;
@@ -54,6 +57,7 @@ export class DVVersionController implements IController {
     public showBlog: boolean = false;
     public currentYear: number;
     public currentNode: string;
+    public mandant: KiBonMandant;
 
     // We have two angular versions which both have an interceptor for a version mismatch, but we only want to
     // notify the users once, therefore we track here whether we already displayed a mismatch
@@ -63,10 +67,11 @@ export class DVVersionController implements IController {
         private readonly $rootScope: IRootScopeService,
         private readonly httpVersionInterceptor: HttpVersionInterceptor,
         private readonly $window: IWindowService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly $translate: ITranslateService,
         private readonly authServiceRS: AuthServiceRS,
-        private readonly versionService: VersionService
+        private readonly versionService: VersionService,
+        private readonly mandantService: MandantService
     ) {}
 
     public $onInit(): void {
@@ -82,32 +87,36 @@ export class DVVersionController implements IController {
             }
         );
         // Anular X Version Mismatch
-        this.versionService.$backendVersionChange.subscribe(
-            version => {
+        this.versionService.$backendVersionChange.subscribe({
+            next: version => {
                 this.backendVersion = version;
             },
-            error => LOG.error(error)
-        );
-        this.versionService.$versionMismatch.subscribe(
-            backendVersion => {
+            error: error => LOG.error(error)
+        });
+        this.versionService.$versionMismatch.subscribe({
+            next: backendVersion => {
                 this.saveVersionAndHandleMismatch(backendVersion);
                 this.versionService.versionMismatchHandled();
             },
-            error => LOG.error(error)
-        );
+            error: error => LOG.error(error)
+        });
 
-        this.currentYear = DateUtil.currentYear();
+        this.currentYear = MomentUtil.currentYear();
 
         // we use this as a healthcheck after we register the listener for VERSION_MISMATCH
-        this.applicationPropertyRS.getBackgroundColorFromServer();
+        this.applicationPropertyRS.getBackgroundColorFromServer().subscribe();
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then(value => (this.currentNode = value.currentNode));
+            .subscribe(value => (this.currentNode = value.currentNode));
         // Den Blog für Gesuchsteller nicht anzeigen (Wird nur bei Reload angepasst,
         // sollte aber für unsere Zwecke genügen)
-        this.showBlog = this.authServiceRS.isOneOfRoles(
-            TSRoleUtil.getAllRolesButGesuchsteller()
-        );
+        this.mandantService.mandant$.subscribe(mandant => {
+            this.mandant = mandant;
+        });
+        this.showBlog =
+            this.authServiceRS.isOneOfRoles(
+                TSRoleUtil.getAllRolesButGesuchsteller()
+            ) && this.mandant === MANDANTS.BERN;
     }
 
     private saveVersionAndHandleMismatch(backendVersion: string): void {

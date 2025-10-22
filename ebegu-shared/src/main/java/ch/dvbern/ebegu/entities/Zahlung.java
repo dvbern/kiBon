@@ -23,29 +23,31 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.ZahlungStatus;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.MathUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
+import org.hibernate.usertype.UserTypeLegacyBridge;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -54,22 +56,29 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
  */
 @Audited
 @Entity
-public class Zahlung extends AbstractMutableEntity implements Comparable<Zahlung> {
+public class Zahlung extends AbstractMutableEntity implements
+	Comparable<Zahlung> {
 
 	private static final long serialVersionUID = 8975199813240034719L;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_Zahlung_zahlungsauftrag_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_Zahlung_zahlungsauftrag_id"), nullable = false)
 	private Zahlungsauftrag zahlungsauftrag;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false, length = 16)
 	@Size(min = Constants.UUID_LENGTH, max = Constants.UUID_LENGTH)
-	@Type( type = "string-uuid-binary" )
+	@Type(
+		value = UserTypeLegacyBridge.class,
+		parameters = @Parameter(name = UserTypeLegacyBridge.TYPE_NAME_PARAM_KEY,
+			value = "string-uuid-binary"))
 	private String empfaengerId;	// Kann fuer verschiedene Zahlungslauftypen etwas unterschiedliches bedeuten
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
 	private String empfaengerName; 	// Kann fuer verschiedene Zahlungslauftypen etwas unterschiedliches bedeuten
@@ -79,18 +88,21 @@ public class Zahlung extends AbstractMutableEntity implements Comparable<Zahlung
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
 	private String empfaenger2Name; 	// Kann fuer verschiedene Zahlungslauftypen etwas unterschiedliches bedeuten
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private  BetreuungsangebotTyp betreuungsangebotTyp;
+	private BetreuungsangebotTyp betreuungsangebotTyp;
 
 	@Nullable
 	@Column(nullable = true)
 	private String traegerschaftName;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false, cascade = CascadeType.ALL)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_zahlung_auszahlungsdaten_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_zahlung_auszahlungsdaten_id"), nullable = false)
 	private Auszahlungsdaten auszahlungsdaten;
 
 	@NotNull
@@ -100,7 +112,10 @@ public class Zahlung extends AbstractMutableEntity implements Comparable<Zahlung
 
 	@Nonnull
 	@Valid
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "zahlung")
+	@OneToMany(cascade = CascadeType.ALL,
+		fetch = FetchType.LAZY,
+		orphanRemoval = true,
+		mappedBy = "zahlung")
 	private List<Zahlungsposition> zahlungspositionen = new ArrayList<>();
 
 	@Nonnull
@@ -146,7 +161,9 @@ public class Zahlung extends AbstractMutableEntity implements Comparable<Zahlung
 		return betreuungsangebotTyp;
 	}
 
-	public void setBetreuungsangebotTyp(@Nonnull BetreuungsangebotTyp betreuungsangebotTyp) {
+	public void setBetreuungsangebotTyp(
+		@Nonnull BetreuungsangebotTyp betreuungsangebotTyp
+	) {
 		this.betreuungsangebotTyp = betreuungsangebotTyp;
 	}
 
@@ -164,7 +181,9 @@ public class Zahlung extends AbstractMutableEntity implements Comparable<Zahlung
 		return auszahlungsdaten;
 	}
 
-	public void setAuszahlungsdaten(@Nonnull Auszahlungsdaten auszahlungsdaten) {
+	public void setAuszahlungsdaten(
+		@Nonnull Auszahlungsdaten auszahlungsdaten
+	) {
 		this.auszahlungsdaten = auszahlungsdaten;
 	}
 
@@ -181,7 +200,9 @@ public class Zahlung extends AbstractMutableEntity implements Comparable<Zahlung
 		return zahlungspositionen;
 	}
 
-	public void setZahlungspositionen(@Nonnull List<Zahlungsposition> zahlungspositionen) {
+	public void setZahlungspositionen(
+		@Nonnull List<Zahlungsposition> zahlungspositionen
+	) {
 		this.zahlungspositionen = zahlungspositionen;
 	}
 
@@ -198,7 +219,10 @@ public class Zahlung extends AbstractMutableEntity implements Comparable<Zahlung
 	public int compareTo(@Nonnull Zahlung o) {
 		CompareToBuilder builder = new CompareToBuilder();
 		builder.append(this.getEmpfaengerName(), o.getEmpfaengerName());
-		builder.append(this.getZahlungsauftrag().getDatumFaellig(), o.getZahlungsauftrag().getDatumFaellig());
+		builder.append(
+			this.getZahlungsauftrag().getDatumFaellig(),
+			o.getZahlungsauftrag().getDatumFaellig()
+		);
 		return builder.toComparison();
 	}
 
@@ -214,19 +238,34 @@ public class Zahlung extends AbstractMutableEntity implements Comparable<Zahlung
 			return false;
 		}
 		final Zahlung otherZahlung = (Zahlung) other;
-		return getStatus() == otherZahlung.getStatus() &&
-			Objects.equals(getEmpfaengerId(), otherZahlung.getEmpfaengerId()) &&
-			MathUtil.isSame(getBetragTotalZahlung(), otherZahlung.getBetragTotalZahlung());
+		return getStatus() == otherZahlung.getStatus()
+			&&
+			Objects.equals(
+				getEmpfaengerId(),
+				otherZahlung.getEmpfaengerId()
+			)
+			&&
+			MathUtil.isSame(
+				getBetragTotalZahlung(),
+				otherZahlung.getBetragTotalZahlung()
+			);
 	}
 
 	@Nonnull
 	public Institution extractInstitution() {
-		final Optional<Zahlungsposition> firstZahlungsposition = getZahlungspositionen().stream().findFirst();
+		final Optional<Zahlungsposition> firstZahlungsposition =
+			getZahlungspositionen().stream().findFirst();
 		if (firstZahlungsposition.isPresent()) {
 			final AbstractPlatz platz =
-				firstZahlungsposition.get().getVerfuegungZeitabschnitt().getVerfuegung().getPlatz();
+				firstZahlungsposition.get()
+					.getVerfuegungZeitabschnitt()
+					.getVerfuegung()
+					.getPlatz();
 			return platz.getInstitutionStammdaten().getInstitution();
 		}
-		throw new EbeguEntityNotFoundException("extractInstitution", "No Institution found for Zahlung " + getId());
+		throw new EbeguEntityNotFoundException(
+			"extractInstitution",
+			"No Institution found for Zahlung " + getId()
+		);
 	}
 }

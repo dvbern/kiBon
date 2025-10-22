@@ -15,36 +15,37 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {IComponentOptions, IPromise} from 'angular';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../app/core/directive/dv-dialog/dv-dialog';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../../../app/core/rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../../app/core/service/downloadRS.rest';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {
     isAtLeastFreigegeben,
     TSAntragStatus
 } from '../../../../models/enums/TSAntragStatus';
-import {TSEinstellungKey} from '../../../../models/enums/TSEinstellungKey';
-import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
+import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {TSFreigabe} from '../../../../models/TSFreigabe';
-import {DateUtil} from '../../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {FreigabeDialogController} from '../../dialog/FreigabeDialogController';
-import {FreigabeService} from '../../freigabe.service';
+import {AbstractGesuchViewController} from '../../../component/abstractGesuchView';
 import {BerechnungsManager} from '../../../service/berechnungsManager';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../service/wizardStepManager';
-import {AbstractGesuchViewController} from '../../../component/abstractGesuchView';
+import {FreigabeDialogController} from '../../dialog/FreigabeDialogController';
+import {FreigabeZurueckziehenDialogController} from '../../dialog/FreigabeZurueckziehenDialogController';
+import {FreigabeService} from '../../freigabe.service';
 import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
 
-const dialogTemplate = require('../../../dialog/removeDialogTemplate.html');
+const RemoveDialogTemplate = require('../../../dialog/removeDialogTemplate.html');
+const ZurueckziehenDialogTemplate = require('../../../dialog/zurueckziehenDialogTemplate.html');
 
 const LOG = LogFactory.createLog('FreigabeViewComponent');
 
@@ -64,7 +65,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
         'DvDialog',
         'DownloadRS',
         '$scope',
-        'ApplicationPropertyRS',
+        'SharedUtilApplicationPropertyRsService',
         'AuthServiceRS',
         '$timeout',
         '$translate',
@@ -85,7 +86,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
         private readonly dvDialog: DvDialog,
         private readonly downloadRS: DownloadRS,
         $scope: IScope,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly authServiceRS: AuthServiceRS,
         $timeout: ITimeoutService,
         private readonly $translate: TranslateService,
@@ -131,7 +132,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
         if (this.isGesuchValid()) {
             this.form.$setPristine();
             return this.dvDialog.showDialog(
-                dialogTemplate,
+                RemoveDialogTemplate,
                 FreigabeDialogController,
                 {
                     parentController: this
@@ -164,23 +165,35 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
         );
     }
 
-    public freigabeZurueckziehen(): void {
+    public freigabeZurueckziehen(): IPromise<void> {
         const gesuchID = this.gesuchModelManager.getGesuch().id;
-        this.gesuchModelManager.antragZurueckziehen(gesuchID);
+        return this.dvDialog
+            .showDialog(
+                ZurueckziehenDialogTemplate,
+                FreigabeZurueckziehenDialogController,
+                {
+                    parentController: this
+                }
+            )
+            .then(() => {
+                this.gesuchModelManager.antragZurueckziehen(gesuchID);
+            });
     }
 
     private initDevModeParameter(): void {
-        this.applicationPropertyRS.isDevMode().then((response: boolean) => {
-            // Simulation nur fuer SuperAdmin freischalten
-            const isSuperadmin = this.authServiceRS.isOneOfRoles(
-                TSRoleUtil.getSuperAdminRoles()
-            );
-            // Die Simulation ist nur im Dev-Mode moeglich und nur, wenn das Gesuch im Status FREIGABEQUITTUNG ist
-            this.showGesuchFreigebenSimulationButton =
-                response &&
-                this.isGesuchInStatus(TSAntragStatus.FREIGABEQUITTUNG) &&
-                isSuperadmin;
-        });
+        this.applicationPropertyRS
+            .isDevMode()
+            .subscribe((response: boolean) => {
+                // Simulation nur fuer SuperAdmin freischalten
+                const isSuperadmin = this.authServiceRS.isOneOfRoles(
+                    TSRoleUtil.getSuperAdminRoles()
+                );
+                // Die Simulation ist nur im Dev-Mode moeglich und nur, wenn das Gesuch im Status FREIGABEQUITTUNG ist
+                this.showGesuchFreigebenSimulationButton =
+                    response &&
+                    this.isGesuchInStatus(TSAntragStatus.FREIGABEQUITTUNG) &&
+                    isSuperadmin;
+            });
     }
 
     public isGesuchFreigegeben(): boolean {
@@ -225,7 +238,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
                 this.gesuchModelManager
                     .openGesuch(gesuchId)
                     .then(() => {
-                        this.downloadRS.startDownload(
+                        this.downloadRS.startDownloadGeneratedPDF(
                             downloadFile.accessToken,
                             downloadFile.filename,
                             false,
@@ -245,7 +258,7 @@ export class FreigabeViewController extends AbstractGesuchViewController<any> {
             this.gesuchModelManager.getGesuch() &&
             this.gesuchModelManager.getGesuch().freigabeDatum
         ) {
-            return DateUtil.momentToLocalDateFormat(
+            return MomentUtil.momentToLocalDateFormat(
                 this.gesuchModelManager.getGesuch().freigabeDatum,
                 'DD.MM.YYYY'
             );

@@ -15,7 +15,7 @@
 package ch.dvbern.ebegu.api.dtos;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.api.enums.JaxExternalBetreuungsangebotTyp;
 import ch.dvbern.ebegu.api.enums.JaxExternalBetreuungsstatus;
@@ -28,7 +28,6 @@ public class JaxExternalAnmeldungFerieninsel extends JaxExternalAnmeldung {
 
 	private static final long serialVersionUID = 5211944101244853396L;
 
-
 	@Nonnull
 	private JaxExternalFerieninsel ferieninsel;
 
@@ -38,9 +37,17 @@ public class JaxExternalAnmeldungFerieninsel extends JaxExternalAnmeldung {
 		@Nonnull String keyInstitution,
 		@Nonnull JaxExternalFerieninsel ferieninsel,
 		@Nonnull String kindName,
-		@Nonnull String kindVorname) {
+		@Nonnull String kindVorname
+	) {
 
-		super(referenznummer, betreuungsstatus, JaxExternalBetreuungsangebotTyp.FERIENINSEL, keyInstitution, kindName, kindVorname);
+		super(
+			referenznummer,
+			betreuungsstatus,
+			JaxExternalBetreuungsangebotTyp.FERIENINSEL,
+			keyInstitution,
+			kindName,
+			kindVorname
+		);
 		this.ferieninsel = ferieninsel;
 	}
 

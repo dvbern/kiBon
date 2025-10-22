@@ -18,8 +18,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSGemeinde} from '../../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../../models/TSGesuchsperiode';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 
@@ -31,7 +30,8 @@ import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
  */
 @Component({
     selector: 'dv-ng-gemeinde-dialog',
-    templateUrl: './dv-ng-gemeinde-dialog.template.html'
+    templateUrl: './dv-ng-gemeinde-dialog.template.html',
+    standalone: false
 })
 export class DvNgGemeindeDialogComponent {
     public selectedGemeinde: TSGemeinde;

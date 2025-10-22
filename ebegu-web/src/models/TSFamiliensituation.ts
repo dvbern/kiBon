@@ -13,15 +13,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {EbeguUtil} from '../utils/EbeguUtil';
 import {TSFamilienstatus} from './enums/TSFamilienstatus';
 import {TSGesuchstellerKardinalitaet} from './enums/TSGesuchstellerKardinalitaet';
 import {TSUnterhaltsvereinbarungAnswer} from './enums/TSUnterhaltsvereinbarungAnswer';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
-import {TSAdresse} from './TSAdresse';
-import {TSGesuchsperiode} from './TSGesuchsperiode';
-import {TSDateRange} from './types/TSDateRange';
+import {
+    TSAbstractMutableEntity,
+    TSAdresse,
+    TSDateRange,
+    TSGesuchsperiode
+} from '@kibon/shared/model/entity';
 
 export class TSFamiliensituation extends TSAbstractMutableEntity {
     private _familienstatus: TSFamilienstatus;
@@ -262,7 +264,7 @@ export class TSFamiliensituation extends TSAbstractMutableEntity {
         return konkubinatPlusYears.isSameOrBefore(endOfPeriode);
     }
 
-    public konkuinatOhneKindBecomesXYearsDuringPeriode(
+    public konkubinatOhneKindBecomesXYearsDuringPeriode(
         periode: TSGesuchsperiode
     ): boolean {
         if (this.familienstatus !== TSFamilienstatus.KONKUBINAT_KEIN_KIND) {
@@ -294,7 +296,7 @@ export class TSFamiliensituation extends TSAbstractMutableEntity {
         const konkubinat_start: moment.Moment = moment(
             this.startKonkubinat.clone()
         );
-        return konkubinat_start.add({years: this.minDauerKonkubinat});
+        return konkubinat_start.add(this.minDauerKonkubinat, 'years');
     }
 
     public getStartKonkubinatEndofMonthPlusMinDauer(): moment.Moment {

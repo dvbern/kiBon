@@ -1,13 +1,13 @@
 /*
  * Copyright (C) 2021 DV Bern AG,
- *  Switzerland
+ * Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation,
- *  either version 3 of the
+ * either version 3 of the
  * License,
- *  or (at your option) any later version.
+ * or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  *
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not,
- *  see <https://www.gnu.org/licenses/>.
+ * see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.dto;
@@ -31,29 +31,19 @@ import ch.dvbern.ebegu.entities.Adresse;
 
 public class FinanzielleSituationStartDTO {
 
-	final private @Nonnull
-	Boolean sozialhilfeBezueger;
-	final private @Nullable
-	String zustaendigeAmtsstelle;
-	final private @Nullable
-	String nameBetreuer;
-	final private @Nullable
-	Boolean gemeinsameSteuererklaerung;
+	final private @Nonnull Boolean sozialhilfeBezueger;
+	final private @Nullable String zustaendigeAmtsstelle;
+	final private @Nullable String nameBetreuer;
+	final private @Nullable Boolean gemeinsameSteuererklaerung;
 	final private Boolean verguenstigungGewuenscht;
 	final private boolean keineMahlzeitenverguenstigungGewuenscht;
-	final private @Nullable
-	String iban;
-	final private @Nullable
-	String kontoinhaber;
+	final private @Nullable String iban;
+	final private @Nullable String kontoinhaber;
 	final private boolean abweichendeZahlungsadresse;
-	final private @Nullable
-	Adresse zahlungsadresse;
-	final private @Nullable
-	String infomaKreditorennummer;
-	final private @Nullable
-	String infomaBankcode;
-	final private @Nullable
-	LocalDate finSitAenderungGueltigAbDatum;
+	final private @Nullable Adresse zahlungsadresse;
+	final private @Nullable String infomaKreditorennummer;
+	final private @Nullable String infomaBankcode;
+	final private @Nullable LocalDate finSitAenderungGueltigAbDatum;
 
 	final private boolean auszahlungAusserhalbVonKibon;
 
@@ -71,13 +61,15 @@ public class FinanzielleSituationStartDTO {
 		@Nullable String infomaKreditorennummer,
 		@Nullable String infomaBankcode,
 		@Nullable LocalDate finSitAenderungGueltigAbDatum,
-		boolean auszahlungAusserhalbVonKibon) {
+		boolean auszahlungAusserhalbVonKibon
+	) {
 		this.sozialhilfeBezueger = sozialhilfeBezueger;
 		this.zustaendigeAmtsstelle = zustaendigeAmtsstelle;
 		this.nameBetreuer = nameBetreuer;
 		this.gemeinsameSteuererklaerung = gemeinsameSteuererklaerung;
 		this.verguenstigungGewuenscht = verguenstigungGewuenscht;
-		this.keineMahlzeitenverguenstigungGewuenscht = keineMahlzeitenverguenstigungGewuenscht;
+		this.keineMahlzeitenverguenstigungGewuenscht =
+			keineMahlzeitenverguenstigungGewuenscht;
 		this.iban = iban;
 		this.kontoinhaber = kontoinhaber;
 		this.abweichendeZahlungsadresse = abweichendeZahlungsadresse;

@@ -19,6 +19,5 @@ package ch.dvbern.ebegu.enums;
  * Enum fuer Lifespan des Download Accesstokens
  */
 public enum TokenLifespan {
-	SHORT,
-	LONG
+	SHORT, LONG
 }

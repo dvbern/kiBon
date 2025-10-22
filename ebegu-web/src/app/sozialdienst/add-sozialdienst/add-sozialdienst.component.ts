@@ -22,13 +22,14 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {StateService} from '@uirouter/core';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSSozialdienstStatus} from '../../../models/enums/TSSozialdienstStatus';
 import {TSSozialdienst} from '../../../models/sozialdienst/TSSozialdienst';
 import {DvNgGesuchstellerDialogComponent} from '../../core/component/dv-ng-gesuchsteller-dialog/dv-ng-gesuchsteller-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {Log, LogFactory} from '../../core/logging/LogFactory';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
 
@@ -36,7 +37,8 @@ import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
     selector: 'dv-add-sozialdienst',
     templateUrl: './add-sozialdienst.component.html',
     styleUrls: ['./add-sozialdienst.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AddSozialdienstComponent implements OnInit {
     private readonly log: Log = LogFactory.createLog(
@@ -150,4 +152,6 @@ export class AddSozialdienstComponent implements OnInit {
                     )
             );
     }
+
+    protected readonly CONSTANTS = CONSTANTS;
 }

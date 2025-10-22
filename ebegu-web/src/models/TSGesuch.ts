@@ -13,18 +13,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {EbeguUtil} from '../utils/EbeguUtil';
-import {isAtLeastFreigegeben, TSAntragStatus} from './enums/TSAntragStatus';
-import {TSAntragTyp} from './enums/TSAntragTyp';
 import {
     getBgInstitutionenBetreuungsangebote,
     getSchulamtBetreuungsangebotTypValues,
     isJugendamt,
-    isOfAnyBetreuungsangebotTyp,
-    TSBetreuungsangebotTyp
-} from './enums/betreuung/TSBetreuungsangebotTyp';
-import {TSBetreuungsstatus} from './enums/betreuung/TSBetreuungsstatus';
+    isOfAnyBetreuungsangebotTyp
+} from '@kibon/shared/util-fn/betreuungsangebot-typ';
+import moment from 'moment';
+import {EbeguUtil} from '../utils/EbeguUtil';
+import {
+    TSBetreuungsangebotTyp,
+    TSBetreuungsstatus
+} from '@kibon/shared/model/enums';
+import {isAtLeastFreigegeben, TSAntragStatus} from './enums/TSAntragStatus';
+import {TSAntragTyp} from './enums/TSAntragTyp';
 import {TSEingangsart} from './enums/TSEingangsart';
 import {TSFinanzielleSituationTyp} from './enums/TSFinanzielleSituationTyp';
 import {TSFinSitStatus} from './enums/TSFinSitStatus';

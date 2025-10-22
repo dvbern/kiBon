@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -21,11 +21,11 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import ch.dvbern.ebegu.enums.PensumUnits;
 
@@ -83,7 +83,9 @@ public class JaxAbstractDecimalPensumDTO extends JaxAbstractDateRangedDTO {
 		return monatlicheBetreuungskosten;
 	}
 
-	public void setMonatlicheBetreuungskosten(@Nonnull BigDecimal monatlicheBetreuungskosten) {
+	public void setMonatlicheBetreuungskosten(
+		@Nonnull BigDecimal monatlicheBetreuungskosten
+	) {
 		this.monatlicheBetreuungskosten = monatlicheBetreuungskosten;
 	}
 
@@ -92,7 +94,9 @@ public class JaxAbstractDecimalPensumDTO extends JaxAbstractDateRangedDTO {
 		return stuendlicheVollkosten;
 	}
 
-	public void setStuendlicheVollkosten(@Nullable BigDecimal stuendlicheVollkosten) {
+	public void setStuendlicheVollkosten(
+		@Nullable BigDecimal stuendlicheVollkosten
+	) {
 		this.stuendlicheVollkosten = stuendlicheVollkosten;
 	}
 

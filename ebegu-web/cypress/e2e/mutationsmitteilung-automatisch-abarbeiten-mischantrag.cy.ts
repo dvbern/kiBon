@@ -29,12 +29,13 @@ import {
     VerfuegenPO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '../../libs/shared/model/shared-model-mandant/src/lib/MANDANTS';
 import {PosteingangPO} from '../page-objects/antrag/posteingang.po';
 import {SidenavPO} from '../page-objects/antrag/sidenav.po';
 import {VerfuegungPO} from '../page-objects/antrag/verfuegung.po';
 
 describe('Kibon - Testet das Feature der automatischen Abarbeitung von Mutationsmitteilungen, KIBON-3240', () => {
-    const superAdmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const superAdmin = getUser('[1-Superadmin] Super User');
     const sachbearbeitungBGGemeinde = getUser('[6-P-SB-BG] Jörg Becker');
     const sachbearbeitungTSGemeinde = getUser('[6-P-SB-TS] Julien Schuler');
     const sachbearbeitungKita = getUser(
@@ -44,6 +45,7 @@ describe('Kibon - Testet das Feature der automatischen Abarbeitung von Mutations
     const betreuungspensumInMutation = 90;
 
     beforeEach(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
         cy.login(superAdmin);
         cy.visit('/#/faelle');
@@ -55,9 +57,9 @@ describe('Kibon - Testet das Feature der automatischen Abarbeitung von Mutations
             gemeinde: 'Paris',
             periode: '2022/23',
             betreuungsstatus: 'bestaetigt',
-            besitzerin: '[5-GS] Heinrich Mueller'
+            besitzerin: '[5-GS] Heinrich Müller'
         });
-        cy.login('[5-GS] Heinrich Mueller');
+        cy.login('[5-GS] Heinrich Müller');
         cy.visit('/#/dossier/gesuchstellerDashboard');
         GesuchstellendeDashboardPO.getAntragBearbeitenButton('2022/23').click();
         cy.waitForRequest(

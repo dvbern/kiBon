@@ -1,1 +1,6 @@
 package-lock.json
+
+.angular
+libs/tooling/nx-plugin/src/generators/lib/files
+
+.angular

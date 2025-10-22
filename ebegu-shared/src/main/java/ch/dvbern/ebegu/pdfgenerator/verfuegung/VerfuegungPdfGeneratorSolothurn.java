@@ -8,14 +8,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.verfuegung;
+
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
@@ -33,23 +37,25 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
 import static ch.dvbern.ebegu.pdfgenerator.PdfUtil.DEFAULT_FONT_SIZE;
 import static ch.dvbern.lib.invoicegenerator.pdf.PdfUtilities.DEFAULT_MULTIPLIED_LEADING;
 
-public class VerfuegungPdfGeneratorSolothurn extends AbstractVerfuegungPdfGenerator {
+public class VerfuegungPdfGeneratorSolothurn extends
+	AbstractVerfuegungPdfGenerator {
 
-	private static final String TITLE_ERWAEGUNGEN = "PdfGeneration_Titel_Erwaegungen";
-	private static final String TITLE_SACHVERHALT = "PdfGeneration_Titel_Sachverhalt";
-	private static final String NICHT_EINTRETEN_CONTENT_9 = "PdfGeneration_NichtEintreten_Content_9";
+	private static final String TITLE_ERWAEGUNGEN =
+		"PdfGeneration_Titel_Erwaegungen";
+	private static final String TITLE_SACHVERHALT =
+		"PdfGeneration_Titel_Sachverhalt";
+	private static final String NICHT_EINTRETEN_CONTENT_9 =
+		"PdfGeneration_NichtEintreten_Content_9";
 
 	public VerfuegungPdfGeneratorSolothurn(
 		@Nonnull Betreuung betreuung,
 		@Nonnull GemeindeStammdaten stammdaten,
 		@Nonnull Art art,
-		VerfuegungPdfGeneratorKonfiguration verfuegungPdfGeneratorKonfiguration) {
+		VerfuegungPdfGeneratorKonfiguration verfuegungPdfGeneratorKonfiguration
+	) {
 		super(betreuung, stammdaten, art, verfuegungPdfGeneratorKonfiguration);
 	}
 
@@ -59,25 +65,55 @@ public class VerfuegungPdfGeneratorSolothurn extends AbstractVerfuegungPdfGenera
 		PdfPTable table = new PdfPTable(2);
 		// Init
 		PdfUtil.setTableDefaultStyles(table);
-		table.getDefaultCell().setPaddingBottom(DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE);
-		PdfPCell titelCell = new PdfPCell(new Phrase(gemeindeStammdaten.getStandardDokTitle(),
-			getPageConfiguration().getFonts().getFontBold()));
-		titelCell.setPaddingBottom(DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE * 2);
+		table.getDefaultCell()
+			.setPaddingBottom(
+				DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE
+			);
+		PdfPCell titelCell = new PdfPCell(
+			new Phrase(
+				gemeindeStammdaten.getStandardDokTitle(),
+				getPageConfiguration().getFonts().getFontBold()
+			)
+		);
+		titelCell.setPaddingBottom(
+			DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE * 2
+		);
 		titelCell.setPaddingLeft(0);
 		titelCell.setBorder(0);
 		table.addCell(titelCell);
 		final Font defaultFont = getPageConfiguration().getFonts().getFont();
 		table.addCell(new Phrase("", defaultFont));
-		table.addCell(createCellZeroPaddingLeftAndBorder(gemeindeStammdaten.getStandardDokUnterschriftName(), defaultFont));
-		table.addCell(createCellZeroPaddingLeftAndBorder(gemeindeStammdaten.getStandardDokUnterschriftName2(), defaultFont));
-		table.addCell(new Phrase(gemeindeStammdaten.getStandardDokUnterschriftTitel(),
-			defaultFont));
-		table.addCell(new Phrase(gemeindeStammdaten.getStandardDokUnterschriftTitel2(),
-			defaultFont));
+		table.addCell(
+			createCellZeroPaddingLeftAndBorder(
+				gemeindeStammdaten.getStandardDokUnterschriftName(),
+				defaultFont
+			)
+		);
+		table.addCell(
+			createCellZeroPaddingLeftAndBorder(
+				gemeindeStammdaten.getStandardDokUnterschriftName2(),
+				defaultFont
+			)
+		);
+		table.addCell(
+			new Phrase(
+				gemeindeStammdaten.getStandardDokUnterschriftTitel(),
+				defaultFont
+			)
+		);
+		table.addCell(
+			new Phrase(
+				gemeindeStammdaten.getStandardDokUnterschriftTitel2(),
+				defaultFont
+			)
+		);
 		return table;
 	}
 
-	private PdfPCell createCellZeroPaddingLeftAndBorder(@Nullable String text, Font font) {
+	private PdfPCell createCellZeroPaddingLeftAndBorder(
+		@Nullable String text,
+		Font font
+	) {
 		PdfPCell cell = new PdfPCell(new Phrase(text, font));
 		cell.setPaddingLeft(0);
 		cell.setBorder(0);
@@ -87,7 +123,8 @@ public class VerfuegungPdfGeneratorSolothurn extends AbstractVerfuegungPdfGenera
 	@Nonnull
 	@Override
 	protected PdfPTable createVerfuegungTable() {
-		final List<VerfuegungZeitabschnitt> zeitabschnitte = getVerfuegungZeitabschnitt();
+		final List<VerfuegungZeitabschnitt> zeitabschnitte =
+			getVerfuegungZeitabschnitt();
 		VerfuegungTable verfuegungTable = new VerfuegungTable(
 			zeitabschnitte,
 			getPageConfiguration(),
@@ -108,7 +145,8 @@ public class VerfuegungPdfGeneratorSolothurn extends AbstractVerfuegungPdfGenera
 	@Override
 	protected void createDokumentNichtEintretten(
 		@Nonnull Document document,
-		@Nonnull PdfGenerator generator) {
+		@Nonnull PdfGenerator generator
+	) {
 
 		createFusszeileNichtEintreten(generator);
 		document.add(createAnrede());
@@ -123,16 +161,24 @@ public class VerfuegungPdfGeneratorSolothurn extends AbstractVerfuegungPdfGenera
 
 		document.newPage();
 
-		document.add(PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_7)));
-		document.add(PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_9)));
+		document.add(
+			PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_7))
+		);
+		document.add(
+			PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_9))
+		);
 		document.add(createAntragNichtEintreten());
 		addZusatzTextIfAvailable(document);
 	}
 
 	private Element createParagraphErwaegungenNichtEintretten() {
-		Paragraph paragraph = PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_4));
+		Paragraph paragraph = PdfUtil.createParagraph(
+			translate(NICHT_EINTRETEN_CONTENT_4)
+		);
 		paragraph.add(PdfUtil.createSuperTextInText("1"));
-		paragraph.add(PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_5)));
+		paragraph.add(
+			PdfUtil.createParagraph(translate(NICHT_EINTRETEN_CONTENT_5))
+		);
 		return paragraph;
 	}
 
@@ -140,7 +186,8 @@ public class VerfuegungPdfGeneratorSolothurn extends AbstractVerfuegungPdfGenera
 		return PdfUtil.createBoldParagraph(title, 1);
 	}
 
-	private void createFusszeileNichtEintreten(@Nonnull PdfGenerator generator) throws DocumentException {
+	private void createFusszeileNichtEintreten(@Nonnull PdfGenerator generator)
+		throws DocumentException {
 		createFusszeile(
 			generator.getDirectContent(),
 			Lists.newArrayList(translate(FUSSZEILE_1_NICHT_EINTRETEN))

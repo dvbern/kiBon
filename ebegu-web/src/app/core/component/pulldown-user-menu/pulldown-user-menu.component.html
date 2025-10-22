@@ -26,17 +26,20 @@
 </button>
 
 <mat-menu #menu="matMenu" class="pulldown-user-menu">
-    <dv-pulldown-user-menu-button
-        [allowedRoles]="getSuperAdminRoles()"
-        [uiSRef]="'admin.debugging'"
-        >{{ 'DEBUGGING' | translate }}</dv-pulldown-user-menu-button
-    >
-    <dv-pulldown-user-menu-button
-        *ngIf="testfaelleEnabled"
-        [allowedRoles]="getSuperAdminRoles()"
-        [uiSRef]="'admin.testdaten'"
-        >{{ 'TESTDATEN' | translate }}</dv-pulldown-user-menu-button
-    >
+    @if (isDevMode() | async) {
+        <dv-pulldown-user-menu-button
+            [allowedRoles]="getSuperAdminRoles()"
+            [uiSRef]="'admin.debugging'"
+            >{{ 'DEBUGGING' | translate }}</dv-pulldown-user-menu-button
+        >
+    }
+    @if (testfaelleEnabled) {
+        <dv-pulldown-user-menu-button
+            [allowedRoles]="getSuperAdminRoles()"
+            [uiSRef]="'admin.testdaten'"
+            >{{ 'TESTDATEN' | translate }}</dv-pulldown-user-menu-button
+        >
+    }
     <dv-pulldown-user-menu-button
         [allowedRoles]="getSuperAdminRoles()"
         [uiSRef]="'admin.batchjobTrigger'"
@@ -53,6 +56,11 @@
         [allowedRoles]="getSuperAdminRoles()"
         [uiSRef]="'admin.uebersichtVersendeteMails'"
         >{{ 'MENU_VERSENDETE_MAILS' | translate }}</dv-pulldown-user-menu-button
+    >
+    <dv-pulldown-user-menu-button
+        [allowedRoles]="getSuperAdminRoles()"
+        [uiSRef]="'admin.meldungfenster'"
+        >{{ 'MELDUNGSFENSTER' | translate }}</dv-pulldown-user-menu-button
     >
     <dv-pulldown-user-menu-button
         [allowedRoles]="getAllAdministratorRevisorRole()"
@@ -79,17 +87,19 @@
         [uiSRef]="'traegerschaft.list'"
         >{{ 'TRAEGERSCHAFTEN' | translate }}</dv-pulldown-user-menu-button
     >
+    @if (getTraegerschaftId() | async; as traegerschaftId) {
+        <dv-pulldown-user-menu-button
+            [allowedRoles]="getSuperAdminRoles()"
+            [uiSRef]="
+                'traegerschaft.edit({traegerschaftId:' + traegerschaftId + '})'
+            "
+        >
+            {{ 'TRAEGERSCHAFT' | translate }}
+        </dv-pulldown-user-menu-button>
+    }
+
     <dv-pulldown-user-menu-button
-        *ngIf="getTraegerschaftId() | async as traegerschaftId"
-        [allowedRoles]="getSuperAdminRoles()"
-        [uiSRef]="
-            'traegerschaft.edit({traegerschaftId:' + traegerschaftId + '})'
-        "
-    >
-        {{ 'TRAEGERSCHAFT' | translate }}
-    </dv-pulldown-user-menu-button>
-    <dv-pulldown-user-menu-button
-        [allowedRoles]="getAdministratorMandantRevisorRole()"
+        [allowedRoles]="getAdministratorBgTsGemeindeOrMandantRole()"
         [uiSRef]="'gemeinde.list'"
         >{{ 'GEMEINDEN' | translate }}</dv-pulldown-user-menu-button
     >
@@ -98,12 +108,13 @@
         [uiSRef]="'sozialdienst.list'"
         >{{ 'MENU_SOZIALDIENST' | translate }}</dv-pulldown-user-menu-button
     >
-    <dv-pulldown-user-menu-button
-        *ngIf="multimandantAktiv"
-        [allowedRoles]="getSuperAdminRoles()"
-        [uiSRef]="'onboarding.mandant'"
-        >{{ 'MANDANT_SWITCH' | translate }}</dv-pulldown-user-menu-button
-    >
+    @if (multimandantAktiv) {
+        <dv-pulldown-user-menu-button
+            [allowedRoles]="getSuperAdminRoles()"
+            [uiSRef]="'onboarding.mandant'"
+            >{{ 'MANDANT_SWITCH' | translate }}</dv-pulldown-user-menu-button
+        >
+    }
     <dv-pulldown-user-menu-button (buttonClick)="logout()">{{
         'AUSLOGGEN' | translate
     }}</dv-pulldown-user-menu-button>

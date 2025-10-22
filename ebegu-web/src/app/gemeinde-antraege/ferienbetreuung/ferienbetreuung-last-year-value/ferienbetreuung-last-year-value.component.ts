@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 
@@ -24,7 +24,8 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     templateUrl: './ferienbetreuung-last-year-value.component.html',
     styleUrls: ['./ferienbetreuung-last-year-value.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class FerienbetreuungLastYearValueComponent {
     @Input()

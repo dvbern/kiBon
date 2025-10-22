@@ -25,17 +25,17 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
@@ -53,16 +53,17 @@ import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.GesuchDeletionCause;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.validationgroups.ChangeVerantwortlicherBGValidationGroup;
 import ch.dvbern.ebegu.validationgroups.ChangeVerantwortlicherTSValidationGroup;
-import ch.dvbern.lib.cdipersistence.Persistence;
 
 /**
  * Service fuer Dossier
  */
 @Stateless
 @Local(DossierService.class)
-public class DossierServiceBean extends AbstractBaseService implements DossierService {
+public class DossierServiceBean extends AbstractBaseService implements
+	DossierService {
 
 	@Inject
 	private Persistence persistence;
@@ -102,14 +103,20 @@ public class DossierServiceBean extends AbstractBaseService implements DossierSe
 
 	@Nonnull
 	@Override
-	public Optional<Dossier> findDossierForMandant(@Nonnull String id, boolean doAuthCheck) {
+	public Optional<Dossier> findDossierForMandant(
+		@Nonnull String id,
+		boolean doAuthCheck
+	) {
 		Objects.requireNonNull(id, "id muss gesetzt sein");
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Dossier> query = cb.createQuery(Dossier.class);
 
 		Root<Dossier> root = query.from(Dossier.class);
-		Predicate predicateId = cb.equal(root.get(AbstractEntity_.id),id);
-		Predicate predicateMandant = cb.equal(root.get(Dossier_.fall).get(Fall_.mandant), principalBean.getMandant());
+		Predicate predicateId = cb.equal(root.get(AbstractEntity_.id), id);
+		Predicate predicateMandant = cb.equal(
+			root.get(Dossier_.fall).get(Fall_.mandant),
+			principalBean.getMandant()
+		);
 		query.where(cb.and(predicateId, predicateMandant));
 		Dossier dossier = persistence.getCriteriaSingleResult(query);
 		if (doAuthCheck && dossier != null) {
@@ -120,7 +127,10 @@ public class DossierServiceBean extends AbstractBaseService implements DossierSe
 
 	@Nonnull
 	@Override
-	public Optional<Dossier> findDossier(@Nonnull String id, boolean doAuthCheck) {
+	public Optional<Dossier> findDossier(
+		@Nonnull String id,
+		boolean doAuthCheck
+	) {
 		Objects.requireNonNull(id, "id muss gesetzt sein");
 		Dossier dossier = persistence.find(Dossier.class, id);
 		if (doAuthCheck && dossier != null) {
@@ -133,42 +143,46 @@ public class DossierServiceBean extends AbstractBaseService implements DossierSe
 	@Override
 	public Collection<Dossier> findDossiersByFall(@Nonnull String fallId) {
 		final Fall fall =
-			fallService.findFall(fallId).orElseThrow(() -> new EbeguEntityNotFoundException("findDossiersByFall",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, fallId));
+			fallService.findFall(fallId)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"findDossiersByFall",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						fallId
+					)
+				);
 
-		Collection<Dossier> dossiers = criteriaQueryHelper.getEntitiesByAttribute(Dossier.class, fall, Dossier_.fall);
+		Collection<Dossier> dossiers = criteriaQueryHelper
+			.getEntitiesByAttribute(Dossier.class, fall, Dossier_.fall);
 
 		return dossiers.stream()
-			.filter(authorizer::isReadCompletelyAuthorizedDossier).
-				collect(Collectors.toList());
+			.filter(authorizer::isReadCompletelyAuthorizedDossier)
+			.collect(Collectors.toList());
 	}
 
 	@Nonnull
 	@Override
-	public Collection<Dossier> findDossiersByGemeinde(@Nonnull Gemeinde gemeinde) {
-		// Theoretisch muesste hier fuer jedes gelesene Gesuch ein AuthCheck gemacht werden,
-		// dies ist aber ein ziemlicher Performance-Killer.
-		// Da die Methode aktuell nur als Superadmin verwendet wird, stellen wir hier einfach
-		// nochmals sicher, dass wir SUPERADMIN sind und verzichten auf den weiteren Check.
-		// Sollte diese Methode spaeter an anderen Orten verwendet werden, muss hier unbedingt
-		// fuer jedes gelesene Dossier ein AuthCheck durchgefuehrt werden!
-		authorizer.checkSuperadmin();
-		return criteriaQueryHelper.getEntitiesByAttribute(Dossier.class, gemeinde, Dossier_.gemeinde);
-	}
-
-	@Nonnull
-	@Override
-	public Optional<Dossier> findDossierByGemeindeAndFall(@Nonnull String gemeindeId, @Nonnull String fallId) {
+	public Optional<Dossier> findDossierByGemeindeAndFall(
+		@Nonnull String gemeindeId,
+		@Nonnull String fallId
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Dossier> query = cb.createQuery(Dossier.class);
 
 		Root<Dossier> root = query.from(Dossier.class);
 
-		Predicate predicateFall = cb.equal(root.get(Dossier_.fall).get(AbstractEntity_.id), fallId);
-		Predicate predicateGemeinde = cb.equal(root.get(Dossier_.gemeinde).get(AbstractEntity_.id), gemeindeId);
+		Predicate predicateFall = cb.equal(
+			root.get(Dossier_.fall).get(AbstractEntity_.id),
+			fallId
+		);
+		Predicate predicateGemeinde = cb.equal(
+			root.get(Dossier_.gemeinde).get(AbstractEntity_.id),
+			gemeindeId
+		);
 
 		query.where(predicateFall, predicateGemeinde);
-		final Dossier criteriaSingleResult = persistence.getCriteriaSingleResult(query);
+		final Dossier criteriaSingleResult = persistence
+			.getCriteriaSingleResult(query);
 		return Optional.ofNullable(criteriaSingleResult);
 	}
 
@@ -181,29 +195,48 @@ public class DossierServiceBean extends AbstractBaseService implements DossierSe
 	}
 
 	@Override
-	public void removeDossier(@Nonnull String dossierId, @Nonnull GesuchDeletionCause deletionCause) {
+	public void removeDossier(
+		@Nonnull String dossierId,
+		@Nonnull GesuchDeletionCause deletionCause
+	) {
 		Objects.requireNonNull(dossierId);
 
 		final Optional<Dossier> optDossier = findDossier(dossierId);
-		final Dossier dossierToRemove = optDossier.orElseThrow(()
-			-> new EbeguEntityNotFoundException("removeDossier", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, dossierId));
+		final Dossier dossierToRemove = optDossier.orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"removeDossier",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				dossierId
+			)
+		);
 
 		authorizer.checkWriteAuthorizationDossier(dossierToRemove);
 
 		gesuchService.getAllGesuchIDsForDossier(dossierToRemove.getId())
-			.forEach(gesuch -> gesuchService.removeGesuch(gesuch, deletionCause));
+			.forEach(
+				gesuch -> gesuchService.removeGesuch(
+					gesuch,
+					deletionCause
+				)
+			);
 
 		persistence.remove(dossierToRemove);
 	}
 
 	@Nonnull
 	@Override
-	public Collection<Dossier> getAllDossiersForMandant(@Nonnull Mandant mandant, boolean doAuthCheck) {
+	public Collection<Dossier> getAllDossiersForMandant(
+		@Nonnull Mandant mandant,
+		boolean doAuthCheck
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Dossier> query = cb.createQuery(Dossier.class);
 		Root<Dossier> root = query.from(Dossier.class);
 
-		Predicate mandantPredicate = cb.equal(root.get(Dossier_.fall).get(Fall_.mandant), mandant);
+		Predicate mandantPredicate = cb.equal(
+			root.get(Dossier_.fall).get(Fall_.mandant),
+			mandant
+		);
 		query.where(mandantPredicate);
 
 		List<Dossier> dossiers = persistence.getCriteriaResults(query);
@@ -215,23 +248,35 @@ public class DossierServiceBean extends AbstractBaseService implements DossierSe
 
 	@Nonnull
 	@Override
-	public Dossier getOrCreateDossierAndFallForCurrentUserAsBesitzer(@Nonnull String gemeindeId) {
-		Optional<Fall> fallOptional = fallService.findFallByCurrentBenutzerAsBesitzer();
+	public Dossier getOrCreateDossierAndFallForCurrentUserAsBesitzer(
+		@Nonnull String gemeindeId
+	) {
+		Optional<Fall> fallOptional = fallService
+			.findFallByCurrentBenutzerAsBesitzer();
 		if (!fallOptional.isPresent()) {
-			fallOptional = fallService.createFallForCurrentGesuchstellerAsBesitzer();
+			fallOptional = fallService
+				.createFallForCurrentGesuchstellerAsBesitzer();
 		}
 
-		Optional<Gemeinde> gemeindeOptional = gemeindeService.findGemeinde(gemeindeId);
-		Gemeinde gemeinde = gemeindeOptional.orElseThrow(() -> new EbeguEntityNotFoundException(
-			"getOrCreateDossierAndFallForCurrentUserAsBesitzer",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			gemeindeId));
+		Optional<Gemeinde> gemeindeOptional = gemeindeService.findGemeinde(
+			gemeindeId
+		);
+		Gemeinde gemeinde = gemeindeOptional.orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"getOrCreateDossierAndFallForCurrentUserAsBesitzer",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				gemeindeId
+			)
+		);
 		//noinspection ConstantConditions
 
 		authorizer.checkReadAuthorization(gemeinde);
 
 		Objects.requireNonNull(fallOptional.get());
-		Optional<Dossier> dossierOptional = findDossierByGemeindeAndFall(gemeinde.getId(), fallOptional.get().getId());
+		Optional<Dossier> dossierOptional = findDossierByGemeindeAndFall(
+			gemeinde.getId(),
+			fallOptional.get().getId()
+		);
 		if (dossierOptional.isPresent()) {
 			return dossierOptional.get();
 		}
@@ -254,53 +299,93 @@ public class DossierServiceBean extends AbstractBaseService implements DossierSe
 
 	@Nonnull
 	@Override
-	public Dossier setVerantwortlicherBG(@Nonnull String dossierId, @Nullable Benutzer benutzer) {
+	public Dossier setVerantwortlicherBG(
+		@Nonnull String dossierId,
+		@Nullable Benutzer benutzer
+	) {
 		final Dossier dossier =
-			findDossier(dossierId).orElseThrow(() -> new EbeguEntityNotFoundException("setVerantwortlicherBG",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, dossierId));
+			findDossier(dossierId).orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"setVerantwortlicherBG",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					dossierId
+				)
+			);
 		authorizer.checkWriteAuthorizationDossier(dossier);
 		dossier.setVerantwortlicherBG(benutzer);
 
 		// Die Validierung bezüglich der Rolle des Verantwortlichen darf nur hier erfolgen, nicht bei jedem Speichern
 		// des Falls
-		validateVerantwortlicher(dossier, ChangeVerantwortlicherBGValidationGroup.class);
+		validateVerantwortlicher(
+			dossier,
+			ChangeVerantwortlicherBGValidationGroup.class
+		);
 		return saveDossier(dossier);
 	}
 
 	@Nonnull
 	@Override
-	public Dossier setVerantwortlicherTS(@Nonnull String dossierId, @Nullable Benutzer benutzer) {
+	public Dossier setVerantwortlicherTS(
+		@Nonnull String dossierId,
+		@Nullable Benutzer benutzer
+	) {
 		final Dossier dossier =
-			findDossier(dossierId).orElseThrow(() -> new EbeguEntityNotFoundException("setVerantwortlicherTS",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, dossierId));
+			findDossier(dossierId).orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"setVerantwortlicherTS",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					dossierId
+				)
+			);
 		authorizer.checkWriteAuthorizationDossier(dossier);
 		dossier.setVerantwortlicherTS(benutzer);
 
 		// Die Validierung bezüglich der Rolle des Verantwortlichen darf nur hier erfolgen, nicht bei jedem Speichern
 		// des Falls
-		validateVerantwortlicher(dossier, ChangeVerantwortlicherTSValidationGroup.class);
+		validateVerantwortlicher(
+			dossier,
+			ChangeVerantwortlicherTSValidationGroup.class
+		);
 		return saveDossier(dossier);
 	}
 
 	@Nonnull
 	@Override
-	public LocalDate getErstesEinreichungsdatum(@Nonnull Dossier dossier, @Nonnull Gesuchsperiode gesuchsperiode) {
+	public LocalDate getErstesEinreichungsdatum(
+		@Nonnull Dossier dossier,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		authorizer.checkWriteAuthorizationDossier(dossier);
 		LocalDate erstesEinreichungsdatum = null;
 		List<Gesuch> gesuchList =
-			gesuchService.getAllGesucheForDossierAndPeriod(dossier, gesuchsperiode);
+			gesuchService.getAllGesucheForDossierAndPeriod(
+				dossier,
+				gesuchsperiode
+			);
 		for (Gesuch gesuch : gesuchList) {
-			if (gesuch.getRegelStartDatum() != null &&
-					(erstesEinreichungsdatum == null || gesuch.getRegelStartDatum().isBefore(erstesEinreichungsdatum))) {
+			if (gesuch.getRegelStartDatum() != null
+				&&
+				(erstesEinreichungsdatum == null
+					|| gesuch.getRegelStartDatum()
+						.isBefore(erstesEinreichungsdatum))) {
 				erstesEinreichungsdatum = gesuch.getRegelStartDatum();
 			}
 		}
-		return erstesEinreichungsdatum != null ? erstesEinreichungsdatum : LocalDate.now();
+		return erstesEinreichungsdatum != null ?
+			erstesEinreichungsdatum :
+			LocalDate.now();
 	}
 
-	private void validateVerantwortlicher(@Nonnull Dossier dossier, @Nonnull Class validationGroup) {
-		Validator validator = Validation.byDefaultProvider().configure().buildValidatorFactory().getValidator();
-		Set<ConstraintViolation<Dossier>> constraintViolations = validator.validate(dossier, validationGroup);
+	private void validateVerantwortlicher(
+		@Nonnull Dossier dossier,
+		@Nonnull Class validationGroup
+	) {
+		Validator validator = Validation.byDefaultProvider()
+			.configure()
+			.buildValidatorFactory()
+			.getValidator();
+		Set<ConstraintViolation<Dossier>> constraintViolations = validator
+			.validate(dossier, validationGroup);
 		if (!constraintViolations.isEmpty()) {
 			throw new ConstraintViolationException(constraintViolations);
 		}

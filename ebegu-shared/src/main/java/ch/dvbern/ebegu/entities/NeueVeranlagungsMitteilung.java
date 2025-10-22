@@ -18,11 +18,11 @@
 package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
@@ -37,7 +37,8 @@ public class NeueVeranlagungsMitteilung extends Mitteilung {
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_mitteilung_steuerdaten_response_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_mitteilung_steuerdaten_response_id"))
 	@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 	private SteuerdatenResponse steuerdatenResponse;
 
@@ -55,8 +56,11 @@ public class NeueVeranlagungsMitteilung extends Mitteilung {
 		if (!super.isSame(other)) {
 			return false;
 		}
-		final NeueVeranlagungsMitteilung otherBetreuungsmitteilung = (NeueVeranlagungsMitteilung) other;
-		return getSteuerdatenResponse().isSame(otherBetreuungsmitteilung.getSteuerdatenResponse());
+		final NeueVeranlagungsMitteilung otherBetreuungsmitteilung =
+			(NeueVeranlagungsMitteilung) other;
+		return getSteuerdatenResponse().isSame(
+			otherBetreuungsmitteilung.getSteuerdatenResponse()
+		);
 	}
 
 	@Nonnull
@@ -64,7 +68,9 @@ public class NeueVeranlagungsMitteilung extends Mitteilung {
 		return steuerdatenResponse;
 	}
 
-	public void setSteuerdatenResponse(@Nonnull SteuerdatenResponse steuerdatenResponse) {
+	public void setSteuerdatenResponse(
+		@Nonnull SteuerdatenResponse steuerdatenResponse
+	) {
 		this.steuerdatenResponse = steuerdatenResponse;
 	}
 }

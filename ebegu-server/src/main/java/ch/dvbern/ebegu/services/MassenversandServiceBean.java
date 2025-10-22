@@ -22,15 +22,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.Fall;
@@ -38,11 +38,12 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuch_;
 import ch.dvbern.ebegu.entities.Massenversand;
 import ch.dvbern.ebegu.entities.Massenversand_;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 @Stateless
 @Local(MassenversandService.class)
-public class MassenversandServiceBean extends AbstractBaseService implements MassenversandService {
+public class MassenversandServiceBean extends AbstractBaseService implements
+	MassenversandService {
 
 	@Inject
 	private Persistence persistence;
@@ -56,19 +57,30 @@ public class MassenversandServiceBean extends AbstractBaseService implements Mas
 	}
 
 	@Override
-	public List<String> getMassenversandTexteForGesuch(@Nonnull String gesuchId) {
+	public List<String> getMassenversandTexteForGesuch(
+		@Nonnull String gesuchId
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Massenversand> query = cb.createQuery(Massenversand.class);
+		final CriteriaQuery<Massenversand> query = cb.createQuery(
+			Massenversand.class
+		);
 
 		Root<Massenversand> root = query.from(Massenversand.class);
-		ListJoin<Massenversand, Gesuch> gesuche = root.join(Massenversand_.gesuche);
+		ListJoin<Massenversand, Gesuch> gesuche = root.join(
+			Massenversand_.gesuche
+		);
 
-		Predicate predicate = cb.equal(gesuche.get(AbstractEntity_.id), gesuchId);
+		Predicate predicate = cb.equal(
+			gesuche.get(AbstractEntity_.id),
+			gesuchId
+		);
 		query.where(predicate);
 		query.select(root);
 		query.orderBy(cb.desc(root.get(AbstractEntity_.timestampErstellt)));
 
-		List<Massenversand> massenversaende = persistence.getCriteriaResults(query);
+		List<Massenversand> massenversaende = persistence.getCriteriaResults(
+			query
+		);
 		List<String> result = massenversaende.stream()
 			.map(Massenversand::getDescription)
 			.collect(Collectors.toList());
@@ -78,29 +90,36 @@ public class MassenversandServiceBean extends AbstractBaseService implements Mas
 
 	@Override
 	public void removeMassenversandGesucheForFall(@Nonnull final Fall fall) {
-		List<String> gesuchIds = gesuchService.getAllGesuchIDsForFall(fall.getId());
-		if(gesuchIds.isEmpty()) {
+		List<String> gesuchIds = gesuchService.getAllGesuchIDsForFall(
+			fall.getId()
+		);
+		if (gesuchIds.isEmpty()) {
 			return;
 		}
 		removeGesuchs(gesuchIds);
 	}
 
 	@Override
-	public void removeMassenversandGesucheForGesuch(@Nonnull final Gesuch gesuch) {
+	public void removeMassenversandGesucheForGesuch(
+		@Nonnull final Gesuch gesuch
+	) {
 		List<String> gesuchIds = new ArrayList<>();
 		gesuchIds.add(gesuch.getId());
 		removeGesuchs(gesuchIds);
 	}
 
-	private void removeGesuchs(@Nonnull List<String> gesuchIds){
+	private void removeGesuchs(@Nonnull List<String> gesuchIds) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Massenversand> query = cb.createQuery(Massenversand.class);
+		final CriteriaQuery<Massenversand> query = cb.createQuery(
+			Massenversand.class
+		);
 		Root<Massenversand> root = query.from(Massenversand.class);
 		Join<Massenversand, Gesuch> join = root.join(Massenversand_.gesuche);
 
 		Predicate predGesuchId = join.get(Gesuch_.id).in(gesuchIds);
 		query.where(predGesuchId);
-		final List<Massenversand> massenversandList = persistence.getCriteriaResults(query);
+		final List<Massenversand> massenversandList = persistence
+			.getCriteriaResults(query);
 
 		for (Massenversand massenversand : massenversandList) {
 			List<Gesuch> filtered = massenversand.getGesuche()

@@ -43,7 +43,7 @@ class CheckGrundAblehnungValidatorTest {
 	}
 
 	@ParameterizedTest(name = "#{index} - with args=<{0}>")
-	@ValueSource(strings = {"", "mein Grund"})
+	@ValueSource(strings = { "", "mein Grund" })
 	@NullSource
 	void testNichtAbgewiesen(@Nullable String grund) {
 		betreuung.setGrundAblehnung(grund);

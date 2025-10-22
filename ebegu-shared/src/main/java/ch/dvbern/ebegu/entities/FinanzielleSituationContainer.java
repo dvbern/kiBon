@@ -19,16 +19,16 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.finanziellesituation.AbstractFinanzielleSituationContainer;
@@ -42,20 +42,26 @@ import org.hibernate.envers.Audited;
  * Container-Entity für die Finanzielle Situation: Diese muss für jeden Benutzertyp (GS, JA, SV) einzeln geführt werden,
  * damit die Veränderungen / Korrekturen angezeigt werden können.
  */
-@CheckFinanzielleSituationContainerComplete(groups = AntragCompleteValidationGroup.class)
+@CheckFinanzielleSituationContainerComplete(
+	groups = AntragCompleteValidationGroup.class)
 @Audited
 @Entity
 @Table(
-	uniqueConstraints = @UniqueConstraint(columnNames = "gesuchsteller_container_id", name = "UK_finanzielle_situation_container_gesuchsteller")
+	uniqueConstraints = @UniqueConstraint(
+		columnNames = "gesuchsteller_container_id",
+		name = "UK_finanzielle_situation_container_gesuchsteller")
 )
 public class FinanzielleSituationContainer extends AbstractMutableEntity
-	implements AbstractFinanzielleSituationContainer<FinanzielleSituation> {
+	implements
+	AbstractFinanzielleSituationContainer<FinanzielleSituation> {
 
 	private static final long serialVersionUID = -6504985266190035840L;
 
 	@NotNull
 	@OneToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_finanzielleSituationContainer_gesuchstellerContainer_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_finanzielleSituationContainer_gesuchstellerContainer_id"),
+		nullable = false)
 	private GesuchstellerContainer gesuchstellerContainer;
 
 	@NotNull
@@ -64,12 +70,16 @@ public class FinanzielleSituationContainer extends AbstractMutableEntity
 
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_finanzielleSituationContainer_finanzielleSituationGS_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_finanzielleSituationContainer_finanzielleSituationGS_id"),
+		nullable = true)
 	private FinanzielleSituation finanzielleSituationGS;
 
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_finanzielleSituationContainer_finanzielleSituationJA_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_finanzielleSituationContainer_finanzielleSituationJA_id"),
+		nullable = true)
 	private FinanzielleSituation finanzielleSituationJA;
 
 	public FinanzielleSituationContainer() {
@@ -79,7 +89,9 @@ public class FinanzielleSituationContainer extends AbstractMutableEntity
 		return gesuchstellerContainer;
 	}
 
-	public void setGesuchsteller(GesuchstellerContainer gesuchstellerContainer) {
+	public void setGesuchsteller(
+		GesuchstellerContainer gesuchstellerContainer
+	) {
 		this.gesuchstellerContainer = gesuchstellerContainer;
 	}
 
@@ -95,7 +107,9 @@ public class FinanzielleSituationContainer extends AbstractMutableEntity
 		return finanzielleSituationGS;
 	}
 
-	public void setFinanzielleSituationGS(FinanzielleSituation finanzielleSituationGS) {
+	public void setFinanzielleSituationGS(
+		FinanzielleSituation finanzielleSituationGS
+	) {
 		this.finanzielleSituationGS = finanzielleSituationGS;
 	}
 
@@ -103,7 +117,9 @@ public class FinanzielleSituationContainer extends AbstractMutableEntity
 		return finanzielleSituationJA;
 	}
 
-	public void setFinanzielleSituationJA(FinanzielleSituation finanzielleSituationJA) {
+	public void setFinanzielleSituationJA(
+		FinanzielleSituation finanzielleSituationJA
+	) {
 		this.finanzielleSituationJA = finanzielleSituationJA;
 	}
 
@@ -121,7 +137,10 @@ public class FinanzielleSituationContainer extends AbstractMutableEntity
 
 	@Nonnull
 	public FinanzielleSituationContainer copyFinanzielleSituationContainer(
-			@Nonnull FinanzielleSituationContainer target, @Nonnull AntragCopyType copyType, @Nonnull GesuchstellerContainer targetGesuchstellerContainer) {
+		@Nonnull FinanzielleSituationContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull GesuchstellerContainer targetGesuchstellerContainer
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
@@ -130,7 +149,13 @@ public class FinanzielleSituationContainer extends AbstractMutableEntity
 			target.setGesuchsteller(targetGesuchstellerContainer);
 			target.setJahr(this.getJahr());
 			target.setFinanzielleSituationGS(null);
-			target.setFinanzielleSituationJA(this.getFinanzielleSituationJA().copyFinanzielleSituation(new FinanzielleSituation(), copyType));
+			target.setFinanzielleSituationJA(
+				this.getFinanzielleSituationJA()
+					.copyFinanzielleSituation(
+						new FinanzielleSituation(),
+						copyType
+					)
+			);
 			break;
 		case ERNEUERUNG:
 		case ERNEUERUNG_NEUES_DOSSIER:
@@ -150,8 +175,13 @@ public class FinanzielleSituationContainer extends AbstractMutableEntity
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final FinanzielleSituationContainer otherFinSitContainer = (FinanzielleSituationContainer) other;
-		return Objects.equals(getJahr(), otherFinSitContainer.getJahr()) &&
-			EbeguUtil.isSame(getFinanzielleSituationJA(), otherFinSitContainer.getFinanzielleSituationJA());
+		final FinanzielleSituationContainer otherFinSitContainer =
+			(FinanzielleSituationContainer) other;
+		return Objects.equals(getJahr(), otherFinSitContainer.getJahr())
+			&&
+			EbeguUtil.isSame(
+				getFinanzielleSituationJA(),
+				otherFinSitContainer.getFinanzielleSituationJA()
+			);
 	}
 }

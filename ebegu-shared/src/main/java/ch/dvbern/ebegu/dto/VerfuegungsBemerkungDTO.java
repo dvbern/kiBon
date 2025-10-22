@@ -15,17 +15,19 @@
 
 package ch.dvbern.ebegu.dto;
 
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Objects;
 
 /**
  * DTO für eine Verfügungsbemerkung
@@ -48,14 +50,21 @@ public class VerfuegungsBemerkungDTO {
 	private DateRange gueltigkeit;
 
 	@SuppressWarnings("PMD.ArrayIsStoredDirectly")
-	public VerfuegungsBemerkungDTO(@Nonnull RuleValidity ruleValidity, @Nonnull MsgKey msgKey, @Nonnull Locale sprache, @Nullable Object... args) {
+	public VerfuegungsBemerkungDTO(
+		@Nonnull RuleValidity ruleValidity,
+		@Nonnull MsgKey msgKey,
+		@Nonnull Locale sprache,
+		@Nullable Object... args
+	) {
 		this.ruleValidity = ruleValidity;
 		this.msgKey = msgKey;
 		this.sprache = sprache;
 		this.args = args;
 	}
 
-	public VerfuegungsBemerkungDTO(@Nonnull VerfuegungsBemerkungDTO verfuegungsBemerkungDTO) {
+	public VerfuegungsBemerkungDTO(
+		@Nonnull VerfuegungsBemerkungDTO verfuegungsBemerkungDTO
+	) {
 		this.ruleValidity = verfuegungsBemerkungDTO.ruleValidity;
 		this.msgKey = verfuegungsBemerkungDTO.msgKey;
 		this.sprache = verfuegungsBemerkungDTO.sprache;
@@ -107,11 +116,22 @@ public class VerfuegungsBemerkungDTO {
 		this.args = Arrays.copyOf(args, args.length);
 	}
 
-	public String getTranslated(Mandant mandant) {
+	public String getTranslated(Mandant mandant, Gemeinde gemeinde) {
 		if (args != null) {
-			return ServerMessageUtil.translateEnumValue(msgKey, sprache, mandant, args);
+			return ServerMessageUtil.translateEnumValue(
+				msgKey,
+				sprache,
+				mandant,
+				gemeinde,
+				args
+			);
 		} else {
-			return ServerMessageUtil.translateEnumValue(msgKey, sprache, mandant);
+			return ServerMessageUtil.translateEnumValue(
+				msgKey,
+				sprache,
+				mandant,
+				gemeinde
+			);
 		}
 	}
 
@@ -124,9 +144,12 @@ public class VerfuegungsBemerkungDTO {
 			return false;
 		}
 		VerfuegungsBemerkungDTO that = (VerfuegungsBemerkungDTO) o;
-		return msgKey == that.msgKey &&
-			Arrays.equals(args, that.args) &&
-			Objects.equals(sprache, that.sprache) &&
+		return msgKey == that.msgKey
+			&&
+			Arrays.equals(args, that.args)
+			&&
+			Objects.equals(sprache, that.sprache)
+			&&
 			this.ruleValidity == that.ruleValidity;
 	}
 

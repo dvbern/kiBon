@@ -8,19 +8,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.converter;
 
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.Dependent;
 
 import ch.dvbern.ebegu.api.dtos.JaxWizardStepX;
-import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.wizardx.Wizard;
 import ch.dvbern.ebegu.wizardx.WizardStep;
 import ch.dvbern.ebegu.wizardx.ferienbetreuung.AbschlussStep;
@@ -35,7 +34,7 @@ import ch.dvbern.ebegu.wizardx.tagesschuleLastenausgleich.AngabenTagesschuleStep
 import ch.dvbern.ebegu.wizardx.tagesschuleLastenausgleich.LastenausgleichStep;
 import ch.dvbern.ebegu.wizardx.tagesschuleLastenausgleich.TagesschuleWizardStepsEnum;
 
-@RequestScoped
+@Dependent
 public class JaxBWizardStepXConverter {
 
 	public JaxWizardStepX convertStepToJax(WizardStep step, Wizard wizard) {

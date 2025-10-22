@@ -61,5 +61,7 @@ public interface AdresseService {
 	 *
 	 * @return TRUE when Gemeinde or BFS changed.
 	 */
-	boolean updateGemeindeAndBFS(@Nonnull Adresse adresse);
+	boolean updateGemeindeAndBFS(
+		@Nonnull Adresse adresse
+	);
 }

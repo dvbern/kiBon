@@ -26,7 +26,7 @@ import {ControlContainer, NgForm} from '@angular/forms';
 import {MAT_DATE_FORMATS} from '@angular/material/core';
 import {MatDatepicker} from '@angular/material/datepicker';
 
-import * as moment from 'moment';
+import moment from 'moment';
 
 export const MY_FORMATS = {
     parse: {
@@ -47,7 +47,8 @@ let nextId = 0;
     templateUrl: './dv-month-picker.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
-    providers: [{provide: MAT_DATE_FORMATS, useValue: MY_FORMATS}]
+    providers: [{provide: MAT_DATE_FORMATS, useValue: MY_FORMATS}],
+    standalone: false
 })
 export class DvMonthPickerComponent {
     @Input() public date?: moment.Moment;

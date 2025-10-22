@@ -27,17 +27,19 @@ import {
     VerfuegenPO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {GesuchstellendePO} from '../../page-objects/antrag/gesuchstellende.po';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 
 describe('Kibon - Gesuch zu Steuerverwaltung senden', () => {
-    const userSuperadmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const userSuperadmin = getUser('[1-Superadmin] Super User');
     const userSteueramt = getUser('[7-L-Steueramt] Rodolfo Iten');
     const userGemeinde = getUser('[6-L-SB-Gemeinde] Stefan Weibel');
     let gesuchUrl: string;
     let fallnummer: string;
 
     before(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
         cy.login(userSuperadmin);
         cy.visit('/#/faelle');

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -21,15 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 public class JaxExternalClientAssignment {
 
 	@Nonnull
-	private final @Valid List<JaxExternalClient> availableClients = new ArrayList<>();
+	private final @Valid List<JaxExternalClient> availableClients =
+		new ArrayList<>();
 
 	@Nonnull
-	private final @Valid List<JaxExternalClient> assignedClients = new ArrayList<>();
+	private final @Valid List<JaxExternalClient> assignedClients =
+		new ArrayList<>();
 
 	@Nonnull
 	public List<JaxExternalClient> getAvailableClients() {

@@ -24,8 +24,8 @@ import {
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {
-    TSExternalClient,
-    externalClientComparator
+    externalClientComparator,
+    TSExternalClient
 } from '../../../../models/TSExternalClient';
 import {TSExternalClientAssignment} from '../../../../models/TSExternalClientAssignment';
 
@@ -35,7 +35,8 @@ let nextId = 0;
     selector: 'dv-external-client-multiselect',
     templateUrl: './external-client-multiselect.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class ExternalClientMultiselectComponent implements OnChanges {
     @Input() public externalClients: TSExternalClientAssignment;

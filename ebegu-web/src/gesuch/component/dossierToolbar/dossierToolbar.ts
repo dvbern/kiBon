@@ -15,19 +15,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
-import {IComponentOptions, IFormController, ILogService} from 'angular';
+import {
+    copy,
+    element,
+    equals,
+    IComponentOptions,
+    IFormController,
+    ILogService
+} from 'angular';
 import {map} from 'rxjs/operators';
 import {Permission} from '../../../app/authorisation/Permission';
 import {PERMISSIONS} from '../../../app/authorisation/Permissions';
 import {IDVFocusableController} from '../../../app/core/component/IDVFocusableController';
-import {MANDANTS} from '../../../app/core/constants/MANDANTS';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {SozialdienstRS} from '../../../app/core/service/SozialdienstRS.rest';
-import {MandantService} from '../../../app/shared/services/mandant.service';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {
     isAnyStatusOfVerfuegt,
@@ -37,22 +44,23 @@ import {
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
 import {TSCreationAction} from '../../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../../models/enums/TSEingangsart';
-import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
+import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
+
 import {TSMitteilungEvent} from '../../../models/enums/TSMitteilungEvent';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSSozialdienstFallStatus} from '../../../models/enums/TSSozialdienstFallStatus';
 import {TSSozialdienstStammdaten} from '../../../models/sozialdienst/TSSozialdienstStammdaten';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
 import {TSDossier} from '../../../models/TSDossier';
-import {TSGemeindeStammdatenLite} from '../../../models/TSGemeindeStammdatenLite';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {TSInstitutionStammdatenSummary} from '../../../models/TSInstitutionStammdatenSummary';
+import {
+    TSGesuchsperiode,
+    TSInstitutionStammdatenSummary
+} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {NavigationUtil} from '../../../utils/NavigationUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
-import {ShowTooltipController} from '../../dialog/ShowTooltipController';
 import {DossierRS} from '../../service/dossierRS.rest';
 import {GemeindeRS} from '../../service/gemeindeRS.rest';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
@@ -60,6 +68,9 @@ import {GesuchRS} from '../../service/gesuchRS.rest';
 import IPromise = angular.IPromise;
 import IScope = angular.IScope;
 import ITranslateService = angular.translate.ITranslateService;
+import {GemeindeKontaktdatenController} from '../../dialog/GemeindeKontaktdatenController';
+import {TSGemeindeStammdaten} from '../../../models/TSGemeindeStammdaten';
+import {firstValueFrom} from 'rxjs';
 
 const showKontaktTemplate = require('../../../gesuch/dialog/showKontaktTemplate.html');
 const removeDialogTempl = require('../../dialog/removeDialogTemplate.html');
@@ -119,7 +130,7 @@ export class DossierToolbarController implements IDVFocusableController {
         'SozialdienstRS',
         '$translate',
         'MandantService',
-        'ApplicationPropertyRS'
+        'SharedUtilApplicationPropertyRsService'
     ];
 
     public antragList: Array<TSAntragDTO>;
@@ -166,7 +177,7 @@ export class DossierToolbarController implements IDVFocusableController {
         private readonly sozialdienstRS: SozialdienstRS,
         private readonly $translate: ITranslateService,
         private readonly mandantService: MandantService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {
@@ -176,15 +187,17 @@ export class DossierToolbarController implements IDVFocusableController {
         if (EbeguUtil.isEmptyStringNullOrUndefined(this.dossierId)) {
             return;
         }
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.angebotTS = res.angebotTSActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.angebotTS = res.angebotTSActivated;
+            });
         this.gesuchsperiodeRS
             .getActiveGesuchsperiodenForDossier(this.dossierId)
             .then((response: TSGesuchsperiode[]) => {
                 // Die neueste ist zuoberst
                 this.neuesteGesuchsperiode = response[0];
-                this.antragErneuernPossible();
+                this.updateAntragErneuernPossible();
             });
         this.mandantService.mandant$
             .pipe(map(mandant => mandant === MANDANTS.LUZERN))
@@ -197,6 +210,11 @@ export class DossierToolbarController implements IDVFocusableController {
     }
 
     private updateAmountNewMitteilungenGS(): void {
+        if (
+            this.authServiceRS.isOneOfRoles(TSRoleUtil.getSteueramtOnlyRoles())
+        ) {
+            return;
+        }
         this.mitteilungRS
             .getAmountNewMitteilungenOfDossierForCurrentRolle(this.dossierId)
             .then((response: number) => {
@@ -241,8 +259,8 @@ export class DossierToolbarController implements IDVFocusableController {
                 this.gesuchNavigationList = {};
                 this.gesuchsperiodeList = {};
                 this.antragList = [];
-                this.antragMutierenPossible(); // neu berechnen ob mutieren moeglich ist
-                this.antragErneuernPossible();
+                this.updateAntragMutierenPossible(); // neu berechnen ob mutieren moeglich ist
+                this.updateAntragErneuernPossible();
             }
         );
         if (this.gesuchModelManager && this.getGesuch()) {
@@ -279,8 +297,8 @@ export class DossierToolbarController implements IDVFocusableController {
                     this.gesuchNavigationList = {};
                     this.gesuchsperiodeList = {};
                     this.antragList = [];
-                    this.antragMutierenPossible(); // neu berechnen ob mutieren moeglich ist
-                    this.antragErneuernPossible();
+                    this.updateAntragMutierenPossible(); // neu berechnen ob mutieren moeglich ist
+                    this.updateAntragErneuernPossible();
                 }
             }
         );
@@ -297,7 +315,7 @@ export class DossierToolbarController implements IDVFocusableController {
     public showGesuchPeriodeNavigationMenu(): boolean {
         return (
             !this.isDashboardScreen &&
-            !angular.equals(this.gesuchsperiodeList, {}) &&
+            !equals(this.gesuchsperiodeList, {}) &&
             !this.authServiceRS.isRole(TSRole.STEUERAMT)
         );
     }
@@ -308,7 +326,7 @@ export class DossierToolbarController implements IDVFocusableController {
     public showAntragTypListNavigationMenu(): boolean {
         return (
             !this.isDashboardScreen &&
-            !angular.equals(this.antragTypList, {}) &&
+            !equals(this.antragTypList, {}) &&
             !this.authServiceRS.isRole(TSRole.STEUERAMT)
         );
     }
@@ -332,105 +350,13 @@ export class DossierToolbarController implements IDVFocusableController {
                     this.dossier = response;
                     this.gemeindeId = this.dossier.gemeinde.id;
 
-                    this.updateGemeindeStammdaten();
+                    this.setGemeindeInstitutionKontakteHtmlIfTraegerschaftInstitution();
+                    this.setGemeindeSozialdienstKontakteHtmIfSozialdienstFall();
 
-                    if (
-                        this.authServiceRS.isOneOfRoles(
-                            TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
-                        )
-                    ) {
-                        if (
-                            EbeguUtil.isNotNullOrUndefined(
-                                this.gesuchModelManager.gemeindeStammdaten
-                            )
-                        ) {
-                            this.gemeindeInstitutionKontakteHtml =
-                                this.gemeindeStammdatenToHtml(
-                                    this.gesuchModelManager.gemeindeStammdaten
-                                );
-                        } else {
-                            this.gemeindeRS
-                                .getGemeindeStammdatenLite(this.gemeindeId)
-                                .then(stammdaten => {
-                                    this.gemeindeInstitutionKontakteHtml =
-                                        this.gemeindeStammdatenToHtml(
-                                            stammdaten
-                                        );
-                                });
-                        }
-                    }
-
-                    if (this.dossier.fall.sozialdienstFall) {
-                        this.sozialdienstRS
-                            .getSozialdienstStammdaten(
-                                this.dossier.fall.sozialdienstFall.sozialdienst
-                                    .id
-                            )
-                            .toPromise()
-                            .then(
-                                stammdaten =>
-                                    (this.gemeindeSozialdienstKontakteHtml =
-                                        this.sozialdienstStammdatenToHtml(
-                                            stammdaten
-                                        ))
-                            );
-                    }
-
-                    if (
-                        !this.forceLoadingFromFall &&
-                        this.getGesuch() &&
-                        this.getGesuch().id
-                    ) {
-                        this.gesuchRS
-                            .getAllAntragDTOForDossier(
-                                this.getGesuch().dossier.id
-                            )
-                            .then(antraege => {
-                                this.antragList = angular.copy(antraege);
-                                this.updateGesuchperiodeList();
-                                this.updateGesuchNavigationList();
-                                this.updateAntragTypList();
-                                this.antragMutierenPossible();
-                                this.antragErneuernPossible();
-                            });
+                    if (!this.forceLoadingFromFall && this.getGesuch()?.id) {
+                        this.getAllAntragDTOAndUpdate();
                     } else if (this.dossier) {
-                        this.gesuchRS
-                            .getAllAntragDTOForDossier(this.dossier.id)
-                            .then(antraege => {
-                                this.antragList = angular.copy(antraege);
-                                if (antraege && antraege.length > 0) {
-                                    const newest = this.getNewest(
-                                        this.antragList
-                                    );
-                                    this.gesuchRS
-                                        .findGesuch(newest.antragId)
-                                        .then(gesuch => {
-                                            if (!gesuch) {
-                                                this.$log.warn(
-                                                    `Could not find gesuch for id ${newest.antragId}`
-                                                );
-                                            }
-                                            this.gesuchModelManager.setGesuch(
-                                                angular.copy(gesuch)
-                                            );
-                                            this.updateGesuchperiodeList();
-                                            this.updateGesuchNavigationList();
-                                            this.updateAntragTypList();
-                                            this.antragMutierenPossible();
-                                            this.antragErneuernPossible();
-                                        });
-                                } else if (
-                                    !this.gesuchModelManager.getGesuch() ||
-                                    !this.gesuchModelManager.getGesuch().isNew()
-                                ) {
-                                    // Wenn das Gesuch noch neu ist, sind wir noch ungespeichert auf der FallCreation-Seite
-                                    // In diesem Fall durfen wir das Gesuch nicht zuruecksetzen
-                                    const gesuch = new TSGesuch();
-                                    gesuch.dossier = angular.copy(this.dossier);
-                                    this.gesuchModelManager.setGesuch(gesuch);
-                                    this.resetNavigationParameters();
-                                }
-                            });
+                        this.getAllAntragDTOForDossierAndUpdateAndInitialize();
                         this.updateAmountNewMitteilungenGS();
                     } else {
                         this.resetNavigationParameters();
@@ -450,40 +376,66 @@ export class DossierToolbarController implements IDVFocusableController {
         this.forceLoadingFromFall = false; // reset it because it's not needed any more
     }
 
-    private updateGemeindeStammdaten(): void {
+    private gemeindeStammdatenToHtml(stammdaten: TSGemeindeStammdaten): string {
+        const htmlIntro = this.authServiceRS.isOneOfRoles(
+            TSRoleUtil.getGesuchstellerSozialdienstRolle()
+        )
+            ? `<h3 class="margin-top-20">${this.$translate.instant('BEI_FRAGEN_GEMEINDE_KONTAKTIEREN')}</h3>`
+            : ``;
+        let html = ``;
+        html += `${htmlIntro}`;
         if (
-            EbeguUtil.isNotNullOrUndefined(
-                this.gesuchModelManager.gemeindeStammdaten
-            )
+            !stammdaten.bgAdresse ||
+            !stammdaten.tsAdresse ||
+            !stammdaten.gemeinde.angebotTS ||
+            !stammdaten.gemeinde.angebotBG
         ) {
-            this.kontaktdatenGemeindeAsHtml = this.getKontaktdatenHtml(
-                this.gesuchModelManager.gemeindeStammdaten
-            );
-            return;
+            html += `<h3>${
+                stammdaten.adresse.organisation
+                    ? stammdaten.adresse.organisation
+                    : ''
+            }</h3>`;
+            html += `
+                <span>${stammdaten.adresse.strasse} ${stammdaten.adresse.hausnummer}</span>
+                <span>${stammdaten.adresse.plz} ${stammdaten.adresse.ort}</span>
+                ${!stammdaten.tsEmail || !stammdaten.bgEmail ? `<a href="mailto:${stammdaten.mail}">${stammdaten.mail}</a>` : ``}`;
+            if (!stammdaten.bgTelefon || !stammdaten.tsTelefon) {
+                html += `<a href="tel:${stammdaten.telefon}">${stammdaten.telefon}</a>`;
+            }
         }
-        this.gemeindeRS
-            .getGemeindeStammdatenLite(this.gemeindeId)
-            .then(stammdaten => {
-                this.kontaktdatenGemeindeAsHtml =
-                    this.gemeindeStammdatenToHtml(stammdaten);
-            });
-    }
-
-    private getKontaktdatenHtml(
-        gemeindeDaten: TSGemeindeStammdatenLite
-    ): string {
-        if (gemeindeDaten.hasAltGemeindeKontakt) {
-            return this.sanitizeHtml(gemeindeDaten.altGemeindeKontaktText);
+        if (stammdaten.bgAdresse && stammdaten.gemeinde.angebotBG) {
+            html += `<h3 class="margin-top-20">${this.$translate.instant('KONTAKT_BETREUUNGSGUTSCHEINE_TITLE')}</h3>`;
+            html += `<span>${
+                stammdaten.bgAdresse.organisation
+                    ? stammdaten.bgAdresse.organisation
+                    : ''
+            }</span>`;
+            html += `<span>${stammdaten.bgAdresse.strasse} ${stammdaten.bgAdresse.hausnummer}</span>`;
+            html += `<span>${stammdaten.bgAdresse.plz} ${stammdaten.bgAdresse.ort}</span>`;
+            html += `<a href="mailto:${stammdaten.bgEmail || stammdaten.mail}">${stammdaten.bgEmail || stammdaten.mail}</a>`;
+            html += `<a href="tel:${stammdaten.bgTelefon || stammdaten.telefon}">${stammdaten.bgTelefon || stammdaten.telefon}</a>`;
         }
-        return this.gemeindeStammdatenToHtml(gemeindeDaten);
+        if (stammdaten.tsAdresse && stammdaten.gemeinde.angebotTS) {
+            html += `<h3 class="margin-top-20">${this.$translate.instant('KONTAKT_TAGESCHSCHULANMELDUNGEN_TITLE')}</h3>`;
+            html += `<span>${
+                stammdaten.tsAdresse.organisation
+                    ? stammdaten.tsAdresse.organisation
+                    : ''
+            }</span>`;
+            html += `<span>${stammdaten.tsAdresse.strasse} ${stammdaten.tsAdresse.hausnummer}</span>`;
+            html += `<span>${stammdaten.tsAdresse.plz} ${stammdaten.tsAdresse.ort}</span>`;
+            html += `<a href="tel:${stammdaten.tsEmail || stammdaten.mail}">${stammdaten.tsEmail || stammdaten.mail}</a>`;
+            html += `<a href="tel:${stammdaten.tsTelefon || stammdaten.telefon}">${stammdaten.tsTelefon || stammdaten.telefon}</a>`;
+        }
+        return html;
     }
 
     private resetNavigationParameters(): void {
         this.gesuchsperiodeList = {};
         this.gesuchNavigationList = {};
         this.antragTypList = {};
-        this.antragMutierenPossible();
-        this.antragErneuernPossible();
+        this.updateAntragMutierenPossible();
+        this.updateAntragErneuernPossible();
     }
 
     private updateGesuchperiodeList(): void {
@@ -677,7 +629,7 @@ export class DossierToolbarController implements IDVFocusableController {
         return this.mutierenPossibleForCurrentAntrag;
     }
 
-    private antragMutierenPossible(): void {
+    private updateAntragMutierenPossible(): void {
         if (!this.antragList || this.antragList.length === 0) {
             this.mutierenPossibleForCurrentAntrag = false;
             return;
@@ -722,7 +674,7 @@ export class DossierToolbarController implements IDVFocusableController {
         });
     }
 
-    private antragErneuernPossible(): void {
+    private updateAntragErneuernPossible(): void {
         if (!this.antragList || this.antragList.length === 0) {
             this.erneuernPossibleForCurrentAntrag = false;
             return;
@@ -816,6 +768,7 @@ export class DossierToolbarController implements IDVFocusableController {
         if (!this.getGesuch() || this.getGesuch().isNew()) {
             return false;
         }
+
         if (
             this.authServiceRS.isOneOfRoles(
                 this.TSRoleUtil.getGesuchstellerSozialdienstRolle()
@@ -836,14 +789,11 @@ export class DossierToolbarController implements IDVFocusableController {
             // JA: Darf nicht verfuegen oder verfuegt sein und muss Papier sein
             return false;
         }
-        if (
+        return !(
             this.getGesuch().dossier.fall.sozialdienstFall &&
             this.getGesuch().dossier.fall.sozialdienstFall.status ===
                 TSSozialdienstFallStatus.ENTZOGEN
-        ) {
-            return false;
-        }
-        return true;
+        );
     }
 
     public gesuchLoeschen(): IPromise<void> {
@@ -933,48 +883,18 @@ export class DossierToolbarController implements IDVFocusableController {
     }
 
     public showKontakt(): void {
-        if (EbeguUtil.isNullOrUndefined(this.kontaktdatenGemeindeAsHtml)) {
-            this.updateGemeindeStammdaten();
-        }
-        if (!EbeguUtil.isNotNullOrUndefined(this.kontaktdatenGemeindeAsHtml)) {
-            return;
-        }
-        this.dvDialog.showDialog(showKontaktTemplate, ShowTooltipController, {
-            title: '',
-            text: this.kontaktdatenGemeindeAsHtml,
-            parentController: this
-        });
-    }
-
-    private gemeindeStammdatenToHtml(
-        stammdaten: TSGemeindeStammdatenLite
-    ): string {
-        const htmlIntro = this.authServiceRS.isOneOfRoles(
-            TSRoleUtil.getGesuchstellerSozialdienstRolle()
-        )
-            ? `<h3 class="margin-top-20">${this.$translate.instant('BEI_FRAGEN_GEMEINDE_KONTAKTIEREN')}</h3>
-            <span>`
-            : `<span class="margin-top-20">`;
-        let html;
-        if (EbeguUtil.isNotNullAndTrue(this.isLuzern)) {
-            html = `${this.$translate.instant('PER_TELEFON_MAIL_KONTAKTIEREN')}
-                   <p><a href="tel:+41 41 208 81 90">+41 41 208 81 90</a></p>
-                   <p><a href="mailto:betreuungsgutscheine@stadtluzern.ch">betreuungsgutscheine@stadtluzern.ch</a></p>`;
-        } else {
-            html = `${htmlIntro}${
-                stammdaten.adresse.organisation
-                    ? stammdaten.adresse.organisation
-                    : ''
-            }
-                          ${stammdaten.gemeindeName}</span><br>
-                    <span>${stammdaten.adresse.strasse} ${stammdaten.adresse.hausnummer}</span><br>
-                    <span>${stammdaten.adresse.plz} ${stammdaten.adresse.ort}</span><br>
-                    <a href="mailto:${stammdaten.mail}">${stammdaten.mail}</a><br>`;
-            html += stammdaten.telefon
-                ? `<a href="tel:${stammdaten.telefon}">${stammdaten.telefon}</a><br>`
-                : '';
-        }
-        return html;
+        this.gemeindeRS
+            .getGemeindeStammdaten(this.gemeindeId)
+            .then(stammdaten => {
+                this.dvDialog.showDialog(
+                    showKontaktTemplate,
+                    GemeindeKontaktdatenController,
+                    {
+                        parentController: this,
+                        stammdaten: stammdaten
+                    }
+                );
+            });
     }
 
     private institutionStammdatenToHtml(
@@ -982,16 +902,16 @@ export class DossierToolbarController implements IDVFocusableController {
     ): string {
         let html = '';
         if (stammdaten.adresse.organisation === stammdaten.institution.name) {
-            html += `<span class="margin-top-20">${stammdaten.institution.name}</span><br>`;
+            html += `<span class="margin-top-20">${stammdaten.institution.name}</span>`;
         } else {
             html += `<span class="margin-top-20">${stammdaten.adresse.organisation ? stammdaten.adresse.organisation : ''}
-                          ${stammdaten.institution.name}</span><br>`;
+                          ${stammdaten.institution.name}</span>`;
         }
-        html += `<span>${stammdaten.adresse.strasse} ${stammdaten.adresse.hausnummer}</span><br>
-                    <span>${stammdaten.adresse.plz} ${stammdaten.adresse.ort}</span><br>
-                    <a href="mailto:${stammdaten.mail}">${stammdaten.mail}</a><br>`;
+        html += `<span>${stammdaten.adresse.strasse} ${stammdaten.adresse.hausnummer}</span>
+                    <span>${stammdaten.adresse.plz} ${stammdaten.adresse.ort}</span>
+                    <a href="mailto:${stammdaten.mail}">${stammdaten.mail}</a>`;
         html += stammdaten.telefon
-            ? `<a href="tel:${stammdaten.telefon}">${stammdaten.telefon}</a><br>`
+            ? `<a href="tel:${stammdaten.telefon}">${stammdaten.telefon}</a>`
             : '';
         return html;
     }
@@ -1040,7 +960,7 @@ export class DossierToolbarController implements IDVFocusableController {
      * Sets the focus back to the Kontakt icon.
      */
     public setFocusBack(): void {
-        angular.element('#kontaktButton').first().focus();
+        element('#kontaktButton').first().focus();
     }
 
     public getGesuchName(): string {
@@ -1064,11 +984,83 @@ export class DossierToolbarController implements IDVFocusableController {
         );
     }
 
-    private sanitizeHtml(altGemeindeKontaktText: string): string {
-        return altGemeindeKontaktText;
-    }
-
     public isTagesschulangebotEnabled(): boolean {
         return this.angebotTS;
+    }
+
+    private setGemeindeInstitutionKontakteHtmlIfTraegerschaftInstitution(): void {
+        if (
+            this.authServiceRS.isOneOfRoles(
+                TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
+            )
+        ) {
+            this.gemeindeRS
+                .getGemeindeStammdaten(this.gemeindeId)
+                .then(stammdaten => {
+                    this.gemeindeInstitutionKontakteHtml =
+                        this.gemeindeStammdatenToHtml(stammdaten);
+                });
+        }
+    }
+
+    private setGemeindeSozialdienstKontakteHtmIfSozialdienstFall(): void {
+        if (this.dossier.fall.sozialdienstFall) {
+            firstValueFrom(
+                this.sozialdienstRS.getSozialdienstStammdaten(
+                    this.dossier.fall.sozialdienstFall.sozialdienst.id
+                )
+            ).then(
+                stammdaten =>
+                    (this.gemeindeSozialdienstKontakteHtml =
+                        this.sozialdienstStammdatenToHtml(stammdaten))
+            );
+        }
+    }
+
+    private getAllAntragDTOForDossierAndUpdateAndInitialize() {
+        this.gesuchRS
+            .getAllAntragDTOForDossier(this.dossier.id)
+            .then(antraege => {
+                this.antragList = copy(antraege);
+                if (antraege && antraege.length > 0) {
+                    const newest = this.getNewest(this.antragList);
+                    this.gesuchRS.findGesuch(newest.antragId).then(gesuch => {
+                        if (!gesuch) {
+                            this.$log.warn(
+                                `Could not find gesuch for id ${newest.antragId}`
+                            );
+                        }
+                        this.gesuchModelManager.setGesuch(copy(gesuch));
+                        this.updateListsAndProperties();
+                    });
+                } else if (
+                    !this.gesuchModelManager.getGesuch() ||
+                    !this.gesuchModelManager.getGesuch().isNew()
+                ) {
+                    // Wenn das Gesuch noch neu ist, sind wir noch ungespeichert auf der FallCreation-Seite
+                    // In diesem Fall durfen wir das Gesuch nicht zuruecksetzen
+                    const gesuch = new TSGesuch();
+                    gesuch.dossier = copy(this.dossier);
+                    this.gesuchModelManager.setGesuch(gesuch);
+                    this.resetNavigationParameters();
+                }
+            });
+    }
+
+    private getAllAntragDTOAndUpdate() {
+        this.gesuchRS
+            .getAllAntragDTOForDossier(this.getGesuch().dossier.id)
+            .then(antraege => {
+                this.antragList = antraege;
+                this.updateListsAndProperties();
+            });
+    }
+
+    private updateListsAndProperties() {
+        this.updateGesuchperiodeList();
+        this.updateGesuchNavigationList();
+        this.updateAntragTypList();
+        this.updateAntragMutierenPossible();
+        this.updateAntragErneuernPossible();
     }
 }

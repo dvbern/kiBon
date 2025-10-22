@@ -21,13 +21,14 @@ import {
     Transition,
     TransitionService
 } from '@uirouter/core';
-import {map, take} from 'rxjs/operators';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {map} from 'rxjs/operators';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {hasFromState} from '../../../dvbModules/router/route-helper-provider';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {getRoleBasedTargetState} from '../../../utils/AuthenticationUtil';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
 import {OnBeforePriorities} from './onBeforePriorities';
+import {firstValueFrom} from 'rxjs';
 
 /**
  * This file contains a Transition Hook which protects a
@@ -59,9 +60,8 @@ function abortWhenUnauthorised(transition: Transition): HookResult {
         .injector()
         .get('AuthServiceRS');
 
-    return authService.principal$
-        .pipe(
-            take(1),
+    return firstValueFrom(
+        authService.principal$.pipe(
             map(principal => {
                 const transitionTo = transition ? transition.$to().name : '-';
                 LOG.debug(
@@ -124,5 +124,5 @@ function abortWhenUnauthorised(transition: Transition): HookResult {
                 return false;
             })
         )
-        .toPromise();
+    );
 }

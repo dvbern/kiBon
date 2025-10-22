@@ -16,9 +16,9 @@
 import {TSBedarfsstufe} from './enums/betreuung/TSBedarfsstufe';
 import {TSPensumUnits} from './enums/TSPensumUnits';
 import {TSVerfuegungZeitabschnittZahlungsstatus} from './enums/TSVerfuegungZeitabschnittZahlungsstatus';
-import {TSAbstractDateRangedEntity} from './TSAbstractDateRangedEntity';
-import {TSVerfuegungZeitabschnittBemerkung} from './TSVerfuegungZeitabschnittBemerkung';
+import {TSAbstractDateRangedEntity} from '@kibon/shared/model/entity';
 import {TSTsCalculationResult} from './TSTsCalculationResult';
+import {TSVerfuegungZeitabschnittBemerkung} from './TSVerfuegungZeitabschnittBemerkung';
 
 export class TSVerfuegungZeitabschnitt extends TSAbstractDateRangedEntity {
     public abzugFamGroesse: number;

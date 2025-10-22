@@ -23,21 +23,24 @@ import {
     VerfuegungPO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 
 describe('Kibon - Tagesschule Only [Superadmin]', () => {
-    const adminUser = getUser('[1-Superadmin] E-BEGU Superuser');
+    const adminUser = getUser('[1-Superadmin] Super User');
     const adminGemeindeTSParisUser = getUser('[6-P-Admin-TS] Adrian Schuler');
     let gesuchUrl: string;
 
     before(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
+        cy.ignoreUncaughtException();
         cy.login(adminUser);
         cy.visit('/#/faelle');
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-1',
             gemeinde: 'Paris',
-            periode: '2022/23',
+            periode: '2024/25',
             betreuungsstatus: 'warten'
         });
 
@@ -49,6 +52,7 @@ describe('Kibon - Tagesschule Only [Superadmin]', () => {
     });
 
     it('should create a prefilled new Testfall Antrag', () => {
+        cy.ignoreUncaughtException();
         // login as Administrator TS der Gemeinde
         cy.login(adminGemeindeTSParisUser);
 

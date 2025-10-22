@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.lastenausgleichTagesschulen;
@@ -289,7 +289,9 @@ public class LastenausgleichTagesschulenDataRow {
 		return betreuungsstundenTagesschule;
 	}
 
-	public void setBetreuungsstundenTagesschule(@Nullable BigDecimal betreuungsstundenTagesschule) {
+	public void setBetreuungsstundenTagesschule(
+		@Nullable BigDecimal betreuungsstundenTagesschule
+	) {
 		this.betreuungsstundenTagesschule = betreuungsstundenTagesschule;
 	}
 
@@ -298,7 +300,9 @@ public class LastenausgleichTagesschulenDataRow {
 		return konzeptOrganisatorisch;
 	}
 
-	public void setKonzeptOrganisatorisch(@Nullable Boolean konzeptOrganisatorisch) {
+	public void setKonzeptOrganisatorisch(
+		@Nullable Boolean konzeptOrganisatorisch
+	) {
 		this.konzeptOrganisatorisch = konzeptOrganisatorisch;
 	}
 
@@ -325,7 +329,9 @@ public class LastenausgleichTagesschulenDataRow {
 		return betreuungsVerhaeltnis;
 	}
 
-	public void setBetreuungsVerhaeltnis(@Nullable Boolean betreuungsVerhaeltnis) {
+	public void setBetreuungsVerhaeltnis(
+		@Nullable Boolean betreuungsVerhaeltnis
+	) {
 		this.betreuungsVerhaeltnis = betreuungsVerhaeltnis;
 	}
 
@@ -343,7 +349,9 @@ public class LastenausgleichTagesschulenDataRow {
 		return bemerkungenTagesschule;
 	}
 
-	public void setBemerkungenTagesschule(@Nullable String bemerkungenTagesschule) {
+	public void setBemerkungenTagesschule(
+		@Nullable String bemerkungenTagesschule
+	) {
 		this.bemerkungenTagesschule = bemerkungenTagesschule;
 	}
 

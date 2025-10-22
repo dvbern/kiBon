@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 
 export class TSFinanzielleSituationSelbstdeklaration extends TSAbstractMutableEntity {
     private _einkunftErwerb: number;

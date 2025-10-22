@@ -21,14 +21,14 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.enums.AbholungTagesschule;
 import ch.dvbern.ebegu.enums.reporting.FleischOption;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO fuer Daten der Belegungen.
@@ -38,14 +38,17 @@ public class JaxBelegungTagesschule extends JaxAbstractDTO {
 
 	private static final long serialVersionUID = -1297972380574937397L;
 
-	@NotNull @Nonnull
-	private Set<JaxBelegungTagesschuleModul> belegungTagesschuleModule = new LinkedHashSet<>();
+	@NotNull
+	@Nonnull
+	private Set<JaxBelegungTagesschuleModul> belegungTagesschuleModule =
+		new LinkedHashSet<>();
 
 	@NotNull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate eintrittsdatum;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private String planKlasse;
 
 	@Nullable
@@ -57,7 +60,8 @@ public class JaxBelegungTagesschule extends JaxAbstractDTO {
 	@Nullable
 	private String notfallnummer;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private AbholungTagesschule abholungTagesschule;
 
 	@Nullable
@@ -66,12 +70,14 @@ public class JaxBelegungTagesschule extends JaxAbstractDTO {
 	private boolean abweichungZweitesSemester = false;
 	private boolean keineKesbPlatzierung = true;
 
-
+	@Nonnull
 	public Set<JaxBelegungTagesschuleModul> getBelegungTagesschuleModule() {
 		return belegungTagesschuleModule;
 	}
 
-	public void setBelegungTagesschuleModule(Set<JaxBelegungTagesschuleModul> belegungTagesschuleModule) {
+	public void setBelegungTagesschuleModule(
+		@Nonnull Set<JaxBelegungTagesschuleModul> belegungTagesschuleModule
+	) {
 		this.belegungTagesschuleModule = belegungTagesschuleModule;
 	}
 
@@ -83,19 +89,23 @@ public class JaxBelegungTagesschule extends JaxAbstractDTO {
 		this.eintrittsdatum = eintrittsdatum;
 	}
 
+	@Nonnull
 	public String getPlanKlasse() {
 		return planKlasse;
 	}
 
-	public void setPlanKlasse(String planKlasse) {
+	public void setPlanKlasse(@Nonnull String planKlasse) {
 		this.planKlasse = planKlasse;
 	}
 
+	@Nonnull
 	public AbholungTagesschule getAbholungTagesschule() {
 		return abholungTagesschule;
 	}
 
-	public void setAbholungTagesschule(AbholungTagesschule abholungTagesschule) {
+	public void setAbholungTagesschule(
+		@Nonnull AbholungTagesschule abholungTagesschule
+	) {
 		this.abholungTagesschule = abholungTagesschule;
 	}
 
@@ -112,7 +122,9 @@ public class JaxBelegungTagesschule extends JaxAbstractDTO {
 		return abweichungZweitesSemester;
 	}
 
-	public void setAbweichungZweitesSemester(boolean abweichungZweitesSemester) {
+	public void setAbweichungZweitesSemester(
+		boolean abweichungZweitesSemester
+	) {
 		this.abweichungZweitesSemester = abweichungZweitesSemester;
 	}
 
@@ -138,8 +150,11 @@ public class JaxBelegungTagesschule extends JaxAbstractDTO {
 		return allergienUndUnvertraeglichkeiten;
 	}
 
-	public void setAllergienUndUnvertraeglichkeiten(@Nullable String allergienUndUnvertraeglichkeiten) {
-		this.allergienUndUnvertraeglichkeiten = allergienUndUnvertraeglichkeiten;
+	public void setAllergienUndUnvertraeglichkeiten(
+		@Nullable String allergienUndUnvertraeglichkeiten
+	) {
+		this.allergienUndUnvertraeglichkeiten =
+			allergienUndUnvertraeglichkeiten;
 	}
 
 	@Nullable

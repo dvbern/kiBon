@@ -24,8 +24,9 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.PermitAll;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.security.PermitAll;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.dto.JaxAntragDTO;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -64,7 +65,11 @@ public interface GesuchService {
 	 * @return Das aktualisierte Gesuch
 	 */
 	@Nonnull
-	Gesuch updateGesuch(@Nonnull Gesuch gesuch, boolean saveInStatusHistory, @Nullable Benutzer saveAsUser);
+	Gesuch updateGesuch(
+		@Nonnull Gesuch gesuch,
+		boolean saveInStatusHistory,
+		@Nullable Benutzer saveAsUser
+	);
 
 	Gesuch updateGesuch(@Nonnull Gesuch gesuch, boolean saveInStatusHistory);
 
@@ -84,7 +89,8 @@ public interface GesuchService {
 		@Nonnull Gesuch gesuch,
 		boolean saveInStatusHistory,
 		@Nullable Benutzer saveAsUser,
-		boolean doAuthCheck);
+		boolean doAuthCheck
+	);
 
 	/**
 	 * Laedt das Gesuch mit der id aus der DB. ACHTUNG zudem wird hier der Status auf IN_BEARBEITUNG_JA gesetzt
@@ -114,7 +120,11 @@ public interface GesuchService {
 	 * nicht durch den Gesuchsteller zurückgezogen wurde)
 	 */
 	@Nonnull
-	Gesuch findGesuchForFreigabe(@Nonnull String gesuchId, @Nonnull Integer anzahlZurueckgezogen, boolean checkAnzahlZurueckgezogen);
+	Gesuch findGesuchForFreigabe(
+		@Nonnull String gesuchId,
+		@Nonnull Integer anzahlZurueckgezogen,
+		boolean checkAnzahlZurueckgezogen
+	);
 
 	/**
 	 * Gibt alle Gesuche zurueck die in der Liste der gesuchIds auftauchen und fuer die der Benutzer berechtigt ist.
@@ -134,7 +144,10 @@ public interface GesuchService {
 	 * entfernt ein Gesuch aus der Database. Es wird ein LogEintrag erstellt mit dem Grund des Löschens-
 	 */
 	@SuppressWarnings("NonBooleanMethodNameMayNotStartWithQuestion")
-	void removeGesuch(@Nonnull String gesuchId, GesuchDeletionCause deletionCause);
+	void removeGesuch(
+		@Nonnull String gesuchId,
+		GesuchDeletionCause deletionCause
+	);
 
 	/**
 	 * Gibt alle Antraege des aktuell eingeloggten Benutzers
@@ -164,7 +177,8 @@ public interface GesuchService {
 	Optional<Gesuch> getNeustesVerfuegtesGesuchFuerGesuch(
 		@Nonnull Gesuchsperiode gesuchsperiode,
 		@Nonnull Dossier dossier,
-		boolean doAuthCheck);
+		boolean doAuthCheck
+	);
 
 	/**
 	 * Gibt das neueste Gesuch der im selben Fall und Periode wie das gegebene Gesuch ist.
@@ -195,25 +209,33 @@ public interface GesuchService {
 	 * Alle Gesuche fuer den gegebenen Fall in der gegebenen Periode
 	 */
 	@Nonnull
-	List<Gesuch> getAllGesucheForDossierAndPeriod(@Nonnull Dossier dossier, @Nonnull Gesuchsperiode gesuchsperiode);
+	List<Gesuch> getAllGesucheForDossierAndPeriod(
+		@Nonnull Dossier dossier,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
 	 * Alle Gesuche Ids fuer den gegebenen Dossier in der gegebenen Periode
 	 */
 	@Nonnull
-	List<String> getAllGesucheIdsForDossierAndPeriod(@Nonnull Dossier dossier, @Nonnull Gesuchsperiode gesuchsperiode);
+	List<String> getAllGesucheIdsForDossierAndPeriod(
+		@Nonnull Dossier dossier,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
 	 * Das gegebene Gesuch wird mit heutigem Datum freigegeben und den Step FREIGABE auf OK gesetzt
 	 */
-	Gesuch antragFreigabequittungErstellen(@Nonnull Gesuch gesuch, AntragStatus statusToChangeTo);
+	Gesuch antragFreigabequittungErstellen(
+		@Nonnull Gesuch gesuch,
+		AntragStatus statusToChangeTo
+	);
 
 	/**
 	 * Zieht die Freigabe wieder zurück.
 	 */
 	@Nonnull
 	Gesuch antragZurueckziehen(@Nonnull String gesuchId);
-
 
 	/**
 	 * Setzt das gegebene Gesuch als Beschwerde hängig und bei allen Gescuhen der Periode den Flag
@@ -259,7 +281,8 @@ public interface GesuchService {
 	@Nonnull
 	Optional<String> getIdOfNeuestesGesuchForDossierAndGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull Dossier dossier);
+		@Nonnull Dossier dossier
+	);
 
 	/**
 	 * Returns the newest Gesuch for the given Fall. It will return the newest Gesuch for which the user has
@@ -276,7 +299,8 @@ public interface GesuchService {
 	Optional<Gesuch> getNeustesGesuchFuerFallnumerForSchulamtInterface(
 		@Nonnull Gemeinde gemeinde,
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull Long fallnummer);
+		@Nonnull Long fallnummer
+	);
 
 	/**
 	 * Schickt eine E-Mail an alle Gesuchsteller, die ihr Gesuch innerhalb einer konfigurierbaren Frist nach
@@ -288,7 +312,10 @@ public interface GesuchService {
 	/**
 	 * Schickt eine E-Mail an den Gesuchsteller des Gesuchs
 	 */
-	void warnGesuchNichtFreigegeben(Integer anzahlTageBisLoeschungNachWarnungFreigabe, Gesuch gesuch);
+	void warnGesuchNichtFreigegeben(
+		Integer anzahlTageBisLoeschungNachWarnungFreigabe,
+		Gesuch gesuch
+	);
 
 	/**
 	 * Schickt eine E-Mail an alle Gesuchsteller, die die Freigabequittung innerhalb einer konfigurierbaren Frist nach
@@ -300,7 +327,10 @@ public interface GesuchService {
 	/**
 	 * Schickt eine E-Mail an den Gesuchsteller und setzt das DatumGewarntFehlendeQuittung
 	 */
-	void sendWarnungFreigabequittung(Integer anzahlTageBisLoeschungNachWarnungFreigabe, Gesuch gesuch);
+	void sendWarnungFreigabequittung(
+		Integer anzahlTageBisLoeschungNachWarnungFreigabe,
+		Gesuch gesuch
+	);
 
 	/**
 	 * Löscht alle Gesuche, die nach einer konfigurierbaren Frist nach Erstellung nicht freigegeben bzw. nach Freigabe
@@ -312,10 +342,11 @@ public interface GesuchService {
 	/**
 	 * Löscht eine Gesuche mit eine neue Transaction
 	 * Achtung es muss durch einen anderen EJB angerufen werden, sonst die Transaction parameter ist ignoriert!
+	 *
 	 * @param gesuch
 	 * @param typ
 	 */
-	void removeGesuchAndPersist(Gesuch gesuch,GesuchDeletionCause typ);
+	void removeGesuchAndPersist(Gesuch gesuch, GesuchDeletionCause typ);
 
 	/**
 	 * gibt alle Gesuche zurueck die nach einer konfigurierten Frist nach Erstellung nicht freigegeben bzw. nach
@@ -337,7 +368,10 @@ public interface GesuchService {
 	 * @param dossier Der Antraege, zu denen die Mutation gehoert, die geloescht werden muss
 	 * @param gesuchsperiode Gesuchsperiode, in der die Gesuche geloescht werden sollen
 	 */
-	void removeOnlineMutation(@Nonnull Dossier dossier, @Nonnull Gesuchsperiode gesuchsperiode);
+	void removeOnlineMutation(
+		@Nonnull Dossier dossier,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
 	 * Sucht die neueste Online Mutation, die zu dem gegebenen Antrag gehoert
@@ -347,7 +381,10 @@ public interface GesuchService {
 	 * @param dossier Der Antraege, zu denen die Mutation gehoert
 	 * @param gesuchsperiode Gesuchsperiode
 	 */
-	Gesuch findOnlineMutation(@Nonnull Dossier dossier, @Nonnull Gesuchsperiode gesuchsperiode);
+	Gesuch findOnlineMutation(
+		@Nonnull Dossier dossier,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
 	 * Sucht und entfernt ein Folgegesuch fuer den gegebenen Antrag in der gegebenen Gesuchsperiode
@@ -355,7 +392,10 @@ public interface GesuchService {
 	 * @param dossier Der Antraeg des Falles
 	 * @param gesuchsperiode Gesuchsperiode in der das Folgegesuch gesucht werden muss
 	 */
-	void removeOnlineFolgegesuch(@Nonnull Dossier dossier, @Nonnull Gesuchsperiode gesuchsperiode);
+	void removeOnlineFolgegesuch(
+		@Nonnull Dossier dossier,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
 	 * Loescht ein Gesuch. Einzige Ausnahme: Das Gesuch ist bereits verfuegt.
@@ -379,7 +419,10 @@ public interface GesuchService {
 	 * @param dossier Der Antraeg des Falles
 	 * @param gesuchsperiode Gesuchsperiode in der das Folgegesuch gesucht werden muss
 	 */
-	Gesuch findOnlineFolgegesuch(@Nonnull Dossier dossier, @Nonnull Gesuchsperiode gesuchsperiode);
+	Gesuch findOnlineFolgegesuch(
+		@Nonnull Dossier dossier,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
 	 * Schliesst ein Gesuch, das sich im Status GEPRUEFT befindet und kein Angebot hat
@@ -408,19 +451,26 @@ public interface GesuchService {
 	@Nonnull
 	Optional<Gesuch> getNeuestesGesuchForDossierAndPeriod(
 		@Nonnull Dossier dossier,
-		@Nonnull Gesuchsperiode gesuchsperiode);
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
 	 * Setzt den uebergebene FinSitStatus im gegebenen Gesuch
 	 *
 	 * @return 1 wenn alles ok
 	 */
-	int changeFinSitStatus(@Nonnull String antragId, @Nonnull FinSitStatus finSitStatus);
+	int changeFinSitStatus(
+		@Nonnull String antragId,
+		@Nonnull FinSitStatus finSitStatus
+	);
 
 	/**
 	 * Setzt das Gesuch auf Status PRUEFUNG_STV und aktualisiert die benoetigten Parameter.
 	 */
-	Gesuch sendGesuchToSTV(@Nonnull Gesuch gesuch, @Nullable String bemerkungen);
+	Gesuch sendGesuchToSTV(
+		@Nonnull Gesuch gesuch,
+		@Nullable String bemerkungen
+	);
 
 	/**
 	 * Das Gesuch wird als GEPRUEFT_STV markkiert
@@ -440,20 +490,19 @@ public interface GesuchService {
 	List<Gesuch> getGepruefteFreigegebeneGesucheForGesuchsperiode(
 		@Nonnull LocalDate datumVon,
 		@Nonnull LocalDate datumBis,
-		@Nonnull Gesuchsperiode gesuchsperiode);
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
 	 * Returns a list of all Gesuchen fuer die eingeloggte Benutzer Gemeinde nach dieser gesuchsperiode
 	 */
-	List<Gesuch> getAllGesuchForAmtAfterGP(@Nonnull Gesuchsperiode gesuchsperiode);
+	List<Gesuch> getAllGesuchForAmtAfterGP(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
 	/**
-	 * Erstellt eine Mutation und verlangt alle Platzbestaetigungen neu.
-	 */
-	void createMutationAndAskForPlatzbestaetigung(@Nonnull Gesuch gesuch);
-
-	/**
-	 * Findet alle verfügten und gültigen Gesuche von Kindern mit einer ZEMIS Nummer von einer der Lastenausgleichsperioden
+	 * Findet alle verfügten und gültigen Gesuche von Kindern mit einer ZEMIS Nummer von einer der
+	 * Lastenausgleichsperioden
 	 * haben. Z.B. Lastenausgleich 2020: Gesuche der Periode 2018/19 oder Periode 19/20 werden berücksichtigt
 	 */
 	List<Gesuch> findGesucheForZemisList(@Nonnull Integer lastenausgleichJahr);
@@ -462,7 +511,10 @@ public interface GesuchService {
 
 	Gesuch mutationIgnorieren(Gesuch gesuch);
 
-	Gesuch updateMarkiertFuerKontroll(@NotNull Gesuch gesuch, Boolean markiertFuerKontroll);
+	Gesuch updateMarkiertFuerKontroll(
+		@NotNull Gesuch gesuch,
+		Boolean markiertFuerKontroll
+	);
 
 	/**
 	 * Findet für eine Mutation den Erstantrag aus derselben Gesuchsperiode. Der Erstantrag ist entweder vom Typ Erst-
@@ -474,15 +526,22 @@ public interface GesuchService {
 	 * Findet für das übergebene Gesuch das neuste, verfügte Gesuch
 	 */
 	@Nonnull
-	Optional<Gesuch> getNeustesVerfuegtesGesuchFuerGesuch(@Nonnull Gesuch gesuch);
+	Optional<Gesuch> getNeustesVerfuegtesGesuchFuerGesuch(
+		@Nonnull Gesuch gesuch
+	);
 
-	/** Gibt der jüngste Vorgänger des übergebenen Gesuches zurück
-		der nicht ignoriert wurde. Wirft einen Fehler, falls kein Vorgesuch gefunden wird */
+	/**
+	 * Gibt der jüngste Vorgänger des übergebenen Gesuches zurück
+	 * der nicht ignoriert wurde. Wirft einen Fehler, falls kein Vorgesuch gefunden wird
+	 */
 	@Nonnull
 	Gesuch findVorgaengerGesuchNotIgnoriert(@Nonnull String gesuchId);
+
 	/**
 	 * Findet für eine FinanzielleSituation das Gesuch, egal ob es sich dabei um die Finanzielle Situation
 	 * von Gesuchsteler 1 oder 2 handelt. Betrachtet wird finanzielleSituationJA
 	 */
 	Optional<Gesuch> findGesuchForFinSit(@Nonnull String finSitId);
+
+	void validate(@Valid Gesuch gesuch);
 }

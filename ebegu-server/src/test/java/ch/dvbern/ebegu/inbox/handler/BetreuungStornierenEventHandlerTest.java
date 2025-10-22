@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -36,10 +36,10 @@ import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionExternalClient;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
 import ch.dvbern.ebegu.enums.MitteilungStatus;
 import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.inbox.services.BetreuungEventHelper;
 import ch.dvbern.ebegu.services.BetreuungMonitoringService;
 import ch.dvbern.ebegu.services.BetreuungService;
@@ -89,7 +89,8 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 	private static final LocalDateTime EVENT_TIME = LocalDateTime.now();
 
 	@TestSubject
-	private final BetreuungStornierenEventHandler handler = new BetreuungStornierenEventHandler();
+	private final BetreuungStornierenEventHandler handler =
+		new BetreuungStornierenEventHandler();
 
 	@SuppressWarnings("InstanceVariableMayNotBeInitialized")
 	@Mock
@@ -117,14 +118,27 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 
 	@BeforeEach
 	void setUp() {
-		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiodeXXYY(2020, 2021);
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiodeXXYY(
+			2020,
+			2021
+		);
 		gemeinde = TestDataUtil.createGemeindeParis();
 		Testfall01_WaeltiDagmar testfall_1GS =
-			new Testfall01_WaeltiDagmar(gesuchsperiode, false, gemeinde,  new TestDataInstitutionStammdatenBuilder(gesuchsperiode));
+			new Testfall01_WaeltiDagmar(
+				gesuchsperiode,
+				false,
+				gemeinde,
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode)
+			);
 		testfall_1GS.createFall();
 		testfall_1GS.createGesuch(LocalDate.of(2016, Month.DECEMBER, 12));
 		gesuch_1GS = testfall_1GS.fillInGesuch();
-		eventMonitor = new EventMonitor(betreuungMonitoringService, EVENT_TIME, REF_NUMMER, CLIENT_NAME);
+		eventMonitor = new EventMonitor(
+			betreuungMonitoringService,
+			EVENT_TIME,
+			REF_NUMMER,
+			CLIENT_NAME
+		);
 	}
 
 	@ParameterizedTest
@@ -140,15 +154,24 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 
 		@Test
 		void ignoreEventWhenNoBetreuungFound() {
-			expect(betreuungService.findBetreuungByReferenzNummer(REF_NUMMER, false))
+			expect(
+				betreuungService.findBetreuungByReferenzNummer(
+					REF_NUMMER,
+					false
+				)
+			)
 				.andReturn(Optional.empty());
 
 			testIgnored("Betreuung nicht gefunden.");
 		}
 
 		@ParameterizedTest
-		@EnumSource(value = GesuchsperiodeStatus.class, names = "AKTIV", mode = Mode.EXCLUDE)
-		void ignoreEventWhenPeriodeNotAktiv(@Nonnull GesuchsperiodeStatus status) {
+		@EnumSource(value = GesuchsperiodeStatus.class,
+			names = "AKTIV",
+			mode = Mode.EXCLUDE)
+		void ignoreEventWhenPeriodeNotAktiv(
+			@Nonnull GesuchsperiodeStatus status
+		) {
 			Betreuung betreuung = betreuungWithSingleContainer();
 			betreuung.extractGesuchsperiode().setStatus(status);
 
@@ -166,7 +189,9 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 
 			expectBetreuungFound(betreuung);
 
-			testIgnored("Die Betreuung wurde verändert, nachdem das BetreuungEvent generiert wurde.");
+			testIgnored(
+				"Die Betreuung wurde verändert, nachdem das BetreuungEvent generiert wurde."
+			);
 		}
 
 		@Test
@@ -174,20 +199,37 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 			Betreuung betreuung = betreuungWithSingleContainer();
 
 			expectBetreuungFound(betreuung);
-			expect(betreuungEventHelper.getExternalClients(CLIENT_NAME, betreuung))
+			expect(
+				betreuungEventHelper.getExternalClients(
+					CLIENT_NAME,
+					betreuung
+				)
+			)
 				.andReturn(new InstitutionExternalClients());
-			expect(betreuungEventHelper.clientNotFoundFailure(CLIENT_NAME, betreuung))
-				.andReturn(Processing.failure("Kein InstitutionExternalClient Namens ist der Institution zugewiesen"));
+			expect(
+				betreuungEventHelper.clientNotFoundFailure(
+					CLIENT_NAME,
+					betreuung
+				)
+			)
+				.andReturn(
+					Processing.failure(
+						"Kein InstitutionExternalClient Namens ist der Institution zugewiesen"
+					)
+				);
 
 			replayAll();
 
 			Processing result = handler.attemptProcessing(eventMonitor);
 			assertThat(
 				result,
-				failed(stringContainsInOrder(
-					"Kein InstitutionExternalClient Namens",
-					"ist der Institution",
-					"zugewiesen"))
+				failed(
+					stringContainsInOrder(
+						"Kein InstitutionExternalClient Namens",
+						"ist der Institution",
+						"zugewiesen"
+					)
+				)
 			);
 			verifyAll();
 		}
@@ -199,14 +241,19 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 			expectBetreuungFound(betreuung);
 			mockClient(new DateRange(2022));
 
-			testIgnored("Der Client hat innerhalb der Periode keine Berechtigung.");
+			testIgnored(
+				"Der Client hat innerhalb der Periode keine Berechtigung."
+			);
 		}
 
 		@ParameterizedTest
 		@EnumSource(value = Betreuungsstatus.class,
-			names = { "WARTEN", "BESTAETIGT", "VERFUEGT", "GESCHLOSSEN_OHNE_VERFUEGUNG" },
+			names = { "WARTEN", "BESTAETIGT", "VERFUEGT",
+				"GESCHLOSSEN_OHNE_VERFUEGUNG" },
 			mode = Mode.EXCLUDE)
-		void ignoreWhenInvalidBetreuungStatus(@Nonnull Betreuungsstatus status) {
+		void ignoreWhenInvalidBetreuungStatus(
+			@Nonnull Betreuungsstatus status
+		) {
 			Betreuung betreuung = betreuungWithSingleContainer();
 			betreuung.setBetreuungsstatus(status);
 
@@ -218,8 +265,11 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 			Processing result = handler.attemptProcessing(eventMonitor);
 			assertThat(
 				result,
-				failed(stringContainsInOrder(
-					"Die Betreuung befindet sich in einen Status in dem eine Stornierung nicht erlaubt ist."))
+				failed(
+					stringContainsInOrder(
+						"Die Betreuung befindet sich in einen Status in dem eine Stornierung nicht erlaubt ist."
+					)
+				)
 			);
 			verifyAll();
 		}
@@ -250,7 +300,10 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 			// of gueltigkeiten harder
 			betreuungspensum.setPensum(BigDecimal.valueOf(50));
 			ErweiterteBetreuung erweiterteBetreuung =
-				requireNonNull(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA());
+				requireNonNull(
+					betreuung.getErweiterteBetreuungContainer()
+						.getErweiterteBetreuungJA()
+				);
 			// the default test data already sets TRUE, but the actual default is NULL...
 			erweiterteBetreuung.setBetreuungInGemeinde(null);
 
@@ -265,16 +318,47 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 
 			Dossier dossier = gesuch_1GS.getDossier();
 
-			assertThat(capture.getValue(), pojo(Betreuungsmitteilung.class)
-				.where(Betreuungsmitteilung::getDossier, sameInstance(dossier))
-				.where(Betreuungsmitteilung::getSenderTyp, is(MitteilungTeilnehmerTyp.INSTITUTION))
-				.where(Betreuungsmitteilung::getSender, notNullValue())
-				.where(Betreuungsmitteilung::getEmpfaengerTyp, is(MitteilungTeilnehmerTyp.JUGENDAMT))
-				.where(Betreuungsmitteilung::getEmpfaenger, sameInstance(dossier.getFall().getBesitzer()))
-				.where(Betreuungsmitteilung::getMitteilungStatus, is(MitteilungStatus.NEU))
-				.where(Betreuungsmitteilung::getSubject, is("Mutationstornierungmeldung"))
-				.where(Betreuungsmitteilung::isBetreuungStornieren, is(true))
-				.where(Betreuungsmitteilung::getBetreuung, sameInstance(betreuung))
+			assertThat(
+				capture.getValue(),
+				pojo(Betreuungsmitteilung.class)
+					.where(
+						Betreuungsmitteilung::getDossier,
+						sameInstance(dossier)
+					)
+					.where(
+						Betreuungsmitteilung::getSenderTyp,
+						is(MitteilungTeilnehmerTyp.INSTITUTION)
+					)
+					.where(
+						Betreuungsmitteilung::getSender,
+						notNullValue()
+					)
+					.where(
+						Betreuungsmitteilung::getEmpfaengerTyp,
+						is(MitteilungTeilnehmerTyp.JUGENDAMT)
+					)
+					.where(
+						Betreuungsmitteilung::getEmpfaenger,
+						sameInstance(
+							dossier.getFall().getBesitzer()
+						)
+					)
+					.where(
+						Betreuungsmitteilung::getMitteilungStatus,
+						is(MitteilungStatus.NEU)
+					)
+					.where(
+						Betreuungsmitteilung::getSubject,
+						is("Mutationstornierungmeldung")
+					)
+					.where(
+						Betreuungsmitteilung::isBetreuungStornieren,
+						is(true)
+					)
+					.where(
+						Betreuungsmitteilung::getBetreuung,
+						sameInstance(betreuung)
+					)
 			);
 		}
 
@@ -287,8 +371,13 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 			testProcessingSuccess();
 
 			// ignoring the dates, because their formatting is not platform independent
-			assertThat(capture.getValue().getMessage(), stringContainsInOrder(
-				"Die Betreuung ", " wird storniert"));
+			assertThat(
+				capture.getValue().getMessage(),
+				stringContainsInOrder(
+					"Die Betreuung ",
+					" wird storniert"
+				)
+			);
 		}
 
 		@Test
@@ -300,7 +389,10 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 
 			testProcessingSuccess();
 
-			assertEquals(betreuung.getBetreuungsstatus(), Betreuungsstatus.STORNIERT);
+			assertEquals(
+				betreuung.getBetreuungsstatus(),
+				Betreuungsstatus.STORNIERT
+			);
 		}
 
 		private void testProcessingSuccess() {
@@ -317,7 +409,13 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 
 			mockClient(clientGueltigkeit);
 
-			expect(betreuungService.saveBetreuung(betreuung, false, CLIENT_NAME))
+			expect(
+				betreuungService.saveBetreuung(
+					betreuung,
+					false,
+					CLIENT_NAME
+				)
+			)
 				.andReturn(betreuung);
 		}
 
@@ -326,17 +424,32 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 
 			mockClient(clientGueltigkeit);
 
-			expect(betreuungEventHelper.getMutationsmeldungBenutzer(betreuung)).andReturn(new Benutzer());
+			expect(betreuungEventHelper.getMutationsmeldungBenutzer(betreuung))
+				.andReturn(new Benutzer());
 
-			expect(gemeindeService.getGemeindeStammdatenByGemeindeId(gemeinde.getId()))
-				.andReturn(Optional.of(TestDataUtil.createGemeindeStammdaten(gemeinde)));
+			expect(
+				gemeindeService.getGemeindeStammdatenByGemeindeId(
+					gemeinde.getId()
+				)
+			)
+				.andReturn(
+					Optional.of(
+						TestDataUtil.createGemeindeStammdaten(
+							gemeinde
+						)
+					)
+				);
 		}
 
 		@Nonnull
 		private Capture<Betreuungsmitteilung> expectNewMitteilung() {
 			Capture<Betreuungsmitteilung> captured = newCapture();
 			//noinspection ConstantConditions
-			mitteilungService.replaceOffeneBetreungsmitteilungenWithSameReferenzNummer(capture(captured), eq(REF_NUMMER));
+			mitteilungService
+				.replaceOffeneBetreungsmitteilungenWithSameReferenzNummer(
+					capture(captured),
+					eq(REF_NUMMER)
+				);
 			expectLastCall();
 
 			return captured;
@@ -345,16 +458,33 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 
 	@SuppressWarnings("MethodOnlyUsedFromInnerClass")
 	private void expectBetreuungFound(@Nonnull Betreuung foundBetreuung) {
-		expect(betreuungService.findBetreuungByReferenzNummer(REF_NUMMER, false))
+		expect(
+			betreuungService.findBetreuungByReferenzNummer(
+				REF_NUMMER,
+				false
+			)
+		)
 			.andReturn(Optional.of(foundBetreuung));
 	}
 
 	@SuppressWarnings("MethodOnlyUsedFromInnerClass")
 	private void mockClient(@Nonnull DateRange clientGueltigkeit) {
-		InstitutionExternalClient institutionExternalClient = mock(InstitutionExternalClient.class);
+		InstitutionExternalClient institutionExternalClient = mock(
+			InstitutionExternalClient.class
+		);
 
-		expect(betreuungEventHelper.getExternalClients(eq(CLIENT_NAME), EasyMock.<Betreuung>anyObject()))
-			.andReturn(new InstitutionExternalClients(institutionExternalClient, Collections.emptyList()));
+		expect(
+			betreuungEventHelper.getExternalClients(
+				eq(CLIENT_NAME),
+				EasyMock.<Betreuung>anyObject()
+			)
+		)
+			.andReturn(
+				new InstitutionExternalClients(
+					institutionExternalClient,
+					Collections.emptyList()
+				)
+			);
 
 		expect(institutionExternalClient.getGueltigkeit())
 			.andReturn(clientGueltigkeit);
@@ -363,7 +493,8 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 	@SuppressWarnings("MethodOnlyUsedFromInnerClass")
 	@Nonnull
 	private Betreuung betreuungWithSingleContainer() {
-		return PlatzbestaetigungTestUtil.betreuungWithSingleContainer(gesuch_1GS);
+		return PlatzbestaetigungTestUtil.betreuungWithSingleContainer(
+			gesuch_1GS
+		);
 	}
 }
-

@@ -13,15 +13,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, Input, OnChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {IPromise} from 'angular';
-import {from as fromPromise, from, Observable, of} from 'rxjs';
+import {from, Observable, of} from 'rxjs';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {DvNgGemeindeDialogComponent} from '../../../app/core/component/dv-ng-gemeinde-dialog/dv-ng-gemeinde-dialog.component';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {GemeindeService} from '../../../app/shared/services/gemeinde.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSKitaxResponse} from '../../../models/dto/TSKitaxResponse';
 import {TSCreationAction} from '../../../models/enums/TSCreationAction';
@@ -29,10 +30,11 @@ import {
     getTSEingangsartFromRole,
     TSEingangsart
 } from '../../../models/enums/TSEingangsart';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSSozialdienstFallStatus} from '../../../models/enums/TSSozialdienstFallStatus';
 import {TSDossier} from '../../../models/TSDossier';
-import {TSGemeinde} from '../../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {NavigationUtil} from '../../../utils/NavigationUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
@@ -46,9 +48,10 @@ const LOG = LogFactory.createLog('FallToolbarComponent');
 @Component({
     selector: 'dv-fall-toolbar',
     templateUrl: './fallToolbar.template.html',
-    styleUrls: ['./fallToolbar.less']
+    styleUrls: ['./fallToolbar.less'],
+    standalone: false
 })
-export class FallToolbarComponent implements OnChanges {
+export class FallToolbarComponent implements OnChanges, OnDestroy {
     public readonly TSRoleUtil: any = TSRoleUtil;
 
     @Input() public fallId: string;
@@ -75,8 +78,19 @@ export class FallToolbarComponent implements OnChanges {
         private readonly $state: StateService,
         private readonly gesuchRS: GesuchRS,
         private readonly authServiceRS: AuthServiceRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
+        private readonly gemeindeService: GemeindeService
     ) {}
+
+    public ngOnChanges(changes: any): void {
+        if (changes.fallId || changes.dossierId || changes.currentDossier) {
+            this.loadObjects();
+        }
+    }
+
+    public ngOnDestroy(): void {
+        this.gemeindeService.setCurrentActiveGemeinde(null);
+    }
 
     private loadObjects(): void {
         if (
@@ -111,12 +125,6 @@ export class FallToolbarComponent implements OnChanges {
         this.removeAllExistingNewDossierToCreate();
         this.dossierList.push(this.currentDossier);
         this.selectedDossier = this.dossierList[this.dossierList.length - 1];
-    }
-
-    public ngOnChanges(changes: any): void {
-        if (changes.fallId || changes.dossierId || changes.currentDossier) {
-            this.loadObjects();
-        }
     }
 
     private setSelectedDossier(): void {
@@ -161,7 +169,7 @@ export class FallToolbarComponent implements OnChanges {
     private openNewestGesuchOfDossier$(
         dossier: TSDossier
     ): Observable<TSDossier> {
-        return fromPromise(
+        return from(
             this.gesuchRS
                 .getIdOfNewestGesuchForDossier(dossier.id)
                 .then(newestGesuchID => {
@@ -394,6 +402,9 @@ export class FallToolbarComponent implements OnChanges {
             );
             this.addNewDossierToCreateToDossiersList();
             this.retrieveListOfAvailableGemeinden();
+            this.gemeindeService.setCurrentActiveGemeinde(
+                this.selectedDossier.gemeinde
+            );
 
             if (
                 this.kitaxEnabled &&
@@ -401,11 +412,11 @@ export class FallToolbarComponent implements OnChanges {
                 this.selectedDossier.fall.besitzer.externalUUID &&
                 this.isGemeindeUserOrSuperAdmin()
             ) {
-                this.applicationPropertyRS.getKitaxHost().then(host => {
+                this.applicationPropertyRS.getKitaxHost().subscribe(host => {
                     this.kitaxHost = host;
                 });
 
-                this.applicationPropertyRS.getKitaxUrl().then(url => {
+                this.applicationPropertyRS.getKitaxUrl().subscribe(url => {
                     this.gesuchRS
                         .lookupKitax(
                             url,

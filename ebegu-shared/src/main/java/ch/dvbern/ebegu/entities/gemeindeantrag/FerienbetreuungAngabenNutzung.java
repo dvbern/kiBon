@@ -25,17 +25,20 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungFormularStatus;
+import ch.dvbern.ebegu.validators.gemeindeantraege.ferienbetreuung.FormularAbschliessenGroup;
+import ch.dvbern.ebegu.validators.gemeindeantraege.ferienbetreuung.NutzungPlausibilisierung;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
+@NutzungPlausibilisierung(groups = FormularAbschliessenGroup.class)
 public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 
 	private static final long serialVersionUID = 3169971542443386003L;
@@ -83,19 +86,27 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 	@Nonnull
 	@Column()
 	@Enumerated(EnumType.STRING)
-	private FerienbetreuungFormularStatus status = FerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE;;
+	private FerienbetreuungFormularStatus status =
+		FerienbetreuungFormularStatus.IN_BEARBEITUNG;
 
-	public FerienbetreuungAngabenNutzung() {}
+	public FerienbetreuungAngabenNutzung() {
+	}
 
 	public FerienbetreuungAngabenNutzung(FerienbetreuungAngabenNutzung toCopy) {
-		this.anzahlBetreuungstageKinderBern = toCopy.anzahlBetreuungstageKinderBern;
-		this.betreuungstageKinderDieserGemeinde = toCopy.betreuungstageKinderDieserGemeinde;
-		this.betreuungstageKinderDieserGemeindeSonderschueler = toCopy.betreuungstageKinderDieserGemeindeSonderschueler;
-		this.davonBetreuungstageKinderAndererGemeinden = toCopy.davonBetreuungstageKinderAndererGemeinden;
-		this.davonBetreuungstageKinderAndererGemeindenSonderschueler = toCopy.davonBetreuungstageKinderAndererGemeindenSonderschueler;
+		this.anzahlBetreuungstageKinderBern =
+			toCopy.anzahlBetreuungstageKinderBern;
+		this.betreuungstageKinderDieserGemeinde =
+			toCopy.betreuungstageKinderDieserGemeinde;
+		this.betreuungstageKinderDieserGemeindeSonderschueler =
+			toCopy.betreuungstageKinderDieserGemeindeSonderschueler;
+		this.davonBetreuungstageKinderAndererGemeinden =
+			toCopy.davonBetreuungstageKinderAndererGemeinden;
+		this.davonBetreuungstageKinderAndererGemeindenSonderschueler =
+			toCopy.davonBetreuungstageKinderAndererGemeindenSonderschueler;
 
 		this.anzahlBetreuteKinder = toCopy.anzahlBetreuteKinder;
-		this.anzahlBetreuteKinderSonderschueler = toCopy.anzahlBetreuteKinderSonderschueler;
+		this.anzahlBetreuteKinderSonderschueler =
+			toCopy.anzahlBetreuteKinderSonderschueler;
 		this.anzahlBetreuteKinder1Zyklus = toCopy.anzahlBetreuteKinder1Zyklus;
 		this.anzahlBetreuteKinder2Zyklus = toCopy.anzahlBetreuteKinder2Zyklus;
 		this.anzahlBetreuteKinder3Zyklus = toCopy.anzahlBetreuteKinder3Zyklus;
@@ -106,7 +117,9 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return anzahlBetreuungstageKinderBern;
 	}
 
-	public void setAnzahlBetreuungstageKinderBern(@Nullable BigDecimal anzahlBetreuungstageKinderBern) {
+	public void setAnzahlBetreuungstageKinderBern(
+		@Nullable BigDecimal anzahlBetreuungstageKinderBern
+	) {
 		this.anzahlBetreuungstageKinderBern = anzahlBetreuungstageKinderBern;
 	}
 
@@ -115,8 +128,11 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return betreuungstageKinderDieserGemeinde;
 	}
 
-	public void setBetreuungstageKinderDieserGemeinde(@Nullable BigDecimal betreuungstageKinderDieserGemeinde) {
-		this.betreuungstageKinderDieserGemeinde = betreuungstageKinderDieserGemeinde;
+	public void setBetreuungstageKinderDieserGemeinde(
+		@Nullable BigDecimal betreuungstageKinderDieserGemeinde
+	) {
+		this.betreuungstageKinderDieserGemeinde =
+			betreuungstageKinderDieserGemeinde;
 	}
 
 	@Nullable
@@ -124,8 +140,11 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return betreuungstageKinderDieserGemeindeSonderschueler;
 	}
 
-	public void setBetreuungstageKinderDieserGemeindeSonderschueler(@Nullable BigDecimal betreuungstageKinderDieserGemeindeSonderschueler) {
-		this.betreuungstageKinderDieserGemeindeSonderschueler = betreuungstageKinderDieserGemeindeSonderschueler;
+	public void setBetreuungstageKinderDieserGemeindeSonderschueler(
+		@Nullable BigDecimal betreuungstageKinderDieserGemeindeSonderschueler
+	) {
+		this.betreuungstageKinderDieserGemeindeSonderschueler =
+			betreuungstageKinderDieserGemeindeSonderschueler;
 	}
 
 	@Nullable
@@ -133,8 +152,11 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return davonBetreuungstageKinderAndererGemeinden;
 	}
 
-	public void setDavonBetreuungstageKinderAndererGemeinden(@Nullable BigDecimal davonBetreuungstageKinderAndererGemeinden) {
-		this.davonBetreuungstageKinderAndererGemeinden = davonBetreuungstageKinderAndererGemeinden;
+	public void setDavonBetreuungstageKinderAndererGemeinden(
+		@Nullable BigDecimal davonBetreuungstageKinderAndererGemeinden
+	) {
+		this.davonBetreuungstageKinderAndererGemeinden =
+			davonBetreuungstageKinderAndererGemeinden;
 	}
 
 	@Nullable
@@ -142,8 +164,11 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return davonBetreuungstageKinderAndererGemeindenSonderschueler;
 	}
 
-	public void setDavonBetreuungstageKinderAndererGemeindenSonderschueler(@Nullable BigDecimal davonBetreuungstageKinderAndererGemeindenSonderschueler) {
-		this.davonBetreuungstageKinderAndererGemeindenSonderschueler = davonBetreuungstageKinderAndererGemeindenSonderschueler;
+	public void setDavonBetreuungstageKinderAndererGemeindenSonderschueler(
+		@Nullable BigDecimal davonBetreuungstageKinderAndererGemeindenSonderschueler
+	) {
+		this.davonBetreuungstageKinderAndererGemeindenSonderschueler =
+			davonBetreuungstageKinderAndererGemeindenSonderschueler;
 	}
 
 	@Nullable
@@ -151,7 +176,9 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return anzahlBetreuteKinder;
 	}
 
-	public void setAnzahlBetreuteKinder(@Nullable BigDecimal anzahlBetreuteKinder) {
+	public void setAnzahlBetreuteKinder(
+		@Nullable BigDecimal anzahlBetreuteKinder
+	) {
 		this.anzahlBetreuteKinder = anzahlBetreuteKinder;
 	}
 
@@ -160,8 +187,11 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return anzahlBetreuteKinderSonderschueler;
 	}
 
-	public void setAnzahlBetreuteKinderSonderschueler(@Nullable BigDecimal anzahlBetreuteKinderSonderschueler) {
-		this.anzahlBetreuteKinderSonderschueler = anzahlBetreuteKinderSonderschueler;
+	public void setAnzahlBetreuteKinderSonderschueler(
+		@Nullable BigDecimal anzahlBetreuteKinderSonderschueler
+	) {
+		this.anzahlBetreuteKinderSonderschueler =
+			anzahlBetreuteKinderSonderschueler;
 	}
 
 	@Nullable
@@ -169,7 +199,9 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return anzahlBetreuteKinder1Zyklus;
 	}
 
-	public void setAnzahlBetreuteKinder1Zyklus(@Nullable BigDecimal anzahlBetreuteKinder1Zyklus) {
+	public void setAnzahlBetreuteKinder1Zyklus(
+		@Nullable BigDecimal anzahlBetreuteKinder1Zyklus
+	) {
 		this.anzahlBetreuteKinder1Zyklus = anzahlBetreuteKinder1Zyklus;
 	}
 
@@ -178,7 +210,9 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return anzahlBetreuteKinder2Zyklus;
 	}
 
-	public void setAnzahlBetreuteKinder2Zyklus(@Nullable BigDecimal anzahlBetreuteKinder2Zyklus) {
+	public void setAnzahlBetreuteKinder2Zyklus(
+		@Nullable BigDecimal anzahlBetreuteKinder2Zyklus
+	) {
 		this.anzahlBetreuteKinder2Zyklus = anzahlBetreuteKinder2Zyklus;
 	}
 
@@ -187,7 +221,9 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 		return anzahlBetreuteKinder3Zyklus;
 	}
 
-	public void setAnzahlBetreuteKinder3Zyklus(@Nullable BigDecimal anzahlBetreuteKinder3Zyklus) {
+	public void setAnzahlBetreuteKinder3Zyklus(
+		@Nullable BigDecimal anzahlBetreuteKinder3Zyklus
+	) {
 		this.anzahlBetreuteKinder3Zyklus = anzahlBetreuteKinder3Zyklus;
 	}
 
@@ -197,7 +233,8 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 	}
 
 	public boolean isReadyForFreigeben() {
-		return checkPropertiesNotNull() && status == FerienbetreuungFormularStatus.ABGESCHLOSSEN;
+		return checkPropertiesNotNull()
+			&& status == FerienbetreuungFormularStatus.ABGESCHLOSSEN;
 	}
 
 	public boolean isReadyForAbschluss() {
@@ -229,21 +266,33 @@ public class FerienbetreuungAngabenNutzung extends AbstractEntity {
 
 	@Nonnull
 	public BigDecimal getAnzahlTageSonderschueler() {
-		if (this.getDavonBetreuungstageKinderAndererGemeindenSonderschueler() == null
-			|| this.getBetreuungstageKinderDieserGemeindeSonderschueler() == null) {
-			return BigDecimal.ZERO;
-		}
-		return this.getBetreuungstageKinderDieserGemeindeSonderschueler()
-			.add(this.getDavonBetreuungstageKinderAndererGemeindenSonderschueler());
+		var dieserGemeinde =
+			this.betreuungstageKinderDieserGemeindeSonderschueler == null ?
+				BigDecimal.ZERO :
+				this.betreuungstageKinderDieserGemeindeSonderschueler;
+		var andererGemeinde =
+			this.davonBetreuungstageKinderAndererGemeindenSonderschueler
+				== null ?
+					BigDecimal.ZERO :
+					this.davonBetreuungstageKinderAndererGemeindenSonderschueler;
+		return dieserGemeinde
+			.add(
+				andererGemeinde
+			);
 	}
 
 	@Nonnull
 	public BigDecimal getAnzahlTageOhneSonderschueler() {
-		if (this.betreuungstageKinderDieserGemeinde == null
-		|| this.davonBetreuungstageKinderAndererGemeinden == null) {
-			return BigDecimal.ZERO;
-		}
-		return this.betreuungstageKinderDieserGemeinde.add(this.davonBetreuungstageKinderAndererGemeinden)
+		var dieserGemeinde = this.betreuungstageKinderDieserGemeinde == null ?
+			BigDecimal.ZERO :
+			this.betreuungstageKinderDieserGemeinde;
+		var andererGemeinde = this.davonBetreuungstageKinderAndererGemeinden
+			== null ?
+				BigDecimal.ZERO :
+				this.davonBetreuungstageKinderAndererGemeinden;
+		return dieserGemeinde.add(
+			andererGemeinde
+		)
 			.subtract(getAnzahlTageSonderschueler());
 	}
 

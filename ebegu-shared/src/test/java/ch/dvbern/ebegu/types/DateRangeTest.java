@@ -29,7 +29,10 @@ import static org.junit.Assert.assertTrue;
 
 public class DateRangeTest {
 
-	private final DateRange year2015 = new DateRange(LocalDate.of(2015, 1, 1), LocalDate.of(2015, 12, 31));
+	private final DateRange year2015 = new DateRange(
+		LocalDate.of(2015, 1, 1),
+		LocalDate.of(2015, 12, 31)
+	);
 
 	@Test
 	public void testIsInRange_shouldBeFalseWhenNotInRange() {
@@ -47,14 +50,38 @@ public class DateRangeTest {
 	@Test
 	public void testEquals() {
 		assertEquals(year2015, new DateRange(year2015));
-		assertFalse(year2015.equals(new DateRange(LocalDate.of(2015, 1, 2), LocalDate.of(2015, 12, 31))));
-		assertFalse(year2015.equals(new DateRange(LocalDate.of(2015, 1, 1), LocalDate.of(2015, 12, 30))));
-		assertFalse(year2015.equals(new DateRange(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 12, 31))));
+		assertFalse(
+			year2015.equals(
+				new DateRange(
+					LocalDate.of(2015, 1, 2),
+					LocalDate.of(2015, 12, 31)
+				)
+			)
+		);
+		assertFalse(
+			year2015.equals(
+				new DateRange(
+					LocalDate.of(2015, 1, 1),
+					LocalDate.of(2015, 12, 30)
+				)
+			)
+		);
+		assertFalse(
+			year2015.equals(
+				new DateRange(
+					LocalDate.of(2016, 1, 1),
+					LocalDate.of(2016, 12, 31)
+				)
+			)
+		);
 	}
 
 	@Test
 	public void testGetOverlap_shouldBeEqualForIdenticalRanges() {
-		assertEquals(year2015, year2015.getOverlap(new DateRange(year2015)).get());
+		assertEquals(
+			year2015,
+			year2015.getOverlap(new DateRange(year2015)).get()
+		);
 	}
 
 	@Test
@@ -65,15 +92,24 @@ public class DateRangeTest {
 
 	@Test
 	public void testGetOverlap_shouldBeTheSubRange() {
-		DateRange subRange1 = new DateRange(year2015.getGueltigAb(), year2015.getGueltigBis().minusDays(1));
+		DateRange subRange1 = new DateRange(
+			year2015.getGueltigAb(),
+			year2015.getGueltigBis().minusDays(1)
+		);
 		assertEquals(subRange1, year2015.getOverlap(subRange1).get());
 		assertEquals(subRange1, subRange1.getOverlap(year2015).get());
 
-		DateRange subRange2 = new DateRange(year2015.getGueltigAb().plusDays(1), year2015.getGueltigBis());
+		DateRange subRange2 = new DateRange(
+			year2015.getGueltigAb().plusDays(1),
+			year2015.getGueltigBis()
+		);
 		assertEquals(subRange2, year2015.getOverlap(subRange2).get());
 		assertEquals(subRange2, subRange2.getOverlap(year2015).get());
 
-		DateRange subRange3 = new DateRange(year2015.getGueltigAb().plusDays(1), year2015.getGueltigBis().minusDays(1));
+		DateRange subRange3 = new DateRange(
+			year2015.getGueltigAb().plusDays(1),
+			year2015.getGueltigBis().minusDays(1)
+		);
 		assertEquals(subRange3, year2015.getOverlap(subRange3).get());
 		assertEquals(subRange3, subRange3.getOverlap(year2015).get());
 	}
@@ -96,7 +132,14 @@ public class DateRangeTest {
 
 	@Test
 	public void testGetOverlap_shouldBeEmptyWhenNoOverlap() {
-		assertFalse(year2015.getOverlap(new DateRange(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))).isPresent());
+		assertFalse(
+			year2015.getOverlap(
+				new DateRange(
+					LocalDate.of(2014, 1, 1),
+					LocalDate.of(2014, 12, 31)
+				)
+			).isPresent()
+		);
 	}
 
 	@Test
@@ -113,7 +156,10 @@ public class DateRangeTest {
 	public void testGetOverlap_stichtag() {
 		LocalDate stichtag = year2015.getGueltigAb();
 		DateRange expected = new DateRange(stichtag, stichtag);
-		assertEquals(expected, year2015.getOverlap(new DateRange(stichtag, stichtag)).get());
+		assertEquals(
+			expected,
+			year2015.getOverlap(new DateRange(stichtag, stichtag)).get()
+		);
 	}
 
 	@Test
@@ -135,11 +181,26 @@ public class DateRangeTest {
 	@Test
 	public void testEndsDayBefore_daterange() {
 		DateRange a = year2015;
-		DateRange adjacent = new DateRange(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 12, 31));
-		DateRange before = new DateRange(LocalDate.of(2012, 1, 1), LocalDate.of(2012, 12, 31));
-		DateRange intersectBefore = new DateRange(LocalDate.of(2012, 1, 1), LocalDate.of(2015, 10, 10));
-		DateRange intersectAfter = new DateRange(LocalDate.of(2015, 3, 3), LocalDate.of(2016, 12, 31));
-		DateRange after = new DateRange(LocalDate.of(2017, 1, 1), LocalDate.of(2017, 12, 31));
+		DateRange adjacent = new DateRange(
+			LocalDate.of(2016, 1, 1),
+			LocalDate.of(2016, 12, 31)
+		);
+		DateRange before = new DateRange(
+			LocalDate.of(2012, 1, 1),
+			LocalDate.of(2012, 12, 31)
+		);
+		DateRange intersectBefore = new DateRange(
+			LocalDate.of(2012, 1, 1),
+			LocalDate.of(2015, 10, 10)
+		);
+		DateRange intersectAfter = new DateRange(
+			LocalDate.of(2015, 3, 3),
+			LocalDate.of(2016, 12, 31)
+		);
+		DateRange after = new DateRange(
+			LocalDate.of(2017, 1, 1),
+			LocalDate.of(2017, 12, 31)
+		);
 
 		assertTrue(a.endsDayBefore(adjacent));
 		assertFalse(a.endsDayBefore(a)); // same ref
@@ -197,13 +258,29 @@ public class DateRangeTest {
 		assertEquals(LocalDate.of(2015, 5, 31), oneMonth.getGueltigBis());
 
 		LocalDate stichtagSchaltjahr = LocalDate.of(2016, 2, 5);
-		DateRange oneMonthSchaltjahr = new DateRange(stichtagSchaltjahr).withFullMonths();
-		assertEquals(LocalDate.of(2016, 2, 1), oneMonthSchaltjahr.getGueltigAb());
-		assertEquals(LocalDate.of(2016, 2, 29), oneMonthSchaltjahr.getGueltigBis());
+		DateRange oneMonthSchaltjahr = new DateRange(stichtagSchaltjahr)
+			.withFullMonths();
+		assertEquals(
+			LocalDate.of(2016, 2, 1),
+			oneMonthSchaltjahr.getGueltigAb()
+		);
+		assertEquals(
+			LocalDate.of(2016, 2, 29),
+			oneMonthSchaltjahr.getGueltigBis()
+		);
 
-		DateRange range = new DateRange(LocalDate.of(2014, 5, 5), LocalDate.of(2015, 5, 5));
+		DateRange range = new DateRange(
+			LocalDate.of(2014, 5, 5),
+			LocalDate.of(2015, 5, 5)
+		);
 		DateRange multiYear = range.withFullMonths();
-		assertEquals(new DateRange(LocalDate.of(2014, 5, 1), LocalDate.of(2015, 5, 31)), multiYear);
+		assertEquals(
+			new DateRange(
+				LocalDate.of(2014, 5, 1),
+				LocalDate.of(2015, 5, 31)
+			),
+			multiYear
+		);
 	}
 
 	@Test
@@ -213,9 +290,18 @@ public class DateRangeTest {
 		assertEquals(LocalDate.of(2015, 1, 1), oneYear.getGueltigAb());
 		assertEquals(LocalDate.of(2015, 12, 31), oneYear.getGueltigBis());
 
-		DateRange range = new DateRange(LocalDate.of(2014, 5, 5), LocalDate.of(2015, 5, 5));
+		DateRange range = new DateRange(
+			LocalDate.of(2014, 5, 5),
+			LocalDate.of(2015, 5, 5)
+		);
 		DateRange multiYear = range.withFullYears();
-		assertEquals(new DateRange(LocalDate.of(2014, 1, 1), LocalDate.of(2015, 12, 31)), multiYear);
+		assertEquals(
+			new DateRange(
+				LocalDate.of(2014, 1, 1),
+				LocalDate.of(2015, 12, 31)
+			),
+			multiYear
+		);
 	}
 
 	private int sign(int value) {
@@ -225,12 +311,30 @@ public class DateRangeTest {
 
 	@Test
 	public void testCompareTo() throws Exception {
-		DateRange ref = new DateRange(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 12, 31));
-		DateRange refSame = new DateRange(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 12, 31));
-		DateRange later = new DateRange(LocalDate.of(9999, 1, 1), LocalDate.of(9999, 12, 31));
-		DateRange laterLonger = new DateRange(LocalDate.of(2016, 1, 1), LocalDate.of(9999, 12, 31));
-		DateRange before = new DateRange(LocalDate.of(1000, 1, 1), LocalDate.of(1000, 12, 31));
-		DateRange beforeLonger = new DateRange(LocalDate.of(1000, 1, 1), LocalDate.of(2016, 12, 31));
+		DateRange ref = new DateRange(
+			LocalDate.of(2016, 1, 1),
+			LocalDate.of(2016, 12, 31)
+		);
+		DateRange refSame = new DateRange(
+			LocalDate.of(2016, 1, 1),
+			LocalDate.of(2016, 12, 31)
+		);
+		DateRange later = new DateRange(
+			LocalDate.of(9999, 1, 1),
+			LocalDate.of(9999, 12, 31)
+		);
+		DateRange laterLonger = new DateRange(
+			LocalDate.of(2016, 1, 1),
+			LocalDate.of(9999, 12, 31)
+		);
+		DateRange before = new DateRange(
+			LocalDate.of(1000, 1, 1),
+			LocalDate.of(1000, 12, 31)
+		);
+		DateRange beforeLonger = new DateRange(
+			LocalDate.of(1000, 1, 1),
+			LocalDate.of(2016, 12, 31)
+		);
 
 		assertEquals(0, ref.compareTo(ref));
 		assertEquals(0, ref.compareTo(refSame));
@@ -253,7 +357,10 @@ public class DateRangeTest {
 	@Test
 	public void testToFullWeekRanges_shouldReturnASingleWeekForARangeWithinAWeek() {
 		// Tuesday to Wednesday in the same week
-		DateRange withinAWeekRange = new DateRange(LocalDate.of(2016, 4, 19), LocalDate.of(2016, 4, 20));
+		DateRange withinAWeekRange = new DateRange(
+			LocalDate.of(2016, 4, 19),
+			LocalDate.of(2016, 4, 20)
+		);
 
 		List<DateRange> actualRanges = withinAWeekRange.toFullWeekRanges();
 		assertEquals(1, actualRanges.size());
@@ -272,80 +379,147 @@ public class DateRangeTest {
 
 	@Test
 	public void testToFullWeekRanges_shouldReturnTwoRangesForARangeIntersectingTwoWeeks() {
-		DateRange weednesdayToFridayNextWeek = new DateRange(LocalDate.of(2016, 4, 13), LocalDate.of(2016, 4, 22));
+		DateRange weednesdayToFridayNextWeek = new DateRange(
+			LocalDate.of(2016, 4, 13),
+			LocalDate.of(2016, 4, 22)
+		);
 
-		List<DateRange> actualRanges = weednesdayToFridayNextWeek.toFullWeekRanges();
+		List<DateRange> actualRanges = weednesdayToFridayNextWeek
+			.toFullWeekRanges();
 		assertEquals(2, actualRanges.size());
-		assertEquals(new DateRange(weednesdayToFridayNextWeek.getGueltigAb()).withFullWeeks(), actualRanges.get(0));
-		assertEquals(new DateRange(weednesdayToFridayNextWeek.getGueltigBis()).withFullWeeks(), actualRanges.get(1));
+		assertEquals(
+			new DateRange(weednesdayToFridayNextWeek.getGueltigAb())
+				.withFullWeeks(),
+			actualRanges.get(0)
+		);
+		assertEquals(
+			new DateRange(weednesdayToFridayNextWeek.getGueltigBis())
+				.withFullWeeks(),
+			actualRanges.get(1)
+		);
 	}
 
 	@Test
 	public void testToFullWeekRanges_shouldReturnThreeRangesForARangeIntersectingManyWeeks() {
-		DateRange tuesdayToThursdayThreeWeeksLater = new DateRange(LocalDate.of(2016, 4, 5), LocalDate.of(2016, 4, 28));
+		DateRange tuesdayToThursdayThreeWeeksLater = new DateRange(
+			LocalDate.of(2016, 4, 5),
+			LocalDate.of(2016, 4, 28)
+		);
 
-		List<DateRange> actualRanges = tuesdayToThursdayThreeWeeksLater.toFullWeekRanges();
+		List<DateRange> actualRanges = tuesdayToThursdayThreeWeeksLater
+			.toFullWeekRanges();
 		assertEquals(3, actualRanges.size());
 
-		DateRange expectedGueltigAbWeek = new DateRange(tuesdayToThursdayThreeWeeksLater.getGueltigAb()).withFullWeeks();
+		DateRange expectedGueltigAbWeek = new DateRange(
+			tuesdayToThursdayThreeWeeksLater.getGueltigAb()
+		).withFullWeeks();
 		assertEquals(expectedGueltigAbWeek, actualRanges.get(0));
 
-		DateRange expectedGueltigBisWeek = new DateRange(tuesdayToThursdayThreeWeeksLater.getGueltigBis()).withFullWeeks();
+		DateRange expectedGueltigBisWeek = new DateRange(
+			tuesdayToThursdayThreeWeeksLater.getGueltigBis()
+		).withFullWeeks();
 		assertEquals(expectedGueltigBisWeek, actualRanges.get(2));
 
-		DateRange expectedInbetweenWeeks = new DateRange(LocalDate.of(2016, 4, 11), LocalDate.of(2016, 4, 24));
+		DateRange expectedInbetweenWeeks = new DateRange(
+			LocalDate.of(2016, 4, 11),
+			LocalDate.of(2016, 4, 24)
+		);
 		assertEquals(expectedInbetweenWeeks, actualRanges.get(1));
 	}
 
 	@Test
 	public void testToFullWeekRanges_shouldReturnTwoRangesWhenGueltigAbIsOnAMonday() {
-		DateRange mondayToThursdayThreeWeeksLater = new DateRange(LocalDate.of(2016, 4, 4), LocalDate.of(2016, 4, 28));
+		DateRange mondayToThursdayThreeWeeksLater = new DateRange(
+			LocalDate.of(2016, 4, 4),
+			LocalDate.of(2016, 4, 28)
+		);
 
-		List<DateRange> actualRanges = mondayToThursdayThreeWeeksLater.toFullWeekRanges();
+		List<DateRange> actualRanges = mondayToThursdayThreeWeeksLater
+			.toFullWeekRanges();
 		assertEquals(2, actualRanges.size());
 
-		DateRange expectedStartWeeks = new DateRange(LocalDate.of(2016, 4, 4), LocalDate.of(2016, 4, 24));
+		DateRange expectedStartWeeks = new DateRange(
+			LocalDate.of(2016, 4, 4),
+			LocalDate.of(2016, 4, 24)
+		);
 		assertEquals(expectedStartWeeks, actualRanges.get(0));
 
-		DateRange expectedGueltigBisWeek = new DateRange(LocalDate.of(2016, 4, 25), LocalDate.of(2016, 5, 1));
+		DateRange expectedGueltigBisWeek = new DateRange(
+			LocalDate.of(2016, 4, 25),
+			LocalDate.of(2016, 5, 1)
+		);
 		assertEquals(expectedGueltigBisWeek, actualRanges.get(1));
 	}
 
 	@Test
 	public void testToFullWeekRanges_shouldReturnTwoRangesWhenGueltigBisIsOnASunday() {
-		DateRange tuesdayToSundayThreeWeeksLater = new DateRange(LocalDate.of(2016, 4, 5), LocalDate.of(2016, 5, 1));
+		DateRange tuesdayToSundayThreeWeeksLater = new DateRange(
+			LocalDate.of(2016, 4, 5),
+			LocalDate.of(2016, 5, 1)
+		);
 
-		List<DateRange> actualRanges = tuesdayToSundayThreeWeeksLater.toFullWeekRanges();
+		List<DateRange> actualRanges = tuesdayToSundayThreeWeeksLater
+			.toFullWeekRanges();
 		assertEquals(2, actualRanges.size());
 
-		DateRange expectedGueltigAbWeek = new DateRange(LocalDate.of(2016, 4, 4), LocalDate.of(2016, 4, 10));
+		DateRange expectedGueltigAbWeek = new DateRange(
+			LocalDate.of(2016, 4, 4),
+			LocalDate.of(2016, 4, 10)
+		);
 		assertEquals(expectedGueltigAbWeek, actualRanges.get(0));
 
-		DateRange expectedEndWeeks = new DateRange(LocalDate.of(2016, 4, 11), LocalDate.of(2016, 5, 1));
+		DateRange expectedEndWeeks = new DateRange(
+			LocalDate.of(2016, 4, 11),
+			LocalDate.of(2016, 5, 1)
+		);
 		assertEquals(expectedEndWeeks, actualRanges.get(1));
 	}
 
 	@Test
 	public void testCalculateEndOfPreviousYear() {
-		DateRange range = new DateRange(LocalDate.of(2016, 8, 1), LocalDate.of(2017, 7, 31));
-		Assert.assertEquals(LocalDate.of(2015, 12, 31), range.calculateEndOfPreviousYear());
+		DateRange range = new DateRange(
+			LocalDate.of(2016, 8, 1),
+			LocalDate.of(2017, 7, 31)
+		);
+		Assert.assertEquals(
+			LocalDate.of(2015, 12, 31),
+			range.calculateEndOfPreviousYear()
+		);
 	}
 
 	@Test
 	public void testCalculateEndOfPreviousYearJanuar() {
-		DateRange range = new DateRange(LocalDate.of(2016, 1, 1), LocalDate.of(2017, 7, 31));
-		Assert.assertEquals(LocalDate.of(2015, 12, 31), range.calculateEndOfPreviousYear());
+		DateRange range = new DateRange(
+			LocalDate.of(2016, 1, 1),
+			LocalDate.of(2017, 7, 31)
+		);
+		Assert.assertEquals(
+			LocalDate.of(2015, 12, 31),
+			range.calculateEndOfPreviousYear()
+		);
 	}
 
 	@Test
 	public void testCalculateEndOfPreviousYearDezember() {
-		DateRange range = new DateRange(LocalDate.of(2016, 12, 31), LocalDate.of(2017, 7, 31));
-		Assert.assertEquals(LocalDate.of(2015, 12, 31), range.calculateEndOfPreviousYear());
+		DateRange range = new DateRange(
+			LocalDate.of(2016, 12, 31),
+			LocalDate.of(2017, 7, 31)
+		);
+		Assert.assertEquals(
+			LocalDate.of(2015, 12, 31),
+			range.calculateEndOfPreviousYear()
+		);
 	}
 
 	@Test
 	public void testCalculateEndOfPreviousYearYearZero() {
-		DateRange range = new DateRange(LocalDate.of(0, 12, 31), LocalDate.of(2017, 7, 31));
-		Assert.assertEquals(LocalDate.of(-1, 12, 31), range.calculateEndOfPreviousYear());
+		DateRange range = new DateRange(
+			LocalDate.of(0, 12, 31),
+			LocalDate.of(2017, 7, 31)
+		);
+		Assert.assertEquals(
+			LocalDate.of(-1, 12, 31),
+			range.calculateEndOfPreviousYear()
+		);
 	}
 }

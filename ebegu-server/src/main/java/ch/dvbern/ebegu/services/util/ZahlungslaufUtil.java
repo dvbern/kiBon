@@ -28,7 +28,10 @@ public final class ZahlungslaufUtil {
 	) {
 		List<Gesuchsperiode> containedGesuchsperioden = new ArrayList<>();
 		for (Gesuchsperiode currentGP : allGesuchsperioden) {
-			boolean contains = isGesuchsperiodeContainedInZahlungsauftrag(currentGP, zahlungsauftrag);
+			boolean contains = isGesuchsperiodeContainedInZahlungsauftrag(
+				currentGP,
+				zahlungsauftrag
+			);
 			if (contains) {
 				containedGesuchsperioden.add(currentGP);
 			}
@@ -42,9 +45,11 @@ public final class ZahlungslaufUtil {
 	) {
 		final List<Zahlung> zahlungen = zahlungsauftrag.getZahlungen();
 		for (Zahlung zahlung : zahlungen) {
-			final List<Zahlungsposition> zahlungspositionen = zahlung.getZahlungspositionen();
+			final List<Zahlungsposition> zahlungspositionen = zahlung
+				.getZahlungspositionen();
 			for (Zahlungsposition zahlungsposition : zahlungspositionen) {
-				final Gesuchsperiode gesuchsperiode = zahlungsposition.extractGesuchsperiode();
+				final Gesuchsperiode gesuchsperiode = zahlungsposition
+					.extractGesuchsperiode();
 				if (currentGP.equals(gesuchsperiode)) {
 					return true;
 				}
@@ -60,7 +65,9 @@ public final class ZahlungslaufUtil {
 		if (lastZahlungslauf == null) {
 			return false;
 		}
-		final boolean repetition = !gueltigBisCurrentZahlungslauf.isAfter(lastZahlungslauf.getGueltigkeit().getGueltigBis());
+		final boolean repetition = !gueltigBisCurrentZahlungslauf.isAfter(
+			lastZahlungslauf.getGueltigkeit().getGueltigBis()
+		);
 		return repetition;
 	}
 
@@ -69,8 +76,12 @@ public final class ZahlungslaufUtil {
 		@Nonnull Zahlungsauftrag currentZahlungsauftrag,
 		int anzahlMonateInZukunft
 	) {
-		Objects.requireNonNull(currentZahlungsauftrag.getDatumGeneriert(), "Datum generiert muss jetzt gesetzt sein");
-		return currentZahlungsauftrag.getDatumGeneriert().toLocalDate()
+		Objects.requireNonNull(
+			currentZahlungsauftrag.getDatumGeneriert(),
+			"Datum generiert muss jetzt gesetzt sein"
+		);
+		return currentZahlungsauftrag.getDatumGeneriert()
+			.toLocalDate()
 			.plusMonths(anzahlMonateInZukunft)
 			.with(TemporalAdjusters.lastDayOfMonth());
 	}
@@ -83,8 +94,13 @@ public final class ZahlungslaufUtil {
 		if (lastZahlungslauf == null) {
 			return Constants.START_OF_DATETIME.toLocalDate();
 		}
-		boolean isRepetition = ZahlungslaufUtil.isZahlunglaufRepetition(gueltigBisCurrentZahlungslauf, lastZahlungslauf);
-		final LocalDate gueltigBisLastZahlungslauf = lastZahlungslauf.getGueltigkeit().getGueltigBis();
+		boolean isRepetition = ZahlungslaufUtil.isZahlunglaufRepetition(
+			gueltigBisCurrentZahlungslauf,
+			lastZahlungslauf
+		);
+		final LocalDate gueltigBisLastZahlungslauf = lastZahlungslauf
+			.getGueltigkeit()
+			.getGueltigBis();
 		if (isRepetition) {
 			// Repetition, dh.der Monat ist schon ausgeloest. Wir nehmen den Monat der Gültigkeit des letzten Zahlungslaufs
 			return gueltigBisLastZahlungslauf
@@ -92,7 +108,7 @@ public final class ZahlungslaufUtil {
 		}
 		// Wir beginnen am Anfang des Folgemonats des letzten Auftrags
 		return gueltigBisLastZahlungslauf
-				.plusMonths(1)
-				.with(TemporalAdjusters.firstDayOfMonth());
+			.plusMonths(1)
+			.with(TemporalAdjusters.firstDayOfMonth());
 	}
 }

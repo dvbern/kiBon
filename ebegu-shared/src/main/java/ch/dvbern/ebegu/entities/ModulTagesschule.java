@@ -19,14 +19,14 @@ import java.time.DayOfWeek;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -37,26 +37,33 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class ModulTagesschule extends AbstractEntity implements Comparable<ModulTagesschule> {
+public class ModulTagesschule extends AbstractEntity implements
+	Comparable<ModulTagesschule> {
 
 	private static final long serialVersionUID = -8403411439182708718L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_modul_tagesschule_modul_tagesschule_group_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_modul_tagesschule_modul_tagesschule_group_id"),
+		nullable = false)
 	private ModulTagesschuleGroup modulTagesschuleGroup;
 
 	@Enumerated(value = EnumType.STRING)
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private DayOfWeek wochentag;
 
-
+	@Nonnull
 	public ModulTagesschuleGroup getModulTagesschuleGroup() {
 		return modulTagesschuleGroup;
 	}
 
-	public void setModulTagesschuleGroup(ModulTagesschuleGroup modulTagesschuleGroup) {
+	public void setModulTagesschuleGroup(
+		@Nonnull ModulTagesschuleGroup modulTagesschuleGroup
+	) {
 		this.modulTagesschuleGroup = modulTagesschuleGroup;
 	}
 
@@ -81,7 +88,10 @@ public class ModulTagesschule extends AbstractEntity implements Comparable<Modul
 			return false;
 		}
 		final ModulTagesschule otherModulTagesschule = (ModulTagesschule) other;
-		return getModulTagesschuleGroup().isSame(otherModulTagesschule.getModulTagesschuleGroup()) &&
+		return getModulTagesschuleGroup().isSame(
+			otherModulTagesschule.getModulTagesschuleGroup()
+		)
+			&&
 			getWochentag() == otherModulTagesschule.getWochentag();
 	}
 
@@ -97,19 +107,30 @@ public class ModulTagesschule extends AbstractEntity implements Comparable<Modul
 			return false;
 		}
 		ModulTagesschule that = (ModulTagesschule) o;
-		return Objects.equals(this.getModulTagesschuleGroup(), that.getModulTagesschuleGroup()) &&
+		return Objects.equals(
+			this.getModulTagesschuleGroup(),
+			that.getModulTagesschuleGroup()
+		)
+			&&
 			this.getWochentag() == that.getWochentag();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), getModulTagesschuleGroup(), getWochentag());
+		return Objects.hash(
+			super.hashCode(),
+			getModulTagesschuleGroup(),
+			getWochentag()
+		);
 	}
 
 	@Override
 	public int compareTo(@Nonnull ModulTagesschule o) {
 		CompareToBuilder builder = new CompareToBuilder();
-		builder.append(this.getModulTagesschuleGroup(), o.getModulTagesschuleGroup());
+		builder.append(
+			this.getModulTagesschuleGroup(),
+			o.getModulTagesschuleGroup()
+		);
 		builder.append(this.getWochentag(), o.getWochentag());
 		return builder.toComparison();
 	}

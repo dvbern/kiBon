@@ -1,0 +1,11 @@
+{
+    "valid": {
+        "kind1": {
+            "vorname": "Leonard",
+            "nachname": "Feutz",
+            "geschlecht": "MAENNLICH",
+            "geburtsdatum": "19.11.2012",
+            "einschulungstyp": "VORSCHULALTER"
+        }
+    }
+}

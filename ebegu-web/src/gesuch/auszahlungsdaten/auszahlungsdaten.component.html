@@ -35,7 +35,10 @@
                         class="form-control"
                         isNotQrIbanN
                         [disabled]="isReadOnly()"
+                        ngxIban
+                        placeholder="CHXX XXXX XXXX XXXX XXXX X"
                         required
+                        data-test="iban"
                     />
                     <dv-error-messages
                         [errorObject]="iban.errors"
@@ -68,6 +71,7 @@
                         class="form-control"
                         [disabled]="isReadOnly()"
                         required
+                        data-test="kontoinhaber"
                     />
                     <dv-error-messages
                         [errorObject]="kontoinhaber.errors"

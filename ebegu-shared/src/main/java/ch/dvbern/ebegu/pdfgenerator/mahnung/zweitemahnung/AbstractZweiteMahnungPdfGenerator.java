@@ -8,14 +8,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.mahnung.zweitemahnung;
+
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Mahnung;
@@ -25,14 +29,17 @@ import ch.dvbern.ebegu.pdfgenerator.mahnung.AbstractMahnungPdfGenerator;
 import ch.dvbern.ebegu.util.Constants;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
-import javax.annotation.Nonnull;
-import java.util.List;
 
-public abstract class AbstractZweiteMahnungPdfGenerator extends AbstractMahnungPdfGenerator {
-	private static final String ZWEITE_MAHNUNG_SEITE_1_PARAGRAPH_1 = "PdfGeneration_ZweiteMahnung_Seite1_Paragraph1";
-	private static final String ZWEITE_MAHNUNG_SEITE_1_PARAGRAPH_2 = "PdfGeneration_ZweiteMahnung_Seite1_Paragraph2";
-	private static final String ZWEITE_MAHNUNG_SEITE_2_PARAGRAPH_1 = "PdfGeneration_ZweiteMahnung_Seite2_Paragraph1";
-	private static final String ZWEITE_MAHNUNG_SEITE_2_PARAGRAPH_2 = "PdfGeneration_ZweiteMahnung_Seite2_Paragraph2";
+public abstract class AbstractZweiteMahnungPdfGenerator extends
+	AbstractMahnungPdfGenerator {
+	private static final String ZWEITE_MAHNUNG_SEITE_1_PARAGRAPH_1 =
+		"PdfGeneration_ZweiteMahnung_Seite1_Paragraph1";
+	private static final String ZWEITE_MAHNUNG_SEITE_1_PARAGRAPH_2 =
+		"PdfGeneration_ZweiteMahnung_Seite1_Paragraph2";
+	private static final String ZWEITE_MAHNUNG_SEITE_2_PARAGRAPH_1 =
+		"PdfGeneration_ZweiteMahnung_Seite2_Paragraph1";
+	private static final String ZWEITE_MAHNUNG_SEITE_2_PARAGRAPH_2 =
+		"PdfGeneration_ZweiteMahnung_Seite2_Paragraph2";
 
 	private final Mahnung ersteMahnung;
 
@@ -45,16 +52,36 @@ public abstract class AbstractZweiteMahnungPdfGenerator extends AbstractMahnungP
 		this.ersteMahnung = ersteMahnung;
 	}
 
-
 	@Override
 	protected void createSeite1(@Nonnull Document document) {
-		document.add(PdfUtil.createParagraph(translate(ZWEITE_MAHNUNG_SEITE_1_PARAGRAPH_1, getMahndatum())));
-		document.add(PdfUtil.createParagraphHtml(translate(ZWEITE_MAHNUNG_SEITE_1_PARAGRAPH_2, getFristdatum())));
+		document.add(
+			PdfUtil.createParagraph(
+				translate(
+					ZWEITE_MAHNUNG_SEITE_1_PARAGRAPH_1,
+					getMahndatum()
+				)
+			)
+		);
+		document.add(
+			PdfUtil.createParagraphHtml(
+				translate(
+					ZWEITE_MAHNUNG_SEITE_1_PARAGRAPH_2,
+					getFristdatum()
+				)
+			)
+		);
 	}
 
 	@Override
-	protected void createSeite2(@Nonnull Document document, @Nonnull List<Element> seite2Paragraphs) {
-		seite2Paragraphs.add(PdfUtil.createParagraphHtml(translate(ZWEITE_MAHNUNG_SEITE_2_PARAGRAPH_1)));
+	protected void createSeite2(
+		@Nonnull Document document,
+		@Nonnull List<Element> seite2Paragraphs
+	) {
+		seite2Paragraphs.add(
+			PdfUtil.createParagraphHtml(
+				translate(ZWEITE_MAHNUNG_SEITE_2_PARAGRAPH_1)
+			)
+		);
 		String paragraph2 = translate(
 			ZWEITE_MAHNUNG_SEITE_2_PARAGRAPH_2,
 			gemeindeStammdaten.getTelefonForGesuch(getGesuch()),
@@ -65,8 +92,12 @@ public abstract class AbstractZweiteMahnungPdfGenerator extends AbstractMahnungP
 
 	@Nonnull
 	private String getMahndatum() {
-		if (mahnung.getMahnungTyp() == MahnungTyp.ZWEITE_MAHNUNG && ersteMahnung != null && ersteMahnung.getTimestampErstellt() != null) {
-			return Constants.DATE_FORMATTER.format(ersteMahnung.getTimestampErstellt());
+		if (mahnung.getMahnungTyp() == MahnungTyp.ZWEITE_MAHNUNG
+			&& ersteMahnung != null
+			&& ersteMahnung.getTimestampErstellt() != null) {
+			return Constants.DATE_FORMATTER.format(
+				ersteMahnung.getTimestampErstellt()
+			);
 		}
 		return "";
 	}

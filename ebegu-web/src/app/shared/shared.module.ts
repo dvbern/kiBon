@@ -16,22 +16,18 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HttpClientModule} from '@angular/common/http';
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {
-    TranslateLoader,
-    TranslateModule,
-    TranslateService
-} from '@ngx-translate/core';
+import {TranslateModule} from '@ngx-translate/core';
 import {UIRouterModule} from '@uirouter/angular';
 import {GuidedTourModule} from 'ngx-guided-tour';
+import {IbanDirective} from 'ngx-iban';
 import {AuszahlungsdatenComponent} from '../../gesuch/auszahlungsdaten/auszahlungsdaten.component';
 import {DvEingabeHintComponent} from '../../gesuch/component/dv-eingabe-hint/dv-eingabe-hint.component';
 import {SteuerveranlagungGemeinsamComponent} from '../../gesuch/component/finanzielleSituation/solothurn/steuerveranlagung-gemeinsam/steuerveranlagung-gemeinsam.component';
 import {DvNgHelpDialogComponent} from '../../gesuch/dialog/dv-ng-help-dialog/dv-ng-help-dialog.component';
-import {DvNgSupportDialogComponent} from '../../gesuch/dialog/dv-ng-support-dialog.component';
-import {TSBrowserLanguage} from '../../models/enums/TSBrowserLanguage';
+import {DvNgSupportDialogComponent} from '../../gesuch/dialog/dv-ng-support-dialog/dv-ng-support-dialog.component';
 import {DvBenutzerEntryComponent} from '../core/component/dv-benutzer-entry/dv-benutzer-entry.component';
 import {DvBisherXComponent} from '../core/component/dv-bisher/dv-bisher-x.component';
 import {DvCheckboxXComponent} from '../core/component/dv-checkbox-x/dv-checkbox-x.component';
@@ -52,7 +48,7 @@ import {DvNgMitteilungDelegationDialogComponent} from '../core/component/dv-ng-m
 import {DvNgMitteilungResultDialogComponent} from '../core/component/dv-ng-mitteilung-result-dialog/dv-ng-mitteilung-result-dialog.component';
 import {DvNgMultiSelectDialogComponent} from '../core/component/dv-ng-multi-select-dialog/dv-ng-multi-select-dialog.component';
 import {DvNgOkDialogComponent} from '../core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
-import {DvNgRemoveDialogComponent} from '../core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {DvNgSelectTraegerschaftEmailDialogComponent} from '../core/component/dv-ng-select-traegerschaft-email-dialog/dv-ng-select-traegerschaft-email-dialog.component';
 import {DvNgSozialdienstDialogComponent} from '../core/component/dv-ng-sozialdienst-dialog/dv-ng-sozialdienst-dialog.component';
 import {DvNgThreeButtonDialogComponent} from '../core/component/dv-ng-three-button-dialog/dv-ng-three-button-dialog.component';
@@ -66,14 +62,11 @@ import {PulldownUserMenuButtonComponent} from '../core/component/pulldown-user-m
 import {PulldownUserMenuComponent} from '../core/component/pulldown-user-menu/pulldown-user-menu.component';
 import {DvDemoFeatureDirective} from '../core/directive/dv-hide-feature/dv-demo-feature.directive';
 import {DvLoadingButtonXDirective} from '../core/directive/dv-loading-button/dv-loading-button-x.directive';
-import {DvNgDebounceClickDirective} from '../core/directive/dv-ng-debounce-click/dv-ng-debounce-click.directive';
 import {DvNgEnableElementDirective} from '../core/directive/dv-ng-enable-element/dv-ng-enable-element.directive';
 import {DvNgShowElementDirective} from '../core/directive/dv-ng-show-element/dv-ng-show-element.directive';
 import {DvSearchListComponent} from '../core/dv-search-list/dv-search-list.component';
 import {NewAntragListComponent} from '../core/new-antrag-list/new-antrag-list.component';
 import {NewUserSelectDirective} from '../core/new-antrag-list/new-user-select.directive';
-import {MultiMandantHttpLoader} from '../i18n/MultiMandantHttpLoader';
-import {I18nServiceRSRest} from '../i18n/services/i18nServiceRS.rest';
 import {KiBonGuidedTourComponent} from '../kibonTour/component/KiBonGuidedTourComponent';
 import {BenutzerRolleComponent} from './component/benutzer-rolle/benutzer-rolle.component';
 import {BerechtigungComponent} from './component/berechtigung/berechtigung.component';
@@ -90,10 +83,10 @@ import {SingleFileUploadComponent} from './component/single-file-upload/single-f
 import {StammdatenHeaderComponent} from './component/stammdaten-header/stammdaten-header.component';
 import {AccordionTabDirective} from './directive/accordion-tab.directive';
 import {AccordionDirective} from './directive/accordion.directive';
+import {dvStrictEmailValidatorDirective} from './directive/dv-email-validator.directive';
 import {DvIfViewportSizeDirective} from './directive/dv-if-viewport-size/dv-if-viewport-size.directive';
 import {EnableElementDirective} from './directive/enable-element.directive';
 import {LoadingButtonDirective} from './directive/loading-button.directive';
-import {NumbersMinMaxDirective} from './directive/numbers-min-max.directive';
 import {TooltipDirective} from './directive/TooltipDirective';
 import {FullHeightContainerComponent} from './full-height-container/full-height-container.component';
 import {FullHeightInnerPaddingContainerComponent} from './full-height-inner-padding-container/full-height-inner-padding-container.component';
@@ -103,16 +96,12 @@ import {EbeguDatePipe} from './pipe/ebegu-date.pipe';
 import {EbeguNumberPipe} from './pipe/ebegu-number.pipe';
 import {NextPeriodeStrPipe} from './pipe/next-periode-str.pipe';
 import {PreviousPeriodeStrPipe} from './pipe/previous-periode-str.pipe';
-import {MandantService} from './services/mandant.service';
 import {UiViewComponent} from './ui-view/ui-view.component';
 import {QrIbanValidatorDirective} from './validators/qr-iban-validator.directive';
-
-export function createTranslateLoader(
-    http: HttpClient,
-    mandantService: MandantService
-): TranslateLoader {
-    return new MultiMandantHttpLoader(http, mandantService);
-}
+import {NoFutureDateValidatorDirective} from './validators/no-future-date-validator.directive';
+import {MatCardTitle} from '@angular/material/card';
+import {MatListItem} from '@angular/material/list';
+import {BicSwiftValidatorDirective} from './validators/bic-swift-validator.directive';
 
 @NgModule({
     imports: [
@@ -121,22 +110,22 @@ export function createTranslateLoader(
         FormsModule,
         ReactiveFormsModule,
         UIRouterModule,
+        TranslateModule,
 
         MaterialModule,
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: createTranslateLoader,
-                deps: [HttpClient, MandantService]
-            }
-        }),
-        GuidedTourModule.forRoot()
+        GuidedTourModule.forRoot(),
+        IbanDirective,
+        MatCardTitle,
+        MatListItem,
+        BicSwiftValidatorDirective,
+        dvStrictEmailValidatorDirective
     ],
     declarations: [
         AccordionDirective,
         AccordionTabDirective,
-        NumbersMinMaxDirective,
+
         QrIbanValidatorDirective,
+        NoFutureDateValidatorDirective,
         BenutzerRolleComponent,
         BerechtigungComponent,
         DvHelpmenuComponent,
@@ -144,7 +133,6 @@ export function createTranslateLoader(
         DvNgMitteilungDelegationDialogComponent,
         DvNgMitteilungResultDialogComponent,
         DvBenutzerEntryComponent,
-        DvNgDebounceClickDirective,
         DvNgGemeindeDialogComponent,
         DvNgHelpDialogComponent,
         DvNgSupportDialogComponent,
@@ -221,18 +209,20 @@ export function createTranslateLoader(
 
         MaterialModule,
         TranslateModule,
+        IbanDirective,
 
         AccordionDirective,
         AccordionTabDirective,
-        NumbersMinMaxDirective,
+
+        BicSwiftValidatorDirective,
         QrIbanValidatorDirective,
+        NoFutureDateValidatorDirective,
         BenutzerRolleComponent,
         BerechtigungComponent,
         DvHelpmenuComponent,
         DvMitteilungDelegationComponent,
         DvNgMitteilungDelegationDialogComponent,
         DvNgMitteilungResultDialogComponent,
-        DvNgDebounceClickDirective,
         DvNgGemeindeDialogComponent,
         DvBenutzerEntryComponent,
         DvNgHelpDialogComponent,
@@ -289,27 +279,11 @@ export function createTranslateLoader(
         DvNgEnableElementDirective,
         DvIfViewportSizeDirective,
         AuszahlungsdatenComponent,
-        SteuerveranlagungGemeinsamComponent
+        SteuerveranlagungGemeinsamComponent,
+        dvStrictEmailValidatorDirective
     ],
     providers: [
         // Leave empty (if you have singleton services, add them to CoreModule)
     ]
 })
-export class SharedModule {
-    public constructor(
-        translate: TranslateService,
-        i18nServiceRS: I18nServiceRSRest
-    ) {
-        SharedModule.initTranslateService(translate, i18nServiceRS);
-    }
-
-    private static initTranslateService(
-        translate: TranslateService,
-        i18nServiceRS: I18nServiceRSRest
-    ): void {
-        // this language will be used as a fallback when a translation isn't found in the current language
-        translate.setDefaultLang(TSBrowserLanguage.DE);
-        // the lang to use, if the lang isn't available, it will use the current loader to get them
-        translate.use(i18nServiceRS.extractPreferredLanguage());
-    }
-}
+export class SharedModule {}

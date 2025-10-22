@@ -188,7 +188,8 @@
                     class="row margin-top-30"
                     ng-if="
                         vm.mustFinanzielleSituationBeValidated() &&
-                        !vm.isGesuchstellerOrSozialdienst()
+                        !vm.isGesuchstellerOrSozialdienst() &&
+                        !vm.isTraegerschaftInstitutionRolle()
                     "
                 >
                     <div class="col-xs-12 dv-input-container-medium">
@@ -303,6 +304,7 @@
                                 name="eingeschrieben"
                                 ng-change="vm.verfuegungEingeschriebenChanged()"
                                 ng-model="vm.getGesuch().verfuegungEingeschrieben"
+                                class="verfuegung-einschreiben"
                             >
                                 <span
                                     data-translate="VERFUEGUNG_EINGESCHRIEBEN"
@@ -315,67 +317,108 @@
                         </div>
                     </div>
                 </div>
-                <!--FinanzielleSituationPDF anzeigen-->
-                <div
-                    class="row text-left"
-                    dv-show-allowed-roles="vm.TSRoleUtil.getAllRolesButTraegerschaftInstitution()"
-                    dv-show-element
-                    dv-show-expression="vm.isFinanziellesituationPDFVisible()"
-                >
-                    <div class="col-md-12">
-                        <button
-                            class="dv-btn btn-link link-underline"
-                            ng-click="vm.openFinanzielleSituationPDF()"
-                            type="button"
-                        >
-                            <i class="fa fa-file-text-o"></i>
-                            <span
-                                data-translate="PDF_FINSITUATION_ANZEIGEN"
-                            ></span>
-                        </button>
-                    </div>
-                </div>
                 <!--Begleitschreiben anzeigen-->
-                <div
-                    class="row text-left"
-                    ng-show="vm.isBegleitschreibenVisible()"
-                >
-                    <div class="col-md-12">
-                        <button
-                            class="dv-btn btn-link link-underline"
-                            ng-click="vm.openBegleitschreibenPDF()"
-                            type="button"
-                        >
-                            <i class="fa fa-file-text-o"></i>
-                            <span
-                                data-translate="PDF_BEGLEITSCHREIBEN_ANZEIGEN"
-                            ></span>
-                        </button>
+                <div>
+                    <div
+                        class="row text-left"
+                        dv-show-allowed-roles="vm.TSRoleUtil.getAllRolesButTraegerschaftInstitution()"
+                        dv-show-element
+                        dv-show-expression="vm.isBegleitschreibenVisible()"
+                    >
+                        <div class="col-md-12">
+                            <button
+                                class="dv-btn btn-link link-underline"
+                                ng-click="vm.openBegleitschreibenPDF()"
+                                type="button"
+                            >
+                                <i class="fa fa-file-text-o"></i>
+                                <span
+                                    data-translate="PDF_BEGLEITSCHREIBEN_ANZEIGEN"
+                                ></span>
+                            </button>
+                        </div>
+                    </div>
+                    <!--FinanzielleSituationPDF anzeigen-->
+                    <div
+                        class="row text-left"
+                        dv-show-allowed-roles="vm.TSRoleUtil.getAllRolesButTraegerschaftInstitution()"
+                        dv-show-element
+                        dv-show-expression="vm.isFinanziellesituationPDFVisible()"
+                    >
+                        <div class="col-md-12">
+                            <button
+                                class="dv-btn btn-link link-underline"
+                                ng-click="vm.openFinanzielleSituationPDF()"
+                                type="button"
+                            >
+                                <i class="fa fa-file-text-o"></i>
+                                <span
+                                    data-translate="PDF_FINSITUATION_ANZEIGEN"
+                                >
+                                </span
+                                ><span>&nbsp;</span>
+                                <span
+                                    dv-show-allowed-roles="vm.TSRoleUtil.getAllRolesButTraegerschaftInstitution()"
+                                    dv-show-element
+                                    dv-show-expression="vm.isErlaeuterungUploaded"
+                                    data-translate="BEILAGE_NR_IN_KLAMMERN"
+                                    data-translate-value-beilagenummer="1"
+                                    >-</span
+                                >
+                            </button>
+                        </div>
+                    </div>
+                    <!--Erlaeuterung Betreuungsgutschein PDF anzeigen-->
+                    <div
+                        class="row text-left"
+                        dv-show-allowed-roles="vm.TSRoleUtil.getAllRolesButTraegerschaftInstitution()"
+                        dv-show-element
+                        dv-show-expression="vm.isErlaeuterungUploaded && vm.isKompletteKorrespondenzVisible()"
+                    >
+                        <div class="col-md-12">
+                            <button
+                                class="dv-btn btn-link link-underline"
+                                ng-click="vm.openErlaeuterungPDF()"
+                                type="button"
+                            >
+                                <i class="fa fa-file-text-o"></i>
+                                <span
+                                    data-translate="PDF_ERLAEUTERUNG_BG_ANZEIGEN"
+                                ></span>
+                                <span
+                                    data-translate="BEILAGE_NR_IN_KLAMMERN"
+                                    data-translate-value-beilagenummer="{{
+                                        vm.getBeilagenummerForErlaeuterungPDF()
+                                    }}"
+                                ></span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Komplette Korrespondenz anzeigen -->
+                    <div
+                        class="row text-left"
+                        ng-show="vm.isKompletteKorrespondenzVisible()"
+                    >
+                        <div class="col-md-12">
+                            <button
+                                class="dv-btn btn-link link-underline"
+                                ng-click="vm.openKompletteKorrespondenzPDF()"
+                                type="button"
+                            >
+                                <i class="fa fa-file-text-o"></i>
+                                <span
+                                    data-translate="PDF_KOMPLETTE_KORRESPONDENZ_ANZEIGEN"
+                                ></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <!-- Komplette Korrespondenz anzeigen -->
-                <div
-                    class="row text-left"
-                    ng-show="vm.isKompletteKorrespondenzVisible()"
-                >
-                    <div class="col-md-12">
-                        <button
-                            class="dv-btn btn-link link-underline"
-                            ng-click="vm.openKompletteKorrespondenzPDF()"
-                            type="button"
-                        >
-                            <i class="fa fa-file-text-o"></i>
-                            <span
-                                data-translate="PDF_KOMPLETTE_KORRESPONDENZ_ANZEIGEN"
-                            ></span>
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Liste der bisherige Mahnungen -->
                 <div
                     class="row text-left margin-top-20"
-                    ng-if="vm.getMahnungList().length > 0"
+                    dv-show-allowed-roles="vm.TSRoleUtil.getAllRolesButTraegerschaftInstitution()"
+                    dv-show-element
+                    dv-show-expression="vm.getMahnungList().length > 0"
                 >
                     <div class="col-md-12">
                         <h2 data-translate="MAHNUNGEN"></h2>

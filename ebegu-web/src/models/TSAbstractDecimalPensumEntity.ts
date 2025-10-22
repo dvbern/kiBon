@@ -16,7 +16,7 @@
  */
 
 import {TSPensumUnits} from './enums/TSPensumUnits';
-import {TSAbstractDateRangedEntity} from './TSAbstractDateRangedEntity';
+import {TSAbstractDateRangedEntity} from '@kibon/shared/model/entity';
 import {TSEingewoehnung} from './TSEingewoehnung';
 
 export class TSAbstractDecimalPensumEntity extends TSAbstractDateRangedEntity {
@@ -28,6 +28,22 @@ export class TSAbstractDecimalPensumEntity extends TSAbstractDateRangedEntity {
     private _eingewoehnung: TSEingewoehnung;
     // Transient field used for calculations. Not sent to server
     private _hasEingewoehnung: boolean;
+
+    public override deepCopyTo(
+        target: TSAbstractDecimalPensumEntity
+    ): TSAbstractDecimalPensumEntity {
+        super.deepCopyTo(target);
+
+        target.unitForDisplay = this.unitForDisplay;
+        target.pensum = this.pensum;
+        target.monatlicheBetreuungskosten = this.monatlicheBetreuungskosten;
+        target.stuendlicheVollkosten = this.stuendlicheVollkosten;
+        target.betreuteTage = this.betreuteTage;
+        target.eingewoehnung = this.eingewoehnung;
+        target.hasEingewoehnung = this.hasEingewoehnungs;
+
+        return target;
+    }
 
     public get unitForDisplay(): TSPensumUnits {
         return this._unitForDisplay;

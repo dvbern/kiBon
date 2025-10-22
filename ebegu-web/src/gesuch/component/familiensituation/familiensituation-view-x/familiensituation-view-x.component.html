@@ -208,7 +208,7 @@
                                         "
                                         class="input-element"
                                         [required]="true"
-                                        [maxDate]="getToday()"
+                                        [noFutureDate]="true"
                                         (dateChange)="onDatumBlur()"
                                         data-test="container.konkubinat-start"
                                         [datePickerEnabled]="false"
@@ -232,7 +232,10 @@
                     </div>
 
                     <!--Geteilte Obhut-->
-                    <div class="row" *ngIf="showFrageGeteilteObhut()">
+                    <div
+                        class="row margin-top-10"
+                        *ngIf="showFrageGeteilteObhut()"
+                    >
                         <div class="col-xs-12 dv-input-container-question">
                             <div class="form-group">
                                 <span class="ebegu-h1 required">
@@ -462,7 +465,7 @@
                                         [required]="true"
                                         #gesuchstellerKardinalitaet="ngModel"
                                         name="gesuchstellerKardinalitaet"
-                                        data-test="container.gesuchsteller-kardnalitaet"
+                                        data-test="container.gesuchsteller-kardinalitaet"
                                         class="input-element sp"
                                         (change)="
                                             gesuchstellerKardinalitaetChange()

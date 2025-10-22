@@ -15,12 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSBetreuungsangebotTyp} from './enums/betreuung/TSBetreuungsangebotTyp';
-import {TSInstitutionStatus} from './enums/TSInstitutionStatus';
-import {TSGemeinde} from './TSGemeinde';
-import {TSInstitution} from './TSInstitution';
-import {TSMandant} from './TSMandant';
-import {TSTraegerschaft} from './TSTraegerschaft';
+import {
+    TSGemeinde,
+    TSInstitution,
+    TSMandant,
+    TSTraegerschaft
+} from '@kibon/shared/model/entity';
+import {
+    TSBetreuungsangebotTyp,
+    TSInstitutionStatus
+} from '@kibon/shared/model/enums';
 
 export class TSInstitutionListDTO extends TSInstitution {
     public betreuungsangebotTyp: TSBetreuungsangebotTyp;

@@ -21,7 +21,7 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.api.dtos.sozialdienst.JaxSozialdienst;
 import ch.dvbern.ebegu.enums.UserRole;
@@ -50,7 +50,6 @@ public class JaxBerechtigung extends JaxAbstractDateRangedDTO {
 
 	@Nonnull
 	private Set<JaxGemeinde> gemeindeList = new TreeSet<>();
-
 
 	@Nonnull
 	public UserRole getRole() {
@@ -93,14 +92,20 @@ public class JaxBerechtigung extends JaxAbstractDateRangedDTO {
 		if (this == that) {
 			return true;
 		}
-		return role == that.role &&
-			Objects.equals(traegerschaft, that.traegerschaft) &&
+		return role == that.role
+			&&
+			Objects.equals(traegerschaft, that.traegerschaft)
+			&&
 			Objects.equals(institution, that.institution);
 	}
 
 	public boolean isGueltig() {
-		LocalDate dateFrom = getGueltigAb() != null ? getGueltigAb() : Constants.START_OF_TIME;
-		LocalDate dateUntil = getGueltigBis() != null ? getGueltigBis() : Constants.END_OF_TIME;
+		LocalDate dateFrom = getGueltigAb() != null ?
+			getGueltigAb() :
+			Constants.START_OF_TIME;
+		LocalDate dateUntil = getGueltigBis() != null ?
+			getGueltigBis() :
+			Constants.END_OF_TIME;
 		DateRange dateRange = new DateRange(dateFrom, dateUntil);
 		return dateRange.contains(LocalDate.now());
 	}

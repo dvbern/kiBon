@@ -7,7 +7,7 @@
 <#-- @ftlvariable name="empfaengerMail" type="java.lang.String" -->
 From: ${configuration.senderAddress}
 To: ${empfaengerMail}
-Subject: <@base64Header>kiBon <#if configuration.isDevmode>Testsystem / Système de test</#if> –  <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung> neue Mitteilungen</#if> (${institutionStammdaten.institution.name}) / <#if offenePendenzen>Confirmation de places en attente</#if><#if ungelesendeMitteilung && offenePendenzen> et</#if><#if ungelesendeMitteilung> nouveau message</#if> (${institutionStammdaten.institution.name})</@base64Header>
+Subject: <@base64Header>kiBon <#if configuration.isDevmode>Testsystem</#if> –  <#if offenePendenzen>Offene Pendenzen</#if><#if ungelesendeMitteilung && offenePendenzen> und</#if><#if ungelesendeMitteilung> neue Mitteilungen</#if> (${institutionStammdaten.institution.name})</@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -28,13 +28,13 @@ ${templateConfiguration.mailCss}
     <#if offenePendenzen>
 	<p>
 		Wir möchten Sie darüber informieren, dass für Ihre Institution ${institutionStammdaten.institution.name} in kiBon Pendenzen offen sind. <br>
-		Sie können diese <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/pendenzenBetreuungen">hier</a> einsehen.
+		Sie können diese <a href="${frontendUrl}/pendenzenBetreuungen">hier</a> einsehen.
 	</p>
     </#if>
     <#if ungelesendeMitteilung>
 	<p>
 		Wir möchten Sie <#if offenePendenzen> ausserdem </#if>darüber informieren, dass Sie für Ihre Institution ${institutionStammdaten.institution.name} ungelesene Nachrichten im Posteingang haben.
-		Sie können diese <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/posteingang">hier</a> einsehen.
+		Sie können diese <a href="${frontendUrl}/posteingang">hier</a> einsehen.
 	</p>
 	</#if>
 	<p>

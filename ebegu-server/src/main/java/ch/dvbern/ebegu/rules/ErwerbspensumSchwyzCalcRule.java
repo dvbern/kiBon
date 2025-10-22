@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -33,22 +33,32 @@ public class ErwerbspensumSchwyzCalcRule extends ErwerbspensumCalcRule {
 		int minErwerbspensumNichtEingeschult,
 		int minErwerbspensumEingeschult,
 		int paramMinDauerKonkubinat,
-		@Nonnull Locale locale) {
+		@Nonnull Locale locale
+	) {
 		super(
 			RuleValidity.ASIV,
 			validityPeriod,
 			minErwerbspensumNichtEingeschult,
 			minErwerbspensumEingeschult,
 			paramMinDauerKonkubinat,
-			locale);
+			locale
+		);
 	}
 
 	@Override
-	protected boolean isErwerbspensumRelevantForGS2(@Nonnull AbstractPlatz platz, @Nonnull BGCalculationInput inputData) {
+	protected boolean isErwerbspensumRelevantForGS2(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull BGCalculationInput inputData
+	) {
 		Kind kind = platz.getKind().getKindJA();
-		final boolean has2GsOnFamiliensituation = hasSecondGSForZeit(platz.extractGesuch(), inputData.getParent().getGueltigkeit());
+		final boolean has2GsOnFamiliensituation = hasSecondGSForZeit(
+			platz.extractGesuch(),
+			inputData.getParent().getGueltigkeit()
+		);
 		// kinder von erstgesuch betrachten wenn vor famsit änderungsdatum
-		final boolean has2GSOnKind = Boolean.TRUE.equals(kind.getGemeinsamesGesuch());
+		final boolean has2GSOnKind = Boolean.TRUE.equals(
+			kind.getGemeinsamesGesuch()
+		);
 		return has2GsOnFamiliensituation && has2GSOnKind;
 	}
 }

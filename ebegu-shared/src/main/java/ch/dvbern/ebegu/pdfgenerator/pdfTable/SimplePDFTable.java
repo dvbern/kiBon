@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.pdfTable;
@@ -39,19 +39,24 @@ import org.slf4j.LoggerFactory;
 
 public class SimplePDFTable {
 
-	private final float[] columnWidths = { 14, 4 };
+	private static final float[] columnWidths = { 14, 4 };
 	private final PageConfiguration pageConfiguration;
 	private final boolean lastLineBold;
-	private final int[] alignement = { Element.ALIGN_LEFT,Element.ALIGN_RIGHT};
+	private static final int[] alignement = { Element.ALIGN_LEFT,
+		Element.ALIGN_RIGHT };
 	private List<SimplePDFTableRow> rows = new ArrayList<>();
 
-	private static final Logger LOG = LoggerFactory.getLogger(SimplePDFTable.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		SimplePDFTable.class
+	);
 
-	public SimplePDFTable(PageConfiguration pageConfiguration, boolean lastLineBold) {
+	public SimplePDFTable(
+		PageConfiguration pageConfiguration,
+		boolean lastLineBold
+	) {
 		this.pageConfiguration = pageConfiguration;
 		this.lastLineBold = lastLineBold;
 	}
-
 
 	@Nonnull
 	public PdfPTable createTable() {
@@ -65,10 +70,13 @@ public class SimplePDFTable {
 		table.setWidthPercentage(PdfElementGenerator.FULL_WIDTH);
 		for (int i = 0; i < rows.size(); i++) {
 			SimplePDFTableRow row = rows.get(i);
-			SimplePDFTableRowConfiguration rowConfiguration = row.getConfiguration();
+			SimplePDFTableRowConfiguration rowConfiguration = row
+				.getConfiguration();
 
 			boolean isFooter = lastLineBold && i == rows.size() - 1;
-			Font font = isFooter ? pageConfiguration.getFonts().getFontBold() : pageConfiguration.getFonts().getFont();
+			Font font = isFooter ?
+				pageConfiguration.getFonts().getFontBold() :
+				pageConfiguration.getFonts().getFont();
 			rowConfiguration.setFont(font);
 
 			addRow(table, row, rowConfiguration);
@@ -76,13 +84,40 @@ public class SimplePDFTable {
 		return table;
 	}
 
-	private void addRow(@Nonnull PdfPTable table, @Nonnull SimplePDFTableRow row, SimplePDFTableRowConfiguration rowConfiguration) {
-		addCell(table, row.getLabel(), row.getSupertext(), rowConfiguration.getFont(), rowConfiguration.getBgColor(), alignement[0], rowConfiguration.getIdent());
-		addCell(table, row.getValue(), null, rowConfiguration.getFont(), rowConfiguration.getBgColor(), alignement[1], rowConfiguration.getIdent());
+	private void addRow(
+		@Nonnull PdfPTable table,
+		@Nonnull SimplePDFTableRow row,
+		SimplePDFTableRowConfiguration rowConfiguration
+	) {
+		addCell(
+			table,
+			row.getLabel(),
+			row.getSupertext(),
+			rowConfiguration.getFont(),
+			rowConfiguration.getBgColor(),
+			alignement[0],
+			rowConfiguration.getIdent()
+		);
+		addCell(
+			table,
+			row.getValue(),
+			null,
+			rowConfiguration.getFont(),
+			rowConfiguration.getBgColor(),
+			alignement[1],
+			rowConfiguration.getIdent()
+		);
 	}
 
-	private void addCell(@Nonnull PdfPTable table, @Nullable String value, @Nullable String supertext, @Nonnull Font font, @Nonnull Color bgColor, int alignment,
-			int ident) {
+	private void addCell(
+		@Nonnull PdfPTable table,
+		@Nullable String value,
+		@Nullable String supertext,
+		@Nonnull Font font,
+		@Nonnull Color bgColor,
+		int alignment,
+		int ident
+	) {
 		final Phrase phrase = new Phrase(value, font);
 		if (supertext != null) {
 			phrase.add(PdfUtil.createSuperTextInText(supertext));
@@ -104,7 +139,9 @@ public class SimplePDFTable {
 	}
 
 	public void addHeaderRow(@Nonnull String label, @Nullable String value) {
-		this.addRow(new SimplePDFTableRow(label, value != null ? value : "", true));
+		this.addRow(
+			new SimplePDFTableRow(label, value != null ? value : "", true)
+		);
 	}
 
 	public void addRow(@Nonnull String label, @Nullable BigDecimal value) {
@@ -115,19 +152,44 @@ public class SimplePDFTable {
 		this.addRow(new SimplePDFTableRow(label, value));
 	}
 
-	public void addRow(@Nonnull String label, @Nullable String value, int ident) {
-		this.addRow(new SimplePDFTableRow(label, value != null ? value : "", ident));
+	public void addRow(
+		@Nonnull String label,
+		@Nullable String value,
+		int ident
+	) {
+		this.addRow(
+			new SimplePDFTableRow(label, value != null ? value : "", ident)
+		);
 	}
 
-	public void addHeaderRow(@Nonnull String label, @Nullable String value, int ident) {
-		this.addRow(new SimplePDFTableRow(label, value != null ? value : "", true, ident));
+	public void addHeaderRow(
+		@Nonnull String label,
+		@Nullable String value,
+		int ident
+	) {
+		this.addRow(
+			new SimplePDFTableRow(
+				label,
+				value != null ? value : "",
+				true,
+				ident
+			)
+		);
 	}
 
-	public void addRow(@Nonnull String label, @Nullable BigDecimal value, int ident) {
+	public void addRow(
+		@Nonnull String label,
+		@Nullable BigDecimal value,
+		int ident
+	) {
 		this.addRow(new SimplePDFTableRow(label, value, ident));
 	}
 
-	public void addRow(@Nonnull String label, @Nullable Integer value, int ident) {
+	public void addRow(
+		@Nonnull String label,
+		@Nullable Integer value,
+		int ident
+	) {
 		this.addRow(new SimplePDFTableRow(label, value, ident));
 	}
 }

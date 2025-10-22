@@ -29,7 +29,7 @@ import {TSWizardStepXTyp} from '../../../../models/enums/TSWizardStepXTyp';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {TSWizardStepX} from '../../../../models/TSWizardStepX';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../core/service/downloadRS.rest';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {LastenausgleichTSService} from '../services/lastenausgleich-ts.service';
@@ -40,7 +40,8 @@ const LOG = LogFactory.createLog('LastenausgleichTSComponent');
     selector: 'dv-lastenausgleich-ts',
     templateUrl: './lastenausgleich-ts.component.html',
     styleUrls: ['./lastenausgleich-ts.component.less'],
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class LastenausgleichTSComponent implements OnInit, OnDestroy {
     @Input() public lastenausgleichId: string;
@@ -65,8 +66,8 @@ export class LastenausgleichTSComponent implements OnInit, OnDestroy {
         );
         this.subscription = this.lastenausgleichTSService
             .getLATSAngabenGemeindeContainer()
-            .subscribe(
-                container => {
+            .subscribe({
+                next: container => {
                     this.lATSAngabenGemeindeContainer = container;
                     // update wizard steps every time LATSAngabenGemeindeContainer is reloaded
                     this.wizardStepXRS.updateSteps(
@@ -74,8 +75,8 @@ export class LastenausgleichTSComponent implements OnInit, OnDestroy {
                         this.lastenausgleichId
                     );
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public ngOnDestroy(): void {
@@ -94,10 +95,10 @@ export class LastenausgleichTSComponent implements OnInit, OnDestroy {
     public downloadFerienbetreuungReport(): void {
         this.lastenausgleichTSService
             .generateLATSReport(this.lATSAngabenGemeindeContainer)
-            .subscribe(
-                res => this.openDownloadForFile(res),
-                err => LOG.error(err)
-            );
+            .subscribe({
+                next: res => this.openDownloadForFile(res),
+                error: err => LOG.error(err)
+            });
     }
 
     private openDownloadForFile(response: BlobPart): void {

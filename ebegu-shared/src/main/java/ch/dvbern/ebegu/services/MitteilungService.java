@@ -25,7 +25,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import ch.dvbern.ebegu.dto.suchfilter.smarttable.MitteilungTableFilterDTO;
 import ch.dvbern.ebegu.entities.Benutzer;
@@ -84,13 +84,17 @@ public interface MitteilungService {
 	 * Sucht die Betreuungsmitteilung mit der uebergebenen ID
 	 */
 	@Nonnull
-	Optional<Betreuungsmitteilung> findBetreuungsmitteilung(@Nonnull String key);
+	Optional<Betreuungsmitteilung> findBetreuungsmitteilung(
+		@Nonnull String key
+	);
 
 	/**
 	 * Sucht die Betreuungsmitteilung mit der uebergebenen ID
 	 */
 	@Nonnull
-	Optional<NeueVeranlagungsMitteilung> findVeranlagungsMitteilungById(@Nonnull String key);
+	Optional<NeueVeranlagungsMitteilung> findVeranlagungsMitteilungById(
+		@Nonnull String key
+	);
 
 	/**
 	 * Löscht alle offenen Mutationsmeldung für eine Betreuung
@@ -101,42 +105,56 @@ public interface MitteilungService {
 	 * Returns all not applied Betreuungsmitteilungen that are linked with the given Betreuung.
 	 */
 	@Nonnull
-	Collection<Betreuungsmitteilung> findOffeneBetreuungsmitteilungenForBetreuung(@Nonnull Betreuung betreuung);
+	Collection<Betreuungsmitteilung> findOffeneBetreuungsmitteilungenForBetreuung(
+		@Nonnull Betreuung betreuung
+	);
 
 	@Nonnull
-	Collection<Betreuungsmitteilung> findOffeneBetreuungsmitteilungenByReferenzNummer(@Nonnull String referenzNummer);
+	Collection<Betreuungsmitteilung> findOffeneBetreuungsmitteilungenByReferenzNummer(
+		@Nonnull String referenzNummer
+	);
 
 	/**
 	 * Returns all Betreuungsmitteilungen that are linked with the given Betreuung.
 	 */
 	@Nonnull
-	Collection<Betreuungsmitteilung> findAllBetreuungsmitteilungenForBetreuung(@Nonnull Betreuung betreuung);
+	Collection<Betreuungsmitteilung> findAllBetreuungsmitteilungenForBetreuung(
+		@Nonnull Betreuung betreuung
+	);
 
 	/**
 	 * Returns all BetreuungspensumAbweichung that are linked with the given Betreuung.
 	 */
 	@Nonnull
-	Collection<BetreuungspensumAbweichung> findAllBetreuungspensumAbweichungenForBetreuung(@Nonnull Betreuung betreuung);
+	Collection<BetreuungspensumAbweichung> findAllBetreuungspensumAbweichungenForBetreuung(
+		@Nonnull Betreuung betreuung
+	);
 
 	/**
 	 * Gibt alle (Betreuungs-) Mitteilungen fuer die uebergebene Betreuung zurueck
 	 */
 	@Nonnull
-	Collection<Mitteilung> findAllMitteilungenForBetreuung(@Nonnull Betreuung betreuung);
+	Collection<Mitteilung> findAllMitteilungenForBetreuung(
+		@Nonnull Betreuung betreuung
+	);
 
 	/**
 	 * Gibt alle Mitteilungen fuer das uebergebene Dossier zurueck, welche fuer den eingeloggten Benutzer sichtbar
 	 * sind.
 	 */
 	@Nonnull
-	Collection<Mitteilung> getMitteilungenForCurrentRolle(@Nonnull Dossier dossier);
+	Collection<Mitteilung> getMitteilungenForCurrentRolle(
+		@Nonnull Dossier dossier
+	);
 
 	/**
 	 * Gibt alle Mitteilungen fuer die uebergebene Betreuung zurueck, welche fuer den eingeloggten Benutzer sichtbar
 	 * sind.
 	 */
 	@Nonnull
-	Collection<Mitteilung> getMitteilungenForCurrentRolle(@Nonnull Betreuung betreuung);
+	Collection<Mitteilung> getMitteilungenForCurrentRolle(
+		@Nonnull Betreuung betreuung
+	);
 
 	/**
 	 * Loescht die uebergebene Mitteilung
@@ -163,14 +181,18 @@ public interface MitteilungService {
 	 * ihren Status auf GELESEN.
 	 */
 	@Nonnull
-	Collection<Mitteilung> setAllNewMitteilungenOfDossierGelesen(@Nonnull Dossier dossier);
+	Collection<Mitteilung> setAllNewMitteilungenOfDossierGelesen(
+		@Nonnull Dossier dossier
+	);
 
 	/**
 	 * Gibt alle ungelesenen Mitteilungen (Status NEU) fuer das uebergebene Dossier zurueck, welche fuer den
 	 * eingeloggten Benutzer sichtbar sind
 	 */
 	@Nonnull
-	Collection<Mitteilung> getNewMitteilungenOfDossierForCurrentRolle(@Nonnull Dossier dossier);
+	Collection<Mitteilung> getNewMitteilungenOfDossierForCurrentRolle(
+		@Nonnull Dossier dossier
+	);
 
 	/**
 	 * Gibt die Anzahl aller ungelesenen Mitteilungen (Status NEU), welche fuer den eingeloggten Benutzer sichtbar
@@ -184,13 +206,16 @@ public interface MitteilungService {
 	 */
 	void replaceOffeneBetreungsmitteilungenWithSameReferenzNummer(
 		@Valid @Nonnull Betreuungsmitteilung betreuungsmitteilung,
-		@Nonnull String referenzNummer);
+		@Nonnull String referenzNummer
+	);
 
 	/**
 	 * Sendet die uebergebene Betreuungsmitteilung. Der Empfaenger wird automatisch gesetzt
 	 */
 	@Nonnull
-	Betreuungsmitteilung sendBetreuungsmitteilung(@Valid @Nonnull Betreuungsmitteilung betreuungsmitteilung);
+	Betreuungsmitteilung sendBetreuungsmitteilung(
+		@Valid @Nonnull Betreuungsmitteilung betreuungsmitteilung
+	);
 
 	/**
 	 * Applies all passed Betreuungspensen from the Betreuungsmitteilung to the existing Betreuung with the same
@@ -207,13 +232,18 @@ public interface MitteilungService {
 	 * Returns the newest Betreuungsmitteilung for the given Betreuung
 	 */
 	@Nonnull
-	Optional<Betreuungsmitteilung> findNewestBetreuungsmitteilung(@Nonnull String betreuungId);
+	Optional<Betreuungsmitteilung> findNewestBetreuungsmitteilung(
+		@Nonnull String betreuungId
+	);
 
 	/**
 	 * Leitet die Mitteilung an einen weiteren Benutzer weiter.
 	 */
 	@Nonnull
-	Mitteilung mitteilungWeiterleiten(@Nonnull String mitteilungId, @Nonnull String userName);
+	Mitteilung mitteilungWeiterleiten(
+		@Nonnull String mitteilungId,
+		@Nonnull String userName
+	);
 
 	/**
 	 * Methode welche jeweils eine bestimmte Menge an Suchresultate fuer die Paginatete Suchtabelle zuruckgibt. Wenn
@@ -229,19 +259,28 @@ public interface MitteilungService {
 	);
 
 	/**
-	 * Ermittelt, ob der übergebene Benutzer entweder als Sender oder als Empfänger in irgendeiner Mitteilung gesetzt ist
+	 * Ermittelt, ob der übergebene Benutzer entweder als Sender oder als Empfänger in irgendeiner Mitteilung gesetzt
+	 * ist
 	 * Es wird keine Berechtigungsprüfung durchgeführt, da nur ja/nein zurückgeben wird.
 	 */
-	boolean hasBenutzerAnyMitteilungenAsSenderOrEmpfaenger(@Nonnull Benutzer benutzer);
+	boolean hasBenutzerAnyMitteilungenAsSenderOrEmpfaenger(
+		@Nonnull Benutzer benutzer
+	);
 
 	/**
 	 * Erstellt und sendet eine Mutationsmeldung aus den bestehenden Betreuungspensen und BetreuungspensumAbweichungen
 	 */
-	void createMutationsmeldungAbweichungen(@Nonnull Betreuungsmitteilung mitteilung, @Nonnull Betreuung betreuung);
+	void createMutationsmeldungAbweichungen(
+		@Nonnull Betreuungsmitteilung mitteilung,
+		@Nonnull Betreuung betreuung
+	);
 
 	boolean hasInstitutionOffeneMitteilungen(Institution institution);
 
-	void adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(@Nonnull Institution institution, @Nonnull DateRange gueltigkeit);
+	void adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(
+		@Nonnull Institution institution,
+		@Nonnull DateRange gueltigkeit
+	);
 
 	boolean isBetreuungGueltigForMutation(Betreuung betreuung);
 
@@ -254,17 +293,29 @@ public interface MitteilungService {
 	 * Used for bulk work
 	 */
 	@Nullable
-	String applyBetreuungsmitteilungIfPossible(@Nonnull Betreuungsmitteilung betreuungsmitteilung);
+	String applyBetreuungsmitteilungIfPossible(
+		@Nonnull Betreuungsmitteilung betreuungsmitteilung
+	);
 
-	Optional<Betreuungsmitteilung> findAndRefreshBetreuungsmitteilung(String id);
+	Optional<Betreuungsmitteilung> findAndRefreshBetreuungsmitteilung(
+		String id
+	);
 
+	NeueVeranlagungsMitteilung sendNeueVeranlagungsmitteilung(
+		@Nonnull NeueVeranlagungsMitteilung neueVeranlagungsMitteilung
+	);
 
-	NeueVeranlagungsMitteilung sendNeueVeranlagungsmitteilung(@Nonnull NeueVeranlagungsMitteilung neueVeranlagungsMitteilung);
+	Gesuch neueVeranlagungssmitteilungBearbeiten(
+		NeueVeranlagungsMitteilung neueVeranlagungsMitteilung
+	);
 
-	Gesuch neueVeranlagungssmitteilungBearbeiten(NeueVeranlagungsMitteilung neueVeranlagungsMitteilung);
+	String createNachrichtForMutationsmeldung(
+		Betreuungsmitteilung mitteilung,
+		Set<BetreuungsmitteilungPensum> changedBetreuungen,
+		Locale locale
+	);
 
-	String createNachrichtForMutationsmeldung(Betreuungsmitteilung mitteilung, Set<BetreuungsmitteilungPensum> changedBetreuungen,
-		Locale locale);
-
-	Collection<NeueVeranlagungsMitteilung> findOffeneNeueVeranlagungsmitteilungenForGesuch(List<String> gesuchIds);
+	Collection<NeueVeranlagungsMitteilung> findOffeneNeueVeranlagungsmitteilungenForGesuch(
+		List<String> gesuchIds
+	);
 }

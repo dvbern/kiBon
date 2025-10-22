@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.tests.validations;
@@ -22,27 +22,49 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Betreuungspensum;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
-import ch.dvbern.ebegu.validators.betreuungspensum.CheckMittagstischPensum;
+import ch.dvbern.ebegu.validators.betreuungspensum.CheckMittagstischPensumValidator;
+import org.easymock.EasyMockExtension;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
+import org.easymock.TestSubject;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import static ch.dvbern.ebegu.tests.util.validation.ViolationMatchers.violatesAnnotation;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_MITTAGSTISCH;
+import static org.easymock.EasyMock.expect;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-class CheckMittagstischPensumValidatorTest extends AbstractValidatorTest {
+@ExtendWith(EasyMockExtension.class)
+class CheckMittagstischPensumValidatorTest extends EasyMockSupport {
+
+	@TestSubject
+	private final CheckMittagstischPensumValidator validator =
+		new CheckMittagstischPensumValidator();
+
+	@Mock
+	private EinstellungService einstellungServiceMock;
 
 	@ParameterizedTest
-	@EnumSource(value = BetreuungsangebotTyp.class, names = "MITTAGSTISCH", mode = EnumSource.Mode.EXCLUDE)
-	void pensumAndMahlzeitenCanBeArbitrary(BetreuungsangebotTyp betreuungsangebotTyp) {
+	@EnumSource(value = BetreuungsangebotTyp.class,
+		names = "MITTAGSTISCH",
+		mode = EnumSource.Mode.EXCLUDE)
+	void pensumAndMahlzeitenCanBeArbitrary(
+		BetreuungsangebotTyp betreuungsangebotTyp
+	) {
 		var pensumJA = createBetreuungspensum(
 			BigDecimal.valueOf(5),
 			BigDecimal.valueOf(13),
@@ -52,11 +74,51 @@ class CheckMittagstischPensumValidatorTest extends AbstractValidatorTest {
 
 		Betreuung betreuung = createBetreuung(betreuungsangebotTyp, pensumJA);
 
-		assertThat(validate(betreuung), not(violatesAnnotation(CheckMittagstischPensum.class)));
+		assertThat(
+			validator.isValid(betreuung, null),
+			not(false)
+		);
 	}
 
 	@Nested
 	class WhenBetreuungsangebotMittagstisch {
+
+		@ParameterizedTest
+		@CsvSource({
+			"68.3333333333, 100",
+			"34.1666666666, 50",
+			"4.1, 6",
+			"6.83333333333, 10",
+			"1, 1.464",
+			"0, 0"
+		})
+		void shouldPassWhenPensumIsDerived(
+			BigDecimal anzahlMahlzeiten,
+			BigDecimal pensum
+		) {
+			BigDecimal tarifProMahlzeit = BigDecimal.TEN;
+			BigDecimal monatlicheKosten = tarifProMahlzeit.multiply(
+				anzahlMahlzeiten
+			);
+			Betreuung betreuung = setup(
+				anzahlMahlzeiten,
+				tarifProMahlzeit,
+				monatlicheKosten,
+				pensum
+			);
+			createEinstellungMock(
+				betreuung,
+				OEFFNUNGSTAGE_MITTAGSTISCH,
+				"246",
+				1
+			);
+			replayAll();
+
+			assertThat(
+				validator.isValid(betreuung, null),
+				not(false)
+			);
+		}
 
 		@ParameterizedTest
 		@CsvSource({
@@ -69,34 +131,83 @@ class CheckMittagstischPensumValidatorTest extends AbstractValidatorTest {
 			"1, 4.879",
 			"0, 0"
 		})
-		void shouldPassWhenPensumIsDerived(BigDecimal anzahlMahlzeiten, BigDecimal pensum) {
+		void shouldPassWhenOldPensumIsDerived(
+			BigDecimal anzahlMahlzeiten,
+			BigDecimal pensum
+		) {
 			BigDecimal tarifProMahlzeit = BigDecimal.TEN;
-			BigDecimal monatlicheKosten = tarifProMahlzeit.multiply(anzahlMahlzeiten);
-			Betreuung betreuung = setup(anzahlMahlzeiten, tarifProMahlzeit, monatlicheKosten, pensum);
-
-			assertThat(validate(betreuung), not(violatesAnnotation(CheckMittagstischPensum.class)));
+			BigDecimal monatlicheKosten = tarifProMahlzeit.multiply(
+				anzahlMahlzeiten
+			);
+			Betreuung betreuung = setup(
+				anzahlMahlzeiten,
+				tarifProMahlzeit,
+				monatlicheKosten,
+				pensum
+			);
+			createEinstellungMock(
+				betreuung,
+				OEFFNUNGSTAGE_MITTAGSTISCH,
+				"246",
+				1
+			);
+			replayAll();
+			assertThat(
+				validator.isValid(betreuung, null),
+				not(false)
+			);
 		}
 
 		@ParameterizedTest
 		@CsvSource("1, 2, 10, 20.5, 100")
-		void shouldFailWhenPensumMismatchesMahlzeiten(BigDecimal anzahlMahlzeiten) {
+		void shouldFailWhenPensumMismatchesMahlzeiten(
+			BigDecimal anzahlMahlzeiten
+		) {
 			BigDecimal tarifProMahlzeit = BigDecimal.TEN;
-			BigDecimal monatlicheKosten = tarifProMahlzeit.multiply(anzahlMahlzeiten);
-			Betreuung betreuung = setup(anzahlMahlzeiten, tarifProMahlzeit, monatlicheKosten, BigDecimal.ZERO);
-
-			assertThat(validate(betreuung), violatesAnnotation(CheckMittagstischPensum.class));
+			BigDecimal monatlicheKosten = tarifProMahlzeit.multiply(
+				anzahlMahlzeiten
+			);
+			Betreuung betreuung = setup(
+				anzahlMahlzeiten,
+				tarifProMahlzeit,
+				monatlicheKosten,
+				BigDecimal.ZERO
+			);
+			createEinstellungMock(
+				betreuung,
+				OEFFNUNGSTAGE_MITTAGSTISCH,
+				"246",
+				1
+			);
+			replayAll();
+			assertThat(
+				validator.isValid(betreuung, null),
+				is(false)
+			);
 		}
 
 		@ParameterizedTest
 		@CsvSource("1, 2, 10, 20.5, 100")
-		void shouldFailWhenKostenMismatchesMahlzeitenTarif(double anzahlMahlzeiten) {
+		void shouldFailWhenKostenMismatchesMahlzeitenTarif(
+			double anzahlMahlzeiten
+		) {
 			Betreuung betreuung = setup(
 				BigDecimal.valueOf(anzahlMahlzeiten),
 				BigDecimal.valueOf(13),
 				BigDecimal.TEN,
-				BigDecimal.valueOf(anzahlMahlzeiten * 100 / 20.5));
-
-			assertThat(validate(betreuung), violatesAnnotation(CheckMittagstischPensum.class));
+				BigDecimal.valueOf(anzahlMahlzeiten * 100 / 20.5)
+			);
+			createEinstellungMock(
+				betreuung,
+				OEFFNUNGSTAGE_MITTAGSTISCH,
+				"246",
+				1
+			);
+			replayAll();
+			assertThat(
+				validator.isValid(betreuung, null),
+				is(false)
+			);
 		}
 
 		Betreuung setup(
@@ -105,9 +216,38 @@ class CheckMittagstischPensumValidatorTest extends AbstractValidatorTest {
 			BigDecimal monatlicheKosten,
 			BigDecimal pensum
 		) {
-			var pensumJA = createBetreuungspensum(anzahlMahlzeiten, tarifProMahlzeit, monatlicheKosten, pensum);
+			var pensumJA = createBetreuungspensum(
+				anzahlMahlzeiten,
+				tarifProMahlzeit,
+				monatlicheKosten,
+				pensum
+			);
 
 			return createBetreuung(BetreuungsangebotTyp.MITTAGSTISCH, pensumJA);
+		}
+
+		private void createEinstellungMock(
+			Betreuung betreuung,
+			EinstellungKey key,
+			String eroffnungstageProJahr,
+			int times
+		) {
+			expect(
+				einstellungServiceMock.findEinstellung(
+					key,
+					betreuung.extractGemeinde(),
+					betreuung.extractGesuchsperiode(),
+					null
+				)
+			)
+				.andReturn(
+					new Einstellung(
+						key,
+						eroffnungstageProJahr,
+						betreuung.extractGesuchsperiode()
+					)
+				)
+				.times(times);
 		}
 	}
 
@@ -118,7 +258,10 @@ class CheckMittagstischPensumValidatorTest extends AbstractValidatorTest {
 		BigDecimal monatlicheKosten,
 		BigDecimal pensum
 	) {
-		var result = TestDataUtil.createBetreuungspensumMittagstisch(anzahlMahlzeiten, tarifProMahlzeit);
+		var result = TestDataUtil.createBetreuungspensumMittagstisch(
+			anzahlMahlzeiten,
+			tarifProMahlzeit
+		);
 		result.setPensum(pensum);
 		result.setMonatlicheBetreuungskosten(monatlicheKosten);
 
@@ -135,9 +278,11 @@ class CheckMittagstischPensumValidatorTest extends AbstractValidatorTest {
 
 		Betreuung betreuung = TestDataUtil.createDefaultBetreuung();
 		betreuung.getKind().setGesuch(gesuch);
-		betreuung.getInstitutionStammdaten().setBetreuungsangebotTyp(betreuungsangebotTyp);
+		betreuung.getInstitutionStammdaten()
+			.setBetreuungsangebotTyp(betreuungsangebotTyp);
 
-		BetreuungspensumContainer betPensContainer = TestDataUtil.createBetPensContainer(betreuung);
+		BetreuungspensumContainer betPensContainer = TestDataUtil
+			.createBetPensContainer(betreuung);
 		betPensContainer.setBetreuungspensumJA(pensumJA);
 
 		betreuung.setBetreuungspensumContainers(Set.of(betPensContainer));

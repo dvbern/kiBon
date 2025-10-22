@@ -8,24 +8,29 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
 
-import ch.dvbern.ebegu.enums.AnmeldungMutationZustand;
-import ch.dvbern.ebegu.enums.AntragCopyType;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
-import ch.dvbern.ebegu.enums.Eingangsart;
-import org.hibernate.envers.Audited;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
+
+import ch.dvbern.ebegu.enums.AnmeldungMutationZustand;
+import ch.dvbern.ebegu.enums.AntragCopyType;
+import ch.dvbern.ebegu.enums.Eingangsart;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
+import org.hibernate.envers.Audited;
 
 /**
  * Superklasse fuer Schulamt Anmeldungen: Tagesschule oder Ferieninsel
@@ -40,7 +45,8 @@ public abstract class AbstractAnmeldung extends AbstractPlatz {
 	@Nullable
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = true)
-	private AnmeldungMutationZustand anmeldungMutationZustand = AnmeldungMutationZustand.NOCH_NICHT_FREIGEGEBEN;
+	private AnmeldungMutationZustand anmeldungMutationZustand =
+		AnmeldungMutationZustand.NOCH_NICHT_FREIGEGEBEN;
 
 	@Nullable
 	@Enumerated(EnumType.STRING)
@@ -50,13 +56,14 @@ public abstract class AbstractAnmeldung extends AbstractPlatz {
 	public AbstractAnmeldung() {
 	}
 
-
 	@Nullable
 	public AnmeldungMutationZustand getAnmeldungMutationZustand() {
 		return anmeldungMutationZustand;
 	}
 
-	public void setAnmeldungMutationZustand(@Nullable AnmeldungMutationZustand anmeldungMutationZustand) {
+	public void setAnmeldungMutationZustand(
+		@Nullable AnmeldungMutationZustand anmeldungMutationZustand
+	) {
 		this.anmeldungMutationZustand = anmeldungMutationZustand;
 	}
 
@@ -65,7 +72,9 @@ public abstract class AbstractAnmeldung extends AbstractPlatz {
 		return statusVorIgnorieren;
 	}
 
-	public void setStatusVorIgnorieren(@Nullable Betreuungsstatus statusVorIgnorieren) {
+	public void setStatusVorIgnorieren(
+		@Nullable Betreuungsstatus statusVorIgnorieren
+	) {
 		this.statusVorIgnorieren = statusVorIgnorieren;
 	}
 
@@ -79,12 +88,20 @@ public abstract class AbstractAnmeldung extends AbstractPlatz {
 		switch (copyType) {
 		case MUTATION:
 			if (targetEingangsart == Eingangsart.ONLINE) {
-				target.setAnmeldungMutationZustand(AnmeldungMutationZustand.NOCH_NICHT_FREIGEGEBEN);
-				this.setAnmeldungMutationZustand(AnmeldungMutationZustand.AKTUELLE_ANMELDUNG);
+				target.setAnmeldungMutationZustand(
+					AnmeldungMutationZustand.NOCH_NICHT_FREIGEGEBEN
+				);
+				this.setAnmeldungMutationZustand(
+					AnmeldungMutationZustand.AKTUELLE_ANMELDUNG
+				);
 			} else {
-				target.setAnmeldungMutationZustand(AnmeldungMutationZustand.AKTUELLE_ANMELDUNG);
+				target.setAnmeldungMutationZustand(
+					AnmeldungMutationZustand.AKTUELLE_ANMELDUNG
+				);
 				target.setGueltig(true); // Bei Anmeldungen ist immer die neueste "gültig"
-				this.setAnmeldungMutationZustand(AnmeldungMutationZustand.MUTIERT);
+				this.setAnmeldungMutationZustand(
+					AnmeldungMutationZustand.MUTIERT
+				);
 				this.setGueltig(false);
 			}
 			break;

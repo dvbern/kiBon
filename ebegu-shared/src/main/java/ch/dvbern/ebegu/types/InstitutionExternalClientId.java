@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.types;
@@ -20,10 +20,12 @@ package ch.dvbern.ebegu.types;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
+import org.hibernate.usertype.UserTypeLegacyBridge;
 
 @Embeddable
 public class InstitutionExternalClientId implements Serializable {
@@ -31,11 +33,17 @@ public class InstitutionExternalClientId implements Serializable {
 	private static final long serialVersionUID = 3704996447646323706L;
 
 	@Column(name = "institution_id")
-	@Type(type = "string-uuid-binary")
+	@Type(
+		value = UserTypeLegacyBridge.class,
+		parameters = @Parameter(name = UserTypeLegacyBridge.TYPE_NAME_PARAM_KEY,
+			value = "string-uuid-binary"))
 	private String institutionId;
 
 	@Column(name = "external_client_id")
-	@Type(type = "string-uuid-binary")
+	@Type(
+		value = UserTypeLegacyBridge.class,
+		parameters = @Parameter(name = UserTypeLegacyBridge.TYPE_NAME_PARAM_KEY,
+			value = "string-uuid-binary"))
 	private String externalClientId;
 
 	private InstitutionExternalClientId() {
@@ -43,7 +51,8 @@ public class InstitutionExternalClientId implements Serializable {
 
 	public InstitutionExternalClientId(
 		String institutionId,
-		String externalClientId) {
+		String externalClientId
+	) {
 		this.institutionId = institutionId;
 		this.externalClientId = externalClientId;
 	}
@@ -59,7 +68,8 @@ public class InstitutionExternalClientId implements Serializable {
 		}
 
 		InstitutionExternalClientId that = (InstitutionExternalClientId) o;
-		return Objects.equals(institutionId, that.institutionId) &&
+		return Objects.equals(institutionId, that.institutionId)
+			&&
 			Objects.equals(externalClientId, that.externalClientId);
 	}
 

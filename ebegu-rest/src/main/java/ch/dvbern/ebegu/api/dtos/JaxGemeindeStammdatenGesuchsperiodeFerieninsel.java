@@ -20,21 +20,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.enums.Ferienname;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * DTO fuer Ferieninsel-Stammdaten
  */
 @XmlRootElement(name = "gemeindeStammdatenGesuchsperiodeFerieninsel")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JaxGemeindeStammdatenGesuchsperiodeFerieninsel extends JaxAbstractDTO {
+public class JaxGemeindeStammdatenGesuchsperiodeFerieninsel extends
+	JaxAbstractDTO {
 
 	private static final long serialVersionUID = -755938593616840976L;
 
@@ -45,7 +46,7 @@ public class JaxGemeindeStammdatenGesuchsperiodeFerieninsel extends JaxAbstractD
 	private List<JaxFerieninselZeitraum> zeitraumList = new ArrayList<>();
 
 	@NotNull
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate anmeldeschluss;
 
 	private boolean ferienActive;
@@ -85,8 +86,11 @@ public class JaxGemeindeStammdatenGesuchsperiodeFerieninsel extends JaxAbstractD
 		return potenzielleFerieninselTageFuerBelegung;
 	}
 
-	public void setPotenzielleFerieninselTageFuerBelegung(@Nullable List<JaxBelegungFerieninselTag> potenzielleFerieninselTageFuerBelegung) {
-		this.potenzielleFerieninselTageFuerBelegung = potenzielleFerieninselTageFuerBelegung;
+	public void setPotenzielleFerieninselTageFuerBelegung(
+		@Nullable List<JaxBelegungFerieninselTag> potenzielleFerieninselTageFuerBelegung
+	) {
+		this.potenzielleFerieninselTageFuerBelegung =
+			potenzielleFerieninselTageFuerBelegung;
 	}
 
 	@Nullable
@@ -94,8 +98,11 @@ public class JaxGemeindeStammdatenGesuchsperiodeFerieninsel extends JaxAbstractD
 		return potenzielleFerieninselTageFuerBelegungMorgenmodul;
 	}
 
-	public void setPotenzielleFerieninselTageFuerBelegungMorgenmodul(@Nullable List<JaxBelegungFerieninselTag> potenzielleFerieninselTageFuerBelegungMorgenmodul) {
-		this.potenzielleFerieninselTageFuerBelegungMorgenmodul = potenzielleFerieninselTageFuerBelegungMorgenmodul;
+	public void setPotenzielleFerieninselTageFuerBelegungMorgenmodul(
+		@Nullable List<JaxBelegungFerieninselTag> potenzielleFerieninselTageFuerBelegungMorgenmodul
+	) {
+		this.potenzielleFerieninselTageFuerBelegungMorgenmodul =
+			potenzielleFerieninselTageFuerBelegungMorgenmodul;
 	}
 
 	public boolean isFerienActive() {

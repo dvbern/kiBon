@@ -22,12 +22,12 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 import ch.dvbern.ebegu.api.dtos.JaxAdresse;
 import ch.dvbern.ebegu.enums.gemeindeantrag.FerienbetreuungFormularStatus;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 
@@ -37,7 +37,7 @@ public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 	private Set<String> amAngebotBeteiligteGemeinden;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate seitWannFerienbetreuungen;
 
 	@Nullable
@@ -76,13 +76,14 @@ public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 	@Nonnull
 	private FerienbetreuungFormularStatus status;
 
-
 	@Nullable
 	public Set<String> getAmAngebotBeteiligteGemeinden() {
 		return amAngebotBeteiligteGemeinden;
 	}
 
-	public void setAmAngebotBeteiligteGemeinden(@Nullable Set<String> amAngebotBeteiligteGemeinden) {
+	public void setAmAngebotBeteiligteGemeinden(
+		@Nullable Set<String> amAngebotBeteiligteGemeinden
+	) {
 		this.amAngebotBeteiligteGemeinden = amAngebotBeteiligteGemeinden;
 	}
 
@@ -91,7 +92,9 @@ public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 		return seitWannFerienbetreuungen;
 	}
 
-	public void setSeitWannFerienbetreuungen(@Nullable LocalDate seitWannFerienbetreuungen) {
+	public void setSeitWannFerienbetreuungen(
+		@Nullable LocalDate seitWannFerienbetreuungen
+	) {
 		this.seitWannFerienbetreuungen = seitWannFerienbetreuungen;
 	}
 
@@ -118,7 +121,9 @@ public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 		return stammdatenKontaktpersonVorname;
 	}
 
-	public void setStammdatenKontaktpersonVorname(@Nullable String stammdatenKontaktpersonVorname) {
+	public void setStammdatenKontaktpersonVorname(
+		@Nullable String stammdatenKontaktpersonVorname
+	) {
 		this.stammdatenKontaktpersonVorname = stammdatenKontaktpersonVorname;
 	}
 
@@ -127,7 +132,9 @@ public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 		return stammdatenKontaktpersonNachname;
 	}
 
-	public void setStammdatenKontaktpersonNachname(@Nullable String stammdatenKontaktpersonNachname) {
+	public void setStammdatenKontaktpersonNachname(
+		@Nullable String stammdatenKontaktpersonNachname
+	) {
 		this.stammdatenKontaktpersonNachname = stammdatenKontaktpersonNachname;
 	}
 
@@ -136,7 +143,9 @@ public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 		return stammdatenKontaktpersonFunktion;
 	}
 
-	public void setStammdatenKontaktpersonFunktion(@Nullable String stammdatenKontaktpersonFunktion) {
+	public void setStammdatenKontaktpersonFunktion(
+		@Nullable String stammdatenKontaktpersonFunktion
+	) {
 		this.stammdatenKontaktpersonFunktion = stammdatenKontaktpersonFunktion;
 	}
 
@@ -145,7 +154,9 @@ public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 		return stammdatenKontaktpersonTelefon;
 	}
 
-	public void setStammdatenKontaktpersonTelefon(@Nullable String stammdatenKontaktpersonTelefon) {
+	public void setStammdatenKontaktpersonTelefon(
+		@Nullable String stammdatenKontaktpersonTelefon
+	) {
 		this.stammdatenKontaktpersonTelefon = stammdatenKontaktpersonTelefon;
 	}
 
@@ -154,7 +165,9 @@ public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 		return stammdatenKontaktpersonEmail;
 	}
 
-	public void setStammdatenKontaktpersonEmail(@Nullable String stammdatenKontaktpersonEmail) {
+	public void setStammdatenKontaktpersonEmail(
+		@Nullable String stammdatenKontaktpersonEmail
+	) {
 		this.stammdatenKontaktpersonEmail = stammdatenKontaktpersonEmail;
 	}
 
@@ -181,7 +194,9 @@ public class JaxFerienbetreuungAngabenStammdaten extends JaxAbstractDTO {
 		return adresseKontoinhaber;
 	}
 
-	public void setAdresseKontoinhaber(@Nullable JaxAdresse adresseKontoinhaber) {
+	public void setAdresseKontoinhaber(
+		@Nullable JaxAdresse adresseKontoinhaber
+	) {
 		this.adresseKontoinhaber = adresseKontoinhaber;
 	}
 

@@ -24,12 +24,12 @@ import {
     ViewChild
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
+import * as Sentry from '@sentry/browser';
 import {Category, UIRouter} from '@uirouter/core';
 import {visualizer} from '@uirouter/visualizer';
-import * as Sentry from '@sentry/browser';
 import {Subject} from 'rxjs';
 import {distinctUntilChanged, filter, map, takeUntil} from 'rxjs/operators';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
 
 const LOG = LogFactory.createLog('DebuggingComponent');
@@ -38,7 +38,8 @@ const LOG = LogFactory.createLog('DebuggingComponent');
     selector: 'dv-debugging',
     templateUrl: './debugging.component.html',
     styleUrls: ['./debugging.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DebuggingComponent implements OnInit, OnDestroy {
     @ViewChild('traceForm', {static: true}) private readonly traceForm: NgForm;

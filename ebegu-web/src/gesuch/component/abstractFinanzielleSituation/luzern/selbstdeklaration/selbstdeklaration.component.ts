@@ -22,7 +22,7 @@ import {
     Input,
     OnInit
 } from '@angular/core';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSAbstractFinanzielleSituation} from '../../../../../models/TSAbstractFinanzielleSituation';
 import {TSFinanzielleSituationSelbstdeklaration} from '../../../../../models/TSFinanzielleSituationSelbstdeklaration';
@@ -37,7 +37,8 @@ const LOG = LogFactory.createLog('SelbstdeklarationComponent');
     selector: 'dv-selbstdeklaration',
     templateUrl: './selbstdeklaration.component.html',
     styleUrls: ['./selbstdeklaration.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SelbstdeklarationComponent implements OnInit {
     @Input()

@@ -13,10 +13,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {getTSBetreuungsangebotTypValuesForMandant} from '@kibon/shared/util-fn/betreuungsangebot-typ';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, IController, IFilterService} from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {
+    TSGemeinde,
+    TSGesuchsperiode,
+    TSInstitution
+} from '@kibon/shared/model/entity';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {
@@ -28,21 +37,12 @@ import {
     getNormalizedTSAntragTypValues,
     TSAntragTyp
 } from '../../../../models/enums/TSAntragTyp';
-import {
-    getTSBetreuungsangebotTypValuesForMandant,
-    TSBetreuungsangebotTyp
-} from '../../../../models/enums/betreuung/TSBetreuungsangebotTyp';
 import {TSAbstractAntragDTO} from '../../../../models/TSAbstractAntragDTO';
 import {TSAntragDTO} from '../../../../models/TSAntragDTO';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
 import {TSFallAntragDTO} from '../../../../models/TSFallAntragDTO';
-import {TSGemeinde} from '../../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../../models/TSGesuchsperiode';
-import {TSInstitution} from '../../../../models/TSInstitution';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {LogFactory} from '../../../core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../../core/rest-services/applicationPropertyRS.rest';
 import {GesuchsperiodeRS} from '../../../core/service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../../../core/service/institutionRS.rest';
 
@@ -75,7 +75,7 @@ export class DVQuicksearchListController implements IController {
         '$state',
         'AuthServiceRS',
         'GemeindeRS',
-        'ApplicationPropertyRS'
+        'SharedUtilApplicationPropertyRsService'
     ];
 
     public antraege: Array<TSAntragDTO> = []; // muss hier gesuch haben damit Felder die wir anzeigen muessen da sind
@@ -116,7 +116,7 @@ export class DVQuicksearchListController implements IController {
         private readonly $state: StateService,
         private readonly authServiceRS: AuthServiceRS,
         private readonly gemeindeRS: GemeindeRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public userHasChanged(selectedUser: TSBenutzerNoDetails): void {
@@ -127,10 +127,13 @@ export class DVQuicksearchListController implements IController {
         this.updateInstitutionenList();
         this.updateGesuchsperiodenList();
         this.updateGemeindenList();
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.anmeldungTSEnabled = res.angebotTSActivated;
-            this.angebotMittagstischEnabled = res.angebotMittagstischActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.anmeldungTSEnabled = res.angebotTSActivated;
+                this.angebotMittagstischEnabled =
+                    res.angebotMittagstischActivated;
+            });
     }
 
     public $onDestroy(): void {

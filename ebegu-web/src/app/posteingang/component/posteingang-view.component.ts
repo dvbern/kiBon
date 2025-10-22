@@ -26,8 +26,11 @@ import {
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {PageEvent} from '@angular/material/paginator';
-import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
+import {MatSort, Sort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+import {TSRole} from '@kibon/shared/model/enums';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TranslateService} from '@ngx-translate/core';
 import {TransitionService} from '@uirouter/angular';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
@@ -43,12 +46,11 @@ import {
 } from '../../../models/enums/TSMitteilungStatus';
 import {TSMitteilungTyp} from '../../../models/enums/TSMitteilungTyp';
 import {TSMitteilungTypes} from '../../../models/enums/TSMitteilungTypes';
-import {TSRole} from '../../../models/enums/TSRole';
 import {TSVerantwortung} from '../../../models/enums/TSVerantwortung';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
 import {TSBetreuungsmitteilung} from '../../../models/TSBetreuungsmitteilung';
-import {TSGemeinde} from '../../../models/TSGemeinde';
+
 import {TSMitteilung} from '../../../models/TSMitteilung';
 import {TSMtteilungSearchresultDTO} from '../../../models/TSMitteilungSearchresultDTO';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
@@ -57,7 +59,6 @@ import {DvNgConfirmDialogComponent} from '../../core/component/dv-ng-confirm-dia
 import {DvNgMitteilungResultDialogComponent} from '../../core/component/dv-ng-mitteilung-result-dialog/dv-ng-mitteilung-result-dialog.component';
 import {TSDemoFeature} from '../../core/directive/dv-hide-feature/TSDemoFeature';
 import {ErrorServiceX} from '../../core/errors/service/ErrorServiceX';
-import {Log, LogFactory} from '../../core/logging/LogFactory';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 import {DemoFeatureRS} from '../../core/service/demoFeatureRS.rest';
 import {MitteilungRS} from '../../core/service/mitteilungRS.rest';
@@ -71,7 +72,8 @@ const LOG = LogFactory.createLog('PosteingangViewComponent');
     selector: 'posteingang-view',
     templateUrl: './posteingang-view.component.html',
     styleUrls: ['./posteingang-view.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PosteingangViewComponent
     implements OnInit, OnDestroy, AfterViewInit
@@ -186,8 +188,8 @@ export class PosteingangViewComponent
         this.updateGemeindenList();
         this.initDisplayedColumns();
         this.initSort();
-        this.initFilter().subscribe(
-            filter => {
+        this.initFilter().subscribe({
+            next: filter => {
                 this.filterPredicate = filter;
                 this.benutzerRS
                     .getAllBenutzerBgTsOrGemeinde()
@@ -200,8 +202,8 @@ export class PosteingangViewComponent
                     });
                 this.passFilterToServer();
             },
-            error => LOG.error(error)
-        );
+            error: err => LOG.error(err)
+        });
     }
 
     public ngAfterViewInit(): void {
@@ -213,6 +215,12 @@ export class PosteingangViewComponent
         this.storeFilterSortStates();
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
+    }
+
+    public showAlleMutationenBearbeitenButton() {
+        return this.authServiceRS.isOneOfRoles(
+            TSRoleUtil.getGemeindeOrBGOrTSRoles().concat(TSRole.SUPER_ADMIN)
+        );
     }
 
     public addZerosToFallNummer(fallnummer: number): string {
@@ -230,15 +238,15 @@ export class PosteingangViewComponent
         this.gemeindeRS
             .getGemeindenForPrincipal$()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                gemeinden => {
+            .subscribe({
+                next: gemeinden => {
                     this.gemeindenList = gemeinden;
                     this.gemeindenList.sort((a, b) =>
                         a.name.localeCompare(b.name)
                     );
                 },
-                err => this.log.error(err)
-            );
+                error: err => this.log.error(err)
+            });
     }
 
     public getVerantwortungList(): Array<string> {
@@ -454,9 +462,6 @@ export class PosteingangViewComponent
     private initMatSort(): void {
         this.matSort.active = this.sort.predicate;
         this.matSort.direction = this.sort.reverse ? 'asc' : 'desc';
-        (
-            this.matSort.sortables.get(this.sort.predicate) as MatSortHeader
-        )?._setAnimationTransitionState({toState: 'active'});
     }
 
     private initDisplayedColumns(): void {

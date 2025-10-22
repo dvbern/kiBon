@@ -13,15 +13,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {TSBedarfsstufe} from './enums/betreuung/TSBedarfsstufe';
-import {TSAnmeldungMutationZustand} from './enums/TSAnmeldungMutationZustand';
-import {TSBetreuungsangebotTyp} from './enums/betreuung/TSBetreuungsangebotTyp';
 import {
     isBetreuungsstatusTSAusgeloest,
+    TSBetreuungsangebotTyp,
     TSBetreuungsstatus
-} from './enums/betreuung/TSBetreuungsstatus';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+} from '@kibon/shared/model/enums';
+import moment from 'moment';
+import {TSBedarfsstufe} from './enums/betreuung/TSBedarfsstufe';
+import {TSAnmeldungMutationZustand} from './enums/TSAnmeldungMutationZustand';
+import {
+    TSAbstractMutableEntity,
+    TSGesuchsperiode,
+    TSInstitutionStammdatenSummary
+} from '@kibon/shared/model/entity';
 import {TSAbwesenheitContainer} from './TSAbwesenheitContainer';
 import {TSAnmeldungTagesschuleZeitabschnitt} from './TSAnmeldungTagesschuleZeitabschnitt';
 import {TSBelegungFerieninsel} from './TSBelegungFerieninsel';
@@ -29,8 +33,6 @@ import {TSBelegungTagesschule} from './TSBelegungTagesschule';
 import {TSBetreuungspensumAbweichung} from './TSBetreuungspensumAbweichung';
 import {TSBetreuungspensumContainer} from './TSBetreuungspensumContainer';
 import {TSErweiterteBetreuungContainer} from './TSErweiterteBetreuungContainer';
-import {TSGesuchsperiode} from './TSGesuchsperiode';
-import {TSInstitutionStammdatenSummary} from './TSInstitutionStammdatenSummary';
 import {TSVerfuegung} from './TSVerfuegung';
 
 export class TSBetreuung extends TSAbstractMutableEntity {
@@ -49,6 +51,7 @@ export class TSBetreuung extends TSAbstractMutableEntity {
     private _vertrag: boolean;
     private _datumAblehnung: moment.Moment;
     private _datumBestaetigung: moment.Moment;
+    public datumAngefordert: moment.Moment;
     private _kindFullname: string;
     private _kindNummer: number;
     private _kindId: string;

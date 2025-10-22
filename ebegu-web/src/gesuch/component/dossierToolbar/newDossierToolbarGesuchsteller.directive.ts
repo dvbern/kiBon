@@ -19,7 +19,8 @@ import {Directive, ElementRef, Injector, Input} from '@angular/core';
 import {UpgradeComponent} from '@angular/upgrade/static';
 
 @Directive({
-    selector: 'dossier-toolbar-gesuchsteller'
+    selector: 'dossier-toolbar-gesuchsteller',
+    standalone: false
 })
 export class NewDossierToolbarGesuchstellerDirective extends UpgradeComponent {
     @Input() public gesuchid: string;

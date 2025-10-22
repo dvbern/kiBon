@@ -15,14 +15,24 @@
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.Taetigkeit;
-import ch.dvbern.ebegu.types.DateRange;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+
+import ch.dvbern.ebegu.entities.Erwerbspensum;
+import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
+import ch.dvbern.ebegu.entities.Familiensituation;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.Taetigkeit;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.types.DateRange;
 
 /**
  * Berechnet die hoehe des ErwerbspensumRule eines bestimmten Erwerbspensums
@@ -30,7 +40,8 @@ import java.util.*;
  * Die weiteren Rules müssen diesen Wert gegebenenfalls korrigieren.
  * Verweis 16.9.2
  */
-public abstract class ErwerbspensumAbschnittRule extends AbstractErwerbspensumAbschnittRule {
+public abstract class ErwerbspensumAbschnittRule extends
+	AbstractErwerbspensumAbschnittRule {
 
 	protected final int zuschlagErwerbspensum;
 
@@ -40,7 +51,13 @@ public abstract class ErwerbspensumAbschnittRule extends AbstractErwerbspensumAb
 		int zuschlagErwerbspensum,
 		@Nonnull Locale locale
 	) {
-		super(RuleKey.ERWERBSPENSUM, RuleType.GRUNDREGEL_DATA, validity, validityPeriod, locale);
+		super(
+			RuleKey.ERWERBSPENSUM,
+			RuleType.GRUNDREGEL_DATA,
+			validity,
+			validityPeriod,
+			locale
+		);
 		this.zuschlagErwerbspensum = zuschlagErwerbspensum;
 	}
 
@@ -63,19 +80,27 @@ public abstract class ErwerbspensumAbschnittRule extends AbstractErwerbspensumAb
 		boolean gs2
 	) {
 		List<VerfuegungZeitabschnitt> ewpAbschnitte = new ArrayList<>();
-		Set<ErwerbspensumContainer> ewpContainers = gesuchsteller.getErwerbspensenContainersNotEmpty();
+		Set<ErwerbspensumContainer> ewpContainers = gesuchsteller
+			.getErwerbspensenContainersNotEmpty();
 
 		ewpContainers.stream()
 			.map(ErwerbspensumContainer::getErwerbspensumJA)
 			.filter(Objects::nonNull)
-			.map(erwerbspensumJA -> toVerfuegungZeitabschnitt(gesuch, erwerbspensumJA, gs2))
+			.map(
+				erwerbspensumJA -> toVerfuegungZeitabschnitt(
+					gesuch,
+					erwerbspensumJA,
+					gs2
+				)
+			)
 			.filter(Objects::nonNull)
 			.forEach(zeitabschnitt -> {
 				ewpAbschnitte.add(zeitabschnitt);
 			});
 
 		// Fuer den Zuschlag muss IMMER ein Abschnitt erstellt werden, unabhaengig von den Erwerbspensen
-		VerfuegungZeitabschnitt abschnittZuschlagEWP = createZeitabschnittWithinValidityPeriodOfRule(validityPeriod());
+		VerfuegungZeitabschnitt abschnittZuschlagEWP =
+			createZeitabschnittWithinValidityPeriodOfRule(validityPeriod());
 		setErwerbspensumZuschlag(abschnittZuschlagEWP, zuschlagErwerbspensum);
 		ewpAbschnitte.add(abschnittZuschlagEWP);
 		return ewpAbschnitte;
@@ -87,7 +112,8 @@ public abstract class ErwerbspensumAbschnittRule extends AbstractErwerbspensumAb
 	 */
 	protected abstract void setErwerbspensumZuschlag(
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
-		int zuschlagErwerbspensum);
+		int zuschlagErwerbspensum
+	);
 
 	/**
 	 * Konvertiert ein Erwerbspensum in einen Zeitabschnitt von entsprechender dauer und erwerbspensumGS1 (falls
@@ -98,16 +124,29 @@ public abstract class ErwerbspensumAbschnittRule extends AbstractErwerbspensumAb
 	private VerfuegungZeitabschnitt toVerfuegungZeitabschnitt(
 		@Nonnull Gesuch gesuch,
 		@Nonnull Erwerbspensum erwerbspensum,
-		boolean gs2) {
+		boolean gs2
+	) {
 		if (getValidTaetigkeiten().contains(erwerbspensum.getTaetigkeit())) {
-			final DateRange gueltigkeit = new DateRange(erwerbspensum.getGueltigkeit());
+			final DateRange gueltigkeit = new DateRange(
+				erwerbspensum.getGueltigkeit()
+			);
 
 			// Wir merken uns hier den eingegebenen Wert, auch wenn dieser (mit Zuschlag) über 100% liegt
-			Familiensituation familiensituationErstgesuch = gesuch.extractFamiliensituationErstgesuch();
-			Familiensituation familiensituation = gesuch.extractFamiliensituation();
+			Familiensituation familiensituationErstgesuch = gesuch
+				.extractFamiliensituationErstgesuch();
+			Familiensituation familiensituation = gesuch
+				.extractFamiliensituation();
 
-			if (gs2 && gesuch.isMutation() && familiensituationErstgesuch != null && familiensituation != null) {
-				getGueltigkeitFromFamiliensituation(gueltigkeit, familiensituationErstgesuch, familiensituation);
+			if (gs2
+				&& gesuch.isMutation()
+				&& familiensituationErstgesuch != null
+				&& familiensituation != null) {
+				getGueltigkeitFromFamiliensituation(
+					gesuch,
+					gueltigkeit,
+					familiensituationErstgesuch,
+					familiensituation
+				);
 				return createZeitAbschnitt(gueltigkeit, erwerbspensum, false);
 			}
 			if (gs2 && !gesuch.isMutation()) {
@@ -125,5 +164,8 @@ public abstract class ErwerbspensumAbschnittRule extends AbstractErwerbspensumAb
 
 	@Nullable
 	protected abstract VerfuegungZeitabschnitt createZeitAbschnitt(
-		@Nonnull DateRange gueltigkeit, @Nonnull Erwerbspensum erwerbspensum, boolean isGesuchsteller1);
+		@Nonnull DateRange gueltigkeit,
+		@Nonnull Erwerbspensum erwerbspensum,
+		boolean isGesuchsteller1
+	);
 }

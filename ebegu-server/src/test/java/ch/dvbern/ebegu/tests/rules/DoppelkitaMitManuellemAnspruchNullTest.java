@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.tests.rules;
@@ -34,9 +34,9 @@ import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragStatus;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationBernRechner;
 import ch.dvbern.ebegu.rechner.AbstractBGRechnerTest;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
@@ -56,45 +56,75 @@ import org.junit.Test;
  * manuell auf 0 gesetzt wird, in der anderen aber nicht, stimmt die Berechnung des Restanspruchs
  * nicht mehr.
  */
-public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTest {
+public class DoppelkitaMitManuellemAnspruchNullTest extends
+	AbstractBGRechnerTest {
 
-	private KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter = TestDataUtil.geKitaxUebergangsloesungParameter();
+	private KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter =
+		TestDataUtil.geKitaxUebergangsloesungParameter();
 
-	final Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
+	final Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+		.createGesuchsperiode1718();
 	final Gemeinde paris = TestDataUtil.createGemeindeParis();
-	final InstitutionStammdaten kita_1 = TestDataUtil.createInstitutionStammdatenKitaBruennen();
-	final InstitutionStammdaten kita_2 = TestDataUtil.createInstitutionStammdatenKitaWeissenstein();
+	final InstitutionStammdaten kita_1 = TestDataUtil
+		.createInstitutionStammdatenKitaBruennen();
+	final InstitutionStammdaten kita_2 = TestDataUtil
+		.createInstitutionStammdatenKitaWeissenstein();
 
 	private Gesuch gesuch;
 
 	@Before
 	public void setUp() {
-		kitaxUebergangsloesungParameter.setStadtBernAsivStartDate(LocalDate.of(gesuchsperiode1718.getBasisJahrPlus2(), Month.JANUARY, 1));
+		kitaxUebergangsloesungParameter.setStadtBernAsivStartDate(
+			LocalDate.of(
+				gesuchsperiode1718.getBasisJahrPlus2(),
+				Month.JANUARY,
+				1
+			)
+		);
 
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
 		institutionStammdatenList.add(kita_1);
 		institutionStammdatenList.add(kita_2);
 
-		Testfall02_FeutzYvonne testfall = new Testfall02_FeutzYvonne(gesuchsperiode1718,  new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718));
+		Testfall02_FeutzYvonne testfall = new Testfall02_FeutzYvonne(
+			gesuchsperiode1718,
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718)
+		);
 
 		testfall.createFall();
 		testfall.createGesuch(LocalDate.of(2016, 7, 1));
 		gesuch = testfall.fillInGesuch();
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
 		gesuch.setGesuchsperiode(gesuchsperiode1718);
 		gesuch.getDossier().setGemeinde(paris);
 
 		// Der Einfachheit halber loeschen wir das zweite Kind
-		final KindContainer kind = gesuch.getKindContainers().stream().findFirst().get();
+		final KindContainer kind = gesuch.getKindContainers()
+			.stream()
+			.findFirst()
+			.get();
 		gesuch.setKindContainers(new HashSet<>());
 		gesuch.getKindContainers().add(kind);
-		Assert.assertEquals("Vor dem Test ist nur noch 1 Kind vorhanden", 1, gesuch.getKindContainers().size());
+		Assert.assertEquals(
+			"Vor dem Test ist nur noch 1 Kind vorhanden",
+			1,
+			gesuch.getKindContainers().size()
+		);
 		// Und alle Betreuungen des ersten Kindes
-		gesuch.getKindContainers().stream().iterator().next().setBetreuungen(new HashSet<>());
-		Assert.assertTrue("Vor dem Test sollen keine Betreuungen vorhanden sein", gesuch.extractAllBetreuungen().isEmpty());
+		gesuch.getKindContainers()
+			.stream()
+			.iterator()
+			.next()
+			.setBetreuungen(new HashSet<>());
+		Assert.assertTrue(
+			"Vor dem Test sollen keine Betreuungen vorhanden sein",
+			gesuch.extractAllBetreuungen().isEmpty()
+		);
 	}
-
-
 
 	@Test
 	public void normalFallUeberschneidungMitAnspruch() {
@@ -103,7 +133,8 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTes
 			40,
 			gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
 			gesuchsperiode1718.getGueltigkeit().getGueltigBis(),
-			kita_1);
+			kita_1
+		);
 		// Betreuung 2: 30%, Restanspruch 20% -> BG 20%
 		addBetreuung(
 			30,
@@ -112,7 +143,12 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTes
 			kita_2
 		);
 
-		evaluator.evaluate(gesuch, getParameterToUse(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			getParameterToUse(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 		assertResults(kita_1, 40, 60, 40, -1, false);
 		assertResults(kita_2, 30, 20, 20, 20, true);
 
@@ -120,7 +156,12 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTes
 		betreuungVerfuegen(kita_1);
 
 		// Die Resultate muessen aber immer noch gleich sein
-		evaluator.evaluate(gesuch, getParameterToUse(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			getParameterToUse(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 		assertResults(kita_1, 40, 60, 40, -1, false);
 		assertResults(kita_2, 30, 20, 20, 20, true);
 
@@ -129,7 +170,12 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTes
 		gesuch.setStatus(AntragStatus.VERFUEGT);
 
 		// Die Resultate muessen aber immer noch gleich sein
-		evaluator.evaluate(gesuch, getParameterToUse(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			getParameterToUse(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 		assertResults(kita_1, 40, 60, 40, -1, false);
 		assertResults(kita_2, 30, 20, 20, 20, true);
 	}
@@ -141,7 +187,8 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTes
 			40,
 			gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
 			LocalDate.of(2017, Month.OCTOBER, 31),
-			kita_1);
+			kita_1
+		);
 		// Betreuung 2: 30%, Anspruch 60% -> BG 30%, startet per Anfang November
 		addBetreuung(
 			30,
@@ -150,64 +197,188 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTes
 			kita_2
 		);
 
-		evaluator.evaluate(gesuch, getParameterToUse(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			getParameterToUse(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 
-		assertResults(kita_1, gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
-			40, 60, 40, -1, false);
-		assertResults(kita_2, gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
-			0, 0, 0, 20, false);
-		assertResults(kita_1, LocalDate.of(2017, Month.NOVEMBER, 1),
-			0, 0, 0, -1, false);
-		assertResults(kita_2, LocalDate.of(2017, Month.NOVEMBER, 1),
-			30, 60, 30, 60, false);
+		assertResults(
+			kita_1,
+			gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
+			40,
+			60,
+			40,
+			-1,
+			false
+		);
+		assertResults(
+			kita_2,
+			gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
+			0,
+			0,
+			0,
+			20,
+			false
+		);
+		assertResults(
+			kita_1,
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			0,
+			0,
+			0,
+			-1,
+			false
+		);
+		assertResults(
+			kita_2,
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			30,
+			60,
+			30,
+			60,
+			false
+		);
 
 		// Die erste Kita verfuegen. Damit wird der Restangspruch fuer die zweite anders berechnet
 		betreuungVerfuegen(kita_1);
 
 		// Die Resultate muessen aber immer noch gleich sein
-		evaluator.evaluate(gesuch, getParameterToUse(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			getParameterToUse(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 
-		assertResults(kita_1, gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
-			40, 60, 40, -1, false);
-		assertResults(kita_2, gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
-			0, 0, 0, 20, false);
-		assertResults(kita_1, LocalDate.of(2017, Month.NOVEMBER, 1),
-			0, 0, 0, -1, false);
-		assertResults(kita_2, LocalDate.of(2017, Month.NOVEMBER, 1),
-			30, 60, 30, 60, false);
+		assertResults(
+			kita_1,
+			gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
+			40,
+			60,
+			40,
+			-1,
+			false
+		);
+		assertResults(
+			kita_2,
+			gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
+			0,
+			0,
+			0,
+			20,
+			false
+		);
+		assertResults(
+			kita_1,
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			0,
+			0,
+			0,
+			-1,
+			false
+		);
+		assertResults(
+			kita_2,
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			30,
+			60,
+			30,
+			60,
+			false
+		);
 
 		// Die zweite ebenfalls verfuegen
 		betreuungVerfuegen(kita_2);
 		gesuch.setStatus(AntragStatus.VERFUEGT);
 
 		// Die Resultate muessen aber immer noch gleich sein
-		evaluator.evaluate(gesuch, getParameterToUse(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			getParameterToUse(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 
-		assertResults(kita_1, gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
-			40, 60, 40, -1, false);
-		assertResults(kita_2, gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
-			0, 0, 0, 20, false);
-		assertResults(kita_1, LocalDate.of(2017, Month.NOVEMBER, 1),
-			0, 0, 0, -1, false);
-		assertResults(kita_2, LocalDate.of(2017, Month.NOVEMBER, 1),
-			30, 60, 30, 60, false);
+		assertResults(
+			kita_1,
+			gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
+			40,
+			60,
+			40,
+			-1,
+			false
+		);
+		assertResults(
+			kita_2,
+			gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
+			0,
+			0,
+			0,
+			20,
+			false
+		);
+		assertResults(
+			kita_1,
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			0,
+			0,
+			0,
+			-1,
+			false
+		);
+		assertResults(
+			kita_2,
+			LocalDate.of(2017, Month.NOVEMBER, 1),
+			30,
+			60,
+			30,
+			60,
+			false
+		);
 	}
 
-	private void addBetreuung(int betreuungspensum, @Nonnull LocalDate von, @Nonnull LocalDate bis, @Nonnull InstitutionStammdaten kita) {
-		Betreuung betreuung = TestDataUtil.createDefaultBetreuung(betreuungspensum, von, bis);
+	private void addBetreuung(
+		int betreuungspensum,
+		@Nonnull LocalDate von,
+		@Nonnull LocalDate bis,
+		@Nonnull InstitutionStammdaten kita
+	) {
+		Betreuung betreuung = TestDataUtil.createDefaultBetreuung(
+			betreuungspensum,
+			von,
+			bis
+		);
 		betreuung.setInstitutionStammdaten(kita);
-		gesuch.getKindContainers().iterator().next().getBetreuungen().add(betreuung);
-		betreuung.setKind(gesuch.getKindContainers().stream().findFirst().get());
+		gesuch.getKindContainers()
+			.iterator()
+			.next()
+			.getBetreuungen()
+			.add(betreuung);
+		betreuung.setKind(
+			gesuch.getKindContainers().stream().findFirst().get()
+		);
 		betreuung.initVorgaengerVerfuegungen(null, null);
 	}
 
 	@Nonnull
 	private BGRechnerParameterDTO getParameterToUse() {
-		final BGRechnerParameterDTO parameter = AbstractBGRechnerTest.getParameter();
-		if (KitaxUtil.isGemeindeWithKitaxUebergangsloesung(gesuch.extractGemeinde())) {
-			parameter.getGemeindeParameter().setGemeindeZusaetzlicherGutscheinEnabled(true);
-			parameter.getGemeindeParameter().setGemeindeZusaetzlicherGutscheinBisUndMitSchulstufeKita(EinschulungTyp.KINDERGARTEN1);
-			parameter.getGemeindeParameter().setGemeindeZusaetzlicherGutscheinBetragKita(MathUtil.DEFAULT.from(11));
+		final BGRechnerParameterDTO parameter = AbstractBGRechnerTest
+			.getParameter();
+		if (KitaxUtil.isGemeindeWithKitaxUebergangsloesung(
+			gesuch.extractGemeinde()
+		)) {
+			parameter.getGemeindeParameter()
+				.setGemeindeZusaetzlicherGutscheinEnabled(true);
+			parameter.getGemeindeParameter()
+				.setGemeindeZusaetzlicherGutscheinBisUndMitSchulstufeKita(
+					EinschulungTyp.KINDERGARTEN1
+				);
+			parameter.getGemeindeParameter()
+				.setGemeindeZusaetzlicherGutscheinBetragKita(
+					MathUtil.DEFAULT.from(11)
+				);
 		}
 		return parameter;
 	}
@@ -221,8 +392,15 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTes
 		boolean msgRestanspruchExpected
 	) {
 		// Egal welches Datum, wir gehen davon aus, dass alle Zeitabschnitte gleich sind
-		this.assertResults(kita, gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
-			expectedBetreuungspensum, expectedAnspruchspensum, expectedBgPEnsum, expectedRestFromPreviousBetreuung, msgRestanspruchExpected);
+		this.assertResults(
+			kita,
+			gesuchsperiode1718.getGueltigkeit().getGueltigAb(),
+			expectedBetreuungspensum,
+			expectedAnspruchspensum,
+			expectedBgPEnsum,
+			expectedRestFromPreviousBetreuung,
+			msgRestanspruchExpected
+		);
 	}
 
 	private void assertResults(
@@ -239,11 +417,29 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTes
 				Verfuegung verfuegung = betreuung.getVerfuegungPreview();
 				Assert.assertNotNull(verfuegung);
 				if (betreuung.getInstitutionStammdaten().equals(kita)) {
-					Assert.assertEquals(12, verfuegung.getZeitabschnitte().size());
-					for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : verfuegung.getZeitabschnitte()) {
-						if (verfuegungZeitabschnitt.getGueltigkeit().contains(stichtag)) {
-							assertZeitabschnitt(verfuegungZeitabschnitt, expectedBetreuungspensum, expectedAnspruchspensum, expectedBgPEnsum, expectedRestFromPreviousBetreuung);
-							Assert.assertEquals(msgRestanspruchExpected, verfuegungZeitabschnitt.getBemerkungenDTOList().containsMsgKey(MsgKey.RESTANSPRUCH_MSG));
+					Assert.assertEquals(
+						12,
+						verfuegung.getZeitabschnitte().size()
+					);
+					for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : verfuegung
+						.getZeitabschnitte()) {
+						if (verfuegungZeitabschnitt.getGueltigkeit()
+							.contains(stichtag)) {
+							assertZeitabschnitt(
+								verfuegungZeitabschnitt,
+								expectedBetreuungspensum,
+								expectedAnspruchspensum,
+								expectedBgPEnsum,
+								expectedRestFromPreviousBetreuung
+							);
+							Assert.assertEquals(
+								msgRestanspruchExpected,
+								verfuegungZeitabschnitt
+									.getBemerkungenDTOList()
+									.containsMsgKey(
+										MsgKey.RESTANSPRUCH_MSG
+									)
+							);
 						}
 					}
 				}
@@ -255,7 +451,8 @@ public class DoppelkitaMitManuellemAnspruchNullTest extends AbstractBGRechnerTes
 		gesuch.extractAllBetreuungen().forEach(betreuung -> {
 			if (betreuung.getInstitutionStammdaten().equals(kita)) {
 				betreuung.setBetreuungsstatus(Betreuungsstatus.VERFUEGT);
-				final Verfuegung verfuegungPreview = betreuung.getVerfuegungPreview();
+				final Verfuegung verfuegungPreview = betreuung
+					.getVerfuegungPreview();
 				Assert.assertNotNull(verfuegungPreview);
 				betreuung.setVerfuegung(verfuegungPreview);
 				verfuegungPreview.setBetreuung(betreuung);

@@ -15,16 +15,23 @@
 
 package ch.dvbern.ebegu.entities;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.hibernate.envers.Audited;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.Objects;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import ch.dvbern.ebegu.validators.CheckEmail;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.hibernate.envers.Audited;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -34,9 +41,12 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 @Audited
 @Entity
 @Table(
-	uniqueConstraints =	@UniqueConstraint(columnNames = {"name", "mandant_id"}, name = "UK_Traegerschaft_name_mandant")
+	uniqueConstraints = @UniqueConstraint(columnNames = { "name",
+		"mandant_id" }, name = "UK_Traegerschaft_name_mandant")
 )
-public class Traegerschaft extends AbstractMutableEntity implements Displayable, HasMandant {
+public class Traegerschaft extends AbstractMutableEntity implements
+	Displayable,
+	HasMandant {
 
 	private static final long serialVersionUID = -8403454439884704618L;
 
@@ -51,12 +61,13 @@ public class Traegerschaft extends AbstractMutableEntity implements Displayable,
 
 	@Nullable
 	@Column(nullable = true)
-	@Email
+	@CheckEmail
 	private String email;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_traegerschaft_mandant_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_traegerschaft_mandant_id"),
+		updatable = false)
 	private Mandant mandant;
 
 	public Traegerschaft() {

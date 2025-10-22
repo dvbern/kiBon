@@ -30,7 +30,7 @@ ${templateConfiguration.mailCss}
 	<p>
 		Ihre Anmeldung für ${betreuung.kind.kindJA.fullName} / ${betreuung.institutionStammdaten.institution.name} wurde abgelehnt.
 		Die Betreuungsangebote können
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/betreuungen/${betreuung.extractGesuch().id}">hier</a>
+		<a href="${frontendUrl}/gesuch/betreuungen/${betreuung.extractGesuch().id}">hier</a>
 		eingesehen werden.
 	</p>
 	<p>

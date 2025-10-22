@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.ApplicationException;
+import jakarta.ejb.ApplicationException;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
@@ -51,7 +51,8 @@ public class EbeguRuntimeException extends RuntimeException {
 	public EbeguRuntimeException(
 		@Nullable String methodeName,
 		@Nonnull String message,
-		@Nonnull Serializable... messageArgs) {
+		@Nonnull Serializable... messageArgs
+	) {
 
 		super(message);
 		methodName = methodeName;
@@ -64,7 +65,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nullable String methodeName,
 		@Nonnull String message,
 		@Nullable String customMessage,
-		@Nonnull Serializable... messageArgs) {
+		@Nonnull Serializable... messageArgs
+	) {
 
 		super(message);
 		methodName = methodeName;
@@ -78,7 +80,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nullable String methodeName,
 		@Nonnull String message,
 		@Nullable String customMessage,
-		@Nonnull Serializable... messageArgs) {
+		@Nonnull Serializable... messageArgs
+	) {
 
 		super(message);
 		this.logLevel = logLevel;
@@ -92,7 +95,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nonnull KibonLogLevel logLevel,
 		@Nullable String methodeName,
 		@Nonnull String message,
-		@Nonnull Serializable... messageArgs) {
+		@Nonnull Serializable... messageArgs
+	) {
 
 		super(message);
 		this.logLevel = logLevel;
@@ -106,7 +110,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nullable String methodeName,
 		@Nullable String message,
 		@Nullable Throwable cause,
-		@Nonnull Serializable... messageArgs) {
+		@Nonnull Serializable... messageArgs
+	) {
 
 		super(message, cause);
 		this.methodName = methodeName;
@@ -120,7 +125,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nullable String message,
 		@Nullable ErrorCodeEnum errorCodeEnum,
 		@Nullable Throwable cause,
-		@Nonnull Serializable... messageArgs) {
+		@Nonnull Serializable... messageArgs
+	) {
 
 		super(message, cause);
 		this.errorCodeEnum = errorCodeEnum;
@@ -135,7 +141,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nullable String customMessage,
 		@Nullable ErrorCodeEnum errorCodeEnum,
 		@Nullable Throwable cause,
-		@Nonnull Serializable... messageArgs) {
+		@Nonnull Serializable... messageArgs
+	) {
 
 		super(message, cause);
 		this.errorCodeEnum = errorCodeEnum;
@@ -148,7 +155,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nullable String methodeName,
 		@Nullable String message,
 		@Nullable ErrorCodeEnum errorCodeEnum,
-		@Nonnull Serializable... messageArgs) {
+		@Nonnull Serializable... messageArgs
+	) {
 
 		super(message);
 		methodName = methodeName;
@@ -162,7 +170,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nullable String methodeName,
 		@Nullable String message,
 		@Nullable ErrorCodeEnum errorCodeEnum,
-		@Nonnull Serializable... messageArgs) {
+		@Nonnull Serializable... messageArgs
+	) {
 
 		super(message);
 		this.methodName = methodeName;
@@ -175,7 +184,8 @@ public class EbeguRuntimeException extends RuntimeException {
 	public EbeguRuntimeException(
 		@Nullable String methodName,
 		@Nullable ErrorCodeEnum errorCodeEnum,
-		@Nonnull Serializable... args) {
+		@Nonnull Serializable... args
+	) {
 
 		super(errorCodeEnum != null ? errorCodeEnum.name() : null);
 		this.methodName = methodName;
@@ -188,7 +198,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nullable String methodName,
 		@Nullable ErrorCodeEnum errorCodeEnum,
 		@Nullable Mandant mandant,
-		@Nonnull Serializable... args) {
+		@Nonnull Serializable... args
+	) {
 
 		super(errorCodeEnum != null ? errorCodeEnum.name() : null);
 		this.methodName = methodName;
@@ -202,7 +213,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nonnull KibonLogLevel logLevel,
 		@Nullable String methodName,
 		@Nullable ErrorCodeEnum errorCodeEnum,
-		@Nonnull Serializable... args) {
+		@Nonnull Serializable... args
+	) {
 
 		super(errorCodeEnum != null ? errorCodeEnum.name() : null);
 		this.methodName = methodName;
@@ -216,7 +228,8 @@ public class EbeguRuntimeException extends RuntimeException {
 		@Nullable String methodName,
 		@Nullable ErrorCodeEnum errorCodeEnum,
 		@Nullable Throwable cause,
-		@Nonnull Serializable... args) {
+		@Nonnull Serializable... args
+	) {
 
 		super(cause);
 		this.methodName = methodName;
@@ -253,5 +266,7 @@ public class EbeguRuntimeException extends RuntimeException {
 	}
 
 	@Nullable
-	public Mandant getMandant() { return mandant;}
+	public Mandant getMandant() {
+		return mandant;
+	}
 }

@@ -8,29 +8,38 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.sozialdienst;
 
-import ch.dvbern.ebegu.entities.AbstractEntity;
-import ch.dvbern.ebegu.entities.Adresse;
-import ch.dvbern.ebegu.util.Constants;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.hibernate.envers.Audited;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.util.Objects;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+import ch.dvbern.ebegu.entities.AbstractEntity;
+import ch.dvbern.ebegu.entities.Adresse;
+import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.validators.CheckEmail;
+import ch.dvbern.ebegu.validators.CheckWebseite;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.hibernate.envers.Audited;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -38,37 +47,46 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 @Entity
 @Table(
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "sozialdienst_id", name = "UK_sozialdienst_stammdaten_sozialdienst_id"),
-		@UniqueConstraint(columnNames = "adresse_id", name = "UK_sozialdienst_stammdaten_adresse_id")
+		@UniqueConstraint(columnNames = "sozialdienst_id",
+			name = "UK_sozialdienst_stammdaten_sozialdienst_id"),
+		@UniqueConstraint(columnNames = "adresse_id",
+			name = "UK_sozialdienst_stammdaten_adresse_id")
 	}
 )
 public class SozialdienstStammdaten extends AbstractEntity {
 
 	private static final long serialVersionUID = -4083405024633687668L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_sozialdienststammdaten_sozialdienst_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_sozialdienststammdaten_sozialdienst_id"),
+		nullable = false)
 	private Sozialdienst sozialdienst;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_sozialdienststammdaten_adresse_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_sozialdienststammdaten_adresse_id"), nullable = false)
 	private Adresse adresse;
 
-	@NotNull @Nonnull
-	@Email
+	@NotNull
+	@Nonnull
+	@CheckEmail
 	@Size(min = 5, max = DB_DEFAULT_MAX_LENGTH)
 	@Column(nullable = false)
 	private String mail;
 
 	@Nullable
 	@Column(nullable = false, length = Constants.DB_DEFAULT_MAX_LENGTH)
-	@Pattern(regexp = Constants.REGEX_TELEFON, message = "{validator.constraints.phonenumber.message}")
+	@Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{validator.constraints.phonenumber.message}")
 	private String telefon;
 
 	@Nullable
-	@Pattern(regexp = Constants.REGEX_URL, message = "{validator.constraints.url.message}")
+	@CheckWebseite
 	@Size(max = DB_DEFAULT_MAX_LENGTH)
 	private String webseite;
 
@@ -125,13 +143,17 @@ public class SozialdienstStammdaten extends AbstractEntity {
 		if (this == other) {
 			return true;
 		}
-		if (!(other instanceof SozialdienstStammdaten)){
+		if (!(other instanceof SozialdienstStammdaten)) {
 			return false;
 		}
 		if (!super.equals(other)) {
 			return false;
 		}
-	SozialdienstStammdaten sozialdienstStammdaten = (SozialdienstStammdaten) other;
-		return Objects.equals(this.getSozialdienst(), sozialdienstStammdaten.getSozialdienst());
+		SozialdienstStammdaten sozialdienstStammdaten =
+			(SozialdienstStammdaten) other;
+		return Objects.equals(
+			this.getSozialdienst(),
+			sozialdienstStammdaten.getSozialdienst()
+		);
 	}
 }

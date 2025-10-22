@@ -24,9 +24,10 @@ import {
     TagesschuleModulImportDialogPO
 } from '@dv-e2e/page-objects';
 import {getUser, TestInstitution} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 
 describe('Kibon - generate Tagesschule Institutionen', () => {
-    const superAdmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const superAdmin = getUser('[1-Superadmin] Super User');
     const gemeindeAdministator = getUser(
         '[6-P-Admin-Gemeinde] Gerlinde Hofstetter'
     );
@@ -34,6 +35,7 @@ describe('Kibon - generate Tagesschule Institutionen', () => {
     const tagesschuleToImportFrom: TestInstitution = 'Tagesschule Paris';
 
     beforeEach(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
     });
 
@@ -264,10 +266,9 @@ function controllEditTagesschuleForm(
             'have.value',
             data[tagesschuleArt].ort
         );
-        EditTagesschulePO.getGueltigAb().should(
-            'have.value',
-            data[tagesschuleArt].gueltigAb
-        );
+        EditTagesschulePO.getGueltigAb()
+            .find('input')
+            .should('have.value', data[tagesschuleArt].gueltigAb);
         EditTagesschulePO.getCancelButton().click();
     });
 }

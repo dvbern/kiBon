@@ -30,9 +30,13 @@ public abstract class AbstractTestfallDataProvider {
 	}
 
 	public abstract Familiensituation createVerheiratet();
+
 	public abstract Familiensituation createAlleinerziehend();
 
-	public abstract FinanzielleSituation createFinanzielleSituation(BigDecimal vermoegen, BigDecimal einkommen);
+	public abstract FinanzielleSituation createFinanzielleSituation(
+		BigDecimal vermoegen,
+		BigDecimal einkommen
+	);
 
 	public abstract FinanzielleSituationTyp getFinanzielleSituationTyp();
 
@@ -64,7 +68,9 @@ public abstract class AbstractTestfallDataProvider {
 	 * Schreibt in alle Felder der finanziellenSituation, die nicht Null sein dürfen, eine 0. Diese kann später in den
 	 * Testfällen überschrieben werden.
 	 */
-	private void setFinSitDefaultValues(@Nonnull FinanzielleSituation finanzielleSituation) {
+	private void setFinSitDefaultValues(
+		@Nonnull FinanzielleSituation finanzielleSituation
+	) {
 		finanzielleSituation.setFamilienzulage(BigDecimal.ZERO);
 		finanzielleSituation.setErsatzeinkommen(BigDecimal.ZERO);
 		finanzielleSituation.setErhalteneAlimente(BigDecimal.ZERO);
@@ -81,7 +87,8 @@ public abstract class AbstractTestfallDataProvider {
 		LocalDate geburtsdatum,
 		boolean is18GeburtstagBeforeGPEnds,
 		Kinderabzug kinderabzug,
-		boolean betreuung) {
+		boolean betreuung
+	) {
 		Kind kind = new Kind();
 		final TestKindParameter testKindParameter =
 			TestKindParameter.builder()
@@ -99,7 +106,9 @@ public abstract class AbstractTestfallDataProvider {
 		return kind;
 	}
 
-	public static void setRequiredKindData(TestKindParameter testKindParameter) {
+	public static void setRequiredKindData(
+		TestKindParameter testKindParameter
+	) {
 		final Kind kind = testKindParameter.getKind();
 		kind.setGeschlecht(testKindParameter.getGeschlecht());
 		kind.setNachname(testKindParameter.getName());
@@ -107,7 +116,9 @@ public abstract class AbstractTestfallDataProvider {
 		kind.setGeburtsdatum(testKindParameter.getGeburtsdatum());
 		kind.setKinderabzugErstesHalbjahr(testKindParameter.getKinderabzug());
 		kind.setKinderabzugZweitesHalbjahr(testKindParameter.getKinderabzug());
-		if (Boolean.TRUE.equals(testKindParameter.getIs18GeburtstagBeforeGPEnds())) {
+		if (Boolean.TRUE.equals(
+			testKindParameter.getIs18GeburtstagBeforeGPEnds()
+		)) {
 			kind.setInErstausbildung(false);
 		} else {
 			kind.setObhutAlternierendAusueben(false);
@@ -130,7 +141,11 @@ public abstract class AbstractTestfallDataProvider {
 	/**
 	 * @param gesuchstellerNumber is required in overriding methods
 	 */
-	public Gesuchsteller createGesuchsteller(String name, String vorname, int gesuchstellerNumber) {
+	public Gesuchsteller createGesuchsteller(
+		String name,
+		String vorname,
+		int gesuchstellerNumber
+	) {
 		Gesuchsteller gesuchsteller = new Gesuchsteller();
 		gesuchsteller.setGeschlecht(Geschlecht.WEIBLICH);
 		gesuchsteller.setNachname(name);
@@ -143,4 +158,3 @@ public abstract class AbstractTestfallDataProvider {
 		return gesuchsteller;
 	}
 }
-

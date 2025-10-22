@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util;
@@ -36,7 +36,10 @@ import javax.annotation.Nonnull;
  */
 public class CsvCreator {
 
-	private static final Pattern PATTERN_BACKSLASH = Pattern.compile("\"", Pattern.LITERAL);
+	private static final Pattern PATTERN_BACKSLASH = Pattern.compile(
+		"\"",
+		Pattern.LITERAL
+	);
 	private static final Pattern PATTERN_LINEBREAK = Pattern.compile("\\R");
 
 	@Nonnull
@@ -49,7 +52,9 @@ public class CsvCreator {
 	public void append(@Nonnull String... data) throws IOException {
 		String line = convertToCSVLine(data);
 		outputStream.write(line.getBytes(StandardCharsets.UTF_8));
-		outputStream.write(Constants.CSV_NEW_LINE.getBytes(StandardCharsets.UTF_8));
+		outputStream.write(
+			Constants.CSV_NEW_LINE.getBytes(StandardCharsets.UTF_8)
+		);
 	}
 
 	@Nonnull
@@ -68,8 +73,12 @@ public class CsvCreator {
 	@Nonnull
 	private String escapeSpecialCharacters(@Nonnull String data) {
 		String escapedData = PATTERN_LINEBREAK.matcher(data).replaceAll(" ");
-		if (data.contains(Constants.CSV_DELIMITER) || data.contains("\"") || data.contains("'") || data.contains("|")) {
-			data = PATTERN_BACKSLASH.matcher(data).replaceAll(Matcher.quoteReplacement("\"\""));
+		if (data.contains(Constants.CSV_DELIMITER)
+			|| data.contains("\"")
+			|| data.contains("'")
+			|| data.contains("|")) {
+			data = PATTERN_BACKSLASH.matcher(data)
+				.replaceAll(Matcher.quoteReplacement("\"\""));
 			escapedData = '"' + data + '"';
 		}
 		return escapedData;

@@ -30,7 +30,7 @@ import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Kinderabzug;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
 
 /**
  * http://localhost:8080/ebegu/api/v1/testfaelle/testfall/6
@@ -42,56 +42,123 @@ public class Testfall06_BeckerNora extends AbstractTestfall {
 	private static final String FAMILIENNAME = "Becker";
 
 	public Testfall06_BeckerNora(
-			Gesuchsperiode gesuchsperiode,
-			InstitutionStammdatenBuilder institutionStammdatenBuilder) {
+		Gesuchsperiode gesuchsperiode,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
 		super(gesuchsperiode, false, institutionStammdatenBuilder);
 	}
 
 	public Testfall06_BeckerNora(
-			Gesuchsperiode gesuchsperiode,
-			boolean betreuungenBestaetigt,
-			Gemeinde
-					gemeinde, InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, gemeinde, institutionStammdatenBuilder);
+		Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		Gemeinde gemeinde,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			gemeinde,
+			institutionStammdatenBuilder
+		);
 	}
 
 	@Override
 	public Gesuch fillInGesuch() {
 		// Gesuch, Gesuchsteller
 		gesuch = createAlleinerziehend();
-		GesuchstellerContainer gesuchsteller1 = createGesuchstellerContainer(FAMILIENNAME, "Nora", 1);
+		GesuchstellerContainer gesuchsteller1 = createGesuchstellerContainer(
+			FAMILIENNAME,
+			"Nora",
+			1
+		);
 		gesuch.setGesuchsteller1(gesuchsteller1);
 		// Erwerbspensum
 		ErwerbspensumContainer erwerbspensumGS1 = createErwerbspensum(60);
 		gesuchsteller1.addErwerbspensumContainer(erwerbspensumGS1);
 		// Kinder
-		KindContainer kind1 = createKind(Geschlecht.MAENNLICH, FAMILIENNAME, "Timon", LocalDate.of(2006, Month.DECEMBER, 25), Kinderabzug.HALBER_ABZUG, true);
+		KindContainer kind1 = createKind(
+			Geschlecht.MAENNLICH,
+			FAMILIENNAME,
+			"Timon",
+			LocalDate.of(2006, Month.DECEMBER, 25),
+			Kinderabzug.HALBER_ABZUG,
+			true
+		);
 		kind1.setGesuch(gesuch);
 		gesuch.getKindContainers().add(kind1);
-		KindContainer kind2 = createKind(Geschlecht.WEIBLICH, FAMILIENNAME, "Yasmin", LocalDate.of(2011, Month.MARCH, 29), Kinderabzug.HALBER_ABZUG, true);
+		KindContainer kind2 = createKind(
+			Geschlecht.WEIBLICH,
+			FAMILIENNAME,
+			"Yasmin",
+			LocalDate.of(2011, Month.MARCH, 29),
+			Kinderabzug.HALBER_ABZUG,
+			true
+		);
 		kind2.setGesuch(gesuch);
 		gesuch.getKindContainers().add(kind2);
 
 		// Betreuungen
 		// Kind 1: Kita Weissenstein
-		Betreuung betreuungKitaWeissenstein = createBetreuung(institutionStammdatenBuilder.getIdInstitutionStammdatenWeissenstein(), betreuungenBestaetigt);
+		Betreuung betreuungKitaWeissenstein = createBetreuung(
+			institutionStammdatenBuilder
+				.getIdInstitutionStammdatenWeissenstein(),
+			betreuungenBestaetigt
+		);
 		betreuungKitaWeissenstein.setKind(kind1);
 		kind1.getBetreuungen().add(betreuungKitaWeissenstein);
-		BetreuungspensumContainer betreuungspensumTagiAaregg = createBetreuungspensum(100, LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.AUGUST, 1), LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JULY, 31));
+		BetreuungspensumContainer betreuungspensumTagiAaregg =
+			createBetreuungspensum(
+				100,
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus1(),
+					Month.AUGUST,
+					1
+				),
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus2(),
+					Month.JULY,
+					31
+				)
+			);
 		betreuungspensumTagiAaregg.setBetreuung(betreuungKitaWeissenstein);
-		betreuungKitaWeissenstein.getBetreuungspensumContainers().add(betreuungspensumTagiAaregg);
+		betreuungKitaWeissenstein.getBetreuungspensumContainers()
+			.add(betreuungspensumTagiAaregg);
 		// Kind 2: Kita Weissenstein
-		Betreuung betreuungKitaAaregg = createBetreuung(institutionStammdatenBuilder.getIdInstitutionStammdatenBruennen(), betreuungenBestaetigt);
+		Betreuung betreuungKitaAaregg = createBetreuung(
+			institutionStammdatenBuilder
+				.getIdInstitutionStammdatenBruennen(),
+			betreuungenBestaetigt
+		);
 		betreuungKitaAaregg.setKind(kind2);
 		kind2.getBetreuungen().add(betreuungKitaAaregg);
-		BetreuungspensumContainer betreuungspensumKitaAaregg = createBetreuungspensum(100, LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.AUGUST, 1), LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JULY, 31));
+		BetreuungspensumContainer betreuungspensumKitaAaregg =
+			createBetreuungspensum(
+				100,
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus1(),
+					Month.AUGUST,
+					1
+				),
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus2(),
+					Month.JULY,
+					31
+				)
+			);
 		betreuungspensumKitaAaregg.setBetreuung(betreuungKitaAaregg);
-		betreuungKitaAaregg.getBetreuungspensumContainers().add(betreuungspensumKitaAaregg);
+		betreuungKitaAaregg.getBetreuungspensumContainers()
+			.add(betreuungspensumKitaAaregg);
 
 		// Finanzielle Situation
-		FinanzielleSituationContainer finanzielleSituationGS1 = createFinanzielleSituationContainer(BigDecimal.ZERO, BigDecimal.ZERO);
+		FinanzielleSituationContainer finanzielleSituationGS1 =
+			createFinanzielleSituationContainer(
+				BigDecimal.ZERO,
+				BigDecimal.ZERO
+			);
 		finanzielleSituationGS1.setGesuchsteller(gesuchsteller1);
-		gesuchsteller1.setFinanzielleSituationContainer(finanzielleSituationGS1);
+		gesuchsteller1.setFinanzielleSituationContainer(
+			finanzielleSituationGS1
+		);
 
 		createEmptyEKVInfoContainer(gesuch);
 

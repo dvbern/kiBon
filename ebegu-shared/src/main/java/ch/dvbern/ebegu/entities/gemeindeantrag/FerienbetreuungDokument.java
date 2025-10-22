@@ -20,12 +20,12 @@ package ch.dvbern.ebegu.entities.gemeindeantrag;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.FileMetadata;
 import ch.dvbern.ebegu.enums.AntragCopyType;
@@ -40,7 +40,9 @@ public class FerienbetreuungDokument extends FileMetadata {
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuungDokument_ferienbetreuungAngabenContainer_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuungDokument_ferienbetreuungAngabenContainer_id"),
+		nullable = false)
 	private FerienbetreuungAngabenContainer ferienbetreuungAngabenContainer;
 
 	@NotNull
@@ -53,7 +55,9 @@ public class FerienbetreuungDokument extends FileMetadata {
 		return ferienbetreuungAngabenContainer;
 	}
 
-	public void setFerienbetreuungAngabenContainer(@Nonnull FerienbetreuungAngabenContainer ferienbetreuungAngabenContainer) {
+	public void setFerienbetreuungAngabenContainer(
+		@Nonnull FerienbetreuungAngabenContainer ferienbetreuungAngabenContainer
+	) {
 		this.ferienbetreuungAngabenContainer = ferienbetreuungAngabenContainer;
 	}
 
@@ -68,11 +72,12 @@ public class FerienbetreuungDokument extends FileMetadata {
 
 	@Nonnull
 	public FerienbetreuungDokument copyDokument(
-			@Nonnull FerienbetreuungDokument target,
-			FerienbetreuungAngabenContainer targetContainer) {
+		@Nonnull FerienbetreuungDokument target,
+		FerienbetreuungAngabenContainer targetContainer
+	) {
 		super.copyFileMetadata(target, AntragCopyType.MUTATION);
-			target.setTimestampUpload(getTimestampUpload());
-			target.setFerienbetreuungAngabenContainer(targetContainer);
+		target.setTimestampUpload(getTimestampUpload());
+		target.setFerienbetreuungAngabenContainer(targetContainer);
 		return target;
 	}
 }

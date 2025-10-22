@@ -28,7 +28,8 @@ export enum TSSteuerdatenAnfrageStatus {
     FAILED_KEINE_ZPV_NUMMER_GS2 = 'FAILED_KEINE_ZPV_NUMMER_GS2',
     RETRY = 'RETRY',
     FAILED_VERAENDERTE_PARTNERSCHAFT = 'FAILED_VERAENDERTE_PARTNERSCHAFT',
-    FAILED_UNREGELMAESSIGKEIT = 'FAILED_UNREGELMAESSIGKEIT'
+    FAILED_UNREGELMAESSIGKEIT = 'FAILED_UNREGELMAESSIGKEIT',
+    NEUE_VERANLAGUNG = 'NEUE_VERANLAGUNG'
 }
 
 export function isSteuerdatenAnfrageStatusErfolgreich(
@@ -37,6 +38,7 @@ export function isSteuerdatenAnfrageStatusErfolgreich(
     return (
         status === TSSteuerdatenAnfrageStatus.OFFEN ||
         status === TSSteuerdatenAnfrageStatus.PROVISORISCH ||
-        status === TSSteuerdatenAnfrageStatus.RECHTSKRAEFTIG
+        status === TSSteuerdatenAnfrageStatus.RECHTSKRAEFTIG ||
+        status === TSSteuerdatenAnfrageStatus.NEUE_VERANLAGUNG
     );
 }

@@ -21,17 +21,17 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.AnspruchBeschaeftigungAbhaengigkeitTyp;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
-import ch.dvbern.ebegu.services.EinstellungService;
 
 @Stateless
 public class DokumentenverzeichnisEvaluator {
@@ -39,16 +39,19 @@ public class DokumentenverzeichnisEvaluator {
 	@Inject
 	private EinstellungService einstellungService;
 
-	private final FamiliensituationDokumenteVisitor familiensituationVisitor = new FamiliensituationDokumenteVisitor();
-	private final KindDokumenteVisitor kindDokumenteVisitor = new KindDokumenteVisitor();
-	private final BetreuungDokumenteVisitor  betreuungDokumenteVisitor = new BetreuungDokumenteVisitor();
+	private final FamiliensituationDokumenteDefaultVisitor familiensituationVisitor =
+		new FamiliensituationDokumenteDefaultVisitor();
+	private final KindDokumenteDefaultVisitor kindDokumenteVisitor =
+		new KindDokumenteDefaultVisitor();
+	private final BetreuungDokumenteDefaultVisitor betreuungDokumenteVisitor =
+		new BetreuungDokumenteDefaultVisitor();
 
-	private final FinanzielleSituationDokumenteVisitor
-		finanzielleSituationVisitor = new FinanzielleSituationDokumenteVisitor();
-	private final EinkommenVerschlechterungDokumenteVisitor
-		einkommenVerschlechterungDokumenteVisitor = new EinkommenVerschlechterungDokumenteVisitor();
-	private final ErwerbspensumDokumenteVisitor
-		erwerbspensumDokumenteVisitor = new ErwerbspensumDokumenteVisitor();
+	private final FinanzielleSituationDokumenteVisitor finanzielleSituationVisitor =
+		new FinanzielleSituationDokumenteVisitor();
+	private final EinkommenVerschlechterungDokumenteVisitor einkommenVerschlechterungDokumenteVisitor =
+		new EinkommenVerschlechterungDokumenteVisitor();
+	private final ErwerbspensumDokumenteDefaultVisitor erwerbspensumDokumenteVisitor =
+		new ErwerbspensumDokumenteDefaultVisitor();
 
 	/**
 	 * Gibt die *zwingenden* DokumentGruende fuer das uebergebene Gesuch zurueck.
@@ -75,10 +78,14 @@ public class DokumentenverzeichnisEvaluator {
 					.getAllDokumente(gesuch, anlageVerzeichnis, locale);
 			}
 			finanzielleSituationVisitor
-				.getFinanzielleSituationDokumenteForFinSitTyp(gesuch.getFinSitTyp())
+				.getFinanzielleSituationDokumenteForFinSitTyp(
+					gesuch.getFinSitTyp()
+				)
 				.getAllDokumente(gesuch, anlageVerzeichnis, locale);
 			einkommenVerschlechterungDokumenteVisitor
-				.getEinkommenVerschlechterungDokumenteForFinSitTyp(gesuch.getFinSitTyp())
+				.getEinkommenVerschlechterungDokumenteForFinSitTyp(
+					gesuch.getFinSitTyp()
+				)
 				.getAllDokumente(gesuch, anlageVerzeichnis, locale);
 			betreuungDokumenteVisitor
 				.getBetreuungDokumenteForMandant(mandant)
@@ -95,23 +102,34 @@ public class DokumentenverzeichnisEvaluator {
 				gesuch.extractGemeinde(),
 				gesuch.getGesuchsperiode()
 			);
-		return !AnspruchBeschaeftigungAbhaengigkeitTyp.getEnumValue(anspruchUnabhaengig).isAnspruchUnabhaengig();
+		return !AnspruchBeschaeftigungAbhaengigkeitTyp.getEnumValue(
+			anspruchUnabhaengig
+		).isAnspruchUnabhaengig();
 	}
 
 	public void addSonstige(Set<DokumentGrund> dokumentGrunds) {
-		DokumentGrund dokumentGrund = new DokumentGrund(DokumentGrundTyp.SONSTIGE_NACHWEISE, DokumentTyp.DIV);
+		DokumentGrund dokumentGrund = new DokumentGrund(
+			DokumentGrundTyp.SONSTIGE_NACHWEISE,
+			DokumentTyp.DIV
+		);
 		dokumentGrund.setNeeded(false);
 		dokumentGrunds.add(dokumentGrund);
 	}
 
 	public void addPapiergesuch(Set<DokumentGrund> dokumentGrunds) {
-		DokumentGrund dokumentGrund = new DokumentGrund(DokumentGrundTyp.PAPIERGESUCH, DokumentTyp.ORIGINAL_PAPIERGESUCH);
+		DokumentGrund dokumentGrund = new DokumentGrund(
+			DokumentGrundTyp.PAPIERGESUCH,
+			DokumentTyp.ORIGINAL_PAPIERGESUCH
+		);
 		dokumentGrund.setNeeded(false);
 		dokumentGrunds.add(dokumentGrund);
 	}
 
 	public void addFreigabequittung(Set<DokumentGrund> dokumentGrunds) {
-		DokumentGrund dokumentGrund = new DokumentGrund(DokumentGrundTyp.FREIGABEQUITTUNG, DokumentTyp.ORIGINAL_FREIGABEQUITTUNG);
+		DokumentGrund dokumentGrund = new DokumentGrund(
+			DokumentGrundTyp.FREIGABEQUITTUNG,
+			DokumentTyp.ORIGINAL_FREIGABEQUITTUNG
+		);
 		dokumentGrund.setNeeded(false);
 		dokumentGrunds.add(dokumentGrund);
 	}
@@ -130,12 +148,17 @@ public class DokumentenverzeichnisEvaluator {
 	 * Fuegt alle Dokumente des gewuenschten Typs zum Set, welche nicht zwingend sind und daher nicht in der Method
 	 * calculate() hinzugefuegt werden
 	 */
-	public void addOptionalDokumentGruendeByType(Set<DokumentGrund> dokumentGrunds, DokumentGrundTyp requestedOptionalDocumentType) {
+	public void addOptionalDokumentGruendeByType(
+		Set<DokumentGrund> dokumentGrunds,
+		DokumentGrundTyp requestedOptionalDocumentType
+	) {
 		if (requestedOptionalDocumentType == DokumentGrundTyp.PAPIERGESUCH) {
 			addPapiergesuch(dokumentGrunds);
-		} else if (requestedOptionalDocumentType == DokumentGrundTyp.FREIGABEQUITTUNG) {
+		} else if (requestedOptionalDocumentType
+			== DokumentGrundTyp.FREIGABEQUITTUNG) {
 			addFreigabequittung(dokumentGrunds);
-		} else if (requestedOptionalDocumentType == DokumentGrundTyp.SONSTIGE_NACHWEISE) {
+		} else if (requestedOptionalDocumentType
+			== DokumentGrundTyp.SONSTIGE_NACHWEISE) {
 			addSonstige(dokumentGrunds);
 		}
 	}

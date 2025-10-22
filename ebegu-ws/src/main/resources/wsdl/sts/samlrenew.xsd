@@ -20,9 +20,12 @@
 <!-- ======================== Header ============================ Typ-Definitionen zu den Security-Token-Webservices. Autor:
     E. Lambelet, 2007 -->
 <xs:schema targetNamespace="http://sv.fin.be.ch/schemas/a7s/securityService/20071010/RenewAssertionService"
-    elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.1"
-    xmlns:tns="http://sv.fin.be.ch/schemas/a7s/securityService/20071010/RenewAssertionService" xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+		   elementFormDefault="qualified"
+		   attributeFormDefault="unqualified"
+		   version="0.1"
+		   xmlns:tns="http://sv.fin.be.ch/schemas/a7s/securityService/20071010/RenewAssertionService"
+		   xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <!-- ======================== Imports ============================ -->
 

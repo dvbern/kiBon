@@ -18,17 +18,17 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.SequenceType;
 import ch.dvbern.ebegu.util.Constants;
@@ -37,7 +37,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @Entity
 @Table(
-	uniqueConstraints = @UniqueConstraint(name = "UK_sequence", columnNames = { "sequenceType", "mandant_id" }),
+	uniqueConstraints = @UniqueConstraint(name = "UK_sequence",
+		columnNames = { "sequenceType", "mandant_id" }),
 	indexes = {
 		@Index(name = "sequence_ix1", columnList = "mandant_id"),
 	}
@@ -66,12 +67,16 @@ public class Sequence extends AbstractMutableEntity implements HasMandant {
 	 * JPA only
 	 */
 	@SuppressWarnings("ConstantConditions")
-	@SuppressFBWarnings(value = "NP_NONNULL_PARAM_VIOLATION", justification = "JPA instantiation only")
+	@SuppressFBWarnings(value = "NP_NONNULL_PARAM_VIOLATION",
+		justification = "JPA instantiation only")
 	protected Sequence() {
 		this(SequenceType.FALL_NUMMER, -1L);
 	}
 
-	public Sequence(@Nonnull SequenceType sequenceType, @Nonnull Long currentValue) {
+	public Sequence(
+		@Nonnull SequenceType sequenceType,
+		@Nonnull Long currentValue
+	) {
 		this.sequenceType = sequenceType;
 		this.currentValue = currentValue;
 	}
@@ -124,7 +129,14 @@ public class Sequence extends AbstractMutableEntity implements HasMandant {
 			return false;
 		}
 		final Sequence otherSequence = (Sequence) other;
-		return Objects.equals(getSequenceType(), otherSequence.getSequenceType()) &&
-			Objects.equals(getCurrentValue(), otherSequence.getCurrentValue());
+		return Objects.equals(
+			getSequenceType(),
+			otherSequence.getSequenceType()
+		)
+			&&
+			Objects.equals(
+				getCurrentValue(),
+				otherSequence.getCurrentValue()
+			);
 	}
 }

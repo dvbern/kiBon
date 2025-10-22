@@ -16,59 +16,67 @@
  */
 
 import {TransitionService} from '@uirouter/angular';
-import {
-    HookMatchCriteria,
-    HookResult,
-    TargetState,
-    Transition
-} from '@uirouter/core';
-import {ApplicationPropertyRS} from '../../app/core/rest-services/applicationPropertyRS.rest';
+import {HookMatchCriteria, HookResult, Transition} from '@uirouter/core';
+import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';
+import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
 import {OnBeforePriorities} from '../../authentication/state-hooks/onBefore/onBeforePriorities';
 import {getRoleBasedTargetState} from '../../utils/AuthenticationUtil';
 import {EbeguBetreuungAbweichungenState} from '../gesuch.route';
+import {GesuchModelManager} from '../service/gesuchModelManager';
+import {firstValueFrom} from 'rxjs';
 
 abortWhenAbweichungenNotEnabled.$inject = [
     '$transitions',
-    'ApplicationPropertyRS',
-    'AuthServiceRS'
+    'EinstellungRS',
+    'AuthServiceRS',
+    'GesuchModelManager'
 ];
 
 export function abweichungenEnabledHook(
     $transitions: TransitionService,
-    applicationPropertyRS: ApplicationPropertyRS,
-    authService: AuthServiceRS
+    einstellungenRs: EinstellungRS,
+    authService: AuthServiceRS,
+    gesuchModelManager: GesuchModelManager
 ): void {
     const navigatesToAbweichungenCriteria: HookMatchCriteria = {
         to: state => state.name === new EbeguBetreuungAbweichungenState().name
     };
 
-    $transitions.onBefore(
+    $transitions.onFinish(
         navigatesToAbweichungenCriteria,
-        transition =>
+        async transition =>
             abortWhenAbweichungenNotEnabled(
                 transition,
-                applicationPropertyRS,
-                authService
+                einstellungenRs,
+                authService,
+                gesuchModelManager
             ),
         {priority: OnBeforePriorities.CONFIGURATION}
     );
 }
 
-function abortWhenAbweichungenNotEnabled(
+async function abortWhenAbweichungenNotEnabled(
     transition: Transition,
-    applicationPropertyRS: ApplicationPropertyRS,
-    authService: AuthServiceRS
-): HookResult {
-    return applicationPropertyRS
-        .getPublicPropertiesCached()
-        .then(publicProperties => {
-            if (publicProperties.abweichungenEnabled) {
-                return true;
-            }
-            return getRoleBasedTargetState(
-                authService.getPrincipalRole(),
-                transition.router.stateService
-            );
-        }) as Promise<TargetState | boolean>;
+    einstellungenRs: EinstellungRS,
+    authService: AuthServiceRS,
+    gesuchModelManager: GesuchModelManager
+): Promise<HookResult> {
+    const gesuchsperiodeId = gesuchModelManager.getGesuchsperiode().id;
+    const abweichungEnabled = await firstValueFrom(
+        einstellungenRs.getEinstellung(
+            gesuchsperiodeId,
+            TSEinstellungKey.ABWEICHUNGEN_ENABLED
+        )
+    ).then(abweichungEnabled => {
+        return abweichungEnabled.getValueAsBoolean();
+    });
+
+    if (abweichungEnabled) {
+        return true;
+    }
+    return getRoleBasedTargetState(
+        authService.getPrincipalRole(),
+        transition.router.stateService
+    );
 }

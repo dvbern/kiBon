@@ -22,17 +22,19 @@ import {
     ViewChild
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {StateService, Transition} from '@uirouter/core';
 import {StateDeclaration} from '@uirouter/core/lib/state/interface';
 import {from, Observable} from 'rxjs';
-import {TSTraegerschaft} from '../../../models/TSTraegerschaft';
+import {TSTraegerschaft} from '@kibon/shared/model/entity';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
 
 @Component({
     selector: 'dv-traegerschaft-edit',
     templateUrl: './traegerschaft-edit.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TraegerschaftEditComponent implements OnInit {
     @ViewChild(NgForm) public form: NgForm;
@@ -87,4 +89,6 @@ export class TraegerschaftEditComponent implements OnInit {
 
         this.$state.go(redirectTo, {traegerschaftId: this.traegerschaftId});
     }
+
+    protected readonly CONSTANTS = CONSTANTS;
 }

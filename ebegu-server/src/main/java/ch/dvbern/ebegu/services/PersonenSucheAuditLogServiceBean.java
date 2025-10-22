@@ -1,5 +1,5 @@
 /*
- * Copyright (C)  2020 DV Bern AG, Switzerland
+ * Copyright (C) 2020 DV Bern AG, Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -21,27 +21,37 @@ package ch.dvbern.ebegu.services;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.PersonensucheAuditLog;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 /**
  * Service zum Verwalten von PersonensucheAuditLogs
  */
 @Stateless
 @Local(PersonenSucheAuditLogService.class)
-public class PersonenSucheAuditLogServiceBean extends AbstractBaseService implements PersonenSucheAuditLogService {
+@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+public class PersonenSucheAuditLogServiceBean extends AbstractBaseService
+	implements
+	PersonenSucheAuditLogService {
 
 	@Inject
 	private Persistence persistence;
 
 	@Nonnull
 	@Override
-	public PersonensucheAuditLog savePersonenSucheAuditLog(@Nonnull PersonensucheAuditLog logEintrag) {
-		Objects.requireNonNull(logEintrag, "Personen Suche Log muss gesetzt sein");
+	public PersonensucheAuditLog savePersonenSucheAuditLog(
+		@Nonnull PersonensucheAuditLog logEintrag
+	) {
+		Objects.requireNonNull(
+			logEintrag,
+			"Personen Suche Log muss gesetzt sein"
+		);
 		return persistence.persist(logEintrag);
 	}
 }

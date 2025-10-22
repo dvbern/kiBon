@@ -1,10 +1,11 @@
 {
-    "extends": "./tsconfig.json",
+    "extends": "./tsconfig.base.json",
     "include": [
         // adjust "includes" to what makes sense for you and your project
         "./src/**/*.spec.ts",
         "./src/**/*.d.ts",
-        "./src/**/*.ts"
+        "./src/**/*.ts",
+        "./libs/**/*.ts"
     ],
     "exclude": ["build", "dist", "node_modules", "./.eslintrc.json"]
 }

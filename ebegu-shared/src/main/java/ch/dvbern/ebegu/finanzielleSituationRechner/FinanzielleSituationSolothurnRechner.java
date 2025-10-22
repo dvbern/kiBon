@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.finanzielleSituationRechner;
@@ -29,29 +29,42 @@ import ch.dvbern.ebegu.entities.FinanzielleSituation;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.util.MathUtil;
 
-public class FinanzielleSituationSolothurnRechner extends AbstractFinanzielleSituationRechner {
+public class FinanzielleSituationSolothurnRechner extends
+	AbstractFinanzielleSituationRechner {
 
 	@Override
 	public void setFinanzielleSituationParameters(
 		@Nonnull Gesuch gesuch,
 		final FinanzielleSituationResultateDTO finSitResultDTO,
-		boolean hasSecondGesuchsteller) {
+		boolean hasSecondGesuchsteller
+	) {
 
-		final FinanzielleSituation finanzielleSituationGS1 = getFinanzielleSituationGS(gesuch.getGesuchsteller1());
-		finSitResultDTO.setMassgebendesEinkVorAbzFamGrGS1(calcMassgebendesEinkommenAlleine(finanzielleSituationGS1));
+		final FinanzielleSituation finanzielleSituationGS1 =
+			getFinanzielleSituationGS(gesuch.getGesuchsteller1());
+		finSitResultDTO.setMassgebendesEinkVorAbzFamGrGS1(
+			calcMassgebendesEinkommenAlleine(finanzielleSituationGS1)
+		);
 
-		if(hasSecondGesuchsteller) {
-			final FinanzielleSituation finanzielleSituationGS2 = getFinanzielleSituationGS(gesuch.getGesuchsteller2());
-			finSitResultDTO.setMassgebendesEinkVorAbzFamGrGS2(calcMassgebendesEinkommenAlleine(finanzielleSituationGS2));
+		if (hasSecondGesuchsteller) {
+			final FinanzielleSituation finanzielleSituationGS2 =
+				getFinanzielleSituationGS(gesuch.getGesuchsteller2());
+			finSitResultDTO.setMassgebendesEinkVorAbzFamGrGS2(
+				calcMassgebendesEinkommenAlleine(finanzielleSituationGS2)
+			);
 		}
 
-		finSitResultDTO.setMassgebendesEinkVorAbzFamGr(calculateMassgebendesEinkommenZusammen(finSitResultDTO));
+		finSitResultDTO.setMassgebendesEinkVorAbzFamGr(
+			calculateMassgebendesEinkommenZusammen(finSitResultDTO)
+		);
 	}
 
 	@Override
 	public void setEinkommensverschlechterungParameters(
-		@Nonnull Gesuch gesuch, int basisJahrPlus,
-		final FinanzielleSituationResultateDTO einkVerResultDTO, boolean hasSecondGesuchsteller) {
+		@Nonnull Gesuch gesuch,
+		int basisJahrPlus,
+		final FinanzielleSituationResultateDTO einkVerResultDTO,
+		boolean hasSecondGesuchsteller
+	) {
 		Einkommensverschlechterung einkommensverschlechterungGS1Bjp1 =
 			getEinkommensverschlechterungGS(gesuch.getGesuchsteller1(), 1);
 		Einkommensverschlechterung einkommensverschlechterungGS1Bjp2 =
@@ -61,25 +74,35 @@ public class FinanzielleSituationSolothurnRechner extends AbstractFinanzielleSit
 		Einkommensverschlechterung einkommensverschlechterungGS2Bjp1 = null;
 		Einkommensverschlechterung einkommensverschlechterungGS2Bjp2 = null;
 		if (hasSecondGesuchsteller) {
-			einkommensverschlechterungGS2Bjp1 = getEinkommensverschlechterungGS(gesuch.getGesuchsteller2(), 1);
-			einkommensverschlechterungGS2Bjp2 = getEinkommensverschlechterungGS(gesuch.getGesuchsteller2(), 2);
+			einkommensverschlechterungGS2Bjp1 = getEinkommensverschlechterungGS(
+				gesuch.getGesuchsteller2(),
+				1
+			);
+			einkommensverschlechterungGS2Bjp2 = getEinkommensverschlechterungGS(
+				gesuch.getGesuchsteller2(),
+				2
+			);
 		}
 
 		if (basisJahrPlus == 2) {
 			calculateZusammen(
 				einkVerResultDTO,
 				einkommensverschlechterungGS1Bjp2,
-				einkommensverschlechterungGS2Bjp2);
+				einkommensverschlechterungGS2Bjp2
+			);
 		} else {
 			calculateZusammen(
 				einkVerResultDTO,
 				einkommensverschlechterungGS1Bjp1,
-				einkommensverschlechterungGS2Bjp1);
+				einkommensverschlechterungGS2Bjp1
+			);
 		}
 	}
 
 	@Override
-	public boolean calculateByVeranlagung(@Nonnull AbstractFinanzielleSituation finanzielleSituation) {
+	public boolean calculateByVeranlagung(
+		@Nonnull AbstractFinanzielleSituation finanzielleSituation
+	) {
 		return finanzielleSituation.getSteuerveranlagungErhalten();
 	}
 
@@ -87,104 +110,216 @@ public class FinanzielleSituationSolothurnRechner extends AbstractFinanzielleSit
 	public boolean acceptEKV(
 		BigDecimal massgebendesEinkommenBasisjahr,
 		BigDecimal massgebendesEinkommenJahr,
-		BigDecimal minimumProzentFuerEKV) {
+		BigDecimal minimumProzentFuerEKV
+	) {
 
-		boolean result = massgebendesEinkommenBasisjahr.compareTo(BigDecimal.ZERO) > 0;
+		boolean result = massgebendesEinkommenBasisjahr.compareTo(
+			BigDecimal.ZERO
+		) > 0;
 		if (result) {
-			BigDecimal differenzGerundet = getCalculatedProzentualeDifferenzRounded(massgebendesEinkommenBasisjahr, massgebendesEinkommenJahr);
+			BigDecimal differenzGerundet =
+				getCalculatedProzentualeDifferenzRounded(
+					massgebendesEinkommenBasisjahr,
+					massgebendesEinkommenJahr
+				);
 			// wenn es gibt mehr als minimumEKV in einer positive oder negative Richtung ist der EKV akkzeptiert
-			return differenzGerundet.compareTo(minimumProzentFuerEKV.negate()) <= 0 || differenzGerundet.compareTo(
-					minimumProzentFuerEKV) >= 0;
+			return differenzGerundet.compareTo(minimumProzentFuerEKV.negate())
+				<= 0
+				|| differenzGerundet.compareTo(
+					minimumProzentFuerEKV
+				) >= 0;
 		}
 		return false;
 	}
 
-	private void calculateZusammen(FinanzielleSituationResultateDTO einkVerResultDTO, Einkommensverschlechterung einkommensverschlechterungGS1, Einkommensverschlechterung einkommensverschlechterungGS2) {
+	private void calculateZusammen(
+		FinanzielleSituationResultateDTO einkVerResultDTO,
+		Einkommensverschlechterung einkommensverschlechterungGS1,
+		Einkommensverschlechterung einkommensverschlechterungGS2
+	) {
 		// Jaehrlicher BruttoLohn Berechnen
-		var resGS1Exact = calculateJaehrlicherBruttolohn(einkommensverschlechterungGS1);
-		einkVerResultDTO.setBruttolohnJahrGS1(MathUtil.GANZZAHL.from(resGS1Exact));
-		var resGS2Exact = calculateJaehrlicherBruttolohn(einkommensverschlechterungGS2);
-		einkVerResultDTO.setBruttolohnJahrGS2(MathUtil.GANZZAHL.from(resGS2Exact));
+		var resGS1Exact = calculateJaehrlicherBruttolohn(
+			einkommensverschlechterungGS1
+		);
+		einkVerResultDTO.setBruttolohnJahrGS1(
+			MathUtil.GANZZAHL.from(resGS1Exact)
+		);
+		var resGS2Exact = calculateJaehrlicherBruttolohn(
+			einkommensverschlechterungGS2
+		);
+		einkVerResultDTO.setBruttolohnJahrGS2(
+			MathUtil.GANZZAHL.from(resGS2Exact)
+		);
 		// Massgegebeneseinkommens bevor Einbeziehen Vermoegen
-		final BigDecimal abzugNettoLohnGS1 =  MathUtil.GANZZAHL.from(percent(einkVerResultDTO.getBruttolohnJahrGS1(), 25));
-		final BigDecimal abzugNettoLohnGS2 =  MathUtil.GANZZAHL.from(percent(einkVerResultDTO.getBruttolohnJahrGS2(), 25));
-		final BigDecimal nettoLohnGS1 =  subtract(einkVerResultDTO.getBruttolohnJahrGS1(), abzugNettoLohnGS1);
-		final BigDecimal nettoLohnGS2 =  subtract(einkVerResultDTO.getBruttolohnJahrGS2(), abzugNettoLohnGS2);
+		final BigDecimal abzugNettoLohnGS1 = MathUtil.GANZZAHL.from(
+			percent(einkVerResultDTO.getBruttolohnJahrGS1(), 25)
+		);
+		final BigDecimal abzugNettoLohnGS2 = MathUtil.GANZZAHL.from(
+			percent(einkVerResultDTO.getBruttolohnJahrGS2(), 25)
+		);
+		final BigDecimal nettoLohnGS1 = subtract(
+			einkVerResultDTO.getBruttolohnJahrGS1(),
+			abzugNettoLohnGS1
+		);
+		final BigDecimal nettoLohnGS2 = subtract(
+			einkVerResultDTO.getBruttolohnJahrGS2(),
+			abzugNettoLohnGS2
+		);
 		// Massgegebeneseinkommens mit Einbeziehen Vermoegen
-		final BigDecimal massgebendesEinkVorAbzFamGrGS1 = calculateMassgegebendesEinkVorAbzFamGrEKV(nettoLohnGS1, einkommensverschlechterungGS1);
-		final BigDecimal massgebendesEinkVorAbzFamGrGS2 = calculateMassgegebendesEinkVorAbzFamGrEKV(nettoLohnGS2, einkommensverschlechterungGS2);
-		einkVerResultDTO.setMassgebendesEinkVorAbzFamGrGS1(massgebendesEinkVorAbzFamGrGS1);
-		einkVerResultDTO.setMassgebendesEinkVorAbzFamGrGS2(massgebendesEinkVorAbzFamGrGS2);
-		einkVerResultDTO.setMassgebendesEinkVorAbzFamGr(calculateMassgebendesEinkommenZusammen(einkVerResultDTO));
+		final BigDecimal massgebendesEinkVorAbzFamGrGS1 =
+			calculateMassgegebendesEinkVorAbzFamGrEKV(
+				nettoLohnGS1,
+				einkommensverschlechterungGS1
+			);
+		final BigDecimal massgebendesEinkVorAbzFamGrGS2 =
+			calculateMassgegebendesEinkVorAbzFamGrEKV(
+				nettoLohnGS2,
+				einkommensverschlechterungGS2
+			);
+		einkVerResultDTO.setMassgebendesEinkVorAbzFamGrGS1(
+			massgebendesEinkVorAbzFamGrGS1
+		);
+		einkVerResultDTO.setMassgebendesEinkVorAbzFamGrGS2(
+			massgebendesEinkVorAbzFamGrGS2
+		);
+		einkVerResultDTO.setMassgebendesEinkVorAbzFamGr(
+			calculateMassgebendesEinkommenZusammen(einkVerResultDTO)
+		);
 	}
 
-	private BigDecimal calculateJaehrlicherBruttolohn(@Nullable Einkommensverschlechterung einkommensverschlechterung)  {
+	private BigDecimal calculateJaehrlicherBruttolohn(
+		@Nullable Einkommensverschlechterung einkommensverschlechterung
+	) {
 		if (einkommensverschlechterung == null) {
 			return BigDecimal.ZERO;
 		}
-		BigDecimal total3Monaten = MathUtil.EXACT.addNullSafe(BigDecimal.ZERO, einkommensverschlechterung.getBruttolohnAbrechnung1(), einkommensverschlechterung.getBruttolohnAbrechnung2(), einkommensverschlechterung.getBruttolohnAbrechnung3());
-		BigDecimal durchschnitt = MathUtil.EXACT.divideNullSafe(total3Monaten, new BigDecimal(3));
-		return MathUtil.EXACT.multiplyNullSafe(durchschnitt, einkommensverschlechterung.getExtraLohn() != null && einkommensverschlechterung.getExtraLohn() ? new BigDecimal(13) : new BigDecimal(12));
+		BigDecimal total3Monaten = MathUtil.EXACT.addNullSafe(
+			BigDecimal.ZERO,
+			einkommensverschlechterung.getBruttolohnAbrechnung1(),
+			einkommensverschlechterung.getBruttolohnAbrechnung2(),
+			einkommensverschlechterung.getBruttolohnAbrechnung3()
+		);
+		BigDecimal durchschnitt = MathUtil.EXACT.divideNullSafe(
+			total3Monaten,
+			new BigDecimal(3)
+		);
+		return MathUtil.EXACT.multiplyNullSafe(
+			durchschnitt,
+			einkommensverschlechterung.getExtraLohn() != null
+				&& einkommensverschlechterung.getExtraLohn() ?
+					new BigDecimal(13) :
+					new BigDecimal(12)
+		);
 	}
 
-	private BigDecimal calculateMassgegebendesEinkVorAbzFamGrEKV(@Nonnull BigDecimal nettoLohn, @Nullable Einkommensverschlechterung einkommensverschlechterung) {
-		final BigDecimal nettoVermoegenGS1 = einkommensverschlechterung != null ? MathUtil.GANZZAHL.from(percent(einkommensverschlechterung.getNettoVermoegen(), 5)) : BigDecimal.ZERO;
+	private BigDecimal calculateMassgegebendesEinkVorAbzFamGrEKV(
+		@Nonnull BigDecimal nettoLohn,
+		@Nullable Einkommensverschlechterung einkommensverschlechterung
+	) {
+		final BigDecimal nettoVermoegenGS1 = einkommensverschlechterung
+			!= null ?
+				MathUtil.GANZZAHL.from(
+					percent(
+						einkommensverschlechterung
+							.getNettoVermoegen(),
+						5
+					)
+				) :
+				BigDecimal.ZERO;
 		return add(nettoLohn, nettoVermoegenGS1);
 	}
 
-	private BigDecimal calculateMassgebendesEinkommenZusammen(FinanzielleSituationResultateDTO finSitResultDTO) {
-		return MathUtil.EXACT.addNullSafe(finSitResultDTO.getMassgebendesEinkVorAbzFamGrGS1(), finSitResultDTO.getMassgebendesEinkVorAbzFamGrGS2());
+	private BigDecimal calculateMassgebendesEinkommenZusammen(
+		FinanzielleSituationResultateDTO finSitResultDTO
+	) {
+		return MathUtil.EXACT.addNullSafe(
+			finSitResultDTO.getMassgebendesEinkVorAbzFamGrGS1(),
+			finSitResultDTO.getMassgebendesEinkVorAbzFamGrGS2()
+		);
 	}
 
-	private BigDecimal calcMassgebendesEinkommenAlleine(@Nullable FinanzielleSituation finanzielleSituation) {
-		if(finanzielleSituation == null) {
+	private BigDecimal calcMassgebendesEinkommenAlleine(
+		@Nullable FinanzielleSituation finanzielleSituation
+	) {
+		if (finanzielleSituation == null) {
 			return BigDecimal.ZERO;
 		}
 
-		if(calculateByVeranlagung(finanzielleSituation)) {
-			return calcuateMassgebendesEinkommenBasedOnNettoeinkommen(finanzielleSituation);
+		if (calculateByVeranlagung(finanzielleSituation)) {
+			return calcuateMassgebendesEinkommenBasedOnNettoeinkommen(
+				finanzielleSituation
+			);
 		}
 
-		return calcuateMassgebendesEinkommenBasedOnBruttoEinkommen(finanzielleSituation);
+		return calcuateMassgebendesEinkommenBasedOnBruttoEinkommen(
+			finanzielleSituation
+		);
 	}
 
-	private BigDecimal calcuateMassgebendesEinkommenBasedOnBruttoEinkommen(FinanzielleSituation finanzielleSituation) {
-		if(isNullOrZero(finanzielleSituation.getBruttoLohn())) {
+	private BigDecimal calcuateMassgebendesEinkommenBasedOnBruttoEinkommen(
+		FinanzielleSituation finanzielleSituation
+	) {
+		if (isNullOrZero(finanzielleSituation.getBruttoLohn())) {
 			return BigDecimal.ZERO;
 		}
 
 		var bruttovermoegenMultiplicated =
-			MathUtil.EXACT.multiply(finanzielleSituation.getBruttoLohn(), BigDecimal.valueOf(0.75));
+			MathUtil.EXACT.multiply(
+				finanzielleSituation.getBruttoLohn(),
+				BigDecimal.valueOf(0.75)
+			);
 		BigDecimal steuerbaresVermoegen5Prozent =
-			calcualteStuerbaresVermoegen5Prozent(finanzielleSituation.getSteuerbaresVermoegen());
-		return MathUtil.EXACT.addNullSafe(bruttovermoegenMultiplicated, steuerbaresVermoegen5Prozent);
+			calcualteStuerbaresVermoegen5Prozent(
+				finanzielleSituation.getSteuerbaresVermoegen()
+			);
+		return MathUtil.EXACT.addNullSafe(
+			bruttovermoegenMultiplicated,
+			steuerbaresVermoegen5Prozent
+		);
 	}
 
-	private BigDecimal calcuateMassgebendesEinkommenBasedOnNettoeinkommen(FinanzielleSituation finanzielleSituation) {
-		if(isNullOrZero(finanzielleSituation.getNettolohn())) {
+	private BigDecimal calcuateMassgebendesEinkommenBasedOnNettoeinkommen(
+		FinanzielleSituation finanzielleSituation
+	) {
+		if (isNullOrZero(finanzielleSituation.getNettolohn())) {
 			return BigDecimal.ZERO;
 		}
 
 		BigDecimal nettoLohn = finanzielleSituation.getNettolohn();
-		BigDecimal abzuegeKinderAusbildung = isNullOrZero(finanzielleSituation.getAbzuegeKinderAusbildung()) ?
+		BigDecimal abzuegeKinderAusbildung = isNullOrZero(
+			finanzielleSituation.getAbzuegeKinderAusbildung()
+		) ?
 			BigDecimal.ZERO :
 			finanzielleSituation.getAbzuegeKinderAusbildung();
-		BigDecimal abzuegeUnterhaltsBeitraege = isNullOrZero(finanzielleSituation.getUnterhaltsBeitraege()) ?
+		BigDecimal abzuegeUnterhaltsBeitraege = isNullOrZero(
+			finanzielleSituation.getUnterhaltsBeitraege()
+		) ?
 			BigDecimal.ZERO :
 			finanzielleSituation.getUnterhaltsBeitraege();
-		BigDecimal steuerbaresVermoegen5Prozent = calcualteStuerbaresVermoegen5Prozent(finanzielleSituation.getSteuerbaresVermoegen());
+		BigDecimal steuerbaresVermoegen5Prozent =
+			calcualteStuerbaresVermoegen5Prozent(
+				finanzielleSituation.getSteuerbaresVermoegen()
+			);
 
-		return MathUtil.EXACT.subtractNullSafe(nettoLohn, abzuegeKinderAusbildung)
+		return MathUtil.EXACT.subtractNullSafe(
+			nettoLohn,
+			abzuegeKinderAusbildung
+		)
 			.subtract(abzuegeUnterhaltsBeitraege)
 			.add(steuerbaresVermoegen5Prozent);
 	}
 
-	private BigDecimal calcualteStuerbaresVermoegen5Prozent(BigDecimal steuerbaresVermoegen) {
+	private BigDecimal calcualteStuerbaresVermoegen5Prozent(
+		BigDecimal steuerbaresVermoegen
+	) {
 		if (isNullOrZero(steuerbaresVermoegen)) {
 			return BigDecimal.ZERO;
 		}
 
-		return MathUtil.EXACT.multiply(steuerbaresVermoegen, BigDecimal.valueOf(0.05));
+		return MathUtil.EXACT.multiply(
+			steuerbaresVermoegen,
+			BigDecimal.valueOf(0.05)
+		);
 	}
 
 	private boolean isNullOrZero(BigDecimal number) {

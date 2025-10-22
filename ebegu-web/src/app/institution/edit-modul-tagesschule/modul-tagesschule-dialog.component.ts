@@ -18,18 +18,18 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {TSModulTagesschuleGroup} from '@kibon/shared/model/entity';
 import {
     getTSModulTagesschuleIntervallValues,
-    TSModulTagesschuleIntervall
-} from '../../../models/enums/TSModulTagesschuleIntervall';
-import {TSModulTagesschuleName} from '../../../models/enums/TSModulTagesschuleName';
-import {TSModulTagesschuleGroup} from '../../../models/TSModulTagesschuleGroup';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-
+    TSModulTagesschuleIntervall,
+    TSModulTagesschuleName
+} from '@kibon/shared/model/enums';
 @Component({
     selector: 'modul-tagesschule-dialog',
     templateUrl: './modul-tagesschule-dialog.template.html',
-    styleUrls: ['./modul-tagesschule-dialog.component.less']
+    styleUrls: ['./modul-tagesschule-dialog.component.less'],
+    standalone: false
 })
 export class ModulTagesschuleDialogComponent implements OnInit {
     @ViewChild(NgForm, {static: true}) public form: NgForm;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractDateRangedEntity} from './TSAbstractDateRangedEntity';
+import {TSAbstractDateRangedEntity} from '@kibon/shared/model/entity';
 
 export class TSAnmeldungTagesschuleZeitabschnitt extends TSAbstractDateRangedEntity {
     public massgebendesEinkommenInklAbzugFamgr: number;

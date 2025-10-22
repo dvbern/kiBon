@@ -13,13 +13,14 @@
         </div>
     </div>
 
-    <ng-container
-        *ngIf="
-            !hasMultipleGS || gs2Ausgefuellt;
-            then allGSAusgefuellt;
-            else notAllGSAusgefuellt
-        "
-    ></ng-container>
+    @if (
+        !hasMultipleGS ||
+        !dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
+    ) {
+        <ng-container [ngTemplateOutlet]="allGSAusgefuellt"></ng-container>
+    } @else {
+        <ng-container [ngTemplateOutlet]="notAllGSAusgefuellt"></ng-container>
+    }
 </div>
 
 <ng-template #allGSAusgefuellt>
@@ -45,6 +46,7 @@
                 [finSitJA]="model.getFiSiConToWorkWith().finanzielleSituationJA"
                 [finSitGS]="model.getFiSiConToWorkWith().finanzielleSituationGS"
                 [readonly]="gesuchModelManager.isGesuchReadonly()"
+                [schwyzErweiterteFinSit]="isSchwyzFinSitTypSchwyzErweitert()"
                 (valueChanged)="recalculateMassgendesEinkommen()"
             >
             </dv-steuerveranlagt-schwyz>
@@ -70,6 +72,7 @@
                 [readonly]="gesuchModelManager.isGesuchReadonly()"
                 (valueChanged)="recalculateMassgendesEinkommen()"
                 [finanzModel]="model"
+                [schwyzErweiterteFinSit]="isSchwyzFinSitTypSchwyzErweitert()"
             >
             </dv-finanzielle-situation-single-gs-schwyz>
 
@@ -106,6 +109,7 @@
 
 <ng-template #notAllGSAusgefuellt>
     <div data-test="warnung-gs2-ausfuellen" class="well well-status-warten">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
         <span translate>WARNUNG_GS2_AUSFUELLEN</span>
     </div>
 </ng-template>

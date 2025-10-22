@@ -169,7 +169,7 @@
                 [label]="'VON'"
                 [attr.data-test]="'pensum-gueltig-ab#' + index"
                 [(date)]="pensumFachstelle.gueltigkeit.gueltigAb"
-                [required]="true"
+                [required]="submitted"
                 (dateChange)="validatePensumOverlaps()"
             >
             </dv-date-picker-x>

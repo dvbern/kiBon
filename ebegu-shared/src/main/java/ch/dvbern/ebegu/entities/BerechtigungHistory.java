@@ -17,20 +17,22 @@ package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.util.Constants;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
@@ -40,7 +42,8 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class BerechtigungHistory extends AbstractDateRangedEntity implements Comparable<BerechtigungHistory> {
+public class BerechtigungHistory extends AbstractDateRangedEntity implements
+	Comparable<BerechtigungHistory> {
 
 	private static final long serialVersionUID = -9032257320864372570L;
 
@@ -55,18 +58,29 @@ public class BerechtigungHistory extends AbstractDateRangedEntity implements Com
 
 	@Nullable
 	@ManyToOne
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_berechtigung_history_institution_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_berechtigung_history_institution_id"))
 	private Institution institution = null;
 
 	@Nullable
 	@ManyToOne
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_berechtigung_history_traegerschaft_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_berechtigung_history_traegerschaft_id"))
 	private Traegerschaft traegerschaft = null;
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_berechtigung_history_sozialdienst_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_berechtigung_history_sozialdienst_id"))
 	private Sozialdienst sozialdienst = null;
+
+	@Nullable
+	@ManyToOne()
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_berechtigung_history_benutzer_id"))
+	@Getter
+	@Setter
+	private Benutzer benutzer;
 
 	@Nullable
 	@Column
@@ -88,7 +102,10 @@ public class BerechtigungHistory extends AbstractDateRangedEntity implements Com
 		this.role = null;
 	}
 
-	public BerechtigungHistory(@Nonnull Berechtigung berechtigung, boolean deleted) {
+	public BerechtigungHistory(
+		@Nonnull Berechtigung berechtigung,
+		boolean deleted
+	) {
 		this.role = berechtigung.getRole();
 		this.setGueltigkeit(berechtigung.getGueltigkeit());
 		this.institution = berechtigung.getInstitution();
@@ -97,6 +114,7 @@ public class BerechtigungHistory extends AbstractDateRangedEntity implements Com
 		this.sozialdienst = berechtigung.getSozialdienst();
 
 		Benutzer benutzer = berechtigung.getBenutzer();
+		this.benutzer = benutzer;
 		this.username = benutzer.getUsername();
 		this.status = benutzer.getStatus();
 
@@ -151,8 +169,14 @@ public class BerechtigungHistory extends AbstractDateRangedEntity implements Com
 		CompareToBuilder cb = new CompareToBuilder();
 		cb.append(this.getUsername(), other.getUsername());
 		cb.append(this.getRole(), other.getRole());
-		cb.append(this.getGueltigkeit().getGueltigAb(), other.getGueltigkeit().getGueltigAb());
-		cb.append(this.getGueltigkeit().getGueltigBis(), other.getGueltigkeit().getGueltigBis());
+		cb.append(
+			this.getGueltigkeit().getGueltigAb(),
+			other.getGueltigkeit().getGueltigAb()
+		);
+		cb.append(
+			this.getGueltigkeit().getGueltigBis(),
+			other.getGueltigkeit().getGueltigBis()
+		);
 		cb.append(this.getInstitution(), other.getInstitution());
 		cb.append(this.getTraegerschaft(), other.getTraegerschaft());
 		cb.append(this.getGemeinden(), other.getGemeinden());

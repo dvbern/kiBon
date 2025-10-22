@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-@import '~style/variables';
+@import './../../../../style/variables';
 
-dv-error-messages {
-    display: none;
+dv-date-picker-x dv-input-container-x .dv-input-container {
+    display: block;
 }
 
 ::ng-deep form.ng-submitted {
@@ -26,11 +26,6 @@ dv-error-messages {
         dv-error-messages {
             display: block;
         }
-    }
-}
-.form-group.touched {
-    dv-error-messages {
-        display: block;
     }
 }
 

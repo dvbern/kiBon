@@ -23,7 +23,9 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 /**
  * Comparator, der die VerfuegungsZeitabschnitte nach Datum-Von sortiert.
  */
-public class VerfuegungZeitabschnittComparator implements Comparator<VerfuegungZeitabschnitt>, Serializable {
+public class VerfuegungZeitabschnittComparator implements
+	Comparator<VerfuegungZeitabschnitt>,
+	Serializable {
 
 	private static final long serialVersionUID = -309383917391346314L;
 

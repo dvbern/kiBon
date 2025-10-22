@@ -34,7 +34,7 @@
                     <!-- Jahr -->
                     <div class="col-md-3">
                         <label
-                            class="md-no-float required"
+                            class="md-no-float required ignore-danger-font-color"
                             for="gemeindeantragperiode"
                             translate
                             >GESUCHSPERIODEN</label
@@ -45,6 +45,7 @@
                             id="gemeindeantragperiode"
                             [formControl]="formGroup.controls.periode"
                             class="form-control"
+                            data-test="gemeindeantraege-periode"
                         >
                             <option value="" style="display: none"></option>
                             <option
@@ -80,7 +81,7 @@
                     >
                         <div>
                             <label
-                                class="md-no-float required"
+                                class="md-no-float required ignore-danger-font-color"
                                 for="gemeindeantragtyp"
                                 translate
                                 >TYP</label
@@ -92,6 +93,7 @@
                                 [formControl]="formGroup.controls.antragTyp"
                                 (change)="onAntragTypChange()"
                                 class="form-control"
+                                data-test="gemeindeantraege-typ"
                             >
                                 <option
                                     *ngFor="let typ of creatableTypes"
@@ -122,7 +124,7 @@
                     <div class="col-md-3" *ngIf="ferienBetreuungSelected()">
                         <div>
                             <label
-                                class="md-no-float"
+                                class="md-no-float ignore-danger-font-color"
                                 [ngClass]="{
                                     required: ferienBetreuungSelected()
                                 }"
@@ -175,6 +177,7 @@
                             [ariaLabel]="'LATS_ANTRAEGE_ERSTELLEN' | translate"
                             type="submit"
                             (buttonClick)="createAllAntraege()"
+                            data-test="gemeindeantraege-antraege-erstellen"
                         >
                             <span class="uppercase" translate
                                 >LATS_ANTRAEGE_ERSTELLEN</span
@@ -185,6 +188,7 @@
                             type="button"
                             class="dv-btn cancel-button margin-left-5"
                             (click)="deleteAllLatsAntraege()"
+                            data-test="gemeindeantraege-antraege-loeschen"
                         >
                             <span class="uppercase" translate
                                 >LATS_ANTRAEGE_LOESCHEN</span

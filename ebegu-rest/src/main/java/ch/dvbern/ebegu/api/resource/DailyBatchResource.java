@@ -15,41 +15,42 @@
 
 package ch.dvbern.ebegu.api.resource;
 
-import ch.dvbern.ebegu.enums.UserRoleName;
-import ch.dvbern.ebegu.services.DailyBatch;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import javax.annotation.Nullable;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
+import ch.dvbern.ebegu.enums.UserRoleName;
+import ch.dvbern.ebegu.services.DailyBatch;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Resource fuer DailyBatch. Dies darf nur als SUPERADMIN aufgerufen werden
  */
 @Path("dailybatch")
 @Stateless
-@Api(description = "Resource für die DailyBatch Jobs")
 @RolesAllowed(UserRoleName.SUPER_ADMIN)
 public class DailyBatchResource {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DailyBatchResource.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		DailyBatchResource.class
+	);
 
 	@Inject
 	private DailyBatch dailyBatch;
 
-	@ApiOperation(value = "Führt den Job runBatchCleanDownloadFiles aus.", response = String.class)
+	@Operation(summary = "Führt den Job runBatchCleanDownloadFiles aus.")
 	@Nullable
 	@GET
 	@Path("/cleanDownloadFiles")
@@ -60,7 +61,7 @@ public class DailyBatchResource {
 		return executeFuture(booleanFuture, "CleanDownloadFiles");
 	}
 
-	@ApiOperation(value = "Führt den Job runBatchMahnungFristablauf aus.", response = String.class)
+	@Operation(summary = "Führt den Job runBatchMahnungFristablauf aus.")
 	@Nullable
 	@GET
 	@Path("/mahnungFristAblauf")
@@ -71,21 +72,29 @@ public class DailyBatchResource {
 		return executeFuture(booleanFuture, "MahnungFristablauf");
 	}
 
-	@ApiOperation(value = "Führt den Job UpdateBGInstitutionGemeinden aus.", response = String.class)
+	@Operation(summary = "Führt den Job UpdateBGInstitutionGemeinden aus.")
 	@Nullable
 	@GET
 	@Path("/updateGemeindeForBGInstitutionen")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response runBatchUpdateGemeindeForBGInstitutionen() {
-		Future<Integer> count = dailyBatch.runBatchUpdateGemeindeForBGInstitutionen();
+		Future<Integer> count = dailyBatch
+			.runBatchUpdateGemeindeForBGInstitutionen();
 		return executeFuture(count, "UpdateGemeindeForBGInstitutionen");
 	}
 
-	private static Response executeFuture(Future<?> future, String batchjobName) {
+	private static Response executeFuture(
+		Future<?> future,
+		String batchjobName
+	) {
 		try {
 			var result = future.get();
-			String info = String.format("Manuelle ausführung! Batchjob {%s} durchgefuehrt mit Resultat: {%s}", batchjobName, result);
+			String info = String.format(
+				"Manuelle ausführung! Batchjob {%s} durchgefuehrt mit Resultat: {%s}",
+				batchjobName,
+				result
+			);
 			LOGGER.info(info);
 			return Response.ok(info).build();
 		} catch (ExecutionException e) {
@@ -96,8 +105,14 @@ public class DailyBatchResource {
 		}
 	}
 
-	private static Response logExceptionAndBuildError(String batchjobName, Exception e) {
-		String errorMessage = String.format("Manuelle ausführung! Batch-Job Mahnung {%s} konnte nicht durchgefuehrt werden!", batchjobName);
+	private static Response logExceptionAndBuildError(
+		String batchjobName,
+		Exception e
+	) {
+		String errorMessage = String.format(
+			"Manuelle ausführung! Batch-Job Mahnung {%s} konnte nicht durchgefuehrt werden!",
+			batchjobName
+		);
 		LOGGER.error(errorMessage, e);
 		return Response.serverError().build();
 	}

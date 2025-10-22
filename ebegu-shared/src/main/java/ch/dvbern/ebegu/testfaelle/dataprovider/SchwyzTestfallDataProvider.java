@@ -8,14 +8,17 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle.dataprovider;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import ch.dvbern.ebegu.entities.AbstractFinanzielleSituation;
 import ch.dvbern.ebegu.entities.Familiensituation;
@@ -30,9 +33,6 @@ import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Kinderabzug;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 public class SchwyzTestfallDataProvider extends AbstractTestfallDataProvider {
 	protected SchwyzTestfallDataProvider(Gesuchsperiode gesuchsperiode) {
 		super(gesuchsperiode);
@@ -46,7 +46,9 @@ public class SchwyzTestfallDataProvider extends AbstractTestfallDataProvider {
 		familiensituation.setAuszahlungsdaten(createDefaultAuszahlungsdaten());
 		familiensituation.setFamilienstatus(EnumFamilienstatus.SCHWYZ);
 		familiensituation.setGemeinsameSteuererklaerung(Boolean.TRUE);
-		familiensituation.setGesuchstellerKardinalitaet(EnumGesuchstellerKardinalitaet.ZU_ZWEIT);
+		familiensituation.setGesuchstellerKardinalitaet(
+			EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+		);
 		familiensituation.setKeineMahlzeitenverguenstigungBeantragt(true);
 		return familiensituation;
 	}
@@ -58,20 +60,31 @@ public class SchwyzTestfallDataProvider extends AbstractTestfallDataProvider {
 		familiensituation.setSozialhilfeBezueger(false);
 		familiensituation.setAuszahlungsdaten(createDefaultAuszahlungsdaten());
 		familiensituation.setFamilienstatus(EnumFamilienstatus.SCHWYZ);
-		familiensituation.setGesuchstellerKardinalitaet(EnumGesuchstellerKardinalitaet.ALLEINE);
+		familiensituation.setGesuchstellerKardinalitaet(
+			EnumGesuchstellerKardinalitaet.ALLEINE
+		);
 		familiensituation.setKeineMahlzeitenverguenstigungBeantragt(true);
 		return familiensituation;
 	}
 
 	@Override
-	public FinanzielleSituation createFinanzielleSituation(BigDecimal vermoegen, BigDecimal einkommen) {
+	public FinanzielleSituation createFinanzielleSituation(
+		BigDecimal vermoegen,
+		BigDecimal einkommen
+	) {
 		FinanzielleSituation finanzielleSituation = new FinanzielleSituation();
 		// required in all finsit
 		finanzielleSituation.setSteuerveranlagungErhalten(true);
 		// required in all finsit
 		finanzielleSituation.setSteuererklaerungAusgefuellt(true);
 		finanzielleSituation.setQuellenbesteuert(false);
-		applyVerfuegt(finanzielleSituation, vermoegen, einkommen, BigDecimal.ZERO, BigDecimal.ZERO);
+		applyVerfuegt(
+			finanzielleSituation,
+			vermoegen,
+			einkommen,
+			BigDecimal.ZERO,
+			BigDecimal.ZERO
+		);
 
 		return finanzielleSituation;
 	}
@@ -102,16 +115,19 @@ public class SchwyzTestfallDataProvider extends AbstractTestfallDataProvider {
 		LocalDate geburtsdatum,
 		boolean is18GeburtstagBeforeGPEnds,
 		Kinderabzug kinderabzug,
-		boolean betreuung) {
+		boolean betreuung
+	) {
 		Kind kind = new Kind();
-		setSchwyzKindData(TestKindParameter.builder()
-			.kind(kind)
-			.geschlecht(geschlecht)
-			.name(name)
-			.vorname(vorname)
-			.geburtsdatum(geburtsdatum)
-			.betreuung(betreuung)
-			.build());
+		setSchwyzKindData(
+			TestKindParameter.builder()
+				.kind(kind)
+				.geschlecht(geschlecht)
+				.name(name)
+				.vorname(vorname)
+				.geburtsdatum(geburtsdatum)
+				.betreuung(betreuung)
+				.build()
+		);
 		return kind;
 	}
 
@@ -134,8 +150,16 @@ public class SchwyzTestfallDataProvider extends AbstractTestfallDataProvider {
 	}
 
 	@Override
-	public Gesuchsteller createGesuchsteller(String name, String vorname, int gesuchstellerNumber) {
-		Gesuchsteller gesuchsteller = super.createGesuchsteller(name, vorname, gesuchstellerNumber);
+	public Gesuchsteller createGesuchsteller(
+		String name,
+		String vorname,
+		int gesuchstellerNumber
+	) {
+		Gesuchsteller gesuchsteller = super.createGesuchsteller(
+			name,
+			vorname,
+			gesuchstellerNumber
+		);
 		if (gesuchstellerNumber == 1) {
 			gesuchsteller.setSozialversicherungsnummer("756.1234.5678.97");
 		} else {

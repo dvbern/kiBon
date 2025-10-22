@@ -19,7 +19,8 @@ import {
     IFilterService,
     ILogService,
     IPromise,
-    IQService
+    IQService,
+    isArray
 } from 'angular';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {GesuchModelManager} from '../../../../../gesuch/service/gesuchModelManager';
@@ -109,7 +110,7 @@ export class DvQuicksearchboxController {
         quickSearchResult: TSQuickSearchResult,
         limitedResults: TSSearchResultEntry[]
     ): void {
-        if (angular.isArray(limitedResults) && limitedResults.length > 0) {
+        if (isArray(limitedResults) && limitedResults.length > 0) {
             const totalResEntry = new TSSearchResultEntry();
             const alleFaelleEntry = new TSAntragDTO();
             alleFaelleEntry.familienName = this.$translate.instant(

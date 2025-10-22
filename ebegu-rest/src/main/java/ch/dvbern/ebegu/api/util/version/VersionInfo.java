@@ -25,14 +25,16 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
 
 public class VersionInfo implements Serializable {
 	private static final long serialVersionUID = -5421524814455690392L;
 
-	private static final Logger LOG = Logger.getLogger(VersionInfo.class.getName());
+	private static final Logger LOG = Logger.getLogger(
+		VersionInfo.class.getName()
+	);
 
 	@Nullable
 	private final String version;
@@ -41,7 +43,7 @@ public class VersionInfo implements Serializable {
 	@Nullable
 	private final String artifactName;
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private final LocalDateTime buildTimestamp;
 	@Nullable
 	private final String builtBy;
@@ -54,10 +56,17 @@ public class VersionInfo implements Serializable {
 	@Nullable
 	private final String createdBy;
 
-	public VersionInfo(@Nullable String version, @Nullable String artifactGroup, @Nullable String artifactName,
-		@Nullable LocalDateTime buildTimestamp, @Nullable String builtBy,
-		@Nullable String buildJdk, @Nullable String osName,
-		@Nullable String description, @Nullable String createdBy) {
+	public VersionInfo(
+		@Nullable String version,
+		@Nullable String artifactGroup,
+		@Nullable String artifactName,
+		@Nullable LocalDateTime buildTimestamp,
+		@Nullable String builtBy,
+		@Nullable String buildJdk,
+		@Nullable String osName,
+		@Nullable String description,
+		@Nullable String createdBy
+	) {
 		this.version = version;
 		this.buildTimestamp = buildTimestamp;
 		this.builtBy = builtBy;
@@ -74,9 +83,12 @@ public class VersionInfo implements Serializable {
 		Attributes attr = mf.getMainAttributes();
 
 		return new VersionInfo(
-			attrValue(attr, "Version"), attrValue(attr, "Artifact-Group"), attrValue(attr, "Built-By"),
+			attrValue(attr, "Version"),
+			attrValue(attr, "Artifact-Group"),
+			attrValue(attr, "Built-By"),
 			parseBuildDateTime(attr),
-			attrValue(attr, "Artifact-Name"), attrValue(attr, "Build-Jdk"),
+			attrValue(attr, "Artifact-Name"),
+			attrValue(attr, "Build-Jdk"),
 			attrValue(attr, "OS-Name"),
 			attrValue(attr, "Description"),
 			attrValue(attr, "Created-By")
@@ -86,20 +98,26 @@ public class VersionInfo implements Serializable {
 	@Nullable
 	private static LocalDateTime parseBuildDateTime(@Nonnull Attributes attr) {
 		try {
-			LocalDateTimeXMLConverter localDateTimeConverter = new LocalDateTimeXMLConverter();
-			LocalDateTime buildDateTime = localDateTimeConverter.unmarshal(attrValue(attr, "Build-Timestamp"));
-			return buildDateTime;
+			String date = attrValue(attr, "Build-Timestamp");
+			return LocalDateTime.parse(date);
 		} catch (DateTimeParseException ignore) {
 			return null;
 		}
 	}
 
 	@Nullable
-	private static String attrValue(@Nonnull Attributes attr, @Nonnull String attrName) {
+	private static String attrValue(
+		@Nonnull Attributes attr,
+		@Nonnull String attrName
+	) {
 		try {
 			return attr.getValue(attrName);
 		} catch (RuntimeException e) {
-			LOG.log(Level.INFO, "Could not read attribute value for name: " + attrName, e);
+			LOG.log(
+				Level.INFO,
+				"Could not read attribute value for name: " + attrName,
+				e
+			);
 			return null;
 		}
 	}
@@ -151,16 +169,44 @@ public class VersionInfo implements Serializable {
 
 	@Override
 	public String toString() {
-		return "VersionInfo{" +
-			"version='" + getVersion() + '\'' +
-			", artifactGroup='" + getArtifactGroup() + '\'' +
-			", artifactName='" + getArtifactName() + '\'' +
-			", buildTimestamp='" + getBuildTimestamp() + '\'' +
-			", builtBy='" + getBuiltBy() + '\'' +
-			", buildJdk='" + getBuildJdk() + '\'' +
-			", osName='" + getOsName() + '\'' +
-			", description='" + getDescription() + '\'' +
-			", createdBy='" + getCreatedBy() + '\'' +
+		return "VersionInfo{"
+			+
+			"version='"
+			+ getVersion()
+			+ '\''
+			+
+			", artifactGroup='"
+			+ getArtifactGroup()
+			+ '\''
+			+
+			", artifactName='"
+			+ getArtifactName()
+			+ '\''
+			+
+			", buildTimestamp='"
+			+ getBuildTimestamp()
+			+ '\''
+			+
+			", builtBy='"
+			+ getBuiltBy()
+			+ '\''
+			+
+			", buildJdk='"
+			+ getBuildJdk()
+			+ '\''
+			+
+			", osName='"
+			+ getOsName()
+			+ '\''
+			+
+			", description='"
+			+ getDescription()
+			+ '\''
+			+
+			", createdBy='"
+			+ getCreatedBy()
+			+ '\''
+			+
 			'}';
 	}
 }

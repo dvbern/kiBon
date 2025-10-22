@@ -15,48 +15,89 @@
 
 package ch.dvbern.ebegu.api.resource;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.Optional;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.activation.MimeTypeParseException;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.MatrixParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+
 import ch.dvbern.ebegu.api.av.AVClient;
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.JaxDokumentConverter;
+import ch.dvbern.ebegu.api.converter.JaxMahnungConverter;
 import ch.dvbern.ebegu.api.dtos.JaxDownloadFile;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxMahnung;
 import ch.dvbern.ebegu.api.util.RestUtil;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.entities.AbstractAnmeldung;
+import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.DownloadFile;
+import ch.dvbern.ebegu.entities.FileMetadata;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Mahnung;
+import ch.dvbern.ebegu.entities.WriteProtectedDokument;
+import ch.dvbern.ebegu.entities.Zahlungsauftrag;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.MergeDocException;
-import ch.dvbern.ebegu.services.*;
+import ch.dvbern.ebegu.services.Authorizer;
+import ch.dvbern.ebegu.services.BetreuungService;
+import ch.dvbern.ebegu.services.DokumentService;
+import ch.dvbern.ebegu.services.DownloadFileService;
+import ch.dvbern.ebegu.services.ExportService;
+import ch.dvbern.ebegu.services.GeneratedDokumentService;
+import ch.dvbern.ebegu.services.GesuchService;
+import ch.dvbern.ebegu.services.SozialdienstFallDokumentService;
+import ch.dvbern.ebegu.services.ZahlungService;
 import ch.dvbern.ebegu.services.gemeindeantrag.FerienbetreuungDokumentService;
 import ch.dvbern.ebegu.util.UploadFileInfo;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.activation.MimeTypeParseException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
-import java.net.URI;
-import java.util.Optional;
-
-import static ch.dvbern.ebegu.enums.UserRoleName.*;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_INSTITUTION;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_SOZIALDIENST;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TRAEGERSCHAFT;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.GESUCHSTELLER;
+import static ch.dvbern.ebegu.enums.UserRoleName.JURIST;
+import static ch.dvbern.ebegu.enums.UserRoleName.REVISOR;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_INSTITUTION;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_SOZIALDIENST;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_TRAEGERSCHAFT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -67,24 +108,24 @@ import static java.util.Objects.requireNonNull;
 @SuppressWarnings("InstanceMethodNamingConvention")
 @Path("blobs/temp")
 @Stateless
-@Api(description = "Resource fuer den Download von Dokumenten")
 @PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 public class DownloadResource {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DownloadResource.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		DownloadResource.class.getSimpleName()
+	);
 	public static final String GESUCH_ID_INVALID = "GesuchId invalid: ";
 
 	@Inject
 	private DownloadFileService downloadFileService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxDokumentConverter converter;
+	@Inject
+	private JaxMahnungConverter mahnungConverter;
 
 	@Inject
 	private DokumentService dokumentService;
-
-	@Inject
-	private VorlageService vorlageService;
 
 	@Inject
 	private GesuchService gesuchService;
@@ -102,19 +143,10 @@ public class DownloadResource {
 	private GeneratedDokumentService generatedDokumentService;
 
 	@Inject
-	private EbeguVorlageService ebeguVorlageService;
-
-	@Inject
 	private PrincipalBean principalBean;
 
 	@Inject
 	private Authorizer authorizer;
-
-	@Inject
-	private RueckforderungDokumentService rueckforderungDokumentService;
-
-	@Inject
-	private RueckforderungFormularService rueckforderungFormularService;
 
 	@Inject
 	private FerienbetreuungDokumentService ferienbetreuungDokumentService;
@@ -130,52 +162,68 @@ public class DownloadResource {
 
 	@SuppressWarnings("ConstantConditions")
 	@SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
-	@ApiOperation("L&auml;dt das Dokument herunter, auf welches das &uuml;bergebene accessToken verweist")
+	@Operation(
+		summary = "L&auml;dt das Dokument herunter, auf welches das &uuml;bergebene accessToken verweist")
 	@GET
 	@Path("blobdata/{accessToken}")
 	//mimetyp wird in buildDownloadResponse erraten
 	public Response downloadByAccessToken(
 		@PathParam("accessToken") String blobAccessTokenParam,
-		@MatrixParam("attachment") @DefaultValue("false") boolean attachment,
-		@Context HttpServletRequest request) {
+		@MatrixParam("attachment")
+		@DefaultValue("false") boolean attachment,
+		@Context HttpServletRequest request
+	) {
 
 		String ip = getIP(request);
 
-		DownloadFile downloadFile = downloadFileService.getDownloadFileByAccessToken(blobAccessTokenParam);
+		DownloadFile downloadFile = downloadFileService
+			.getDownloadFileByAccessToken(blobAccessTokenParam);
 
 		if (downloadFile == null) {
-			return Response.status(Response.Status.FORBIDDEN).entity("Ung&uuml;ltige Anfrage f&uuml;r download").build();
+			return Response.status(Response.Status.FORBIDDEN)
+				.entity("Ung&uuml;ltige Anfrage f&uuml;r download")
+				.build();
 		}
 
 		if (!downloadFile.getIp().equals(ip)
 			|| principalBean.getPrincipal() == null
-			|| !principalBean.getBenutzer().isSame(downloadFile.getBenutzer())) {
+			|| !principalBean.getBenutzer()
+				.isSame(downloadFile.getBenutzer())) {
 			// Wir loggen noch ein bisschen, bis wir sicher sind, dass das Problem geloest ist
 			StringBuilder sb = new StringBuilder();
 			sb.append("Keine Berechtigung fuer Download");
 			if (!downloadFile.getIp().equals(ip)) {
-				sb.append("; downloadFile.getIp(): ").append(downloadFile.getIp());
+				sb.append("; downloadFile.getIp(): ")
+					.append(downloadFile.getIp());
 				sb.append("; ip").append(ip);
 			}
 			if (principalBean.getPrincipal() == null) {
 				sb.append("; principalBean.getPrincipal() is null");
-			} else if (!principalBean.getBenutzer().isSame(downloadFile.getBenutzer())) {
-				sb.append("; principalBean.getPrincipal().getName()").append(principalBean.getPrincipal().getName());
-				sb.append("; downloadFile.getUserErstellt()").append(downloadFile.getUserErstellt());
+			} else if (!principalBean.getBenutzer()
+				.isSame(downloadFile.getBenutzer())) {
+				sb.append("; principalBean.getPrincipal().getName()")
+					.append(principalBean.getPrincipal().getName());
+				sb.append("; downloadFile.getUserErstellt()")
+					.append(downloadFile.getUserErstellt());
 			}
 			LOG.error(sb.toString());
-			return Response.status(Response.Status.FORBIDDEN).entity("Keine Berechtigung f&uuml;r download").build();
+			return Response.status(Response.Status.FORBIDDEN)
+				.entity("Keine Berechtigung f&uuml;r download")
+				.build();
 		}
 
 		try {
 			return RestUtil.buildDownloadResponse(downloadFile, attachment);
 		} catch (IOException e) {
 			LOG.error("Dokument kann nicht heruntergeladen werden", e);
-			return Response.status(Response.Status.NOT_FOUND).entity("Dokument kann nicht gelesen werden").build();
+			return Response.status(Response.Status.NOT_FOUND)
+				.entity("Dokument kann nicht gelesen werden")
+				.build();
 		}
 	}
 
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download eines Dokumentes.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download eines Dokumentes.")
 	@Nonnull
 	@GET
 	@Path("/{dokumentId}/dokument")
@@ -183,7 +231,9 @@ public class DownloadResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDokumentAccessTokenDokument(
 		@Nonnull @Valid @PathParam("dokumentId") JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException {
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException {
 
 		String ip = getIP(request);
 
@@ -191,66 +241,15 @@ public class DownloadResource {
 		String id = converter.toEntityId(jaxId);
 
 		final FileMetadata dokument = dokumentService.findDokument(id)
-			.orElseThrow(() -> new EbeguEntityNotFoundException("getDokumentAccessTokenDokument",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, id));
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getDokumentAccessTokenDokument",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					id
+				)
+			);
 
 		return getFileDownloadResponse(uriInfo, ip, dokument);
-	}
-
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download einer Vorlage.")
-	@Nonnull
-	@GET
-	@Path("/{dokumentId}/vorlage")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDokumentAccessTokenVorlage(
-		@Nonnull @Valid @PathParam("dokumentId") JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException {
-
-		String ip = getIP(request);
-
-		requireNonNull(jaxId.getId());
-		String id = converter.toEntityId(jaxId);
-
-		final FileMetadata dokument = vorlageService.findVorlage(id)
-			.orElseThrow(() -> new EbeguEntityNotFoundException("getDokumentAccessTokenVorlage",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, id));
-
-		return getFileDownloadResponse(uriInfo, ip, dokument);
-	}
-
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download einer Vorlage fuer die Notrecht Rueckforderung")
-	@Nonnull
-	@GET
-	@Path("/NOTRECHTVORLAGEOEFFENTLICH/{language}/{angebotTyp}")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDokumentAccessTokenNotrechtvorlageOeffentlicheInstitutionen(
-		@Nonnull @Valid @PathParam("language") String language,
-		@Nonnull @Valid @PathParam("angebotTyp") BetreuungsangebotTyp angebotTyp,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException {
-
-		String ip = getIP(request);
-		FileMetadata vorlageNotrecht = ebeguVorlageService.getVorlageNotrechtOeffentlicheInstitutionen(language,
-			angebotTyp, requireNonNull(principalBean.getMandant()));
-		return getFileDownloadResponse(uriInfo, ip, vorlageNotrecht);
-	}
-
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download einer Vorlage fuer die Notrecht Rueckforderung")
-	@Nonnull
-	@GET
-	@Path("/NOTRECHTVORLAGEPRIVAT/{language}/{angebotTyp}")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDokumentAccessTokenNotrechtvorlagePrivateInstitutionen(
-		@Nonnull @Valid @PathParam("language") String language,
-		@Nonnull @Valid @PathParam("angebotTyp") BetreuungsangebotTyp angebotTyp,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException {
-
-		String ip = getIP(request);
-		FileMetadata vorlageNotrecht = ebeguVorlageService.getVorlageNotrechtPrivateInstitutionen(language,
-			angebotTyp, requireNonNull(principalBean.getMandant()));
-		return getFileDownloadResponse(uriInfo, ip, vorlageNotrecht);
 	}
 
 	/**
@@ -258,12 +257,14 @@ public class DownloadResource {
 	 * Alle anderen Vorlagen, die andere Daten brauchen, muessen ihre eigene Methode haben. So wie bei VERFUEGUNG
 	 *
 	 * @param jaxGesuchId gesuch ID
-	 * @param request     request
-	 * @param uriInfo     uri
+	 * @param request request
+	 * @param uriInfo uri
 	 * @return ein Response mit dem GeneratedDokument
 	 */
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download der Finanziellen Situation des Gesuchs mit der " +
-		"&uuml;bergebenen Id.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download der Finanziellen Situation des Gesuchs mit der "
+			+
+			"&uuml;bergebenen Id.")
 	@Nonnull
 	@GET
 	@Path("/{gesuchid}/FINANZIELLE_SITUATION/generated")
@@ -271,20 +272,30 @@ public class DownloadResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getFinSitDokumentAccessTokenGeneratedDokument(
 		@Nonnull @Valid @PathParam("gesuchid") JaxId jaxGesuchId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException,
 		MergeDocException, MimeTypeParseException {
 
 		requireNonNull(jaxGesuchId.getId());
 		String ip = getIP(request);
 
-		final Optional<Gesuch> gesuch = gesuchService.findGesuch(converter.toEntityId(jaxGesuchId));
+		final Optional<Gesuch> gesuch = gesuchService.findGesuch(
+			converter.toEntityId(jaxGesuchId)
+		);
 		if (gesuch.isPresent()) {
 			WriteProtectedDokument generatedDokument = generatedDokumentService
-				.getFinSitDokumentAccessTokenGeneratedDokument(gesuch.get(), false);
+				.getFinSitDokumentAccessTokenGeneratedDokument(
+					gesuch.get(),
+					false
+				);
 			return getFileDownloadResponse(uriInfo, ip, generatedDokument);
 		}
-		throw new EbeguEntityNotFoundException("getFinSitDokumentAccessTokenGeneratedDokument",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, GESUCH_ID_INVALID + jaxGesuchId.getId());
+		throw new EbeguEntityNotFoundException(
+			"getFinSitDokumentAccessTokenGeneratedDokument",
+			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+			GESUCH_ID_INVALID + jaxGesuchId.getId()
+		);
 	}
 
 	/**
@@ -292,12 +303,14 @@ public class DownloadResource {
 	 * Alle anderen Vorlagen, die andere Daten brauchen, muessen ihre eigene Methode haben. So wie bei VERFUEGUNG
 	 *
 	 * @param jaxGesuchId gesuch ID
-	 * @param request     request
-	 * @param uriInfo     uri
+	 * @param request request
+	 * @param uriInfo uri
 	 * @return ein Response mit dem GeneratedDokument
 	 */
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download des Begleitschreibens f&uuml;r das Gesuchs mit der " +
-		"&uuml;bergebenen Id.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download des Begleitschreibens f&uuml;r das Gesuchs mit der "
+			+
+			"&uuml;bergebenen Id.")
 	@Nonnull
 	@GET
 	@Path("/{gesuchid}/BEGLEITSCHREIBEN/generated")
@@ -305,20 +318,30 @@ public class DownloadResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getBegleitschreibenDokumentAccessTokenGeneratedDokument(
 		@Nonnull @Valid @PathParam("gesuchid") JaxId jaxGesuchId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException,
 		MergeDocException, MimeTypeParseException {
 
 		requireNonNull(jaxGesuchId.getId());
 		String ip = getIP(request);
 
-		final Optional<Gesuch> gesuch = gesuchService.findGesuch(converter.toEntityId(jaxGesuchId));
+		final Optional<Gesuch> gesuch = gesuchService.findGesuch(
+			converter.toEntityId(jaxGesuchId)
+		);
 		if (gesuch.isPresent()) {
 			WriteProtectedDokument generatedDokument =
-				generatedDokumentService.getBegleitschreibenDokument(gesuch.get(), false);
+				generatedDokumentService.getBegleitschreibenDokument(
+					gesuch.get(),
+					false
+				);
 			return getFileDownloadResponse(uriInfo, ip, generatedDokument);
 		}
-		throw new EbeguEntityNotFoundException("getBegleitschreibenDokumentAccessTokenGeneratedDokument",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, GESUCH_ID_INVALID + jaxGesuchId.getId());
+		throw new EbeguEntityNotFoundException(
+			"getBegleitschreibenDokumentAccessTokenGeneratedDokument",
+			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+			GESUCH_ID_INVALID + jaxGesuchId.getId()
+		);
 	}
 
 	/**
@@ -326,12 +349,14 @@ public class DownloadResource {
 	 * Alle anderen Vorlagen, die andere Daten brauchen, muessen ihre eigene Methode haben. So wie bei VERFUEGUNG
 	 *
 	 * @param jaxGesuchId gesuch ID
-	 * @param request     request
-	 * @param uriInfo     uri
+	 * @param request request
+	 * @param uriInfo uri
 	 * @return ein Response mit dem GeneratedDokument
 	 */
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download der kompletten Korrespondenz f&uuml;r das Gesuchs mit der" +
-		"&uuml;bergebenen Id.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download der kompletten Korrespondenz f&uuml;r das Gesuchs mit der"
+			+
+			"&uuml;bergebenen Id.")
 	@Nonnull
 	@GET
 	@Path("/{gesuchid}/KOMPLETTEKORRESPONDENZ/generated")
@@ -340,28 +365,40 @@ public class DownloadResource {
 	public Response getKompletteKorrespondenzAccessTokenGeneratedDokument(
 
 		@Nonnull @Valid @PathParam("gesuchid") JaxId jaxGesuchId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException,
 		MergeDocException, MimeTypeParseException {
 
 		requireNonNull(jaxGesuchId.getId());
 		String ip = getIP(request);
 
-		final Optional<Gesuch> gesuch = gesuchService.findGesuch(converter.toEntityId(jaxGesuchId));
+		final Optional<Gesuch> gesuch = gesuchService.findGesuch(
+			converter.toEntityId(jaxGesuchId)
+		);
 		if (gesuch.isPresent()) {
 			WriteProtectedDokument generatedDokument =
-				generatedDokumentService.getKompletteKorrespondenz(gesuch.get());
+				generatedDokumentService.getKompletteKorrespondenz(
+					gesuch.get()
+				);
 			return getFileDownloadResponse(uriInfo, ip, generatedDokument);
 		}
-		throw new EbeguEntityNotFoundException("getKompletteKorrespondenzAccessTokenGeneratedDokument",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, GESUCH_ID_INVALID + jaxGesuchId.getId());
+		throw new EbeguEntityNotFoundException(
+			"getKompletteKorrespondenzAccessTokenGeneratedDokument",
+			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+			GESUCH_ID_INVALID + jaxGesuchId.getId()
+		);
 	}
 
 	/**
-	 * Wir benutzen dafuer die Methode getDokumentAccessTokenGeneratedDokument nicht damit man unnoetige Parameter (zustelladresse)
+	 * Wir benutzen dafuer die Methode getDokumentAccessTokenGeneratedDokument nicht damit man unnoetige Parameter
+	 * (zustelladresse)
 	 * nicht fuer jeden DokumentTyp eingeben muss
 	 */
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download der Freigabequittung f&uuml;r das Gesuchs mit der " +
-		"&uuml;bergebenen Id.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download der Freigabequittung f&uuml;r das Gesuchs mit der "
+			+
+			"&uuml;bergebenen Id.")
 	@Nonnull
 	@GET
 	@Path("/{gesuchid}/FREIGABEQUITTUNG/{forceCreation}/generated")
@@ -370,30 +407,46 @@ public class DownloadResource {
 	public Response getFreigabequittungAccessTokenGeneratedDokument(
 		@Nonnull @Valid @PathParam("gesuchid") JaxId jaxGesuchId,
 		@Nonnull @Valid @PathParam("forceCreation") Boolean forceCreation,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException,
 		MergeDocException, MimeTypeParseException {
 
 		requireNonNull(jaxGesuchId.getId());
 		String ip = getIP(request);
 
-		final Optional<Gesuch> gesuchOpt = gesuchService.findGesuch(converter.toEntityId(jaxGesuchId));
-		final Gesuch gesuch = gesuchOpt.orElseThrow(() -> new EbeguEntityNotFoundException(
-			"getFreigabequittungAccessTokenGeneratedDokument",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, GESUCH_ID_INVALID + jaxGesuchId.getId()));
+		final Optional<Gesuch> gesuchOpt = gesuchService.findGesuch(
+			converter.toEntityId(jaxGesuchId)
+		);
+		final Gesuch gesuch = gesuchOpt.orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"getFreigabequittungAccessTokenGeneratedDokument",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				GESUCH_ID_INVALID + jaxGesuchId.getId()
+			)
+		);
 
 		// Only onlinegesuch have a freigabequittung
 		if (gesuch.getEingangsart().isPapierGesuch()) {
-			throw new EbeguRuntimeException("getFreigabequittungAccessTokenGeneratedDokument",
-				ErrorCodeEnum.ERROR_FREIGABEQUITTUNG_PAPIER, gesuch.getId());
+			throw new EbeguRuntimeException(
+				"getFreigabequittungAccessTokenGeneratedDokument",
+				ErrorCodeEnum.ERROR_FREIGABEQUITTUNG_PAPIER,
+				gesuch.getId()
+			);
 		}
 
 		WriteProtectedDokument generatedDokument = generatedDokumentService
-			.getFreigabequittungAccessTokenGeneratedDokument(gesuch, forceCreation);
+			.getFreigabequittungAccessTokenGeneratedDokument(
+				gesuch,
+				forceCreation
+			);
 		return getFileDownloadResponse(uriInfo, ip, generatedDokument);
 	}
 
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download der Verf&uuml;gung f&uuml;r die Betreuung mit der " +
-		"&uuml;bergebenen Id.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download der Verf&uuml;gung f&uuml;r die Betreuung mit der "
+			+
+			"&uuml;bergebenen Id.")
 	@Nonnull
 	@POST
 	@Path("/{gesuchid}/{betreuungId}/VERFUEGUNG/{forceCreation}/generated")
@@ -404,7 +457,9 @@ public class DownloadResource {
 		@Nonnull @Valid @PathParam("betreuungId") JaxId jaxBetreuungId,
 		@Nonnull @Valid @PathParam("forceCreation") Boolean forceCreation,
 		@Nullable String manuelleBemerkungen,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException,
 		MergeDocException,
 		IOException, MimeTypeParseException {
 
@@ -413,35 +468,51 @@ public class DownloadResource {
 		String ip = getIP(request);
 
 		if (!isUserAllowedToDownloadVerfuegungPdf()) {
-			throw new EbeguRuntimeException("getVerfuegungDokumentAccessTokenGeneratedDokument", "Action not allowed for this user");
+			throw new EbeguRuntimeException(
+				"getVerfuegungDokumentAccessTokenGeneratedDokument",
+				"Action not allowed for this user"
+			);
 		}
 
-		final Optional<Gesuch> gesuchOptional = gesuchService.findGesuch(converter.toEntityId(jaxGesuchId));
+		final Optional<Gesuch> gesuchOptional = gesuchService.findGesuch(
+			converter.toEntityId(jaxGesuchId)
+		);
 		if (gesuchOptional.isPresent()) {
-			Betreuung betreuung = gesuchOptional.get().extractBetreuungById(jaxBetreuungId.getId());
+			Betreuung betreuung = gesuchOptional.get()
+				.extractBetreuungById(jaxBetreuungId.getId());
 			requireNonNull(betreuung);
 			requireNonNull(manuelleBemerkungen);
 
 			WriteProtectedDokument persistedDokument = generatedDokumentService
-				.getVerfuegungDokumentAccessTokenGeneratedDokument(gesuchOptional.get(), betreuung,
-					manuelleBemerkungen, forceCreation);
+				.getVerfuegungDokumentAccessTokenGeneratedDokument(
+					gesuchOptional.get(),
+					betreuung,
+					manuelleBemerkungen,
+					forceCreation
+				);
 			return getFileDownloadResponse(uriInfo, ip, persistedDokument);
 
 		}
-		throw new EbeguEntityNotFoundException("getVerfuegungDokumentAccessTokenGeneratedDokument",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, "GesuchId not found: " + jaxGesuchId.getId());
+		throw new EbeguEntityNotFoundException(
+			"getVerfuegungDokumentAccessTokenGeneratedDokument",
+			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+			"GesuchId not found: " + jaxGesuchId.getId()
+		);
 	}
 
 	private boolean isUserAllowedToDownloadVerfuegungPdf() {
-		var isAuszahlungAnElternActive = applicationPropertyService.isAuszahlungAnElternAktiviert(principalBean.getMandant());
+		var isAuszahlungAnElternActive = applicationPropertyService
+			.isAuszahlungAnElternAktiviert(principalBean.getMandant());
 		if (Boolean.TRUE.equals(isAuszahlungAnElternActive)) {
 			return !principalBean.getBenutzer().getRole().isInstitutionRole();
 		}
 		return true;
 	}
 
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download des Mahnungsbriefs f&uuml;r die " +
-		"&uuml;bergebenen Mahnung.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download des Mahnungsbriefs f&uuml;r die "
+			+
+			"&uuml;bergebenen Mahnung.")
 	@Nonnull
 	@PUT
 	@Path("/MAHNUNG/generated")
@@ -449,13 +520,18 @@ public class DownloadResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getMahnungDokumentAccessTokenGeneratedDokument(
 		@Nonnull @NotNull @Valid JaxMahnung jaxMahnung,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException,
 		IOException, MimeTypeParseException, MergeDocException {
 
 		requireNonNull(jaxMahnung);
 		String ip = getIP(request);
 
-		Mahnung mahnung = converter.mahnungToEntity(jaxMahnung, new Mahnung());
+		Mahnung mahnung = mahnungConverter.mahnungToEntity(
+			jaxMahnung,
+			new Mahnung()
+		);
 		authorizer.checkReadAuthorization(mahnung.getGesuch());
 
 		WriteProtectedDokument persistedDokument = generatedDokumentService
@@ -465,8 +541,10 @@ public class DownloadResource {
 
 	}
 
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download der Nichteintretens-Verf&uuml;gung f&uuml;r die " +
-		"Betreuung mit der  &uuml;bergebenen Id.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download der Nichteintretens-Verf&uuml;gung f&uuml;r die "
+			+
+			"Betreuung mit der  &uuml;bergebenen Id.")
 	@Nonnull
 	@GET
 	@Path("/{betreuungId}/NICHTEINTRETEN/{forceCreation}/generated")
@@ -475,17 +553,29 @@ public class DownloadResource {
 	public Response getNichteintretenDokumentAccessTokenGeneratedDokument(
 		@Nonnull @Valid @PathParam("betreuungId") JaxId jaxBetreuungId,
 		@Nonnull @Valid @PathParam("forceCreation") Boolean forceCreation,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException,
 		IOException, MimeTypeParseException, MergeDocException {
 
 		requireNonNull(jaxBetreuungId);
 		String ip = getIP(request);
 
-		Betreuung betreuung = betreuungService.findBetreuung(jaxBetreuungId.getId()).orElseThrow(()
-			-> new EbeguEntityNotFoundException("getNichteintretenDokumentAccessTokenGeneratedDokument",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, jaxBetreuungId.getId()));
+		Betreuung betreuung = betreuungService.findBetreuung(
+			jaxBetreuungId.getId()
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getNichteintretenDokumentAccessTokenGeneratedDokument",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					jaxBetreuungId.getId()
+				)
+			);
 		WriteProtectedDokument persistedDokument = generatedDokumentService
-			.getNichteintretenDokumentAccessTokenGeneratedDokument(betreuung, forceCreation);
+			.getNichteintretenDokumentAccessTokenGeneratedDokument(
+				betreuung,
+				forceCreation
+			);
 		return getFileDownloadResponse(uriInfo, ip, persistedDokument);
 	}
 
@@ -494,8 +584,8 @@ public class DownloadResource {
 	 * Dazu wird das File fuer die entsprechende Betreuung generiert und auf dem Server fuer eine gewisse Zeit
 	 * zum download bereitgestellt.
 	 */
-	@ApiOperation(value = "Generate Exportfile of a Verfuegung and return Token a token to download the generated file",
-		response = JaxDownloadFile.class)
+	@Operation(
+		summary = "Generate Exportfile of a Verfuegung and return Token a token to download the generated file")
 	@Nonnull
 	@GET
 	@Path("/{betreuungId}/EXPORT")
@@ -503,18 +593,24 @@ public class DownloadResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDokumentAccessTokenVerfuegungExport(
 		@Nonnull @Valid @PathParam("betreuungId") JaxId jaxBetreuungId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException {
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException {
 		requireNonNull(jaxBetreuungId);
 		String ip = getIP(request);
 
 		UploadFileInfo uploadFileInfo =
-			exportService.exportVerfuegungOfBetreuungAsFile(converter.toEntityId(jaxBetreuungId));
+			exportService.exportVerfuegungOfBetreuungAsFile(
+				converter.toEntityId(jaxBetreuungId)
+			);
 		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
 		return this.getFileDownloadResponse(uriInfo, ip, downloadFileInfo);
 	}
 
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download des Zahlungsfiles (ISO20022) f&uuml;r die " +
-		"Zahlung mit der &uuml;bergebenen Id.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download des Zahlungsfiles (ISO20022) f&uuml;r die "
+			+
+			"Zahlung mit der &uuml;bergebenen Id.")
 	@Nonnull
 	@GET
 	@Path("/{zahlungsauftragId}/PAIN001/generated")
@@ -523,7 +619,9 @@ public class DownloadResource {
 	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_GEMEINDE })
 	public Response getPain001AccessTokenGeneratedDokument(
 		@Nonnull @Valid @PathParam("zahlungsauftragId") JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException,
 		MimeTypeParseException {
 
 		requireNonNull(jaxId.getId());
@@ -534,15 +632,22 @@ public class DownloadResource {
 		if (zahlungsauftrag.isPresent()) {
 
 			WriteProtectedDokument persistedDokument = generatedDokumentService
-				.getPain001DokumentAccessTokenGeneratedDokument(zahlungsauftrag.get());
+				.getPain001DokumentAccessTokenGeneratedDokument(
+					zahlungsauftrag.get()
+				);
 			return getFileDownloadResponse(uriInfo, ip, persistedDokument);
 		}
-		throw new EbeguEntityNotFoundException("getPain001AccessTokenGeneratedDokument",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, "ZahlungsauftragId invalid: " + jaxId.getId());
+		throw new EbeguEntityNotFoundException(
+			"getPain001AccessTokenGeneratedDokument",
+			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+			"ZahlungsauftragId invalid: " + jaxId.getId()
+		);
 	}
 
-	@ApiOperation("Erstellt ein Token für den Download des Zahlungsfiles (INFOMA) für die " +
-		"Zahlung mit der übergebenen Id.")
+	@Operation(
+		summary = "Erstellt ein Token für den Download des Zahlungsfiles (INFOMA) für die "
+			+
+			"Zahlung mit der übergebenen Id.")
 	@Nonnull
 	@GET
 	@Path("/{zahlungsauftragId}/INFOMA/generated")
@@ -551,7 +656,9 @@ public class DownloadResource {
 	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_GEMEINDE })
 	public Response getInfomaAccessTokenGeneratedDokument(
 		@Nonnull @Valid @PathParam("zahlungsauftragId") JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException,
 		MimeTypeParseException {
 		requireNonNull(jaxId.getId());
 		String ip = getIP(request);
@@ -560,28 +667,45 @@ public class DownloadResource {
 			zahlungService.findZahlungsauftrag(converter.toEntityId(jaxId));
 		if (zahlungsauftrag.isPresent()) {
 			WriteProtectedDokument persistedDokument = generatedDokumentService
-				.getInfomaDokumentAccessTokenGeneratedDokument(zahlungsauftrag.get());
+				.getInfomaDokumentAccessTokenGeneratedDokument(
+					zahlungsauftrag.get()
+				);
 			return getFileDownloadResponse(uriInfo, ip, persistedDokument);
 		}
-		throw new EbeguEntityNotFoundException("geInfomaAccessTokenGeneratedDokument",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, "ZahlungsauftragId invalid: " + jaxId.getId());
+		throw new EbeguEntityNotFoundException(
+			"geInfomaAccessTokenGeneratedDokument",
+			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+			"ZahlungsauftragId invalid: " + jaxId.getId()
+		);
 	}
 
 	@Nonnull
-	public Response getFileDownloadResponse(UriInfo uriInfo, String ip, @Nonnull FileMetadata fileMetadata) {
+	public Response getFileDownloadResponse(
+		UriInfo uriInfo,
+		String ip,
+		@Nonnull FileMetadata fileMetadata
+	) {
 
 		avClient.scan(fileMetadata);
 
-		final DownloadFile downloadFile = downloadFileService.create(fileMetadata, ip);
+		final DownloadFile downloadFile = downloadFileService.create(
+			fileMetadata,
+			ip
+		);
 
 		URI uri = createDownloadURIForDownloadFile(uriInfo, downloadFile);
 
-		JaxDownloadFile jaxDownloadFile = converter.downloadFileToJAX(downloadFile);
+		JaxDownloadFile jaxDownloadFile = converter.downloadFileToJAX(
+			downloadFile
+		);
 
 		return Response.created(uri).entity(jaxDownloadFile).build();
 	}
 
-	private URI createDownloadURIForDownloadFile(UriInfo uriInfo, DownloadFile downloadFile) {
+	private URI createDownloadURIForDownloadFile(
+		UriInfo uriInfo,
+		DownloadFile downloadFile
+	) {
 		return uriInfo.getBaseUriBuilder()
 			.path(DownloadResource.class)
 			.path("/blobdata")
@@ -602,17 +726,22 @@ public class DownloadResource {
 		}
 	}
 
-	@ApiOperation("Erstellt ein Token fuer den Download der Anmeldebestaetigung fuer die Betreuung mit der " +
-		"gebenen Id.")
+	@Operation(
+		summary = "Erstellt ein Token fuer den Download der Anmeldebestaetigung fuer die Betreuung mit der "
+			+
+			"gebenen Id.")
 	@Nonnull
 	@GET
 	@Path("/{gesuchId}/{anmeldungId}/ANMELDEBESTAETIGUNG/{forceCreation}/{mitTarif}/generated")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, JURIST, REVISOR,
-		ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT, ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION,
-		GESUCHSTELLER, ADMIN_TS, SACHBEARBEITER_TS, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, ADMIN_SOZIALDIENST,
-		SACHBEARBEITER_SOZIALDIENST})
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, JURIST, REVISOR,
+		ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT,
+		ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION,
+		GESUCHSTELLER, ADMIN_TS, SACHBEARBEITER_TS, ADMIN_MANDANT,
+		SACHBEARBEITER_MANDANT, ADMIN_SOZIALDIENST,
+		SACHBEARBEITER_SOZIALDIENST })
 	public Response getAnmeldebestaetigungDokumentAccessTokenGeneratedDokument(
 		@Nonnull @Valid @PathParam("gesuchId") JaxId jaxGesuchId,
 		@Nonnull @Valid @PathParam("anmeldungId") JaxId jaxAnmledungId,
@@ -627,46 +756,41 @@ public class DownloadResource {
 		requireNonNull(jaxAnmledungId.getId());
 		String ip = getIP(request);
 
-		Gesuch gesuch = gesuchService.findGesuch(converter.toEntityId(jaxGesuchId))
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"getAnmeldebestaetigungDokumentAccessTokenGeneratedDokument",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, GESUCH_ID_INVALID + jaxGesuchId.getId()));
-
-		AbstractAnmeldung anmeldung =
-			betreuungService.findAnmeldung(converter.toEntityId(jaxAnmledungId))
-				.orElseThrow(() -> new EbeguEntityNotFoundException(
+		Gesuch gesuch = gesuchService.findGesuch(
+			converter.toEntityId(jaxGesuchId)
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
 					"getAnmeldebestaetigungDokumentAccessTokenGeneratedDokument",
 					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					jaxAnmledungId.getId()));
+					GESUCH_ID_INVALID + jaxGesuchId.getId()
+				)
+			);
+
+		AbstractAnmeldung anmeldung =
+			betreuungService.findAnmeldung(
+				converter.toEntityId(jaxAnmledungId)
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"getAnmeldebestaetigungDokumentAccessTokenGeneratedDokument",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						jaxAnmledungId.getId()
+					)
+				);
 
 		WriteProtectedDokument persistedDokument = generatedDokumentService
-			.getAnmeldeBestaetigungDokumentAccessTokenGeneratedDokument(gesuch, anmeldung, mitTarif, forceCreation);
+			.getAnmeldeBestaetigungDokumentAccessTokenGeneratedDokument(
+				gesuch,
+				anmeldung,
+				mitTarif,
+				forceCreation
+			);
 		return getFileDownloadResponse(uriInfo, ip, persistedDokument);
 	}
 
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download eines Dokumentes.")
-	@Nonnull
-	@GET
-	@Path("/{dokumentId}/rueckforderungDokument")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDokumentAccessTokenRueckforderungDokument(
-		@Nonnull @Valid @PathParam("dokumentId") JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException {
-
-		String ip = getIP(request);
-
-		requireNonNull(jaxId.getId());
-		String id = converter.toEntityId(jaxId);
-
-		final FileMetadata dokument = rueckforderungDokumentService.findDokument(id)
-			.orElseThrow(() -> new EbeguEntityNotFoundException("getDokumentAccessTokenRueckforderungDokument",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, id));
-
-		return getFileDownloadResponse(uriInfo, ip, dokument);
-	}
-
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download eines Dokumentes.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download eines Dokumentes.")
 	@Nonnull
 	@GET
 	@Path("/{dokumentId}/ferienbetreuungDokument")
@@ -674,101 +798,30 @@ public class DownloadResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDokumentAccessTokenFerienbetreuungDokument(
 		@Nonnull @Valid @PathParam("dokumentId") JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException {
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException {
 
 		String ip = getIP(request);
 
 		requireNonNull(jaxId.getId());
 		String id = converter.toEntityId(jaxId);
 
-		final FileMetadata dokument = ferienbetreuungDokumentService.findDokument(id)
-			.orElseThrow(() -> new EbeguEntityNotFoundException("getDokumentAccessTokenFerienbetreuungDokument",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, id));
+		final FileMetadata dokument = ferienbetreuungDokumentService
+			.findDokument(id)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getDokumentAccessTokenFerienbetreuungDokument",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					id
+				)
+			);
 
 		return getFileDownloadResponse(uriInfo, ip, dokument);
 	}
 
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download eines Dokumentes.")
-	@Nonnull
-	@GET
-	@Path("/{rueckforderungFormularId}/provisorischeVerfuegung")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getNotrechtProvisorischeVerfuegungDokument(
-		@Nonnull @Valid @PathParam("rueckforderungFormularId") JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
-		MimeTypeParseException, MergeDocException {
-
-		requireNonNull(jaxId.getId());
-		String ip = getIP(request);
-		String id = converter.toEntityId(jaxId);
-
-		RueckforderungFormular rueckforderungFormular =
-			rueckforderungFormularService.findRueckforderungFormular(id)
-				.orElseThrow(() -> new EbeguEntityNotFoundException("getNotrechtProvisorischeVerfuegungDokument",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					id));
-
-		WriteProtectedDokument persistedDokument =
-			generatedDokumentService.getRueckforderungProvVerfuegungAccessTokenGeneratedDokument(rueckforderungFormular);
-		return getFileDownloadResponse(uriInfo, ip, persistedDokument);
-	}
-
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download einer einzelnen definitiven Verf&uuml;gung.")
-	@Nonnull
-	@GET
-	@Path("/{rueckforderungFormularId}/definitiveVerfuegung")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getNotrechtDefinitiveVerfuegungDokument(
-		@Nonnull @Valid @PathParam("rueckforderungFormularId") JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException,
-		MimeTypeParseException, MergeDocException {
-
-		requireNonNull(jaxId.getId());
-		String ip = getIP(request);
-		String id = converter.toEntityId(jaxId);
-
-		RueckforderungFormular rueckforderungFormular =
-			rueckforderungFormularService.findRueckforderungFormular(id)
-				.orElseThrow(() -> new EbeguEntityNotFoundException("getNotrechtDefinitiveVerfuegungDokument",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					id));
-
-		WriteProtectedDokument persistedDokument =
-			generatedDokumentService.getRueckforderungDefinitiveVerfuegungAccessTokenGeneratedDokument(rueckforderungFormular, null);
-		return getFileDownloadResponse(uriInfo, ip, persistedDokument);
-	}
-
-	@ApiOperation("Verfuegt alle Rueckforderungsformulare, die im Status 'BEREIT_ZUM_VERFUEGEN' sind," +
-		"erstellt die Verfuegungen (PDF) und gibt dieses als ZIP File zurueck.")
-	@Nonnull
-	@GET
-	@Path("/massenverfuegung/{auftragIdentifier}")
-	@Consumes(MediaType.WILDCARD)
-	@Produces(MediaType.WILDCARD)
-	public Response getNotverordnungVerfuegungenAccessTokenGeneratedDokument(
-		@Nonnull @Valid @PathParam("auftragIdentifier") String auftragIdentifier,
-		@Context HttpServletRequest request,
-		@Context UriInfo uriInfo
-	) throws EbeguEntityNotFoundException {
-		requireNonNull(auftragIdentifier);
-		String ip = getIP(request);
-
-		try {
-			final byte[] zipWithVerfuegungen = rueckforderungFormularService.massenVerfuegungDefinitiv(auftragIdentifier);
-
-			final WriteProtectedDokument writeProtectedDokument;
-			writeProtectedDokument = generatedDokumentService.generateMassenVerfuegungenAccessTokenGeneratedDocument(zipWithVerfuegungen,
-				auftragIdentifier);
-			return getFileDownloadResponse(uriInfo, ip, writeProtectedDokument);
-		} catch (MimeTypeParseException | IOException e) {
-			throw new EbeguRuntimeException("getNotverordnungVerfuegungenAccessTokenGeneratedDokument",
-				"Verfuegungen konnten nicht erstellt werden", e, auftragIdentifier);
-		}
-	}
-
-	@ApiOperation("Erstellt ein Token f&uuml;r den Download eines Dokumentes.")
+	@Operation(
+		summary = "Erstellt ein Token f&uuml;r den Download eines Dokumentes.")
 	@Nonnull
 	@GET
 	@Path("/{dokumentId}/sozialdienstFallDokument")
@@ -776,16 +829,24 @@ public class DownloadResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getDokumentAccessTokenSozialdienstFallDokument(
 		@Nonnull @Valid @PathParam("dokumentId") JaxId jaxId,
-		@Context HttpServletRequest request, @Context UriInfo uriInfo) throws EbeguEntityNotFoundException {
+		@Context HttpServletRequest request,
+		@Context UriInfo uriInfo
+	) throws EbeguEntityNotFoundException {
 
 		String ip = getIP(request);
 
 		requireNonNull(jaxId.getId());
 		String id = converter.toEntityId(jaxId);
 
-		final FileMetadata dokument = sozialdienstFallDokumentService.findDokument(id)
-			.orElseThrow(() -> new EbeguEntityNotFoundException("getDokumentAccessTokenSozialdienstFallDokument",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, id));
+		final FileMetadata dokument = sozialdienstFallDokumentService
+			.findDokument(id)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getDokumentAccessTokenSozialdienstFallDokument",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					id
+				)
+			);
 
 		return getFileDownloadResponse(uriInfo, ip, dokument);
 	}

@@ -13,13 +13,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {IController, IDirective, IDirectiveFactory} from 'angular';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
 import {TSGesuch} from '../../../../models/TSGesuch';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {ApplicationPropertyRS} from '../../rest-services/applicationPropertyRS.rest';
 import {BenutzerRSX} from '../../service/benutzerRSX.rest';
 import ITranslateService = angular.translate.ITranslateService;
 
@@ -46,7 +46,7 @@ export class VerantwortlicherselectController implements IController {
         'BenutzerRS',
         'GesuchModelManager',
         '$translate',
-        'ApplicationPropertyRS'
+        'SharedUtilApplicationPropertyRsService'
     ];
 
     public readonly TSRoleUtil = TSRoleUtil;
@@ -60,13 +60,15 @@ export class VerantwortlicherselectController implements IController {
         private readonly benutzerRS: BenutzerRSX,
         private readonly gesuchModelManager: GesuchModelManager,
         private readonly $translate: ITranslateService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public $onInit(): void {
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.angebotTS = res.angebotTSActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.angebotTS = res.angebotTSActivated;
+            });
     }
 
     public $onChanges(changes: any): void {

@@ -18,11 +18,12 @@ import {
     IDirective,
     IDirectiveFactory,
     IDirectiveLinkFn,
-    IScope
+    IScope,
+    extend
 } from 'angular';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {DVQuicksearchListController} from '../../../quicksearch/component/dv-quicksearch-list/dv-quicksearch-list';
-import {LogFactory} from '../../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../service/benutzerRSX.rest';
 import {DVsTPersistService} from '../../service/dVsTPersistService';
 import {InstitutionRS} from '../../service/institutionRS.rest';
@@ -116,7 +117,7 @@ export class DVSTPersistPendenzen implements IDirective {
                 );
             }
             const tableState = stTableCtrl.tableState();
-            angular.extend(tableState, savedState);
+            extend(tableState, savedState);
             stTableCtrl.pipe();
         };
     }
@@ -203,13 +204,13 @@ export class DVSTPersistPendenzen implements IDirective {
 
         this.institutionRS
             .getInstitutionenReadableForCurrentBenutzer()
-            .subscribe(
-                institutionList => {
+            .subscribe({
+                next: institutionList => {
                     quicksearchListController.selectedInstitution =
                         institutionList.find(i => i.name === institution);
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     private setGemeindeFromName(

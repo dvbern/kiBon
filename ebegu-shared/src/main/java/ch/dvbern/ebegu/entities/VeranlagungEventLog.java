@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -20,11 +20,10 @@ package ch.dvbern.ebegu.entities;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -56,7 +55,8 @@ public class VeranlagungEventLog extends AbstractEntity {
 		String antragId,
 		Integer zpvNummer,
 		LocalDate geburtsdatum,
-		Integer gesuchsperiodeBeginnJahr) {
+		Integer gesuchsperiodeBeginnJahr
+	) {
 		this.antragId = antragId;
 		this.zpvNummer = zpvNummer;
 		this.geburtsdatum = geburtsdatum;
@@ -81,11 +81,18 @@ public class VeranlagungEventLog extends AbstractEntity {
 			return false;
 		}
 		VeranlagungEventLog veranlagungEventLog = (VeranlagungEventLog) other;
-		return Objects.equals(this.antragId, veranlagungEventLog.antragId) &&
-				Objects.equals(geburtsdatum, veranlagungEventLog.geburtsdatum) &&
-				Objects.equals(zpvNummer, veranlagungEventLog.zpvNummer) &&
-				Objects.equals(gesuchsperiodeBeginnJahr, veranlagungEventLog.gesuchsperiodeBeginnJahr) &&
-				Objects.equals(result, veranlagungEventLog.result);
+		return Objects.equals(this.antragId, veranlagungEventLog.antragId)
+			&&
+			Objects.equals(geburtsdatum, veranlagungEventLog.geburtsdatum)
+			&&
+			Objects.equals(zpvNummer, veranlagungEventLog.zpvNummer)
+			&&
+			Objects.equals(
+				gesuchsperiodeBeginnJahr,
+				veranlagungEventLog.gesuchsperiodeBeginnJahr
+			)
+			&&
+			Objects.equals(result, veranlagungEventLog.result);
 
 	}
 }

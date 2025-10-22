@@ -15,13 +15,14 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
-import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
+import jakarta.validation.Valid;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer FamiliensituationenContainer
@@ -43,14 +44,17 @@ public class JaxFamiliensituationContainer extends JaxAbstractDTO {
 	private JaxFamiliensituation familiensituationErstgesuch;
 
 	@Nullable
-	private List<JaxSozialhilfeZeitraumContainer> sozialhilfeZeitraumContainers = new ArrayList<>();
+	private List<JaxSozialhilfeZeitraumContainer> sozialhilfeZeitraumContainers =
+		new ArrayList<>();
 
 	@Nullable
 	public JaxFamiliensituation getFamiliensituationJA() {
 		return familiensituationJA;
 	}
 
-	public void setFamiliensituationJA(JaxFamiliensituation familiensituationJA) {
+	public void setFamiliensituationJA(
+		@Nullable JaxFamiliensituation familiensituationJA
+	) {
 		this.familiensituationJA = familiensituationJA;
 	}
 
@@ -59,7 +63,9 @@ public class JaxFamiliensituationContainer extends JaxAbstractDTO {
 		return familiensituationGS;
 	}
 
-	public void setFamiliensituationGS(JaxFamiliensituation familiensituationGS) {
+	public void setFamiliensituationGS(
+		@Nullable JaxFamiliensituation familiensituationGS
+	) {
 		this.familiensituationGS = familiensituationGS;
 	}
 
@@ -68,7 +74,9 @@ public class JaxFamiliensituationContainer extends JaxAbstractDTO {
 		return familiensituationErstgesuch;
 	}
 
-	public void setFamiliensituationErstgesuch(JaxFamiliensituation familiensituationErstgesuch) {
+	public void setFamiliensituationErstgesuch(
+		@Nullable JaxFamiliensituation familiensituationErstgesuch
+	) {
 		this.familiensituationErstgesuch = familiensituationErstgesuch;
 	}
 
@@ -77,7 +85,9 @@ public class JaxFamiliensituationContainer extends JaxAbstractDTO {
 		return sozialhilfeZeitraumContainers;
 	}
 
-	public void setSozialhilfeZeitraumContainers(@Nullable List<JaxSozialhilfeZeitraumContainer> sozialhilfeZeitraumContainers) {
+	public void setSozialhilfeZeitraumContainers(
+		@Nullable List<JaxSozialhilfeZeitraumContainer> sozialhilfeZeitraumContainers
+	) {
 		this.sozialhilfeZeitraumContainers = sozialhilfeZeitraumContainers;
 	}
 }

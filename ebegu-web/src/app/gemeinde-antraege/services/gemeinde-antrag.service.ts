@@ -16,21 +16,18 @@
  */
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
 import {TSWizardStepXTyp} from '../../../models/enums/TSWizardStepXTyp';
 import {TSGemeindeAntrag} from '../../../models/gemeindeantrag/TSGemeindeAntrag';
-import {TSLastenausgleichTagesschuleAngabenInstitution} from '../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenInstitution';
-import {TSLastenausgleichTagesschuleAngabenInstitutionContainer} from '../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenInstitutionContainer';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {TSPaginationResultDTO} from '../../../models/TSPaginationResultDTO';
+import {TSPaginationResultDTO} from '@kibon/shared/model/dto';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
-import {LogFactory} from '../../core/logging/LogFactory';
 import {DVAntragListFilter} from '../../shared/interfaces/DVAntragListFilter';
 import {PaginationDTO} from '../../shared/interfaces/PaginationDTO';
 
@@ -71,6 +68,12 @@ export class GemeindeAntragService {
         }
         if (filter.aenderungsdatum) {
             params = params.append('timestampMutiert', filter.aenderungsdatum);
+        }
+        if (filter.gemeindeAntragFirstEinreichedatum) {
+            params = params.append(
+                'einreichedatum',
+                filter.gemeindeAntragFirstEinreichedatum
+            );
         }
         if (filter.verantwortlicherGemeindeantraege) {
             params = params.append(
@@ -213,21 +216,5 @@ export class GemeindeAntragService {
         }
         LOG.error('wrong wizardTypStr provided');
         return undefined;
-    }
-
-    public getAllVisibleTagesschulenAngabenForTSLastenausgleich(
-        lastenausgleichId: string
-    ): Observable<TSLastenausgleichTagesschuleAngabenInstitutionContainer[]> {
-        return this.http
-            .get<
-                TSLastenausgleichTagesschuleAngabenInstitution[]
-            >(`${this.API_BASE_URL}/${lastenausgleichId}/tagesschulenantraege`)
-            .pipe(
-                map(lastenausgleichAngabenList =>
-                    this.ebeguRestUtil.parseLastenausgleichTagesschuleAngabenInstitutionContainerList(
-                        lastenausgleichAngabenList
-                    )
-                )
-            );
     }
 }

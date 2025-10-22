@@ -42,23 +42,39 @@ public final class MonatsRule extends AbstractAbschlussRule {
 
 	@Override
 	protected List<BetreuungsangebotTyp> getApplicableAngebotTypes() {
-		return Stream.concat(BetreuungsangebotTyp.getBetreuungsgutscheinTypes().stream(), Stream.of(TAGESSCHULE)).collect(Collectors.toList());
+		return Stream.concat(
+			BetreuungsangebotTyp.getBetreuungsgutscheinTypes().stream(),
+			Stream.of(TAGESSCHULE)
+		).collect(Collectors.toList());
 	}
 
 	@Nonnull
 	@Override
-	protected List<VerfuegungZeitabschnitt> execute(@Nonnull AbstractPlatz platz, @Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	protected List<VerfuegungZeitabschnitt> execute(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		List<VerfuegungZeitabschnitt> monatsSchritte = new ArrayList<>();
 		for (VerfuegungZeitabschnitt zeitabschnitt : zeitabschnitte) {
 			LocalDate gueltigAb = zeitabschnitt.getGueltigkeit().getGueltigAb();
-			LocalDate gueltigBis = zeitabschnitt.getGueltigkeit().getGueltigBis();
+			LocalDate gueltigBis = zeitabschnitt.getGueltigkeit()
+				.getGueltigBis();
 			while (!gueltigAb.isAfter(gueltigBis)) {
-				LocalDate endOfMoth = gueltigAb.with(TemporalAdjusters.lastDayOfMonth());
-				LocalDate enddate = endOfMoth.isAfter(gueltigBis) ? gueltigBis : endOfMoth;
-				VerfuegungZeitabschnitt monatsSchritt = new VerfuegungZeitabschnitt(new DateRange(gueltigAb, enddate));
+				LocalDate endOfMoth = gueltigAb.with(
+					TemporalAdjusters.lastDayOfMonth()
+				);
+				LocalDate enddate = endOfMoth.isAfter(gueltigBis) ?
+					gueltigBis :
+					endOfMoth;
+				VerfuegungZeitabschnitt monatsSchritt =
+					new VerfuegungZeitabschnitt(
+						new DateRange(gueltigAb, enddate)
+					);
 				monatsSchritt.add(zeitabschnitt);
 				monatsSchritte.add(monatsSchritt);
-				gueltigAb = monatsSchritt.getGueltigkeit().getGueltigBis().plusDays(1);
+				gueltigAb = monatsSchritt.getGueltigkeit()
+					.getGueltigBis()
+					.plusDays(1);
 			}
 		}
 		return monatsSchritte;

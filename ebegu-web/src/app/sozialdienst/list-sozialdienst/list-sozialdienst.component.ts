@@ -28,7 +28,8 @@ import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
     selector: 'dv-list-sozialdienst',
     templateUrl: './list-sozialdienst.component.html',
     styleUrls: ['./list-sozialdienst.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ListSozialdienstComponent implements OnInit {
     public hiddenDVTableColumns = [

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
@@ -32,12 +32,17 @@ class KostenMapperTest {
 
 	@Test
 	void importKosten() {
-		ZeitabschnittDTO z = createZeitabschnittDTO(Constants.DEFAULT_GUELTIGKEIT);
+		ZeitabschnittDTO z = createZeitabschnittDTO(
+			Constants.DEFAULT_GUELTIGKEIT
+		);
 		z.setBetreuungskosten(BigDecimal.valueOf(123.45));
 
 		BetreuungsmitteilungPensum actual = new BetreuungsmitteilungPensum();
 		PensumMapper.KOSTEN_MAPPER.toAbstractMahlzeitenPensum(actual, z);
 
-		assertThat(actual.getMonatlicheBetreuungskosten(), comparesEqualTo(BigDecimal.valueOf(123.45)));
+		assertThat(
+			actual.getMonatlicheBetreuungskosten(),
+			comparesEqualTo(BigDecimal.valueOf(123.45))
+		);
 	}
 }

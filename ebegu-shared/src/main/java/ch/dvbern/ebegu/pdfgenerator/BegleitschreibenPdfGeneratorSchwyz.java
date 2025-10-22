@@ -8,35 +8,46 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
 
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import com.lowagie.text.Paragraph;
 import org.jetbrains.annotations.NotNull;
 
-public class BegleitschreibenPdfGeneratorSchwyz extends BegleitschreibenPdfGenerator {
+public class BegleitschreibenPdfGeneratorSchwyz extends
+	BegleitschreibenPdfGenerator {
 
-	private static final String BEGLEITSCHREIBEN_CONTENT_MIT_GEMEINDE_INFO = "PdfGeneration_Begleitschreiben_Content_Mit_Gemeinde_Info";
+	private static final String BEGLEITSCHREIBEN_CONTENT_MIT_GEMEINDE_INFO =
+		"PdfGeneration_Begleitschreiben_Content_Mit_Gemeinde_Info";
 
 	public BegleitschreibenPdfGeneratorSchwyz(
 		@NotNull Gesuch gesuch,
-		@NotNull GemeindeStammdaten stammdaten) {
-		super(gesuch, stammdaten);
+		@NotNull GemeindeStammdaten stammdaten,
+		@NotNull GesuchsperiodeService gesuchsperiodeService
+	) {
+		super(gesuch, stammdaten, gesuchsperiodeService);
 	}
 
 	@Override
 	protected Paragraph getCustomBegleitschreibenParagraph() {
-		return PdfUtil.createParagraph(translate(
-			BEGLEITSCHREIBEN_CONTENT_MIT_GEMEINDE_INFO,
-			this.gemeindeStammdaten.getTelefonForGesuch(getGesuch()),
-			this.gemeindeStammdaten.getEmailForGesuch(getGesuch())), 2);
+		return PdfUtil.createParagraph(
+			translate(
+				BEGLEITSCHREIBEN_CONTENT_MIT_GEMEINDE_INFO,
+				this.gemeindeStammdaten.getTelefonForGesuch(
+					getGesuch()
+				),
+				this.gemeindeStammdaten.getEmailForGesuch(getGesuch())
+			),
+			2
+		);
 	}
 }

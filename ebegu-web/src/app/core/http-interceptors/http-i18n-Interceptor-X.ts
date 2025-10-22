@@ -22,8 +22,8 @@ import {
     HttpRequest
 } from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import {HEADER_ACCEPT_LANGUAGE} from '@kibon/shared/model/constants';
 import {Observable} from 'rxjs';
-import {HEADER_ACCEPT_LANGUAGE} from '../constants/CONSTANTS';
 import {I18nServiceRSRest} from '../../i18n/services/i18nServiceRS.rest';
 
 @Injectable()

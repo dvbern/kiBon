@@ -15,6 +15,26 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
@@ -24,16 +44,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
 /**
@@ -41,13 +51,16 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
  */
 @Audited
 @Entity
-public class DokumentGrund extends AbstractMutableEntity implements Comparable<DokumentGrund> {
+public class DokumentGrund extends AbstractMutableEntity implements
+	Comparable<DokumentGrund> {
 
 	private static final long serialVersionUID = 5417585258130227434L;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dokumentGrund_gesuch_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_dokumentGrund_gesuch_id"),
+		nullable = false,
+		updatable = false)
 	private Gesuch gesuch = null;
 
 	@Enumerated(EnumType.STRING)
@@ -72,7 +85,9 @@ public class DokumentGrund extends AbstractMutableEntity implements Comparable<D
 
 	@Nonnull
 	@Valid
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "dokumentGrund")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "dokumentGrund")
 	private Set<Dokument> dokumente = new HashSet<>();
 
 	// Marker, ob Dokument benötigt wird oder nicht. Nicht in DB
@@ -84,23 +99,31 @@ public class DokumentGrund extends AbstractMutableEntity implements Comparable<D
 
 	public DokumentGrund(DokumentGrundTyp dokumentGrundTyp) {
 		this.dokumentGrundTyp = dokumentGrundTyp;
-		this.needed = !DokumentGrundTyp.isSonstigeOrPapiergesuch(dokumentGrundTyp);
+		this.needed = !DokumentGrundTyp.isSonstigeOrPapiergesuch(
+			dokumentGrundTyp
+		);
 	}
 
 	public DokumentGrund(
 		@Nonnull DokumentGrundTyp dokumentGrundTyp,
 		@Nullable String tag,
 		@Nullable DokumentGrundPersonType personType,
-		@Nullable Integer personNumber) {
+		@Nullable Integer personNumber
+	) {
 
 		this.dokumentGrundTyp = dokumentGrundTyp;
-		this.needed = !DokumentGrundTyp.isSonstigeOrPapiergesuch(dokumentGrundTyp);
+		this.needed = !DokumentGrundTyp.isSonstigeOrPapiergesuch(
+			dokumentGrundTyp
+		);
 		this.tag = tag;
 		this.personType = personType;
 		this.personNumber = personNumber;
 	}
 
-	public DokumentGrund(@Nonnull DokumentGrundTyp dokumentGrundTyp, @Nonnull DokumentTyp dokumentTyp) {
+	public DokumentGrund(
+		@Nonnull DokumentGrundTyp dokumentGrundTyp,
+		@Nonnull DokumentTyp dokumentTyp
+	) {
 		this(dokumentGrundTyp);
 		this.dokumente = new HashSet<>();
 		this.dokumentTyp = dokumentTyp;
@@ -111,7 +134,8 @@ public class DokumentGrund extends AbstractMutableEntity implements Comparable<D
 		@Nullable String tag,
 		@Nullable DokumentGrundPersonType personType,
 		@Nullable Integer personNumber,
-		@Nonnull DokumentTyp dokumentTyp) {
+		@Nonnull DokumentTyp dokumentTyp
+	) {
 
 		this(dokumentGrundTyp, tag, personType, personNumber);
 		this.dokumente = new HashSet<>();
@@ -188,10 +212,18 @@ public class DokumentGrund extends AbstractMutableEntity implements Comparable<D
 
 	@Override
 	public String toString() {
-		return "DokumentGrund{" +
-			"dokumentGrundTyp=" + dokumentGrundTyp +
-			", year='" + tag + '\'' +
-			", dokumente=" + dokumente +
+		return "DokumentGrund{"
+			+
+			"dokumentGrundTyp="
+			+ dokumentGrundTyp
+			+
+			", year='"
+			+ tag
+			+ '\''
+			+
+			", dokumente="
+			+ dokumente
+			+
 			'}';
 	}
 
@@ -223,7 +255,10 @@ public class DokumentGrund extends AbstractMutableEntity implements Comparable<D
 	}
 
 	@Nonnull
-	public DokumentGrund copyDokumentGrund(@Nonnull DokumentGrund target, @Nonnull AntragCopyType copyType) {
+	public DokumentGrund copyDokumentGrund(
+		@Nonnull DokumentGrund target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
@@ -235,9 +270,18 @@ public class DokumentGrund extends AbstractMutableEntity implements Comparable<D
 			target.setPersonType(this.getPersonType());
 			target.setDokumentTyp(this.getDokumentTyp());
 			for (Dokument dokument : this.getDokumente()) {
-				target.getDokumente().add(dokument.copyDokument(new Dokument(), copyType, target));
+				target.getDokumente()
+					.add(
+						dokument.copyDokument(
+							new Dokument(),
+							copyType,
+							target
+						)
+					);
 			}
-			if (DokumentGrundTyp.isSonstigeOrPapiergesuch(this.getDokumentGrundTyp())) {
+			if (DokumentGrundTyp.isSonstigeOrPapiergesuch(
+				this.getDokumentGrundTyp()
+			)) {
 				target.setNeeded(false);
 			} else {
 				target.setNeeded(this.isNeeded());
@@ -262,11 +306,22 @@ public class DokumentGrund extends AbstractMutableEntity implements Comparable<D
 			return false;
 		}
 		final DokumentGrund otherDokumentGrund = (DokumentGrund) other;
-		return getDokumentGrundTyp() == otherDokumentGrund.getDokumentGrundTyp() &&
-			Objects.equals(getTag(), otherDokumentGrund.getTag()) &&
-			getPersonType() == otherDokumentGrund.getPersonType() &&
-			Objects.equals(getPersonNumber(), otherDokumentGrund.getPersonNumber()) &&
-			getDokumentTyp() == otherDokumentGrund.getDokumentTyp() &&
-			EbeguUtil.areListsSameSize(getDokumente(), otherDokumentGrund.getDokumente());
+		return getDokumentGrundTyp() == otherDokumentGrund.getDokumentGrundTyp()
+			&&
+			Objects.equals(getTag(), otherDokumentGrund.getTag())
+			&&
+			getPersonType() == otherDokumentGrund.getPersonType()
+			&&
+			Objects.equals(
+				getPersonNumber(),
+				otherDokumentGrund.getPersonNumber()
+			)
+			&&
+			getDokumentTyp() == otherDokumentGrund.getDokumentTyp()
+			&&
+			EbeguUtil.areListsSameSize(
+				getDokumente(),
+				otherDokumentGrund.getDokumente()
+			);
 	}
 }

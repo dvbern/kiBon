@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.time.DayOfWeek;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.api.enums.JaxExternalModulName;
 
@@ -36,7 +36,10 @@ public class JaxExternalModul implements Serializable {
 	@Nonnull
 	private JaxExternalModulName stufe;
 
-	public JaxExternalModul(@Nonnull DayOfWeek tag, @Nonnull JaxExternalModulName stufe) {
+	public JaxExternalModul(
+		@Nonnull DayOfWeek tag,
+		@Nonnull JaxExternalModulName stufe
+	) {
 		this.tag = tag;
 		this.stufe = stufe;
 	}

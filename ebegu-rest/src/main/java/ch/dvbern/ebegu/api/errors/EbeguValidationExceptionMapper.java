@@ -16,61 +16,102 @@
 package ch.dvbern.ebegu.api.errors;
 
 import javax.annotation.Nullable;
-import javax.validation.ConstraintDeclarationException;
-import javax.validation.ConstraintDefinitionException;
-import javax.validation.ConstraintViolationException;
-import javax.validation.GroupDefinitionException;
-import javax.validation.ValidationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.Provider;
+import jakarta.validation.ConstraintDeclarationException;
+import jakarta.validation.ConstraintDefinitionException;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.GroupDefinitionException;
+import jakarta.validation.ValidationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.resteasy.api.validation.ResteasyViolationException;
+import org.jboss.resteasy.plugins.validation.ResteasyViolationExceptionImpl;
 
 /**
  * Created by imanol on 01.03.16.
  * Exception Mapper der mit Validation Exceptions von javax umgehen kann. Diese werden zum Beispiel geworfen wenn ein
- * ungueltiger Parameter in einen JAX-RS Aufruf reinkommt   .
+ * ungueltiger Parameter in einen JAX-RS Aufruf reinkommt .
  * Der Mapper handhabt auch einige Subklassen von ValidationException
  */
 @Provider
-public class EbeguValidationExceptionMapper extends AbstractEbeguExceptionMapper<ValidationException> {
+public class EbeguValidationExceptionMapper extends
+	AbstractEbeguExceptionMapper<ValidationException> {
 
 	@Override
 	public Response toResponse(ValidationException exception) {
 		if (exception instanceof ConstraintDefinitionException) {
-			return buildResponse(unwrapException(exception), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
+			return buildResponse(
+				unwrapException(exception),
+				MediaType.TEXT_PLAIN,
+				Status.INTERNAL_SERVER_ERROR
+			);
 		}
 		if (exception instanceof ConstraintDeclarationException) {
-			return buildResponse(unwrapException(exception), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
+			return buildResponse(
+				unwrapException(exception),
+				MediaType.TEXT_PLAIN,
+				Status.INTERNAL_SERVER_ERROR
+			);
 		}
 		if (exception instanceof GroupDefinitionException) {
-			return buildResponse(unwrapException(exception), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
+			return buildResponse(
+				unwrapException(exception),
+				MediaType.TEXT_PLAIN,
+				Status.INTERNAL_SERVER_ERROR
+			);
 		}
 		if (exception instanceof ResteasyViolationException) {
-			ResteasyViolationException resteasyViolationException = (ResteasyViolationException) exception;
+			ResteasyViolationException resteasyViolationException =
+				(ResteasyViolationException) exception;
 			Exception e = resteasyViolationException.getException();
 			if (e != null) {
-				return buildResponse(unwrapException(e), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
+				return buildResponse(
+					unwrapException(e),
+					MediaType.TEXT_PLAIN,
+					Status.INTERNAL_SERVER_ERROR
+				);
 			}
-			MediaType acceptMediaType = getAcceptMediaType(resteasyViolationException.getAccept());
+			MediaType acceptMediaType = getAcceptMediaType(
+				resteasyViolationException.getAccept()
+			);
 
-			return ViolationReportCreator.buildViolationReportResponse(resteasyViolationException, Status.BAD_REQUEST, acceptMediaType);
+			return ViolationReportCreator.buildViolationReportResponse(
+				resteasyViolationException,
+				Status.BAD_REQUEST,
+				acceptMediaType
+			);
 		}
 		if (exception instanceof ConstraintViolationException) {
 			ResteasyViolationException resteasyViolationException =
-				new ResteasyViolationException(((ConstraintViolationException) exception).getConstraintViolations());
-			MediaType acceptMediaType = getAcceptMediaType(resteasyViolationException.getAccept());
+				new ResteasyViolationExceptionImpl(
+					((ConstraintViolationException) exception)
+						.getConstraintViolations()
+				);
+			MediaType acceptMediaType = getAcceptMediaType(
+				resteasyViolationException.getAccept()
+			);
 
-			return ViolationReportCreator.buildViolationReportResponse(resteasyViolationException, Status.BAD_REQUEST, acceptMediaType);
+			return ViolationReportCreator.buildViolationReportResponse(
+				resteasyViolationException,
+				Status.BAD_REQUEST,
+				acceptMediaType
+			);
 		}
-		return buildResponse(unwrapException(exception), MediaType.TEXT_PLAIN, Status.INTERNAL_SERVER_ERROR);
+		return buildResponse(
+			unwrapException(exception),
+			MediaType.TEXT_PLAIN,
+			Status.INTERNAL_SERVER_ERROR
+		);
 	}
 
 	@Nullable
 	@Override
-	protected Response buildViolationReportResponse(ValidationException exception, Status status) {
+	protected Response buildViolationReportResponse(
+		ValidationException exception,
+		Status status
+	) {
 		return null;
 	}
 }

@@ -8,14 +8,29 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.dto;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.rules.RuleValidity;
@@ -24,17 +39,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.MultiKeyMap;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
  * DTO für eine Verfügungsbemerkung
  */
 public class VerfuegungsBemerkungDTOList {
-
 
 	/**
 	 * Wir schreiben alle Bemerkungen in ein Set. Damit stellen wir sicher, dass alle Varianten von Bemerkungen drin
@@ -42,7 +50,8 @@ public class VerfuegungsBemerkungDTOList {
 	 * koennen, welche Bemerkungen wir genau benoetigen.
 	 */
 	@Nonnull
-	private final Set<VerfuegungsBemerkungDTO> bemerkungenList = new HashSet<>();
+	private final Set<VerfuegungsBemerkungDTO> bemerkungenList =
+		new HashSet<>();
 
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
@@ -74,20 +83,34 @@ public class VerfuegungsBemerkungDTOList {
 	}
 
 	public boolean containsMsgKey(@Nonnull MsgKey msgKey) {
-		return this.bemerkungenList.stream().anyMatch(bemerkung -> bemerkung.getMsgKey() == msgKey);
+		return this.bemerkungenList.stream()
+			.anyMatch(bemerkung -> bemerkung.getMsgKey() == msgKey);
 	}
 
-	public void addAllBemerkungen(@Nonnull VerfuegungsBemerkungDTOList additionalBemerkungen) {
+	public void addAllBemerkungen(
+		@Nonnull VerfuegungsBemerkungDTOList additionalBemerkungen
+	) {
 		for (VerfuegungsBemerkungDTO additionalBemerkung : additionalBemerkungen.bemerkungenList) {
-			bemerkungenList.add(new VerfuegungsBemerkungDTO(additionalBemerkung));
+			bemerkungenList.add(
+				new VerfuegungsBemerkungDTO(additionalBemerkung)
+			);
 		}
 	}
 
-	public void addBemerkung(@Nonnull RuleValidity ruleValidity, @Nonnull MsgKey msgKey, @Nonnull Locale locale, @Nullable Object... args) {
-		bemerkungenList.add(new VerfuegungsBemerkungDTO(ruleValidity, msgKey, locale, args));
+	public void addBemerkung(
+		@Nonnull RuleValidity ruleValidity,
+		@Nonnull MsgKey msgKey,
+		@Nonnull Locale locale,
+		@Nullable Object... args
+	) {
+		bemerkungenList.add(
+			new VerfuegungsBemerkungDTO(ruleValidity, msgKey, locale, args)
+		);
 	}
 
-	public void addBemerkung(@Nonnull VerfuegungsBemerkungDTO verfuegungsBemerkungDTO) {
+	public void addBemerkung(
+		@Nonnull VerfuegungsBemerkungDTO verfuegungsBemerkungDTO
+	) {
 		bemerkungenList.add(verfuegungsBemerkungDTO);
 	}
 
@@ -96,17 +119,21 @@ public class VerfuegungsBemerkungDTOList {
 		return this.bemerkungenList.stream();
 	}
 
-
 	@Nullable
-	public VerfuegungsBemerkungDTO findFirstBemerkungByMsgKey(@Nonnull MsgKey msgKey) {
+	public VerfuegungsBemerkungDTO findFirstBemerkungByMsgKey(
+		@Nonnull MsgKey msgKey
+	) {
 		return this.bemerkungenList
 			.stream()
 			.filter(bemerkung -> bemerkung.getMsgKey() == msgKey)
-			.findFirst().orElse(null);
+			.findFirst()
+			.orElse(null);
 	}
 
 	@Nonnull
-	private List<VerfuegungsBemerkungDTO> findBemerkungenByMsgKey(@Nonnull MsgKey msgKey) {
+	private List<VerfuegungsBemerkungDTO> findBemerkungenByMsgKey(
+		@Nonnull MsgKey msgKey
+	) {
 		return this.bemerkungenList
 			.stream()
 			.filter(bemerkung -> bemerkung.getMsgKey() == msgKey)
@@ -114,7 +141,9 @@ public class VerfuegungsBemerkungDTOList {
 	}
 
 	public void removeBemerkungByMsgKey(@Nonnull MsgKey msgKey) {
-		List<VerfuegungsBemerkungDTO> toRemoveList = findBemerkungenByMsgKey(msgKey);
+		List<VerfuegungsBemerkungDTO> toRemoveList = findBemerkungenByMsgKey(
+			msgKey
+		);
 		for (VerfuegungsBemerkungDTO verfuegungsBemerkungDTO : toRemoveList) {
 			bemerkungenList.remove(verfuegungsBemerkungDTO);
 		}
@@ -123,9 +152,15 @@ public class VerfuegungsBemerkungDTOList {
 	/**
 	 * Fügt otherBemerkungen zur Liste hinzu
 	 */
-	public void mergeBemerkungenMap(@Nonnull VerfuegungsBemerkungDTOList otherList) {
+	public void mergeBemerkungenMap(
+		@Nonnull VerfuegungsBemerkungDTOList otherList
+	) {
 		otherList.bemerkungenList
-			.forEach(bemerkung -> this.bemerkungenList.add(new VerfuegungsBemerkungDTO(bemerkung)));
+			.forEach(
+				bemerkung -> this.bemerkungenList.add(
+					new VerfuegungsBemerkungDTO(bemerkung)
+				)
+			);
 	}
 
 	/**
@@ -133,9 +168,13 @@ public class VerfuegungsBemerkungDTOList {
 	 * Anspruch FACHSTELLE ueberschreibt Anspruch ERWERBSPENSUM) werden entfernt.
 	 */
 	@Nonnull
-	public List<VerfuegungsBemerkungDTO> getRequiredBemerkungen(boolean isTexteForFKJV) {
+	public List<VerfuegungsBemerkungDTO> getRequiredBemerkungen(
+		boolean isTexteForFKJV
+	) {
 		// Wir muessen bei gleichem MsgKey dejenigen aus ASIV loeschen
-		BemerkungenReplacer bemerkungenRemover = new BemerkungenReplacer(toUniqueMap());
+		BemerkungenReplacer bemerkungenRemover = new BemerkungenReplacer(
+			toUniqueMap()
+		);
 		// Ab jetzt muessen wir die Herkunft (ASIV oder Gemeinde) nicht mehr beachten.
 		return bemerkungenRemover.getRequiredBemerkungen(isTexteForFKJV);
 	}
@@ -151,39 +190,64 @@ public class VerfuegungsBemerkungDTOList {
 		MultiKeyMap messagesMap = new MultiKeyMap();
 		for (VerfuegungsBemerkungDTO verfuegungsBemerkungDTO : bemerkungenList) {
 			VerfuegungsBemerkungDTO maybeExistingMsg =
-				(VerfuegungsBemerkungDTO) messagesMap.get(verfuegungsBemerkungDTO.getMsgKey(), verfuegungsBemerkungDTO.getGueltigkeit());
+				(VerfuegungsBemerkungDTO) messagesMap.get(
+					verfuegungsBemerkungDTO.getMsgKey(),
+					verfuegungsBemerkungDTO.getGueltigkeit()
+				);
 
 			if (maybeExistingMsg != null) {
 				if (maybeExistingMsg.getRuleValidity() == RuleValidity.ASIV) {
-					messagesMap.remove(verfuegungsBemerkungDTO.getMsgKey(), verfuegungsBemerkungDTO.getGueltigkeit());
-					messagesMap.put(verfuegungsBemerkungDTO.getMsgKey(), verfuegungsBemerkungDTO.getGueltigkeit(), verfuegungsBemerkungDTO);
+					messagesMap.remove(
+						verfuegungsBemerkungDTO.getMsgKey(),
+						verfuegungsBemerkungDTO.getGueltigkeit()
+					);
+					messagesMap.put(
+						verfuegungsBemerkungDTO.getMsgKey(),
+						verfuegungsBemerkungDTO.getGueltigkeit(),
+						verfuegungsBemerkungDTO
+					);
 				}
 			} else {
-				messagesMap.put(verfuegungsBemerkungDTO.getMsgKey(), verfuegungsBemerkungDTO.getGueltigkeit(), verfuegungsBemerkungDTO);
+				messagesMap.put(
+					verfuegungsBemerkungDTO.getMsgKey(),
+					verfuegungsBemerkungDTO.getGueltigkeit(),
+					verfuegungsBemerkungDTO
+				);
 			}
 		}
 
-		List<VerfuegungsBemerkungDTO> verfuegungBemerkungList = new ArrayList<>();
+		List<VerfuegungsBemerkungDTO> verfuegungBemerkungList =
+			new ArrayList<>();
 		verfuegungBemerkungList.addAll(messagesMap.values());
-		return verfuegungBemerkungList.stream().collect(Collectors.groupingBy(VerfuegungsBemerkungDTO::getMsgKey));
+		return verfuegungBemerkungList.stream()
+			.collect(
+				Collectors.groupingBy(
+					VerfuegungsBemerkungDTO::getMsgKey
+				)
+			);
 	}
 
 	private static class BemerkungenReplacer {
 
 		private final Map<MsgKey, List<VerfuegungsBemerkungDTO>> messagesMap;
 
-		private BemerkungenReplacer(Map<MsgKey, List<VerfuegungsBemerkungDTO>> messagesMap) {
+		private BemerkungenReplacer(
+			Map<MsgKey, List<VerfuegungsBemerkungDTO>> messagesMap
+		) {
 			this.messagesMap = messagesMap;
 		}
 
-		protected List<VerfuegungsBemerkungDTO> getRequiredBemerkungen(boolean isFKJVText) {
+		protected List<VerfuegungsBemerkungDTO> getRequiredBemerkungen(
+			boolean isFKJVText
+		) {
 			this.removeNotRequiredBemerkungen();
 
 			if (isFKJVText) {
 				this.overwriteASIVBemerkungenWithFKJVBemerkungen();
 			}
 
-			return messagesMap.values().stream()
+			return messagesMap.values()
+				.stream()
 				.flatMap(List::stream)
 				.collect(Collectors.toList());
 		}
@@ -197,41 +261,121 @@ public class VerfuegungsBemerkungDTOList {
 			// 4. Erweiterte Beduefrnisse
 			// 5. Zusatzgutschein
 			// 6. Beenden von Antrag bei Konkubinat
-			if (messagesMap.containsKey(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG)) {
-				removeBemerkungForPeriodes(MsgKey.ERWERBSPENSUM_ANSPRUCH, getGueltigkeitenByMessageKey(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG));
-				removeBemerkungForPeriodes(MsgKey.FACHSTELLE_MSG, getGueltigkeitenByMessageKey(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG));
+			if (messagesMap.containsKey(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+			)) {
+				removeBemerkungForPeriodes(
+					MsgKey.ERWERBSPENSUM_ANSPRUCH,
+					getGueltigkeitenByMessageKey(
+						MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+					)
+				);
+				removeBemerkungForPeriodes(
+					MsgKey.FACHSTELLE_MSG,
+					getGueltigkeitenByMessageKey(
+						MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG
+					)
+				);
 			}
 			if (messagesMap.containsKey(MsgKey.FACHSTELLE_MSG)) {
-				removeBemerkungForPeriodes(MsgKey.ERWERBSPENSUM_ANSPRUCH, getGueltigkeitenByMessageKey(MsgKey.FACHSTELLE_MSG));
+				removeBemerkungForPeriodes(
+					MsgKey.ERWERBSPENSUM_ANSPRUCH,
+					getGueltigkeitenByMessageKey(MsgKey.FACHSTELLE_MSG)
+				);
 			}
 			if (messagesMap.containsKey(MsgKey.ERWERBSPENSUM_EINGEWOEHNUNG)) {
-				removeBemerkungForPeriodes(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH, getGueltigkeitenByMessageKey(MsgKey.ERWERBSPENSUM_EINGEWOEHNUNG));
+				removeBemerkungForPeriodes(
+					MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH,
+					getGueltigkeitenByMessageKey(
+						MsgKey.ERWERBSPENSUM_EINGEWOEHNUNG
+					)
+				);
 			}
-			if (messagesMap.containsKey(MsgKey.KEINE_ERWEITERTE_BEDUERFNISSE_MSG)) {
-				removeBemerkungForPeriodes(MsgKey.ERWEITERTE_BEDUERFNISSE_MSG, getGueltigkeitenByMessageKey(MsgKey.KEINE_ERWEITERTE_BEDUERFNISSE_MSG));
-				// Die Key KEINE_ERWEITERTE_BEDUERFNISSE_MSG soll nicht angezeigt werden, er wird nur verwendet,
-				// um den ERWEITERTE_BEDUERFNISSE_MSG zu überschreiben, desshalb löschen wir in auch
-				removeBemerkungForPeriodes(MsgKey.KEINE_ERWEITERTE_BEDUERFNISSE_MSG, getGueltigkeitenByMessageKey(MsgKey.KEINE_ERWEITERTE_BEDUERFNISSE_MSG));
+			if (messagesMap.containsKey(
+				MsgKey.ZUSATZGUTSCHEIN_NEIN_SOZIALHILFE
+			)) {
+				removeBemerkungForPeriodes(
+					MsgKey.MAHLZEITENVERGUENSTIGUNG_BG_NEIN,
+					getGueltigkeitenByMessageKey(
+						MsgKey.ZUSATZGUTSCHEIN_NEIN_SOZIALHILFE
+					)
+				);
+				removeBemerkungForPeriodes(
+					MsgKey.MAHLZEITENVERGUENSTIGUNG_TS_NEIN,
+					getGueltigkeitenByMessageKey(
+						MsgKey.ZUSATZGUTSCHEIN_NEIN_SOZIALHILFE
+					)
+				);
 			}
-			if (messagesMap.containsKey(MsgKey.ZUSATZGUTSCHEIN_NEIN_SOZIALHILFE)) {
-				removeBemerkungForPeriodes(MsgKey.MAHLZEITENVERGUENSTIGUNG_BG_NEIN, getGueltigkeitenByMessageKey(MsgKey.ZUSATZGUTSCHEIN_NEIN_SOZIALHILFE));
-				removeBemerkungForPeriodes(MsgKey.MAHLZEITENVERGUENSTIGUNG_TS_NEIN, getGueltigkeitenByMessageKey(MsgKey.ZUSATZGUTSCHEIN_NEIN_SOZIALHILFE));
+			if (messagesMap.containsKey(
+				MsgKey.SOZIALHILFEEMPFAENGER_HABEN_KEINEN_ANSPRUCH
+			)) {
+				removeBemerkungForPeriodes(
+					MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG,
+					getGueltigkeitenByMessageKey(
+						MsgKey.SOZIALHILFEEMPFAENGER_HABEN_KEINEN_ANSPRUCH
+					)
+				);
 			}
-			if (messagesMap.containsKey(MsgKey.SOZIALHILFEEMPFAENGER_HABEN_KEINEN_ANSPRUCH)) {
-				removeBemerkungForPeriodes(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG, getGueltigkeitenByMessageKey(MsgKey.SOZIALHILFEEMPFAENGER_HABEN_KEINEN_ANSPRUCH));
+			if (messagesMap.containsKey(
+				MsgKey.FIN_SIT_RUECKWIRKEND_ANGEPASST
+			)) {
+				removeBemerkungForPeriodes(
+					MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG,
+					getGueltigkeitenByMessageKey(
+						MsgKey.FIN_SIT_RUECKWIRKEND_ANGEPASST
+					)
+				);
 			}
-			if (messagesMap.containsKey(MsgKey.FIN_SIT_RUECKWIRKEND_ANGEPASST)) {
-				removeBemerkungForPeriodes(MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG, getGueltigkeitenByMessageKey(MsgKey.FIN_SIT_RUECKWIRKEND_ANGEPASST));
+			if (messagesMap.containsKey(
+				MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG
+			)) {
+				removeBemerkungForPeriodes(
+					MsgKey.FAMILIENSITUATION_KONKUBINAT_MSG,
+					getGueltigkeitenByMessageKey(
+						MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG
+					)
+				);
+				removeBemerkungForPeriodes(
+					MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH,
+					getGueltigkeitenByMessageKey(
+						MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG
+					)
+				);
 			}
-			if (messagesMap.containsKey(MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG)) {
-				removeBemerkungForPeriodes(MsgKey.FAMILIENSITUATION_KONKUBINAT_MSG, getGueltigkeitenByMessageKey(MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG));
-				removeBemerkungForPeriodes(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH, getGueltigkeitenByMessageKey(MsgKey.FAMILIENSITUATION_X_JAHRE_KONKUBINAT_MSG));
-			}
-			if (messagesMap.containsKey(MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_MUTATION_MSG)) {
-				removeBemerkungForPeriodes(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG, getGueltigkeitenByMessageKey(MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_MUTATION_MSG));
+			if (messagesMap.containsKey(
+				MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_MUTATION_MSG
+			)) {
+				removeBemerkungForPeriodes(
+					MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG,
+					getGueltigkeitenByMessageKey(
+						MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_MUTATION_MSG
+					)
+				);
 			}
 			Optional<MsgKey> msgKeySchulstufe = getOptionalMsgKeySchulstufe();
-			msgKeySchulstufe.ifPresent(msgKey -> removeBemerkungForPeriodes(MsgKey.FACHSTELLE_MSG, getGueltigkeitenByMessageKey(msgKey)));
+			msgKeySchulstufe.ifPresent(
+				msgKey -> removeBemerkungForPeriodes(
+					MsgKey.FACHSTELLE_MSG,
+					getGueltigkeitenByMessageKey(msgKey)
+				)
+			);
+			if (messagesMap.containsKey(
+				MsgKey.KEIN_ANSPRUCH_KIND_TERMINIERT
+			)) {
+				removeBemerkungForPeriodes(
+					MsgKey.REDUCKTION_RUECKWIRKEND_MSG,
+					getGueltigkeitenByMessageKey(
+						MsgKey.KEIN_ANSPRUCH_KIND_TERMINIERT
+					)
+				);
+				removeBemerkungForPeriodes(
+					MsgKey.GESCHWISTERBONUS_SCHWYZ,
+					getGueltigkeitenByMessageKey(
+						MsgKey.KEIN_ANSPRUCH_KIND_TERMINIERT
+					)
+				);
+			}
 		}
 
 		private Optional<MsgKey> getOptionalMsgKeySchulstufe() {
@@ -243,8 +387,12 @@ public class VerfuegungsBemerkungDTOList {
 				return Optional.of(MsgKey.SCHULSTUFE_KINDERGARTEN_1_MSG);
 			}
 
-			if (messagesMap.containsKey(MsgKey.SCHULSTUFE_FREIWILLIGER_KINDERGARTEN_MSG)) {
-				return Optional.of(MsgKey.SCHULSTUFE_FREIWILLIGER_KINDERGARTEN_MSG);
+			if (messagesMap.containsKey(
+				MsgKey.SCHULSTUFE_FREIWILLIGER_KINDERGARTEN_MSG
+			)) {
+				return Optional.of(
+					MsgKey.SCHULSTUFE_FREIWILLIGER_KINDERGARTEN_MSG
+				);
 			}
 
 			if (messagesMap.containsKey(MsgKey.SCHULSTUFE_KINDERGARTEN_2_MSG)) {
@@ -260,53 +408,92 @@ public class VerfuegungsBemerkungDTOList {
 		 * Zeiträume {@param periodes}: 01.08-10.08 und 20.08-25.08
 		 * Gültigkeit MessageKey {@param messageKeyToRemove} nach remove: 11.08-19.08 und 26.08-31.08
 		 */
-		private void removeBemerkungForPeriodes(MsgKey messageKeyToRemove, List<DateRange> periodes) {
-			List<VerfuegungsBemerkungDTO> messagesToRemove = messagesMap.get(messageKeyToRemove);
+		private void removeBemerkungForPeriodes(
+			MsgKey messageKeyToRemove,
+			List<DateRange> periodes
+		) {
+			List<VerfuegungsBemerkungDTO> messagesToRemove = messagesMap.get(
+				messageKeyToRemove
+			);
 
-			if(CollectionUtils.isEmpty(messagesToRemove)) {
+			if (CollectionUtils.isEmpty(messagesToRemove)) {
 				return;
 			}
 
-			List<VerfuegungsBemerkungDTO> gueltigeBemerkungen = periodes.stream()
-				.flatMap(gueltigkeit -> getGueltigeBemerkungen(messagesToRemove, gueltigkeit).stream())
+			List<VerfuegungsBemerkungDTO> gueltigeBemerkungen = periodes
+				.stream()
+				.flatMap(
+					gueltigkeit -> getGueltigeBemerkungen(
+						messagesToRemove,
+						gueltigkeit
+					).stream()
+				)
 				.collect(Collectors.toList());
 
 			messagesMap.put(messageKeyToRemove, gueltigeBemerkungen);
 		}
 
-
-
-		private List<VerfuegungsBemerkungDTO> getGueltigeBemerkungen(List<VerfuegungsBemerkungDTO> messagesToRemove, DateRange dateRangeNotGueltig) {
+		private List<VerfuegungsBemerkungDTO> getGueltigeBemerkungen(
+			List<VerfuegungsBemerkungDTO> messagesToRemove,
+			DateRange dateRangeNotGueltig
+		) {
 			return messagesToRemove.stream()
-				.flatMap(verfuegungsBemerkungDTO -> getGueltigeBemerkung(verfuegungsBemerkungDTO, dateRangeNotGueltig).stream())
+				.flatMap(
+					verfuegungsBemerkungDTO -> getGueltigeBemerkung(
+						verfuegungsBemerkungDTO,
+						dateRangeNotGueltig
+					).stream()
+				)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 		}
 
-
-		private List<VerfuegungsBemerkungDTO> getGueltigeBemerkung(VerfuegungsBemerkungDTO verfuegungsBemerkungDTO, DateRange dateRangeNotGueltig) {
-			if(verfuegungsBemerkungDTO.getGueltigkeit() == null) {
+		private List<VerfuegungsBemerkungDTO> getGueltigeBemerkung(
+			VerfuegungsBemerkungDTO verfuegungsBemerkungDTO,
+			DateRange dateRangeNotGueltig
+		) {
+			if (verfuegungsBemerkungDTO.getGueltigkeit() == null) {
 				return Collections.emptyList();
 			}
 
 			//Return: kein gültiges Resultat, wenn Gültigkeit der Bemerkung komplet innerhalb der notGueltigRange ist
-			if(dateRangeNotGueltig.contains(verfuegungsBemerkungDTO.getGueltigkeit())) {
+			if (dateRangeNotGueltig.contains(
+				verfuegungsBemerkungDTO.getGueltigkeit()
+			)) {
 				return Collections.emptyList();
 			}
 
-			Optional<DateRange> overlap = verfuegungsBemerkungDTO.getGueltigkeit().getOverlap(dateRangeNotGueltig);
+			Optional<DateRange> overlap = verfuegungsBemerkungDTO
+				.getGueltigkeit()
+				.getOverlap(dateRangeNotGueltig);
 
-			if(overlap.isEmpty()) {
+			if (overlap.isEmpty()) {
 				return Collections.singletonList(verfuegungsBemerkungDTO);
 			}
 
-			return createGueltigeBemerkungen(verfuegungsBemerkungDTO, overlap.get());
+			return createGueltigeBemerkungen(
+				verfuegungsBemerkungDTO,
+				overlap.get()
+			);
 		}
 
-		private List<VerfuegungsBemerkungDTO> createGueltigeBemerkungen(VerfuegungsBemerkungDTO verfuegungsBemerkungDTO, DateRange overlap) {
+		private List<VerfuegungsBemerkungDTO> createGueltigeBemerkungen(
+			VerfuegungsBemerkungDTO verfuegungsBemerkungDTO,
+			DateRange overlap
+		) {
 			List<VerfuegungsBemerkungDTO> result = new ArrayList<>();
-			result.add(createGueltigeBemerkungFirstRange(verfuegungsBemerkungDTO, overlap));
-			result.add(createGueltigeBemerkungenLastRange(verfuegungsBemerkungDTO, overlap));
+			result.add(
+				createGueltigeBemerkungFirstRange(
+					verfuegungsBemerkungDTO,
+					overlap
+				)
+			);
+			result.add(
+				createGueltigeBemerkungenLastRange(
+					verfuegungsBemerkungDTO,
+					overlap
+				)
+			);
 			return result.stream()
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
@@ -315,75 +502,169 @@ public class VerfuegungsBemerkungDTOList {
 		@Nullable
 		private VerfuegungsBemerkungDTO createGueltigeBemerkungenLastRange(
 			VerfuegungsBemerkungDTO verfuegungsBemerkungDTO,
-			DateRange overlap) {
+			DateRange overlap
+		) {
 			assert verfuegungsBemerkungDTO.getGueltigkeit() != null;
 
-			if(verfuegungsBemerkungDTO.getGueltigkeit().endsBefore(overlap) ||
-				verfuegungsBemerkungDTO.getGueltigkeit().endsSameDay(overlap)) {
+			if (verfuegungsBemerkungDTO.getGueltigkeit().endsBefore(overlap)
+				||
+				verfuegungsBemerkungDTO.getGueltigkeit()
+					.endsSameDay(overlap)) {
 				return null;
 			}
 
-			VerfuegungsBemerkungDTO result = new VerfuegungsBemerkungDTO(verfuegungsBemerkungDTO);
-			result.setGueltigkeit(new DateRange(overlap.getGueltigBis().plusDays(1), verfuegungsBemerkungDTO.getGueltigkeit().getGueltigBis()));
+			VerfuegungsBemerkungDTO result = new VerfuegungsBemerkungDTO(
+				verfuegungsBemerkungDTO
+			);
+			result.setGueltigkeit(
+				new DateRange(
+					overlap.getGueltigBis().plusDays(1),
+					verfuegungsBemerkungDTO.getGueltigkeit()
+						.getGueltigBis()
+				)
+			);
 			return result;
 		}
 
 		@Nullable
 		private VerfuegungsBemerkungDTO createGueltigeBemerkungFirstRange(
 			VerfuegungsBemerkungDTO verfuegungsBemerkungDTO,
-			DateRange overlap) {
+			DateRange overlap
+		) {
 
 			assert verfuegungsBemerkungDTO.getGueltigkeit() != null;
 
-			if(overlap.startsBefore(verfuegungsBemerkungDTO.getGueltigkeit()) ||
-			overlap.startsSameDay(verfuegungsBemerkungDTO.getGueltigkeit())) {
+			if (overlap.startsBefore(verfuegungsBemerkungDTO.getGueltigkeit())
+				||
+				overlap.startsSameDay(
+					verfuegungsBemerkungDTO.getGueltigkeit()
+				)) {
 				return null;
 			}
 
-			VerfuegungsBemerkungDTO result = new VerfuegungsBemerkungDTO(verfuegungsBemerkungDTO);
-			result.setGueltigkeit(new DateRange(verfuegungsBemerkungDTO.getGueltigkeit().getGueltigAb(), overlap.getGueltigAb().minusDays(1)));
+			VerfuegungsBemerkungDTO result = new VerfuegungsBemerkungDTO(
+				verfuegungsBemerkungDTO
+			);
+			result.setGueltigkeit(
+				new DateRange(
+					verfuegungsBemerkungDTO.getGueltigkeit()
+						.getGueltigAb(),
+					overlap.getGueltigAb().minusDays(1)
+				)
+			);
 			return result;
 		}
 
-		private List<DateRange> getGueltigkeitenByMessageKey(MsgKey messageKey) {
-			return messagesMap.get(messageKey).stream()
+		private List<DateRange> getGueltigkeitenByMessageKey(
+			MsgKey messageKey
+		) {
+			return messagesMap.get(messageKey)
+				.stream()
 				.map(VerfuegungsBemerkungDTO::getGueltigkeit)
 				.collect(Collectors.toList());
 		}
 
-
 		private void overwriteASIVBemerkungenWithFKJVBemerkungen() {
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH, MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG, MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_MUTATION_MSG, MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_MUTATION_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG, MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.EINKOMMENSVERSCHLECHTERUNG_NOT_ACCEPT_MSG, MsgKey.EINKOMMENSVERSCHLECHTERUNG_NOT_ACCEPT_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.EINKOMMENSVERSCHLECHTERUNG_ANNULLIERT_MSG, MsgKey.EINKOMMENSVERSCHLECHTERUNG_ANNULLIERT_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.UNBEZAHLTER_URLAUB_MSG, MsgKey.UNBEZAHLTER_URLAUB_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.ERWERBSPENSUM_ANSPRUCH, MsgKey.ERWERBSPENSUM_ANSPRUCH_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG, MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.WOHNSITZ_MSG, MsgKey.WOHNSITZ_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.FACHSTELLE_MSG, MsgKey.FACHSTELLE_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.EINREICHUNGSFRIST_MSG, MsgKey.EINREICHUNGSFRIST_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.REDUCKTION_RUECKWIRKEND_MSG, MsgKey.REDUCKTION_RUECKWIRKEND_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.ANSPRUCHSAENDERUNG_MSG, MsgKey.ANSPRUCHSAENDERUNG_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.SCHULSTUFE_KINDERGARTEN_2_MSG, MsgKey.SCHULSTUFE_KINDERGARTEN_2_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.ERWEITERTE_BEDUERFNISSE_MSG, MsgKey.ERWEITERTE_BEDUERFNISSE_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.VERFUEGUNG_MIT_ANSPRUCH, MsgKey.VERFUEGUNG_MIT_ANSPRUCH_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.EINKOMMEN_MAX_MSG, MsgKey.EINKOMMEN_MAX_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG, MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.ABWESENHEIT_MSG, MsgKey.ABWESENHEIT_MSG_FKJV);
-			overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG, MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG_FKJV);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH,
+				MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG,
+				MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_ERSTGESUCH_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_MUTATION_MSG,
+				MsgKey.EINKOMMEN_FINSIT_ABGELEHNT_MUTATION_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG,
+				MsgKey.EINKOMMENSVERSCHLECHTERUNG_ACCEPT_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.EINKOMMENSVERSCHLECHTERUNG_NOT_ACCEPT_MSG,
+				MsgKey.EINKOMMENSVERSCHLECHTERUNG_NOT_ACCEPT_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.EINKOMMENSVERSCHLECHTERUNG_ANNULLIERT_MSG,
+				MsgKey.EINKOMMENSVERSCHLECHTERUNG_ANNULLIERT_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.UNBEZAHLTER_URLAUB_MSG,
+				MsgKey.UNBEZAHLTER_URLAUB_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.ERWERBSPENSUM_ANSPRUCH,
+				MsgKey.ERWERBSPENSUM_ANSPRUCH_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG,
+				MsgKey.AUSSERORDENTLICHER_ANSPRUCH_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.WOHNSITZ_MSG,
+				MsgKey.WOHNSITZ_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.FACHSTELLE_MSG,
+				MsgKey.FACHSTELLE_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.EINREICHUNGSFRIST_MSG,
+				MsgKey.EINREICHUNGSFRIST_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.REDUCKTION_RUECKWIRKEND_MSG,
+				MsgKey.REDUCKTION_RUECKWIRKEND_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.ANSPRUCHSAENDERUNG_MSG,
+				MsgKey.ANSPRUCHSAENDERUNG_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.SCHULSTUFE_KINDERGARTEN_2_MSG,
+				MsgKey.SCHULSTUFE_KINDERGARTEN_2_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.ERWEITERTE_BEDUERFNISSE_MSG,
+				MsgKey.ERWEITERTE_BEDUERFNISSE_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.VERFUEGUNG_MIT_ANSPRUCH,
+				MsgKey.VERFUEGUNG_MIT_ANSPRUCH_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.EINKOMMEN_MAX_MSG,
+				MsgKey.EINKOMMEN_MAX_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG,
+				MsgKey.EINKOMMEN_SOZIALHILFEEMPFAENGER_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.ABWESENHEIT_MSG,
+				MsgKey.ABWESENHEIT_MSG_FKJV
+			);
+			overwriteASIVBemerkungenWithFKJVBemerkungen(
+				MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG,
+				MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG_FKJV
+			);
 		}
 
-		private void overwriteASIVBemerkungenWithFKJVBemerkungen(MsgKey bemerkungToReplace, MsgKey replaceWithBemerkung) {
+		private void overwriteASIVBemerkungenWithFKJVBemerkungen(
+			MsgKey bemerkungToReplace,
+			MsgKey replaceWithBemerkung
+		) {
 			if (!messagesMap.containsKey(bemerkungToReplace)) {
 				return;
 			}
 
 			messagesMap
 				.get(bemerkungToReplace)
-				.forEach(verfuegungsBemerkungDTO -> verfuegungsBemerkungDTO.setMsgKey(replaceWithBemerkung));
+				.forEach(
+					verfuegungsBemerkungDTO -> verfuegungsBemerkungDTO
+						.setMsgKey(replaceWithBemerkung)
+				);
 		}
 	}
 }

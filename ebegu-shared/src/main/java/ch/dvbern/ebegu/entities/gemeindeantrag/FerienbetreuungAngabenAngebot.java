@@ -28,18 +28,18 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Adresse;
@@ -74,7 +74,8 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_angebot_adresse_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_angebot_adresse_id"))
 	private Adresse angebotAdresse;
 
 	@Nullable
@@ -122,7 +123,8 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private FerienbetreuungFormularStatus status = FerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE;;
+	private FerienbetreuungFormularStatus status =
+		FerienbetreuungFormularStatus.IN_BEARBEITUNG;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
@@ -201,47 +203,69 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 	@Column(length = Constants.DB_TEXTAREA_LENGTH)
 	private String bemerkungenTarifsystem;
 
-	public FerienbetreuungAngabenAngebot() {}
+	public FerienbetreuungAngabenAngebot() {
+	}
 
 	public FerienbetreuungAngabenAngebot(FerienbetreuungAngabenAngebot toCopy) {
 		this.angebot = toCopy.angebot;
 		this.angebotKontaktpersonVorname = toCopy.angebotKontaktpersonVorname;
 		this.angebotKontaktpersonNachname = toCopy.angebotKontaktpersonNachname;
-		if(toCopy.angebotAdresse != null) {
-			this.angebotAdresse = toCopy.angebotAdresse.copyAdresse(new Adresse(), AntragCopyType.MUTATION);
+		if (toCopy.angebotAdresse != null) {
+			this.angebotAdresse = toCopy.angebotAdresse.copyAdresse(
+				new Adresse(),
+				AntragCopyType.MUTATION
+			);
 		}
 
-		this.anzahlFerienwochenFruehlingsferien = toCopy.anzahlFerienwochenFruehlingsferien;
-		this.anzahlFerienwochenSommerferien = toCopy.anzahlFerienwochenSommerferien;
-		this.anzahlFerienwochenSportferien = toCopy.anzahlFerienwochenSportferien;
-		this.anzahlFerienwochenHerbstferien = toCopy.anzahlFerienwochenHerbstferien;
-		this.anzahlFerienwochenWinterferien = toCopy.anzahlFerienwochenWinterferien;
+		this.anzahlFerienwochenFruehlingsferien =
+			toCopy.anzahlFerienwochenFruehlingsferien;
+		this.anzahlFerienwochenSommerferien =
+			toCopy.anzahlFerienwochenSommerferien;
+		this.anzahlFerienwochenSportferien =
+			toCopy.anzahlFerienwochenSportferien;
+		this.anzahlFerienwochenHerbstferien =
+			toCopy.anzahlFerienwochenHerbstferien;
+		this.anzahlFerienwochenWinterferien =
+			toCopy.anzahlFerienwochenWinterferien;
 		this.anzahlTage = toCopy.anzahlTage;
-		this.bemerkungenAnzahlFerienwochen = toCopy.bemerkungenAnzahlFerienwochen;
+		this.bemerkungenAnzahlFerienwochen =
+			toCopy.bemerkungenAnzahlFerienwochen;
 
-		this.finanziellBeteiligteGemeinden = new TreeSet<>(toCopy.finanziellBeteiligteGemeinden);
+		this.finanziellBeteiligteGemeinden = new TreeSet<>(
+			toCopy.finanziellBeteiligteGemeinden
+		);
 
 		this.gemeindeFuehrtAngebotSelber = toCopy.gemeindeFuehrtAngebotSelber;
-		this.gemeindeFuehrtAngebotInKooperation = toCopy.gemeindeFuehrtAngebotInKooperation;
-		this.gemeindeBeauftragtExterneAnbieter = toCopy.gemeindeBeauftragtExterneAnbieter;
-		this.angebotVereineUndPrivateIntegriert = toCopy.angebotVereineUndPrivateIntegriert;
+		this.gemeindeFuehrtAngebotInKooperation =
+			toCopy.gemeindeFuehrtAngebotInKooperation;
+		this.gemeindeBeauftragtExterneAnbieter =
+			toCopy.gemeindeBeauftragtExterneAnbieter;
+		this.angebotVereineUndPrivateIntegriert =
+			toCopy.angebotVereineUndPrivateIntegriert;
 		this.bemerkungenKooperation = toCopy.bemerkungenKooperation;
 
-		this.anzahlStundenProBetreuungstag = toCopy.anzahlStundenProBetreuungstag;
+		this.anzahlStundenProBetreuungstag =
+			toCopy.anzahlStundenProBetreuungstag;
 		this.betreuungErfolgtTagsueber = toCopy.betreuungErfolgtTagsueber;
 		this.bemerkungenOeffnungszeiten = toCopy.bemerkungenOeffnungszeiten;
 
-		this.leitungDurchPersonMitAusbildung = toCopy.leitungDurchPersonMitAusbildung;
-		this.betreuungDurchPersonenMitErfahrung = toCopy.betreuungDurchPersonenMitErfahrung;
+		this.leitungDurchPersonMitAusbildung =
+			toCopy.leitungDurchPersonMitAusbildung;
+		this.betreuungDurchPersonenMitErfahrung =
+			toCopy.betreuungDurchPersonenMitErfahrung;
 		this.anzahlKinderAngemessen = toCopy.anzahlKinderAngemessen;
 		this.betreuungsschluessel = toCopy.betreuungsschluessel;
 		this.bemerkungenPersonal = toCopy.bemerkungenPersonal;
 
 		this.fixerTarifKinderDerGemeinde = toCopy.fixerTarifKinderDerGemeinde;
-		this.einkommensabhaengigerTarifKinderDerGemeinde = toCopy.einkommensabhaengigerTarifKinderDerGemeinde;
-		this.tagesschuleTarifGiltFuerFerienbetreuung = toCopy.tagesschuleTarifGiltFuerFerienbetreuung;
-		this.ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet = toCopy.ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
-		this.kinderAusAnderenGemeindenZahlenAnderenTarif = toCopy.kinderAusAnderenGemeindenZahlenAnderenTarif;
+		this.einkommensabhaengigerTarifKinderDerGemeinde =
+			toCopy.einkommensabhaengigerTarifKinderDerGemeinde;
+		this.tagesschuleTarifGiltFuerFerienbetreuung =
+			toCopy.tagesschuleTarifGiltFuerFerienbetreuung;
+		this.ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet =
+			toCopy.ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
+		this.kinderAusAnderenGemeindenZahlenAnderenTarif =
+			toCopy.kinderAusAnderenGemeindenZahlenAnderenTarif;
 
 		this.bemerkungenTarifsystem = toCopy.bemerkungenTarifsystem;
 	}
@@ -260,7 +284,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return angebotKontaktpersonVorname;
 	}
 
-	public void setAngebotKontaktpersonVorname(@Nullable String angebotKontaktpersonVorname) {
+	public void setAngebotKontaktpersonVorname(
+		@Nullable String angebotKontaktpersonVorname
+	) {
 		this.angebotKontaktpersonVorname = angebotKontaktpersonVorname;
 	}
 
@@ -269,7 +295,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return angebotKontaktpersonNachname;
 	}
 
-	public void setAngebotKontaktpersonNachname(@Nullable String angebotKontaktpersonNachname) {
+	public void setAngebotKontaktpersonNachname(
+		@Nullable String angebotKontaktpersonNachname
+	) {
 		this.angebotKontaktpersonNachname = angebotKontaktpersonNachname;
 	}
 
@@ -287,7 +315,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return anzahlFerienwochenHerbstferien;
 	}
 
-	public void setAnzahlFerienwochenHerbstferien(@Nullable BigDecimal anzahlFerienwochenHerbstferien) {
+	public void setAnzahlFerienwochenHerbstferien(
+		@Nullable BigDecimal anzahlFerienwochenHerbstferien
+	) {
 		this.anzahlFerienwochenHerbstferien = anzahlFerienwochenHerbstferien;
 	}
 
@@ -296,7 +326,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return anzahlFerienwochenWinterferien;
 	}
 
-	public void setAnzahlFerienwochenWinterferien(@Nullable BigDecimal anzahlFerienwochenWinterferien) {
+	public void setAnzahlFerienwochenWinterferien(
+		@Nullable BigDecimal anzahlFerienwochenWinterferien
+	) {
 		this.anzahlFerienwochenWinterferien = anzahlFerienwochenWinterferien;
 	}
 
@@ -305,8 +337,11 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return anzahlFerienwochenFruehlingsferien;
 	}
 
-	public void setAnzahlFerienwochenFruehlingsferien(@Nullable BigDecimal anzahlFerienwochenFruehlingsferien) {
-		this.anzahlFerienwochenFruehlingsferien = anzahlFerienwochenFruehlingsferien;
+	public void setAnzahlFerienwochenFruehlingsferien(
+		@Nullable BigDecimal anzahlFerienwochenFruehlingsferien
+	) {
+		this.anzahlFerienwochenFruehlingsferien =
+			anzahlFerienwochenFruehlingsferien;
 	}
 
 	@Nullable
@@ -314,7 +349,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return anzahlFerienwochenSommerferien;
 	}
 
-	public void setAnzahlFerienwochenSommerferien(@Nullable BigDecimal anzahlFerienwochenSommerferien) {
+	public void setAnzahlFerienwochenSommerferien(
+		@Nullable BigDecimal anzahlFerienwochenSommerferien
+	) {
 		this.anzahlFerienwochenSommerferien = anzahlFerienwochenSommerferien;
 	}
 
@@ -332,7 +369,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return bemerkungenAnzahlFerienwochen;
 	}
 
-	public void setBemerkungenAnzahlFerienwochen(@Nullable String bemerkungenAnzahlFerienwochen) {
+	public void setBemerkungenAnzahlFerienwochen(
+		@Nullable String bemerkungenAnzahlFerienwochen
+	) {
 		this.bemerkungenAnzahlFerienwochen = bemerkungenAnzahlFerienwochen;
 	}
 
@@ -341,7 +380,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return anzahlStundenProBetreuungstag;
 	}
 
-	public void setAnzahlStundenProBetreuungstag(@Nullable BigDecimal anzahlStundenProBetreuungstag) {
+	public void setAnzahlStundenProBetreuungstag(
+		@Nullable BigDecimal anzahlStundenProBetreuungstag
+	) {
 		this.anzahlStundenProBetreuungstag = anzahlStundenProBetreuungstag;
 	}
 
@@ -350,7 +391,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return betreuungErfolgtTagsueber;
 	}
 
-	public void setBetreuungErfolgtTagsueber(@Nullable Boolean betreuungErfolgtTagsueber) {
+	public void setBetreuungErfolgtTagsueber(
+		@Nullable Boolean betreuungErfolgtTagsueber
+	) {
 		this.betreuungErfolgtTagsueber = betreuungErfolgtTagsueber;
 	}
 
@@ -359,7 +402,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return bemerkungenOeffnungszeiten;
 	}
 
-	public void setBemerkungenOeffnungszeiten(@Nullable String bemerkungenOeffnungszeiten) {
+	public void setBemerkungenOeffnungszeiten(
+		@Nullable String bemerkungenOeffnungszeiten
+	) {
 		this.bemerkungenOeffnungszeiten = bemerkungenOeffnungszeiten;
 	}
 
@@ -368,7 +413,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return finanziellBeteiligteGemeinden;
 	}
 
-	public void setFinanziellBeteiligteGemeinden(@Nonnull Set<String> finanziellBeteiligteGemeinden) {
+	public void setFinanziellBeteiligteGemeinden(
+		@Nonnull Set<String> finanziellBeteiligteGemeinden
+	) {
 		this.finanziellBeteiligteGemeinden = finanziellBeteiligteGemeinden;
 	}
 
@@ -377,7 +424,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return gemeindeFuehrtAngebotSelber;
 	}
 
-	public void setGemeindeFuehrtAngebotSelber(@Nullable Boolean gemeindeFuehrtAngebotSelber) {
+	public void setGemeindeFuehrtAngebotSelber(
+		@Nullable Boolean gemeindeFuehrtAngebotSelber
+	) {
 		this.gemeindeFuehrtAngebotSelber = gemeindeFuehrtAngebotSelber;
 	}
 
@@ -386,8 +435,11 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return gemeindeBeauftragtExterneAnbieter;
 	}
 
-	public void setGemeindeBeauftragtExterneAnbieter(@Nullable Boolean gemeindeBeauftragtExterneAnbieter) {
-		this.gemeindeBeauftragtExterneAnbieter = gemeindeBeauftragtExterneAnbieter;
+	public void setGemeindeBeauftragtExterneAnbieter(
+		@Nullable Boolean gemeindeBeauftragtExterneAnbieter
+	) {
+		this.gemeindeBeauftragtExterneAnbieter =
+			gemeindeBeauftragtExterneAnbieter;
 	}
 
 	@Nullable
@@ -395,8 +447,11 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return angebotVereineUndPrivateIntegriert;
 	}
 
-	public void setAngebotVereineUndPrivateIntegriert(@Nullable Boolean angebotVereineUndPrivateIntegriert) {
-		this.angebotVereineUndPrivateIntegriert = angebotVereineUndPrivateIntegriert;
+	public void setAngebotVereineUndPrivateIntegriert(
+		@Nullable Boolean angebotVereineUndPrivateIntegriert
+	) {
+		this.angebotVereineUndPrivateIntegriert =
+			angebotVereineUndPrivateIntegriert;
 	}
 
 	@Nullable
@@ -404,7 +459,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return bemerkungenKooperation;
 	}
 
-	public void setBemerkungenKooperation(@Nullable String bemerkungenKooperation) {
+	public void setBemerkungenKooperation(
+		@Nullable String bemerkungenKooperation
+	) {
 		this.bemerkungenKooperation = bemerkungenKooperation;
 	}
 
@@ -413,7 +470,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return leitungDurchPersonMitAusbildung;
 	}
 
-	public void setLeitungDurchPersonMitAusbildung(@Nullable Boolean leitungDurchPersonMitAusbildung) {
+	public void setLeitungDurchPersonMitAusbildung(
+		@Nullable Boolean leitungDurchPersonMitAusbildung
+	) {
 		this.leitungDurchPersonMitAusbildung = leitungDurchPersonMitAusbildung;
 	}
 
@@ -422,8 +481,11 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return betreuungDurchPersonenMitErfahrung;
 	}
 
-	public void setBetreuungDurchPersonenMitErfahrung(@Nullable Boolean betreuungDurchPersonenMitErfahrung) {
-		this.betreuungDurchPersonenMitErfahrung = betreuungDurchPersonenMitErfahrung;
+	public void setBetreuungDurchPersonenMitErfahrung(
+		@Nullable Boolean betreuungDurchPersonenMitErfahrung
+	) {
+		this.betreuungDurchPersonenMitErfahrung =
+			betreuungDurchPersonenMitErfahrung;
 	}
 
 	@Nullable
@@ -431,7 +493,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return anzahlKinderAngemessen;
 	}
 
-	public void setAnzahlKinderAngemessen(@Nullable Boolean anzahlKinderAngemessen) {
+	public void setAnzahlKinderAngemessen(
+		@Nullable Boolean anzahlKinderAngemessen
+	) {
 		this.anzahlKinderAngemessen = anzahlKinderAngemessen;
 	}
 
@@ -458,7 +522,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return fixerTarifKinderDerGemeinde;
 	}
 
-	public void setFixerTarifKinderDerGemeinde(@Nullable Boolean fixerTarifKinderDerGemeinde) {
+	public void setFixerTarifKinderDerGemeinde(
+		@Nullable Boolean fixerTarifKinderDerGemeinde
+	) {
 		this.fixerTarifKinderDerGemeinde = fixerTarifKinderDerGemeinde;
 	}
 
@@ -467,8 +533,11 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return einkommensabhaengigerTarifKinderDerGemeinde;
 	}
 
-	public void setEinkommensabhaengigerTarifKinderDerGemeinde(@Nullable Boolean einkommensabhaengigerTarifKinderDerGemeinde) {
-		this.einkommensabhaengigerTarifKinderDerGemeinde = einkommensabhaengigerTarifKinderDerGemeinde;
+	public void setEinkommensabhaengigerTarifKinderDerGemeinde(
+		@Nullable Boolean einkommensabhaengigerTarifKinderDerGemeinde
+	) {
+		this.einkommensabhaengigerTarifKinderDerGemeinde =
+			einkommensabhaengigerTarifKinderDerGemeinde;
 	}
 
 	@Nullable
@@ -476,8 +545,11 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return tagesschuleTarifGiltFuerFerienbetreuung;
 	}
 
-	public void setTagesschuleTarifGiltFuerFerienbetreuung(@Nullable Boolean tagesschuleTarifGiltFuerFerienbetreuung) {
-		this.tagesschuleTarifGiltFuerFerienbetreuung = tagesschuleTarifGiltFuerFerienbetreuung;
+	public void setTagesschuleTarifGiltFuerFerienbetreuung(
+		@Nullable Boolean tagesschuleTarifGiltFuerFerienbetreuung
+	) {
+		this.tagesschuleTarifGiltFuerFerienbetreuung =
+			tagesschuleTarifGiltFuerFerienbetreuung;
 	}
 
 	@Nullable
@@ -485,8 +557,11 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
 	}
 
-	public void setFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet(@Nullable Boolean ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet) {
-		this.ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet = ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
+	public void setFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet(
+		@Nullable Boolean ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet
+	) {
+		this.ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet =
+			ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
 	}
 
 	@Nullable
@@ -497,7 +572,8 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 	public void setKinderAusAnderenGemeindenZahlenAnderenTarif(
 		@Nullable KinderAusAnderenGemeindenZahlenAnderenTarifAnswer kinderAusAnderenGemeindenZahlenAnderenTarif
 	) {
-		this.kinderAusAnderenGemeindenZahlenAnderenTarif = kinderAusAnderenGemeindenZahlenAnderenTarif;
+		this.kinderAusAnderenGemeindenZahlenAnderenTarif =
+			kinderAusAnderenGemeindenZahlenAnderenTarif;
 	}
 
 	@Nullable
@@ -505,7 +581,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return bemerkungenTarifsystem;
 	}
 
-	public void setBemerkungenTarifsystem(@Nullable String bemerkungenTarifsystem) {
+	public void setBemerkungenTarifsystem(
+		@Nullable String bemerkungenTarifsystem
+	) {
 		this.bemerkungenTarifsystem = bemerkungenTarifsystem;
 	}
 
@@ -515,7 +593,8 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 	}
 
 	public boolean isReadyForFreigeben() {
-		return checkPropertiesNotNull() && status == FerienbetreuungFormularStatus.ABGESCHLOSSEN;
+		return checkPropertiesNotNull()
+			&& status == FerienbetreuungFormularStatus.ABGESCHLOSSEN;
 	}
 
 	public boolean isReadyForAbschluss() {
@@ -562,7 +641,9 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return anzahlFerienwochenSportferien;
 	}
 
-	public void setAnzahlFerienwochenSportferien(@Nullable BigDecimal anzahlFerienwochenSportferien) {
+	public void setAnzahlFerienwochenSportferien(
+		@Nullable BigDecimal anzahlFerienwochenSportferien
+	) {
 		this.anzahlFerienwochenSportferien = anzahlFerienwochenSportferien;
 	}
 
@@ -571,31 +652,57 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		return gemeindeFuehrtAngebotInKooperation;
 	}
 
-	public void setGemeindeFuehrtAngebotInKooperation(@Nullable Boolean gemeindeFuehrtAngebotInKooperation) {
-		this.gemeindeFuehrtAngebotInKooperation = gemeindeFuehrtAngebotInKooperation;
+	public void setGemeindeFuehrtAngebotInKooperation(
+		@Nullable Boolean gemeindeFuehrtAngebotInKooperation
+	) {
+		this.gemeindeFuehrtAngebotInKooperation =
+			gemeindeFuehrtAngebotInKooperation;
 	}
 
 	public void copyForErneuerung(FerienbetreuungAngabenAngebot target) {
 		target.setAngebot(getAngebot());
 		// Kontaktperson
 		target.setAngebotKontaktpersonVorname(getAngebotKontaktpersonVorname());
-		target.setAngebotKontaktpersonNachname(getAngebotKontaktpersonNachname());
+		target.setAngebotKontaktpersonNachname(
+			getAngebotKontaktpersonNachname()
+		);
 		// Adresse
 		if (getAngebotAdresse() != null) {
-			target.setAngebotAdresse(getAngebotAdresse().copyAdresse(new Adresse(), AntragCopyType.ERNEUERUNG));
+			target.setAngebotAdresse(
+				getAngebotAdresse().copyAdresse(
+					new Adresse(),
+					AntragCopyType.ERNEUERUNG
+				)
+			);
 		}
 		// Kooperation
 		target.setGemeindeFuehrtAngebotSelber(getGemeindeFuehrtAngebotSelber());
-		target.setGemeindeFuehrtAngebotInKooperation(getGemeindeFuehrtAngebotInKooperation());
-		target.setGemeindeBeauftragtExterneAnbieter(getGemeindeBeauftragtExterneAnbieter());
-		target.setFinanziellBeteiligteGemeinden(new HashSet<>(getFinanziellBeteiligteGemeinden()));
-		target.setAngebotVereineUndPrivateIntegriert(getAngebotVereineUndPrivateIntegriert());
+		target.setGemeindeFuehrtAngebotInKooperation(
+			getGemeindeFuehrtAngebotInKooperation()
+		);
+		target.setGemeindeBeauftragtExterneAnbieter(
+			getGemeindeBeauftragtExterneAnbieter()
+		);
+		target.setFinanziellBeteiligteGemeinden(
+			new HashSet<>(getFinanziellBeteiligteGemeinden())
+		);
+		target.setAngebotVereineUndPrivateIntegriert(
+			getAngebotVereineUndPrivateIntegriert()
+		);
 		// Tarife
-		target.setTagesschuleTarifGiltFuerFerienbetreuung(getTagesschuleTarifGiltFuerFerienbetreuung());
-		target.setFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet(getFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet());
-		target.setEinkommensabhaengigerTarifKinderDerGemeinde(getEinkommensabhaengigerTarifKinderDerGemeinde());
+		target.setTagesschuleTarifGiltFuerFerienbetreuung(
+			getTagesschuleTarifGiltFuerFerienbetreuung()
+		);
+		target.setFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet(
+			getFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet()
+		);
+		target.setEinkommensabhaengigerTarifKinderDerGemeinde(
+			getEinkommensabhaengigerTarifKinderDerGemeinde()
+		);
 		target.setFixerTarifKinderDerGemeinde(getFixerTarifKinderDerGemeinde());
-		target.setKinderAusAnderenGemeindenZahlenAnderenTarif(getKinderAusAnderenGemeindenZahlenAnderenTarif());
+		target.setKinderAusAnderenGemeindenZahlenAnderenTarif(
+			getKinderAusAnderenGemeindenZahlenAnderenTarif()
+		);
 	}
 
 	public boolean isDelegationsmodell() {
@@ -605,6 +712,7 @@ public class FerienbetreuungAngabenAngebot extends AbstractEntity {
 		if (this.gemeindeBeauftragtExterneAnbieter == null) {
 			return false;
 		}
-		return !this.gemeindeFuehrtAngebotSelber && this.gemeindeBeauftragtExterneAnbieter;
+		return !this.gemeindeFuehrtAngebotSelber
+			&& this.gemeindeBeauftragtExterneAnbieter;
 	}
 }

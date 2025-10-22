@@ -8,23 +8,23 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Entitaet zum Speichern von Verrechnungsdetails in der Datenbank.
@@ -36,44 +36,54 @@ public class VerrechnungKibonDetail extends AbstractEntity {
 
 	@NotNull
 	@ManyToOne(optional = false, cascade = CascadeType.PERSIST)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_verrechnungdetail_verrechnung_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_verrechnungdetail_verrechnung_id"))
 	private VerrechnungKibon verrechnungKibon;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_verrechnungdetail_gemeinde_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_verrechnungdetail_gemeinde_id"), updatable = false)
 	private Gemeinde gemeinde;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_verrechnungdetail_gesuchsperiode_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_verrechnungdetail_gesuchsperiode_id"), updatable = false)
 	private Gesuchsperiode gesuchsperiode;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Long totalBg;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Long totalTs;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Long totalBgTs;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Long totalKeinAngebot;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Long totalFi;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Long totalTagi;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Long totalFiTagi;
 
@@ -85,7 +95,9 @@ public class VerrechnungKibonDetail extends AbstractEntity {
 		return verrechnungKibon;
 	}
 
-	public void setVerrechnungKibon(@Nonnull VerrechnungKibon verrechnungKibon) {
+	public void setVerrechnungKibon(
+		@Nonnull VerrechnungKibon verrechnungKibon
+	) {
 		this.verrechnungKibon = verrechnungKibon;
 	}
 
@@ -192,7 +204,10 @@ public class VerrechnungKibonDetail extends AbstractEntity {
 
 	@Nonnull
 	public Long getTotalKanton() {
-		return getTotalBg() + getTotalTs() + getTotalBgTs()+ getTotalKeinAngebot();
+		return getTotalBg()
+			+ getTotalTs()
+			+ getTotalBgTs()
+			+ getTotalKeinAngebot();
 	}
 
 	@Nonnull

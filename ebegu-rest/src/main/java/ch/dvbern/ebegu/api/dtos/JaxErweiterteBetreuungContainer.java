@@ -15,10 +15,10 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
-import javax.validation.Valid;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.Valid;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * DTO fuer Erweiterte Betreuung Container
@@ -39,7 +39,9 @@ public class JaxErweiterteBetreuungContainer extends JaxAbstractDTO {
 		return erweiterteBetreuungGS;
 	}
 
-	public void setErweiterteBetreuungGS(JaxErweiterteBetreuung erweiterteBetreuungGS) {
+	public void setErweiterteBetreuungGS(
+		JaxErweiterteBetreuung erweiterteBetreuungGS
+	) {
 		this.erweiterteBetreuungGS = erweiterteBetreuungGS;
 	}
 
@@ -47,7 +49,9 @@ public class JaxErweiterteBetreuungContainer extends JaxAbstractDTO {
 		return erweiterteBetreuungJA;
 	}
 
-	public void setErweiterteBetreuungJA(JaxErweiterteBetreuung erweiterteBetreuungJA) {
+	public void setErweiterteBetreuungJA(
+		JaxErweiterteBetreuung erweiterteBetreuungJA
+	) {
 		this.erweiterteBetreuungJA = erweiterteBetreuungJA;
 	}
 }

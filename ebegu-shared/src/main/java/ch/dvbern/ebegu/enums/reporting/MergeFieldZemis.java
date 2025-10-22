@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.enums.reporting;
@@ -36,18 +36,24 @@ public enum MergeFieldZemis implements MergeFieldProvider {
 
 	jahr(new SimpleMergeField<>("berechnungsjahr", STRING_CONVERTER)),
 
-	fall(new SimpleMergeField<>("fall", LONG_CONVERTER)),
-	periode(new SimpleMergeField<>("periode", STRING_CONVERTER)),
-	gemeinde(new SimpleMergeField<>("gemeinde", STRING_CONVERTER)),
-	name(new SimpleMergeField<>("name", STRING_CONVERTER)),
-	vorname(new SimpleMergeField<>("vorname", STRING_CONVERTER)),
-	kindNummer(new SimpleMergeField<>("kindId", INTEGER_CONVERTER)),
-	geburtsdatum(new SimpleMergeField<>("geburtsdatum", DATE_CONVERTER)),
-	zemisNummer(new SimpleMergeField<>("zemisNummer", STRING_CONVERTER)),
-	keinSelbstbehaltFuerGemeinde(new SimpleMergeField<>("keinSelbstbehaltFuerGemeinde", BOOLEAN_NULL_CONVERTER)),
+	fall(new SimpleMergeField<>("fall", LONG_CONVERTER)), periode(
+		new SimpleMergeField<>("periode", STRING_CONVERTER)
+	), gemeinde(new SimpleMergeField<>("gemeinde", STRING_CONVERTER)), name(
+		new SimpleMergeField<>("name", STRING_CONVERTER)
+	), vorname(new SimpleMergeField<>("vorname", STRING_CONVERTER)), kindNummer(
+		new SimpleMergeField<>("kindId", INTEGER_CONVERTER)
+	), geburtsdatum(
+		new SimpleMergeField<>("geburtsdatum", DATE_CONVERTER)
+	), zemisNummer(
+		new SimpleMergeField<>("zemisNummer", STRING_CONVERTER)
+	), keinSelbstbehaltFuerGemeinde(
+		new SimpleMergeField<>(
+			"keinSelbstbehaltFuerGemeinde",
+			BOOLEAN_NULL_CONVERTER
+		)
+	),
 
 	repeatRow(new RepeatRowMergeField("repeatRow"));
-
 
 	@Nonnull
 	private final MergeField<?> mergeField;

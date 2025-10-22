@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.BindingProvider;
-import javax.xml.ws.Service;
+import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.Service;
 
 import ch.bedag.geres.schemas._20180101.geresresidentinfoservice.ResidentInfoPortType;
 import ch.dvbern.ebegu.config.EbeguConfiguration;
@@ -38,10 +38,14 @@ import org.slf4j.LoggerFactory;
 
 @RequiredArgsConstructor
 abstract class AbstractGeresPortFactory {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGeresPortFactory.class.getSimpleName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(
+		AbstractGeresPortFactory.class.getSimpleName()
+	);
 
-	public static final String METHOD_NAME_INIT_GERES_WEB_SERVICE_PORT = "initGeresResidentInfoServicePort";
-	private static final String TARGET_NAME_SPACE = "http://geres.bedag.ch/schemas/20180101/GeresResidentInfoService";
+	public static final String METHOD_NAME_INIT_GERES_WEB_SERVICE_PORT =
+		"initGeresResidentInfoServicePort";
+	private static final String TARGET_NAME_SPACE =
+		"http://geres.bedag.ch/schemas/20180101/GeresResidentInfoService";
 	private static final String SERVICE_NAME = "GeresResidentInfoService";
 
 	@Getter
@@ -54,8 +58,13 @@ abstract class AbstractGeresPortFactory {
 		try {
 			LOGGER.info("GeresResidentInfoService Endpoint: {}", endpointURL);
 			var url = getWsdlUrl();
-			LOGGER.info("GeresResidentInfoService TargetNameSpace: " + TARGET_NAME_SPACE);
-			LOGGER.info("GeresResidentInfoService ServiceName: " + SERVICE_NAME);
+			LOGGER.info(
+				"GeresResidentInfoService TargetNameSpace: "
+					+ TARGET_NAME_SPACE
+			);
+			LOGGER.info(
+				"GeresResidentInfoService ServiceName: " + SERVICE_NAME
+			);
 			final QName qname = new QName(TARGET_NAME_SPACE, SERVICE_NAME);
 			LOGGER.info("GeresResidentInfoService QName: {}", qname);
 			final Service service = Service.create(url, qname);
@@ -66,14 +75,22 @@ abstract class AbstractGeresPortFactory {
 
 			LOGGER.info("ResidentInfoPortType Port created: {}", port);
 			final BindingProvider bp = (BindingProvider) port;
-			bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointURL);
+			bp.getRequestContext()
+				.put(
+					BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+					endpointURL
+				);
 			customizeRequestContext(bp.getRequestContext());
 
 			LOGGER.info("GeresResidentInfoService erfolgreich initialisiert");
 			return port;
 		} catch (RuntimeException e) {
-			throw new PersonenSucheServiceException(METHOD_NAME_INIT_GERES_WEB_SERVICE_PORT,
-				"Could not create service-port GeresResidentInfoService for endpoint " + endpointURL, e);
+			throw new PersonenSucheServiceException(
+				METHOD_NAME_INIT_GERES_WEB_SERVICE_PORT,
+				"Could not create service-port GeresResidentInfoService for endpoint "
+					+ endpointURL,
+				e
+			);
 		}
 
 	}
@@ -83,7 +100,8 @@ abstract class AbstractGeresPortFactory {
 		if (StringUtils.isEmpty(endpointURL)) {
 			throw new PersonenSucheServiceException(
 				METHOD_NAME_INIT_GERES_WEB_SERVICE_PORT,
-				"Es wurde keine Endpunkt URL definiert fuer den GeresResidentInfoService");
+				"Es wurde keine Endpunkt URL definiert fuer den GeresResidentInfoService"
+			);
 		}
 		return endpointURL;
 	}
@@ -96,24 +114,32 @@ abstract class AbstractGeresPortFactory {
 				LOGGER.info("GeresResidentInfoService WSDL: {}", wsdlURL);
 				URL urlFromConfig = new URL(wsdlURL);
 				Object content = urlFromConfig.getContent();
-				LOGGER.debug("GeresResidentInfoService WSDL-Content: {}", content);
+				LOGGER.debug(
+					"GeresResidentInfoService WSDL-Content: {}",
+					content
+				);
 				return urlFromConfig;
 			} catch (IOException e) {
 				LOGGER.warn("Geres WSDL from config not found at: {}", wsdlURL);
 			}
 		}
 
-		var defaultUrl = AbstractGeresPortFactory.class.getResource("/wsdl/geres/GeresResidentInfo_v1801.wsdl");
+		var defaultUrl = AbstractGeresPortFactory.class.getResource(
+			"/wsdl/geres/GeresResidentInfo_v1801.wsdl"
+		);
 		LOGGER.info("Using default Geres WSDL at {}", defaultUrl);
 
 		return Objects.requireNonNull(
 			defaultUrl,
-			"WSDL konnte unter der angegebenen URI nicht gefunden werden. Kann Service-Port nicht erstellen");
+			"WSDL konnte unter der angegebenen URI nicht gefunden werden. Kann Service-Port nicht erstellen"
+		);
 	}
 
 	protected abstract String getGeresUrl();
 
 	protected abstract void customizeService(Service service);
 
-	protected abstract void customizeRequestContext(Map<String, Object> requestContext);
+	protected abstract void customizeRequestContext(
+		Map<String, Object> requestContext
+	);
 }

@@ -20,8 +20,7 @@ import java.util.List;
 
 public enum GemeindeStatus {
 
-	AKTIV,
-	EINGELADEN;
+	AKTIV, EINGELADEN;
 
 	public boolean isEnabled() {
 		return AKTIV == this;

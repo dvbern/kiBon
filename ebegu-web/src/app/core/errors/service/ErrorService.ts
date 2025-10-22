@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import IRootScopeService = angular.IRootScopeService;
+import {IRootScopeService, copy} from 'angular';
 import {DVErrorMessageCallback} from '../../../../models/DVErrorMessageCallback';
 import {TSMessageEvent} from '../../../../models/enums/TSErrorEvent';
 import {TSErrorLevel} from '../../../../models/enums/TSErrorLevel';
@@ -28,7 +28,7 @@ export class ErrorService {
     public constructor(private readonly $rootScope: IRootScopeService) {}
 
     public getErrors(): Array<TSExceptionReport> {
-        return angular.copy(this.errors);
+        return copy(this.errors);
     }
 
     /**

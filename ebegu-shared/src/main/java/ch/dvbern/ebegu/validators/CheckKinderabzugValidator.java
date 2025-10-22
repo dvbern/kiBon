@@ -17,18 +17,22 @@ package ch.dvbern.ebegu.validators;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.Kind;
 
 /**
  * Stellt sicher, dass die Angaben zum Kinderabzug korrekt sind
  */
-public class CheckKinderabzugValidator implements ConstraintValidator<CheckKinderabzug, Kind> {
+public class CheckKinderabzugValidator implements
+	ConstraintValidator<CheckKinderabzug, Kind> {
 
 	@Override
-	public boolean isValid(@Nonnull Kind kind, @Nullable ConstraintValidatorContext context) {
+	public boolean isValid(
+		@Nonnull Kind kind,
+		@Nullable ConstraintValidatorContext context
+	) {
 		if (!validatePflegekind(kind)) {
 			return false;
 		}

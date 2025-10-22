@@ -14,28 +14,29 @@
  */
 
 import {waitForAsync} from '@angular/core/testing';
-import {IHttpBackendService, IQService, IScope} from 'angular';
-import * as moment from 'moment';
+import {TSDateRange} from '@kibon/shared/model/entity';
+import angular, {IHttpBackendService, IQService, IScope} from 'angular';
+import moment from 'moment';
 import {CORE_JS_MODULE} from '../../app/core/core.angularjs.module';
 import {AntragStatusHistoryRS} from '../../app/core/service/antragStatusHistoryRS.rest';
-import {BetreuungRS} from '../../app/core/service/betreuungRS.rest';
+import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
 import {KindRS} from '../../app/core/service/kindRS.rest';
 import {VerfuegungRS} from '../../app/core/service/verfuegungRS.rest';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../hybridTools/translationsMock';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
 import {TSAntragStatus} from '../../models/enums/TSAntragStatus';
-import {TSBetreuungsangebotTyp} from '../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSBetreuungsstatus} from '../../models/enums/betreuung/TSBetreuungsstatus';
 import {TSCreationAction} from '../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
 import {TSFamilienstatus} from '../../models/enums/TSFamilienstatus';
 import {TSGesuchBetreuungenStatus} from '../../models/enums/TSGesuchBetreuungenStatus';
-import {TSGesuchsperiodeStatus} from '../../models/enums/TSGesuchsperiodeStatus';
+import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
+
 import {TSGesuchstellerKardinalitaet} from '../../models/enums/TSGesuchstellerKardinalitaet';
 import {TSUnterhaltsvereinbarungAnswer} from '../../models/enums/TSUnterhaltsvereinbarungAnswer';
-import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSAntragStatusHistory} from '../../models/TSAntragStatusHistory';
 import {TSBenutzerNoDetails} from '../../models/TSBenutzerNoDetails';
 import {TSBetreuung} from '../../models/TSBetreuung';
@@ -43,13 +44,12 @@ import {TSDossier} from '../../models/TSDossier';
 import {TSFamiliensituation} from '../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../models/TSFamiliensituationContainer';
 import {TSGesuch} from '../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../models/TSGesuchsperiode';
-import {TSInstitutionStammdaten} from '../../models/TSInstitutionStammdaten';
-import {TSKind} from '../../models/TSKind';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
+import {TSKind} from '@kibon/kind/model/entity';
 import {TSKindContainer} from '../../models/TSKindContainer';
 import {TSVerfuegung} from '../../models/TSVerfuegung';
-import {TSDateRange} from '../../models/types/TSDateRange';
-import {DateUtil} from '../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {TestDataUtil} from '../../utils/TestDataUtil.spec';
 import {DossierRS} from './dossierRS.rest';
 import {GesuchModelManager} from './gesuchModelManager';
@@ -230,7 +230,7 @@ describe('gesuchModelManager', () => {
                     )
                     .then(() => {
                         gesuchModelManager.getGesuch().timestampErstellt =
-                            DateUtil.today();
+                            MomentUtil.today();
                         gesuchModelManager.saveGesuchAndFall();
 
                         scope.$apply();
@@ -335,7 +335,7 @@ describe('gesuchModelManager', () => {
             it('should return true for a list with Kinder needing Betreuung', () => {
                 const kind = new TSKindContainer();
                 kind.kindJA = new TSKind();
-                kind.kindJA.timestampErstellt = DateUtil.today();
+                kind.kindJA.timestampErstellt = MomentUtil.today();
                 kind.kindJA.familienErgaenzendeBetreuung = true;
                 spyOn(gesuchModelManager, 'getKinderList').and.returnValue([
                     kind
@@ -677,7 +677,7 @@ describe('gesuchModelManager', () => {
 
                 const gesuch = new TSGesuch();
                 gesuch.id = '123';
-                spyOn(gesuchRS, 'findGesuchForInstitution').and.returnValue(
+                spyOn(gesuchRS, 'findGesuch').and.returnValue(
                     $q.resolve(gesuch)
                 );
                 spyOn(authServiceRS, 'isOneOfRoles').and.returnValue(true);
@@ -694,9 +694,7 @@ describe('gesuchModelManager', () => {
                 gesuchModelManager.openGesuch(gesuch.id);
                 scope.$apply();
 
-                expect(gesuchRS.findGesuchForInstitution).toHaveBeenCalledWith(
-                    gesuch.id
-                );
+                expect(gesuchRS.findGesuch).toHaveBeenCalledWith(gesuch.id);
                 expect(gesuchModelManager.getGesuch()).toEqual(gesuch);
             });
             it('should call findGesuch for other role but Institution/Traegerschaft', () => {

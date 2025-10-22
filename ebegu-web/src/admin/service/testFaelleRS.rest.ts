@@ -15,14 +15,12 @@
 
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {TSGemeindeAntragTyp} from '../../models/enums/TSGemeindeAntragTyp';
-import {TSGemeinde} from '../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../models/TSGesuchsperiode';
-import {DateUtil} from '../../utils/DateUtil';
+import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 
 @Injectable({
@@ -80,17 +78,21 @@ export class TestFaelleRS {
             `${this.serviceURL}/mutationHeirat/${dossierid}/${encodeURIComponent(gesuchsperiodeid)}`,
             {
                 params: {
-                    mutationsdatum: DateUtil.momentToLocalDate(mutationsdatum),
-                    aenderungper: DateUtil.momentToLocalDate(aenderungper)
+                    mutationsdatum:
+                        MomentUtil.momentToLocalDate(mutationsdatum),
+                    aenderungper: MomentUtil.momentToLocalDate(aenderungper)
                 }
             }
         );
     }
 
-    public testAllMails(mailadresse: string): Observable<void> {
-        return this.http.get<void>(
-            `${this.serviceURL}/mailtest/${mailadresse}`
-        );
+    public testAllMails(
+        mailadresse: string,
+        gemeindeId: string
+    ): Observable<void> {
+        return this.http.get<void>(`${this.serviceURL}/mailtest`, {
+            params: {mailadresse, gemeindeId}
+        });
     }
 
     public mutiereFallScheidung(
@@ -102,27 +104,9 @@ export class TestFaelleRS {
         const url = `${this.serviceURL}/mutationScheidung/${dossierid}/${encodeURIComponent(gesuchsperiodeid)}`;
         return this.http.get(url, {
             params: {
-                mutationsdatum: DateUtil.momentToLocalDate(mutationsdatum),
-                aenderungper: DateUtil.momentToLocalDate(aenderungper)
+                mutationsdatum: MomentUtil.momentToLocalDate(mutationsdatum),
+                aenderungper: MomentUtil.momentToLocalDate(aenderungper)
             },
-            responseType: 'text'
-        });
-    }
-
-    public resetSchulungsdaten(): Observable<string> {
-        return this.http.get(`${this.serviceURL}/schulung/reset`, {
-            responseType: 'text'
-        });
-    }
-
-    public createSchulungsdaten(): Observable<string> {
-        return this.http.get(`${this.serviceURL}/schulung/create`, {
-            responseType: 'text'
-        });
-    }
-
-    public deleteSchulungsdaten(): Observable<string> {
-        return this.http.delete(`${this.serviceURL}/schulung/delete`, {
             responseType: 'text'
         });
     }
@@ -131,12 +115,6 @@ export class TestFaelleRS {
         return this.http.get(`${this.serviceURL}/schulung/tutorial/create`, {
             responseType: 'text'
         });
-    }
-
-    public getSchulungBenutzer(): Observable<string[]> {
-        return this.http
-            .get(`${this.serviceURL}/schulung/public/user`)
-            .pipe(map((response: any) => response));
     }
 
     public processScript(scriptNr: string): Observable<any> {

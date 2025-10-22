@@ -25,14 +25,15 @@ import {
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 
 @Component({
     selector: 'dv-benutzer-rolle',
     templateUrl: './benutzer-rolle.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class BenutzerRolleComponent implements OnInit {
     @Input() public name: string;

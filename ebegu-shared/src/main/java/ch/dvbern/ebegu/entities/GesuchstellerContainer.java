@@ -15,6 +15,23 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+
 import ch.dvbern.ebegu.dto.suchfilter.lucene.Searchable;
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.Taetigkeit;
@@ -26,67 +43,80 @@ import ch.dvbern.ebegu.validators.CheckGesuchstellerContainerComplete;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.*;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 /**
  * Entitaet zum Speichern von GesuchContainer in der Datenbank.
  */
 @Audited
-@CheckGesuchstellerContainerComplete(groups = AntragCompleteValidationGroup.class)
+@CheckGesuchstellerContainerComplete(
+	groups = AntragCompleteValidationGroup.class)
 @Entity
 @Indexed
-@Analyzer(definition = "EBEGUGermanAnalyzer")
-public class GesuchstellerContainer extends AbstractMutableEntity implements Searchable {
+public class GesuchstellerContainer extends AbstractMutableEntity implements
+	Searchable {
 
 	private static final long serialVersionUID = -8403117439764700618L;
 
 	@Valid
 	@Nullable
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gesuchsteller_container_gesuchstellergs_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gesuchsteller_container_gesuchstellergs_id"),
+		nullable = true)
 	private Gesuchsteller gesuchstellerGS;
 
 	@Valid
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_gesuchsteller_container_gesuchstellerja_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_gesuchsteller_container_gesuchstellerja_id"),
+		nullable = true)
 	@IndexedEmbedded
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW) // automatic re-indexing requires bidirectional relationship
 	private Gesuchsteller gesuchstellerJA;
 
 	@Nullable
 	@Valid
-	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "gesuchstellerContainer")
+	@OneToOne(optional = true,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "gesuchstellerContainer")
 	private FinanzielleSituationContainer finanzielleSituationContainer;
 
 	@Nullable
 	@Valid
-	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "gesuchstellerContainer")
+	@OneToOne(optional = true,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "gesuchstellerContainer")
 	private EinkommensverschlechterungContainer einkommensverschlechterungContainer;
 
 	@Nonnull
 	@Valid
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "gesuchstellerContainer")
-	private Set<ErwerbspensumContainer> erwerbspensenContainers = new HashSet<>();
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "gesuchstellerContainer")
+	private Set<ErwerbspensumContainer> erwerbspensenContainers =
+		new HashSet<>();
 
 	@Valid
 	@Nonnull
 	// es handelt sich um eine "private" Relation, das heisst Adressen koennen nie einer anderen Gesuchsteller zugeordnet werden
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "gesuchstellerContainer")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "gesuchstellerContainer")
 	private List<GesuchstellerAdresseContainer> adressen = new ArrayList<>();
 
 	public GesuchstellerContainer() {
 	}
 
 	@CanIgnoreReturnValue
-	public boolean addAdresse(@Nonnull final GesuchstellerAdresseContainer gesuchstellerAdresseContainer) {
+	public boolean addAdresse(
+		@Nonnull final GesuchstellerAdresseContainer gesuchstellerAdresseContainer
+	) {
 		gesuchstellerAdresseContainer.setGesuchstellerContainer(this);
 		if (adressen.contains(gesuchstellerAdresseContainer)) {
 			return false;
@@ -117,7 +147,9 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 		return adressen;
 	}
 
-	public void setAdressen(@Nonnull final List<GesuchstellerAdresseContainer> adressen) {
+	public void setAdressen(
+		@Nonnull final List<GesuchstellerAdresseContainer> adressen
+	) {
 		this.adressen = adressen;
 	}
 
@@ -166,9 +198,12 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 		}
 
 		final Set<ErwerbspensumContainer> erwerbspensen = new HashSet<>();
-		final ErwerbspensumContainer erwerbspensum = new ErwerbspensumContainer();
+		final ErwerbspensumContainer erwerbspensum =
+			new ErwerbspensumContainer();
 		Erwerbspensum pensumJA = new Erwerbspensum();
-		pensumJA.setGueltigkeit(new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME));
+		pensumJA.setGueltigkeit(
+			new DateRange(Constants.START_OF_TIME, Constants.END_OF_TIME)
+		);
 		pensumJA.setPensum(0);
 		pensumJA.setTaetigkeit(Taetigkeit.ANGESTELLT);
 		erwerbspensum.setErwerbspensumJA(pensumJA);
@@ -176,23 +211,33 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 		return erwerbspensen;
 	}
 
-	public void setErwerbspensenContainers(@Nonnull final Set<ErwerbspensumContainer> erwerbspensenContainers) {
+	public void setErwerbspensenContainers(
+		@Nonnull final Set<ErwerbspensumContainer> erwerbspensenContainers
+	) {
 		this.erwerbspensenContainers = erwerbspensenContainers;
 	}
 
-	public void setFinanzielleSituationContainer(@Nullable final FinanzielleSituationContainer
-		finanzielleSituationContainer) {
+	public void setFinanzielleSituationContainer(
+		@Nullable final FinanzielleSituationContainer finanzielleSituationContainer
+	) {
 		this.finanzielleSituationContainer = finanzielleSituationContainer;
-		if (this.finanzielleSituationContainer != null &&
-			(this.finanzielleSituationContainer.getGesuchsteller() == null || !this.finanzielleSituationContainer.getGesuchsteller().equals(this))) {
+		if (this.finanzielleSituationContainer != null
+			&&
+			(this.finanzielleSituationContainer.getGesuchsteller() == null
+				|| !this.finanzielleSituationContainer
+					.getGesuchsteller()
+					.equals(this))) {
 			this.finanzielleSituationContainer.setGesuchsteller(this);
 		}
 	}
 
 	@CanIgnoreReturnValue
-	public boolean addErwerbspensumContainer(final ErwerbspensumContainer erwerbspensumToAdd) {
+	public boolean addErwerbspensumContainer(
+		final ErwerbspensumContainer erwerbspensumToAdd
+	) {
 		erwerbspensumToAdd.setGesuchsteller(this);
-		return !erwerbspensenContainers.contains(erwerbspensumToAdd) && erwerbspensenContainers.add(erwerbspensumToAdd);
+		return !erwerbspensenContainers.contains(erwerbspensumToAdd)
+			&& erwerbspensenContainers.add(erwerbspensumToAdd);
 	}
 
 	@Nullable
@@ -200,10 +245,17 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 		return einkommensverschlechterungContainer;
 	}
 
-	public void setEinkommensverschlechterungContainer(@Nullable final EinkommensverschlechterungContainer einkommensverschlechterungContainer) {
-		this.einkommensverschlechterungContainer = einkommensverschlechterungContainer;
-		if (einkommensverschlechterungContainer != null &&
-			(einkommensverschlechterungContainer.getGesuchsteller() == null || !einkommensverschlechterungContainer.getGesuchsteller().equals(this))) {
+	public void setEinkommensverschlechterungContainer(
+		@Nullable final EinkommensverschlechterungContainer einkommensverschlechterungContainer
+	) {
+		this.einkommensverschlechterungContainer =
+			einkommensverschlechterungContainer;
+		if (einkommensverschlechterungContainer != null
+			&&
+			(einkommensverschlechterungContainer.getGesuchsteller() == null
+				|| !einkommensverschlechterungContainer
+					.getGesuchsteller()
+					.equals(this))) {
 			einkommensverschlechterungContainer.setGesuchsteller(this);
 		}
 	}
@@ -242,12 +294,18 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 	}
 
 	@Nonnull
-	public GesuchstellerContainer copyGesuchstellerContainer(@Nonnull GesuchstellerContainer target, @Nonnull AntragCopyType copyType) {
+	public GesuchstellerContainer copyGesuchstellerContainer(
+		@Nonnull GesuchstellerContainer target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		target.setGesuchstellerGS(null);
 
 		if (this.getGesuchstellerJA() != null) {
-			target.setGesuchstellerJA(this.getGesuchstellerJA().copyGesuchsteller(new Gesuchsteller(), copyType));
+			target.setGesuchstellerJA(
+				this.getGesuchstellerJA()
+					.copyGesuchsteller(new Gesuchsteller(), copyType)
+			);
 		}
 		switch (copyType) {
 		case MUTATION:
@@ -269,40 +327,86 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 		return target;
 	}
 
-	public void copyFinanzen(@Nonnull GesuchstellerContainer target, @Nonnull AntragCopyType copyType) {
+	public void copyFinanzen(
+		@Nonnull GesuchstellerContainer target,
+		@Nonnull AntragCopyType copyType
+	) {
 		if (this.getFinanzielleSituationContainer() != null) {
-			target.setFinanzielleSituationContainer(this.getFinanzielleSituationContainer()
-				.copyFinanzielleSituationContainer(new FinanzielleSituationContainer(), copyType, this));
+			target.setFinanzielleSituationContainer(
+				this.getFinanzielleSituationContainer()
+					.copyFinanzielleSituationContainer(
+						new FinanzielleSituationContainer(),
+						copyType,
+						this
+					)
+			);
 		}
 		if (this.getEinkommensverschlechterungContainer() != null) {
-			target.setEinkommensverschlechterungContainer(this.getEinkommensverschlechterungContainer()
-				.copyEinkommensverschlechterungContainer(new EinkommensverschlechterungContainer(), copyType, this));
+			target.setEinkommensverschlechterungContainer(
+				this.getEinkommensverschlechterungContainer()
+					.copyEinkommensverschlechterungContainer(
+						new EinkommensverschlechterungContainer(),
+						copyType,
+						this
+					)
+			);
 		}
 	}
 
-	private void copyErwerbspensen(@Nonnull GesuchstellerContainer target, @Nonnull AntragCopyType copyType) {
-		for (ErwerbspensumContainer erwerbspensumContainer : this.getErwerbspensenContainers()) {
-			target.addErwerbspensumContainer(erwerbspensumContainer.copyErwerbspensumContainer(new ErwerbspensumContainer(), copyType, this));
+	private void copyErwerbspensen(
+		@Nonnull GesuchstellerContainer target,
+		@Nonnull AntragCopyType copyType
+	) {
+		for (ErwerbspensumContainer erwerbspensumContainer : this
+			.getErwerbspensenContainers()) {
+			target.addErwerbspensumContainer(
+				erwerbspensumContainer.copyErwerbspensumContainer(
+					new ErwerbspensumContainer(),
+					copyType,
+					this
+				)
+			);
 		}
 	}
 
-	private void copyAdressenAll(@Nonnull GesuchstellerContainer target, @Nonnull AntragCopyType copyType) {
-		for (GesuchstellerAdresseContainer gesuchstellerAdresse : this.getAdressen()) {
+	private void copyAdressenAll(
+		@Nonnull GesuchstellerContainer target,
+		@Nonnull AntragCopyType copyType
+	) {
+		for (GesuchstellerAdresseContainer gesuchstellerAdresse : this
+			.getAdressen()) {
 			if (gesuchstellerAdresse.getGesuchstellerAdresseJA() != null) {
-				target.addAdresse(gesuchstellerAdresse.copyGesuchstellerAdresseContainer(new GesuchstellerAdresseContainer(), copyType, this));
+				target.addAdresse(
+					gesuchstellerAdresse.copyGesuchstellerAdresseContainer(
+						new GesuchstellerAdresseContainer(),
+						copyType,
+						this
+					)
+				);
 			}
 		}
 	}
 
 	@SuppressWarnings("PMD.CollapsibleIfStatements")
-	private void copyAdressenAktuellUndZukuenftig(@Nonnull GesuchstellerContainer target, @Nonnull AntragCopyType copyType) {
-		for (GesuchstellerAdresseContainer gesuchstellerAdresse : this.getAdressen()) {
+	private void copyAdressenAktuellUndZukuenftig(
+		@Nonnull GesuchstellerContainer target,
+		@Nonnull AntragCopyType copyType
+	) {
+		for (GesuchstellerAdresseContainer gesuchstellerAdresse : this
+			.getAdressen()) {
 			if (gesuchstellerAdresse.getGesuchstellerAdresseJA() != null) {
 				// Nur aktuelle und zukuenftige Adressen kopieren. Aus Sicht HEUTE und nicht per Anfang Gesuchsperiode, da schon vorher Briefe
 				// geschickt werden muessen
-				if (!Objects.requireNonNull(gesuchstellerAdresse.extractGueltigkeit()).endsBefore(LocalDate.now())) {
-					GesuchstellerAdresseContainer adresseContainer = gesuchstellerAdresse.copyGesuchstellerAdresseContainer(
-						new GesuchstellerAdresseContainer(), copyType,this);
+				if (!Objects.requireNonNull(
+					gesuchstellerAdresse.extractGueltigkeit()
+				).endsBefore(LocalDate.now())) {
+					GesuchstellerAdresseContainer adresseContainer =
+						gesuchstellerAdresse
+							.copyGesuchstellerAdresseContainer(
+								new GesuchstellerAdresseContainer(),
+								copyType,
+								this
+							);
 					target.addAdresse(adresseContainer);
 				}
 			}
@@ -314,13 +418,17 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 	 */
 	//TODO (team) so was ähnliches kommt auch im PrintUtil.getGesuchstellerAdresse bzw. in den neuen PDFGenerators vor!
 	@Nullable
-	public GesuchstellerAdresse extractEffektiveKorrespondezAdresse(LocalDate stichtag) {
-		final GesuchstellerAdresseContainer korrespondezAdresse = extractKorrespondezAdresse();
+	public GesuchstellerAdresse extractEffektiveKorrespondezAdresse(
+		LocalDate stichtag
+	) {
+		final GesuchstellerAdresseContainer korrespondezAdresse =
+			extractKorrespondezAdresse();
 		if (korrespondezAdresse != null) {
 			return korrespondezAdresse.getGesuchstellerAdresseJA();
 		}
 		for (GesuchstellerAdresseContainer adresse : getAdressen()) {
-			if (AdresseTyp.WOHNADRESSE == adresse.extractAdresseTyp() && adresse.extractGueltigkeit().contains(stichtag)) {
+			if (AdresseTyp.WOHNADRESSE == adresse.extractAdresseTyp()
+				&& adresse.extractGueltigkeit().contains(stichtag)) {
 				return adresse.getGesuchstellerAdresseJA();
 			}
 		}
@@ -330,7 +438,8 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 	@Nullable
 	public GesuchstellerAdresse getWohnadresseAm(LocalDate stichtag) {
 		for (GesuchstellerAdresseContainer adresse : getAdressen()) {
-			if (AdresseTyp.WOHNADRESSE == adresse.extractAdresseTyp() && adresse.extractGueltigkeit().contains(stichtag)) {
+			if (AdresseTyp.WOHNADRESSE == adresse.extractAdresseTyp()
+				&& adresse.extractGueltigkeit().contains(stichtag)) {
 				return adresse.getGesuchstellerAdresseJA();
 			}
 		}
@@ -341,8 +450,12 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 	public List<Erwerbspensum> getErwerbspensenAm(LocalDate stichtag) {
 		List<Erwerbspensum> erwerbspensenInZeitraum = new ArrayList<>();
 		for (ErwerbspensumContainer erwerbspensumContainer : getErwerbspensenContainersNotEmpty()) {
-			if (erwerbspensumContainer.getErwerbspensumJA().getGueltigkeit().contains(stichtag)) {
-				erwerbspensenInZeitraum.add(erwerbspensumContainer.getErwerbspensumJA());
+			if (erwerbspensumContainer.getErwerbspensumJA()
+				.getGueltigkeit()
+				.contains(stichtag)) {
+				erwerbspensenInZeitraum.add(
+					erwerbspensumContainer.getErwerbspensumJA()
+				);
 			}
 		}
 		return erwerbspensenInZeitraum;
@@ -395,8 +508,12 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final GesuchstellerContainer otherGesuchstellerContainer = (GesuchstellerContainer) other;
-		return EbeguUtil.isSame(getGesuchstellerJA(), otherGesuchstellerContainer.getGesuchstellerJA());
+		final GesuchstellerContainer otherGesuchstellerContainer =
+			(GesuchstellerContainer) other;
+		return EbeguUtil.isSame(
+			getGesuchstellerJA(),
+			otherGesuchstellerContainer.getGesuchstellerJA()
+		);
 	}
 
 	/**
@@ -404,8 +521,11 @@ public class GesuchstellerContainer extends AbstractMutableEntity implements Sea
 	 * am stichtag gilt.
 	 */
 	@Nullable
-	public GesuchstellerAdresse extractEffectiveRechnungsAdresse(LocalDate stichtag) {
-		final GesuchstellerAdresseContainer rechnungsadresse = extractRechnungsAdresse();
+	public GesuchstellerAdresse extractEffectiveRechnungsAdresse(
+		LocalDate stichtag
+	) {
+		final GesuchstellerAdresseContainer rechnungsadresse =
+			extractRechnungsAdresse();
 		if (rechnungsadresse != null) {
 			return rechnungsadresse.getGesuchstellerAdresseJA();
 		}

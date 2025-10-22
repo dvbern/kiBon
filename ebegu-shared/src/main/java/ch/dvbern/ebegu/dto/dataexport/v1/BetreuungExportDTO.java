@@ -17,8 +17,8 @@ package ch.dvbern.ebegu.dto.dataexport.v1;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 
@@ -56,7 +56,8 @@ public class BetreuungExportDTO {
 			return false;
 		}
 		BetreuungExportDTO that = (BetreuungExportDTO) o;
-		return getBetreuungsArt() == that.getBetreuungsArt() &&
+		return getBetreuungsArt() == that.getBetreuungsArt()
+			&&
 			Objects.equals(getInstitution(), that.getInstitution());
 	}
 

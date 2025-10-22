@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.util;
@@ -23,13 +23,13 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
@@ -62,8 +62,10 @@ public final class PredicateHelper<V> {
 		@Nonnull Root<T> root
 	) {
 		Predicate predActive = cb.greaterThanOrEqualTo(
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis),
-			LocalDate.now());
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigBis),
+			LocalDate.now()
+		);
 		return predActive;
 	}
 
@@ -72,9 +74,13 @@ public final class PredicateHelper<V> {
 		@Nonnull Root<T> root,
 		ParameterExpression<LocalDate> stichtag
 	) {
-		Predicate intervalPredicate = cb.between(stichtag,
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb),
-			root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis));
+		Predicate intervalPredicate = cb.between(
+			stichtag,
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigAb),
+			root.get(AbstractDateRangedEntity_.gueltigkeit)
+				.get(DateRange_.gueltigBis)
+		);
 		return intervalPredicate;
 	}
 
@@ -85,15 +91,29 @@ public final class PredicateHelper<V> {
 		ParameterExpression<LocalDate> endParam
 	) {
 		List<Predicate> predicates = new ArrayList<>();
-		predicates.add(cb.greaterThanOrEqualTo(root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigBis), startParam));
-		predicates.add(cb.lessThanOrEqualTo(root.get(AbstractDateRangedEntity_.gueltigkeit).get(DateRange_.gueltigAb), endParam));
+		predicates.add(
+			cb.greaterThanOrEqualTo(
+				root.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigBis),
+				startParam
+			)
+		);
+		predicates.add(
+			cb.lessThanOrEqualTo(
+				root.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigAb),
+				endParam
+			)
+		);
 		return predicates;
 	}
 
 	/**
 	 * @param root Root darf Institution oder InstitutionStammdaten sein
 	 */
-	public static Predicate excludeUnknownInstitutionStammdatenPredicate(Root<? extends AbstractEntity> root) {
+	public static Predicate excludeUnknownInstitutionStammdatenPredicate(
+		Root<? extends AbstractEntity> root
+	) {
 		return root.get(AbstractEntity_.id)
 			.in(Constants.ALL_UNKNOWN_INSTITUTION_IDS)
 			.not();
@@ -105,23 +125,52 @@ public final class PredicateHelper<V> {
 		@Nonnull ParameterExpression<Collection> gemeindeParam
 	) {
 		// Falls es sich um ein Tagesschule- oder Ferieninselangebot handelt, muss ich für die Gemeinde berechtigt sein
-		Join<InstitutionStammdaten, InstitutionStammdatenTagesschule> joinTagesschule = root.join(InstitutionStammdaten_.institutionStammdatenTagesschule, JoinType.LEFT);
-		Join<InstitutionStammdaten, InstitutionStammdatenFerieninsel> joinFerieninsel = root.join(InstitutionStammdaten_.institutionStammdatenFerieninsel, JoinType.LEFT);
+		Join<InstitutionStammdaten, InstitutionStammdatenTagesschule> joinTagesschule =
+			root.join(
+				InstitutionStammdaten_.institutionStammdatenTagesschule,
+				JoinType.LEFT
+			);
+		Join<InstitutionStammdaten, InstitutionStammdatenFerieninsel> joinFerieninsel =
+			root.join(
+				InstitutionStammdaten_.institutionStammdatenFerieninsel,
+				JoinType.LEFT
+			);
 
 		Predicate predicateBetreuungsgutschein =
-			root.get(InstitutionStammdaten_.betreuungsangebotTyp).in(BetreuungsangebotTyp.getBetreuungsgutscheinTypes());
-		Predicate predicateTypTagesschule = cb.equal(root.get(InstitutionStammdaten_.betreuungsangebotTyp), BetreuungsangebotTyp.TAGESSCHULE);
-		Predicate predicateTypFerieninsel = cb.equal(root.get(InstitutionStammdaten_.betreuungsangebotTyp), BetreuungsangebotTyp.FERIENINSEL);
+			root.get(InstitutionStammdaten_.betreuungsangebotTyp)
+				.in(BetreuungsangebotTyp.getBetreuungsgutscheinTypes());
+		Predicate predicateTypTagesschule = cb.equal(
+			root.get(InstitutionStammdaten_.betreuungsangebotTyp),
+			BetreuungsangebotTyp.TAGESSCHULE
+		);
+		Predicate predicateTypFerieninsel = cb.equal(
+			root.get(InstitutionStammdaten_.betreuungsangebotTyp),
+			BetreuungsangebotTyp.FERIENINSEL
+		);
 
-		Predicate predicateGemeindeTagesschule = joinTagesschule.get(InstitutionStammdatenTagesschule_.gemeinde).in(gemeindeParam);
-		Predicate predicateGemeindeFerieninsel = joinFerieninsel.get(InstitutionStammdatenFerieninsel_.gemeinde).in(gemeindeParam);
+		Predicate predicateGemeindeTagesschule = joinTagesschule.get(
+			InstitutionStammdatenTagesschule_.gemeinde
+		).in(gemeindeParam);
+		Predicate predicateGemeindeFerieninsel = joinFerieninsel.get(
+			InstitutionStammdatenFerieninsel_.gemeinde
+		).in(gemeindeParam);
 
 		// TS und FI sind okay, wenn es der jeweilige Typ ist UND ich für die Gemeinde berechtigt bin
-		Predicate predicateTagesschule = cb.and(predicateTypTagesschule, predicateGemeindeTagesschule);
-		Predicate predicateFerieninsel = cb.and(predicateTypFerieninsel, predicateGemeindeFerieninsel);
+		Predicate predicateTagesschule = cb.and(
+			predicateTypTagesschule,
+			predicateGemeindeTagesschule
+		);
+		Predicate predicateFerieninsel = cb.and(
+			predicateTypFerieninsel,
+			predicateGemeindeFerieninsel
+		);
 
 		// Die Institution insgesamt ist okay, wenn es ein BG ist ODER eine berechtigte TS oder FI
-		Predicate predicateBerechtigteInstitution = cb.or(predicateBetreuungsgutschein, predicateTagesschule, predicateFerieninsel);
+		Predicate predicateBerechtigteInstitution = cb.or(
+			predicateBetreuungsgutschein,
+			predicateTagesschule,
+			predicateFerieninsel
+		);
 		return predicateBerechtigteInstitution;
 
 	}
@@ -131,7 +180,10 @@ public final class PredicateHelper<V> {
 		@Nonnull Path<Mandant> path,
 		@Nonnull Benutzer eingeloggterBenutzer
 	) {
-		final Predicate predicateMandant = cb.equal(path, eingeloggterBenutzer.getMandant());
+		final Predicate predicateMandant = cb.equal(
+			path,
+			eingeloggterBenutzer.getMandant()
+		);
 		return predicateMandant;
 	}
 
@@ -141,14 +193,28 @@ public final class PredicateHelper<V> {
 		@Nonnull String gesuchsperiodeString
 	) {
 		String[] years = ensureYearFormat(gesuchsperiodeString);
-		Path<DateRange> dateRangePath = joinGesuchsperiode.get(AbstractDateRangedEntity_.gueltigkeit);
+		Path<DateRange> dateRangePath = joinGesuchsperiode.get(
+			AbstractDateRangedEntity_.gueltigkeit
+		);
 		Predicate predicateGesuchsperiode =
 			cb.and(
-				cb.equal(cb.function("year", Integer.class, dateRangePath.get(DateRange_.gueltigAb)),
-					years[0]),
 				cb.equal(
-					cb.function("year", Integer.class, dateRangePath.get(DateRange_.gueltigBis)),
-					years[1]));
+					cb.function(
+						"year",
+						Integer.class,
+						dateRangePath.get(DateRange_.gueltigAb)
+					),
+					years[0]
+				),
+				cb.equal(
+					cb.function(
+						"year",
+						Integer.class,
+						dateRangePath.get(DateRange_.gueltigBis)
+					),
+					years[1]
+				)
+			);
 
 		return predicateGesuchsperiode;
 	}
@@ -158,7 +224,9 @@ public final class PredicateHelper<V> {
 		if (years.length != 2) {
 			throw new EbeguRuntimeException(
 				"ensureYearFormat",
-				"Der Gesuchsperioden string war nicht im erwarteten Format x/y sondern " + gesuchsperiodeString);
+				"Der Gesuchsperioden string war nicht im erwarteten Format x/y sondern "
+					+ gesuchsperiodeString
+			);
 		}
 		String[] result = new String[2];
 		result[0] = changeTwoDigitYearToFourDigit(years[0]);
@@ -174,10 +242,15 @@ public final class PredicateHelper<V> {
 			return year;
 		}
 		if (year.length() < currentYearAsString.length()) { // jahr ist im kurzformat
-			return currentYearAsString.substring(0, currentYearAsString.length() - year.length()) + year;
+			return currentYearAsString.substring(
+				0,
+				currentYearAsString.length() - year.length()
+			) + year;
 		}
 		throw new EbeguRuntimeException(
 			"changeTwoDigitYearToFourDigit",
-			"Der Gesuchsperioden string war nicht im erwarteten Format yy oder yyyy sondern " + year);
+			"Der Gesuchsperioden string war nicht im erwarteten Format yy oder yyyy sondern "
+				+ year
+		);
 	}
 }

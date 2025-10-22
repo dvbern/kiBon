@@ -23,108 +23,187 @@ import java.time.LocalDate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 
 public class GesuchstellerKinderBetreuungDataRow {
 
-	@Nullable private String referenzNummer;
-	@Nullable private String institution;
-	@Nullable private BetreuungsangebotTyp betreuungsTyp;
-	@Nullable private String periode;
-	@Nullable private String gesuchStatus;
+	@Nullable
+	private String referenzNummer;
+	@Nullable
+	private String institution;
+	@Nullable
+	private BetreuungsangebotTyp betreuungsTyp;
+	@Nullable
+	private String periode;
+	@Nullable
+	private String gesuchStatus;
 
-	@Nullable private LocalDate eingangsdatum;
-	@Nullable private LocalDate verfuegungsdatum;
-	@Nullable private Integer fallId;
-	@Nullable private String gemeinde;
+	@Nullable
+	private LocalDate eingangsdatum;
+	@Nullable
+	private LocalDate verfuegungsdatum;
+	@Nullable
+	private Integer fallId;
+	@Nullable
+	private String gemeinde;
 
-	@Nullable private String gs1Name;
-	@Nullable private String gs1Vorname;
-	@Nullable private String gs1Strasse;
-	@Nullable private String gs1Hausnummer;
-	@Nullable private String gs1Zusatzzeile;
-	@Nullable private String gs1Plz;
-	@Nullable private String gs1Ort;
-	@Nullable private Boolean gs1Diplomatenstatus;
-	@Nonnull private Integer gs1EwpAngestellt = 0;
-	@Nonnull private Integer gs1EwpAusbildung = 0;
-	@Nonnull private Integer gs1EwpSelbstaendig = 0;
-	@Nonnull private Integer gs1EwpRav = 0;
-	@Nonnull private Integer gs1EwpGesundhtl = 0;
-	@Nonnull private Integer gs1EwpIntegration = 0;
-	@Nonnull private Integer gs1EwpFreiwillig = 0;
+	@Nullable
+	private String gs1Name;
+	@Nullable
+	private String gs1Vorname;
+	@Nullable
+	private String gs1Strasse;
+	@Nullable
+	private String gs1Hausnummer;
+	@Nullable
+	private String gs1Zusatzzeile;
+	@Nullable
+	private String gs1Plz;
+	@Nullable
+	private String gs1Ort;
+	@Nullable
+	private Boolean gs1Diplomatenstatus;
+	@Nonnull
+	private Integer gs1EwpAngestellt = 0;
+	@Nonnull
+	private Integer gs1EwpAusbildung = 0;
+	@Nonnull
+	private Integer gs1EwpSelbstaendig = 0;
+	@Nonnull
+	private Integer gs1EwpRav = 0;
+	@Nonnull
+	private Integer gs1EwpGesundhtl = 0;
+	@Nonnull
+	private Integer gs1EwpIntegration = 0;
+	@Nonnull
+	private Integer gs1EwpFreiwillig = 0;
 
+	@Nullable
+	private String gs2Name;
+	@Nullable
+	private String gs2Vorname;
+	@Nullable
+	private String gs2Strasse;
+	@Nullable
+	private String gs2Hausnummer;
+	@Nullable
+	private String gs2Zusatzzeile;
+	@Nullable
+	private String gs2Plz;
+	@Nullable
+	private String gs2Ort;
+	@Nullable
+	private Boolean gs2Diplomatenstatus;
+	@Nonnull
+	private Integer gs2EwpAngestellt = 0;
+	@Nonnull
+	private Integer gs2EwpAusbildung = 0;
+	@Nonnull
+	private Integer gs2EwpSelbstaendig = 0;
+	@Nonnull
+	private Integer gs2EwpRav = 0;
+	@Nonnull
+	private Integer gs2EwpGesundhtl = 0;
+	@Nonnull
+	private Integer gs2EwpIntegration = 0;
+	@Nonnull
+	private Integer gs2EwpFreiwillig = 0;
 
-	@Nullable private String gs2Name;
-	@Nullable private String gs2Vorname;
-	@Nullable private String gs2Strasse;
-	@Nullable private String gs2Hausnummer;
-	@Nullable private String gs2Zusatzzeile;
-	@Nullable private String gs2Plz;
-	@Nullable private String gs2Ort;
-	@Nullable private Boolean gs2Diplomatenstatus;
-	@Nonnull private Integer gs2EwpAngestellt = 0;
-	@Nonnull private Integer gs2EwpAusbildung = 0;
-	@Nonnull private Integer gs2EwpSelbstaendig = 0;
-	@Nonnull private Integer gs2EwpRav = 0;
-	@Nonnull private Integer gs2EwpGesundhtl = 0;
-	@Nonnull private Integer gs2EwpIntegration = 0;
-	@Nonnull private Integer gs2EwpFreiwillig = 0;
+	@Nullable
+	private EnumFamilienstatus familiensituation;
+	@Nullable
+	private BigDecimal familiengroesse;
 
-	@Nullable private EnumFamilienstatus familiensituation;
-	@Nullable private BigDecimal familiengroesse;
+	@Nullable
+	private BigDecimal massgEinkVorFamilienabzug;
+	@Nullable
+	private BigDecimal familienabzug;
+	@Nullable
+	private BigDecimal massgEink;
+	@Nullable
+	private Integer einkommensjahr;
+	@Nullable
+	private Boolean ekvVorhandenBasisJahr1;
+	@Nullable
+	private Boolean ekvVorhandenBasisJahr2;
+	@Nullable
+	private Boolean ekvAnnuliertBasisJahr1;
+	@Nullable
+	private Boolean ekvAnnuliertBasisJahr2;
+	@Nullable
+	private Boolean stvGeprueft;
+	@Nullable
+	private Boolean veranlagt;
+	@Nullable
+	private Boolean mzvBeantragt;
+	@Nullable
+	private Boolean sozialhilfeBezueger;
 
-	@Nullable private BigDecimal massgEinkVorFamilienabzug;
-	@Nullable private BigDecimal familienabzug;
-	@Nullable private BigDecimal massgEink;
-	@Nullable private Integer einkommensjahr;
-	@Nullable private Boolean ekvVorhandenBasisJahr1;
-	@Nullable private Boolean ekvVorhandenBasisJahr2;
-	@Nullable private Boolean ekvAnnuliertBasisJahr1;
-	@Nullable private Boolean ekvAnnuliertBasisJahr2;
-	@Nullable private Boolean stvGeprueft;
-	@Nullable private Boolean veranlagt;
-	@Nullable private Boolean mzvBeantragt;
-	@Nullable private Boolean sozialhilfeBezueger;
-
-	@Nullable private String kindName;
-	@Nullable private String kindVorname;
-	@Nullable private LocalDate kindGeburtsdatum;
-	@Nullable private String kindFachstelle;
-	@Nullable private String kindIntegration;
-	@Nullable private Boolean kindErwBeduerfnisse;
-	@Nullable private Boolean kindSprichtAmtssprache;
-	@Nullable private EinschulungTyp kindEinschulungTyp;
-	@Nullable private Boolean keinPlatzImSchulhort;
+	@Nullable
+	private String kindName;
+	@Nullable
+	private String kindVorname;
+	@Nullable
+	private LocalDate kindGeburtsdatum;
+	@Nullable
+	private String kindFachstelle;
+	@Nullable
+	private String kindIntegration;
+	@Nullable
+	private Boolean kindErwBeduerfnisse;
+	@Nullable
+	private Boolean kindSprichtAmtssprache;
+	@Nullable
+	private EinschulungTyp kindEinschulungTyp;
+	@Nullable
+	private Boolean keinPlatzImSchulhort;
 
 	private LocalDate zeitabschnittVon;
 	private LocalDate zeitabschnittBis;
-	@Nullable private String betreuungsStatus;
-	@Nullable private BigDecimal betreuungsPensum;
+	@Nullable
+	private String betreuungsStatus;
+	@Nullable
+	private BigDecimal betreuungsPensum;
 
-	@Nullable private BigDecimal anspruchsPensumKanton;
-	@Nullable private BigDecimal anspruchsPensumGemeinde;
-	@Nullable private BigDecimal anspruchsPensumTotal;
+	@Nullable
+	private BigDecimal anspruchsPensumKanton;
+	@Nullable
+	private BigDecimal anspruchsPensumGemeinde;
+	@Nullable
+	private BigDecimal anspruchsPensumTotal;
 
-	@Nullable private BigDecimal bgPensumKanton;
-	@Nullable private BigDecimal bgPensumGemeinde;
-	@Nullable private BigDecimal bgPensumTotal;
+	@Nullable
+	private BigDecimal bgPensumKanton;
+	@Nullable
+	private BigDecimal bgPensumGemeinde;
+	@Nullable
+	private BigDecimal bgPensumTotal;
 
-	@Nullable private BigDecimal bgStunden;
-	@Nullable private String bgPensumZeiteinheit;
+	@Nullable
+	private BigDecimal bgStunden;
+	@Nullable
+	private String bgPensumZeiteinheit;
 
-	@Nullable private BigDecimal vollkosten;
-	@Nullable private BigDecimal elternbeitrag;
-	@Nullable private BigDecimal verguenstigungKanton;
-	@Nullable private BigDecimal verguenstigungGemeinde;
-	@Nullable private BigDecimal verguenstigungTotal;
+	@Nullable
+	private BigDecimal vollkosten;
+	@Nullable
+	private BigDecimal elternbeitrag;
+	@Nullable
+	private BigDecimal verguenstigungKanton;
+	@Nullable
+	private BigDecimal verguenstigungGemeinde;
+	@Nullable
+	private BigDecimal verguenstigungTotal;
 
-	@Nullable private BigDecimal ausserordentlicherAnspruch;
+	@Nullable
+	private BigDecimal ausserordentlicherAnspruch;
 
-	@Nullable private String iban;
-	@Nullable private String kontoinhaber;
+	@Nullable
+	private String iban;
+	@Nullable
+	private String kontoinhaber;
 
 	private boolean showBgSensitiveData = true;
 
@@ -460,7 +539,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return familiensituation;
 	}
 
-	public void setFamiliensituation(@Nullable EnumFamilienstatus familiensituation) {
+	public void setFamiliensituation(
+		@Nullable EnumFamilienstatus familiensituation
+	) {
 		this.familiensituation = familiensituation;
 	}
 
@@ -478,7 +559,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return massgEinkVorFamilienabzug;
 	}
 
-	public void setMassgEinkVorFamilienabzug(@Nullable BigDecimal massgEinkVorFamilienabzug) {
+	public void setMassgEinkVorFamilienabzug(
+		@Nullable BigDecimal massgEinkVorFamilienabzug
+	) {
 		this.massgEinkVorFamilienabzug = massgEinkVorFamilienabzug;
 	}
 
@@ -595,21 +678,31 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return kindSprichtAmtssprache;
 	}
 
-	public void setKindSprichtAmtssprache(@Nullable Boolean kindSprichtAmtssprache) {
+	public void setKindSprichtAmtssprache(
+		@Nullable Boolean kindSprichtAmtssprache
+	) {
 		this.kindSprichtAmtssprache = kindSprichtAmtssprache;
 	}
 
 	@Nullable
-	public EinschulungTyp getKindEinschulungTyp() { return kindEinschulungTyp; }
+	public EinschulungTyp getKindEinschulungTyp() {
+		return kindEinschulungTyp;
+	}
 
-	public void setKindEinschulungTyp(@Nullable EinschulungTyp kindEinschulungTyp) { this.kindEinschulungTyp = kindEinschulungTyp; }
+	public void setKindEinschulungTyp(
+		@Nullable EinschulungTyp kindEinschulungTyp
+	) {
+		this.kindEinschulungTyp = kindEinschulungTyp;
+	}
 
 	@Nullable
 	public Boolean getKeinPlatzImSchulhort() {
 		return keinPlatzImSchulhort;
 	}
 
-	public void setKeinPlatzImSchulhort(@Nullable Boolean keinPlatzImSchulhort) {
+	public void setKeinPlatzImSchulhort(
+		@Nullable Boolean keinPlatzImSchulhort
+	) {
 		this.keinPlatzImSchulhort = keinPlatzImSchulhort;
 	}
 
@@ -652,7 +745,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return anspruchsPensumKanton;
 	}
 
-	public void setAnspruchsPensumKanton(@Nullable BigDecimal anspruchsPensumKanton) {
+	public void setAnspruchsPensumKanton(
+		@Nullable BigDecimal anspruchsPensumKanton
+	) {
 		this.anspruchsPensumKanton = anspruchsPensumKanton;
 	}
 
@@ -661,7 +756,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return anspruchsPensumGemeinde;
 	}
 
-	public void setAnspruchsPensumGemeinde(@Nullable BigDecimal anspruchsPensumGemeinde) {
+	public void setAnspruchsPensumGemeinde(
+		@Nullable BigDecimal anspruchsPensumGemeinde
+	) {
 		this.anspruchsPensumGemeinde = anspruchsPensumGemeinde;
 	}
 
@@ -670,7 +767,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return anspruchsPensumTotal;
 	}
 
-	public void setAnspruchsPensumTotal(@Nullable BigDecimal anspruchsPensumTotal) {
+	public void setAnspruchsPensumTotal(
+		@Nullable BigDecimal anspruchsPensumTotal
+	) {
 		this.anspruchsPensumTotal = anspruchsPensumTotal;
 	}
 
@@ -742,7 +841,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return verguenstigungKanton;
 	}
 
-	public void setVerguenstigungKanton(@Nullable BigDecimal verguenstigungKanton) {
+	public void setVerguenstigungKanton(
+		@Nullable BigDecimal verguenstigungKanton
+	) {
 		this.verguenstigungKanton = verguenstigungKanton;
 	}
 
@@ -751,7 +852,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return verguenstigungGemeinde;
 	}
 
-	public void setVerguenstigungGemeinde(@Nullable BigDecimal verguenstigungGemeinde) {
+	public void setVerguenstigungGemeinde(
+		@Nullable BigDecimal verguenstigungGemeinde
+	) {
 		this.verguenstigungGemeinde = verguenstigungGemeinde;
 	}
 
@@ -760,7 +863,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return verguenstigungTotal;
 	}
 
-	public void setVerguenstigungTotal(@Nullable BigDecimal verguenstigungTotal) {
+	public void setVerguenstigungTotal(
+		@Nullable BigDecimal verguenstigungTotal
+	) {
 		this.verguenstigungTotal = verguenstigungTotal;
 	}
 
@@ -769,7 +874,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return ausserordentlicherAnspruch;
 	}
 
-	public void setAusserordentlicherAnspruch(@Nullable BigDecimal ausserordentlicherAnspruch) {
+	public void setAusserordentlicherAnspruch(
+		@Nullable BigDecimal ausserordentlicherAnspruch
+	) {
 		this.ausserordentlicherAnspruch = ausserordentlicherAnspruch;
 	}
 
@@ -805,7 +912,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return ekvVorhandenBasisJahr1;
 	}
 
-	public void setEkvVorhandenBasisJahr1(@Nullable Boolean ekvVorhandenBasisJahr1) {
+	public void setEkvVorhandenBasisJahr1(
+		@Nullable Boolean ekvVorhandenBasisJahr1
+	) {
 		this.ekvVorhandenBasisJahr1 = ekvVorhandenBasisJahr1;
 	}
 
@@ -814,7 +923,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return ekvVorhandenBasisJahr2;
 	}
 
-	public void setEkvVorhandenBasisJahr2(@Nullable Boolean ekvVorhandenBasisJahr2) {
+	public void setEkvVorhandenBasisJahr2(
+		@Nullable Boolean ekvVorhandenBasisJahr2
+	) {
 		this.ekvVorhandenBasisJahr2 = ekvVorhandenBasisJahr2;
 	}
 
@@ -823,7 +934,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return ekvAnnuliertBasisJahr1;
 	}
 
-	public void setEkvAnnuliertBasisJahr1(@Nullable Boolean ekvAnnuliertBasisJahr1) {
+	public void setEkvAnnuliertBasisJahr1(
+		@Nullable Boolean ekvAnnuliertBasisJahr1
+	) {
 		this.ekvAnnuliertBasisJahr1 = ekvAnnuliertBasisJahr1;
 	}
 
@@ -832,7 +945,9 @@ public class GesuchstellerKinderBetreuungDataRow {
 		return ekvAnnuliertBasisJahr2;
 	}
 
-	public void setEkvAnnuliertBasisJahr2(@Nullable Boolean ekvAnnuliertBasisJahr2) {
+	public void setEkvAnnuliertBasisJahr2(
+		@Nullable Boolean ekvAnnuliertBasisJahr2
+	) {
 		this.ekvAnnuliertBasisJahr2 = ekvAnnuliertBasisJahr2;
 	}
 

@@ -15,11 +15,8 @@
   ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<div>
-    <div
-        class="dv-bisher"
-        *ngIf="displayBisher() && !equals(deklaration, korrektur)"
-    >
+<div *ngIf="displayBisher() && !equals(deklaration, korrektur)">
+    <div class="dv-bisher">
         <span>{{ getBisherLabel() }} </span>
         <span *ngFor="let line of getBisher()" class="dv-bisher-content-row">{{
             line

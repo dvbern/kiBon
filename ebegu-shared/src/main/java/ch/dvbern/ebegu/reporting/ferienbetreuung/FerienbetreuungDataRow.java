@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.ferienbetreuung;
@@ -90,17 +90,23 @@ public class FerienbetreuungDataRow {
 	private @Nullable String betreuungsschluessel = null;
 	private @Nullable String bemerkungenPersonal = null;
 	private @Nullable Boolean fixerTarifKinderDerGemeinde = null;
-	private @Nullable Boolean einkommensabhaengigerTarifKinderDerGemeinde = null;
+	private @Nullable Boolean einkommensabhaengigerTarifKinderDerGemeinde =
+		null;
 	private @Nullable Boolean tagesschuleTarifGiltFuerFerienbetreuung = null;
-	private @Nullable Boolean ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet = null;
-	private @Nullable KinderAusAnderenGemeindenZahlenAnderenTarifAnswer kinderAusAnderenGemeindenZahlenAnderenTarif = null;
+	private @Nullable Boolean ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet =
+		null;
+	private @Nullable KinderAusAnderenGemeindenZahlenAnderenTarifAnswer kinderAusAnderenGemeindenZahlenAnderenTarif =
+		null;
 	private @Nullable String bemerkungenTarifsystem = null;
 
 	private @Nullable BigDecimal anzahlBetreuungstageKinderBern = null;
 	private @Nullable BigDecimal betreuungstageKinderDieserGemeinde = null;
-	private @Nullable BigDecimal betreuungstageKinderDieserGemeindeSonderschueler = null;
-	private @Nullable BigDecimal davonBetreuungstageKinderAndererGemeinden = null;
-	private @Nullable BigDecimal davonBetreuungstageKinderAndererGemeindenSonderschueler = null;
+	private @Nullable BigDecimal betreuungstageKinderDieserGemeindeSonderschueler =
+		null;
+	private @Nullable BigDecimal davonBetreuungstageKinderAndererGemeinden =
+		null;
+	private @Nullable BigDecimal davonBetreuungstageKinderAndererGemeindenSonderschueler =
+		null;
 	private @Nullable BigDecimal anzahlBetreuteKinder = null;
 	private @Nullable BigDecimal anzahlBetreuteKinderSonderschueler = null;
 	private @Nullable BigDecimal anzahlBetreuteKinder1Zyklus = null;
@@ -187,7 +193,9 @@ public class FerienbetreuungDataRow {
 		return seitWannFerienbetreuungen;
 	}
 
-	public void setSeitWannFerienbetreuungen(@Nullable LocalDate seitWannFerienbetreuungen) {
+	public void setSeitWannFerienbetreuungen(
+		@Nullable LocalDate seitWannFerienbetreuungen
+	) {
 		this.seitWannFerienbetreuungen = seitWannFerienbetreuungen;
 	}
 
@@ -235,15 +243,20 @@ public class FerienbetreuungDataRow {
 		return stammdatenKontaktpersonVorname;
 	}
 
-	public void setStammdatenKontaktpersonVorname(@Nullable String stammdatenKontaktPersonPersonVorname) {
-		this.stammdatenKontaktpersonVorname = stammdatenKontaktPersonPersonVorname;
+	public void setStammdatenKontaktpersonVorname(
+		@Nullable String stammdatenKontaktPersonPersonVorname
+	) {
+		this.stammdatenKontaktpersonVorname =
+			stammdatenKontaktPersonPersonVorname;
 	}
 
 	public @Nullable String getStammdatenKontaktpersonName() {
 		return stammdatenKontaktpersonName;
 	}
 
-	public void setStammdatenKontaktpersonName(@Nullable String stammdatenKontaktpersonName) {
+	public void setStammdatenKontaktpersonName(
+		@Nullable String stammdatenKontaktpersonName
+	) {
 		this.stammdatenKontaktpersonName = stammdatenKontaktpersonName;
 	}
 
@@ -251,7 +264,9 @@ public class FerienbetreuungDataRow {
 		return stammdatenKontaktpersonFunktion;
 	}
 
-	public void setStammdatenKontaktpersonFunktion(@Nullable String stammdatenKontaktpersonFunktion) {
+	public void setStammdatenKontaktpersonFunktion(
+		@Nullable String stammdatenKontaktpersonFunktion
+	) {
 		this.stammdatenKontaktpersonFunktion = stammdatenKontaktpersonFunktion;
 	}
 
@@ -259,7 +274,9 @@ public class FerienbetreuungDataRow {
 		return stammdatenKontaktpersonTelefon;
 	}
 
-	public void setStammdatenKontaktpersonTelefon(@Nullable String stammdatenKontaktpersonTelefon) {
+	public void setStammdatenKontaktpersonTelefon(
+		@Nullable String stammdatenKontaktpersonTelefon
+	) {
 		this.stammdatenKontaktpersonTelefon = stammdatenKontaktpersonTelefon;
 	}
 
@@ -267,7 +284,9 @@ public class FerienbetreuungDataRow {
 		return stammdatenKontaktpersonEmail;
 	}
 
-	public void setStammdatenKontaktpersonEmail(@Nullable String stammdatenKontaktPersonMail) {
+	public void setStammdatenKontaktpersonEmail(
+		@Nullable String stammdatenKontaktPersonMail
+	) {
 		this.stammdatenKontaktpersonEmail = stammdatenKontaktPersonMail;
 	}
 
@@ -347,7 +366,9 @@ public class FerienbetreuungDataRow {
 		return angebotKontaktpersonVorname;
 	}
 
-	public void setAngebotKontaktpersonVorname(@Nullable String angebotKontaktPersonVorname) {
+	public void setAngebotKontaktpersonVorname(
+		@Nullable String angebotKontaktPersonVorname
+	) {
 		this.angebotKontaktpersonVorname = angebotKontaktPersonVorname;
 	}
 
@@ -355,7 +376,9 @@ public class FerienbetreuungDataRow {
 		return angebotKontaktpersonNachname;
 	}
 
-	public void setAngebotKontaktpersonNachname(@Nullable String angebotKontaktPersonName) {
+	public void setAngebotKontaktpersonNachname(
+		@Nullable String angebotKontaktPersonName
+	) {
 		this.angebotKontaktpersonNachname = angebotKontaktPersonName;
 	}
 
@@ -363,7 +386,9 @@ public class FerienbetreuungDataRow {
 		return angebotKontaktpersonStrasse;
 	}
 
-	public void setAngebotKontaktpersonStrasse(String angebotKontaktPersonStrasse) {
+	public void setAngebotKontaktpersonStrasse(
+		String angebotKontaktPersonStrasse
+	) {
 		this.angebotKontaktpersonStrasse = angebotKontaktPersonStrasse;
 	}
 
@@ -371,7 +396,9 @@ public class FerienbetreuungDataRow {
 		return angebotKontaktpersonHausnummer;
 	}
 
-	public void setAngebotKontaktpersonHausnummer(@Nullable String angebotKontaktPersonNummer) {
+	public void setAngebotKontaktpersonHausnummer(
+		@Nullable String angebotKontaktPersonNummer
+	) {
 		this.angebotKontaktpersonHausnummer = angebotKontaktPersonNummer;
 	}
 
@@ -379,7 +406,9 @@ public class FerienbetreuungDataRow {
 		return angebotKontaktpersonZusatz;
 	}
 
-	public void setAngebotKontaktpersonZusatz(@Nullable String angebotKontaktPersonZusatz) {
+	public void setAngebotKontaktpersonZusatz(
+		@Nullable String angebotKontaktPersonZusatz
+	) {
 		this.angebotKontaktpersonZusatz = angebotKontaktPersonZusatz;
 	}
 
@@ -403,7 +432,9 @@ public class FerienbetreuungDataRow {
 		return anzahlFerienwochenHerbstferien;
 	}
 
-	public void setAnzahlFerienwochenHerbstferien(@Nullable BigDecimal anzahlFerienwochenHerbstferien) {
+	public void setAnzahlFerienwochenHerbstferien(
+		@Nullable BigDecimal anzahlFerienwochenHerbstferien
+	) {
 		this.anzahlFerienwochenHerbstferien = anzahlFerienwochenHerbstferien;
 	}
 
@@ -411,7 +442,9 @@ public class FerienbetreuungDataRow {
 		return anzahlFerienwochenWinterferien;
 	}
 
-	public void setAnzahlFerienwochenWinterferien(@Nullable BigDecimal anzahlFerienwochenWinterferien) {
+	public void setAnzahlFerienwochenWinterferien(
+		@Nullable BigDecimal anzahlFerienwochenWinterferien
+	) {
 		this.anzahlFerienwochenWinterferien = anzahlFerienwochenWinterferien;
 	}
 
@@ -419,7 +452,9 @@ public class FerienbetreuungDataRow {
 		return anzahlFerienwochenSportferien;
 	}
 
-	public void setAnzahlFerienwochenSportferien(@Nullable BigDecimal anzahlFerienwochenSportferien) {
+	public void setAnzahlFerienwochenSportferien(
+		@Nullable BigDecimal anzahlFerienwochenSportferien
+	) {
 		this.anzahlFerienwochenSportferien = anzahlFerienwochenSportferien;
 	}
 
@@ -427,15 +462,20 @@ public class FerienbetreuungDataRow {
 		return anzahlFerienwochenFruehlingsferien;
 	}
 
-	public void setAnzahlFerienwochenFruehlingsferien(@Nullable BigDecimal anzahlFerienwochenFruehlingsferien) {
-		this.anzahlFerienwochenFruehlingsferien = anzahlFerienwochenFruehlingsferien;
+	public void setAnzahlFerienwochenFruehlingsferien(
+		@Nullable BigDecimal anzahlFerienwochenFruehlingsferien
+	) {
+		this.anzahlFerienwochenFruehlingsferien =
+			anzahlFerienwochenFruehlingsferien;
 	}
 
 	public @Nullable BigDecimal getAnzahlFerienwochenSommerferien() {
 		return anzahlFerienwochenSommerferien;
 	}
 
-	public void setAnzahlFerienwochenSommerferien(@Nullable BigDecimal anzahlFerienwochenSommerferien) {
+	public void setAnzahlFerienwochenSommerferien(
+		@Nullable BigDecimal anzahlFerienwochenSommerferien
+	) {
 		this.anzahlFerienwochenSommerferien = anzahlFerienwochenSommerferien;
 	}
 
@@ -451,7 +491,9 @@ public class FerienbetreuungDataRow {
 		return bemerkungAnzahlFerienwochen;
 	}
 
-	public void setBemerkungAnzahlFerienwochen(@Nullable String bemerkungAnzahlFerienwochen) {
+	public void setBemerkungAnzahlFerienwochen(
+		@Nullable String bemerkungAnzahlFerienwochen
+	) {
 		this.bemerkungAnzahlFerienwochen = bemerkungAnzahlFerienwochen;
 	}
 
@@ -459,7 +501,9 @@ public class FerienbetreuungDataRow {
 		return anzahlStundenProBetreuungstag;
 	}
 
-	public void setAnzahlStundenProBetreuungstag(@Nullable BigDecimal anzahlStundenProBetreuungstag) {
+	public void setAnzahlStundenProBetreuungstag(
+		@Nullable BigDecimal anzahlStundenProBetreuungstag
+	) {
 		this.anzahlStundenProBetreuungstag = anzahlStundenProBetreuungstag;
 	}
 
@@ -467,7 +511,9 @@ public class FerienbetreuungDataRow {
 		return betreuungErfolgtTagsueber;
 	}
 
-	public void setBetreuungErfolgtTagsueber(@Nullable Boolean betreuungErfolgtTagsueber) {
+	public void setBetreuungErfolgtTagsueber(
+		@Nullable Boolean betreuungErfolgtTagsueber
+	) {
 		this.betreuungErfolgtTagsueber = betreuungErfolgtTagsueber;
 	}
 
@@ -475,7 +521,9 @@ public class FerienbetreuungDataRow {
 		return bemerkungOeffnungszeiten;
 	}
 
-	public void setBemerkungOeffnungszeiten(@Nullable String bemerkungOeffnungszeiten) {
+	public void setBemerkungOeffnungszeiten(
+		@Nullable String bemerkungOeffnungszeiten
+	) {
 		this.bemerkungOeffnungszeiten = bemerkungOeffnungszeiten;
 	}
 
@@ -483,7 +531,9 @@ public class FerienbetreuungDataRow {
 		return finanziellBeteiligteGemeinden;
 	}
 
-	public void setFinanziellBeteiligteGemeinden(String finanziellBeteiligteGemeinden) {
+	public void setFinanziellBeteiligteGemeinden(
+		String finanziellBeteiligteGemeinden
+	) {
 		this.finanziellBeteiligteGemeinden = finanziellBeteiligteGemeinden;
 	}
 
@@ -491,7 +541,9 @@ public class FerienbetreuungDataRow {
 		return gemeindeFuehrtAngebotSelber;
 	}
 
-	public void setGemeindeFuehrtAngebotSelber(@Nullable Boolean gemeindeFuehrtAngebotSelber) {
+	public void setGemeindeFuehrtAngebotSelber(
+		@Nullable Boolean gemeindeFuehrtAngebotSelber
+	) {
 		this.gemeindeFuehrtAngebotSelber = gemeindeFuehrtAngebotSelber;
 	}
 
@@ -499,31 +551,42 @@ public class FerienbetreuungDataRow {
 		return gemeindeFuehrtAngebotInKooperation;
 	}
 
-	public void setGemeindeFuehrtAngebotInKooperation(@Nullable Boolean gemeindeFuehrtAngebotInKooperation) {
-		this.gemeindeFuehrtAngebotInKooperation = gemeindeFuehrtAngebotInKooperation;
+	public void setGemeindeFuehrtAngebotInKooperation(
+		@Nullable Boolean gemeindeFuehrtAngebotInKooperation
+	) {
+		this.gemeindeFuehrtAngebotInKooperation =
+			gemeindeFuehrtAngebotInKooperation;
 	}
 
 	public @Nullable Boolean getGemeindeBeauftragtExterneAnbieter() {
 		return gemeindeBeauftragtExterneAnbieter;
 	}
 
-	public void setGemeindeBeauftragtExterneAnbieter(@Nullable Boolean gemeindeBeauftragtExterneAnbieter) {
-		this.gemeindeBeauftragtExterneAnbieter = gemeindeBeauftragtExterneAnbieter;
+	public void setGemeindeBeauftragtExterneAnbieter(
+		@Nullable Boolean gemeindeBeauftragtExterneAnbieter
+	) {
+		this.gemeindeBeauftragtExterneAnbieter =
+			gemeindeBeauftragtExterneAnbieter;
 	}
 
 	public @Nullable Boolean getAngebotVereineUndPrivateIntegriert() {
 		return angebotVereineUndPrivateIntegriert;
 	}
 
-	public void setAngebotVereineUndPrivateIntegriert(@Nullable Boolean angebotVereineUndPrivateIntegriert) {
-		this.angebotVereineUndPrivateIntegriert = angebotVereineUndPrivateIntegriert;
+	public void setAngebotVereineUndPrivateIntegriert(
+		@Nullable Boolean angebotVereineUndPrivateIntegriert
+	) {
+		this.angebotVereineUndPrivateIntegriert =
+			angebotVereineUndPrivateIntegriert;
 	}
 
 	public @Nullable String getBemerkungenKooperation() {
 		return bemerkungenKooperation;
 	}
 
-	public void setBemerkungenKooperation(@Nullable String bemerkungenKooperation) {
+	public void setBemerkungenKooperation(
+		@Nullable String bemerkungenKooperation
+	) {
 		this.bemerkungenKooperation = bemerkungenKooperation;
 	}
 
@@ -531,7 +594,9 @@ public class FerienbetreuungDataRow {
 		return leitungDurchPersonMitAusbildung;
 	}
 
-	public void setLeitungDurchPersonMitAusbildung(@Nullable Boolean leitungDurchPersonMitAusbildung) {
+	public void setLeitungDurchPersonMitAusbildung(
+		@Nullable Boolean leitungDurchPersonMitAusbildung
+	) {
 		this.leitungDurchPersonMitAusbildung = leitungDurchPersonMitAusbildung;
 	}
 
@@ -539,15 +604,20 @@ public class FerienbetreuungDataRow {
 		return betreuungDurchPersonenMitErfahrung;
 	}
 
-	public void setBetreuungDurchPersonenMitErfahrung(@Nullable Boolean betreuungDurchPersonenMitErfahrung) {
-		this.betreuungDurchPersonenMitErfahrung = betreuungDurchPersonenMitErfahrung;
+	public void setBetreuungDurchPersonenMitErfahrung(
+		@Nullable Boolean betreuungDurchPersonenMitErfahrung
+	) {
+		this.betreuungDurchPersonenMitErfahrung =
+			betreuungDurchPersonenMitErfahrung;
 	}
 
 	public @Nullable Boolean getAnzahlKinderAngemessen() {
 		return anzahlKinderAngemessen;
 	}
 
-	public void setAnzahlKinderAngemessen(@Nullable Boolean anzahlKinderAngemessen) {
+	public void setAnzahlKinderAngemessen(
+		@Nullable Boolean anzahlKinderAngemessen
+	) {
 		this.anzahlKinderAngemessen = anzahlKinderAngemessen;
 	}
 
@@ -571,7 +641,9 @@ public class FerienbetreuungDataRow {
 		return fixerTarifKinderDerGemeinde;
 	}
 
-	public void setFixerTarifKinderDerGemeinde(@Nullable Boolean fixerTarifKinderDerGemeinde) {
+	public void setFixerTarifKinderDerGemeinde(
+		@Nullable Boolean fixerTarifKinderDerGemeinde
+	) {
 		this.fixerTarifKinderDerGemeinde = fixerTarifKinderDerGemeinde;
 	}
 
@@ -579,23 +651,31 @@ public class FerienbetreuungDataRow {
 		return einkommensabhaengigerTarifKinderDerGemeinde;
 	}
 
-	public void setEinkommensabhaengigerTarifKinderDerGemeinde(@Nullable Boolean einkommensabhaengigerTarifKinderDerGemeinde) {
-		this.einkommensabhaengigerTarifKinderDerGemeinde = einkommensabhaengigerTarifKinderDerGemeinde;
+	public void setEinkommensabhaengigerTarifKinderDerGemeinde(
+		@Nullable Boolean einkommensabhaengigerTarifKinderDerGemeinde
+	) {
+		this.einkommensabhaengigerTarifKinderDerGemeinde =
+			einkommensabhaengigerTarifKinderDerGemeinde;
 	}
 
 	public @Nullable Boolean getTagesschuleTarifGiltFuerFerienbetreuung() {
 		return tagesschuleTarifGiltFuerFerienbetreuung;
 	}
 
-	public void setTagesschuleTarifGiltFuerFerienbetreuung(@Nullable Boolean tagesschuleTarifGiltFuerFerienbetreuung) {
-		this.tagesschuleTarifGiltFuerFerienbetreuung = tagesschuleTarifGiltFuerFerienbetreuung;
+	public void setTagesschuleTarifGiltFuerFerienbetreuung(
+		@Nullable Boolean tagesschuleTarifGiltFuerFerienbetreuung
+	) {
+		this.tagesschuleTarifGiltFuerFerienbetreuung =
+			tagesschuleTarifGiltFuerFerienbetreuung;
 	}
 
 	public @Nullable Boolean getFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet() {
 		return ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
 	}
 
-	public void setFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet(@Nullable Boolean ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet) {
+	public void setFerienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet(
+		@Nullable Boolean ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet
+	) {
 		this.ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet =
 			ferienbetreuungTarifWirdAusTagesschuleTarifAbgeleitet;
 	}
@@ -604,15 +684,20 @@ public class FerienbetreuungDataRow {
 		return kinderAusAnderenGemeindenZahlenAnderenTarif;
 	}
 
-	public void setKinderAusAnderenGemeindenZahlenAnderenTarif(@Nullable KinderAusAnderenGemeindenZahlenAnderenTarifAnswer kinderAusAnderenGemeindenZahlenAnderenTarif) {
-		this.kinderAusAnderenGemeindenZahlenAnderenTarif = kinderAusAnderenGemeindenZahlenAnderenTarif;
+	public void setKinderAusAnderenGemeindenZahlenAnderenTarif(
+		@Nullable KinderAusAnderenGemeindenZahlenAnderenTarifAnswer kinderAusAnderenGemeindenZahlenAnderenTarif
+	) {
+		this.kinderAusAnderenGemeindenZahlenAnderenTarif =
+			kinderAusAnderenGemeindenZahlenAnderenTarif;
 	}
 
 	public @Nullable String getBemerkungenTarifsystem() {
 		return bemerkungenTarifsystem;
 	}
 
-	public void setBemerkungenTarifsystem(@Nullable String bemerkungenTarifsystem) {
+	public void setBemerkungenTarifsystem(
+		@Nullable String bemerkungenTarifsystem
+	) {
 		this.bemerkungenTarifsystem = bemerkungenTarifsystem;
 	}
 
@@ -620,7 +705,9 @@ public class FerienbetreuungDataRow {
 		return anzahlBetreuungstageKinderBern;
 	}
 
-	public void setAnzahlBetreuungstageKinderBern(@Nullable BigDecimal anzahlBetreuungstageKinderBern) {
+	public void setAnzahlBetreuungstageKinderBern(
+		@Nullable BigDecimal anzahlBetreuungstageKinderBern
+	) {
 		this.anzahlBetreuungstageKinderBern = anzahlBetreuungstageKinderBern;
 	}
 
@@ -628,31 +715,42 @@ public class FerienbetreuungDataRow {
 		return betreuungstageKinderDieserGemeinde;
 	}
 
-	public void setBetreuungstageKinderDieserGemeinde(@Nullable BigDecimal betreuungstageKinderDieserGemeinde) {
-		this.betreuungstageKinderDieserGemeinde = betreuungstageKinderDieserGemeinde;
+	public void setBetreuungstageKinderDieserGemeinde(
+		@Nullable BigDecimal betreuungstageKinderDieserGemeinde
+	) {
+		this.betreuungstageKinderDieserGemeinde =
+			betreuungstageKinderDieserGemeinde;
 	}
 
 	public @Nullable BigDecimal getBetreuungstageKinderDieserGemeindeSonderschueler() {
 		return betreuungstageKinderDieserGemeindeSonderschueler;
 	}
 
-	public void setBetreuungstageKinderDieserGemeindeSonderschueler(@Nullable BigDecimal betreuungstageKinderDieserGemeindeSonderschueler) {
-		this.betreuungstageKinderDieserGemeindeSonderschueler = betreuungstageKinderDieserGemeindeSonderschueler;
+	public void setBetreuungstageKinderDieserGemeindeSonderschueler(
+		@Nullable BigDecimal betreuungstageKinderDieserGemeindeSonderschueler
+	) {
+		this.betreuungstageKinderDieserGemeindeSonderschueler =
+			betreuungstageKinderDieserGemeindeSonderschueler;
 	}
 
 	public @Nullable BigDecimal getDavonBetreuungstageKinderAndererGemeinden() {
 		return davonBetreuungstageKinderAndererGemeinden;
 	}
 
-	public void setDavonBetreuungstageKinderAndererGemeinden(@Nullable BigDecimal davonBetreuungstageKinderAndererGemeinden) {
-		this.davonBetreuungstageKinderAndererGemeinden = davonBetreuungstageKinderAndererGemeinden;
+	public void setDavonBetreuungstageKinderAndererGemeinden(
+		@Nullable BigDecimal davonBetreuungstageKinderAndererGemeinden
+	) {
+		this.davonBetreuungstageKinderAndererGemeinden =
+			davonBetreuungstageKinderAndererGemeinden;
 	}
 
 	public @Nullable BigDecimal getDavonBetreuungstageKinderAndererGemeindenSonderschueler() {
 		return davonBetreuungstageKinderAndererGemeindenSonderschueler;
 	}
 
-	public void setDavonBetreuungstageKinderAndererGemeindenSonderschueler(@Nullable BigDecimal davonBetreuungstageKinderAndererGemeindenSonderschueler) {
+	public void setDavonBetreuungstageKinderAndererGemeindenSonderschueler(
+		@Nullable BigDecimal davonBetreuungstageKinderAndererGemeindenSonderschueler
+	) {
 		this.davonBetreuungstageKinderAndererGemeindenSonderschueler =
 			davonBetreuungstageKinderAndererGemeindenSonderschueler;
 	}
@@ -661,7 +759,9 @@ public class FerienbetreuungDataRow {
 		return anzahlBetreuteKinder;
 	}
 
-	public void setAnzahlBetreuteKinder(@Nullable BigDecimal anzahlBetreuteKinder) {
+	public void setAnzahlBetreuteKinder(
+		@Nullable BigDecimal anzahlBetreuteKinder
+	) {
 		this.anzahlBetreuteKinder = anzahlBetreuteKinder;
 	}
 
@@ -669,15 +769,20 @@ public class FerienbetreuungDataRow {
 		return anzahlBetreuteKinderSonderschueler;
 	}
 
-	public void setAnzahlBetreuteKinderSonderschueler(@Nullable BigDecimal anzahlBetreuteKinderSonderschueler) {
-		this.anzahlBetreuteKinderSonderschueler = anzahlBetreuteKinderSonderschueler;
+	public void setAnzahlBetreuteKinderSonderschueler(
+		@Nullable BigDecimal anzahlBetreuteKinderSonderschueler
+	) {
+		this.anzahlBetreuteKinderSonderschueler =
+			anzahlBetreuteKinderSonderschueler;
 	}
 
 	public @Nullable BigDecimal getAnzahlBetreuteKinder1Zyklus() {
 		return anzahlBetreuteKinder1Zyklus;
 	}
 
-	public void setAnzahlBetreuteKinder1Zyklus(@Nullable BigDecimal anzahlBetreuteKinder1Zyklus) {
+	public void setAnzahlBetreuteKinder1Zyklus(
+		@Nullable BigDecimal anzahlBetreuteKinder1Zyklus
+	) {
 		this.anzahlBetreuteKinder1Zyklus = anzahlBetreuteKinder1Zyklus;
 	}
 
@@ -685,7 +790,9 @@ public class FerienbetreuungDataRow {
 		return anzahlBetreuteKinder2Zyklus;
 	}
 
-	public void setAnzahlBetreuteKinder2Zyklus(@Nullable BigDecimal anzahlBetreuteKinder2Zyklus) {
+	public void setAnzahlBetreuteKinder2Zyklus(
+		@Nullable BigDecimal anzahlBetreuteKinder2Zyklus
+	) {
 		this.anzahlBetreuteKinder2Zyklus = anzahlBetreuteKinder2Zyklus;
 	}
 
@@ -693,7 +800,9 @@ public class FerienbetreuungDataRow {
 		return anzahlBetreuteKinder3Zyklus;
 	}
 
-	public void setAnzahlBetreuteKinder3Zyklus(@Nullable BigDecimal anzahlBetreuteKinder3Zyklus) {
+	public void setAnzahlBetreuteKinder3Zyklus(
+		@Nullable BigDecimal anzahlBetreuteKinder3Zyklus
+	) {
 		this.anzahlBetreuteKinder3Zyklus = anzahlBetreuteKinder3Zyklus;
 	}
 
@@ -709,7 +818,9 @@ public class FerienbetreuungDataRow {
 		return personalkostenLeitungAdmin;
 	}
 
-	public void setPersonalkostenLeitungAdmin(@Nullable BigDecimal personalkostenLeitungAdmin) {
+	public void setPersonalkostenLeitungAdmin(
+		@Nullable BigDecimal personalkostenLeitungAdmin
+	) {
 		this.personalkostenLeitungAdmin = personalkostenLeitungAdmin;
 	}
 
@@ -775,7 +886,9 @@ public class FerienbetreuungDataRow {
 		return beitraegeNachAnmeldungen;
 	}
 
-	public void setBeitraegeNachAnmeldungen(@Nullable BigDecimal beitraegeNachAnmeldungen) {
+	public void setBeitraegeNachAnmeldungen(
+		@Nullable BigDecimal beitraegeNachAnmeldungen
+	) {
 		this.beitraegeNachAnmeldungen = beitraegeNachAnmeldungen;
 	}
 
@@ -784,15 +897,20 @@ public class FerienbetreuungDataRow {
 		return vorfinanzierteKantonsbeitraege;
 	}
 
-	public void setVorfinanzierteKantonsbeitraege(@Nullable BigDecimal vorfinanzierteKantonsbeitraege) {
+	public void setVorfinanzierteKantonsbeitraege(
+		@Nullable BigDecimal vorfinanzierteKantonsbeitraege
+	) {
 		this.vorfinanzierteKantonsbeitraege = vorfinanzierteKantonsbeitraege;
 	}
 
+	@Nullable
 	public BigDecimal getEigenleistungenGemeinde() {
 		return eigenleistungenGemeinde;
 	}
 
-	public void setEigenleistungenGemeinde(BigDecimal eigenleistungenGemeinde) {
+	public void setEigenleistungenGemeinde(
+		@Nullable BigDecimal eigenleistungenGemeinde
+	) {
 		this.eigenleistungenGemeinde = eigenleistungenGemeinde;
 	}
 
@@ -808,7 +926,9 @@ public class FerienbetreuungDataRow {
 		return beteiligungAnbietendenGemeinde;
 	}
 
-	public void setBeteiligungAnbietendenGemeinde(BigDecimal beteiligungAnbietendenGemeinde) {
+	public void setBeteiligungAnbietendenGemeinde(
+		BigDecimal beteiligungAnbietendenGemeinde
+	) {
 		this.beteiligungAnbietendenGemeinde = beteiligungAnbietendenGemeinde;
 	}
 
@@ -832,7 +952,10 @@ public class FerienbetreuungDataRow {
 		return beitragKinderAnbietendenGemeinde;
 	}
 
-	public void setBeitragKinderAnbietendenGemeinde(BigDecimal beitragKinderAnbietendenGemeinde) {
-		this.beitragKinderAnbietendenGemeinde = beitragKinderAnbietendenGemeinde;
+	public void setBeitragKinderAnbietendenGemeinde(
+		BigDecimal beitragKinderAnbietendenGemeinde
+	) {
+		this.beitragKinderAnbietendenGemeinde =
+			beitragKinderAnbietendenGemeinde;
 	}
 }

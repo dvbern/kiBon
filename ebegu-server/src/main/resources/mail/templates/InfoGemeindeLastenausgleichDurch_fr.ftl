@@ -5,7 +5,7 @@
 <#-- @ftlvariable name="hostname" type="java.lang.String" -->
 From: ${configuration.senderAddress}
 To: ${empfaengerMail}
-Subject: <@base64Header>kiBon - compensation des charges comptabilisée</@base64Header>
+Subject: <@base64Header>kiBon <#if configuration.isDevmode>Système de test</#if> - compensation des charges comptabilisée</@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -24,13 +24,16 @@ Content-Type: text/html;charset=utf-8
 		Bonjour,
 	</p>
 	<p>
-		La compensation des charges pour l'année ${jahr} a été comptabilisée. Les résultats sont disponibles <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/lastenausgleich">ici</a>
+		La compensation des charges pour l'année ${jahr} a été comptabilisée. Les résultats sont disponibles <a href="${frontendUrl}/lastenausgleich">ici</a>
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>
 		Votre canton
 	</p>
 	<p>
+		<#if configuration.isDevmode>
+			<b>Le présent message est envoyé par un système test utilisé à des fins d'essai. Les demandes via ce système ne donnent pas droit à un versement.</b><br><br>
+		</#if>
 		Merci de ne pas répondre à ce message automatique.
 	</p>
 </div>

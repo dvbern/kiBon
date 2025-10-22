@@ -8,17 +8,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.reporting;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,18 +31,18 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
@@ -80,28 +79,34 @@ import ch.dvbern.ebegu.enums.BelegungTagesschuleModulIntervall;
 import ch.dvbern.ebegu.enums.reporting.ReportVorlage;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.reporting.ReportMahlzeitenService;
 import ch.dvbern.ebegu.reporting.ReportService;
 import ch.dvbern.ebegu.reporting.mahlzeiten.MahlzeitenverguenstigungDataRow;
 import ch.dvbern.ebegu.reporting.mahlzeiten.MahlzeitenverguenstigungExcelConverter;
 import ch.dvbern.ebegu.services.FileSaverService;
 import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.types.DateRange_;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.UploadFileInfo;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergeException;
 import ch.dvbern.oss.lib.excelmerger.ExcelMergerDTO;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
+import static ch.dvbern.ebegu.services.reporting.ReportUtil.createWorkbook;
+import static ch.dvbern.ebegu.services.reporting.ReportUtil.getContentTypeForExport;
+
 @Stateless
 @Local(ReportMahlzeitenService.class)
-public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean implements ReportMahlzeitenService {
+public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean
+	implements
+	ReportMahlzeitenService {
 
 	private MahlzeitenverguenstigungExcelConverter mahlzeitenverguenstigungExcelConverter =
 		new MahlzeitenverguenstigungExcelConverter();
@@ -118,10 +123,13 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 	@Inject
 	private ReportService reportService;
 
+	@Inject
+	private GesuchService gesuchService;
 
 	@Nonnull
 	@Override
-	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.STATISTIK_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public UploadFileInfo generateExcelReportMahlzeiten(
 		@Nonnull LocalDate datumVon,
@@ -130,23 +138,37 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 		@Nonnull String gemeindeId
 	) throws ExcelMergeException, IOException {
 
-		final ReportVorlage reportVorlage = ReportVorlage.VORLAGE_REPORT_MAHLZEITENVERGUENSTIGUNG;
+		final ReportVorlage reportVorlage =
+			ReportVorlage.VORLAGE_REPORT_MAHLZEITENVERGUENSTIGUNG;
 
 		try (
-			InputStream is = ReportMahlzeitenServiceBean.class.getResourceAsStream(reportVorlage.getTemplatePath());
-			Workbook workbook = createWorkbook(is, reportVorlage);
+			Workbook workbook = createWorkbook(reportVorlage);
 		) {
 			Sheet sheet = workbook.getSheet(reportVorlage.getDataSheetName());
 
 			Gemeinde gemeinde =
-				gemeindeService.findGemeinde(gemeindeId).orElseThrow(() -> new EbeguEntityNotFoundException(
-					"getReportDataMahlzeitenverguenstigung", gemeindeId));
+				gemeindeService.findGemeinde(gemeindeId)
+					.orElseThrow(
+						() -> new EbeguEntityNotFoundException(
+							"getReportDataMahlzeitenverguenstigung",
+							gemeindeId
+						)
+					);
 
 			List<MahlzeitenverguenstigungDataRow> reportData =
-				getReportMahlzeitenverguenstigung(datumVon, datumBis, gemeinde);
+				getReportMahlzeitenverguenstigung(
+					datumVon,
+					datumBis,
+					gemeinde
+				);
 			ExcelMergerDTO excelMergerDTO =
-				mahlzeitenverguenstigungExcelConverter.toExcelMergerDTO(reportData, locale, datumVon, datumBis,
-					Objects.requireNonNull(gemeinde.getMandant()));
+				mahlzeitenverguenstigungExcelConverter.toExcelMergerDTO(
+					reportData,
+					locale,
+					datumVon,
+					datumBis,
+					Objects.requireNonNull(gemeinde.getMandant())
+				);
 
 			mergeData(sheet, excelMergerDTO, reportVorlage.getMergeFields());
 			mahlzeitenverguenstigungExcelConverter.applyAutoSize(sheet);
@@ -158,9 +180,11 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 				ServerMessageUtil.translateEnumValue(
 					reportVorlage.getDefaultExportFilename(),
 					Locale.GERMAN,
-					gemeinde.getMandant()) + ".xlsx",
+					gemeinde.getMandant()
+				) + ".xlsx",
 				Constants.TEMP_REPORT_FOLDERNAME,
-				getContentTypeForExport());
+				getContentTypeForExport()
+			);
 		}
 	}
 
@@ -173,12 +197,29 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 	) {
 
 		List<VerfuegungZeitabschnitt> zeitabschnittList =
-			getBetreuungenReportDataMahlzeitenverguenstigung(datumVon, datumBis, gemeinde);
-		zeitabschnittList.addAll(getAnmeldungenReportDataMahlzeitenverguenstigung(datumVon, datumBis, gemeinde));
-		List<MahlzeitenverguenstigungDataRow> dataRows = convertToMahlzeitDataRow(zeitabschnittList);
+			getBetreuungenReportDataMahlzeitenverguenstigung(
+				datumVon,
+				datumBis,
+				gemeinde
+			);
+		zeitabschnittList.addAll(
+			getAnmeldungenReportDataMahlzeitenverguenstigung(
+				datumVon,
+				datumBis,
+				gemeinde
+			)
+		);
+		List<MahlzeitenverguenstigungDataRow> dataRows =
+			convertToMahlzeitDataRow(zeitabschnittList);
 
-		dataRows.sort(Comparator.comparing(MahlzeitenverguenstigungDataRow::getReferenzNummer)
-			.thenComparing(MahlzeitenverguenstigungDataRow::getZeitabschnittVon));
+		dataRows.sort(
+			Comparator.comparing(
+				MahlzeitenverguenstigungDataRow::getReferenzNummer
+			)
+				.thenComparing(
+					MahlzeitenverguenstigungDataRow::getZeitabschnittVon
+				)
+		);
 
 		return dataRows;
 	}
@@ -194,7 +235,10 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 
 		for (VerfuegungZeitabschnitt zeitabschnitt : zeitabschnittList) {
 			MahlzeitenverguenstigungDataRow row =
-				createRowForKinderReport(zeitabschnitt, neustesVerfuegtesGesuchCache);
+				createRowForKinderReport(
+					zeitabschnitt,
+					neustesVerfuegtesGesuchCache
+				);
 			dataRowList.add(row);
 		}
 
@@ -204,13 +248,16 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 	@Nonnull
 	private MahlzeitenverguenstigungDataRow createRowForKinderReport(
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
-		@Nonnull Map<Long, Gesuch> neustesVerfuegtesGesuchCache) {
+		@Nonnull Map<Long, Gesuch> neustesVerfuegtesGesuchCache
+	) {
 
-		AbstractPlatz gueltigePlatz = zeitabschnitt.getVerfuegung().getBetreuung();
+		AbstractPlatz gueltigePlatz = zeitabschnitt.getVerfuegung()
+			.getBetreuung();
 		//und Anmeldungen auch betrachten
 		// zu abklaeren, gibt es eine Verfuegung pro betreuung oder kann es gemischt sein?
 		if (gueltigePlatz == null) {
-			gueltigePlatz = zeitabschnitt.getVerfuegung().getAnmeldungTagesschule();
+			gueltigePlatz = zeitabschnitt.getVerfuegung()
+				.getAnmeldungTagesschule();
 		}
 		Objects.requireNonNull(gueltigePlatz);
 		Gesuch gesuch = gueltigePlatz.extractGesuch();
@@ -219,32 +266,50 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 		//prüfen ob Gesuch ist gültig, und via GesuchService oder Cache holen, inkl. Kind & Betreuung
 		if (!gesuch.isGueltig()) {
 
-			gueltigeGesuch = getGueltigesGesuch(neustesVerfuegtesGesuchCache, gesuch);
+			gueltigeGesuch = getGueltigesGesuch(
+				neustesVerfuegtesGesuchCache,
+				gesuch
+			);
 
-			Optional<KindContainer> gueltigeKind = getGueltigesKind(zeitabschnitt, gueltigeGesuch);
+			Optional<KindContainer> gueltigeKind = getGueltigesKind(
+				zeitabschnitt,
+				gueltigeGesuch
+			);
 
 			if (gueltigePlatz.getBetreuungsangebotTyp().isTagesschule()) {
-				Objects.requireNonNull(zeitabschnitt.getVerfuegung().getAnmeldungTagesschule());
+				Objects.requireNonNull(
+					zeitabschnitt.getVerfuegung().getAnmeldungTagesschule()
+				);
 				gueltigePlatz = getGueltigeAnmeldung(
 					zeitabschnitt,
 					zeitabschnitt.getVerfuegung().getAnmeldungTagesschule(),
-					gueltigeKind);
+					gueltigeKind
+				);
 			} else {
 				gueltigePlatz =
-					getGueltigeBetreuung(zeitabschnitt, zeitabschnitt.getVerfuegung().getBetreuung(), gueltigeKind);
+					getGueltigeBetreuung(
+						zeitabschnitt,
+						zeitabschnitt.getVerfuegung().getBetreuung(),
+						gueltigeKind
+					);
 			}
 
-			neustesVerfuegtesGesuchCache.put(gesuch.getFall().getFallNummer(), gueltigeGesuch);
+			neustesVerfuegtesGesuchCache.put(
+				gesuch.getFall().getFallNummer(),
+				gueltigeGesuch
+			);
 		} else {
 			gueltigeGesuch = gesuch;
 		}
 
-		MahlzeitenverguenstigungDataRow row = new MahlzeitenverguenstigungDataRow();
+		MahlzeitenverguenstigungDataRow row =
+			new MahlzeitenverguenstigungDataRow();
 		addStammdaten(row, zeitabschnitt);
 		row.setFallNummer(gesuch.getFall().getFallNummer());
 
 		// Gesuchsteller 1
-		GesuchstellerContainer gs1Container = gueltigeGesuch.getGesuchsteller1();
+		GesuchstellerContainer gs1Container = gueltigeGesuch
+			.getGesuchsteller1();
 		if (gs1Container != null) {
 			Gesuchsteller gs1 = gs1Container.getGesuchstellerJA();
 			row.setGs1Name(gs1.getNachname());
@@ -252,35 +317,52 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 		}
 		// Gesuchsteller 2
 		if (gueltigeGesuch.getGesuchsteller2() != null) {
-			Gesuchsteller gs2 = gueltigeGesuch.getGesuchsteller2().getGesuchstellerJA();
+			Gesuchsteller gs2 = gueltigeGesuch.getGesuchsteller2()
+				.getGesuchstellerJA();
 			row.setGs2Name(gs2.getNachname());
 			row.setGs2Vorname(gs2.getVorname());
 		}
 
 		if (gueltigeGesuch.getFamiliensituationContainer() != null
-			&& gueltigeGesuch.getFamiliensituationContainer().getFamiliensituationJA() != null) {
+			&& gueltigeGesuch.getFamiliensituationContainer()
+				.getFamiliensituationJA()
+				!= null) {
 			// Sozialhilfebezueger
 			boolean sozialhilfeBezueger = reportService.isSozialhilfeBezueger(
 				zeitabschnitt,
 				gueltigeGesuch.getFamiliensituationContainer(),
-				gueltigeGesuch.getFamiliensituationContainer().getFamiliensituationJA()
+				gueltigeGesuch.getFamiliensituationContainer()
+					.getFamiliensituationJA()
 			);
 			row.setSozialhilfeBezueger(sozialhilfeBezueger);
 
 			// IBAN-Nummer
 			final Auszahlungsdaten auszahlungsdatenMahlzeiten =
-				gueltigeGesuch.getFamiliensituationContainer().getFamiliensituationJA().getAuszahlungsdaten();
+				gueltigeGesuch.getFamiliensituationContainer()
+					.getFamiliensituationJA()
+					.getAuszahlungsdaten();
 			if (auszahlungsdatenMahlzeiten != null) {
 				// "IBAN" ist entweder die tatsaechliche IBAN oder die InfomaKontonummer
-				row.setIban(auszahlungsdatenMahlzeiten.getIbanOrInfomaKreditorennummer());
+				row.setIban(
+					auszahlungsdatenMahlzeiten
+						.getIbanOrInfomaKreditorennummer()
+				);
 			}
 		}
 
 		// massgebendes Einkommen
-		final BGCalculationResult bgCalculationResult = zeitabschnitt.getRelevantBgCalculationResult();
-		row.setMassgebendesEinkommenVorFamAbzug(bgCalculationResult.getMassgebendesEinkommenVorAbzugFamgr());
+		final BGCalculationResult bgCalculationResult = zeitabschnitt
+			.getRelevantBgCalculationResult();
+		row.setMassgebendesEinkommenVorFamAbzug(
+			bgCalculationResult.getMassgebendesEinkommenVorAbzugFamgr()
+		);
 		row.setFamGroesse(bgCalculationResult.getFamGroesse());
-		row.setMassgebendesEinkommenNachFamAbzug(MathUtil.minimum(bgCalculationResult.getMassgebendesEinkommen(), BigDecimal.ZERO));
+		row.setMassgebendesEinkommenNachFamAbzug(
+			MathUtil.minimum(
+				bgCalculationResult.getMassgebendesEinkommen(),
+				BigDecimal.ZERO
+			)
+		);
 
 		// Kind
 		Kind kind = gueltigePlatz.getKind().getKindJA();
@@ -289,7 +371,11 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 		row.setKindGeburtsdatum(kind.getGeburtsdatum());
 
 		// Betreuung
-		addMahlzeitendatenToMahlzeitenverguenstigungDataRow(row, zeitabschnitt, gueltigePlatz);
+		addMahlzeitendatenToMahlzeitenverguenstigungDataRow(
+			row,
+			zeitabschnitt,
+			gueltigePlatz
+		);
 
 		return row;
 	}
@@ -313,27 +399,43 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
 	) {
 		if (zeitabschnitt.getBgCalculationResultGemeinde() != null) {
-			row.setBerechneteMahlzeitenverguenstigung(zeitabschnitt.getBgCalculationResultGemeinde()
-				.getVerguenstigungMahlzeitenTotal());
-		}
-		else {
+			row.setBerechneteMahlzeitenverguenstigung(
+				zeitabschnitt.getBgCalculationResultGemeinde()
+					.getVerguenstigungMahlzeitenTotal()
+			);
+		} else {
 			row.setBerechneteMahlzeitenverguenstigung(BigDecimal.ZERO);
 		}
 		if (zeitabschnitt.getVerfuegung().getBetreuung() != null) {
-			for (BetreuungspensumContainer betreuungspensumContainer : zeitabschnitt.getVerfuegung()
+			for (BetreuungspensumContainer betreuungspensumContainer : zeitabschnitt
+				.getVerfuegung()
 				.getBetreuung()
 				.getBetreuungspensumContainers()
 			) {
-				Betreuungspensum betreuungspensum = betreuungspensumContainer.getBetreuungspensumJA();
-				if (betreuungspensum.getGueltigkeit().contains(zeitabschnitt.getGueltigkeit())) {
-					row.setAnzahlHauptmahlzeiten(betreuungspensum.getMonatlicheHauptmahlzeiten());
-					row.setKostenHauptmahlzeiten(MathUtil.DEFAULT.multiplyNullSafe(
-						betreuungspensum.getTarifProHauptmahlzeit(),
-						betreuungspensum.getMonatlicheHauptmahlzeiten()));
-					row.setKostenNebenmahlzeiten(MathUtil.DEFAULT.multiplyNullSafe(
-						betreuungspensum.getTarifProNebenmahlzeit(),
-						betreuungspensum.getMonatlicheNebenmahlzeiten()));
-					row.setAnzahlNebenmahlzeiten(betreuungspensum.getMonatlicheNebenmahlzeiten());
+				Betreuungspensum betreuungspensum = betreuungspensumContainer
+					.getBetreuungspensumJA();
+				if (betreuungspensum.getGueltigkeit()
+					.contains(zeitabschnitt.getGueltigkeit())) {
+					row.setAnzahlHauptmahlzeiten(
+						betreuungspensum.getMonatlicheHauptmahlzeiten()
+					);
+					row.setKostenHauptmahlzeiten(
+						MathUtil.DEFAULT.multiplyNullSafe(
+							betreuungspensum.getTarifProHauptmahlzeit(),
+							betreuungspensum
+								.getMonatlicheHauptmahlzeiten()
+						)
+					);
+					row.setKostenNebenmahlzeiten(
+						MathUtil.DEFAULT.multiplyNullSafe(
+							betreuungspensum.getTarifProNebenmahlzeit(),
+							betreuungspensum
+								.getMonatlicheNebenmahlzeiten()
+						)
+					);
+					row.setAnzahlNebenmahlzeiten(
+						betreuungspensum.getMonatlicheNebenmahlzeiten()
+					);
 					break;
 				}
 			}
@@ -347,22 +449,30 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 		TSCalculationResult tsCalculationResultMit = null;
 		if (zeitabschnitt.getBgCalculationResultGemeinde() != null) {
 			tsCalculationResultMit =
-				zeitabschnitt.getBgCalculationResultGemeinde().getTsCalculationResultMitPaedagogischerBetreuung();
+				zeitabschnitt.getBgCalculationResultGemeinde()
+					.getTsCalculationResultMitPaedagogischerBetreuung();
 		}
 		BigDecimal berechneteMahlzeitenverguenstigung = BigDecimal.ZERO;
 		if (tsCalculationResultMit != null) {
-			berechneteMahlzeitenverguenstigung = tsCalculationResultMit.getVerpflegungskostenVerguenstigt();
+			berechneteMahlzeitenverguenstigung = tsCalculationResultMit
+				.getVerpflegungskostenVerguenstigt();
 		}
 		TSCalculationResult tsCalculationResultOhne = null;
 		if (zeitabschnitt.getBgCalculationResultGemeinde() != null) {
 			tsCalculationResultOhne =
-				zeitabschnitt.getBgCalculationResultGemeinde().getTsCalculationResultOhnePaedagogischerBetreuung();
+				zeitabschnitt.getBgCalculationResultGemeinde()
+					.getTsCalculationResultOhnePaedagogischerBetreuung();
 		}
 		if (tsCalculationResultOhne != null) {
 			berechneteMahlzeitenverguenstigung =
-				berechneteMahlzeitenverguenstigung.add(tsCalculationResultOhne.getVerpflegungskostenVerguenstigt());
+				berechneteMahlzeitenverguenstigung.add(
+					tsCalculationResultOhne
+						.getVerpflegungskostenVerguenstigt()
+				);
 		}
-		row.setBerechneteMahlzeitenverguenstigung(berechneteMahlzeitenverguenstigung);
+		row.setBerechneteMahlzeitenverguenstigung(
+			berechneteMahlzeitenverguenstigung
+		);
 		//immer 0
 		row.setAnzahlNebenmahlzeiten(BigDecimal.ZERO);
 		row.setKostenNebenmahlzeiten(BigDecimal.ZERO);
@@ -371,23 +481,37 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 		BigDecimal totalKostenHauptMahlzeiten = BigDecimal.ZERO;
 		double scale = 1.0;
 		if (zeitabschnitt.getVerfuegung().getAnmeldungTagesschule() != null
-			&& zeitabschnitt.getVerfuegung().getAnmeldungTagesschule().getBelegungTagesschule() != null) {
-			for (BelegungTagesschuleModul belegungTagesschuleModul : zeitabschnitt.getVerfuegung()
+			&& zeitabschnitt.getVerfuegung()
+				.getAnmeldungTagesschule()
+				.getBelegungTagesschule()
+				!= null) {
+			for (BelegungTagesschuleModul belegungTagesschuleModul : zeitabschnitt
+				.getVerfuegung()
 				.getAnmeldungTagesschule()
 				.getBelegungTagesschule()
 				.getBelegungTagesschuleModule()) {
 				scale =
-					belegungTagesschuleModul.getIntervall() == BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN ?
-						0.5 : 1.0;
+					belegungTagesschuleModul.getIntervall()
+						== BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN ?
+							0.5 :
+							1.0;
 				BigDecimal verpflegungskosten =
 					belegungTagesschuleModul.getModulTagesschule()
 						.getModulTagesschuleGroup()
 						.getVerpflegungskosten();
-				if (verpflegungskosten != null && verpflegungskosten.compareTo(BigDecimal.ZERO) > 0) {
+				if (verpflegungskosten != null
+					&& verpflegungskosten.compareTo(BigDecimal.ZERO) > 0) {
 					totalKostenHauptMahlzeiten = MathUtil.DEFAULT.add(
 						totalKostenHauptMahlzeiten,
-						MathUtil.DEFAULT.multiply(verpflegungskosten, BigDecimal.valueOf(scale)));
-					totalHauptMahlzeiten = MathUtil.DEFAULT.add(totalHauptMahlzeiten, BigDecimal.valueOf(scale));
+						MathUtil.DEFAULT.multiply(
+							verpflegungskosten,
+							BigDecimal.valueOf(scale)
+						)
+					);
+					totalHauptMahlzeiten = MathUtil.DEFAULT.add(
+						totalHauptMahlzeiten,
+						BigDecimal.valueOf(scale)
+					);
 				}
 			}
 		}
@@ -404,134 +528,275 @@ public class ReportMahlzeitenServiceBean extends AbstractReportServiceBean imple
 			platz = zeitabschnitt.getVerfuegung().getAnmeldungTagesschule();
 		}
 		Objects.requireNonNull(platz);
-		row.setInstitution(platz
-			.getInstitutionStammdaten()
-			.getInstitution()
-			.getName());
-		if (platz.getInstitutionStammdaten().getInstitution().getTraegerschaft() != null) {
-			row.setTraegerschaft(platz.getInstitutionStammdaten().getInstitution().getTraegerschaft().getName());
+		row.setInstitution(
+			platz
+				.getInstitutionStammdaten()
+				.getInstitution()
+				.getName()
+		);
+		if (platz.getInstitutionStammdaten().getInstitution().getTraegerschaft()
+			!= null) {
+			row.setTraegerschaft(
+				platz.getInstitutionStammdaten()
+					.getInstitution()
+					.getTraegerschaft()
+					.getName()
+			);
 		}
 		row.setBetreuungsTyp(platz.getBetreuungsangebotTyp());
 		row.setReferenzNummer(platz.getReferenzNummer());
 	}
 
-	@SuppressWarnings("PMD.NcssMethodCount")
 	@Nonnull
 	private List<VerfuegungZeitabschnitt> getBetreuungenReportDataMahlzeitenverguenstigung(
 		@Nonnull LocalDate datumVon,
 		@Nonnull LocalDate datumBis,
-		@Nonnull Gemeinde gemeinde) {
+		@Nonnull Gemeinde gemeinde
+	) {
 		validateDateParams(datumVon, datumBis);
 
 		// Alle Verfuegungszeitabschnitte zwischen datumVon und datumBis. Aber pro Fall immer nur das zuletzt
 		// verfuegte.
 		final CriteriaBuilder builder = persistence.getCriteriaBuilder();
-		final CriteriaQuery<VerfuegungZeitabschnitt> query = builder.createQuery(VerfuegungZeitabschnitt.class);
+		final CriteriaQuery<VerfuegungZeitabschnitt> query = builder
+			.createQuery(VerfuegungZeitabschnitt.class);
 		query.distinct(true);
-		Root<VerfuegungZeitabschnitt> root = query.from(VerfuegungZeitabschnitt.class);
-		Join<VerfuegungZeitabschnitt, Verfuegung> joinVerfuegung = root.join(VerfuegungZeitabschnitt_.verfuegung);
-		Join<Verfuegung, Betreuung> joinBetreuung = joinVerfuegung.join(Verfuegung_.betreuung);
-		Join<Betreuung, KindContainer> joinBetreuungKindContainer = joinBetreuung.join(Betreuung_.kind, JoinType.LEFT);
+		Root<VerfuegungZeitabschnitt> root = query.from(
+			VerfuegungZeitabschnitt.class
+		);
+		Join<VerfuegungZeitabschnitt, Verfuegung> joinVerfuegung = root.join(
+			VerfuegungZeitabschnitt_.verfuegung
+		);
+		Join<Verfuegung, Betreuung> joinBetreuung = joinVerfuegung.join(
+			Verfuegung_.betreuung
+		);
+		Join<Betreuung, KindContainer> joinBetreuungKindContainer =
+			joinBetreuung.join(Betreuung_.kind, JoinType.LEFT);
 		Join<KindContainer, Gesuch> joinBetreuungGesuch =
-			joinBetreuungKindContainer.join(KindContainer_.gesuch, JoinType.LEFT);
-		Join<Gesuch, Dossier> joinBetreuungDossier = joinBetreuungGesuch.join(Gesuch_.dossier, JoinType.LEFT);
-		Join<Dossier, Gemeinde> joinBetreuungGemeinde = joinBetreuungDossier.join(Dossier_.gemeinde, JoinType.LEFT);
+			joinBetreuungKindContainer.join(
+				KindContainer_.gesuch,
+				JoinType.LEFT
+			);
+		Join<Gesuch, Dossier> joinBetreuungDossier = joinBetreuungGesuch.join(
+			Gesuch_.dossier,
+			JoinType.LEFT
+		);
+		Join<Dossier, Gemeinde> joinBetreuungGemeinde = joinBetreuungDossier
+			.join(Dossier_.gemeinde, JoinType.LEFT);
 
 		Join<Gesuch, FamiliensituationContainer> joinBetreuungGemeindeFamSitCtn =
-			joinBetreuungGesuch.join(Gesuch_.familiensituationContainer, JoinType.LEFT);
+			joinBetreuungGesuch.join(
+				Gesuch_.familiensituationContainer,
+				JoinType.LEFT
+			);
 		Join<FamiliensituationContainer, Familiensituation> joinBetreuungFamSitCtnFamSit =
 			joinBetreuungGemeindeFamSitCtn.join(
-				FamiliensituationContainer_.familiensituationJA, JoinType.LEFT);
+				FamiliensituationContainer_.familiensituationJA,
+				JoinType.LEFT
+			);
 
 		List<Predicate> predicatesToUse = new ArrayList<>();
 
 		// nur Gesuchen wo mahlzeiten beantragt sind
 		Predicate predicateBetreuungMahlzeitbeantragt = builder.equal(
-			joinBetreuungFamSitCtnFamSit.get(Familiensituation_.keineMahlzeitenverguenstigungBeantragt),
-			Boolean.FALSE);
+			joinBetreuungFamSitCtnFamSit.get(
+				Familiensituation_.keineMahlzeitenverguenstigungBeantragt
+			),
+			Boolean.FALSE
+		);
 		predicatesToUse.add(predicateBetreuungMahlzeitbeantragt);
 
 		// startAbschnitt <= datumBis && endeAbschnitt >= datumVon
-		Path<DateRange> dateRangePath = root.get(AbstractDateRangedEntity_.gueltigkeit);
-		Predicate predicateStart = builder.lessThanOrEqualTo(dateRangePath.get(DateRange_.gueltigAb), datumBis);
+		Path<DateRange> dateRangePath = root.get(
+			AbstractDateRangedEntity_.gueltigkeit
+		);
+		Predicate predicateStart = builder.lessThanOrEqualTo(
+			dateRangePath.get(DateRange_.gueltigAb),
+			datumBis
+		);
 		predicatesToUse.add(predicateStart);
-		Predicate predicateEnd = builder.greaterThanOrEqualTo(dateRangePath.get(DateRange_.gueltigBis), datumVon);
+		Predicate predicateEnd = builder.greaterThanOrEqualTo(
+			dateRangePath.get(DateRange_.gueltigBis),
+			datumVon
+		);
 		predicatesToUse.add(predicateEnd);
 
 		// Nur neueste Verfuegung jedes Falls beachten
-		Predicate predicateBetreuungGueltig = builder.equal(joinBetreuung.get(Betreuung_.gueltig), Boolean.TRUE);
+		Predicate predicateBetreuungGueltig = builder.equal(
+			joinBetreuung.get(Betreuung_.gueltig),
+			Boolean.TRUE
+		);
 		predicatesToUse.add(predicateBetreuungGueltig);
 
 		// Nur Gesuche von der gewählten Gemeinde
-		Predicate inGemeindeForBetreuung = builder.equal(joinBetreuungGemeinde.get(Gemeinde_.id), gemeinde.getId());
+		Predicate inGemeindeForBetreuung = builder.equal(
+			joinBetreuungGemeinde.get(Gemeinde_.id),
+			gemeinde.getId()
+		);
 		predicatesToUse.add(inGemeindeForBetreuung);
 
-		Predicate predicateForBenutzerRole = getPredicateForBenutzerRole(builder, root);
+		Predicate predicateForBenutzerRole = getPredicateForBenutzerRole(
+			builder,
+			root
+		);
 		if (predicateForBenutzerRole != null) {
 			predicatesToUse.add(predicateForBenutzerRole);
 		}
-		query.where(CriteriaQueryHelper.concatenateExpressions(builder, predicatesToUse));
+		query.where(
+			CriteriaQueryHelper.concatenateExpressions(
+				builder,
+				predicatesToUse
+			)
+		);
 		return persistence.getCriteriaResults(query);
 	}
 
-	@SuppressWarnings("PMD.NcssMethodCount")
 	@Nonnull
 	private List<VerfuegungZeitabschnitt> getAnmeldungenReportDataMahlzeitenverguenstigung(
 		@Nonnull LocalDate datumVon,
 		@Nonnull LocalDate datumBis,
-		@Nonnull Gemeinde gemeinde) {
+		@Nonnull Gemeinde gemeinde
+	) {
 		validateDateParams(datumVon, datumBis);
 
 		// Alle Verfuegungszeitabschnitte zwischen datumVon und datumBis. Aber pro Fall immer nur das zuletzt
 		// verfuegte.
 		final CriteriaBuilder builder = persistence.getCriteriaBuilder();
-		final CriteriaQuery<VerfuegungZeitabschnitt> query = builder.createQuery(VerfuegungZeitabschnitt.class);
+		final CriteriaQuery<VerfuegungZeitabschnitt> query = builder
+			.createQuery(VerfuegungZeitabschnitt.class);
 		query.distinct(true);
-		Root<VerfuegungZeitabschnitt> root = query.from(VerfuegungZeitabschnitt.class);
-		Join<VerfuegungZeitabschnitt, Verfuegung> joinVerfuegung = root.join(VerfuegungZeitabschnitt_.verfuegung);
-		Join<Verfuegung, AnmeldungTagesschule> joinAnmeldung = joinVerfuegung.join(Verfuegung_.anmeldungTagesschule);
+		Root<VerfuegungZeitabschnitt> root = query.from(
+			VerfuegungZeitabschnitt.class
+		);
+		Join<VerfuegungZeitabschnitt, Verfuegung> joinVerfuegung = root.join(
+			VerfuegungZeitabschnitt_.verfuegung
+		);
+		Join<Verfuegung, AnmeldungTagesschule> joinAnmeldung = joinVerfuegung
+			.join(Verfuegung_.anmeldungTagesschule);
 		Join<AnmeldungTagesschule, KindContainer> joinAnmeldungKindContainer =
 			joinAnmeldung.join(AnmeldungTagesschule_.kind, JoinType.LEFT);
 		Join<KindContainer, Gesuch> joinAnmeldungGesuch =
-			joinAnmeldungKindContainer.join(KindContainer_.gesuch, JoinType.LEFT);
-		Join<Gesuch, Dossier> joinAnmeldungDossier = joinAnmeldungGesuch.join(Gesuch_.dossier, JoinType.LEFT);
-		Join<Dossier, Gemeinde> joinAnmeldungGemeinde = joinAnmeldungDossier.join(Dossier_.gemeinde, JoinType.LEFT);
+			joinAnmeldungKindContainer.join(
+				KindContainer_.gesuch,
+				JoinType.LEFT
+			);
+		Join<Gesuch, Dossier> joinAnmeldungDossier = joinAnmeldungGesuch.join(
+			Gesuch_.dossier,
+			JoinType.LEFT
+		);
+		Join<Dossier, Gemeinde> joinAnmeldungGemeinde = joinAnmeldungDossier
+			.join(Dossier_.gemeinde, JoinType.LEFT);
 
 		Join<Gesuch, FamiliensituationContainer> joinAnmeldungGemeindeFamSitCtn =
-			joinAnmeldungGesuch.join(Gesuch_.familiensituationContainer, JoinType.LEFT);
+			joinAnmeldungGesuch.join(
+				Gesuch_.familiensituationContainer,
+				JoinType.LEFT
+			);
 		Join<FamiliensituationContainer, Familiensituation> joinAnmeldungFamSitCtnFamSit =
 			joinAnmeldungGemeindeFamSitCtn.join(
-				FamiliensituationContainer_.familiensituationJA, JoinType.LEFT);
+				FamiliensituationContainer_.familiensituationJA,
+				JoinType.LEFT
+			);
 
 		List<Predicate> predicatesToUse = new ArrayList<>();
 
 		// nur Gesuchen wo mahlzeiten beantragt sind
 		Predicate predicateAnmeldungMahlzeitbeantragt = builder.equal(
-			joinAnmeldungFamSitCtnFamSit.get(Familiensituation_.keineMahlzeitenverguenstigungBeantragt),
-			Boolean.FALSE);
+			joinAnmeldungFamSitCtnFamSit.get(
+				Familiensituation_.keineMahlzeitenverguenstigungBeantragt
+			),
+			Boolean.FALSE
+		);
 		predicatesToUse.add(predicateAnmeldungMahlzeitbeantragt);
 
 		// startAbschnitt <= datumBis && endeAbschnitt >= datumVon
-		Path<DateRange> dateRangePath = root.get(AbstractDateRangedEntity_.gueltigkeit);
-		Predicate predicateStart = builder.lessThanOrEqualTo(dateRangePath.get(DateRange_.gueltigAb), datumBis);
+		Path<DateRange> dateRangePath = root.get(
+			AbstractDateRangedEntity_.gueltigkeit
+		);
+		Predicate predicateStart = builder.lessThanOrEqualTo(
+			dateRangePath.get(DateRange_.gueltigAb),
+			datumBis
+		);
 		predicatesToUse.add(predicateStart);
-		Predicate predicateEnd = builder.greaterThanOrEqualTo(dateRangePath.get(DateRange_.gueltigBis), datumVon);
+		Predicate predicateEnd = builder.greaterThanOrEqualTo(
+			dateRangePath.get(DateRange_.gueltigBis),
+			datumVon
+		);
 		predicatesToUse.add(predicateEnd);
 
 		// Nur neueste Verfuegung jedes Falls beachten
 		Predicate predicateAnmeldungGueltig =
-			builder.equal(joinAnmeldung.get(AnmeldungTagesschule_.gueltig), Boolean.TRUE);
+			builder.equal(
+				joinAnmeldung.get(AnmeldungTagesschule_.gueltig),
+				Boolean.TRUE
+			);
 		predicatesToUse.add(predicateAnmeldungGueltig);
 
 		// Nur Gesuche von der gewählten Gemeinde
-		Predicate inGemeindeForTagesschule = builder.equal(joinAnmeldungGemeinde.get(Gemeinde_.id), gemeinde.getId());
+		Predicate inGemeindeForTagesschule = builder.equal(
+			joinAnmeldungGemeinde.get(Gemeinde_.id),
+			gemeinde.getId()
+		);
 		predicatesToUse.add(inGemeindeForTagesschule);
 
-		Predicate predicateForBenutzerRole = getPredicateForBenutzerRole(builder, root);
+		Predicate predicateForBenutzerRole = getPredicateForBenutzerRole(
+			builder,
+			root
+		);
 		if (predicateForBenutzerRole != null) {
 			predicatesToUse.add(predicateForBenutzerRole);
 		}
-		query.where(CriteriaQueryHelper.concatenateExpressions(builder, predicatesToUse));
+		query.where(
+			CriteriaQueryHelper.concatenateExpressions(
+				builder,
+				predicatesToUse
+			)
+		);
 		return persistence.getCriteriaResults(query);
+	}
+
+	@Nonnull
+	private Gesuch getGueltigesGesuch(
+		@Nonnull Map<Long, Gesuch> neustesVerfuegtesGesuchCache,
+		@Nonnull Gesuch gesuch
+	) {
+		Gesuch gueltigeGesuch;
+		gueltigeGesuch = neustesVerfuegtesGesuchCache.getOrDefault(
+			gesuch.getFall().getFallNummer(),
+			gesuchService.getNeustesVerfuegtesGesuchFuerGesuch(
+				gesuch.getGesuchsperiode(),
+				gesuch.getDossier(),
+				false
+			)
+				.orElse(gesuch)
+		);
+		return gueltigeGesuch;
+	}
+
+	@Nonnull
+	private AnmeldungTagesschule getGueltigeAnmeldung(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
+		@Nonnull AnmeldungTagesschule gueltigeAnmeldung,
+		@Nonnull
+		@SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<KindContainer> gueltigeKind
+	) {
+
+		return gueltigeKind
+			.map(gk -> {
+				final AnmeldungTagesschule anmeld = zeitabschnitt
+					.getVerfuegung()
+					.getAnmeldungTagesschule();
+				Objects.requireNonNull(anmeld);
+				return gk.getAnmeldungenTagesschule()
+					.stream()
+					.filter(
+						anmeldungTagesschule -> anmeldungTagesschule
+							.getBetreuungNummer()
+							.equals(anmeld.getBetreuungNummer())
+					)
+					.findFirst()
+					.orElse(anmeld);
+			})
+			.orElse(gueltigeAnmeldung);
 	}
 }

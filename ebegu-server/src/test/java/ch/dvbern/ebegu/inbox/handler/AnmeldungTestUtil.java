@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -38,7 +38,8 @@ public final class AnmeldungTestUtil {
 
 	@Nonnull
 	public static TagesschuleBestaetigungEventDTO createTagesschuleBestaetigungEventDTO() {
-		TagesschuleBestaetigungEventDTO dto = new TagesschuleBestaetigungEventDTO();
+		TagesschuleBestaetigungEventDTO dto =
+			new TagesschuleBestaetigungEventDTO();
 		dto.setRefnr(PlatzbestaetigungTestUtil.REF_NUMMER);
 		dto.setBemerkung("Test");
 		dto.setAbholung(AbholungTagesschule.ALLEINE_NACH_HAUSE);
@@ -49,19 +50,26 @@ public final class AnmeldungTestUtil {
 	}
 
 	@Nonnull
-	public static ModulAuswahlDTO createModulAuswahlDTO(@Nonnull BelegungTagesschuleModul modul) {
+	public static ModulAuswahlDTO createModulAuswahlDTO(
+		@Nonnull BelegungTagesschuleModul modul
+	) {
 		return createModulAuswahlDTO(modul.getModulTagesschule());
 	}
 
 	@Nonnull
-	public static ModulAuswahlDTO createModulAuswahlDTO(@Nonnull ModulTagesschule modulTagesschule) {
+	public static ModulAuswahlDTO createModulAuswahlDTO(
+		@Nonnull ModulTagesschule modulTagesschule
+	) {
 		String id = modulTagesschule.getModulTagesschuleGroup().getId();
 
 		return createModulAuswahlDTO(id, modulTagesschule.getWochentag());
 	}
 
 	@Nonnull
-	public static ModulAuswahlDTO createModulAuswahlDTO(@Nonnull String modulId, @Nonnull DayOfWeek weekday) {
+	public static ModulAuswahlDTO createModulAuswahlDTO(
+		@Nonnull String modulId,
+		@Nonnull DayOfWeek weekday
+	) {
 		ModulAuswahlDTO modulAuswahlDTO = new ModulAuswahlDTO();
 		modulAuswahlDTO.setModulId(modulId);
 		modulAuswahlDTO.setWochentag(Wochentag.valueOf(weekday.name()));

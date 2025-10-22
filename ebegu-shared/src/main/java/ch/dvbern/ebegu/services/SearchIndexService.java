@@ -27,8 +27,6 @@ import ch.dvbern.ebegu.dto.suchfilter.lucene.SearchFilter;
  */
 public interface SearchIndexService {
 
-	void rebuildSearchIndex();
-
 	/**
 	 * Perform a search against all the indizes specified in the SearchFilter Objects
 	 *
@@ -38,13 +36,20 @@ public interface SearchIndexService {
 	 * @return List of results. Note that the list only contains results that are visible by the current user
 	 */
 	@Nonnull
-	QuickSearchResultDTO search(@Nonnull String searchText, @Nonnull List<SearchFilter> filters);
+	QuickSearchResultDTO search(
+		@Nonnull String searchText,
+		@Nonnull List<SearchFilter> filters
+	);
 
 	/**
 	 * Perform a search over all indexed fields with the given searchString
 	 *
-	 * @param limitResult if true the actual loaded results will never contain more elements than the specified limit allows
+	 * @param limitResult if true the actual loaded results will never contain more elements than the specified limit
+	 * allows
 	 * @return results contains a list of potential matches as well as the list of loaded matches
 	 */
-	QuickSearchResultDTO quicksearch(String searchStringParam, boolean limitResult);
+	QuickSearchResultDTO quicksearch(
+		String searchStringParam,
+		boolean limitResult
+	);
 }

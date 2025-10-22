@@ -16,12 +16,12 @@
  */
 
 import {
+    GemeindeTestFall,
     normalizeUser,
     TestBetreuungsstatus,
     TestFall,
     TestGesuchstellende,
     TestPeriode,
-    GemeindeTestFall,
     User
 } from '@dv-e2e/types';
 import {MainNavigationPO} from '../navigation';

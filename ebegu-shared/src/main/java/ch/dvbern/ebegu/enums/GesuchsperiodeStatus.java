@@ -20,8 +20,5 @@ package ch.dvbern.ebegu.enums;
  */
 public enum GesuchsperiodeStatus {
 
-	ENTWURF,
-	AKTIV,
-	INAKTIV,
-	GESCHLOSSEN
+	ENTWURF, AKTIV, INAKTIV, GESCHLOSSEN
 }

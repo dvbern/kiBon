@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -28,8 +28,8 @@ import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionExternalClient;
 import ch.dvbern.ebegu.enums.AntragStatus;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.inbox.services.BetreuungEventHelper;
 import ch.dvbern.ebegu.services.BetreuungMonitoringService;
 import ch.dvbern.ebegu.services.BetreuungService;
@@ -83,19 +83,35 @@ public class AnmeldungAblehnenEventHandlerTest extends EasyMockSupport {
 
 	@BeforeEach
 	void setUp() {
-		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(false);
+		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(
+			false
+		);
 		Gesuchsperiode gesuchsperiode = betreuung.extractGesuchsperiode();
-		anmeldungTagesschule = TestDataUtil.createAnmeldungTagesschuleWithModules(betreuung.getKind(), gesuchsperiode);
-		anmeldungTagesschule.extractGesuch().setStatus(AntragStatus.IN_BEARBEITUNG_JA);
-		eventMonitor = new EventMonitor(betreuungMonitoringService, EVENT_TIME, REF_NUMMER, CLIENT_NAME);
+		anmeldungTagesschule = TestDataUtil
+			.createAnmeldungTagesschuleWithModules(
+				betreuung.getKind(),
+				gesuchsperiode
+			);
+		anmeldungTagesschule.extractGesuch()
+			.setStatus(AntragStatus.IN_BEARBEITUNG_JA);
+		eventMonitor = new EventMonitor(
+			betreuungMonitoringService,
+			EVENT_TIME,
+			REF_NUMMER,
+			CLIENT_NAME
+		);
 	}
 
 	@ParameterizedTest
 	@EnumSource(value = Betreuungsstatus.class,
-		names = { "SCHULAMT_ANMELDUNG_AUSGELOEST", "SCHULAMT_FALSCHE_INSTITUTION" },
+		names = { "SCHULAMT_ANMELDUNG_AUSGELOEST",
+			"SCHULAMT_FALSCHE_INSTITUTION" },
 		mode = Mode.INCLUDE)
 	void isAblehnungErblaubt(@Nonnull Betreuungsstatus status) {
-		assertThat(anmeldungAblehnenEventHandler.isAblehnungErlaubtStatus(status), is(true));
+		assertThat(
+			anmeldungAblehnenEventHandler.isAblehnungErlaubtStatus(status),
+			is(true)
+		);
 	}
 
 	@Nested
@@ -103,18 +119,30 @@ public class AnmeldungAblehnenEventHandlerTest extends EasyMockSupport {
 
 		@Test
 		void ignoreEventWhenNoAnmeldungFound() {
-			expect(betreuungService.findAnmeldungenTagesschuleByReferenzNummer(eventMonitor.getRefnr()))
+			expect(
+				betreuungService.findAnmeldungenTagesschuleByReferenzNummer(
+					eventMonitor.getRefnr()
+				)
+			)
 				.andReturn(Optional.empty());
 
 			testIgnored("AnmeldungTagesschule nicht gefunden.");
 		}
 
 		@ParameterizedTest
-		@EnumSource(value = GesuchsperiodeStatus.class, names = "AKTIV", mode = Mode.EXCLUDE)
-		void ignoreEventWhenPeriodeNotAktiv(@Nonnull GesuchsperiodeStatus status) {
+		@EnumSource(value = GesuchsperiodeStatus.class,
+			names = "AKTIV",
+			mode = Mode.EXCLUDE)
+		void ignoreEventWhenPeriodeNotAktiv(
+			@Nonnull GesuchsperiodeStatus status
+		) {
 			anmeldungTagesschule.extractGesuchsperiode().setStatus(status);
 
-			expect(betreuungService.findAnmeldungenTagesschuleByReferenzNummer(eventMonitor.getRefnr()))
+			expect(
+				betreuungService.findAnmeldungenTagesschuleByReferenzNummer(
+					eventMonitor.getRefnr()
+				)
+			)
 				.andReturn(Optional.of(anmeldungTagesschule));
 
 			testIgnored("Die Gesuchsperiode ist nicht aktiv.");
@@ -126,56 +154,102 @@ public class AnmeldungAblehnenEventHandlerTest extends EasyMockSupport {
 			LocalDateTime anmeldungMutiertTime = EVENT_TIME.plusSeconds(1);
 			anmeldungTagesschule.setTimestampMutiert(anmeldungMutiertTime);
 
-			expect(betreuungService.findAnmeldungenTagesschuleByReferenzNummer(eventMonitor.getRefnr()))
+			expect(
+				betreuungService.findAnmeldungenTagesschuleByReferenzNummer(
+					eventMonitor.getRefnr()
+				)
+			)
 				.andReturn(Optional.of(anmeldungTagesschule));
 
 			testIgnored(
-				"Die AnmeldungTagesschule wurde verändert, nachdem das AblehnungEvent generiert wurde.");
+				"Die AnmeldungTagesschule wurde verändert, nachdem das AblehnungEvent generiert wurde."
+			);
 		}
 
 		@Test
 		void ignoreEventWhenNoExternalClient() {
 
-			expect(betreuungService.findAnmeldungenTagesschuleByReferenzNummer(eventMonitor.getRefnr()))
+			expect(
+				betreuungService.findAnmeldungenTagesschuleByReferenzNummer(
+					eventMonitor.getRefnr()
+				)
+			)
 				.andReturn(Optional.of(anmeldungTagesschule));
-			expect(betreuungEventHelper.getExternalClients(CLIENT_NAME, anmeldungTagesschule))
-				.andReturn(new InstitutionExternalClients(null, Collections.emptyList()));
-			expect(betreuungEventHelper.clientNotFoundFailure(CLIENT_NAME, anmeldungTagesschule))
-				.andReturn(Processing.failure("Kein InstitutionExternalClient Namens ist der Institution zugewiesen"));
+			expect(
+				betreuungEventHelper.getExternalClients(
+					CLIENT_NAME,
+					anmeldungTagesschule
+				)
+			)
+				.andReturn(
+					new InstitutionExternalClients(
+						null,
+						Collections.emptyList()
+					)
+				);
+			expect(
+				betreuungEventHelper.clientNotFoundFailure(
+					CLIENT_NAME,
+					anmeldungTagesschule
+				)
+			)
+				.andReturn(
+					Processing.failure(
+						"Kein InstitutionExternalClient Namens ist der Institution zugewiesen"
+					)
+				);
 
 			testIgnored(
-				"Kein InstitutionExternalClient Namens ist der Institution zugewiesen");
+				"Kein InstitutionExternalClient Namens ist der Institution zugewiesen"
+			);
 		}
 
 		@Test
 		void ignoreEventWhenClientGueltigkeitOutsidePeriode() {
 
-			expect(betreuungService.findAnmeldungenTagesschuleByReferenzNummer(eventMonitor.getRefnr()))
+			expect(
+				betreuungService.findAnmeldungenTagesschuleByReferenzNummer(
+					eventMonitor.getRefnr()
+				)
+			)
 				.andReturn(Optional.of(anmeldungTagesschule));
 			mockClient(new DateRange(2022));
 
-			testIgnored("Der Client hat innerhalb der Periode keine Berechtigung.");
+			testIgnored(
+				"Der Client hat innerhalb der Periode keine Berechtigung."
+			);
 		}
 
 		@ParameterizedTest
 		@EnumSource(value = Betreuungsstatus.class,
-			names = { "SCHULAMT_ANMELDUNG_AUSGELOEST", "SCHULAMT_FALSCHE_INSTITUTION" },
+			names = { "SCHULAMT_ANMELDUNG_AUSGELOEST",
+				"SCHULAMT_FALSCHE_INSTITUTION" },
 			mode = Mode.EXCLUDE)
-		void ignoreWhenInvalidBetreuungStatus(@Nonnull Betreuungsstatus status) {
+		void ignoreWhenInvalidBetreuungStatus(
+			@Nonnull Betreuungsstatus status
+		) {
 			anmeldungTagesschule.setBetreuungsstatus(status);
 
-			expect(betreuungService.findAnmeldungenTagesschuleByReferenzNummer(eventMonitor.getRefnr()))
+			expect(
+				betreuungService.findAnmeldungenTagesschuleByReferenzNummer(
+					eventMonitor.getRefnr()
+				)
+			)
 				.andReturn(Optional.of(anmeldungTagesschule));
 			mockClient(Constants.DEFAULT_GUELTIGKEIT);
 
 			testIgnored(
-				"Die AnmeldungTagesschule hat einen ungültigen Status: " + status);
+				"Die AnmeldungTagesschule hat einen ungültigen Status: "
+					+ status
+			);
 		}
 
 		private void testIgnored(@Nonnull String message) {
 			replayAll();
 
-			Processing result = anmeldungAblehnenEventHandler.attemptProcessing(eventMonitor);
+			Processing result = anmeldungAblehnenEventHandler.attemptProcessing(
+				eventMonitor
+			);
 			assertThat(result, failed(message));
 			verifyAll();
 		}
@@ -186,24 +260,46 @@ public class AnmeldungAblehnenEventHandlerTest extends EasyMockSupport {
 
 		@Test
 		void testAnmeldungAkzeptiert() {
-			expect(betreuungService.anmeldungSchulamtAblehnen(anmeldungTagesschule))
+			expect(
+				betreuungService.anmeldungSchulamtAblehnen(
+					anmeldungTagesschule
+				)
+			)
 				.andReturn(anmeldungTagesschule);
 
-			expect(betreuungService.findAnmeldungenTagesschuleByReferenzNummer(eventMonitor.getRefnr()))
+			expect(
+				betreuungService.findAnmeldungenTagesschuleByReferenzNummer(
+					eventMonitor.getRefnr()
+				)
+			)
 				.andReturn(Optional.of(anmeldungTagesschule));
 			mockClient(Constants.DEFAULT_GUELTIGKEIT);
 			replayAll();
-			Processing result = anmeldungAblehnenEventHandler.attemptProcessing(eventMonitor);
+			Processing result = anmeldungAblehnenEventHandler.attemptProcessing(
+				eventMonitor
+			);
 			assertThat(result.isProcessingSuccess(), is(true));
 			verifyAll();
 		}
 	}
 
 	private void mockClient(@Nonnull DateRange clientGueltigkeit) {
-		InstitutionExternalClient institutionExternalClient = mock(InstitutionExternalClient.class);
+		InstitutionExternalClient institutionExternalClient = mock(
+			InstitutionExternalClient.class
+		);
 
-		expect(betreuungEventHelper.getExternalClients(eq(CLIENT_NAME), EasyMock.<AnmeldungTagesschule>anyObject()))
-			.andReturn(new InstitutionExternalClients(institutionExternalClient, Collections.emptyList()));
+		expect(
+			betreuungEventHelper.getExternalClients(
+				eq(CLIENT_NAME),
+				EasyMock.<AnmeldungTagesschule>anyObject()
+			)
+		)
+			.andReturn(
+				new InstitutionExternalClients(
+					institutionExternalClient,
+					Collections.emptyList()
+				)
+			);
 
 		expect(institutionExternalClient.getGueltigkeit())
 			.andReturn(clientGueltigkeit);

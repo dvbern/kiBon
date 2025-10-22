@@ -15,19 +15,24 @@
 
 package ch.dvbern.ebegu.entities;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 /**
- * Container-Entity für das Erwerbspensum: Diese muss für die  Benutzertypen (GS, JA) einzeln geführt werden,
+ * Container-Entity für das Erwerbspensum: Diese muss für die Benutzertypen (GS, JA) einzeln geführt werden,
  * damit die Veränderungen / Korrekturen angezeigt werden können.
  */
 @Audited
@@ -38,19 +43,23 @@ public class ErwerbspensumContainer extends AbstractMutableEntity {
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_erwerbspensum_container_gesuchstellerContainer_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_erwerbspensum_container_gesuchstellerContainer_id"),
+		updatable = false)
 	private GesuchstellerContainer gesuchstellerContainer;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_erwerbspensum_container_erwerbspensumgs_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_erwerbspensum_container_erwerbspensumgs_id"))
 	private Erwerbspensum erwerbspensumGS;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_erwerbspensum_container_erwerbspensumja_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_erwerbspensum_container_erwerbspensumja_id"))
 	private Erwerbspensum erwerbspensumJA;
 
 	public ErwerbspensumContainer() {
@@ -60,7 +69,9 @@ public class ErwerbspensumContainer extends AbstractMutableEntity {
 		return gesuchstellerContainer;
 	}
 
-	public void setGesuchsteller(GesuchstellerContainer gesuchstellerContainer) {
+	public void setGesuchsteller(
+		GesuchstellerContainer gesuchstellerContainer
+	) {
 		this.gesuchstellerContainer = gesuchstellerContainer;
 	}
 
@@ -93,13 +104,20 @@ public class ErwerbspensumContainer extends AbstractMutableEntity {
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final ErwerbspensumContainer otherErwerbspensumContainer = (ErwerbspensumContainer) other;
-		return EbeguUtil.isSame(getErwerbspensumJA(), otherErwerbspensumContainer.getErwerbspensumJA());
+		final ErwerbspensumContainer otherErwerbspensumContainer =
+			(ErwerbspensumContainer) other;
+		return EbeguUtil.isSame(
+			getErwerbspensumJA(),
+			otherErwerbspensumContainer.getErwerbspensumJA()
+		);
 	}
 
 	@Nonnull
 	public ErwerbspensumContainer copyErwerbspensumContainer(
-			@Nonnull ErwerbspensumContainer target, @Nonnull AntragCopyType copyType, @Nonnull GesuchstellerContainer targetGesuchstellerContainer) {
+		@Nonnull ErwerbspensumContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull GesuchstellerContainer targetGesuchstellerContainer
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
@@ -108,7 +126,13 @@ public class ErwerbspensumContainer extends AbstractMutableEntity {
 			target.setGesuchsteller(targetGesuchstellerContainer);
 			target.setErwerbspensumGS(null);
 			if (this.getErwerbspensumJA() != null) {
-				target.setErwerbspensumJA(this.getErwerbspensumJA().copyErwerbspensum(new Erwerbspensum(), copyType));
+				target.setErwerbspensumJA(
+					this.getErwerbspensumJA()
+						.copyErwerbspensum(
+							new Erwerbspensum(),
+							copyType
+						)
+				);
 			}
 			break;
 		case ERNEUERUNG:

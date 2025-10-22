@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -40,29 +40,42 @@ class StaedtischerZuschlagRechnerTest {
 
 	public static Stream<Arguments> angebotsTypSource() {
 		return Stream.of(
-				Arguments.of(BetreuungsangebotTyp.KITA, ZUSCHLAG_KITA),
-				Arguments.of(BetreuungsangebotTyp.TAGESFAMILIEN,ZUSCHLAG_TFO )
+			Arguments.of(BetreuungsangebotTyp.KITA, ZUSCHLAG_KITA),
+			Arguments.of(BetreuungsangebotTyp.TAGESFAMILIEN, ZUSCHLAG_TFO)
 		);
 	}
 
-	static class DummyStaedtischerZuschlagRechner extends StaedtischerZuschlagRechner {
+	static class DummyStaedtischerZuschlagRechner extends
+		StaedtischerZuschlagRechner {
 		@Override
-		BigDecimal calculateForTfo(BGCalculationInput inputGemeinde, BGRechnerParameterDTO rechnerParameterDTO) {
+		BigDecimal calculateForTfo(
+			BGCalculationInput inputGemeinde,
+			BGRechnerParameterDTO rechnerParameterDTO
+		) {
 			return ZUSCHLAG_TFO;
 		}
 
 		@Override
-		BigDecimal calculateForKita(BGCalculationInput inputGemeinde, BGRechnerParameterDTO rechnerParameterDTO) {
+		BigDecimal calculateForKita(
+			BGCalculationInput inputGemeinde,
+			BGRechnerParameterDTO rechnerParameterDTO
+		) {
 			return ZUSCHLAG_KITA;
 		}
 	}
 
 	@ParameterizedTest
 	@MethodSource("angebotsTypSource")
-	void mustThrowIfAngebotsTypNotKita(BetreuungsangebotTyp betreuungsangebotTyp, BigDecimal erwarteterZuschlag) {
+	void mustThrowIfAngebotsTypNotKita(
+		BetreuungsangebotTyp betreuungsangebotTyp,
+		BigDecimal erwarteterZuschlag
+	) {
 		// given
 		var testee = new DummyStaedtischerZuschlagRechner();
-		BGCalculationInput input = new BGCalculationInput(new VerfuegungZeitabschnitt(), RuleValidity.ASIV);
+		BGCalculationInput input = new BGCalculationInput(
+			new VerfuegungZeitabschnitt(),
+			RuleValidity.ASIV
+		);
 		input.setBetreuungsangebotTyp(betreuungsangebotTyp);
 		BGRechnerParameterDTO rechnerParameterDTO = new BGRechnerParameterDTO();
 

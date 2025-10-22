@@ -28,8 +28,14 @@ import ch.dvbern.ebegu.errors.MergeDocException;
 public interface LastenausgleichTagesschuleDokumentService {
 
 	@Nonnull
-	byte[] createDocx(@Nonnull String containerId, @Nonnull Sprache sprache, @Nonnull BigDecimal betreuungsstundenPrognose);
+	byte[] createDocx(
+		@Nonnull String containerId,
+		@Nonnull Sprache sprache,
+		@Nonnull BigDecimal betreuungsstundenPrognose
+	);
 
-	byte[] generateLATSReportDokument(@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer container, Sprache sprache) throws
-			MergeDocException;
+	byte[] generateLATSReportDokument(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer container,
+		Sprache sprache
+	) throws MergeDocException;
 }

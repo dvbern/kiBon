@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -34,6 +34,8 @@ import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.betreuung.BetreuungEinstellungen;
 import ch.dvbern.ebegu.betreuung.BetreuungEinstellungenService;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractMahlzeitenPensum;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Betreuung;
@@ -50,18 +52,16 @@ import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionExternalClient;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.AntragStatus;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
 import ch.dvbern.ebegu.enums.MitteilungStatus;
 import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.inbox.handler.PlatzbestaetigungImportForm.ImportForm;
 import ch.dvbern.ebegu.inbox.handler.pensum.PensumMapperFactory;
 import ch.dvbern.ebegu.inbox.services.BetreuungEventHelper;
-import ch.dvbern.ebegu.services.ApplicationPropertyService;
 import ch.dvbern.ebegu.services.BetreuungMonitoringService;
 import ch.dvbern.ebegu.services.BetreuungService;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.MitteilungService;
 import ch.dvbern.ebegu.test.TestDataUtil;
@@ -93,7 +93,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static ch.dvbern.ebegu.enums.EinstellungKey.GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED;
 import static ch.dvbern.ebegu.inbox.handler.PlatzbestaetigungImportForm.ImportForm.MUTATIONS_MITTEILUNG;
 import static ch.dvbern.ebegu.inbox.handler.PlatzbestaetigungTestUtil.REF_NUMMER;
 import static ch.dvbern.ebegu.inbox.handler.PlatzbestaetigungTestUtil.createBetreuungEventDTO;
@@ -131,7 +131,8 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 	public static final LocalDateTime EVENT_TIME = LocalDateTime.now();
 
 	@TestSubject
-	private final PlatzbestaetigungEventHandler handler = new PlatzbestaetigungEventHandler();
+	private final PlatzbestaetigungEventHandler handler =
+		new PlatzbestaetigungEventHandler();
 
 	@Mock
 	private BetreuungService betreuungService;
@@ -179,26 +180,42 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 				gesuchsperiode,
 				false,
 				gemeinde,
-				new TestDataInstitutionStammdatenBuilder(gesuchsperiode));
+				new TestDataInstitutionStammdatenBuilder(gesuchsperiode)
+			);
 		testfall_1GS.createFall();
 		testfall_1GS.createGesuch(LocalDate.of(2016, Month.DECEMBER, 12));
 		gesuch_1GS = testfall_1GS.fillInGesuch();
-		eventMonitor = new EventMonitor(betreuungMonitoringService, EVENT_TIME, "fake", CLIENT_NAME);
+		eventMonitor = new EventMonitor(
+			betreuungMonitoringService,
+			EVENT_TIME,
+			"fake",
+			CLIENT_NAME
+		);
 	}
 
 	@Test
 	void testIsSame() {
 		List<Betreuung> betreuungen = gesuch_1GS.extractAllBetreuungen();
 		Betreuungsmitteilung betreuungsmitteilung = createBetreuungMitteilung(
-			createBetreuungsmitteilungPensum(new DateRange(
-				gesuchsperiode.getGueltigkeit().getGueltigAb(),
-				gesuchsperiode.getGueltigkeit().getGueltigBis().withDayOfYear(31)
-			))
+			createBetreuungsmitteilungPensum(
+				new DateRange(
+					gesuchsperiode.getGueltigkeit().getGueltigAb(),
+					gesuchsperiode.getGueltigkeit()
+						.getGueltigBis()
+						.withDayOfYear(31)
+				)
+			)
 		);
 
-		assertThat(handler.isSame(betreuungsmitteilung, betreuungen.get(0)), is(true));
+		assertThat(
+			handler.isSame(betreuungsmitteilung, betreuungen.get(0)),
+			is(true)
+		);
 		//then with different Betreuung
-		assertThat(handler.isSame(betreuungsmitteilung, betreuungen.get(1)), is(false));
+		assertThat(
+			handler.isSame(betreuungsmitteilung, betreuungen.get(1)),
+			is(false)
+		);
 	}
 
 	@Nested
@@ -209,7 +226,9 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		 */
 		@Test
 		void failWhenNoZeitabschnitte() {
-			BetreuungEventDTO dto = createBetreuungEventDTO(defaultZeitabschnittDTO());
+			BetreuungEventDTO dto = createBetreuungEventDTO(
+				defaultZeitabschnittDTO()
+			);
 			dto.setZeitabschnitte(Collections.emptyList());
 
 			testFailed(dto, "Es wurden keine Zeitabschnitte übergeben.");
@@ -217,18 +236,29 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 		@Test
 		void failWhenNoBetreuungFound() {
-			BetreuungEventDTO dto = createBetreuungEventDTO(defaultZeitabschnittDTO());
+			BetreuungEventDTO dto = createBetreuungEventDTO(
+				defaultZeitabschnittDTO()
+			);
 
-			expect(betreuungService.findBetreuungByReferenzNummer(dto.getRefnr(), false))
+			expect(
+				betreuungService.findBetreuungByReferenzNummer(
+					dto.getRefnr(),
+					false
+				)
+			)
 				.andReturn(Optional.empty());
 
 			testFailed(dto, "Betreuung nicht gefunden.");
 		}
 
 		@ParameterizedTest
-		@EnumSource(value = GesuchsperiodeStatus.class, names = "AKTIV", mode = Mode.EXCLUDE)
+		@EnumSource(value = GesuchsperiodeStatus.class,
+			names = "AKTIV",
+			mode = Mode.EXCLUDE)
 		void failWhenPeriodeNotAktiv(@Nonnull GesuchsperiodeStatus status) {
-			BetreuungEventDTO dto = createBetreuungEventDTO(defaultZeitabschnittDTO());
+			BetreuungEventDTO dto = createBetreuungEventDTO(
+				defaultZeitabschnittDTO()
+			);
 
 			Betreuung betreuung = betreuungWithSingleContainer();
 			betreuung.extractGesuchsperiode().setStatus(status);
@@ -240,7 +270,9 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 		@Test
 		void failWhenBetreuungMutiertAfterEventTimestamp() {
-			BetreuungEventDTO dto = createBetreuungEventDTO(defaultZeitabschnittDTO());
+			BetreuungEventDTO dto = createBetreuungEventDTO(
+				defaultZeitabschnittDTO()
+			);
 			Betreuung betreuung = betreuungWithSingleContainer();
 
 			LocalDateTime eventTime = LocalDateTime.of(2020, 12, 1, 10, 1);
@@ -252,10 +284,20 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			replayAll();
 
-			EventMonitor monitor = new EventMonitor(betreuungMonitoringService, eventTime, refnr, CLIENT_NAME);
+			EventMonitor monitor = new EventMonitor(
+				betreuungMonitoringService,
+				eventTime,
+				refnr,
+				CLIENT_NAME
+			);
 
 			Processing result = handler.attemptProcessing(monitor, dto);
-			assertThat(result, failed("Die Betreuung wurde verändert, nachdem das BetreuungEvent generiert wurde."));
+			assertThat(
+				result,
+				failed(
+					"Die Betreuung wurde verändert, nachdem das BetreuungEvent generiert wurde."
+				)
+			);
 			verifyAll();
 		}
 
@@ -265,53 +307,89 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			zeitabschnittDTO.setPensumUnit(Zeiteinheit.DAYS);
 			BetreuungEventDTO dto = createBetreuungEventDTO(zeitabschnittDTO);
 			Betreuung betreuung = betreuungWithSingleContainer();
-			betreuung.getInstitutionStammdaten().setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESFAMILIEN);
+			betreuung.getInstitutionStammdaten()
+				.setBetreuungsangebotTyp(
+					BetreuungsangebotTyp.TAGESFAMILIEN
+				);
 
 			expectBetreuungFound(betreuung);
 
-			testFailed(dto, "Eine Pensum in DAYS kann nur für ein Angebot in einer Kita angegeben werden.");
+			testFailed(
+				dto,
+				"Eine Pensum in DAYS kann nur für ein Angebot in einer Kita angegeben werden."
+			);
 		}
 
 		@Test
 		void failWhenNoExternalClient() {
-			BetreuungEventDTO dto = createBetreuungEventDTO(defaultZeitabschnittDTO());
+			BetreuungEventDTO dto = createBetreuungEventDTO(
+				defaultZeitabschnittDTO()
+			);
 			Betreuung betreuung = betreuungWithSingleContainer();
 
 			expectBetreuungFound(betreuung);
-			expect(betreuungEventHelper.getExternalClients(CLIENT_NAME, betreuung))
+			expect(
+				betreuungEventHelper.getExternalClients(
+					CLIENT_NAME,
+					betreuung
+				)
+			)
 				.andReturn(new InstitutionExternalClients());
-			expect(betreuungEventHelper.clientNotFoundFailure(CLIENT_NAME, betreuung))
-				.andReturn(Processing.failure("Kein InstitutionExternalClient Namens ist der Institution zugewiesen"));
+			expect(
+				betreuungEventHelper.clientNotFoundFailure(
+					CLIENT_NAME,
+					betreuung
+				)
+			)
+				.andReturn(
+					Processing.failure(
+						"Kein InstitutionExternalClient Namens ist der Institution zugewiesen"
+					)
+				);
 
 			replayAll();
 
 			Processing result = handler.attemptProcessing(eventMonitor, dto);
 			assertThat(
 				result,
-				failed(stringContainsInOrder(
-					"Kein InstitutionExternalClient Namens",
-					"ist der Institution",
-					"zugewiesen"))
+				failed(
+					stringContainsInOrder(
+						"Kein InstitutionExternalClient Namens",
+						"ist der Institution",
+						"zugewiesen"
+					)
+				)
 			);
 			verifyAll();
 		}
 
 		@Test
 		void failWhenClientGueltigkeitOutsidePeriode() {
-			BetreuungEventDTO dto = createBetreuungEventDTO(defaultZeitabschnittDTO());
+			BetreuungEventDTO dto = createBetreuungEventDTO(
+				defaultZeitabschnittDTO()
+			);
 			Betreuung betreuung = betreuungWithSingleContainer();
 
 			expectBetreuungFound(betreuung);
 			mockClients(new DateRange(2022));
 
-			testFailed(dto, "Der Client hat innerhalb der Periode keine Berechtigung.");
+			testFailed(
+				dto,
+				"Der Client hat innerhalb der Periode keine Berechtigung."
+			);
 		}
 
 		@Test
 		void failWhenZeitabschnitteOverlap() {
 			BetreuungEventDTO dto = createBetreuungEventDTO(
-				createZeitabschnittDTO(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 10)),
-				createZeitabschnittDTO(LocalDate.of(2021, 1, 10), LocalDate.of(2021, 1, 11))
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 1, 1),
+					LocalDate.of(2021, 1, 10)
+				),
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 1, 10),
+					LocalDate.of(2021, 1, 11)
+				)
 			);
 			Betreuung betreuung = betreuungWithSingleContainer();
 
@@ -324,41 +402,67 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		@Test
 		void failWhenNoInstitutionGueltigkeitAndClientGueltigkeitOverlap() {
 			LocalDate gueltigAb = LocalDate.of(2021, 5, 1);
-			DateRange institutionGueltigkeit = new DateRange(gueltigAb, Constants.END_OF_TIME);
+			DateRange institutionGueltigkeit = new DateRange(
+				gueltigAb,
+				Constants.END_OF_TIME
+			);
 
-			BetreuungEventDTO dto = createBetreuungEventDTO(defaultZeitabschnittDTO());
+			BetreuungEventDTO dto = createBetreuungEventDTO(
+				defaultZeitabschnittDTO()
+			);
 			Betreuung betreuung = betreuungWithSingleContainer();
-			betreuung.getInstitutionStammdaten().setGueltigkeit(institutionGueltigkeit);
+			betreuung.getInstitutionStammdaten()
+				.setGueltigkeit(institutionGueltigkeit);
 
 			expectBetreuungFound(betreuung);
-			mockClients(new DateRange(Constants.START_OF_TIME, gueltigAb.minusDays(1)));
+			mockClients(
+				new DateRange(
+					Constants.START_OF_TIME,
+					gueltigAb.minusDays(1)
+				)
+			);
 
-			testFailed(dto, "Die Institution Gültigkeit überlappt nicht mit der Client Gültigkeit.");
+			testFailed(
+				dto,
+				"Die Institution Gültigkeit überlappt nicht mit der Client Gültigkeit."
+			);
 		}
 
 		@Test
 		void failWhenNoZeitabschnittInInstitutionGueltigkeit() {
 			LocalDate gueltigAb = LocalDate.of(2021, 5, 1);
 			DateRange dtoGueltigkeit =
-				new DateRange(gesuchsperiode.getGueltigkeit().getGueltigAb(), gueltigAb.minusDays(1));
-			DateRange institutionGueltigkeit = new DateRange(gueltigAb, Constants.END_OF_TIME);
+				new DateRange(
+					gesuchsperiode.getGueltigkeit().getGueltigAb(),
+					gueltigAb.minusDays(1)
+				);
+			DateRange institutionGueltigkeit = new DateRange(
+				gueltigAb,
+				Constants.END_OF_TIME
+			);
 
-			BetreuungEventDTO dto = createBetreuungEventDTO(createZeitabschnittDTO(dtoGueltigkeit));
+			BetreuungEventDTO dto = createBetreuungEventDTO(
+				createZeitabschnittDTO(dtoGueltigkeit)
+			);
 			Betreuung betreuung = betreuungWithSingleContainer();
-			betreuung.getInstitutionStammdaten().setGueltigkeit(institutionGueltigkeit);
+			betreuung.getInstitutionStammdaten()
+				.setGueltigkeit(institutionGueltigkeit);
 
 			expectBetreuungFound(betreuung);
 			mockClients(Constants.DEFAULT_GUELTIGKEIT);
 
 			testFailed(
 				dto,
-				"Kein Zeitabschnitt liegt innerhalb Client Gültigkeit & Periode & Institution Gültigkeit.");
+				"Kein Zeitabschnitt liegt innerhalb Client Gültigkeit & Periode & Institution Gültigkeit."
+			);
 		}
 
 		@Test
 		void failWhenNoZeitabschnittInClientGueltigkeit() {
-			LocalDate gesuchsperiodeAb = gesuchsperiode.getGueltigkeit().getGueltigAb();
-			LocalDate zeitabschnittBis = gesuchsperiodeAb.plusMonths(8).minusDays(1);
+			LocalDate gesuchsperiodeAb = gesuchsperiode.getGueltigkeit()
+				.getGueltigAb();
+			LocalDate zeitabschnittBis = gesuchsperiodeAb.plusMonths(8)
+				.minusDays(1);
 
 			BetreuungEventDTO dto = createBetreuungEventDTO(
 				createZeitabschnittDTO(gesuchsperiodeAb, zeitabschnittBis)
@@ -366,19 +470,28 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			Betreuung betreuung = betreuungWithSingleContainer();
 
 			expectBetreuungFound(betreuung);
-			mockClients(new DateRange(zeitabschnittBis.plusDays(1), Constants.END_OF_TIME));
+			mockClients(
+				new DateRange(
+					zeitabschnittBis.plusDays(1),
+					Constants.END_OF_TIME
+				)
+			);
 
 			testFailed(
 				dto,
-				"Kein Zeitabschnitt liegt innerhalb Client Gültigkeit & Periode & Institution Gültigkeit.");
+				"Kein Zeitabschnitt liegt innerhalb Client Gültigkeit & Periode & Institution Gültigkeit."
+			);
 		}
 
 		@ParameterizedTest
 		@EnumSource(value = Betreuungsstatus.class,
-			names = { "WARTEN", "VERFUEGT", "BESTAETIGT", "GESCHLOSSEN_OHNE_VERFUEGUNG", "STORNIERT" },
+			names = { "WARTEN", "VERFUEGT", "BESTAETIGT",
+				"GESCHLOSSEN_OHNE_VERFUEGUNG", "STORNIERT" },
 			mode = Mode.EXCLUDE)
 		void failWhenInvalidBetreuungStatus(@Nonnull Betreuungsstatus status) {
-			BetreuungEventDTO dto = createBetreuungEventDTO(defaultZeitabschnittDTO());
+			BetreuungEventDTO dto = createBetreuungEventDTO(
+				defaultZeitabschnittDTO()
+			);
 			Betreuung betreuung = betreuungWithSingleContainer();
 			betreuung.setBetreuungsstatus(status);
 
@@ -390,7 +503,10 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			testFailed(dto, "Platzbestätigung oder Mutation nicht möglich.");
 		}
 
-		private void testFailed(@Nonnull BetreuungEventDTO dto, @Nonnull String message) {
+		private void testFailed(
+			@Nonnull BetreuungEventDTO dto,
+			@Nonnull String message
+		) {
 			replayAll();
 
 			Processing result = handler.attemptProcessing(eventMonitor, dto);
@@ -424,7 +540,10 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			betreuung = betreuungWithSingleContainer();
 			betreuung.getBetreuungspensumContainers().clear();
 			ErweiterteBetreuung erweiterteBetreuung =
-				requireNonNull(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA());
+				requireNonNull(
+					betreuung.getErweiterteBetreuungContainer()
+						.getErweiterteBetreuungJA()
+				);
 			// the default test data already sets TRUE, but the actual default is NULL...
 			erweiterteBetreuung.setBetreuungInGemeinde(null);
 
@@ -458,8 +577,14 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			replayAll();
 			Processing result = handler.attemptProcessing(eventMonitor, dto);
-			ErweiterteBetreuung erweiterteBetreuung = betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA();
-			assertThat(requireNonNull(erweiterteBetreuung).isSprachfoerderungBestaetigt(), is(isBestaetigt));
+			ErweiterteBetreuung erweiterteBetreuung = betreuung
+				.getErweiterteBetreuungContainer()
+				.getErweiterteBetreuungJA();
+			assertThat(
+				requireNonNull(erweiterteBetreuung)
+					.isSprachfoerderungBestaetigt(),
+				is(isBestaetigt)
+			);
 			assertThat(result.isProcessingSuccess(), is(true));
 			verifyAll();
 		}
@@ -468,7 +593,9 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		@EnumSource(value = AntragStatus.class,
 			names = { "IN_BEARBEITUNG_GS", "IN_BEARBEITUNG_SOZIALDIENST" },
 			mode = Mode.INCLUDE)
-		void updatesPlatzbestaetigungWhenNotYetFreigegeben(@Nonnull AntragStatus antragStatus) {
+		void updatesPlatzbestaetigungWhenNotYetFreigegeben(
+			@Nonnull AntragStatus antragStatus
+		) {
 			betreuung.setBetreuungsstatus(Betreuungsstatus.BESTAETIGT);
 			Gesuch gesuch = betreuung.extractGesuch();
 			gesuch.setStatus(antragStatus);
@@ -491,26 +618,38 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		void setErweiterteBeduerfnisseBestaetigt(
 			boolean erweiterteBeduerfnisseClaimed,
 			boolean erweiterteBeduerfnisseConfirmed,
-			boolean confirmation) {
+			boolean confirmation
+		) {
 
 			ErweiterteBetreuung erweiterteBetreuung =
-				requireNonNull(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA());
+				requireNonNull(
+					betreuung.getErweiterteBetreuungContainer()
+						.getErweiterteBetreuungJA()
+				);
 
-			erweiterteBetreuung.setErweiterteBeduerfnisse(erweiterteBeduerfnisseClaimed);
+			erweiterteBetreuung.setErweiterteBeduerfnisse(
+				erweiterteBeduerfnisseClaimed
+			);
 
-			dto.setAusserordentlicherBetreuungsaufwand(erweiterteBeduerfnisseConfirmed);
+			dto.setAusserordentlicherBetreuungsaufwand(
+				erweiterteBeduerfnisseConfirmed
+			);
 
 			expectPlatzBestaetigung();
 
 			testProcessingSuccess();
 
-			assertThat(erweiterteBetreuung.isErweiterteBeduerfnisseBestaetigt(), is(confirmation));
+			assertThat(
+				erweiterteBetreuung.isErweiterteBeduerfnisseBestaetigt(),
+				is(confirmation)
+			);
 		}
 
 		@Test
 		void allowPensumInHoursForKita() {
 			dto.getZeitabschnitte().get(0).setPensumUnit(Zeiteinheit.HOURS);
-			betreuung.getInstitutionStammdaten().setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
+			betreuung.getInstitutionStammdaten()
+				.setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
 
 			expectPlatzBestaetigung();
 
@@ -520,7 +659,8 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		@Test
 		void ignoreErweiterteBeduerfnisseWhenNotClaimed() {
 			// removes the claim
-			betreuung.getErweiterteBetreuungContainer().setErweiterteBetreuungJA(null);
+			betreuung.getErweiterteBetreuungContainer()
+				.setErweiterteBetreuungJA(null);
 			// to be ignored
 			dto.setAusserordentlicherBetreuungsaufwand(true);
 			// disable ZusaetzlicherGutscheinGeminde, because it automatically creates ErweiterteBetreuung
@@ -530,20 +670,29 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			testProcessingSuccessWithoutErweiterteBetreuung();
 
-			assertThat(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA(), nullValue());
+			assertThat(
+				betreuung.getErweiterteBetreuungContainer()
+					.getErweiterteBetreuungJA(),
+				nullValue()
+			);
 		}
 
 		@Test
 		void ignoreGemeindeWhenNotRequired() {
 			zusaetzlicherGutscheinGemeindeEnabled = false;
 
-			betreuung.getErweiterteBetreuungContainer().setErweiterteBetreuungJA(null);
+			betreuung.getErweiterteBetreuungContainer()
+				.setErweiterteBetreuungJA(null);
 
 			expectPlatzBestaetigung();
 
 			testProcessingSuccessWithoutErweiterteBetreuung();
 
-			assertThat(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA(), nullValue());
+			assertThat(
+				betreuung.getErweiterteBetreuungContainer()
+					.getErweiterteBetreuungJA(),
+				nullValue()
+			);
 		}
 
 		@Test
@@ -580,7 +729,8 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			@Nonnull Long kiBonBfsNumber,
 			@Nullable String dtoName,
 			@Nullable Long dtoBfsNumber,
-			boolean betreuungInGemeinde) {
+			boolean betreuungInGemeinde
+		) {
 
 			gemeinde.setName(kiBonName);
 			gemeinde.setBfsNummer(kiBonBfsNumber);
@@ -591,13 +741,19 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			expectPlatzBestaetigung();
 
 			ErweiterteBetreuung erweiterteBetreuung =
-				requireNonNull(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA());
+				requireNonNull(
+					betreuung.getErweiterteBetreuungContainer()
+						.getErweiterteBetreuungJA()
+				);
 			// the default test data already sets TRUE, but the actual default is NULL...
 			erweiterteBetreuung.setBetreuungInGemeinde(null);
 
 			testProcessingSuccess();
 
-			assertThat(erweiterteBetreuung.getBetreuungInGemeinde(), is(betreuungInGemeinde));
+			assertThat(
+				erweiterteBetreuung.getBetreuungInGemeinde(),
+				is(betreuungInGemeinde)
+			);
 		}
 
 		@Nested
@@ -609,23 +765,45 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			 */
 			@Test
 			void requireHumanConfirmationWhenClientGueltigkeitIsNotCoveringEntirePeriod_withSomeOtherClientInPeriode() {
-				LocalDate periodeAb = gesuchsperiode.getGueltigkeit().getGueltigAb();
-				clientGueltigkeit = new DateRange(periodeAb.plusDays(1), Constants.END_OF_TIME);
-				InstitutionExternalClient client2 = mockClient(new DateRange(Constants.START_OF_TIME, periodeAb), "client2");
+				LocalDate periodeAb = gesuchsperiode.getGueltigkeit()
+					.getGueltigAb();
+				clientGueltigkeit = new DateRange(
+					periodeAb.plusDays(1),
+					Constants.END_OF_TIME
+				);
+				InstitutionExternalClient client2 = mockClient(
+					new DateRange(Constants.START_OF_TIME, periodeAb),
+					"client2"
+				);
 
 				expectHumanConfirmation();
 				expectBetreuungWithoutOffeneBetreuungsmitteilung(betreuung);
-				expect(betreuungEinstellungenService.getEinstellungen(betreuung))
+				expect(
+					betreuungEinstellungenService.getEinstellungen(
+						betreuung
+					)
+				)
 					.andReturn(BetreuungEinstellungen.builder().build());
-				expectGetSchnittstelleSprachfoerderungAktivAb(LocalDate.of(2023, 1, 1));
+				expectGetSchnittstelleSprachfoerderungAktivAb(
+					LocalDate.of(2023, 1, 1)
+				);
 				mockClients(clientGueltigkeit, List.of(client2));
-				expect(pensumMapperFactory.createForPlatzbestaetigung(anyObject()))
+				expect(
+					pensumMapperFactory.createForPlatzbestaetigung(
+						anyObject()
+					)
+				)
 					.andReturn(unitTestPensumMapper());
-				withZusaetzlicherGutschein(zusaetzlicherGutscheinGemeindeEnabled);
+				withZusaetzlicherGutschein(
+					zusaetzlicherGutscheinGemeindeEnabled
+				);
 
 				replayAll();
 
-				Processing result = handler.attemptProcessing(eventMonitor, dto);
+				Processing result = handler.attemptProcessing(
+					eventMonitor,
+					dto
+				);
 				assertThat(result.isProcessingSuccess(), is(true));
 				verifyAll();
 			}
@@ -638,7 +816,12 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			void automaticWhenClientGueltigkeitIsNotCoveringEntirePeriod_whenNoOtherClientInPeriode() {
 
 				clientGueltigkeit =
-					new DateRange(gesuchsperiode.getGueltigkeit().getGueltigAb().plusDays(1), Constants.END_OF_TIME);
+					new DateRange(
+						gesuchsperiode.getGueltigkeit()
+							.getGueltigAb()
+							.plusDays(1),
+						Constants.END_OF_TIME
+					);
 
 				expectPlatzBestaetigung();
 				testProcessingSuccess();
@@ -646,7 +829,10 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			@Test
 			void splitDtoZeitabschnitteWithClientGueltigkeit() {
-				clientGueltigkeit = new DateRange(LocalDate.of(2020, 12, 31), LocalDate.of(2021, 5, 31));
+				clientGueltigkeit = new DateRange(
+					LocalDate.of(2020, 12, 31),
+					LocalDate.of(2021, 5, 31)
+				);
 
 				// ZeitabschnittDTO's must be distinct, otherwise they get merged together to one large Zeitabschnitt.
 				// -> set distinct Betreuungskosten
@@ -654,74 +840,147 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 				AtomicInteger betreuungsKosten = new AtomicInteger(1234);
 
 				ZeitabschnittDTO beforeGueltigAb =
-					createZeitabschnittDTO(LocalDate.of(2020, 11, 1), LocalDate.of(2020, 11, 30));
-				beforeGueltigAb.setBetreuungskosten(BigDecimal.valueOf(betreuungsKosten.incrementAndGet()));
+					createZeitabschnittDTO(
+						LocalDate.of(2020, 11, 1),
+						LocalDate.of(2020, 11, 30)
+					);
+				beforeGueltigAb.setBetreuungskosten(
+					BigDecimal.valueOf(betreuungsKosten.incrementAndGet())
+				);
 
 				ZeitabschnittDTO overlapGueltigAb =
-					createZeitabschnittDTO(LocalDate.of(2020, 12, 1), LocalDate.of(2021, 1, 31));
-				overlapGueltigAb.setBetreuungskosten(BigDecimal.valueOf(betreuungsKosten.incrementAndGet()));
+					createZeitabschnittDTO(
+						LocalDate.of(2020, 12, 1),
+						LocalDate.of(2021, 1, 31)
+					);
+				overlapGueltigAb.setBetreuungskosten(
+					BigDecimal.valueOf(betreuungsKosten.incrementAndGet())
+				);
 
 				ZeitabschnittDTO containedInGueltigkeit =
-					createZeitabschnittDTO(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 3, 31));
-				containedInGueltigkeit.setBetreuungskosten(BigDecimal.valueOf(betreuungsKosten.incrementAndGet()));
+					createZeitabschnittDTO(
+						LocalDate.of(2021, 2, 1),
+						LocalDate.of(2021, 3, 31)
+					);
+				containedInGueltigkeit.setBetreuungskosten(
+					BigDecimal.valueOf(betreuungsKosten.incrementAndGet())
+				);
 
 				ZeitabschnittDTO overlapGueltigBis =
-					createZeitabschnittDTO(LocalDate.of(2021, 4, 1), LocalDate.of(2021, 5, 31));
-				overlapGueltigBis.setBetreuungskosten(BigDecimal.valueOf(betreuungsKosten.incrementAndGet()));
+					createZeitabschnittDTO(
+						LocalDate.of(2021, 4, 1),
+						LocalDate.of(2021, 5, 31)
+					);
+				overlapGueltigBis.setBetreuungskosten(
+					BigDecimal.valueOf(betreuungsKosten.incrementAndGet())
+				);
 
 				ZeitabschnittDTO afterGueltigBis =
-					createZeitabschnittDTO(LocalDate.of(2021, 7, 1), LocalDate.of(2021, 7, 31));
-				afterGueltigBis.setBetreuungskosten(BigDecimal.valueOf(betreuungsKosten.incrementAndGet()));
+					createZeitabschnittDTO(
+						LocalDate.of(2021, 7, 1),
+						LocalDate.of(2021, 7, 31)
+					);
+				afterGueltigBis.setBetreuungskosten(
+					BigDecimal.valueOf(betreuungsKosten.incrementAndGet())
+				);
 
-				dto.setZeitabschnitte(Arrays.asList(
-					beforeGueltigAb,
-					overlapGueltigAb,
-					containedInGueltigkeit,
-					overlapGueltigBis,
-					afterGueltigBis));
+				dto.setZeitabschnitte(
+					Arrays.asList(
+						beforeGueltigAb,
+						overlapGueltigAb,
+						containedInGueltigkeit,
+						overlapGueltigBis,
+						afterGueltigBis
+					)
+				);
 
 				expectPlatzBestaetigung();
 				testProcessingSuccess();
 
-				assertThat(betreuung.getBetreuungspensumContainers(), contains(
-					container(matches(overlapGueltigAb, LocalDate.of(2020, 12, 31), LocalDate.of(2021, 1, 31))),
-					container(matches(containedInGueltigkeit)),
-					container(matches(overlapGueltigBis, LocalDate.of(2021, 4, 1), LocalDate.of(2021, 5, 31)))
-				));
+				assertThat(
+					betreuung.getBetreuungspensumContainers(),
+					contains(
+						container(
+							matches(
+								overlapGueltigAb,
+								LocalDate.of(2020, 12, 31),
+								LocalDate.of(2021, 1, 31)
+							)
+						),
+						container(matches(containedInGueltigkeit)),
+						container(
+							matches(
+								overlapGueltigBis,
+								LocalDate.of(2021, 4, 1),
+								LocalDate.of(2021, 5, 31)
+							)
+						)
+					)
+				);
 			}
 
 			@Test
 			void mergesIdenticalZeitabschnitte() {
-				clientGueltigkeit = new DateRange(LocalDate.of(2020, 12, 31), LocalDate.of(2021, 5, 31));
+				clientGueltigkeit = new DateRange(
+					LocalDate.of(2020, 12, 31),
+					LocalDate.of(2021, 5, 31)
+				);
 
 				ZeitabschnittDTO beforeGueltigAb =
-					createZeitabschnittDTO(LocalDate.of(2020, 11, 1), LocalDate.of(2020, 11, 30));
+					createZeitabschnittDTO(
+						LocalDate.of(2020, 11, 1),
+						LocalDate.of(2020, 11, 30)
+					);
 
 				ZeitabschnittDTO overlapGueltigAb =
-					createZeitabschnittDTO(LocalDate.of(2020, 12, 1), LocalDate.of(2021, 1, 31));
+					createZeitabschnittDTO(
+						LocalDate.of(2020, 12, 1),
+						LocalDate.of(2021, 1, 31)
+					);
 
 				ZeitabschnittDTO containedInGueltigkeit =
-					createZeitabschnittDTO(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 3, 31));
+					createZeitabschnittDTO(
+						LocalDate.of(2021, 2, 1),
+						LocalDate.of(2021, 3, 31)
+					);
 
 				ZeitabschnittDTO overlapGueltigBis =
-					createZeitabschnittDTO(LocalDate.of(2021, 4, 1), LocalDate.of(2021, 5, 31));
+					createZeitabschnittDTO(
+						LocalDate.of(2021, 4, 1),
+						LocalDate.of(2021, 5, 31)
+					);
 
 				ZeitabschnittDTO afterGueltigBis =
-					createZeitabschnittDTO(LocalDate.of(2021, 7, 1), LocalDate.of(2021, 7, 31));
+					createZeitabschnittDTO(
+						LocalDate.of(2021, 7, 1),
+						LocalDate.of(2021, 7, 31)
+					);
 
-				dto.setZeitabschnitte(Arrays.asList(
-					beforeGueltigAb,
-					overlapGueltigAb,
-					containedInGueltigkeit,
-					overlapGueltigBis,
-					afterGueltigBis));
+				dto.setZeitabschnitte(
+					Arrays.asList(
+						beforeGueltigAb,
+						overlapGueltigAb,
+						containedInGueltigkeit,
+						overlapGueltigBis,
+						afterGueltigBis
+					)
+				);
 
 				expectPlatzBestaetigung();
 				testProcessingSuccess();
 
-				assertThat(betreuung.getBetreuungspensumContainers(), contains(
-					container(matches(containedInGueltigkeit, LocalDate.of(2020, 12, 31), LocalDate.of(2021, 5, 31)))
-				));
+				assertThat(
+					betreuung.getBetreuungspensumContainers(),
+					contains(
+						container(
+							matches(
+								containedInGueltigkeit,
+								LocalDate.of(2020, 12, 31),
+								LocalDate.of(2021, 5, 31)
+							)
+						)
+					)
+				);
 			}
 
 			/**
@@ -730,30 +989,64 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			 */
 			@Test
 			void updateBetreuungpensumContainersWithDtoZeitabschnitte() {
-				BetreuungspensumContainer original = addCompleteContainer(gesuchsperiode.getGueltigkeit());
+				BetreuungspensumContainer original = addCompleteContainer(
+					gesuchsperiode.getGueltigkeit()
+				);
 
-				clientGueltigkeit = new DateRange(LocalDate.of(2020, 12, 15), LocalDate.of(2021, 5, 31));
+				clientGueltigkeit = new DateRange(
+					LocalDate.of(2020, 12, 15),
+					LocalDate.of(2021, 5, 31)
+				);
 
 				// "von" is before client gueltigAb -> must be ignored
 				// "bis" is before client gueltigBis -> there must be a gap from "bis" to "gueltigBis"
-				ZeitabschnittDTO z = createZeitabschnittDTO(LocalDate.of(2020, 11, 1), LocalDate.of(2021, 4, 30));
+				ZeitabschnittDTO z = createZeitabschnittDTO(
+					LocalDate.of(2020, 11, 1),
+					LocalDate.of(2021, 4, 30)
+				);
 				dto.setZeitabschnitte(Collections.singletonList(z));
 
 				expectPlatzBestaetigung();
 				testProcessingSuccess();
 
-				assertThat(betreuung.getBetreuungspensumContainers(), contains(
-					container(matches(original, LocalDate.of(2020, 8, 1), LocalDate.of(2020, 12, 14))),
-					container(matches(z, LocalDate.of(2020, 12, 15), LocalDate.of(2021, 4, 30))),
-					container(matches(original, LocalDate.of(2021, 6, 1), LocalDate.of(2021, 7, 31)))
-				));
+				assertThat(
+					betreuung.getBetreuungspensumContainers(),
+					contains(
+						container(
+							matches(
+								original,
+								LocalDate.of(2020, 8, 1),
+								LocalDate.of(2020, 12, 14)
+							)
+						),
+						container(
+							matches(
+								z,
+								LocalDate.of(2020, 12, 15),
+								LocalDate.of(2021, 4, 30)
+							)
+						),
+						container(
+							matches(
+								original,
+								LocalDate.of(2021, 6, 1),
+								LocalDate.of(2021, 7, 31)
+							)
+						)
+					)
+				);
 			}
 
 			@Test
 			void preservesIncompleteContainerOutsideClientGueltigkeit() {
-				BetreuungspensumContainer incomplete = addIncompleteContainer(gesuchsperiode.getGueltigkeit());
+				BetreuungspensumContainer incomplete = addIncompleteContainer(
+					gesuchsperiode.getGueltigkeit()
+				);
 
-				clientGueltigkeit = new DateRange(LocalDate.of(2020, 12, 15), LocalDate.of(2021, 5, 31));
+				clientGueltigkeit = new DateRange(
+					LocalDate.of(2020, 12, 15),
+					LocalDate.of(2021, 5, 31)
+				);
 
 				ZeitabschnittDTO z = createZeitabschnittDTO(clientGueltigkeit);
 				dto.setZeitabschnitte(Collections.singletonList(z));
@@ -761,19 +1054,40 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 				expectPlatzBestaetigung();
 				testProcessingSuccess();
 
-				assertThat(betreuung.getBetreuungspensumContainers(), contains(
-					container(matches(incomplete, LocalDate.of(2020, 8, 1), LocalDate.of(2020, 12, 14))),
-					container(matches(z, clientGueltigkeit)),
-					container(matches(incomplete, LocalDate.of(2021, 6, 1), LocalDate.of(2021, 7, 31)))
-				));
+				assertThat(
+					betreuung.getBetreuungspensumContainers(),
+					contains(
+						container(
+							matches(
+								incomplete,
+								LocalDate.of(2020, 8, 1),
+								LocalDate.of(2020, 12, 14)
+							)
+						),
+						container(matches(z, clientGueltigkeit)),
+						container(
+							matches(
+								incomplete,
+								LocalDate.of(2021, 6, 1),
+								LocalDate.of(2021, 7, 31)
+							)
+						)
+					)
+				);
 			}
 
 			@Test
 			void keepsEndOfTimeOfOriginalZeitabschnitt() {
 				BetreuungspensumContainer original =
-					addCompleteContainer(LocalDate.of(2020, 8, 1), Constants.END_OF_TIME);
+					addCompleteContainer(
+						LocalDate.of(2020, 8, 1),
+						Constants.END_OF_TIME
+					);
 
-				clientGueltigkeit = new DateRange(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 5, 1));
+				clientGueltigkeit = new DateRange(
+					LocalDate.of(2021, 1, 1),
+					LocalDate.of(2021, 5, 1)
+				);
 
 				ZeitabschnittDTO z = createZeitabschnittDTO(clientGueltigkeit);
 				dto.setZeitabschnitte(Collections.singletonList(z));
@@ -781,46 +1095,83 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 				expectPlatzBestaetigung();
 				testProcessingSuccess();
 
-				assertThat(betreuung.getBetreuungspensumContainers(), contains(
-					container(matches(original, LocalDate.of(2020, 8, 1), LocalDate.of(2020, 12, 31))),
-					container(matches(z, clientGueltigkeit)),
-					container(matches(original, LocalDate.of(2021, 5, 2), Constants.END_OF_TIME))
-				));
+				assertThat(
+					betreuung.getBetreuungspensumContainers(),
+					contains(
+						container(
+							matches(
+								original,
+								LocalDate.of(2020, 8, 1),
+								LocalDate.of(2020, 12, 31)
+							)
+						),
+						container(matches(z, clientGueltigkeit)),
+						container(
+							matches(
+								original,
+								LocalDate.of(2021, 5, 2),
+								Constants.END_OF_TIME
+							)
+						)
+					)
+				);
 			}
 
 			@Test
 			void doesNotGeneratedCompletelyOutOfPeriodZeitabschnitt() {
-				addCompleteContainer(LocalDate.of(2020, 8, 1), Constants.END_OF_TIME);
+				addCompleteContainer(
+					LocalDate.of(2020, 8, 1),
+					Constants.END_OF_TIME
+				);
 
-				clientGueltigkeit = new DateRange(LocalDate.of(2020, 8, 1), Constants.END_OF_TIME);
+				clientGueltigkeit = new DateRange(
+					LocalDate.of(2020, 8, 1),
+					Constants.END_OF_TIME
+				);
 
-				DateRange gueltigkeit = betreuung.extractGesuchsperiode().getGueltigkeit();
+				DateRange gueltigkeit = betreuung.extractGesuchsperiode()
+					.getGueltigkeit();
 				ZeitabschnittDTO z = createZeitabschnittDTO(gueltigkeit);
 				dto.setZeitabschnitte(Collections.singletonList(z));
 
 				expectPlatzBestaetigung();
 				testProcessingSuccess();
 
-				assertThat(betreuung.getBetreuungspensumContainers(), contains(
-					container(matches(z, gueltigkeit))
-				));
+				assertThat(
+					betreuung.getBetreuungspensumContainers(),
+					contains(
+						container(matches(z, gueltigkeit))
+					)
+				);
 			}
 
 			@Test
 			void removesZeitabschnitteOutsidePeriode() {
-				addCompleteContainer(LocalDate.of(2020, 8, 1), LocalDate.of(2021, 7, 31));
-				addCompleteContainer(LocalDate.of(2021, 9, 1), Constants.END_OF_TIME);
+				addCompleteContainer(
+					LocalDate.of(2020, 8, 1),
+					LocalDate.of(2021, 7, 31)
+				);
+				addCompleteContainer(
+					LocalDate.of(2021, 9, 1),
+					Constants.END_OF_TIME
+				);
 
-				DateRange gueltigkeit = new DateRange(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 7, 31));
+				DateRange gueltigkeit = new DateRange(
+					LocalDate.of(2021, 1, 1),
+					LocalDate.of(2021, 7, 31)
+				);
 				ZeitabschnittDTO z = createZeitabschnittDTO(gueltigkeit);
 				dto.setZeitabschnitte(Collections.singletonList(z));
 
 				expectPlatzBestaetigung();
 				testProcessingSuccess();
 
-				assertThat(betreuung.getBetreuungspensumContainers(), contains(
-					container(matches(z, gueltigkeit))
-				));
+				assertThat(
+					betreuung.getBetreuungspensumContainers(),
+					contains(
+						container(matches(z, gueltigkeit))
+					)
+				);
 			}
 
 			/**
@@ -830,9 +1181,15 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			@Test
 			void handlesOriginalBisEqualClientAb() {
 				LocalDate edgeCase = LocalDate.of(2021, 1, 1);
-				BetreuungspensumContainer original = addCompleteContainer(LocalDate.of(2020, 8, 1), edgeCase);
+				BetreuungspensumContainer original = addCompleteContainer(
+					LocalDate.of(2020, 8, 1),
+					edgeCase
+				);
 
-				clientGueltigkeit = new DateRange(edgeCase, LocalDate.of(2021, 5, 1));
+				clientGueltigkeit = new DateRange(
+					edgeCase,
+					LocalDate.of(2021, 5, 1)
+				);
 
 				ZeitabschnittDTO z = createZeitabschnittDTO(clientGueltigkeit);
 				dto.setZeitabschnitte(Collections.singletonList(z));
@@ -840,22 +1197,46 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 				expectPlatzBestaetigung();
 				testProcessingSuccess();
 
-				assertThat(betreuung.getBetreuungspensumContainers(), contains(
-					container(matches(original, LocalDate.of(2020, 8, 1), LocalDate.of(2020, 12, 31))),
-					container(matches(z, edgeCase, LocalDate.of(2021, 5, 1)))
-				));
+				assertThat(
+					betreuung.getBetreuungspensumContainers(),
+					contains(
+						container(
+							matches(
+								original,
+								LocalDate.of(2020, 8, 1),
+								LocalDate.of(2020, 12, 31)
+							)
+						),
+						container(
+							matches(
+								z,
+								edgeCase,
+								LocalDate.of(2021, 5, 1)
+							)
+						)
+					)
+				);
 			}
 
 			@Nonnull
-			private Matcher<BetreuungspensumContainer> container(@Nonnull Matcher<AbstractMahlzeitenPensum> matcher) {
+			private Matcher<BetreuungspensumContainer> container(
+				@Nonnull Matcher<AbstractMahlzeitenPensum> matcher
+			) {
 				return pojo(BetreuungspensumContainer.class)
-					.where(BetreuungspensumContainer::getBetreuungspensumJA, matcher);
+					.where(
+						BetreuungspensumContainer::getBetreuungspensumJA,
+						matcher
+					);
 			}
 
 			@Nonnull
 			@CanIgnoreReturnValue
-			private BetreuungspensumContainer addIncompleteContainer(@Nonnull DateRange range) {
-				BetreuungspensumContainer container = addCompleteContainer(range);
+			private BetreuungspensumContainer addIncompleteContainer(
+				@Nonnull DateRange range
+			) {
+				BetreuungspensumContainer container = addCompleteContainer(
+					range
+				);
 				container.getBetreuungspensumJA().setVollstaendig(false);
 
 				return container;
@@ -863,15 +1244,26 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			@Nonnull
 			@CanIgnoreReturnValue
-			private BetreuungspensumContainer addCompleteContainer(@Nonnull DateRange range) {
-				return addCompleteContainer(range.getGueltigAb(), range.getGueltigBis());
+			private BetreuungspensumContainer addCompleteContainer(
+				@Nonnull DateRange range
+			) {
+				return addCompleteContainer(
+					range.getGueltigAb(),
+					range.getGueltigBis()
+				);
 			}
 
 			@Nonnull
 			@CanIgnoreReturnValue
-			private BetreuungspensumContainer addCompleteContainer(@Nonnull LocalDate von, @Nonnull LocalDate bis) {
-				BetreuungspensumContainer container = new BetreuungspensumContainer();
-				Betreuungspensum pensum = new Betreuungspensum(new DateRange(von, bis));
+			private BetreuungspensumContainer addCompleteContainer(
+				@Nonnull LocalDate von,
+				@Nonnull LocalDate bis
+			) {
+				BetreuungspensumContainer container =
+					new BetreuungspensumContainer();
+				Betreuungspensum pensum = new Betreuungspensum(
+					new DateRange(von, bis)
+				);
 				container.setBetreuungspensumJA(pensum);
 				pensum.setVollstaendig(true);
 
@@ -895,7 +1287,9 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			expect(betreuungEinstellungenService.getEinstellungen(betreuung))
 				.andReturn(BetreuungEinstellungen.builder().build());
 			if (erweitereBetreuung) {
-				expectGetSchnittstelleSprachfoerderungAktivAb(LocalDate.of(2023, 1, 1));
+				expectGetSchnittstelleSprachfoerderungAktivAb(
+					LocalDate.of(2023, 1, 1)
+				);
 			}
 			mockClients(clientGueltigkeit);
 			withZusaetzlicherGutschein(zusaetzlicherGutscheinGemeindeEnabled);
@@ -910,24 +1304,45 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			verifyAll();
 		}
 
-		private void expectGetSchnittstelleSprachfoerderungAktivAb(LocalDate aktivierungDatum) {
-			expect(applicationPropertyService.getSchnittstelleSprachfoerderungAktivAb(mandant))
+		private void expectGetSchnittstelleSprachfoerderungAktivAb(
+			LocalDate aktivierungDatum
+		) {
+			expect(
+				applicationPropertyService
+					.getSchnittstelleSprachfoerderungAktivAb(mandant)
+			)
 				.andReturn(aktivierungDatum);
 		}
 
 		private void withZusaetzlicherGutschein(boolean enabled) {
-			expect(einstellungService
-				.isEnabled(GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED, betreuung))
+			expect(
+				einstellungService
+					.isEnabled(
+						GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED,
+						betreuung
+					)
+			)
 				.andReturn(enabled);
 		}
 
 		private void expectPlatzBestaetigung() {
-			expect(betreuungService.betreuungPlatzBestaetigen(betreuung, CLIENT_NAME))
+			expect(
+				betreuungService.betreuungPlatzBestaetigen(
+					betreuung,
+					CLIENT_NAME
+				)
+			)
 				.andReturn(betreuung);
 		}
 
 		private void expectHumanConfirmation() {
-			expect(betreuungService.saveBetreuung(betreuung, false, CLIENT_NAME))
+			expect(
+				betreuungService.saveBetreuung(
+					betreuung,
+					false,
+					CLIENT_NAME
+				)
+			)
 				.andReturn(betreuung);
 		}
 	}
@@ -946,7 +1361,10 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		 */
 		@BeforeEach
 		void setUp() {
-			zeitabschnittDTO = createZeitabschnittDTO(GO_LIVE, gesuchsperiode.getGueltigkeit().getGueltigBis());
+			zeitabschnittDTO = createZeitabschnittDTO(
+				GO_LIVE,
+				gesuchsperiode.getGueltigkeit().getGueltigBis()
+			);
 
 			zeitabschnittDTO.setTarifProHauptmahlzeiten(BigDecimal.ZERO);
 			zeitabschnittDTO.setTarifProNebenmahlzeiten(BigDecimal.ZERO);
@@ -960,7 +1378,10 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			// of gueltigkeiten harder
 			betreuungspensum.setPensum(BigDecimal.valueOf(50));
 			ErweiterteBetreuung erweiterteBetreuung =
-				requireNonNull(betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA());
+				requireNonNull(
+					betreuung.getErweiterteBetreuungContainer()
+						.getErweiterteBetreuungJA()
+				);
 			// the default test data already sets TRUE, but the actual default is NULL...
 			erweiterteBetreuung.setBetreuungInGemeinde(null);
 
@@ -978,19 +1399,56 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			Dossier dossier = gesuch_1GS.getDossier();
 
-			assertThat(capture.getValue(), pojo(Betreuungsmitteilung.class)
-				.where(Betreuungsmitteilung::getDossier, sameInstance(dossier))
-				.where(Betreuungsmitteilung::getSenderTyp, is(MitteilungTeilnehmerTyp.INSTITUTION))
-				.where(Betreuungsmitteilung::getSender, notNullValue())
-				.where(Betreuungsmitteilung::getEmpfaengerTyp, is(MitteilungTeilnehmerTyp.JUGENDAMT))
-				.where(Betreuungsmitteilung::getEmpfaenger, sameInstance(dossier.getFall().getBesitzer()))
-				.where(Betreuungsmitteilung::getMitteilungStatus, is(MitteilungStatus.NEU))
-				.where(Betreuungsmitteilung::getSubject, is("Mutationsmeldung von foo"))
-				.where(Betreuungsmitteilung::getBetreuung, sameInstance(betreuung))
-				.where(Betreuungsmitteilung::getBetreuungspensen, contains(
-					matches(betreuungspensum, betreuungspensum.getGueltigkeit().getGueltigAb(), GO_LIVE.minusDays(1)),
-					matches(zeitabschnittDTO)
-				))
+			assertThat(
+				capture.getValue(),
+				pojo(Betreuungsmitteilung.class)
+					.where(
+						Betreuungsmitteilung::getDossier,
+						sameInstance(dossier)
+					)
+					.where(
+						Betreuungsmitteilung::getSenderTyp,
+						is(MitteilungTeilnehmerTyp.INSTITUTION)
+					)
+					.where(
+						Betreuungsmitteilung::getSender,
+						notNullValue()
+					)
+					.where(
+						Betreuungsmitteilung::getEmpfaengerTyp,
+						is(MitteilungTeilnehmerTyp.JUGENDAMT)
+					)
+					.where(
+						Betreuungsmitteilung::getEmpfaenger,
+						sameInstance(
+							dossier.getFall().getBesitzer()
+						)
+					)
+					.where(
+						Betreuungsmitteilung::getMitteilungStatus,
+						is(MitteilungStatus.NEU)
+					)
+					.where(
+						Betreuungsmitteilung::getSubject,
+						is("Mutationsmeldung von foo")
+					)
+					.where(
+						Betreuungsmitteilung::getBetreuung,
+						sameInstance(betreuung)
+					)
+					.where(
+						Betreuungsmitteilung::getBetreuungspensen,
+						contains(
+							matches(
+								betreuungspensum,
+								betreuungspensum
+									.getGueltigkeit()
+									.getGueltigAb(),
+								GO_LIVE.minusDays(1)
+							),
+							matches(zeitabschnittDTO)
+						)
+					)
 			);
 		}
 
@@ -1006,125 +1464,248 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		@Test
 		void preservesOriginalGueltigkeit() {
 			Capture<Betreuungsmitteilung> capture = expectNewMitteilung();
-			clientGueltigkeit = new DateRange(Constants.START_OF_TIME, LocalDate.of(2021, 3, 31));
+			clientGueltigkeit = new DateRange(
+				Constants.START_OF_TIME,
+				LocalDate.of(2021, 3, 31)
+			);
 
 			testProcessingSuccess();
 
-			assertThat(capture.getValue().getBetreuungspensen(), contains(
-				matches(betreuungspensum, betreuungspensum.getGueltigkeit().getGueltigAb(), GO_LIVE.minusDays(1)),
-				matches(zeitabschnittDTO, GO_LIVE, clientGueltigkeit.getGueltigBis()),
-				matches(betreuungspensum, clientGueltigkeit.getGueltigBis().plusDays(1), Constants.END_OF_TIME)
-			));
+			assertThat(
+				capture.getValue().getBetreuungspensen(),
+				contains(
+					matches(
+						betreuungspensum,
+						betreuungspensum.getGueltigkeit()
+							.getGueltigAb(),
+						GO_LIVE.minusDays(1)
+					),
+					matches(
+						zeitabschnittDTO,
+						GO_LIVE,
+						clientGueltigkeit.getGueltigBis()
+					),
+					matches(
+						betreuungspensum,
+						clientGueltigkeit.getGueltigBis()
+							.plusDays(1),
+						Constants.END_OF_TIME
+					)
+				)
+			);
 		}
 
 		@Test
 		void splitDtoZeitabschnitteWithClientGueltigkeit() {
-			clientGueltigkeit = new DateRange(LocalDate.of(2021, 1, 15), LocalDate.of(2021, 5, 31));
+			clientGueltigkeit = new DateRange(
+				LocalDate.of(2021, 1, 15),
+				LocalDate.of(2021, 5, 31)
+			);
 
 			ZeitabschnittDTO beforeGueltigAb =
-				createZeitabschnittDTO(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 14));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 1, 1),
+					LocalDate.of(2021, 1, 14)
+				);
 
 			ZeitabschnittDTO overlapGueltigAb =
-				createZeitabschnittDTO(LocalDate.of(2021, 1, 15), LocalDate.of(2021, 1, 31));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 1, 15),
+					LocalDate.of(2021, 1, 31)
+				);
 
 			ZeitabschnittDTO containedInGueltigkeit =
-				createZeitabschnittDTO(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 3, 31));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 2, 1),
+					LocalDate.of(2021, 3, 31)
+				);
 
 			ZeitabschnittDTO overlapGueltigBis =
-				createZeitabschnittDTO(LocalDate.of(2021, 4, 10), LocalDate.of(2021, 5, 31));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 4, 10),
+					LocalDate.of(2021, 5, 31)
+				);
 
 			ZeitabschnittDTO afterGueltigBis =
-				createZeitabschnittDTO(LocalDate.of(2021, 7, 1), LocalDate.of(2021, 7, 31));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 7, 1),
+					LocalDate.of(2021, 7, 31)
+				);
 
-			dto.setZeitabschnitte(Arrays.asList(
-				beforeGueltigAb,
-				overlapGueltigAb,
-				containedInGueltigkeit,
-				overlapGueltigBis,
-				afterGueltigBis));
+			dto.setZeitabschnitte(
+				Arrays.asList(
+					beforeGueltigAb,
+					overlapGueltigAb,
+					containedInGueltigkeit,
+					overlapGueltigBis,
+					afterGueltigBis
+				)
+			);
 
 			Capture<Betreuungsmitteilung> capture = expectNewMitteilung();
 
 			testProcessingSuccess();
 
-			assertThat(capture.getValue().getBetreuungspensen(), contains(
-				matches(betreuungspensum, betreuungspensum.getGueltigkeit().getGueltigAb(), LocalDate.of(2021, 1, 14)),
-				matches(overlapGueltigAb, clientGueltigkeit.getGueltigAb(), LocalDate.of(2021, 3, 31)),
-				matches(overlapGueltigBis, LocalDate.of(2021, 4, 10), clientGueltigkeit.getGueltigBis()),
-				matches(
-					betreuungspensum,
-					clientGueltigkeit.getGueltigBis().plusDays(1),
-					betreuungspensum.getGueltigkeit().getGueltigBis())
-			));
+			assertThat(
+				capture.getValue().getBetreuungspensen(),
+				contains(
+					matches(
+						betreuungspensum,
+						betreuungspensum.getGueltigkeit()
+							.getGueltigAb(),
+						LocalDate.of(2021, 1, 14)
+					),
+					matches(
+						overlapGueltigAb,
+						clientGueltigkeit.getGueltigAb(),
+						LocalDate.of(2021, 3, 31)
+					),
+					matches(
+						overlapGueltigBis,
+						LocalDate.of(2021, 4, 10),
+						clientGueltigkeit.getGueltigBis()
+					),
+					matches(
+						betreuungspensum,
+						clientGueltigkeit.getGueltigBis()
+							.plusDays(1),
+						betreuungspensum.getGueltigkeit()
+							.getGueltigBis()
+					)
+				)
+			);
 		}
 
 		@Test
 		void splitDtoZeitabschnitteWithInstitutionGueltigkeit() {
-			DateRange institutionGueltigkeit = new DateRange(LocalDate.of(2021, 1, 15), LocalDate.of(2021, 5, 31));
-			betreuung.getInstitutionStammdaten().setGueltigkeit(institutionGueltigkeit);
+			DateRange institutionGueltigkeit = new DateRange(
+				LocalDate.of(2021, 1, 15),
+				LocalDate.of(2021, 5, 31)
+			);
+			betreuung.getInstitutionStammdaten()
+				.setGueltigkeit(institutionGueltigkeit);
 
 			ZeitabschnittDTO beforeGueltigAb =
-				createZeitabschnittDTO(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 14));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 1, 1),
+					LocalDate.of(2021, 1, 14)
+				);
 
 			ZeitabschnittDTO overlapGueltigAb =
-				createZeitabschnittDTO(LocalDate.of(2021, 1, 15), LocalDate.of(2021, 1, 31));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 1, 15),
+					LocalDate.of(2021, 1, 31)
+				);
 
 			ZeitabschnittDTO containedInGueltigkeit =
-				createZeitabschnittDTO(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 3, 31));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 2, 1),
+					LocalDate.of(2021, 3, 31)
+				);
 			containedInGueltigkeit.setBetreuungspensum(BigDecimal.valueOf(75));
 
 			ZeitabschnittDTO overlapGueltigBis =
-				createZeitabschnittDTO(LocalDate.of(2021, 4, 10), LocalDate.of(2021, 5, 31));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 4, 10),
+					LocalDate.of(2021, 5, 31)
+				);
 
 			ZeitabschnittDTO afterGueltigBis =
-				createZeitabschnittDTO(LocalDate.of(2021, 7, 1), LocalDate.of(2021, 7, 31));
+				createZeitabschnittDTO(
+					LocalDate.of(2021, 7, 1),
+					LocalDate.of(2021, 7, 31)
+				);
 
-			dto.setZeitabschnitte(Arrays.asList(
-				beforeGueltigAb,
-				overlapGueltigAb,
-				containedInGueltigkeit,
-				overlapGueltigBis,
-				afterGueltigBis));
+			dto.setZeitabschnitte(
+				Arrays.asList(
+					beforeGueltigAb,
+					overlapGueltigAb,
+					containedInGueltigkeit,
+					overlapGueltigBis,
+					afterGueltigBis
+				)
+			);
 
 			Capture<Betreuungsmitteilung> capture = expectNewMitteilung();
 
 			testProcessingSuccess();
 
-			assertThat(capture.getValue().getBetreuungspensen(), contains(
-				matches(overlapGueltigAb, institutionGueltigkeit.getGueltigAb(), LocalDate.of(2021, 1, 31)),
-				matches(containedInGueltigkeit, containedInGueltigkeit.getVon(), containedInGueltigkeit.getBis()),
-				matches(overlapGueltigBis, LocalDate.of(2021, 4, 10), institutionGueltigkeit.getGueltigBis())
-			));
+			assertThat(
+				capture.getValue().getBetreuungspensen(),
+				contains(
+					matches(
+						overlapGueltigAb,
+						institutionGueltigkeit.getGueltigAb(),
+						LocalDate.of(2021, 1, 31)
+					),
+					matches(
+						containedInGueltigkeit,
+						containedInGueltigkeit.getVon(),
+						containedInGueltigkeit.getBis()
+					),
+					matches(
+						overlapGueltigBis,
+						LocalDate.of(2021, 4, 10),
+						institutionGueltigkeit.getGueltigBis()
+					)
+				)
+			);
 		}
 
 		@Test
 		void ignoresZeitabschnitteBeforeGoLive() {
 			ZeitabschnittDTO beforeGoLive =
-				createZeitabschnittDTO(LocalDate.of(2020, 11, 1), LocalDate.of(2020, 12, 14));
+				createZeitabschnittDTO(
+					LocalDate.of(2020, 11, 1),
+					LocalDate.of(2020, 12, 14)
+				);
 
 			ZeitabschnittDTO overlapGueltigAb =
-				createZeitabschnittDTO(LocalDate.of(2020, 12, 15), LocalDate.of(2021, 1, 31));
+				createZeitabschnittDTO(
+					LocalDate.of(2020, 12, 15),
+					LocalDate.of(2021, 1, 31)
+				);
 
-			dto.setZeitabschnitte(Arrays.asList(beforeGoLive, overlapGueltigAb));
+			dto.setZeitabschnitte(
+				Arrays.asList(beforeGoLive, overlapGueltigAb)
+			);
 
 			Capture<Betreuungsmitteilung> capture = expectNewMitteilung();
 
 			testProcessingSuccess();
 
-			assertThat(capture.getValue().getBetreuungspensen(), contains(
-				matches(betreuungspensum, betreuungspensum.getGueltigkeit().getGueltigAb(), GO_LIVE.minusDays(1)),
-				matches(overlapGueltigAb, LocalDate.of(2021, 1, 1), LocalDate.of(2021, 1, 31))
-			));
+			assertThat(
+				capture.getValue().getBetreuungspensen(),
+				contains(
+					matches(
+						betreuungspensum,
+						betreuungspensum.getGueltigkeit()
+							.getGueltigAb(),
+						GO_LIVE.minusDays(1)
+					),
+					matches(
+						overlapGueltigAb,
+						LocalDate.of(2021, 1, 1),
+						LocalDate.of(2021, 1, 31)
+					)
+				)
+			);
 		}
 
 		@Test
 		void createsNewBetreuungsmeldungBasedOnExistingBetreuungsmeldung() {
 			DateRange periode = gesuchsperiode.getGueltigkeit();
-			BetreuungsmitteilungPensum existingPensum = createBetreuungsmitteilungPensum(new DateRange(
-				periode.getGueltigAb().plusMonths(1),
-				periode.getGueltigBis()));
+			BetreuungsmitteilungPensum existingPensum =
+				createBetreuungsmitteilungPensum(
+					new DateRange(
+						periode.getGueltigAb().plusMonths(1),
+						periode.getGueltigBis()
+					)
+				);
 			existingPensum.setPensum(BigDecimal.valueOf(50));
-			Betreuungsmitteilung existing = createBetreuungMitteilung(existingPensum);
+			Betreuungsmitteilung existing = createBetreuungMitteilung(
+				existingPensum
+			);
 
 			Capture<Betreuungsmitteilung> capture = expectNewMitteilung();
 			testProcessingSuccess(existing);
@@ -1134,10 +1715,22 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			// -> the new Betreuungsmitteilung should ignore August 2020, since the existing mutation did not define
 			// anything in that range.
 
-			assertThat(capture.getValue().getBetreuungspensen(), contains(
-				matches(existingPensum, existingPensum.getGueltigkeit().getGueltigAb(), GO_LIVE.minusDays(1)),
-				matches(zeitabschnittDTO, GO_LIVE, periode.getGueltigBis())
-			));
+			assertThat(
+				capture.getValue().getBetreuungspensen(),
+				contains(
+					matches(
+						existingPensum,
+						existingPensum.getGueltigkeit()
+							.getGueltigAb(),
+						GO_LIVE.minusDays(1)
+					),
+					matches(
+						zeitabschnittDTO,
+						GO_LIVE,
+						periode.getGueltigBis()
+					)
+				)
+			);
 		}
 
 		@Test
@@ -1146,29 +1739,49 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			LocalDateTime now = LocalDateTime.now();
 
-			BetreuungsmitteilungPensum newestPensum = createBetreuungsmitteilungPensum(periode);
+			BetreuungsmitteilungPensum newestPensum =
+				createBetreuungsmitteilungPensum(periode);
 			newestPensum.setPensum(BigDecimal.valueOf(75));
-			Betreuungsmitteilung newest = createBetreuungMitteilung(newestPensum);
+			Betreuungsmitteilung newest = createBetreuungMitteilung(
+				newestPensum
+			);
 			newest.setSentDatum(now.minusMinutes(1));
 
-			BetreuungsmitteilungPensum otherOpenPensum = createBetreuungsmitteilungPensum(periode);
+			BetreuungsmitteilungPensum otherOpenPensum =
+				createBetreuungsmitteilungPensum(periode);
 			otherOpenPensum.setPensum(BigDecimal.valueOf(70));
-			Betreuungsmitteilung otherOpen = createBetreuungMitteilung(otherOpenPensum);
+			Betreuungsmitteilung otherOpen = createBetreuungMitteilung(
+				otherOpenPensum
+			);
 			otherOpen.setSentDatum(now.minusHours(1));
 
-			BetreuungsmitteilungPensum completedPensum = createBetreuungsmitteilungPensum(periode);
+			BetreuungsmitteilungPensum completedPensum =
+				createBetreuungsmitteilungPensum(periode);
 			completedPensum.setPensum(BigDecimal.valueOf(60));
-			Betreuungsmitteilung completed = createBetreuungMitteilung(completedPensum);
+			Betreuungsmitteilung completed = createBetreuungMitteilung(
+				completedPensum
+			);
 			completed.setApplied(true);
 
 			Capture<Betreuungsmitteilung> capture = expectNewMitteilung();
 
 			testProcessingSuccess(completed, otherOpen, newest);
 
-			assertThat(capture.getValue().getBetreuungspensen(), contains(
-				matches(newestPensum, periode.getGueltigAb(), GO_LIVE.minusDays(1)),
-				matches(zeitabschnittDTO, GO_LIVE, periode.getGueltigBis())
-			));
+			assertThat(
+				capture.getValue().getBetreuungspensen(),
+				contains(
+					matches(
+						newestPensum,
+						periode.getGueltigAb(),
+						GO_LIVE.minusDays(1)
+					),
+					matches(
+						zeitabschnittDTO,
+						GO_LIVE,
+						periode.getGueltigBis()
+					)
+				)
+			);
 		}
 
 		@Test
@@ -1179,21 +1792,35 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			// region setup platzbestätigung
 			betreuung.setBetreuungsstatus(Betreuungsstatus.WARTEN);
-			expect(einstellungService
-				.isEnabled(GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED, betreuung))
+			expect(
+				einstellungService
+					.isEnabled(
+						GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED,
+						betreuung
+					)
+			)
 				.andReturn(false);
 
-			expect(betreuungService.betreuungPlatzBestaetigen(betreuung, CLIENT_NAME))
+			expect(
+				betreuungService.betreuungPlatzBestaetigen(
+					betreuung,
+					CLIENT_NAME
+				)
+			)
 				.andReturn(betreuung);
-			betreuung.getErweiterteBetreuungContainer().setErweiterteBetreuungJA(null);
+			betreuung.getErweiterteBetreuungContainer()
+				.setErweiterteBetreuungJA(null);
 
 			expect(pensumMapperFactory.createForPlatzbestaetigung(anyObject()))
 				.andReturn(unitTestPensumMapper());
 			// endregion
 
-			BetreuungsmitteilungPensum newestPensum = createBetreuungsmitteilungPensum(periode);
+			BetreuungsmitteilungPensum newestPensum =
+				createBetreuungsmitteilungPensum(periode);
 			newestPensum.setPensum(BigDecimal.valueOf(75));
-			Betreuungsmitteilung newest = createBetreuungMitteilung(newestPensum);
+			Betreuungsmitteilung newest = createBetreuungMitteilung(
+				newestPensum
+			);
 			newest.setSentDatum(now.minusMinutes(1));
 			newest.setBetreuung(betreuung);
 
@@ -1204,15 +1831,44 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			replayAll();
 
 			Processing result = handler.attemptProcessing(eventMonitor, dto);
-			assertThat((PlatzbestaetigungProcessing) result, pojo(PlatzbestaetigungProcessing.class)
-				.where(PlatzbestaetigungProcessing::getProcessed, containsInAnyOrder(
-					pojo(PlatzbestaetigungProcessing.class)
-						.where(PlatzbestaetigungProcessing::getImportForm, is(ImportForm.PLATZBESTAETIGUNG))
-						.where(PlatzbestaetigungProcessing::getState, is(ProcessingState.SUCCESS)),
-					pojo(PlatzbestaetigungProcessing.class)
-						.where(PlatzbestaetigungProcessing::getImportForm, is(MUTATIONS_MITTEILUNG))
-						.where(PlatzbestaetigungProcessing::getState, is(ProcessingState.SUCCESS))
-				))
+			assertThat(
+				(PlatzbestaetigungProcessing) result,
+				pojo(PlatzbestaetigungProcessing.class)
+					.where(
+						PlatzbestaetigungProcessing::getProcessed,
+						containsInAnyOrder(
+							pojo(
+								PlatzbestaetigungProcessing.class
+							)
+								.where(
+									PlatzbestaetigungProcessing::getImportForm,
+									is(
+										ImportForm.PLATZBESTAETIGUNG
+									)
+								)
+								.where(
+									PlatzbestaetigungProcessing::getState,
+									is(
+										ProcessingState.SUCCESS
+									)
+								),
+							pojo(
+								PlatzbestaetigungProcessing.class
+							)
+								.where(
+									PlatzbestaetigungProcessing::getImportForm,
+									is(
+										MUTATIONS_MITTEILUNG
+									)
+								)
+								.where(
+									PlatzbestaetigungProcessing::getState,
+									is(
+										ProcessingState.SUCCESS
+									)
+								)
+						)
+					)
 			);
 
 			assertThat(m1.getValue().getBetreuung(), is(betreuung));
@@ -1225,20 +1881,31 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			betreuung.setBetreuungsstatus(Betreuungsstatus.WARTEN);
 			// not yet freigegeben
 			betreuung.extractGesuch().setStatus(AntragStatus.IN_BEARBEITUNG_GS);
-			betreuung.setVorgaengerId("my-vorgaenger-id");
+			betreuung.setVorgaengerId("8b547a70-348d-11ef-8abb-4b16a3337a93");
 
 			expect(betreuungEinstellungenService.getEinstellungen(betreuung))
 				.andReturn(BetreuungEinstellungen.builder().build());
 
 			// region setup platzbestätigung
 			betreuung.setBetreuungsstatus(Betreuungsstatus.WARTEN);
-			expect(einstellungService
-				.isEnabled(GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED, betreuung))
+			expect(
+				einstellungService
+					.isEnabled(
+						GEMEINDE_ZUSAETZLICHER_GUTSCHEIN_ENABLED,
+						betreuung
+					)
+			)
 				.andReturn(false);
 
-			expect(betreuungService.betreuungPlatzBestaetigen(betreuung, CLIENT_NAME))
+			expect(
+				betreuungService.betreuungPlatzBestaetigen(
+					betreuung,
+					CLIENT_NAME
+				)
+			)
 				.andReturn(betreuung);
-			betreuung.getErweiterteBetreuungContainer().setErweiterteBetreuungJA(null);
+			betreuung.getErweiterteBetreuungContainer()
+				.setErweiterteBetreuungJA(null);
 
 			expect(pensumMapperFactory.createForPlatzbestaetigung(anyObject()))
 				.andReturn(unitTestPensumMapper());
@@ -1246,17 +1913,39 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			Gesuch vorgaengerGesuch = initGesuch();
 			vorgaengerGesuch.setDossier(gesuch_1GS.getDossier());
-			Betreuung mutationsmeldungBetreuung = PlatzbestaetigungTestUtil.betreuungWithSingleContainer(vorgaengerGesuch, LocalDate.MIN, LocalDate.MAX);
-			mutationsmeldungBetreuung.setId("my-vorgaenger-id");
-			expect(betreuungService.findBetreuung(mutationsmeldungBetreuung.getId(), false))
+			Betreuung mutationsmeldungBetreuung = PlatzbestaetigungTestUtil
+				.betreuungWithSingleContainer(
+					vorgaengerGesuch,
+					LocalDate.MIN,
+					LocalDate.MAX
+				);
+			mutationsmeldungBetreuung.setId(
+				"8b547a70-348d-11ef-8abb-4b16a3337a93"
+			);
+			expect(
+				betreuungService.findBetreuung(
+					mutationsmeldungBetreuung.getId(),
+					false
+				)
+			)
 				.andReturn(Optional.of(mutationsmeldungBetreuung));
 
 			expectBetreuungFound(betreuung);
 
-			expect(mitteilungService.findOffeneBetreuungsmitteilungenForBetreuung(betreuung))
+			expect(
+				mitteilungService
+					.findOffeneBetreuungsmitteilungenForBetreuung(
+						betreuung
+					)
+			)
 				.andReturn(List.of());
 
-			expect(mitteilungService.findOffeneBetreuungsmitteilungenForBetreuung(mutationsmeldungBetreuung))
+			expect(
+				mitteilungService
+					.findOffeneBetreuungsmitteilungenForBetreuung(
+						mutationsmeldungBetreuung
+					)
+			)
 				.andReturn(List.of());
 
 			mockClients(clientGueltigkeit);
@@ -1268,7 +1957,8 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			expectMutationsmeldungCreated(mutationsmeldungBetreuung);
 
-			Capture<Betreuungsmitteilung> mitteilungCapture = expectNewMitteilung();
+			Capture<Betreuungsmitteilung> mitteilungCapture =
+				expectNewMitteilung();
 
 			replayAll();
 
@@ -1276,7 +1966,10 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			assertThat(result.isProcessingSuccess(), is(true));
 			verifyAll();
 
-			assertThat(mitteilungCapture.getValue().getBetreuung(), is(mutationsmeldungBetreuung));
+			assertThat(
+				mitteilungCapture.getValue().getBetreuung(),
+				is(mutationsmeldungBetreuung)
+			);
 		}
 
 		@Test
@@ -1293,7 +1986,10 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			Processing result = handler.attemptProcessing(eventMonitor, dto);
 			assertThat(
 				(PlatzbestaetigungProcessing) result,
-				ignored(MUTATIONS_MITTEILUNG, "Die Betreuungsmeldung und die Betreuung sind identisch.")
+				ignored(
+					MUTATIONS_MITTEILUNG,
+					"Die Betreuungsmeldung und die Betreuung sind identisch."
+				)
 			);
 			verifyAll();
 		}
@@ -1301,8 +1997,11 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		@Test
 		void ignoresBetreuungsmeldungWhenIdenticalToExistingBetreuungsmeldung() {
 			BetreuungsmitteilungPensum betreuungsmitteilungPensum =
-				createBetreuungsmitteilungPensum(gesuchsperiode.getGueltigkeit());
-			Betreuungsmitteilung betreuungMitteilung = createBetreuungMitteilung(betreuungsmitteilungPensum);
+				createBetreuungsmitteilungPensum(
+					gesuchsperiode.getGueltigkeit()
+				);
+			Betreuungsmitteilung betreuungMitteilung =
+				createBetreuungMitteilung(betreuungsmitteilungPensum);
 
 			expectMutationsmeldung(betreuungMitteilung);
 
@@ -1311,7 +2010,10 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			Processing result = handler.attemptProcessing(eventMonitor, dto);
 			assertThat(
 				(PlatzbestaetigungProcessing) result,
-				ignored(MUTATIONS_MITTEILUNG, "Die Betreuungsmeldung ist identisch mit der neusten offenen Betreuungsmeldung.")
+				ignored(
+					MUTATIONS_MITTEILUNG,
+					"Die Betreuungsmeldung ist identisch mit der neusten offenen Betreuungsmeldung."
+				)
 			);
 			verifyAll();
 		}
@@ -1324,18 +2026,27 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			// make sure pensum is the same
 			betreuungspensum.setPensum(zeitabschnittDTO.getBetreuungspensum());
 
-			Betreuungsmitteilung betreuungMitteilung = createBetreuungMitteilung(
-				// existing Betreuungsmitteilung and new one are not equal due to different  gueltigkeit
-				createBetreuungsmitteilungPensum(new DateRange(periode.getGueltigAb(), GO_LIVE))
-			);
+			Betreuungsmitteilung betreuungMitteilung =
+				createBetreuungMitteilung(
+					// existing Betreuungsmitteilung and new one are not equal due to different  gueltigkeit
+					createBetreuungsmitteilungPensum(
+						new DateRange(
+							periode.getGueltigAb(),
+							GO_LIVE
+						)
+					)
+				);
 
 			Capture<Betreuungsmitteilung> capture = expectNewMitteilung();
 
 			testProcessingSuccess(betreuungMitteilung);
 
-			assertThat(capture.getValue().getBetreuungspensen(), contains(
-				matches(betreuungspensum, periode)
-			));
+			assertThat(
+				capture.getValue().getBetreuungspensen(),
+				contains(
+					matches(betreuungspensum, periode)
+				)
+			);
 		}
 
 		@Test
@@ -1351,7 +2062,10 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			Processing result = handler.attemptProcessing(eventMonitor, dto);
 			assertThat(
 				(PlatzbestaetigungProcessing) result,
-				ignored(MUTATIONS_MITTEILUNG, "Die Betreuungsmeldung und die Betreuung sind identisch.")
+				ignored(
+					MUTATIONS_MITTEILUNG,
+					"Die Betreuungsmeldung und die Betreuung sind identisch."
+				)
 			);
 			verifyAll();
 		}
@@ -1372,10 +2086,17 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			zeitabschnittDTO.setBetreuungskosten(BigDecimal.valueOf(100));
 
 			BetreuungsmitteilungPensum p1 =
-				createBetreuungsmitteilungPensum(new DateRange(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 2, 28)));
+				createBetreuungsmitteilungPensum(
+					new DateRange(
+						LocalDate.of(2021, 2, 1),
+						LocalDate.of(2021, 2, 28)
+					)
+				);
 			p1.setMonatlicheBetreuungskosten(BigDecimal.valueOf(2000));
 			BetreuungsmitteilungPensum p2 =
-				createBetreuungsmitteilungPensum(new DateRange(march, LocalDate.of(2021, 7, 1)));
+				createBetreuungsmitteilungPensum(
+					new DateRange(march, LocalDate.of(2021, 7, 1))
+				);
 			p2.setMonatlicheBetreuungskosten(BigDecimal.valueOf(99));
 			Betreuungsmitteilung existing = createBetreuungMitteilung(p1, p2);
 
@@ -1383,14 +2104,29 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 
 			testProcessingSuccess(existing);
 
-			assertThat(capture.getValue().getBetreuungspensen(), contains(
-				matches(p1, p1.getGueltigkeit()),
-				matches(zeitabschnittDTO, new DateRange(march, clientGueltigkeit.getGueltigBis())),
-				matches(p2, LocalDate.of(2021, 7, 1), LocalDate.of(2021, 7, 1))
-			));
+			assertThat(
+				capture.getValue().getBetreuungspensen(),
+				contains(
+					matches(p1, p1.getGueltigkeit()),
+					matches(
+						zeitabschnittDTO,
+						new DateRange(
+							march,
+							clientGueltigkeit.getGueltigBis()
+						)
+					),
+					matches(
+						p2,
+						LocalDate.of(2021, 7, 1),
+						LocalDate.of(2021, 7, 1)
+					)
+				)
+			);
 		}
 
-		private void testProcessingSuccess(@Nonnull Betreuungsmitteilung... existing) {
+		private void testProcessingSuccess(
+			@Nonnull Betreuungsmitteilung... existing
+		) {
 			expectMutationsmeldung(existing);
 
 			replayAll();
@@ -1400,12 +2136,19 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			verifyAll();
 		}
 
-		private void expectMutationsmeldung(@Nonnull Betreuungsmitteilung... existing) {
+		private void expectMutationsmeldung(
+			@Nonnull Betreuungsmitteilung... existing
+		) {
 			expectBetreuungFound(betreuung);
 			expect(betreuungEinstellungenService.getEinstellungen(betreuung))
 				.andReturn(BetreuungEinstellungen.builder().build());
 
-			expect(mitteilungService.findOffeneBetreuungsmitteilungenForBetreuung(betreuung))
+			expect(
+				mitteilungService
+					.findOffeneBetreuungsmitteilungenForBetreuung(
+						betreuung
+					)
+			)
 				.andReturn(Arrays.asList(existing));
 
 			mockClients(clientGueltigkeit);
@@ -1418,20 +2161,62 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			expectMutationsmeldungCreated(betreuung);
 		}
 
-		private void expectMutationsmeldungCreated(Betreuung mutierteBetreuung) {
+		private void expectMutationsmeldungCreated(
+			Betreuung mutierteBetreuung
+		) {
 			Benutzer benutzer = mock(Benutzer.class);
-			expect(betreuungEventHelper.getMutationsmeldungBenutzer(mutierteBetreuung)).andReturn(benutzer);
-			expect(benutzer.getMandant()).andReturn(TestDataUtil.createMandant(MandantIdentifier.BERN)).anyTimes();
+			expect(
+				betreuungEventHelper.getMutationsmeldungBenutzer(
+					mutierteBetreuung
+				)
+			).andReturn(benutzer);
+			expect(benutzer.getMandant()).andReturn(
+				TestDataUtil.createMandant(MandantIdentifier.BERN)
+			).anyTimes();
 
-			expect(mitteilungService.isBetreuungGueltigForMutation(mutierteBetreuung)).andReturn(true);
+			expect(
+				mitteilungService.isBetreuungGueltigForMutation(
+					mutierteBetreuung
+				)
+			).andReturn(true);
 
-			expect(mitteilungService.createNachrichtForMutationsmeldung(anyObject(), anyObject(), anyObject()))
+			expect(
+				mitteilungService.createNachrichtForMutationsmeldung(
+					anyObject(),
+					anyObject(),
+					anyObject()
+				)
+			)
 				.andReturn("my test message");
 
-			expect(gemeindeService.getGemeindeStammdatenByGemeindeId(gemeinde.getId()))
-				.andReturn(Optional.of(TestDataUtil.createGemeindeStammdaten(gemeinde)));
+			expect(
+				gemeindeService.getGemeindeStammdatenByGemeindeId(
+					gemeinde.getId()
+				)
+			)
+				.andReturn(
+					Optional.of(
+						TestDataUtil.createGemeindeStammdaten(
+							gemeinde
+						)
+					)
+				);
 
-			expect(pensumMapperFactory.createForBetreuungsmitteilung(anyObject()))
+			expect(
+				einstellungService.getEinstellungAsBigDecimal(
+					anyObject(),
+					anyObject()
+				)
+			)
+				.andReturn(
+					BigDecimal.valueOf(246)
+				);
+
+			expect(
+				pensumMapperFactory.createForBetreuungsmitteilung(
+					anyObject()
+				)
+			)
 				.andReturn(unitTestPensumMapper());
 		}
 
@@ -1439,21 +2224,36 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		private Capture<Betreuungsmitteilung> expectNewMitteilung() {
 			Capture<Betreuungsmitteilung> captured = newCapture();
 			//noinspection ConstantConditions
-			mitteilungService.replaceOffeneBetreungsmitteilungenWithSameReferenzNummer(capture(captured), eq(REF_NUMMER));
+			mitteilungService
+				.replaceOffeneBetreungsmitteilungenWithSameReferenzNummer(
+					capture(captured),
+					eq(REF_NUMMER)
+				);
 			expectLastCall();
 
 			return captured;
 		}
 	}
 
-	private void expectBetreuungWithoutOffeneBetreuungsmitteilung(Betreuung betreuung) {
+	private void expectBetreuungWithoutOffeneBetreuungsmitteilung(
+		Betreuung betreuung
+	) {
 		expectBetreuungFound(betreuung);
-		expect(mitteilungService.findOffeneBetreuungsmitteilungenForBetreuung(betreuung))
+		expect(
+			mitteilungService.findOffeneBetreuungsmitteilungenForBetreuung(
+				betreuung
+			)
+		)
 			.andReturn(Collections.emptyList());
 	}
 
 	private void expectBetreuungFound(@Nonnull Betreuung betreuung) {
-		expect(betreuungService.findBetreuungByReferenzNummer(REF_NUMMER, false))
+		expect(
+			betreuungService.findBetreuungByReferenzNummer(
+				REF_NUMMER,
+				false
+			)
+		)
 			.andReturn(Optional.of(betreuung));
 	}
 
@@ -1461,19 +2261,37 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 		mockClients(clientGueltigkeit, Collections.emptyList());
 	}
 
-	private void mockClients(@Nonnull DateRange clientGueltigkeit, Collection<InstitutionExternalClient> others) {
+	private void mockClients(
+		@Nonnull DateRange clientGueltigkeit,
+		Collection<InstitutionExternalClient> others
+	) {
 		institutionExternalClient = mockClient(clientGueltigkeit, CLIENT_NAME);
 
-		expect(betreuungEventHelper.getExternalClients(eq(CLIENT_NAME), EasyMock.<Betreuung>anyObject()))
-			.andReturn(new InstitutionExternalClients(institutionExternalClient, others));
+		expect(
+			betreuungEventHelper.getExternalClients(
+				eq(CLIENT_NAME),
+				EasyMock.<Betreuung>anyObject()
+			)
+		)
+			.andReturn(
+				new InstitutionExternalClients(
+					institutionExternalClient,
+					others
+				)
+			);
 
 		expect(institutionExternalClient.getGueltigkeit())
 			.andStubReturn(clientGueltigkeit);
 	}
 
 	@Nonnull
-	private InstitutionExternalClient mockClient(@Nonnull DateRange clientGueltigkeit, @Nonnull String clientName) {
-		InstitutionExternalClient client = mock(InstitutionExternalClient.class);
+	private InstitutionExternalClient mockClient(
+		@Nonnull DateRange clientGueltigkeit,
+		@Nonnull String clientName
+	) {
+		InstitutionExternalClient client = mock(
+			InstitutionExternalClient.class
+		);
 
 		ExternalClient mockClient = new ExternalClient();
 		mockClient.setClientName(clientName);
@@ -1490,13 +2308,17 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 	private ZeitabschnittDTO defaultZeitabschnittDTO() {
 		return PlatzbestaetigungTestUtil.createZeitabschnittDTO(
 			gesuchsperiode.getGueltigkeit().getGueltigAb(),
-			gesuchsperiode.getGueltigkeit().getGueltigBis().withDayOfYear(31)
+			gesuchsperiode.getGueltigkeit()
+				.getGueltigBis()
+				.withDayOfYear(31)
 		);
 	}
 
 	@Nonnull
 	private Betreuung betreuungWithSingleContainer() {
-		return PlatzbestaetigungTestUtil.betreuungWithSingleContainer(gesuch_1GS);
+		return PlatzbestaetigungTestUtil.betreuungWithSingleContainer(
+			gesuch_1GS
+		);
 	}
 
 	private static Stream<Arguments> provideSprachfoederungTestData() {
@@ -1506,6 +2328,7 @@ public class PlatzbestaetigungEventHandlerTest extends EasyMockSupport {
 			Arguments.of(false, LocalDate.of(2023, 1, 15), false),
 			Arguments.of(false, LocalDate.now().plusDays(1), false),
 			Arguments.of(true, LocalDate.now().plusDays(1), true),
-			Arguments.of(true, LocalDate.of(2023, 1, 15), true));
+			Arguments.of(true, LocalDate.of(2023, 1, 15), true)
+		);
 	}
 }

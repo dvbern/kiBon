@@ -15,20 +15,34 @@
 
 package ch.dvbern.ebegu.testfaelle;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.AntragCopyType;
-import ch.dvbern.ebegu.enums.EnumFamilienstatus;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
-import ch.dvbern.ebegu.testfaelle.testfealleschwyz.BetreuungData;
-import ch.dvbern.ebegu.testfaelle.testfealleschwyz.GesuchstellerData;
-import ch.dvbern.ebegu.testfaelle.testfealleschwyz.KindData;
-
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.entities.Auszahlungsdaten;
+import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
+import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
+import ch.dvbern.ebegu.entities.Familiensituation;
+import ch.dvbern.ebegu.entities.FamiliensituationContainer;
+import ch.dvbern.ebegu.entities.FinanzielleSituationContainer;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.Gesuchsteller;
+import ch.dvbern.ebegu.entities.GesuchstellerAdresseContainer;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.entities.KindContainer;
+import ch.dvbern.ebegu.enums.AntragCopyType;
+import ch.dvbern.ebegu.enums.EnumFamilienstatus;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.testfealleschwyz.BetreuungData;
+import ch.dvbern.ebegu.testfaelle.testfealleschwyz.GesuchstellerData;
+import ch.dvbern.ebegu.testfaelle.testfealleschwyz.KindData;
 
 /**
  * Superklasse für Schwyz-Testfaelle.
@@ -36,34 +50,52 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractSZTestfall extends AbstractTestfall {
 
-
 	protected AbstractSZTestfall(
-			@Nonnull Gesuchsperiode gesuchsperiode,
-			boolean betreuungenBestaetigt,
-			@Nonnull Gemeinde gemeinde,
-			InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, gemeinde, institutionStammdatenBuilder);
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		@Nonnull Gemeinde gemeinde,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			gemeinde,
+			institutionStammdatenBuilder
+		);
 	}
 
 	protected AbstractSZTestfall(
-			@Nonnull Gesuchsperiode gesuchsperiode,
-			boolean betreuungenBestaetigt,
-			InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, institutionStammdatenBuilder);
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			institutionStammdatenBuilder
+		);
 	}
 
-	protected Gesuch createAlleinerziehend(Gesuch gesuch, LocalDate ereignisdatum) {
+	protected Gesuch createAlleinerziehend(
+		Gesuch gesuch,
+		LocalDate ereignisdatum
+	) {
 		// Familiensituation
 		Familiensituation familiensituation = new Familiensituation();
 		familiensituation.setFamilienstatus(EnumFamilienstatus.ALLEINERZIEHEND);
-		FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
+		FamiliensituationContainer familiensituationContainer =
+			new FamiliensituationContainer();
 		familiensituationContainer.setFamiliensituationJA(familiensituation);
 		familiensituation.setAenderungPer(ereignisdatum);
 
 		Familiensituation familiensituationErstgesuch = new Familiensituation();
-		familiensituationErstgesuch.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
+		familiensituationErstgesuch.setFamilienstatus(
+			EnumFamilienstatus.VERHEIRATET
+		);
 		familiensituationErstgesuch.setGemeinsameSteuererklaerung(Boolean.TRUE);
-		familiensituationContainer.setFamiliensituationErstgesuch(familiensituationErstgesuch);
+		familiensituationContainer.setFamiliensituationErstgesuch(
+			familiensituationErstgesuch
+		);
 
 		gesuch.setFamiliensituationContainer(familiensituationContainer);
 		return gesuch;
@@ -72,33 +104,48 @@ public abstract class AbstractSZTestfall extends AbstractTestfall {
 	protected Gesuch createVerheiratet(Gesuch gesuch, LocalDate ereignisdatum) {
 		// Familiensituation
 		assert gesuch.getFamiliensituationContainer() != null;
-		assert gesuch.getFamiliensituationContainer().getFamiliensituationJA() != null;
+		assert gesuch.getFamiliensituationContainer().getFamiliensituationJA()
+			!= null;
 
-		Familiensituation familiensituation = gesuch.getFamiliensituationContainer()
+		Familiensituation familiensituation = gesuch
+			.getFamiliensituationContainer()
+			.getFamiliensituationJA()
+			.copyFamiliensituation(
+				new Familiensituation(),
+				AntragCopyType.MUTATION
+			);
+		familiensituation.setSozialhilfeBezueger(
+			gesuch.getFamiliensituationContainer()
 				.getFamiliensituationJA()
-				.copyFamiliensituation(new Familiensituation(), AntragCopyType.MUTATION);
-		familiensituation.setSozialhilfeBezueger(gesuch.getFamiliensituationContainer()
-				.getFamiliensituationJA()
-				.getSozialhilfeBezueger());
+				.getSozialhilfeBezueger()
+		);
 		familiensituation.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
-		familiensituation.setGemeinsameSteuererklaerung(gesuch.getFamiliensituationContainer()
+		familiensituation.setGemeinsameSteuererklaerung(
+			gesuch.getFamiliensituationContainer()
 				.getFamiliensituationJA()
-				.getGemeinsameSteuererklaerung());
-		FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
+				.getGemeinsameSteuererklaerung()
+		);
+		FamiliensituationContainer familiensituationContainer =
+			new FamiliensituationContainer();
 		familiensituationContainer.setFamiliensituationJA(familiensituation);
 		familiensituation.setAenderungPer(ereignisdatum);
 
-		familiensituationContainer.setFamiliensituationErstgesuch(gesuch.extractFamiliensituationErstgesuch());
+		familiensituationContainer.setFamiliensituationErstgesuch(
+			gesuch.extractFamiliensituationErstgesuch()
+		);
 
 		gesuch.setFamiliensituationContainer(familiensituationContainer);
 		return gesuch;
 	}
 
-	protected GesuchstellerContainer createGesuchsteller(GesuchstellerData gsData) {
+	protected GesuchstellerContainer createGesuchsteller(
+		GesuchstellerData gsData
+	) {
 		Gesuchsteller gs = testfallDataProvider.createGesuchsteller(
 			gsData.getNachname(),
 			gsData.getVorname(),
-			gsData.getGesuchstellerNummer());
+			gsData.getGesuchstellerNummer()
+		);
 
 		gs.setGeburtsdatum(gsData.getGeburtsdatum());
 		gs.setSozialversicherungsnummer(gsData.getSvNummer());
@@ -109,10 +156,13 @@ public abstract class AbstractSZTestfall extends AbstractTestfall {
 		gesuchstellerCont.setAdressen(new ArrayList<>());
 
 		if (gsData.hasAdress()) {
-			GesuchstellerAdresseContainer adresse = createWohnadresseContainer(gesuchstellerCont);
+			GesuchstellerAdresseContainer adresse = createWohnadresseContainer(
+				gesuchstellerCont
+			);
 			Objects.requireNonNull(adresse.getGesuchstellerAdresseJA());
 			adresse.getGesuchstellerAdresseJA().setStrasse(gsData.getStrasse());
-			adresse.getGesuchstellerAdresseJA().setHausnummer(gsData.getHausnummer());
+			adresse.getGesuchstellerAdresseJA()
+				.setHausnummer(gsData.getHausnummer());
 			adresse.getGesuchstellerAdresseJA().setPlz(gsData.getPlz());
 			adresse.getGesuchstellerAdresseJA().setOrt(gsData.getOrt());
 			gesuchstellerCont.getAdressen().add(adresse);
@@ -128,15 +178,25 @@ public abstract class AbstractSZTestfall extends AbstractTestfall {
 			kindData.getVorname(),
 			kindData.getGeburtsdatum(),
 			kindData.getKinderabzug(),
-			kindData.getFamilienergaenzendBetreuug());
+			kindData.getFamilienergaenzendBetreuug()
+		);
 
-		kind.getKindJA().setHoehereBeitraegeWegenBeeintraechtigungBeantragen(kindData.getHohereBeitraege());
-		kind.getKindJA().setUnterhaltspflichtig(kindData.getUnterhaltspflichtig());
-		kind.getKindJA().setLebtKindAlternierend(kindData.getLebtAlternierend());
+		kind.getKindJA()
+			.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(
+				kindData.getHohereBeitraege()
+			);
+		kind.getKindJA()
+			.setUnterhaltspflichtig(kindData.getUnterhaltspflichtig());
+		kind.getKindJA()
+			.setLebtKindAlternierend(kindData.getLebtAlternierend());
 		kind.getKindJA().setGemeinsamesGesuch(kindData.getGemeinsamesGesuch());
-		kind.getKindJA().setFamilienErgaenzendeBetreuung(kindData.getFamilienergaenzendBetreuug());
+		kind.getKindJA()
+			.setFamilienErgaenzendeBetreuung(
+				kindData.getFamilienergaenzendBetreuug()
+			);
 		kind.getKindJA().setEinschulungTyp(kindData.getEinschulungTyp());
-		kind.getKindJA().setKinderabzugErstesHalbjahr(kindData.getKinderabzug());
+		kind.getKindJA()
+			.setKinderabzugErstesHalbjahr(kindData.getKinderabzug());
 
 		kindData.getBetreuungDataList().forEach(betreuungData -> {
 			createBetreuungContainer(kind, betreuungData);
@@ -144,57 +204,114 @@ public abstract class AbstractSZTestfall extends AbstractTestfall {
 		return kind;
 	}
 
-	private void createBetreuungContainer(KindContainer kind, BetreuungData betreuungData) {
-		Betreuung betreuung = createBetreuung(betreuungData.getInstiutionId(), betreuungData.isBestaetigt());
+	private void createBetreuungContainer(
+		KindContainer kind,
+		BetreuungData betreuungData
+	) {
+		Betreuung betreuung = createBetreuung(
+			betreuungData.getInstiutionId(),
+			betreuungData.isBestaetigt()
+		);
 		betreuung.setAuszahlungAnEltern(betreuungData.isAuszahlungAnEltern());
-		betreuung.setBegruendungAuszahlungAnInstitution(betreuungData.getBegruendung());
+		betreuung.setBegruendungAuszahlungAnInstitution(
+			betreuungData.getBegruendung()
+		);
 		betreuung.setKind(kind);
 		kind.getBetreuungen().add(betreuung);
 
 		betreuungData.getBetreuungspensum()
 			.stream()
 			.map(pensum -> {
-				BetreuungspensumContainer betreuungspensum = createBetreuungspensum(
-					BigDecimal.valueOf(pensum.getPensum()),
-					pensum.getGueltigAb(),
-					pensum.getGueltigBis());
-				betreuungspensum.getBetreuungspensumJA().setMonatlicheBetreuungskosten(pensum.getMonatlicheBetreuungskosten());
+				BetreuungspensumContainer betreuungspensum =
+					createBetreuungspensum(
+						BigDecimal.valueOf(pensum.getPensum()),
+						pensum.getGueltigAb(),
+						pensum.getGueltigBis()
+					);
+				betreuungspensum.getBetreuungspensumJA()
+					.setMonatlicheBetreuungskosten(
+						pensum.getMonatlicheBetreuungskosten()
+					);
 				betreuungspensum.setBetreuung(betreuung);
-				betreuungspensum.getBetreuungspensumJA().setBetreuungInFerienzeit(pensum.isBetreuungInFerienzeit());
-				betreuungspensum.getBetreuungspensumJA().setMonatlicheHauptmahlzeiten(pensum.getMonatlicheHauptmahlzeiten());
-				betreuungspensum.getBetreuungspensumJA().setTarifProHauptmahlzeit(pensum.getTarifProMahlzeit());
+				betreuungspensum.getBetreuungspensumJA()
+					.setBetreuungInFerienzeit(
+						pensum.isBetreuungInFerienzeit()
+					);
+				betreuungspensum.getBetreuungspensumJA()
+					.setMonatlicheHauptmahlzeiten(
+						pensum.getMonatlicheHauptmahlzeiten()
+					);
+				betreuungspensum.getBetreuungspensumJA()
+					.setTarifProHauptmahlzeit(
+						pensum.getTarifProMahlzeit()
+					);
 				return betreuungspensum;
 			})
-			.collect(Collectors.toCollection(betreuung::getBetreuungspensumContainers));
+			.collect(
+				Collectors.toCollection(
+					betreuung::getBetreuungspensumContainers
+				)
+			);
 	}
 
-	protected ErwerbspensumContainer createErwerbspensumContainer(GesuchstellerData gsData) {
-		ErwerbspensumContainer erwerbspensum = createErwerbspensum(gsData.getErwerbspensum());
+	protected ErwerbspensumContainer createErwerbspensumContainer(
+		GesuchstellerData gsData
+	) {
+		ErwerbspensumContainer erwerbspensum = createErwerbspensum(
+			gsData.getErwerbspensum()
+		);
 		Objects.requireNonNull(erwerbspensum.getErwerbspensumJA());
-		erwerbspensum.getErwerbspensumJA().setTaetigkeit(gsData.getTaetigkeit());
-		erwerbspensum.getErwerbspensumJA().setBezeichnung(gsData.getErwerbsBezeichnung());
-		erwerbspensum.getErwerbspensumJA().setGueltigkeit(gsData.getErwerbGueltigkeit());
+		erwerbspensum.getErwerbspensumJA()
+			.setTaetigkeit(gsData.getTaetigkeit());
+		erwerbspensum.getErwerbspensumJA()
+			.setBezeichnung(gsData.getErwerbsBezeichnung());
+		erwerbspensum.getErwerbspensumJA()
+			.setGueltigkeit(gsData.getErwerbGueltigkeit());
 		return erwerbspensum;
 	}
 
-	protected FinanzielleSituationContainer createFinSit(GesuchstellerData gsData) {
-		FinanzielleSituationContainer finsit = createFinanzielleSituationContainer(gsData.getReinvermoegen(), gsData.getReineinkommen());
+	protected FinanzielleSituationContainer createFinSit(
+		GesuchstellerData gsData
+	) {
+		FinanzielleSituationContainer finsit =
+			createFinanzielleSituationContainer(
+				gsData.getReinvermoegen(),
+				gsData.getReineinkommen()
+			);
 		if (gsData.isQuellenbesteuert()) {
 			finsit.getFinanzielleSituationJA().setQuellenbesteuert(true);
-			finsit.getFinanzielleSituationJA().setBruttoLohn(gsData.getBruttoLohn());
-			finsit.getFinanzielleSituationJA().setSteuerbaresVermoegen(BigDecimal.ZERO);
-			finsit.getFinanzielleSituationJA().setSteuerbaresEinkommen(BigDecimal.ZERO);
+			finsit.getFinanzielleSituationJA()
+				.setBruttoLohn(gsData.getBruttoLohn());
+			finsit.getFinanzielleSituationJA()
+				.setSteuerbaresVermoegen(BigDecimal.ZERO);
+			finsit.getFinanzielleSituationJA()
+				.setSteuerbaresEinkommen(BigDecimal.ZERO);
 		}
-		finsit.getFinanzielleSituationJA().setGemeinsameStekVorjahr(gsData.isGemeinsameSteuererklaerung());
+		finsit.getFinanzielleSituationJA()
+			.setGemeinsameStekVorjahr(
+				gsData.isGemeinsameSteuererklaerung()
+			);
 		return finsit;
 	}
 
-	protected void setAuszahlungsdaten(Gesuch erstgesuch, GesuchstellerData gsData) {
+	protected void setAuszahlungsdaten(
+		Gesuch erstgesuch,
+		GesuchstellerData gsData
+	) {
 		Objects.requireNonNull(erstgesuch.getFamiliensituationContainer());
-		Objects.requireNonNull(erstgesuch.getFamiliensituationContainer().getFamiliensituationJA());
-		Objects.requireNonNull(erstgesuch.getFamiliensituationContainer().getFamiliensituationJA().getAuszahlungsdaten());
+		Objects.requireNonNull(
+			erstgesuch.getFamiliensituationContainer()
+				.getFamiliensituationJA()
+		);
+		Objects.requireNonNull(
+			erstgesuch.getFamiliensituationContainer()
+				.getFamiliensituationJA()
+				.getAuszahlungsdaten()
+		);
 
-		Auszahlungsdaten a = erstgesuch.getFamiliensituationContainer().getFamiliensituationJA().getAuszahlungsdaten();
+		Auszahlungsdaten a = erstgesuch.getFamiliensituationContainer()
+			.getFamiliensituationJA()
+			.getAuszahlungsdaten();
 		a.setIban(gsData.getIban());
 		a.setKontoinhaber(gsData.getKontoinhaber());
 	}

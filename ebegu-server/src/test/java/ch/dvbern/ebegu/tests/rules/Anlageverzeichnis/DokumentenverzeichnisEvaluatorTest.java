@@ -18,21 +18,25 @@ package ch.dvbern.ebegu.tests.rules.Anlageverzeichnis;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Dossier;
 import ch.dvbern.ebegu.entities.Einkommensverschlechterung;
 import ch.dvbern.ebegu.entities.EinkommensverschlechterungContainer;
 import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfo;
 import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfoContainer;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.Erwerbspensum;
 import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
 import ch.dvbern.ebegu.entities.Fall;
@@ -53,7 +57,6 @@ import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
 import ch.dvbern.ebegu.enums.FachstelleName;
@@ -62,12 +65,11 @@ import ch.dvbern.ebegu.enums.IntegrationTyp;
 import ch.dvbern.ebegu.enums.Kinderabzug;
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
 import ch.dvbern.ebegu.enums.Taetigkeit;
-import ch.dvbern.ebegu.rules.anlageverzeichnis.BernErwerbspensumDokumente;
-import ch.dvbern.ebegu.rules.anlageverzeichnis.BernKindDokumente;
 import ch.dvbern.ebegu.rules.anlageverzeichnis.DokumentenverzeichnisEvaluator;
+import ch.dvbern.ebegu.rules.anlageverzeichnis.ErwerbspensumDokumente;
+import ch.dvbern.ebegu.rules.anlageverzeichnis.KindDokumente;
 import ch.dvbern.ebegu.rules.anlageverzeichnis.LuzernErwerbspensumDokumente;
 import ch.dvbern.ebegu.rules.anlageverzeichnis.LuzernKindDokumente;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.testfaelle.dataprovider.SchwyzTestfallDataProvider;
 import ch.dvbern.ebegu.types.DateRange;
@@ -83,9 +85,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
 import static java.util.Objects.requireNonNull;
@@ -105,22 +104,32 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 	private static final BigDecimal ZEHN_TAUSEND = BigDecimal.valueOf(100000);
 
 	@TestSubject
-	private final DokumentenverzeichnisEvaluator evaluator = new DokumentenverzeichnisEvaluator();
+	private final DokumentenverzeichnisEvaluator evaluator =
+		new DokumentenverzeichnisEvaluator();
 
 	@Mock
 	private EinstellungService einstellungServiceMock;
 
-	private final BernKindDokumente bernKindDokumente = new BernKindDokumente();
-	private final LuzernKindDokumente luzernKindDokumente = new LuzernKindDokumente();
-	private final BernErwerbspensumDokumente bernErwerbspensumDokumente = new BernErwerbspensumDokumente();
-	private final LuzernErwerbspensumDokumente luzernErwerbspensumDokumente = new LuzernErwerbspensumDokumente();
+	private final KindDokumente kindDokumente = new KindDokumente();
+	private final LuzernKindDokumente luzernKindDokumente =
+		new LuzernKindDokumente();
+	private final ErwerbspensumDokumente bernErwerbspensumDokumente =
+		new ErwerbspensumDokumente();
+	private final LuzernErwerbspensumDokumente luzernErwerbspensumDokumente =
+		new LuzernErwerbspensumDokumente();
 	private Gesuch testgesuchBern;
 	private Gesuch testgesuchLuzern;
 
 	@BeforeEach
 	void setUpCalculator() {
-		testgesuchBern = setUpTestgesuch(TestDataUtil.getMandantKantonBern(), FinanzielleSituationTyp.BERN);
-		testgesuchLuzern = setUpTestgesuch(TestDataUtil.getMandantLuzern(), FinanzielleSituationTyp.LUZERN);
+		testgesuchBern = setUpTestgesuch(
+			TestDataUtil.getMandantKantonBern(),
+			FinanzielleSituationTyp.BERN
+		);
+		testgesuchLuzern = setUpTestgesuch(
+			TestDataUtil.getMandantLuzern(),
+			FinanzielleSituationTyp.LUZERN
+		);
 	}
 
 	@AfterEach
@@ -128,11 +137,18 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		verifyAll();
 	}
 
-	private Gesuch setUpTestgesuch(Mandant mandant, FinanzielleSituationTyp finanzielleSituationTyp) {
+	private Gesuch setUpTestgesuch(
+		Mandant mandant,
+		FinanzielleSituationTyp finanzielleSituationTyp
+	) {
 		Gesuch gesuch = new Gesuch();
 		gesuch.setGesuchsperiode(TestDataUtil.createGesuchsperiode1718());
-		gesuch.getGesuchsperiode().getGueltigkeit().setGueltigAb(Constants.GESUCHSPERIODE_17_18_AB);
-		gesuch.getGesuchsperiode().getGueltigkeit().setGueltigBis(Constants.GESUCHSPERIODE_17_18_BIS);
+		gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.setGueltigAb(Constants.GESUCHSPERIODE_17_18_AB);
+		gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.setGueltigBis(Constants.GESUCHSPERIODE_17_18_BIS);
 		gesuch.setKindContainers(new HashSet<>());
 		gesuch.setDossier(new Dossier());
 		gesuch.setFinSitTyp(finanzielleSituationTyp);
@@ -155,7 +171,9 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		return einstellung;
 	}
 
-	private void setupEinstellungBeschaeftigungsPensumAbhaengig(@Nonnull Gesuch gesuch) {
+	private void setupEinstellungBeschaeftigungsPensumAbhaengig(
+		@Nonnull Gesuch gesuch
+	) {
 		Einstellung einstellung = createEinstellung(
 			EinstellungKey.ABHAENGIGKEIT_ANSPRUCH_BESCHAEFTIGUNGPENSUM,
 			AnspruchBeschaeftigungAbhaengigkeitTyp.ABHAENGING.name()
@@ -164,29 +182,52 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		setUpEinstellungMock(gesuch, einstellung);
 	}
 
-	private void setUpEinstellungMock(@Nonnull Gesuch gesuch, @Nonnull Einstellung einstellung) {
+	private void setUpEinstellungMock(
+		@Nonnull Gesuch gesuch,
+		@Nonnull Einstellung einstellung
+	) {
 		Gemeinde gemeinde = gesuch.extractGemeinde();
 		Gesuchsperiode gesuchsperiode = gesuch.getGesuchsperiode();
 
-		expect(einstellungServiceMock.findEinstellung(einstellung.getKey(), gemeinde, gesuchsperiode))
+		expect(
+			einstellungServiceMock.findEinstellung(
+				einstellung.getKey(),
+				gemeinde,
+				gesuchsperiode
+			)
+		)
 			.andReturn(einstellung)
 			.anyTimes();
 		replayAll();
 	}
 
-	private Kind createKind(Gesuch gesuch, @Nullable FachstelleName fachstellename, @Nullable IntegrationTyp integrationTyp) {
-		final KindContainer kindContainer = TestDataUtil.createDefaultKindContainer();
+	private Kind createKind(
+		Gesuch gesuch,
+		@Nullable FachstelleName fachstellename,
+		@Nullable IntegrationTyp integrationTyp
+	) {
+		final KindContainer kindContainer = TestDataUtil
+			.createDefaultKindContainer();
 		kindContainer.getKindJA().setNachname("Chavez");
 		kindContainer.getKindJA().setVorname("Jan");
-		kindContainer.getKindJA().setKinderabzugErstesHalbjahr(Kinderabzug.GANZER_ABZUG);
-		kindContainer.getKindJA().setKinderabzugZweitesHalbjahr(Kinderabzug.GANZER_ABZUG);
+		kindContainer.getKindJA()
+			.setKinderabzugErstesHalbjahr(Kinderabzug.GANZER_ABZUG);
+		kindContainer.getKindJA()
+			.setKinderabzugZweitesHalbjahr(Kinderabzug.GANZER_ABZUG);
 
 		if (fachstellename != null) {
 			kindContainer.getKindJA().getPensumFachstelle().clear();
-			PensumFachstelle defaultPensumFachstelle = TestDataUtil.createDefaultPensumFachstelle(kindContainer.getKindJA());
-			requireNonNull(defaultPensumFachstelle.getFachstelle()).setName(fachstellename);
-			defaultPensumFachstelle.setIntegrationTyp(integrationTyp);
-			kindContainer.getKindJA().getPensumFachstelle().add(defaultPensumFachstelle);
+			PensumFachstelle defaultPensumFachstelle = TestDataUtil
+				.createDefaultPensumFachstelle(kindContainer.getKindJA());
+			requireNonNull(defaultPensumFachstelle.getFachstelle()).setName(
+				fachstellename
+			);
+			if (integrationTyp != null) {
+				defaultPensumFachstelle.setIntegrationTyp(integrationTyp);
+			}
+			kindContainer.getKindJA()
+				.getPensumFachstelle()
+				.add(defaultPensumFachstelle);
 		} else {
 			kindContainer.getKindJA().setPensumFachstelle(new HashSet<>());
 		}
@@ -199,18 +240,28 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		gesuch.getKindContainers().clear();
 	}
 
-	private Erwerbspensum createErwerbspensum(Gesuch gesuch, Taetigkeit taetigkeit, boolean gesundheitlicheEinschraenkungen) {
-		final ErwerbspensumContainer erwerbspensumContainer = TestDataUtil.createErwerbspensumContainer();
-		final Erwerbspensum erwerbspensumJA = requireNonNull(erwerbspensumContainer.getErwerbspensumJA());
+	private Erwerbspensum createErwerbspensum(
+		Gesuch gesuch,
+		Taetigkeit taetigkeit,
+		boolean gesundheitlicheEinschraenkungen
+	) {
+		final ErwerbspensumContainer erwerbspensumContainer = TestDataUtil
+			.createErwerbspensumContainer();
+		final Erwerbspensum erwerbspensumJA = requireNonNull(
+			erwerbspensumContainer.getErwerbspensumJA()
+		);
 
 		if (gesundheitlicheEinschraenkungen) {
-			erwerbspensumJA.setTaetigkeit(Taetigkeit.GESUNDHEITLICHE_EINSCHRAENKUNGEN);
+			erwerbspensumJA.setTaetigkeit(
+				Taetigkeit.GESUNDHEITLICHE_EINSCHRAENKUNGEN
+			);
 		} else {
 			erwerbspensumJA.setTaetigkeit(taetigkeit);
 		}
 		erwerbspensumJA.getGueltigkeit().setGueltigAb(LocalDate.of(1980, 1, 1));
 
-		final GesuchstellerContainer gesuchsteller = TestDataUtil.createDefaultGesuchstellerContainer();
+		final GesuchstellerContainer gesuchsteller = TestDataUtil
+			.createDefaultGesuchstellerContainer();
 		gesuchsteller.getGesuchstellerJA().setNachname("Chavez");
 		gesuchsteller.getGesuchstellerJA().setVorname("Hugo");
 
@@ -220,18 +271,32 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		return erwerbspensumJA;
 	}
 
-	private void createFinanzielleSituationGS(int GS, Gesuch gesuch, String vorname, boolean steuerveranlagungErhalten) {
-		final FinanzielleSituationContainer finanzielleSituationContainer = TestDataUtil.createFinanzielleSituationContainer();
-		final FinanzielleSituation finanzielleSituation = TestDataUtil.createDefaultFinanzielleSituation();
+	private void createFinanzielleSituationGS(
+		int GS,
+		Gesuch gesuch,
+		String vorname,
+		boolean steuerveranlagungErhalten
+	) {
+		final FinanzielleSituationContainer finanzielleSituationContainer =
+			TestDataUtil.createFinanzielleSituationContainer();
+		final FinanzielleSituation finanzielleSituation = TestDataUtil
+			.createDefaultFinanzielleSituation();
 
-		finanzielleSituation.setSteuerveranlagungErhalten(steuerveranlagungErhalten);
-		finanzielleSituationContainer.setFinanzielleSituationJA(finanzielleSituation);
+		finanzielleSituation.setSteuerveranlagungErhalten(
+			steuerveranlagungErhalten
+		);
+		finanzielleSituationContainer.setFinanzielleSituationJA(
+			finanzielleSituation
+		);
 
-		final GesuchstellerContainer gesuchsteller = TestDataUtil.createDefaultGesuchstellerContainer();
+		final GesuchstellerContainer gesuchsteller = TestDataUtil
+			.createDefaultGesuchstellerContainer();
 		gesuchsteller.getGesuchstellerJA().setNachname("Chavez");
 		gesuchsteller.getGesuchstellerJA().setVorname(vorname);
 
-		gesuchsteller.setFinanzielleSituationContainer(finanzielleSituationContainer);
+		gesuchsteller.setFinanzielleSituationContainer(
+			finanzielleSituationContainer
+		);
 		if (GS == 2) {
 			gesuch.setGesuchsteller2(gesuchsteller);
 		} else {
@@ -239,19 +304,34 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		}
 	}
 
-	private void createEinkommensverschlechterungGS(int GS, Gesuch gesuch, String vorname) {
-		final EinkommensverschlechterungContainer einkommensverschlechterungsContainer = TestDataUtil.createDefaultEinkommensverschlechterungsContainer();
-		final Einkommensverschlechterung einkommensverschlechterung1 = TestDataUtil.createDefaultEinkommensverschlechterung();
-		final Einkommensverschlechterung einkommensverschlechterung2 = TestDataUtil.createDefaultEinkommensverschlechterung();
+	private void createEinkommensverschlechterungGS(
+		int GS,
+		Gesuch gesuch,
+		String vorname
+	) {
+		final EinkommensverschlechterungContainer einkommensverschlechterungsContainer =
+			TestDataUtil
+				.createDefaultEinkommensverschlechterungsContainer();
+		final Einkommensverschlechterung einkommensverschlechterung1 =
+			TestDataUtil.createDefaultEinkommensverschlechterung();
+		final Einkommensverschlechterung einkommensverschlechterung2 =
+			TestDataUtil.createDefaultEinkommensverschlechterung();
 
-		einkommensverschlechterungsContainer.setEkvJABasisJahrPlus1(einkommensverschlechterung1);
-		einkommensverschlechterungsContainer.setEkvJABasisJahrPlus2(einkommensverschlechterung2);
+		einkommensverschlechterungsContainer.setEkvJABasisJahrPlus1(
+			einkommensverschlechterung1
+		);
+		einkommensverschlechterungsContainer.setEkvJABasisJahrPlus2(
+			einkommensverschlechterung2
+		);
 
-		final GesuchstellerContainer gesuchsteller = TestDataUtil.createDefaultGesuchstellerContainer();
+		final GesuchstellerContainer gesuchsteller = TestDataUtil
+			.createDefaultGesuchstellerContainer();
 		gesuchsteller.getGesuchstellerJA().setNachname("Chavez");
 		gesuchsteller.getGesuchstellerJA().setVorname(vorname);
 
-		gesuchsteller.setEinkommensverschlechterungContainer(einkommensverschlechterungsContainer);
+		gesuchsteller.setEinkommensverschlechterungContainer(
+			einkommensverschlechterungsContainer
+		);
 		if (GS == 2) {
 			gesuch.setGesuchsteller2(gesuchsteller);
 		} else {
@@ -259,10 +339,17 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		}
 	}
 
-	private void createFamilienSituation(Gesuch gesuch, boolean gemeinsam, boolean sozialhilfe) {
-		FamiliensituationContainer famSitContainer = TestDataUtil.createDefaultFamiliensituationContainer();
+	private void createFamilienSituation(
+		Gesuch gesuch,
+		boolean gemeinsam,
+		boolean sozialhilfe
+	) {
+		FamiliensituationContainer famSitContainer = TestDataUtil
+			.createDefaultFamiliensituationContainer();
 
-		Familiensituation famSit = requireNonNull(famSitContainer.extractFamiliensituation());
+		Familiensituation famSit = requireNonNull(
+			famSitContainer.extractFamiliensituation()
+		);
 		famSit.setFamilienstatus(EnumFamilienstatus.VERHEIRATET);
 		famSit.setGemeinsameSteuererklaerung(gemeinsam);
 		famSit.setSozialhilfeBezueger(sozialhilfe);
@@ -275,12 +362,24 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchBern);
 
 		clearKinder(testgesuchBern);
-		Kind kind = createKind(testgesuchBern, FachstelleName.ERZIEHUNGSBERATUNG, null);
+		Kind kind = createKind(
+			testgesuchBern,
+			FachstelleName.ERZIEHUNGSBERATUNG,
+			null
+		);
 
-		Assertions.assertTrue(bernKindDokumente.isDokumentNeeded(DokumentTyp.FACHSTELLENBESTAETIGUNG, kind));
+		Assertions.assertTrue(
+			kindDokumente.isDokumentNeeded(
+				DokumentTyp.FACHSTELLENBESTAETIGUNG,
+				kind
+			)
+		);
 
 		final DokumentGrund dokumentGrund = getDokumentGrund(testgesuchBern);
-		Assertions.assertEquals(DokumentTyp.FACHSTELLENBESTAETIGUNG, dokumentGrund.getDokumentTyp());
+		Assertions.assertEquals(
+			DokumentTyp.FACHSTELLENBESTAETIGUNG,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
 	@Test
@@ -288,12 +387,24 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchLuzern);
 
 		clearKinder(testgesuchLuzern);
-		Kind kind = createKind(testgesuchLuzern, FachstelleName.ERZIEHUNGSBERATUNG, IntegrationTyp.SOZIALE_INTEGRATION);
+		Kind kind = createKind(
+			testgesuchLuzern,
+			FachstelleName.ERZIEHUNGSBERATUNG,
+			IntegrationTyp.SOZIALE_INTEGRATION
+		);
 
-		Assertions.assertTrue(luzernKindDokumente.isDokumentNeeded(DokumentTyp.FACHSTELLENBESTAETIGUNG, kind));
+		Assertions.assertTrue(
+			luzernKindDokumente.isDokumentNeeded(
+				DokumentTyp.FACHSTELLENBESTAETIGUNG,
+				kind
+			)
+		);
 
 		final DokumentGrund dokumentGrund = getDokumentGrund(testgesuchLuzern);
-		Assertions.assertEquals(DokumentTyp.FACHSTELLENBESTAETIGUNG, dokumentGrund.getDokumentTyp());
+		Assertions.assertEquals(
+			DokumentTyp.FACHSTELLENBESTAETIGUNG,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
 	@Test
@@ -301,10 +412,21 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchLuzern);
 
 		clearKinder(testgesuchLuzern);
-		Kind kind = createKind(testgesuchLuzern, FachstelleName.ERZIEHUNGSBERATUNG, IntegrationTyp.SPRACHLICHE_INTEGRATION);
+		Kind kind = createKind(
+			testgesuchLuzern,
+			FachstelleName.ERZIEHUNGSBERATUNG,
+			IntegrationTyp.SPRACHLICHE_INTEGRATION
+		);
 
 		kind.getPensumFachstelle().forEach(pensumFachstelle -> {
-			Assertions.assertFalse(luzernKindDokumente.isDokumentNeeded(DokumentTyp.FACHSTELLENBESTAETIGUNG, kind, pensumFachstelle, LocalDate.MIN));
+			Assertions.assertFalse(
+				luzernKindDokumente.isDokumentNeeded(
+					DokumentTyp.FACHSTELLENBESTAETIGUNG,
+					kind,
+					pensumFachstelle,
+					LocalDate.MIN
+				)
+			);
 		});
 	}
 
@@ -317,78 +439,167 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		kind.setKeinPlatzInSchulhort(true);
 		kind.setEinschulungTyp(EinschulungTyp.OBLIGATORISCHER_KINDERGARTEN);
 
-		Assertions.assertTrue(luzernKindDokumente.isDokumentNeeded(DokumentTyp.ABSAGESCHREIBEN_HORTPLATZ, kind));
+		Assertions.assertTrue(
+			luzernKindDokumente.isDokumentNeeded(
+				DokumentTyp.ABSAGESCHREIBEN_HORTPLATZ,
+				kind
+			)
+		);
 
 		final DokumentGrund dokumentGrund = getDokumentGrund(testgesuchLuzern);
-		Assertions.assertEquals(DokumentTyp.ABSAGESCHREIBEN_HORTPLATZ, dokumentGrund.getDokumentTyp());
+		Assertions.assertEquals(
+			DokumentTyp.ABSAGESCHREIBEN_HORTPLATZ,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
-
 	private DokumentGrund getDokumentGrund(Gesuch gesuch) {
-		final Set<DokumentGrund> calculate = evaluator.calculate(gesuch, Constants.DEFAULT_LOCALE);
+		final Set<DokumentGrund> calculate = evaluator.calculate(
+			gesuch,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(1, calculate.size());
 		final DokumentGrund dokumentGrund = calculate.iterator().next();
-		Assertions.assertEquals(DokumentGrundTyp.KINDER, dokumentGrund.getDokumentGrundTyp());
-		Assertions.assertEquals(DokumentGrundPersonType.KIND, dokumentGrund.getPersonType());
-		Assertions.assertEquals(Integer.valueOf(-1), dokumentGrund.getPersonNumber()); //-1 is the default value
+		Assertions.assertEquals(
+			DokumentGrundTyp.KINDER,
+			dokumentGrund.getDokumentGrundTyp()
+		);
+		Assertions.assertEquals(
+			DokumentGrundPersonType.KIND,
+			dokumentGrund.getPersonType()
+		);
+		Assertions.assertEquals(
+			Integer.valueOf(-1),
+			dokumentGrund.getPersonNumber()
+		); //-1 is the default value
 		return dokumentGrund;
 	}
 
-	private DokumentGrund assertDokumentGrund(Erwerbspensum erwerbspensum, Gesuch gesuch) {
-		final Set<DokumentGrund> calculate = evaluator.calculate(gesuch, Constants.DEFAULT_LOCALE);
+	private DokumentGrund assertDokumentGrund(
+		Erwerbspensum erwerbspensum,
+		Gesuch gesuch
+	) {
+		final Set<DokumentGrund> calculate = evaluator.calculate(
+			gesuch,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(1, calculate.size());
 		final DokumentGrund dokumentGrund = calculate.iterator().next();
-		Assertions.assertEquals(DokumentGrundTyp.ERWERBSPENSUM, dokumentGrund.getDokumentGrundTyp());
-		Assertions.assertEquals(DokumentGrundPersonType.GESUCHSTELLER, dokumentGrund.getPersonType());
-		Assertions.assertEquals(Integer.valueOf(1), dokumentGrund.getPersonNumber());
-		String erwerbspensumName = erwerbspensum.getName(Constants.DEFAULT_LOCALE, gesuch.extractMandant());
+		Assertions.assertEquals(
+			DokumentGrundTyp.ERWERBSPENSUM,
+			dokumentGrund.getDokumentGrundTyp()
+		);
+		Assertions.assertEquals(
+			DokumentGrundPersonType.GESUCHSTELLER,
+			dokumentGrund.getPersonType()
+		);
+		Assertions.assertEquals(
+			Integer.valueOf(1),
+			dokumentGrund.getPersonNumber()
+		);
+		String erwerbspensumName = erwerbspensum.getName(
+			Constants.DEFAULT_LOCALE,
+			gesuch.extractMandant()
+		);
 		Assertions.assertEquals(erwerbspensumName, dokumentGrund.getTag());
 		return dokumentGrund;
 	}
 
-	private void assertDokumentGrundCorrect(@Nonnull DokumentGrund dokGrund, @Nonnull String expectedTag, @Nonnull DokumentTyp expectedDokumentTyp) {
-		Assertions.assertEquals(DokumentGrundTyp.ERWERBSPENSUM, dokGrund.getDokumentGrundTyp());
-		Assertions.assertEquals(DokumentGrundPersonType.GESUCHSTELLER, dokGrund.getPersonType());
+	private void assertDokumentGrundCorrect(
+		@Nonnull DokumentGrund dokGrund,
+		@Nonnull String expectedTag,
+		@Nonnull DokumentTyp expectedDokumentTyp
+	) {
+		Assertions.assertEquals(
+			DokumentGrundTyp.ERWERBSPENSUM,
+			dokGrund.getDokumentGrundTyp()
+		);
+		Assertions.assertEquals(
+			DokumentGrundPersonType.GESUCHSTELLER,
+			dokGrund.getPersonType()
+		);
 		Assertions.assertEquals(Integer.valueOf(1), dokGrund.getPersonNumber());
 		Assertions.assertEquals(expectedTag, dokGrund.getTag());
 		Assertions.assertEquals(expectedDokumentTyp, dokGrund.getDokumentTyp());
 	}
 
 	@Nonnull
-	private DokumentGrund extractDocumentFromList(@Nonnull Set<DokumentGrund> dokumentGrundList, @Nonnull DokumentTyp typOfDocumentToExtract) {
+	private DokumentGrund extractDocumentFromList(
+		@Nonnull Set<DokumentGrund> dokumentGrundList,
+		@Nonnull DokumentTyp typOfDocumentToExtract
+	) {
 		return dokumentGrundList.stream()
 			.filter(dg -> dg.getDokumentTyp() == typOfDocumentToExtract)
 			.findAny()
-			.orElseThrow(() -> new IllegalStateException("Dokument of Type " + typOfDocumentToExtract + " expected"));
+			.orElseThrow(
+				() -> new IllegalStateException(
+					"Dokument of Type "
+						+ typOfDocumentToExtract
+						+ " expected"
+				)
+			);
 	}
 
 	@Test
 	void erwpDokumentNeueintrittAfterTest() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchBern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchBern, Taetigkeit.ANGESTELLT, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchBern,
+			Taetigkeit.ANGESTELLT,
+			false
+		);
 
 		// Nachweis EP ist neu immer zwingend
-		Assertions.assertTrue(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ERWERBSPENSUM, erwerbspensum));
+		Assertions.assertTrue(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
+				erwerbspensum
+			)
+		);
 
 		erwerbspensum.getGueltigkeit().setGueltigAb(LocalDate.of(2017, 9, 1));
-		Assertions.assertTrue(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ERWERBSPENSUM, erwerbspensum, LocalDate.of(2016, 1, 1), LocalDate.of(2016, 1, 1)));
+		Assertions.assertTrue(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
+				erwerbspensum,
+				LocalDate.of(2016, 1, 1),
+				LocalDate.of(2016, 1, 1)
+			)
+		);
 
-		final Set<DokumentGrund> calculate = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		final Set<DokumentGrund> calculate = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		final DokumentGrund dokumentGrund = calculate.iterator().next();
 
-		Assertions.assertEquals(DokumentTyp.NACHWEIS_ERWERBSPENSUM, dokumentGrund.getDokumentTyp());
+		Assertions.assertEquals(
+			DokumentTyp.NACHWEIS_ERWERBSPENSUM,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
 	@Test
 	void erwpDokumentNeueintrittBeforeTest() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchBern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchBern, Taetigkeit.ANGESTELLT, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchBern,
+			Taetigkeit.ANGESTELLT,
+			false
+		);
 
 		erwerbspensum.getGueltigkeit().setGueltigAb(LocalDate.of(2000, 7, 1));
 		// Nachweis Erwerbspensum wird neu immer benötigt
-		Assertions.assertTrue(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ERWERBSPENSUM, erwerbspensum, LocalDate.of(2000, 8, 1), LocalDate.of(2000, 8, 1)));
+		Assertions.assertTrue(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
+				erwerbspensum,
+				LocalDate.of(2000, 8, 1),
+				LocalDate.of(2000, 8, 1)
+			)
+		);
 
 	}
 
@@ -396,152 +607,454 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 	void erwpDokumentSelbstaendigTest() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchBern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchBern, Taetigkeit.SELBSTAENDIG, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchBern,
+			Taetigkeit.SELBSTAENDIG,
+			false
+		);
 
-		Assertions.assertTrue(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, erwerbspensum));
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_AUSBILDUNG, erwerbspensum));
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_RAV, erwerbspensum));
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.BESTAETIGUNG_ARZT, erwerbspensum));
+		Assertions.assertTrue(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_AUSBILDUNG,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_RAV,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.BESTAETIGUNG_ARZT,
+				erwerbspensum
+			)
+		);
 
-		final Set<DokumentGrund> dokumentList = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		final Set<DokumentGrund> dokumentList = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(1, dokumentList.size());
-		DokumentGrund nachweisSelbstaendigkeit = extractDocumentFromList(dokumentList, DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT);
-		String erwerbspensumName = erwerbspensum.getName(Constants.DEFAULT_LOCALE, testgesuchBern.extractMandant());
-		assertDokumentGrundCorrect(nachweisSelbstaendigkeit, erwerbspensumName, DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT);
+		DokumentGrund nachweisSelbstaendigkeit = extractDocumentFromList(
+			dokumentList,
+			DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT
+		);
+		String erwerbspensumName = erwerbspensum.getName(
+			Constants.DEFAULT_LOCALE,
+			testgesuchBern.extractMandant()
+		);
+		assertDokumentGrundCorrect(
+			nachweisSelbstaendigkeit,
+			erwerbspensumName,
+			DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT
+		);
 	}
 
 	@Test
 	void erwpDokumentAusbildung() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchBern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchBern, Taetigkeit.AUSBILDUNG, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchBern,
+			Taetigkeit.AUSBILDUNG,
+			false
+		);
 
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, erwerbspensum));
-		Assertions.assertTrue(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_AUSBILDUNG, erwerbspensum));
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_RAV, erwerbspensum));
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.BESTAETIGUNG_ARZT, erwerbspensum));
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+				erwerbspensum
+			)
+		);
+		Assertions.assertTrue(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_AUSBILDUNG,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_RAV,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.BESTAETIGUNG_ARZT,
+				erwerbspensum
+			)
+		);
 
-		final DokumentGrund dokumentGrund = assertDokumentGrund(erwerbspensum, testgesuchBern);
+		final DokumentGrund dokumentGrund = assertDokumentGrund(
+			erwerbspensum,
+			testgesuchBern
+		);
 
-		Assertions.assertEquals(DokumentTyp.NACHWEIS_AUSBILDUNG, dokumentGrund.getDokumentTyp());
+		Assertions.assertEquals(
+			DokumentTyp.NACHWEIS_AUSBILDUNG,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
 	@Test
 	void erwpDokumentRAV() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchBern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchBern, Taetigkeit.RAV, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchBern,
+			Taetigkeit.RAV,
+			false
+		);
 
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, erwerbspensum));
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_AUSBILDUNG, erwerbspensum));
-		Assertions.assertTrue(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_RAV, erwerbspensum));
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.BESTAETIGUNG_ARZT, erwerbspensum));
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_AUSBILDUNG,
+				erwerbspensum
+			)
+		);
+		Assertions.assertTrue(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_RAV,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.BESTAETIGUNG_ARZT,
+				erwerbspensum
+			)
+		);
 
-		final DokumentGrund dokumentGrund = assertDokumentGrund(erwerbspensum, testgesuchBern);
+		final DokumentGrund dokumentGrund = assertDokumentGrund(
+			erwerbspensum,
+			testgesuchBern
+		);
 
-		Assertions.assertEquals(DokumentTyp.NACHWEIS_RAV, dokumentGrund.getDokumentTyp());
+		Assertions.assertEquals(
+			DokumentTyp.NACHWEIS_RAV,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
 	@Test
 	void erwpDokumentArzt() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchBern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchBern, Taetigkeit.ANGESTELLT, true);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchBern,
+			Taetigkeit.ANGESTELLT,
+			true
+		);
 
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, erwerbspensum));
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_AUSBILDUNG, erwerbspensum));
-		Assertions.assertFalse(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_RAV, erwerbspensum));
-		Assertions.assertTrue(bernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.BESTAETIGUNG_ARZT, erwerbspensum));
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_AUSBILDUNG,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_RAV,
+				erwerbspensum
+			)
+		);
+		Assertions.assertTrue(
+			bernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.BESTAETIGUNG_ARZT,
+				erwerbspensum
+			)
+		);
 
-		final DokumentGrund dokumentGrund = assertDokumentGrund(erwerbspensum, testgesuchBern);
+		final DokumentGrund dokumentGrund = assertDokumentGrund(
+			erwerbspensum,
+			testgesuchBern
+		);
 
-		Assertions.assertEquals(DokumentTyp.BESTAETIGUNG_ARZT, dokumentGrund.getDokumentTyp());
+		Assertions.assertEquals(
+			DokumentTyp.BESTAETIGUNG_ARZT,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
 	@Test
 	void erwpDokumentAngestelltLuzern() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchLuzern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchLuzern, Taetigkeit.ANGESTELLT, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchLuzern,
+			Taetigkeit.ANGESTELLT,
+			false
+		);
 
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ERWERBSPENSUM, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ARBEITSSUCHEND, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_AUSBILDUNG, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, erwerbspensum));
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_AUSBILDUNG,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+				erwerbspensum
+			)
+		);
 	}
 
 	@Test
 	void erwpDokumentArbeitlosLuzern() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchLuzern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchLuzern, Taetigkeit.RAV, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchLuzern,
+			Taetigkeit.RAV,
+			false
+		);
 
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ERWERBSPENSUM, erwerbspensum));
-		Assertions.assertTrue(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ARBEITSSUCHEND, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_AUSBILDUNG, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, erwerbspensum));
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
+				erwerbspensum
+			)
+		);
+		Assertions.assertTrue(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_AUSBILDUNG,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+				erwerbspensum
+			)
+		);
 
-		final DokumentGrund dokumentGrund = assertDokumentGrund(erwerbspensum, testgesuchLuzern);
-		Assertions.assertEquals(DokumentTyp.NACHWEIS_ARBEITSSUCHEND, dokumentGrund.getDokumentTyp());
+		final DokumentGrund dokumentGrund = assertDokumentGrund(
+			erwerbspensum,
+			testgesuchLuzern
+		);
+		Assertions.assertEquals(
+			DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
 	@Test
 	void erwpDokumentInAusbildungLuzern() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchLuzern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchLuzern, Taetigkeit.AUSBILDUNG, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchLuzern,
+			Taetigkeit.AUSBILDUNG,
+			false
+		);
 
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ERWERBSPENSUM, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ARBEITSSUCHEND, erwerbspensum));
-		Assertions.assertTrue(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_AUSBILDUNG, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, erwerbspensum));
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
+				erwerbspensum
+			)
+		);
+		Assertions.assertTrue(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_AUSBILDUNG,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+				erwerbspensum
+			)
+		);
 
-		final DokumentGrund dokumentGrund = assertDokumentGrund(erwerbspensum, testgesuchLuzern);
-		Assertions.assertEquals(DokumentTyp.NACHWEIS_AUSBILDUNG, dokumentGrund.getDokumentTyp());
+		final DokumentGrund dokumentGrund = assertDokumentGrund(
+			erwerbspensum,
+			testgesuchLuzern
+		);
+		Assertions.assertEquals(
+			DokumentTyp.NACHWEIS_AUSBILDUNG,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
 	@Test
 	void erwpDokumentGesundheitlicheIndikationLuzern() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchLuzern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchLuzern,
-			Taetigkeit.GESUNDHEITLICHE_EINSCHRAENKUNGEN, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchLuzern,
+			Taetigkeit.GESUNDHEITLICHE_EINSCHRAENKUNGEN,
+			false
+		);
 
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ERWERBSPENSUM, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ARBEITSSUCHEND, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_AUSBILDUNG, erwerbspensum));
-		Assertions.assertTrue(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, erwerbspensum));
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_AUSBILDUNG,
+				erwerbspensum
+			)
+		);
+		Assertions.assertTrue(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+				erwerbspensum
+			)
+		);
 
-		final DokumentGrund dokumentGrund = assertDokumentGrund(erwerbspensum, testgesuchLuzern);
-		Assertions.assertEquals(DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION, dokumentGrund.getDokumentTyp());
+		final DokumentGrund dokumentGrund = assertDokumentGrund(
+			erwerbspensum,
+			testgesuchLuzern
+		);
+		Assertions.assertEquals(
+			DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
 	@Test
 	void erwpDokumentSelbststaendigLuzern() {
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchLuzern);
 
-		final Erwerbspensum erwerbspensum = createErwerbspensum(testgesuchLuzern, Taetigkeit.SELBSTAENDIG, false);
+		final Erwerbspensum erwerbspensum = createErwerbspensum(
+			testgesuchLuzern,
+			Taetigkeit.SELBSTAENDIG,
+			false
+		);
 
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ERWERBSPENSUM, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_ARBEITSSUCHEND, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_AUSBILDUNG, erwerbspensum));
-		Assertions.assertFalse(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION, erwerbspensum));
-		Assertions.assertTrue(luzernErwerbspensumDokumente.isDokumentNeeded(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, erwerbspensum));
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ERWERBSPENSUM,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_AUSBILDUNG,
+				erwerbspensum
+			)
+		);
+		Assertions.assertFalse(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
+				erwerbspensum
+			)
+		);
+		Assertions.assertTrue(
+			luzernErwerbspensumDokumente.isDokumentNeeded(
+				DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+				erwerbspensum
+			)
+		);
 
-		final DokumentGrund dokumentGrund = assertDokumentGrund(erwerbspensum, testgesuchLuzern);
-		Assertions.assertEquals(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT, dokumentGrund.getDokumentTyp());
+		final DokumentGrund dokumentGrund = assertDokumentGrund(
+			erwerbspensum,
+			testgesuchLuzern
+		);
+		Assertions.assertEquals(
+			DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+			dokumentGrund.getDokumentTyp()
+		);
 	}
 
-	private Set<DokumentGrund> getDokumentGrundsForGS(int gesuchstellerNumber, Set<DokumentGrund> dokumentGrunds) {
+	private Set<DokumentGrund> getDokumentGrundsForGS(
+		int gesuchstellerNumber,
+		Set<DokumentGrund> dokumentGrunds
+	) {
 		Set<DokumentGrund> grunds = new HashSet<>();
 
 		for (DokumentGrund dokumentGrund : dokumentGrunds) {
-			if (dokumentGrund.getPersonType() == DokumentGrundPersonType.GESUCHSTELLER
-				&& Objects.equals(dokumentGrund.getPersonNumber(), gesuchstellerNumber)) {
+			if (dokumentGrund.getPersonType()
+				== DokumentGrundPersonType.GESUCHSTELLER
+				&& Objects.equals(
+					dokumentGrund.getPersonNumber(),
+					gesuchstellerNumber
+				)) {
 				grunds.add(dokumentGrund);
 			}
 		}
@@ -553,7 +1066,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		Set<DokumentGrund> dokumentGrunds,
 		@Nullable DokumentGrundPersonType personType,
 		@Nullable Integer personNumber,
-		@Nullable String year) {
+		@Nullable String year
+	) {
 
 		Set<DokumentGrund> grunds = new HashSet<>();
 
@@ -561,18 +1075,28 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 
 			if (personType != null) {
 				if (year != null) {
-					if (personType != dokumentGrund.getPersonType() || !Objects.equals(personNumber, dokumentGrund.getPersonNumber())
+					if (personType != dokumentGrund.getPersonType()
+						|| !Objects.equals(
+							personNumber,
+							dokumentGrund.getPersonNumber()
+						)
 						|| !year.equals(dokumentGrund.getTag())) {
 						continue;
 					}
 				} else {
-					if (personType != dokumentGrund.getPersonType() || !Objects.equals(personNumber, dokumentGrund.getPersonNumber())
+					if (personType != dokumentGrund.getPersonType()
+						|| !Objects.equals(
+							personNumber,
+							dokumentGrund.getPersonNumber()
+						)
 						|| dokumentGrund.getTag() != null) {
 						continue;
 					}
 				}
 			} else {
-				if (dokumentGrund.getPersonType() != null || dokumentGrund.getPersonNumber() != null || dokumentGrund.getTag() != null) {
+				if (dokumentGrund.getPersonType() != null
+					|| dokumentGrund.getPersonNumber() != null
+					|| dokumentGrund.getTag() != null) {
 					continue;
 				}
 			}
@@ -594,11 +1118,17 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(2, testgesuchBern, "Alex", true);
 
 		createFamilienSituation(testgesuchBern, true, false);
-		final Set<DokumentGrund> dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		final Set<DokumentGrund> dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 
-		assertThat(dokumentGrunds, contains(
-			steuerveranlagungForGesuchsteller(0)
-		));
+		assertThat(
+			dokumentGrunds,
+			contains(
+				steuerveranlagungForGesuchsteller(0)
+			)
+		);
 	}
 
 	@Test
@@ -609,30 +1139,51 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(2, testgesuchBern, "Alex", true);
 
 		createFamilienSituation(testgesuchBern, false, false);
-		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 
-		assertThat(dokumentGrunds, containsInAnyOrder(
-			steuerveranlagungForGesuchsteller(1),
-			steuerveranlagungForGesuchsteller(2)
-		));
+		assertThat(
+			dokumentGrunds,
+			containsInAnyOrder(
+				steuerveranlagungForGesuchsteller(1),
+				steuerveranlagungForGesuchsteller(2)
+			)
+		);
 	}
 
 	private IsPojo<DokumentGrund> steuerveranlagungForGesuchsteller(int GS) {
 		return steuerveranlagungForGesuchsteller(GS, "2016");
 	}
 
-	private IsPojo<DokumentGrund> steuerveranlagungForGesuchsteller(int GS, @Nullable String tag) {
+	private IsPojo<DokumentGrund> steuerveranlagungForGesuchsteller(
+		int GS,
+		@Nullable String tag
+	) {
 		return dokumentOfTyp(DokumentTyp.STEUERVERANLAGUNG)
-			.where(DokumentGrund::getDokumentGrundTyp, is(DokumentGrundTyp.FINANZIELLESITUATION))
-			.where(DokumentGrund::getPersonType, is(DokumentGrundPersonType.GESUCHSTELLER))
+			.where(
+				DokumentGrund::getDokumentGrundTyp,
+				is(DokumentGrundTyp.FINANZIELLESITUATION)
+			)
+			.where(
+				DokumentGrund::getPersonType,
+				is(DokumentGrundPersonType.GESUCHSTELLER)
+			)
 			.where(DokumentGrund::getPersonNumber, is(GS))
 			.where(DokumentGrund::getTag, is(tag));
 	}
 
 	private IsPojo<DokumentGrund> quellensteuerForGesuchsteller(int GS) {
 		return dokumentOfTyp(DokumentTyp.NACHWEIS_ABGERECHNETE_QUELLENSTEUERN)
-			.where(DokumentGrund::getDokumentGrundTyp, is(DokumentGrundTyp.FINANZIELLESITUATION))
-			.where(DokumentGrund::getPersonType, is(DokumentGrundPersonType.GESUCHSTELLER))
+			.where(
+				DokumentGrund::getDokumentGrundTyp,
+				is(DokumentGrundTyp.FINANZIELLESITUATION)
+			)
+			.where(
+				DokumentGrund::getPersonType,
+				is(DokumentGrundPersonType.GESUCHSTELLER)
+			)
 			.where(DokumentGrund::getPersonNumber, is(GS))
 			.where(DokumentGrund::getTag, is(nullValue()));
 	}
@@ -645,22 +1196,45 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(2, testgesuchBern, "Alex", false);
 
 		createFamilienSituation(testgesuchBern, false, false);
-		final Set<DokumentGrund> dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		final Set<DokumentGrund> dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(6, dokumentGrunds.size());
 
-		final Set<DokumentGrund> dokumentGrundGS1 = getDokumentGrundsForGS(1, dokumentGrunds);
+		final Set<DokumentGrund> dokumentGrundGS1 = getDokumentGrundsForGS(
+			1,
+			dokumentGrunds
+		);
 		Assertions.assertEquals(3, dokumentGrundGS1.size());
 
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		assertType(dokumentGrundGS1, DokumentTyp.STEUERERKLAERUNG, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.STEUERERKLAERUNG,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 
-		final Set<DokumentGrund> dokumentGrundGS2 = getDokumentGrundsForGS(2, dokumentGrunds);
+		final Set<DokumentGrund> dokumentGrundGS2 = getDokumentGrundsForGS(
+			2,
+			dokumentGrunds
+		);
 		Assertions.assertEquals(3, dokumentGrundGS2.size());
 
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
-		assertType(dokumentGrundGS2, DokumentTyp.STEUERERKLAERUNG, testgesuchBern.getGesuchsteller2().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 2, DokumentGrundTyp.FINANZIELLESITUATION);
+		assertType(
+			dokumentGrundGS2,
+			DokumentTyp.STEUERERKLAERUNG,
+			testgesuchBern.getGesuchsteller2().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			2,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 	}
 
 	private void assertType(
@@ -672,16 +1246,37 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		@Nullable Integer personNumber,
 		DokumentGrundTyp dokumentGrundTyp
 	) {
-		final Set<DokumentGrund> dokumentGrundsForType = getDokumentGrundsForType(dokumentTyp, dokumentGrundGS1, personType, personNumber, year);
+		final Set<DokumentGrund> dokumentGrundsForType =
+			getDokumentGrundsForType(
+				dokumentTyp,
+				dokumentGrundGS1,
+				personType,
+				personNumber,
+				year
+			);
 		Assertions.assertEquals(
 			1,
 			dokumentGrundsForType.size(),
-			"No document with dokumentGrundTyp: " + dokumentGrundTyp + "; dokumentTyp: " + dokumentTyp + "; fullname: " + fullname + "; year: " + year);
+			"No document with dokumentGrundTyp: "
+				+ dokumentGrundTyp
+				+ "; dokumentTyp: "
+				+ dokumentTyp
+				+ "; fullname: "
+				+ fullname
+				+ "; year: "
+				+ year
+		);
 
-		assertThat(dokumentGrundsForType.iterator().next(), dokumentOfTyp(dokumentTyp)
-			.where(DokumentGrund::getDokumentGrundTyp, is(dokumentGrundTyp))
-			.where(DokumentGrund::getPersonType, is(personType))
-			.where(DokumentGrund::getPersonNumber, is(personNumber)));
+		assertThat(
+			dokumentGrundsForType.iterator().next(),
+			dokumentOfTyp(dokumentTyp)
+				.where(
+					DokumentGrund::getDokumentGrundTyp,
+					is(dokumentGrundTyp)
+				)
+				.where(DokumentGrund::getPersonType, is(personType))
+				.where(DokumentGrund::getPersonNumber, is(personNumber))
+		);
 	}
 
 	@Test
@@ -691,69 +1286,231 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(1, testgesuchBern, "Sämi", false);
 		createFamilienSituation(testgesuchBern, false, false);
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer());
-		final FinanzielleSituation finanzielleSituationJA = testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA();
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+		);
+		final FinanzielleSituation finanzielleSituationJA = testgesuchBern
+			.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA();
 
 		setAllFinSitJaValue(finanzielleSituationJA);
 
 		//Test wenn Steuererklärung ausgefüllt ist
-		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(11, dokumentGrunds.size());
 
-		Set<DokumentGrund> dokumentGrundGS1 = getDokumentGrundsForGS(1, dokumentGrunds);
+		Set<DokumentGrund> dokumentGrundGS1 = getDokumentGrundsForGS(
+			1,
+			dokumentGrunds
+		);
 		Assertions.assertEquals(11, dokumentGrundGS1.size());
 
-		assertType(dokumentGrundGS1, DokumentTyp.STEUERERKLAERUNG, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.JAHRESLOHNAUSWEISE, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_FAMILIENZULAGEN, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_ERSATZEINKOMMEN, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_ERHALTENE_ALIMENTE, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_GELEISTETE_ALIMENTE, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.ERFOLGSRECHNUNGEN_JAHR, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.ERFOLGSRECHNUNGEN_JAHR_MINUS1, testgesuchBern.getGesuchsteller1().extractFullName(), "2015",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.ERFOLGSRECHNUNGEN_JAHR_MINUS2, testgesuchBern.getGesuchsteller1().extractFullName(), "2014",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_VERMOEGEN, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_SCHULDEN, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.STEUERERKLAERUNG,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.JAHRESLOHNAUSWEISE,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_FAMILIENZULAGEN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_ERSATZEINKOMMEN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_ERHALTENE_ALIMENTE,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_GELEISTETE_ALIMENTE,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.ERFOLGSRECHNUNGEN_JAHR,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.ERFOLGSRECHNUNGEN_JAHR_MINUS1,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2015",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.ERFOLGSRECHNUNGEN_JAHR_MINUS2,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2014",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_VERMOEGEN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_SCHULDEN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 
 		//Test wenn Steuererklärung nicht ausgefüllt ist
 		finanzielleSituationJA.setSteuererklaerungAusgefuellt(false);
-		dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(10, dokumentGrunds.size());
 
 		dokumentGrundGS1 = getDokumentGrundsForGS(1, dokumentGrunds);
 		Assertions.assertEquals(10, dokumentGrundGS1.size());
 
-		assertType(dokumentGrundGS1, DokumentTyp.JAHRESLOHNAUSWEISE, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_FAMILIENZULAGEN, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_ERSATZEINKOMMEN, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_ERHALTENE_ALIMENTE, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_GELEISTETE_ALIMENTE, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.ERFOLGSRECHNUNGEN_JAHR, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.ERFOLGSRECHNUNGEN_JAHR_MINUS1, testgesuchBern.getGesuchsteller1().extractFullName(), "2015",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.ERFOLGSRECHNUNGEN_JAHR_MINUS2, testgesuchBern.getGesuchsteller1().extractFullName(), "2014",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_VERMOEGEN, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
-		assertType(dokumentGrundGS1, DokumentTyp.NACHWEIS_SCHULDEN, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.JAHRESLOHNAUSWEISE,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_FAMILIENZULAGEN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_ERSATZEINKOMMEN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_ERHALTENE_ALIMENTE,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_GELEISTETE_ALIMENTE,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.ERFOLGSRECHNUNGEN_JAHR,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.ERFOLGSRECHNUNGEN_JAHR_MINUS1,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2015",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.ERFOLGSRECHNUNGEN_JAHR_MINUS2,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2014",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_VERMOEGEN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.NACHWEIS_SCHULDEN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 	}
 
 	@Test
@@ -763,23 +1520,41 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(1, testgesuchBern, "Sämi", false);
 		createFamilienSituation(testgesuchBern, false, false);
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer());
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+		);
 		final FinanzielleSituation finanzielleSituationJA =
-			testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA();
+			testgesuchBern.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA();
 		setAllFinSitJaValue(finanzielleSituationJA);
 		//Normal Fall
-		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(11, dokumentGrunds.size());
 
 		finanzielleSituationJA.setSteuerdatenZugriff(true);
-		finanzielleSituationJA.setSteuerdatenAbfrageStatus(SteuerdatenAnfrageStatus.PROVISORISCH);
+		finanzielleSituationJA.setSteuerdatenAbfrageStatus(
+			SteuerdatenAnfrageStatus.PROVISORISCH
+		);
 		//Steuerabfrage Erfolgreich
-		dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(0, dokumentGrunds.size());
 
-		finanzielleSituationJA.setSteuerdatenAbfrageStatus(SteuerdatenAnfrageStatus.FAILED);
+		finanzielleSituationJA.setSteuerdatenAbfrageStatus(
+			SteuerdatenAnfrageStatus.FAILED
+		);
 		//Steuerabfrage nicht Erfolgreich
-		dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(11, dokumentGrunds.size());
 	}
 
@@ -789,47 +1564,105 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createEinkommensverschlechterungGS(1, testgesuchBern, "Sämi");
 		createEinkommensverschlechterungGS(2, testgesuchBern, "Alex");
 		createEinkommensverschlechterungInfo();
-		final Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiode1718();
-		gesuchsperiode.setGueltigkeit(new DateRange(LocalDate.of(2016, 8, 1), Constants.GESUCHSPERIODE_17_18_AB));
+		final Gesuchsperiode gesuchsperiode = TestDataUtil
+			.createGesuchsperiode1718();
+		gesuchsperiode.setGueltigkeit(
+			new DateRange(
+				LocalDate.of(2016, 8, 1),
+				Constants.GESUCHSPERIODE_17_18_AB
+			)
+		);
 
 		testgesuchBern.setGesuchsperiode(gesuchsperiode);
 		setupEinstellungBeschaeftigungsPensumAbhaengig(testgesuchBern);
 		createFamilienSituation(testgesuchBern, true, false);
 
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1().getEinkommensverschlechterungContainer());
-		final Einkommensverschlechterung ekvJABasisJahrPlus1 = testgesuchBern.getGesuchsteller1().getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1();
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller1()
+				.getEinkommensverschlechterungContainer()
+		);
+		final Einkommensverschlechterung ekvJABasisJahrPlus1 = testgesuchBern
+			.getGesuchsteller1()
+			.getEinkommensverschlechterungContainer()
+			.getEkvJABasisJahrPlus1();
 		ekvJABasisJahrPlus1.setNettolohn(ZEHN_TAUSEND);
 
-		final Einkommensverschlechterung ekvJABasisJahrPlus2 = testgesuchBern.getGesuchsteller1().getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus2();
+		final Einkommensverschlechterung ekvJABasisJahrPlus2 = testgesuchBern
+			.getGesuchsteller1()
+			.getEinkommensverschlechterungContainer()
+			.getEkvJABasisJahrPlus2();
 		ekvJABasisJahrPlus2.setNettolohn(BigDecimal.valueOf(200000));
 
-		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(8, dokumentGrunds.size()); // Vermoegen wird neu immer gefragt (2 GS x 2 EKVs)
 
-		Set<DokumentGrund> dokumentGrundGS1 = getDokumentGrundsForGS(1, dokumentGrunds);
+		Set<DokumentGrund> dokumentGrundGS1 = getDokumentGrundsForGS(
+			1,
+			dokumentGrunds
+		);
 		Assertions.assertEquals(4, dokumentGrundGS1.size());
 
-		assertType(dokumentGrundGS1, DokumentTyp.JAHRESLOHNAUSWEISE, testgesuchBern.getGesuchsteller1().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.JAHRESLOHNAUSWEISE,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+		);
 
-		assertType(dokumentGrundGS1, DokumentTyp.JAHRESLOHNAUSWEISE, testgesuchBern.getGesuchsteller1().extractFullName(), "2017",
-			DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG);
+		assertType(
+			dokumentGrundGS1,
+			DokumentTyp.JAHRESLOHNAUSWEISE,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2017",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+		);
 
-		Set<DokumentGrund> dokumentGrundGS2 = getDokumentGrundsForGS(2, dokumentGrunds);
+		Set<DokumentGrund> dokumentGrundGS2 = getDokumentGrundsForGS(
+			2,
+			dokumentGrunds
+		);
 		Assertions.assertEquals(4, dokumentGrundGS2.size());
 
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
-		assertType(dokumentGrundGS2, DokumentTyp.JAHRESLOHNAUSWEISE, testgesuchBern.getGesuchsteller2().extractFullName(), "2016",
-			DokumentGrundPersonType.GESUCHSTELLER, 2, DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG);
+		assertType(
+			dokumentGrundGS2,
+			DokumentTyp.JAHRESLOHNAUSWEISE,
+			testgesuchBern.getGesuchsteller2().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			2,
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+		);
 
-		assertType(dokumentGrundGS2, DokumentTyp.JAHRESLOHNAUSWEISE, testgesuchBern.getGesuchsteller2().extractFullName(), "2017",
-			DokumentGrundPersonType.GESUCHSTELLER, 2, DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG);
+		assertType(
+			dokumentGrundGS2,
+			DokumentTyp.JAHRESLOHNAUSWEISE,
+			testgesuchBern.getGesuchsteller2().extractFullName(),
+			"2017",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			2,
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+		);
 
 		testgesuchBern.setFinSitTyp(FinanzielleSituationTyp.SOLOTHURN);
 
-		dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
-		Assertions.assertEquals(8, dokumentGrunds.size()); //8 wegen 1 EKV (wird nur von einem Jahr verlangt) x 2 GS x (3 Lohnabrechnungen + 1 Vermögen)
+		dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
+		Assertions.assertEquals(
+			8,
+			dokumentGrunds.size()
+		); //8 wegen 1 EKV (wird nur von einem Jahr verlangt) x 2 GS x (3 Lohnabrechnungen + 1 Vermögen)
 		dokumentGrundGS1 = getDokumentGrundsForGS(1, dokumentGrunds);
 		Assertions.assertEquals(4, dokumentGrundGS1.size());
 
@@ -842,15 +1675,46 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		assertTypeForNachweisLohnausweis(dokumentGrundGS2, null, 2);
 	}
 
-	private void assertTypeForNachweisLohnausweis(Set<DokumentGrund> dokumentGrunds, @Nullable String year, int gsNumber) {
+	private void assertTypeForNachweisLohnausweis(
+		Set<DokumentGrund> dokumentGrunds,
+		@Nullable String year,
+		int gsNumber
+	) {
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
-		assertType(dokumentGrunds, DokumentTyp.NACHWEIS_LOHNAUSWEIS_1, gsNumber == 1 ? testgesuchBern.getGesuchsteller1().extractFullName() : testgesuchBern.getGesuchsteller2().extractFullName(), year,
-			DokumentGrundPersonType.GESUCHSTELLER, gsNumber, DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG);
-		assertType(dokumentGrunds, DokumentTyp.NACHWEIS_LOHNAUSWEIS_2, gsNumber == 1 ? testgesuchBern.getGesuchsteller1().extractFullName() : testgesuchBern.getGesuchsteller2().extractFullName(), year,
-			DokumentGrundPersonType.GESUCHSTELLER, gsNumber, DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG);
-		assertType(dokumentGrunds, DokumentTyp.NACHWEIS_LOHNAUSWEIS_3, gsNumber == 1 ? testgesuchBern.getGesuchsteller1().extractFullName() : testgesuchBern.getGesuchsteller2().extractFullName(), year,
-			DokumentGrundPersonType.GESUCHSTELLER, gsNumber, DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG);
+		assertType(
+			dokumentGrunds,
+			DokumentTyp.NACHWEIS_LOHNAUSWEIS_1,
+			gsNumber == 1 ?
+				testgesuchBern.getGesuchsteller1().extractFullName() :
+				testgesuchBern.getGesuchsteller2().extractFullName(),
+			year,
+			DokumentGrundPersonType.GESUCHSTELLER,
+			gsNumber,
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+		);
+		assertType(
+			dokumentGrunds,
+			DokumentTyp.NACHWEIS_LOHNAUSWEIS_2,
+			gsNumber == 1 ?
+				testgesuchBern.getGesuchsteller1().extractFullName() :
+				testgesuchBern.getGesuchsteller2().extractFullName(),
+			year,
+			DokumentGrundPersonType.GESUCHSTELLER,
+			gsNumber,
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+		);
+		assertType(
+			dokumentGrunds,
+			DokumentTyp.NACHWEIS_LOHNAUSWEIS_3,
+			gsNumber == 1 ?
+				testgesuchBern.getGesuchsteller1().extractFullName() :
+				testgesuchBern.getGesuchsteller2().extractFullName(),
+			year,
+			DokumentGrundPersonType.GESUCHSTELLER,
+			gsNumber,
+			DokumentGrundTyp.EINKOMMENSVERSCHLECHTERUNG
+		);
 
 	}
 
@@ -860,10 +1724,20 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 
 		createFamilienSituation(testgesuchBern, true, true);
 
-		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		Set<DokumentGrund> dokumentGrunds = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 
-		assertType(dokumentGrunds, DokumentTyp.UNTERSTUETZUNGSBESTAETIGUNG, null, null,
-			null, null, DokumentGrundTyp.FINANZIELLESITUATION);
+		assertType(
+			dokumentGrunds,
+			DokumentTyp.UNTERSTUETZUNGSBESTAETIGUNG,
+			null,
+			null,
+			null,
+			null,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 	}
 
 	@Test
@@ -878,10 +1752,13 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFinanzielleSituationGS(2, testgesuchBern, "Alex", true);
 
 		createFamilienSituation(testgesuchBern, false, false);
-		var dokumentGruende = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		var dokumentGruende = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		Assertions.assertEquals(2, dokumentGruende.size());
 		boolean found = false;
-		for (var grund: dokumentGruende) {
+		for (var grund : dokumentGruende) {
 			if (grund.getDokumentTyp() == DokumentTyp.NACHWEIS_ERWERBSPENSUM) {
 				found = true;
 			}
@@ -896,20 +1773,36 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFamilienSituation(testgesuchBern, false, false);
 
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer());
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+		);
 
 		final FinanzielleSituation finanzielleSituationJA =
-			testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA();
+			testgesuchBern.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA();
 
 		finanzielleSituationJA.setGeschaeftsgewinnBasisjahr(ZEHN_TAUSEND);
 		finanzielleSituationJA.setGeschaeftsgewinnBasisjahrMinus1(ZEHN_TAUSEND);
 		finanzielleSituationJA.setGeschaeftsgewinnBasisjahrMinus2(ZEHN_TAUSEND);
-		finanzielleSituationJA.setErsatzeinkommenSelbststaendigkeitBasisjahr(ZEHN_TAUSEND);
-		finanzielleSituationJA.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus1(ZEHN_TAUSEND);
-		finanzielleSituationJA.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(ZEHN_TAUSEND);
+		finanzielleSituationJA.setErsatzeinkommenSelbststaendigkeitBasisjahr(
+			ZEHN_TAUSEND
+		);
+		finanzielleSituationJA
+			.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus1(
+				ZEHN_TAUSEND
+			);
+		finanzielleSituationJA
+			.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus2(
+				ZEHN_TAUSEND
+			);
 
-		var dokumentGruende = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
-		Assertions.assertEquals(4, dokumentGruende.size());
+		var dokumentGruende = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
+		Assertions.assertEquals(7, dokumentGruende.size());
 		assertType(
 			dokumentGruende,
 			DokumentTyp.NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR,
@@ -917,7 +1810,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			"2016",
 			DokumentGrundPersonType.GESUCHSTELLER,
 			1,
-			DokumentGrundTyp.FINANZIELLESITUATION);
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 		assertType(
 			dokumentGruende,
 			DokumentTyp.NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR_MINUS1,
@@ -925,7 +1819,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			"2015",
 			DokumentGrundPersonType.GESUCHSTELLER,
 			1,
-			DokumentGrundTyp.FINANZIELLESITUATION);
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 		assertType(
 			dokumentGruende,
 			DokumentTyp.NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR_MINUS2,
@@ -933,7 +1828,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			"2014",
 			DokumentGrundPersonType.GESUCHSTELLER,
 			1,
-			DokumentGrundTyp.FINANZIELLESITUATION);
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 	}
 
 	@Test
@@ -944,26 +1840,41 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFamilienSituation(testgesuchBern, false, false);
 
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer());
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+		);
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2().getFinanzielleSituationContainer());
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller2()
+				.getFinanzielleSituationContainer()
+		);
 
-		testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer()
+		testgesuchBern.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
 			.getFinanzielleSituationJA()
 			.setErsatzeinkommenSelbststaendigkeitBasisjahr(ZEHN_TAUSEND);
-		testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer()
+		testgesuchBern.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
 			.getFinanzielleSituationJA()
 			.setGeschaeftsgewinnBasisjahr(ZEHN_TAUSEND);
 
-		testgesuchBern.getGesuchsteller2().getFinanzielleSituationContainer()
+		testgesuchBern.getGesuchsteller2()
+			.getFinanzielleSituationContainer()
 			.getFinanzielleSituationJA()
-			.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus1(ZEHN_TAUSEND);
-		testgesuchBern.getGesuchsteller2().getFinanzielleSituationContainer()
+			.setErsatzeinkommenSelbststaendigkeitBasisjahrMinus1(
+				ZEHN_TAUSEND
+			);
+		testgesuchBern.getGesuchsteller2()
+			.getFinanzielleSituationContainer()
 			.getFinanzielleSituationJA()
 			.setGeschaeftsgewinnBasisjahrMinus1(ZEHN_TAUSEND);
 
-		var dokumentGruende = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
-		Assertions.assertEquals(4, dokumentGruende.size());
+		var dokumentGruende = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
+		Assertions.assertEquals(6, dokumentGruende.size());
 		assertType(
 			dokumentGruende,
 			DokumentTyp.NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR,
@@ -971,7 +1882,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			"2016",
 			DokumentGrundPersonType.GESUCHSTELLER,
 			1,
-			DokumentGrundTyp.FINANZIELLESITUATION);
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 		assertType(
 			dokumentGruende,
 			DokumentTyp.NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR_MINUS1,
@@ -979,7 +1891,8 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			"2015",
 			DokumentGrundPersonType.GESUCHSTELLER,
 			2,
-			DokumentGrundTyp.FINANZIELLESITUATION);
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 	}
 
 	@Test
@@ -990,18 +1903,32 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFamilienSituation(testgesuchBern, false, false);
 
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer());
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+		);
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller2().getFinanzielleSituationContainer());
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller2()
+				.getFinanzielleSituationContainer()
+		);
 
+		testgesuchBern.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA()
+			.setErsatzeinkommenSelbststaendigkeitBasisjahr(BigDecimal.ZERO);
 
-		testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer()
-			.getFinanzielleSituationJA().setErsatzeinkommenSelbststaendigkeitBasisjahr(BigDecimal.ZERO);
-
-		var dokumentGruende = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
+		var dokumentGruende = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
 		var dokumentGruendeErsatzeinkommen = getDokumentGrundsForType(
 			DokumentTyp.NACHWEIS_ERSATZINKOMMEN_SELBSTSTAENDIGKEIT_JAHR,
-			dokumentGruende, DokumentGrundPersonType.GESUCHSTELLER, 1, "2016");
+			dokumentGruende,
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			"2016"
+		);
 		Assertions.assertTrue(dokumentGruendeErsatzeinkommen.isEmpty());
 	}
 
@@ -1012,17 +1939,36 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFamilienSituation(testgesuchBern, false, false);
 
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer());
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+		);
 
 		testgesuchBern.setFinSitTyp(FinanzielleSituationTyp.BERN_FKJV);
-		testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer()
-			.getFinanzielleSituationJA().setEinkommenInVereinfachtemVerfahrenAbgerechnet(true);
-		testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer()
-			.getFinanzielleSituationJA().setAmountEinkommenInVereinfachtemVerfahrenAbgerechnet(ZEHN_TAUSEND);
+		testgesuchBern.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA()
+			.setEinkommenInVereinfachtemVerfahrenAbgerechnet(true);
+		testgesuchBern.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA()
+			.setAmountEinkommenInVereinfachtemVerfahrenAbgerechnet(
+				ZEHN_TAUSEND
+			);
 
-		var dokumentGruende = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
-		assertType(dokumentGruende, DokumentTyp.NACHWEIS_EINKOMMEN_VERFAHREN, testgesuchBern.getGesuchsteller1().extractFullName(),
-			"2016", DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
+		var dokumentGruende = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
+		assertType(
+			dokumentGruende,
+			DokumentTyp.NACHWEIS_EINKOMMEN_VERFAHREN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 	}
 
 	@Test
@@ -1032,27 +1978,53 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		createFamilienSituation(testgesuchBern, false, false);
 
 		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1());
-		Assertions.assertNotNull(testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer());
+		Assertions.assertNotNull(
+			testgesuchBern.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+		);
 
 		testgesuchBern.setFinSitTyp(FinanzielleSituationTyp.BERN_FKJV);
-		testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer()
-			.getFinanzielleSituationJA().setEinkommenInVereinfachtemVerfahrenAbgerechnet(true);
-		testgesuchBern.getGesuchsteller1().getFinanzielleSituationContainer()
-			.getFinanzielleSituationJA().setAmountEinkommenInVereinfachtemVerfahrenAbgerechnet(ZEHN_TAUSEND);
+		testgesuchBern.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA()
+			.setEinkommenInVereinfachtemVerfahrenAbgerechnet(true);
+		testgesuchBern.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA()
+			.setAmountEinkommenInVereinfachtemVerfahrenAbgerechnet(
+				ZEHN_TAUSEND
+			);
 
-		var dokumentGruende = evaluator.calculate(testgesuchBern, Constants.DEFAULT_LOCALE);
-		assertType(dokumentGruende, DokumentTyp.NACHWEIS_EINKOMMEN_VERFAHREN, testgesuchBern.getGesuchsteller1().extractFullName(),
-			"2016", DokumentGrundPersonType.GESUCHSTELLER, 1, DokumentGrundTyp.FINANZIELLESITUATION);
+		var dokumentGruende = evaluator.calculate(
+			testgesuchBern,
+			Constants.DEFAULT_LOCALE
+		);
+		assertType(
+			dokumentGruende,
+			DokumentTyp.NACHWEIS_EINKOMMEN_VERFAHREN,
+			testgesuchBern.getGesuchsteller1().extractFullName(),
+			"2016",
+			DokumentGrundPersonType.GESUCHSTELLER,
+			1,
+			DokumentGrundTyp.FINANZIELLESITUATION
+		);
 	}
 
 	private void createEinkommensverschlechterungInfo() {
-		final EinkommensverschlechterungInfoContainer einkommensverschlechterungsInfo = TestDataUtil.createDefaultEinkommensverschlechterungsInfoContainer(
-			testgesuchBern);
-		einkommensverschlechterungsInfo.getEinkommensverschlechterungInfoJA().setEkvFuerBasisJahrPlus1(true);
-		einkommensverschlechterungsInfo.getEinkommensverschlechterungInfoJA().setEkvFuerBasisJahrPlus2(true);
+		final EinkommensverschlechterungInfoContainer einkommensverschlechterungsInfo =
+			TestDataUtil
+				.createDefaultEinkommensverschlechterungsInfoContainer(
+					testgesuchBern
+				);
+		einkommensverschlechterungsInfo.getEinkommensverschlechterungInfoJA()
+			.setEkvFuerBasisJahrPlus1(true);
+		einkommensverschlechterungsInfo.getEinkommensverschlechterungInfoJA()
+			.setEkvFuerBasisJahrPlus2(true);
 	}
 
-	private void setAllFinSitJaValue(FinanzielleSituation finanzielleSituationJA) {
+	private void setAllFinSitJaValue(
+		FinanzielleSituation finanzielleSituationJA
+	) {
 		finanzielleSituationJA.setFamilienzulage(ZEHN_TAUSEND);
 		finanzielleSituationJA.setErsatzeinkommen(ZEHN_TAUSEND);
 		finanzielleSituationJA.setErhalteneAlimente(ZEHN_TAUSEND);
@@ -1069,23 +2041,42 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 	class SchwyzTest {
 
 		private void setUpFamiliensituationAlleine(Gesuch testGesuch) {
-			final FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
-			final Familiensituation familiensituationJA = new Familiensituation();
+			final FamiliensituationContainer familiensituationContainer =
+				new FamiliensituationContainer();
+			final Familiensituation familiensituationJA =
+				new Familiensituation();
 			familiensituationJA.setSozialhilfeBezueger(false);
-			familiensituationJA.setGesuchstellerKardinalitaet(EnumGesuchstellerKardinalitaet.ALLEINE);
+			familiensituationJA.setGesuchstellerKardinalitaet(
+				EnumGesuchstellerKardinalitaet.ALLEINE
+			);
 			familiensituationJA.setGemeinsameSteuererklaerung(false);
-			familiensituationContainer.setFamiliensituationJA(familiensituationJA);
-			testGesuch.setFamiliensituationContainer(familiensituationContainer);
+			familiensituationContainer.setFamiliensituationJA(
+				familiensituationJA
+			);
+			testGesuch.setFamiliensituationContainer(
+				familiensituationContainer
+			);
 		}
 
-		private void setUpFamiliensituationZuZweit(boolean gemeinsameFinSit, Gesuch testGesuch) {
-			final FamiliensituationContainer familiensituationContainer = new FamiliensituationContainer();
-			final Familiensituation familiensituationJA = new Familiensituation();
+		private void setUpFamiliensituationZuZweit(
+			boolean gemeinsameFinSit,
+			Gesuch testGesuch
+		) {
+			final FamiliensituationContainer familiensituationContainer =
+				new FamiliensituationContainer();
+			final Familiensituation familiensituationJA =
+				new Familiensituation();
 			familiensituationJA.setSozialhilfeBezueger(false);
-			familiensituationJA.setGesuchstellerKardinalitaet(EnumGesuchstellerKardinalitaet.ZU_ZWEIT);
+			familiensituationJA.setGesuchstellerKardinalitaet(
+				EnumGesuchstellerKardinalitaet.ZU_ZWEIT
+			);
 			familiensituationJA.setGemeinsameSteuererklaerung(gemeinsameFinSit);
-			familiensituationContainer.setFamiliensituationJA(familiensituationJA);
-			testGesuch.setFamiliensituationContainer(familiensituationContainer);
+			familiensituationContainer.setFamiliensituationJA(
+				familiensituationJA
+			);
+			testGesuch.setFamiliensituationContainer(
+				familiensituationContainer
+			);
 		}
 
 		@Nested
@@ -1095,36 +2086,61 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			void erwerbspensumRAV_shouldOnlyHaveNachweisRAV() {
 				Set<DokumentGrund> dokumentGruende = test(Taetigkeit.RAV);
 
-				assertThat(dokumentGruende, contains(
-					dokumentOfTyp(DokumentTyp.NACHWEIS_RAV).where(DokumentGrund::getPersonNumber, is(1))
-				));
+				assertThat(
+					dokumentGruende,
+					contains(
+						dokumentOfTyp(DokumentTyp.NACHWEIS_RAV).where(
+							DokumentGrund::getPersonNumber,
+							is(1)
+						)
+					)
+				);
 			}
 
 			@Test
 			void erwerbspensumAngestellt_shouldOnlyHaveNachweisAngestellt() {
-				Set<DokumentGrund> dokumentGruende = test(Taetigkeit.ANGESTELLT);
+				Set<DokumentGrund> dokumentGruende = test(
+					Taetigkeit.ANGESTELLT
+				);
 
-				assertThat(dokumentGruende, contains(
-					dokumentOfTyp(DokumentTyp.NACHWEIS_ERWERBSPENSUM)
-				));
+				assertThat(
+					dokumentGruende,
+					contains(
+						dokumentOfTyp(
+							DokumentTyp.NACHWEIS_ERWERBSPENSUM
+						)
+					)
+				);
 			}
 
 			@Test
 			void erwerbspensumInAusbildung_shouldOnlyHaveNachweisInAusbildung() {
-				Set<DokumentGrund> dokumentGruende = test(Taetigkeit.AUSBILDUNG);
+				Set<DokumentGrund> dokumentGruende = test(
+					Taetigkeit.AUSBILDUNG
+				);
 
-				assertThat(dokumentGruende, contains(
-					dokumentOfTyp(DokumentTyp.NACHWEIS_AUSBILDUNG)
-				));
+				assertThat(
+					dokumentGruende,
+					contains(
+						dokumentOfTyp(DokumentTyp.NACHWEIS_AUSBILDUNG)
+					)
+				);
 			}
 
 			@Test
 			void erwerbspensumSelbststaendig_shouldOnlyHaveNachweisSelbststaendig() {
-				Set<DokumentGrund> dokumentGruende = test(Taetigkeit.SELBSTAENDIG);
+				Set<DokumentGrund> dokumentGruende = test(
+					Taetigkeit.SELBSTAENDIG
+				);
 
-				assertThat(dokumentGruende, contains(
-					dokumentOfTyp(DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT)
-				));
+				assertThat(
+					dokumentGruende,
+					contains(
+						dokumentOfTyp(
+							DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT
+						)
+					)
+				);
 			}
 
 			private Set<DokumentGrund> test(Taetigkeit taetigkeit) {
@@ -1135,13 +2151,24 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 			}
 
 			private Gesuch setUpGesuchForErwerbspensumTest(Taetigkeit rav) {
-				Gesuch gesuch = setUpTestgesuch(TestDataUtil.getMandantSchwyz(), FinanzielleSituationTyp.SCHWYZ);
+				Gesuch gesuch = setUpTestgesuch(
+					TestDataUtil.getMandantSchwyz(),
+					FinanzielleSituationTyp.SCHWYZ
+				);
 
-				GesuchstellerContainer gesuchsteller = TestDataUtil.createDefaultGesuchstellerContainer();
+				GesuchstellerContainer gesuchsteller = TestDataUtil
+					.createDefaultGesuchstellerContainer();
 				gesuch.setGesuchsteller1(gesuchsteller);
 
-				ErwerbspensumContainer erwerbspensumContainer = createErwerbspensumContainer(rav, gesuchsteller, gesuch);
-				gesuchsteller.setErwerbspensenContainers(Set.of(erwerbspensumContainer));
+				ErwerbspensumContainer erwerbspensumContainer =
+					createErwerbspensumContainer(
+						rav,
+						gesuchsteller,
+						gesuch
+					);
+				gesuchsteller.setErwerbspensenContainers(
+					Set.of(erwerbspensumContainer)
+				);
 
 				return gesuch;
 			}
@@ -1151,8 +2178,13 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 				GesuchstellerContainer gesuchstellerContainer,
 				Gesuch gesuch
 			) {
-				final Erwerbspensum erwerbspensum = createErwerbspensum(gesuch, taetigkeit, false);
-				final ErwerbspensumContainer erwerbspensumContainer = new ErwerbspensumContainer();
+				final Erwerbspensum erwerbspensum = createErwerbspensum(
+					gesuch,
+					taetigkeit,
+					false
+				);
+				final ErwerbspensumContainer erwerbspensumContainer =
+					new ErwerbspensumContainer();
 				erwerbspensumContainer.setErwerbspensumJA(erwerbspensum);
 				erwerbspensumContainer.setGesuchsteller(gesuchstellerContainer);
 
@@ -1169,7 +2201,10 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 				setUpFamiliensituationAlleine(testGesuch);
 				testGesuch.setEinkommensverschlechterungInfoContainer(null);
 
-				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(testGesuch, Constants.DEFAULT_LOCALE);
+				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(
+					testGesuch,
+					Constants.DEFAULT_LOCALE
+				);
 
 				assertThat(dokumentGruende.size(), is(0));
 			}
@@ -1180,7 +2215,10 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 				setUpFamiliensituationZuZweit(false, testGesuch);
 				setUpEkvInfoContainer(false, testGesuch);
 
-				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(testGesuch, Constants.DEFAULT_LOCALE);
+				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(
+					testGesuch,
+					Constants.DEFAULT_LOCALE
+				);
 
 				assertThat(dokumentGruende.size(), is(0));
 			}
@@ -1190,9 +2228,13 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 				Gesuch testGesuch = setUpGesuchForEKV();
 				setUpEkvInfoContainer(true, testGesuch);
 				Objects.requireNonNull(testGesuch.getGesuchsteller1());
-				testGesuch.getGesuchsteller1().setEinkommensverschlechterungContainer(null);
+				testGesuch.getGesuchsteller1()
+					.setEinkommensverschlechterungContainer(null);
 
-				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(testGesuch, Constants.DEFAULT_LOCALE);
+				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(
+					testGesuch,
+					Constants.DEFAULT_LOCALE
+				);
 
 				assertThat(dokumentGruende.size(), is(0));
 			}
@@ -1202,15 +2244,24 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 				Gesuch testGesuch = setUpGesuchForEKV();
 				setUpFamiliensituationAlleine(testGesuch);
 				setUpEkvInfoContainer(true, testGesuch);
-				final Einkommensverschlechterung ekv = new Einkommensverschlechterung();
+				final Einkommensverschlechterung ekv =
+					new Einkommensverschlechterung();
 				ekv.setBruttoLohn(BigDecimal.valueOf(120000));
 				setUpEkvGS(ekv, testGesuch.getGesuchsteller1());
 
-				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(testGesuch, Constants.DEFAULT_LOCALE);
-				final DokumentGrund dokumentGrund = dokumentGruende.stream().findFirst().orElse(new DokumentGrund());
+				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(
+					testGesuch,
+					Constants.DEFAULT_LOCALE
+				);
+				final DokumentGrund dokumentGrund = dokumentGruende.stream()
+					.findFirst()
+					.orElse(new DokumentGrund());
 
 				assertThat(dokumentGruende.size(), is(1));
-				assertThat(dokumentGrund.getDokumentTyp(), is(DokumentTyp.NACHWEIS_BRUTTOLOHN));
+				assertThat(
+					dokumentGrund.getDokumentTyp(),
+					is(DokumentTyp.NACHWEIS_BRUTTOLOHN)
+				);
 			}
 
 			@Test
@@ -1218,26 +2269,36 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 				Gesuch testGesuch = setUpGesuchForEKV();
 				setUpFamiliensituationAlleine(testGesuch);
 				setUpEkvInfoContainer(true, testGesuch);
-				final Einkommensverschlechterung ekv = new Einkommensverschlechterung();
+				final Einkommensverschlechterung ekv =
+					new Einkommensverschlechterung();
 				ekv.setSteuerbaresEinkommen(BigDecimal.valueOf(120000));
 				ekv.setSteuerbaresVermoegen(BigDecimal.valueOf(100000));
 				ekv.setEinkaeufeVorsorge(BigDecimal.valueOf(0));
 				ekv.setAbzuegeLiegenschaft(BigDecimal.valueOf(0));
 				setUpEkvGS(ekv, testGesuch.getGesuchsteller1());
 
-				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(testGesuch, Constants.DEFAULT_LOCALE);
+				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(
+					testGesuch,
+					Constants.DEFAULT_LOCALE
+				);
 
 				assertThat(dokumentGruende.size(), is(4));
 				List.of(
-						DokumentTyp.NACHWEIS_NETTOLOHN,
-						DokumentTyp.NACHWEIS_EINKAEUFE_VORSORGE,
-						DokumentTyp.NACHWEIS_ABZUEGE_LIEGENSCHAFT,
-						DokumentTyp.NACHWEIS_VERMOEGEN)
+					DokumentTyp.NACHWEIS_NETTOLOHN,
+					DokumentTyp.NACHWEIS_EINKAEUFE_VORSORGE,
+					DokumentTyp.NACHWEIS_ABZUEGE_LIEGENSCHAFT,
+					DokumentTyp.NACHWEIS_VERMOEGEN
+				)
 					.forEach(dokumentTyp -> {
 						var gruendeOfTyp = dokumentGruende.stream()
-							.filter(dokumentGrund -> dokumentGrund.getDokumentTyp() == dokumentTyp)
+							.filter(
+								dokumentGrund -> dokumentGrund
+									.getDokumentTyp()
+									== dokumentTyp
+							)
 							.collect(
-								Collectors.toList());
+								Collectors.toList()
+							);
 						assertThat(gruendeOfTyp.size(), is(1));
 					});
 			}
@@ -1248,29 +2309,61 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 				setUpFamiliensituationZuZweit(false, testGesuch);
 				setUpEkvInfoContainer(true, testGesuch);
 				testGesuch.setGesuchsteller2(new GesuchstellerContainer());
-				setUpEkvGS(setUpEkvQuellbesteuert(), testGesuch.getGesuchsteller1());
-				setUpEkvGS(setUpEkvQuellbesteuert(), testGesuch.getGesuchsteller2());
+				setUpEkvGS(
+					setUpEkvQuellbesteuert(),
+					testGesuch.getGesuchsteller1()
+				);
+				setUpEkvGS(
+					setUpEkvQuellbesteuert(),
+					testGesuch.getGesuchsteller2()
+				);
 
-				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(testGesuch, Constants.DEFAULT_LOCALE);
+				final Set<DokumentGrund> dokumentGruende = evaluator.calculate(
+					testGesuch,
+					Constants.DEFAULT_LOCALE
+				);
 				final DokumentGrund dokumentGrundGS1 = dokumentGruende.stream()
-					.filter(dokumentGrund -> dokumentGrund.getPersonNumber() != null)
-					.filter(dokumentGrund -> dokumentGrund.getPersonNumber() == 1)
+					.filter(
+						dokumentGrund -> dokumentGrund.getPersonNumber()
+							!= null
+					)
+					.filter(
+						dokumentGrund -> dokumentGrund.getPersonNumber()
+							== 1
+					)
 					.findFirst()
 					.orElse(new DokumentGrund());
 				final DokumentGrund dokumentGrundGS2 = dokumentGruende.stream()
-					.filter(dokumentGrund -> dokumentGrund.getPersonNumber() != null)
-					.filter(dokumentGrund -> dokumentGrund.getPersonNumber() == 2)
+					.filter(
+						dokumentGrund -> dokumentGrund.getPersonNumber()
+							!= null
+					)
+					.filter(
+						dokumentGrund -> dokumentGrund.getPersonNumber()
+							== 2
+					)
 					.findFirst()
 					.orElse(new DokumentGrund());
 
 				assertThat(dokumentGruende.size(), is(2));
-				assertThat(dokumentGrundGS1.getDokumentTyp(), is(DokumentTyp.NACHWEIS_BRUTTOLOHN));
-				assertThat(dokumentGrundGS2.getDokumentTyp(), is(DokumentTyp.NACHWEIS_BRUTTOLOHN));
+				assertThat(
+					dokumentGrundGS1.getDokumentTyp(),
+					is(DokumentTyp.NACHWEIS_BRUTTOLOHN)
+				);
+				assertThat(
+					dokumentGrundGS2.getDokumentTyp(),
+					is(DokumentTyp.NACHWEIS_BRUTTOLOHN)
+				);
 			}
 
 			private Gesuch setUpGesuchForEKV() {
-				Gesuch gesuchToCreate = setUpTestgesuch(TestDataUtil.getMandantSchwyz(), FinanzielleSituationTyp.SCHWYZ);
-				gesuchToCreate.setGesuchsteller1(TestDataUtil.createDefaultGesuchstellerContainer());
+				Gesuch gesuchToCreate = setUpTestgesuch(
+					TestDataUtil.getMandantSchwyz(),
+					FinanzielleSituationTyp.SCHWYZ
+				);
+				gesuchToCreate.setGesuchsteller1(
+					TestDataUtil.createDefaultGesuchstellerContainer()
+				);
 				setupEinstellungBeschaeftigungsPensumAbhaengig(gesuchToCreate);
 
 				return gesuchToCreate;
@@ -1278,25 +2371,41 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 
 			@Nonnull
 			private Einkommensverschlechterung setUpEkvQuellbesteuert() {
-				final Einkommensverschlechterung ekvGS = new Einkommensverschlechterung();
+				final Einkommensverschlechterung ekvGS =
+					new Einkommensverschlechterung();
 				ekvGS.setBruttoLohn(BigDecimal.valueOf(10000));
 				return ekvGS;
 			}
 
-			private void setUpEkvInfoContainer(boolean einkommensverschlechterung, Gesuch testGesuch) {
-				final EinkommensverschlechterungInfoContainer ekvInfoContainer = new EinkommensverschlechterungInfoContainer();
-				final EinkommensverschlechterungInfo ekvInfoJA = new EinkommensverschlechterungInfo();
+			private void setUpEkvInfoContainer(
+				boolean einkommensverschlechterung,
+				Gesuch testGesuch
+			) {
+				final EinkommensverschlechterungInfoContainer ekvInfoContainer =
+					new EinkommensverschlechterungInfoContainer();
+				final EinkommensverschlechterungInfo ekvInfoJA =
+					new EinkommensverschlechterungInfo();
 				ekvInfoJA.setEkvFuerBasisJahrPlus1(true);
-				ekvInfoJA.setEinkommensverschlechterung(einkommensverschlechterung);
+				ekvInfoJA.setEinkommensverschlechterung(
+					einkommensverschlechterung
+				);
 				ekvInfoContainer.setEinkommensverschlechterungInfoJA(ekvInfoJA);
-				testGesuch.setEinkommensverschlechterungInfoContainer(ekvInfoContainer);
+				testGesuch.setEinkommensverschlechterungInfoContainer(
+					ekvInfoContainer
+				);
 			}
 
-			private void setUpEkvGS(Einkommensverschlechterung ekv, @Nullable GesuchstellerContainer gesuchsteller) {
-				final EinkommensverschlechterungContainer ekvContainer = new EinkommensverschlechterungContainer();
+			private void setUpEkvGS(
+				Einkommensverschlechterung ekv,
+				@Nullable GesuchstellerContainer gesuchsteller
+			) {
+				final EinkommensverschlechterungContainer ekvContainer =
+					new EinkommensverschlechterungContainer();
 				ekvContainer.setEkvJABasisJahrPlus1(ekv);
 				Objects.requireNonNull(gesuchsteller);
-				gesuchsteller.setEinkommensverschlechterungContainer(ekvContainer);
+				gesuchsteller.setEinkommensverschlechterungContainer(
+					ekvContainer
+				);
 			}
 
 		}
@@ -1314,9 +2423,12 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 						SchwzyTestData::createFinanzielleSituationVeranlagt
 					);
 
-					assertThat(dokumente, contains(
-						steuerveranlagungForGesuchsteller(0, null)
-					));
+					assertThat(
+						dokumente,
+						contains(
+							steuerveranlagungForGesuchsteller(0, null)
+						)
+					);
 				}
 
 				@Test
@@ -1326,9 +2438,12 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 						SchwzyTestData::createFinanzielleSituationVeranlagt
 					);
 
-					assertThat(dokumente, contains(
-						steuerveranlagungForGesuchsteller(1, null)
-					));
+					assertThat(
+						dokumente,
+						contains(
+							steuerveranlagungForGesuchsteller(1, null)
+						)
+					);
 				}
 
 				@Test
@@ -1338,26 +2453,39 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 						SchwzyTestData::createFinanzielleSituationQuellenbesteuert
 					);
 
-					assertThat(dokumente, contains(
-						quellensteuerForGesuchsteller(1)
-					));
+					assertThat(
+						dokumente,
+						contains(
+							quellensteuerForGesuchsteller(1)
+						)
+					);
 				}
 
 				Set<DokumentGrund> runSingleGesuchsteller(
 					Function<SchwzyTestData, Familiensituation> famSit,
 					Function<SchwzyTestData, FinanzielleSituation> finSit
 				) {
-					var gesuch = setUpTestgesuch(TestDataUtil.getMandantSchwyz(), FinanzielleSituationTyp.SCHWYZ);
-					var schwyzTestData = new SchwzyTestData(gesuch.getGesuchsperiode());
+					var gesuch = setUpTestgesuch(
+						TestDataUtil.getMandantSchwyz(),
+						FinanzielleSituationTyp.SCHWYZ
+					);
+					var schwyzTestData = new SchwzyTestData(
+						gesuch.getGesuchsperiode()
+					);
 
-					var gesuchsteller = createGesuchsteller(finSit.apply(schwyzTestData));
+					var gesuchsteller = createGesuchsteller(
+						finSit.apply(schwyzTestData)
+					);
 					gesuch.setGesuchsteller1(gesuchsteller);
 
 					addFamiliensituation(famSit.apply(schwyzTestData), gesuch);
 
 					setupEinstellungBeschaeftigungsPensumAbhaengig(gesuch);
 
-					return evaluator.calculate(gesuch, Constants.DEFAULT_LOCALE);
+					return evaluator.calculate(
+						gesuch,
+						Constants.DEFAULT_LOCALE
+					);
 				}
 			}
 
@@ -1370,9 +2498,12 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 						SchwzyTestData::createFinanzielleSituationVeranlagt
 					);
 
-					assertThat(dokumente, contains(
-						steuerveranlagungForGesuchsteller(0, null)
-					));
+					assertThat(
+						dokumente,
+						contains(
+							steuerveranlagungForGesuchsteller(0, null)
+						)
+					);
 				}
 
 				@Test
@@ -1382,10 +2513,13 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 						SchwzyTestData::createFinanzielleSituationQuellenbesteuert
 					);
 
-					assertThat(dokumente, containsInAnyOrder(
-						quellensteuerForGesuchsteller(1),
-						quellensteuerForGesuchsteller(2)
-					));
+					assertThat(
+						dokumente,
+						containsInAnyOrder(
+							quellensteuerForGesuchsteller(1),
+							quellensteuerForGesuchsteller(2)
+						)
+					);
 				}
 
 				@Test
@@ -1395,23 +2529,34 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 						SchwzyTestData::createFinanzielleSituationVeranlagt
 					);
 
-					assertThat(dokumentGrunds, containsInAnyOrder(
-						quellensteuerForGesuchsteller(1),
-						steuerveranlagungForGesuchsteller(2, null)
-					));
+					assertThat(
+						dokumentGrunds,
+						containsInAnyOrder(
+							quellensteuerForGesuchsteller(1),
+							steuerveranlagungForGesuchsteller(2, null)
+						)
+					);
 				}
 
 				Set<DokumentGrund> runGemeinsameSteuererklaerung(
 					Function<SchwzyTestData, FinanzielleSituation> finSitGs
 				) {
-					return runMultipleGesuchsteller(true, finSitGs, a -> Optional.empty());
+					return runMultipleGesuchsteller(
+						true,
+						finSitGs,
+						a -> Optional.empty()
+					);
 				}
 
 				Set<DokumentGrund> runInviduelleSteuererklaerungen(
 					Function<SchwzyTestData, FinanzielleSituation> finSitGs1,
 					Function<SchwzyTestData, FinanzielleSituation> finSitGs2
 				) {
-					return runMultipleGesuchsteller(false, finSitGs1, finSitGs2.andThen(Optional::of));
+					return runMultipleGesuchsteller(
+						false,
+						finSitGs1,
+						finSitGs2.andThen(Optional::of)
+					);
 				}
 
 				Set<DokumentGrund> runMultipleGesuchsteller(
@@ -1419,29 +2564,50 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 					Function<SchwzyTestData, FinanzielleSituation> finSitGs1,
 					Function<SchwzyTestData, Optional<FinanzielleSituation>> finSitGs2
 				) {
-					var gesuch = setUpTestgesuch(TestDataUtil.getMandantSchwyz(), FinanzielleSituationTyp.SCHWYZ);
-					var schwyzTestData = new SchwzyTestData(gesuch.getGesuchsperiode());
+					var gesuch = setUpTestgesuch(
+						TestDataUtil.getMandantSchwyz(),
+						FinanzielleSituationTyp.SCHWYZ
+					);
+					var schwyzTestData = new SchwzyTestData(
+						gesuch.getGesuchsperiode()
+					);
 
-					gesuch.setGesuchsteller1(createGesuchsteller(finSitGs1.apply(schwyzTestData)));
+					gesuch.setGesuchsteller1(
+						createGesuchsteller(finSitGs1.apply(schwyzTestData))
+					);
 
-					GesuchstellerContainer gesuchsteller2 = finSitGs2.apply(schwyzTestData)
+					GesuchstellerContainer gesuchsteller2 = finSitGs2.apply(
+						schwyzTestData
+					)
 						.map(FinSitDokumenteTest.this::createGesuchsteller)
-						.orElseGet(TestDataUtil::createDefaultGesuchstellerContainer);
+						.orElseGet(
+							TestDataUtil::createDefaultGesuchstellerContainer
+						);
 					gesuch.setGesuchsteller2(gesuchsteller2);
 
 					// nur in diesem Fall darf es 2 Gesuchsteller geben (Verheirated / Konkubinat  ist ebenbürtig)
-					Familiensituation verheiratet = schwyzTestData.createVerheiratet();
-					verheiratet.setGemeinsameSteuererklaerung(gemeinsameSteuererklaerung);
+					Familiensituation verheiratet = schwyzTestData
+						.createVerheiratet();
+					verheiratet.setGemeinsameSteuererklaerung(
+						gemeinsameSteuererklaerung
+					);
 					addFamiliensituation(verheiratet, gesuch);
 
 					setupEinstellungBeschaeftigungsPensumAbhaengig(gesuch);
 
-					return evaluator.calculate(gesuch, Constants.DEFAULT_LOCALE);
+					return evaluator.calculate(
+						gesuch,
+						Constants.DEFAULT_LOCALE
+					);
 				}
 			}
 
-			private void addFamiliensituation(Familiensituation familiensituation, Gesuch gesuch) {
-				FamiliensituationContainer famSitContainer = new FamiliensituationContainer();
+			private void addFamiliensituation(
+				Familiensituation familiensituation,
+				Gesuch gesuch
+			) {
+				FamiliensituationContainer famSitContainer =
+					new FamiliensituationContainer();
 				famSitContainer.setFamiliensituationJA(familiensituation);
 
 				gesuch.setFamiliensituationContainer(famSitContainer);
@@ -1454,22 +2620,32 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 				}
 
 				FinanzielleSituation createFinanzielleSituationQuellenbesteuert() {
-					FinanzielleSituation finanzielleSituation = new FinanzielleSituation();
+					FinanzielleSituation finanzielleSituation =
+						new FinanzielleSituation();
 					finanzielleSituation.setQuellenbesteuert(true);
-					finanzielleSituation.setBruttoLohn(BigDecimal.valueOf(100_000));
+					finanzielleSituation.setBruttoLohn(
+						BigDecimal.valueOf(100_000)
+					);
 
 					return finanzielleSituation;
 				}
 
 				FinanzielleSituation createFinanzielleSituationVeranlagt() {
-					return createFinanzielleSituation(BigDecimal.valueOf(123_456), BigDecimal.valueOf(88_000));
+					return createFinanzielleSituation(
+						BigDecimal.valueOf(123_456),
+						BigDecimal.valueOf(88_000)
+					);
 				}
 			}
 
-			GesuchstellerContainer createGesuchsteller(FinanzielleSituation finSit) {
-				GesuchstellerContainer gesuchsteller = TestDataUtil.createDefaultGesuchstellerContainer();
+			GesuchstellerContainer createGesuchsteller(
+				FinanzielleSituation finSit
+			) {
+				GesuchstellerContainer gesuchsteller = TestDataUtil
+					.createDefaultGesuchstellerContainer();
 
-				FinanzielleSituationContainer finSitContainer = new FinanzielleSituationContainer();
+				FinanzielleSituationContainer finSitContainer =
+					new FinanzielleSituationContainer();
 				finSitContainer.setFinanzielleSituationJA(finSit);
 				gesuchsteller.setFinanzielleSituationContainer(finSitContainer);
 

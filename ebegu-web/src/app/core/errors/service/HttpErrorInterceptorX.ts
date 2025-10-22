@@ -26,8 +26,8 @@ import {catchError} from 'rxjs/operators';
 import {TSErrorLevel} from '../../../../models/enums/TSErrorLevel';
 import {TSErrorType} from '../../../../models/enums/TSErrorType';
 import {TSExceptionReport} from '../../../../models/TSExceptionReport';
-import {HTTP_CODES} from '../../constants/CONSTANTS';
-import {LogFactory} from '../../logging/LogFactory';
+import {HTTP_CODES} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {ErrorServiceX} from './ErrorServiceX';
 import {isOIDCTokenInitialisationException} from './HttpErrorInterceptorUtil';
 
@@ -103,6 +103,18 @@ export class HttpErrorInterceptorX implements HttpInterceptor {
         try {
             if (this.isDataViolationResponse(response.error)) {
                 errors = this.convertViolationReport(response.error);
+            } else if (
+                this.isTranslationNotFound(response.status, response.error)
+            ) {
+                errors = [];
+                errors.push(
+                    new TSExceptionReport(
+                        TSErrorType.CLIENT_SIDE,
+                        TSErrorLevel.INFO,
+                        'WARNING_TRANSLATIONS_NOT_FOUND',
+                        response.message
+                    )
+                );
             } else if (this.isDataEbeguExceptionReport(response.error)) {
                 errors = this.convertEbeguExceptionReport(response.error);
             } else if (isOIDCTokenInitialisationException(response)) {
@@ -141,6 +153,18 @@ export class HttpErrorInterceptorX implements HttpInterceptor {
                         response.message
                     )
                 );
+            } else if (
+                this.isUserStandardVerantwortlicherGemeindeException(response)
+            ) {
+                errors = [];
+                errors.push(
+                    new TSExceptionReport(
+                        TSErrorType.INTERNAL,
+                        TSErrorLevel.SEVERE,
+                        'ERROR_STANDARDVERANTWORTLICHER_GEMEINDE_GESETZT',
+                        response.message
+                    )
+                );
             } else {
                 LOG.error(
                     `ErrorStatus: "${response.status}" StatusText: "${response.statusText}"`
@@ -158,7 +182,7 @@ export class HttpErrorInterceptorX implements HttpInterceptor {
                 );
             }
             return errors;
-        } catch (e) {
+        } catch {
             LOG.error('Could not handle error');
             LOG.error(response);
             return [
@@ -176,7 +200,6 @@ export class HttpErrorInterceptorX implements HttpInterceptor {
         return []
             .concat(this.convertToExceptionReport(data.parameterViolations))
             .concat(this.convertToExceptionReport(data.classViolations))
-            .concat(this.convertToExceptionReport(data.fieldViolations))
             .concat(this.convertToExceptionReport(data.propertyViolations))
             .concat(this.convertToExceptionReport(data.returnValueViolations));
     }
@@ -227,20 +250,12 @@ export class HttpErrorInterceptorX implements HttpInterceptor {
             );
             const hasClassViol: boolean =
                 data.hasOwnProperty('classViolations');
-            const hasfieldViol: boolean =
-                data.hasOwnProperty('fieldViolations');
             const hasPropViol: boolean =
                 data.hasOwnProperty('propertyViolations');
             const hasRetViol: boolean = data.hasOwnProperty(
                 'returnValueViolations'
             );
-            return (
-                hasParamViol &&
-                hasClassViol &&
-                hasfieldViol &&
-                hasPropViol &&
-                hasRetViol
-            );
+            return hasParamViol && hasClassViol && hasPropViol && hasRetViol;
         }
         return false;
     }
@@ -296,5 +311,18 @@ export class HttpErrorInterceptorX implements HttpInterceptor {
 
     private isBlob(error: any): boolean {
         return error instanceof Blob;
+    }
+
+    private isTranslationNotFound(status: number, error: any): boolean {
+        return (
+            status === HTTP_CODES.NOT_FOUND && error.includes('translations_')
+        );
+    }
+
+    private isUserStandardVerantwortlicherGemeindeException(response: any) {
+        if (!response) {
+            return false;
+        }
+        return response.message.includes('benutzer/delete');
     }
 }

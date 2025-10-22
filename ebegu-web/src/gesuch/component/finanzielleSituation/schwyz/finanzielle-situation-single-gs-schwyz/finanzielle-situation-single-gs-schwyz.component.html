@@ -14,11 +14,12 @@
             id="quellenbesteuert_id"
             name="quellenbesteuert"
             required
+            data-test="quellenbesteuert"
         >
-            <mat-radio-button [value]="true">{{
+            <mat-radio-button data-test="radio-value.true" [value]="true">{{
                 'LABEL_JA' | translate
             }}</mat-radio-button>
-            <mat-radio-button [value]="false">{{
+            <mat-radio-button data-test="radio-value.false" [value]="false">{{
                 'LABEL_NEIN' | translate
             }}</mat-radio-button>
         </mat-radio-group>
@@ -47,6 +48,7 @@
         [finSitGS]="finanzModel.getFiSiConToWorkWith().finanzielleSituationGS"
         [finSitJA]="finanzModel.getFiSiConToWorkWith().finanzielleSituationJA"
         [readonly]="readonly"
+        [schwyzErweiterteFinSit]="schwyzErweiterteFinSit"
     >
     </dv-steuerveranlagt-schwyz>
 </ng-template>

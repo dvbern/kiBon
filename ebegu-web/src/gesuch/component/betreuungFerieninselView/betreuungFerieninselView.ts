@@ -15,27 +15,27 @@
 
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, IFormController, IPromise} from 'angular';
+import {
+    getTSFeriennameValues,
+    getWeekdaysValues,
+    TSBetreuungsstatus,
+    TSFerienname
+} from '@kibon/shared/model/enums';
+import {TSEinstellungenFerieninsel} from '@kibon/shared/model/entity';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {FerieninselStammdatenRS} from '../../../admin/service/ferieninselStammdatenRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
-import {MandantService} from '../../../app/shared/services/mandant.service';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAnmeldungMutationZustand} from '../../../models/enums/TSAnmeldungMutationZustand';
-import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
-import {getWeekdaysValues} from '../../../models/enums/TSDayOfWeek';
-import {
-    getTSFeriennameValues,
-    TSFerienname
-} from '../../../models/enums/TSFerienname';
 import {TSBelegungFerieninsel} from '../../../models/TSBelegungFerieninsel';
 import {TSBelegungFerieninselTag} from '../../../models/TSBelegungFerieninselTag';
 import {TSBetreuung} from '../../../models/TSBetreuung';
-import {TSEinstellungenFerieninsel} from '../../../models/TSEinstellungenFerieninsel';
 import {TSFerieninselStammdaten} from '../../../models/TSFerieninselStammdaten';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {RemoveDialogController} from '../../dialog/RemoveDialogController';
@@ -88,7 +88,7 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         'GlobalCacheService',
         '$timeout',
         '$translate',
-        'ApplicationPropertyRS',
+        'SharedUtilApplicationPropertyRsService',
         'FerieninselStammdatenRS',
         'MandantService',
         'EbeguRestUtil'
@@ -121,7 +121,7 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         globalCacheService: GlobalCacheService,
         $timeout: ITimeoutService,
         $translate: ITranslateService,
-        applicationPropertyRS: ApplicationPropertyRS,
+        applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly ferieninselStammdatenRS: FerieninselStammdatenRS,
         mandantService: MandantService,
         ebeguRestUtil: EbeguRestUtil
@@ -201,7 +201,7 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         if (
             this.gesuchModelManager.gemeindeKonfiguration.isFerieninselAnmeldungBeforePeriode()
         ) {
-            const terminValue = DateUtil.momentToLocalDateFormat(
+            const terminValue = MomentUtil.momentToLocalDateFormat(
                 this.gesuchModelManager.gemeindeKonfiguration
                     .konfigFerieninselAktivierungsdatum,
                 'DD.MM.YYYY'
@@ -235,12 +235,12 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
                 // Bereits gespeicherte Daten wieder ankreuzen
                 this.activateFerieninselTage(
                     this.ferieninselStammdaten
-                        .potenzielleFerieninselTageFuerBelegung,
+                        ?.potenzielleFerieninselTageFuerBelegung,
                     this.betreuung.belegungFerieninsel.tage
                 );
                 this.activateFerieninselTage(
                     this.ferieninselStammdaten
-                        .potenzielleFerieninselTageFuerBelegungMorgenmodul,
+                        ?.potenzielleFerieninselTageFuerBelegungMorgenmodul,
                     this.betreuung.belegungFerieninsel.tageMorgenmodul
                 );
             });
@@ -250,10 +250,12 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         potenzielleTage: TSBelegungFerieninselTag[],
         angemeldeteTage: TSBelegungFerieninselTag[]
     ): void {
-        for (const obj of potenzielleTage) {
-            for (const tagAngemeldet of angemeldeteTage) {
-                if (tagAngemeldet.tag.isSame(obj.tag)) {
-                    obj.angemeldet = true;
+        if (potenzielleTage) {
+            for (const obj of potenzielleTage) {
+                for (const tagAngemeldet of angemeldeteTage) {
+                    if (tagAngemeldet.tag.isSame(obj.tag)) {
+                        obj.angemeldet = true;
+                    }
                 }
             }
         }
@@ -282,7 +284,9 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
             EbeguUtil.isNotNullOrUndefined(
                 this.ferieninselStammdaten.anmeldeschluss
             ) &&
-            this.ferieninselStammdaten.anmeldeschluss.isBefore(DateUtil.today())
+            this.ferieninselStammdaten.anmeldeschluss.isBefore(
+                MomentUtil.today()
+            )
         );
     }
 
@@ -353,20 +357,31 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
 
     private setChosenFerientage(): void {
         this.betreuung.belegungFerieninsel.tage = [];
-        for (const tag of this.ferieninselStammdaten
-            .potenzielleFerieninselTageFuerBelegung) {
-            if (tag.angemeldet) {
-                this.betreuung.belegungFerieninsel.tage.push(tag);
+        if (
+            this.ferieninselStammdaten?.potenzielleFerieninselTageFuerBelegung
+        ) {
+            for (const tag of this.ferieninselStammdaten
+                .potenzielleFerieninselTageFuerBelegung) {
+                if (tag.angemeldet) {
+                    this.betreuung.belegungFerieninsel.tage.push(tag);
+                }
             }
         }
     }
 
     private setChosenFerientageMorgenmodul(): void {
         this.betreuung.belegungFerieninsel.tageMorgenmodul = [];
-        for (const tag of this.ferieninselStammdaten
-            .potenzielleFerieninselTageFuerBelegungMorgenmodul) {
-            if (tag.angemeldet) {
-                this.betreuung.belegungFerieninsel.tageMorgenmodul.push(tag);
+        if (
+            this.ferieninselStammdaten
+                ?.potenzielleFerieninselTageFuerBelegungMorgenmodul
+        ) {
+            for (const tag of this.ferieninselStammdaten
+                .potenzielleFerieninselTageFuerBelegungMorgenmodul) {
+                if (tag.angemeldet) {
+                    this.betreuung.belegungFerieninsel.tageMorgenmodul.push(
+                        tag
+                    );
+                }
             }
         }
     }
@@ -426,15 +441,13 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         ) {
             return undefined;
         }
-        const tsEinstellungenTFerieninsel =
-            stammdatenFerieninsel.einstellungenFerieninsel
-                .filter(
-                    (einstellung: TSEinstellungenFerieninsel) =>
-                        einstellung.gesuchsperiode.id ===
-                        this.gesuchModelManager.getGesuchsperiode().id
-                )
-                .pop();
-        return tsEinstellungenTFerieninsel;
+        return stammdatenFerieninsel.einstellungenFerieninsel
+            .filter(
+                (einstellung: TSEinstellungenFerieninsel) =>
+                    einstellung.gesuchsperiode.id ===
+                    this.gesuchModelManager.getGesuchsperiode().id
+            )
+            .pop();
     }
 
     public hasAusweichstandort(): boolean {

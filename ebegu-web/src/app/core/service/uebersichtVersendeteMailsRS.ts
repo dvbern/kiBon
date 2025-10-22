@@ -15,11 +15,12 @@
 
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {CONSTANTS} from '../constants/CONSTANTS';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSVersendeteMail} from '../../../models/TSVersendeteMail';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {SortDirection} from '@angular/material/sort';
 
 @Injectable({
     providedIn: 'root'
@@ -27,19 +28,24 @@ import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 export class UebersichtVersendeteMailsRS {
     public readonly serviceURL = `${CONSTANTS.REST_API}versendeteMails`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
+
     public constructor(public http: HttpClient) {}
-    public getAllMails(): Observable<TSVersendeteMail[]> {
-        return this.getInfo(`${this.serviceURL}/allMails`);
-    }
-    private getInfo(url: string): Observable<Array<TSVersendeteMail>> {
-        return this.http
-            .get(url)
-            .pipe(
-                map((response: any) =>
+
+    public getAllMails(params: {
+        active: string;
+        direction: SortDirection;
+        page: number;
+        size: number;
+        filter: string;
+    }): Observable<{resultList: TSVersendeteMail[]; totalCount: number}> {
+        return this.http.get(`${this.serviceURL}/allMails`, {params}).pipe(
+            map((response: any) => ({
+                resultList:
                     this.ebeguRestUtil.parseTSUebersichtVersendeteMailsList(
-                        response
-                    )
-                )
-            );
+                        response.resultList
+                    ),
+                totalCount: response.totalCount
+            }))
+        );
     }
 }

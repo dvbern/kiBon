@@ -15,20 +15,28 @@
 
 package ch.dvbern.ebegu.validators;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.Dossier;
 
 /**
- * Validator der prueft, dass der eingegebene Verantwortlicher die richtige Role hat. SuperAdmin wird auch als Role zugelassen,
+ * Validator der prueft, dass der eingegebene Verantwortlicher die richtige Role hat. SuperAdmin wird auch als Role
+ * zugelassen,
  * damit man auch Testfaelle erzeugen kann.
  */
-public class CheckVerantwortlicherValidatorTS implements ConstraintValidator<CheckVerantwortlicherTS, Dossier> {
+public class CheckVerantwortlicherValidatorTS implements
+	ConstraintValidator<CheckVerantwortlicherTS, Dossier> {
 
 	@Override
-	public boolean isValid(Dossier instance, ConstraintValidatorContext context) {
-		return instance.getVerantwortlicherTS() == null || instance.getVerantwortlicherTS().getRole().isRoleGemeindeOrTS()
+	public boolean isValid(
+		Dossier instance,
+		ConstraintValidatorContext context
+	) {
+		return instance.getVerantwortlicherTS() == null
+			|| instance.getVerantwortlicherTS()
+				.getRole()
+				.isRoleGemeindeOrTS()
 			|| instance.getVerantwortlicherTS().getRole().isSuperadmin();
 	}
 }

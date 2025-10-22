@@ -33,7 +33,7 @@ ${templateConfiguration.mailCss}
 		Vous avez déposé une demande <#if isSozialdienst>pour ${gesuchsteller.fullName}</#if> via kiBon le ${gesuch.getEingangsdatumFormated()}.
 		Malheureusement, le dossier est incomplet. Vous voudrez bien nous faire parvenir les documents manquants.
 		Notre lettre peut être consultée
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/verfuegen/${gesuch.id}">ici</a>.
+		<a href="${frontendUrl}/gesuch/verfuegen/${gesuch.id}">ici</a>.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>

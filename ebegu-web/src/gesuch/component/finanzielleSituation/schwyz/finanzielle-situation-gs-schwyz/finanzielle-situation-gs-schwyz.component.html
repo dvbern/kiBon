@@ -35,6 +35,7 @@
             [readonly]="gesuchmodelManager.isGesuchReadonly()"
             (valueChanged)="recalculateMassgebendesEinkommen()"
             [finanzModel]="model"
+            [schwyzErweiterteFinSit]="isSchwyzFinSitTypSchwyzErweitert()"
         >
         </dv-finanzielle-situation-single-gs-schwyz>
     </form>

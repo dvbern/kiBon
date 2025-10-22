@@ -21,6 +21,7 @@ import {
     MainNavigationPO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {EditGemeindePO} from '../../page-objects/admin/edit-gemeinde.po';
 
 describe('Einladung einer Gemeinde und Ausfüllen der Stammdaten durch Mandant', () => {
@@ -28,6 +29,7 @@ describe('Einladung einer Gemeinde und Ausfüllen der Stammdaten durch Mandant',
     let invitedGemeinde;
 
     before(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.login(userMandant);
         cy.visit('/#/');
     });

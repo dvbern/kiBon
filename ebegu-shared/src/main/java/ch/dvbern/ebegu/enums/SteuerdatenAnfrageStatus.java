@@ -8,34 +8,23 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.enums;
 
 public enum SteuerdatenAnfrageStatus {
 
-	OFFEN,
-	PROVISORISCH,
-	RECHTSKRAEFTIG,
-	FAILED,
-	FAILED_KEIN_PARTNER_GEMEINSAM,
-	FAILED_PARTNER_NICHT_GEMEINSAM,
-	FAILED_GEBURTSDATUM,
-	FAILED_UNTERJAEHRIGER_FALL,
-	FAILED_KEINE_ZPV_NUMMER,
-	FAILED_KEINE_ZPV_NUMMER_GS2,
-	RETRY,
-	FAILED_VERAENDERTE_PARTNERSCHAFT,
-	FAILED_UNREGELMAESSIGKEIT;
+	OFFEN, PROVISORISCH, NEUE_VERANLAGUNG, RECHTSKRAEFTIG, FAILED, FAILED_KEIN_PARTNER_GEMEINSAM, FAILED_PARTNER_NICHT_GEMEINSAM, FAILED_GEBURTSDATUM, FAILED_UNTERJAEHRIGER_FALL, FAILED_KEINE_ZPV_NUMMER, FAILED_KEINE_ZPV_NUMMER_GS2, RETRY, FAILED_VERAENDERTE_PARTNERSCHAFT, FAILED_UNREGELMAESSIGKEIT;
 
 	public boolean isSteuerdatenAbfrageErfolgreich() {
 		return this == OFFEN
 			|| this == PROVISORISCH
+			|| this == NEUE_VERANLAGUNG
 			|| this == RECHTSKRAEFTIG;
 	}
 }

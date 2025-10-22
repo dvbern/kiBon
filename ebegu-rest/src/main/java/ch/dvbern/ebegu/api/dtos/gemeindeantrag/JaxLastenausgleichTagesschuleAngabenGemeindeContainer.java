@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.gemeindeantrag;
@@ -23,29 +23,33 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
-import ch.dvbern.ebegu.api.dtos.JaxBenutzer;
 import ch.dvbern.ebegu.api.dtos.JaxBenutzerNoDetails;
 import ch.dvbern.ebegu.api.dtos.JaxGemeinde;
 import ch.dvbern.ebegu.api.dtos.JaxGesuchsperiode;
 import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatus;
 
-public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAbstractDTO {
+public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends
+	JaxAbstractDTO {
 
 	private static final long serialVersionUID = -1005681981708595973L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private LastenausgleichTagesschuleAngabenGemeindeStatus status;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxGemeinde gemeinde;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxGesuchsperiode gesuchsperiode;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private Boolean alleAngabenInKibonErfasst;
 
 	@Nullable
@@ -57,8 +61,10 @@ public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAb
 	@Nullable
 	private JaxLastenausgleichTagesschuleAngabenGemeinde angabenKorrektur;
 
-	@NotNull @Nonnull
-	private Set<JaxLastenausgleichTagesschuleAngabenInstitutionContainer> angabenInstitutionContainers = new HashSet<>();
+	@NotNull
+	@Nonnull
+	private Set<JaxLastenausgleichTagesschuleAngabenInstitutionContainer> angabenInstitutionContainers =
+		new HashSet<>();
 
 	@Nullable
 	private BigDecimal betreuungsstundenPrognose;
@@ -74,7 +80,9 @@ public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAb
 		return status;
 	}
 
-	public void setStatus(@Nonnull LastenausgleichTagesschuleAngabenGemeindeStatus status) {
+	public void setStatus(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeStatus status
+	) {
 		this.status = status;
 	}
 
@@ -101,7 +109,9 @@ public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAb
 		return alleAngabenInKibonErfasst;
 	}
 
-	public void setAlleAngabenInKibonErfasst(@Nonnull Boolean alleAngabenInKibonErfasst) {
+	public void setAlleAngabenInKibonErfasst(
+		@Nonnull Boolean alleAngabenInKibonErfasst
+	) {
 		this.alleAngabenInKibonErfasst = alleAngabenInKibonErfasst;
 	}
 
@@ -119,7 +129,9 @@ public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAb
 		return angabenDeklaration;
 	}
 
-	public void setAngabenDeklaration(@Nullable JaxLastenausgleichTagesschuleAngabenGemeinde angabenDeklaration) {
+	public void setAngabenDeklaration(
+		@Nullable JaxLastenausgleichTagesschuleAngabenGemeinde angabenDeklaration
+	) {
 		this.angabenDeklaration = angabenDeklaration;
 	}
 
@@ -128,7 +140,9 @@ public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAb
 		return angabenKorrektur;
 	}
 
-	public void setAngabenKorrektur(@Nullable JaxLastenausgleichTagesschuleAngabenGemeinde angabenKorrektur) {
+	public void setAngabenKorrektur(
+		@Nullable JaxLastenausgleichTagesschuleAngabenGemeinde angabenKorrektur
+	) {
 		this.angabenKorrektur = angabenKorrektur;
 	}
 
@@ -137,7 +151,9 @@ public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAb
 		return angabenInstitutionContainers;
 	}
 
-	public void setAngabenInstitutionContainers(@Nonnull Set<JaxLastenausgleichTagesschuleAngabenInstitutionContainer> angabenInstitutionContainers) {
+	public void setAngabenInstitutionContainers(
+		@Nonnull Set<JaxLastenausgleichTagesschuleAngabenInstitutionContainer> angabenInstitutionContainers
+	) {
 		this.angabenInstitutionContainers = angabenInstitutionContainers;
 	}
 
@@ -146,7 +162,9 @@ public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAb
 		return betreuungsstundenPrognose;
 	}
 
-	public void setBetreuungsstundenPrognose(@Nullable BigDecimal betreuungsstundenPrognose) {
+	public void setBetreuungsstundenPrognose(
+		@Nullable BigDecimal betreuungsstundenPrognose
+	) {
 		this.betreuungsstundenPrognose = betreuungsstundenPrognose;
 	}
 
@@ -155,7 +173,9 @@ public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAb
 		return verantwortlicher;
 	}
 
-	public void setVerantwortlicher(@Nullable JaxBenutzerNoDetails verantwortlicher) {
+	public void setVerantwortlicher(
+		@Nullable JaxBenutzerNoDetails verantwortlicher
+	) {
 		this.verantwortlicher = verantwortlicher;
 	}
 
@@ -164,7 +184,10 @@ public class JaxLastenausgleichTagesschuleAngabenGemeindeContainer extends JaxAb
 		return bemerkungenBetreuungsstundenPrognose;
 	}
 
-	public void setBemerkungenBetreuungsstundenPrognose(@Nullable String bemerkungenBetreuungsstundenPrognose) {
-		this.bemerkungenBetreuungsstundenPrognose = bemerkungenBetreuungsstundenPrognose;
+	public void setBemerkungenBetreuungsstundenPrognose(
+		@Nullable String bemerkungenBetreuungsstundenPrognose
+	) {
+		this.bemerkungenBetreuungsstundenPrognose =
+			bemerkungenBetreuungsstundenPrognose;
 	}
 }

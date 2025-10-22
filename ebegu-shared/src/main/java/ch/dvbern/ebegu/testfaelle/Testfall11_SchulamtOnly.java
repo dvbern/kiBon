@@ -31,7 +31,7 @@ import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Kinderabzug;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
 
 /**
  * http://localhost:8080/ebegu/api/v1/testfaelle/testfall/11
@@ -43,41 +43,72 @@ public class Testfall11_SchulamtOnly extends AbstractTestfall {
 	private static final String FAMILIENNAME = "Schmid";
 
 	public Testfall11_SchulamtOnly(
-			Gesuchsperiode gesuchsperiode,
-			InstitutionStammdatenBuilder institutionStammdatenBuilder) {
+		Gesuchsperiode gesuchsperiode,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
 		super(gesuchsperiode, false, institutionStammdatenBuilder);
 	}
 
 	public Testfall11_SchulamtOnly(
-			Gesuchsperiode gesuchsperiode,
-			boolean betreuungenBestaetigt,
-			Gemeinde gemeinde, InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, gemeinde, institutionStammdatenBuilder);
+		Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		Gemeinde gemeinde,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			gemeinde,
+			institutionStammdatenBuilder
+		);
 	}
 
 	@Override
 	public Gesuch fillInGesuch() {
 		// Gesuch, Gesuchsteller
 		Gesuch gesuch = createAlleinerziehend();
-		GesuchstellerContainer gesuchsteller1 = createGesuchstellerContainer(FAMILIENNAME, "Pirmin", 1);
+		GesuchstellerContainer gesuchsteller1 = createGesuchstellerContainer(
+			FAMILIENNAME,
+			"Pirmin",
+			1
+		);
 		gesuch.setGesuchsteller1(gesuchsteller1);
 		// Erwerbspensum
 		ErwerbspensumContainer erwerbspensumGS1 = createErwerbspensum(60);
 		gesuchsteller1.addErwerbspensumContainer(erwerbspensumGS1);
 		// Kinder
-		KindContainer kind1 = createKind(Geschlecht.MAENNLICH, FAMILIENNAME, "Luan", LocalDate.of(2006, Month
-			.DECEMBER, 25), Kinderabzug.HALBER_ABZUG, true);
+		KindContainer kind1 = createKind(
+			Geschlecht.MAENNLICH,
+			FAMILIENNAME,
+			"Luan",
+			LocalDate.of(2006, Month.DECEMBER, 25),
+			Kinderabzug.HALBER_ABZUG,
+			true
+		);
 		kind1.setGesuch(gesuch);
 		gesuch.getKindContainers().add(kind1);
-		KindContainer kind2 = createKind(Geschlecht.MAENNLICH, FAMILIENNAME, "Laurin", LocalDate.of(2011, Month.MARCH,
-			29), Kinderabzug.HALBER_ABZUG, true);
+		KindContainer kind2 = createKind(
+			Geschlecht.MAENNLICH,
+			FAMILIENNAME,
+			"Laurin",
+			LocalDate.of(
+				2011,
+				Month.MARCH,
+				29
+			),
+			Kinderabzug.HALBER_ABZUG,
+			true
+		);
 		kind2.setGesuch(gesuch);
 		gesuch.getKindContainers().add(kind2);
 
 		// Betreuungen
 		// Kind 1: Tagesschule Bern
 		AnmeldungTagesschule anmeldungTagesschule =
-			createTagesschuleAnmeldung(institutionStammdatenBuilder.getIdInstitutionStammdatenTagesschule());
+			createTagesschuleAnmeldung(
+				institutionStammdatenBuilder
+					.getIdInstitutionStammdatenTagesschule()
+			);
 		anmeldungTagesschule.setKind(kind1);
 		Set<AnmeldungTagesschule> anmeldungTSSet = new TreeSet();
 		anmeldungTSSet.add(anmeldungTagesschule);
@@ -95,10 +126,16 @@ public class Testfall11_SchulamtOnly extends AbstractTestfall {
 		// betreuungFerieninselGuarda.getBetreuungspensumContainers().add(betreuungspensumKitaAaregg);
 
 		// Finanzielle Situation
-		FinanzielleSituationContainer finanzielleSituationGS1 = createFinanzielleSituationContainer(BigDecimal.ZERO, BigDecimal.ZERO);
+		FinanzielleSituationContainer finanzielleSituationGS1 =
+			createFinanzielleSituationContainer(
+				BigDecimal.ZERO,
+				BigDecimal.ZERO
+			);
 		finanzielleSituationGS1.setGesuchsteller(gesuchsteller1);
-		gesuchsteller1.setFinanzielleSituationContainer(finanzielleSituationGS1);
-createEmptyEKVInfoContainer(gesuch);
+		gesuchsteller1.setFinanzielleSituationContainer(
+			finanzielleSituationGS1
+		);
+		createEmptyEKVInfoContainer(gesuch);
 
 		return gesuch;
 	}

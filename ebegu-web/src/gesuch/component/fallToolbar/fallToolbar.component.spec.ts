@@ -21,19 +21,20 @@ import {
     waitForAsync
 } from '@angular/core/testing';
 import {MatDialogModule} from '@angular/material/dialog';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateModule} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
 import {of} from 'rxjs';
 import {DvNgShowElementDirective} from '../../../app/core/directive/dv-ng-show-element/dv-ng-show-element.directive';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {SharedModule} from '../../../app/shared/shared.module';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSDossier} from '../../../models/TSDossier';
 import {TSFall} from '../../../models/TSFall';
-import {TSGemeinde} from '../../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {DossierRS} from '../../service/dossierRS.rest';
 import {GemeindeRS} from '../../service/gemeindeRS.rest';
@@ -96,11 +97,9 @@ describe('fallToolbar', () => {
         });
 
         const applicationPropertySpy =
-            jasmine.createSpyObj<ApplicationPropertyRS>(
-                ApplicationPropertyRS.name,
-                {
-                    getKitaxUrl: Promise.resolve('http://google.com')
-                }
+            jasmine.createSpyObj<SharedUtilApplicationPropertyRsService>(
+                SharedUtilApplicationPropertyRsService.name,
+                ['getKitaxUrl']
             );
 
         TestBed.configureTestingModule({
@@ -112,7 +111,7 @@ describe('fallToolbar', () => {
                 {provide: StateService, useValue: stateServiceSpy},
                 {provide: GesuchRS, useValue: gesuchServiceSpy},
                 {
-                    provide: ApplicationPropertyRS,
+                    provide: SharedUtilApplicationPropertyRsService,
                     useValue: applicationPropertySpy
                 }
             ],

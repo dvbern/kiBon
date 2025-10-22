@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {TSDateRange} from '@kibon/shared/model/entity';
 import {TSExternalClient} from './TSExternalClient';
-import {TSDateRange} from './types/TSDateRange';
 
 export class TSInstitutionExternalClient {
     public externalClient: TSExternalClient;

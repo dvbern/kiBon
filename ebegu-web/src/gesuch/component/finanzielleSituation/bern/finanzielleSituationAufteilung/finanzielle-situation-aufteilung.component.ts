@@ -24,7 +24,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {
     TSAufteilungDTO,
     TSFinanzielleSituationAufteilungDTO
@@ -39,7 +39,8 @@ const LOG = LogFactory.createLog('FinanzielleSituationAufteilungComponent');
     selector: 'dv-finanzielle-situation-aufteilung',
     templateUrl: './finanzielle-situation-aufteilung.component.html',
     styleUrls: ['./finanzielle-situation-aufteilung.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FinanzielleSituationAufteilungComponent implements OnInit {
     @ViewChild(NgForm) public form: NgForm;

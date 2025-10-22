@@ -27,7 +27,8 @@ import ch.dvbern.ebegu.docxmerger.mergefield.BigDecimalMergeField;
 import ch.dvbern.ebegu.docxmerger.mergefield.StringMergeField;
 import ch.dvbern.ebegu.util.Constants;
 
-public class FerienbetreuungDocxMerger extends DocxMerger<FerienbetreuungDocxDTO> {
+public class FerienbetreuungDocxMerger extends
+	DocxMerger<FerienbetreuungDocxDTO> {
 
 	public FerienbetreuungDocxMerger(DocxDocument docxDocument) {
 		super(docxDocument);
@@ -36,62 +37,104 @@ public class FerienbetreuungDocxMerger extends DocxMerger<FerienbetreuungDocxDTO
 	@Override
 	public void addMergeFields(@Nonnull FerienbetreuungDocxDTO dto) {
 		this.mergeFields = new ArrayList<>();
-		this.mergeFields.add(new StringMergeField("userName", dto.getUserName()));
-		this.mergeFields.add(new StringMergeField("userEmail", dto.getUserEmail()));
-		this.mergeFields.add(new StringMergeField("gemeindeNamen", dto.getGemeindeNamen()));
-		this.mergeFields.add(new StringMergeField("gemeindeAnschrift", dto.getGemeindeAnschrift()));
-		this.mergeFields.add(new StringMergeField("gemeindeStrasse", dto.getGemeindeStrasse()));
-		this.mergeFields.add(new StringMergeField("gemeindeNr", dto.getGemeindeNr()));
-		this.mergeFields.add(new StringMergeField("gemeindePLZ", dto.getGemeindePLZ()));
-		this.mergeFields.add(new StringMergeField("gemeindeOrt", dto.getGemeindeOrt()));
-		this.mergeFields.add(new StringMergeField("fallNummer", dto.getFallNummer()));
+		this.mergeFields.add(
+			new StringMergeField("userName", dto.getUserName())
+		);
+		this.mergeFields.add(
+			new StringMergeField("userEmail", dto.getUserEmail())
+		);
+		this.mergeFields.add(
+			new StringMergeField("gemeindeNamen", dto.getGemeindeNamen())
+		);
+		this.mergeFields.add(
+			new StringMergeField(
+				"gemeindeAnschrift",
+				dto.getGemeindeAnschrift()
+			)
+		);
+		this.mergeFields.add(
+			new StringMergeField(
+				"gemeindeStrasse",
+				dto.getGemeindeStrasse()
+			)
+		);
+		this.mergeFields.add(
+			new StringMergeField("gemeindeNr", dto.getGemeindeNr())
+		);
+		this.mergeFields.add(
+			new StringMergeField("gemeindePLZ", dto.getGemeindePLZ())
+		);
+		this.mergeFields.add(
+			new StringMergeField("gemeindeOrt", dto.getGemeindeOrt())
+		);
+		this.mergeFields.add(
+			new StringMergeField("fallNummer", dto.getFallNummer())
+		);
 		this.mergeFields.add(new StringMergeField("periode", dto.getPeriode()));
 		this.mergeFields.add(new StringMergeField("angebot", dto.getAngebot()));
-		this.mergeFields.add(new BigDecimalMergeField(
-			"tage",
-			dto.getTotalTage(),
-			Constants.ONE_DECIMAL_PATTERN
-		));
-		this.mergeFields.add(new BigDecimalMergeField(
-			"tageSonderschueler",
-			dto.getTageSonderschueler(),
-			Constants.ONE_DECIMAL_PATTERN
-		));
-		this.mergeFields.add(new BigDecimalMergeField(
-			"chfSonderschueler",
-			dto.getChfSonderschueler(),
-			Constants.CURRENCY_PATTERN
-		));
-		this.mergeFields.add(new BigDecimalMergeField(
-			"tageOhneSonderschueler",
-			dto.getTageOhneSonderschueler(),
-			Constants.ONE_DECIMAL_PATTERN
-		));
-		this.mergeFields.add(new BigDecimalMergeField(
-			"chfOhneSonderschueler",
-			dto.getChfOhneSonderschueler(),
-			Constants.CURRENCY_PATTERN
-		));
-		this.mergeFields.add(new BigDecimalMergeField(
-			"totalTage",
-			dto.getTotalTage(),
-			Constants.ONE_DECIMAL_PATTERN
-		));
-		this.mergeFields.add(new BigDecimalMergeField(
-			"totalChf",
-			dto.getTotalChf(),
-			Constants.CURRENCY_PATTERN
-		));
-		this.mergeFields.add(new StringMergeField("iban", dto.getIban()));
-		this.mergeFields.add(new BigDecimalMergeField(
-			"pauschale",
-			dto.getPauschale(),
-			Constants.CURRENCY_PATTERN)
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"tage",
+				dto.getTotalTage(),
+				Constants.ONE_DECIMAL_PATTERN
+			)
 		);
-		this.mergeFields.add(new BigDecimalMergeField(
-			"pauschaleSonderschueler",
-			dto.getPauschaleSonderschueler(),
-			Constants.CURRENCY_PATTERN)
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"tageSonderschueler",
+				dto.getTageSonderschueler(),
+				Constants.ONE_DECIMAL_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"chfSonderschueler",
+				dto.getChfSonderschueler(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"tageOhneSonderschueler",
+				dto.getTageOhneSonderschueler(),
+				Constants.ONE_DECIMAL_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"chfOhneSonderschueler",
+				dto.getChfOhneSonderschueler(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"totalTage",
+				dto.getTotalTage(),
+				Constants.ONE_DECIMAL_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"totalChf",
+				dto.getTotalChf(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(new StringMergeField("iban", dto.getIban()));
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"pauschale",
+				dto.getPauschale(),
+				Constants.CURRENCY_PATTERN
+			)
+		);
+		this.mergeFields.add(
+			new BigDecimalMergeField(
+				"pauschaleSonderschueler",
+				dto.getPauschaleSonderschueler(),
+				Constants.CURRENCY_PATTERN
+			)
 		);
 	}
 }

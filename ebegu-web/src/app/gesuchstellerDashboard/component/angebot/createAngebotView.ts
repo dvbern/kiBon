@@ -12,26 +12,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-import {StateService} from '@uirouter/core';
-import {IComponentOptions, IController} from 'angular';
-import * as moment from 'moment';
-import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
-import {TSBetreuungsangebotTyp} from '../../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSBetreuungsstatus} from '../../../../models/enums/betreuung/TSBetreuungsstatus';
+import {TSAnmeldungDTO} from '@kibon/shared/model/dto';
 import {
     getTSEinschulungTypValues,
-    TSEinschulungTyp
-} from '../../../../models/enums/TSEinschulungTyp';
-import {TSAnmeldungDTO} from '../../../../models/TSAnmeldungDTO';
+    TSEinschulungTyp,
+    TSBetreuungsstatus,
+    TSBetreuungsangebotTyp
+} from '@kibon/shared/model/enums';
+import {StateService} from '@uirouter/core';
+import {IComponentOptions, IController} from 'angular';
+import moment from 'moment';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
+import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
+import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
 import {TSBelegungFerieninsel} from '../../../../models/TSBelegungFerieninsel';
 import {TSBelegungTagesschule} from '../../../../models/TSBelegungTagesschule';
 import {TSBetreuung} from '../../../../models/TSBetreuung';
-import {TSInstitutionStammdaten} from '../../../../models/TSInstitutionStammdaten';
 import {TSKindContainer} from '../../../../models/TSKindContainer';
-import {DateUtil} from '../../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
-import {CONSTANTS} from '../../../core/constants/CONSTANTS';
-import {BetreuungRS} from '../../../core/service/betreuungRS.rest';
 import {IAngebotStateParams} from '../../gesuchstellerDashboard.route';
 import IFormController = angular.IFormController;
 import ITranslateService = angular.translate.ITranslateService;
@@ -164,7 +164,7 @@ export class CreateAngebotListViewController implements IController {
                     const ersterSchultag =
                         this.gesuchModelManager.gemeindeKonfiguration
                             .konfigTagesschuleErsterSchultag;
-                    if (DateUtil.today().isBefore(ersterSchultag)) {
+                    if (MomentUtil.today().isBefore(ersterSchultag)) {
                         this.anmeldungDTO.betreuung.belegungTagesschule.eintrittsdatum =
                             ersterSchultag;
                     }

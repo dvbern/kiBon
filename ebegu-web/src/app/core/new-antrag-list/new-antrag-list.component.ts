@@ -30,21 +30,23 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
+import {MatSort, Sort} from '@angular/material/sort';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {getTSBetreuungsangebotTypValuesForMandant} from '@kibon/shared/util-fn/betreuungsangebot-typ';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {TransitionService} from '@uirouter/angular';
 import {UIRouterGlobals} from '@uirouter/core';
 import {
     BehaviorSubject,
     forkJoin,
-    from,
     Observable,
     of,
     Subject,
     Subscription
 } from 'rxjs';
-import {map, mergeMap, takeUntil} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {SearchRS} from '../../../gesuch/service/searchRS.rest';
@@ -56,29 +58,24 @@ import {
     getNormalizedTSAntragTypValues,
     TSAntragTyp
 } from '../../../models/enums/TSAntragTyp';
-import {
-    getTSBetreuungsangebotTypValuesForMandant,
-    TSBetreuungsangebotTyp
-} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
 import {TSAntragDTO} from '../../../models/TSAntragDTO';
 import {TSAntragSearchresultDTO} from '../../../models/TSAntragSearchresultDTO';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
-import {TSGemeinde} from '../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
-import {TSInstitution} from '../../../models/TSInstitution';
+import {
+    TSGemeinde,
+    TSGesuchsperiode,
+    TSInstitution
+} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DVAntragListFilter} from '../../shared/interfaces/DVAntragListFilter';
 import {DVAntragListItem} from '../../shared/interfaces/DVAntragListItem';
 import {DVPaginationEvent} from '../../shared/interfaces/DVPaginationEvent';
 import {StateStoreService} from '../../shared/services/state-store.service';
-import {CONSTANTS} from '../constants/CONSTANTS';
-import {TSDemoFeature} from '../directive/dv-hide-feature/TSDemoFeature';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {ErrorService} from '../errors/service/ErrorService';
-import {LogFactory} from '../logging/LogFactory';
-import {ApplicationPropertyRS} from '../rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../service/benutzerRSX.rest';
-import {DemoFeatureRS} from '../service/demoFeatureRS.rest';
 import {GesuchsperiodeRS} from '../service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../service/institutionRS.rest';
 
@@ -90,7 +87,8 @@ const LOG = LogFactory.createLog('DVAntragListController');
     styleUrls: ['./new-antrag-list.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     // we need this to overwrite angular material styles
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class NewAntragListComponent
     implements OnInit, OnDestroy, OnChanges, AfterViewInit
@@ -124,7 +122,8 @@ export class NewAntragListComponent
      * 'verantwortlicheTS',
      * 'verantwortlicheBG',
      * 'verantwortlicheGemeinde',
-     * 'verantwortlicherGemeindeantraege'
+     * 'verantwortlicherGemeindeantraege',
+     * 'gemeindeAntragFirstEinreichedatum'
      *
      * Hides the column in the table
      */
@@ -241,6 +240,7 @@ export class NewAntragListComponent
         'antragTyp-filter',
         'periode-filter',
         'aenderungsdatum-filter',
+        'gemeindeAntragFirstEinreichedatum-filter',
         'status-filter',
         'internePendenz-filter',
         'dokumenteHochgeladen-filter',
@@ -260,6 +260,7 @@ export class NewAntragListComponent
         'antragTyp',
         'periode',
         'aenderungsdatum',
+        'gemeindeAntragFirstEinreichedatum',
         'status',
         'internePendenz',
         'dokumenteHochgeladen',
@@ -320,8 +321,7 @@ export class NewAntragListComponent
         private readonly stateStore: StateStoreService,
         private readonly uiRouterGlobals: UIRouterGlobals,
         private readonly benutzerRS: BenutzerRSX,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
-        private readonly demofeatureRS: DemoFeatureRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public ngOnInit(): void {
@@ -394,9 +394,14 @@ export class NewAntragListComponent
     }
 
     private updateColumns(): void {
-        this.displayedColumns = this.allColumns.filter(
-            column => !this.hiddenColumns.includes(column)
-        );
+        this.displayedColumns = this.allColumns
+            .filter(column => !this.hiddenColumns.includes(column))
+            .filter(
+                column =>
+                    column != 'verantwortlicheTS' ||
+                    (column == 'verantwortlicheTS' &&
+                        this.isTagesschulangebotEnabled())
+            );
         if (this.showRemoveButton) {
             this.displayedColumns.push('remove');
         }
@@ -415,9 +420,6 @@ export class NewAntragListComponent
             this.sort.reverse = stored.reverse;
             this.matSort.active = stored.predicate;
             this.matSort.direction = stored.reverse ? 'asc' : 'desc';
-            (
-                this.matSort.sortables.get(stored.predicate) as MatSortHeader
-            )?._setAnimationTransitionState({toState: 'active'});
             this.sortChange.emit(this.sort);
         }
     }
@@ -425,13 +427,13 @@ export class NewAntragListComponent
     public updateInstitutionenList(): void {
         this.institutionRS
             .getInstitutionenReadableForCurrentBenutzer()
-            .subscribe(
-                response => {
+            .subscribe({
+                next: response => {
                     this.allInstitutionen = response;
                     this.institutionenList$.next(this.allInstitutionen);
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public updateGesuchsperiodenList(): void {
@@ -460,13 +462,13 @@ export class NewAntragListComponent
         this.gemeindeRS
             .getGemeindenForPrincipal$()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                gemeinden => {
+            .subscribe({
+                next: gemeinden => {
                     this.gemeindenList = gemeinden;
                     gemeinden.sort((a, b) => a.name.localeCompare(b.name));
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     private initFilter(fromStore: boolean = false): void {
@@ -544,42 +546,30 @@ export class NewAntragListComponent
         // cancel previous subscription if not closed
         this.dataLoadingSubscription?.unsubscribe();
 
-        this.dataLoadingSubscription = dataToLoad$.subscribe(
-            (result: DVAntragListItem[]) => {
+        this.dataLoadingSubscription = dataToLoad$.subscribe({
+            next: (result: DVAntragListItem[]) => {
                 this.datasource.data = result;
                 this.updatePagination();
             },
-            error => {
-                this.translate.get('DATA_RETRIEVAL_ERROR', error).subscribe(
-                    message => {
+            error: error => {
+                this.translate.get('DATA_RETRIEVAL_ERROR', error).subscribe({
+                    next: message => {
                         this.errorService.addMesageAsError(message);
                     },
-                    translateError =>
+                    error: translateError =>
                         console.error(
                             'Could not load translation',
                             translateError
                         )
-                );
+                });
             }
-        );
+        });
 
         this.loadTotalCount(body);
     }
 
     private searchAntraege(body: any): Observable<TSAntragSearchresultDTO> {
-        return from(
-            this.demofeatureRS.isDemoFeatureAllowed(
-                TSDemoFeature.ALLE_FAELLE_SUCHE_NEU
-            )
-        ).pipe(
-            mergeMap((alleFaelleViewNeuAktiv: boolean) => {
-                if (alleFaelleViewNeuAktiv) {
-                    return this.searchRS.searchAntraegeInAlleFaelleView(body);
-                }
-
-                return this.searchRS.searchAntraege(body);
-            })
-        );
+        return this.searchRS.searchAntraege(body);
     }
 
     // TODO: Doctor: Refactor totalItems into Observable for smoother subscription handling
@@ -591,12 +581,12 @@ export class NewAntragListComponent
         if (!EbeguUtil.isNullOrUndefined(this.data$)) {
             return;
         }
-        this.searchRS.countAntraege(body).subscribe(
-            result => {
+        this.searchRS.countAntraege(body).subscribe({
+            next: result => {
                 this.totalItems = result;
             },
-            error => LOG.error(error)
-        );
+            error: error => LOG.error(error)
+        });
     }
 
     private updatePagination(): void {
@@ -724,6 +714,12 @@ export class NewAntragListComponent
 
     public filterGeaendert(query: string): void {
         this.filterPredicate.aenderungsdatum = query.length > 0 ? query : null;
+        this.applyFilter();
+    }
+
+    public filterGemeindeAntragFirstEinreichedatum(query: string): void {
+        this.filterPredicate.gemeindeAntragFirstEinreichedatum =
+            query.length > 0 ? query : null;
         this.applyFilter();
     }
 
@@ -936,9 +932,13 @@ export class NewAntragListComponent
     }
 
     private initPublicProperties() {
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.tagesschulangebotEnabled = res.angebotTSActivated;
-            this.angebotMittagstischEnabled = res.angebotMittagstischActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.tagesschulangebotEnabled = res.angebotTSActivated;
+                this.angebotMittagstischEnabled =
+                    res.angebotMittagstischActivated;
+                this.updateColumns();
+            });
     }
 }

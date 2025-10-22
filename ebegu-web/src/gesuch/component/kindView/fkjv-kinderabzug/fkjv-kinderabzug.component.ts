@@ -28,7 +28,7 @@ import {
 import {NgForm} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFamilienstatus} from '../../../../models/enums/TSFamilienstatus';
 import {TSGesuchstellerKardinalitaet} from '../../../../models/enums/TSGesuchstellerKardinalitaet';
 import {TSUnterhaltsvereinbarungAnswer} from '../../../../models/enums/TSUnterhaltsvereinbarungAnswer';
@@ -43,7 +43,9 @@ const LOG = LogFactory.createLog('FkjvKinderabzugComponent');
 @Component({
     selector: 'dv-fkjv-kinderabzug',
     templateUrl: './fkjv-kinderabzug.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ['./fkjv-kinderabzug.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FkjvKinderabzugComponent
     implements OnInit, AfterViewInit, OnDestroy
@@ -104,18 +106,22 @@ export class FkjvKinderabzugComponent
         this.unsubscribe$.next();
     }
 
+    public isReadOnly(): boolean {
+        return this.gesuchModelManager.isGesuchReadonly();
+    }
+
     public change(): void {
         this.deleteValuesOfHiddenQuestions();
     }
 
     public pflegeEntschaedigungErhaltenVisible(): boolean {
-        return this.kindContainer?.kindJA.isPflegekind;
+        return this.kindContainer?.kindJA.pflegekind;
     }
 
     public obhutAlternierendAusuebenVisible(): boolean {
         return (
             !this.kindIsOrGetsVolljaehrig &&
-            !this.kindContainer?.kindJA.isPflegekind
+            !this.kindContainer?.kindJA.pflegekind
         );
     }
 
@@ -137,7 +143,7 @@ export class FkjvKinderabzugComponent
     public inErstausbildungVisible(): boolean {
         return (
             this.kindIsOrGetsVolljaehrig &&
-            !this.kindContainer?.kindJA.isPflegekind
+            !this.kindContainer?.kindJA.pflegekind
         );
     }
 

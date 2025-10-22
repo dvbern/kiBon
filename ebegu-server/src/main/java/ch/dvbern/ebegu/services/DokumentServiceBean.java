@@ -19,21 +19,22 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Dokument;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Gesuch;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 /**
  * Service fuer Dokument
  */
 @Stateless
 @Local(DokumentService.class)
-public class DokumentServiceBean extends AbstractBaseService implements DokumentService {
+public class DokumentServiceBean extends AbstractBaseService implements
+	DokumentService {
 
 	@Inject
 	private Persistence persistence;

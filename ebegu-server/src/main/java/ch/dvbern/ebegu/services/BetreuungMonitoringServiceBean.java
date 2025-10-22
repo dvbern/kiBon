@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -23,21 +23,21 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.BetreuungMonitoring;
 import ch.dvbern.ebegu.entities.BetreuungMonitoring_;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.util.SearchUtil;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -45,7 +45,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Stateless
 @Local(BetreuungMonitoringService.class)
-public class BetreuungMonitoringServiceBean extends AbstractBaseService implements BetreuungMonitoringService {
+public class BetreuungMonitoringServiceBean extends AbstractBaseService
+	implements
+	BetreuungMonitoringService {
 
 	@Inject
 	private Persistence persistence;
@@ -54,24 +56,36 @@ public class BetreuungMonitoringServiceBean extends AbstractBaseService implemen
 	@Nonnull
 	public Collection<BetreuungMonitoring> getAllBetreuungMonitoringBeiCriteria(
 		@Nullable String referenzNummer,
-		@Nullable String benutzer){
+		@Nullable String benutzer
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<BetreuungMonitoring> query = cb.createQuery(BetreuungMonitoring.class);
+		final CriteriaQuery<BetreuungMonitoring> query = cb.createQuery(
+			BetreuungMonitoring.class
+		);
 		Root<BetreuungMonitoring> root = query.from(BetreuungMonitoring.class);
 		List<Predicate> predicates = new ArrayList<>();
-		if(!StringUtils.isEmpty(referenzNummer)) {
-			Predicate refNummerPredicate = cb.equal(root.get(BetreuungMonitoring_.refNummer), referenzNummer);
+		if (!StringUtils.isEmpty(referenzNummer)) {
+			Predicate refNummerPredicate = cb.equal(
+				root.get(BetreuungMonitoring_.refNummer),
+				referenzNummer
+			);
 			predicates.add(refNummerPredicate);
 		}
-		if(!StringUtils.isEmpty(benutzer)) {
-			Predicate benutzendePredicate = cb.like(root.get(BetreuungMonitoring_.benutzer),
-				SearchUtil.withWildcards(benutzer));
+		if (!StringUtils.isEmpty(benutzer)) {
+			Predicate benutzendePredicate = cb.like(
+				root.get(BetreuungMonitoring_.benutzer),
+				SearchUtil.withWildcards(benutzer)
+			);
 			predicates.add(benutzendePredicate);
 		}
 		query.orderBy(cb.desc(root.get(AbstractEntity_.timestampErstellt)));
 		if (!predicates.isEmpty()) {
-			query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));
-			TypedQuery<BetreuungMonitoring> typedQuery = persistence.getEntityManager().createQuery(query);
+			query.where(
+				CriteriaQueryHelper.concatenateExpressions(cb, predicates)
+			);
+			TypedQuery<BetreuungMonitoring> typedQuery = persistence
+				.getEntityManager()
+				.createQuery(query);
 			// we only want no restriction if the referenzNummer is given, it can be a lot of result by benutzer
 			if (!StringUtils.isEmpty(benutzer)) {
 				typedQuery.setMaxResults(200);
@@ -79,12 +93,17 @@ public class BetreuungMonitoringServiceBean extends AbstractBaseService implemen
 			return typedQuery.getResultList();
 		}
 
-		return persistence.getEntityManager().createQuery(query).setMaxResults(200).getResultList();
+		return persistence.getEntityManager()
+			.createQuery(query)
+			.setMaxResults(200)
+			.getResultList();
 	}
 
 	@Override
 	@Nonnull
-	public BetreuungMonitoring saveBetreuungMonitoring(@Nonnull BetreuungMonitoring betreuungMonitoring){
+	public BetreuungMonitoring saveBetreuungMonitoring(
+		@Nonnull BetreuungMonitoring betreuungMonitoring
+	) {
 		return persistence.persist(betreuungMonitoring);
 	}
 }

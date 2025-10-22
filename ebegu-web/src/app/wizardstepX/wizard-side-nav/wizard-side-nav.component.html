@@ -41,6 +41,7 @@
                 *ngFor="let entry of wizardSteps$ | async"
                 class="row"
                 uiSrefActive="active-element"
+                [attr.data-test]="'LATS-sidenav'"
             >
                 <div *ngIf="!entry.disabled">
                     <button
@@ -48,6 +49,7 @@
                         *ngIf="!entry.disabled"
                         uiSref="{{ wizardTyp }}.{{ entry.stepName }}"
                         [uiParams]="{id: id}"
+                        [attr.data-test]="'LATS-sidenav.' + entry.stepName"
                     >
                         <span translate
                             >{{ wizardTyp }}_{{ entry.stepName }}</span
@@ -66,7 +68,12 @@
                         *ngIf="isNOK(entry)"
                     ></span>
                 </div>
-                <button class="col-xs-10" *ngIf="entry.disabled" disabled>
+                <button
+                    [attr.data-test]="'LATS-sidenav.' + entry.stepName"
+                    class="col-xs-10"
+                    *ngIf="entry.disabled"
+                    disabled
+                >
                     <span translate>{{ wizardTyp }}_{{ entry.stepName }}</span>
                 </button>
             </li>

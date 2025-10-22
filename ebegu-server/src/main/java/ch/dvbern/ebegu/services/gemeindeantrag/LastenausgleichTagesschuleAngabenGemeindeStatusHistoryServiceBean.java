@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.gemeindeantrag;
@@ -20,27 +20,29 @@ package ch.dvbern.ebegu.services.gemeindeantrag;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatusHistory;
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatusHistory_;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeStatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.AbstractBaseService;
 import ch.dvbern.ebegu.services.BenutzerService;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,16 +51,21 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @Local(LastenausgleichTagesschuleAngabenGemeindeStatusHistoryService.class)
-public class LastenausgleichTagesschuleAngabenGemeindeStatusHistoryServiceBean extends AbstractBaseService implements LastenausgleichTagesschuleAngabenGemeindeStatusHistoryService {
+public class LastenausgleichTagesschuleAngabenGemeindeStatusHistoryServiceBean
+	extends
+	AbstractBaseService implements
+	LastenausgleichTagesschuleAngabenGemeindeStatusHistoryService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(LastenausgleichTagesschuleAngabenGemeindeStatusHistoryServiceBean.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		LastenausgleichTagesschuleAngabenGemeindeStatusHistoryServiceBean.class
+			.getSimpleName()
+	);
 
 	@Inject
 	private Persistence persistence;
 
 	@Inject
 	private BenutzerService benutzerService;
-
 
 	@Override
 	@Nonnull
@@ -68,14 +75,21 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistoryServiceBean e
 		Objects.requireNonNull(fallContainer);
 
 		final Benutzer currentBenutzer = benutzerService.getCurrentBenutzer()
-			.orElseThrow(() -> new EbeguEntityNotFoundException("saveLastenausgleichTagesschuleStatusChange", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND));
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"saveLastenausgleichTagesschuleStatusChange",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
+				)
+			);
 		// Den letzten Eintrag beenden, falls es schon einen gab
-		LastenausgleichTagesschuleAngabenGemeindeStatusHistory lastStatusChange = findLastLastenausgleichTagesschuleStatusChange(fallContainer);
+		LastenausgleichTagesschuleAngabenGemeindeStatusHistory lastStatusChange =
+			findLastLastenausgleichTagesschuleStatusChange(fallContainer);
 		if (lastStatusChange != null) {
 			lastStatusChange.setTimestampBis(LocalDateTime.now());
 		}
 		// Und den neuen speichern
-		final LastenausgleichTagesschuleAngabenGemeindeStatusHistory newStatusHistory = new LastenausgleichTagesschuleAngabenGemeindeStatusHistory();
+		final LastenausgleichTagesschuleAngabenGemeindeStatusHistory newStatusHistory =
+			new LastenausgleichTagesschuleAngabenGemeindeStatusHistory();
 		newStatusHistory.setStatus(fallContainer.getStatus());
 		newStatusHistory.setAngabenGemeindeContainer(fallContainer);
 		newStatusHistory.setTimestampVon(LocalDateTime.now());
@@ -85,10 +99,58 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistoryServiceBean e
 	}
 
 	@Override
-	public List<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> findHistoryForContainer(@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer container) {
+	public List<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> findHistoryForContainer(
+		@Nonnull LastenausgleichTagesschuleAngabenGemeindeContainer container
+	) {
 		final CriteriaQuery<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> query =
 			createQueryAllStatusHistoryForFall(container);
-		return persistence.getEntityManager().createQuery(query).getResultList();
+		return persistence.getEntityManager()
+			.createQuery(query)
+			.getResultList();
+	}
+
+	@Override
+	public Optional<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> findLastHistoryOfStatus(
+		LastenausgleichTagesschuleAngabenGemeindeContainer container,
+		LastenausgleichTagesschuleAngabenGemeindeStatus status
+	) {
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> query =
+			cb.createQuery(
+				LastenausgleichTagesschuleAngabenGemeindeStatusHistory.class
+			);
+
+		Root<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> root =
+			query.from(
+				LastenausgleichTagesschuleAngabenGemeindeStatusHistory.class
+			);
+
+		Predicate predicateContainer = cb.equal(
+			root.get(
+				LastenausgleichTagesschuleAngabenGemeindeStatusHistory_.angabenGemeindeContainer
+			),
+			container
+		);
+
+		Predicate predicateStatus = cb.equal(
+			root.get(
+				LastenausgleichTagesschuleAngabenGemeindeStatusHistory_.status
+			),
+			status
+		);
+
+		query.where(predicateContainer, predicateStatus);
+		try {
+			return Optional.of(
+				persistence.getEntityManager()
+					.createQuery(query)
+					.setFirstResult(0)
+					.setMaxResults(1)
+					.getSingleResult()
+			);
+		} catch (NoResultException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Nullable
@@ -98,18 +160,29 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistoryServiceBean e
 		Objects.requireNonNull(fallContainer);
 
 		try {
-			final CriteriaQuery<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> query = createQueryAllStatusHistoryForFall(fallContainer);
+			final CriteriaQuery<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> query =
+				createQueryAllStatusHistoryForFall(fallContainer);
 
-			LastenausgleichTagesschuleAngabenGemeindeStatusHistory result = persistence.getEntityManager().createQuery(query).setFirstResult(0).setMaxResults(1).getSingleResult();
+			LastenausgleichTagesschuleAngabenGemeindeStatusHistory result =
+				persistence.getEntityManager()
+					.createQuery(query)
+					.setFirstResult(0)
+					.setMaxResults(1)
+					.getSingleResult();
 			return result;
 		} catch (NoResultException e) {
-			LOG.debug("No last status change found for LastenausgleichTagesschuleFallContainer {}", fallContainer, e);
+			LOG.debug(
+				"No last status change found for LastenausgleichTagesschuleFallContainer {}",
+				fallContainer,
+				e
+			);
 			return null;
 		}
 	}
 
 	/**
-	 * Gibt alle LastenausgleichTagesschuleFallStatusHistory des gegebenen Falls zurueck. Sortiert nach timestampVon DESC
+	 * Gibt alle LastenausgleichTagesschuleFallStatusHistory des gegebenen Falls zurueck. Sortiert nach timestampVon
+	 * DESC
 	 */
 	@Nonnull
 	private CriteriaQuery<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> createQueryAllStatusHistoryForFall(
@@ -118,15 +191,30 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistoryServiceBean e
 		Objects.requireNonNull(fallContainer);
 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> query = cb.createQuery(LastenausgleichTagesschuleAngabenGemeindeStatusHistory.class);
-		Root<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> root = query.from(LastenausgleichTagesschuleAngabenGemeindeStatusHistory.class);
+		final CriteriaQuery<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> query =
+			cb.createQuery(
+				LastenausgleichTagesschuleAngabenGemeindeStatusHistory.class
+			);
+		Root<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> root =
+			query.from(
+				LastenausgleichTagesschuleAngabenGemeindeStatusHistory.class
+			);
 
-		Predicate predicateInstitution = cb.equal(root.get(LastenausgleichTagesschuleAngabenGemeindeStatusHistory_.angabenGemeindeContainer), fallContainer);
+		Predicate predicateInstitution = cb.equal(
+			root.get(
+				LastenausgleichTagesschuleAngabenGemeindeStatusHistory_.angabenGemeindeContainer
+			),
+			fallContainer
+		);
 
 		query.where(predicateInstitution);
-		query.orderBy(cb.desc(root.get(LastenausgleichTagesschuleAngabenGemeindeStatusHistory_.timestampVon)));
+		query.orderBy(
+			cb.desc(
+				root.get(
+					LastenausgleichTagesschuleAngabenGemeindeStatusHistory_.timestampVon
+				)
+			)
+		);
 		return query;
 	}
 }
-
-

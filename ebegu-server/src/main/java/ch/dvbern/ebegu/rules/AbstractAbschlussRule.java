@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractAbschlussRule extends AbstractRule {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractAbschlussRule.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		AbstractAbschlussRule.class
+	);
 	private boolean isDebug = false;
 
 	protected AbstractAbschlussRule(boolean isDebug) {
@@ -38,9 +40,15 @@ public abstract class AbstractAbschlussRule extends AbstractRule {
 	}
 
 	@Nonnull
-	public List<VerfuegungZeitabschnitt> executeIfApplicable(@Nonnull AbstractPlatz platz, @Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	public List<VerfuegungZeitabschnitt> executeIfApplicable(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		if (isApplicableForAngebot(platz)) {
-			final List<VerfuegungZeitabschnitt> executedAbschnitte = execute(platz, zeitabschnitte);
+			final List<VerfuegungZeitabschnitt> executedAbschnitte = execute(
+				platz,
+				zeitabschnitte
+			);
 			if (isDebug) {
 				LOG.info(this.getClass().getSimpleName());
 				for (VerfuegungZeitabschnitt verfuegungZeitabschnitt : executedAbschnitte) {
@@ -53,7 +61,10 @@ public abstract class AbstractAbschlussRule extends AbstractRule {
 	}
 
 	@Nonnull
-	protected abstract List<VerfuegungZeitabschnitt> execute(@Nonnull AbstractPlatz platz, @Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte);
+	protected abstract List<VerfuegungZeitabschnitt> execute(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	);
 
 	/**
 	 * @param platz (Betreuung, Tageschhulplatz etc)
@@ -62,7 +73,9 @@ public abstract class AbstractAbschlussRule extends AbstractRule {
 	private boolean isApplicableForAngebot(@Nonnull AbstractPlatz platz) {
 		Objects.requireNonNull(platz);
 		Objects.requireNonNull(platz.getBetreuungsangebotTyp());
-		return getApplicableAngebotTypes().contains(platz.getBetreuungsangebotTyp());
+		return getApplicableAngebotTypes().contains(
+			platz.getBetreuungsangebotTyp()
+		);
 	}
 
 	protected abstract List<BetreuungsangebotTyp> getApplicableAngebotTypes();

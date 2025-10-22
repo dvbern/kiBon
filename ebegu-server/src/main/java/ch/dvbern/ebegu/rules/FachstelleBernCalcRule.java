@@ -15,29 +15,34 @@
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.dto.BGCalculationInput;
-import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
-import ch.dvbern.ebegu.entities.Einstellung;
-import ch.dvbern.ebegu.entities.PensumFachstelle;
-import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.enums.*;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.types.DateRange;
-import ch.dvbern.ebegu.util.MathUtil;
-
-import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.entities.AbstractPlatz;
+import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
+import ch.dvbern.ebegu.entities.PensumFachstelle;
+import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.FachstellenTyp;
+import ch.dvbern.ebegu.enums.IntegrationTyp;
+import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.types.DateRange;
+import ch.dvbern.ebegu.util.MathUtil;
+
 /**
  * Regel für die Betreuungspensen. Sie beachtet:
  * - Anspruch aus Betreuungspensum darf nicht höher sein als Erwerbspensum
  * - Nur relevant für Kita, Tageseltern-Kleinkinder, die anderen bekommen so viel wie sie wollen
- * - Falls Kind eine Fachstelle hat, gilt das Pensum der Fachstelle, sofern dieses höher ist als der Anspruch aus sonstigen Regeln
+ * - Falls Kind eine Fachstelle hat, gilt das Pensum der Fachstelle, sofern dieses höher ist als der Anspruch aus
+ * sonstigen Regeln
  * Verweis 16.9.3
  */
 public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
@@ -46,9 +51,17 @@ public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
 	public FachstelleBernCalcRule(
 		boolean sprachefoerderungBestaetigenAktiviert,
 		@Nonnull DateRange validityPeriod,
-		@Nonnull Locale locale) {
-		super(RuleKey.FACHSTELLE, RuleType.GRUNDREGEL_CALC, RuleValidity.ASIV, validityPeriod, locale);
-		this.sprachefoerderungBestaetigenAktiviert = sprachefoerderungBestaetigenAktiviert;
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.FACHSTELLE,
+			RuleType.GRUNDREGEL_CALC,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
+		this.sprachefoerderungBestaetigenAktiviert =
+			sprachefoerderungBestaetigenAktiviert;
 	}
 
 	@Override
@@ -64,7 +77,8 @@ public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
 		// Ohne Fachstelle: Wird in einer separaten Rule behandelt
 		Betreuung betreuung = (Betreuung) platz;
 		int pensum = inputData.getFachstellenpensum();
-		boolean betreuungspensumMustBeAtLeastFachstellenpensum = inputData.isBetreuungspensumMustBeAtLeastFachstellenpensum();
+		boolean betreuungspensumMustBeAtLeastFachstellenpensum = inputData
+			.isBetreuungspensumMustBeAtLeastFachstellenpensum();
 		BigDecimal pensumBetreuung = inputData.getBetreuungspensumProzent();
 		int pensumAnspruch = inputData.getAnspruchspensumProzent();
 		// Das Fachstellen-Pensum wird immer auf 5-er Schritte gerundet
@@ -73,21 +87,28 @@ public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
 			// Bei Sprachliche Integration muss die sprachfoerderung bestaetigt werden
 			if (showFachstelleSprachlicheIntegrationNichtBestaetigtBemerkung(
 				inputData.getIntegrationTypFachstellenPensum(),
-				platz)) {
+				platz
+			)) {
 				inputData.addBemerkung(
 					MsgKey.FACHSTELLE_SPRACHEFOEDERUNG_NICHT_BESTAETIGT_MSG,
-					getLocale());
+					getLocale()
+				);
 				return;
 			}
 			if (roundedPensumFachstelle > pensumAnspruch) {
 				if (!betreuungspensumMustBeAtLeastFachstellenpensum
-					|| pensumBetreuung.compareTo(BigDecimal.valueOf(roundedPensumFachstelle)) >= 0) {
+					|| pensumBetreuung.compareTo(
+						BigDecimal.valueOf(roundedPensumFachstelle)
+					) >= 0) {
 					// Anspruch ist immer mindestens das Pensum der Fachstelle, ausser das Restpensum lässt dies nicht mehr zu
-					inputData.setAnspruchspensumProzent(roundedPensumFachstelle);
+					inputData.setAnspruchspensumProzent(
+						roundedPensumFachstelle
+					);
 					PensumFachstelle pensumFachstelle =
 						findPensumFachstelleForGueltigkeit(
 							betreuung.getKind().getKindJA(),
-							inputData.getParent().getGueltigkeit());
+							inputData.getParent().getGueltigkeit()
+						);
 					inputData.addBemerkung(
 						MsgKey.FACHSTELLE_MSG,
 						getLocale(),
@@ -95,13 +116,21 @@ public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
 						getFachstelleName(pensumFachstelle.getFachstelle())
 					);
 				} else {
-					handlePensumTooLow(inputData, betreuung, roundedPensumFachstelle);
+					handlePensumTooLow(
+						inputData,
+						betreuung,
+						roundedPensumFachstelle
+					);
 				}
 			}
 		}
 	}
 
-	private void handlePensumTooLow(@Nonnull BGCalculationInput inputData, Betreuung betreuung, int roundedPensumFachstelle) {
+	private void handlePensumTooLow(
+		@Nonnull BGCalculationInput inputData,
+		Betreuung betreuung,
+		int roundedPensumFachstelle
+	) {
 		// Es gibt ein Fachstelle Pensum, aber das Betreuungspensum ist zu tief. Wir muessen uns das Fachstelle
 		// Pensum als
 		// Restanspruch merken, damit es für eine eventuelle andere Betreuung dieses Kindes noch gilt!
@@ -114,34 +143,51 @@ public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
 			inputData.addBemerkung(
 				MsgKey.FACHSTELLE_SPRACHLICHE_INTEGRATION_ZU_TIEF_MSG,
 				getLocale(),
-				roundedPensumFachstelle);
+				roundedPensumFachstelle
+			);
 		}
 	}
 
-	private boolean intersectsAnyBetreuungspensum(VerfuegungZeitabschnitt verfuegungZeitabschnitt, Betreuung betreuung) {
-		DateRange zeitabschnittGueltigkeit = verfuegungZeitabschnitt.getGueltigkeit();
+	private boolean intersectsAnyBetreuungspensum(
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt,
+		Betreuung betreuung
+	) {
+		DateRange zeitabschnittGueltigkeit = verfuegungZeitabschnitt
+			.getGueltigkeit();
 		return betreuung.getBetreuungspensumContainers()
 			.stream()
 			.map(BetreuungspensumContainer::getBetreuungspensumJA)
-			.anyMatch(betreuungspensum -> zeitabschnittGueltigkeit.intersects(betreuungspensum.getGueltigkeit()));
+			.anyMatch(
+				betreuungspensum -> zeitabschnittGueltigkeit.intersects(
+					betreuungspensum.getGueltigkeit()
+				)
+			);
 	}
 
-
 	@Override
-	public boolean isRelevantForGemeinde(@Nonnull Map<EinstellungKey, Einstellung> einstellungMap) {
-		return super.getFachstellenTypFromEinstellungen(einstellungMap) == FachstellenTyp.BERN;
+	public boolean isRelevantForGemeinde(
+		@Nonnull Map<EinstellungKey, Einstellung> einstellungMap
+	) {
+		return super.getFachstellenTypFromEinstellungen(einstellungMap)
+			== FachstellenTyp.BERN;
 	}
 
 	private boolean showFachstelleSprachlicheIntegrationNichtBestaetigtBemerkung(
 		@Nonnull IntegrationTyp integrationTyp,
-		@Nonnull AbstractPlatz platz) {
-		if (!integrationTyp.equals(IntegrationTyp.SPRACHLICHE_INTEGRATION) || !sprachefoerderungBestaetigenAktiviert) {
+		@Nonnull AbstractPlatz platz
+	) {
+		if (!integrationTyp.equals(IntegrationTyp.SPRACHLICHE_INTEGRATION)
+			|| !sprachefoerderungBestaetigenAktiviert) {
 			return false;
 		}
 		var betreuung = (Betreuung) platz;
-		if (betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA() == null) {
+		if (betreuung.getErweiterteBetreuungContainer()
+			.getErweiterteBetreuungJA()
+			== null) {
 			return true;
 		}
-		return !betreuung.getErweiterteBetreuungContainer().getErweiterteBetreuungJA().isSprachfoerderungBestaetigt();
+		return !betreuung.getErweiterteBetreuungContainer()
+			.getErweiterteBetreuungJA()
+			.isSprachfoerderungBestaetigt();
 	}
 }

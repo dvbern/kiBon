@@ -20,15 +20,15 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.ZahlungspositionStatus;
 import ch.dvbern.ebegu.util.EbeguUtil;
@@ -42,18 +42,25 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class Zahlungsposition extends AbstractMutableEntity implements Comparable<Zahlungsposition> {
+public class Zahlungsposition extends AbstractMutableEntity implements
+	Comparable<Zahlungsposition> {
 
 	private static final long serialVersionUID = -8403487439884700618L;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_Zahlungsposition_zahlung_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_Zahlungsposition_zahlung_id"),
+		nullable = false,
+		updatable = false)
 	private Zahlung zahlung;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_Zahlungsposition_verfuegungZeitabschnitt_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_Zahlungsposition_verfuegungZeitabschnitt_id"),
+		nullable = false,
+		updatable = false)
 	private VerfuegungZeitabschnitt verfuegungZeitabschnitt;
 
 	@NotNull
@@ -81,7 +88,9 @@ public class Zahlungsposition extends AbstractMutableEntity implements Comparabl
 		return verfuegungZeitabschnitt;
 	}
 
-	public void setVerfuegungZeitabschnitt(VerfuegungZeitabschnitt verfuegungZeitabschnitt) {
+	public void setVerfuegungZeitabschnitt(
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt
+	) {
 		this.verfuegungZeitabschnitt = verfuegungZeitabschnitt;
 	}
 
@@ -102,7 +111,10 @@ public class Zahlungsposition extends AbstractMutableEntity implements Comparabl
 	}
 
 	public Kind getKind() {
-		return verfuegungZeitabschnitt.getVerfuegung().getBetreuung().getKind().getKindJA();
+		return verfuegungZeitabschnitt.getVerfuegung()
+			.getBetreuung()
+			.getKind()
+			.getKindJA();
 	}
 
 	public boolean isIgnoriert() {
@@ -118,8 +130,16 @@ public class Zahlungsposition extends AbstractMutableEntity implements Comparabl
 		CompareToBuilder builder = new CompareToBuilder();
 		builder.append(this.getKind().getNachname(), o.getKind().getNachname());
 		builder.append(this.getKind().getVorname(), o.getKind().getVorname());
-		builder.append(this.getKind().getGeburtsdatum(), o.getKind().getGeburtsdatum());
-		builder.append(this.getVerfuegungZeitabschnitt().getGueltigkeit().getGueltigAb(), o.getVerfuegungZeitabschnitt().getGueltigkeit().getGueltigAb());
+		builder.append(
+			this.getKind().getGeburtsdatum(),
+			o.getKind().getGeburtsdatum()
+		);
+		builder.append(
+			this.getVerfuegungZeitabschnitt()
+				.getGueltigkeit()
+				.getGueltigAb(),
+			o.getVerfuegungZeitabschnitt().getGueltigkeit().getGueltigAb()
+		);
 		builder.append(this.getBetrag(), o.getBetrag());
 		return builder.toComparison();
 	}
@@ -136,17 +156,30 @@ public class Zahlungsposition extends AbstractMutableEntity implements Comparabl
 			return false;
 		}
 		final Zahlungsposition otherZahlungsposition = (Zahlungsposition) other;
-		return EbeguUtil.isSame(getVerfuegungZeitabschnitt(), otherZahlungsposition.getVerfuegungZeitabschnitt()) &&
-			Objects.equals(getStatus(), otherZahlungsposition.getStatus()) &&
-			MathUtil.isSame(getBetrag(), otherZahlungsposition.getBetrag()) &&
-			Objects.equals(isIgnoriert(), otherZahlungsposition.isIgnoriert());
+		return EbeguUtil.isSame(
+			getVerfuegungZeitabschnitt(),
+			otherZahlungsposition.getVerfuegungZeitabschnitt()
+		)
+			&&
+			Objects.equals(getStatus(), otherZahlungsposition.getStatus())
+			&&
+			MathUtil.isSame(getBetrag(), otherZahlungsposition.getBetrag())
+			&&
+			Objects.equals(
+				isIgnoriert(),
+				otherZahlungsposition.isIgnoriert()
+			);
 	}
 
 	@Transient
 	@Nullable
 	public Gesuchsperiode extractGesuchsperiode() {
 		if (verfuegungZeitabschnitt.getVerfuegung().getBetreuung() != null) {
-			return verfuegungZeitabschnitt.getVerfuegung().getBetreuung().getKind().getGesuch().getGesuchsperiode();
+			return verfuegungZeitabschnitt.getVerfuegung()
+				.getBetreuung()
+				.getKind()
+				.getGesuch()
+				.getGesuchsperiode();
 		}
 		return null;
 	}

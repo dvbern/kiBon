@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.resource;
@@ -22,18 +22,18 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.JaxBetreuungMonitoringConverter;
 import ch.dvbern.ebegu.api.dtos.JaxBetreuungMonitoring;
 import ch.dvbern.ebegu.api.dtos.JaxExternalClient;
 import ch.dvbern.ebegu.services.BetreuungMonitoringService;
@@ -53,7 +53,7 @@ public class BetreuungMonitoringResource {
 	private ExternalClientService externalClientService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxBetreuungMonitoringConverter converter;
 
 	@Nonnull
 	@GET
@@ -64,8 +64,15 @@ public class BetreuungMonitoringResource {
 		@QueryParam("refNummer") @Nullable String referenzNummer,
 		@QueryParam("benutzer") @Nullable String benutzer
 	) {
-		return betreuungMonitoringService.getAllBetreuungMonitoringBeiCriteria(referenzNummer, benutzer).stream()
-			.map(betreuungMonitoring -> converter.betreuungMonitoringToJax(betreuungMonitoring))
+		return betreuungMonitoringService.getAllBetreuungMonitoringBeiCriteria(
+			referenzNummer,
+			benutzer
+		)
+			.stream()
+			.map(
+				betreuungMonitoring -> converter
+					.betreuungMonitoringToJax(betreuungMonitoring)
+			)
 			.collect(Collectors.toList());
 	}
 
@@ -76,8 +83,13 @@ public class BetreuungMonitoringResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed(SUPER_ADMIN)
 	public List<JaxExternalClient> getAllExternalClient() {
-		return externalClientService.getAll().stream()
-			.map(externalClient -> converter.externalClientToJAX(externalClient))
+		return externalClientService.getAll()
+			.stream()
+			.map(
+				externalClient -> converter.externalClientToJAX(
+					externalClient
+				)
+			)
 			.collect(Collectors.toList());
 	}
 }

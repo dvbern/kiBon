@@ -38,7 +38,7 @@ ${templateConfiguration.mailCss}
 	</p>
 	<p>
 		Leider ist Ihre Freigabequittung bisher nicht bei uns eingetroffen.
-        <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/freigabe/${gesuch.id}">Hier</a>
+        <a href="${frontendUrl}/gesuch/freigabe/${gesuch.id}">Hier</a>
 		können Sie Ihre Freigabequittung nochmals herunterladen. Bitte schicken Sie uns die unterschriebene
         Freigabequittung umgehend per Post an ${adresse}.
 		Andernfalls gilt Ihr Antrag als nicht eingereicht, kann nicht bearbeitet werden und wird am

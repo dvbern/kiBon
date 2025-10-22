@@ -1,0 +1,104 @@
+<!--
+  ~ Copyright (C) 2019 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<mat-dialog-content
+    role="document"
+    tabindex="-1"
+    id="dialogContent"
+    class="dv-supportanfrage"
+>
+    <dv-input-container-x class="form-group" [verticalAlign]="true">
+        <form #anfrageForm="ngForm" (ngSubmit)="send()">
+            <mat-card-title
+                ><h2 [textContent]="'SUPPORTANFRAGE_STELLEN' | translate"></h2
+            ></mat-card-title>
+            <mat-label
+                class="margin-top-20"
+                [textContent]="'SUPPORTANFRAGE_ANLEITUNG' | translate"
+            ></mat-label>
+            <mat-label
+                class="margin-top-20"
+                [textContent]="'SUPPORTANFRAGE_BETROFFENER_FALL' | translate"
+            ></mat-label>
+            <textarea
+                class="form-control margin-top-5"
+                rows="1"
+                maxlength="4000"
+                name="betroffeneFaelle"
+                [(ngModel)]="betroffeneFaelle"
+            ></textarea>
+            <mat-label
+                class="margin-top-20"
+                [textContent]="'SUPPORTANFRAGE_BETROFFENE_PERIODE' | translate"
+            ></mat-label>
+            <mat-select
+                [(ngModel)]="betroffenePeriode"
+                name="betroffenePeriode"
+            >
+                <mat-option [value]="">
+                    {{ 'SUPPORTANFRAGE_OPTION_NO_PERIODE' | translate }}
+                </mat-option>
+                @for (
+                    gesuchsperiode of allActiveGesuchsperioden$ | async;
+                    track gesuchsperiode
+                ) {
+                    <mat-option [value]="gesuchsperiode.gesuchsperiodeString">
+                        {{ gesuchsperiode.gesuchsperiodeString }}
+                    </mat-option>
+                }
+            </mat-select>
+            <mat-label
+                class="margin-top-40"
+                [textContent]="'SUPPORTANFRAGE_ANFRAGE_FELD' | translate"
+            ></mat-label>
+            <textarea
+                class="form-control margin-top-5"
+                rows="10"
+                maxlength="4000"
+                [required]="true"
+                name="beschreibung"
+                [(ngModel)]="beschreibung"
+                #beschreibungNgModel="ngModel"
+            >
+            </textarea>
+            <dv-error-messages
+                *ngIf="anfrageForm.submitted || beschreibungNgModel.touched"
+                [errorObject]="beschreibungNgModel.errors"
+                [inputId]="'beschreibung_id'"
+                class="error"
+            ></dv-error-messages>
+            <mat-dialog-actions
+                layout-align="center center"
+                class="margin-top-40"
+            >
+                <div class="dv-dialog-actions">
+                    <button
+                        class="dv-btn"
+                        type="button"
+                        (click)="cancel()"
+                        [textContent]="'CANCEL' | translate"
+                    ></button>
+                    <button
+                        class="dv-btn"
+                        type="submit"
+                        [textContent]="'MITTEILUNG_SENDEN' | translate"
+                    ></button>
+                </div>
+            </mat-dialog-actions>
+        </form>
+    </dv-input-container-x>
+</mat-dialog-content>

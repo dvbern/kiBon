@@ -1,20 +1,13 @@
 {
-    "extends": "../tsconfig.json",
+    "extends": "../tsconfig.base.json",
     "compilerOptions": {
         "allowJs": true,
         "outDir": "./dist/out-tsc",
-        "baseUrl": "./",
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "module": "es2020",
         "types": ["cypress", "node"],
-        "sourceMap": false,
-        "paths": {
-            "@dv-e2e/types": ["./support/types.ts"],
-            "@dv-e2e/tasks": ["./support/tasks.ts"],
-            "@dv-e2e/fixtures": ["./support/fixture-helper.ts"],
-            "@dv-e2e/page-objects": ["./page-objects/index.ts"]
-        }
+        "sourceMap": false
     },
     "include": [
         "**/*.ts",

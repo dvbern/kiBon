@@ -14,10 +14,10 @@
  */
 
 import {Injectable} from '@angular/core';
+import {DVErrorMessageCallback} from '../../../../models/DVErrorMessageCallback';
 import {TSMessageEvent} from '../../../../models/enums/TSErrorEvent';
 import {TSErrorLevel} from '../../../../models/enums/TSErrorLevel';
 import {TSErrorType} from '../../../../models/enums/TSErrorType';
-import {DVErrorMessageCallback} from '../../../../models/DVErrorMessageCallback';
 import {TSExceptionReport} from '../../../../models/TSExceptionReport';
 import {BroadcastService} from '../../service/broadcast.service';
 

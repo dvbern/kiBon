@@ -32,11 +32,8 @@
                 <mat-checkbox
                     [(ngModel)]="option.selected"
                     (ngModelChange)="updateCheckedFlags()"
-                    >{{
-                        option.labelSelectFunction
-                            ? option.labelSelectFunction()
-                            : option.item.name
-                    }}</mat-checkbox
+                    [attr.data-test]="'gemeinde-' + getLabel(option)"
+                    >{{ getLabel(option) }}</mat-checkbox
                 >
             </li>
         </ul>
@@ -49,6 +46,7 @@
             class="dv-btn"
             (click)="ok()"
             [textContent]="'LABEL_OK' | translate"
+            data-test="LATS-erstellen-Ok"
         ></button>
         <button
             class="dv-btn"

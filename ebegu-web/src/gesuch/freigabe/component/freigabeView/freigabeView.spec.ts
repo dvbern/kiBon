@@ -14,7 +14,12 @@
  */
 
 import {TranslateService} from '@ngx-translate/core';
-import {IHttpBackendService, IQService, IScope, ITimeoutService} from 'angular';
+import angular, {
+    IHttpBackendService,
+    IQService,
+    IScope,
+    ITimeoutService
+} from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../app/core/directive/dv-dialog/dv-dialog';
@@ -24,11 +29,12 @@ import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
 import {TSDossier} from '../../../../models/TSDossier';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
-import {TSEinstellung} from '../../../../models/TSEinstellung';
+import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
 import {TSFall} from '../../../../models/TSFall';
-import {TSGemeinde} from '../../../../models/TSGemeinde';
+import {TSGemeinde} from '@kibon/shared/model/entity';
+
 import {TSGesuch} from '../../../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {GESUCH_JS_MODULE} from '../../../gesuch.module';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
@@ -69,16 +75,14 @@ describe('freigabeView', () => {
             $q = $injector.get('$q');
             gesuchModelManager = $injector.get('GesuchModelManager');
             $httpBackend = $injector.get('$httpBackend');
-            applicationPropertyRS = $injector.get('ApplicationPropertyRS');
+            applicationPropertyRS = $injector.get(
+                'SharedUtilApplicationPropertyRsService'
+            );
             authServiceRS = $injector.get('AuthServiceRS');
             $timeout = $injector.get('$timeout');
             $translate = $injector.get('$translate');
             einstellungRS = $injector.get('EinstellungRS');
             freigabeService = $injector.get('FreigabeService');
-
-            spyOn(applicationPropertyRS, 'isDevMode').and.returnValue(
-                $q.when(false)
-            );
             spyOn(authServiceRS, 'isOneOfRoles').and.returnValue(true);
             spyOn(
                 wizardStepManager,
@@ -160,7 +164,7 @@ describe('freigabeView', () => {
                 downloadRS,
                 'getFreigabequittungAccessTokenGeneratedDokument'
             ).and.returnValue($q.resolve(downloadFile));
-            spyOn(downloadRS, 'startDownload').and.returnValue();
+            spyOn(downloadRS, 'startDownloadGeneratedPDF').and.returnValue();
 
             const fakeWindow: any = undefined;
             spyOn(downloadRS, 'prepareDownloadWindow').and.returnValue(
@@ -180,7 +184,7 @@ describe('freigabeView', () => {
             expect(
                 downloadRS.getFreigabequittungAccessTokenGeneratedDokument
             ).toHaveBeenCalledWith(gesuch.id, true);
-            expect(downloadRS.startDownload).toHaveBeenCalledWith(
+            expect(downloadRS.startDownloadGeneratedPDF).toHaveBeenCalledWith(
                 downloadFile.accessToken,
                 downloadFile.filename,
                 false,
@@ -197,7 +201,7 @@ describe('freigabeView', () => {
             spyOn(gesuchModelManager, 'openGesuch').and.returnValue(
                 $q.resolve(gesuch)
             );
-            spyOn(downloadRS, 'startDownload').and.returnValue();
+            spyOn(downloadRS, 'startDownloadGeneratedPDF').and.returnValue();
             tsDownloadFile = new TSDownloadFile();
             spyOn(
                 downloadRS,

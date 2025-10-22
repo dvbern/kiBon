@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util.betreuungsmitteilung.messages;
@@ -25,9 +25,8 @@ import ch.dvbern.ebegu.entities.BetreuungsmitteilungPensum;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 
-import static java.util.Objects.requireNonNull;
-
-public class AnwesenheitstageMessageFactory implements BetreuungsmitteilungPensumMessageFactory {
+public class AnwesenheitstageMessageFactory implements
+	BetreuungsmitteilungPensumMessageFactory {
 
 	private final Mandant mandant;
 	private final Locale locale;
@@ -39,15 +38,23 @@ public class AnwesenheitstageMessageFactory implements BetreuungsmitteilungPensu
 		this.mandant = mandant;
 		this.locale = locale;
 	}
+
 	@Override
-	public String messageForPensum(int index, BetreuungsmitteilungPensum pensum) {
+	public String messageForPensum(
+		int index,
+		BetreuungsmitteilungPensum pensum
+	) {
 		NumberFormat numberFormat = NumberFormat.getNumberInstance(locale);
 
 		return ServerMessageUtil.getMessage(
 			"mutationsmeldung_message_anwesenheitstage",
 			locale,
 			mandant,
-			numberFormat.format(pensum.getBetreuteTage() != null ? pensum.getBetreuteTage() : BigDecimal.ZERO)
+			numberFormat.format(
+				pensum.getBetreuteTage() != null ?
+					pensum.getBetreuteTage() :
+					BigDecimal.ZERO
+			)
 		);
 	}
 }

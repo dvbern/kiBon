@@ -28,7 +28,7 @@ ${templateConfiguration.mailCss}
 		Chère famille,
 	</p>
 	<p>
-		Votre inscription pour ${betreuung.kind.kindJA.fullName} à l'EJC (${betreuung.institutionStammdaten.institution.name}) est acceptée. Vous pouvez consulter les horaires de prise en charge <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/verfuegenView/${betreuung.extractGesuch().id}/${betreuung.betreuungNummer}/${betreuung.kind.kindNummer}">ici</a>.
+		Votre inscription pour ${betreuung.kind.kindJA.fullName} à l'EJC (${betreuung.institutionStammdaten.institution.name}) est acceptée. Vous pouvez consulter les horaires de prise en charge <a href="${frontendUrl}/gesuch/verfuegenView/${betreuung.extractGesuch().id}/${betreuung.betreuungNummer}/${betreuung.kind.kindNummer}">ici</a>.
 		Votre demande de réduction de tarif n'a pas encore été contrôlée. Vous recevrez une nouvelle confirmation avec les tarifs définitifs dès qu'elle aura été contrôlée.
 	</p>
 	<p>

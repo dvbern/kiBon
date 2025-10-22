@@ -39,7 +39,10 @@
                     [page]="calculatePage()"
                     [totalItems]="pagination.totalItemCount"
                     [pendenz]="true"
-                    [hiddenColumns]="['verantwortlicherGemeindeantraege']"
+                    [hiddenColumns]="[
+                        'verantwortlicherGemeindeantraege',
+                        'gemeindeAntragFirstEinreichedatum'
+                    ]"
                     (sortChange)="onSort($event)"
                     (filterChange)="onFilterChange($event)"
                     (paginationEvent)="onPagination($event)"

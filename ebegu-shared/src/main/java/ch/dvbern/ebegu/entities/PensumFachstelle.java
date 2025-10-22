@@ -15,6 +15,17 @@
 
 package ch.dvbern.ebegu.entities;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.GruendeZusatzleistung;
 import ch.dvbern.ebegu.enums.IntegrationTyp;
@@ -23,23 +34,20 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 /**
  * Entity fuer PensumFachstelle.
  */
 @Audited
 @Entity
-public class PensumFachstelle extends AbstractIntegerPensum implements Comparable<PensumFachstelle> {
+public class PensumFachstelle extends AbstractIntegerPensum implements
+	Comparable<PensumFachstelle> {
 
 	private static final long serialVersionUID = -9132257320978374570L;
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_pensum_fachstelle_fachstelle_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_pensum_fachstelle_fachstelle_id"))
 	private Fachstelle fachstelle;
 
 	@NotNull
@@ -65,7 +73,10 @@ public class PensumFachstelle extends AbstractIntegerPensum implements Comparabl
 	}
 
 	@Nonnull
-	public PensumFachstelle copyPensumFachstelle(@Nonnull PensumFachstelle target, @Nonnull AntragCopyType copyType) {
+	public PensumFachstelle copyPensumFachstelle(
+		@Nonnull PensumFachstelle target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractPensumEntity(target, copyType);
 		target.setFachstelle(this.getFachstelle());
 		target.setIntegrationTyp(this.getIntegrationTyp());
@@ -89,8 +100,12 @@ public class PensumFachstelle extends AbstractIntegerPensum implements Comparabl
 			return false;
 		}
 		final PensumFachstelle otherPensumFachstelle = (PensumFachstelle) other;
-		return EbeguUtil.isSame(getFachstelle(), otherPensumFachstelle.getFachstelle())
-			&& getIntegrationTyp() == otherPensumFachstelle.getIntegrationTyp();
+		return EbeguUtil.isSame(
+			getFachstelle(),
+			otherPensumFachstelle.getFachstelle()
+		)
+			&& getIntegrationTyp()
+				== otherPensumFachstelle.getIntegrationTyp();
 	}
 
 	@Nullable
@@ -124,14 +139,19 @@ public class PensumFachstelle extends AbstractIntegerPensum implements Comparabl
 		return gruendeZusatzleistung;
 	}
 
-	public void setGruendeZusatzleistung(@Nullable GruendeZusatzleistung gruendeZusatzleistung) {
+	public void setGruendeZusatzleistung(
+		@Nullable GruendeZusatzleistung gruendeZusatzleistung
+	) {
 		this.gruendeZusatzleistung = gruendeZusatzleistung;
 	}
 
 	@Override
 	public int compareTo(@Nonnull PensumFachstelle o) {
 		CompareToBuilder builder = new CompareToBuilder();
-		builder.append(this.getGueltigkeit().getGueltigAb(), o.getGueltigkeit().getGueltigAb());
+		builder.append(
+			this.getGueltigkeit().getGueltigAb(),
+			o.getGueltigkeit().getGueltigAb()
+		);
 		builder.append(this.getId(), o.getId());
 		return builder.toComparison();
 	}

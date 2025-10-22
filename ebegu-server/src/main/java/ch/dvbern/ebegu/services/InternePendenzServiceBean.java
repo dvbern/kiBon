@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -25,14 +25,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Dossier;
@@ -44,14 +44,15 @@ import ch.dvbern.ebegu.entities.Gesuch_;
 import ch.dvbern.ebegu.entities.InternePendenz;
 import ch.dvbern.ebegu.entities.InternePendenz_;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 /**
  * Service fuer interne Pendenzen
  */
 @Stateless
 @Local(InternePendenzService.class)
-public class InternePendenzServiceBean extends AbstractBaseService implements InternePendenzService {
+public class InternePendenzServiceBean extends AbstractBaseService implements
+	InternePendenzService {
 
 	@Inject
 	private Persistence persistence;
@@ -67,17 +68,25 @@ public class InternePendenzServiceBean extends AbstractBaseService implements In
 
 	@Nonnull
 	@Override
-	public Optional<InternePendenz> findInternePendenz(@Nonnull String internePendenzId) {
+	public Optional<InternePendenz> findInternePendenz(
+		@Nonnull String internePendenzId
+	) {
 		Objects.requireNonNull(internePendenzId);
 
-		Optional<InternePendenz> internePendenz = Optional.ofNullable(persistence.find(InternePendenz.class, internePendenzId));
-		internePendenz.ifPresent(pendenz -> authorizer.checkReadAuthorization(pendenz));
+		Optional<InternePendenz> internePendenz = Optional.ofNullable(
+			persistence.find(InternePendenz.class, internePendenzId)
+		);
+		internePendenz.ifPresent(
+			pendenz -> authorizer.checkReadAuthorization(pendenz)
+		);
 		return internePendenz;
 	}
 
 	@Nonnull
 	@Override
-	public InternePendenz updateInternePendenz(@Nonnull InternePendenz internePendenz) {
+	public InternePendenz updateInternePendenz(
+		@Nonnull InternePendenz internePendenz
+	) {
 		Objects.requireNonNull(internePendenz);
 		Objects.requireNonNull(internePendenz.getId());
 
@@ -87,7 +96,9 @@ public class InternePendenzServiceBean extends AbstractBaseService implements In
 
 	@Nonnull
 	@Override
-	public InternePendenz createInternePendenz(@Nonnull InternePendenz internePendenz) {
+	public InternePendenz createInternePendenz(
+		@Nonnull InternePendenz internePendenz
+	) {
 		Objects.requireNonNull(internePendenz);
 		internePendenz.getGesuch().setInternePendenz(true);
 		return persistence.persist(internePendenz);
@@ -95,12 +106,18 @@ public class InternePendenzServiceBean extends AbstractBaseService implements In
 
 	@Nonnull
 	@Override
-	public Collection<InternePendenz> findInternePendenzenForGesuch(@Nonnull Gesuch gesuch) {
+	public Collection<InternePendenz> findInternePendenzenForGesuch(
+		@Nonnull Gesuch gesuch
+	) {
 		Objects.requireNonNull(gesuch);
 		Objects.requireNonNull(gesuch.getId());
 
 		authorizer.checkReadAuthorization(gesuch);
-		return criteriaQueryHelper.getEntitiesByAttribute(InternePendenz.class, gesuch, InternePendenz_.gesuch);
+		return criteriaQueryHelper.getEntitiesByAttribute(
+			InternePendenz.class,
+			gesuch,
+			InternePendenz_.gesuch
+		);
 	}
 
 	@Nonnull
@@ -115,9 +132,15 @@ public class InternePendenzServiceBean extends AbstractBaseService implements In
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		Predicate predicateNichtErledigt = cb.equal(root.get(InternePendenz_.erledigt), false);
+		Predicate predicateNichtErledigt = cb.equal(
+			root.get(InternePendenz_.erledigt),
+			false
+		);
 		predicates.add(predicateNichtErledigt);
-		Predicate predicateGesuch = cb.equal(root.get(InternePendenz_.gesuch), gesuch);
+		Predicate predicateGesuch = cb.equal(
+			root.get(InternePendenz_.gesuch),
+			gesuch
+		);
 		predicates.add(predicateGesuch);
 
 		query.select(cb.countDistinct(root));
@@ -137,43 +160,67 @@ public class InternePendenzServiceBean extends AbstractBaseService implements In
 	@Override
 	public Collection<InternePendenz> findAlleAbgelaufendeInternePendenzen() {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<InternePendenz> query = cb.createQuery(InternePendenz.class);
+		final CriteriaQuery<InternePendenz> query = cb.createQuery(
+			InternePendenz.class
+		);
 		Root<InternePendenz> root = query.from(InternePendenz.class);
-		Join<InternePendenz, Gesuch> gesuchJoin = root.join(InternePendenz_.gesuch);
+		Join<InternePendenz, Gesuch> gesuchJoin = root.join(
+			InternePendenz_.gesuch
+		);
 		Join<Gesuch, Dossier> dossierJoin = gesuchJoin.join(Gesuch_.dossier);
 		Join<Dossier, Fall> fallJoin = dossierJoin.join(Dossier_.fall);
 
-
 		List<Predicate> predicates = new ArrayList<>();
 
-		Predicate predicateNichtErledigt = cb.equal(root.get(InternePendenz_.erledigt), false);
+		Predicate predicateNichtErledigt = cb.equal(
+			root.get(InternePendenz_.erledigt),
+			false
+		);
 		predicates.add(predicateNichtErledigt);
 
-		Predicate predicateMandant = cb.equal(fallJoin.get(Fall_.mandant), principalBean.getMandant());
+		Predicate predicateMandant = cb.equal(
+			fallJoin.get(Fall_.mandant),
+			principalBean.getMandant()
+		);
 		predicates.add(predicateMandant);
 
-		Predicate predicateAbgelaufen = cb.lessThanOrEqualTo(root.get(InternePendenz_.termin), LocalDate.now());
+		Predicate predicateAbgelaufen = cb.lessThanOrEqualTo(
+			root.get(InternePendenz_.termin),
+			LocalDate.now()
+		);
 		predicates.add(predicateAbgelaufen);
 		query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));
 		return persistence.getCriteriaResults(query);
 	}
 
-	@Nonnull
 	@Override
-	public boolean hasGesuchAbgelaufeneInternePendenzen(@Nonnull Gesuch gesuch) {
+	public boolean hasGesuchAbgelaufeneInternePendenzen(
+		@Nonnull Gesuch gesuch
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<InternePendenz> query = cb.createQuery(InternePendenz.class);
+		final CriteriaQuery<InternePendenz> query = cb.createQuery(
+			InternePendenz.class
+		);
 		Root<InternePendenz> root = query.from(InternePendenz.class);
 
 		List<Predicate> predicates = new ArrayList<>();
 
-		Predicate predicateNichtErledigt = cb.equal(root.get(InternePendenz_.erledigt), false);
+		Predicate predicateNichtErledigt = cb.equal(
+			root.get(InternePendenz_.erledigt),
+			false
+		);
 		predicates.add(predicateNichtErledigt);
 
-		Predicate predicateAbgelaufen = cb.lessThanOrEqualTo(root.get(InternePendenz_.termin), LocalDate.now());
+		Predicate predicateAbgelaufen = cb.lessThanOrEqualTo(
+			root.get(InternePendenz_.termin),
+			LocalDate.now()
+		);
 		predicates.add(predicateAbgelaufen);
 
-		Predicate predicateGesuch = cb.equal(root.get(InternePendenz_.gesuch), gesuch);
+		Predicate predicateGesuch = cb.equal(
+			root.get(InternePendenz_.gesuch),
+			gesuch
+		);
 		predicates.add(predicateGesuch);
 
 		query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));

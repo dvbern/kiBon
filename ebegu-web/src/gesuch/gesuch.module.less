@@ -279,7 +279,7 @@
     &.betreuung-view {
         padding: 5rem 3rem 14rem;
 
-        .well {
+        .well:not(.non-full-space) {
             margin-left: -3rem;
             margin-right: -3rem;
         }
@@ -322,8 +322,8 @@
         .mdc-radio__background,
         .mat-mdc-radio-touch-target,
         input.mdc-radio__native-control {
-            height: 1.5rem !important;
-            width: 1.5rem !important;
+            height: 3rem !important;
+            width: 3rem !important;
         }
 
         .mdc-radio__native-control:checked
@@ -348,7 +348,8 @@
                 color: #000;
                 font-style: normal;
                 font-weight: 600;
-                line-height: 2.5rem;
+                line-height: 2.2rem;
+                padding-left: 0.6rem;
             }
 
             &.mdc-radio--disabled + label {
@@ -480,4 +481,35 @@
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
+}
+
+md-checkbox:not(.dv-ebegu-calendar--tagesschule) {
+    &.md-checked {
+        // checkbox md-checkbox, overwrite default behaviour and replace with new mat-checkbox svg
+        .md-icon::after {
+            content: '' !important;
+            display: block;
+            width: 16px;
+            height: 16px;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="white" stroke-width="3" d="M1.73,12.91 8.1,19.28 22.79,4.59"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-color: #424242;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+    }
+
+    // checkbox md-checkbox, overwrite default behaviour and replace with new mat-checkbox svg
+    .md-icon::after {
+        content: '' !important;
+    }
+}
+
+md-checkbox[disabled]:not(.dv-ebegu-calendar--tagesschule) {
+    .md-icon::after {
+        background-color: #858585 !important;
+    }
 }

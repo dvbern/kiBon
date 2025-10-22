@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -20,7 +20,7 @@ package ch.dvbern.ebegu.services;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import ch.dvbern.ebegu.entities.SozialhilfeZeitraumContainer;
 
@@ -32,19 +32,26 @@ public interface SozialhilfeZeitraumService {
 	 * @param erwerbspensumContainer Das SozialhilfeZeitraum das gespeichert werden soll
 	 */
 	@Nonnull
-	SozialhilfeZeitraumContainer saveSozialhilfeZeitraum(@Valid @Nonnull SozialhilfeZeitraumContainer sozialhilfeZeitraumContainer);
+	SozialhilfeZeitraumContainer saveSozialhilfeZeitraum(
+		@Valid
+		@Nonnull SozialhilfeZeitraumContainer sozialhilfeZeitraumContainer
+	);
 
 	/**
 	 * @param key PK (id) des SozialhilfeZeitraumContainers
-	 * @return Optional mit dem  SozialhilfeZeitraumContainers mit fuer den gegebenen Key
+	 * @return Optional mit dem SozialhilfeZeitraumContainers mit fuer den gegebenen Key
 	 */
 	@Nonnull
-	Optional<SozialhilfeZeitraumContainer> findSozialhilfeZeitraum(@Nonnull String key);
+	Optional<SozialhilfeZeitraumContainer> findSozialhilfeZeitraum(
+		@Nonnull String key
+	);
 
 	/**
 	 * entfernt eine Erwerbspensum aus der Databse
 	 *
 	 * @param erwerbspensumContainerID der Entfernt werden soll
 	 */
-	void removeSozialhilfeZeitraum(@Nonnull String sozialhilfeZeitraumContainerID);
+	void removeSozialhilfeZeitraum(
+		@Nonnull String sozialhilfeZeitraumContainerID
+	);
 }

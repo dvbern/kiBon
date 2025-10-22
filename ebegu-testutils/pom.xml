@@ -28,23 +28,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>ch.dvbern.ebegu</groupId>
             <artifactId>ebegu-shared</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.dvbern.oss.cdipersistence</groupId>
-            <artifactId>cdi-persistence-api</artifactId>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wildfly.arquillian</groupId>
-            <artifactId>wildfly-arquillian-common</artifactId>
-            <scope>compile</scope>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
         </dependency>
     </dependencies>
 

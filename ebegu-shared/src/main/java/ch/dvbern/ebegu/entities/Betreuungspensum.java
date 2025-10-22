@@ -18,12 +18,12 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.AssociationOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.types.DateRange;
@@ -39,8 +39,10 @@ import org.hibernate.envers.Audited;
 @Audited
 @Entity
 @AssociationOverride(name = "eingewoehnung",
-	joinColumns = @JoinColumn(name = "eingewoehnung_id"), foreignKey = @ForeignKey(name = "FK_betreuungspensum_eingewoehnung_id"))
-public class Betreuungspensum extends AbstractBetreuungsPensum implements Comparable<Betreuungspensum> {
+	joinColumns = @JoinColumn(name = "eingewoehnung_id"),
+	foreignKey = @ForeignKey(name = "FK_betreuungspensum_eingewoehnung_id"))
+public class Betreuungspensum extends AbstractBetreuungsPensum implements
+	Comparable<Betreuungspensum> {
 
 	private static final long serialVersionUID = -9032857320571372370L;
 
@@ -53,23 +55,43 @@ public class Betreuungspensum extends AbstractBetreuungsPensum implements Compar
 
 	@SuppressWarnings("PMD.ConstructorCallsOverridableMethod")
 	public Betreuungspensum(BetreuungsmitteilungPensum betPensumMitteilung) {
-		this.setGueltigkeit(new DateRange(betPensumMitteilung.getGueltigkeit()));
+		this.setGueltigkeit(
+			new DateRange(betPensumMitteilung.getGueltigkeit())
+		);
 		this.setPensum(betPensumMitteilung.getPensum());
 		this.setUnitForDisplay(betPensumMitteilung.getUnitForDisplay());
-		this.setMonatlicheBetreuungskosten(betPensumMitteilung.getMonatlicheBetreuungskosten());
+		this.setMonatlicheBetreuungskosten(
+			betPensumMitteilung.getMonatlicheBetreuungskosten()
+		);
 		this.setNichtEingetreten(false); //can not be set through BetreuungsmitteilungPensum
-		this.setMonatlicheHauptmahlzeiten(betPensumMitteilung.getMonatlicheHauptmahlzeiten());
-		this.setMonatlicheNebenmahlzeiten(betPensumMitteilung.getMonatlicheNebenmahlzeiten());
-		this.setTarifProHauptmahlzeit(betPensumMitteilung.getTarifProHauptmahlzeit());
-		this.setTarifProNebenmahlzeit(betPensumMitteilung.getTarifProNebenmahlzeit());
-		this.setStuendlicheVollkosten(betPensumMitteilung.getStuendlicheVollkosten());
-		this.setBetreuungInFerienzeit(betPensumMitteilung.getBetreuungInFerienzeit());
+		this.setMonatlicheHauptmahlzeiten(
+			betPensumMitteilung.getMonatlicheHauptmahlzeiten()
+		);
+		this.setMonatlicheNebenmahlzeiten(
+			betPensumMitteilung.getMonatlicheNebenmahlzeiten()
+		);
+		this.setTarifProHauptmahlzeit(
+			betPensumMitteilung.getTarifProHauptmahlzeit()
+		);
+		this.setTarifProNebenmahlzeit(
+			betPensumMitteilung.getTarifProNebenmahlzeit()
+		);
+		this.setStuendlicheVollkosten(
+			betPensumMitteilung.getStuendlicheVollkosten()
+		);
+		this.setBetreuungInFerienzeit(
+			betPensumMitteilung.getBetreuungInFerienzeit()
+		);
 		this.setBetreuteTage(betPensumMitteilung.getBetreuteTage());
 
 		if (betPensumMitteilung.getEingewoehnung() != null) {
 			Eingewoehnung eingewoehnung = new Eingewoehnung();
-			eingewoehnung.setKosten(betPensumMitteilung.getEingewoehnung().getKosten());
-			eingewoehnung.setGueltigkeit(betPensumMitteilung.getEingewoehnung().getGueltigkeit());
+			eingewoehnung.setKosten(
+				betPensumMitteilung.getEingewoehnung().getKosten()
+			);
+			eingewoehnung.setGueltigkeit(
+				betPensumMitteilung.getEingewoehnung().getGueltigkeit()
+			);
 			this.setEingewoehnung(eingewoehnung);
 		}
 	}
@@ -96,8 +118,14 @@ public class Betreuungspensum extends AbstractBetreuungsPensum implements Compar
 	}
 
 	@Nonnull
-	public Betreuungspensum copyBetreuungspensum(@Nonnull Betreuungspensum target, @Nonnull AntragCopyType copyType) {
-		super.copyAbstractBetreuungspensumMahlzeitenEntity(target, copyType);
+	public Betreuungspensum copyBetreuungspensum(
+		@Nonnull Betreuungspensum target,
+		@Nonnull AntragCopyType copyType
+	) {
+		super.copyAbstractBetreuungspensumMahlzeitenEntity(
+			target,
+			copyType
+		);
 		switch (copyType) {
 		case MUTATION:
 			target.setNichtEingetreten(this.getNichtEingetreten());
@@ -127,8 +155,15 @@ public class Betreuungspensum extends AbstractBetreuungsPensum implements Compar
 			return false;
 		}
 		final Betreuungspensum otherBetreuungspensum = (Betreuungspensum) other;
-		return Objects.equals(getNichtEingetreten(), otherBetreuungspensum.getNichtEingetreten())
-			&& Objects.equals(getBetreuungInFerienzeit(), otherBetreuungspensum.getBetreuungInFerienzeit())
-			&& this.getUnitForDisplay() == otherBetreuungspensum.getUnitForDisplay();
+		return Objects.equals(
+			getNichtEingetreten(),
+			otherBetreuungspensum.getNichtEingetreten()
+		)
+			&& Objects.equals(
+				getBetreuungInFerienzeit(),
+				otherBetreuungspensum.getBetreuungInFerienzeit()
+			)
+			&& this.getUnitForDisplay()
+				== otherBetreuungspensum.getUnitForDisplay();
 	}
 }

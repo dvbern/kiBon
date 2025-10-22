@@ -17,15 +17,15 @@ package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.AssociationOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -40,20 +40,28 @@ import org.hibernate.envers.Audited;
 @Audited
 @Entity
 @AssociationOverride(name = "eingewoehnung",
-	joinColumns = @JoinColumn(name = "eingewoehnung_id"), foreignKey = @ForeignKey(name = "FK_betreuungsmitteilung_pensum_eingewoehnung_id"))
-public class BetreuungsmitteilungPensum extends AbstractBetreuungsPensum implements Comparable<BetreuungsmitteilungPensum> {
+	joinColumns = @JoinColumn(name = "eingewoehnung_id"),
+	foreignKey = @ForeignKey(
+		name = "FK_betreuungsmitteilung_pensum_eingewoehnung_id"))
+public class BetreuungsmitteilungPensum extends AbstractBetreuungsPensum
+	implements
+	Comparable<BetreuungsmitteilungPensum> {
 
 	private static final long serialVersionUID = -9032858720574672370L;
 
 	@ManyToOne(optional = false)
-	@NotNull @Nonnull
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_betreuungsmitteilung_pens_betreuungsmitteilung_id"), nullable = false)
+	@NotNull
+	@Nonnull
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_betreuungsmitteilung_pens_betreuungsmitteilung_id"),
+		nullable = false)
 	private Betreuungsmitteilung betreuungsmitteilung;
 
 	@Nullable
 	@Valid
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_betreuungspensum_mitteilung_betreuungspensum_abweichung"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_betreuungspensum_mitteilung_betreuungspensum_abweichung"))
 	private BetreuungspensumAbweichung betreuungspensumAbweichung;
 
 	@Nonnull
@@ -61,7 +69,9 @@ public class BetreuungsmitteilungPensum extends AbstractBetreuungsPensum impleme
 		return betreuungsmitteilung;
 	}
 
-	public void setBetreuungsmitteilung(@Nonnull Betreuungsmitteilung betreuungsmitteilung) {
+	public void setBetreuungsmitteilung(
+		@Nonnull Betreuungsmitteilung betreuungsmitteilung
+	) {
 		this.betreuungsmitteilung = betreuungsmitteilung;
 	}
 
@@ -70,7 +80,9 @@ public class BetreuungsmitteilungPensum extends AbstractBetreuungsPensum impleme
 		return betreuungspensumAbweichung;
 	}
 
-	public void setBetreuungspensumAbweichung(@Nullable BetreuungspensumAbweichung betreuungspensumAbweichung) {
+	public void setBetreuungspensumAbweichung(
+		@Nullable BetreuungspensumAbweichung betreuungspensumAbweichung
+	) {
 		this.betreuungspensumAbweichung = betreuungspensumAbweichung;
 	}
 
@@ -96,14 +108,20 @@ public class BetreuungsmitteilungPensum extends AbstractBetreuungsPensum impleme
 		if (!super.isSame(other)) {
 			return false;
 		}
-		final BetreuungsmitteilungPensum otherBetreuungsmitteilungPensum = (BetreuungsmitteilungPensum) other;
-		return getBetreuungsmitteilung().isSame(otherBetreuungsmitteilungPensum.getBetreuungsmitteilung());
+		final BetreuungsmitteilungPensum otherBetreuungsmitteilungPensum =
+			(BetreuungsmitteilungPensum) other;
+		return getBetreuungsmitteilung().isSame(
+			otherBetreuungsmitteilungPensum.getBetreuungsmitteilung()
+		);
 	}
 
 	@Nonnull
 	public BetreuungsmitteilungPensum copy() {
 		BetreuungsmitteilungPensum target = new BetreuungsmitteilungPensum();
-		copyAbstractBetreuungspensumMahlzeitenEntity(target, AntragCopyType.MUTATION);
+		copyAbstractBetreuungspensumMahlzeitenEntity(
+			target,
+			AntragCopyType.MUTATION
+		);
 
 		return target;
 	}

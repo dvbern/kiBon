@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -63,50 +63,68 @@ import org.apache.commons.lang.StringUtils;
 import static ch.dvbern.ebegu.pdfgenerator.PdfUtil.DEFAULT_FONT_SIZE;
 import static ch.dvbern.lib.invoicegenerator.pdf.PdfUtilities.DEFAULT_MULTIPLIED_LEADING;
 
-public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerator {
+public class AnmeldebestaetigungTSPDFGenerator extends
+	DokumentAnFamilieGenerator {
 
-	private static final String ANMELDUNG_BESTAETIGUNG_PFAD = "PdfGeneration_AnmeldungBestaetigung_";
-	private static final String ANMELDUNG_BESTAETIGUNG_TITLE = "PdfGeneration_AnmeldungBestaetigung_Title";
-	private static final String KIND_NAME = "PdfGeneration_AnmeldungBestaetigung_KindName";
-	private static final String EINTRITTSDATUM = "PdfGeneration_AnmeldungBestaetigung_Eintrittsdatum";
-	private static final String ANGEBOT = "PdfGeneration_AnmeldungBestaetigung_Angebot";
-	private static final String ANGEBOT_TAGESSCHULE = "PdfGeneration_AnmeldungBestaetigung_AngebotTagesschule";
-	private static final String KLASSE = "PdfGeneration_AnmeldungBestaetigung_Klasse";
-	private static final String INSTITUTION = "PdfGeneration_AnmeldungBestaetigung_institution";
-	private static final String BEMERKUNG = "PdfGeneration_AnmeldungBestaetigung_bemerkung";
-	private static final String KIND_GEBURTSDATUM = "PdfGeneration_AnmeldungBestaetigung_KindGeburtsdatum";
+	private static final String ANMELDUNG_BESTAETIGUNG_PFAD =
+		"PdfGeneration_AnmeldungBestaetigung_";
+	private static final String ANMELDUNG_BESTAETIGUNG_TITLE =
+		"PdfGeneration_AnmeldungBestaetigung_Title";
+	private static final String KIND_NAME =
+		"PdfGeneration_AnmeldungBestaetigung_KindName";
+	private static final String EINTRITTSDATUM =
+		"PdfGeneration_AnmeldungBestaetigung_Eintrittsdatum";
+	private static final String ANGEBOT =
+		"PdfGeneration_AnmeldungBestaetigung_Angebot";
+	private static final String ANGEBOT_TAGESSCHULE =
+		"PdfGeneration_AnmeldungBestaetigung_AngebotTagesschule";
+	private static final String KLASSE =
+		"PdfGeneration_AnmeldungBestaetigung_Klasse";
+	private static final String INSTITUTION =
+		"PdfGeneration_AnmeldungBestaetigung_institution";
+	private static final String BEMERKUNG =
+		"PdfGeneration_AnmeldungBestaetigung_bemerkung";
+	private static final String KIND_GEBURTSDATUM =
+		"PdfGeneration_AnmeldungBestaetigung_KindGeburtsdatum";
 
 	private static final String ANMELDUNG_BESTAETIGUNG_INTRO_MODULE =
 		"PdfGeneration_AnmeldungBestaetigung_IntroModule";
-	private static final String BESTAETIGUNG_OHNE_TARIF = "PdfGeneration_AnmeldungBestaetigung_ohneTarif";
+	private static final String BESTAETIGUNG_OHNE_TARIF =
+		"PdfGeneration_AnmeldungBestaetigung_ohneTarif";
 	private static final String GEBUEHREN_MIT_PEDAGOGISCHER_BETREUUNG =
 		"PdfGeneration_AnmeldungBestaetigung_gebuehrenMit";
 	private static final String GEBUEHREN_OHNE_PEDAGOGISCHER_BETREUUNG =
 		"PdfGeneration_AnmeldungBestaetigung_gebuehrenOhne";
-	private static final String TEILANGEBOT = "PdfGeneration_AnmeldungBestaetigung_Teilangebot";
-	private static final String ZEIT = "PdfGeneration_AnmeldungBestaetigung_Zeit";
+	private static final String TEILANGEBOT =
+		"PdfGeneration_AnmeldungBestaetigung_Teilangebot";
+	private static final String ZEIT =
+		"PdfGeneration_AnmeldungBestaetigung_Zeit";
 	private static final String MONTAG = "PdfGeneration_Montag";
 	private static final String DIENSTAG = "PdfGeneration_Dienstag";
 	private static final String MITTWOCH = "PdfGeneration_Mittwoch";
 	private static final String DONNERSTAG = "PdfGeneration_Donnerstag";
 	private static final String FREITAG = "PdfGeneration_Freitag";
-	private static final String ALLE_2_WOCHEN = "PdfGeneration_AnmeldungBestaetigung_alle2wochen";
+	private static final String ALLE_2_WOCHEN =
+		"PdfGeneration_AnmeldungBestaetigung_alle2wochen";
 
 	private static final String VON = "PdfGeneration_AnmeldungBestaetigung_Von";
 	private static final String BIS = "PdfGeneration_AnmeldungBestaetigung_Bis";
-	private static final String BETREUNGSSTUNDEN_PRO_WOCHE = "PdfGeneration_AnmeldungBestaetigung_BetreuungsProWoche";
-	private static final String GEBUEHR_PRO_STUNDE = "PdfGeneration_AnmeldungBestaetigung_GebuehrProStunde";
+	private static final String BETREUNGSSTUNDEN_PRO_WOCHE =
+		"PdfGeneration_AnmeldungBestaetigung_BetreuungsProWoche";
+	private static final String GEBUEHR_PRO_STUNDE =
+		"PdfGeneration_AnmeldungBestaetigung_GebuehrProStunde";
 	private static final String VERPFLEGUNGSKOSTEN_PRO_WOCHE =
 		"PdfGeneration_AnmeldungBestaetigung_VerplfegungsProWoche";
 	private static final String VERPFLEGUNGSKOSTEN_VERGUENSTIGUNG_PRO_WOCHE =
 		"PdfGeneration_AnmeldungBestaetigung_VerplfegungsVerguenstigungProWoche";
-	private static final String TOTAL_PRO_WOCHE = "PdfGeneration_AnmeldungBestaetigung_TotalProWoche";
-	private static final String NICHT_EINVERSTANDEN = "PdfGeneration_AnmeldungBestaetigung_NichtEinverstandenInfo";
+	private static final String TOTAL_PRO_WOCHE =
+		"PdfGeneration_AnmeldungBestaetigung_TotalProWoche";
+	private static final String NICHT_EINVERSTANDEN =
+		"PdfGeneration_AnmeldungBestaetigung_NichtEinverstandenInfo";
 	private static final String CHF = "CHF ";
 
 	public enum Art {
-		OHNE_TARIF,
-		MIT_TARIF
+		OHNE_TARIF, MIT_TARIF
 	}
 
 	@Nonnull
@@ -115,8 +133,12 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 	private boolean mahlzeitenverguenstigung;
 
 	public AnmeldebestaetigungTSPDFGenerator(
-		@Nonnull Gesuch gesuch, @Nonnull GemeindeStammdaten stammdaten,
-		@Nonnull Art art, AnmeldungTagesschule anmeldungTagesschule, boolean mahlzeitenverguenstigung) {
+		@Nonnull Gesuch gesuch,
+		@Nonnull GemeindeStammdaten stammdaten,
+		@Nonnull Art art,
+		AnmeldungTagesschule anmeldungTagesschule,
+		boolean mahlzeitenverguenstigung
+	) {
 		super(gesuch, stammdaten);
 		this.art = art;
 		this.anmeldungTagesschule = anmeldungTagesschule;
@@ -148,7 +170,9 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		String email = StringUtils.isNotEmpty(gemeindeStammdaten.getTsEmail()) ?
 			gemeindeStammdaten.getTsEmail() :
 			gemeindeStammdaten.getMail();
-		String telefon = StringUtils.isNotEmpty(gemeindeStammdaten.getTsTelefon()) ?
+		String telefon = StringUtils.isNotEmpty(
+			gemeindeStammdaten.getTsTelefon()
+		) ?
 			gemeindeStammdaten.getTsTelefon() :
 			gemeindeStammdaten.getTelefon();
 		Adresse adresse = gemeindeStammdaten.getTsAdresse() != null ?
@@ -171,45 +195,82 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		return (generator, ctx) -> {
 			Document document = generator.getDocument();
 			document.add(createKindTSAnmeldungTable());
-			document.add(PdfUtil.createParagraph(translate(ANMELDUNG_BESTAETIGUNG_INTRO_MODULE)));
+			document.add(
+				PdfUtil.createParagraph(
+					translate(ANMELDUNG_BESTAETIGUNG_INTRO_MODULE)
+				)
+			);
 			document.add(createBetreuungsangeboteTable());
 			//Bemerkung
-			if (anmeldungTagesschule.getBelegungTagesschule() != null &&
-				StringUtils.isNotEmpty(anmeldungTagesschule.getBelegungTagesschule().getBemerkung())) {
+			if (anmeldungTagesschule.getBelegungTagesschule() != null
+				&&
+				StringUtils.isNotEmpty(
+					anmeldungTagesschule.getBelegungTagesschule()
+						.getBemerkung()
+				)) {
 				document.add(PdfUtil.createParagraph(translate(BEMERKUNG), 0));
 				Paragraph bemerkungParagraph = new Paragraph();
-				bemerkungParagraph.setSpacingAfter(1 * DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
-				bemerkungParagraph.add(PdfUtil.createListInParagraph(Arrays.asList(anmeldungTagesschule.getBelegungTagesschule()
-					.getBemerkung()
-					.split("\\r?\\n"))
-					.stream()
-					.filter(string -> string != null && string.trim().length() > 0)
-					.collect(Collectors.toList())));
+				bemerkungParagraph.setSpacingAfter(
+					1
+						* DEFAULT_FONT_SIZE
+						* PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+				);
+				bemerkungParagraph.add(
+					PdfUtil.createListInParagraph(
+						Arrays.asList(
+							anmeldungTagesschule
+								.getBelegungTagesschule()
+								.getBemerkung()
+								.split("\\r?\\n")
+						)
+							.stream()
+							.filter(
+								string -> string != null
+									&& string.trim()
+										.length()
+										> 0
+							)
+							.collect(Collectors.toList())
+					)
+				);
 				document.add(bemerkungParagraph);
 			}
 			List<Element> abschlussElemente = Lists.newArrayList();
 			if (art == Art.OHNE_TARIF) {
-				abschlussElemente.add(PdfUtil.createParagraph(translate(BESTAETIGUNG_OHNE_TARIF)));
+				abschlussElemente.add(
+					PdfUtil.createParagraph(
+						translate(BESTAETIGUNG_OHNE_TARIF)
+					)
+				);
 			} else {
-				Verfuegung verfuegung = anmeldungTagesschule.getVerfuegungOrVerfuegungPreview();
+				Verfuegung verfuegung = anmeldungTagesschule
+					.getVerfuegungOrVerfuegungPreview();
 				Objects.requireNonNull(verfuegung);
 				createGebuehrenTabelle(verfuegung, document);
 			}
-			abschlussElemente.add(PdfUtil.createParagraph(translate(NICHT_EINVERSTANDEN)));
+			abschlussElemente.add(
+				PdfUtil.createParagraph(translate(NICHT_EINVERSTANDEN))
+			);
 			abschlussElemente.add(createParagraphGruss());
 			abschlussElemente.add(createParagraphSignatur());
-			document.add(PdfUtil.createKeepTogetherTable(abschlussElemente, 2, 0));
+			document.add(
+				PdfUtil.createKeepTogetherTable(abschlussElemente, 2, 0)
+			);
 		};
 	}
 
 	@Override
 	@Nullable
 	protected String getSachbearbeiterSigniert() {
-		Benutzer hauptVerantwortlicher = getGesuch().getDossier().getVerantwortlicherTS();
+		Benutzer hauptVerantwortlicher = getGesuch().getDossier()
+			.getVerantwortlicherTS();
 		if (hauptVerantwortlicher == null) {
-			hauptVerantwortlicher = getGesuch().getDossier().getVerantwortlicherBG();
+			hauptVerantwortlicher = getGesuch().getDossier()
+				.getVerantwortlicherBG();
 		}
-		return hauptVerantwortlicher != null ? translate(SIGNIERT, hauptVerantwortlicher.getFullName()) : null;
+		return hauptVerantwortlicher != null ?
+			translate(SIGNIERT, hauptVerantwortlicher.getFullName()) :
+			null;
 	}
 
 	@Override
@@ -217,20 +278,35 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		return true;
 	}
 
-	private void createGebuehrenTabelle(@Nonnull Verfuegung verfuegung, @Nonnull Document document) {
+	private void createGebuehrenTabelle(
+		@Nonnull Verfuegung verfuegung,
+		@Nonnull Document document
+	) {
 		List<VerfuegungZeitabschnitt> abschnitteMitBetreuung =
 			verfuegung.getZeitabschnitte()
 				.stream()
-				.filter(verfuegungZeitabschnitt ->
-					verfuegungZeitabschnitt.getRelevantBgCalculationResult()
-						.getTsCalculationResultMitPaedagogischerBetreuung() != null)
+				.filter(
+					verfuegungZeitabschnitt -> verfuegungZeitabschnitt
+						.getRelevantBgCalculationResult()
+						.getTsCalculationResultMitPaedagogischerBetreuung()
+						!= null
+				)
 				// filter out time spans which end before the ts entry date
 				.filter(verfuegungZeitabschnitt -> {
-					if (verfuegung.getAnmeldungTagesschule() != null &&
-						verfuegung.getAnmeldungTagesschule().getBelegungTagesschule() != null) {
-						return verfuegungZeitabschnitt.getGueltigkeit().getGueltigBis().compareTo(
-							(verfuegung.getAnmeldungTagesschule()
-								.getBelegungTagesschule()).getEintrittsdatum()) >= 0;
+					if (verfuegung.getAnmeldungTagesschule() != null
+						&&
+						verfuegung.getAnmeldungTagesschule()
+							.getBelegungTagesschule()
+							!= null) {
+						return verfuegungZeitabschnitt.getGueltigkeit()
+							.getGueltigBis()
+							.compareTo(
+								(verfuegung
+									.getAnmeldungTagesschule()
+									.getBelegungTagesschule())
+									.getEintrittsdatum()
+							)
+							>= 0;
 					}
 					return false;
 				})
@@ -245,16 +321,28 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		List<VerfuegungZeitabschnitt> abschnitteOhneBetreuung =
 			verfuegung.getZeitabschnitte()
 				.stream()
-				.filter(verfuegungZeitabschnitt ->
-					verfuegungZeitabschnitt.getRelevantBgCalculationResult()
-						.getTsCalculationResultOhnePaedagogischerBetreuung() != null)
+				.filter(
+					verfuegungZeitabschnitt -> verfuegungZeitabschnitt
+						.getRelevantBgCalculationResult()
+						.getTsCalculationResultOhnePaedagogischerBetreuung()
+						!= null
+				)
 				// filter out time spans which end before the ts entry date
 				.filter(verfuegungZeitabschnitt -> {
-					if (verfuegung.getAnmeldungTagesschule() != null &&
-						verfuegung.getAnmeldungTagesschule().getBelegungTagesschule() != null) {
-						return verfuegungZeitabschnitt.getGueltigkeit().getGueltigBis().compareTo(
-							(verfuegung.getAnmeldungTagesschule()
-								.getBelegungTagesschule()).getEintrittsdatum()) >= 0;
+					if (verfuegung.getAnmeldungTagesschule() != null
+						&&
+						verfuegung.getAnmeldungTagesschule()
+							.getBelegungTagesschule()
+							!= null) {
+						return verfuegungZeitabschnitt.getGueltigkeit()
+							.getGueltigBis()
+							.compareTo(
+								(verfuegung
+									.getAnmeldungTagesschule()
+									.getBelegungTagesschule())
+									.getEintrittsdatum()
+							)
+							>= 0;
 					}
 					return false;
 				})
@@ -267,16 +355,31 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		}
 	}
 
-	private Paragraph createGebuehrTabelleTitle(boolean pedagogischerBetreut, boolean setSpacingBefore) {
+	private Paragraph createGebuehrTabelleTitle(
+		boolean pedagogischerBetreut,
+		boolean setSpacingBefore
+	) {
 		Paragraph gebuhren = new Paragraph();
-		gebuhren.add(new Phrase(
-			pedagogischerBetreut ? translate(GEBUEHREN_MIT_PEDAGOGISCHER_BETREUUNG) :
-				translate(GEBUEHREN_OHNE_PEDAGOGISCHER_BETREUUNG),
-			getPageConfiguration().getFonts().getFont()));
+		gebuhren.add(
+			new Phrase(
+				pedagogischerBetreut ?
+					translate(
+						GEBUEHREN_MIT_PEDAGOGISCHER_BETREUUNG
+					) :
+					translate(
+						GEBUEHREN_OHNE_PEDAGOGISCHER_BETREUUNG
+					),
+				getPageConfiguration().getFonts().getFont()
+			)
+		);
 		if (setSpacingBefore) {
-			gebuhren.setSpacingBefore(DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+			gebuhren.setSpacingBefore(
+				DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+			);
 		}
-		gebuhren.setSpacingAfter(DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		gebuhren.setSpacingAfter(
+			DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+		);
 		return gebuhren;
 	}
 
@@ -287,15 +390,27 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		table.setWidths(columnWidths);
 		// Init
 		PdfUtil.setTableDefaultStyles(table);
-		table.setSpacingAfter(2 * DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE);
+		table.setSpacingAfter(
+			2 * DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE
+		);
 		//Row: Referenznummer + Institution
 		final Font defaultFont = getPageConfiguration().getFonts().getFont();
 		table.addCell(new Phrase(translate(REFERENZ_NUMMER), defaultFont));
-		table.addCell(new Phrase(getGesuch().getJahrFallAndGemeindenummer(), defaultFont));
+		table.addCell(
+			new Phrase(
+				getGesuch().getJahrFallAndGemeindenummer(),
+				defaultFont
+			)
+		);
 		table.addCell(new Phrase(translate(INSTITUTION), defaultFont));
-		table.addCell(new Phrase(
-			anmeldungTagesschule.getInstitutionStammdaten().getInstitution().getName(),
-			defaultFont));
+		table.addCell(
+			new Phrase(
+				anmeldungTagesschule.getInstitutionStammdaten()
+					.getInstitution()
+					.getName(),
+				defaultFont
+			)
+		);
 
 		Kind kind = anmeldungTagesschule.getKind().getKindJA();
 		// Row: Name + Eintrittsdatum
@@ -303,8 +418,15 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		table.addCell(new Phrase(kind.getFullName(), defaultFont));
 		table.addCell(new Phrase(translate(EINTRITTSDATUM), defaultFont));
 		Objects.requireNonNull(anmeldungTagesschule.getBelegungTagesschule());
-		table.addCell(new Phrase(Constants.DATE_FORMATTER.format(
-			anmeldungTagesschule.getBelegungTagesschule().getEintrittsdatum()), defaultFont));
+		table.addCell(
+			new Phrase(
+				Constants.DATE_FORMATTER.format(
+					anmeldungTagesschule.getBelegungTagesschule()
+						.getEintrittsdatum()
+				),
+				defaultFont
+			)
+		);
 		// Row: Angebot + Klasse
 		table.addCell(new Phrase(translate(ANGEBOT), defaultFont));
 		table.addCell(new Phrase(translate(ANGEBOT_TAGESSCHULE), defaultFont));
@@ -312,15 +434,27 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		EinschulungTyp einschulungTyp = kind.getEinschulungTyp();
 		if (einschulungTyp != null) {
 			String einschulungString = einschulungTyp.name();
-			table.addCell(new Phrase(
-				translate(ANMELDUNG_BESTAETIGUNG_PFAD + einschulungString),
-				defaultFont));
+			table.addCell(
+				new Phrase(
+					translate(
+						ANMELDUNG_BESTAETIGUNG_PFAD
+							+ einschulungString
+					),
+					defaultFont
+				)
+			);
 		} else {
 			table.addCell(new Phrase("", defaultFont));
 		}
 		table.addCell(new Phrase(translate(KIND_GEBURTSDATUM), defaultFont));
-		table.addCell(new Phrase(Constants.DATE_FORMATTER.format(
-			kind.getGeburtsdatum()), defaultFont));
+		table.addCell(
+			new Phrase(
+				Constants.DATE_FORMATTER.format(
+					kind.getGeburtsdatum()
+				),
+				defaultFont
+			)
+		);
 		table.completeRow();
 		return table;
 	}
@@ -332,109 +466,202 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		table.setWidths(new int[] { 30, 25, 20, 20, 20, 20, 20 });
 		table.setHeaderRows(1);
 		table.setKeepTogether(true);
-		table.addCell(createCell(Element.ALIGN_LEFT, translate(TEILANGEBOT), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_RIGHT, translate(ZEIT), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_CENTER, translate(MONTAG), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_CENTER, translate(DIENSTAG), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_CENTER, translate(MITTWOCH), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_CENTER, translate(DONNERSTAG), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_CENTER, translate(FREITAG), Color.LIGHT_GRAY));
+		table.addCell(
+			createCell(
+				Element.ALIGN_LEFT,
+				translate(TEILANGEBOT),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_RIGHT,
+				translate(ZEIT),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_CENTER,
+				translate(MONTAG),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_CENTER,
+				translate(DIENSTAG),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_CENTER,
+				translate(MITTWOCH),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_CENTER,
+				translate(DONNERSTAG),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_CENTER,
+				translate(FREITAG),
+				Color.LIGHT_GRAY
+			)
+		);
 
 		if (anmeldungTagesschule.getBelegungTagesschule() != null) {
-			Map<String, List<BelegungTagesschuleModul>> tagesschuleModuleMap = new HashMap();
+			Map<String, List<BelegungTagesschuleModul>> tagesschuleModuleMap =
+				new HashMap();
 
 			anmeldungTagesschule.getBelegungTagesschule()
 				.getBelegungTagesschuleModule()
 				.forEach(belegungTagesschuleModul -> {
 					List<BelegungTagesschuleModul> modulTagesschuleList =
-						tagesschuleModuleMap.get(belegungTagesschuleModul.getModulTagesschule()
-							.getModulTagesschuleGroup()
-							.getId());
+						tagesschuleModuleMap.get(
+							belegungTagesschuleModul
+								.getModulTagesschule()
+								.getModulTagesschuleGroup()
+								.getId()
+						);
 					if (modulTagesschuleList == null) {
 						modulTagesschuleList = new ArrayList();
 					}
 					modulTagesschuleList.add(belegungTagesschuleModul);
-					tagesschuleModuleMap.put(belegungTagesschuleModul.getModulTagesschule()
-						.getModulTagesschuleGroup()
-						.getId(), modulTagesschuleList);
+					tagesschuleModuleMap.put(
+						belegungTagesschuleModul.getModulTagesschule()
+							.getModulTagesschuleGroup()
+							.getId(),
+						modulTagesschuleList
+					);
 				});
 
-			tagesschuleModuleMap.values().stream().sorted((oneList, otherList) -> {
-				ModulTagesschuleGroup one = oneList.get(0).getModulTagesschule().getModulTagesschuleGroup();
-				ModulTagesschuleGroup other = otherList.get(0).getModulTagesschule().getModulTagesschuleGroup();
-				return one.compareTo(other);
-			}).forEach(v -> {
-				boolean monday = false;
-				boolean tuesday = false;
-				boolean wednesday = false;
-				boolean thursday = false;
-				boolean friday = false;
-				boolean mondayAlleZweiWoche = false;
-				boolean tuesdayAlleZweiWoche = false;
-				boolean wednesdayAlleZweiWoche = false;
-				boolean thursdayAlleZweiWoche = false;
-				boolean fridayAlleZweiWoche = false;
-				ModulTagesschuleGroup mtg = null;
-				for (BelegungTagesschuleModul btm : v) {
-					if (mtg == null) {
-						mtg = btm.getModulTagesschule().getModulTagesschuleGroup();
+			tagesschuleModuleMap.values()
+				.stream()
+				.sorted((oneList, otherList) -> {
+					ModulTagesschuleGroup one = oneList.get(0)
+						.getModulTagesschule()
+						.getModulTagesschuleGroup();
+					ModulTagesschuleGroup other = otherList.get(0)
+						.getModulTagesschule()
+						.getModulTagesschuleGroup();
+					return one.compareTo(other);
+				})
+				.forEach(v -> {
+					boolean monday = false;
+					boolean tuesday = false;
+					boolean wednesday = false;
+					boolean thursday = false;
+					boolean friday = false;
+					boolean mondayAlleZweiWoche = false;
+					boolean tuesdayAlleZweiWoche = false;
+					boolean wednesdayAlleZweiWoche = false;
+					boolean thursdayAlleZweiWoche = false;
+					boolean fridayAlleZweiWoche = false;
+					ModulTagesschuleGroup mtg = null;
+					for (BelegungTagesschuleModul btm : v) {
+						if (mtg == null) {
+							mtg = btm.getModulTagesschule()
+								.getModulTagesschuleGroup();
+						}
+						int day = btm.getModulTagesschule()
+							.getWochentag()
+							.getValue();
+						switch (day) {
+						case 1:
+							monday = true;
+							if (btm.getIntervall()
+								== BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
+								mondayAlleZweiWoche = true;
+							}
+							break;
+						case 2:
+							tuesday = true;
+							if (btm.getIntervall()
+								== BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
+								tuesdayAlleZweiWoche = true;
+							}
+							break;
+						case 3:
+							wednesday = true;
+							if (btm.getIntervall()
+								== BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
+								wednesdayAlleZweiWoche = true;
+							}
+							break;
+						case 4:
+							thursday = true;
+							if (btm.getIntervall()
+								== BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
+								thursdayAlleZweiWoche = true;
+							}
+							break;
+						case 5:
+							friday = true;
+							if (btm.getIntervall()
+								== BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
+								fridayAlleZweiWoche = true;
+							}
+							break;
+						}
 					}
-					int day = btm.getModulTagesschule().getWochentag().getValue();
-					switch (day) {
-					case 1:
-						monday = true;
-						if (btm.getIntervall() == BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
-							mondayAlleZweiWoche = true;
-						}
-						break;
-					case 2:
-						tuesday = true;
-						if (btm.getIntervall() == BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
-							tuesdayAlleZweiWoche = true;
-						}
-						break;
-					case 3:
-						wednesday = true;
-						if (btm.getIntervall() == BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
-							wednesdayAlleZweiWoche = true;
-						}
-						break;
-					case 4:
-						thursday = true;
-						if (btm.getIntervall() == BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
-							thursdayAlleZweiWoche = true;
-						}
-						break;
-					case 5:
-						friday = true;
-						if (btm.getIntervall() == BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN) {
-							fridayAlleZweiWoche = true;
-						}
-						break;
+					Objects.requireNonNull(mtg);
+					boolean isFrench = "fr".equalsIgnoreCase(
+						sprache.getLanguage()
+					);
+					String bezeichnungStr;
+					if (mtg.getBezeichnung().getTextDeutsch() != null
+						&& mtg.getBezeichnung().getTextFranzoesisch()
+							!= null) {
+						bezeichnungStr = isFrench ?
+							mtg.getBezeichnung().getTextFranzoesisch() :
+							mtg.getBezeichnung().getTextDeutsch();
+					} else {
+						bezeichnungStr = mtg.getModulTagesschuleName()
+							.toString();
 					}
-				}
-				Objects.requireNonNull(mtg);
-				boolean isFrench = "fr".equalsIgnoreCase(sprache.getLanguage());
-				String bezeichnungStr;
-				if (mtg.getBezeichnung().getTextDeutsch() != null
-					&& mtg.getBezeichnung().getTextFranzoesisch() != null) {
-					bezeichnungStr = isFrench ? mtg.getBezeichnung().getTextFranzoesisch() :
-						mtg.getBezeichnung().getTextDeutsch();
-				} else {
-					bezeichnungStr = mtg.getModulTagesschuleName().toString();
-				}
-				table.addCell(createCell(Element.ALIGN_LEFT, bezeichnungStr, null));
-				table.addCell(createCell(
-					Element.ALIGN_RIGHT,
-					mtg.getZeitVon().format(Constants.HOURS_FORMAT) + '-' + mtg.getZeitBis()
-						.format(Constants.HOURS_FORMAT),
-					null));
-				table.addCell(getCellForDay(monday, mondayAlleZweiWoche));
-				table.addCell(getCellForDay(tuesday, tuesdayAlleZweiWoche));
-				table.addCell(getCellForDay(wednesday, wednesdayAlleZweiWoche));
-				table.addCell(getCellForDay(thursday, thursdayAlleZweiWoche));
-				table.addCell(getCellForDay(friday, fridayAlleZweiWoche));
-			});
+					table.addCell(
+						createCell(
+							Element.ALIGN_LEFT,
+							bezeichnungStr,
+							null
+						)
+					);
+					table.addCell(
+						createCell(
+							Element.ALIGN_RIGHT,
+							mtg.getZeitVon()
+								.format(Constants.HOURS_FORMAT)
+								+ '-'
+								+ mtg.getZeitBis()
+									.format(
+										Constants.HOURS_FORMAT
+									),
+							null
+						)
+					);
+					table.addCell(
+						getCellForDay(monday, mondayAlleZweiWoche)
+					);
+					table.addCell(
+						getCellForDay(tuesday, tuesdayAlleZweiWoche)
+					);
+					table.addCell(
+						getCellForDay(wednesday, wednesdayAlleZweiWoche)
+					);
+					table.addCell(
+						getCellForDay(thursday, thursdayAlleZweiWoche)
+					);
+					table.addCell(
+						getCellForDay(friday, fridayAlleZweiWoche)
+					);
+				});
 		}
 		table.setSpacingAfter(DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE);
 		return table;
@@ -444,25 +671,68 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 
 		int rows = mahlzeitenverguenstigung ? 7 : 6;
 		int[] columnWidths =
-			mahlzeitenverguenstigung ? new int[] { 20, 20, 30, 18, 30, 30, 25 } : new int[] { 20, 20, 30, 18, 30, 25 };
+			mahlzeitenverguenstigung ?
+				new int[] { 20, 20, 30, 18, 30, 30, 25 } :
+				new int[] { 20, 20, 30, 18, 30, 25 };
 
 		PdfPTable table = new PdfPTable(rows);
 		table.setWidthPercentage(PdfElementGenerator.FULL_WIDTH);
 		table.setWidths(columnWidths);
 		table.setHeaderRows(1);
 		table.setKeepTogether(true);
-		table.addCell(createCell(Element.ALIGN_RIGHT, translate(VON), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_RIGHT, translate(BIS), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_RIGHT, translate(BETREUNGSSTUNDEN_PRO_WOCHE), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_RIGHT, translate(GEBUEHR_PRO_STUNDE), Color.LIGHT_GRAY));
-		table.addCell(createCell(Element.ALIGN_RIGHT, translate(VERPFLEGUNGSKOSTEN_PRO_WOCHE), Color.LIGHT_GRAY));
-		if (mahlzeitenverguenstigung) {
-			table.addCell(createCell(
+		table.addCell(
+			createCell(
 				Element.ALIGN_RIGHT,
-				translate(VERPFLEGUNGSKOSTEN_VERGUENSTIGUNG_PRO_WOCHE),
-				Color.LIGHT_GRAY));
+				translate(VON),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_RIGHT,
+				translate(BIS),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_RIGHT,
+				translate(BETREUNGSSTUNDEN_PRO_WOCHE),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_RIGHT,
+				translate(GEBUEHR_PRO_STUNDE),
+				Color.LIGHT_GRAY
+			)
+		);
+		table.addCell(
+			createCell(
+				Element.ALIGN_RIGHT,
+				translate(VERPFLEGUNGSKOSTEN_PRO_WOCHE),
+				Color.LIGHT_GRAY
+			)
+		);
+		if (mahlzeitenverguenstigung) {
+			table.addCell(
+				createCell(
+					Element.ALIGN_RIGHT,
+					translate(
+						VERPFLEGUNGSKOSTEN_VERGUENSTIGUNG_PRO_WOCHE
+					),
+					Color.LIGHT_GRAY
+				)
+			);
 		}
-		table.addCell(createCell(Element.ALIGN_RIGHT, translate(TOTAL_PRO_WOCHE), Color.LIGHT_GRAY));
+		table.addCell(
+			createCell(
+				Element.ALIGN_RIGHT,
+				translate(TOTAL_PRO_WOCHE),
+				Color.LIGHT_GRAY
+			)
+		);
 		table.setSpacingAfter(DEFAULT_MULTIPLIED_LEADING * DEFAULT_FONT_SIZE);
 		return table;
 	}
@@ -470,51 +740,107 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 	private void fillGebuehrenTable(
 		PdfPTable table,
 		List<VerfuegungZeitabschnitt> abschnitte,
-		boolean mitPedagogischerBetreuug) {
+		boolean mitPedagogischerBetreuug
+	) {
 		for (VerfuegungZeitabschnitt anmeldungTagesschuleZeitabschnitt : abschnitte) {
 			TSCalculationResult tsResult = mitPedagogischerBetreuug ?
-				anmeldungTagesschuleZeitabschnitt.getRelevantBgCalculationResult()
+				anmeldungTagesschuleZeitabschnitt
+					.getRelevantBgCalculationResult()
 					.getTsCalculationResultMitPaedagogischerBetreuung() :
-				anmeldungTagesschuleZeitabschnitt.getRelevantBgCalculationResult()
+				anmeldungTagesschuleZeitabschnitt
+					.getRelevantBgCalculationResult()
 					.getTsCalculationResultOhnePaedagogischerBetreuung();
 			Objects.requireNonNull(tsResult);
 
-			table.addCell(createCell(
-				Element.ALIGN_RIGHT,
-				Constants.DATE_FORMATTER.format(
-					// if there is a ts betreuung and the entry date of the tagesschule entry is after the time span
-					// start date, display the entry date
-					(anmeldungTagesschule.getBelegungTagesschule() != null &&
-						anmeldungTagesschuleZeitabschnitt.getGueltigkeit().getGueltigAb().compareTo(
-							anmeldungTagesschule.getBelegungTagesschule().getEintrittsdatum()
-						) < 0) ?
-						anmeldungTagesschule.getBelegungTagesschule().getEintrittsdatum() :
-						anmeldungTagesschuleZeitabschnitt.getGueltigkeit().getGueltigAb()),
-				null));
-			table.addCell(createCell(
-				Element.ALIGN_RIGHT,
-				Constants.DATE_FORMATTER.format(anmeldungTagesschuleZeitabschnitt.getGueltigkeit().getGueltigBis()),
-				null));
-			table.addCell(createCell(
-				Element.ALIGN_RIGHT,
-				tsResult.getBetreuungszeitProWocheFormatted(),
-				null));
-			table.addCell(createCell(Element.ALIGN_RIGHT,
-				CHF + PdfUtil.printBigDecimal(tsResult.getGebuehrProStunde()), null));
-			table.addCell(createCell(
-				Element.ALIGN_RIGHT,
-				CHF + PdfUtil.printBigDecimal(tsResult.getVerpflegungskosten()),
-				null));
-			if (mahlzeitenverguenstigung) {
-				table.addCell(createCell(
+			table.addCell(
+				createCell(
 					Element.ALIGN_RIGHT,
-					CHF + PdfUtil.printBigDecimal(tsResult.getVerpflegungskostenVerguenstigt()),
-					null));
+					Constants.DATE_FORMATTER.format(
+						// if there is a ts betreuung and the entry date of the tagesschule entry is after the time span
+						// start date, display the entry date
+						(anmeldungTagesschule
+							.getBelegungTagesschule()
+							!= null
+							&&
+							anmeldungTagesschuleZeitabschnitt
+								.getGueltigkeit()
+								.getGueltigAb()
+								.compareTo(
+									anmeldungTagesschule
+										.getBelegungTagesschule()
+										.getEintrittsdatum()
+								)
+								< 0) ?
+									anmeldungTagesschule
+										.getBelegungTagesschule()
+										.getEintrittsdatum() :
+									anmeldungTagesschuleZeitabschnitt
+										.getGueltigkeit()
+										.getGueltigAb()
+					),
+					null
+				)
+			);
+			table.addCell(
+				createCell(
+					Element.ALIGN_RIGHT,
+					Constants.DATE_FORMATTER.format(
+						anmeldungTagesschuleZeitabschnitt
+							.getGueltigkeit()
+							.getGueltigBis()
+					),
+					null
+				)
+			);
+			table.addCell(
+				createCell(
+					Element.ALIGN_RIGHT,
+					tsResult.getBetreuungszeitProWocheFormatted(),
+					null
+				)
+			);
+			table.addCell(
+				createCell(
+					Element.ALIGN_RIGHT,
+					CHF
+						+ PdfUtil.printBigDecimal(
+							tsResult.getGebuehrProStunde()
+						),
+					null
+				)
+			);
+			table.addCell(
+				createCell(
+					Element.ALIGN_RIGHT,
+					CHF
+						+ PdfUtil.printBigDecimal(
+							tsResult.getVerpflegungskosten()
+						),
+					null
+				)
+			);
+			if (mahlzeitenverguenstigung) {
+				table.addCell(
+					createCell(
+						Element.ALIGN_RIGHT,
+						CHF
+							+ PdfUtil.printBigDecimal(
+								tsResult.getVerpflegungskostenVerguenstigt()
+							),
+						null
+					)
+				);
 			}
-			table.addCell(createCell(
-				Element.ALIGN_RIGHT,
-				CHF + PdfUtil.printBigDecimal(tsResult.getTotalKostenProWoche()),
-				null));
+			table.addCell(
+				createCell(
+					Element.ALIGN_RIGHT,
+					CHF
+						+ PdfUtil.printBigDecimal(
+							tsResult.getTotalKostenProWoche()
+						),
+					null
+				)
+			);
 		}
 	}
 
@@ -531,9 +857,16 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		dayCell.addElement(dayParagraph);
 		if (alleZweiWochen) {
 			Paragraph alleZweiWocheParagraph =
-				new Paragraph(new Phrase(
-					translate(ALLE_2_WOCHEN),
-					PdfUtil.createFontWithSize(getPageConfiguration().getFonts().getFont(), 6.0f)));
+				new Paragraph(
+					new Phrase(
+						translate(ALLE_2_WOCHEN),
+						PdfUtil.createFontWithSize(
+							getPageConfiguration().getFonts()
+								.getFont(),
+							6.0f
+						)
+					)
+				);
 			alleZweiWocheParagraph.setAlignment(Element.ALIGN_CENTER);
 			dayCell.addElement(alleZweiWocheParagraph);
 		}
@@ -548,7 +881,9 @@ public class AnmeldebestaetigungTSPDFGenerator extends DokumentAnFamilieGenerato
 		@Nullable Color bgColor
 	) {
 		PdfPCell cell;
-		cell = new PdfPCell(new Phrase(value, getPageConfiguration().getFonts().getFont()));
+		cell = new PdfPCell(
+			new Phrase(value, getPageConfiguration().getFonts().getFont())
+		);
 		cell.setHorizontalAlignment(alignment);
 		if (bgColor != null) {
 			cell.setBackgroundColor(bgColor);

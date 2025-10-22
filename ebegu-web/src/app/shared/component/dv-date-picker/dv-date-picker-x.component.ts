@@ -20,22 +20,28 @@ import {
     Component,
     EventEmitter,
     Input,
-    Output
+    Output,
+    ViewEncapsulation
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
-import * as moment from 'moment';
+import moment from 'moment';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 
 @Component({
     selector: 'dv-date-picker-x',
     templateUrl: './dv-date-picker-x.component.html',
     changeDetection: ChangeDetectionStrategy.Default,
+    encapsulation: ViewEncapsulation.None,
     styleUrls: ['dv-date-picker-x.component.less'],
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class DvDatePickerXComponent {
     @Input()
     public label: string;
+
+    @Input()
+    public tooltip?: string;
 
     @Input()
     public date: moment.Moment;
@@ -45,6 +51,15 @@ export class DvDatePickerXComponent {
 
     @Input()
     public maxDate: moment.Moment;
+
+    @Input()
+    public noFutureDate: boolean;
+
+    @Input()
+    public startView: 'month' | 'year' | 'multi-year' = 'month';
+
+    @Input()
+    public placeholderFirstOfMonth: boolean = false;
 
     /**
      * Whether the mat-toggle for opening the calender is enabled. Defaults to true
@@ -67,7 +82,7 @@ export class DvDatePickerXComponent {
         new EventEmitter<moment.Moment>();
 
     @Input()
-    public readonly required: boolean;
+    public required: boolean;
 
     public randId = EbeguUtil.generateRandomName(10);
 

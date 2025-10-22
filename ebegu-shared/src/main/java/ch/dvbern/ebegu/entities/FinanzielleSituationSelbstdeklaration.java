@@ -8,29 +8,31 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
+
+import java.math.BigDecimal;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.util.MathUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import java.math.BigDecimal;
-
 @Audited
 @Entity
-public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity {
+public class FinanzielleSituationSelbstdeklaration extends
+	AbstractMutableEntity {
 
 	private static final long serialVersionUID = -731322115720756445L;
 
@@ -132,7 +134,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return einkunftVersicherung;
 	}
 
-	public void setEinkunftVersicherung(@Nullable BigDecimal einkunftVersicherung) {
+	public void setEinkunftVersicherung(
+		@Nullable BigDecimal einkunftVersicherung
+	) {
 		this.einkunftVersicherung = einkunftVersicherung;
 	}
 
@@ -141,17 +145,20 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return einkunftWertschriften;
 	}
 
-	public void setEinkunftWertschriften(@Nullable BigDecimal einkunftWertschriften) {
+	public void setEinkunftWertschriften(
+		@Nullable BigDecimal einkunftWertschriften
+	) {
 		this.einkunftWertschriften = einkunftWertschriften;
 	}
-
 
 	@Nullable
 	public BigDecimal getEinkunftUnterhaltsbeitragKinder() {
 		return einkunftUnterhaltsbeitragKinder;
 	}
 
-	public void setEinkunftUnterhaltsbeitragKinder(@Nullable BigDecimal einkunftUnterhaltsbeitragKinder) {
+	public void setEinkunftUnterhaltsbeitragKinder(
+		@Nullable BigDecimal einkunftUnterhaltsbeitragKinder
+	) {
 		this.einkunftUnterhaltsbeitragKinder = einkunftUnterhaltsbeitragKinder;
 	}
 
@@ -169,7 +176,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return einkunftLiegenschaften;
 	}
 
-	public void setEinkunftLiegenschaften(@Nullable BigDecimal einkunftLiegenschaften) {
+	public void setEinkunftLiegenschaften(
+		@Nullable BigDecimal einkunftLiegenschaften
+	) {
 		this.einkunftLiegenschaften = einkunftLiegenschaften;
 	}
 
@@ -178,7 +187,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugBerufsauslagen;
 	}
 
-	public void setAbzugBerufsauslagen(@Nullable BigDecimal abzugBerufsauslagen) {
+	public void setAbzugBerufsauslagen(
+		@Nullable BigDecimal abzugBerufsauslagen
+	) {
 		this.abzugBerufsauslagen = abzugBerufsauslagen;
 	}
 
@@ -196,7 +207,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugUnterhaltsbeitragKinder;
 	}
 
-	public void setAbzugUnterhaltsbeitragKinder(@Nullable BigDecimal abzugUnterhaltsbeitragKinder) {
+	public void setAbzugUnterhaltsbeitragKinder(
+		@Nullable BigDecimal abzugUnterhaltsbeitragKinder
+	) {
 		this.abzugUnterhaltsbeitragKinder = abzugUnterhaltsbeitragKinder;
 	}
 
@@ -214,7 +227,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugVersicherungspraemien;
 	}
 
-	public void setAbzugVersicherungspraemien(@Nullable BigDecimal abzugVersicherungspraemien) {
+	public void setAbzugVersicherungspraemien(
+		@Nullable BigDecimal abzugVersicherungspraemien
+	) {
 		this.abzugVersicherungspraemien = abzugVersicherungspraemien;
 	}
 
@@ -223,7 +238,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugKrankheitsUnfallKosten;
 	}
 
-	public void setAbzugKrankheitsUnfallKosten(@Nullable BigDecimal abzugKrankheitsUnfallKosten) {
+	public void setAbzugKrankheitsUnfallKosten(
+		@Nullable BigDecimal abzugKrankheitsUnfallKosten
+	) {
 		this.abzugKrankheitsUnfallKosten = abzugKrankheitsUnfallKosten;
 	}
 
@@ -232,8 +249,11 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return sonderabzugErwerbstaetigkeitEhegatten;
 	}
 
-	public void setSonderabzugErwerbstaetigkeitEhegatten(@Nullable BigDecimal sonderabzugErwerbstaetigkeitEhegatten) {
-		this.sonderabzugErwerbstaetigkeitEhegatten = sonderabzugErwerbstaetigkeitEhegatten;
+	public void setSonderabzugErwerbstaetigkeitEhegatten(
+		@Nullable BigDecimal sonderabzugErwerbstaetigkeitEhegatten
+	) {
+		this.sonderabzugErwerbstaetigkeitEhegatten =
+			sonderabzugErwerbstaetigkeitEhegatten;
 	}
 
 	@Nullable
@@ -241,7 +261,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugKinderVorschule;
 	}
 
-	public void setAbzugKinderVorschule(@Nullable BigDecimal abzugKinderVorschule) {
+	public void setAbzugKinderVorschule(
+		@Nullable BigDecimal abzugKinderVorschule
+	) {
 		this.abzugKinderVorschule = abzugKinderVorschule;
 	}
 
@@ -259,7 +281,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugEigenbetreuung;
 	}
 
-	public void setAbzugEigenbetreuung(@Nullable BigDecimal abzugEigenbetreuung) {
+	public void setAbzugEigenbetreuung(
+		@Nullable BigDecimal abzugEigenbetreuung
+	) {
 		this.abzugEigenbetreuung = abzugEigenbetreuung;
 	}
 
@@ -268,7 +292,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugFremdbetreuung;
 	}
 
-	public void setAbzugFremdbetreuung(@Nullable BigDecimal abzugFremdbetreuung) {
+	public void setAbzugFremdbetreuung(
+		@Nullable BigDecimal abzugFremdbetreuung
+	) {
 		this.abzugFremdbetreuung = abzugFremdbetreuung;
 	}
 
@@ -277,7 +303,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugErwerbsunfaehigePersonen;
 	}
 
-	public void setAbzugErwerbsunfaehigePersonen(@Nullable BigDecimal abzugErwerbsunfaehigePersonen) {
+	public void setAbzugErwerbsunfaehigePersonen(
+		@Nullable BigDecimal abzugErwerbsunfaehigePersonen
+	) {
 		this.abzugErwerbsunfaehigePersonen = abzugErwerbsunfaehigePersonen;
 	}
 
@@ -295,8 +323,11 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugSteuerfreierBetragErwachsene;
 	}
 
-	public void setAbzugSteuerfreierBetragErwachsene(@Nullable BigDecimal abzugSteuerfreierBetragErwachsene) {
-		this.abzugSteuerfreierBetragErwachsene = abzugSteuerfreierBetragErwachsene;
+	public void setAbzugSteuerfreierBetragErwachsene(
+		@Nullable BigDecimal abzugSteuerfreierBetragErwachsene
+	) {
+		this.abzugSteuerfreierBetragErwachsene =
+			abzugSteuerfreierBetragErwachsene;
 	}
 
 	@Nullable
@@ -304,7 +335,9 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		return abzugSteuerfreierBetragKinder;
 	}
 
-	public void setAbzugSteuerfreierBetragKinder(@Nullable BigDecimal abzugSteuerfreierBetragKinder) {
+	public void setAbzugSteuerfreierBetragKinder(
+		@Nullable BigDecimal abzugSteuerfreierBetragKinder
+	) {
 		this.abzugSteuerfreierBetragKinder = abzugSteuerfreierBetragKinder;
 	}
 
@@ -319,33 +352,123 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final FinanzielleSituationSelbstdeklaration otherSelbstdeklaration = (FinanzielleSituationSelbstdeklaration) other;
-		return MathUtil.isSame(getEinkunftErwerb(), otherSelbstdeklaration.getEinkunftErwerb()) &&
-			MathUtil.isSame(getEinkunftVersicherung(), otherSelbstdeklaration.getEinkunftVersicherung()) &&
-			MathUtil.isSame(getEinkunftWertschriften(), otherSelbstdeklaration.getEinkunftWertschriften()) &&
-			MathUtil.isSame(getEinkunftUnterhaltsbeitragKinder(), otherSelbstdeklaration.getEinkunftUnterhaltsbeitragKinder()) &&
-			MathUtil.isSame(getEinkunftUeberige(), otherSelbstdeklaration.getEinkunftUeberige()) &&
-			MathUtil.isSame(getEinkunftLiegenschaften(), otherSelbstdeklaration.getEinkunftLiegenschaften()) &&
-			MathUtil.isSame(getAbzugBerufsauslagen(), otherSelbstdeklaration.getAbzugBerufsauslagen()) &&
-			MathUtil.isSame(getAbzugSchuldzinsen(), otherSelbstdeklaration.getAbzugSchuldzinsen()) &&
-			MathUtil.isSame(getAbzugUnterhaltsbeitragKinder(), otherSelbstdeklaration.getAbzugUnterhaltsbeitragKinder()) &&
-			MathUtil.isSame(getAbzugSaeule3A(), otherSelbstdeklaration.getAbzugSaeule3A()) &&
-			MathUtil.isSame(getAbzugVersicherungspraemien(), otherSelbstdeklaration.getAbzugVersicherungspraemien()) &&
-			MathUtil.isSame(getAbzugKrankheitsUnfallKosten(), otherSelbstdeklaration.getAbzugKrankheitsUnfallKosten()) &&
-			MathUtil.isSame(getSonderabzugErwerbstaetigkeitEhegatten(), otherSelbstdeklaration.getSonderabzugErwerbstaetigkeitEhegatten()) &&
-			MathUtil.isSame(getAbzugKinderVorschule(), otherSelbstdeklaration.getAbzugKinderVorschule()) &&
-			MathUtil.isSame(getAbzugKinderSchule(), otherSelbstdeklaration.getAbzugKinderSchule()) &&
-			MathUtil.isSame(getAbzugEigenbetreuung(), otherSelbstdeklaration.getAbzugEigenbetreuung()) &&
-			MathUtil.isSame(getAbzugFremdbetreuung(), otherSelbstdeklaration.getAbzugFremdbetreuung()) &&
-			MathUtil.isSame(getAbzugErwerbsunfaehigePersonen(), otherSelbstdeklaration.getAbzugErwerbsunfaehigePersonen()) &&
-			MathUtil.isSame(getAbzugSteuerfreierBetragErwachsene(), otherSelbstdeklaration.getAbzugSteuerfreierBetragErwachsene()) &&
-			MathUtil.isSame(getAbzugSteuerfreierBetragKinder(), otherSelbstdeklaration.getAbzugSteuerfreierBetragKinder()) &&
-			MathUtil.isSame(getVermoegen(), otherSelbstdeklaration.getVermoegen());
+		final FinanzielleSituationSelbstdeklaration otherSelbstdeklaration =
+			(FinanzielleSituationSelbstdeklaration) other;
+		return MathUtil.isSame(
+			getEinkunftErwerb(),
+			otherSelbstdeklaration.getEinkunftErwerb()
+		)
+			&&
+			MathUtil.isSame(
+				getEinkunftVersicherung(),
+				otherSelbstdeklaration.getEinkunftVersicherung()
+			)
+			&&
+			MathUtil.isSame(
+				getEinkunftWertschriften(),
+				otherSelbstdeklaration.getEinkunftWertschriften()
+			)
+			&&
+			MathUtil.isSame(
+				getEinkunftUnterhaltsbeitragKinder(),
+				otherSelbstdeklaration
+					.getEinkunftUnterhaltsbeitragKinder()
+			)
+			&&
+			MathUtil.isSame(
+				getEinkunftUeberige(),
+				otherSelbstdeklaration.getEinkunftUeberige()
+			)
+			&&
+			MathUtil.isSame(
+				getEinkunftLiegenschaften(),
+				otherSelbstdeklaration.getEinkunftLiegenschaften()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugBerufsauslagen(),
+				otherSelbstdeklaration.getAbzugBerufsauslagen()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugSchuldzinsen(),
+				otherSelbstdeklaration.getAbzugSchuldzinsen()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugUnterhaltsbeitragKinder(),
+				otherSelbstdeklaration.getAbzugUnterhaltsbeitragKinder()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugSaeule3A(),
+				otherSelbstdeklaration.getAbzugSaeule3A()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugVersicherungspraemien(),
+				otherSelbstdeklaration.getAbzugVersicherungspraemien()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugKrankheitsUnfallKosten(),
+				otherSelbstdeklaration.getAbzugKrankheitsUnfallKosten()
+			)
+			&&
+			MathUtil.isSame(
+				getSonderabzugErwerbstaetigkeitEhegatten(),
+				otherSelbstdeklaration
+					.getSonderabzugErwerbstaetigkeitEhegatten()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugKinderVorschule(),
+				otherSelbstdeklaration.getAbzugKinderVorschule()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugKinderSchule(),
+				otherSelbstdeklaration.getAbzugKinderSchule()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugEigenbetreuung(),
+				otherSelbstdeklaration.getAbzugEigenbetreuung()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugFremdbetreuung(),
+				otherSelbstdeklaration.getAbzugFremdbetreuung()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugErwerbsunfaehigePersonen(),
+				otherSelbstdeklaration
+					.getAbzugErwerbsunfaehigePersonen()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugSteuerfreierBetragErwachsene(),
+				otherSelbstdeklaration
+					.getAbzugSteuerfreierBetragErwachsene()
+			)
+			&&
+			MathUtil.isSame(
+				getAbzugSteuerfreierBetragKinder(),
+				otherSelbstdeklaration
+					.getAbzugSteuerfreierBetragKinder()
+			)
+			&&
+			MathUtil.isSame(
+				getVermoegen(),
+				otherSelbstdeklaration.getVermoegen()
+			);
 	}
 
 	public FinanzielleSituationSelbstdeklaration copySelbsteklaration(
 		FinanzielleSituationSelbstdeklaration target,
-		AntragCopyType copyType) {
+		AntragCopyType copyType
+	) {
 		switch (copyType) {
 		case MUTATION:
 		case MUTATION_NEUES_DOSSIER:
@@ -353,23 +476,39 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 			target.setEinkunftErwerb(this.getEinkunftErwerb());
 			target.setEinkunftVersicherung(this.getEinkunftVersicherung());
 			target.setEinkunftWertschriften(this.getEinkunftWertschriften());
-			target.setEinkunftUnterhaltsbeitragKinder(this.getEinkunftUnterhaltsbeitragKinder());
+			target.setEinkunftUnterhaltsbeitragKinder(
+				this.getEinkunftUnterhaltsbeitragKinder()
+			);
 			target.setEinkunftUeberige(this.getEinkunftUeberige());
 			target.setEinkunftLiegenschaften(this.getEinkunftLiegenschaften());
 			target.setAbzugBerufsauslagen(this.getAbzugBerufsauslagen());
 			target.setAbzugSchuldzinsen(this.getAbzugSchuldzinsen());
-			target.setAbzugUnterhaltsbeitragKinder(this.getAbzugUnterhaltsbeitragKinder());
+			target.setAbzugUnterhaltsbeitragKinder(
+				this.getAbzugUnterhaltsbeitragKinder()
+			);
 			target.setAbzugSaeule3A(this.getAbzugSaeule3A());
-			target.setAbzugVersicherungspraemien(this.getAbzugVersicherungspraemien());
-			target.setAbzugKrankheitsUnfallKosten(this.getAbzugKrankheitsUnfallKosten());
-			target.setSonderabzugErwerbstaetigkeitEhegatten(this.getSonderabzugErwerbstaetigkeitEhegatten());
+			target.setAbzugVersicherungspraemien(
+				this.getAbzugVersicherungspraemien()
+			);
+			target.setAbzugKrankheitsUnfallKosten(
+				this.getAbzugKrankheitsUnfallKosten()
+			);
+			target.setSonderabzugErwerbstaetigkeitEhegatten(
+				this.getSonderabzugErwerbstaetigkeitEhegatten()
+			);
 			target.setAbzugKinderVorschule(this.getAbzugKinderVorschule());
 			target.setAbzugKinderSchule(this.getAbzugKinderSchule());
 			target.setAbzugEigenbetreuung(this.getAbzugEigenbetreuung());
-			target.setAbzugErwerbsunfaehigePersonen(this.getAbzugErwerbsunfaehigePersonen());
+			target.setAbzugErwerbsunfaehigePersonen(
+				this.getAbzugErwerbsunfaehigePersonen()
+			);
 			target.setAbzugFremdbetreuung(this.getAbzugFremdbetreuung());
-			target.setAbzugSteuerfreierBetragErwachsene(this.getAbzugSteuerfreierBetragErwachsene());
-			target.setAbzugSteuerfreierBetragKinder(this.getAbzugSteuerfreierBetragKinder());
+			target.setAbzugSteuerfreierBetragErwachsene(
+				this.getAbzugSteuerfreierBetragErwachsene()
+			);
+			target.setAbzugSteuerfreierBetragKinder(
+				this.getAbzugSteuerfreierBetragKinder()
+			);
 			target.setVermoegen(this.getVermoegen());
 			break;
 		default:
@@ -420,7 +559,7 @@ public class FinanzielleSituationSelbstdeklaration extends AbstractMutableEntity
 			total,
 			abzugSteuerfreierBetragErwachsene
 		);
-		total =  MathUtil.EXACT.subtractNullSafe(
+		total = MathUtil.EXACT.subtractNullSafe(
 			total,
 			abzugSteuerfreierBetragKinder
 		);

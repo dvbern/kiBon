@@ -23,5 +23,8 @@ import ch.dvbern.ebegu.enums.SequenceType;
 public interface SequenceService {
 
 	@Nonnull
-	Long createNumberTransactional(@Nonnull SequenceType seq, @Nonnull Mandant mandant);
+	Long createNumberTransactional(
+		@Nonnull SequenceType seq,
+		@Nonnull Mandant mandant
+	);
 }

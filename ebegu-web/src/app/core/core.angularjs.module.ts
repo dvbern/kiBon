@@ -15,6 +15,9 @@
 
 import {LOCALE_ID} from '@angular/core';
 import {downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
+import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
+import {WizardStepRS} from '@kibon/shared/util/wizard-step-manager';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import * as angular from 'angular';
 /* eslint-disable import/no-unassigned-import */
 import 'angular-animate';
@@ -62,7 +65,6 @@ import {MahnungRS} from '../../gesuch/service/mahnungRS.rest';
 import {SearchRS} from '../../gesuch/service/searchRS.rest';
 import {SupportRS} from '../../gesuch/service/supportRS.rest';
 import {WizardStepManager} from '../../gesuch/service/wizardStepManager';
-import {WizardStepRS} from '../../gesuch/service/WizardStepRS.rest';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {BenutzerComponent} from '../benutzer/benutzer/benutzer.component';
@@ -73,7 +75,7 @@ import {PosteingangService} from '../posteingang/service/posteingang.service';
 import {DvDemoFeatureWrapperComponent} from '../shared/component/dv-demo-feture-wrapper/dv-demo-feature-wrapper.component';
 import {ColorService} from '../shared/services/color.service';
 import {HttpPendingService} from '../shared/services/http-pending.service';
-import {MandantService} from '../shared/services/mandant.service';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {DvAccordionComponentConfig} from './component/dv-accordion/dv-accordion';
 import {DvAccordionTabComponentConfig} from './component/dv-accordion/dv-accordion-tab/dv-accordion-tab';
 import {AdresseComponentConfig} from './component/dv-adresse/dv-adresse';
@@ -101,10 +103,10 @@ import {DVVersionComponentConfig} from './component/dv-version/dv-version';
 import {NavbarComponent} from './component/navbar/navbar.component';
 import {PulldownUserMenuComponent} from './component/pulldown-user-menu/pulldown-user-menu.component';
 import {configure} from './config';
-import {CONSTANTS} from './constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {DVRoleElementController} from './controller/DVRoleElementController';
 import {appRun} from './core.route';
-import {customTranslateLoader} from './custom-translate-provider';
+import {customTranslateLoader} from './MultiMandantHttpLoader';
 import {DvAhvCheck} from './directive/dv-ahv-check';
 import {DvAhvGesuchstellerCheck} from './directive/dv-ahv-gesuchsteller-check';
 import {DVBarcodeListener} from './directive/dv-barcode-listener';
@@ -132,12 +134,11 @@ import {ERRORS_JS_MODULE} from './errors/errors';
 import {ErrorServiceX} from './errors/service/ErrorServiceX';
 import {arrayToString} from './filters/array-to-string.filter';
 import {gemeindenToString} from './filters/gemeinden-to-string.filter';
+import {thousandSeparator} from './filters/thousand-separator.filter';
 import {NewAntragListComponent} from './new-antrag-list/new-antrag-list.component';
-import {ApplicationPropertyRS} from './rest-services/applicationPropertyRS.rest';
 import {AdresseRS} from './service/adresseRS.rest';
 import {AntragStatusHistoryRS} from './service/antragStatusHistoryRS.rest';
 import {BenutzerRSX} from './service/benutzerRSX.rest';
-import {BetreuungRS} from './service/betreuungRS.rest';
 import {BroadcastService} from './service/broadcast.service';
 import {DemoFeatureRS} from './service/demoFeatureRS.rest';
 import {DownloadRS} from './service/downloadRS.rest';
@@ -153,7 +154,6 @@ import {InstitutionStammdatenRS} from './service/institutionStammdatenRS.rest';
 import {KindRS} from './service/kindRS.rest';
 import {ListResourceRS} from './service/listResourceRS.rest';
 import {MitteilungRS} from './service/mitteilungRS.rest';
-import {NotrechtRS} from './service/notrechtRS.rest';
 import {ReportRS} from './service/reportRS.rest';
 import {SearchIndexRS} from './service/searchIndexRS.rest';
 import {SozialdienstRS} from './service/SozialdienstRS.rest';
@@ -164,6 +164,9 @@ import {VerfuegungRS} from './service/verfuegungRS.rest';
 import {HttpVersionInterceptor} from './service/version/HttpVersionInterceptor';
 import {VersionService} from './service/version/version.service';
 import {WizardStepXRS} from './service/wizardStepXRS.rest';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
+import {DvIbanValidator} from './directive/dv-iban-validator/dv-iban-validator';
+import {SharedPatternMeldungsfensterComponent} from '@kibon/shared-pattern-meldungsfenster';
 
 const dependencies = [
     /* Angular modules */
@@ -207,7 +210,10 @@ export const CORE_JS_MODULE = angular
     .constant('REST_API', '/ebegu/api/v1/')
     .constant('CONSTANTS', CONSTANTS)
     .factory('LOCALE_ID', downgradeInjectable(LOCALE_ID))
-    .service('ApplicationPropertyRS', ApplicationPropertyRS)
+    .service(
+        'SharedUtilApplicationPropertyRsService',
+        downgradeInjectable(SharedUtilApplicationPropertyRsService) as any
+    )
     .service('EbeguRestUtil', downgradeInjectable(EbeguRestUtil))
     .service('EbeguUtil', EbeguUtil)
     .service('GesuchstellerRS', GesuchstellerRS)
@@ -243,7 +249,6 @@ export const CORE_JS_MODULE = angular
     .service('ExportRS', ExportRS)
     .service('DossierRS', DossierRS)
     .service('GemeindeRS', GemeindeRS)
-    .service('NotrechtRS', NotrechtRS)
     .factory(
         'FamiliensituationRS',
         downgradeInjectable(FamiliensituationRS) as any
@@ -287,14 +292,16 @@ export const CORE_JS_MODULE = angular
         downgradeInjectable(KinderabzugExchangeService) as any
     )
     .factory('DemoFeatureRS', downgradeInjectable(DemoFeatureRS) as any)
-    .factory('CustomTranslationLoader', [
-        '$http',
-        'MandantService',
-        '$q',
-        customTranslateLoader
-    ])
+    .factory('CustomTranslationLoader', ['$http', customTranslateLoader])
+    .factory(
+        'SharedUtilDvShowWarningAngabenVervollstaendingenService',
+        downgradeInjectable(
+            SharedUtilDvShowWarningAngabenVervollstaendingenService
+        ) as any
+    )
     .directive('dvMaxLength', DVMaxLength.factory())
     .directive('dvIsNotQrIban', DvIsNotQrIban.factory())
+    .directive('dvIban', DvIbanValidator.factory())
     .directive('dvDatepicker', DVDatepicker.factory())
     .directive('dvTimepicker', DVTimepicker.factory())
     .directive('dvValueinput', DVValueinput.factory())
@@ -315,6 +322,12 @@ export const CORE_JS_MODULE = angular
     )
     .directive('dvAhvCheck', DvAhvCheck.factory())
     .directive('dvAhvGesuchstellerCheck', DvAhvGesuchstellerCheck.factory())
+    .directive(
+        'dvMeldungsfensterAngularjsWrapper',
+        downgradeComponent({
+            component: SharedPatternMeldungsfensterComponent
+        })
+    )
     .service('FachstelleRS', FachstelleRS)
     .service('BerechnungsManager', BerechnungsManager)
     .service('HttpResponseInterceptor', HttpResponseInterceptor)
@@ -388,4 +401,5 @@ export const CORE_JS_MODULE = angular
     .service('DatabaseMigrationRS', DatabaseMigrationRS)
     .service('SupportRS', SupportRS)
     .filter('arrayToString', () => arrayToString)
-    .filter('gemeindenToString', () => gemeindenToString);
+    .filter('gemeindenToString', () => gemeindenToString)
+    .filter('thousandSeparator', () => thousandSeparator);

@@ -8,41 +8,48 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.validation;
 
-import javax.validation.BootstrapConfiguration;
-import javax.validation.Configuration;
-import javax.validation.Validation;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import jakarta.validation.BootstrapConfiguration;
+import jakarta.validation.Configuration;
+import jakarta.validation.Validation;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 
 import ch.dvbern.ebegu.validation.LocaleAwareMessageInterpolator;
 import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 @Provider
-public class ValidationConfigurationContextResolver implements ContextResolver<GeneralValidator> {
+public class ValidationConfigurationContextResolver implements
+	ContextResolver<GeneralValidator> {
 
 	private final GeneralValidatorImpl generalValidator;
 
 	public ValidationConfigurationContextResolver() {
 		Configuration<?> config = Validation.byDefaultProvider().configure();
-		BootstrapConfiguration bootstrapConfiguration = config.getBootstrapConfiguration();
+		BootstrapConfiguration bootstrapConfiguration = config
+			.getBootstrapConfiguration();
 
-		config.messageInterpolator(new LocaleAwareMessageInterpolator(config
-			.getDefaultMessageInterpolator()));
+		config.messageInterpolator(
+			new LocaleAwareMessageInterpolator(
+				config
+					.getDefaultMessageInterpolator()
+			)
+		);
 
 		generalValidator = new GeneralValidatorImpl(
 			config.buildValidatorFactory(),
 			bootstrapConfiguration.isExecutableValidationEnabled(),
-			bootstrapConfiguration.getDefaultValidatedExecutableTypes());
+			bootstrapConfiguration.getDefaultValidatedExecutableTypes()
+		);
 	}
 
 	/**

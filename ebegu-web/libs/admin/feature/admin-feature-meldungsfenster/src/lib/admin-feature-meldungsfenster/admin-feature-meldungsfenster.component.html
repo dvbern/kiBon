@@ -1,0 +1,522 @@
+<div class="admin-modul dv-meldungsfenster">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="view-title">
+            <h2>{{ 'MELDUNGSFENSTER' | translate }}</h2>
+            <hr class="header" />
+        </div>
+
+        <mat-tab-group [dynamicHeight]="true">
+            <mat-tab
+                [label]="'MELDUNGSFENSTER_NEW' | translate"
+                [labelClass]="'flex-basis-0'"
+            >
+                <!-- aktuelle und zukünftige Meldungen -->
+                <div class="table-responsive meldungsfenster-table">
+                    <mat-table
+                        [dataSource]="newDataSource"
+                        matSort
+                        #newTableSort="matSort"
+                        [matSortActive]="'gueltigBis'"
+                        [matSortDirection]="'asc'"
+                        *ngIf="displayedColumns$ | async as cols"
+                    >
+                        <!-- title -->
+                        <ng-container matColumnDef="title">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="title"
+                            >
+                                {{ 'MELDUNGSFENSTER_TABLE_TITLE' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">
+                                {{ item.titleDe }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- title DE (french enabled) -->
+                        <ng-container matColumnDef="titleDE">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="titleDe"
+                            >
+                                {{
+                                    'MELDUNGSFENSTER_TABLE_TITLE_DE' | translate
+                                }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">
+                                {{ item.titleDe }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- title FR -->
+                        <ng-container matColumnDef="titleFR">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="titleFr"
+                            >
+                                {{
+                                    'MELDUNGSFENSTER_TABLE_TITLE_FR' | translate
+                                }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">
+                                {{ item.titleFr }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- gueltigAb -->
+                        <ng-container matColumnDef="gueltigAb">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="gueltigAb"
+                            >
+                                {{ 'VON' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">{{
+                                item.gueltigAb | date: 'medium'
+                            }}</mat-cell>
+                        </ng-container>
+
+                        <!-- gueltigBis -->
+                        <ng-container matColumnDef="gueltigBis">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="gueltigBis"
+                            >
+                                {{ 'BIS' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">{{
+                                item.gueltigBis | date: 'medium'
+                            }}</mat-cell>
+                        </ng-container>
+
+                        <!-- status -->
+                        <ng-container matColumnDef="status">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                {{ 'MELDUNGSFENSTER_TABLE_STATUS' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">
+                                {{ item.status }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- actions -->
+                        <ng-container matColumnDef="actions">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                            ></mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let item"
+                                class="action-buttons"
+                            >
+                                <!-- edit -->
+                                <button
+                                    type="button"
+                                    class="dv-btn dv-btn-operation"
+                                    uiSref="admin.meldungfenster-edit"
+                                    [uiParams]="{id: item.id}"
+                                >
+                                    <i class="fa fa-lg fa-edit"></i>
+                                </button>
+                                <span class="button-separator"></span>
+                                <!-- delete -->
+                                <button
+                                    type="button"
+                                    class="dv-btn dv-btn-operation"
+                                    (click)="deleteMeldungsfenster(item.id)"
+                                >
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                </button>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- filter -->
+                        <!-- title-filter -->
+                        <ng-container matColumnDef="title-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <mat-form-field
+                                    class="meldungsfenster-mat-form-field"
+                                >
+                                    <input
+                                        matInput
+                                        (keyup)="
+                                            applyFilter(
+                                                MeldungsfensterTableType.NEW,
+                                                'titleDe',
+                                                $event
+                                            )
+                                        "
+                                    />
+                                </mat-form-field>
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- filter -->
+                        <!-- titleDE-filter -->
+                        <ng-container matColumnDef="titleDE-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <mat-form-field
+                                    class="meldungsfenster-mat-form-field"
+                                >
+                                    <input
+                                        matInput
+                                        (keyup)="
+                                            applyFilter(
+                                                MeldungsfensterTableType.NEW,
+                                                'titleDe',
+                                                $event
+                                            )
+                                        "
+                                    />
+                                </mat-form-field>
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- titleFR-filter -->
+                        <ng-container matColumnDef="titleFR-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <mat-form-field
+                                    class="meldungsfenster-mat-form-field"
+                                >
+                                    <input
+                                        matInput
+                                        (keyup)="
+                                            applyFilter(
+                                                MeldungsfensterTableType.NEW,
+                                                'titleFr',
+                                                $event
+                                            )
+                                        "
+                                    />
+                                </mat-form-field>
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- gueltigAb-filter -->
+                        <ng-container matColumnDef="gueltigAb-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- gueltigBis-filter -->
+                        <ng-container matColumnDef="gueltigBis-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- status-filter -->
+                        <ng-container matColumnDef="status-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <mat-form-field
+                                    class="meldungsfenster-mat-form-field"
+                                    floatLabel="auto"
+                                >
+                                    <mat-select
+                                        (selectionChange)="
+                                            applyStatusFilter(
+                                                MeldungsfensterTableType.NEW,
+                                                $event
+                                            )
+                                        "
+                                        [placeholder]="'ALLE' | translate"
+                                    >
+                                        <mat-option
+                                            ><span translate
+                                                >ALLE</span
+                                            ></mat-option
+                                        >
+                                        <mat-option
+                                            *ngFor="
+                                                let status of getMeldungsfensterStatus()
+                                            "
+                                            [value]="status"
+                                            >{{ status }}</mat-option
+                                        >
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- actions-filter -->
+                        <ng-container matColumnDef="actions-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <mat-header-row
+                            *matHeaderRowDef="cols"
+                        ></mat-header-row>
+
+                        <mat-header-row
+                            class="filter-header-row"
+                            *matHeaderRowDef="filterColumns$ | async"
+                        ></mat-header-row>
+
+                        <mat-row
+                            class="data-row"
+                            *matRowDef="let row; columns: cols"
+                            [ngClass]="getDisabledRowClass(row)"
+                        ></mat-row>
+                    </mat-table>
+                    <mat-paginator
+                        [pageSizeOptions]="[10, 25, 100]"
+                    ></mat-paginator>
+                </div>
+                <div class="margin-top-40">
+                    <button
+                        type="button"
+                        class="dv-btn"
+                        uiSref="admin.meldungfenster-create"
+                    >
+                        <span translate>MELDUNGSFENSTER_CREATE</span>
+                    </button>
+                </div>
+            </mat-tab>
+            <mat-tab
+                [labelClass]="'flex-basis-0'"
+                [label]="'MELDUNGSFENSTER_OLD' | translate"
+            >
+                <!-- Archivierte Meldungen -->
+                <div class="table-responsive meldungsfenster-table">
+                    <mat-table
+                        [dataSource]="archivedDataSource"
+                        *ngIf="displayedColumns$ | async as cols"
+                        matSort
+                        [matSortActive]="'gueltigBis'"
+                        [matSortDirection]="'asc'"
+                        #archivedTableSort="matSort"
+                    >
+                        <!-- title -->
+                        <ng-container matColumnDef="title">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="title"
+                            >
+                                {{ 'MELDUNGSFENSTER_TABLE_TITLE' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">
+                                {{ item.titleDe }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- title DE (french enabled) -->
+                        <ng-container matColumnDef="titleDE">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="titleDe"
+                            >
+                                {{
+                                    'MELDUNGSFENSTER_TABLE_TITLE_DE' | translate
+                                }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">
+                                {{ item.titleDe }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- title FR -->
+                        <ng-container matColumnDef="titleFR">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="titleFr"
+                            >
+                                {{
+                                    'MELDUNGSFENSTER_TABLE_TITLE_FR' | translate
+                                }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">
+                                {{ item.titleFr }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- gueltigAb -->
+                        <ng-container matColumnDef="gueltigAb">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="gueltigAb"
+                            >
+                                {{ 'VON' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">{{
+                                item.gueltigAb | date: 'medium'
+                            }}</mat-cell>
+                        </ng-container>
+
+                        <!-- gueltigBis -->
+                        <ng-container matColumnDef="gueltigBis">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                                mat-sort-header="gueltigBis"
+                            >
+                                {{ 'BIS' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">{{
+                                item.gueltigBis | date: 'medium'
+                            }}</mat-cell>
+                        </ng-container>
+
+                        <!-- status -->
+                        <ng-container matColumnDef="status">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                {{ 'MELDUNGSFENSTER_TABLE_STATUS' | translate }}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let item">
+                                {{ item.status }}
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- actions -->
+                        <ng-container matColumnDef="actions">
+                            <mat-header-cell
+                                *matHeaderCellDef
+                            ></mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let item"
+                                class="action-buttons"
+                            >
+                                <!-- edit -->
+                                <button
+                                    type="button"
+                                    class="dv-btn dv-btn-operation"
+                                    uiSref="admin.meldungfenster-detail"
+                                    [uiParams]="{id: item.id}"
+                                >
+                                    <i class="fa fa-lg fa-eye"></i>
+                                </button>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- filter -->
+                        <!-- title-filter -->
+                        <ng-container matColumnDef="title-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <mat-form-field
+                                    class="meldungsfenster-mat-form-field"
+                                >
+                                    <input
+                                        matInput
+                                        (keyup)="
+                                            applyFilter(
+                                                MeldungsfensterTableType.ARCHIVE,
+                                                'titleDe',
+                                                $event
+                                            )
+                                        "
+                                    />
+                                </mat-form-field>
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- filter -->
+                        <!-- titleDE-filter -->
+                        <ng-container matColumnDef="titleDE-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <mat-form-field
+                                    class="meldungsfenster-mat-form-field"
+                                >
+                                    <input
+                                        matInput
+                                        (keyup)="
+                                            applyFilter(
+                                                MeldungsfensterTableType.ARCHIVE,
+                                                'titleDe',
+                                                $event
+                                            )
+                                        "
+                                    />
+                                </mat-form-field>
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- titleFR-filter -->
+                        <ng-container matColumnDef="titleFR-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <mat-form-field
+                                    class="meldungsfenster-mat-form-field"
+                                >
+                                    <input
+                                        matInput
+                                        (keyup)="
+                                            applyFilter(
+                                                MeldungsfensterTableType.ARCHIVE,
+                                                'titleFr',
+                                                $event
+                                            )
+                                        "
+                                    />
+                                </mat-form-field>
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- gueltigAb-filter -->
+                        <ng-container matColumnDef="gueltigAb-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- gueltigBis-filter -->
+                        <ng-container matColumnDef="gueltigBis-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- status-filter -->
+                        <ng-container matColumnDef="status-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <mat-form-field
+                                    class="meldungsfenster-mat-form-field"
+                                    floatLabel="auto"
+                                >
+                                    <mat-select
+                                        (selectionChange)="
+                                            applyStatusFilter(
+                                                MeldungsfensterTableType.ARCHIVE,
+                                                $event
+                                            )
+                                        "
+                                        [placeholder]="'ALLE' | translate"
+                                    >
+                                        <mat-option
+                                            ><span translate
+                                                >ALLE</span
+                                            ></mat-option
+                                        >
+                                        <mat-option
+                                            *ngFor="
+                                                let status of getMeldungsfensterStatus()
+                                            "
+                                            [value]="status"
+                                            >{{ status }}</mat-option
+                                        >
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <!-- actions-filter -->
+                        <ng-container matColumnDef="actions-filter">
+                            <mat-header-cell *matHeaderCellDef="let column">
+                            </mat-header-cell>
+                        </ng-container>
+
+                        <mat-header-row
+                            *matHeaderRowDef="cols"
+                        ></mat-header-row>
+
+                        <mat-header-row
+                            class="filter-header-row"
+                            *matHeaderRowDef="filterColumns$ | async"
+                        ></mat-header-row>
+
+                        <mat-row
+                            class="data-row"
+                            *matRowDef="let row; columns: cols"
+                        ></mat-row>
+                    </mat-table>
+                    <mat-paginator
+                        [pageSizeOptions]="[10, 25, 100]"
+                    ></mat-paginator>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>

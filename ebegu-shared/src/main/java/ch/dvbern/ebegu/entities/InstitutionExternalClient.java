@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -20,15 +20,15 @@ package ch.dvbern.ebegu.entities;
 import java.io.Serializable;
 
 import javax.annotation.Nonnull;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.types.InstitutionExternalClientId;
@@ -38,8 +38,10 @@ import org.hibernate.envers.Audited;
 @Audited
 @Entity
 @Table(indexes = {
-	@Index(name = "IX_institution_external_clients_institution_id", columnList = "institution_id"),
-	@Index(name = "IX_institution_external_clients_external_client_id", columnList = "external_client_id"),
+	@Index(name = "IX_institution_external_clients_institution_id",
+		columnList = "institution_id"),
+	@Index(name = "IX_institution_external_clients_external_client_id",
+		columnList = "external_client_id"),
 })
 public class InstitutionExternalClient implements Serializable, Gueltigkeit {
 
@@ -56,12 +58,18 @@ public class InstitutionExternalClient implements Serializable, Gueltigkeit {
 	@NotNull
 	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_external_clients_institution_id"), insertable = false, updatable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_institution_external_clients_institution_id"),
+		insertable = false,
+		updatable = false)
 	private Institution institution;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_external_clients_external_client_id"), insertable = false, updatable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_institution_external_clients_external_client_id"),
+		insertable = false,
+		updatable = false)
 	private ExternalClient externalClient;
 
 	@Override

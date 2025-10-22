@@ -22,19 +22,19 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.Transient;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Transient;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.util.Constants;
@@ -54,37 +54,44 @@ public class Verfuegung extends AbstractMutableEntity {
 
 	@Column(nullable = true, length = Constants.DB_TEXTAREA_XL_LENGTH)
 	@Nullable
-	private @Size(max = Constants.DB_TEXTAREA_XL_LENGTH) String generatedBemerkungen;
+	private @Size(
+		max = Constants.DB_TEXTAREA_XL_LENGTH) String generatedBemerkungen;
 
 	@Column(nullable = true, length = Constants.DB_TEXTAREA_XL_LENGTH)
 	@Nullable
-	private @Size(max = Constants.DB_TEXTAREA_XL_LENGTH) String manuelleBemerkungen;
+	private @Size(
+		max = Constants.DB_TEXTAREA_XL_LENGTH) String manuelleBemerkungen;
 
 	@Nullable
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_verfuegung_betreuung_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_verfuegung_betreuung_id"),
+		nullable = true)
 	@OneToOne(optional = true, fetch = FetchType.EAGER)
 	private Betreuung betreuung;
 
 	@Nullable
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_verfuegung_anmeldungTagesschule_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_verfuegung_anmeldungTagesschule_id"), nullable = true)
 	@OneToOne(optional = true, fetch = FetchType.EAGER)
 	private AnmeldungTagesschule anmeldungTagesschule;
 
 	@OrderBy("gueltigkeit ASC")
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "verfuegung")
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "verfuegung")
 	@Nonnull
-	private @Valid List<VerfuegungZeitabschnitt> zeitabschnitte = new ArrayList<>();
+	private @Valid List<VerfuegungZeitabschnitt> zeitabschnitte =
+		new ArrayList<>();
 
-	@Column(nullable = false) // Verwendet in Statistik "Gesuche nach Zeitraum", siehe orm.xml
+	@Column(nullable = false) // Verwendet in Statistik "Gesuche nach Zeitraum", siehe orm.xml, darf nicht im Rechner verwendet sein
 	private @NotNull boolean kategorieNormal = false;
 
-	@Column(nullable = false) // Verwendet in Statistik "Gesuche nach Zeitraum", siehe orm.xml
+	@Column(nullable = false) // Verwendet in Statistik "Gesuche nach Zeitraum", siehe orm.xml, darf nicht im Rechner verwendet sein
 	private @NotNull boolean kategorieMaxEinkommen = false;
 
-	@Column(nullable = false) // Verwendet in Statistik "Gesuche nach Zeitraum", siehe orm.xml
+	@Column(nullable = false) // Verwendet in Statistik "Gesuche nach Zeitraum", siehe orm.xml, darf nicht im Rechner verwendet sein
 	private @NotNull boolean kategorieKeinPensum = false;
 
-	@Column(nullable = false) // Verwendet in Statistik "Gesuche nach Zeitraum", siehe orm.xml
+	@Column(nullable = false) // Verwendet in Statistik "Gesuche nach Zeitraum", siehe orm.xml, darf nicht im Rechner verwendet sein
 	private @NotNull boolean kategorieNichtEintreten = false;
 
 	@Column(nullable = false)
@@ -92,7 +99,7 @@ public class Verfuegung extends AbstractMutableEntity {
 
 	@Transient
 	@Nullable
-	private  BigDecimal veraenderungVerguenstigungGegenueberVorgaenger;
+	private BigDecimal veraenderungVerguenstigungGegenueberVorgaenger;
 
 	@Transient
 	private boolean ignorable;
@@ -111,7 +118,9 @@ public class Verfuegung extends AbstractMutableEntity {
 		return generatedBemerkungen;
 	}
 
-	public void setGeneratedBemerkungen(@Nullable String autoInitialisierteBemerkungen) {
+	public void setGeneratedBemerkungen(
+		@Nullable String autoInitialisierteBemerkungen
+	) {
 		this.generatedBemerkungen = autoInitialisierteBemerkungen;
 	}
 
@@ -129,7 +138,9 @@ public class Verfuegung extends AbstractMutableEntity {
 		return zeitabschnitte;
 	}
 
-	public void setZeitabschnitte(@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	public void setZeitabschnitte(
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		this.zeitabschnitte = zeitabschnitte;
 		for (VerfuegungZeitabschnitt zeitabschnitt : this.zeitabschnitte) {
 			zeitabschnitt.setVerfuegung(this);
@@ -150,7 +161,9 @@ public class Verfuegung extends AbstractMutableEntity {
 		return anmeldungTagesschule;
 	}
 
-	public void setAnmeldungTagesschule(@Nullable AnmeldungTagesschule anmeldungTagesschule) {
+	public void setAnmeldungTagesschule(
+		@Nullable AnmeldungTagesschule anmeldungTagesschule
+	) {
 		this.anmeldungTagesschule = anmeldungTagesschule;
 	}
 
@@ -162,7 +175,11 @@ public class Verfuegung extends AbstractMutableEntity {
 		if (anmeldungTagesschule != null) {
 			return anmeldungTagesschule;
 		}
-		throw new EbeguRuntimeException("getPlatz", "Verfuegung ohne dazugehoerige Betreuung/AnmeldungTagesschule: " + getId());
+		throw new EbeguRuntimeException(
+			"getPlatz",
+			"Verfuegung ohne dazugehoerige Betreuung/AnmeldungTagesschule: "
+				+ getId()
+		);
 	}
 
 	public void setPlatz(@Nonnull AbstractPlatz platz) {
@@ -171,7 +188,11 @@ public class Verfuegung extends AbstractMutableEntity {
 		} else if (platz instanceof AnmeldungTagesschule) {
 			setAnmeldungTagesschule((AnmeldungTagesschule) platz);
 		} else {
-			throw new EbeguRuntimeException("setPlatz", "Verfuegung gibts nur für Betreuung/AnmeldungTagesschule: " + getId());
+			throw new EbeguRuntimeException(
+				"setPlatz",
+				"Verfuegung gibts nur für Betreuung/AnmeldungTagesschule: "
+					+ getId()
+			);
 		}
 	}
 
@@ -236,12 +257,35 @@ public class Verfuegung extends AbstractMutableEntity {
 			return false;
 		}
 		final Verfuegung otherVerfuegung = (Verfuegung) other;
-		return Objects.equals(getGeneratedBemerkungen(), otherVerfuegung.getGeneratedBemerkungen()) &&
-			Objects.equals(getManuelleBemerkungen(), otherVerfuegung.getManuelleBemerkungen()) &&
-			Objects.equals(isKategorieNormal(), otherVerfuegung.isKategorieNormal()) &&
-			Objects.equals(isKategorieMaxEinkommen(), otherVerfuegung.isKategorieMaxEinkommen()) &&
-			Objects.equals(isKategorieKeinPensum(), otherVerfuegung.isKategorieKeinPensum()) &&
-			Objects.equals(isKategorieNichtEintreten(), otherVerfuegung.isKategorieNichtEintreten());
+		return Objects.equals(
+			getGeneratedBemerkungen(),
+			otherVerfuegung.getGeneratedBemerkungen()
+		)
+			&&
+			Objects.equals(
+				getManuelleBemerkungen(),
+				otherVerfuegung.getManuelleBemerkungen()
+			)
+			&&
+			Objects.equals(
+				isKategorieNormal(),
+				otherVerfuegung.isKategorieNormal()
+			)
+			&&
+			Objects.equals(
+				isKategorieMaxEinkommen(),
+				otherVerfuegung.isKategorieMaxEinkommen()
+			)
+			&&
+			Objects.equals(
+				isKategorieKeinPensum(),
+				otherVerfuegung.isKategorieKeinPensum()
+			)
+			&&
+			Objects.equals(
+				isKategorieNichtEintreten(),
+				otherVerfuegung.isKategorieNichtEintreten()
+			);
 	}
 
 	@Nullable
@@ -249,8 +293,11 @@ public class Verfuegung extends AbstractMutableEntity {
 		return veraenderungVerguenstigungGegenueberVorgaenger;
 	}
 
-	public void setVeraenderungVerguenstigungGegenueberVorgaenger(@Nullable BigDecimal veraenderungVerguenstigungGegenueberVorgaenger) {
-		this.veraenderungVerguenstigungGegenueberVorgaenger = veraenderungVerguenstigungGegenueberVorgaenger;
+	public void setVeraenderungVerguenstigungGegenueberVorgaenger(
+		@Nullable BigDecimal veraenderungVerguenstigungGegenueberVorgaenger
+	) {
+		this.veraenderungVerguenstigungGegenueberVorgaenger =
+			veraenderungVerguenstigungGegenueberVorgaenger;
 	}
 
 	public boolean getIgnorable() {
@@ -265,7 +312,9 @@ public class Verfuegung extends AbstractMutableEntity {
 		return korrekturAusbezahltInstitution;
 	}
 
-	public void setKorrekturAusbezahltInstitution(BigDecimal korrekturAusbezahltInstitution) {
+	public void setKorrekturAusbezahltInstitution(
+		BigDecimal korrekturAusbezahltInstitution
+	) {
 		this.korrekturAusbezahltInstitution = korrekturAusbezahltInstitution;
 	}
 
@@ -273,7 +322,9 @@ public class Verfuegung extends AbstractMutableEntity {
 		return korrekturAusbezahltEltern;
 	}
 
-	public void setKorrekturAusbezahltEltern(BigDecimal korrekturAusbezahltEltern) {
+	public void setKorrekturAusbezahltEltern(
+		BigDecimal korrekturAusbezahltEltern
+	) {
 		this.korrekturAusbezahltEltern = korrekturAusbezahltEltern;
 	}
 }

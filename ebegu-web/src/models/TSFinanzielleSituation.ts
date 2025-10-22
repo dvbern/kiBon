@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {EbeguUtil} from '../utils/EbeguUtil';
 import {TSAbstractFinanzielleSituation} from './TSAbstractFinanzielleSituation';
 

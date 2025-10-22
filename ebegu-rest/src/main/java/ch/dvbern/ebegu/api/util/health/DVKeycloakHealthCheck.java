@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.util.health;
@@ -21,35 +21,37 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.microprofile.health.Health;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
-import org.eclipse.microprofile.health.HealthCheckResponseBuilder;
+import org.eclipse.microprofile.health.Readiness;
 
 /**
  * Checks if there is a connection to Keycloak
  */
-@Health
 @ApplicationScoped
+@Readiness
 public class DVKeycloakHealthCheck implements HealthCheck {
 
 	private static final String NAME = "dv-keycloak-connection-check";
-	private static final String OPENID_CONFIGURATION_API = "/realms/kibon/.well-known/openid-configuration";
+	private static final String OPENID_CONFIGURATION_API =
+		"/realms/kibon/.well-known/openid-configuration";
 	private static final String AUTH_PATH = "/auth";
-	private static final Pattern AUTH_SERVER_PATTERN = Pattern.compile("(.+)" + AUTH_PATH + "(?:.*)");
+	private static final Pattern AUTH_SERVER_PATTERN = Pattern.compile(
+		"(.+)" + AUTH_PATH + "(?:.*)"
+	);
 
 	@Inject
 	private EbeguConfiguration ebeguConfiguration;
@@ -67,29 +69,39 @@ public class DVKeycloakHealthCheck implements HealthCheck {
 	}
 
 	@Override
-	@SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "Health Check reports reason")
+	@SuppressFBWarnings(value = "REC_CATCH_EXCEPTION",
+		justification = "Health Check reports reason")
 	public HealthCheckResponse call() {
-		String keycloackAuthServer = ebeguConfiguration.getKeycloackAuthServer();
+		String keycloackAuthServer = ebeguConfiguration
+			.getKeycloackAuthServer();
 
 		if (StringUtils.isBlank(keycloackAuthServer)) {
-			return HealthCheckResponse.named(NAME).down().withData("reason", "AuthServer URL not configured").build();
+			return HealthCheckResponse.named(NAME)
+				.down()
+				.withData("reason", "AuthServer URL not configured")
+				.build();
 		}
 
-		HealthCheckResponseBuilder builder = HealthCheckResponse.named(NAME).up();
 		String authServer = getAuthServerURL(keycloackAuthServer);
 		try (
-			Response response = client.target(authServer + OPENID_CONFIGURATION_API)
+			Response response = client.target(
+				authServer + OPENID_CONFIGURATION_API
+			)
 				.request(MediaType.APPLICATION_JSON)
 				.get();
 		) {
 			boolean state = response.getStatus() == Status.OK.getStatusCode();
 
-			return builder.state(state)
+			return HealthCheckResponse.named(NAME)
+				.status(state)
 				.withData("response status", response.getStatus())
 				.withData("AuthServer", authServer)
 				.build();
 		} catch (Exception e) {
-			return builder.down().withData("reason", e.getMessage()).build();
+			return HealthCheckResponse.named(NAME)
+				.down()
+				.withData("reason", e.getMessage())
+				.build();
 		}
 	}
 

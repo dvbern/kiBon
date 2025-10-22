@@ -14,8 +14,10 @@
  */
 
 import {IComponentOptions, IOnInit} from 'angular';
+import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSErwerbspensum} from '../../../../models/TSErwerbspensum';
 import {TSErwerbspensumContainer} from '../../../../models/TSErwerbspensumContainer';
+import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 
 export class DVErwerbspensumListConfig implements IComponentOptions {
     public transclude = false;
@@ -37,7 +39,7 @@ export class DVErwerbspensumListConfig implements IComponentOptions {
 }
 
 export class DVErwerbspensumListController implements IOnInit {
-    public static $inject: ReadonlyArray<string> = [];
+    public static $inject: ReadonlyArray<string> = ['AuthServiceRS'];
 
     public erwerbspensen: TSErwerbspensum[];
     public tableId: string;
@@ -48,6 +50,8 @@ export class DVErwerbspensumListController implements IOnInit {
     public onRemove: (pensumToRemove: any) => void;
     public onEdit: (pensumToEdit: any) => void;
     public onAdd: () => void;
+
+    public constructor(private readonly authServiceRS: AuthServiceRS) {}
 
     public $onInit(): void {
         if (!this.addButtonText) {
@@ -60,7 +64,6 @@ export class DVErwerbspensumListController implements IOnInit {
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let i = 0; i < this.erwerbspensen.length; i++) {
             const obj: any = this.erwerbspensen[i];
-            // FIXME woher kommt dieses Property?
             obj.isSelected = false;
         }
     }
@@ -84,6 +87,19 @@ export class DVErwerbspensumListController implements IOnInit {
         // Loeschen erlaubt, solange das Gesuch noch nicht readonly ist. Dies ist notwendig, weil sonst in die Zukunft
         // erfasste Taetigkeiten bei nicht-zustandekommen des Jobs nicht mehr geloescht werden koennen
         // Siehe auch EBEGU-1146 und EBEGU-580
-        return this.addButtonVisible && _pensumToEdit.isGSContainerEmpty();
+
+        if (
+            this.authServiceRS.isOneOfRoles(
+                TSRoleUtil.getGesuchstellerSozialdienstRolle()
+            )
+        ) {
+            return (
+                this.addButtonVisible &&
+                _pensumToEdit.isGSContainerEmpty() &&
+                !_pensumToEdit.hasVorgaenger()
+            );
+        } else {
+            return this.addButtonVisible && _pensumToEdit.isGSContainerEmpty();
+        }
     }
 }

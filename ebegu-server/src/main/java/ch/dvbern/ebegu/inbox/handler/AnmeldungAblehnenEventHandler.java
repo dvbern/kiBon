@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -21,12 +21,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.inbox.services.BetreuungEventHelper;
 import ch.dvbern.ebegu.kafka.BaseEventHandler;
 import ch.dvbern.ebegu.kafka.EventType;
@@ -39,7 +39,9 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class AnmeldungAblehnenEventHandler extends BaseEventHandler<String> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AnmeldungAblehnenEventHandler.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		AnmeldungAblehnenEventHandler.class
+	);
 
 	@Inject
 	private BetreuungService betreuungService;
@@ -50,79 +52,135 @@ public class AnmeldungAblehnenEventHandler extends BaseEventHandler<String> {
 	@Inject
 	private BetreuungEventHelper betreuungEventHelper;
 
-
 	@Override
 	protected void processEvent(
 		@Nonnull LocalDateTime eventTime,
 		@Nonnull EventType eventType,
 		@Nonnull String key,
 		@Nonnull String dto,
-		@Nonnull String clientName) {
-		EventMonitor eventMonitor = new EventMonitor(betreuungMonitoringService, eventTime, key, clientName);
+		@Nonnull String clientName
+	) {
+		EventMonitor eventMonitor = new EventMonitor(
+			betreuungMonitoringService,
+			eventTime,
+			key,
+			clientName
+		);
 		Processing processing = attemptProcessing(eventMonitor);
 
 		if (!processing.isProcessingSuccess()) {
 			String message = processing.getMessage();
-			LOG.warn("Ablehnung Event für Betreuung mit RefNr: {} nicht verarbeitet: {}", key, message);
-			eventMonitor.record("Ablehnung Event wurde nicht verarbeitet: " + message);
+			LOG.warn(
+				"Ablehnung Event für Betreuung mit RefNr: {} nicht verarbeitet: {}",
+				key,
+				message
+			);
+			eventMonitor.record(
+				"Ablehnung Event wurde nicht verarbeitet: " + message
+			);
 		}
 	}
 
 	@Nonnull
 	protected Processing attemptProcessing(@Nonnull EventMonitor eventMonitor) {
-		return betreuungService.findAnmeldungenTagesschuleByReferenzNummer(eventMonitor.getRefnr())
-			.map(anmeldungTagesschule -> processEventForAblehnung(eventMonitor, anmeldungTagesschule))
-			.orElseGet(() -> Processing.failure("AnmeldungTagesschule nicht gefunden."));
+		return betreuungService.findAnmeldungenTagesschuleByReferenzNummer(
+			eventMonitor.getRefnr()
+		)
+			.map(
+				anmeldungTagesschule -> processEventForAblehnung(
+					eventMonitor,
+					anmeldungTagesschule
+				)
+			)
+			.orElseGet(
+				() -> Processing.failure(
+					"AnmeldungTagesschule nicht gefunden."
+				)
+			);
 	}
 
 	@Nonnull
 	private Processing processEventForAblehnung(
 		@Nonnull EventMonitor eventMonitor,
-		@Nonnull AnmeldungTagesschule anmeldungTagesschule) {
+		@Nonnull AnmeldungTagesschule anmeldungTagesschule
+	) {
 
-		if (anmeldungTagesschule.extractGesuchsperiode().getStatus() != GesuchsperiodeStatus.AKTIV) {
+		if (anmeldungTagesschule.extractGesuchsperiode().getStatus()
+			!= GesuchsperiodeStatus.AKTIV) {
 			return Processing.failure("Die Gesuchsperiode ist nicht aktiv.");
 		}
 
-		if (eventMonitor.isTooLate(anmeldungTagesschule.getTimestampMutiert())) {
+		if (eventMonitor.isTooLate(
+			anmeldungTagesschule.getTimestampMutiert()
+		)) {
 			return Processing.failure(
-				"Die AnmeldungTagesschule wurde verändert, nachdem das AblehnungEvent generiert wurde.");
+				"Die AnmeldungTagesschule wurde verändert, nachdem das AblehnungEvent generiert wurde."
+			);
 		}
 
 		InstitutionExternalClients clients =
-			betreuungEventHelper.getExternalClients(eventMonitor.getClientName(), anmeldungTagesschule);
+			betreuungEventHelper.getExternalClients(
+				eventMonitor.getClientName(),
+				anmeldungTagesschule
+			);
 
 		return clients.getRelevantClient()
-			.map(client -> processEventForExternalClient(eventMonitor, anmeldungTagesschule, client.getGueltigkeit()))
-			.orElseGet(() -> betreuungEventHelper.clientNotFoundFailure(
-				eventMonitor.getClientName(),
-				anmeldungTagesschule));
+			.map(
+				client -> processEventForExternalClient(
+					eventMonitor,
+					anmeldungTagesschule,
+					client.getGueltigkeit()
+				)
+			)
+			.orElseGet(
+				() -> betreuungEventHelper.clientNotFoundFailure(
+					eventMonitor.getClientName(),
+					anmeldungTagesschule
+				)
+			);
 	}
 
 	@Nonnull
 	private Processing processEventForExternalClient(
 		@Nonnull EventMonitor eventMonitor,
 		@Nonnull AnmeldungTagesschule anmeldungTagesschule,
-		@Nonnull DateRange clientGueltigkeit) {
-		DateRange gesuchsperiode = anmeldungTagesschule.extractGesuchsperiode().getGueltigkeit();
-		Optional<DateRange> overlap = gesuchsperiode.getOverlap(clientGueltigkeit);
+		@Nonnull DateRange clientGueltigkeit
+	) {
+		DateRange gesuchsperiode = anmeldungTagesschule.extractGesuchsperiode()
+			.getGueltigkeit();
+		Optional<DateRange> overlap = gesuchsperiode.getOverlap(
+			clientGueltigkeit
+		);
 		if (overlap.isEmpty()) {
-			return Processing.failure("Der Client hat innerhalb der Periode keine Berechtigung.");
+			return Processing.failure(
+				"Der Client hat innerhalb der Periode keine Berechtigung."
+			);
 		}
 
-		if (isAblehnungErlaubtStatus(anmeldungTagesschule.getBetreuungsstatus())) {
+		if (isAblehnungErlaubtStatus(
+			anmeldungTagesschule.getBetreuungsstatus()
+		)) {
 			betreuungService.anmeldungSchulamtAblehnen(anmeldungTagesschule);
-			LOG.info("Tagesschuleanmeldung mit RefNr: {} wurde automatisch abgelehnt", eventMonitor.getRefnr());
-			eventMonitor.record("Tagesschuleanmeldung wurde automatisch abgelehnt");
+			LOG.info(
+				"Tagesschuleanmeldung mit RefNr: {} wurde automatisch abgelehnt",
+				eventMonitor.getRefnr()
+			);
+			eventMonitor.record(
+				"Tagesschuleanmeldung wurde automatisch abgelehnt"
+			);
 
 			return Processing.success();
 		}
 
-		return Processing.failure("Die AnmeldungTagesschule hat einen ungültigen Status: "
-			+ anmeldungTagesschule.getBetreuungsstatus());
+		return Processing.failure(
+			"Die AnmeldungTagesschule hat einen ungültigen Status: "
+				+ anmeldungTagesschule.getBetreuungsstatus()
+		);
 	}
 
-	protected boolean isAblehnungErlaubtStatus(@Nonnull Betreuungsstatus status) {
+	protected boolean isAblehnungErlaubtStatus(
+		@Nonnull Betreuungsstatus status
+	) {
 		return status == Betreuungsstatus.SCHULAMT_ANMELDUNG_AUSGELOEST
 			|| status == Betreuungsstatus.SCHULAMT_FALSCHE_INSTITUTION;
 	}

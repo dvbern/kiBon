@@ -17,13 +17,20 @@
 
 package ch.dvbern.ebegu.entities.gemeindeantrag;
 
-import ch.dvbern.ebegu.entities.AbstractEntity;
-import org.hibernate.envers.Audited;
+import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.*;
-import java.math.BigDecimal;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+
+import ch.dvbern.ebegu.entities.AbstractEntity;
+import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
@@ -32,29 +39,54 @@ public class FerienbetreuungAngaben extends AbstractEntity {
 	private static final long serialVersionUID = -4376690435594903597L;
 
 	@Nonnull
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_stammdaten_ferienbetreuung"), nullable = false)
-	private FerienbetreuungAngabenStammdaten ferienbetreuungAngabenStammdaten = new FerienbetreuungAngabenStammdaten();
+	@OneToOne(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		fetch = FetchType.EAGER)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_stammdaten_ferienbetreuung"),
+		nullable = false)
+	private FerienbetreuungAngabenStammdaten ferienbetreuungAngabenStammdaten =
+		new FerienbetreuungAngabenStammdaten();
 
 	@Nonnull
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_angebot_ferienbetreuung"), nullable = false)
-	private FerienbetreuungAngabenAngebot ferienbetreuungAngabenAngebot = new FerienbetreuungAngabenAngebot();
+	@OneToOne(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		fetch = FetchType.EAGER)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_angebot_ferienbetreuung"),
+		nullable = false)
+	private FerienbetreuungAngabenAngebot ferienbetreuungAngabenAngebot =
+		new FerienbetreuungAngabenAngebot();
 
 	@Nonnull
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_nutzung_ferienbetreuung"), nullable = false)
-	private FerienbetreuungAngabenNutzung ferienbetreuungAngabenNutzung = new FerienbetreuungAngabenNutzung();
+	@OneToOne(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		fetch = FetchType.EAGER)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_nutzung_ferienbetreuung"),
+		nullable = false)
+	private FerienbetreuungAngabenNutzung ferienbetreuungAngabenNutzung =
+		new FerienbetreuungAngabenNutzung();
 
 	@Nonnull
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_kosten_einnahmen_ferienbetreuung"), nullable = false)
-	private FerienbetreuungAngabenKostenEinnahmen ferienbetreuungAngabenKostenEinnahmen = new FerienbetreuungAngabenKostenEinnahmen();
+	@OneToOne(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		fetch = FetchType.EAGER)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_kosten_einnahmen_ferienbetreuung"),
+		nullable = false)
+	private FerienbetreuungAngabenKostenEinnahmen ferienbetreuungAngabenKostenEinnahmen =
+		new FerienbetreuungAngabenKostenEinnahmen();
 
 	@Nonnull
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferienbetreuung_berechnungen_ferienbetreuung"), nullable = true)
-	private FerienbetreuungBerechnungen ferienbetreuungBerechnungen = new FerienbetreuungBerechnungen();
+	@OneToOne(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		fetch = FetchType.EAGER)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferienbetreuung_berechnungen_ferienbetreuung"),
+		nullable = true)
+	private FerienbetreuungBerechnungen ferienbetreuungBerechnungen =
+		new FerienbetreuungBerechnungen();
 
 	@Nullable
 	@Column()
@@ -64,13 +96,24 @@ public class FerienbetreuungAngaben extends AbstractEntity {
 	@Column()
 	private BigDecimal gemeindebeitrag;
 
-	public FerienbetreuungAngaben() {}
+	public FerienbetreuungAngaben() {
+	}
 
 	public FerienbetreuungAngaben(FerienbetreuungAngaben angabenToCopy) {
-		this.ferienbetreuungAngabenStammdaten = new FerienbetreuungAngabenStammdaten(angabenToCopy.ferienbetreuungAngabenStammdaten);
-		this.ferienbetreuungAngabenAngebot = new FerienbetreuungAngabenAngebot(angabenToCopy.ferienbetreuungAngabenAngebot);
-		this.ferienbetreuungAngabenNutzung = new FerienbetreuungAngabenNutzung(angabenToCopy.ferienbetreuungAngabenNutzung);
-		this.ferienbetreuungAngabenKostenEinnahmen = new FerienbetreuungAngabenKostenEinnahmen(angabenToCopy.ferienbetreuungAngabenKostenEinnahmen);
+		this.ferienbetreuungAngabenStammdaten =
+			new FerienbetreuungAngabenStammdaten(
+				angabenToCopy.ferienbetreuungAngabenStammdaten
+			);
+		this.ferienbetreuungAngabenAngebot = new FerienbetreuungAngabenAngebot(
+			angabenToCopy.ferienbetreuungAngabenAngebot
+		);
+		this.ferienbetreuungAngabenNutzung = new FerienbetreuungAngabenNutzung(
+			angabenToCopy.ferienbetreuungAngabenNutzung
+		);
+		this.ferienbetreuungAngabenKostenEinnahmen =
+			new FerienbetreuungAngabenKostenEinnahmen(
+				angabenToCopy.ferienbetreuungAngabenKostenEinnahmen
+			);
 	}
 
 	@Nonnull
@@ -78,8 +121,11 @@ public class FerienbetreuungAngaben extends AbstractEntity {
 		return ferienbetreuungAngabenStammdaten;
 	}
 
-	public void setFerienbetreuungAngabenStammdaten(@Nonnull FerienbetreuungAngabenStammdaten ferienbetreuungAngabenStammdaten) {
-		this.ferienbetreuungAngabenStammdaten = ferienbetreuungAngabenStammdaten;
+	public void setFerienbetreuungAngabenStammdaten(
+		@Nonnull FerienbetreuungAngabenStammdaten ferienbetreuungAngabenStammdaten
+	) {
+		this.ferienbetreuungAngabenStammdaten =
+			ferienbetreuungAngabenStammdaten;
 	}
 
 	@Nonnull
@@ -87,7 +133,9 @@ public class FerienbetreuungAngaben extends AbstractEntity {
 		return ferienbetreuungAngabenAngebot;
 	}
 
-	public void setFerienbetreuungAngabenAngebot(@Nonnull FerienbetreuungAngabenAngebot ferienbetreuungAngabenAngebot) {
+	public void setFerienbetreuungAngabenAngebot(
+		@Nonnull FerienbetreuungAngabenAngebot ferienbetreuungAngabenAngebot
+	) {
 		this.ferienbetreuungAngabenAngebot = ferienbetreuungAngabenAngebot;
 	}
 
@@ -96,7 +144,9 @@ public class FerienbetreuungAngaben extends AbstractEntity {
 		return ferienbetreuungAngabenNutzung;
 	}
 
-	public void setFerienbetreuungAngabenNutzung(@Nonnull FerienbetreuungAngabenNutzung ferienbetreuungAngabenNutzung) {
+	public void setFerienbetreuungAngabenNutzung(
+		@Nonnull FerienbetreuungAngabenNutzung ferienbetreuungAngabenNutzung
+	) {
 		this.ferienbetreuungAngabenNutzung = ferienbetreuungAngabenNutzung;
 	}
 
@@ -105,8 +155,11 @@ public class FerienbetreuungAngaben extends AbstractEntity {
 		return ferienbetreuungAngabenKostenEinnahmen;
 	}
 
-	public void setFerienbetreuungAngabenKostenEinnahmen(@Nonnull FerienbetreuungAngabenKostenEinnahmen ferienbetreuungAngabenKostenEinnahmen) {
-		this.ferienbetreuungAngabenKostenEinnahmen = ferienbetreuungAngabenKostenEinnahmen;
+	public void setFerienbetreuungAngabenKostenEinnahmen(
+		@Nonnull FerienbetreuungAngabenKostenEinnahmen ferienbetreuungAngabenKostenEinnahmen
+	) {
+		this.ferienbetreuungAngabenKostenEinnahmen =
+			ferienbetreuungAngabenKostenEinnahmen;
 	}
 
 	@Nullable
@@ -144,12 +197,18 @@ public class FerienbetreuungAngaben extends AbstractEntity {
 		return ferienbetreuungBerechnungen;
 	}
 
-	public void setFerienbetreuungBerechnungen(@Nonnull FerienbetreuungBerechnungen ferienbetreuungBerechnungen) {
+	public void setFerienbetreuungBerechnungen(
+		@Nonnull FerienbetreuungBerechnungen ferienbetreuungBerechnungen
+	) {
 		this.ferienbetreuungBerechnungen = ferienbetreuungBerechnungen;
 	}
 
 	public void copyForErneuerung(FerienbetreuungAngaben target) {
-		getFerienbetreuungAngabenStammdaten().copyForErneuerung(target.getFerienbetreuungAngabenStammdaten());
-		getFerienbetreuungAngabenAngebot().copyForErneuerung(target.getFerienbetreuungAngabenAngebot());
+		getFerienbetreuungAngabenStammdaten().copyForErneuerung(
+			target.getFerienbetreuungAngabenStammdaten()
+		);
+		getFerienbetreuungAngabenAngebot().copyForErneuerung(
+			target.getFerienbetreuungAngabenAngebot()
+		);
 	}
 }

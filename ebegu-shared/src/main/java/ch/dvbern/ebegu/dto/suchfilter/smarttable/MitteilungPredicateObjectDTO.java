@@ -18,9 +18,9 @@ package ch.dvbern.ebegu.dto.suchfilter.smarttable;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import ch.dvbern.ebegu.enums.MessageTypes;
 import org.apache.commons.lang.builder.ToStringBuilder;

@@ -14,7 +14,6 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
   -->
-
 <p
     *ngIf="canSeeFreigegebenText | async"
     [innerHTML]="'LATS_FREIGEGEBEN_AN_KANTON' | translate"
@@ -24,12 +23,17 @@
     [innerHTML]="'LATS_ABGESCHLOSSEN' | translate"
 ></p>
 
+@if (container && (isZweitPruefungAndSameUserAsPruefung() | async)) {
+    <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
+}
+
 <div class="actions">
     <dv-loading-button
         *ngIf="canSeeFreigabeButton | async"
         [buttonDisabled]="(isInBearbeitungGemeinde() | async) === false"
         (buttonClick)="freigeben()"
         type="button"
+        data-test="freigabe-pruefung-kanton"
     >
         <span translate>LATS_FREIGABE_PRUEFUNG_KANTON</span>
     </dv-loading-button>
@@ -38,8 +42,16 @@
         [buttonDisabled]="!isReadyForGeprueft()"
         type="button"
         (buttonClick)="geprueft()"
+        data-test="freigabe-geprueft-von-kanton"
     >
         <span translate>LATS_GEPRUEFT_KANTON</span>
+    </dv-loading-button>
+    <dv-loading-button
+        *ngIf="(canSeeGeprueftButton | async) && !isAlreadyInZweitpruefung()"
+        [buttonDisabled]="!isReadyForGeprueft()"
+        (buttonClick)="inZweitpruefungGeben()"
+    >
+        <span translate>ZUR_ZWEITPRUEFUNG</span>
     </dv-loading-button>
     <dv-loading-button
         *ngIf="canSeeGeprueftButton | async"
@@ -47,6 +59,7 @@
         type="button"
         class="secondary"
         (buttonClick)="zurueckAnGemeinde()"
+        data-test="zurueck-an-die-gemeinde"
     >
         <span translate>ZURUECK_AN_GEMEINDE_TITLE</span>
     </dv-loading-button>

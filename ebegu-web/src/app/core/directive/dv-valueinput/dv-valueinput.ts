@@ -18,7 +18,8 @@ import {
     IController,
     IDirective,
     IDirectiveFactory,
-    INgModelController
+    INgModelController,
+    element
 } from 'angular';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import ITimeoutService = angular.ITimeoutService;
@@ -160,18 +161,18 @@ export class ValueinputController implements IController {
             return;
         }
 
-        const angEle: IAugmentedJQuery = angular.element(event.target);
-        const element: any = angEle[0];
+        const angEle: IAugmentedJQuery = element(event.target);
+        const jqElement: any = angEle[0];
         this.$timeout(() => {
             // If this function exists...
-            if (element.setSelectionRange) {
+            if (jqElement.setSelectionRange) {
                 // ... then use it
                 const range = 999999;
-                element.setSelectionRange(range, range);
+                jqElement.setSelectionRange(range, range);
             } else {
                 // ... otherwise replace the contents with itself
                 // (Doesn't work in Google Chrome)
-                element.val(element.val());
+                jqElement.val(jqElement.val());
             }
         });
     }

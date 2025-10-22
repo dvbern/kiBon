@@ -44,6 +44,10 @@
         </div>
     </div>
 
+    @if (isZweitPruefungAndSameUserAsPruefung() | async) {
+        <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
+    }
+
     <form *ngIf="container" [formGroup]="form">
         <h3 translate class="uppercase">FERIENBETREUUNG_BETREUUNGSTAGE</h3>
 
@@ -797,13 +801,7 @@
 
         <div
             class="well well-status-warten"
-            *ngIf="
-                !(
-                    (allAnzahlFieldsFilledOut() &&
-                        abweichungenAnzahlKinder === 0) ||
-                    allAnzahlFieldsEmpty()
-                )
-            "
+            *ngIf="abweichungenAnzahlKinder !== 0"
         >
             <i class="fa fa-exclamation" aria-hidden="true"></i>
             <span>

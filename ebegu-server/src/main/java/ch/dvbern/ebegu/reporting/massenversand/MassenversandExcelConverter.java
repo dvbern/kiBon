@@ -34,7 +34,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-//@Dependent
+// @Dependent
 public class MassenversandExcelConverter implements ExcelConverter {
 
 	public static final String EMPTY_STRING = "";
@@ -56,88 +56,383 @@ public class MassenversandExcelConverter implements ExcelConverter {
 		boolean inklMischGesuche,
 		boolean inklTsGesuche,
 		boolean ohneErneuerungsgesuch,
-		@Nullable String text) {
+		@Nullable String text
+	) {
 		checkNotNull(data);
 
 		ExcelMergerDTO excelMerger = new ExcelMergerDTO();
 
-		addHeaders(excelMerger, locale, Objects.requireNonNull(auswertungPeriode.getMandant()));
+		addHeaders(
+			excelMerger,
+			locale,
+			Objects.requireNonNull(auswertungPeriode.getMandant())
+		);
 
 		excelMerger.addValue(MergeFieldMassenversand.auswertungVon, datumVon);
 		excelMerger.addValue(MergeFieldMassenversand.auswertungBis, datumBis);
-		excelMerger.addValue(MergeFieldMassenversand.auswertungPeriode, auswertungPeriode.getGesuchsperiodeString());
-		excelMerger.addValue(MergeFieldMassenversand.auswertungInklBgGesuche, inklBgGesuche);
-		excelMerger.addValue(MergeFieldMassenversand.auswertungInklMischGesuche, inklMischGesuche);
-		excelMerger.addValue(MergeFieldMassenversand.auswertungInklTsGesuche, inklTsGesuche);
-		excelMerger.addValue(MergeFieldMassenversand.auswertungOhneFolgegesuch, ohneErneuerungsgesuch);
+		excelMerger.addValue(
+			MergeFieldMassenversand.auswertungPeriode,
+			auswertungPeriode.getGesuchsperiodeString()
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.auswertungInklBgGesuche,
+			inklBgGesuche
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.auswertungInklMischGesuche,
+			inklMischGesuche
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.auswertungInklTsGesuche,
+			inklTsGesuche
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.auswertungOhneFolgegesuch,
+			ohneErneuerungsgesuch
+		);
 		excelMerger.addValue(MergeFieldMassenversand.auswertungText, text);
 
 		insertRequiredColumns(data, excelMerger);
 
 		data.forEach(dataRow -> {
-			ExcelMergerDTO fallRowGroup = excelMerger.createGroup(MergeFieldMassenversand.repeatRow);
-			fallRowGroup.addValue(MergeFieldMassenversand.gesuchsperiode, dataRow.getGesuchsperiode());
-			fallRowGroup.addValue(MergeFieldMassenversand.gemeinde, dataRow.getGemeinde());
-			fallRowGroup.addValue(MergeFieldMassenversand.fall, dataRow.getFall());
-			fallRowGroup.addValue(MergeFieldMassenversand.gs1Name, dataRow.getGs1Name());
-			fallRowGroup.addValue(MergeFieldMassenversand.gs1Vorname, dataRow.getGs1Vorname());
-			fallRowGroup.addValue(MergeFieldMassenversand.gs1Mail, dataRow.getGs1Mail());
-			fallRowGroup.addValue(MergeFieldMassenversand.gs2Name, dataRow.getGs2Name());
-			fallRowGroup.addValue(MergeFieldMassenversand.gs2Vorname, dataRow.getGs2Vorname());
-			fallRowGroup.addValue(MergeFieldMassenversand.gs2Mail, dataRow.getGs2Mail());
-			fallRowGroup.addValue(MergeFieldMassenversand.adresse, dataRow.getAdresse());
-			fallRowGroup.addValue(MergeFieldMassenversand.einreichungsart, dataRow.getEinreichungsart());
-			fallRowGroup.addValue(MergeFieldMassenversand.status, dataRow.getStatus());
-			fallRowGroup.addValue(MergeFieldMassenversand.typ, dataRow.getTyp());
+			ExcelMergerDTO fallRowGroup = excelMerger.createGroup(
+				MergeFieldMassenversand.repeatRow
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.gesuchsperiode,
+				dataRow.getGesuchsperiode()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.gemeinde,
+				dataRow.getGemeinde()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.fall,
+				dataRow.getFall()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.gs1Name,
+				dataRow.getGs1Name()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.gs1Vorname,
+				dataRow.getGs1Vorname()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.gs1Mail,
+				dataRow.getGs1Mail()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.gs2Name,
+				dataRow.getGs2Name()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.gs2Vorname,
+				dataRow.getGs2Vorname()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.gs2Mail,
+				dataRow.getGs2Mail()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.adresse,
+				dataRow.getAdresse()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.einreichungsart,
+				dataRow.getEinreichungsart()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.status,
+				dataRow.getStatus()
+			);
+			fallRowGroup.addValue(
+				MergeFieldMassenversand.typ,
+				dataRow.getTyp()
+			);
 
 			dataRow.getKinderCols().forEach(kindCol -> {
-				fallRowGroup.addValue(MergeFieldMassenversand.kindName, kindCol.getKindName());
-				fallRowGroup.addValue(MergeFieldMassenversand.kindVorname, kindCol.getKindVorname());
-				fallRowGroup.addValue(MergeFieldMassenversand.kindGeburtsdatum, kindCol.getKindGeburtsdatum());
-				fallRowGroup.addValue(MergeFieldMassenversand.kindInstitutionKita, kindCol.getKindInstitutionKita());
-				fallRowGroup.addValue(MergeFieldMassenversand.kindInstitutionTagesfamilie, kindCol.getKindInstitutionTagesfamilie());
-				fallRowGroup.addValue(MergeFieldMassenversand.kindInstitutionTagesschule, kindCol.getKindInstitutionTagesschule());
-				fallRowGroup.addValue(MergeFieldMassenversand.kindInstitutionFerieninsel, kindCol.getKindInstitutionFerieninsel());
-				fallRowGroup.addValue(MergeFieldMassenversand.kindInstitutionenWeitere, kindCol.getKindInstitutionenWeitere());
+				fallRowGroup.addValue(
+					MergeFieldMassenversand.kindName,
+					kindCol.getKindName()
+				);
+				fallRowGroup.addValue(
+					MergeFieldMassenversand.kindVorname,
+					kindCol.getKindVorname()
+				);
+				fallRowGroup.addValue(
+					MergeFieldMassenversand.kindGeburtsdatum,
+					kindCol.getKindGeburtsdatum()
+				);
+				fallRowGroup.addValue(
+					MergeFieldMassenversand.kindInstitutionKita,
+					kindCol.getKindInstitutionKita()
+				);
+				fallRowGroup.addValue(
+					MergeFieldMassenversand.kindInstitutionTagesfamilie,
+					kindCol.getKindInstitutionTagesfamilie()
+				);
+				fallRowGroup.addValue(
+					MergeFieldMassenversand.kindInstitutionTagesschule,
+					kindCol.getKindInstitutionTagesschule()
+				);
+				fallRowGroup.addValue(
+					MergeFieldMassenversand.kindInstitutionFerieninsel,
+					kindCol.getKindInstitutionFerieninsel()
+				);
+				fallRowGroup.addValue(
+					MergeFieldMassenversand.kindInstitutionenWeitere,
+					kindCol.getKindInstitutionenWeitere()
+				);
 			});
 		});
 
 		return excelMerger;
 	}
 
-	private void addHeaders(@Nonnull ExcelMergerDTO excelMerger, @Nonnull Locale locale, @Nonnull Mandant mandant) {
-		excelMerger.addValue(MergeFieldMassenversand.gemeindeTitle, ServerMessageUtil.getMessage("Reports_gemeindeTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.serienbriefeTitle, ServerMessageUtil.getMessage("Reports_serienbriefeTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.parameterTitle, ServerMessageUtil.getMessage("Reports_parameterTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.vonTitle, ServerMessageUtil.getMessage("Reports_vonTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.bisTitle, ServerMessageUtil.getMessage("Reports_bisTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.periodeTitle, ServerMessageUtil.getMessage("Reports_periodeTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.inklJAGesucheTitle, ServerMessageUtil.getMessage("Reports_inklJAGesucheTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.inklSCHGesucheTitle, ServerMessageUtil.getMessage("Reports_inklSCHGesucheTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.inklMischGesucheTitle, ServerMessageUtil.getMessage("Reports_inklMischGesucheTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.ohneFolgegesucheTitle, ServerMessageUtil.getMessage("Reports_ohneFolgegesucheTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.textTitle, ServerMessageUtil.getMessage("Reports_textTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.fallIdTitle, ServerMessageUtil.getMessage("Reports_fallIdTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.gesuchsteller1Title, ServerMessageUtil.getMessage("Reports_gesuchsteller1Title", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.gesuchsteller2Title, ServerMessageUtil.getMessage("Reports_gesuchsteller2Title", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.nachnameTitle, ServerMessageUtil.getMessage("Reports_nachnameTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.vornameTitle, ServerMessageUtil.getMessage("Reports_vornameTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.emailTitle, ServerMessageUtil.getMessage("Reports_emailTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.postanschriftTitle, ServerMessageUtil.getMessage("Reports_postanschriftTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.geburtsdatumTitle, ServerMessageUtil.getMessage("Reports_geburtsdatumTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.kindTitle, ServerMessageUtil.getMessage("Reports_kindTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.betreuungsartInstitutionenTitle, ServerMessageUtil.getMessage("Reports_betreuungsartInstitutionenTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.kitaTitel, ServerMessageUtil.getMessage("Reports_kitaTitel", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.ferieninselTitle, ServerMessageUtil.getMessage("Reports_ferieninselTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.tagesfamilieTitle, ServerMessageUtil.getMessage("Reports_tagesfamilieTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.tagesschuleTitel, ServerMessageUtil.getMessage("Reports_tagesschuleTitel", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.weitereInstitutionenTitle, ServerMessageUtil.getMessage("Reports_weitereInstitutionenTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.einreichungsartTitel, ServerMessageUtil.getMessage("Reports_einreichungsartTitel", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.gesuchStatusTitle, ServerMessageUtil.getMessage("Reports_gesuchStatusTitle", locale, mandant));
-		excelMerger.addValue(MergeFieldMassenversand.gesuchstypTitle, ServerMessageUtil.getMessage("Reports_gesuchstypTitle", locale, mandant));
+	private void addHeaders(
+		@Nonnull ExcelMergerDTO excelMerger,
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	) {
+		excelMerger.addValue(
+			MergeFieldMassenversand.gemeindeTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_gemeindeTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.serienbriefeTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_serienbriefeTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.parameterTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_parameterTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.vonTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_vonTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.bisTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_bisTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.periodeTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_periodeTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.inklJAGesucheTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_inklJAGesucheTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.inklSCHGesucheTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_inklSCHGesucheTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.inklMischGesucheTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_inklMischGesucheTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.ohneFolgegesucheTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_ohneFolgegesucheTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.textTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_textTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.fallIdTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_fallIdTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.gesuchsteller1Title,
+			ServerMessageUtil.getMessage(
+				"Reports_gesuchsteller1Title",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.gesuchsteller2Title,
+			ServerMessageUtil.getMessage(
+				"Reports_gesuchsteller2Title",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.nachnameTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_nachnameTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.vornameTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_vornameTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.emailTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_emailTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.postanschriftTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_postanschriftTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.geburtsdatumTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_geburtsdatumTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.kindTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_kindTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.betreuungsartInstitutionenTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_betreuungsartInstitutionenTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.kitaTitel,
+			ServerMessageUtil.getMessage(
+				"Reports_kitaTitel",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.ferieninselTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_ferieninselTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.tagesfamilieTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_tagesfamilieTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.tagesschuleTitel,
+			ServerMessageUtil.getMessage(
+				"Reports_tagesschuleTitel",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.weitereInstitutionenTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_weitereInstitutionenTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.einreichungsartTitel,
+			ServerMessageUtil.getMessage(
+				"Reports_einreichungsartTitel",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.gesuchStatusTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_gesuchStatusTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldMassenversand.gesuchstypTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_gesuchstypTitle",
+				locale,
+				mandant
+			)
+		);
 	}
 
-	private void insertRequiredColumns(List<MassenversandDataRow> data, ExcelMergerDTO sheet) {
+	private void insertRequiredColumns(
+		List<MassenversandDataRow> data,
+		ExcelMergerDTO sheet
+	) {
 		// Die maximale Anzahl Kinder ermitteln
 		int maxKinder = 0;
 		for (MassenversandDataRow familie : data) {
@@ -148,13 +443,17 @@ public class MassenversandExcelConverter implements ExcelConverter {
 		}
 		Preconditions.checkState(
 			maxKinder <= MAX_KIND_COLS_IN_TEMPLATE,
-			"Es gibt mehr Kinder als Spalten (für Kinder) die im Template zur Verfügung stehen");
-
-		IntStream.range(0, maxKinder).forEach(i ->
-			IntStream.range(0, 11).forEach(j -> {
-				// Pro Kind haben wir 11 Spalten
-				sheet.addValue(MergeFieldMassenversand.repeatKind, EMPTY_STRING);
-			})
+			"Es gibt mehr Kinder als Spalten (für Kinder) die im Template zur Verfügung stehen"
 		);
+
+		IntStream.range(0, maxKinder)
+			.forEach(i -> IntStream.range(0, 11).forEach(j -> {
+				// Pro Kind haben wir 11 Spalten
+				sheet.addValue(
+					MergeFieldMassenversand.repeatKind,
+					EMPTY_STRING
+				);
+			})
+			);
 	}
 }

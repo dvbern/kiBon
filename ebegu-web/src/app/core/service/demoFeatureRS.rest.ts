@@ -16,25 +16,23 @@
  */
 
 import {Injectable} from '@angular/core';
-import {IPromise} from 'angular';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {map} from 'rxjs/operators';
 import {TSDemoFeature} from '../directive/dv-hide-feature/TSDemoFeature';
-import {ApplicationPropertyRS} from '../rest-services/applicationPropertyRS.rest';
 
 @Injectable({
     providedIn: 'root'
 })
 export class DemoFeatureRS {
     public constructor(
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
-    public isDemoFeatureAllowed(
-        dvDemoFeature: TSDemoFeature
-    ): IPromise<boolean> {
-        return this.applicationPropertyRS
-            .getActivatedDemoFeatures()
-            .then(allowedElement =>
-                allowedElement.includes(dvDemoFeature.valueOf())
-            );
+    public isDemoFeatureAllowed(dvDemoFeature: TSDemoFeature) {
+        return this.applicationPropertyRS.getActivatedDemoFeatures().pipe(
+            map(allowedElement => {
+                return allowedElement.includes(dvDemoFeature.valueOf());
+            })
+        );
     }
 }

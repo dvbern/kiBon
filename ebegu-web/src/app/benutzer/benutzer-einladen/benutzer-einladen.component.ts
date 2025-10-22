@@ -17,25 +17,36 @@
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NgForm} from '@angular/forms';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {TSRole} from '@kibon/shared/model/enums';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSBenutzerStatus} from '../../../models/enums/TSBenutzerStatus';
-import {TSRole} from '../../../models/enums/TSRole';
 import {TSBenutzer} from '../../../models/TSBenutzer';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 
 @Component({
     selector: 'dv-benutzer-einladen',
     templateUrl: './benutzer-einladen.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BenutzerEinladenComponent {
     public readonly benutzer = new TSBenutzer();
     public readonly excludedRoles: ReadonlyArray<TSRole> = [
         TSRole.GESUCHSTELLER
+    ];
+    public readonly exludedTSRoles: ReadonlyArray<TSRole> = [
+        TSRole.GESUCHSTELLER,
+        TSRole.ADMIN_FERIENBETREUUNG,
+        TSRole.ADMIN_GEMEINDE,
+        TSRole.ADMIN_TS,
+        TSRole.SACHBEARBEITER_FERIENBETREUUNG,
+        TSRole.SACHBEARBEITER_GEMEINDE,
+        TSRole.SACHBEARBEITER_TS
     ];
     public readonly CONSTANTS = CONSTANTS;
 
@@ -44,7 +55,8 @@ export class BenutzerEinladenComponent {
         private readonly authServiceRS: AuthServiceRS,
         private readonly stateService: StateService,
         private readonly errorService: ErrorService,
-        private readonly translate: TranslateService
+        private readonly translate: TranslateService,
+        public readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {}
 
     public onSubmit(form: NgForm): void {

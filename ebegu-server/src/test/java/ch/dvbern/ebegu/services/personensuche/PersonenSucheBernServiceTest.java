@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -55,18 +55,57 @@ class PersonenSucheBernServiceTest extends EasyMockSupport {
 	@Test
 	void suchePersonByGesuch() throws Exception {
 		// given
-		Gesuch gesuch = TestDataUtil.createTestgesuchDagmar(new FinanzielleSituationBernRechner());
-		var gs1 = Objects.requireNonNull(Objects.requireNonNull(gesuch.getGesuchsteller1()).getGesuchstellerJA());
-		var kind1 = Objects.requireNonNull(Objects.requireNonNull(gesuch.getKindContainers().stream().collect(Collectors.toList()).get(0).getKindJA()));
+		Gesuch gesuch = TestDataUtil.createTestgesuchDagmar(
+			new FinanzielleSituationBernRechner()
+		);
+		var gs1 = Objects.requireNonNull(
+			Objects.requireNonNull(gesuch.getGesuchsteller1())
+				.getGesuchstellerJA()
+		);
+		var kind1 = Objects.requireNonNull(
+			Objects.requireNonNull(
+				gesuch.getKindContainers()
+					.stream()
+					.collect(Collectors.toList())
+					.get(0)
+					.getKindJA()
+			)
+		);
 		gesuch.getDossier().getGemeinde().setBfsNummer(351L);
-		Assertions.assertNotNull(gesuch.getDossier().getGemeinde().getBfsNummer(), "bfs nummer muss gesetzt sein fuer suche");
+		Assertions.assertNotNull(
+			gesuch.getDossier().getGemeinde().getBfsNummer(),
+			"bfs nummer muss gesetzt sein fuer suche"
+		);
 
 		EWKResultat value = new EWKResultat();
 		value.getPersonen().add(GeresTestUtil.ewkPersonFromEntity(gs1));
-		expect(geresClient.suchePersonMitFallbackOhneVorname(gs1.getNachname(), gs1.getVorname(), gs1.getGeburtsdatum(), gs1.getGeschlecht(), 351L)).andReturn(
-			value);
-		expect(geresClient.suchePersonMitFallbackOhneVorname(gs1.getNachname(), gs1.getVorname(), gs1.getGeburtsdatum(), gs1.getGeschlecht())).andReturn(new EWKResultat());
-		expect(geresClient.suchePersonMitFallbackOhneVorname(kind1.getNachname(), kind1.getVorname(), kind1.getGeburtsdatum(), kind1.getGeschlecht())).andReturn(new EWKResultat());
+		expect(
+			geresClient.suchePersonMitFallbackOhneVorname(
+				gs1.getNachname(),
+				gs1.getVorname(),
+				gs1.getGeburtsdatum(),
+				gs1.getGeschlecht(),
+				351L
+			)
+		).andReturn(
+			value
+		);
+		expect(
+			geresClient.suchePersonMitFallbackOhneVorname(
+				gs1.getNachname(),
+				gs1.getVorname(),
+				gs1.getGeburtsdatum(),
+				gs1.getGeschlecht()
+			)
+		).andReturn(new EWKResultat());
+		expect(
+			geresClient.suchePersonMitFallbackOhneVorname(
+				kind1.getNachname(),
+				kind1.getVorname(),
+				kind1.getGeburtsdatum(),
+				kind1.getGeschlecht()
+			)
+		).andReturn(new EWKResultat());
 
 		replayAll();
 
@@ -78,18 +117,29 @@ class PersonenSucheBernServiceTest extends EasyMockSupport {
 		Assertions.assertEquals(2, ewkResultat.getPersonen().size()); // gs1 und gs2 sowie ein kind existieren im gesuch, wir erwarten IMMer fuer alle eine Antwort
 
 		//found GS
-		final List<EWKPerson> gesuchstellerRes = ewkResultat.getPersonen().stream().filter(EWKPerson::isGesuchsteller).collect(Collectors.toList());
+		final List<EWKPerson> gesuchstellerRes = ewkResultat.getPersonen()
+			.stream()
+			.filter(EWKPerson::isGesuchsteller)
+			.collect(Collectors.toList());
 		Assertions.assertEquals(1, gesuchstellerRes.size());
 
 		//found kind
-		final List<EWKPerson> kinderResults = ewkResultat.getPersonen().stream().filter(EWKPerson::isKind).collect(Collectors.toList());
-		Assertions.assertEquals(1, kinderResults.size(), "Should find exactly the one Kind in the Gesuch");
+		final List<EWKPerson> kinderResults = ewkResultat.getPersonen()
+			.stream()
+			.filter(EWKPerson::isKind)
+			.collect(Collectors.toList());
+		Assertions.assertEquals(
+			1,
+			kinderResults.size(),
+			"Should find exactly the one Kind in the Gesuch"
+		);
 		EWKPerson kindResult = kinderResults.get(0);
-		Assertions.assertEquals(LocalDate.of(2014,4,13), kindResult.getGeburtsdatum());
+		Assertions.assertEquals(
+			LocalDate.of(2014, 4, 13),
+			kindResult.getGeburtsdatum()
+		);
 		Assertions.assertEquals("Simon", kindResult.getVorname());
 		Assertions.assertEquals("Wälti", kindResult.getNachname());
 	}
-
-
 
 }

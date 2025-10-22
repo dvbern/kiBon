@@ -17,13 +17,21 @@
 
 package ch.dvbern.ebegu.entities;
 
-import ch.dvbern.ebegu.enums.AntragCopyType;
-import org.hibernate.envers.Audited;
-
-import javax.annotation.Nullable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+
+import ch.dvbern.ebegu.enums.AntragCopyType;
+import ch.dvbern.ebegu.util.EbeguUtil;
+import ch.dvbern.ebegu.util.MathUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.hibernate.envers.Audited;
 
 @Audited
 @Entity
@@ -111,7 +119,9 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 		return liegenschaftsaufwand;
 	}
 
-	public void setLiegenschaftsaufwand(@Nullable BigDecimal liegenschaftsaufwand) {
+	public void setLiegenschaftsaufwand(
+		@Nullable BigDecimal liegenschaftsaufwand
+	) {
 		this.liegenschaftsaufwand = liegenschaftsaufwand;
 	}
 
@@ -138,7 +148,9 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 		return politischeParteiSpende;
 	}
 
-	public void setPolitischeParteiSpende(@Nullable BigDecimal politischeParteiSpende) {
+	public void setPolitischeParteiSpende(
+		@Nullable BigDecimal politischeParteiSpende
+	) {
 		this.politischeParteiSpende = politischeParteiSpende;
 	}
 
@@ -147,13 +159,71 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 		return leistungAnJuristischePersonen;
 	}
 
-	public void setLeistungAnJuristischePersonen(@Nullable BigDecimal leistungAnJuristischePersonen) {
+	public void setLeistungAnJuristischePersonen(
+		@Nullable BigDecimal leistungAnJuristischePersonen
+	) {
 		this.leistungAnJuristischePersonen = leistungAnJuristischePersonen;
 	}
 
 	@Override
+	@SuppressWarnings("PMD.CompareObjectsWithEquals")
+	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
-		return this.equals(other);
+		if (this == other) {
+			return true;
+		}
+		if (other == null || !getClass().equals(other.getClass())) {
+			return false;
+		}
+		final FinSitZusatzangabenAppenzell otherFinSitZusatzangabenAppenzell =
+			(FinSitZusatzangabenAppenzell) other;
+
+		return MathUtil.isSame(
+			getSaeule3a(),
+			otherFinSitZusatzangabenAppenzell.getSaeule3a()
+		)
+			&& MathUtil.isSame(
+				getSaeule3aNichtBvg(),
+				otherFinSitZusatzangabenAppenzell.getSaeule3aNichtBvg()
+			)
+			&& MathUtil.isSame(
+				getBeruflicheVorsorge(),
+				otherFinSitZusatzangabenAppenzell.getBeruflicheVorsorge()
+			)
+			&& MathUtil.isSame(
+				getLiegenschaftsaufwand(),
+				otherFinSitZusatzangabenAppenzell.getLiegenschaftsaufwand()
+			)
+			&& MathUtil.isSame(
+				getEinkuenfteBgsa(),
+				otherFinSitZusatzangabenAppenzell.getEinkuenfteBgsa()
+			)
+			&& MathUtil.isSame(
+				getVorjahresverluste(),
+				otherFinSitZusatzangabenAppenzell.getVorjahresverluste()
+			)
+			&& MathUtil.isSame(
+				getPolitischeParteiSpende(),
+				otherFinSitZusatzangabenAppenzell.getPolitischeParteiSpende()
+			)
+			&& MathUtil.isSame(
+				getLeistungAnJuristischePersonen(),
+				otherFinSitZusatzangabenAppenzell
+					.getLeistungAnJuristischePersonen()
+			)
+			&& MathUtil.isSame(
+				getSteuerbaresEinkommen(),
+				otherFinSitZusatzangabenAppenzell.getSteuerbaresEinkommen()
+			)
+			&& MathUtil.isSame(
+				getSteuerbaresVermoegen(),
+				otherFinSitZusatzangabenAppenzell.getSteuerbaresVermoegen()
+			)
+			&& EbeguUtil.isSame(
+				getZusatzangabenPartner(),
+				otherFinSitZusatzangabenAppenzell.getZusatzangabenPartner()
+			);
+
 	}
 
 	@Override
@@ -168,20 +238,7 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 			return false;
 		}
 		FinSitZusatzangabenAppenzell that = (FinSitZusatzangabenAppenzell) o;
-		return Objects.equals(getSaeule3a(), that.getSaeule3a())
-			&& Objects.equals(
-			getSaeule3aNichtBvg(),
-			that.getSaeule3aNichtBvg())
-			&& Objects.equals(
-			getBeruflicheVorsorge(),
-			that.getBeruflicheVorsorge())
-			&& Objects.equals(
-			getLiegenschaftsaufwand(),
-			that.getLiegenschaftsaufwand())
-			&& Objects.equals(getEinkuenfteBgsa(), that.getEinkuenfteBgsa())
-			&& Objects.equals(getVorjahresverluste(), that.getVorjahresverluste())
-			&& Objects.equals(getPolitischeParteiSpende(), that.getPolitischeParteiSpende())
-			&& Objects.equals(getLeistungAnJuristischePersonen(), that.getLeistungAnJuristischePersonen());
+		return EbeguUtil.isSame(this, that);
 	}
 
 	@Override
@@ -195,12 +252,14 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 			getEinkuenfteBgsa(),
 			getVorjahresverluste(),
 			getPolitischeParteiSpende(),
-			getLeistungAnJuristischePersonen());
+			getLeistungAnJuristischePersonen()
+		);
 	}
 
 	public FinSitZusatzangabenAppenzell copyFinSitZusatzangabenAppenzell(
 		FinSitZusatzangabenAppenzell target,
-		AntragCopyType copyType) {
+		AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 
 		switch (copyType) {
@@ -214,7 +273,9 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 		return target;
 	}
 
-	public FinSitZusatzangabenAppenzell copyAllValues(FinSitZusatzangabenAppenzell target) {
+	public FinSitZusatzangabenAppenzell copyAllValues(
+		FinSitZusatzangabenAppenzell target
+	) {
 		target.setSteuerbaresEinkommen(this.getSteuerbaresEinkommen());
 		target.setSteuerbaresVermoegen(this.getSteuerbaresVermoegen());
 		target.setSaeule3a(this.getSaeule3a());
@@ -224,22 +285,34 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 		target.setEinkuenfteBgsa(this.getEinkuenfteBgsa());
 		target.setVorjahresverluste(this.getVorjahresverluste());
 		target.setPolitischeParteiSpende(this.getPolitischeParteiSpende());
-		target.setLeistungAnJuristischePersonen(this.getLeistungAnJuristischePersonen());
+		target.setLeistungAnJuristischePersonen(
+			this.getLeistungAnJuristischePersonen()
+		);
 		if (this.zusatzangabenPartner != null) {
-			target.setZusatzangabenPartner(this.zusatzangabenPartner.copyAllValues(
-				new FinSitZusatzangabenAppenzell()));
+			target.setZusatzangabenPartner(
+				this.zusatzangabenPartner.copyAllValues(
+					new FinSitZusatzangabenAppenzell()
+				)
+			);
 		}
 		return target;
 	}
 
 	public boolean isVollstaendig() {
-		return saeule3a != null &&
-			saeule3aNichtBvg != null &&
-			beruflicheVorsorge != null &&
-			liegenschaftsaufwand != null &&
-			einkuenfteBgsa != null &&
-			vorjahresverluste != null &&
-			politischeParteiSpende != null &&
+		return saeule3a != null
+			&&
+			saeule3aNichtBvg != null
+			&&
+			beruflicheVorsorge != null
+			&&
+			liegenschaftsaufwand != null
+			&&
+			einkuenfteBgsa != null
+			&&
+			vorjahresverluste != null
+			&&
+			politischeParteiSpende != null
+			&&
 			leistungAnJuristischePersonen != null;
 	}
 
@@ -248,7 +321,9 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 		return zusatzangabenPartner;
 	}
 
-	public void setZusatzangabenPartner(@Nullable FinSitZusatzangabenAppenzell zusatzangabenPartner) {
+	public void setZusatzangabenPartner(
+		@Nullable FinSitZusatzangabenAppenzell zusatzangabenPartner
+	) {
 		this.zusatzangabenPartner = zusatzangabenPartner;
 	}
 
@@ -257,7 +332,9 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 		return steuerbaresEinkommen;
 	}
 
-	public void setSteuerbaresEinkommen(@Nullable BigDecimal steuerbaresEinkommen) {
+	public void setSteuerbaresEinkommen(
+		@Nullable BigDecimal steuerbaresEinkommen
+	) {
 		this.steuerbaresEinkommen = steuerbaresEinkommen;
 	}
 
@@ -266,7 +343,9 @@ public class FinSitZusatzangabenAppenzell extends AbstractMutableEntity {
 		return steuerbaresVermoegen;
 	}
 
-	public void setSteuerbaresVermoegen(@Nullable BigDecimal steuerbaresVermoegen) {
+	public void setSteuerbaresVermoegen(
+		@Nullable BigDecimal steuerbaresVermoegen
+	) {
 		this.steuerbaresVermoegen = steuerbaresVermoegen;
 	}
 }

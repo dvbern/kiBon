@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities.sozialdienst;
@@ -22,19 +22,19 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Adresse;
@@ -47,21 +47,25 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 @Audited
 @Entity
 @Table(
-	uniqueConstraints =
-		@UniqueConstraint(columnNames = "adresse_id", name = "UK_sozialdienst_fall_adresse_id")
+	uniqueConstraints = @UniqueConstraint(columnNames = "adresse_id",
+		name = "UK_sozialdienst_fall_adresse_id")
 )
 public class SozialdienstFall extends AbstractEntity {
 
 	private static final long serialVersionUID = -3978972308622826784L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_sozialdienst_fall_sozialdienst_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_sozialdienst_fall_sozialdienst_id"), nullable = false)
 	private Sozialdienst sozialdienst;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_sozialdienst_fall_adresse_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_sozialdienst_fall_adresse_id"), nullable = false)
 	private Adresse adresse;
 
 	@Size(min = 1, max = DB_DEFAULT_MAX_LENGTH)
@@ -76,12 +80,14 @@ public class SozialdienstFall extends AbstractEntity {
 	@Nonnull
 	private String vorname;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private SozialdienstFallStatus status = SozialdienstFallStatus.INAKTIV;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private LocalDate geburtsdatum;
 
@@ -161,22 +167,46 @@ public class SozialdienstFall extends AbstractEntity {
 		if (this == other) {
 			return true;
 		}
-		if (!(other instanceof SozialdienstFall)){
+		if (!(other instanceof SozialdienstFall)) {
 			return false;
 		}
 		if (!super.equals(other)) {
 			return false;
 		}
 		SozialdienstFall sozialdienstFall = (SozialdienstFall) other;
-		return Objects.equals(this.getSozialdienst(), sozialdienstFall.getSozialdienst())
-			&& Objects.equals(this.getStatus(), sozialdienstFall.getStatus())
+		return Objects.equals(
+			this.getSozialdienst(),
+			sozialdienstFall.getSozialdienst()
+		)
+			&& Objects.equals(
+				this.getStatus(),
+				sozialdienstFall.getStatus()
+			)
 			&& Objects.equals(this.getName(), sozialdienstFall.getName())
-			&& Objects.equals(this.getVorname(), sozialdienstFall.getVorname())
-			&& Objects.equals(this.getGeburtsdatum(), sozialdienstFall.getGeburtsdatum())
-			&& Objects.equals(this.getAdresse(), sozialdienstFall.getAdresse())
-			&& Objects.equals(this.getNameGs2(), sozialdienstFall.getNameGs2())
-			&& Objects.equals(this.getVornameGs2(), sozialdienstFall.getVornameGs2())
-			&& Objects.equals(this.getGeburtsdatumGs2(), sozialdienstFall.getGeburtsdatumGs2());
+			&& Objects.equals(
+				this.getVorname(),
+				sozialdienstFall.getVorname()
+			)
+			&& Objects.equals(
+				this.getGeburtsdatum(),
+				sozialdienstFall.getGeburtsdatum()
+			)
+			&& Objects.equals(
+				this.getAdresse(),
+				sozialdienstFall.getAdresse()
+			)
+			&& Objects.equals(
+				this.getNameGs2(),
+				sozialdienstFall.getNameGs2()
+			)
+			&& Objects.equals(
+				this.getVornameGs2(),
+				sozialdienstFall.getVornameGs2()
+			)
+			&& Objects.equals(
+				this.getGeburtsdatumGs2(),
+				sozialdienstFall.getGeburtsdatumGs2()
+			);
 	}
 
 	@Nullable

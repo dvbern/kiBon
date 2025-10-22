@@ -22,11 +22,11 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
@@ -69,7 +69,8 @@ public class EbeguExceptionReport {
 		@Nullable String translatedMessage,
 		@Nullable String customMessage,
 		@Nullable String objectId,
-		@Nullable List<Serializable> argumentList) {
+		@Nullable List<Serializable> argumentList
+	) {
 
 		this.exceptionName = exceptionName;
 		this.errorCodeEnum = errorCodeEnum;
@@ -157,11 +158,17 @@ public class EbeguExceptionReport {
 		EbeguException ex,
 		Locale localeFromHeader,
 		Mandant mandant,
-		boolean addDebugInfo) {
+		boolean addDebugInfo
+	) {
 
 		Response.ResponseBuilder builder = setResponseHeaderAndStatus(status);
 		Object[] args = ex.getArgs().toArray();
-		String translatedEnumMessage = translateEnumValue(ex.getErrorCodeEnum(), localeFromHeader, mandant, args);
+		String translatedEnumMessage = translateEnumValue(
+			ex.getErrorCodeEnum(),
+			localeFromHeader,
+			mandant,
+			args
+		);
 
 		EbeguExceptionReport exceptionReport = new EbeguExceptionReport(
 			ex.getClass().getSimpleName(),
@@ -170,7 +177,8 @@ public class EbeguExceptionReport {
 			translatedEnumMessage,
 			ex.getCustomMessage(),
 			null,
-			ex.getArgs());
+			ex.getArgs()
+		);
 
 		if (addDebugInfo) {
 			addDevelopmentDebugInformation(exceptionReport, ex);
@@ -185,17 +193,24 @@ public class EbeguExceptionReport {
 		EbeguRuntimeException ex,
 		Locale localeFromHeader,
 		Mandant mandant,
-		boolean addDebugInfo) {
+		boolean addDebugInfo
+	) {
 
 		Response.ResponseBuilder builder = setResponseHeaderAndStatus(status);
 
 		String objectId = null;
 		if (ex instanceof EbeguExistingAntragRuntimeException) {
-			objectId = ((EbeguExistingAntragRuntimeException) ex).getDossierId();
+			objectId = ((EbeguExistingAntragRuntimeException) ex)
+				.getDossierId();
 		}
 
 		Object[] args = ex.getArgs().toArray();
-		String translatedEnumMessage = translateEnumValue(ex.getErrorCodeEnum(), localeFromHeader, mandant, args);
+		String translatedEnumMessage = translateEnumValue(
+			ex.getErrorCodeEnum(),
+			localeFromHeader,
+			mandant,
+			args
+		);
 		EbeguExceptionReport exceptionReport = new EbeguExceptionReport(
 			ex.getClass().getSimpleName(),
 			ex.getErrorCodeEnum(),
@@ -203,7 +218,8 @@ public class EbeguExceptionReport {
 			translatedEnumMessage,
 			ex.getCustomMessage(),
 			objectId,
-			ex.getArgs());
+			ex.getArgs()
+		);
 
 		if (addDebugInfo) {
 			addDevelopmentDebugInformation(exceptionReport, ex);
@@ -212,12 +228,17 @@ public class EbeguExceptionReport {
 		return builder.entity(exceptionReport).build();
 	}
 
-	private static void addDevelopmentDebugInformation(EbeguExceptionReport exceptionReport, Exception e) {
+	private static void addDevelopmentDebugInformation(
+		EbeguExceptionReport exceptionReport,
+		Exception e
+	) {
 		exceptionReport.setStackTrace(ExceptionUtils.getStackTrace(e));
 	}
 
 	@Nonnull
-	private static Response.ResponseBuilder setResponseHeaderAndStatus(Response.Status status) {
+	private static Response.ResponseBuilder setResponseHeaderAndStatus(
+		Response.Status status
+	) {
 		Response.ResponseBuilder builder = Response.status(status);
 		builder.header(Validation.VALIDATION_HEADER, "true");
 		builder.type(MediaType.APPLICATION_JSON_TYPE);

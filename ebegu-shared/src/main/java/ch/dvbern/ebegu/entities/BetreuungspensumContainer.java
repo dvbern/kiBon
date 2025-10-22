@@ -19,15 +19,15 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.types.DateRange;
@@ -44,24 +44,31 @@ import org.hibernate.envers.Audited;
 @Audited
 @Entity
 public class BetreuungspensumContainer extends AbstractMutableEntity
-	implements Gueltigkeit, Comparable<BetreuungspensumContainer> {
+	implements
+	Gueltigkeit,
+	Comparable<BetreuungspensumContainer> {
 
 	private static final long serialVersionUID = -6784987861150035840L;
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_betreuungspensum_container_betreuung_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_betreuungspensum_container_betreuung_id"),
+		nullable = false,
+		updatable = false)
 	private Betreuung betreuung;
 
 	@Nullable
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_betreuungspensum_container_betreuungspensum_gs"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_betreuungspensum_container_betreuungspensum_gs"))
 	private Betreuungspensum betreuungspensumGS;
 
 	@Valid
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_betreuungspensum_container_betreuungspensum_ja"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_betreuungspensum_container_betreuungspensum_ja"))
 	private Betreuungspensum betreuungspensumJA;
 
 	public BetreuungspensumContainer() {
@@ -80,7 +87,9 @@ public class BetreuungspensumContainer extends AbstractMutableEntity
 		return betreuungspensumGS;
 	}
 
-	public void setBetreuungspensumGS(@Nullable Betreuungspensum betreuungspensumGS) {
+	public void setBetreuungspensumGS(
+		@Nullable Betreuungspensum betreuungspensumGS
+	) {
 		this.betreuungspensumGS = betreuungspensumGS;
 	}
 
@@ -104,7 +113,8 @@ public class BetreuungspensumContainer extends AbstractMutableEntity
 	}
 
 	@Override
-	@SuppressWarnings({ "OverlyComplexBooleanExpression", "PMD.CompareObjectsWithEquals" })
+	@SuppressWarnings({ "OverlyComplexBooleanExpression",
+		"PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -114,9 +124,13 @@ public class BetreuungspensumContainer extends AbstractMutableEntity
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final BetreuungspensumContainer otherBetreuungspensumContainer = (BetreuungspensumContainer) other;
+		final BetreuungspensumContainer otherBetreuungspensumContainer =
+			(BetreuungspensumContainer) other;
 
-		return EbeguUtil.isSame(getBetreuungspensumJA(), otherBetreuungspensumContainer.getBetreuungspensumJA());
+		return EbeguUtil.isSame(
+			getBetreuungspensumJA(),
+			otherBetreuungspensumContainer.getBetreuungspensumJA()
+		);
 	}
 
 	/**
@@ -125,9 +139,18 @@ public class BetreuungspensumContainer extends AbstractMutableEntity
 	 */
 	@Transient
 	public Gesuchsperiode extractGesuchsperiode() {
-		Objects.requireNonNull(this.getBetreuung(), "Cannot extract Gesuchsperiode because Betreuung is null");
-		Objects.requireNonNull(this.getBetreuung().getKind(), "Cannot extract Gesuchsperiode because Kind is null");
-		Objects.requireNonNull(this.getBetreuung().getKind().getGesuch(), "Cannot extract Gesuchsperiode because Gesuch is null");
+		Objects.requireNonNull(
+			this.getBetreuung(),
+			"Cannot extract Gesuchsperiode because Betreuung is null"
+		);
+		Objects.requireNonNull(
+			this.getBetreuung().getKind(),
+			"Cannot extract Gesuchsperiode because Kind is null"
+		);
+		Objects.requireNonNull(
+			this.getBetreuung().getKind().getGesuch(),
+			"Cannot extract Gesuchsperiode because Gesuch is null"
+		);
 		return this.getBetreuung().getKind().getGesuch().getGesuchsperiode();
 	}
 
@@ -140,24 +163,40 @@ public class BetreuungspensumContainer extends AbstractMutableEntity
 	public int compareTo(BetreuungspensumContainer o) {
 		CompareToBuilder builder = new CompareToBuilder();
 		builder.append(this.getBetreuungspensumJA(), o.getBetreuungspensumJA());
-		builder.append(this.getBetreuungspensumJA().getId(), o.getBetreuungspensumJA().getId());
+		builder.append(
+			this.getBetreuungspensumJA().getId(),
+			o.getBetreuungspensumJA().getId()
+		);
 		return builder.toComparison();
 	}
 
 	@Nonnull
 	public BetreuungspensumContainer copyWithPensumJA() {
-		return copyBetreuungspensumContainer(new BetreuungspensumContainer(), AntragCopyType.MUTATION, betreuung);
+		return copyBetreuungspensumContainer(
+			new BetreuungspensumContainer(),
+			AntragCopyType.MUTATION,
+			betreuung
+		);
 	}
 
 	@Nonnull
 	public BetreuungspensumContainer copyBetreuungspensumContainer(
-			@Nonnull BetreuungspensumContainer target, @Nonnull AntragCopyType copyType, @Nonnull Betreuung targetBetreuung) {
+		@Nonnull BetreuungspensumContainer target,
+		@Nonnull AntragCopyType copyType,
+		@Nonnull Betreuung targetBetreuung
+	) {
 		super.copyAbstractEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
 			target.setBetreuung(targetBetreuung);
 			target.setBetreuungspensumGS(null);
-			target.setBetreuungspensumJA(this.getBetreuungspensumJA().copyBetreuungspensum(new Betreuungspensum(), copyType));
+			target.setBetreuungspensumJA(
+				this.getBetreuungspensumJA()
+					.copyBetreuungspensum(
+						new Betreuungspensum(),
+						copyType
+					)
+			);
 			break;
 		case ERNEUERUNG:
 		case ERNEUERUNG_AR_2023:

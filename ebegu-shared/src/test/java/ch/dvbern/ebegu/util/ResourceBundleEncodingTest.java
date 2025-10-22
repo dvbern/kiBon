@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -23,7 +23,6 @@ import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,14 +34,32 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ResourceBundleEncodingTest {
 
 	public static Stream<Arguments> bundleLocaleSource() {
-		var localesDeutsch = MandantIdentifier.getAll().stream().map(new MandantLocaleVisitor(DEUTSCH_LOCALE)::process);
-		var localesFrench = MandantIdentifier.getAll().stream().map(new MandantLocaleVisitor(FRENCH_LOCALE)::process);
-		Stream<Arguments> serverMessages = Stream.concat(localesFrench, localesDeutsch)
-			.map(locale -> Arguments.of(Constants.SERVER_MESSAGE_BUNDLE_NAME, locale));
-
-		Stream<Arguments> validationMessages = ValidationMessageUtil.BUNDLES.keySet()
+		var localesDeutsch = MandantIdentifier.getAll()
 			.stream()
-			.map(locale -> Arguments.of(Constants.VALIDATION_MESSAGE_BUNDLE_NAME, locale));
+			.map(new MandantLocaleVisitor(DEUTSCH_LOCALE)::process);
+		var localesFrench = MandantIdentifier.getAll()
+			.stream()
+			.map(new MandantLocaleVisitor(FRENCH_LOCALE)::process);
+		Stream<Arguments> serverMessages = Stream.concat(
+			localesFrench,
+			localesDeutsch
+		)
+			.map(
+				locale -> Arguments.of(
+					Constants.SERVER_MESSAGE_BUNDLE_NAME,
+					locale
+				)
+			);
+
+		Stream<Arguments> validationMessages = ValidationMessageUtil.BUNDLES
+			.keySet()
+			.stream()
+			.map(
+				locale -> Arguments.of(
+					Constants.VALIDATION_MESSAGE_BUNDLE_NAME,
+					locale
+				)
+			);
 
 		return Stream.concat(serverMessages, validationMessages);
 	}
@@ -62,8 +79,10 @@ class ResourceBundleEncodingTest {
 					"key '%s' in bundle '%s' contains invalid UTF-8 chars: '%s'",
 					key,
 					bundle.getBaseBundleName(),
-					resource),
-				!resource.contains("�"));
+					resource
+				),
+				!resource.contains("�")
+			);
 
 			// Because of the fallback to ISO-8859-1 (see https://docs.oracle.com/javase/9/intl/internationalization-enhancements-jdk-9.htm#GUID-974CF488-23E8-4963-A322-82006A7A14C7)
 			// we must also check for UTF-8 umlauts read with ISO-8859-1 encoding:
@@ -73,10 +92,12 @@ class ResourceBundleEncodingTest {
 			assertThat(
 				String.format(
 					"Bundle '%s' with locale '%s' is read with ISO-8859-1 encoding, which means that it contains at least one "
-							+ "ISO-8859-1 character",
+						+ "ISO-8859-1 character",
 					bundle.getBaseBundleName(),
-					bundle.getLocale()),
-				!resource.contains("Ã"));
+					bundle.getLocale()
+				),
+				!resource.contains("Ã")
+			);
 		});
 	}
 

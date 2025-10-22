@@ -8,14 +8,27 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.av;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Map.Entry;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.entities.FileMetadata;
@@ -29,18 +42,6 @@ import xyz.capybara.clamav.ClamavClient;
 import xyz.capybara.clamav.ClamavException;
 import xyz.capybara.clamav.commands.scan.result.ScanResult;
 import xyz.capybara.clamav.commands.scan.result.ScanResult.VirusFound;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Map.Entry;
 
 @Stateless
 public class AVClient {
@@ -66,48 +67,74 @@ public class AVClient {
 		}
 	}
 
-	public void scan (@Nonnull FileMetadata fileMetadata) {
-		if (ebeguConfiguration.isClamavDisabled() || !isReady() || client == null) {
+	public void scan(@Nonnull FileMetadata fileMetadata) {
+		if (ebeguConfiguration.isClamavDisabled()
+			|| !isReady()
+			|| client == null) {
 			return;
 		}
 
-		String filepath = uploadFilePathService.getValidatedFilePath(Path.of(fileMetadata.getFilepfad())).toString();
+		String filepath = uploadFilePathService.getValidatedFilePath(
+			Path.of(fileMetadata.getFilepfad())
+		).toString();
 
 		try (InputStream is = new FileInputStream(filepath)) {
 			ScanResult result = client.scan(is);
 
 			if (result instanceof ScanResult.VirusFound) {
 				logFoundViruses((VirusFound) result, fileMetadata);
-				throw new EbeguMailiciousContentException(METHOD_NAME, ErrorCodeEnum.ERROR_MALICIOUS_CONTENT, filepath);
-			}
-		} catch (IOException e) {
-			throw new EbeguEntityNotFoundException(METHOD_NAME,
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, e, fileMetadata.getId());
-		}
-	}
-
-	public void scan(byte[] content, @Nonnull String info) {
-		if (ebeguConfiguration.isClamavDisabled() || !isReady() || client == null) {
-			return;
-		}
-		try (
-			ByteArrayInputStream inputStream = new ByteArrayInputStream(content);
-		) {
-			ScanResult result = client.scan(inputStream);
-			if (result instanceof ScanResult.VirusFound) {
-				logFoundViruses((VirusFound) result, info);
-				throw new EbeguMailiciousContentException(METHOD_NAME, ErrorCodeEnum.ERROR_MALICIOUS_CONTENT, info);
+				throw new EbeguMailiciousContentException(
+					METHOD_NAME,
+					ErrorCodeEnum.ERROR_MALICIOUS_CONTENT,
+					filepath
+				);
 			}
 		} catch (IOException e) {
 			throw new EbeguEntityNotFoundException(
 				METHOD_NAME,
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, e, info);
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				e,
+				fileMetadata.getId()
+			);
+		}
+	}
+
+	public void scan(byte[] content, @Nonnull String info) {
+		if (ebeguConfiguration.isClamavDisabled()
+			|| !isReady()
+			|| client == null) {
+			return;
+		}
+		try (
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(
+				content
+			);
+		) {
+			ScanResult result = client.scan(inputStream);
+			if (result instanceof ScanResult.VirusFound) {
+				logFoundViruses((VirusFound) result, info);
+				throw new EbeguMailiciousContentException(
+					METHOD_NAME,
+					ErrorCodeEnum.ERROR_MALICIOUS_CONTENT,
+					info
+				);
+			}
+		} catch (IOException e) {
+			throw new EbeguEntityNotFoundException(
+				METHOD_NAME,
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				e,
+				info
+			);
 		}
 	}
 
 	private boolean isReady() {
 		if (client == null) {
-			createClient(ebeguConfiguration.getClamavHost(), ebeguConfiguration.getClamavPort());
+			createClient(
+				ebeguConfiguration.getClamavHost(),
+				ebeguConfiguration.getClamavPort()
+			);
 		}
 
 		try {
@@ -120,14 +147,21 @@ public class AVClient {
 		}
 	}
 
-	private void logFoundViruses(@Nonnull VirusFound result, @Nonnull FileMetadata fileMetadata) {
+	private void logFoundViruses(
+		@Nonnull VirusFound result,
+		@Nonnull FileMetadata fileMetadata
+	) {
 		this.logFoundViruses(result, fileMetadata.getFilepfad());
 	}
 
-	private void logFoundViruses(@Nonnull VirusFound result, @Nonnull String description) {
+	private void logFoundViruses(
+		@Nonnull VirusFound result,
+		@Nonnull String description
+	) {
 		StringBuilder log = new StringBuilder("Malicious file detected at: ");
 		log.append(description);
-		for (Entry<String, Collection<String>> virus : result.getFoundViruses().entrySet()) {
+		for (Entry<String, Collection<String>> virus : result.getFoundViruses()
+			.entrySet()) {
 			int count = 0;
 			for (String info : virus.getValue()) {
 				count++;

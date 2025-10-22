@@ -67,7 +67,9 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return anzahlBetreuungstageKinderBern;
 	}
 
-	public void setAnzahlBetreuungstageKinderBern(@Nullable BigDecimal anzahlBetreuungstageKinderBern) {
+	public void setAnzahlBetreuungstageKinderBern(
+		@Nullable BigDecimal anzahlBetreuungstageKinderBern
+	) {
 		this.anzahlBetreuungstageKinderBern = anzahlBetreuungstageKinderBern;
 	}
 
@@ -76,8 +78,11 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return betreuungstageKinderDieserGemeinde;
 	}
 
-	public void setBetreuungstageKinderDieserGemeinde(@Nullable BigDecimal betreuungstageKinderDieserGemeinde) {
-		this.betreuungstageKinderDieserGemeinde = betreuungstageKinderDieserGemeinde;
+	public void setBetreuungstageKinderDieserGemeinde(
+		@Nullable BigDecimal betreuungstageKinderDieserGemeinde
+	) {
+		this.betreuungstageKinderDieserGemeinde =
+			betreuungstageKinderDieserGemeinde;
 	}
 
 	@Nullable
@@ -85,8 +90,11 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return betreuungstageKinderDieserGemeindeSonderschueler;
 	}
 
-	public void setBetreuungstageKinderDieserGemeindeSonderschueler(@Nullable BigDecimal betreuungstageKinderDieserGemeindeSonderschueler) {
-		this.betreuungstageKinderDieserGemeindeSonderschueler = betreuungstageKinderDieserGemeindeSonderschueler;
+	public void setBetreuungstageKinderDieserGemeindeSonderschueler(
+		@Nullable BigDecimal betreuungstageKinderDieserGemeindeSonderschueler
+	) {
+		this.betreuungstageKinderDieserGemeindeSonderschueler =
+			betreuungstageKinderDieserGemeindeSonderschueler;
 	}
 
 	@Nullable
@@ -94,8 +102,11 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return davonBetreuungstageKinderAndererGemeinden;
 	}
 
-	public void setDavonBetreuungstageKinderAndererGemeinden(@Nullable BigDecimal davonBetreuungstageKinderAndererGemeinden) {
-		this.davonBetreuungstageKinderAndererGemeinden = davonBetreuungstageKinderAndererGemeinden;
+	public void setDavonBetreuungstageKinderAndererGemeinden(
+		@Nullable BigDecimal davonBetreuungstageKinderAndererGemeinden
+	) {
+		this.davonBetreuungstageKinderAndererGemeinden =
+			davonBetreuungstageKinderAndererGemeinden;
 	}
 
 	@Nullable
@@ -103,8 +114,11 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return davonBetreuungstageKinderAndererGemeindenSonderschueler;
 	}
 
-	public void setDavonBetreuungstageKinderAndererGemeindenSonderschueler(@Nullable BigDecimal davonBetreuungstageKinderAndererGemeindenSonderschueler) {
-		this.davonBetreuungstageKinderAndererGemeindenSonderschueler = davonBetreuungstageKinderAndererGemeindenSonderschueler;
+	public void setDavonBetreuungstageKinderAndererGemeindenSonderschueler(
+		@Nullable BigDecimal davonBetreuungstageKinderAndererGemeindenSonderschueler
+	) {
+		this.davonBetreuungstageKinderAndererGemeindenSonderschueler =
+			davonBetreuungstageKinderAndererGemeindenSonderschueler;
 	}
 
 	@Nullable
@@ -112,7 +126,9 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return anzahlBetreuteKinder;
 	}
 
-	public void setAnzahlBetreuteKinder(@Nullable BigDecimal anzahlBetreuteKinder) {
+	public void setAnzahlBetreuteKinder(
+		@Nullable BigDecimal anzahlBetreuteKinder
+	) {
 		this.anzahlBetreuteKinder = anzahlBetreuteKinder;
 	}
 
@@ -121,8 +137,11 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return anzahlBetreuteKinderSonderschueler;
 	}
 
-	public void setAnzahlBetreuteKinderSonderschueler(@Nullable BigDecimal anzahlBetreuteKinderSonderschueler) {
-		this.anzahlBetreuteKinderSonderschueler = anzahlBetreuteKinderSonderschueler;
+	public void setAnzahlBetreuteKinderSonderschueler(
+		@Nullable BigDecimal anzahlBetreuteKinderSonderschueler
+	) {
+		this.anzahlBetreuteKinderSonderschueler =
+			anzahlBetreuteKinderSonderschueler;
 	}
 
 	@Nullable
@@ -130,7 +149,9 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return anzahlBetreuteKinder1Zyklus;
 	}
 
-	public void setAnzahlBetreuteKinder1Zyklus(@Nullable BigDecimal anzahlBetreuteKinder1Zyklus) {
+	public void setAnzahlBetreuteKinder1Zyklus(
+		@Nullable BigDecimal anzahlBetreuteKinder1Zyklus
+	) {
 		this.anzahlBetreuteKinder1Zyklus = anzahlBetreuteKinder1Zyklus;
 	}
 
@@ -139,7 +160,9 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return anzahlBetreuteKinder2Zyklus;
 	}
 
-	public void setAnzahlBetreuteKinder2Zyklus(@Nullable BigDecimal anzahlBetreuteKinder2Zyklus) {
+	public void setAnzahlBetreuteKinder2Zyklus(
+		@Nullable BigDecimal anzahlBetreuteKinder2Zyklus
+	) {
 		this.anzahlBetreuteKinder2Zyklus = anzahlBetreuteKinder2Zyklus;
 	}
 
@@ -148,7 +171,9 @@ public class JaxFerienbetreuungAngabenNutzung extends JaxAbstractDTO {
 		return anzahlBetreuteKinder3Zyklus;
 	}
 
-	public void setAnzahlBetreuteKinder3Zyklus(@Nullable BigDecimal anzahlBetreuteKinder3Zyklus) {
+	public void setAnzahlBetreuteKinder3Zyklus(
+		@Nullable BigDecimal anzahlBetreuteKinder3Zyklus
+	) {
 		this.anzahlBetreuteKinder3Zyklus = anzahlBetreuteKinder3Zyklus;
 	}
 

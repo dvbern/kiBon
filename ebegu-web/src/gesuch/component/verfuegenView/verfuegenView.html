@@ -53,6 +53,7 @@
                             class="betreuung-status verfuegen-view ng-class:vm.getBetreuungsstatus();"
                         >
                             <div
+                                data-test="verfuegen-status"
                                 ng-bind="vm.getBetreuungsstatus() | translate"
                             ></div>
                             <span class="betreuung-bar"></span>
@@ -329,9 +330,11 @@
                                         <tr class="title-row">
                                             <th
                                                 data-translate="BETREUUNG_VON"
+                                                class="bis-spacing"
                                             ></th>
                                             <th
                                                 data-translate="BETREUUNG_BIS"
+                                                class="bis-spacing"
                                             ></th>
                                             <th
                                                 data-translate="BETREUUNGSTUNDEN_PRO_WOCHE"
@@ -366,11 +369,13 @@
                                             <td
                                                 ng-bind="zeitabschnitt.gueltigkeit.gueltigAb | amDateFormat : 'DD.MM.YYYY'"
                                                 data-test="tagesschul-anmeldung-zeitabschnitt-gueltig-ab"
+                                                class="bis-spacing"
                                             ></td>
                                             <!-- Bis -->
                                             <td
                                                 ng-bind="zeitabschnitt.gueltigkeit.gueltigBis | amDateFormat : 'DD.MM.YYYY'"
                                                 data-test="tagesschul-anmeldung-zeitabschnitt-gueltigb-bis"
+                                                class="bis-spacing"
                                             ></td>
                                             <!-- Betreungszeit Pro Woche -->
                                             <td>
@@ -770,68 +775,93 @@
                                     </td>
                                 </tr>
                                 <tr class="title-row">
-                                    <th data-translate="BETREUUNG_VON"></th>
-                                    <th data-translate="BETREUUNG_BIS"></th>
                                     <th
+                                        scope="col"
+                                        data-translate="BETREUUNG_VON"
+                                        class="bis-spacing"
+                                    ></th>
+                                    <th
+                                        scope="col"
+                                        data-translate="BETREUUNG_BIS"
+                                        class="bis-spacing"
+                                    ></th>
+                                    <th
+                                        scope="col"
                                         data-translate="EFFEKTIVE_BETREUUNG"
                                         ng-if="vm.showPercent"
                                     ></th>
                                     <th
+                                        scope="col"
                                         data-translate="EFFEKTIVE_BETREUUNG_IN_H"
                                         ng-if="vm.showHours"
                                     ></th>
                                     <th
+                                        scope="col"
                                         data-translate="EFFEKTIVE_BETREUUNG_IN_D"
                                         ng-if="vm.showDays"
                                     ></th>
                                     <th
+                                        scope="col"
                                         data-translate="ANSPRUCH"
                                         ng-if="vm.showPercent"
                                     ></th>
                                     <th
+                                        scope="col"
                                         data-translate="ANSPRUCH_IN_H"
                                         ng-if="vm.showHours"
                                     ></th>
                                     <th
+                                        scope="col"
                                         data-translate="ANSPRUCH_IN_D"
                                         ng-if="vm.showDays"
                                     ></th>
                                     <th
+                                        scope="col"
                                         data-translate="VERGUENSTIGT"
                                         ng-if="vm.showPercent"
                                     ></th>
                                     <th
+                                        scope="col"
                                         data-translate="VERGUENSTIGT_IN_H"
                                         ng-if="vm.showHours"
                                     ></th>
                                     <th
+                                        scope="col"
                                         data-translate="VERGUENSTIGT_IN_D"
                                         ng-if="vm.showDays"
                                     ></th>
-                                    <th data-translate="VOLLKOSTEN"></th>
                                     <th
+                                        scope="col"
+                                        data-translate="VOLLKOSTEN"
+                                    ></th>
+                                    <th
+                                        scope="col"
                                         ng-if="vm.showSelbstbehaltProzent()"
                                         data-translate="SELBSTBEHALT_PROZENT"
                                         class="result"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="vm.showBeitragshoheProzent()"
                                         data-translate="BEITRAGSHOHE_PROZENT"
                                         class="result"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="
                                             vm.isLineareZusaetzlicherGutscheinDurchGemeindeEnabled()
                                         "
                                         data-translate="STAEDTISCHER_ZUSCHLAG_IN_CHF"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="
                                             vm.showGutscheinOhneBeruecksichtigungVollkosten()
                                         "
                                         data-translate="GUTSCHEIN_OHNE_BERUECKSICHTIGUNG_VOLLKOSTEN"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="
                                             vm.showElternMinimalerBeitragColumns()
                                         "
@@ -839,6 +869,7 @@
                                         data-translate="GUTSCHEIN_OHNE_BERUECKSICHTIGUNG_MINIMALBEITRAG"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="
                                             vm.showElternMinimalerBeitragColumns()
                                         "
@@ -846,11 +877,13 @@
                                         data-translate="MIN_ELTERNBEITRAG"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="vm.areHoehereBeitraegeGewaehrt()"
                                         class="result"
                                         data-translate="GUTSCHEIN_HOEHERER_BEITRAG"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="vm.showGutscheinProStunde()"
                                         class="result"
                                         data-translate="GUTSCHEIN_PRO_STUNDE"
@@ -860,9 +893,12 @@
                                             vm.showAuszahlungAnInstitutionenCol()
                                         "
                                         class="result"
+                                        data-test="auszahlungAnInstitutionen"
+                                        scope="col"
                                         data-translate="VERGUENSTIGUNG_AN_INSTITUTION"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="
                                             vm.showZahlungsstatusInstitutionenCol()
                                         "
@@ -872,9 +908,12 @@
                                     <th
                                         ng-if="vm.showAuszahlungAnElternCol()"
                                         class="result"
+                                        data-test="auszahlungAnEltern"
                                         data-translate="VERGUENSTIGUNG_AN_ELTERN"
+                                        scope="col"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="
                                             vm.showMahlzeitenverguenstigung()
                                         "
@@ -882,6 +921,7 @@
                                         data-translate="VERGUENSTIGUNG_MAHLZEITEN"
                                     ></th>
                                     <th
+                                        scope="col"
                                         ng-if="
                                             vm.showZahlungsstatusAntragstellerCol()
                                         "
@@ -897,7 +937,7 @@
                             >
                                 <tr
                                     ng-repeat="verfuegungZeitabschnitt in displayedCollection"
-                                    ng-attr-data-test="container.zeitabschnitt#{{
+                                    data-test="container.zeitabschnitt#{{
                                         $index
                                     }}"
                                 >
@@ -905,11 +945,13 @@
                                     <td
                                         data-test="gueltigkeit-ab"
                                         ng-bind="verfuegungZeitabschnitt.gueltigkeit.gueltigAb | amDateFormat : 'DD.MM.YYYY'"
+                                        class="bis-spacing"
                                     ></td>
                                     <!-- Bis -->
                                     <td
                                         data-test="gueltigkeit-bis"
                                         ng-bind="verfuegungZeitabschnitt.gueltigkeit.gueltigBis | amDateFormat : 'DD.MM.YYYY'"
+                                        class="bis-spacing"
                                     ></td>
                                     <!-- Effektives Betreuungspensum -->
                                     <td
@@ -1049,6 +1091,7 @@
                                     <!-- An Kita überwiesen (Gutschein) -->
                                     <td
                                         class="result"
+                                        data-test="showZahlungsstatusInstitutionen"
                                         ng-if="
                                             vm.showAuszahlungAnInstitutionenCol()
                                         "
@@ -1070,9 +1113,10 @@
                                             "
                                         ></dv-zahlungsstatus-icon>
                                     </td>
-                                    <!-- An Kita überwiesen (Gutschein) -->
+                                    <!-- An Eltern überwiesen (Gutschein) -->
                                     <td
                                         class="result"
+                                        data-test="showAuszahlungAnEltern"
                                         ng-if="vm.showAuszahlungAnElternCol()"
                                         ng-bind="vm.getVerguenstigungAnEltern(verfuegungZeitabschnitt) | currency : '' : 2"
                                     ></td>

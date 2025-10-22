@@ -23,7 +23,7 @@ import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {SHARED_MODULE_OVERRIDES} from '../../../hybridTools/mockUpgradedDirective';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {WindowRef} from '../../core/service/windowRef.service';
+import {WindowRef} from '@kibon/shared-util-window-ref';
 import {I18nServiceRSRest} from '../../i18n/services/i18nServiceRS.rest';
 import {SharedModule} from '../../shared/shared.module';
 import {GemeindeListComponent} from './gemeinde-list.component';
@@ -51,7 +51,7 @@ describe('GemeindeListComponent', () => {
         );
         const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
             I18nServiceRSRest.name,
-            ['extractPreferredLanguage']
+            ['extractPreferredLanguage', 'init']
         );
 
         TestBed.configureTestingModule({

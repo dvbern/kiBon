@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Gesuch;
@@ -33,7 +33,8 @@ import ch.dvbern.ebegu.enums.WizardStepName;
 public interface WizardStepService {
 
 	/**
-	 * Speichert den WizardStep neu in der DB falls der Key noch nicht existiert. Sonst wird der existierende WizardStep aktualisiert
+	 * Speichert den WizardStep neu in der DB falls der Key noch nicht existiert. Sonst wird der existierende WizardStep
+	 * aktualisiert
 	 *
 	 * @param wizardStep Der WizardStep als DTO
 	 */
@@ -58,35 +59,56 @@ public interface WizardStepService {
 	/**
 	 * Gibt den gewuenschten Step des gegebenen Gesuchs zurueck
 	 */
-	WizardStep findWizardStepFromGesuch(String gesuchId, WizardStepName stepName);
+	WizardStep findWizardStepFromGesuch(
+		String gesuchId,
+		WizardStepName stepName
+	);
 
 	/**
-	 * Fuer das uebergebene Gesuch und das alte und neue Objekt, werden alle Steps berechnet und ihren Status dementsprechend gesetzt. Ruft die
+	 * Fuer das uebergebene Gesuch und das alte und neue Objekt, werden alle Steps berechnet und ihren Status
+	 * dementsprechend gesetzt. Ruft die
 	 * Methode updateSteps mit substep=null
 	 *
 	 * @param gesuchId Id des Gesuchs
-	 * @param oldEntity Objekt mit den Daten vor der Aktualisierung. kann auch null sein, wenn die Daten nicht relevant sind
-	 * @param newEntity Objekt mit den Daten nach der Aktualisierung. kann auch null sein, wenn die Daten nicht relevant sind
+	 * @param oldEntity Objekt mit den Daten vor der Aktualisierung. kann auch null sein, wenn die Daten nicht relevant
+	 * sind
+	 * @param newEntity Objekt mit den Daten nach der Aktualisierung. kann auch null sein, wenn die Daten nicht relevant
+	 * sind
 	 * @param stepName name des Steps der Aktualisiert wurde.
 	 * @return die Liste mit allen aktualisierten Status
 	 */
-	List<WizardStep> updateSteps(String gesuchId, @Nullable AbstractEntity oldEntity, @Nullable AbstractEntity newEntity, WizardStepName stepName);
+	List<WizardStep> updateSteps(
+		String gesuchId,
+		@Nullable AbstractEntity oldEntity,
+		@Nullable AbstractEntity newEntity,
+		WizardStepName stepName
+	);
 
 	/**
-	 * Fuer das uebergebene Gesuch und das alte und neue Objekt, werden alle Steps berechnet und ihren Status dementsprechend gesetzt
+	 * Fuer das uebergebene Gesuch und das alte und neue Objekt, werden alle Steps berechnet und ihren Status
+	 * dementsprechend gesetzt
 	 *
 	 * @param gesuchId Id des Gesuchs
-	 * @param oldEntity Objekt mit den Daten vor der Aktualisierung. kann auch null sein, wenn die Daten nicht relevant sind
-	 * @param newEntity Objekt mit den Daten nach der Aktualisierung. kann auch null sein, wenn die Daten nicht relevant sind
+	 * @param oldEntity Objekt mit den Daten vor der Aktualisierung. kann auch null sein, wenn die Daten nicht relevant
+	 * sind
+	 * @param newEntity Objekt mit den Daten nach der Aktualisierung. kann auch null sein, wenn die Daten nicht relevant
+	 * sind
 	 * @param stepName name des Steps der Aktualisiert wurde.
-	 * @param substep Manchmal muss man auf dem Server wissen, in welchem Substep wir sind, um zu entscheiden ob etwas gemacht werden muss.
+	 * @param substep Manchmal muss man auf dem Server wissen, in welchem Substep wir sind, um zu entscheiden ob etwas
+	 * gemacht werden muss.
 	 * @return die Liste mit allen aktualisierten Status
 	 */
-	List<WizardStep> updateSteps(String gesuchId, @Nullable AbstractEntity oldEntity, @Nullable AbstractEntity newEntity,
-		WizardStepName stepName, @Nullable Integer substep);
+	List<WizardStep> updateSteps(
+		String gesuchId,
+		@Nullable AbstractEntity oldEntity,
+		@Nullable AbstractEntity newEntity,
+		WizardStepName stepName,
+		@Nullable Integer substep
+	);
 
 	/**
-	 * Erstellt eine Liste mit allen notwendigen WizardSteps fuer das gegebene Gesuch. Fuer Mutationen bekommen alle Steps
+	 * Erstellt eine Liste mit allen notwendigen WizardSteps fuer das gegebene Gesuch. Fuer Mutationen bekommen alle
+	 * Steps
 	 * den Status OK und werden verfuegbar.
 	 *
 	 * @param gesuch das Gesuch

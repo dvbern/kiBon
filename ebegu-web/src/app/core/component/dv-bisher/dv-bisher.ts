@@ -14,13 +14,13 @@
  */
 
 import {IComponentOptions, IController} from 'angular';
-import * as moment from 'moment';
+import moment from 'moment';
 import {Moment} from 'moment';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSEingangsart} from '../../../../models/enums/TSEingangsart';
-import {TSAbstractMutableEntity} from '../../../../models/TSAbstractMutableEntity';
-import {DateUtil} from '../../../../utils/DateUtil';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import ITranslateService = angular.translate.ITranslateService;
 
@@ -99,7 +99,7 @@ export class DvBisher implements IController {
         }
         if (this.gs instanceof moment) {
             return [
-                DateUtil.momentToLocalDateFormat(
+                MomentUtil.momentToLocalDateFormat(
                     this.gs as Moment,
                     defaultDateFormat
                 )
@@ -140,11 +140,11 @@ export class DvBisher implements IController {
     public equals(gs: any, ja: any): boolean {
         if (gs instanceof moment) {
             return this.equals(
-                DateUtil.momentToLocalDateFormat(
+                MomentUtil.momentToLocalDateFormat(
                     gs as Moment,
                     defaultDateFormat
                 ),
-                DateUtil.momentToLocalDateFormat(ja, defaultDateFormat)
+                MomentUtil.momentToLocalDateFormat(ja, defaultDateFormat)
             );
         }
         if (Array.isArray(gs)) {

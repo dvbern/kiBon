@@ -22,19 +22,21 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {StateService} from '@uirouter/core';
 import {TSExceptionReport} from '../../../models/TSExceptionReport';
-import {TSTraegerschaft} from '../../../models/TSTraegerschaft';
+import {TSTraegerschaft} from '@kibon/shared/model/entity';
 import {DvNgGesuchstellerDialogComponent} from '../../core/component/dv-ng-gesuchsteller-dialog/dv-ng-gesuchsteller-dialog.component';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {Log, LogFactory} from '../../core/logging/LogFactory';
+import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
 
 @Component({
     selector: 'dv-traegerschaft-add',
     templateUrl: './traegerschaft-add.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TraegerschaftAddComponent implements OnInit {
     private readonly log: Log = LogFactory.createLog(
@@ -153,4 +155,6 @@ export class TraegerschaftAddComponent implements OnInit {
     private navigateBack(): void {
         this.$state.go('traegerschaft.list');
     }
+
+    protected readonly CONSTANTS = CONSTANTS;
 }

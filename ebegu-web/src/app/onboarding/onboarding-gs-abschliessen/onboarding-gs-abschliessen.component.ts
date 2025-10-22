@@ -22,12 +22,12 @@ import {from, Observable} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {DossierRS} from '../../../gesuch/service/dossierRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSDossier} from '../../../models/TSDossier';
 import {TSGemeindeRegistrierung} from '../../../models/TSGemeindeRegistrierung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {LogFactory} from '../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
 
 const LOG = LogFactory.createLog('OnboardingGsAbschliessenComponent');
@@ -39,7 +39,8 @@ const LOG = LogFactory.createLog('OnboardingGsAbschliessenComponent');
     styleUrls: [
         './onboarding-gs-abschliessen.component.less',
         '../onboarding.less'
-    ]
+    ],
+    standalone: false
 })
 export class OnboardingGsAbschliessenComponent implements OnInit {
     public user$: Observable<TSBenutzer>;

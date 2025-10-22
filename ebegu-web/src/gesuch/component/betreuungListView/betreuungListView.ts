@@ -13,22 +13,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
-import {IComponentOptions} from 'angular';
+import {element, IComponentOptions} from 'angular';
 import {IDVFocusableController} from '../../../app/core/component/IDVFocusableController';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {
     isStatusVerfuegenVerfuegt,
     TSAntragStatus
 } from '../../../models/enums/TSAntragStatus';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSBetreuungsstatus} from '../../../models/enums/betreuung/TSBetreuungsstatus';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
+import {TSRole} from '@kibon/shared/model/enums';
+import {
+    TSWizardStepName,
+    TSWizardStepStatus,
+    TSBetreuungsstatus
+} from '@kibon/shared/model/enums';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
@@ -72,7 +74,7 @@ export class BetreuungListViewController
         '$scope',
         '$log',
         '$timeout',
-        'ApplicationPropertyRS'
+        'SharedUtilApplicationPropertyRsService'
     ];
 
     public readonly TSRoleUtil = TSRoleUtil;
@@ -92,7 +94,7 @@ export class BetreuungListViewController
         $scope: IScope,
         private readonly $log: ILogService,
         $timeout: ITimeoutService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {
         super(
             gesuchModelManager,
@@ -109,10 +111,12 @@ export class BetreuungListViewController
     }
 
     public $onInit(): void {
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.angebotTS = res.angebotTSActivated;
-            this.angebotFI = res.angebotFIActivated;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.angebotTS = res.angebotTSActivated;
+                this.angebotFI = res.angebotFIActivated;
+            });
     }
 
     public editBetreuung(kind: TSKindContainer, betreuung: any): void {
@@ -319,7 +323,7 @@ export class BetreuungListViewController
     }
 
     public setFocusBack(elementID: string): void {
-        angular.element(`#${elementID}`).first().focus();
+        element(`#${elementID}`).first().focus();
     }
 
     public showButtonAnmeldungTagesschule(): boolean {

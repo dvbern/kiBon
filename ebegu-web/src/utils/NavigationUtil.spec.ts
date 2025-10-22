@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSRole} from '../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {NavigationUtil} from './NavigationUtil';
 
 describe('NavigationUtil', () => {

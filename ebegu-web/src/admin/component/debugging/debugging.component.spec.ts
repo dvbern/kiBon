@@ -31,7 +31,7 @@ describe('DebuggingComponent', () => {
 
     const i18nServiceSpy = jasmine.createSpyObj<I18nServiceRSRest>(
         I18nServiceRSRest.name,
-        ['extractPreferredLanguage']
+        ['extractPreferredLanguage', 'init']
     );
     const gesuchRSSpy = jasmine.createSpyObj<GesuchRS>(GesuchRS.name, [
         'simulateNewVerfuegung'

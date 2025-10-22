@@ -28,7 +28,8 @@ import {TSFerieninselZeitraum} from '../../../models/TSFerieninselZeitraum';
             useExisting: OverlappingZeitraumDirective,
             multi: true
         }
-    ]
+    ],
+    standalone: false
 })
 export class OverlappingZeitraumDirective implements Validator {
     @Input('appOverlappingZeitraum')

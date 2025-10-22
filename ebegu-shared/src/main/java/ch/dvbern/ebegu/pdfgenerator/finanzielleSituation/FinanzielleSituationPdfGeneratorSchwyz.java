@@ -8,14 +8,24 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.finanzielleSituation;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.dto.FinanzielleSituationResultateDTO;
 import ch.dvbern.ebegu.entities.AbstractFinanzielleSituation;
@@ -36,15 +46,6 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfPTable;
 
-import javax.annotation.Nonnull;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import static ch.dvbern.ebegu.finanziellesituation.FinanzielleSituationUtil.findEinkommensverschlechterung;
 import static ch.dvbern.ebegu.finanziellesituation.FinanzielleSituationUtil.findFinanzielleSituation;
 import static ch.dvbern.ebegu.finanziellesituation.FinanzielleSituationUtil.requireFinanzielleSituation;
@@ -52,28 +53,40 @@ import static ch.dvbern.ebegu.pdfgenerator.finanzielleSituation.MassgebendesEink
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElse;
 
-public class FinanzielleSituationPdfGeneratorSchwyz extends FinanzielleSituationPdfGenerator {
+public class FinanzielleSituationPdfGeneratorSchwyz extends
+	FinanzielleSituationPdfGenerator {
 
-	private static final String GESUCHSPERIODE = "PdfGeneration_FinSit_Gesuchsperiode";
+	private static final String GESUCHSPERIODE =
+		"PdfGeneration_FinSit_Gesuchsperiode";
 
-	private static final String EIKOMMEN_TITLE = "PdfGeneration_FinSit_EinkommenTitle";
-	private static final String STEUERBARES_EINKOMMEN = "PdfGeneration_FinSit_SteuerbaresEinkommen";
-	private static final String EINKAEUFE_VORSORGE = "PdfGeneration_FinSit_EinkaeufeVorsorge";
+	protected static final String EIKOMMEN_TITLE =
+		"PdfGeneration_FinSit_EinkommenTitle";
+	protected static final String STEUERBARES_EINKOMMEN =
+		"PdfGeneration_FinSit_SteuerbaresEinkommen";
+	protected static final String EINKAEUFE_VORSORGE =
+		"PdfGeneration_FinSit_EinkaeufeVorsorge";
 
 	private static final String ABZUEGE_TITLE = "PdfGeneration_FinSit_Abzuege";
-	private static final String ABZUEGE_LIEGENSCHAFTEN = "PdfGeneration_FinSit_AbzuegeLiegenschaften";
-	private static final String ABZUEGE_BRUTTOPAUSCHALE = "PdfGeneration_FinSit_AbzuegeBruttopauschale";
+	protected static final String ABZUEGE_LIEGENSCHAFTEN =
+		"PdfGeneration_FinSit_AbzuegeLiegenschaften";
+	private static final String ABZUEGE_BRUTTOPAUSCHALE =
+		"PdfGeneration_FinSit_AbzuegeBruttopauschale";
 
-	private static final String VERMOEGEN_TITLE = "PdfGeneration_FinSit_VermoegenTitle";
-	private static final String STEUERBARES_VERMOEGEN = "PdfGeneration_FinSit_SteuerbaresVermoegen";
-	private static final String FOOTER_STEUERBARES_VERMOEGEN = "PdfGeneration_FinSit_FooterSteuerbaresVermoegen";
+	protected static final String VERMOEGEN_TITLE =
+		"PdfGeneration_FinSit_VermoegenTitle";
+	protected static final String STEUERBARES_VERMOEGEN =
+		"PdfGeneration_FinSit_SteuerbaresVermoegen";
+	protected static final String FOOTER_STEUERBARES_VERMOEGEN =
+		"PdfGeneration_FinSit_FooterSteuerbaresVermoegen";
 
 	private static final String BRUTTOLOHN = "PdfGeneration_FinSit_Bruttolohn";
 
-	private static final String SOZIALABZUG = "PdfGeneration_MassgEinkommen_Sozialabzug";
-	private static final String ANSBRUCHBERECHTIGTES_EINKOMMEN = "PdfGeneration_MassgEinkommen_AnsbruchberechtigtesEinkommen";
+	private static final String SOZIALABZUG =
+		"PdfGeneration_MassgEinkommen_Sozialabzug";
+	private static final String ANSBRUCHBERECHTIGTES_EINKOMMEN =
+		"PdfGeneration_MassgEinkommen_AnsbruchberechtigtesEinkommen";
 
-	private final List<String> footers = new ArrayList<>();
+	protected final List<String> footers = new ArrayList<>();
 
 	public FinanzielleSituationPdfGeneratorSchwyz(
 		@Nonnull Gesuch gesuch,
@@ -81,14 +94,22 @@ public class FinanzielleSituationPdfGeneratorSchwyz extends FinanzielleSituation
 		@Nonnull GemeindeStammdaten stammdaten,
 		@Nonnull LocalDate erstesEinreichungsdatum
 	) {
-		super(gesuch, verfuegungFuerMassgEinkommen, stammdaten, erstesEinreichungsdatum);
+		super(
+			gesuch,
+			verfuegungFuerMassgEinkommen,
+			stammdaten,
+			erstesEinreichungsdatum
+		);
 	}
 
 	@Override
 	protected void initializeValues() {
-		boolean hasFinSitGS2 = findFinanzielleSituation(gesuch.getGesuchsteller2()).isPresent();
+		boolean hasFinSitGS2 = findFinanzielleSituation(
+			gesuch.getGesuchsteller2()
+		).isPresent();
 
-		finanzDatenDTO = finanzielleSituationRechner.calculateResultateFinanzielleSituation(gesuch, hasFinSitGS2);
+		finanzDatenDTO = finanzielleSituationRechner
+			.calculateResultateFinanzielleSituation(gesuch, hasFinSitGS2);
 		initialzeEkv();
 	}
 
@@ -96,35 +117,63 @@ public class FinanzielleSituationPdfGeneratorSchwyz extends FinanzielleSituation
 	@Nonnull
 	protected PdfPTable createIntroBasisjahr() {
 		List<TableRowLabelValue> introBasisjahr = List.of(
-			new TableRowLabelValue(REFERENZ_NUMMER, gesuch.getJahrFallAndGemeindenummer()),
-			new TableRowLabelValue(GESUCHSPERIODE, gesuch.getGesuchsperiode().getGesuchsperiodeString())
+			new TableRowLabelValue(
+				REFERENZ_NUMMER,
+				gesuch.getJahrFallAndGemeindenummer()
+			),
+			new TableRowLabelValue(
+				GESUCHSPERIODE,
+				gesuch.getGesuchsperiode().getGesuchsperiodeString()
+			)
 		);
 		return PdfUtil.createIntroTable(introBasisjahr, sprache, mandant);
 	}
 
 	@Override
-	protected void createPageBasisJahr(@Nonnull PdfGenerator generator, @Nonnull Document document) {
+	protected void createPageBasisJahr(
+		@Nonnull PdfGenerator generator,
+		@Nonnull Document document
+	) {
 		var gesuchsteller1 = requireNonNull(gesuch.getGesuchsteller1());
 		var finSit1 = requireFinanzielleSituation(gesuchsteller1);
 
-		final boolean gemeinsameSteuererklaerung = FamiliensituationUtil.isGemeinsameSteuererklaerung(gesuch);
+		final boolean gemeinsameSteuererklaerung = FamiliensituationUtil
+			.isGemeinsameSteuererklaerung(gesuch);
 		String name = gemeinsameSteuererklaerung ?
 			bothNames() :
 			gesuchsteller1.extractFullName();
 
-		BigDecimal massgebendesEinkommen = requireNonNull(finanzDatenDTO).getMassgebendesEinkVorAbzFamGrGS1();
+		BigDecimal massgebendesEinkommen = requireNonNull(finanzDatenDTO)
+			.getMassgebendesEinkVorAbzFamGrGS1();
 
 		var tablesGs1 =
-			createMassgebendesEinkommenTableForGesuchsteller(finSit1, name, massgebendesEinkommen, isQuellenbesteuert(finSit1));
+			createMassgebendesEinkommenTableForGesuchsteller(
+				finSit1,
+				name,
+				massgebendesEinkommen,
+				finanzDatenDTO
+					.getLiegenschaftsaufwandGS1(),
+				isQuellenbesteuert(finSit1)
+			);
 
 		var tablesGs2 = Optional.ofNullable(gesuch.getGesuchsteller2())
 			.filter(gesuchstellerContainer -> !gemeinsameSteuererklaerung)
-			.flatMap(gesuchsteller2 -> findFinanzielleSituation(gesuchsteller2)
-				.map(finSit2 -> createMassgebendesEinkommenTableForGesuchsteller(
-					finSit2,
-					gesuchsteller2.extractFullName(),
-					finanzDatenDTO.getMassgebendesEinkVorAbzFamGrGS2(),
-					isQuellenbesteuert(finSit2)))
+			.flatMap(
+				gesuchsteller2 -> findFinanzielleSituation(
+					gesuchsteller2
+				)
+					.map(
+						finSit2 -> createMassgebendesEinkommenTableForGesuchsteller(
+							finSit2,
+							gesuchsteller2
+								.extractFullName(),
+							finanzDatenDTO
+								.getMassgebendesEinkVorAbzFamGrGS2(),
+							finanzDatenDTO
+								.getLiegenschaftsaufwandGS2(),
+							isQuellenbesteuert(finSit2)
+						)
+					)
 			)
 			.orElseGet(Collections::emptyList);
 
@@ -151,39 +200,72 @@ public class FinanzielleSituationPdfGeneratorSchwyz extends FinanzielleSituation
 
 	@Nonnull
 	private Boolean isQuellenbesteuert(FinanzielleSituationContainer finSit) {
-		return requireNonNullElse(requireNonNull(finSit.getFinanzielleSituationJA()).getQuellenbesteuert(), false);
+		return requireNonNullElse(
+			requireNonNull(finSit.getFinanzielleSituationJA())
+				.getQuellenbesteuert(),
+			false
+		);
 	}
 
 	private <T extends AbstractFinanzielleSituation> List<PdfPTable> createMassgebendesEinkommenTableForGesuchsteller(
 		@Nonnull AbstractFinanzielleSituationContainer<T> finSit,
 		@Nonnull String gesuchstellerName,
 		@Nonnull BigDecimal massgebendesEinkommen,
+		@Nonnull BigDecimal liegenschaftsaufwand,
 		boolean isQuellenbesteuert
 	) {
-		return isQuellenbesteuert
-			? createTableDeklarationByBruttolohn(finSit, gesuchstellerName, massgebendesEinkommen)
-			: createTablesDeklarationByVeranlagung(finSit, gesuchstellerName, massgebendesEinkommen);
+		return isQuellenbesteuert ?
+			createTableDeklarationByBruttolohn(
+				finSit,
+				gesuchstellerName,
+				massgebendesEinkommen
+			) :
+			createTablesDeklarationByVeranlagung(
+				finSit,
+				gesuchstellerName,
+				massgebendesEinkommen,
+				liegenschaftsaufwand
+			);
 	}
 
-	private <T extends AbstractFinanzielleSituation> List<PdfPTable> createTablesDeklarationByVeranlagung(
+	protected <T extends AbstractFinanzielleSituation> List<PdfPTable> createTablesDeklarationByVeranlagung(
 		@Nonnull AbstractFinanzielleSituationContainer<T> finSit,
 		@Nonnull String gesuchstellerName,
-		@Nonnull BigDecimal massgebendesEinkommen
+		@Nonnull BigDecimal massgebendesEinkommen,
+		@Nonnull BigDecimal liegenschaftsaufwand
 	) {
 		var einkommenTable = createFinSitTableSingleGS(
 			createRow(translate(EIKOMMEN_TITLE), gesuchstellerName),
-			createRow(translate(STEUERBARES_EINKOMMEN), T::getSteuerbaresEinkommen, finSit),
-			createRow(translate(EINKAEUFE_VORSORGE), T::getEinkaeufeVorsorge, finSit)
+			createRow(
+				translate(STEUERBARES_EINKOMMEN),
+				T::getSteuerbaresEinkommen,
+				finSit
+			),
+			createRow(
+				translate(EINKAEUFE_VORSORGE),
+				T::getEinkaeufeVorsorge,
+				finSit
+			)
 		);
 		var abzuegeTable = createFinSitTableSingleGS(
 			createRow(translate(ABZUEGE_TITLE)),
-			createRow(translate(ABZUEGE_LIEGENSCHAFTEN), T::getAbzuegeLiegenschaft, finSit)
+			createRow(
+				translate(ABZUEGE_LIEGENSCHAFTEN),
+				printCHF(liegenschaftsaufwand)
+			)
 		);
 		var vermoegenTable = createFinSitTableSingleGS(
 			createRow(translate(VERMOEGEN_TITLE)),
-			createRow(translate(STEUERBARES_VERMOEGEN), T::getSteuerbaresVermoegen, finSit)
+			createRow(
+				translate(STEUERBARES_VERMOEGEN),
+				T::getSteuerbaresVermoegen,
+				finSit
+			)
 				.withFooter(FOOTER_STEUERBARES_VERMOEGEN, footers),
-			createRow(translate(MASSG_EINK), printCHF(massgebendesEinkommen))
+			createRow(
+				translate(MASSG_EINK),
+				printCHF(massgebendesEinkommen)
+			)
 				.bold()
 		);
 
@@ -198,7 +280,9 @@ public class FinanzielleSituationPdfGeneratorSchwyz extends FinanzielleSituation
 		// see ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationSchwyzRechner.calcBruttopauschale
 		// it's Schwyz specific and not stored on FinanzielleSituationResultateDTO. Chose to not increase the public properties,
 		// since FinanzielleSituationResultateDTO is also a REST API model.
-		BigDecimal bruttopauschale = MathUtil.positiveNonNullAndRound(requireNonNull(finSit.getFinSitJA()).getBruttoLohn())
+		BigDecimal bruttopauschale = MathUtil.positiveNonNullAndRound(
+			requireNonNull(finSit.getFinSitJA()).getBruttoLohn()
+		)
 			.subtract(massgebendesEinkommen);
 
 		var einkommenTable = createFinSitTableSingleGS(
@@ -208,8 +292,14 @@ public class FinanzielleSituationPdfGeneratorSchwyz extends FinanzielleSituation
 
 		var abzuegeTable = createFinSitTableSingleGS(
 			createRow(translate(ABZUEGE_TITLE)),
-			createRow(translate(ABZUEGE_BRUTTOPAUSCHALE), printCHF(bruttopauschale)),
-			createRow(translate(MASSG_EINK), printCHF(massgebendesEinkommen))
+			createRow(
+				translate(ABZUEGE_BRUTTOPAUSCHALE),
+				printCHF(bruttopauschale)
+			),
+			createRow(
+				translate(MASSG_EINK),
+				printCHF(massgebendesEinkommen)
+			)
 				.bold()
 		);
 
@@ -225,41 +315,79 @@ public class FinanzielleSituationPdfGeneratorSchwyz extends FinanzielleSituation
 	}
 
 	@Override
-	protected void createPageEkv1(@Nonnull PdfGenerator generator, @Nonnull Document document) {
+	protected void createPageEkv1(
+		@Nonnull PdfGenerator generator,
+		@Nonnull Document document
+	) {
 		createPageEkv(generator, document, 1);
 	}
 
 	@Override
-	protected void createPageEkv2(@Nonnull PdfGenerator generator, @Nonnull Document document) {
+	protected void createPageEkv2(
+		@Nonnull PdfGenerator generator,
+		@Nonnull Document document
+	) {
 		createPageEkv(generator, document, 2);
 	}
 
-	private void createPageEkv(@Nonnull PdfGenerator generator, @Nonnull Document document, int jahrOffset) {
+	private void createPageEkv(
+		@Nonnull PdfGenerator generator,
+		@Nonnull Document document,
+		int jahrOffset
+	) {
 		GesuchstellerContainer gesuchsteller1 = gesuch.getGesuchsteller1();
-		FinanzielleSituationResultateDTO resultateDTO = requireNonNull(jahrOffset == 1 ? ekvBasisJahrPlus1 : ekvBasisJahrPlus2);
+		FinanzielleSituationResultateDTO resultateDTO = requireNonNull(
+			jahrOffset == 1 ? ekvBasisJahrPlus1 : ekvBasisJahrPlus2
+		);
 
-		final boolean gemeinsameSteuererklaerung = FamiliensituationUtil.isGemeinsameSteuererklaerung(gesuch);
+		final boolean gemeinsameSteuererklaerung = FamiliensituationUtil
+			.isGemeinsameSteuererklaerung(gesuch);
 		String name = gemeinsameSteuererklaerung ?
 			bothNames() :
 			requireNonNull(gesuchsteller1).extractFullName();
 
-		var tablesGS1 = findEinkommensverschlechterung(gesuchsteller1, jahrOffset)
-			.map(ekv1 -> createMassgebendesEinkommenTableForGesuchsteller(
-				ekv1,
-				name,
-				resultateDTO.getMassgebendesEinkVorAbzFamGrGS1(),
-				isQuellenbesteuert(requireFinanzielleSituation(gesuchsteller1)))
+		var tablesGS1 = findEinkommensverschlechterung(
+			gesuchsteller1,
+			jahrOffset
+		)
+			.map(
+				ekv1 -> createMassgebendesEinkommenTableForGesuchsteller(
+					ekv1,
+					name,
+					resultateDTO
+						.getMassgebendesEinkVorAbzFamGrGS1(),
+					resultateDTO
+						.getLiegenschaftsaufwandGS1(),
+					isQuellenbesteuert(
+						requireFinanzielleSituation(
+							gesuchsteller1
+						)
+					)
+				)
 			)
 			.orElseGet(Collections::emptyList);
 
 		GesuchstellerContainer gesuchsteller2 = gesuch.getGesuchsteller2();
-		var tablesGS2 = findEinkommensverschlechterung(gesuchsteller2, jahrOffset)
+		var tablesGS2 = findEinkommensverschlechterung(
+			gesuchsteller2,
+			jahrOffset
+		)
 			.filter(gesuchstellerCont -> !gemeinsameSteuererklaerung)
-			.map(ekv2 -> createMassgebendesEinkommenTableForGesuchsteller(
-				ekv2,
-				requireNonNull(gesuchsteller2).extractFullName(),
-				resultateDTO.getMassgebendesEinkVorAbzFamGrGS2(),
-				isQuellenbesteuert(requireFinanzielleSituation(gesuchsteller2)))
+			.map(
+				ekv2 -> createMassgebendesEinkommenTableForGesuchsteller(
+					ekv2,
+					requireNonNull(gesuchsteller2)
+						.extractFullName(),
+					resultateDTO
+						.getMassgebendesEinkVorAbzFamGrGS2(),
+					resultateDTO
+						.getLiegenschaftsaufwandGS2(),
+					isQuellenbesteuert(
+						requireFinanzielleSituation(
+							gesuchsteller2
+						)
+					)
+				)
 			)
 			.orElseGet(Collections::emptyList);
 
@@ -284,17 +412,46 @@ public class FinanzielleSituationPdfGeneratorSchwyz extends FinanzielleSituation
 	protected MassgebendesEinkommenTabelleConfig getMassgebendesEinkommenConfig() {
 		return MassgebendesEinkommenTabelleConfig.of(
 			PageSize.A4,
-			column(5, translate(VON), a -> Constants.DATE_FORMATTER.format(a.getGueltigkeit().getGueltigAb())),
-			column(5, translate(BIS), a -> Constants.DATE_FORMATTER.format(a.getGueltigkeit().getGueltigBis())),
-			column(10, translate(MASSG_EINK), a -> printCHF(a.getMassgebendesEinkommenVorAbzFamgr())),
-			column(10, translate(SOZIALABZUG), a -> printCHF(a.getAbzugFamGroesse())),
-			column(10, translate(ANSBRUCHBERECHTIGTES_EINKOMMEN), a -> printCHF(a.getMassgebendesEinkommen()))
+			column(
+				5,
+				translate(VON),
+				a -> Constants.DATE_FORMATTER.format(
+					a.getGueltigkeit().getGueltigAb()
+				)
+			),
+			column(
+				5,
+				translate(BIS),
+				a -> Constants.DATE_FORMATTER.format(
+					a.getGueltigkeit().getGueltigBis()
+				)
+			),
+			column(
+				10,
+				translate(MASSG_EINK),
+				a -> printCHF(a.getMassgebendesEinkommenVorAbzFamgr())
+			),
+			column(
+				10,
+				translate(SOZIALABZUG),
+				a -> printCHF(a.getAbzugFamGroesse())
+			),
+			column(
+				10,
+				translate(ANSBRUCHBERECHTIGTES_EINKOMMEN),
+				a -> printCHF(a.getMassgebendesEinkommen())
+			)
 		);
 	}
 
 	@Override
 	@Nonnull
 	protected List<TableRowLabelValue> createIntroMassgebendesEinkommen() {
-		return List.of(new TableRowLabelValue(REFERENZ_NUMMER, gesuch.getJahrFallAndGemeindenummer()));
+		return List.of(
+			new TableRowLabelValue(
+				REFERENZ_NUMMER,
+				gesuch.getJahrFallAndGemeindenummer()
+			)
+		);
 	}
 }

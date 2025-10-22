@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner;
@@ -39,12 +39,12 @@ public class TagesschuleBernRechner extends AbstractBernRechner {
 		this.rechnerRulesForGemeinde = rechnerRulesForGemeinde;
 	}
 
-
 	@Nonnull
 	@Override
 	protected Optional<BGCalculationResult> calculateGemeinde(
 		@Nonnull BGCalculationInput input,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
 		// Fuer Gemeinde die richtigen Werte setzen
 		prepareRechnerParameterForGemeinde(input, parameterDTO);
@@ -59,30 +59,44 @@ public class TagesschuleBernRechner extends AbstractBernRechner {
 	@Override
 	public BGCalculationResult calculateAsiv(
 		@Nonnull BGCalculationInput input,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
-		BGCalculationResult bgResult = input.getParent().getBgCalculationResultAsiv();
+		BGCalculationResult bgResult = input.getParent()
+			.getBgCalculationResultAsiv();
 		VerfuegungZeitabschnitt.initBGCalculationResult(input, bgResult);
 
 		mitPaedagogischerBetreuung(input, parameterDTO)
-			.ifPresent(bgResult::setTsCalculationResultMitPaedagogischerBetreuung);
+			.ifPresent(
+				bgResult::setTsCalculationResultMitPaedagogischerBetreuung
+			);
 
 		ohnePaedagogischerBetreuung(input, parameterDTO)
-			.ifPresent(bgResult::setTsCalculationResultOhnePaedagogischerBetreuung);
+			.ifPresent(
+				bgResult::setTsCalculationResultOhnePaedagogischerBetreuung
+			);
 
 		// Bei Tagesschulen handelt es sich immer um Hauptmahlzeiten. Wir schreiben das Total auch aufs BGCalculationResult
 		BigDecimal verpflegungskostenVerguenstigt = BigDecimal.ZERO;
-		if (bgResult.getTsCalculationResultMitPaedagogischerBetreuung() != null) {
+		if (bgResult.getTsCalculationResultMitPaedagogischerBetreuung()
+			!= null) {
 			verpflegungskostenVerguenstigt = MathUtil.DEFAULT.add(
 				verpflegungskostenVerguenstigt,
-				bgResult.getTsCalculationResultMitPaedagogischerBetreuung().getVerpflegungskostenVerguenstigt());
+				bgResult.getTsCalculationResultMitPaedagogischerBetreuung()
+					.getVerpflegungskostenVerguenstigt()
+			);
 		}
-		if (bgResult.getTsCalculationResultOhnePaedagogischerBetreuung() != null) {
+		if (bgResult.getTsCalculationResultOhnePaedagogischerBetreuung()
+			!= null) {
 			verpflegungskostenVerguenstigt = MathUtil.DEFAULT.add(
 				verpflegungskostenVerguenstigt,
-				bgResult.getTsCalculationResultOhnePaedagogischerBetreuung().getVerpflegungskostenVerguenstigt());
+				bgResult.getTsCalculationResultOhnePaedagogischerBetreuung()
+					.getVerpflegungskostenVerguenstigt()
+			);
 		}
-		bgResult.setVerguenstigungMahlzeitenTotal(verpflegungskostenVerguenstigt);
+		bgResult.setVerguenstigungMahlzeitenTotal(
+			verpflegungskostenVerguenstigt
+		);
 
 		return bgResult;
 	}
@@ -90,21 +104,35 @@ public class TagesschuleBernRechner extends AbstractBernRechner {
 	@Nonnull
 	private Optional<TSCalculationResult> mitPaedagogischerBetreuung(
 		@Nonnull BGCalculationInput input,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
-		BigDecimal maxTarif = parameterDTO.getMaxTarifTagesschuleMitPaedagogischerBetreuung();
+		BigDecimal maxTarif = parameterDTO
+			.getMaxTarifTagesschuleMitPaedagogischerBetreuung();
 
-		return calculate(input, input.getTsInputMitBetreuung(), maxTarif, parameterDTO);
+		return calculate(
+			input,
+			input.getTsInputMitBetreuung(),
+			maxTarif,
+			parameterDTO
+		);
 	}
 
 	@Nonnull
 	private Optional<TSCalculationResult> ohnePaedagogischerBetreuung(
 		@Nonnull BGCalculationInput input,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
-		BigDecimal maxTarif = parameterDTO.getMaxTarifTagesschuleOhnePaedagogischerBetreuung();
+		BigDecimal maxTarif = parameterDTO
+			.getMaxTarifTagesschuleOhnePaedagogischerBetreuung();
 
-		return calculate(input, input.getTsInputOhneBetreuung(), maxTarif, parameterDTO);
+		return calculate(
+			input,
+			input.getTsInputOhneBetreuung(),
+			maxTarif,
+			parameterDTO
+		);
 	}
 
 	@Nonnull
@@ -112,23 +140,38 @@ public class TagesschuleBernRechner extends AbstractBernRechner {
 		@Nonnull BGCalculationInput sharedInput,
 		@Nonnull TSCalculationInput input,
 		@Nonnull BigDecimal maxTarif,
-		@Nonnull BGRechnerParameterDTO parameterDTO) {
+		@Nonnull BGRechnerParameterDTO parameterDTO
+	) {
 
 		if (!input.shouldCalculate()) {
 			return Optional.empty();
 		}
 
-		BigDecimal gebuehrProStunde = calculateGebuehrProStunde(sharedInput, maxTarif, parameterDTO);
-		BigDecimal betreuungsZeit = BigDecimal.valueOf(input.getBetreuungszeitProWoche());
+		BigDecimal gebuehrProStunde = calculateGebuehrProStunde(
+			sharedInput,
+			maxTarif,
+			parameterDTO
+		);
+		BigDecimal betreuungsZeit = BigDecimal.valueOf(
+			input.getBetreuungszeitProWoche()
+		);
 		BigDecimal verpflegungskosten = input.getVerpflegungskosten();
-		BigDecimal verpflegungskostenVerguenstigt = input.getVerpflegungskostenVerguenstigt();
+		BigDecimal verpflegungskostenVerguenstigt = input
+			.getVerpflegungskostenVerguenstigt();
 		BigDecimal totalKostenProWoche =
-			calculateKostenProWoche(gebuehrProStunde, betreuungsZeit, verpflegungskosten, verpflegungskostenVerguenstigt);
+			calculateKostenProWoche(
+				gebuehrProStunde,
+				betreuungsZeit,
+				verpflegungskosten,
+				verpflegungskostenVerguenstigt
+			);
 
 		TSCalculationResult result = new TSCalculationResult();
 		result.setBetreuungszeitProWoche(betreuungsZeit.intValueExact());
 		result.setVerpflegungskosten(verpflegungskosten);
-		result.setVerpflegungskostenVerguenstigt(verpflegungskostenVerguenstigt);
+		result.setVerpflegungskostenVerguenstigt(
+			verpflegungskostenVerguenstigt
+		);
 		result.setGebuehrProStunde(gebuehrProStunde);
 		result.setTotalKostenProWoche(totalKostenProWoche);
 
@@ -159,20 +202,38 @@ public class TagesschuleBernRechner extends AbstractBernRechner {
 			tarifProStunde = maxTarif;
 		} else {
 			BigDecimal minTarif = parameterDTO.getMinTarifTagesschule();
-			BigDecimal mataMinusMita = MathUtil.EXACT.subtract(maxTarif, minTarif);
+			BigDecimal mataMinusMita = MathUtil.EXACT.subtract(
+				maxTarif,
+				minTarif
+			);
 			BigDecimal maxmEMinusMinmE = MathUtil.EXACT.subtract(
 				parameterDTO.getMaxMassgebendesEinkommen(),
-				parameterDTO.getMinMassgebendesEinkommen());
-			BigDecimal divided = MathUtil.EXACT.divide(mataMinusMita, maxmEMinusMinmE);
+				parameterDTO.getMinMassgebendesEinkommen()
+			);
+			BigDecimal divided = MathUtil.EXACT.divide(
+				mataMinusMita,
+				maxmEMinusMinmE
+			);
 
 			BigDecimal meMinusMinmE = MathUtil.EXACT.subtract(
 				massgebendesEinkommen,
-				parameterDTO.getMinMassgebendesEinkommen());
+				parameterDTO.getMinMassgebendesEinkommen()
+			);
 
-			BigDecimal multiplyDividedMeMinusMinmE = MathUtil.EXACT.multiply(divided, meMinusMinmE);
+			BigDecimal multiplyDividedMeMinusMinmE = MathUtil.EXACT.multiply(
+				divided,
+				meMinusMinmE
+			);
 
-			tarifProStunde = MathUtil.DEFAULT.addNullSafe(multiplyDividedMeMinusMinmE, minTarif);
-			tarifProStunde = MathUtil.minimumMaximum(tarifProStunde, minTarif, maxTarif);
+			tarifProStunde = MathUtil.DEFAULT.addNullSafe(
+				multiplyDividedMeMinusMinmE,
+				minTarif
+			);
+			tarifProStunde = MathUtil.minimumMaximum(
+				tarifProStunde,
+				minTarif,
+				maxTarif
+			);
 		}
 
 		return tarifProStunde;
@@ -182,12 +243,26 @@ public class TagesschuleBernRechner extends AbstractBernRechner {
 		BigDecimal gebuehrProStunde,
 		BigDecimal betreuungszeitProWoche,
 		BigDecimal verpflegungskosten,
-		BigDecimal verpflegungskostenVerguenstigt) {
+		BigDecimal verpflegungskostenVerguenstigt
+	) {
 
-		BigDecimal kostenProWoche = MathUtil.EXACT.multiply(gebuehrProStunde, betreuungszeitProWoche);
-		kostenProWoche = MathUtil.EXACT.divide(kostenProWoche, new BigDecimal(60));
-		BigDecimal verpflegungsKostenEffektiv = MathUtil.DEFAULT.subtractNullSafe(verpflegungskosten, verpflegungskostenVerguenstigt);
-		BigDecimal totalKostenProWoche = MathUtil.DEFAULT.addNullSafe(kostenProWoche, verpflegungsKostenEffektiv);
+		BigDecimal kostenProWoche = MathUtil.EXACT.multiply(
+			gebuehrProStunde,
+			betreuungszeitProWoche
+		);
+		kostenProWoche = MathUtil.EXACT.divide(
+			kostenProWoche,
+			new BigDecimal(60)
+		);
+		BigDecimal verpflegungsKostenEffektiv = MathUtil.DEFAULT
+			.subtractNullSafe(
+				verpflegungskosten,
+				verpflegungskostenVerguenstigt
+			);
+		BigDecimal totalKostenProWoche = MathUtil.DEFAULT.addNullSafe(
+			kostenProWoche,
+			verpflegungsKostenEffektiv
+		);
 
 		return totalKostenProWoche;
 	}
@@ -197,8 +272,16 @@ public class TagesschuleBernRechner extends AbstractBernRechner {
 		@Nonnull BGRechnerParameterDTO parameterDTO
 	) {
 		for (RechnerRule rechnerRule : rechnerRulesForGemeinde) {
-			if (rechnerRule.isConfigueredForGemeinde(parameterDTO) && rechnerRule.isRelevantForVerfuegung(inputGemeinde, parameterDTO)) {
-				rechnerRule.prepareParameter(inputGemeinde, parameterDTO, new RechnerRuleParameterDTO());
+			if (rechnerRule.isConfigueredForGemeinde(parameterDTO)
+				&& rechnerRule.isRelevantForVerfuegung(
+					inputGemeinde,
+					parameterDTO
+				)) {
+				rechnerRule.prepareParameter(
+					inputGemeinde,
+					parameterDTO,
+					new RechnerRuleParameterDTO()
+				);
 			}
 		}
 	}

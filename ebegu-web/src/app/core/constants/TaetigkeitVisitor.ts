@@ -16,21 +16,20 @@
  */
 
 import {
-    getTSTaetigkeit,
-    getTSTaetigkeitWithFreiwilligenarbeit,
-    TSTaetigkeit
-} from '../../../models/enums/TSTaetigkeit';
-import {KiBonMandant} from './MANDANTS';
-import {MandantVisitor} from './MandantVisitor';
+    AbstractMandantDefaultVisitor,
+    KiBonMandant
+} from '@kibon/shared-model-mandant';
+import {TSTaetigkeit} from '../../../models/enums/TSTaetigkeit';
 
-export class TaetigkeitVisitor
-    implements MandantVisitor<ReadonlyArray<TSTaetigkeit>>
-{
+export class TaetigkeitVisitor extends AbstractMandantDefaultVisitor<
+    ReadonlyArray<TSTaetigkeit>
+> {
     private readonly _konfigZusaetzlicherAnspruchFreiwilligenarbeitEnabled: boolean;
 
     public constructor(
         konfigZusaetzlicherAnspruchFreiwilligenarbeitEnabled: boolean
     ) {
+        super();
         this._konfigZusaetzlicherAnspruchFreiwilligenarbeitEnabled =
             konfigZusaetzlicherAnspruchFreiwilligenarbeitEnabled;
     }
@@ -39,10 +38,13 @@ export class TaetigkeitVisitor
         return mandant.accept(this);
     }
 
-    public visitBern(): ReadonlyArray<TSTaetigkeit> {
-        return this._konfigZusaetzlicherAnspruchFreiwilligenarbeitEnabled
-            ? getTSTaetigkeitWithFreiwilligenarbeit()
-            : getTSTaetigkeit();
+    protected visitDefault(): readonly TSTaetigkeit[] {
+        return [
+            TSTaetigkeit.ANGESTELLT,
+            TSTaetigkeit.SELBSTAENDIG,
+            TSTaetigkeit.AUSBILDUNG,
+            TSTaetigkeit.RAV
+        ];
     }
 
     public visitAppenzellAusserrhoden(): ReadonlyArray<TSTaetigkeit> {
@@ -55,20 +57,28 @@ export class TaetigkeitVisitor
         ];
     }
 
-    public visitLuzern(): ReadonlyArray<TSTaetigkeit> {
-        return this.visitBern();
+    public visitBern(): ReadonlyArray<TSTaetigkeit> {
+        const taetigkeiten = [
+            TSTaetigkeit.ANGESTELLT,
+            TSTaetigkeit.SELBSTAENDIG,
+            TSTaetigkeit.AUSBILDUNG,
+            TSTaetigkeit.RAV,
+            TSTaetigkeit.GESUNDHEITLICHE_EINSCHRAENKUNGEN,
+            TSTaetigkeit.INTEGRATION_BESCHAEFTIGUNSPROGRAMM
+        ];
+
+        if (this._konfigZusaetzlicherAnspruchFreiwilligenarbeitEnabled) {
+            taetigkeiten.push(TSTaetigkeit.FREIWILLIGENARBEIT);
+        }
+
+        return taetigkeiten;
     }
 
     public visitSolothurn(): ReadonlyArray<TSTaetigkeit> {
         return this.visitBern();
     }
 
-    public visitSchwyz(): ReadonlyArray<TSTaetigkeit> {
-        return [
-            TSTaetigkeit.ANGESTELLT,
-            TSTaetigkeit.SELBSTAENDIG,
-            TSTaetigkeit.AUSBILDUNG,
-            TSTaetigkeit.RAV
-        ];
+    public visitLuzern(): ReadonlyArray<TSTaetigkeit> {
+        return this.visitBern();
     }
 }

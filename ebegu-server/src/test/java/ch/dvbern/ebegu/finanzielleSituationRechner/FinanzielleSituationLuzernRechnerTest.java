@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.finanzielleSituationRechner;
@@ -35,20 +35,24 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.wildfly.common.Assert;
 
+import static ch.dvbern.ebegu.util.ObjectRequiredNonNullUtils.getEkvJABasisJahrPlus1Selbstdeklaration;
+import static ch.dvbern.ebegu.util.ObjectRequiredNonNullUtils.getFinanzielleSituationContainer;
+import static ch.dvbern.ebegu.util.ObjectRequiredNonNullUtils.getFinanzielleSituationJA;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class FinanzielleSituationLuzernRechnerTest {
 
-	private FinanzielleSituationLuzernRechner finSitRechner = new FinanzielleSituationLuzernRechner();
+	private FinanzielleSituationLuzernRechner finSitRechner =
+		new FinanzielleSituationLuzernRechner();
 
 	/**
 	 * Veranlagte Berechnung, entweder alleine oder zur zweit
 	 *
 	 * Steuerbares Einkommen
-	 * Steuerbares Vermögen	10% von diesem addieren
-	 * Abzüge für den effektiven Liegenschaftsunterhalt...	Subtrahieren
-	 * Verrechenbare Geschäftsverluste aus den Vorjahren..	Subtrahieren
+	 * Steuerbares Vermögen 10% von diesem addieren
+	 * Abzüge für den effektiven Liegenschaftsunterhalt... Subtrahieren
+	 * Verrechenbare Geschäftsverluste aus den Vorjahren.. Subtrahieren
 	 * Einkäufe in die berufliche Vorsorge Subtrahieren
 	 *
 	 * Einkommensverschlechterung sind noch nicht implementiert
@@ -57,50 +61,77 @@ public class FinanzielleSituationLuzernRechnerTest {
 	class VeranlagtTest {
 
 		/**
-		 * Steuerbares Einkommen								60'000
-		 * Steuerbares Vermögen	10'000, 10% =			       + 1'000
+		 * Steuerbares Einkommen 60'000
+		 * Steuerbares Vermögen 10'000, 10% = + 1'000
 		 * Abzüge für den effektiven Liegenschaftsunterhalt... - 0 (Eingabe +1'000)
 		 * Verrechenbare Geschäftsverluste aus den Vorjahren.. + 1'000
-		 * Einkäufe in die berufliche Vorsorge Subtrahieren    + 1'000
-		 *                                                     -------
-		 *                                                      63'000
-		 *                                                     */
+		 * Einkäufe in die berufliche Vorsorge Subtrahieren + 1'000
+		 * -------
+		 * 63'000
+		 */
 		@Test
 		public void testAlleWertVorhandenPositiverNettoeinkommenLiegenschaften() {
 			Gesuch gesuch = prepareGesuch(false);
-			finSitRechner.calculateFinanzDaten(gesuch, null);
-			assertThat(gesuch.getFinanzDatenDTO_alleine().getMassgebendesEinkBjVorAbzFamGr(), is(BigDecimal.valueOf(63000)));
+			finSitRechner.calculateFinanzDaten(gesuch, BigDecimal.ZERO);
+			assertThat(
+				gesuch.getFinanzDatenDTO_alleine()
+					.getMassgebendesEinkBjVorAbzFamGr(),
+				is(BigDecimal.valueOf(63000))
+			);
 
 			//zwei Antragstellende, beides ueberpruefen
 			gesuch = prepareGesuch(true);
-			finSitRechner.calculateFinanzDaten(gesuch, null);
-			assertThat(gesuch.getFinanzDatenDTO_alleine().getMassgebendesEinkBjVorAbzFamGr(), is(BigDecimal.valueOf(63000)));
-			assertThat(gesuch.getFinanzDatenDTO_zuZweit().getMassgebendesEinkBjVorAbzFamGr(), is(BigDecimal.valueOf(126000)));
+			finSitRechner.calculateFinanzDaten(gesuch, BigDecimal.ZERO);
+			assertThat(
+				gesuch.getFinanzDatenDTO_alleine()
+					.getMassgebendesEinkBjVorAbzFamGr(),
+				is(BigDecimal.valueOf(63000))
+			);
+			assertThat(
+				gesuch.getFinanzDatenDTO_zuZweit()
+					.getMassgebendesEinkBjVorAbzFamGr(),
+				is(BigDecimal.valueOf(126000))
+			);
 		}
 
 		/**
-		 * Steuerbares Einkommen								60'000
-		 * Steuerbares Vermögen	10'000, 10% =			       + 1'000
+		 * Steuerbares Einkommen 60'000
+		 * Steuerbares Vermögen 10'000, 10% = + 1'000
 		 * Abzüge für den effektiven Liegenschaftsunterhalt... + 1'000 (Eingabe -1'000)
 		 * Verrechenbare Geschäftsverluste aus den Vorjahren.. + 1'000
-		 * Einkäufe in die berufliche Vorsorge addieren    	   + 1'000
-		 *                                                     -------
-		 *                                                      64'000
-		 *                                                     */
+		 * Einkäufe in die berufliche Vorsorge addieren + 1'000
+		 * -------
+		 * 64'000
+		 */
 		@Test
 		public void testAlleWertVorhandenNegativerNettoeinkommenLiegenschaften() {
 			Gesuch gesuch = prepareGesuch(false);
-			gesuch.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA().setAbzuegeLiegenschaft(BigDecimal.valueOf(-1000));
-			finSitRechner.calculateFinanzDaten(gesuch, null);
-			assertThat(gesuch.getFinanzDatenDTO_alleine().getMassgebendesEinkBjVorAbzFamGr(), is(BigDecimal.valueOf(64000)));
+			getFinanzielleSituationJA(gesuch.getGesuchsteller1())
+				.setAbzuegeLiegenschaft(BigDecimal.valueOf(-1000));
+			finSitRechner.calculateFinanzDaten(gesuch, BigDecimal.ZERO);
+			assertThat(
+				gesuch.getFinanzDatenDTO_alleine()
+					.getMassgebendesEinkBjVorAbzFamGr(),
+				is(BigDecimal.valueOf(64000))
+			);
 
 			//zwei Antragstellende, beides ueberpruefen
 			gesuch = prepareGesuch(true);
-			gesuch.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA().setAbzuegeLiegenschaft(BigDecimal.valueOf(-1000));
-			gesuch.getGesuchsteller2().getFinanzielleSituationContainer().getFinanzielleSituationJA().setAbzuegeLiegenschaft(BigDecimal.valueOf(-1000));
-			finSitRechner.calculateFinanzDaten(gesuch, null);
-			assertThat(gesuch.getFinanzDatenDTO_alleine().getMassgebendesEinkBjVorAbzFamGr(), is(BigDecimal.valueOf(64000)));
-			assertThat(gesuch.getFinanzDatenDTO_zuZweit().getMassgebendesEinkBjVorAbzFamGr(), is(BigDecimal.valueOf(128000)));
+			getFinanzielleSituationJA(gesuch.getGesuchsteller1())
+				.setAbzuegeLiegenschaft(BigDecimal.valueOf(-1000));
+			getFinanzielleSituationJA(gesuch.getGesuchsteller2())
+				.setAbzuegeLiegenschaft(BigDecimal.valueOf(-1000));
+			finSitRechner.calculateFinanzDaten(gesuch, BigDecimal.ZERO);
+			assertThat(
+				gesuch.getFinanzDatenDTO_alleine()
+					.getMassgebendesEinkBjVorAbzFamGr(),
+				is(BigDecimal.valueOf(64000))
+			);
+			assertThat(
+				gesuch.getFinanzDatenDTO_zuZweit()
+					.getMassgebendesEinkBjVorAbzFamGr(),
+				is(BigDecimal.valueOf(128000))
+			);
 		}
 
 		/**
@@ -110,12 +141,24 @@ public class FinanzielleSituationLuzernRechnerTest {
 		public void testNullableWertVorhanden() {
 			Gesuch gesuch = prepareGesuch(false);
 			assert gesuch.getGesuchsteller1() != null;
-			assert gesuch.getGesuchsteller1().getFinanzielleSituationContainer() != null;
-			FinanzielleSituation emptyFinanzielleSituationForTest = new FinanzielleSituation();
-			setPropertiesToCalculateByVeranlagung(emptyFinanzielleSituationForTest);
-			gesuch.getGesuchsteller1().getFinanzielleSituationContainer().setFinanzielleSituationJA(emptyFinanzielleSituationForTest);
-			finSitRechner.calculateFinanzDaten(gesuch, null);
-			assertThat(gesuch.getFinanzDatenDTO_alleine().getMassgebendesEinkBjVorAbzFamGr(), is(BigDecimal.valueOf(0)));
+			assert gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+				!= null;
+			FinanzielleSituation emptyFinanzielleSituationForTest =
+				new FinanzielleSituation();
+			setPropertiesToCalculateByVeranlagung(
+				emptyFinanzielleSituationForTest
+			);
+			gesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.setFinanzielleSituationJA(
+					emptyFinanzielleSituationForTest
+				);
+			finSitRechner.calculateFinanzDaten(gesuch, BigDecimal.ZERO);
+			assertThat(
+				gesuch.getFinanzDatenDTO_alleine()
+					.getMassgebendesEinkBjVorAbzFamGr(),
+				is(BigDecimal.valueOf(0))
+			);
 		}
 
 		@Test
@@ -156,18 +199,33 @@ public class FinanzielleSituationLuzernRechnerTest {
 		@Test
 		public void testCalculateSelbstdeklaration() {
 			Gesuch gesuch = prepareGesuch(false);
-			assert gesuch.getGesuchsteller1() != null;
-			assert gesuch.getGesuchsteller1().getFinanzielleSituationContainer() != null;
 			FinanzielleSituation finSit = new FinanzielleSituation();
 			finSit.setSelbstdeklaration(createSelbstdeklaration());
-			gesuch.getGesuchsteller1().getFinanzielleSituationContainer().setFinanzielleSituationJA(finSit);
+			getFinanzielleSituationContainer(gesuch.getGesuchsteller1())
+				.setFinanzielleSituationJA(finSit);
 			var resultDTO = new FinanzielleSituationResultateDTO();
 
-			finSitRechner.setFinanzielleSituationParameters(gesuch, resultDTO, false);
-			assertThat(resultDTO.getEinkommenGS1(), is(BigDecimal.valueOf(161411)));
-			assertThat(resultDTO.getAbzuegeGS1(), is(BigDecimal.valueOf(33625)));
-			assertThat(resultDTO.getVermoegenXPercentAnrechenbarGS1(), is(BigDecimal.valueOf(9257)));
-			assertThat(resultDTO.getMassgebendesEinkVorAbzFamGrGS1(), is(BigDecimal.valueOf(137043)));
+			finSitRechner.setFinanzielleSituationParameters(
+				gesuch,
+				resultDTO,
+				false
+			);
+			assertThat(
+				resultDTO.getEinkommenGS1(),
+				is(BigDecimal.valueOf(161411))
+			);
+			assertThat(
+				resultDTO.getAbzuegeGS1(),
+				is(BigDecimal.valueOf(33625))
+			);
+			assertThat(
+				resultDTO.getVermoegenXPercentAnrechenbarGS1(),
+				is(BigDecimal.valueOf(9257))
+			);
+			assertThat(
+				resultDTO.getMassgebendesEinkVorAbzFamGrGS1(),
+				is(BigDecimal.valueOf(137043))
+			);
 		}
 	}
 
@@ -177,56 +235,78 @@ public class FinanzielleSituationLuzernRechnerTest {
 		@Test
 		public void testCalculateEKVNichtGenugen() {
 			Gesuch gesuch = prepareGesuch(false);
-			assert gesuch.getGesuchsteller1() != null;
-			assert gesuch.getGesuchsteller1().getFinanzielleSituationContainer() != null;
 			FinanzielleSituation finSit = new FinanzielleSituation();
 			finSit.setSelbstdeklaration(createSelbstdeklaration());
 			createEKVBasisJahrPlus1(gesuch.getGesuchsteller1());
-			gesuch.setEinkommensverschlechterungInfoContainer(createEKVInfoContainer(false));
-			gesuch.getGesuchsteller1().getFinanzielleSituationContainer().setFinanzielleSituationJA(finSit);
+			gesuch.setEinkommensverschlechterungInfoContainer(
+				createEKVInfoContainer(false)
+			);
+			getFinanzielleSituationContainer(gesuch.getGesuchsteller1())
+				.setFinanzielleSituationJA(finSit);
 			finSitRechner.calculateFinanzDaten(gesuch, new BigDecimal(25));
-			assertThat(gesuch.getFinanzDatenDTO_alleine().getMassgebendesEinkBjP1VorAbzFamGr(), is(BigDecimal.valueOf(137043)));
+			assertThat(
+				gesuch.getFinanzDatenDTO_alleine()
+					.getMassgebendesEinkBjP1VorAbzFamGr(),
+				is(BigDecimal.valueOf(137043))
+			);
 		}
 
 		@Test
 		public void testCalculateEKVKleiner() {
 			Gesuch gesuch = prepareGesuch(false);
 			assert gesuch.getGesuchsteller1() != null;
-			assert gesuch.getGesuchsteller1().getFinanzielleSituationContainer() != null;
+			assert gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+				!= null;
 			FinanzielleSituation finSit = new FinanzielleSituation();
 			finSit.setSelbstdeklaration(createSelbstdeklaration());
 			createEKVBasisJahrPlus1(gesuch.getGesuchsteller1());
-			gesuch.setEinkommensverschlechterungInfoContainer(createEKVInfoContainer(false));
-			gesuch.getGesuchsteller1().getFinanzielleSituationContainer().setFinanzielleSituationJA(finSit);
+			gesuch.setEinkommensverschlechterungInfoContainer(
+				createEKVInfoContainer(false)
+			);
+			gesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.setFinanzielleSituationJA(finSit);
 			finSitRechner.calculateFinanzDaten(gesuch, new BigDecimal(2));
-			assertThat(gesuch.getFinanzDatenDTO_alleine().getMassgebendesEinkBjP1VorAbzFamGr(), is(BigDecimal.valueOf(117043)));
+			assertThat(
+				gesuch.getFinanzDatenDTO_alleine()
+					.getMassgebendesEinkBjP1VorAbzFamGr(),
+				is(BigDecimal.valueOf(117043))
+			);
 		}
 
 		@Test
 		public void testCalculateEKVGroesser() {
 			Gesuch gesuch = prepareGesuch(false);
 			assert gesuch.getGesuchsteller1() != null;
-			assert gesuch.getGesuchsteller1().getFinanzielleSituationContainer() != null;
+			assert gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+				!= null;
 			FinanzielleSituation finSit = new FinanzielleSituation();
 			finSit.setSelbstdeklaration(createSelbstdeklaration());
 			createEKVBasisJahrPlus1(gesuch.getGesuchsteller1());
-			gesuch.setEinkommensverschlechterungInfoContainer(createEKVInfoContainer(false));
-			gesuch.getGesuchsteller1().getFinanzielleSituationContainer().setFinanzielleSituationJA(finSit);
-			assert gesuch.getGesuchsteller1().getEinkommensverschlechterungContainer() != null;
-			assert gesuch.getGesuchsteller1().getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1() != null;
-			assert gesuch.getGesuchsteller1()
-				.getEinkommensverschlechterungContainer()
-				.getEkvJABasisJahrPlus1()
-				.getSelbstdeklaration() != null;
-			gesuch.getGesuchsteller1().getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1().getSelbstdeklaration().setEinkunftErwerb(new BigDecimal("55678.00"));
+			gesuch.setEinkommensverschlechterungInfoContainer(
+				createEKVInfoContainer(false)
+			);
+			gesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.setFinanzielleSituationJA(finSit);
+			getEkvJABasisJahrPlus1Selbstdeklaration(gesuch.getGesuchsteller1())
+				.setEinkunftErwerb(new BigDecimal("55678.00"));
 			finSitRechner.calculateFinanzDaten(gesuch, new BigDecimal(5));
-			assertThat(gesuch.getFinanzDatenDTO_alleine().getMassgebendesEinkBjP1VorAbzFamGr(), is(BigDecimal.valueOf(157043)));
+			assertThat(
+				gesuch.getFinanzDatenDTO_alleine()
+					.getMassgebendesEinkBjP1VorAbzFamGr(),
+				is(BigDecimal.valueOf(157043))
+			);
 		}
 	}
 
-	private EinkommensverschlechterungInfoContainer createEKVInfoContainer(boolean plus2) {
-		EinkommensverschlechterungInfoContainer ekvInfoContainer = new EinkommensverschlechterungInfoContainer();
-		EinkommensverschlechterungInfo ekvInfo = new EinkommensverschlechterungInfo();
+	private EinkommensverschlechterungInfoContainer createEKVInfoContainer(
+		boolean plus2
+	) {
+		EinkommensverschlechterungInfoContainer ekvInfoContainer =
+			new EinkommensverschlechterungInfoContainer();
+		EinkommensverschlechterungInfo ekvInfo =
+			new EinkommensverschlechterungInfo();
 		ekvInfo.setEinkommensverschlechterung(true);
 		ekvInfo.setEkvFuerBasisJahrPlus1(true);
 		ekvInfo.setEkvFuerBasisJahrPlus2(plus2);
@@ -235,49 +315,72 @@ public class FinanzielleSituationLuzernRechnerTest {
 	}
 
 	private void createEKVBasisJahrPlus1(GesuchstellerContainer gesuchsteller) {
-		EinkommensverschlechterungContainer ekvContainer = new EinkommensverschlechterungContainer();
+		EinkommensverschlechterungContainer ekvContainer =
+			new EinkommensverschlechterungContainer();
 		ekvContainer.setEkvJABasisJahrPlus1(createEKV());
 		ekvContainer.setGesuchsteller(gesuchsteller);
 		gesuchsteller.setEinkommensverschlechterungContainer(ekvContainer);
 	}
 
 	private Einkommensverschlechterung createEKV() {
-		Einkommensverschlechterung einkommensverschlechterung = new Einkommensverschlechterung();
-		einkommensverschlechterung.setSelbstdeklaration(createSelbstdeklaration());
+		Einkommensverschlechterung einkommensverschlechterung =
+			new Einkommensverschlechterung();
+		einkommensverschlechterung.setSelbstdeklaration(
+			createSelbstdeklaration()
+		);
 		assert einkommensverschlechterung.getSelbstdeklaration() != null;
-		einkommensverschlechterung.getSelbstdeklaration().setEinkunftErwerb(new BigDecimal("15678.00"));
+		einkommensverschlechterung.getSelbstdeklaration()
+			.setEinkunftErwerb(new BigDecimal("15678.00"));
 		return einkommensverschlechterung;
 	}
 
-	private void setPropertiesToCalculateByVeranlagung(@Nonnull FinanzielleSituation finanzielleSituation) {
+	private void setPropertiesToCalculateByVeranlagung(
+		@Nonnull FinanzielleSituation finanzielleSituation
+	) {
 		finanzielleSituation.setQuellenbesteuert(false);
 		finanzielleSituation.setAlleinigeStekVorjahr(true);
 		finanzielleSituation.setGemeinsameStekVorjahr(null);
 		finanzielleSituation.setVeranlagt(true);
 	}
 
-
 	private Gesuch prepareGesuch(boolean secondGesuchsteller) {
 		Gesuch gesuch = new Gesuch();
 		gesuch.setGesuchsteller1(createGesuchstellerMitFinSit());
-		if(secondGesuchsteller) {
+		if (secondGesuchsteller) {
 			gesuch.setGesuchsteller2(createGesuchstellerMitFinSit());
 		}
 		return gesuch;
 	}
 
 	private GesuchstellerContainer createGesuchstellerMitFinSit() {
-		GesuchstellerContainer gesuchstellerContainer = new GesuchstellerContainer();
-		FinanzielleSituationContainer finanzielleSituationContainer = new FinanzielleSituationContainer();
-		FinanzielleSituation finanzielleSituationForTest = new FinanzielleSituation();
-		finanzielleSituationForTest.setSteuerbaresEinkommen(BigDecimal.valueOf(60000));
-		finanzielleSituationForTest.setSteuerbaresVermoegen(BigDecimal.valueOf(10000));
-		finanzielleSituationForTest.setGeschaeftsverlust(BigDecimal.valueOf(1000));
-		finanzielleSituationForTest.setAbzuegeLiegenschaft(BigDecimal.valueOf(1000));
-		finanzielleSituationForTest.setEinkaeufeVorsorge(BigDecimal.valueOf(1000));
+		GesuchstellerContainer gesuchstellerContainer =
+			new GesuchstellerContainer();
+		FinanzielleSituationContainer finanzielleSituationContainer =
+			new FinanzielleSituationContainer();
+		FinanzielleSituation finanzielleSituationForTest =
+			new FinanzielleSituation();
+		finanzielleSituationForTest.setSteuerbaresEinkommen(
+			BigDecimal.valueOf(60000)
+		);
+		finanzielleSituationForTest.setSteuerbaresVermoegen(
+			BigDecimal.valueOf(10000)
+		);
+		finanzielleSituationForTest.setGeschaeftsverlust(
+			BigDecimal.valueOf(1000)
+		);
+		finanzielleSituationForTest.setAbzuegeLiegenschaft(
+			BigDecimal.valueOf(1000)
+		);
+		finanzielleSituationForTest.setEinkaeufeVorsorge(
+			BigDecimal.valueOf(1000)
+		);
 		setPropertiesToCalculateByVeranlagung(finanzielleSituationForTest);
-		finanzielleSituationContainer.setFinanzielleSituationJA(finanzielleSituationForTest);
-		gesuchstellerContainer.setFinanzielleSituationContainer(finanzielleSituationContainer);
+		finanzielleSituationContainer.setFinanzielleSituationJA(
+			finanzielleSituationForTest
+		);
+		gesuchstellerContainer.setFinanzielleSituationContainer(
+			finanzielleSituationContainer
+		);
 		return gesuchstellerContainer;
 	}
 
@@ -286,7 +389,9 @@ public class FinanzielleSituationLuzernRechnerTest {
 		deklaration.setEinkunftErwerb(new BigDecimal("35678.00"));
 		deklaration.setEinkunftVersicherung(new BigDecimal("31319.00"));
 		deklaration.setEinkunftWertschriften(new BigDecimal("13668.00"));
-		deklaration.setEinkunftUnterhaltsbeitragKinder(new BigDecimal("40936.00"));
+		deklaration.setEinkunftUnterhaltsbeitragKinder(
+			new BigDecimal("40936.00")
+		);
 		deklaration.setEinkunftUeberige(new BigDecimal("16005.00"));
 		deklaration.setEinkunftLiegenschaften(new BigDecimal("23805.00"));
 		deklaration.setAbzugBerufsauslagen(new BigDecimal("3940.00"));
@@ -295,14 +400,18 @@ public class FinanzielleSituationLuzernRechnerTest {
 		deklaration.setAbzugSaeule3A(new BigDecimal("2358.00"));
 		deklaration.setAbzugVersicherungspraemien(new BigDecimal("4521.00"));
 		deklaration.setAbzugKrankheitsUnfallKosten(new BigDecimal("1061.00"));
-		deklaration.setSonderabzugErwerbstaetigkeitEhegatten(new BigDecimal("1929.00"));
+		deklaration.setSonderabzugErwerbstaetigkeitEhegatten(
+			new BigDecimal("1929.00")
+		);
 		deklaration.setAbzugKinderVorschule(new BigDecimal("2684.00"));
 		deklaration.setAbzugKinderSchule(new BigDecimal("1381.00"));
 		deklaration.setAbzugEigenbetreuung(new BigDecimal("2370.00"));
 		deklaration.setAbzugFremdbetreuung(new BigDecimal("4211.00"));
 		deklaration.setAbzugErwerbsunfaehigePersonen(new BigDecimal("2891.00"));
 		deklaration.setVermoegen(new BigDecimal("100000.00"));
-		deklaration.setAbzugSteuerfreierBetragErwachsene(new BigDecimal("2652.00"));
+		deklaration.setAbzugSteuerfreierBetragErwachsene(
+			new BigDecimal("2652.00")
+		);
 		deklaration.setAbzugSteuerfreierBetragKinder(new BigDecimal("4783.00"));
 		return deklaration;
 	}

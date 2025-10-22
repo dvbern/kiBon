@@ -18,13 +18,13 @@ package ch.dvbern.ebegu.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
+import jakarta.activation.MimeType;
+import jakarta.activation.MimeTypeParseException;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MediaType;
 
 import ch.dvbern.ebegu.dto.dataexport.v1.ExportConverter;
 import ch.dvbern.ebegu.dto.dataexport.v1.VerfuegungenExportDTO;
@@ -58,25 +58,43 @@ public class ExportServiceBean implements ExportService {
 	@Inject
 	private ExportConverter exportConverter;
 
-	@Inject BenutzerService benutzerService;
+	@Inject
+	BenutzerService benutzerService;
 
 	@Override
-	public UploadFileInfo exportVerfuegungOfBetreuungAsFile(String betreuungID) {
+	public UploadFileInfo exportVerfuegungOfBetreuungAsFile(
+		String betreuungID
+	) {
 
-		Benutzer benutzer = benutzerService.getCurrentBenutzer().orElseThrow(() -> new EbeguRuntimeException(
-			"exportVerfuegungOfBetreuungAsFile", "No User is logged in"));
+		Benutzer benutzer = benutzerService.getCurrentBenutzer()
+			.orElseThrow(
+				() -> new EbeguRuntimeException(
+					"exportVerfuegungOfBetreuungAsFile",
+					"No User is logged in"
+				)
+			);
 
-		LOG.info("Deprecated exportVerfuegungOfBetreuungAsFile is used by " + benutzer.getEmail());
+		LOG.info(
+			"Deprecated exportVerfuegungOfBetreuungAsFile is used by "
+				+ benutzer.getEmail()
+		);
 
 		Betreuung betreuung = readBetreuung(betreuungID);
 
-		VerfuegungenExportDTO verfuegungenExportDTO = convertBetreuungToExport(betreuung);
+		VerfuegungenExportDTO verfuegungenExportDTO = convertBetreuungToExport(
+			betreuung
+		);
 
 		byte[] bytes = convertToJson(verfuegungenExportDTO);
 		String filename = "export_" + betreuung.getReferenzNummer() + ".json";
 		String gesuchId = betreuung.extractGesuch().getId();
 
-		return this.fileSaverService.save(bytes, filename, gesuchId, getContentTypeForExport());
+		return this.fileSaverService.save(
+			bytes,
+			filename,
+			gesuchId,
+			getContentTypeForExport()
+		);
 	}
 
 	@Nonnull
@@ -84,10 +102,13 @@ public class ExportServiceBean implements ExportService {
 		requireNonNull(betreuungID, "betreuungID muss gesetzt sein");
 
 		Betreuung betreuung = betreuungService.findBetreuung(betreuungID)
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"exportVerfuegungOfBetreuung",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				betreuungID));
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"exportVerfuegungOfBetreuung",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					betreuungID
+				)
+			);
 
 		authorizer.checkReadAuthorization(betreuung);
 
@@ -95,7 +116,9 @@ public class ExportServiceBean implements ExportService {
 	}
 
 	@Nonnull
-	private VerfuegungenExportDTO convertBetreuungToExport(@Nonnull Betreuung betreuung) {
+	private VerfuegungenExportDTO convertBetreuungToExport(
+		@Nonnull Betreuung betreuung
+	) {
 		List<Verfuegung> verfuegungToExport = new ArrayList<>();
 		if (betreuung.getVerfuegung() != null) {
 			//single element in list to export
@@ -114,14 +137,17 @@ public class ExportServiceBean implements ExportService {
 				"getContentTypeForExport",
 				"could not parse mime type",
 				e,
-				MediaType.TEXT_PLAIN);
+				MediaType.TEXT_PLAIN
+			);
 		}
 	}
 
 	/**
 	 * convert the dto as json
 	 */
-	private byte[] convertToJson(@Nonnull VerfuegungenExportDTO verfuegungenExportDTO) {
+	private byte[] convertToJson(
+		@Nonnull VerfuegungenExportDTO verfuegungenExportDTO
+	) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new JavaTimeModule());
 		try {
@@ -131,7 +157,8 @@ public class ExportServiceBean implements ExportService {
 				"convertToJson",
 				"Objekt kann nicht JSON konvertiert werden",
 				e,
-				"Objekt kann nicht JSON konvertiert werden");
+				"Objekt kann nicht JSON konvertiert werden"
+			);
 		}
 	}
 }

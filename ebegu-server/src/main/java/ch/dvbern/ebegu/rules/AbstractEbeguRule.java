@@ -27,15 +27,15 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.RuleUtil;
@@ -45,7 +45,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * This defines a Rule that has a unique Name given by RuleKey. The Rule is valid for a specified validityPeriod and
  * is of a given type
  */
-public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
+public abstract class AbstractEbeguRule extends AbstractRule implements Rule {
 
 	private RuleValidity ruleValidity;
 
@@ -119,11 +119,14 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 	 * Stellt die Zeitabschnitte der aktuellen Rule zusammen, falls die Rule für den
 	 * aktuellen Betreuungstyp relevant ist
 	 */
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitteIfApplicable(@Nonnull AbstractPlatz platz) {
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitteIfApplicable(
+		@Nonnull AbstractPlatz platz
+	) {
 		if (isAnwendbarForAngebot(platz)) {
 			// Nach jeder AbschnittRule erhalten wir die *neuen* Zeitabschnitte zurueck. Diese müssen bei ASIV-Regeln
 			// immer eine identische ASIV und GEMEINDE-Berechnung haben!
-			List<VerfuegungZeitabschnitt> zwischenresultate = createVerfuegungsZeitabschnitte(platz);
+			List<VerfuegungZeitabschnitt> zwischenresultate =
+				createVerfuegungsZeitabschnitte(platz);
 			// Wir duerfen nur neue Abschnitte verwenden, welche ueberhaupt gueltig sind
 			for (VerfuegungZeitabschnitt zeitabschnitt : zwischenresultate) {
 				validateZeitabschnittGueltigkeit(zeitabschnitt);
@@ -138,7 +141,9 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 		return new ArrayList<>();
 	}
 
-	protected void validateZeitabschnittGueltigkeit(@Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	protected void validateZeitabschnittGueltigkeit(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		boolean valid = true;
 		if (zeitabschnitt.getGueltigkeit().startsBefore(this.validityPeriod)) {
 			valid = false;
@@ -148,21 +153,35 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 		}
 		if (!valid) {
 			String msg =
-				"Regel " + this.getClass().getSimpleName() + " has invalid Zeitabschnitte. Rule " +
-					this.validityPeriod.toRangeString() + ", Abschnitt: " +
+				"Regel "
+					+ this.getClass().getSimpleName()
+					+ " has invalid Zeitabschnitte. Rule "
+					+
+					this.validityPeriod.toRangeString()
+					+ ", Abschnitt: "
+					+
 					zeitabschnitt.getGueltigkeit().toRangeString();
-			throw new EbeguRuntimeException("validateZeitabschnittGueltigkeit", msg);
+			throw new EbeguRuntimeException(
+				"validateZeitabschnittGueltigkeit",
+				msg
+			);
 		}
 	}
 
-	private void assertSimilarAsivAndGemeindeInputs(@Nonnull Collection<VerfuegungZeitabschnitt> zeitabschnitte) {
+	private void assertSimilarAsivAndGemeindeInputs(
+		@Nonnull Collection<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		boolean hasSameInputAsivAndGemeinde = zeitabschnitte.stream()
-			.allMatch(z -> z.getBgCalculationInputAsiv().isSame(z.getBgCalculationInputGemeinde()));
+			.allMatch(
+				z -> z.getBgCalculationInputAsiv()
+					.isSame(z.getBgCalculationInputGemeinde())
+			);
 
 		if (!hasSameInputAsivAndGemeinde) {
 			throw new EbeguRuntimeException(
 				"createVerfuegungsZeitabschnitteIfApplicable",
-				"ASIV Rule setzt nicht beide Input-Objekte!");
+				"ASIV Rule setzt nicht beide Input-Objekte!"
+			);
 		}
 	}
 
@@ -170,21 +189,30 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 	 * Zuerst muessen die neuen Zeitabschnitte aus den Daten der aktuellen Rule zusammengestellt werden:
 	 */
 	@Nonnull
-	protected abstract List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz);
+	protected abstract List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	);
 
 	/**
 	 * Führt die aktuelle Rule aus, falls die Rule für den
 	 * aktuellen Betreuungstyp relevant ist
 	 */
-	protected void executeRuleIfApplicable(@Nonnull AbstractPlatz platz, @Nonnull VerfuegungZeitabschnitt verfuegungZeitabschnitt) {
-		if (isAnwendbarForAngebot(platz) && isValid(verfuegungZeitabschnitt.getGueltigkeit())) {
-			for (BGCalculationInput inputDatum : getInputData(verfuegungZeitabschnitt)) {
+	protected void executeRuleIfApplicable(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull VerfuegungZeitabschnitt verfuegungZeitabschnitt
+	) {
+		if (isAnwendbarForAngebot(platz)
+			&& isValid(verfuegungZeitabschnitt.getGueltigkeit())) {
+			for (BGCalculationInput inputDatum : getInputData(
+				verfuegungZeitabschnitt
+			)) {
 				executeRule(platz, inputDatum);
 				if (ruleValidity == RuleValidity.GEMEINDE) {
 					// Wir verlassen uns hier darauf, dass GEMEINDE-Rules nur dann verwendet werden,
 					// wenn sich die Berechnung tatsaechlich von ASIV unterscheidet. Siehe auch
 					// ch.dvbern.ebegu.rules.BetreuungsgutscheinConfigurator
-					inputDatum.getParent().setHasGemeindeSpezifischeBerechnung(true);
+					inputDatum.getParent()
+						.setHasGemeindeSpezifischeBerechnung(true);
 				}
 			}
 		}
@@ -194,14 +222,20 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 	 * Fuehrt die eigentliche Rule auf einem einzelnen Zeitabschnitt aus.
 	 * Hier kann man davon ausgehen, dass die Zeitabschnitte schon validiert und gemergt sind.
 	 */
-	abstract void executeRule(@Nonnull AbstractPlatz platz, @Nonnull BGCalculationInput inputData);
+	protected abstract void executeRule(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull BGCalculationInput inputData
+	);
 
 	/**
 	 * Hauptmethode der Regelberechnung. Diese wird von Aussen aufgerufen
 	 */
 	@Nonnull
 	@Override
-	public final List<VerfuegungZeitabschnitt> calculate(@Nonnull AbstractPlatz platz, @Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	public final List<VerfuegungZeitabschnitt> calculate(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		if (!isAnwendbarForAngebot(platz)) {
 			return zeitabschnitte;
 		}
@@ -210,20 +244,25 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 
 		// Zuerst muessen die neuen Zeitabschnitte aus den Daten meiner Rule zusammengestellt werden:
 
-		List<VerfuegungZeitabschnitt> abschnitteCreatedInRule = createVerfuegungsZeitabschnitteIfApplicable(platz);
+		List<VerfuegungZeitabschnitt> abschnitteCreatedInRule =
+			createVerfuegungsZeitabschnitteIfApplicable(platz);
 		Collections.sort(abschnitteCreatedInRule);
 
 		// In dieser Funktion muss sichergestellt werden, dass in der neuen Liste keine Ueberschneidungen mehr bestehen
 		// Jetzt muessen diese mit den bestehenden Zeitabschnitten aus früheren Rules gemergt werden
-		List<VerfuegungZeitabschnitt> mergedZeitabschnitte = mergeZeitabschnitte(zeitabschnitte, abschnitteCreatedInRule);
+		List<VerfuegungZeitabschnitt> mergedZeitabschnitte =
+			mergeZeitabschnitte(zeitabschnitte, abschnitteCreatedInRule);
 		Collections.sort(mergedZeitabschnitte);
 
 		// Die Zeitabschnitte (jetzt ohne Überschneidungen) normalisieren:
 		// - Muss innerhalb Gesuchsperiode sein
 		// - Müssen sich unterscheiden (d.h. 20+20 vs 40 soll nur einen Schnitz geben)
 		Gesuchsperiode gesuchsperiode = platz.extractGesuchsperiode();
-		List<VerfuegungZeitabschnitt> normalizedZeitabschn = normalizeZeitabschnitte(mergedZeitabschnitte,
-			gesuchsperiode);
+		List<VerfuegungZeitabschnitt> normalizedZeitabschn =
+			normalizeZeitabschnitte(
+				mergedZeitabschnitte,
+				gesuchsperiode
+			);
 
 		// Die eigentliche Rule anwenden
 		for (VerfuegungZeitabschnitt zeitabschnitt : normalizedZeitabschn) {
@@ -240,7 +279,9 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 	private boolean isAnwendbarForAngebot(@Nonnull AbstractPlatz platz) {
 		Objects.requireNonNull(platz);
 		Objects.requireNonNull(platz.getBetreuungsangebotTyp());
-		return getAnwendbareAngebote().contains(platz.getBetreuungsangebotTyp());
+		return getAnwendbareAngebote().contains(
+			platz.getBetreuungsangebotTyp()
+		);
 	}
 
 	protected abstract List<BetreuungsangebotTyp> getAnwendbareAngebote();
@@ -252,31 +293,63 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 	 * dies der Fall wäre, werden sie zu einem neuen Schnitz gemergt.
 	 */
 	@Nonnull
-	protected List<VerfuegungZeitabschnitt> normalizeZeitabschnitte(@Nonnull List<VerfuegungZeitabschnitt> mergedZeitabschnitte, @Nonnull Gesuchsperiode gesuchsperiode) {
-		List<VerfuegungZeitabschnitt> normalizedZeitabschnitte = new LinkedList<>();
+	protected List<VerfuegungZeitabschnitt> normalizeZeitabschnitte(
+		@Nonnull List<VerfuegungZeitabschnitt> mergedZeitabschnitte,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
+		List<VerfuegungZeitabschnitt> normalizedZeitabschnitte =
+			new LinkedList<>();
 		for (VerfuegungZeitabschnitt zeitabschnitt : mergedZeitabschnitte) {
 			// Zuerst überprüfen, ob der Zeitabschnitt innerhalb der Gesuchsperiode liegt
-			boolean startsBefore = zeitabschnitt.getGueltigkeit().startsBefore(gesuchsperiode.getGueltigkeit());
-			boolean endsAfter = zeitabschnitt.getGueltigkeit().endsAfter(gesuchsperiode.getGueltigkeit());
+			boolean startsBefore = zeitabschnitt.getGueltigkeit()
+				.startsBefore(gesuchsperiode.getGueltigkeit());
+			boolean endsAfter = zeitabschnitt.getGueltigkeit()
+				.endsAfter(gesuchsperiode.getGueltigkeit());
 			if (startsBefore || endsAfter) {
 				boolean zeitabschnittInPeriode = false;
-				if (startsBefore && zeitabschnitt.getGueltigkeit().getGueltigBis().isAfter(gesuchsperiode.getGueltigkeit().getGueltigAb())) {
+				if (startsBefore
+					&& zeitabschnitt.getGueltigkeit()
+						.getGueltigBis()
+						.isAfter(
+							gesuchsperiode.getGueltigkeit()
+								.getGueltigAb()
+						)) {
 					// Datum Von liegt vor der Periode
 					// Falls Datum Bis ebenfalls vor der Periode liegt, kann der Abschnitt gelöscht werden, ansonsten muss er verkürzt werden
-					zeitabschnitt.getGueltigkeit().setGueltigAb(gesuchsperiode.getGueltigkeit().getGueltigAb());
+					zeitabschnitt.getGueltigkeit()
+						.setGueltigAb(
+							gesuchsperiode.getGueltigkeit()
+								.getGueltigAb()
+						);
 					zeitabschnittInPeriode = true;
 				}
-				if (endsAfter && zeitabschnitt.getGueltigkeit().getGueltigAb().isBefore(gesuchsperiode.getGueltigkeit().getGueltigBis())) {
+				if (endsAfter
+					&& zeitabschnitt.getGueltigkeit()
+						.getGueltigAb()
+						.isBefore(
+							gesuchsperiode.getGueltigkeit()
+								.getGueltigBis()
+						)) {
 					// Datum Bis liegt nach der Periode
 					// Falls Datum Von auch schon nach der Periode lag, kann der Abschnitt gelöscht werden, ansonsten muss er verkürzt werden
-					zeitabschnitt.getGueltigkeit().setGueltigBis(gesuchsperiode.getGueltigkeit().getGueltigBis());
+					zeitabschnitt.getGueltigkeit()
+						.setGueltigBis(
+							gesuchsperiode.getGueltigkeit()
+								.getGueltigBis()
+						);
 					zeitabschnittInPeriode = true;
 				}
 				if (zeitabschnittInPeriode) {
-					addToNormalizedZeitabschnitte(normalizedZeitabschnitte, zeitabschnitt);
+					addToNormalizedZeitabschnitte(
+						normalizedZeitabschnitte,
+						zeitabschnitt
+					);
 				}
 			} else {
-				addToNormalizedZeitabschnitte(normalizedZeitabschnitte, zeitabschnitt);
+				addToNormalizedZeitabschnitte(
+					normalizedZeitabschnitte,
+					zeitabschnitt
+				);
 			}
 		}
 		return normalizedZeitabschnitte;
@@ -286,16 +359,31 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 	 * Stellt sicher, dass zwei aufeinander folgende Zeitabschnitte nie dieselben Daten haben. Falls
 	 * dies der Fall wäre, werden sie zu einem neuen Schnitz gemergt.
 	 */
-	private void addToNormalizedZeitabschnitte(@Nonnull List<VerfuegungZeitabschnitt> validZeitabschnitte, @Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	private void addToNormalizedZeitabschnitte(
+		@Nonnull List<VerfuegungZeitabschnitt> validZeitabschnitte,
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		// Zuerst vergleichen, ob sich der neue Zeitabschnitt vom letzt hinzugefügten (und angrenzenden) unterscheidet
 		int indexOfLast = validZeitabschnitte.size() - 1;
 		if (indexOfLast >= 0) {
-			VerfuegungZeitabschnitt lastZeitabschnitt = validZeitabschnitte.get(indexOfLast);
-			if (lastZeitabschnitt.isSame(zeitabschnitt) && zeitabschnitt.getGueltigkeit().startsDayAfter(lastZeitabschnitt.getGueltigkeit())) {
+			VerfuegungZeitabschnitt lastZeitabschnitt = validZeitabschnitte.get(
+				indexOfLast
+			);
+			if (lastZeitabschnitt.isSame(zeitabschnitt)
+				&& zeitabschnitt.getGueltigkeit()
+					.startsDayAfter(
+						lastZeitabschnitt.getGueltigkeit()
+					)) {
 				// Gleiche Berechnungsgrundlagen: Den alten um den neuen verlängern
-				lastZeitabschnitt.getGueltigkeit().setGueltigBis(zeitabschnitt.getGueltigkeit().getGueltigBis());
+				lastZeitabschnitt.getGueltigkeit()
+					.setGueltigBis(
+						zeitabschnitt.getGueltigkeit().getGueltigBis()
+					);
 				// Die Bemerkungen hinzufügen
-				lastZeitabschnitt.getBemerkungenDTOList().addAllBemerkungen(zeitabschnitt.getBemerkungenDTOList());
+				lastZeitabschnitt.getBemerkungenDTOList()
+					.addAllBemerkungen(
+						zeitabschnitt.getBemerkungenDTOList()
+					);
 				validZeitabschnitte.remove(indexOfLast);
 				validZeitabschnitte.add(lastZeitabschnitt);
 			} else {
@@ -312,7 +400,10 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 	 * Mergt zwei Listen von Verfuegungszeitschnitten.
 	 */
 	@Nonnull
-	private List<VerfuegungZeitabschnitt> mergeZeitabschnitte(@Nonnull List<VerfuegungZeitabschnitt> bestehendeEntities, @Nonnull List<VerfuegungZeitabschnitt> neueEntities) {
+	private List<VerfuegungZeitabschnitt> mergeZeitabschnitte(
+		@Nonnull List<VerfuegungZeitabschnitt> bestehendeEntities,
+		@Nonnull List<VerfuegungZeitabschnitt> neueEntities
+	) {
 		List<VerfuegungZeitabschnitt> alles = new ArrayList<>();
 		alles.addAll(bestehendeEntities);
 		alles.addAll(neueEntities);
@@ -349,22 +440,34 @@ public abstract class AbstractEbeguRule extends AbstractRule implements Rule  {
 	 * muss ASIV *und* Gemeinde berechnet werden, sonst nur Gemeinde.
 	 */
 	@Nonnull
-	private List<BGCalculationInput> getInputData(@Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	private List<BGCalculationInput> getInputData(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		if (this.ruleValidity == RuleValidity.ASIV) {
-			return Arrays.asList(zeitabschnitt.getBgCalculationInputGemeinde(), zeitabschnitt.getBgCalculationInputAsiv());
+			return Arrays.asList(
+				zeitabschnitt.getBgCalculationInputGemeinde(),
+				zeitabschnitt.getBgCalculationInputAsiv()
+			);
 		}
 
-		return Collections.singletonList(zeitabschnitt.getBgCalculationInputGemeinde());
+		return Collections.singletonList(
+			zeitabschnitt.getBgCalculationInputGemeinde()
+		);
 	}
 
 	@Override
-	public boolean isRelevantForGemeinde(@Nonnull Map<EinstellungKey, Einstellung> einstellungMap) {
+	public boolean isRelevantForGemeinde(
+		@Nonnull Map<EinstellungKey, Einstellung> einstellungMap
+	) {
 		// Grundsaetzlich gehen wir davon aus, dass jede Regel fuer jede Gemeinde gueltig ist.
 		// Ausnahme sind Regeln mit RuleValiditiy=GEMEINDE, fuer welche eine Einstellung gleich
 		// ist (bzw. nicht ueberschrieben) wie bei ASIV
 		if (RuleValidity.GEMEINDE == ruleValidity) {
-			throw new EbeguRuntimeException("isRelevantForGemeinde",
-				"Rule mit validity GEMEINDE muessen isRelevantForGemeinde ueberschreiben! " + this.getClass().getName());
+			throw new EbeguRuntimeException(
+				"isRelevantForGemeinde",
+				"Rule mit validity GEMEINDE muessen isRelevantForGemeinde ueberschreiben! "
+					+ this.getClass().getName()
+			);
 		}
 		return true;
 	}

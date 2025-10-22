@@ -15,17 +15,9 @@
 
 package ch.dvbern.ebegu.api.converter;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.batch.runtime.JobExecution;
-import javax.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.Dependent;
 
-import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
-import ch.dvbern.ebegu.api.dtos.batch.JaxBatchJobInformation;
 import ch.dvbern.ebegu.api.dtos.batch.JaxWorkJob;
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Workjob;
@@ -34,33 +26,8 @@ import ch.dvbern.ebegu.enums.reporting.BatchJobStatus;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@RequestScoped
+@Dependent
 public class BatchJaxBConverter {
-
-	@Nullable
-	private LocalDateTime mangleDate(@Nullable Date date) {
-		if (date == null) {
-			return null;
-		}
-		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-	}
-
-	@Nonnull
-	public JaxBatchJobInformation toBatchJobInformation(@Nonnull JobExecution information) {
-		JaxBatchJobInformation jInformation = new JaxBatchJobInformation();
-
-		jInformation.setBatchStatus(information.getBatchStatus().name());
-		jInformation.setCreateTime(mangleDate(information.getCreateTime()));
-		jInformation.setEndTime(mangleDate(information.getEndTime()));
-		jInformation.setExecutionId(information.getExecutionId());
-		jInformation.setExitStatus(information.getExitStatus());
-		jInformation.setJobName(information.getJobName());
-		jInformation.setLastUpdatedTime(mangleDate(information.getLastUpdatedTime()));
-		jInformation.setStartTime(mangleDate(information.getStartTime()));
-		jInformation.setLastUpdatedTime(mangleDate(information.getLastUpdatedTime()));
-
-		return jInformation;
-	}
 
 	@Nonnull
 	public JaxWorkJob toBatchJobInformation(@Nonnull Workjob job) {
@@ -80,15 +47,22 @@ public class BatchJaxBConverter {
 		jaxWorkJob.setExecutionId(executionId);
 		jaxWorkJob.setResultData(job.getResultData());
 		jaxWorkJob.setRequestURI(job.getRequestURI());
+		jaxWorkJob.setStartTime(job.getTimestampErstellt());
+		if (job.getStatus().equals(BatchJobStatus.FINISHED)) {
+			jaxWorkJob.setEndTime(job.getTimestampMutiert());
+
+		}
 		return jaxWorkJob;
 	}
 
-	@Nonnull
-	@SuppressWarnings("PMD.UnusedPrivateMethod") // Die Methode ist verwendet
-	private <T extends JaxAbstractDTO> T convertAbstractVorgaengerFieldsToJAX(@Nonnull final AbstractEntity abstEntity, @Nonnull final T jaxDTOToConvertTo) {
-		jaxDTOToConvertTo.setTimestampErstellt(abstEntity.getTimestampErstellt());
+	private void convertAbstractVorgaengerFieldsToJAX(
+		@Nonnull final AbstractEntity abstEntity,
+		@Nonnull final JaxWorkJob jaxDTOToConvertTo
+	) {
+		jaxDTOToConvertTo.setTimestampErstellt(
+			abstEntity.getTimestampErstellt()
+		);
 		jaxDTOToConvertTo.setTimestampMutiert(abstEntity.getTimestampMutiert());
 		jaxDTOToConvertTo.setId(checkNotNull(abstEntity.getId()));
-		return jaxDTOToConvertTo;
 	}
 }

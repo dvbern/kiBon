@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.tagesschule;
@@ -70,7 +70,7 @@ public class TagesschuleAnmeldungenDataRow {
 	private String bemerkung;
 	@Nullable
 	private AbholungTagesschule abholungtagesschule;
-	@Nonnull
+
 	private boolean isAbweichung;
 	@Nullable
 	private LocalDate eintrittsdatum;
@@ -108,7 +108,9 @@ public class TagesschuleAnmeldungenDataRow {
 		return nachnameAntragsteller1;
 	}
 
-	public void setNachnameAntragsteller1(@Nullable String nachnameAntragsteller1) {
+	public void setNachnameAntragsteller1(
+		@Nullable String nachnameAntragsteller1
+	) {
 		this.nachnameAntragsteller1 = nachnameAntragsteller1;
 	}
 
@@ -117,7 +119,9 @@ public class TagesschuleAnmeldungenDataRow {
 		return vornameAntragsteller1;
 	}
 
-	public void setVornameAntragsteller1(@Nullable String vornameAntragsteller1) {
+	public void setVornameAntragsteller1(
+		@Nullable String vornameAntragsteller1
+	) {
 		this.vornameAntragsteller1 = vornameAntragsteller1;
 	}
 
@@ -135,7 +139,9 @@ public class TagesschuleAnmeldungenDataRow {
 		return nachnameAntragsteller2;
 	}
 
-	public void setNachnameAntragsteller2(@Nullable String nachnameAntragsteller2) {
+	public void setNachnameAntragsteller2(
+		@Nullable String nachnameAntragsteller2
+	) {
 		this.nachnameAntragsteller2 = nachnameAntragsteller2;
 	}
 
@@ -144,7 +150,9 @@ public class TagesschuleAnmeldungenDataRow {
 		return vornameAntragsteller2;
 	}
 
-	public void setVornameAntragsteller2(@Nullable String vornameAntragsteller2) {
+	public void setVornameAntragsteller2(
+		@Nullable String vornameAntragsteller2
+	) {
 		this.vornameAntragsteller2 = vornameAntragsteller2;
 	}
 
@@ -201,7 +209,9 @@ public class TagesschuleAnmeldungenDataRow {
 		isZweiwoechentlich = zweiwoechentlich;
 	}
 
-	public void setAnmeldungTagesschule(@Nonnull AnmeldungTagesschule anmeldungTagesschule) {
+	public void setAnmeldungTagesschule(
+		@Nonnull AnmeldungTagesschule anmeldungTagesschule
+	) {
 		this.anmeldungTagesschule = anmeldungTagesschule;
 	}
 
@@ -219,7 +229,9 @@ public class TagesschuleAnmeldungenDataRow {
 		return telefonAntragsteller1;
 	}
 
-	public void setTelefonAntragsteller1(@Nullable String telefonAntragsteller1) {
+	public void setTelefonAntragsteller1(
+		@Nullable String telefonAntragsteller1
+	) {
 		this.telefonAntragsteller1 = telefonAntragsteller1;
 	}
 
@@ -237,7 +249,9 @@ public class TagesschuleAnmeldungenDataRow {
 		return telefonAntragsteller2;
 	}
 
-	public void setTelefonAntragsteller2(@Nullable String telefonAntragsteller2) {
+	public void setTelefonAntragsteller2(
+		@Nullable String telefonAntragsteller2
+	) {
 		this.telefonAntragsteller2 = telefonAntragsteller2;
 	}
 
@@ -246,18 +260,17 @@ public class TagesschuleAnmeldungenDataRow {
 		return bemerkung;
 	}
 
-	@Nullable
 	public void setBemerkung(@Nullable String bemerkung) {
 		this.bemerkung = bemerkung;
 	}
 
-	@Nonnull
 	public boolean getAbweichung() {
 		return isAbweichung;
 	}
 
-	@Nonnull
-	public void setAbweichung(@Nonnull boolean isAbweichung) { this.isAbweichung = isAbweichung; }
+	public void setAbweichung(boolean isAbweichung) {
+		this.isAbweichung = isAbweichung;
+	}
 
 	@Nullable
 	public FleischOption getFleischOption() {
@@ -273,8 +286,11 @@ public class TagesschuleAnmeldungenDataRow {
 		return allergienUndUnvertraeglichkeiten;
 	}
 
-	public void setAllergienUndUnvertraeglichkeiten(@Nullable String allergienUndUnvertraeglichkeiten) {
-		this.allergienUndUnvertraeglichkeiten = allergienUndUnvertraeglichkeiten;
+	public void setAllergienUndUnvertraeglichkeiten(
+		@Nullable String allergienUndUnvertraeglichkeiten
+	) {
+		this.allergienUndUnvertraeglichkeiten =
+			allergienUndUnvertraeglichkeiten;
 	}
 
 	@Nullable
@@ -287,11 +303,13 @@ public class TagesschuleAnmeldungenDataRow {
 	}
 
 	@Nullable
-	public AbholungTagesschule getAbholungTagesschule(){
+	public AbholungTagesschule getAbholungTagesschule() {
 		return abholungtagesschule;
 	}
 
-	public void setAbholungTagesschule(@Nullable AbholungTagesschule abholungtagesschule) {
+	public void setAbholungTagesschule(
+		@Nullable AbholungTagesschule abholungtagesschule
+	) {
 		this.abholungtagesschule = abholungtagesschule;
 	}
 }

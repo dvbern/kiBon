@@ -13,18 +13,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {DateUtil} from '../utils/DateUtil';
+import {
+    TSGemeinde,
+    TSInstitution,
+    TSMandant,
+    TSTraegerschaft
+} from '@kibon/shared/model/entity';
+import {rolePrefix, TSGemeindeStatus, TSRole} from '@kibon/shared/model/enums';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../utils/EbeguUtil';
 import {TSBenutzerStatus} from './enums/TSBenutzerStatus';
-import {TSGemeindeStatus} from './enums/TSGemeindeStatus';
-import {rolePrefix, TSRole} from './enums/TSRole';
 import {TSSozialdienst} from './sozialdienst/TSSozialdienst';
 import {TSBenutzerNoDetails} from './TSBenutzerNoDetails';
 import {TSBerechtigung} from './TSBerechtigung';
-import {TSGemeinde} from './TSGemeinde';
-import {TSInstitution} from './TSInstitution';
-import {TSMandant} from './TSMandant';
-import {TSTraegerschaft} from './TSTraegerschaft';
 
 export class TSBenutzer {
     private _nachname: string;
@@ -157,7 +158,7 @@ export class TSBenutzer {
     public get currentBerechtigung(): TSBerechtigung {
         if (EbeguUtil.isNullOrUndefined(this._currentBerechtigung)) {
             for (const obj of this.berechtigungen) {
-                if (obj.gueltigkeit.isInDateRange(DateUtil.now())) {
+                if (obj.gueltigkeit.isInDateRange(MomentUtil.now())) {
                     this._currentBerechtigung = obj;
                 }
             }

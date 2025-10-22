@@ -8,33 +8,54 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.MsgKey;
-import ch.dvbern.ebegu.types.DateRange;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.LocalDate;
-import java.util.*;
+
+import ch.dvbern.ebegu.entities.Erwerbspensum;
+import ch.dvbern.ebegu.entities.ErwerbspensumContainer;
+import ch.dvbern.ebegu.entities.Familiensituation;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.GesuchstellerContainer;
+import ch.dvbern.ebegu.entities.UnbezahlterUrlaub;
+import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
+import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.types.DateRange;
 
 /**
- * Regel für unbezahlten Urlaub. In dem Teil des Urlaubs, welcher 3 Monate übersteigt, verfällt der Anspruch (für dieses Erwerbspensum!)
+ * Regel für unbezahlten Urlaub. In dem Teil des Urlaubs, welcher 3 Monate übersteigt, verfällt der Anspruch (für dieses
+ * Erwerbspensum!)
  */
-public class UnbezahlterUrlaubAbschnittRule extends AbstractErwerbspensumAbschnittRule {
+public class UnbezahlterUrlaubAbschnittRule extends
+	AbstractErwerbspensumAbschnittRule {
 
-
-	public UnbezahlterUrlaubAbschnittRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.UNBEZAHLTER_URLAUB, RuleType.GRUNDREGEL_DATA, RuleValidity.ASIV, validityPeriod, locale);
+	public UnbezahlterUrlaubAbschnittRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.UNBEZAHLTER_URLAUB,
+			RuleType.GRUNDREGEL_DATA,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -56,13 +77,24 @@ public class UnbezahlterUrlaubAbschnittRule extends AbstractErwerbspensumAbschni
 		boolean gs2
 	) {
 		List<VerfuegungZeitabschnitt> ewpAbschnitte = new ArrayList<>();
-		Set<ErwerbspensumContainer> ewpContainers = gesuchsteller.getErwerbspensenContainersNotEmpty();
+		Set<ErwerbspensumContainer> ewpContainers = gesuchsteller
+			.getErwerbspensenContainersNotEmpty();
 
 		ewpContainers.stream()
 			.map(ErwerbspensumContainer::getErwerbspensumJA)
 			.filter(Objects::nonNull)
-			.filter(erwerbspensumJA -> erwerbspensumJA.getUnbezahlterUrlaub() != null)
-			.map(erwerbspensumJA -> toVerfuegungZeitabschnitt(gesuch, erwerbspensumJA, gs2))
+			.filter(
+				erwerbspensumJA -> erwerbspensumJA
+					.getUnbezahlterUrlaub()
+					!= null
+			)
+			.map(
+				erwerbspensumJA -> toVerfuegungZeitabschnitt(
+					gesuch,
+					erwerbspensumJA,
+					gs2
+				)
+			)
 			.filter(Objects::nonNull)
 			.forEach(ewpAbschnitte::add);
 
@@ -70,37 +102,65 @@ public class UnbezahlterUrlaubAbschnittRule extends AbstractErwerbspensumAbschni
 	}
 
 	/**
-	 * Fuer Zeitabschnitten bei denen einen langen Urlaub eingegeben wurde, setzen wir das Pensum auf -XX sodass das Pensum aus
+	 * Fuer Zeitabschnitten bei denen einen langen Urlaub eingegeben wurde, setzen wir das Pensum auf -XX sodass das
+	 * Pensum aus
 	 * ErwerbspensumAbschnittRule kompensiert wird.
 	 */
 	@Nullable
-	private VerfuegungZeitabschnitt toVerfuegungZeitabschnitt(@Nonnull Gesuch gesuch, @Nonnull Erwerbspensum erwerbspensumJA, boolean gs2) {
+	private VerfuegungZeitabschnitt toVerfuegungZeitabschnitt(
+		@Nonnull Gesuch gesuch,
+		@Nonnull Erwerbspensum erwerbspensumJA,
+		boolean gs2
+	) {
 
 		// Jeder Urlaub ist mehr als 3 Monate, dies wird bereits beim Speichern validiert. Trotzdem pruefen wir es
 		// hier nochmals
 		UnbezahlterUrlaub urlaub = erwerbspensumJA.getUnbezahlterUrlaub();
 		Objects.requireNonNull(urlaub);
-		LocalDate urlaubNachFreibetragStart = urlaub.getGueltigkeit().getGueltigAb().plusMonths(3);
+		LocalDate urlaubNachFreibetragStart = urlaub.getGueltigkeit()
+			.getGueltigAb()
+			.plusMonths(3);
 		LocalDate urlaubEnd = urlaub.getGueltigkeit().getGueltigBis();
 		if (urlaubNachFreibetragStart.isAfter(urlaubEnd)) {
 			return null;
 		}
-		final DateRange gueltigkeit = new DateRange(urlaubNachFreibetragStart, urlaubEnd);
+		final DateRange gueltigkeit = new DateRange(
+			urlaubNachFreibetragStart,
+			urlaubEnd
+		);
 
 		// Wir merken uns hier den eingegebenen Wert, auch wenn dieser (mit Zuschlag) über 100% liegt
-		Familiensituation familiensituationErstgesuch = gesuch.extractFamiliensituationErstgesuch();
+		Familiensituation familiensituationErstgesuch = gesuch
+			.extractFamiliensituationErstgesuch();
 		Familiensituation familiensituation = gesuch.extractFamiliensituation();
-		if (gs2 && gesuch.isMutation() && familiensituationErstgesuch != null && familiensituation != null) {
+		if (gs2
+			&& gesuch.isMutation()
+			&& familiensituationErstgesuch != null
+			&& familiensituation != null) {
 
-			getGueltigkeitFromFamiliensituation(gueltigkeit, familiensituationErstgesuch, familiensituation);
+			getGueltigkeitFromFamiliensituation(
+				gesuch,
+				gueltigkeit,
+				familiensituationErstgesuch,
+				familiensituation
+			);
 
-			return createZeitabschnittUnbezahlterUrlaubGS2(erwerbspensumJA, gueltigkeit);
+			return createZeitabschnittUnbezahlterUrlaubGS2(
+				erwerbspensumJA,
+				gueltigkeit
+			);
 		}
 		if (gs2 && !gesuch.isMutation()) {
-			return createZeitabschnittUnbezahlterUrlaubGS2(erwerbspensumJA, gueltigkeit);
+			return createZeitabschnittUnbezahlterUrlaubGS2(
+				erwerbspensumJA,
+				gueltigkeit
+			);
 		}
 		if (!gs2) {
-			return createZeitabschnittUnbezahlterUrlaubGS1(erwerbspensumJA, gueltigkeit);
+			return createZeitabschnittUnbezahlterUrlaubGS1(
+				erwerbspensumJA,
+				gueltigkeit
+			);
 		}
 		return null;
 	}
@@ -110,9 +170,13 @@ public class UnbezahlterUrlaubAbschnittRule extends AbstractErwerbspensumAbschni
 		@Nonnull Erwerbspensum erwerbspensumJA,
 		DateRange gueltigkeit
 	) {
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
-		zeitabschnitt.setErwerbspensumGS1ForAsivAndGemeinde(0 - erwerbspensumJA.getPensum());
-		zeitabschnitt.getBgCalculationInputAsiv().addBemerkung(MsgKey.UNBEZAHLTER_URLAUB_MSG, getLocale());
+		VerfuegungZeitabschnitt zeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
+		zeitabschnitt.setErwerbspensumGS1ForAsivAndGemeinde(
+			0 - erwerbspensumJA.getPensum()
+		);
+		zeitabschnitt.getBgCalculationInputAsiv()
+			.addBemerkung(MsgKey.UNBEZAHLTER_URLAUB_MSG, getLocale());
 		return zeitabschnitt;
 	}
 
@@ -121,9 +185,13 @@ public class UnbezahlterUrlaubAbschnittRule extends AbstractErwerbspensumAbschni
 		@Nonnull Erwerbspensum erwerbspensumJA,
 		DateRange gueltigkeit
 	) {
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
-		zeitabschnitt.setErwerbspensumGS2ForAsivAndGemeinde(0 - erwerbspensumJA.getPensum());
-		zeitabschnitt.getBgCalculationInputAsiv().addBemerkung(MsgKey.UNBEZAHLTER_URLAUB_MSG, getLocale());
+		VerfuegungZeitabschnitt zeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
+		zeitabschnitt.setErwerbspensumGS2ForAsivAndGemeinde(
+			0 - erwerbspensumJA.getPensum()
+		);
+		zeitabschnitt.getBgCalculationInputAsiv()
+			.addBemerkung(MsgKey.UNBEZAHLTER_URLAUB_MSG, getLocale());
 		return zeitabschnitt;
 	}
 }

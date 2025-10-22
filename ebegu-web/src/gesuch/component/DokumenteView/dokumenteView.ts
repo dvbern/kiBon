@@ -13,20 +13,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IComponentOptions, ILogService} from 'angular';
+import {copy, IComponentOptions, ILogService} from 'angular';
 import {first} from 'rxjs/operators';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {TSDokumenteDTO} from '../../../models/dto/TSDokumenteDTO';
 import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
 import {TSDokumentGrundTyp} from '../../../models/enums/TSDokumentGrundTyp';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
-import {TSFinanzielleSituationTyp} from '../../../models/enums/TSFinanzielleSituationTyp';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {getSchwyzFinSitTyp} from '../../../models/enums/TSFinanzielleSituationTyp';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSDokument} from '../../../models/TSDokument';
 import {TSDokumentGrund} from '../../../models/TSDokumentGrund';
-import {TSEinstellung} from '../../../models/TSEinstellung';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {IStammdatenStateParams} from '../../gesuch.route';
 import {BerechnungsManager} from '../../service/berechnungsManager';
@@ -255,7 +254,7 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
         }
 
         this.dokumenteRS.removeDokument(dokument).then(response => {
-            const returnedDG = angular.copy(response);
+            const returnedDG = copy(response);
 
             if (returnedDG) {
                 // replace existing object in table with returned if returned not null
@@ -307,8 +306,9 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
 
     public getTagAnhandFinanzielleSituationTyp(): string | null {
         if (
-            this.gesuchModelManager.getGesuch().finSitTyp ===
-            TSFinanzielleSituationTyp.SCHWYZ
+            getSchwyzFinSitTyp().includes(
+                this.gesuchModelManager.getGesuch().finSitTyp
+            )
         ) {
             return null;
         }

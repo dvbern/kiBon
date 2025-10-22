@@ -23,7 +23,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
  */
 @Component({
     selector: 'dv-ng-display-object-dialog',
-    templateUrl: './dv-ng-display-object-dialog.template.html'
+    templateUrl: './dv-ng-display-object-dialog.template.html',
+    standalone: false
 })
 export class DvNgDisplayObjectDialogComponent {
     public object = {};

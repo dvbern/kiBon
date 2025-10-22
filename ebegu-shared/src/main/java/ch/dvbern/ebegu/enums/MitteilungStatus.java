@@ -20,8 +20,5 @@ package ch.dvbern.ebegu.enums;
  */
 public enum MitteilungStatus {
 
-	NEU,
-	GELESEN,
-	ERLEDIGT,
-	IGNORIERT
+	NEU, GELESEN, ERLEDIGT, IGNORIERT
 }

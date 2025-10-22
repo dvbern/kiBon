@@ -15,10 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {FixtureBeschaeftigungspensum} from '@dv-e2e/fixtures';
+import {
+    FixtureBeschaeftigungspensum,
+    FixtureBeschaeftigungspensumFeutz,
+    FixtureBeschaeftigungspensumLuzern
+} from '@dv-e2e/fixtures';
 import {NavigationPO} from './navigation.po';
 
 // !! -- PAGE OBJECTS -- !!
+const getPageTitle = () => {
+    return cy.getByData('page-title');
+};
+
 const getAddErwerbspensumButton = (gesuchSteller: 'GS1' | 'GS2') => {
     return cy.getByData(
         `container.add-erwerbungspensum-erwerbspensen${gesuchSteller}`,
@@ -38,8 +46,16 @@ const getTaetigkeitsPensum = () => {
     return cy.getByData('taetigkeit-pensum');
 };
 
+const getTaetigkeitsInstitution = () => {
+    return cy.getByData('erwerbspensum-institution');
+};
+
 const getTaetigkeitAb = () => {
     return cy.getByData('taetigkeit-ab');
+};
+
+const getWegZeit = () => {
+    return cy.getByData('wegzeit');
 };
 
 // !! -- PAGE ACTIONS -- !!
@@ -53,6 +69,45 @@ const createBeschaeftigungspensum = (
         getTaetigkeit().select(`string:${data[gesuchSteller].taetigkeit}`);
         getTaetigkeitsPensum().type(data[gesuchSteller].taetigkeitPensum);
         getTaetigkeitAb().find('input').type(data[gesuchSteller].taetigkeitAb);
+        cy.wait(1500);
+
+        cy.waitForRequest('GET', '**/erwerbspensen/required/**', () => {
+            NavigationPO.saveAndGoNext();
+        });
+    });
+};
+
+const createBeschaeftigungspensumLuzern = (
+    gesuchSteller: 'GS1' | 'GS2',
+    dataset: keyof typeof FixtureBeschaeftigungspensumLuzern
+) => {
+    FixtureBeschaeftigungspensumLuzern[dataset](data => {
+        getAddErwerbspensumButton(gesuchSteller).click();
+        getBezeichnung().type(data[gesuchSteller].bezeichnung);
+        getTaetigkeit().select(`string:${data[gesuchSteller].taetigkeit}`);
+        getTaetigkeitsPensum().type(data[gesuchSteller].taetigkeitPensum);
+        getTaetigkeitsInstitution().type(data[gesuchSteller].arbeitgeber);
+        getTaetigkeitAb().find('input').type(data[gesuchSteller].taetigkeitAb);
+        cy.wait(1500);
+
+        cy.waitForRequest('GET', '**/erwerbspensen/required/**', () => {
+            NavigationPO.saveAndGoNext();
+        });
+    });
+};
+
+const createBeschaeftigungspensumFamFeutz = (
+    gesuchSteller: 'GS1' | 'GS2',
+    dataset: keyof typeof FixtureBeschaeftigungspensumFeutz
+) => {
+    FixtureBeschaeftigungspensumFeutz[dataset](data => {
+        getAddErwerbspensumButton(gesuchSteller).click();
+        getBezeichnung().type(data[gesuchSteller].bezeichnung);
+        getTaetigkeit().select(`string:${data[gesuchSteller].taetigkeit}`);
+        getTaetigkeitsPensum().type(data[gesuchSteller].taetigkeitPensum);
+        getWegZeit().type(data[gesuchSteller].wegZeit);
+        getTaetigkeitAb().find('input').type(data[gesuchSteller].taetigkeitAb);
+        cy.wait(1500);
 
         cy.waitForRequest('GET', '**/erwerbspensen/required/**', () => {
             NavigationPO.saveAndGoNext();
@@ -67,6 +122,9 @@ export const AntragBeschaeftigungspensumPO = {
     getTaetigkeit,
     getTaetigkeitAb,
     getTaetigkeitsPensum,
+    getPageTitle,
     // page objects
-    createBeschaeftigungspensum
+    createBeschaeftigungspensum,
+    createBeschaeftigungspensumFamFeutz,
+    createBeschaeftigungspensumLuzern
 };

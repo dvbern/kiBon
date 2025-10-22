@@ -16,16 +16,15 @@
  */
 
 import {StateService} from '@uirouter/core';
-import {IComponentOptions} from 'angular';
+import {IComponentOptions, element} from 'angular';
 import {combineLatest} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {IDVFocusableController} from '../../../app/core/component/IDVFocusableController';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
-import {TSEinstellung} from '../../../models/TSEinstellung';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {TSKindDublette} from '../../../models/TSKindDublette';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
@@ -241,7 +240,7 @@ export class KinderListViewController
     }
 
     public setFocusBack(elementID: string): void {
-        angular.element(`#${elementID}`).first().focus();
+        element(`#${elementID}`).first().focus();
     }
 
     public getKinderHint3(): string {

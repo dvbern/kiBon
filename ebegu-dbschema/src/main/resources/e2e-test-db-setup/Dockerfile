@@ -23,6 +23,7 @@ ADD db/migration/ /flyway/sql
 WORKDIR /opt/e2e-test-db-setup
 
 ADD db/testdaten testdaten/
+ADD db/helper helper/
 
 ADD e2e-test-db-setup/entrypoint.sh .
 

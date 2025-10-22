@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSEinstellungKey} from '../../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
 import {TSFamilienstatus} from '../../../../models/enums/TSFamilienstatus';
-import {TSEinstellung} from '../../../../models/TSEinstellung';
+import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {FamiliensituationRS} from '../../../service/familiensituationRS.service';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
@@ -17,14 +17,15 @@ const LOG = LogFactory.createLog('FamiliensituationAppenzellViewXComponent');
 @Component({
     selector: 'dv-familiensituation-appenzell-view-x',
     templateUrl: './familiensituation-appenzell-view-x.component.html',
-    styleUrls: ['./familiensituation-appenzell-view-x.component.less']
+    styleUrls: ['./familiensituation-appenzell-view-x.component.less'],
+    standalone: false
 })
 export class FamiliensituationAppenzellViewXComponent
     extends AbstractFamiliensitutaionView
     implements OnInit
 {
     protected async confirm(onResult: (arg: any) => void): Promise<void> {
-        const savedContaier = await this.save();
+        const savedContaier = await this.saveFamiliensituationAndHandleChange();
         onResult(savedContaier);
     }
 

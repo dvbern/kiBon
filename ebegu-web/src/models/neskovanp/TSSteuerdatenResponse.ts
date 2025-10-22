@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {TSVeranlagungsstand} from './TSVeranlagungsstand';
 
 export class TSSteuerdatenResponse {

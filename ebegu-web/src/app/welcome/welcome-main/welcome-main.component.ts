@@ -15,13 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    OnInit
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {StateService} from '@uirouter/core';
+import {map} from 'rxjs/operators';
+import {MandantLogoNameVisitor} from '@kibon/shared-model-mandant';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ITourParams} from '../../../gesuch/gesuch.route';
 import {
@@ -29,32 +27,29 @@ import {
     navigateToStartPageForRoleWithParams
 } from '../../../utils/AuthenticationUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
 import {KiBonGuidedTourService} from '../../kibonTour/service/KiBonGuidedTourService';
 
 @Component({
     selector: 'dv-welcome-main',
     templateUrl: './welcome-main.component.html',
     styleUrls: ['./welcome-main.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
-export class WelcomeMainComponent implements OnInit {
-    public logoUrl: string;
-
+export class WelcomeMainComponent {
     public constructor(
         private readonly authServiceRs: AuthServiceRS,
         private readonly $state: StateService,
         private readonly kibonGuidedTourService: KiBonGuidedTourService,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
-        private readonly cd: ChangeDetectorRef
+        private readonly mandantService: MandantService
     ) {}
 
-    public ngOnInit(): void {
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.logoUrl = `url("assets/images/${res.logoFileName}")`;
-            this.cd.markForCheck();
-        });
-    }
+    logoUrl$ = this.mandantService.mandant$.pipe(
+        map(mandant => {
+            const filename = new MandantLogoNameVisitor().process(mandant);
+            return `url("assets/images/${filename}")`;
+        })
+    );
 
     public navigateToStartPage(): void {
         const params: ITourParams = {

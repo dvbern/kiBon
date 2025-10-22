@@ -8,17 +8,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.reporting;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -28,24 +27,24 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlen;
 import ch.dvbern.ebegu.entities.gemeindeantrag.gemeindekennzahlen.GemeindeKennzahlenStatus;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.reporting.ReportVorlage;
 import ch.dvbern.ebegu.reporting.ReportGemeindenService;
 import ch.dvbern.ebegu.reporting.gemeinden.GemeindenDataRow;
 import ch.dvbern.ebegu.reporting.gemeinden.GemeindenDatenDataRow;
 import ch.dvbern.ebegu.reporting.gemeinden.GemeindenExcelConverter;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.services.FileSaverService;
 import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.GesuchsperiodeService;
@@ -58,11 +57,15 @@ import ch.dvbern.oss.lib.excelmerger.ExcelMergerDTO;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import static ch.dvbern.ebegu.services.reporting.ReportUtil.createWorkbook;
+import static ch.dvbern.ebegu.services.reporting.ReportUtil.getContentTypeForExport;
 import static java.util.Objects.requireNonNull;
 
 @Stateless
 @Local(ReportGemeindenService.class)
-public class ReportGemeindenServiceBean extends AbstractReportServiceBean implements ReportGemeindenService {
+public class ReportGemeindenServiceBean extends AbstractReportServiceBean
+	implements
+	ReportGemeindenService {
 
 	@Inject
 	private GemeindeService gemeindeService;
@@ -84,27 +87,37 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean implem
 
 	@Inject
 	private PrincipalBean principal;
-	private static final String GEMEINDE_PERIODEN_SHEET_NAME = "Angaben pro Periode";
+	private static final String GEMEINDE_PERIODEN_SHEET_NAME =
+		"Angaben pro Periode";
 	private static final String GEMEINDE_SHEET_NAME = "Angaben pro Gemeinde";
 
 	@Nonnull
 	@Override
 	public UploadFileInfo generateExcelReportGemeinden(
-		@Nonnull Locale locale, @Nonnull Mandant mandant) throws ExcelMergeException, IOException {
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	) throws ExcelMergeException, IOException {
 		ReportVorlage vorlage = ReportVorlage.VORLAGE_REPORT_GEMEINDEN;
 		try (
-			InputStream is = ReportServiceBean.class.getResourceAsStream(vorlage.getTemplatePath());
-			Workbook workbook = createWorkbook(is, vorlage);
+			Workbook workbook = createWorkbook(vorlage);
 		) {
 			Sheet sheet = workbook.getSheet(GEMEINDE_SHEET_NAME);
 			Sheet secondSheet = workbook.getSheet(GEMEINDE_PERIODEN_SHEET_NAME);
 
-			final Collection<Gemeinde> aktiveGemeinden = gemeindeService.getAktiveGemeinden(mandant);
+			final Collection<Gemeinde> aktiveGemeinden = gemeindeService
+				.getAktiveGemeinden(mandant);
 
-			List<GemeindenDataRow> reportData = getReportDataGemeinden(aktiveGemeinden, locale);
+			List<GemeindenDataRow> reportData = getReportDataGemeinden(
+				aktiveGemeinden,
+				locale
+			);
 
-			ExcelMergerDTO excelMergerDTO = gemeindenExcelConverter.toExcelMergerDTO(reportData,
-				requireNonNull(principal.getMandant()), locale);
+			ExcelMergerDTO excelMergerDTO = gemeindenExcelConverter
+				.toExcelMergerDTO(
+					reportData,
+					requireNonNull(principal.getMandant()),
+					locale
+				);
 			mergeData(sheet, excelMergerDTO, vorlage.getMergeFields());
 			mergeData(secondSheet, excelMergerDTO, vorlage.getMergeFields());
 			gemeindenExcelConverter.applyAutoSize(sheet);
@@ -116,21 +129,28 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean implem
 				bytes,
 				"Gemeinden.xlsx",
 				Constants.TEMP_REPORT_FOLDERNAME,
-				getContentTypeForExport());
+				getContentTypeForExport()
+			);
 		}
 	}
 
 	private List<GemeindenDataRow> getReportDataGemeinden(
 		@Nonnull Collection<Gemeinde> gemeinden,
-		@Nonnull Locale locale) {
-		Collection<Gesuchsperiode> allActiveGesuchsperioden = gesuchsperiodeService.getAllActiveGesuchsperioden();
+		@Nonnull Locale locale
+	) {
+		Collection<Gesuchsperiode> allActiveGesuchsperioden =
+			gesuchsperiodeService.getAllActiveGesuchsperioden();
 
-		Map<String, GemeindeKennzahlen> gemeindeAntragGesuchsperiodeCache = new HashMap<>();
-		List<GemeindeKennzahlen> gemeindeAntrags = gemeindeKennzahlenService.getGemeindeKennzahlen(null, null, null, null);
+		Map<String, GemeindeKennzahlen> gemeindeAntragGesuchsperiodeCache =
+			new HashMap<>();
+		List<GemeindeKennzahlen> gemeindeAntrags = gemeindeKennzahlenService
+			.getGemeindeKennzahlen(null, null, null, null);
 		gemeindeAntrags.forEach(
 			gemeindeAntrag -> gemeindeAntragGesuchsperiodeCache.put(
-				gemeindeAntrag.getGesuchsperiode().getId() + gemeindeAntrag.getGemeinde().getId(),
-				gemeindeAntrag)
+				gemeindeAntrag.getGesuchsperiode().getId()
+					+ gemeindeAntrag.getGemeinde().getId(),
+				gemeindeAntrag
+			)
 		);
 
 		return gemeinden.stream()
@@ -141,44 +161,84 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean implem
 				dataRow.setBfsNummer(gemeinde.getBfsNummer());
 				dataRow.setAngebotBG(gemeinde.isAngebotBG());
 				dataRow.setAngebotTS(gemeinde.isAngebotTS());
-				dataRow.setStartdatumBG(gemeinde.getBetreuungsgutscheineStartdatum());
+				dataRow.setStartdatumBG(
+					gemeinde.getBetreuungsgutscheineStartdatum()
+				);
 
-				gemeindeService.getGemeindeStammdatenByGemeindeId(gemeinde.getId())
+				gemeindeService.getGemeindeStammdatenByGemeindeId(
+					gemeinde.getId()
+				)
 					.ifPresent(gemeindeStammdaten -> {
 						dataRow.setKorrespondenzspracheGemeinde(
 							ServerMessageUtil.getMessage(
-								"Reports_" + gemeindeStammdaten.getKorrespondenzsprache(),
-								locale, requireNonNull(gemeinde.getMandant())));
-						if (!gemeindeStammdaten.getGutscheinSelberAusgestellt()
-							&& gemeindeStammdaten.getGemeindeAusgabestelle() != null) {
-							dataRow.setGutscheinausgabestelle(gemeindeStammdaten.getGemeindeAusgabestelle().getName());
+								"Reports_"
+									+ gemeindeStammdaten
+										.getKorrespondenzsprache(),
+								locale,
+								requireNonNull(
+									gemeinde.getMandant()
+								)
+							)
+						);
+						if (!gemeindeStammdaten
+							.getGutscheinSelberAusgestellt()
+							&& gemeindeStammdaten
+								.getGemeindeAusgabestelle()
+								!= null) {
+							dataRow.setGutscheinausgabestelle(
+								gemeindeStammdaten
+									.getGemeindeAusgabestelle()
+									.getName()
+							);
 						}
 					});
 
 				allActiveGesuchsperioden.forEach(gesuchsperiode -> {
-					GemeindenDatenDataRow gemeindenDatenDataRow = new GemeindenDatenDataRow();
+					GemeindenDatenDataRow gemeindenDatenDataRow =
+						new GemeindenDatenDataRow();
 
-					gemeindenDatenDataRow.setGesuchsperiode(gesuchsperiode.getGesuchsperiodeString());
+					gemeindenDatenDataRow.setGesuchsperiode(
+						gesuchsperiode.getGesuchsperiodeString()
+					);
 
 					Einstellung gmeindeBGBisUndMit =
 						einstellungService.findEinstellung(
 							EinstellungKey.GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE,
 							gemeinde,
-							gesuchsperiode);
+							gesuchsperiode
+						);
 					gemeindenDatenDataRow.setLimitierungKita(
-						ServerMessageUtil.getMessage("EinschulungTyp_" + gmeindeBGBisUndMit.getValue(), locale,
-								requireNonNull(gesuchsperiode.getMandant())));
+						ServerMessageUtil.getMessage(
+							"EinschulungTyp_"
+								+ gmeindeBGBisUndMit.getValue(),
+							locale,
+							requireNonNull(
+								gesuchsperiode.getMandant()
+							)
+						)
+					);
 
 					Einstellung erwerbspensumZuschlag =
 						einstellungService.findEinstellung(
 							EinstellungKey.ERWERBSPENSUM_ZUSCHLAG,
 							gemeinde,
-							gesuchsperiode);
-					gemeindenDatenDataRow.setErwerbspensumZuschlag(erwerbspensumZuschlag.getValueAsBigDecimal());
+							gesuchsperiode
+						);
+					gemeindenDatenDataRow.setErwerbspensumZuschlag(
+						erwerbspensumZuschlag.getValueAsBigDecimal()
+					);
 
 					GemeindeKennzahlen gemeindeKennzahlen =
-						gemeindeAntragGesuchsperiodeCache.get(gesuchsperiode.getId() + gemeinde.getId());
-					setGemeindeKennzahlenRows(gemeindeKennzahlen, gemeindenDatenDataRow, locale, gemeinde);
+						gemeindeAntragGesuchsperiodeCache.get(
+							gesuchsperiode.getId()
+								+ gemeinde.getId()
+						);
+					setGemeindeKennzahlenRows(
+						gemeindeKennzahlen,
+						gemeindenDatenDataRow,
+						locale,
+						gemeinde
+					);
 
 					dataRow.getGemeindenDaten().add(gemeindenDatenDataRow);
 				});
@@ -192,31 +252,49 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean implem
 		@Nullable GemeindeKennzahlen gemeindeKennzahlen,
 		GemeindenDatenDataRow gemeindenDatenDataRow,
 		@Nonnull Locale locale,
-		Gemeinde gemeinde) {
+		Gemeinde gemeinde
+	) {
 		if (gemeindeKennzahlen == null) {
-			gemeindenDatenDataRow.setGemeindeKennzahlenStatus(ServerMessageUtil.getMessage(
-				"GemeindeKennzahlen_keinAntrag",
-				locale,
-				requireNonNull(gemeinde.getMandant())));
+			gemeindenDatenDataRow.setGemeindeKennzahlenStatus(
+				ServerMessageUtil.getMessage(
+					"GemeindeKennzahlen_keinAntrag",
+					locale,
+					requireNonNull(gemeinde.getMandant())
+				)
+			);
 			return;
 		}
 		gemeindenDatenDataRow.setGemeindeKennzahlenStatus(
 			ServerMessageUtil.getMessage(
-				"GemeindeKennzahlenStatus_" + gemeindeKennzahlen.getStatus(),
+				"GemeindeKennzahlenStatus_"
+					+ gemeindeKennzahlen.getStatus(),
 				locale,
-				requireNonNull(gemeinde.getMandant())));
-		if (gemeindeKennzahlen.getStatus() != GemeindeKennzahlenStatus.ABGESCHLOSSEN) {
+				requireNonNull(gemeinde.getMandant())
+			)
+		);
+		if (gemeindeKennzahlen.getStatus()
+			!= GemeindeKennzahlenStatus.ABGESCHLOSSEN) {
 			return;
 		}
-		gemeindenDatenDataRow.setKontingentierung(gemeindeKennzahlen.getGemeindeKontingentiert());
-		gemeindenDatenDataRow.setNachfrageErfuellt(gemeindeKennzahlen.getNachfrageErfuellt());
-		gemeindenDatenDataRow.setNachfrageAnzahl(gemeindeKennzahlen.getNachfrageAnzahl());
-		gemeindenDatenDataRow.setNachfrageDauer(gemeindeKennzahlen.getNachfrageDauer());
+		gemeindenDatenDataRow.setKontingentierung(
+			gemeindeKennzahlen.getGemeindeKontingentiert()
+		);
+		gemeindenDatenDataRow.setNachfrageErfuellt(
+			gemeindeKennzahlen.getNachfrageErfuellt()
+		);
+		gemeindenDatenDataRow.setNachfrageAnzahl(
+			gemeindeKennzahlen.getNachfrageAnzahl()
+		);
+		gemeindenDatenDataRow.setNachfrageDauer(
+			gemeindeKennzahlen.getNachfrageDauer()
+		);
 		gemeindenDatenDataRow.setLimitierungTfo(
 			ServerMessageUtil.getMessage(
-				"EinschulungTyp_" + gemeindeKennzahlen.getLimitierungTfo(),
+				"EinschulungTyp_"
+					+ gemeindeKennzahlen.getLimitierungTfo(),
 				locale,
-				requireNonNull(gemeinde.getMandant()))
+				requireNonNull(gemeinde.getMandant())
+			)
 		);
 	}
 }

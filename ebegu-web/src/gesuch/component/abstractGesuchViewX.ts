@@ -20,7 +20,7 @@ import {NgForm} from '@angular/forms';
 import {isAtLeastFreigegeben} from '../../models/enums/TSAntragStatus';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
 import {TSFinanzielleSituationTyp} from '../../models/enums/TSFinanzielleSituationTyp';
-import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {TSAbstractFinanzielleSituation} from '../../models/TSAbstractFinanzielleSituation';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';
@@ -163,6 +163,13 @@ export class AbstractGesuchViewX<T> implements AfterViewInit {
         }
 
         return this.form.valid;
+    }
+
+    public isSchwyzFinSitTypSchwyzErweitert(): boolean {
+        return (
+            this.getGesuch().finSitTyp ===
+            TSFinanzielleSituationTyp.SCHWYZ_ERWEITERT
+        );
     }
 
     protected isSpezialFallAR(): boolean {

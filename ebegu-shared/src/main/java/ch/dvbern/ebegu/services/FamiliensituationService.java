@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.FamiliensituationContainer;
@@ -34,14 +35,31 @@ public interface FamiliensituationService {
 	 *
 	 * @param loadedFamiliensituation dies ist der bisher gespeicherte FamiliensituationJA Wert aus der DB
 	 */
-	FamiliensituationContainer saveFamiliensituation(Gesuch gesuch, FamiliensituationContainer familiensituationContainer, Familiensituation loadedFamiliensituation);
+	FamiliensituationContainer saveFamiliensituationAndHandleChange(
+		Gesuch gesuch,
+		FamiliensituationContainer familiensituationContainer,
+		@Nullable Familiensituation loadedFamiliensituation
+	);
+
+	/**
+	 * Aktualisiert idn Familiensituation in der DB oder erstellt sie wenn sie noch nicht existiert
+	 *
+	 * @param loadedFamiliensituation dies ist der bisher gespeicherte FamiliensituationJA Wert aus der DB
+	 */
+	FamiliensituationContainer saveFamiliensituation(
+		Gesuch gesuch,
+		FamiliensituationContainer familiensituationContainer,
+		@Nullable Familiensituation loadedFamiliensituation
+	);
 
 	/**
 	 * @param key PK (id) der Familiensituation
 	 * @return Familiensituation mit dem gegebenen key oder null falls nicht vorhanden
 	 */
 	@Nonnull
-	Optional<FamiliensituationContainer> findFamiliensituation(@Nonnull String key);
+	Optional<FamiliensituationContainer> findFamiliensituation(
+		@Nonnull String key
+	);
 
 	/**
 	 * Gibt alle existierenden Familiensituationen zurueck.
@@ -56,6 +74,8 @@ public interface FamiliensituationService {
 	 *
 	 * @param familiensituation die Familiensituation als DTO
 	 */
-	void removeFamiliensituation(@Nonnull FamiliensituationContainer familiensituation);
+	void removeFamiliensituation(
+		@Nonnull FamiliensituationContainer familiensituation
+	);
 
 }

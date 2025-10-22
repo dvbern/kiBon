@@ -1,0 +1,19 @@
+{
+    "name": "zahlung-util-zahlung-service",
+    "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/zahlung/util/zahlung-service/src",
+    "prefix": "lib",
+    "projectType": "library",
+    "tags": ["type:util", "feature:zahlung"],
+    "targets": {
+        "build": {
+            "executor": "nx:noop",
+            "options": {
+                "tsConfig": "libs/zahlung/util/tsconfig.lib.json"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

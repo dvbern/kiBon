@@ -15,11 +15,11 @@
 
 package ch.dvbern.ebegu.tests.validations;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorFactory;
-import javax.validation.Validation;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorFactory;
+import jakarta.validation.Validation;
 
-import ch.dvbern.ebegu.services.EinstellungService;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.tests.services.EinstellungDummyServiceBean;
 import ch.dvbern.ebegu.validators.CheckFachstellenValidator;
 import ch.dvbern.ebegu.validators.CheckPensumFachstelleValidator;
@@ -28,31 +28,44 @@ import ch.dvbern.ebegu.validators.betreuungspensum.CheckBetreuungspensumValidato
 /**
  * This class helps us test our ConstraintValidators without actually starting a CDI container.
  * Since we are using services inside the validators we need a way to initialize the Validator with a dummy.
- * This Factory allows us to initialize the Validator ourself, giving us the oppurtunity to use a DummyService for the validotr
+ * This Factory allows us to initialize the Validator ourself, giving us the oppurtunity to use a DummyService for the
+ * validotr
  */
-class ValidationTestConstraintValidatorFactory implements ConstraintValidatorFactory {
+class ValidationTestConstraintValidatorFactory implements
+	ConstraintValidatorFactory {
 
 	@Override
 	public <T extends ConstraintValidator<?, ?>> T getInstance(Class<T> key) {
 		if (key.equals(CheckBetreuungspensumValidator.class)) {
 			//Mock Service for Parameters
-			EinstellungService dummyEinstellungenService = new EinstellungDummyServiceBean();
+			EinstellungService dummyEinstellungenService =
+				new EinstellungDummyServiceBean();
 			//noinspection unchecked,ConstantConditions Der DummyService laesst null zu, in den Tests ist es immer null
-			return (T) new CheckBetreuungspensumValidator(dummyEinstellungenService, null);
+			return (T) new CheckBetreuungspensumValidator(
+				dummyEinstellungenService,
+				null
+			);
 		}
 		if (key.equals(CheckPensumFachstelleValidator.class)) {
 			//Mock Service for Parameters
-			EinstellungService dummyEinstellungenService = new EinstellungDummyServiceBean();
+			EinstellungService dummyEinstellungenService =
+				new EinstellungDummyServiceBean();
 			//noinspection unchecked,ConstantConditions Der DummyService laesst null zu, in den Tests ist es immer null
-			return (T) new CheckPensumFachstelleValidator(dummyEinstellungenService, null);
+			return (T) new CheckPensumFachstelleValidator(
+				dummyEinstellungenService,
+				null
+			);
 		}
 		if (key.equals(CheckFachstellenValidator.class)) {
 			//Mock Service for Parameters
-			EinstellungService dummyEinstellungenService = new EinstellungDummyServiceBean();
+			EinstellungService dummyEinstellungenService =
+				new EinstellungDummyServiceBean();
 			//noinspection unchecked,ConstantConditions Der DummyService laesst null zu, in den Tests ist es immer null
 			return (T) new CheckFachstellenValidator(dummyEinstellungenService);
 		}
-		ConstraintValidatorFactory delegate = Validation.byDefaultProvider().configure().getDefaultConstraintValidatorFactory();
+		ConstraintValidatorFactory delegate = Validation.byDefaultProvider()
+			.configure()
+			.getDefaultConstraintValidatorFactory();
 		return delegate.getInstance(key);
 	}
 

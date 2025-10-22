@@ -14,11 +14,12 @@
  */
 package ch.dvbern.ebegu.api.dtos;
 
-import ch.dvbern.ebegu.api.enums.JaxExternalErrorCode;
+import java.io.Serializable;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
+import ch.dvbern.ebegu.api.enums.JaxExternalErrorCode;
 
 /**
  * ErrorObjekt für eine Anmeldung eines Schulamt-Angebots (Tagesschule oder Ferieninsel) für die externe Schnittstelle
@@ -34,10 +35,10 @@ public class JaxExternalError implements Serializable {
 	@Nonnull
 	private JaxExternalErrorCode externalErrorCode;
 
-
 	public JaxExternalError(
 		@Nonnull JaxExternalErrorCode externalErrorCode,
-		@Nonnull String description) {
+		@Nonnull String description
+	) {
 
 		this.externalErrorCode = externalErrorCode;
 		this.description = description;
@@ -57,7 +58,9 @@ public class JaxExternalError implements Serializable {
 		return externalErrorCode;
 	}
 
-	public void setExternalErrorCode(@Nonnull JaxExternalErrorCode externalErrorCode) {
+	public void setExternalErrorCode(
+		@Nonnull JaxExternalErrorCode externalErrorCode
+	) {
 		this.externalErrorCode = externalErrorCode;
 	}
 }

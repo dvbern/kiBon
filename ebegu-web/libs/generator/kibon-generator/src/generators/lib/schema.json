@@ -1,0 +1,102 @@
+{
+    "$schema": "https://json-schema.org/schema",
+    "cli": "nx",
+    "$id": "Lib",
+    "title": "",
+    "type": "object",
+    "properties": {
+        "domain": {
+            "type": "string",
+            "description": "The domain in which the library can be used",
+            "x-prompt": {
+                "type": "list",
+                "message": "For which domain should the library be created?",
+                "items": [
+                    {
+                        "value": "admin",
+                        "label": "[admin] - Administration of gemeinde/institution/..."
+                    },
+                    {
+                        "value": "betreuung",
+                        "label": "[betreuung] - Betreuungen"
+                    },
+                    {
+                        "value": "gesuch",
+                        "label": "Gesuch"
+                    },
+                    {
+                        "value": "kind",
+                        "label": "[Kind] - kind "
+                    },
+                    {
+                        "value": "shared",
+                        "label": "[Shared] - libs that can be used from other domains"
+                    },
+                    {
+                        "value": "zahlung",
+                        "label": "[zahlung]"
+                    }
+                ]
+            }
+        },
+        "type": {
+            "type": "string",
+            "description": "The type of library",
+            "x-prompt": {
+                "type": "list",
+                "message": "What is the library type?",
+                "items": [
+                    {
+                        "value": "routeable-component",
+                        "label": "Component with a route - lazy loaded + route consumed by an app",
+                        "description": "⚠️ This type will automatically enable routing"
+                    },
+                    {
+                        "value": "smart",
+                        "label": "NOT IMPLEMENTED: Smart component - standalone UI component, eg component that needs to calculate or determine different situations"
+                    },
+                    {
+                        "value": "ui",
+                        "label": "UI/Dumb component - standalone (simple / view / presentational) UI component with minimal logic"
+                    },
+                    {
+                        "value": "util",
+                        "label": "NOT IMPLEMENTED: Util - Angular based util (service), eg validator, mapper, or logger"
+                    },
+                    {
+                        "value": "model",
+                        "label": "NOT IMPLEMENTED: Model - TypeScript interfaces, types, enums and consts"
+                    }
+                ]
+            }
+        },
+        "name": {
+            "type": "string",
+            "description": "Component name",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "What name would you like to use (singular name)?"
+        },
+        "testing": {
+            "type": "string",
+            "description": "Generate Tests",
+            "x-prompt": {
+                "type": "list",
+                "message": "Do you want to generate test setup?",
+                "items": [
+                    {
+                        "value": "false",
+                        "label": "no, no tests needed right now"
+                    },
+                    {
+                        "value": "true",
+                        "label": "yes, generate test setup"
+                    }
+                ]
+            }
+        }
+    },
+    "required": ["name", "type", "domain", "testing"]
+}

@@ -21,15 +21,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.Geschlecht;
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -56,18 +56,18 @@ public class EWKPerson implements Serializable, Comparable<EWKPerson> {
 
 	private String vorname;
 
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate geburtsdatum;
 
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate zuzugsdatum;
 
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate wegzugsdatum;
 
 	private String zivilstand;
 
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate zivilstandsdatum;
 
 	private Geschlecht geschlecht;
@@ -89,8 +89,14 @@ public class EWKPerson implements Serializable, Comparable<EWKPerson> {
 	}
 
 	public boolean isWohnsitzInPeriode(Gesuchsperiode gesuchsperiode) {
-		return (getZuzugsdatum() == null || getZuzugsdatum().isBefore(gesuchsperiode.getGueltigkeit().getGueltigBis()))
-			&& (getWegzugsdatum() == null || getWegzugsdatum().isAfter(gesuchsperiode.getGueltigkeit().getGueltigAb()));
+		return (getZuzugsdatum() == null
+			|| getZuzugsdatum().isBefore(
+				gesuchsperiode.getGueltigkeit().getGueltigBis()
+			))
+			&& (getWegzugsdatum() == null
+				|| getWegzugsdatum().isAfter(
+					gesuchsperiode.getGueltigkeit().getGueltigAb()
+				));
 	}
 
 	@Override
@@ -114,6 +120,9 @@ public class EWKPerson implements Serializable, Comparable<EWKPerson> {
 		if (obj == null || !this.getClass().equals(obj.getClass())) {
 			return false;
 		}
-		return new EqualsBuilder().append(getPersonID(), ((EWKPerson) obj).getPersonID()).isEquals();
+		return new EqualsBuilder().append(
+			getPersonID(),
+			((EWKPerson) obj).getPersonID()
+		).isEquals();
 	}
 }

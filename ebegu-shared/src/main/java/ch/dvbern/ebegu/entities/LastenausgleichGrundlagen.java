@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -22,12 +22,12 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.util.MathUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -38,12 +38,14 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = "jahr", name = "UK_LastenausgleichGrundlagen_jahr"))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = "jahr",
+	name = "UK_LastenausgleichGrundlagen_jahr"))
 public class LastenausgleichGrundlagen extends AbstractEntity {
 
 	private static final long serialVersionUID = -3717533583464831412L;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@Column(nullable = false)
 	private Integer jahr = 0;
 
@@ -57,10 +59,8 @@ public class LastenausgleichGrundlagen extends AbstractEntity {
 	@Min(0)
 	private BigDecimal kostenPro100ProzentPlatz;
 
-
 	public LastenausgleichGrundlagen() {
 	}
-
 
 	@Nonnull
 	public Integer getJahr() {
@@ -76,7 +76,9 @@ public class LastenausgleichGrundlagen extends AbstractEntity {
 		return selbstbehaltPro100ProzentPlatz;
 	}
 
-	public void setSelbstbehaltPro100ProzentPlatz(@Nonnull BigDecimal selbstbehaltPro100ProzentPlatz) {
+	public void setSelbstbehaltPro100ProzentPlatz(
+		@Nonnull BigDecimal selbstbehaltPro100ProzentPlatz
+	) {
 		this.selbstbehaltPro100ProzentPlatz = selbstbehaltPro100ProzentPlatz;
 	}
 
@@ -85,7 +87,9 @@ public class LastenausgleichGrundlagen extends AbstractEntity {
 		return kostenPro100ProzentPlatz;
 	}
 
-	public void setKostenPro100ProzentPlatz(@Nonnull BigDecimal kostenPro100ProzentPlatz) {
+	public void setKostenPro100ProzentPlatz(
+		@Nonnull BigDecimal kostenPro100ProzentPlatz
+	) {
 		this.kostenPro100ProzentPlatz = kostenPro100ProzentPlatz;
 	}
 
@@ -100,8 +104,13 @@ public class LastenausgleichGrundlagen extends AbstractEntity {
 		if (other == null || !getClass().equals(other.getClass())) {
 			return false;
 		}
-		final LastenausgleichGrundlagen otherGrundlagen = (LastenausgleichGrundlagen) other;
-		return Objects.equals(getJahr(), otherGrundlagen.getJahr()) &&
-			MathUtil.isSame(this.getKostenPro100ProzentPlatz(), otherGrundlagen.getKostenPro100ProzentPlatz());
+		final LastenausgleichGrundlagen otherGrundlagen =
+			(LastenausgleichGrundlagen) other;
+		return Objects.equals(getJahr(), otherGrundlagen.getJahr())
+			&&
+			MathUtil.isSame(
+				this.getKostenPro100ProzentPlatz(),
+				otherGrundlagen.getKostenPro100ProzentPlatz()
+			);
 	}
 }

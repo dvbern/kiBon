@@ -19,12 +19,12 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import ch.dvbern.lib.date.converters.LocalDateTimeXMLConverter;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
 
 /**
  * This transfer Object is used to pass the relevant Info about a successfull login
@@ -35,7 +35,7 @@ public class JaxExternalAuthorisierterBenutzer implements Serializable {
 
 	private static final long serialVersionUID = -5370653568368950813L;
 
-	@XmlJavaTypeAdapter(LocalDateTimeXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
 	private LocalDateTime lastLogin = LocalDateTime.now();
 
 	private JaxExternalBenutzer benutzer = null;

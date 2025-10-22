@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.util;
@@ -31,7 +31,8 @@ public class MahlzeitenverguenstigungParameter {
 
 	private boolean enabledFuerSozHilfeBez = false;
 
-	private RangeMap<BigDecimal, BigDecimal> verguenstigungProMahlzeit = TreeRangeMap.create();
+	private RangeMap<BigDecimal, BigDecimal> verguenstigungProMahlzeit =
+		TreeRangeMap.create();
 
 	private BigDecimal minimalerElternbeitragMahlzeit = BigDecimal.ZERO;
 
@@ -47,9 +48,27 @@ public class MahlzeitenverguenstigungParameter {
 	) {
 		this.enabled = enabled;
 		this.enabledFuerSozHilfeBez = enabledFuerSozHilfeBez;
-		verguenstigungProMahlzeit.put(Range.closed(BigDecimal.valueOf(Integer.MAX_VALUE).negate(), maxEinkommenStufe1), verguenstigungStufe1Mahlzeit);
-		verguenstigungProMahlzeit.put(Range.closed(maxEinkommenStufe1.add(BigDecimal.ONE), maxEinkommenStufe2), verguenstigungStufe2Mahlzeit);
-		verguenstigungProMahlzeit.put(Range.closed(maxEinkommenStufe2.add(BigDecimal.ONE), BigDecimal.valueOf(Integer.MAX_VALUE)),	verguenstigungStufe3Mahlzeit);
+		verguenstigungProMahlzeit.put(
+			Range.closed(
+				BigDecimal.valueOf(Integer.MAX_VALUE).negate(),
+				maxEinkommenStufe1
+			),
+			verguenstigungStufe1Mahlzeit
+		);
+		verguenstigungProMahlzeit.put(
+			Range.closed(
+				maxEinkommenStufe1.add(BigDecimal.ONE),
+				maxEinkommenStufe2
+			),
+			verguenstigungStufe2Mahlzeit
+		);
+		verguenstigungProMahlzeit.put(
+			Range.closed(
+				maxEinkommenStufe2.add(BigDecimal.ONE),
+				BigDecimal.valueOf(Integer.MAX_VALUE)
+			),
+			verguenstigungStufe3Mahlzeit
+		);
 
 		this.minimalerElternbeitragMahlzeit = minimalerElternbeitragMahlzeit;
 	}
@@ -58,13 +77,24 @@ public class MahlzeitenverguenstigungParameter {
 
 	}
 
-	public boolean hasAnspruch(BigDecimal massgebendesEinkommen, boolean sozialhilfebezueger) {
-		return getVerguenstigungProMahlzeitWithParam(massgebendesEinkommen, sozialhilfebezueger).compareTo(BigDecimal.ZERO) > 0;
+	public boolean hasAnspruch(
+		BigDecimal massgebendesEinkommen,
+		boolean sozialhilfebezueger
+	) {
+		return getVerguenstigungProMahlzeitWithParam(
+			massgebendesEinkommen,
+			sozialhilfebezueger
+		).compareTo(BigDecimal.ZERO) > 0;
 	}
 
-	public BigDecimal getVerguenstigungProMahlzeitWithParam(BigDecimal massgebendesEinkommen, boolean sozialhilfeBezueger) {
+	public BigDecimal getVerguenstigungProMahlzeitWithParam(
+		BigDecimal massgebendesEinkommen,
+		boolean sozialhilfeBezueger
+	) {
 
-		BigDecimal verguenstigung = verguenstigungProMahlzeit.get(massgebendesEinkommen);
+		BigDecimal verguenstigung = verguenstigungProMahlzeit.get(
+			massgebendesEinkommen
+		);
 
 		// falls es sich um einen Sozialhilfebezüger handelt und Die Vergünstigung für diese aktiv ist, nehmen wir
 		// die Vergünstigung der Stufe 0
@@ -87,13 +117,19 @@ public class MahlzeitenverguenstigungParameter {
 	}
 
 	public BigDecimal getVerguenstigungEffektiv(
-		@Nonnull BigDecimal verguenstigung, @Nonnull BigDecimal tarifProMahlzeit, @Nonnull BigDecimal minimalerElternbeitrag
+		@Nonnull BigDecimal verguenstigung,
+		@Nonnull BigDecimal tarifProMahlzeit,
+		@Nonnull BigDecimal minimalerElternbeitrag
 	) {
-		if ((tarifProMahlzeit.subtract(verguenstigung)).subtract(minimalerElternbeitrag).compareTo(BigDecimal.ZERO) >= 0) {
+		if ((tarifProMahlzeit.subtract(verguenstigung)).subtract(
+			minimalerElternbeitrag
+		).compareTo(BigDecimal.ZERO) >= 0) {
 			return verguenstigung;
 		}
 
-		if (tarifProMahlzeit.subtract(minimalerElternbeitrag).compareTo(BigDecimal.ZERO) > 0) {
+		if (tarifProMahlzeit.subtract(minimalerElternbeitrag)
+			.compareTo(BigDecimal.ZERO)
+			> 0) {
 			return tarifProMahlzeit.subtract(minimalerElternbeitrag);
 		}
 
@@ -112,7 +148,9 @@ public class MahlzeitenverguenstigungParameter {
 		return verguenstigungProMahlzeit;
 	}
 
-	public void setVerguenstigungProMahlzeit(RangeMap<BigDecimal, BigDecimal> verguenstigungPromahlzeit) {
+	public void setVerguenstigungProMahlzeit(
+		RangeMap<BigDecimal, BigDecimal> verguenstigungPromahlzeit
+	) {
 		this.verguenstigungProMahlzeit = verguenstigungPromahlzeit;
 	}
 
@@ -120,7 +158,9 @@ public class MahlzeitenverguenstigungParameter {
 		return minimalerElternbeitragMahlzeit;
 	}
 
-	public void setMinimalerElternbeitragMahlzeit(BigDecimal minimalerElternbeitragMahlzeit) {
+	public void setMinimalerElternbeitragMahlzeit(
+		BigDecimal minimalerElternbeitragMahlzeit
+	) {
 		this.minimalerElternbeitragMahlzeit = minimalerElternbeitragMahlzeit;
 	}
 

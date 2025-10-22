@@ -16,11 +16,20 @@
  */
 
 // !! -- PAGE OBJECTS -- !!
-import {FixtureFinSit} from '@dv-e2e/fixtures';
+import {
+    FixtureFinSit,
+    FixtureFinSitFeutz,
+    FixtureFinSitFeutzLuzern,
+    FixtureFinSitFeutzSolothurn
+} from '@dv-e2e/fixtures';
 import {NavigationPO} from './navigation.po';
 
 const getSozialhilfebezueger = (answer: string) => {
     return cy.getByData('sozialhilfeBezueger.radio-value.' + answer);
+};
+
+const getSozialhilfebezuegerx = (answer: string) => {
+    return cy.getByData('sozialhilfeBezueger', 'radio-value.' + answer);
 };
 
 const getIban = () => {
@@ -29,6 +38,13 @@ const getIban = () => {
 
 const getKontoinhaberIn = () => {
     return cy.getByData('kontoinhaber');
+};
+
+const getSteuerveranlagungGemeinsam = (answer: string) => {
+    return cy.getByData(
+        'steuerveranlagungGemeinsam.radio-group',
+        'radio-value.' + answer
+    );
 };
 
 const fillFinanzielleSituationStartForm = (
@@ -42,6 +58,55 @@ const fillFinanzielleSituationStartForm = (
     });
 };
 
+const fillFinanzielleSituationStartFormFeutz = (
+    dataset: keyof typeof FixtureFinSitFeutz
+) => {
+    FixtureFinSitFeutz[dataset](({Start}) => {
+        cy.wait(2000);
+        getIban().type(Start.iban);
+        getKontoinhaberIn().type(Start.kontoinhaber);
+        getSteuerveranlagungGemeinsam(Start.steuerveranlagungGemeinsam)
+            .find('input')
+            .click();
+    });
+};
+
+const fillFinanzielleSituationStartFormFeutzLuzern = (
+    dataset: keyof typeof FixtureFinSitFeutzLuzern
+) => {
+    FixtureFinSitFeutzLuzern[dataset](({Start}) => {
+        cy.wait(2000);
+        getIban().type(Start.iban);
+        getKontoinhaberIn().type(Start.kontoinhaber);
+        getSozialhilfebezuegerx(Start.sozialhilfeBezueger)
+            .find('input')
+            .click();
+    });
+};
+
+const fillFinanzielleSituationStartFormFeutzSolothurn = (
+    dataset: keyof typeof FixtureFinSitFeutzSolothurn
+) => {
+    FixtureFinSitFeutzSolothurn[dataset](({Start}) => {
+        cy.wait(1000);
+        getSozialhilfebezuegerx(Start.sozialhilfebeziehende)
+            .find('label')
+            .click();
+        cy.wait(1000);
+        getSteuerveranlagungGemeinsam(Start.steuererklaerungGemeinsam)
+            .find('label')
+            .click();
+    });
+};
+
+const getInfomaKred = () => {
+    return cy.getByData('infoma_kred');
+};
+
+const getInfomaBank = () => {
+    return cy.getByData('infoma_bankcode');
+};
+
 const saveForm = () => {
     cy.waitForRequest('POST', '**/finanzielleSituation/calculateTemp', () => {
         NavigationPO.saveAndGoNext();
@@ -53,7 +118,12 @@ export const FinanzielleSituationStartPO = {
     getSozialhilfebezueger,
     getIban,
     getKontoinhaberIn,
+    getInfomaKred,
+    getInfomaBank,
     // page actions
     fillFinanzielleSituationStartForm,
+    fillFinanzielleSituationStartFormFeutz,
+    fillFinanzielleSituationStartFormFeutzLuzern,
+    fillFinanzielleSituationStartFormFeutzSolothurn,
     saveForm
 };

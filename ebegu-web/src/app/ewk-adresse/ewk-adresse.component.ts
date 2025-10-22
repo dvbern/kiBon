@@ -5,7 +5,8 @@ import {TSEWKAdresse} from '../../models/TSEWKAdresse';
     selector: 'dv-ewk-adresse',
     templateUrl: './ewk-adresse.component.html',
     styleUrls: ['./ewk-adresse.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EwkAdresseComponent {
     @Input()

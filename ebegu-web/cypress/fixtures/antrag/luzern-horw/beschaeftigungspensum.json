@@ -1,0 +1,18 @@
+{
+    "valid": {
+        "GS1": {
+            "bezeichnung": "Entwickler",
+            "taetigkeit": "ANGESTELLT",
+            "arbeitgeber": "DVBern",
+            "taetigkeitPensum": "90",
+            "taetigkeitAb": "01.01.1990"
+        },
+        "GS2": {
+            "bezeichnung": "Entwickler",
+            "taetigkeit": "ANGESTELLT",
+            "arbeitgeber": "DVBern",
+            "taetigkeitPensum": "70",
+            "taetigkeitAb": "02.02.1991"
+        }
+    }
+}

@@ -15,7 +15,8 @@ import {EbeguUtil} from '../../../../../utils/EbeguUtil';
     selector: 'dv-finanzielle-situation-single-gs-schwyz',
     templateUrl: './finanzielle-situation-single-gs-schwyz.component.html',
     changeDetection: ChangeDetectionStrategy.Default,
-    viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
+    viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
+    standalone: false
 })
 export class FinanzielleSituationSingleGsSchwyzComponent {
     @ViewChild(NgForm) public form: NgForm;
@@ -25,6 +26,9 @@ export class FinanzielleSituationSingleGsSchwyzComponent {
 
     @Input()
     public finanzModel: TSFinanzModel;
+
+    @Input()
+    public schwyzErweiterteFinSit = false;
 
     @Output()
     public readonly valueChanged = new EventEmitter<void>();

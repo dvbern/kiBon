@@ -21,7 +21,7 @@ import {
     Transition,
     TransitionService
 } from '@uirouter/core';
-import {TSRole} from '../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {navigateToStartPageForRole} from '../../../utils/AuthenticationUtil';
 import {OnErrorPriorities} from './onErrorPriorities';
 

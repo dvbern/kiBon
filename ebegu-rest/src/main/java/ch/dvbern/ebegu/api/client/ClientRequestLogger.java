@@ -18,9 +18,9 @@ package ch.dvbern.ebegu.api.client;
 
 import java.io.IOException;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
-import javax.ws.rs.core.Form;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.core.Form;
 
 import com.google.common.base.Joiner;
 import org.slf4j.Logger;
@@ -31,11 +31,15 @@ import org.slf4j.LoggerFactory;
  */
 public class ClientRequestLogger implements ClientRequestFilter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ClientRequestLogger.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		ClientRequestLogger.class.getSimpleName()
+	);
 
 	@Override
 	public void filter(ClientRequestContext requestContext) throws IOException {
-		LOG.info("ClientRequest Header for call to : " + requestContext.getUri());
+		LOG.info(
+			"ClientRequest Header for call to : " + requestContext.getUri()
+		);
 
 		Joiner.MapJoiner mapJoiner = Joiner.on(',').withKeyValueSeparator("=");
 		LOG.info(mapJoiner.join(requestContext.getStringHeaders()));
@@ -43,7 +47,9 @@ public class ClientRequestLogger implements ClientRequestFilter {
 		LOG.info("ClientReqeust Body: ");
 		//bisschen hacky mit dem form aber wir haben atm nur einen service mit form format
 		if (requestContext.getEntity() instanceof Form) {
-			LOG.info(mapJoiner.join(((Form) requestContext.getEntity()).asMap()));
+			LOG.info(
+				mapJoiner.join(((Form) requestContext.getEntity()).asMap())
+			);
 		} else if (requestContext.getEntity() != null) {
 			LOG.info(requestContext.getEntity().toString());
 		} else {

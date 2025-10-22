@@ -18,10 +18,10 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Embedded;
-import javax.persistence.MappedSuperclass;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.types.DateRange;
@@ -30,13 +30,18 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.envers.Audited;
 
 /**
- * Abstrakte Entitaet. Muss von Entitaeten erweitert werden, die eine Periode (DateRange) mit datumVon und datumBis haben.
+ * Abstrakte Entitaet. Muss von Entitaeten erweitert werden, die eine Periode (DateRange) mit datumVon und datumBis
+ * haben.
  */
+@Audited
 @MappedSuperclass
 @EqualsAndHashCode(callSuper = true)
-public abstract class AbstractDateRangedEntity extends AbstractMutableEntity implements Gueltigkeit {
+public abstract class AbstractDateRangedEntity extends AbstractMutableEntity
+	implements
+	Gueltigkeit {
 
 	private static final long serialVersionUID = -7541083148864749528L;
 
@@ -71,8 +76,12 @@ public abstract class AbstractDateRangedEntity extends AbstractMutableEntity imp
 		if (!(other instanceof AbstractDateRangedEntity)) {
 			return false;
 		}
-		final AbstractDateRangedEntity otherAbstractDateRangedEntity = (AbstractDateRangedEntity) other;
-		return Objects.equals(this.getGueltigkeit(), otherAbstractDateRangedEntity.getGueltigkeit());
+		final AbstractDateRangedEntity otherAbstractDateRangedEntity =
+			(AbstractDateRangedEntity) other;
+		return Objects.equals(
+			this.getGueltigkeit(),
+			otherAbstractDateRangedEntity.getGueltigkeit()
+		);
 	}
 
 	@Override
@@ -84,7 +93,10 @@ public abstract class AbstractDateRangedEntity extends AbstractMutableEntity imp
 
 	@Nonnull
 	@CanIgnoreReturnValue
-	public AbstractDateRangedEntity copyAbstractDateRangedEntity(@Nonnull AbstractDateRangedEntity target, @Nonnull AntragCopyType copyType) {
+	public AbstractDateRangedEntity copyAbstractDateRangedEntity(
+		@Nonnull AbstractDateRangedEntity target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractEntity(target, copyType);
 		target.setGueltigkeit(new DateRange(this.getGueltigkeit()));
 		return target;

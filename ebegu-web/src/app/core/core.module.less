@@ -27,7 +27,7 @@
     }
 
     .view-title {
-        hr.header {
+        hr.header:not(.custom-header-margin) {
             margin-bottom: 5rem;
         }
         p:last-child {
@@ -36,7 +36,7 @@
     }
 
     .view-sub-title {
-        hr.header {
+        hr.header:not(.custom-header-margin) {
             margin-bottom: 1rem;
         }
         p:last-child {
@@ -57,26 +57,50 @@
         padding-right: 0;
         white-space: nowrap;
     }
-    .sortable:after {
-        content: '\f0dc';
-        display: inline-block;
-        font-family: FontAwesome, sans-serif;
-        font-size: 1.2rem;
-        line-height: 0.8rem;
-        margin-left: 1rem;
-        vertical-align: middle;
+
+    .sortable {
+        opacity: 1;
+
+        span {
+            position: relative;
+            top: -5px;
+        }
+
+        &:hover {
+            svg {
+                opacity: 0.6;
+            }
+        }
+
+        svg {
+            opacity: 0;
+            width: 24px;
+            height: 24px;
+            fill: var(--mat-sort-arrow-color, var(--mat-sys-on-surface));
+            transform: scale(0.8);
+            position: relative;
+            top: 2px;
+        }
+
+        &:after {
+            content: none; /* Hide default */
+        }
+
+        &.st-sort-ascent {
+            svg {
+                opacity: 1;
+                transform: scale(0.8);
+            }
+        }
+
+        &.st-sort-descent {
+            svg {
+                opacity: 1;
+                transform: scale(0.8) rotate(180deg);
+            }
+        }
     }
-    .st-sort-ascent:after {
-        content: '\f0dd';
-        font-family: FontAwesome, sans-serif;
-        font-size: 1.2rem;
-        transition: all 3s;
-    }
-    .st-sort-descent:after {
-        content: '\f0de';
-        font-family: FontAwesome, sans-serif;
-        font-size: 1.2rem;
-    }
+
     .pagination {
         .active {
             a {
@@ -114,9 +138,12 @@
         border: none;
         color: #333;
         height: 0.1rem;
-        margin-bottom: 0.5rem;
         margin-top: 0.5rem;
         min-height: 1px;
+
+        &:not(.custom-header-margin) {
+            margin-bottom: 0.5rem;
+        }
     }
 
     .margin-left-50 {
@@ -338,7 +365,8 @@
         border-radius: 0;
         box-shadow: none;
         padding: 2rem 2.5rem 2rem 5rem;
-        span:not(
+        :not(label.mdc-label)
+            > span:not(
                 .mat-checkbox-inner-container,
                 .mat-checkbox-background,
                 .mat-ripple,
@@ -348,7 +376,9 @@
             ) {
             .ebeguH3();
         }
-        i {
+
+        :not(dv-tooltip) > i,
+        & > i {
             padding: 1rem 1rem 1rem 0;
         }
     }
@@ -356,7 +386,8 @@
     .well-status-warten {
         background-color: @warning-light;
         border-bottom-color: @warning;
-        i {
+        :not(dv-tooltip) > i,
+        & > i {
             color: @warning;
         }
     }
@@ -364,7 +395,8 @@
     .well-status-bestaetigt {
         background-color: @success-light;
         border-bottom-color: @success;
-        i {
+        :not(dv-tooltip) > i,
+        & > i {
             color: @success;
         }
     }
@@ -372,7 +404,8 @@
     .well-status-abgewiesen {
         background-color: @danger-light;
         border-bottom-color: @danger;
-        i {
+        :not(dv-tooltip) > i,
+        & > i {
             color: @danger;
         }
     }
@@ -382,8 +415,8 @@
         display: inline;
     }
     h1.required span:after,
-    .ebegu-h1.required span:after {
-        content: '\00a0*';
+    .ebegu-h1.required dv-tooltip:after {
+        content: '*';
     }
     h1.required:after,
     .ebegu-h1.required:after {

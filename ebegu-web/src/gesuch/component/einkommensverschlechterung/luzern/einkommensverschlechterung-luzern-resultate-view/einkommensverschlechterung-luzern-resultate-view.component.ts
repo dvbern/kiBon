@@ -22,19 +22,20 @@ import {
 } from '@angular/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {FinanzielleSituationLuzernService} from '../../../finanzielleSituation/luzern/finanzielle-situation-luzern.service';
 import {AbstractEinkommensverschlechterungResultat} from '../../AbstractEinkommensverschlechterungResultat';
-import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 
 @Component({
     selector: 'dv-einkommensverschlechterung-luzern-resultate-view',
     templateUrl:
         './einkommensverschlechterung-luzern-resultate-view.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EinkommensverschlechterungLuzernResultateViewComponent extends AbstractEinkommensverschlechterungResultat {
     public constructor(
@@ -59,7 +60,7 @@ export class EinkommensverschlechterungLuzernResultateViewComponent extends Abst
 
     public save(onResult: (arg: any) => any): IPromise<any> {
         //hier müssen wir nur den WizardStep Updaten. Die EKV ist schon gespeichert.
-        this.updateStatus(true);
+        this.updateStatus();
         return onResult(true);
     }
 }

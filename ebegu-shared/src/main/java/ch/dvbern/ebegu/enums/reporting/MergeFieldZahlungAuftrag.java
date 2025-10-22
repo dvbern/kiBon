@@ -31,69 +31,114 @@ import static ch.dvbern.oss.lib.excelmerger.converters.StandardConverters.STRING
 public enum MergeFieldZahlungAuftrag implements MergeFieldProvider {
 
 	// Allgemeine Felder und Felder fuer die Detail-Page
-	generiertAmTitle(new SimpleMergeField<>("generiertAmTitle", STRING_CONVERTER)),
-	faelligAmTitle(new SimpleMergeField<>("faelligAmTitle", STRING_CONVERTER)),
-	gemeindeTitle(new SimpleMergeField<>("gemeindeTitle", STRING_CONVERTER)),
-	institutionTitle(new SimpleMergeField<>("institutionTitle", STRING_CONVERTER)),
-	betreuungsangebotTypTitle(new SimpleMergeField<>("betreuungsangebotTypTitle", STRING_CONVERTER)),
-	nachnameTitle(new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)),
-	vornameTitle(new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)),
-	geburtsdatumTitle(new SimpleMergeField<>("geburtsdatumTitle", STRING_CONVERTER)),
-	verfuegungTitle(new SimpleMergeField<>("verfuegungTitle", STRING_CONVERTER)),
-	vonTitle(new SimpleMergeField<>("vonTitle", STRING_CONVERTER)),
-	bisTitle(new SimpleMergeField<>("bisTitle", STRING_CONVERTER)),
-	bgPensumTitle(new SimpleMergeField<>("bgPensumTitle", STRING_CONVERTER)),
-	betragCHFTitle(new SimpleMergeField<>("betragCHFTitle", STRING_CONVERTER)),
-	korrekturTitle(new SimpleMergeField<>("korrekturTitle", STRING_CONVERTER)),
-	zahlungIgnorierenTitle(new SimpleMergeField<>("zahlungIgnorierenTitle", STRING_CONVERTER)),
+	generiertAmTitle(
+		new SimpleMergeField<>("generiertAmTitle", STRING_CONVERTER)
+	), faelligAmTitle(
+		new SimpleMergeField<>("faelligAmTitle", STRING_CONVERTER)
+	), gemeindeTitle(
+		new SimpleMergeField<>("gemeindeTitle", STRING_CONVERTER)
+	), institutionTitle(
+		new SimpleMergeField<>("institutionTitle", STRING_CONVERTER)
+	), betreuungsangebotTypTitle(
+		new SimpleMergeField<>(
+			"betreuungsangebotTypTitle",
+			STRING_CONVERTER
+		)
+	), nachnameTitle(
+		new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)
+	), vornameTitle(
+		new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)
+	), geburtsdatumTitle(
+		new SimpleMergeField<>("geburtsdatumTitle", STRING_CONVERTER)
+	), verfuegungTitle(
+		new SimpleMergeField<>("verfuegungTitle", STRING_CONVERTER)
+	), vonTitle(new SimpleMergeField<>("vonTitle", STRING_CONVERTER)), bisTitle(
+		new SimpleMergeField<>("bisTitle", STRING_CONVERTER)
+	), bgPensumTitle(
+		new SimpleMergeField<>("bgPensumTitle", STRING_CONVERTER)
+	), betragCHFTitle(
+		new SimpleMergeField<>("betragCHFTitle", STRING_CONVERTER)
+	), korrekturTitle(
+		new SimpleMergeField<>("korrekturTitle", STRING_CONVERTER)
+	), zahlungIgnorierenTitle(
+		new SimpleMergeField<>("zahlungIgnorierenTitle", STRING_CONVERTER)
+	),
 
 	repeatZahlungAuftragRow(new RepeatRowMergeField("repeatZahlungAuftragRow")),
 
-	beschrieb(new SimpleMergeField<>("beschrieb", STRING_CONVERTER)),
-	generiertAm(new SimpleMergeField<>("generiertAm", DATETIME_CONVERTER)),
-	faelligAm(new SimpleMergeField<>("faelligAm", DATE_CONVERTER)),
-	gemeinde(new SimpleMergeField<>("gemeinde", STRING_CONVERTER)),
+	beschrieb(
+		new SimpleMergeField<>("beschrieb", STRING_CONVERTER)
+	), generiertAm(
+		new SimpleMergeField<>("generiertAm", DATETIME_CONVERTER)
+	), faelligAm(new SimpleMergeField<>("faelligAm", DATE_CONVERTER)), gemeinde(
+		new SimpleMergeField<>("gemeinde", STRING_CONVERTER)
+	),
 
-	institution(new SimpleMergeField<>("institution", STRING_CONVERTER)),
-	betreuungsangebotTyp(new SimpleMergeField<>("betreuungsangebotTyp", STRING_CONVERTER)),
-	name(new SimpleMergeField<>("name", STRING_CONVERTER)),
-	vorname(new SimpleMergeField<>("vorname", STRING_CONVERTER)),
-	gebDatum(new SimpleMergeField<>("gebDatum", DATE_CONVERTER)),
-	verfuegung(new SimpleMergeField<>("verfuegung", STRING_CONVERTER)),
-	vonDatum(new SimpleMergeField<>("vonDatum", DATE_CONVERTER)),
-	bisDatum(new SimpleMergeField<>("bisDatum", DATE_CONVERTER)),
-	bgPensum(new SimpleMergeField<>("bgPensum", BIGDECIMAL_CONVERTER)),
-	betragCHF(new SimpleMergeField<>("betragCHF", BIGDECIMAL_CONVERTER)),
-	isKorrektur(new SimpleMergeField<>("isKorrektur", BOOLEAN_X_CONVERTER)),
-	isIgnoriert(new SimpleMergeField<>("isIgnoriert", BOOLEAN_X_CONVERTER)),
+	institution(
+		new SimpleMergeField<>("institution", STRING_CONVERTER)
+	), betreuungsangebotTyp(
+		new SimpleMergeField<>("betreuungsangebotTyp", STRING_CONVERTER)
+	), name(new SimpleMergeField<>("name", STRING_CONVERTER)), vorname(
+		new SimpleMergeField<>("vorname", STRING_CONVERTER)
+	), gebDatum(new SimpleMergeField<>("gebDatum", DATE_CONVERTER)), verfuegung(
+		new SimpleMergeField<>("verfuegung", STRING_CONVERTER)
+	), vonDatum(new SimpleMergeField<>("vonDatum", DATE_CONVERTER)), bisDatum(
+		new SimpleMergeField<>("bisDatum", DATE_CONVERTER)
+	), bgPensum(
+		new SimpleMergeField<>("bgPensum", BIGDECIMAL_CONVERTER)
+	), betragCHF(
+		new SimpleMergeField<>("betragCHF", BIGDECIMAL_CONVERTER)
+	), isKorrektur(
+		new SimpleMergeField<>("isKorrektur", BOOLEAN_X_CONVERTER)
+	), isIgnoriert(new SimpleMergeField<>("isIgnoriert", BOOLEAN_X_CONVERTER)),
 
-	institutionIdTitle(new SimpleMergeField<>("institutionIdTitle", STRING_CONVERTER)),
-	traegerschaftTitle(new SimpleMergeField<>("traegerschaftTitle", STRING_CONVERTER)),
-	antragstellerTitle(new RepeatValMergeField<>("antragstellerTitle", STRING_CONVERTER)),
-	antragsteller2Title(new RepeatValMergeField<>("antragsteller2Title", STRING_CONVERTER)),
-	auszahlungTitle(new SimpleMergeField<>("auszahlungTitle", STRING_CONVERTER)),
-	betragAusbezahltTitle(new SimpleMergeField<>("betragAusbezahltTitle", STRING_CONVERTER)),
-	ibanTitle(new SimpleMergeField<>("ibanTitle", STRING_CONVERTER)),
-	kontoinhaberTitle(new SimpleMergeField<>("kontoinhaberTitle", STRING_CONVERTER)),
-	organisationTitle(new SimpleMergeField<>("organisationTitle", STRING_CONVERTER)),
-	strasseTitle(new SimpleMergeField<>("strasseTitle", STRING_CONVERTER)),
-	hausnummerTitle(new SimpleMergeField<>("hausnummerTitle", STRING_CONVERTER)),
-	plzTitle(new SimpleMergeField<>("plzTitle", STRING_CONVERTER)),
-	ortTitle(new SimpleMergeField<>("ortTitle", STRING_CONVERTER)),
-	repeatZahlungTotalsRow(new RepeatRowMergeField("repeatZahlungTotalsRow")),
+	institutionIdTitle(
+		new SimpleMergeField<>("institutionIdTitle", STRING_CONVERTER)
+	), traegerschaftTitle(
+		new SimpleMergeField<>("traegerschaftTitle", STRING_CONVERTER)
+	), antragstellerTitle(
+		new RepeatValMergeField<>("antragstellerTitle", STRING_CONVERTER)
+	), antragsteller2Title(
+		new RepeatValMergeField<>("antragsteller2Title", STRING_CONVERTER)
+	), auszahlungTitle(
+		new SimpleMergeField<>("auszahlungTitle", STRING_CONVERTER)
+	), betragAusbezahltTitle(
+		new SimpleMergeField<>("betragAusbezahltTitle", STRING_CONVERTER)
+	), ibanTitle(
+		new SimpleMergeField<>("ibanTitle", STRING_CONVERTER)
+	), kontoinhaberTitle(
+		new SimpleMergeField<>("kontoinhaberTitle", STRING_CONVERTER)
+	), organisationTitle(
+		new SimpleMergeField<>("organisationTitle", STRING_CONVERTER)
+	), strasseTitle(
+		new SimpleMergeField<>("strasseTitle", STRING_CONVERTER)
+	), hausnummerTitle(
+		new SimpleMergeField<>("hausnummerTitle", STRING_CONVERTER)
+	), plzTitle(new SimpleMergeField<>("plzTitle", STRING_CONVERTER)), ortTitle(
+		new SimpleMergeField<>("ortTitle", STRING_CONVERTER)
+	), repeatZahlungTotalsRow(
+		new RepeatRowMergeField("repeatZahlungTotalsRow")
+	),
 
-	institutionId(new SimpleMergeField<>("institutionId", STRING_CONVERTER)),
-	traegerschaft(new SimpleMergeField<>("traegerschaft", STRING_CONVERTER)),
-	antragsteller(new SimpleMergeField<>("antragsteller", STRING_CONVERTER)),
-	antragsteller2(new SimpleMergeField<>("antragsteller2", STRING_CONVERTER)),
-	betragAusbezahlt(new SimpleMergeField<>("betragAusbezahlt", BIGDECIMAL_CONVERTER)),
-	iban(new SimpleMergeField<>("iban", STRING_CONVERTER)),
-	kontoinhaber(new SimpleMergeField<>("kontoinhaber", STRING_CONVERTER)),
-	organisation(new SimpleMergeField<>("organisation", STRING_CONVERTER)),
-	strasse(new SimpleMergeField<>("strasse", STRING_CONVERTER)),
-	hausnummer(new SimpleMergeField<>("hausnummer", STRING_CONVERTER)),
-	plz(new SimpleMergeField<>("plz", STRING_CONVERTER)),
-	ort(new SimpleMergeField<>("ort", STRING_CONVERTER));
+	institutionId(
+		new SimpleMergeField<>("institutionId", STRING_CONVERTER)
+	), traegerschaft(
+		new SimpleMergeField<>("traegerschaft", STRING_CONVERTER)
+	), antragsteller(
+		new SimpleMergeField<>("antragsteller", STRING_CONVERTER)
+	), antragsteller2(
+		new SimpleMergeField<>("antragsteller2", STRING_CONVERTER)
+	), betragAusbezahlt(
+		new SimpleMergeField<>("betragAusbezahlt", BIGDECIMAL_CONVERTER)
+	), iban(new SimpleMergeField<>("iban", STRING_CONVERTER)), kontoinhaber(
+		new SimpleMergeField<>("kontoinhaber", STRING_CONVERTER)
+	), organisation(
+		new SimpleMergeField<>("organisation", STRING_CONVERTER)
+	), strasse(new SimpleMergeField<>("strasse", STRING_CONVERTER)), hausnummer(
+		new SimpleMergeField<>("hausnummer", STRING_CONVERTER)
+	), plz(new SimpleMergeField<>("plz", STRING_CONVERTER)), ort(
+		new SimpleMergeField<>("ort", STRING_CONVERTER)
+	);
 
 	@Nonnull
 	private final MergeField<?> mergeField;

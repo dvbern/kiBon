@@ -13,13 +13,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {TSAntragStatus} from './enums/TSAntragStatus';
 import {TSAntragTyp} from './enums/TSAntragTyp';
 import {TSEingangsart} from './enums/TSEingangsart';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {
+    TSAbstractMutableEntity,
+    TSGesuchsperiode
+} from '@kibon/shared/model/entity';
 import {TSDossier} from './TSDossier';
-import {TSGesuchsperiode} from './TSGesuchsperiode';
 
 export class TSAbstractAntragEntity extends TSAbstractMutableEntity {
     private _dossier: TSDossier;

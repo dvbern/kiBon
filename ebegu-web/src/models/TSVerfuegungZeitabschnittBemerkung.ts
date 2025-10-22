@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {TSAbstractDateRangedEntity} from './TSAbstractDateRangedEntity';
+import {TSAbstractDateRangedEntity} from '@kibon/shared/model/entity';
 
 export class TSVerfuegungZeitabschnittBemerkung extends TSAbstractDateRangedEntity {
     public bemerkung: string;

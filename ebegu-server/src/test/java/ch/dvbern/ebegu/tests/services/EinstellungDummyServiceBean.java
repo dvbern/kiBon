@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.tests.services;
@@ -29,31 +29,31 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.enterprise.inject.Alternative;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.enterprise.inject.Alternative;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.services.AbstractBaseService;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.test.TestDataUtil;
 
-import static ch.dvbern.ebegu.enums.EinstellungKey.ANGEBOT_SCHULSTUFE;
-import static ch.dvbern.ebegu.enums.EinstellungKey.FACHSTELLE_MAX_PENSUM_SOZIALE_INTEGRATION;
-import static ch.dvbern.ebegu.enums.EinstellungKey.FACHSTELLE_MAX_PENSUM_SPRACHLICHE_INTEGRATION;
-import static ch.dvbern.ebegu.enums.EinstellungKey.FACHSTELLE_MIN_PENSUM_SOZIALE_INTEGRATION;
-import static ch.dvbern.ebegu.enums.EinstellungKey.FACHSTELLE_MIN_PENSUM_SPRACHLICHE_INTEGRATION;
-import static ch.dvbern.ebegu.enums.EinstellungKey.FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE;
-import static ch.dvbern.ebegu.enums.EinstellungKey.GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE;
-import static ch.dvbern.ebegu.enums.EinstellungKey.PARAM_PENSUM_KITA_MIN;
-import static ch.dvbern.ebegu.enums.EinstellungKey.PARAM_PENSUM_TAGESELTERN_MIN;
-import static ch.dvbern.ebegu.enums.EinstellungKey.PARAM_PENSUM_TAGESSCHULE_MIN;
-import static ch.dvbern.ebegu.enums.EinstellungKey.SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANGEBOT_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLE_MAX_PENSUM_SOZIALE_INTEGRATION;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLE_MAX_PENSUM_SPRACHLICHE_INTEGRATION;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLE_MIN_PENSUM_SOZIALE_INTEGRATION;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLE_MIN_PENSUM_SPRACHLICHE_INTEGRATION;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PENSUM_KITA_MIN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PENSUM_TAGESELTERN_MIN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.PARAM_PENSUM_TAGESSCHULE_MIN;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE;
 
 /**
  * Dummyservice fuer Einstellungen
@@ -61,47 +61,96 @@ import static ch.dvbern.ebegu.enums.EinstellungKey.SPRACHLICHE_INTEGRATION_BIS_S
 @Stateless
 @Alternative
 @Local(EinstellungService.class)
-public class EinstellungDummyServiceBean extends AbstractBaseService implements EinstellungService {
+public class EinstellungDummyServiceBean extends AbstractBaseService implements
+	EinstellungService {
 
 	private final Map<EinstellungKey, Einstellung> dummyObjects;
 
 	public EinstellungDummyServiceBean() {
 		this.dummyObjects = new EnumMap<>(EinstellungKey.class);
-		Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
+		Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+			.createGesuchsperiode1718();
 
 		dummyObjects.put(
 			PARAM_PENSUM_KITA_MIN,
-			new Einstellung(PARAM_PENSUM_KITA_MIN, "10", gesuchsperiode1718));
+			new Einstellung(PARAM_PENSUM_KITA_MIN, "10", gesuchsperiode1718)
+		);
 		dummyObjects.put(
 			PARAM_PENSUM_TAGESELTERN_MIN,
-			new Einstellung(PARAM_PENSUM_TAGESELTERN_MIN, "20", gesuchsperiode1718));
+			new Einstellung(
+				PARAM_PENSUM_TAGESELTERN_MIN,
+				"20",
+				gesuchsperiode1718
+			)
+		);
 		dummyObjects.put(
 			PARAM_PENSUM_TAGESSCHULE_MIN,
-			new Einstellung(PARAM_PENSUM_TAGESSCHULE_MIN, "0", gesuchsperiode1718));
+			new Einstellung(
+				PARAM_PENSUM_TAGESSCHULE_MIN,
+				"0",
+				gesuchsperiode1718
+			)
+		);
 		dummyObjects.put(
 			GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE,
-			new Einstellung(GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE, "KINDERGARTEN2", gesuchsperiode1718));
+			new Einstellung(
+				GEMEINDE_BG_BIS_UND_MIT_SCHULSTUFE,
+				"KINDERGARTEN2",
+				gesuchsperiode1718
+			)
+		);
 		dummyObjects.put(
 			ANGEBOT_SCHULSTUFE,
-			new Einstellung(ANGEBOT_SCHULSTUFE, "KITA", gesuchsperiode1718));
+			new Einstellung(ANGEBOT_SCHULSTUFE, "KITA", gesuchsperiode1718)
+		);
 		dummyObjects.put(
 			FACHSTELLE_MIN_PENSUM_SOZIALE_INTEGRATION,
-			new Einstellung(FACHSTELLE_MIN_PENSUM_SOZIALE_INTEGRATION, "20", gesuchsperiode1718));
+			new Einstellung(
+				FACHSTELLE_MIN_PENSUM_SOZIALE_INTEGRATION,
+				"20",
+				gesuchsperiode1718
+			)
+		);
 		dummyObjects.put(
 			FACHSTELLE_MAX_PENSUM_SOZIALE_INTEGRATION,
-			new Einstellung(FACHSTELLE_MAX_PENSUM_SOZIALE_INTEGRATION, "60", gesuchsperiode1718));
+			new Einstellung(
+				FACHSTELLE_MAX_PENSUM_SOZIALE_INTEGRATION,
+				"60",
+				gesuchsperiode1718
+			)
+		);
 		dummyObjects.put(
 			FACHSTELLE_MIN_PENSUM_SPRACHLICHE_INTEGRATION,
-			new Einstellung(FACHSTELLE_MIN_PENSUM_SPRACHLICHE_INTEGRATION, "40", gesuchsperiode1718));
+			new Einstellung(
+				FACHSTELLE_MIN_PENSUM_SPRACHLICHE_INTEGRATION,
+				"40",
+				gesuchsperiode1718
+			)
+		);
 		dummyObjects.put(
 			FACHSTELLE_MAX_PENSUM_SPRACHLICHE_INTEGRATION,
-			new Einstellung(FACHSTELLE_MAX_PENSUM_SPRACHLICHE_INTEGRATION, "40", gesuchsperiode1718));
+			new Einstellung(
+				FACHSTELLE_MAX_PENSUM_SPRACHLICHE_INTEGRATION,
+				"40",
+				gesuchsperiode1718
+			)
+		);
 		dummyObjects.put(
 			FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
-			new Einstellung(FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE, "VORSCHULALTER", gesuchsperiode1718));
+			new Einstellung(
+				FKJV_SOZIALE_INTEGRATION_BIS_SCHULSTUFE,
+				"VORSCHULALTER",
+				gesuchsperiode1718
+			)
+		);
 		dummyObjects.put(
 			SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,
-			new Einstellung(SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE, "VORSCHULALTER", gesuchsperiode1718));
+			new Einstellung(
+				SPRACHLICHE_INTEGRATION_BIS_SCHULSTUFE,
+				"VORSCHULALTER",
+				gesuchsperiode1718
+			)
+		);
 	}
 
 	@Nonnull
@@ -116,7 +165,10 @@ public class EinstellungDummyServiceBean extends AbstractBaseService implements 
 	@Override
 	public Optional<Einstellung> findEinstellung(@Nonnull String id) {
 		Objects.requireNonNull(id, "id muss gesetzt sein");
-		return this.dummyObjects.values().stream().filter(einstellung -> einstellung.getId().equals(id)).findFirst();
+		return this.dummyObjects.values()
+			.stream()
+			.filter(einstellung -> einstellung.getId().equals(id))
+			.findFirst();
 	}
 
 	@Nonnull
@@ -124,15 +176,19 @@ public class EinstellungDummyServiceBean extends AbstractBaseService implements 
 	public Einstellung findEinstellung(
 		@Nonnull EinstellungKey key,
 		@Nonnull Gemeinde gemeinde,
-		@Nonnull Gesuchsperiode gesuchsperiode) {
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		return findEinstellung(key, gemeinde, gesuchsperiode, null);
 	}
 
 	@Nonnull
 	@Override
 	public Einstellung findEinstellung(
-		@Nonnull EinstellungKey key, @Nonnull Gemeinde gemeinde, @Nonnull Gesuchsperiode gesuchsperiode,
-		@Nullable EntityManager em) {
+		@Nonnull EinstellungKey key,
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nullable EntityManager em
+	) {
 
 		Einstellung mockParameter = this.dummyObjects.get(key);
 		if (mockParameter != null) {
@@ -143,13 +199,17 @@ public class EinstellungDummyServiceBean extends AbstractBaseService implements 
 
 	@Nonnull
 	@Override
-	public Collection<Einstellung> getAllEinstellungenBySystem(@Nonnull Gesuchsperiode gesuchsperiode) {
+	public Collection<Einstellung> getAllEinstellungenBySystem(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		return dummyObjects.values();
 	}
 
 	@Nonnull
 	@Override
-	public Collection<Einstellung> getAllEinstellungenByMandant(@Nonnull Gesuchsperiode gesuchsperiode) {
+	public Collection<Einstellung> getAllEinstellungenByMandant(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		return dummyObjects.values();
 	}
 
@@ -157,7 +217,8 @@ public class EinstellungDummyServiceBean extends AbstractBaseService implements 
 	@Override
 	public Optional<Einstellung> getEinstellungByMandant(
 		@Nonnull EinstellungKey einstellungKey,
-		@Nonnull Gesuchsperiode gesuchsperiode) {
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		Einstellung mockParameter = this.dummyObjects.get(einstellungKey);
 		return Optional.of(mockParameter);
 	}
@@ -166,42 +227,68 @@ public class EinstellungDummyServiceBean extends AbstractBaseService implements 
 	@Override
 	public Map<EinstellungKey, Einstellung> getAllEinstellungenByGemeindeAsMap(
 		@Nonnull Gemeinde gemeinde,
-		@Nonnull Gesuchsperiode gesuchsperiode) {
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		Map<EinstellungKey, Einstellung> result = new HashMap<>();
-		Collection<Einstellung> paramsForGesuchsperiode = getAllEinstellungenBySystem(gesuchsperiode);
-		paramsForGesuchsperiode.stream().forEach(ebeguParameter -> result.put(ebeguParameter.getKey(),
-			ebeguParameter));
+		Collection<Einstellung> paramsForGesuchsperiode =
+			getAllEinstellungenBySystem(gesuchsperiode);
+		paramsForGesuchsperiode.stream()
+			.forEach(
+				ebeguParameter -> result.put(
+					ebeguParameter.getKey(),
+					ebeguParameter
+				)
+			);
 		return result;
 	}
 
 	@Nonnull
 	@Override
 	public Map<EinstellungKey, Einstellung> getGemeindeEinstellungenOnlyAsMap(
-		@Nonnull Gemeinde gemeinde, @Nonnull Gesuchsperiode gesuchsperiode) {
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		return getAllEinstellungenByGemeindeAsMap(gemeinde, gesuchsperiode);
 	}
 
 	@Nonnull
 	@Override
 	public Map<EinstellungKey, Einstellung> getGemeindeEinstellungenActiveForMandantOnlyAsMap(
-		@Nonnull Gemeinde gemeinde, @Nonnull Gesuchsperiode gesuchsperiode) {
+		@Nonnull Gemeinde gemeinde,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		Map<EinstellungKey, Einstellung> result = new HashMap<>();
-		Collection<Einstellung> paramsForGesuchsperiode = getAllEinstellungenBySystem(gesuchsperiode);
+		Collection<Einstellung> paramsForGesuchsperiode =
+			getAllEinstellungenBySystem(gesuchsperiode);
 		paramsForGesuchsperiode.stream()
-			.filter(einstellung -> einstellung.getKey().isEinstellungActivForMandant(gemeinde.getMandant().getMandantIdentifier()))
-			.forEach(ebeguParameter -> result.put(ebeguParameter.getKey(), ebeguParameter));
+			.filter(
+				einstellung -> einstellung.getKey()
+					.isEinstellungActivForMandant(
+						gemeinde.getMandant()
+							.getMandantIdentifier()
+					)
+			)
+			.forEach(
+				ebeguParameter -> result.put(
+					ebeguParameter.getKey(),
+					ebeguParameter
+				)
+			);
 		return result;
 	}
 
 	@Override
 	public void copyEinstellungenToNewGesuchsperiode(
 		@Nonnull Gesuchsperiode gesuchsperiodeToCreate,
-		@Nonnull Gesuchsperiode lastGesuchsperiode) {
+		@Nonnull Gesuchsperiode lastGesuchsperiode
+	) {
 		// nop
 	}
 
 	@Override
-	public void deleteEinstellungenOfGesuchsperiode(@Nonnull Gesuchsperiode gesuchsperiode) {
+	public void deleteEinstellungenOfGesuchsperiode(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		// nop
 	}
 
@@ -209,7 +296,8 @@ public class EinstellungDummyServiceBean extends AbstractBaseService implements 
 	@Override
 	public List<Einstellung> findEinstellungen(
 		@Nonnull EinstellungKey key,
-		@Nullable Gesuchsperiode gesuchsperiode) {
+		@Nullable Gesuchsperiode gesuchsperiode
+	) {
 		return dummyObjects.values()
 			.stream()
 			.filter(einstellung -> einstellung.getKey() == key)
@@ -219,11 +307,19 @@ public class EinstellungDummyServiceBean extends AbstractBaseService implements 
 	@Override
 	public Map<EinstellungKey, Einstellung> loadRuleParameters(
 		Gemeinde gemeinde,
-		Gesuchsperiode gesuchsperiode, Set<EinstellungKey> keysToLoad) {
+		Gesuchsperiode gesuchsperiode,
+		Set<EinstellungKey> keysToLoad
+	) {
 		Map<EinstellungKey, Einstellung> result = new HashMap<>();
-		Collection<Einstellung> paramsForGesuchsperiode = getAllEinstellungenBySystem(gesuchsperiode);
-		paramsForGesuchsperiode.stream().forEach(ebeguParameter -> result.put(ebeguParameter.getKey(),
-			ebeguParameter));
+		Collection<Einstellung> paramsForGesuchsperiode =
+			getAllEinstellungenBySystem(gesuchsperiode);
+		paramsForGesuchsperiode.stream()
+			.forEach(
+				ebeguParameter -> result.put(
+					ebeguParameter.getKey(),
+					ebeguParameter
+				)
+			);
 		return result;
 	}
 }

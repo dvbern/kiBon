@@ -47,16 +47,32 @@ public enum FinanzielleSituationTyp {
 	},
 	APPENZELL {
 		@Override
-		public <T> T accept(FinanzielleSituationTypVisitor<T> visitor) { return visitor.visitFinSitAppenzell();}
+		public <T> T accept(FinanzielleSituationTypVisitor<T> visitor) {
+			return visitor.visitFinSitAppenzell();
+		}
 	},
 	APPENZELL_FOLGEMONAT {
 		@Override
-		public <T> T accept(FinanzielleSituationTypVisitor<T> visitor) { return visitor.visitFinSitAppenzellFolgemonat();}
+		public <T> T accept(FinanzielleSituationTypVisitor<T> visitor) {
+			return visitor.visitFinSitAppenzellFolgemonat();
+		}
 	},
 	SCHWYZ {
 		@Override
-		public <T> T accept(FinanzielleSituationTypVisitor<T> visitor) { return visitor.visitFinSitSchwyz();}
+		public <T> T accept(FinanzielleSituationTypVisitor<T> visitor) {
+			return visitor.visitFinSitSchwyz();
+		}
+	},
+	SCHWYZ_ERWEITERT {
+		@Override
+		public <T> T accept(FinanzielleSituationTypVisitor<T> visitor) {
+			return visitor.visitFinSitSchwyzErweitert();
+		}
 	};
 
 	public abstract <T> T accept(FinanzielleSituationTypVisitor<T> visitor);
+
+	public boolean isSchwyzFinSituationTyp() {
+		return this == SCHWYZ || this == SCHWYZ_ERWEITERT;
+	}
 }

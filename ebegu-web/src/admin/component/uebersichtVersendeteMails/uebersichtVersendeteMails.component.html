@@ -26,7 +26,7 @@
                 class="filter"
                 matInput
                 type="text"
-                (keyup)="doFilter($event.target.value)"
+                [(ngModel)]="filter"
                 placeholder="{{
                     'VERSENDETE_MAILS_SUCHE_PLATZHALTER' | translate
                 }}"
@@ -35,7 +35,12 @@
         </div>
 
         <div class="table-responsive">
-            <mat-table #table [dataSource]="dataSource" matSort>
+            <mat-table
+                #table
+                [dataSource]="DATA_SOURCE"
+                matSort
+                class="dv-table"
+            >
                 <!-- Column zeitpunktversand -->
                 <ng-container matColumnDef="zeitpunktVersand">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -73,14 +78,19 @@
                 </ng-container>
 
                 <mat-header-row
-                    *matHeaderRowDef="displayedColumns"
+                    *matHeaderRowDef="DISPLAYED_COLUMNS"
                 ></mat-header-row>
                 <mat-row
-                    *matRowDef="let row; columns: displayedColumns"
+                    *matRowDef="let row; columns: DISPLAYED_COLUMNS"
                     class="pointer-cursor"
                 ></mat-row>
             </mat-table>
-            <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
+            <mat-paginator
+                [length]="totalResults()"
+                [pageSizeOptions]="[10, 25, 100]"
+                [pageIndex]="DEFAULT_PAGE"
+                [pageSize]="DEFAULT_PAGE_SIZE"
+            ></mat-paginator>
         </div>
     </div>
 </div>

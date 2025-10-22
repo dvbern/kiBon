@@ -16,22 +16,23 @@
  */
 
 import {
-    Component,
     ChangeDetectionStrategy,
-    Input,
-    Output,
+    Component,
     EventEmitter,
-    OnChanges
+    Input,
+    OnChanges,
+    Output
 } from '@angular/core';
 import {StateService} from '@uirouter/core';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 
 @Component({
     selector: 'dv-pulldown-user-menu-button',
     templateUrl: './pulldown-user-menu-button.component.html',
     styleUrls: ['./pulldown-user-menu-button.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PulldownUserMenuButtonComponent implements OnChanges {
     @Input()

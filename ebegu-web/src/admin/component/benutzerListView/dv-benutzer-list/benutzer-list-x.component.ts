@@ -28,8 +28,8 @@ import {PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {take} from 'rxjs/operators';
-import {CONSTANTS} from '../../../../app/core/constants/CONSTANTS';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../../../app/core/service/benutzerRSX.rest';
 import {InstitutionRS} from '../../../../app/core/service/institutionRS.rest';
 import {SozialdienstRS} from '../../../../app/core/service/SozialdienstRS.rest';
@@ -39,14 +39,17 @@ import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {TSBenutzerTableFilterDTO} from '../../../../models/dto/TSBenutzerTableFilterDTO';
 import {TSPagination} from '../../../../models/dto/TSPagination';
 import {TSBenutzerStatus} from '../../../../models/enums/TSBenutzerStatus';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
-import {TSGemeinde} from '../../../../models/TSGemeinde';
-import {TSInstitution} from '../../../../models/TSInstitution';
-import {TSTraegerschaft} from '../../../../models/TSTraegerschaft';
+import {
+    TSGemeinde,
+    TSTraegerschaft,
+    TSInstitution
+} from '@kibon/shared/model/entity';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {BenutzerListFilter} from './BenutzerListFilter';
+import {firstValueFrom} from 'rxjs';
 
 const LOG = LogFactory.createLog('BenutzerListXComponent');
 
@@ -54,7 +57,8 @@ const LOG = LogFactory.createLog('BenutzerListXComponent');
     selector: 'dv-benutzer-list-x',
     templateUrl: './benutzer-list-x.component.html',
     styleUrls: ['./benutzer-list-x.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BenutzerListXComponent implements OnInit {
     @Input()
@@ -185,13 +189,12 @@ export class BenutzerListXComponent implements OnInit {
     }
 
     private updateSozialdienstList(): void {
-        this.sozialdienstRS
-            .getSozialdienstList()
-            .toPromise()
-            .then((response: TSSozialdienst[]) => {
+        firstValueFrom(this.sozialdienstRS.getSozialdienstList()).then(
+            (response: TSSozialdienst[]) => {
                 this.sozialdienstList = response;
                 this.cd.markForCheck();
-            });
+            }
+        );
     }
 
     /**

@@ -15,21 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {IComponentOptions} from 'angular';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../../../../app/core/rest-services/applicationPropertyRS.rest';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DemoFeatureRS} from '../../../../../app/core/service/demoFeatureRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSEinstellungKey} from '../../../../../models/enums/TSEinstellungKey';
+import {TSEinstellungKey} from '../../../../../admin/einstellungen/TSEinstellungKey';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSRole} from '../../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {isSteuerdatenAnfrageStatusErfolgreich} from '../../../../../models/enums/TSSteuerdatenAnfrageStatus';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzielleSituation} from '../../../../../models/TSFinanzielleSituation';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
@@ -46,10 +45,12 @@ import IQService = angular.IQService;
 import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;
+import {firstValueFrom} from 'rxjs';
 
 const aufteilungDialogTemplate = require('../../../../dialog/finanzielleSituationAufteilungDialogTemplate.html');
 
 const LOG = LogFactory.createLog('FinanzielleSituationViewController');
+
 export class FinanzielleSituationViewComponentConfig
     implements IComponentOptions
 {
@@ -73,7 +74,7 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
         'EinstellungRS',
         'DvDialog',
         'AuthServiceRS',
-        'ApplicationPropertyRS',
+        'SharedUtilApplicationPropertyRsService',
         'GesuchRS',
         'DemoFeatureRS'
     ];
@@ -100,7 +101,7 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
         einstellungRS: EinstellungRS,
         dvDialog: DvDialog,
         protected readonly authServiceRS: AuthServiceRS,
-        applicationPropertyRS: ApplicationPropertyRS,
+        applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly gesuchRS: GesuchRS,
         private readonly demoFeatureRS: DemoFeatureRS
     ) {
@@ -138,6 +139,23 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
         this.initViewModel();
         this.calculate();
         this.initFinSitVorMutation();
+        this.initSteuerdatenZugriffWhenGemeindeAddFinSit();
+    }
+
+    private initSteuerdatenZugriffWhenGemeindeAddFinSit(): void {
+        if (
+            !this.isGesuchReadonly() &&
+            this.isKorrekturModusJugendamt() &&
+            EbeguUtil.isNullOrUndefined(
+                this.model.getFiSiConToWorkWith().finanzielleSituationJA
+                    ?.steuerdatenZugriff
+            )
+        ) {
+            this.model.getFiSiConToWorkWith().finanzielleSituationJA.steuerdatenZugriff =
+                false;
+            this.model.getFiSiConToWorkWith().finanzielleSituationJA.automatischePruefungErlaubt =
+                false;
+        }
     }
 
     private async initFinSitVorMutation(): Promise<void> {
@@ -485,16 +503,8 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
     }
 
     protected showAutomatischePruefungSteuerdatenFrage(): boolean {
-        if (!this.steuerSchnittstelleAktivForPeriode) {
-            return false;
-        }
-
         return (
-            EbeguUtil.isNotNullOrUndefined(
-                this.gesuchModelManager.getGesuch()
-            ) &&
-            this.gesuchModelManager.getGesuch().isOnlineGesuch() &&
-            !this.model.familienSituation.gemeinsameSteuererklaerung &&
+            this.showZugriffAufSteuerdaten() &&
             this.gesuchModelManager.getGesuchstellerNumber() === 1 &&
             EbeguUtil.isNotNullAndFalse(
                 this.getModel().finanzielleSituationJA.steuerdatenZugriff
@@ -515,27 +525,26 @@ export class FinanzielleSituationViewController extends AbstractFinSitBernView {
     }
 
     private initEinstellungen(): Promise<void> {
-        return this.einstellungRS
-            .getAllEinstellungenBySystemCached(
+        return firstValueFrom(
+            this.einstellungRS.getAllEinstellungenBySystemCached(
                 this.gesuchModelManager.getGesuchsperiode().id
             )
-            .toPromise()
-            .then(einstellungen => {
-                const showErsatzeinkommen = einstellungen.find(
-                    einstellung =>
-                        einstellung.key ===
-                        TSEinstellungKey.ZUSATZLICHE_FELDER_ERSATZEINKOMMEN
+        ).then(einstellungen => {
+            const showErsatzeinkommen = einstellungen.find(
+                einstellung =>
+                    einstellung.key ===
+                    TSEinstellungKey.ZUSATZLICHE_FELDER_ERSATZEINKOMMEN
+            );
+            if (showErsatzeinkommen === undefined) {
+                LOG.error(
+                    `Missing Einstellung "ZUSATZLICHE_FELDER_ERSATZEINKOMMEN" in gesuchsperiode ${this.gesuchModelManager.getGesuchsperiode().gesuchsperiodeString}`
                 );
-                if (showErsatzeinkommen === undefined) {
-                    LOG.error(
-                        `Missing Einstellung "ZUSATZLICHE_FELDER_ERSATZEINKOMMEN" in gesuchsperiode ${this.gesuchModelManager.getGesuchsperiode().gesuchsperiodeString}`
-                    );
-                    this.ersatzeinkommenSelbststaendigkeitActivated = false;
-                    return;
-                }
-                this.ersatzeinkommenSelbststaendigkeitActivated =
-                    showErsatzeinkommen.getValueAsBoolean();
-            });
+                this.ersatzeinkommenSelbststaendigkeitActivated = false;
+                return;
+            }
+            this.ersatzeinkommenSelbststaendigkeitActivated =
+                showErsatzeinkommen.getValueAsBoolean();
+        });
     }
 
     public getTextErsatzeinkommenSelbstaendigKorrektur(): string {

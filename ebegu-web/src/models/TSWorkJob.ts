@@ -13,8 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
-import {TSBatchJobInformation} from './TSBatchJobInformation';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 
 /**
  * DTO fuer einen WorkJob
@@ -27,7 +26,8 @@ export class TSWorkJob extends TSAbstractMutableEntity {
     private _requestURI: string;
     private _resultData: string;
     private _executionId: string;
-    private _execution: TSBatchJobInformation;
+    private _startTime: moment.Moment;
+    private _endTime: moment.Moment;
 
     public get workJobType(): string {
         return this._workJobType;
@@ -85,11 +85,19 @@ export class TSWorkJob extends TSAbstractMutableEntity {
         this._resultData = value;
     }
 
-    public get execution(): TSBatchJobInformation {
-        return this._execution;
+    public get startTime(): moment.Moment {
+        return this._startTime;
     }
 
-    public set execution(value: TSBatchJobInformation) {
-        this._execution = value;
+    public set startTime(value: moment.Moment) {
+        this._startTime = value;
+    }
+
+    public get endTime(): moment.Moment {
+        return this._endTime;
+    }
+
+    public set endTime(value: moment.Moment) {
+        this._endTime = value;
     }
 }

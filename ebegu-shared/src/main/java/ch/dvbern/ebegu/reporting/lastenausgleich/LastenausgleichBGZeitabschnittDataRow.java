@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.lastenausgleich;
@@ -20,11 +20,18 @@ package ch.dvbern.ebegu.reporting.lastenausgleich;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.types.DateRange;
+import ch.dvbern.ebegu.util.MathUtil;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * DTO für den Lastenausgleich von KiBon
  */
+@Getter
+@Setter
 public class LastenausgleichBGZeitabschnittDataRow {
-
 	private String referenzNummer;
 	private long bfsNummer;
 	private String nameGemeinde;
@@ -34,123 +41,41 @@ public class LastenausgleichBGZeitabschnittDataRow {
 	private LocalDate von;
 	private LocalDate bis;
 	private String institution;
-	private String betreuungsangebotTyp;
+	private BetreuungsangebotTyp betreuungsangebotTyp;
+	private String betreuungsangebotTypTranslated;
 	private BigDecimal bgPensum;
 	private Boolean keinSelbstbehaltDurchGemeinde;
 	private BigDecimal gutschein;
 	private Boolean isKorrektur;
 
-	public LastenausgleichBGZeitabschnittDataRow() {}
-
-	public String getReferenzNummer() {
-		return referenzNummer;
-	}
-
-	public void setReferenzNummer(String referenzNummer) {
+	public LastenausgleichBGZeitabschnittDataRow(
+		String referenzNummer,
+		String nachname,
+		String vorname,
+		LocalDate geburtsdatum,
+		DateRange gueltigkeit,
+		String institution,
+		BetreuungsangebotTyp betreuungsangebotTyp,
+		BigDecimal betreuungspensumProzent,
+		int anspruchspensumProzent,
+		Boolean keinSelbstbehaltDurchGemeinde,
+		BigDecimal gutschein
+	) {
 		this.referenzNummer = referenzNummer;
-	}
-
-	public long getBfsNummer() {
-		return bfsNummer;
-	}
-
-	public void setBfsNummer(long bfsNummer) {
-		this.bfsNummer = bfsNummer;
-	}
-
-	public String getNameGemeinde() {
-		return nameGemeinde;
-	}
-
-	public void setNameGemeinde(String nameGemeinde) {
-		this.nameGemeinde = nameGemeinde;
-	}
-
-	public String getNachname() {
-		return nachname;
-	}
-
-	public void setNachname(String nachname) {
 		this.nachname = nachname;
-	}
-
-	public String getVorname() {
-		return vorname;
-	}
-
-	public void setVorname(String vorname) {
 		this.vorname = vorname;
-	}
-
-	public LocalDate getGeburtsdatum() {
-		return geburtsdatum;
-	}
-
-	public void setGeburtsdatum(LocalDate geburtsdatum) {
 		this.geburtsdatum = geburtsdatum;
-	}
-
-	public LocalDate getVon() {
-		return von;
-	}
-
-	public void setVon(LocalDate von) {
-		this.von = von;
-	}
-
-	public LocalDate getBis() {
-		return bis;
-	}
-
-	public void setBis(LocalDate bis) {
-		this.bis = bis;
-	}
-
-	public String getInstitution() {
-		return institution;
-	}
-
-	public void setInstitution(String institution) {
+		this.von = gueltigkeit.getGueltigAb();
+		this.bis = gueltigkeit.getGueltigBis();
 		this.institution = institution;
-	}
-
-	public String getBetreuungsangebotTyp() {
-		return betreuungsangebotTyp;
-	}
-
-	public void setBetreuungsangebotTyp(String betreuungsangebotTyp) {
 		this.betreuungsangebotTyp = betreuungsangebotTyp;
-	}
-
-	public BigDecimal getBgPensum() {
-		return bgPensum;
-	}
-
-	public void setBgPensum(BigDecimal bgPensum) {
-		this.bgPensum = bgPensum;
-	}
-
-	public Boolean getKeinSelbstbehaltDurchGemeinde() {
-		return keinSelbstbehaltDurchGemeinde;
-	}
-
-	public void setKeinSelbstbehaltDurchGemeinde(Boolean keinSelbstbehaltDurchGemeinde) {
+		this.bgPensum = betreuungspensumProzent.min(
+			MathUtil.DEFAULT.from(anspruchspensumProzent)
+		);
 		this.keinSelbstbehaltDurchGemeinde = keinSelbstbehaltDurchGemeinde;
-	}
-
-	public BigDecimal getGutschein() {
-		return gutschein;
-	}
-
-	public void setGutschein(BigDecimal gutschein) {
 		this.gutschein = gutschein;
 	}
 
-	public Boolean getKorrektur() {
-		return isKorrektur;
-	}
-
-	public void setKorrektur(Boolean korrektur) {
-		isKorrektur = korrektur;
+	public LastenausgleichBGZeitabschnittDataRow() {
 	}
 }

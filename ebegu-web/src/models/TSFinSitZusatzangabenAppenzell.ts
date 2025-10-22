@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 
 export class TSFinSitZusatzangabenAppenzell extends TSAbstractMutableEntity {
     private _saeule3a: number;

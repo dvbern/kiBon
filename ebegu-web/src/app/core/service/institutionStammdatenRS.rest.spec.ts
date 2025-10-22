@@ -13,17 +13,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IHttpBackendService} from 'angular';
-import * as moment from 'moment';
+import angular, {IHttpBackendService} from 'angular';
+import moment from 'moment';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSAdresse} from '../../../models/TSAdresse';
-import {TSInstitution} from '../../../models/TSInstitution';
-import {TSInstitutionStammdaten} from '../../../models/TSInstitutionStammdaten';
-import {TSInstitutionStammdatenBetreuungsgutscheine} from '../../../models/TSInstitutionStammdatenBetreuungsgutscheine';
-import {TSDateRange} from '../../../models/types/TSDateRange';
-import {DateUtil} from '../../../utils/DateUtil';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {TSAdresse} from '@kibon/shared/model/entity';
+import {TSInstitution} from '@kibon/shared/model/entity';
+import {TSInstitutionStammdaten} from '@kibon/shared/model/entity';
+import {TSInstitutionStammdatenBetreuungsgutscheine} from '@kibon/shared/model/entity';
+import {TSDateRange} from '@kibon/shared/model/entity';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
@@ -54,7 +54,7 @@ describe('institutionStammdatenRS', () => {
     );
 
     beforeEach(() => {
-        today = DateUtil.today();
+        today = MomentUtil.today();
         mockInstitution = new TSInstitution('Institution_Test');
         mockAdresse = new TSAdresse();
         mockInstitutionStammdaten = new TSInstitutionStammdaten();

@@ -28,35 +28,17 @@
                 PENDENZ_BEARBEITEN
             </h2>
             <h2 translate *ngIf="isNew()">PENDENZ_ERSTELLEN</h2>
-
-            <div class="form-group margin-top-20">
-                <label class="md-no-float" translate for="termin_id"
-                    >TERMIN</label
-                >
-                <input
-                    class="dv-mat-datepicker"
-                    type="text"
-                    id="termin_id"
-                    name="termin"
-                    required
-                    [disabled]="readonlyMode"
-                    #terminRef="ngModel"
-                    [(ngModel)]="internePendenz.termin"
-                    [min]="getMinDateTermin()"
-                    [matDatepicker]="terminPicker"
-                    placeholder="{{ 'DATE_PLACEHOLDER' | translate }}"
-                />
-                <mat-datepicker-toggle
-                    matSuffix
-                    [for]="terminPicker"
-                ></mat-datepicker-toggle>
-                <mat-datepicker #terminPicker></mat-datepicker>
-                <dv-error-messages
-                    input-id="termin_id"
-                    [errorObject]="terminRef.errors"
-                >
-                </dv-error-messages>
-            </div>
+            <dv-date-picker-x
+                id="termin_id"
+                [label]="'TERMIN'"
+                [(date)]="internePendenz.termin"
+                [datePickerEnabled]="true"
+                [disabled]="readonlyMode"
+                [required]="true"
+                [minDate]="getMinDateTermin()"
+                class="margin-top-20"
+            >
+            </dv-date-picker-x>
 
             <div class="form-group">
                 <label class="md-no-float" translate for="text_id"

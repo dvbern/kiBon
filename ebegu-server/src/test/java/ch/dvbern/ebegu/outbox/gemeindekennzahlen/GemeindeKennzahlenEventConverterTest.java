@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.gemeindekennzahlen;
@@ -39,19 +39,21 @@ import static org.hamcrest.Matchers.is;
 
 public class GemeindeKennzahlenEventConverterTest {
 
-	private final GemeindeKennzahlenEventConverter gemeindeKennzahlenEventConverter = new GemeindeKennzahlenEventConverter();
+	private final GemeindeKennzahlenEventConverter gemeindeKennzahlenEventConverter =
+		new GemeindeKennzahlenEventConverter();
 
 	@Test
 	public void testChangedEvent() {
 		Gemeinde gemeinde = new Gemeinde();
-		gemeinde.setId("12345");
+		gemeinde.setId("a1cee024-348d-11ef-8988-ffe8603300d0");
 		gemeinde.setBfsNummer(123L);
 		gemeinde.setMandant(new Mandant());
 		gemeinde.getMandant().setMandantIdentifier(MandantIdentifier.BERN);
 		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
 		gesuchsperiode.setGueltigkeit(new DateRange());
-		gesuchsperiode.getGueltigkeit().setGueltigAb(LocalDate.of(2022,8,1));
-		gesuchsperiode.getGueltigkeit().setGueltigBis(LocalDate.of(2023,7,31));
+		gesuchsperiode.getGueltigkeit().setGueltigAb(LocalDate.of(2022, 8, 1));
+		gesuchsperiode.getGueltigkeit()
+			.setGueltigBis(LocalDate.of(2023, 7, 31));
 		GemeindeKennzahlen gemeindeKennzahlen = new GemeindeKennzahlen();
 		gemeindeKennzahlen.setGemeinde(gemeinde);
 		gemeindeKennzahlen.setGesuchsperiode(gesuchsperiode);
@@ -61,25 +63,79 @@ public class GemeindeKennzahlenEventConverterTest {
 		gemeindeKennzahlen.setNachfrageErfuellt(true);
 		gemeindeKennzahlen.setGemeindeKontingentiert(true);
 
-		GemeindeKennzahlenChangedEvent gemeindeKennzahlenChangedEvent = gemeindeKennzahlenEventConverter.of(gemeindeKennzahlen, EinschulungTyp.KINDERGARTEN1, new BigDecimal(20));
+		GemeindeKennzahlenChangedEvent gemeindeKennzahlenChangedEvent =
+			gemeindeKennzahlenEventConverter.of(
+				gemeindeKennzahlen,
+				EinschulungTyp.KINDERGARTEN1,
+				new BigDecimal(20)
+			);
 
 		//noinspection deprecation
-		GemeindeKennzahlenEventDTO specificRecord = AvroConverter.fromAvroBinary(gemeindeKennzahlenChangedEvent.getSchema(), gemeindeKennzahlenChangedEvent.getPayload());
+		GemeindeKennzahlenEventDTO specificRecord = AvroConverter
+			.fromAvroBinary(
+				gemeindeKennzahlenChangedEvent.getSchema(),
+				gemeindeKennzahlenChangedEvent.getPayload()
+			);
 
-		assertThat(specificRecord, is(pojo(GemeindeKennzahlenEventDTO.class)
-			.where(GemeindeKennzahlenEventDTO::getGemeindeUUID, is(gemeinde.getId()))
-			.where(GemeindeKennzahlenEventDTO::getBfsNummer, is(123L))
-			.where(
-				GemeindeKennzahlenEventDTO::getGesuchsperiodeStart,
-				is(gesuchsperiode.getGueltigkeit().getGueltigAb()))
-			.where(GemeindeKennzahlenEventDTO::getGesuchsperiodeStop, is(gesuchsperiode.getGueltigkeit().getGueltigBis()))
-			.where(GemeindeKennzahlenEventDTO::getAnzahlKinderWarteliste, comparesEqualTo(BigDecimal.TEN))
-			.where(GemeindeKennzahlenEventDTO::getDauerWarteliste, comparesEqualTo(BigDecimal.ONE))
-			.where(GemeindeKennzahlenEventDTO::getErwerbspensumZuschlag, comparesEqualTo(new BigDecimal(20)))
-			.where(GemeindeKennzahlenEventDTO::getKontingentierung, is(true))
-			.where(GemeindeKennzahlenEventDTO::getKontingentierungAusgeschoepft, is(true))
-			.where(GemeindeKennzahlenEventDTO::getLimitierungTfo, is(ch.dvbern.kibon.exchange.commons.types.EinschulungTyp.KINDERGARTEN1))
-			.where(GemeindeKennzahlenEventDTO::getLimitierungKita, is(ch.dvbern.kibon.exchange.commons.types.EinschulungTyp.KINDERGARTEN1))
-		));
+		assertThat(
+			specificRecord,
+			is(
+				pojo(GemeindeKennzahlenEventDTO.class)
+					.where(
+						GemeindeKennzahlenEventDTO::getGemeindeUUID,
+						is(gemeinde.getId())
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getBfsNummer,
+						is(123L)
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getGesuchsperiodeStart,
+						is(
+							gesuchsperiode.getGueltigkeit()
+								.getGueltigAb()
+						)
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getGesuchsperiodeStop,
+						is(
+							gesuchsperiode.getGueltigkeit()
+								.getGueltigBis()
+						)
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getAnzahlKinderWarteliste,
+						comparesEqualTo(BigDecimal.TEN)
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getDauerWarteliste,
+						comparesEqualTo(BigDecimal.ONE)
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getErwerbspensumZuschlag,
+						comparesEqualTo(new BigDecimal(20))
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getKontingentierung,
+						is(true)
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getKontingentierungAusgeschoepft,
+						is(true)
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getLimitierungTfo,
+						is(
+							ch.dvbern.kibon.exchange.commons.types.EinschulungTyp.KINDERGARTEN1
+						)
+					)
+					.where(
+						GemeindeKennzahlenEventDTO::getLimitierungKita,
+						is(
+							ch.dvbern.kibon.exchange.commons.types.EinschulungTyp.KINDERGARTEN1
+						)
+					)
+			)
+		);
 	}
 }

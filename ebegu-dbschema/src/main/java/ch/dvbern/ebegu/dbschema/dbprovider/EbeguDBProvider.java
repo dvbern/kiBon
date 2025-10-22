@@ -8,19 +8,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.dbschema.dbprovider;
 
-import javax.enterprise.context.Dependent;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import jakarta.enterprise.context.Dependent;
 
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 
@@ -37,9 +37,12 @@ public class EbeguDBProvider implements DBProvider {
 
 		try {
 			// CDI Injection does not work at startup time :-(
-			return (DataSource) new InitialContext().lookup(DATASOURCE_JNDI_NAME);
+			return (DataSource) new InitialContext().lookup(
+				DATASOURCE_JNDI_NAME
+			);
 		} catch (NamingException e) {
-			final String msg = ("Database Lookup error (missing datasource '" + DATASOURCE_JNDI_NAME) + "')";
+			final String msg = ("Database Lookup error (missing datasource '"
+				+ DATASOURCE_JNDI_NAME) + "')";
 			throw new EbeguRuntimeException("getDatasource", msg, e);
 		}
 	}

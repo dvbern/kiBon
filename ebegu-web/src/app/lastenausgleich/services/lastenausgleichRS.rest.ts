@@ -23,7 +23,12 @@ import {TSDownloadFile} from '../../../models/TSDownloadFile';
 import {TSLastenausgleich} from '../../../models/TSLastenausgleich';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+
+type lastenausgleichCreateDTO = {
+    jahr: string;
+    selbstbehaltPro100ProzentPlatz?: string;
+};
 
 @Injectable({
     providedIn: 'root'
@@ -47,29 +52,17 @@ export class LastenausgleichRS {
     public createLastenausgleich(
         jahr: number,
         selbstbehaltPro100ProzentPlatz: number
-    ): Observable<TSLastenausgleich> {
-        let params = new HttpParams();
-        params = params.append('jahr', jahr.toFixed(0));
+    ): Observable<void> {
+        const params: lastenausgleichCreateDTO = {
+            jahr: jahr.toFixed(0)
+        };
 
         if (EbeguUtil.isNotNullOrUndefined(selbstbehaltPro100ProzentPlatz)) {
-            params = params.append(
-                'selbstbehaltPro100ProzentPlatz',
-                selbstbehaltPro100ProzentPlatz.toFixed(0)
-            );
+            params.selbstbehaltPro100ProzentPlatz =
+                selbstbehaltPro100ProzentPlatz.toFixed(0);
         }
 
-        return this.http
-            .get(`${this.API_BASE_URL}/create`, {
-                params
-            })
-            .pipe(
-                map((httpresponse: any) =>
-                    this.ebeguRestUtil.parseLastenausgleich(
-                        new TSLastenausgleich(),
-                        httpresponse
-                    )
-                )
-            );
+        return this.http.post<void>(`${this.API_BASE_URL}/create`, params);
     }
 
     public getLastenausgleichReportExcel(

@@ -20,9 +20,11 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {NgxIbanModule} from 'ngx-iban';
 import {MaterialModule} from '../shared/material.module';
 import {SharedModule} from '../shared/shared.module';
+import {WebseiteValidatorDirective} from '../shared/validators/webseite-validator.directive';
 import {AddGemeindeComponent} from './add-gemeinde/add-gemeinde.component';
 import {EditGemeindeBGComponent} from './edit-gemeinde-bg/edit-gemeinde-bg.component';
 import {EditGemeindeFIComponent} from './edit-gemeinde-fi/edit-gemeinde-fi.component';
+import {EditGemeindeInstitutionComponent} from './edit-gemeinde-institution/edit-gemeinde-institution.component';
 import {EditGemeindeKorrespondenzComponent} from './edit-gemeinde-korrespondenz/edit-gemeinde-korrespondenz.component';
 import {EditGemeindeStammdatenComponent} from './edit-gemeinde-stammdaten/edit-gemeinde-stammdaten.component';
 import {EditGemeindeTSComponent} from './edit-gemeinde-ts/edit-gemeinde-ts.component';
@@ -39,7 +41,9 @@ import {GemeindeTsKonfigComponent} from './gemeinde-ts-konfiguration/gemeinde-ts
         GemeindeRoutingModule,
         MaterialModule,
         NgxIbanModule,
-        MatButtonToggleModule
+        MatButtonToggleModule,
+        EditGemeindeInstitutionComponent,
+        WebseiteValidatorDirective
     ],
     // adding custom elements schema disables Angular's element validation: you can now use transclusion for the
     // dv-accordion-tab with multi-slot transclusion (tab-title & tab-body elements).
@@ -54,9 +58,9 @@ import {GemeindeTsKonfigComponent} from './gemeinde-ts-konfiguration/gemeinde-ts
         EditGemeindeStammdatenComponent,
         EditGemeindeTSComponent,
         EditGemeindeKorrespondenzComponent,
-        GemeindeTsKonfigComponent,
         GemeindeFiKonfigComponent,
-        OverlappingZeitraumDirective
+        OverlappingZeitraumDirective,
+        GemeindeTsKonfigComponent
     ],
     providers: []
 })

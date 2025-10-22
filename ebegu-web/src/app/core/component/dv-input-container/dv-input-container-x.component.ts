@@ -21,7 +21,8 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
     selector: 'dv-input-container-x',
     templateUrl: './dv-input-container-x.component.html',
     styleUrls: ['./dv-input-container.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class DVInputContainerXComponent {
     @Input() public disabled = false;

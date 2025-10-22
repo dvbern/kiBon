@@ -13,6 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import angular from 'angular';
 import {CORE_JS_MODULE} from '../core/core.angularjs.module';
 import {SearchListViewComponentConfig} from './component/searchListView';
 import {searchRun} from './search.route';

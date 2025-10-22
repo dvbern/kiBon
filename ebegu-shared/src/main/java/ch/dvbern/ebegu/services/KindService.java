@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import ch.dvbern.ebegu.dto.KindDubletteDTO;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.kind.KindResetDecisionBasis;
 
 /**
  * Service zum Verwalten von Kindern
@@ -33,14 +34,20 @@ import ch.dvbern.ebegu.entities.Mandant;
 public interface KindService {
 
 	/**
-	 * Speichert das Kind neu in der DB falls der Key noch nicht existiert. Sonst wird das existierende Kind aktualisiert
+	 * Speichert das Kind neu in der DB falls der Key noch nicht existiert. Sonst wird das existierende Kind
+	 * aktualisiert
 	 *
 	 * @param kind Das Kind als DTO
 	 */
 	@Nonnull
-	KindContainer saveKind(@Nonnull KindContainer kind, @Nullable KindContainer kindContainer);
+	KindContainer saveKind(
+		@Nonnull KindContainer kind,
+		@Nullable KindResetDecisionBasis kindContainer
+	);
 
 	/**
+	 * 1
+	 *
 	 * @param key PK (id) des Kindes
 	 * @return Kind mit dem gegebenen key oder null falls nicht vorhanden
 	 */
@@ -54,7 +61,8 @@ public interface KindService {
 	List<KindContainer> findAllKinderFromGesuch(@Nonnull String gesuchId);
 
 	/**
-	 * entfernt ein Kind aus der Databse. Um diese Methode aufzurufen muss man sich vorher vergewissern, dass das Kind existiert
+	 * entfernt ein Kind aus der Databse. Um diese Methode aufzurufen muss man sich vorher vergewissern, dass das Kind
+	 * existiert
 	 */
 	void removeKind(@Nonnull KindContainer kind);
 
@@ -77,11 +85,15 @@ public interface KindService {
 	 * Fallnummer, Kindnummer und Gesuchsperiode.
 	 */
 	@Nonnull
-	Collection<KindContainer> findKinder(@Nonnull Integer fallNummer,
-										 @Nonnull Integer kindNummer,
-										 int gesuchsperiodeStartJahr);
+	Collection<KindContainer> findKinder(
+		@Nonnull Integer fallNummer,
+		@Nonnull Integer kindNummer,
+		int gesuchsperiodeStartJahr,
+		Mandant mandant
+	);
 
 	void updateKeinSelbstbehaltFuerGemeinde(
-		Collection<KindContainer> kindContainers,
-		@Nonnull Boolean keinSelbstbehaltFuerGemeinde);
+		KindContainer kindContainer,
+		@Nonnull Boolean keinSelbstbehaltFuerGemeinde
+	);
 }

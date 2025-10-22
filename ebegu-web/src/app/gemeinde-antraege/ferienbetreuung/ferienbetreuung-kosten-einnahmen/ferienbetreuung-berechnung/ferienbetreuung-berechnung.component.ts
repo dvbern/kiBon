@@ -31,7 +31,7 @@ import {mergeMap, startWith, tap} from 'rxjs/operators';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {TSFerienbetreuungAngaben} from '../../../../../models/gemeindeantrag/TSFerienbetreuungAngaben';
 import {TSFerienbetreuungAngabenContainer} from '../../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
-import {LogFactory} from '../../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {FerienbetreuungService} from '../../services/ferienbetreuung.service';
 import {TSFerienbetreuungBerechnung} from '../TSFerienbetreuungBerechnung';
 
@@ -41,7 +41,8 @@ const LOG = LogFactory.createLog('FerienbetreuungBerechnungComponent');
     selector: 'dv-ferienbetreuung-berechnung',
     templateUrl: './ferienbetreuung-berechnung.component.html',
     styleUrls: ['./ferienbetreuung-berechnung.component.less'],
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class FerienbetreuungBerechnungComponent
     implements OnInit, OnDestroy, OnChanges

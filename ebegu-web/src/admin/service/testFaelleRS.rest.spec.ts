@@ -13,7 +13,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {
+    HttpClient,
+    provideHttpClient,
+    withInterceptorsFromDi
+} from '@angular/common/http';
 import {TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
 import {TestFaelleRS} from './testFaelleRS.rest';
@@ -26,8 +30,11 @@ describe('TestFaelleRS', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientModule],
-            providers: [{provide: HttpClient, useValue: mockHttpClient}]
+            imports: [],
+            providers: [
+                {provide: HttpClient, useValue: mockHttpClient},
+                provideHttpClient(withInterceptorsFromDi())
+            ]
         });
         testFaelleRS = TestBed.inject(TestFaelleRS);
     });

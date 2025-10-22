@@ -41,7 +41,10 @@ public class AbwesenheitCalcRuleTest {
 
 	private final LocalDate START_PERIODE = LocalDate.of(2016, Month.AUGUST, 1);
 	private final LocalDate ENDE_PERIODE = LocalDate.of(2017, Month.JULY, 31);
-	private final DateRange PERIODE = new DateRange(START_PERIODE, ENDE_PERIODE);
+	private final DateRange PERIODE = new DateRange(
+		START_PERIODE,
+		ENDE_PERIODE
+	);
 
 	private Mandant mandant;
 
@@ -53,56 +56,95 @@ public class AbwesenheitCalcRuleTest {
 
 	@Test
 	public void testSchulamtBetreuungWithAbwesenheit() {
-		final AbwesenheitCalcRule rule = new AbwesenheitCalcRule(PERIODE, Constants.DEFAULT_LOCALE, 30);
+		final AbwesenheitCalcRule rule = new AbwesenheitCalcRule(
+			PERIODE,
+			Constants.DEFAULT_LOCALE,
+			30
+		);
 		final VerfuegungZeitabschnitt zeitAbschnitt = createZeitabschnitt(true);
 		final Betreuung betreuung = TestDataUtil.createDefaultBetreuung();
-		betreuung.getInstitutionStammdaten().setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESSCHULE);
+		betreuung.getInstitutionStammdaten()
+			.setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESSCHULE);
 
 		rule.executeRuleIfApplicable(betreuung, zeitAbschnitt);
 		BemerkungsMerger.prepareGeneratedBemerkungen(zeitAbschnitt, mandant);
 
-		Assert.assertFalse(zeitAbschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		Assert.assertTrue(zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList().isEmpty());
+		Assert.assertFalse(
+			zeitAbschnitt.getBgCalculationInputAsiv()
+				.isBezahltKompletteVollkosten()
+		);
+		Assert.assertTrue(
+			zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList()
+				.isEmpty()
+		);
 	}
 
 	@Test
 	public void testJABetreuungWithAbwesenheit() {
-		final AbwesenheitCalcRule rule = new AbwesenheitCalcRule(PERIODE, Constants.DEFAULT_LOCALE, 30);
+		final AbwesenheitCalcRule rule = new AbwesenheitCalcRule(
+			PERIODE,
+			Constants.DEFAULT_LOCALE,
+			30
+		);
 		final VerfuegungZeitabschnitt zeitAbschnitt = createZeitabschnitt(true);
 		final Betreuung betreuung = TestDataUtil.createDefaultBetreuung();
-		betreuung.getInstitutionStammdaten().setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
+		betreuung.getInstitutionStammdaten()
+			.setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
 
 		rule.executeRuleIfApplicable(betreuung, zeitAbschnitt);
 		BemerkungsMerger.prepareGeneratedBemerkungen(zeitAbschnitt, mandant);
 
-		Assert.assertTrue(zeitAbschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		Assert.assertEquals(1, zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList().size());
+		Assert.assertTrue(
+			zeitAbschnitt.getBgCalculationInputAsiv()
+				.isBezahltKompletteVollkosten()
+		);
+		Assert.assertEquals(
+			1,
+			zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList().size()
+		);
 		Assert.assertEquals(
 			"Das Kind wird länger als 30 aufeinanderfolgende Kalendertage nicht familienergänzend betreut"
 				+ " (z.B. aufgrund einer längeren Reise). Deshalb wird kein Betreuungsgutschein mehr ausbezahlt (Art. 34u Abs. 1).",
-			zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList().get(0).getBemerkung());
+			zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList()
+				.get(0)
+				.getBemerkung()
+		);
 
 	}
 
 	@Test
 	public void testJABetreuungWithoutAbwesenheit() {
-		final AbwesenheitCalcRule rule = new AbwesenheitCalcRule(PERIODE, Constants.DEFAULT_LOCALE, 30);
-		final VerfuegungZeitabschnitt zeitAbschnitt = createZeitabschnitt(false);
+		final AbwesenheitCalcRule rule = new AbwesenheitCalcRule(
+			PERIODE,
+			Constants.DEFAULT_LOCALE,
+			30
+		);
+		final VerfuegungZeitabschnitt zeitAbschnitt = createZeitabschnitt(
+			false
+		);
 		final Betreuung betreuung = TestDataUtil.createDefaultBetreuung();
-		betreuung.getInstitutionStammdaten().setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
+		betreuung.getInstitutionStammdaten()
+			.setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
 
 		rule.executeRuleIfApplicable(betreuung, zeitAbschnitt);
 		BemerkungsMerger.prepareGeneratedBemerkungen(zeitAbschnitt, mandant);
 
-		Assert.assertFalse(zeitAbschnitt.getBgCalculationInputAsiv().isBezahltKompletteVollkosten());
-		Assert.assertTrue(zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList().isEmpty());
+		Assert.assertFalse(
+			zeitAbschnitt.getBgCalculationInputAsiv()
+				.isBezahltKompletteVollkosten()
+		);
+		Assert.assertTrue(
+			zeitAbschnitt.getVerfuegungZeitabschnittBemerkungList()
+				.isEmpty()
+		);
 	}
 
 	// HELP METHODS
 
 	@Nonnull
 	private VerfuegungZeitabschnitt createZeitabschnitt(boolean abwesend) {
-		final VerfuegungZeitabschnitt zeitAbschnitt = new VerfuegungZeitabschnitt();
+		final VerfuegungZeitabschnitt zeitAbschnitt =
+			new VerfuegungZeitabschnitt();
 		zeitAbschnitt.setGueltigkeit(PERIODE);
 		zeitAbschnitt.getBgCalculationInputAsiv().setLongAbwesenheit(abwesend);
 		return zeitAbschnitt;

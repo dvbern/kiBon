@@ -21,7 +21,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.enums.BenutzerStatus;
 import ch.dvbern.ebegu.enums.UserRole;
@@ -61,7 +61,8 @@ public class JaxBenutzer implements Serializable {
 	@Nonnull
 	private Set<JaxBerechtigung> berechtigungen = new LinkedHashSet<>();
 
-	@SuppressFBWarnings(value = "NM_CONFUSING", justification = "Other method is external interface, cant change that")
+	@SuppressFBWarnings(value = "NM_CONFUSING",
+		justification = "Other method is external interface, cant change that")
 	@Nonnull
 	public String getUsername() {
 		return username;
@@ -138,15 +139,20 @@ public class JaxBenutzer implements Serializable {
 		return currentBerechtigung;
 	}
 
-	public void setCurrentBerechtigung(@Nonnull JaxBerechtigung currentBerechtigung) {
+	public void setCurrentBerechtigung(
+		@Nonnull JaxBerechtigung currentBerechtigung
+	) {
 		this.currentBerechtigung = currentBerechtigung;
 	}
 
+	@Nonnull
 	public Set<JaxBerechtigung> getBerechtigungen() {
 		return berechtigungen;
 	}
 
-	public void setBerechtigungen(Set<JaxBerechtigung> berechtigungen) {
+	public void setBerechtigungen(
+		@Nonnull Set<JaxBerechtigung> berechtigungen
+	) {
 		this.berechtigungen = berechtigungen;
 	}
 

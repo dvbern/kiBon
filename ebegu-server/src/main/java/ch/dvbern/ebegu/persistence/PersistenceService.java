@@ -1,16 +1,19 @@
 /*
- * Ki-Tax: System for the management of external childcare subsidies
- * Copyright (C) 2017 City of Bern Switzerland
+ * Copyright (C) 2024 DV Bern AG, Switzerland
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
+ *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
  */
 
 package ch.dvbern.ebegu.persistence;
@@ -19,16 +22,14 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-
-import ch.dvbern.lib.cdipersistence.Persistence;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 /**
  * Implementation der Persistenz als Stateless Session Bean.
@@ -38,7 +39,7 @@ import ch.dvbern.lib.cdipersistence.Persistence;
 public class PersistenceService implements Persistence, Serializable {
 
 	private static final long serialVersionUID = -4643759053039027750L;
-	
+
 	@PersistenceContext(unitName = "ebeguPersistenceUnit")
 	private EntityManager em;
 
@@ -60,12 +61,15 @@ public class PersistenceService implements Persistence, Serializable {
 
 	@Override
 	@Nullable
-	public <T> T find(final Class<T> entityClass, final Object primaryKey) {
+	public <T> T find(final Class<T> entityClass, final String primaryKey) {
 		return em.find(entityClass, primaryKey);
 	}
 
 	@Override
-	public <T> void remove(final Class<T> entityClass, final Object primaryKey) {
+	public <T> void remove(
+		final Class<T> entityClass,
+		final String primaryKey
+	) {
 		final T entity = em.find(entityClass, primaryKey);
 		em.remove(entity);
 	}
@@ -81,12 +85,18 @@ public class PersistenceService implements Persistence, Serializable {
 	}
 
 	@Override
-	public <T> T getReference(final Class<T> entityClass, final Object primaryKey) {
+	public <T> T getReference(
+		final Class<T> entityClass,
+		final String primaryKey
+	) {
 		return em.getReference(entityClass, primaryKey);
 	}
 
 	@Override
-	public <T> List<T> getCriteriaResults(CriteriaQuery<T> query, int maxResults) {
+	public <T> List<T> getCriteriaResults(
+		CriteriaQuery<T> query,
+		int maxResults
+	) {
 		TypedQuery<T> query1 = em.createQuery(query);
 		query1.setMaxResults(maxResults);
 		return query1.getResultList();

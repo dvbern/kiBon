@@ -35,13 +35,7 @@ public interface DailyBatch {
 
 	void runBatchAbgelaufeneRollen();
 
-	void runBatchDeleteInvalidAuthTokens();
-
 	void runBatchInfoOffenePendenzenNeueMitteilungInstitution();
-
-	void deleteInstitutionKennzahlenFields();
-
-	void runBatchInstitutionCheckRequired();
 
 	void runBatchSendEmailsForNewGesuchsperiode();
 

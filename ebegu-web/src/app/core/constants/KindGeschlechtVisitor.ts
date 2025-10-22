@@ -15,14 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {KiBonMandant} from './MANDANTS';
-import {MandantVisitor} from './MandantVisitor';
+import {
+    AbstractMandantDefaultVisitor,
+    KiBonMandant
+} from '@kibon/shared-model-mandant';
 
-export class KindGeschlechtVisitor implements MandantVisitor<boolean> {
+export class KindGeschlechtVisitor extends AbstractMandantDefaultVisitor<boolean> {
     public process(mandant: KiBonMandant): any {
         return mandant.accept(this);
     }
-    public visitAppenzellAusserrhoden(): boolean {
+
+    protected visitDefault(): boolean {
         return false;
     }
 
@@ -39,6 +42,6 @@ export class KindGeschlechtVisitor implements MandantVisitor<boolean> {
     }
 
     public visitSchwyz(): boolean {
-        return this.visitSolothurn();
+        return true;
     }
 }

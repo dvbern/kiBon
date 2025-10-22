@@ -25,8 +25,8 @@ import {
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {VersionService} from '../service/version/version.service';
-import {CONSTANTS} from '../constants/CONSTANTS';
 
 /**
  * this interceptor boradcasts a  VERSION_MATCH or VERSION_MISMATCH event whenever a rest service responds

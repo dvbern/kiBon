@@ -18,21 +18,20 @@ package ch.dvbern.ebegu.entities;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.bridge.builtin.LongBridge;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -53,7 +52,7 @@ public class Mandant extends AbstractMutableEntity implements Displayable {
 
 	@Column()
 	@Enumerated(EnumType.STRING)
-	@Field
+	@KeywordField
 	private MandantIdentifier mandantIdentifier;
 
 	@Column(nullable = false)
@@ -62,13 +61,13 @@ public class Mandant extends AbstractMutableEntity implements Displayable {
 	@NotNull
 	@Column(nullable = false)
 	@Min(1)
-	@Field(bridge = @FieldBridge(impl = LongBridge.class))
+	@GenericField
 	private long nextInfomaBelegnummerAntragsteller = 1L;
 
 	@NotNull
 	@Column(nullable = false)
 	@Min(1)
-	@Field(bridge = @FieldBridge(impl = LongBridge.class))
+	@GenericField
 	private long nextInfomaBelegnummerInstitutionen = 1L;
 
 	public Mandant() {
@@ -104,7 +103,9 @@ public class Mandant extends AbstractMutableEntity implements Displayable {
 		return nextInfomaBelegnummerAntragsteller;
 	}
 
-	public void setNextInfomaBelegnummerAntragsteller(long nextInfomaBelegnummer) {
+	public void setNextInfomaBelegnummerAntragsteller(
+		long nextInfomaBelegnummer
+	) {
 		this.nextInfomaBelegnummerAntragsteller = nextInfomaBelegnummer;
 	}
 
@@ -112,8 +113,11 @@ public class Mandant extends AbstractMutableEntity implements Displayable {
 		return nextInfomaBelegnummerInstitutionen;
 	}
 
-	public void setNextInfomaBelegnummerInstitutionen(long nextInfomaBelegnummerInstitutionen) {
-		this.nextInfomaBelegnummerInstitutionen = nextInfomaBelegnummerInstitutionen;
+	public void setNextInfomaBelegnummerInstitutionen(
+		long nextInfomaBelegnummerInstitutionen
+	) {
+		this.nextInfomaBelegnummerInstitutionen =
+			nextInfomaBelegnummerInstitutionen;
 	}
 
 	public long getNextInofmaBelegnummer(ZahlungslaufTyp zahlungslaufTyp) {
@@ -124,7 +128,10 @@ public class Mandant extends AbstractMutableEntity implements Displayable {
 		return getNextInfomaBelegnummerInstitutionen();
 	}
 
-	public void setNextInfomaBelegnummer(ZahlungslaufTyp zahlungslaufTyp, long nextInfomaBelegnummer) {
+	public void setNextInfomaBelegnummer(
+		ZahlungslaufTyp zahlungslaufTyp,
+		long nextInfomaBelegnummer
+	) {
 		if (zahlungslaufTyp == ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER) {
 			setNextInfomaBelegnummerAntragsteller(nextInfomaBelegnummer);
 		} else {

@@ -23,6 +23,7 @@ import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Mandant;
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,29 +32,91 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class ServerMessageUtil {
 
-	private static final MandantLocaleVisitor MANDANT_LOCALE_VISITOR_DE = new MandantLocaleVisitor(Constants.DEUTSCH_LOCALE);
-	private static final MandantLocaleVisitor MANDANT_LOCALE_VISITOR_FR = new MandantLocaleVisitor(Constants.FRENCH_LOCALE);
-
 	private ServerMessageUtil() {
 	}
 
-	private static ResourceBundle selectBundleToUse(Locale locale, Mandant mandant) {
-		if (locale.getLanguage().equalsIgnoreCase("FR")) {
-			return ResourceBundle.getBundle(Constants.SERVER_MESSAGE_BUNDLE_NAME, MANDANT_LOCALE_VISITOR_FR.process(mandant));
-		}
-		return ResourceBundle.getBundle(Constants.SERVER_MESSAGE_BUNDLE_NAME, MANDANT_LOCALE_VISITOR_DE.process(mandant));
+	private static ResourceBundle selectBundleToUse(
+		Locale locale,
+		Mandant mandant
+	) {
+		return ResourceBundle.getBundle(
+			Constants.SERVER_MESSAGE_BUNDLE_NAME,
+			MandantLocaleVisitorFactory.getMandantLocaleVisitor(
+				locale,
+				null
+			).process(mandant)
+		);
 	}
 
-	public static String getMessage(String key, Locale locale, Mandant mandant) {
+	private static ResourceBundle selectBundleToUse(
+		Locale locale,
+		Mandant mandant,
+		@Nullable Gemeinde gemeinde
+	) {
+		return ResourceBundle.getBundle(
+			Constants.SERVER_MESSAGE_BUNDLE_NAME,
+			MandantLocaleVisitorFactory.getMandantLocaleVisitor(
+				locale,
+				gemeinde
+			).process(mandant)
+		);
+	}
+
+	public static String getMessage(
+		String key,
+		Locale locale,
+		Mandant mandant
+	) {
 		ResourceBundle bundle = selectBundleToUse(locale, mandant);
 		return readStringFromBundleOrReturnKey(bundle, key);
 	}
 
+	public static String getMessage(
+		String key,
+		Locale locale,
+		Mandant mandant,
+		@Nullable Gemeinde gemeinde
+	) {
+		ResourceBundle bundle = selectBundleToUse(locale, mandant, gemeinde);
+		return readStringFromBundleOrReturnKey(bundle, key);
+	}
+
+	public static String getMessage(
+		String key,
+		Locale locale,
+		Mandant mandant,
+		Object... args
+	) {
+		ResourceBundle bundle = selectBundleToUse(locale, mandant);
+		return MessageFormat.format(
+			readStringFromBundleOrReturnKey(bundle, key),
+			args
+		);
+	}
+
+	public static String getMessage(
+		String key,
+		Locale locale,
+		Mandant mandant,
+		@Nullable Gemeinde gemeinde,
+		Object... args
+	) {
+		ResourceBundle bundle = selectBundleToUse(locale, mandant, gemeinde);
+		return MessageFormat.format(
+			readStringFromBundleOrReturnKey(bundle, key),
+			args
+		);
+	}
+
 	/**
-	 * Da wir aller wahrscheinlichkeit eine Exceptionmessage uebersetzten wollen macht es nicht gross Sinn hier falls ein
+	 * Da wir aller wahrscheinlichkeit eine Exceptionmessage uebersetzten wollen macht es nicht gross Sinn hier falls
+	 * ein
 	 * Key fehlt MissingResourceException werfen zu lassen.
 	 */
-	private static String readStringFromBundleOrReturnKey(ResourceBundle bundle, String key) {
+	private static String readStringFromBundleOrReturnKey(
+		ResourceBundle bundle,
+		String key
+	) {
 		try {
 			return bundle.getString(key);
 		} catch (MissingResourceException ignore) {
@@ -61,19 +124,34 @@ public final class ServerMessageUtil {
 		}
 	}
 
-	public static String getMessage(String key, Locale locale, Mandant mandant, Object... args) {
-		return MessageFormat.format(getMessage(key, locale, mandant), args);
-	}
-
 	/**
 	 * Uebersetzt einen Enum-Wert
 	 */
 	@Nonnull
-	public static String translateEnumValue(@Nullable final Enum<?> e, Locale locale, Mandant mandant, Object... args) {
+	public static String translateEnumValue(
+		@Nullable final Enum<?> e,
+		Locale locale,
+		Mandant mandant,
+		Object... args
+	) {
 		if (e == null) {
 			return StringUtils.EMPTY;
 		}
 		return getMessage(getKey(e), locale, mandant, args);
+	}
+
+	@Nonnull
+	public static String translateEnumValue(
+		@Nullable final Enum<?> e,
+		Locale locale,
+		Mandant mandant,
+		@Nonnull Gemeinde gemeinde,
+		Object... args
+	) {
+		if (e == null) {
+			return StringUtils.EMPTY;
+		}
+		return getMessage(getKey(e), locale, mandant, gemeinde, args);
 	}
 
 	/**

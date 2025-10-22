@@ -13,14 +13,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
+import {EbeguUtil} from '../utils/EbeguUtil';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSAntragStatus} from './enums/TSAntragStatus';
 import {TSAntragTyp} from './enums/TSAntragTyp';
-import {TSBetreuungsangebotTyp} from './enums/betreuung/TSBetreuungsangebotTyp';
 import {TSEingangsart} from './enums/TSEingangsart';
 import {TSGesuchBetreuungenStatus} from './enums/TSGesuchBetreuungenStatus';
 import {TSAbstractAntragDTO} from './TSAbstractAntragDTO';
-import {EbeguUtil} from '../utils/EbeguUtil';
 
 export class TSAntragDTO extends TSAbstractAntragDTO {
     private static readonly YEAR_2000 = 2000;

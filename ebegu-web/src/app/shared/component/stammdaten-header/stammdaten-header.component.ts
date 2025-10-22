@@ -28,14 +28,14 @@ import {NgForm} from '@angular/forms';
 import {StateService} from '@uirouter/core';
 import {Observable, of} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../../models/enums/TSRole';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
-
+import {TSRole} from '@kibon/shared/model/enums';
 @Component({
     selector: 'dv-stammdaten-header',
     templateUrl: './stammdaten-header.component.html',
     styleUrls: ['./stammdaten-header.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StammdatenHeaderComponent implements OnInit {
     @ViewChild(NgForm) public form: NgForm;

@@ -15,11 +15,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {FixtureFamSit} from '@dv-e2e/fixtures';
+import {
+    FixtureFamSit,
+    FixtureFamSitFeutz,
+    FixtureFamSitFeutzAppenzell,
+    FixtureFamSitFeutzLuzern
+} from '@dv-e2e/fixtures';
 
 const getPageTitle = () => {
     return cy.getByData('page-title');
 };
+
+const getFamSitTitle = () => {
+    return cy.getByData('gesuchtitle');
+};
+
 const getFamiliensituationsStatus = (status: string) => {
     return cy.getByData('familienstatus.' + status);
 };
@@ -35,6 +45,16 @@ const getAenderunPer = () => {
 const getGeteilteObhutOption = (answer: string) => {
     return cy
         .getByData('container.geteilte-obhut', 'geteilte-obhut-' + answer)
+        .find('label');
+};
+
+const getGeteilteObhutAppenzell = (answer: string) => {
+    return cy.getByData('geteilteObhut', 'radio-value.' + answer).find('label');
+};
+
+const getGemeinsamerHaushaltAppenzell = (answer: string) => {
+    return cy
+        .getByData('gemeinsamerHaushalt', 'radio-value.' + answer)
         .find('label');
 };
 
@@ -62,9 +82,43 @@ const fillFamiliensituationForm = (dataset: keyof typeof FixtureFamSit) => {
     });
 };
 
+const fillFamiliensituationFormAppenzell = (
+    dataset: keyof typeof FixtureFamSitFeutzAppenzell
+) => {
+    FixtureFamSitFeutzAppenzell[dataset](({familiensituation}) => {
+        getGeteilteObhutAppenzell(familiensituation.geteilteObhut).click();
+        getGemeinsamerHaushaltAppenzell(
+            familiensituation.gemeinsamerHaushalt
+        ).click();
+    });
+};
+
+const fillFamiliensituationFormSchwyz = (
+    dataset: keyof typeof FixtureFamSitFeutz
+) => {
+    FixtureFamSitFeutz[dataset](({familiensituation}) => {
+        getFamiliensituationsStatus(familiensituation.familienstand)
+            .find('label')
+            .click();
+    });
+};
+
+const fillFamilienSituationFormLuzern = (
+    dataset: keyof typeof FixtureFamSitFeutzLuzern
+) => {
+    FixtureFamSitFeutzLuzern[dataset](({familiensituation}) => {
+        getFamiliensituationsStatus(familiensituation.familienstand)
+            .find('label')
+            .click();
+    });
+};
+
 export const AntragFamSitPO = {
     //page objects
+    getGemeinsamerHaushaltAppenzell,
+    getGeteilteObhutAppenzell,
     getPageTitle,
+    getFamSitTitle,
     getFamiliensituationsStatus,
     getKonkubinatStart,
     getGeteilteObhutOption,
@@ -73,5 +127,8 @@ export const AntragFamSitPO = {
     getGesuchstellendeKardinalitaet,
     getUnterhaltsvereinbarungNichtMoeglichBegruendung,
     //page actions
-    fillFamiliensituationForm
+    fillFamiliensituationForm,
+    fillFamiliensituationFormAppenzell,
+    fillFamiliensituationFormSchwyz,
+    fillFamilienSituationFormLuzern
 };

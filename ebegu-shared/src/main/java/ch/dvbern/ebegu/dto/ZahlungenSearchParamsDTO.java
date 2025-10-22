@@ -26,20 +26,34 @@ import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 
 public class ZahlungenSearchParamsDTO {
-	@Nonnull Integer page;
-	@Nonnull Integer pageSize;
-	@Nullable Gemeinde gemeinde;
-	@Nullable String sortPredicate;
-	@Nullable Boolean sortReverse;
-	@Nonnull ZahlungslaufTyp zahlungslaufTyp;
-	@Nullable List<String> allowedInstitutionIds;
+	@Nonnull
+	Integer page;
+	@Nonnull
+	Integer pageSize;
+	@Nullable
+	Gemeinde gemeinde;
+	@Nullable
+	String sortPredicate;
+	@Nullable
+	Boolean sortReverse;
+	@Nonnull
+	ZahlungslaufTyp zahlungslaufTyp;
+	@Nullable
+	List<String> allowedInstitutionIds;
 
-	public ZahlungenSearchParamsDTO(@Nonnull Integer page, @Nonnull Integer pageSize, @Nonnull ZahlungslaufTyp zahlungslaufTyp) {
+	public ZahlungenSearchParamsDTO(
+		@Nonnull Integer page,
+		@Nonnull Integer pageSize,
+		@Nonnull ZahlungslaufTyp zahlungslaufTyp
+	) {
 		this(page, pageSize);
 		this.zahlungslaufTyp = zahlungslaufTyp;
 	}
 
-	public ZahlungenSearchParamsDTO(@Nonnull Integer page, @Nonnull Integer pageSize) {
+	public ZahlungenSearchParamsDTO(
+		@Nonnull Integer page,
+		@Nonnull Integer pageSize
+	) {
 		this.page = page;
 		this.pageSize = pageSize;
 	}
@@ -103,7 +117,9 @@ public class ZahlungenSearchParamsDTO {
 		return allowedInstitutionIds;
 	}
 
-	public void setAllowedInstitutionIds(@Nullable List<String> allowedInstitutionIds) {
+	public void setAllowedInstitutionIds(
+		@Nullable List<String> allowedInstitutionIds
+	) {
 		this.allowedInstitutionIds = allowedInstitutionIds;
 	}
 }

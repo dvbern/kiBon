@@ -8,28 +8,24 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util.zahlungslauf;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.Adresse;
-import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.entities.Zahlung;
-import ch.dvbern.ebegu.entities.Zahlungsauftrag;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
 
@@ -49,20 +45,25 @@ public interface ZahlungslaufHelper extends Serializable {
 	 * Gibt den Zahlungsstatus dieses Zeitabschnitts zurueck.
 	 */
 	@Nonnull
-	VerfuegungsZeitabschnittZahlungsstatus getZahlungsstatus(@Nonnull VerfuegungZeitabschnitt zeitabschnitt);
+	VerfuegungsZeitabschnittZahlungsstatus getZahlungsstatus(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	);
 
 	/**
 	 * Setzt den Zahlungsstatus dieses Zeitabschnitts auf den uebergebenen Wert
 	 */
 	void setZahlungsstatus(
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
-		@Nonnull VerfuegungsZeitabschnittZahlungsstatus status);
+		@Nonnull VerfuegungsZeitabschnittZahlungsstatus status
+	);
 
 	/**
 	 * Gibt den auszuzahlenden Betrag zurueck.
 	 */
 	@Nonnull
-	BigDecimal getAuszahlungsbetrag(@Nonnull VerfuegungZeitabschnitt zeitabschnitt);
+	BigDecimal getAuszahlungsbetrag(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	);
 
 	/**
 	 * Gibt die Auszahlungsadresse zurueck. Falls eine spezifische Auszahlungsadresse gesetzt ist
@@ -78,13 +79,17 @@ public interface ZahlungslaufHelper extends Serializable {
 	 */
 	void setIsSameAusbezahlteVerguenstigung(
 		@Nonnull Optional<VerfuegungZeitabschnitt> oldSameZeitabschnittOptional,
-		@Nonnull VerfuegungZeitabschnitt newZeitabschnitt);
+		@Nonnull VerfuegungZeitabschnitt newZeitabschnitt
+	);
 
 	/**
 	 * Gibt zurueck, ob die gespeicherten Daten, welche fuer diesen Zahlungslauftyp relevant sind,
 	 * identisch sind
 	 */
-	boolean isSamePersistedValues(@Nonnull VerfuegungZeitabschnitt abschnitt, @Nonnull VerfuegungZeitabschnitt otherAbschnitt);
+	boolean isSamePersistedValues(
+		@Nonnull VerfuegungZeitabschnitt abschnitt,
+		@Nonnull VerfuegungZeitabschnitt otherAbschnitt
+	);
 
 	/**
 	 * Gibt zurueck, ob fuer diesen Zeitabschnitt grundsaetzlich eine Auszahlung in Frage kommt.

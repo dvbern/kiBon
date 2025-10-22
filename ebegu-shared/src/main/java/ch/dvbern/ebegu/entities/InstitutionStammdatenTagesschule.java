@@ -21,14 +21,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.collections.CollectionUtils;
@@ -41,21 +41,26 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class InstitutionStammdatenTagesschule extends AbstractEntity implements Comparable<InstitutionStammdatenTagesschule> {
+public class InstitutionStammdatenTagesschule extends AbstractEntity implements
+	Comparable<InstitutionStammdatenTagesschule> {
 
 	private static final long serialVersionUID = 3991623541799163623L;
 
 	@Nonnull
 	@Valid
 	@SortNatural
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "institutionStammdatenTagesschule")
-	private Set<EinstellungenTagesschule> einstellungenTagesschule = new TreeSet<>();
+	@OneToMany(cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "institutionStammdatenTagesschule")
+	private Set<EinstellungenTagesschule> einstellungenTagesschule =
+		new TreeSet<>();
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_stammdaten_ts_gemeinde_id"))
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_institution_stammdaten_ts_gemeinde_id"), updatable = false)
 	private Gemeinde gemeinde;
-
 
 	public InstitutionStammdatenTagesschule() {
 	}
@@ -86,7 +91,9 @@ public class InstitutionStammdatenTagesschule extends AbstractEntity implements 
 		return einstellungenTagesschule;
 	}
 
-	public void setEinstellungenTagesschule(@Nonnull Set<EinstellungenTagesschule> einstellungenTagesschule) {
+	public void setEinstellungenTagesschule(
+		@Nonnull Set<EinstellungenTagesschule> einstellungenTagesschule
+	) {
 		this.einstellungenTagesschule = einstellungenTagesschule;
 	}
 
@@ -103,7 +110,8 @@ public class InstitutionStammdatenTagesschule extends AbstractEntity implements 
 	public List<ModulTagesschuleGroup> extractAllModulTagesschuleGroup() {
 		final List<ModulTagesschuleGroup> list = new ArrayList<>();
 		for (final EinstellungenTagesschule einstellungenTagesschule : getEinstellungenTagesschule()) {
-			Set<ModulTagesschuleGroup> modulTagesschuleGroups = einstellungenTagesschule.getModulTagesschuleGroups();
+			Set<ModulTagesschuleGroup> modulTagesschuleGroups =
+				einstellungenTagesschule.getModulTagesschuleGroups();
 			if (CollectionUtils.isNotEmpty(modulTagesschuleGroups)) {
 				list.addAll(modulTagesschuleGroups);
 			}

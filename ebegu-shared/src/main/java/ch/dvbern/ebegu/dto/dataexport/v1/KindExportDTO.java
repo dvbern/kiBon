@@ -18,12 +18,12 @@ package ch.dvbern.ebegu.dto.dataexport.v1;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 
 /**
  * This is a DTO that is used to export the relevant Information about a {@link ch.dvbern.ebegu.entities.Kind}.
@@ -35,13 +35,17 @@ public class KindExportDTO {
 	private String nachname;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate geburtsdatum;
 
 	public KindExportDTO() {
 	}
 
-	public KindExportDTO(String vorname, String nachname, LocalDate geburtsdatum) {
+	public KindExportDTO(
+		String vorname,
+		String nachname,
+		LocalDate geburtsdatum
+	) {
 		this.vorname = vorname;
 		this.nachname = nachname;
 		this.geburtsdatum = geburtsdatum;
@@ -80,8 +84,10 @@ public class KindExportDTO {
 			return false;
 		}
 		KindExportDTO that = (KindExportDTO) o;
-		return Objects.equals(getVorname(), that.getVorname()) &&
-			Objects.equals(getNachname(), that.getNachname()) &&
+		return Objects.equals(getVorname(), that.getVorname())
+			&&
+			Objects.equals(getNachname(), that.getNachname())
+			&&
 			Objects.equals(getGeburtsdatum(), that.getGeburtsdatum());
 	}
 

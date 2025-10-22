@@ -31,7 +31,7 @@ import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import ch.dvbern.ebegu.enums.Kinderabzug;
-import ch.dvbern.ebegu.testfaelle.institutionStammdatenBuilder.InstitutionStammdatenBuilder;
+import ch.dvbern.ebegu.testfaelle.institutionstammdatenbuilder.InstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.MathUtil;
@@ -48,10 +48,17 @@ public class Testfall10_UmzugVorGesuchsperiode extends AbstractTestfall {
 	static final int EINKOMMEN = 53265;
 
 	public Testfall10_UmzugVorGesuchsperiode(
-			Gesuchsperiode gesuchsperiode,
-			boolean betreuungenBestaetigt,
-			Gemeinde gemeinde, InstitutionStammdatenBuilder institutionStammdatenBuilder) {
-		super(gesuchsperiode, betreuungenBestaetigt, gemeinde, institutionStammdatenBuilder);
+		Gesuchsperiode gesuchsperiode,
+		boolean betreuungenBestaetigt,
+		Gemeinde gemeinde,
+		InstitutionStammdatenBuilder institutionStammdatenBuilder
+	) {
+		super(
+			gesuchsperiode,
+			betreuungenBestaetigt,
+			gemeinde,
+			institutionStammdatenBuilder
+		);
 	}
 
 	@Override
@@ -61,45 +68,96 @@ public class Testfall10_UmzugVorGesuchsperiode extends AbstractTestfall {
 		GesuchstellerContainer gesuchsteller1 = createGesuchstellerContainer(1);
 		gesuch.setGesuchsteller1(gesuchsteller1);
 
-		final int gesuchsperiodeFirstYear = gesuchsperiode.getGueltigkeit().getGueltigAb().getYear();
+		final int gesuchsperiodeFirstYear = gesuchsperiode.getGueltigkeit()
+			.getGueltigAb()
+			.getYear();
 
 		//Wohnadresse in Bern
-		GesuchstellerAdresseContainer adresseVorZuegelnBern = gesuchsteller1.getAdressen().get(0);
+		GesuchstellerAdresseContainer adresseVorZuegelnBern = gesuchsteller1
+			.getAdressen()
+			.get(0);
 		Objects.requireNonNull(adresseVorZuegelnBern);
-		Objects.requireNonNull(adresseVorZuegelnBern.getGesuchstellerAdresseJA());
-		adresseVorZuegelnBern.getGesuchstellerAdresseJA().setNichtInGemeinde(false);
+		Objects.requireNonNull(
+			adresseVorZuegelnBern.getGesuchstellerAdresseJA()
+		);
 		adresseVorZuegelnBern.getGesuchstellerAdresseJA()
-			.setGueltigkeit(new DateRange(Constants.START_OF_TIME, LocalDate.of(gesuchsperiodeFirstYear, 6, 14)));
+			.setNichtInGemeinde(false);
+		adresseVorZuegelnBern.getGesuchstellerAdresseJA()
+			.setGueltigkeit(
+				new DateRange(
+					Constants.START_OF_TIME,
+					LocalDate.of(gesuchsperiodeFirstYear, 6, 14)
+				)
+			);
 
 		// Umzugsadresse am 15.08.2016 aus Bern -> Anspruch bis Ende Monat
-		GesuchstellerAdresseContainer adresseNachZuegelnNichtBern = createWohnadresseContainer(gesuchsteller1);
+		GesuchstellerAdresseContainer adresseNachZuegelnNichtBern =
+			createWohnadresseContainer(gesuchsteller1);
 		Objects.requireNonNull(adresseNachZuegelnNichtBern);
-		Objects.requireNonNull(adresseNachZuegelnNichtBern.getGesuchstellerAdresseJA());
-		adresseNachZuegelnNichtBern.getGesuchstellerAdresseJA().setNichtInGemeinde(true);
-		adresseNachZuegelnNichtBern.getGesuchstellerAdresseJA().setGueltigkeit(new DateRange(LocalDate.of(gesuchsperiodeFirstYear, 8, 15),
-			Constants.END_OF_TIME));
+		Objects.requireNonNull(
+			adresseNachZuegelnNichtBern.getGesuchstellerAdresseJA()
+		);
+		adresseNachZuegelnNichtBern.getGesuchstellerAdresseJA()
+			.setNichtInGemeinde(true);
+		adresseNachZuegelnNichtBern.getGesuchstellerAdresseJA()
+			.setGueltigkeit(
+				new DateRange(
+					LocalDate.of(gesuchsperiodeFirstYear, 8, 15),
+					Constants.END_OF_TIME
+				)
+			);
 		gesuchsteller1.getAdressen().add(adresseNachZuegelnNichtBern);
 
 		// Erwerbspensum
 		ErwerbspensumContainer erwerbspensum = createErwerbspensum(80);
 		gesuchsteller1.addErwerbspensumContainer(erwerbspensum);
 		// Kinder
-		KindContainer kind = createKind(Geschlecht.WEIBLICH, getNachname(), "Estrella", LocalDate.of(2014, Month.APRIL, 13), Kinderabzug.GANZER_ABZUG, true);
+		KindContainer kind = createKind(
+			Geschlecht.WEIBLICH,
+			getNachname(),
+			"Estrella",
+			LocalDate.of(2014, Month.APRIL, 13),
+			Kinderabzug.GANZER_ABZUG,
+			true
+		);
 		kind.setGesuch(gesuch);
 		gesuch.getKindContainers().add(kind);
 		// Betreuungen
 		// Kita Weissenstein
-		Betreuung betreuungKitaAaregg = createBetreuung(institutionStammdatenBuilder.getIdInstitutionStammdatenWeissenstein(), betreuungenBestaetigt);
+		Betreuung betreuungKitaAaregg = createBetreuung(
+			institutionStammdatenBuilder
+				.getIdInstitutionStammdatenWeissenstein(),
+			betreuungenBestaetigt
+		);
 		betreuungKitaAaregg.setKind(kind);
 		kind.getBetreuungen().add(betreuungKitaAaregg);
-		BetreuungspensumContainer betreuungspensumKitaAaregg = createBetreuungspensum(80, LocalDate.of(gesuchsperiode.getBasisJahrPlus1(), Month.AUGUST, 1), LocalDate.of(gesuchsperiode.getBasisJahrPlus2(), Month.JULY, 31));
+		BetreuungspensumContainer betreuungspensumKitaAaregg =
+			createBetreuungspensum(
+				80,
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus1(),
+					Month.AUGUST,
+					1
+				),
+				LocalDate.of(
+					gesuchsperiode.getBasisJahrPlus2(),
+					Month.JULY,
+					31
+				)
+			);
 		betreuungspensumKitaAaregg.setBetreuung(betreuungKitaAaregg);
-		betreuungKitaAaregg.getBetreuungspensumContainers().add(betreuungspensumKitaAaregg);
+		betreuungKitaAaregg.getBetreuungspensumContainers()
+			.add(betreuungspensumKitaAaregg);
 		// Finanzielle Situation
 		FinanzielleSituationContainer finanzielleSituationContainer =
-				createFinanzielleSituationContainer(MathUtil.DEFAULT.from(VERMOEGEN), MathUtil.DEFAULT.from(EINKOMMEN));
+			createFinanzielleSituationContainer(
+				MathUtil.DEFAULT.from(VERMOEGEN),
+				MathUtil.DEFAULT.from(EINKOMMEN)
+			);
 		finanzielleSituationContainer.setGesuchsteller(gesuchsteller1);
-		gesuchsteller1.setFinanzielleSituationContainer(finanzielleSituationContainer);
+		gesuchsteller1.setFinanzielleSituationContainer(
+			finanzielleSituationContainer
+		);
 
 		createEmptyEKVInfoContainer(gesuch);
 

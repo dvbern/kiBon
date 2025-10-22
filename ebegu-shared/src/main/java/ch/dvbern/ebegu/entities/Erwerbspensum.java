@@ -15,6 +15,21 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.util.Locale;
+import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotNull;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.Taetigkeit;
 import ch.dvbern.ebegu.util.Constants;
@@ -24,13 +39,6 @@ import ch.dvbern.ebegu.validators.CheckUnbezahlterUrlaub;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Erwerbspensum eines Gesuchstellers
@@ -53,7 +61,8 @@ public class Erwerbspensum extends AbstractIntegerPensum {
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_erwerbspensum_urlaub_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_erwerbspensum_urlaub_id"),
+		nullable = true)
 	private UnbezahlterUrlaub unbezahlterUrlaub;
 
 	@Column(nullable = true)
@@ -68,10 +77,8 @@ public class Erwerbspensum extends AbstractIntegerPensum {
 	@Nullable
 	private String wegzeit;
 
-
 	public Erwerbspensum() {
 	}
-
 
 	public Taetigkeit getTaetigkeit() {
 		return taetigkeit;
@@ -95,7 +102,9 @@ public class Erwerbspensum extends AbstractIntegerPensum {
 		return unbezahlterUrlaub;
 	}
 
-	public void setUnbezahlterUrlaub(@Nullable UnbezahlterUrlaub unbezahlterUrlaub) {
+	public void setUnbezahlterUrlaub(
+		@Nullable UnbezahlterUrlaub unbezahlterUrlaub
+	) {
 		this.unbezahlterUrlaub = unbezahlterUrlaub;
 	}
 
@@ -104,7 +113,9 @@ public class Erwerbspensum extends AbstractIntegerPensum {
 		return unregelmaessigeArbeitszeiten;
 	}
 
-	public void setUnregelmaessigeArbeitszeiten(@Nullable Boolean unregelmaessigeArbeitszeiten) {
+	public void setUnregelmaessigeArbeitszeiten(
+		@Nullable Boolean unregelmaessigeArbeitszeiten
+	) {
 		this.unregelmaessigeArbeitszeiten = unregelmaessigeArbeitszeiten;
 	}
 
@@ -113,7 +124,9 @@ public class Erwerbspensum extends AbstractIntegerPensum {
 		return erwerbspensumInstitution;
 	}
 
-	public void setErwerbspensumInstitution(@Nullable String erwerbspensumInstitution) {
+	public void setErwerbspensumInstitution(
+		@Nullable String erwerbspensumInstitution
+	) {
 		this.erwerbspensumInstitution = erwerbspensumInstitution;
 	}
 
@@ -127,7 +140,8 @@ public class Erwerbspensum extends AbstractIntegerPensum {
 	}
 
 	@Override
-	@SuppressWarnings({ "OverlyComplexBooleanExpression", "PMD.CompareObjectsWithEquals" })
+	@SuppressWarnings({ "OverlyComplexBooleanExpression",
+		"PMD.CompareObjectsWithEquals" })
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")
 	public boolean isSame(AbstractEntity other) {
 		//noinspection ObjectEquality
@@ -142,25 +156,46 @@ public class Erwerbspensum extends AbstractIntegerPensum {
 		}
 		final Erwerbspensum otherErwerbspensum = (Erwerbspensum) other;
 		boolean pensumIsSame = super.isSame(otherErwerbspensum);
-		boolean taetigkeitSame = taetigkeit == otherErwerbspensum.getTaetigkeit();
-		boolean erwerbspensumInstitutionSame = Objects.equals(erwerbspensumInstitution, otherErwerbspensum.erwerbspensumInstitution);
-		boolean bezeichnungSame = EbeguUtil.isSameOrNullStrings(bezeichnung, otherErwerbspensum.getBezeichnung());
-		boolean urlaubSame = Objects.equals(unbezahlterUrlaub, otherErwerbspensum.getUnbezahlterUrlaub());
-		return pensumIsSame && taetigkeitSame && erwerbspensumInstitutionSame && bezeichnungSame && urlaubSame;
+		boolean taetigkeitSame = taetigkeit
+			== otherErwerbspensum.getTaetigkeit();
+		boolean erwerbspensumInstitutionSame = Objects.equals(
+			erwerbspensumInstitution,
+			otherErwerbspensum.erwerbspensumInstitution
+		);
+		boolean bezeichnungSame = EbeguUtil.isSameOrNullStrings(
+			bezeichnung,
+			otherErwerbspensum.getBezeichnung()
+		);
+		boolean urlaubSame = Objects.equals(
+			unbezahlterUrlaub,
+			otherErwerbspensum.getUnbezahlterUrlaub()
+		);
+		return pensumIsSame
+			&& taetigkeitSame
+			&& erwerbspensumInstitutionSame
+			&& bezeichnungSame
+			&& urlaubSame;
 	}
 
 	public String getName(
-			@Nonnull Locale locale,
-			Mandant mandant) {
+		@Nonnull Locale locale,
+		Mandant mandant
+	) {
 		if (bezeichnung == null || bezeichnung.isEmpty()) {
-			return ServerMessageUtil.translateEnumValue(taetigkeit, locale, mandant) + ' ' + getPensum() + '%';
+			return ServerMessageUtil.translateEnumValue(
+				taetigkeit,
+				locale,
+				mandant
+			) + ' ' + getPensum() + '%';
 		}
 		return bezeichnung;
 	}
 
-
 	@Nonnull
-	public Erwerbspensum copyErwerbspensum(@Nonnull Erwerbspensum target, @Nonnull AntragCopyType copyType) {
+	public Erwerbspensum copyErwerbspensum(
+		@Nonnull Erwerbspensum target,
+		@Nonnull AntragCopyType copyType
+	) {
 		super.copyAbstractPensumEntity(target, copyType);
 		switch (copyType) {
 		case MUTATION:
@@ -168,7 +203,9 @@ public class Erwerbspensum extends AbstractIntegerPensum {
 		case ERNEUERUNG_AR_2023:
 			target.setTaetigkeit(this.getTaetigkeit());
 			target.setBezeichnung(this.getBezeichnung());
-			target.setErwerbspensumInstitution(this.getErwerbspensumInstitution());
+			target.setErwerbspensumInstitution(
+				this.getErwerbspensumInstitution()
+			);
 			target.setWegzeit(this.getWegzeit());
 			copyUnbezahlterUrlaub(target, copyType);
 			break;
@@ -179,9 +216,18 @@ public class Erwerbspensum extends AbstractIntegerPensum {
 		return target;
 	}
 
-	private void copyUnbezahlterUrlaub(@Nonnull Erwerbspensum target, @Nonnull AntragCopyType copyType) {
+	private void copyUnbezahlterUrlaub(
+		@Nonnull Erwerbspensum target,
+		@Nonnull AntragCopyType copyType
+	) {
 		if (this.getUnbezahlterUrlaub() != null) {
-			target.setUnbezahlterUrlaub(this.getUnbezahlterUrlaub().copyUnbezahlterUrlaub(new UnbezahlterUrlaub(), copyType));
+			target.setUnbezahlterUrlaub(
+				this.getUnbezahlterUrlaub()
+					.copyUnbezahlterUrlaub(
+						new UnbezahlterUrlaub(),
+						copyType
+					)
+			);
 		}
 	}
 

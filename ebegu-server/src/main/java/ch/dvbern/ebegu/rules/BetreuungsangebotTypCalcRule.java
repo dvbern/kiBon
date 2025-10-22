@@ -22,8 +22,8 @@ import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 
 import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESSCHULE;
@@ -33,8 +33,17 @@ import static ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp.TAGESSCHULE;
  */
 public class BetreuungsangebotTypCalcRule extends AbstractCalcRule {
 
-	public BetreuungsangebotTypCalcRule(DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.BETREUUNGSANGEBOT_TYP, RuleType.REDUKTIONSREGEL, RuleValidity.ASIV, validityPeriod, locale);
+	public BetreuungsangebotTypCalcRule(
+		DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.BETREUUNGSANGEBOT_TYP,
+			RuleType.REDUKTIONSREGEL,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -45,7 +54,8 @@ public class BetreuungsangebotTypCalcRule extends AbstractCalcRule {
 	@Override
 	protected void executeRule(
 		@Nonnull AbstractPlatz platz,
-		@Nonnull BGCalculationInput inputData) {
+		@Nonnull BGCalculationInput inputData
+	) {
 		// bei tagesschule hat man grundsaetzlich 100 anspruch
 		inputData.setAnspruchspensumProzent(100);
 		inputData.addBemerkung(MsgKey.BETREUUNGSANGEBOT_MSG, getLocale());

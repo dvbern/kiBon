@@ -28,7 +28,8 @@ import ch.dvbern.ebegu.types.DateRange;
 /**
  * Wir teilen die Regeln noch auf so dass eine einzelne Regel grundsaetzlich entweder nur neue Abschnitte macht oder
  * nur Daten berechnet und setzt. Dadurch bekommen wir mehr Kontrolle wann was gemacht wird.
- * Die AbstractEbeguRule definiert aber jeweils beide Schritte. Daher machen wir jeweils noch eine Abstract rule die nichts macht
+ * Die AbstractEbeguRule definiert aber jeweils beide Schritte. Daher machen wir jeweils noch eine Abstract rule die
+ * nichts macht
  * fuer den nicht benoetigten Schritt
  */
 public abstract class AbstractAbschnittRule extends AbstractEbeguRule {
@@ -45,25 +46,39 @@ public abstract class AbstractAbschnittRule extends AbstractEbeguRule {
 
 	//Subklassen dieser Abstrakten Klasse benoetigen diese Methode nicht da sie nur Abschnitte erstellen. Daher hier NOP
 	@Override
-	protected final void executeRule(@Nonnull AbstractPlatz platz, @Nonnull BGCalculationInput inputData) {
+	protected final void executeRule(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull BGCalculationInput inputData
+	) {
 		//NOP
 	}
 
 	@Nonnull
-	protected final VerfuegungZeitabschnitt createZeitabschnittWithinValidityPeriodOfRule(@Nonnull DateRange gueltigkeit) {
+	protected final VerfuegungZeitabschnitt createZeitabschnittWithinValidityPeriodOfRule(
+		@Nonnull DateRange gueltigkeit
+	) {
 		// Der Zeitabschnitt muss innerhalb der Gueltigkeit der Regel liegen!
-		VerfuegungZeitabschnitt zeitabschnitt = new VerfuegungZeitabschnitt(gueltigkeit);
+		VerfuegungZeitabschnitt zeitabschnitt = new VerfuegungZeitabschnitt(
+			gueltigkeit
+		);
 		limitZeitabschnittToGueltigkeitRegel(zeitabschnitt);
 		return zeitabschnitt;
 	}
 
 	@Nonnull
-	protected final VerfuegungZeitabschnitt createZeitabschnittWithinValidityPeriodOfRule(@Nonnull LocalDate gueltigAb, @Nonnull LocalDate gueltigBis) {
+	protected final VerfuegungZeitabschnitt createZeitabschnittWithinValidityPeriodOfRule(
+		@Nonnull LocalDate gueltigAb,
+		@Nonnull LocalDate gueltigBis
+	) {
 		// Der Zeitabschnitt muss innerhalb der Gueltigkeit der Regel liegen!
-		return createZeitabschnittWithinValidityPeriodOfRule(new DateRange(gueltigAb, gueltigBis));
+		return createZeitabschnittWithinValidityPeriodOfRule(
+			new DateRange(gueltigAb, gueltigBis)
+		);
 	}
 
-	private void limitZeitabschnittToGueltigkeitRegel(@Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	private void limitZeitabschnittToGueltigkeitRegel(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		if (zeitabschnitt.getGueltigkeit().startsBefore(validityPeriod())) {
 			zeitabschnitt.getGueltigkeit().setGueltigAb(validFrom());
 		}

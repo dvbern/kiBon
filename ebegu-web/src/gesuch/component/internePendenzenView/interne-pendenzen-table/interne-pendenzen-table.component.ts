@@ -12,14 +12,16 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatSort, Sort, SortDirection} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {isMoment} from 'moment';
-import {DvNgRemoveDialogComponent} from '../../../../app/core/component/dv-ng-remove-dialog/dv-ng-remove-dialog.component';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {TSInternePendenz} from '../../../../models/TSInternePendenz';
+import {firstValueFrom} from 'rxjs';
 
 @Component({
     selector: 'dv-interne-pendenzen-table',
     templateUrl: './interne-pendenzen-table.component.html',
     styleUrls: ['./interne-pendenzen-table.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class InternePendenzenTableComponent implements OnInit, OnChanges {
     @Input()
@@ -112,9 +114,10 @@ export class InternePendenzenTableComponent implements OnInit, OnChanges {
         dialogConfig.data = {
             title: 'PENDENZ_WIRKLICH_LOESCHEN'
         };
-        return this.dialog
-            .open(DvNgRemoveDialogComponent, dialogConfig)
-            .afterClosed()
-            .toPromise();
+        return firstValueFrom(
+            this.dialog
+                .open(DvNgRemoveDialogComponent, dialogConfig)
+                .afterClosed()
+        );
     }
 }

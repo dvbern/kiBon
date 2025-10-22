@@ -16,11 +16,11 @@
  */
 
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {StateService} from '@uirouter/core';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {StammdatenHeaderComponent} from './stammdaten-header.component';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
+import {StammdatenHeaderComponent} from './stammdaten-header.component';
 
 describe('StammdatenHeaderComponent', () => {
     const url = 'http://logo.png';

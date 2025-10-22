@@ -1,14 +1,17 @@
 package ch.dvbern.ebegu.util;
 
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
-
 import javax.annotation.Nullable;
 
-public class MinPensumEinstellungKeyBetreuungsTypVisitor implements BetreuungsangebotTypVisitor<EinstellungKey> {
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+
+public class MinPensumEinstellungKeyBetreuungsTypVisitor implements
+	BetreuungsangebotTypVisitor<EinstellungKey> {
 
 	@Nullable
-	public EinstellungKey getEinstellungenKey(@Nullable BetreuungsangebotTyp betreuungsangebotTyp) {
+	public EinstellungKey getEinstellungenKey(
+		@Nullable BetreuungsangebotTyp betreuungsangebotTyp
+	) {
 		if (betreuungsangebotTyp == null) {
 			return null;
 		}

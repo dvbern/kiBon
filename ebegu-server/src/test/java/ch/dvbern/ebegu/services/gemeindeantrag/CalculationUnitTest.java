@@ -17,15 +17,6 @@
 
 package ch.dvbern.ebegu.services.gemeindeantrag;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.BelegungTagesschuleModulIntervall;
-import ch.dvbern.ebegu.enums.EinschulungTyp;
-import org.easymock.EasyMockExtension;
-import org.easymock.EasyMockSupport;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -33,6 +24,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
+import ch.dvbern.ebegu.entities.BelegungTagesschule;
+import ch.dvbern.ebegu.entities.BelegungTagesschuleModul;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.InstitutionStammdaten;
+import ch.dvbern.ebegu.entities.Kind;
+import ch.dvbern.ebegu.entities.KindContainer;
+import ch.dvbern.ebegu.entities.ModulTagesschule;
+import ch.dvbern.ebegu.entities.ModulTagesschuleGroup;
+import ch.dvbern.ebegu.enums.BelegungTagesschuleModulIntervall;
+import ch.dvbern.ebegu.enums.EinschulungTyp;
+import org.easymock.EasyMockExtension;
+import org.easymock.EasyMockSupport;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -44,10 +52,10 @@ public class CalculationUnitTest extends EasyMockSupport {
 	public void testIsFruebetreuung() {
 		ModulTagesschuleGroup group = new ModulTagesschuleGroup();
 
-		group.setZeitVon(LocalTime.of(8,0));
+		group.setZeitVon(LocalTime.of(8, 0));
 		Assert.assertTrue(group.isFruehbetreuung());
 
-		group.setZeitVon(LocalTime.of(11,29));
+		group.setZeitVon(LocalTime.of(11, 29));
 		Assert.assertTrue(group.isFruehbetreuung());
 
 		group.setZeitVon(LocalTime.of(11, 30));
@@ -58,10 +66,10 @@ public class CalculationUnitTest extends EasyMockSupport {
 	public void testIsMittagsbetreuung() {
 		ModulTagesschuleGroup group = new ModulTagesschuleGroup();
 
-		group.setZeitVon(LocalTime.of(11,30));
+		group.setZeitVon(LocalTime.of(11, 30));
 		Assert.assertTrue(group.isMittagsbetreuung());
 
-		group.setZeitVon(LocalTime.of(13,14));
+		group.setZeitVon(LocalTime.of(13, 14));
 		Assert.assertTrue(group.isMittagsbetreuung());
 
 		group.setZeitVon(LocalTime.of(13, 15));
@@ -72,10 +80,10 @@ public class CalculationUnitTest extends EasyMockSupport {
 	public void testNachmittagsbetreuung1() {
 		ModulTagesschuleGroup group = new ModulTagesschuleGroup();
 
-		group.setZeitVon(LocalTime.of(13,15));
+		group.setZeitVon(LocalTime.of(13, 15));
 		Assert.assertTrue(group.isNachmittagbetreuung1());
 
-		group.setZeitVon(LocalTime.of(14,59));
+		group.setZeitVon(LocalTime.of(14, 59));
 		Assert.assertTrue(group.isNachmittagbetreuung1());
 
 		group.setZeitVon(LocalTime.of(15, 0));
@@ -86,16 +94,17 @@ public class CalculationUnitTest extends EasyMockSupport {
 	public void testNachmittagsbetreuung2() {
 		ModulTagesschuleGroup group = new ModulTagesschuleGroup();
 
-		group.setZeitVon(LocalTime.of(15,0));
+		group.setZeitVon(LocalTime.of(15, 0));
 		Assert.assertTrue(group.isNachmittagbetreuung2());
 
-		group.setZeitVon(LocalTime.of(20,0));
+		group.setZeitVon(LocalTime.of(20, 0));
 		Assert.assertTrue(group.isNachmittagbetreuung2());
 	}
 
 	@Test()
 	public void testCountAnzahlKinder() {
-		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsService = new LastenausgleichTagesschuleAngabenInstitutionServiceBean();
+		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsService =
+			new LastenausgleichTagesschuleAngabenInstitutionServiceBean();
 
 		Kind kind1 = new Kind();
 		kind1.setEinschulungTyp(EinschulungTyp.KLASSE1);
@@ -139,7 +148,9 @@ public class CalculationUnitTest extends EasyMockSupport {
 		anmeldungen.add(anmeldung4);
 		anmeldungen.add(anmeldung5);
 
-		Map<String, Integer> result = latsService.countAnzahlKinder(anmeldungen);
+		Map<String, Integer> result = latsService.countAnzahlKinder(
+			anmeldungen
+		);
 		Assert.assertEquals((int) result.get("vorschulalter"), 1);
 		Assert.assertEquals((int) result.get("kindergarten"), 2);
 		Assert.assertEquals((int) result.get("primarstufe"), 2);
@@ -149,42 +160,65 @@ public class CalculationUnitTest extends EasyMockSupport {
 
 	@Test
 	public void testCalculateDurchschnittKinderProTag() {
-		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsService = new LastenausgleichTagesschuleAngabenInstitutionServiceBean();
+		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsService =
+			new LastenausgleichTagesschuleAngabenInstitutionServiceBean();
 
 		List<AnmeldungTagesschule> anmeldungen = getTestAnmeldungTagesschulen();
 
-		Map<String, BigDecimal> result = latsService.calculateDurchschnittKinderProTag(anmeldungen);
+		Map<String, BigDecimal> result = latsService
+			.calculateDurchschnittKinderProTag(anmeldungen);
 		// keine Mittagsbetreuung und keine Nachmittagsbetreuung2
 		Assert.assertEquals(BigDecimal.ZERO, result.get("mittagsbetreuung"));
-		Assert.assertEquals(BigDecimal.ZERO, result.get("nachmittagsbetreuung2"));
+		Assert.assertEquals(
+			BigDecimal.ZERO,
+			result.get("nachmittagsbetreuung2")
+		);
 		// 8 Module in Kategorie Frühbetreuung in 5 Tagen
-		Assert.assertEquals(new BigDecimal("1.60"), (BigDecimal) result.get("fruehbetreuung"));
+		Assert.assertEquals(
+			new BigDecimal("1.60"),
+			(BigDecimal) result.get("fruehbetreuung")
+		);
 		// 2 Wöchentliche Module und 3 zweiwöchentliche Module in Kategorie Nachmittagsbetreuung1 in 5 Tagen
-		Assert.assertEquals(new BigDecimal("0.70"), (BigDecimal) result.get("nachmittagsbetreuung1"));
+		Assert.assertEquals(
+			new BigDecimal("0.70"),
+			(BigDecimal) result.get("nachmittagsbetreuung1")
+		);
 	}
 
 	@Test
 	public void testCountBetreuungsstundenPerYearForTagesschuleAndPeriode() {
 		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsAngabenInstitutionServiceMock =
-			partialMockBuilder(LastenausgleichTagesschuleAngabenInstitutionServiceBean.class)
-				.addMockedMethod("findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode")
+			partialMockBuilder(
+				LastenausgleichTagesschuleAngabenInstitutionServiceBean.class
+			)
+				.addMockedMethod(
+					"findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode"
+				)
 				.createMock();
 
 		InstitutionStammdaten stammdaten = new InstitutionStammdaten();
 		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
-		expect(latsAngabenInstitutionServiceMock.findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode(
-			stammdaten,
-			gesuchsperiode
-		)).andReturn(getTestAnmeldungTagesschulen());
+		expect(
+			latsAngabenInstitutionServiceMock
+				.findTagesschuleAnmeldungenForTagesschuleStammdatenAndPeriode(
+					stammdaten,
+					gesuchsperiode
+				)
+		).andReturn(getTestAnmeldungTagesschulen());
 
 		replay(latsAngabenInstitutionServiceMock);
 
-		BigDecimal betreuungsstunden = latsAngabenInstitutionServiceMock.countBetreuungsstundenPerYearForTagesschuleAndPeriode(stammdaten, gesuchsperiode);
+		BigDecimal betreuungsstunden = latsAngabenInstitutionServiceMock
+			.countBetreuungsstundenPerYearForTagesschuleAndPeriode(
+				stammdaten,
+				gesuchsperiode
+			);
 		Assert.assertEquals(new BigDecimal("1452.75"), betreuungsstunden);
 	}
 
 	private List<AnmeldungTagesschule> getTestAnmeldungTagesschulen() {
-		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsService = new LastenausgleichTagesschuleAngabenInstitutionServiceBean();
+		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsService =
+			new LastenausgleichTagesschuleAngabenInstitutionServiceBean();
 		ModulTagesschuleGroup group1 = new ModulTagesschuleGroup();
 		group1.setZeitVon(LocalTime.of(8, 0));
 		group1.setZeitBis(LocalTime.of(12, 0));
@@ -196,72 +230,102 @@ public class CalculationUnitTest extends EasyMockSupport {
 		ModulTagesschule modul1 = new ModulTagesschule();
 		modul1.setModulTagesschuleGroup(group1);
 		modul1.setWochentag(DayOfWeek.MONDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul1 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul1 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul1.setModulTagesschule(modul1);
-		belegungTagesschuleModul1.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul1.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul2 = new ModulTagesschule();
 		modul2.setModulTagesschuleGroup(group1);
 		modul2.setWochentag(DayOfWeek.TUESDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul2 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul2 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul2.setModulTagesschule(modul2);
-		belegungTagesschuleModul2.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul2.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul3 = new ModulTagesschule();
 		modul3.setModulTagesschuleGroup(group1);
 		modul3.setWochentag(DayOfWeek.WEDNESDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul3 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul3 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul3.setModulTagesschule(modul3);
-		belegungTagesschuleModul3.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul3.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul4 = new ModulTagesschule();
 		modul4.setModulTagesschuleGroup(group1);
 		modul4.setWochentag(DayOfWeek.THURSDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul4 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul4 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul4.setModulTagesschule(modul4);
-		belegungTagesschuleModul4.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul4.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul5 = new ModulTagesschule();
 		modul5.setModulTagesschuleGroup(group1);
 		modul5.setWochentag(DayOfWeek.FRIDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul5 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul5 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul5.setModulTagesschule(modul5);
-		belegungTagesschuleModul5.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul5.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul6 = new ModulTagesschule();
 		modul6.setModulTagesschuleGroup(group2);
 		modul6.setWochentag(DayOfWeek.MONDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul6 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul6 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul6.setModulTagesschule(modul6);
-		belegungTagesschuleModul6.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul6.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul7 = new ModulTagesschule();
 		modul7.setModulTagesschuleGroup(group2);
 		modul7.setWochentag(DayOfWeek.TUESDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul7 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul7 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul7.setModulTagesschule(modul7);
-		belegungTagesschuleModul7.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul7.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul8 = new ModulTagesschule();
 		modul8.setModulTagesschuleGroup(group2);
 		modul8.setWochentag(DayOfWeek.WEDNESDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul8 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul8 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul8.setModulTagesschule(modul8);
-		belegungTagesschuleModul8.setIntervall(BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN);
+		belegungTagesschuleModul8.setIntervall(
+			BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN
+		);
 
 		ModulTagesschule modul9 = new ModulTagesschule();
 		modul9.setModulTagesschuleGroup(group2);
 		modul9.setWochentag(DayOfWeek.THURSDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul9 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul9 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul9.setModulTagesschule(modul9);
-		belegungTagesschuleModul9.setIntervall(BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN);
+		belegungTagesschuleModul9.setIntervall(
+			BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN
+		);
 
 		ModulTagesschule modul10 = new ModulTagesschule();
 		modul10.setModulTagesschuleGroup(group2);
 		modul10.setWochentag(DayOfWeek.FRIDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul10 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul10 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul10.setModulTagesschule(modul10);
-		belegungTagesschuleModul10.setIntervall(BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN);
+		belegungTagesschuleModul10.setIntervall(
+			BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN
+		);
 
 		Kind kind1 = new Kind();
 		kind1.setEinschulungTyp(EinschulungTyp.KLASSE1);
@@ -306,20 +370,34 @@ public class CalculationUnitTest extends EasyMockSupport {
 		anmeldungen.add(anmeldung1);
 		anmeldungen.add(anmeldung2);
 
-		Map<String, BigDecimal> result = latsService.calculateDurchschnittKinderProTag(anmeldungen);
+		Map<String, BigDecimal> result = latsService
+			.calculateDurchschnittKinderProTag(anmeldungen);
 		// keine Mittagsbetreuung und keine Nachmittagsbetreuung2
-		Assert.assertEquals(BigDecimal.ZERO, (BigDecimal) result.get("mittagsbetreuung"));
-		Assert.assertEquals(BigDecimal.ZERO, (BigDecimal) result.get("nachmittagsbetreuung2"));
+		Assert.assertEquals(
+			BigDecimal.ZERO,
+			(BigDecimal) result.get("mittagsbetreuung")
+		);
+		Assert.assertEquals(
+			BigDecimal.ZERO,
+			(BigDecimal) result.get("nachmittagsbetreuung2")
+		);
 		// 8 Module in Kategorie Frühbetreuung in 5 Tagen
-		Assert.assertEquals(new BigDecimal("1.60"), (BigDecimal) result.get("fruehbetreuung"));
+		Assert.assertEquals(
+			new BigDecimal("1.60"),
+			(BigDecimal) result.get("fruehbetreuung")
+		);
 		// 2 Wöchentliche Module und 3 zweiwöchentliche Module in Kategorie Nachmittagsbetreuung1 in 5 Tagen
-		Assert.assertEquals(new BigDecimal("0.70"), (BigDecimal) result.get("nachmittagsbetreuung1"));
+		Assert.assertEquals(
+			new BigDecimal("0.70"),
+			(BigDecimal) result.get("nachmittagsbetreuung1")
+		);
 		return anmeldungen;
 	}
 
 	@Test
 	public void testCalculateDurchschnittKinderProTagNichtAlleTageBesucht() {
-		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsService = new LastenausgleichTagesschuleAngabenInstitutionServiceBean();
+		LastenausgleichTagesschuleAngabenInstitutionServiceBean latsService =
+			new LastenausgleichTagesschuleAngabenInstitutionServiceBean();
 
 		ModulTagesschuleGroup group1 = new ModulTagesschuleGroup();
 		group1.setZeitVon(LocalTime.of(8, 0));
@@ -330,58 +408,82 @@ public class CalculationUnitTest extends EasyMockSupport {
 		ModulTagesschule modul1 = new ModulTagesschule();
 		modul1.setModulTagesschuleGroup(group1);
 		modul1.setWochentag(DayOfWeek.MONDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul1 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul1 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul1.setModulTagesschule(modul1);
-		belegungTagesschuleModul1.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul1.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul3 = new ModulTagesschule();
 		modul3.setModulTagesschuleGroup(group1);
 		modul3.setWochentag(DayOfWeek.WEDNESDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul3 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul3 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul3.setModulTagesschule(modul3);
-		belegungTagesschuleModul3.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul3.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul4 = new ModulTagesschule();
 		modul4.setModulTagesschuleGroup(group1);
 		modul4.setWochentag(DayOfWeek.THURSDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul4 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul4 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul4.setModulTagesschule(modul4);
-		belegungTagesschuleModul4.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul4.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul5 = new ModulTagesschule();
 		modul5.setModulTagesschuleGroup(group1);
 		modul5.setWochentag(DayOfWeek.FRIDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul5 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul5 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul5.setModulTagesschule(modul5);
-		belegungTagesschuleModul5.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul5.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul6 = new ModulTagesschule();
 		modul6.setModulTagesschuleGroup(group2);
 		modul6.setWochentag(DayOfWeek.MONDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul6 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul6 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul6.setModulTagesschule(modul6);
-		belegungTagesschuleModul6.setIntervall(BelegungTagesschuleModulIntervall.WOECHENTLICH);
+		belegungTagesschuleModul6.setIntervall(
+			BelegungTagesschuleModulIntervall.WOECHENTLICH
+		);
 
 		ModulTagesschule modul8 = new ModulTagesschule();
 		modul8.setModulTagesschuleGroup(group2);
 		modul8.setWochentag(DayOfWeek.WEDNESDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul8 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul8 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul8.setModulTagesschule(modul8);
-		belegungTagesschuleModul8.setIntervall(BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN);
+		belegungTagesschuleModul8.setIntervall(
+			BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN
+		);
 
 		ModulTagesschule modul9 = new ModulTagesschule();
 		modul9.setModulTagesschuleGroup(group2);
 		modul9.setWochentag(DayOfWeek.THURSDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul9 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul9 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul9.setModulTagesschule(modul9);
-		belegungTagesschuleModul9.setIntervall(BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN);
+		belegungTagesschuleModul9.setIntervall(
+			BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN
+		);
 
 		ModulTagesschule modul10 = new ModulTagesschule();
 		modul10.setModulTagesschuleGroup(group2);
 		modul10.setWochentag(DayOfWeek.FRIDAY);
-		BelegungTagesschuleModul belegungTagesschuleModul10 = new BelegungTagesschuleModul();
+		BelegungTagesschuleModul belegungTagesschuleModul10 =
+			new BelegungTagesschuleModul();
 		belegungTagesschuleModul10.setModulTagesschule(modul10);
-		belegungTagesschuleModul10.setIntervall(BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN);
+		belegungTagesschuleModul10.setIntervall(
+			BelegungTagesschuleModulIntervall.ALLE_ZWEI_WOCHEN
+		);
 
 		Kind kind1 = new Kind();
 		kind1.setEinschulungTyp(EinschulungTyp.KLASSE1);
@@ -423,13 +525,26 @@ public class CalculationUnitTest extends EasyMockSupport {
 		anmeldungen.add(anmeldung1);
 		anmeldungen.add(anmeldung2);
 
-		Map<String, BigDecimal> result = latsService.calculateDurchschnittKinderProTag(anmeldungen);
+		Map<String, BigDecimal> result = latsService
+			.calculateDurchschnittKinderProTag(anmeldungen);
 		// keine Mittagsbetreuung und keine Nachmittagsbetreuung2
-		Assert.assertEquals(BigDecimal.ZERO, (BigDecimal) result.get("mittagsbetreuung"));
-		Assert.assertEquals(BigDecimal.ZERO, (BigDecimal) result.get("nachmittagsbetreuung2"));
+		Assert.assertEquals(
+			BigDecimal.ZERO,
+			(BigDecimal) result.get("mittagsbetreuung")
+		);
+		Assert.assertEquals(
+			BigDecimal.ZERO,
+			(BigDecimal) result.get("nachmittagsbetreuung2")
+		);
 		// 6 Module in Kategorie Frühbetreuung in 4 Tagen
-		Assert.assertEquals(new BigDecimal("1.50"), (BigDecimal) result.get("fruehbetreuung"));
+		Assert.assertEquals(
+			new BigDecimal("1.50"),
+			(BigDecimal) result.get("fruehbetreuung")
+		);
 		// 1 Wöchentliche Module und 3 zweiwöchentliche Module in Kategorie Nachmittagsbetreuung1 in 4 Tagen
-		Assert.assertEquals(new BigDecimal("0.63"), (BigDecimal) result.get("nachmittagsbetreuung1"));
+		Assert.assertEquals(
+			new BigDecimal("0.63"),
+			(BigDecimal) result.get("nachmittagsbetreuung1")
+		);
 	}
 }

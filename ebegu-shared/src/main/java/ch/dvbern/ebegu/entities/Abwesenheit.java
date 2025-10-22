@@ -16,10 +16,10 @@
 package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.validation.Valid;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -32,12 +32,16 @@ import org.hibernate.envers.Audited;
 @SuppressWarnings("ComparableImplementedButEqualsNotOverridden")
 @Audited
 @Entity
-public class Abwesenheit extends AbstractDateRangedEntity implements Comparable<Abwesenheit> {
+public class Abwesenheit extends AbstractDateRangedEntity implements
+	Comparable<Abwesenheit> {
 
 	private static final long serialVersionUID = -6776981643150835840L;
 
 	@Valid
-	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "abwesenheitJA")
+	@OneToOne(optional = true,
+		cascade = CascadeType.ALL,
+		orphanRemoval = true,
+		mappedBy = "abwesenheitJA")
 	private AbwesenheitContainer abwesenheitContainer;
 
 	public Abwesenheit() {
@@ -47,7 +51,9 @@ public class Abwesenheit extends AbstractDateRangedEntity implements Comparable<
 		return abwesenheitContainer;
 	}
 
-	public void setAbwesenheitContainer(AbwesenheitContainer abwesenheitContainer) {
+	public void setAbwesenheitContainer(
+		AbwesenheitContainer abwesenheitContainer
+	) {
 		this.abwesenheitContainer = abwesenheitContainer;
 	}
 
@@ -60,8 +66,14 @@ public class Abwesenheit extends AbstractDateRangedEntity implements Comparable<
 	}
 
 	@Nonnull
-	public Abwesenheit copyAbwesenheit(@Nonnull Abwesenheit target, @Nonnull AntragCopyType copyType) {
-		return (Abwesenheit) super.copyAbstractDateRangedEntity(target, copyType);
+	public Abwesenheit copyAbwesenheit(
+		@Nonnull Abwesenheit target,
+		@Nonnull AntragCopyType copyType
+	) {
+		return (Abwesenheit) super.copyAbstractDateRangedEntity(
+			target,
+			copyType
+		);
 	}
 
 	@Override

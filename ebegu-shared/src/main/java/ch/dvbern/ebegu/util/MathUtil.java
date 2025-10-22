@@ -29,12 +29,23 @@ import org.jetbrains.annotations.Contract;
 
 public enum MathUtil {
 
-	GANZZAHL(19, 0, RoundingMode.HALF_UP),
-	EINE_NACHKOMMASTELLE(19, 1, RoundingMode.HALF_UP),
-	ZWEI_NACHKOMMASTELLE(19, 2, RoundingMode.HALF_UP),
-	VIER_NACHKOMMASTELLE(19, 4, RoundingMode.HALF_DOWN),
-	DEFAULT(19, 2, RoundingMode.HALF_UP),
-	EXACT(30, 10, RoundingMode.HALF_UP);
+	GANZZAHL(19, 0, RoundingMode.HALF_UP), EINE_NACHKOMMASTELLE(
+		19,
+		1,
+		RoundingMode.HALF_UP
+	), ZWEI_NACHKOMMASTELLE(19, 2, RoundingMode.HALF_UP), DREI_NACHKOMMASTELLE(
+		19,
+		3,
+		RoundingMode.HALF_UP
+	), VIER_NACHKOMMASTELLE(
+		19,
+		4,
+		RoundingMode.HALF_DOWN
+	), DEFAULT(19, 2, RoundingMode.HALF_UP), EXACT(
+		30,
+		10,
+		RoundingMode.HALF_UP
+	);
 
 	private final int precision;
 	private final int scale;
@@ -185,7 +196,10 @@ public enum MathUtil {
 	 * @throws PrecisionTooLargeException if the resulting value exceeds the defined precision
 	 */
 	@Nonnull
-	public BigDecimal addNullSafe(@Nonnull BigDecimal value, @Nullable BigDecimal augment) {
+	public BigDecimal addNullSafe(
+		@Nonnull BigDecimal value,
+		@Nullable BigDecimal augment
+	) {
 		if (augment == null) {
 			return value;
 		}
@@ -200,7 +214,10 @@ public enum MathUtil {
 	 */
 	@Nullable
 	@Contract("null,null->null; null,!null->null; !null,null->null; !null,!null->!null")
-	public BigDecimal add(@Nullable BigDecimal value, @Nullable BigDecimal augment) {
+	public BigDecimal add(
+		@Nullable BigDecimal value,
+		@Nullable BigDecimal augment
+	) {
 		if (value == null || augment == null) {
 			return null;
 		}
@@ -213,7 +230,10 @@ public enum MathUtil {
 	 * @throws PrecisionTooLargeException if the resulting value exceeds the defined precision
 	 */
 	@Nonnull
-	public BigDecimal addNullSafe(@Nonnull BigDecimal value, @Nonnull BigDecimal... augment) {
+	public BigDecimal addNullSafe(
+		@Nonnull BigDecimal value,
+		@Nonnull BigDecimal... augment
+	) {
 		BigDecimal result = value;
 		for (BigDecimal valueToAdd : augment) {
 			if (valueToAdd != null) {
@@ -229,7 +249,10 @@ public enum MathUtil {
 	 * @throws PrecisionTooLargeException if the resulting value exceeds the defined precision
 	 */
 	@Nonnull
-	public BigDecimal subtractNullSafe(@Nonnull BigDecimal value, @Nullable BigDecimal subtrahend) {
+	public BigDecimal subtractNullSafe(
+		@Nonnull BigDecimal value,
+		@Nullable BigDecimal subtrahend
+	) {
 		if (subtrahend == null) {
 			return value;
 		}
@@ -244,7 +267,10 @@ public enum MathUtil {
 	 */
 	@Nullable
 	@Contract("null,null->null; null,!null->null; !null,null->null; !null,!null->!null")
-	public BigDecimal subtract(@Nullable BigDecimal value, @Nullable BigDecimal subtrahend) {
+	public BigDecimal subtract(
+		@Nullable BigDecimal value,
+		@Nullable BigDecimal subtrahend
+	) {
 		if (value == null || subtrahend == null) {
 			return null;
 		}
@@ -252,7 +278,10 @@ public enum MathUtil {
 	}
 
 	@Nonnull
-	public BigDecimal subtractMultiple(@Nonnull BigDecimal value, @Nonnull BigDecimal... subtrahends) {
+	public BigDecimal subtractMultiple(
+		@Nonnull BigDecimal value,
+		@Nonnull BigDecimal... subtrahends
+	) {
 		BigDecimal result = value;
 		for (BigDecimal subtrahend : subtrahends) {
 			if (subtrahend != null) {
@@ -267,7 +296,10 @@ public enum MathUtil {
 	 */
 	@Nullable
 	@Contract("null,null->null; null,!null->null; !null,null->null; !null,!null->!null")
-	public BigDecimal multiply(@Nullable BigDecimal value, @Nullable BigDecimal multiplicand) {
+	public BigDecimal multiply(
+		@Nullable BigDecimal value,
+		@Nullable BigDecimal multiplicand
+	) {
 		if (value == null || multiplicand == null) {
 			return null;
 		}
@@ -278,7 +310,10 @@ public enum MathUtil {
 	 * @throws PrecisionTooLargeException if the resulting value exceeds the defined precision
 	 */
 	@Nonnull
-	public BigDecimal multiplyNullSafe(@Nonnull BigDecimal value, @Nonnull BigDecimal multiplicand) {
+	public BigDecimal multiplyNullSafe(
+		@Nonnull BigDecimal value,
+		@Nonnull BigDecimal multiplicand
+	) {
 		BigDecimal result = value
 			.multiply(multiplicand)
 			.setScale(scale, roundingMode);
@@ -306,10 +341,15 @@ public enum MathUtil {
 	}
 
 	@Nonnull
-	public BigDecimal divideNullSafe(@Nonnull BigDecimal dividend, @Nonnull BigDecimal divisor) {
+	public BigDecimal divideNullSafe(
+		@Nonnull BigDecimal dividend,
+		@Nonnull BigDecimal divisor
+	) {
 
 		if (0 == BigDecimal.ZERO.compareTo(divisor)) {
-			throw new IllegalArgumentException("Divide by zero: " + dividend + '/' + divisor);
+			throw new IllegalArgumentException(
+				"Divide by zero: " + dividend + '/' + divisor
+			);
 		}
 		BigDecimal result = dividend.divide(divisor, scale, roundingMode);
 		return validatePrecision(result);
@@ -320,7 +360,10 @@ public enum MathUtil {
 	 */
 	@Nullable
 	@Contract("null,null->null; null,!null->null; !null,null->null; !null,!null->!null")
-	public BigDecimal divide(@Nullable BigDecimal dividend, @Nullable BigDecimal divisor) {
+	public BigDecimal divide(
+		@Nullable BigDecimal dividend,
+		@Nullable BigDecimal divisor
+	) {
 		if (dividend == null || divisor == null) {
 			return null;
 		}
@@ -361,7 +404,10 @@ public enum MathUtil {
 		}
 		// Ab welcher Nachkommastelle soll gerundet werden???
 		// Wir runden zuerst die vierte auf die dritte...
-		BigDecimal roundedUp = amount.multiply(MathUtil.HUNDRED).divide(MathUtil.HUNDRED, 3, RoundingMode.HALF_UP);
+		BigDecimal roundedUp = DREI_NACHKOMMASTELLE.divide(
+			amount.multiply(MathUtil.HUNDRED),
+			MathUtil.HUNDRED
+		);
 		// ... dann davon auf 5-Rappen runden
 		BigDecimal divided = GANZZAHL.divide(roundedUp, ROUNDING_INCREMENT);
 		return DEFAULT.multiply(divided, ROUNDING_INCREMENT);
@@ -399,8 +445,12 @@ public enum MathUtil {
 	 * @return TRUE, wenn beide Werte NULL sind, oder wenn beide BigDecimal (via compareTo) identisch sind. Sonst FALSE
 	 */
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	public static boolean isSame(@Nonnull Optional<BigDecimal> a, @Nonnull Optional<BigDecimal> b) {
-		return a.isPresent() && b.isPresent() && a.get().compareTo(b.get()) == 0 || !a.isPresent() && !b.isPresent();
+	public static boolean isSame(
+		@Nonnull Optional<BigDecimal> a,
+		@Nonnull Optional<BigDecimal> b
+	) {
+		return a.isPresent() && b.isPresent() && a.get().compareTo(b.get()) == 0
+			|| !a.isPresent() && !b.isPresent();
 	}
 
 	/**
@@ -408,14 +458,21 @@ public enum MathUtil {
 	 *
 	 * @return TRUE, wenn beide Werte NULL sind, oder wenn beide BigDecimal (via compareTo) identisch sind. Sonst FALSE
 	 */
-	public static boolean isSame(@Nullable BigDecimal a, @Nullable BigDecimal b) {
-		return (a == null && b == null) || (a != null && b != null && (a.compareTo(b) == 0));
+	public static boolean isSame(
+		@Nullable BigDecimal a,
+		@Nullable BigDecimal b
+	) {
+		return (a == null && b == null)
+			|| (a != null && b != null && (a.compareTo(b) == 0));
 	}
 
 	/**
 	 * Vergleicht zwei BigDecimal. Null wird gleich wie 0 behandelt!
 	 */
-	public static boolean isSameWithNullAsZero(@Nullable BigDecimal a, @Nullable BigDecimal b) {
+	public static boolean isSameWithNullAsZero(
+		@Nullable BigDecimal a,
+		@Nullable BigDecimal b
+	) {
 		if (a == null) {
 			a = BigDecimal.ZERO;
 		}
@@ -458,13 +515,25 @@ public enum MathUtil {
 	/**
 	 * rundet auf die naechste Ganzzahl groesser gleich 0
 	 */
-	public static BigDecimal positiveNonNullAndRound(@Nullable BigDecimal value) {
+	public static BigDecimal positiveNonNullAndRound(
+		@Nullable BigDecimal value
+	) {
+		value = nonNullAndRound(value);
+		return value.max(BigDecimal.ZERO);
+	}
+
+	/**
+	 * rundet auf die naechste Ganzzahl groesser gleich 0
+	 */
+	public static BigDecimal nonNullAndRound(
+		@Nullable BigDecimal value
+	) {
 		if (value == null) {
 			return BigDecimal.ZERO;
 		}
 		// Returns the maximum of this BigDecimal and val.
 		value = value.setScale(0, RoundingMode.HALF_UP);
-		return value.max(BigDecimal.ZERO);
+		return value;
 	}
 
 	/**
@@ -500,7 +569,10 @@ public enum MathUtil {
 	}
 
 	@Nonnull
-	public static BigDecimal minimum(@Nonnull BigDecimal value1, @Nonnull BigDecimal minimum) {
+	public static BigDecimal minimum(
+		@Nonnull BigDecimal value1,
+		@Nonnull BigDecimal minimum
+	) {
 		if (value1.compareTo(minimum) > 0) {
 			return value1;
 		}
@@ -508,7 +580,10 @@ public enum MathUtil {
 	}
 
 	@Nonnull
-	public static BigDecimal maximum(@Nonnull BigDecimal value1, @Nonnull BigDecimal maximum) {
+	public static BigDecimal maximum(
+		@Nonnull BigDecimal value1,
+		@Nonnull BigDecimal maximum
+	) {
 		if (value1.compareTo(maximum) < 0) {
 			return value1;
 		}
@@ -516,7 +591,11 @@ public enum MathUtil {
 	}
 
 	@Nonnull
-	public static BigDecimal minimumMaximum(@Nonnull BigDecimal value, @Nonnull BigDecimal minimum, @Nonnull BigDecimal maximum) {
+	public static BigDecimal minimumMaximum(
+		@Nonnull BigDecimal value,
+		@Nonnull BigDecimal minimum,
+		@Nonnull BigDecimal maximum
+	) {
 		value = minimum(value, minimum);
 		value = maximum(value, maximum);
 		return value;
@@ -532,7 +611,11 @@ public enum MathUtil {
 	 * Returns TRUE when {@code value1} is equal to {@code value2} within a range of +/- {@code error}.
 	 * The comparison for equality is done by BigDecimals {@link BigDecimal#compareTo(BigDecimal)} method.
 	 */
-	public static boolean isClose(@Nonnull BigDecimal value1, @Nonnull BigDecimal value2, @Nonnull BigDecimal error) {
+	public static boolean isClose(
+		@Nonnull BigDecimal value1,
+		@Nonnull BigDecimal value2,
+		@Nonnull BigDecimal error
+	) {
 		BigDecimal actualDelta = value1.subtract(value2, MathContext.DECIMAL128)
 			.abs()
 			.subtract(error, MathContext.DECIMAL128)
@@ -550,7 +633,9 @@ public enum MathUtil {
 	}
 
 	@Nonnull
-	public static BigDecimal assertNotNullAndNotNegative(@Nullable BigDecimal valueOrNull) {
+	public static BigDecimal assertNotNullAndNotNegative(
+		@Nullable BigDecimal valueOrNull
+	) {
 		BigDecimal valueNotNull = assertNotNull(valueOrNull);
 		if (valueNotNull.compareTo(BigDecimal.ZERO) < 0) {
 			return BigDecimal.ZERO;

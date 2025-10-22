@@ -23,11 +23,11 @@ import {
     HttpRequest
 } from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import {CONSTANTS, HTTP_CODES} from '@kibon/shared/model/constants';
 import {Observable, Subject} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {AuthLifeCycleService} from '../../../authentication/service/authLifeCycle.service';
 import {TSAuthEvent} from '../../../models/enums/TSAuthEvent';
-import {CONSTANTS, HTTP_CODES} from '../constants/CONSTANTS';
 import {HttpErrorInterceptorX} from '../errors/service/HttpErrorInterceptorX';
 
 @Injectable({

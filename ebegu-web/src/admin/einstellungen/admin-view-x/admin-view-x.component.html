@@ -1,0 +1,180 @@
+<div flex="auto" class="admin-view admin-modul dv-table">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="view-title">
+                <h2>{{ 'ADMIN' | translate }}</h2>
+                <hr class="header" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="col-12">
+                <form
+                    name="form"
+                    [ngClass]="{'ng-submitted': form.submitted}"
+                    #form="ngForm"
+                    novalidate
+                >
+                    <fieldset [disabled]="isReadonly()">
+                        <div class="filter">
+                            <input
+                                class="filter"
+                                matInput
+                                type="text"
+                                (keyup)="doFilter($event.target.value)"
+                                placeholder="{{
+                                    'SUCHBEGRIFF_EINGEBEN' | translate
+                                }}"
+                            />
+                        </div>
+
+                        <!-- Parameter-Liste (repeater) -->
+                        <mat-table matSort [dataSource]="displayedCollection">
+                            <ng-container matColumnDef="name">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="name"
+                                >
+                                    <span>{{
+                                        'PROPERTY_NAME' | translate
+                                    }}</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let item">
+                                    <span [title]="item.name">
+                                        {{ item.name | translate }}
+                                        <dv-tooltip
+                                            [text]="item.erklaerung"
+                                        ></dv-tooltip>
+                                    </span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!--Value-->
+                            <ng-container matColumnDef="value">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="value"
+                                >
+                                    <span>{{
+                                        'PROPERTY_VALUE' | translate
+                                    }}</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let item">
+                                    <dv-edit-einstellung
+                                        [readOnly]="false"
+                                        [einstellung]="{
+                                            value: item.value,
+                                            key: item.name
+                                        }"
+                                        (einstellungChange)="
+                                            updateApplicationProperty($event)
+                                        "
+                                    ></dv-edit-einstellung>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!--Timestamp Erstellt-->
+                            <ng-container matColumnDef="timestampErstellt">
+                                <mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header="timestampErstellt"
+                                >
+                                    <span>{{
+                                        'TIMEERSTELLT' | translate
+                                    }}</span>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let item">
+                                    <span [title]="item.timestampErstellt">{{
+                                        item.timestampErstellt.format(
+                                            'DD.MM.YYYY'
+                                        )
+                                    }}</span>
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row
+                                *matHeaderRowDef="
+                                    displayedColumns;
+                                    sticky: true
+                                "
+                                class="dv-table-thead"
+                            ></mat-header-row>
+                            <mat-row
+                                *matRowDef="
+                                    let row;
+                                    index as i;
+                                    columns: displayedColumns
+                                "
+                                class="dv-table-tbody"
+                            ></mat-row>
+                        </mat-table>
+
+                        <!-- Parameter pro Gesuchsperiode Buttons-->
+                        <div class="row">
+                            <div class="col-md-2">
+                                <dv-loading-button
+                                    type="button"
+                                    [buttonClass]="'color-success'"
+                                    (buttonClick)="submit()"
+                                >
+                                    <span>{{ 'SAVE' | translate }}</span>
+                                </dv-loading-button>
+                            </div>
+                            <div class="col-md-4">
+                                <dv-loading-button
+                                    type="button"
+                                    (buttonClick)="
+                                        resetForm();
+                                        form.form.markAsPristine();
+                                        form.form.markAsUntouched()
+                                    "
+                                    [buttonClass]="'cancel-button'"
+                                >
+                                    <span>{{ 'CANCEL' | translate }}</span>
+                                </dv-loading-button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+            <!-- Suchindex -->
+            <div *ngIf="!isReadonly() && isSuperadmin()">
+                <div class="view-title margin-top-40">
+                    <h1>{{ 'CREATE_SEARCHINDEX' | translate }}</h1>
+                </div>
+                <div class="row margin-top-10">
+                    <div class="col-md-12 form-group">
+                        <dv-loading-button
+                            [buttonDisabled]="reindexInProgress"
+                            (buttonClick)="startReindex()"
+                        >
+                            <span>{{ 'CREATE_SEARCHINDEX' | translate }}</span>
+                        </dv-loading-button>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!isReadonly() && isSuperadmin()">
+                <div class="view-title margin-top-40">
+                    <h1>{{ 'MITARBEITERRECHTE_ERSTELLEN' | translate }}</h1>
+                </div>
+                <div class="row margin-top-10">
+                    <div class="col-md-12 form-group">
+                        <dv-loading-button
+                            [buttonDisabled]="
+                                mitarbeiterRechteErstellenInProgress
+                            "
+                            (buttonClick)="startMitarbeiterRechteErstellen()"
+                        >
+                            <span>{{
+                                'MITARBEITERRECHTE_ERSTELLEN' | translate
+                            }}</span>
+                        </dv-loading-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

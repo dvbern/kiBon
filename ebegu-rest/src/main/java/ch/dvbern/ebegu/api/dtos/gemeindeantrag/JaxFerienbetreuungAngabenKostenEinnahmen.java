@@ -82,7 +82,9 @@ public class JaxFerienbetreuungAngabenKostenEinnahmen extends JaxAbstractDTO {
 		return personalkostenLeitungAdmin;
 	}
 
-	public void setPersonalkostenLeitungAdmin(@Nullable BigDecimal personalkostenLeitungAdmin) {
+	public void setPersonalkostenLeitungAdmin(
+		@Nullable BigDecimal personalkostenLeitungAdmin
+	) {
 		this.personalkostenLeitungAdmin = personalkostenLeitungAdmin;
 	}
 
@@ -154,7 +156,9 @@ public class JaxFerienbetreuungAngabenKostenEinnahmen extends JaxAbstractDTO {
 		return beitraegeNachAnmeldungen;
 	}
 
-	public void setBeitraegeNachAnmeldungen(@Nullable BigDecimal beitraegeNachAnmeldungen) {
+	public void setBeitraegeNachAnmeldungen(
+		@Nullable BigDecimal beitraegeNachAnmeldungen
+	) {
 		this.beitraegeNachAnmeldungen = beitraegeNachAnmeldungen;
 	}
 
@@ -163,7 +167,9 @@ public class JaxFerienbetreuungAngabenKostenEinnahmen extends JaxAbstractDTO {
 		return vorfinanzierteKantonsbeitraege;
 	}
 
-	public void setVorfinanzierteKantonsbeitraege(@Nullable BigDecimal vorfinanzierteKantonsbeitraege) {
+	public void setVorfinanzierteKantonsbeitraege(
+		@Nullable BigDecimal vorfinanzierteKantonsbeitraege
+	) {
 		this.vorfinanzierteKantonsbeitraege = vorfinanzierteKantonsbeitraege;
 	}
 
@@ -172,7 +178,9 @@ public class JaxFerienbetreuungAngabenKostenEinnahmen extends JaxAbstractDTO {
 		return eigenleistungenGemeinde;
 	}
 
-	public void setEigenleistungenGemeinde(@Nullable BigDecimal eigenleistungenGemeinde) {
+	public void setEigenleistungenGemeinde(
+		@Nullable BigDecimal eigenleistungenGemeinde
+	) {
 		this.eigenleistungenGemeinde = eigenleistungenGemeinde;
 	}
 

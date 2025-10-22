@@ -43,20 +43,45 @@ public final class VerfuegungUtil {
 	 * die zuletzt verfuegte Verfuegung
 	 * Wird verwendet fuer die Anzeige "Identische Daten" und folgend "Trotzdem verfuegen / Auf verfuegen verzichten"
 	 */
-	public static void setIsSameVerfuegungsdaten(@Nonnull Verfuegung verfuegung, @Nullable Verfuegung letzteVerfuegung) {
+	public static void setIsSameVerfuegungsdaten(
+		@Nonnull Verfuegung verfuegung,
+		@Nullable Verfuegung letzteVerfuegung
+	) {
 		if (letzteVerfuegung != null) {
-			final List<VerfuegungZeitabschnitt> newZeitabschnitte = verfuegung.getZeitabschnitte();
-			final List<VerfuegungZeitabschnitt> letztVerfuegteZeitabschnitte = letzteVerfuegung.getZeitabschnitte();
+			final List<VerfuegungZeitabschnitt> newZeitabschnitte = verfuegung
+				.getZeitabschnitte();
+			final List<VerfuegungZeitabschnitt> letztVerfuegteZeitabschnitte =
+				letzteVerfuegung.getZeitabschnitte();
 
 			for (VerfuegungZeitabschnitt newZeitabschnitt : newZeitabschnitte) {
 				// todo imanol Dies sollte auch subzeitabschnitte vergleichen
-				Optional<VerfuegungZeitabschnitt> oldSameZeitabschnitt = findZeitabschnittSameGueltigkeit(letztVerfuegteZeitabschnitte, newZeitabschnitt);
+				Optional<VerfuegungZeitabschnitt> oldSameZeitabschnitt =
+					findZeitabschnittSameGueltigkeit(
+						letztVerfuegteZeitabschnitte,
+						newZeitabschnitt
+					);
 				if (oldSameZeitabschnitt.isPresent()) {
-					newZeitabschnitt.setSameVerfuegteVerfuegungsrelevanteDatenForAsivAndGemeinde(newZeitabschnitt.isSameBerechnung(oldSameZeitabschnitt.get()));
-					newZeitabschnitt.setSameVerfuegteMahlzeitenVerguenstigungForAsivAndGemeinde(newZeitabschnitt.isSameMZV(oldSameZeitabschnitt.get()));
+					newZeitabschnitt
+						.setSameVerfuegteVerfuegungsrelevanteDatenForAsivAndGemeinde(
+							newZeitabschnitt.isSameBerechnung(
+								oldSameZeitabschnitt.get()
+							)
+						);
+					newZeitabschnitt
+						.setSameVerfuegteMahlzeitenVerguenstigungForAsivAndGemeinde(
+							newZeitabschnitt.isSameMZV(
+								oldSameZeitabschnitt.get()
+							)
+						);
 				} else { // no Zeitabschnitt with the same Gueltigkeit has been found, so it must be different
-					newZeitabschnitt.setSameVerfuegteVerfuegungsrelevanteDatenForAsivAndGemeinde(false);
-					newZeitabschnitt.setSameVerfuegteMahlzeitenVerguenstigungForAsivAndGemeinde(false);
+					newZeitabschnitt
+						.setSameVerfuegteVerfuegungsrelevanteDatenForAsivAndGemeinde(
+							false
+						);
+					newZeitabschnitt
+						.setSameVerfuegteMahlzeitenVerguenstigungForAsivAndGemeinde(
+							false
+						);
 				}
 			}
 		}
@@ -75,24 +100,39 @@ public final class VerfuegungUtil {
 	) {
 		// "Normale" Auszahlungen
 		if (letzteAusbezahlteVerfuegung != null) {
-			setIsSameAusbezahlteVerguenstigungForZahlungslaufTyp(verfuegung, letzteAusbezahlteVerfuegung, ZahlungslaufTyp.GEMEINDE_INSTITUTION);
+			setIsSameAusbezahlteVerguenstigungForZahlungslaufTyp(
+				verfuegung,
+				letzteAusbezahlteVerfuegung,
+				ZahlungslaufTyp.GEMEINDE_INSTITUTION
+			);
 		} else {
 			// Wenn es noch gar nie eine Auszahlung gab, gibt es auch nichts zu ignorieren
-			for (VerfuegungZeitabschnitt newZeitabschnitt : verfuegung.getZeitabschnitte()) {
-				newZeitabschnitt.getBgCalculationInputAsiv().setSameAusbezahlterBetragInstitution(true);
-				newZeitabschnitt.getBgCalculationInputGemeinde().setSameAusbezahlterBetragInstitution(true);
+			for (VerfuegungZeitabschnitt newZeitabschnitt : verfuegung
+				.getZeitabschnitte()) {
+				newZeitabschnitt.getBgCalculationInputAsiv()
+					.setSameAusbezahlterBetragInstitution(true);
+				newZeitabschnitt.getBgCalculationInputGemeinde()
+					.setSameAusbezahlterBetragInstitution(true);
 			}
 		}
 		// Dasselbe auch fuer Mahlzeiten, jedoch nur, wenn diese fuer die Gemeinde enabled sind
 		// Das Feld ist transient, daher brauchen wir es auch nicht, falls die Mahlzeiten spaeter
 		// fuer die Gemeinde aktiviert werden
-		if (mahlzeitenverguenstigungEnabled && letzteAusbezahlteVerfuegungMahlzeiten != null) {
-			setIsSameAusbezahlteVerguenstigungForZahlungslaufTyp(verfuegung, letzteAusbezahlteVerfuegungMahlzeiten, ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER);
+		if (mahlzeitenverguenstigungEnabled
+			&& letzteAusbezahlteVerfuegungMahlzeiten != null) {
+			setIsSameAusbezahlteVerguenstigungForZahlungslaufTyp(
+				verfuegung,
+				letzteAusbezahlteVerfuegungMahlzeiten,
+				ZahlungslaufTyp.GEMEINDE_ANTRAGSTELLER
+			);
 		} else {
 			// Wenn es noch gar nie eine Auszahlung gab, gibt es auch nichts zu ignorieren
-			for (VerfuegungZeitabschnitt newZeitabschnitt : verfuegung.getZeitabschnitte()) {
-				newZeitabschnitt.getBgCalculationInputAsiv().setSameAusbezahlterBetragAntragsteller(true);
-				newZeitabschnitt.getBgCalculationInputGemeinde().setSameAusbezahlterBetragAntragsteller(true);
+			for (VerfuegungZeitabschnitt newZeitabschnitt : verfuegung
+				.getZeitabschnitte()) {
+				newZeitabschnitt.getBgCalculationInputAsiv()
+					.setSameAusbezahlterBetragAntragsteller(true);
+				newZeitabschnitt.getBgCalculationInputGemeinde()
+					.setSameAusbezahlterBetragAntragsteller(true);
 			}
 		}
 	}
@@ -102,17 +142,27 @@ public final class VerfuegungUtil {
 		@Nonnull Verfuegung letzteAusbezahlteVerfuegungForZahlungslauftyp,
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp
 	) {
-		final List<VerfuegungZeitabschnitt> newZeitabschnitte = verfuegung.getZeitabschnitte();
+		final List<VerfuegungZeitabschnitt> newZeitabschnitte = verfuegung
+			.getZeitabschnitte();
 
 		final List<VerfuegungZeitabschnitt> letztAusbezahlteZeitabschnitteForZahlungslauftyp =
-			letzteAusbezahlteVerfuegungForZahlungslauftyp.getZeitabschnitte();
+			letzteAusbezahlteVerfuegungForZahlungslauftyp
+				.getZeitabschnitte();
 
-		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory.getZahlungslaufHelper(zahlungslaufTyp);
+		final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory
+			.getZahlungslaufHelper(zahlungslaufTyp);
 
 		for (VerfuegungZeitabschnitt newZeitabschnitt : newZeitabschnitte) {
 			// "Normale" Auszahlungen
-			Optional<VerfuegungZeitabschnitt> oldSameZeitabschnittOptional = findZeitabschnittSameGueltigkeit(letztAusbezahlteZeitabschnitteForZahlungslauftyp, newZeitabschnitt);
-			zahlungslaufHelper.setIsSameAusbezahlteVerguenstigung(oldSameZeitabschnittOptional, newZeitabschnitt);
+			Optional<VerfuegungZeitabschnitt> oldSameZeitabschnittOptional =
+				findZeitabschnittSameGueltigkeit(
+					letztAusbezahlteZeitabschnitteForZahlungslauftyp,
+					newZeitabschnitt
+				);
+			zahlungslaufHelper.setIsSameAusbezahlteVerguenstigung(
+				oldSameZeitabschnittOptional,
+				newZeitabschnitt
+			);
 		}
 	}
 
@@ -122,7 +172,10 @@ public final class VerfuegungUtil {
 		@Nonnull VerfuegungZeitabschnitt newZeitabschnitt
 	) {
 		return zeitabschnitteGSM.stream()
-			.filter(z -> z.getGueltigkeit().equals(newZeitabschnitt.getGueltigkeit()))
+			.filter(
+				z -> z.getGueltigkeit()
+					.equals(newZeitabschnitt.getGueltigkeit())
+			)
 			.findAny();
 	}
 
@@ -130,11 +183,23 @@ public final class VerfuegungUtil {
 	public static Optional<VerfuegungZeitabschnitt> findZeitabschnittSameGueltigkeitSameBetrag(
 		@Nonnull ZahlungslaufHelper zahlungslaufHelper,
 		@Nonnull List<VerfuegungZeitabschnitt> vorgaengerZeitabschnittList,
-		@Nonnull VerfuegungZeitabschnitt newZeitabschnitt) {
+		@Nonnull VerfuegungZeitabschnitt newZeitabschnitt
+	) {
 
 		return vorgaengerZeitabschnittList.stream()
-			.filter(z -> z.getGueltigkeit().equals(newZeitabschnitt.getGueltigkeit()))
-			.filter(z -> zahlungslaufHelper.getAuszahlungsbetrag(z).compareTo(zahlungslaufHelper.getAuszahlungsbetrag(newZeitabschnitt)) == 0)
+			.filter(
+				z -> z.getGueltigkeit()
+					.equals(newZeitabschnitt.getGueltigkeit())
+			)
+			.filter(
+				z -> zahlungslaufHelper.getAuszahlungsbetrag(z)
+					.compareTo(
+						zahlungslaufHelper.getAuszahlungsbetrag(
+							newZeitabschnitt
+						)
+					)
+					== 0
+			)
 			.findAny();
 	}
 
@@ -145,26 +210,48 @@ public final class VerfuegungUtil {
 		if (verfuegungOnGesuchForMutationForAllZahlungslaufTypes == null) {
 			return;
 		}
-		List<VerfuegungZeitabschnitt> newZeitabschnitte = verfuegung.getZeitabschnitte();
+		List<VerfuegungZeitabschnitt> newZeitabschnitte = verfuegung
+			.getZeitabschnitte();
 		// Der Zahlungsstatus ist pro Zahlungslauf unterschiedlich!
-		Arrays.stream(ZahlungslaufTyp.values()).iterator().forEachRemaining(zahlungslaufTyp -> {
-			// Die letzte ausbezahlte Verfuegung pro Zahlungslauf betrachten
-			final Verfuegung verfuegungOnGesuchForMutation = verfuegungOnGesuchForMutationForAllZahlungslaufTypes.get(zahlungslaufTyp);
-			if (verfuegungOnGesuchForMutation != null) {
-				List<VerfuegungZeitabschnitt> zeitabschnitteGSM = verfuegungOnGesuchForMutation.getZeitabschnitte();
-				for (VerfuegungZeitabschnitt newZeitabschnitt : newZeitabschnitte) {
-					final ZahlungslaufHelper zahlungslaufHelper = ZahlungslaufHelperFactory.getZahlungslaufHelper(zahlungslaufTyp);
-					final Optional<VerfuegungZeitabschnitt> oldZeitabschnitt = findOldZeitabschnitt(zeitabschnitteGSM, newZeitabschnitt);
-					VerfuegungsZeitabschnittZahlungsstatus statusOldZeitabchnitt = VerfuegungsZeitabschnittZahlungsstatus.NEU;
-					if (oldZeitabschnitt.isPresent()) {
-						statusOldZeitabchnitt = zahlungslaufHelper.getZahlungsstatus(oldZeitabschnitt.get());
-					}
-					//TODO what happens here ????
-					zahlungslaufHelper.setZahlungsstatus(newZeitabschnitt, statusOldZeitabchnitt);
+		Arrays.stream(ZahlungslaufTyp.values())
+			.iterator()
+			.forEachRemaining(zahlungslaufTyp -> {
+				// Die letzte ausbezahlte Verfuegung pro Zahlungslauf betrachten
+				final Verfuegung verfuegungOnGesuchForMutation =
+					verfuegungOnGesuchForMutationForAllZahlungslaufTypes
+						.get(zahlungslaufTyp);
+				if (verfuegungOnGesuchForMutation != null) {
+					List<VerfuegungZeitabschnitt> zeitabschnitteGSM =
+						verfuegungOnGesuchForMutation
+							.getZeitabschnitte();
+					for (VerfuegungZeitabschnitt newZeitabschnitt : newZeitabschnitte) {
+						final ZahlungslaufHelper zahlungslaufHelper =
+							ZahlungslaufHelperFactory
+								.getZahlungslaufHelper(
+									zahlungslaufTyp
+								);
+						final Optional<VerfuegungZeitabschnitt> oldZeitabschnitt =
+							findOldZeitabschnitt(
+								zeitabschnitteGSM,
+								newZeitabschnitt
+							);
+						VerfuegungsZeitabschnittZahlungsstatus statusOldZeitabchnitt =
+							VerfuegungsZeitabschnittZahlungsstatus.NEU;
+						if (oldZeitabschnitt.isPresent()) {
+							statusOldZeitabchnitt = zahlungslaufHelper
+								.getZahlungsstatus(
+									oldZeitabschnitt.get()
+								);
+						}
+						//TODO what happens here ????
+						zahlungslaufHelper.setZahlungsstatus(
+							newZeitabschnitt,
+							statusOldZeitabchnitt
+						);
 
+					}
 				}
-			}
-		});
+			});
 	}
 
 	@Nonnull
@@ -173,7 +260,9 @@ public final class VerfuegungUtil {
 		@Nonnull VerfuegungZeitabschnitt newZeitabschnitt
 	) {
 		for (VerfuegungZeitabschnitt zeitabschnittGSM : zeitabschnitteGSM) {
-			if (zeitabschnittGSM.getGueltigkeit().getOverlap(newZeitabschnitt.getGueltigkeit()).isPresent()) {
+			if (zeitabschnittGSM.getGueltigkeit()
+				.getOverlap(newZeitabschnitt.getGueltigkeit())
+				.isPresent()) {
 				// Wenn ein Vorgaenger vorhanden ist, wird der Status von diesem uebernommen
 				return Optional.of(zeitabschnittGSM);
 			}

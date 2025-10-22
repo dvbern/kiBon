@@ -39,8 +39,11 @@ public class TestdataSetupConfig {
 	}
 
 	public TestdataSetupConfig(
-		Mandant mandant, InstitutionStammdaten kitaBruennen, InstitutionStammdaten kitaWeissenstein,
-		InstitutionStammdaten tagesfamilien) {
+		Mandant mandant,
+		InstitutionStammdaten kitaBruennen,
+		InstitutionStammdaten kitaWeissenstein,
+		InstitutionStammdaten tagesfamilien
+	) {
 		this.mandant = mandant;
 		this.kitaBruennen = kitaBruennen;
 		this.kitaWeissenstein = kitaWeissenstein;
@@ -52,7 +55,8 @@ public class TestdataSetupConfig {
 		InstitutionStammdaten kitaBruennen,
 		InstitutionStammdaten kitaWeissenstein,
 		InstitutionStammdaten tagesfamilien,
-		Gesuchsperiode gesuchsperiode) {
+		Gesuchsperiode gesuchsperiode
+	) {
 		this.mandant = mandant;
 		this.kitaBruennen = kitaBruennen;
 		this.kitaWeissenstein = kitaWeissenstein;
@@ -67,7 +71,8 @@ public class TestdataSetupConfig {
 		InstitutionStammdaten tagesfamilien,
 		InstitutionStammdaten tagesschuleBruennen,
 		InstitutionStammdaten ferieninselBruennen,
-		Gesuchsperiode gesuchsperiode) {
+		Gesuchsperiode gesuchsperiode
+	) {
 
 		this.mandant = mandant;
 		this.kitaBruennen = kitaBruennen;
@@ -79,12 +84,13 @@ public class TestdataSetupConfig {
 	}
 
 	public TestdataSetupConfig(
-			Mandant mandant,
-			InstitutionStammdaten kitaBruennen,
-			InstitutionStammdaten kitaAaregg,
-			InstitutionStammdaten tagesfamilien,
-			InstitutionStammdaten tagesschule,
-			Gesuchsperiode gesuchsperiode) {
+		Mandant mandant,
+		InstitutionStammdaten kitaBruennen,
+		InstitutionStammdaten kitaAaregg,
+		InstitutionStammdaten tagesfamilien,
+		InstitutionStammdaten tagesschule,
+		Gesuchsperiode gesuchsperiode
+	) {
 		this.mandant = mandant;
 		this.kitaBruennen = kitaBruennen;
 		this.kitaWeissenstein = kitaAaregg;
@@ -137,7 +143,9 @@ public class TestdataSetupConfig {
 		return tagesschuleBruennen;
 	}
 
-	public void setTagesschuleBruennen(InstitutionStammdaten tagesschuleBruennen) {
+	public void setTagesschuleBruennen(
+		InstitutionStammdaten tagesschuleBruennen
+	) {
 		this.tagesschuleBruennen = tagesschuleBruennen;
 	}
 
@@ -145,7 +153,9 @@ public class TestdataSetupConfig {
 		return ferieninselBruennen;
 	}
 
-	public void setFerieninselBruennen(InstitutionStammdaten ferieninselBruennen) {
+	public void setFerieninselBruennen(
+		InstitutionStammdaten ferieninselBruennen
+	) {
 		this.ferieninselBruennen = ferieninselBruennen;
 	}
 

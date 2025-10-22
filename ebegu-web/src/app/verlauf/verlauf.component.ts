@@ -22,7 +22,7 @@ import {
     OnInit
 } from '@angular/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
 import {GesuchRS} from '../../gesuch/service/gesuchRS.rest';
 import {TSAntragStatusHistory} from '../../models/TSAntragStatusHistory';
@@ -30,7 +30,7 @@ import {TSDossier} from '../../models/TSDossier';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
-import {CONSTANTS} from '../core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {AntragStatusHistoryRS} from '../core/service/antragStatusHistoryRS.rest';
 import {DvSimpleTableColumnDefinition} from '../shared/component/dv-simple-table/dv-simple-table-column-definition';
 import {DvSimpleTableConfig} from '../shared/component/dv-simple-table/dv-simple-table-config';
@@ -38,7 +38,8 @@ import {DvSimpleTableConfig} from '../shared/component/dv-simple-table/dv-simple
 @Component({
     selector: 'dv-verlauf',
     templateUrl: './verlauf.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class VerlaufComponent implements OnInit {
     public dossier: TSDossier;

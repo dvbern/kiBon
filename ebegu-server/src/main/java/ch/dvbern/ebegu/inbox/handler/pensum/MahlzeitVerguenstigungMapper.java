@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
@@ -30,9 +30,12 @@ import static ch.dvbern.ebegu.util.EbeguUtil.coalesce;
 import static java.math.BigDecimal.ZERO;
 
 @Value
-public class MahlzeitVerguenstigungMapper implements PensumMapper<AbstractMahlzeitenPensum> {
+public class MahlzeitVerguenstigungMapper implements
+	PensumMapper<AbstractMahlzeitenPensum> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MahlzeitVerguenstigungMapper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		MahlzeitVerguenstigungMapper.class
+	);
 
 	private final ProcessingContext ctx;
 
@@ -41,8 +44,12 @@ public class MahlzeitVerguenstigungMapper implements PensumMapper<AbstractMahlze
 		@Nonnull AbstractMahlzeitenPensum target,
 		@Nonnull ZeitabschnittDTO zeitabschnittDTO
 	) {
-		target.setMonatlicheHauptmahlzeiten(coalesce(zeitabschnittDTO.getAnzahlHauptmahlzeiten(), ZERO));
-		target.setMonatlicheNebenmahlzeiten(coalesce(zeitabschnittDTO.getAnzahlNebenmahlzeiten(), ZERO));
+		target.setMonatlicheHauptmahlzeiten(
+			coalesce(zeitabschnittDTO.getAnzahlHauptmahlzeiten(), ZERO)
+		);
+		target.setMonatlicheNebenmahlzeiten(
+			coalesce(zeitabschnittDTO.getAnzahlNebenmahlzeiten(), ZERO)
+		);
 
 		setTarifeProMahlzeiten(target, zeitabschnittDTO, ctx);
 	}
@@ -50,28 +57,39 @@ public class MahlzeitVerguenstigungMapper implements PensumMapper<AbstractMahlze
 	private static <T extends AbstractMahlzeitenPensum> void setTarifeProMahlzeiten(
 		@Nonnull T target,
 		@Nonnull ZeitabschnittDTO zeitabschnittDTO,
-		@Nonnull ProcessingContext ctx) {
+		@Nonnull ProcessingContext ctx
+	) {
 
 		// Die Mahlzeitkosten koennen null sein, wir nehmen dann die default Werten
 		if (zeitabschnittDTO.getTarifProHauptmahlzeiten() != null) {
-			target.setTarifProHauptmahlzeit(zeitabschnittDTO.getTarifProHauptmahlzeiten());
+			target.setTarifProHauptmahlzeit(
+				zeitabschnittDTO.getTarifProHauptmahlzeiten()
+			);
 		} else {
 			target.setVollstaendig(false);
 			ctx.requireHumanConfirmation();
 			LOG.info(
 				"PlatzbestaetigungEvent fuer Betreuung mit RefNr: {} hat kein Hauptmahlzeiten Tarif",
-				ctx.getDto().getRefnr());
-			ctx.addHumanConfirmationMessage("PlatzbestaetigungEvent hat keinen Hauptmahlzeiten Tarif");
+				ctx.getDto().getRefnr()
+			);
+			ctx.addHumanConfirmationMessage(
+				"PlatzbestaetigungEvent hat keinen Hauptmahlzeiten Tarif"
+			);
 		}
 		if (zeitabschnittDTO.getTarifProNebenmahlzeiten() != null) {
-			target.setTarifProNebenmahlzeit(zeitabschnittDTO.getTarifProNebenmahlzeiten());
+			target.setTarifProNebenmahlzeit(
+				zeitabschnittDTO.getTarifProNebenmahlzeiten()
+			);
 		} else {
 			target.setVollstaendig(false);
 			ctx.requireHumanConfirmation();
 			LOG.info(
 				"PlatzbestaetigungEvent fuer Betreuung mit RefNr: {} hat kein Nebenmahlzeiten Tarif",
-				ctx.getDto().getRefnr());
-			ctx.addHumanConfirmationMessage("PlatzbestaetigungEvent hat keinen Nebenmahlzeiten Tarif");
+				ctx.getDto().getRefnr()
+			);
+			ctx.addHumanConfirmationMessage(
+				"PlatzbestaetigungEvent hat keinen Nebenmahlzeiten Tarif"
+			);
 		}
 	}
 }

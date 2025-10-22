@@ -23,36 +23,37 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.Resource;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJBContext;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.Resource;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.EJBContext;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.gesuch.JaxAntragConverter;
+import ch.dvbern.ebegu.api.converter.gesuch.JaxGesuchstellerConverter;
+import ch.dvbern.ebegu.api.converter.gesuch.finsit.JaxFinanzielleSituationConverter;
 import ch.dvbern.ebegu.api.dtos.JaxFamiliensituation;
 import ch.dvbern.ebegu.api.dtos.JaxFamiliensituationContainer;
 import ch.dvbern.ebegu.api.dtos.JaxGesuch;
@@ -63,16 +64,16 @@ import ch.dvbern.ebegu.api.dtos.finanziellesituation.JaxFinanzielleSituationCont
 import ch.dvbern.ebegu.dto.FinanzielleSituationResultateDTO;
 import ch.dvbern.ebegu.dto.FinanzielleSituationStartDTO;
 import ch.dvbern.ebegu.dto.JaxFinanzielleSituationAufteilungDTO;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Adresse;
-import ch.dvbern.ebegu.entities.Einstellung;
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.FamiliensituationContainer;
 import ch.dvbern.ebegu.entities.FinanzielleSituation;
 import ch.dvbern.ebegu.entities.FinanzielleSituationContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
-import ch.dvbern.ebegu.entities.SteuerdatenResponse;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.enums.GesuchstellerTyp;
@@ -80,14 +81,12 @@ import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.OIDCServiceException;
 import ch.dvbern.ebegu.nesko.handler.KibonAnfrageContext;
 import ch.dvbern.ebegu.nesko.handler.KibonAnfrageHandler;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.services.FamiliensituationService;
 import ch.dvbern.ebegu.services.FinanzielleSituationService;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.GesuchstellerService;
 import ch.dvbern.ebegu.util.Constants;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
@@ -111,52 +110,51 @@ import static java.util.Objects.requireNonNull;
  */
 @Path("finanzielleSituation")
 @Stateless
-@Api(description = "Resource für die finanzielle Situation")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class FinanzielleSituationResource {
-
 	@Inject
 	private FinanzielleSituationService finanzielleSituationService;
 	@Inject
 	private GesuchstellerService gesuchstellerService;
-
 	@Inject
 	private FamiliensituationService familiensituationService;
-
 	@Inject
 	private GesuchService gesuchService;
-
 	@Inject
 	private KibonAnfrageHandler kibonAnfrageHandler;
-
 	@Inject
 	private EinstellungService einstellungService;
-
-	@SuppressWarnings("CdiInjectionPointsInspection")
 	@Inject
-	private JaxBConverter converter;
-
+	private JaxFinanzielleSituationConverter converter;
+	@Inject
+	private JaxAntragConverter antragConverter;
+	@Inject
+	private JaxGesuchstellerConverter gesuchstellerConverter;
 	@Resource
 	private EJBContext context;    //fuer rollback
 
-	@ApiOperation(value =
-		"Create a new JaxFinanzielleSituationContainer in the database. The transfer object also has a "
-			+
-			"relation to FinanzielleSituation, it is stored in the database as well.",
-		response = JaxFinanzielleSituationContainer.class)
+	@Operation(
+		summary = "Create a new JaxFinanzielleSituationContainer in the database. The transfer object also has a relation to FinanzielleSituation, it is stored in the database as well.")
 	@Nullable
 	@PUT
 	@Path("/finanzielleSituation/{gesuchId}/{gesuchstellerId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
-		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST,
+		SACHBEARBEITER_SOZIALDIENST })
 	public JaxFinanzielleSituationContainer saveFinanzielleSituation(
 		@Nonnull @NotNull @PathParam("gesuchId") JaxId jaxGesuchId,
-		@Nonnull @NotNull @PathParam("gesuchstellerId") JaxId jaxGesuchstellerId,
-		@Nonnull @NotNull @Valid JaxFinanzielleSituationContainer jaxFinanzielleSituationContainer,
+		@Nonnull
+		@NotNull
+		@PathParam("gesuchstellerId") JaxId jaxGesuchstellerId,
+		@Nonnull
+		@NotNull
+		@Valid JaxFinanzielleSituationContainer jaxFinanzielleSituationContainer,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		requireNonNull(jaxGesuchId);
 		requireNonNull(jaxGesuchstellerId);
@@ -167,43 +165,56 @@ public class FinanzielleSituationResource {
 		requireNonNull(gesuchId);
 		requireNonNull(gesuchstellerId);
 
-		GesuchstellerContainer gesuchsteller = findGesuchstellerById(gesuchstellerId, "saveFinanzielleSituation");
+		GesuchstellerContainer gesuchsteller = findGesuchstellerById(
+			gesuchstellerId,
+			"saveFinanzielleSituation"
+		);
 
-		FinanzielleSituationContainer convertedFinSitCont = converter.finanzielleSituationContainerToStorableEntity(
-			jaxFinanzielleSituationContainer,
-			gesuchsteller.getFinanzielleSituationContainer());
+		FinanzielleSituationContainer convertedFinSitCont = converter
+			.finanzielleSituationContainerToStorableEntity(
+				jaxFinanzielleSituationContainer,
+				gesuchsteller.getFinanzielleSituationContainer()
+			);
 
 		convertedFinSitCont.setGesuchsteller(gesuchsteller);
 
 		FinanzielleSituationContainer persistedFinSit =
-			this.finanzielleSituationService.saveFinanzielleSituation(convertedFinSitCont, gesuchId);
+			this.finanzielleSituationService.saveFinanzielleSituation(
+				convertedFinSitCont,
+				gesuchId
+			);
 
 		return converter.finanzielleSituationContainerToJAX(persistedFinSit);
 	}
 
-	@ApiOperation(value = "Updates all required Data for the finanzielle Situation in Gesuch",
-		response = JaxFinanzielleSituationContainer.class)
+	@Operation(
+		summary = "Updates all required Data for the finanzielle Situation in Gesuch")
 	@Nullable
 	@PUT
 	@Path("/finanzielleSituationStart")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
-		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST })
-	@SuppressWarnings("PMD.NcssMethodCount")
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST,
+		SACHBEARBEITER_SOZIALDIENST })
 	public JaxGesuch saveFinanzielleSituationStart(
 		@Nonnull @NotNull @Valid JaxGesuch gesuchJAXP,
 		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Context HttpServletResponse response
+	) {
 
 		requireNonNull(gesuchJAXP.getId());
-		JaxFamiliensituationContainer jaxFamiliensituationContainer = gesuchJAXP.getFamiliensituationContainer();
+		JaxFamiliensituationContainer jaxFamiliensituationContainer = gesuchJAXP
+			.getFamiliensituationContainer();
 		requireNonNull(jaxFamiliensituationContainer);
-		JaxFamiliensituation familiensituationJA = jaxFamiliensituationContainer.getFamiliensituationJA();
+		JaxFamiliensituation familiensituationJA = jaxFamiliensituationContainer
+			.getFamiliensituationJA();
 		requireNonNull(familiensituationJA);
 		// Bei FinanzielleSituationStart arbeiten wir immer mit GS1: Wenn Sie gemeinsame Stek haben, werden die Fragen
 		// zu Veranlagung und Stek von GS1 genommen!
-		JaxGesuchstellerContainer gesuchsteller1 = gesuchJAXP.getGesuchsteller1();
+		JaxGesuchstellerContainer gesuchsteller1 = gesuchJAXP
+			.getGesuchsteller1();
 		requireNonNull(gesuchsteller1);
 		JaxFinanzielleSituationContainer jaxFinanzielleSituationContainer =
 			gesuchsteller1.getFinanzielleSituationContainer();
@@ -214,11 +225,16 @@ public class FinanzielleSituationResource {
 
 		requireNonNull(gesuchstellerId);
 
-		GesuchstellerContainer gesuchsteller = findGesuchstellerById(gesuchstellerId, "saveFinanzielleSituationStart");
+		GesuchstellerContainer gesuchsteller = findGesuchstellerById(
+			gesuchstellerId,
+			"saveFinanzielleSituationStart"
+		);
 
-		FinanzielleSituationContainer convertedFinSitCont = converter.finanzielleSituationContainerToStorableEntity(
-			jaxFinanzielleSituationContainer,
-			gesuchsteller.getFinanzielleSituationContainer());
+		FinanzielleSituationContainer convertedFinSitCont = converter
+			.finanzielleSituationContainerToStorableEntity(
+				jaxFinanzielleSituationContainer,
+				gesuchsteller.getFinanzielleSituationContainer()
+			);
 		convertedFinSitCont.setGesuchsteller(gesuchsteller);
 
 		if (familiensituationJA.isAbweichendeZahlungsadresse()) {
@@ -227,16 +243,21 @@ public class FinanzielleSituationResource {
 
 		Gesuch gesuch = gesuchService
 			.findGesuch(gesuchId)
-			.orElseThrow(() -> new EbeguEntityNotFoundException(
-				"saveFinanzielleSituationStart",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				gesuchId));
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"saveFinanzielleSituationStart",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gesuchId
+				)
+			);
 
 		final Einstellung einstellung = einstellungService.findEinstellung(
 			EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED,
 			gesuch.extractGemeinde(),
-			gesuch.getGesuchsperiode());
-		boolean mahlzeitenverguenstigungEnabled = einstellung.getValueAsBoolean();
+			gesuch.getGesuchsperiode()
+		);
+		boolean mahlzeitenverguenstigungEnabled = einstellung
+			.getValueAsBoolean();
 
 		if (!mahlzeitenverguenstigungEnabled) {
 			familiensituationJA.setKeineMahlzeitenverguenstigungBeantragt(true);
@@ -245,60 +266,86 @@ public class FinanzielleSituationResource {
 		Adresse storedAdresse = new Adresse();
 		if (jaxFamiliensituationContainer.getId() != null) {
 			Optional<FamiliensituationContainer> storedFamSitContOptional =
-				familiensituationService.findFamiliensituation(jaxFamiliensituationContainer.getId());
+				familiensituationService.findFamiliensituation(
+					jaxFamiliensituationContainer.getId()
+				);
 
 			if (storedFamSitContOptional.isPresent()) {
-				Familiensituation storedFamSit = storedFamSitContOptional.get().getFamiliensituationJA();
+				Familiensituation storedFamSit = storedFamSitContOptional.get()
+					.getFamiliensituationJA();
 				if (storedFamSit != null
 					&& storedFamSit.getAuszahlungsdaten() != null
-					&& storedFamSit.getAuszahlungsdaten().getAdresseKontoinhaber() != null) {
-					storedAdresse = storedFamSit.getAuszahlungsdaten().getAdresseKontoinhaber();
+					&& storedFamSit.getAuszahlungsdaten()
+						.getAdresseKontoinhaber()
+						!= null) {
+					storedAdresse = storedFamSit.getAuszahlungsdaten()
+						.getAdresseKontoinhaber();
 				}
 			}
 		}
 
-		Boolean gemeinsameSteuererklaerung = familiensituationJA.getGemeinsameSteuererklaerung();
-		boolean auszahlungAusserhalbVonKibon = familiensituationJA.isAuszahlungAusserhalbVonKibon();
-		Boolean sozialhilfeBezueger = familiensituationJA.getSozialhilfeBezueger();
+		Boolean gemeinsameSteuererklaerung = familiensituationJA
+			.getGemeinsameSteuererklaerung();
+		boolean auszahlungAusserhalbVonKibon = familiensituationJA
+			.isAuszahlungAusserhalbVonKibon();
+		Boolean sozialhilfeBezueger = familiensituationJA
+			.getSozialhilfeBezueger();
 		requireNonNull(sozialhilfeBezueger);
 
-		FinanzielleSituationStartDTO finSitStartDTO = new FinanzielleSituationStartDTO(
-			sozialhilfeBezueger,
-			familiensituationJA.getZustaendigeAmtsstelle(),
-			familiensituationJA.getNameBetreuer(),
-			gemeinsameSteuererklaerung,
-			calculateVerguenstigungGewuenscht(gesuchJAXP, familiensituationJA),
-			familiensituationJA.isKeineMahlzeitenverguenstigungBeantragt(),
-			familiensituationJA.getIban(),
-			familiensituationJA.getKontoinhaber(),
-			familiensituationJA.isAbweichendeZahlungsadresse(),
-			familiensituationJA.getZahlungsadresse() == null ? null :
-				converter.adresseToEntity(familiensituationJA.getZahlungsadresse(), storedAdresse),
-			familiensituationJA.getInfomaKreditorennummer(),
-			familiensituationJA.getInfomaBankcode(),
-			gesuchJAXP.getFinSitAenderungGueltigAbDatum(),
-			auszahlungAusserhalbVonKibon);
+		FinanzielleSituationStartDTO finSitStartDTO =
+			new FinanzielleSituationStartDTO(
+				sozialhilfeBezueger,
+				familiensituationJA.getZustaendigeAmtsstelle(),
+				familiensituationJA.getNameBetreuer(),
+				gemeinsameSteuererklaerung,
+				calculateVerguenstigungGewuenscht(
+					gesuchJAXP,
+					familiensituationJA
+				),
+				familiensituationJA
+					.isKeineMahlzeitenverguenstigungBeantragt(),
+				familiensituationJA.getIban(),
+				familiensituationJA.getKontoinhaber(),
+				familiensituationJA.isAbweichendeZahlungsadresse(),
+				familiensituationJA.getZahlungsadresse() == null ?
+					null :
+					converter.adresseToEntity(
+						familiensituationJA
+							.getZahlungsadresse(),
+						storedAdresse
+					),
+				familiensituationJA.getInfomaKreditorennummer(),
+				familiensituationJA.getInfomaBankcode(),
+				gesuchJAXP.getFinSitAenderungGueltigAbDatum(),
+				auszahlungAusserhalbVonKibon
+			);
 
-		Gesuch persistedGesuch = this.finanzielleSituationService.saveFinanzielleSituationStart(
-			convertedFinSitCont,
-			finSitStartDTO,
-			gesuchId
-		);
+		Gesuch persistedGesuch = this.finanzielleSituationService
+			.saveFinanzielleSituationStart(
+				convertedFinSitCont,
+				finSitStartDTO,
+				gesuchId
+			);
 
-		return converter.gesuchToJAX(persistedGesuch);
+		return antragConverter.gesuchToJAX(persistedGesuch);
 	}
 
 	@Nonnull
 	private static Boolean calculateVerguenstigungGewuenscht(
 		@Nonnull JaxGesuch gesuchJAXP,
-		JaxFamiliensituation familiensituation) {
-		Boolean sozialhilfeBezueger = familiensituation.getSozialhilfeBezueger();
+		JaxFamiliensituation familiensituation
+	) {
+		Boolean sozialhilfeBezueger = familiensituation
+			.getSozialhilfeBezueger();
 		requireNonNull(sozialhilfeBezueger);
 
-		Boolean verguenstigungGewuenscht = familiensituation.getVerguenstigungGewuenscht();
+		Boolean verguenstigungGewuenscht = familiensituation
+			.getVerguenstigungGewuenscht();
 		if (gesuchJAXP.getFinSitTyp() == FinanzielleSituationTyp.BERN
-			|| gesuchJAXP.getFinSitTyp() == FinanzielleSituationTyp.BERN_FKJV
-			|| gesuchJAXP.getFinSitTyp() == FinanzielleSituationTyp.SOLOTHURN) {
+			|| gesuchJAXP.getFinSitTyp()
+				== FinanzielleSituationTyp.BERN_FKJV
+			|| gesuchJAXP.getFinSitTyp()
+				== FinanzielleSituationTyp.SOLOTHURN) {
 
 			if (sozialhilfeBezueger.equals(Boolean.TRUE)) {
 				// Sozialhilfebezueger bekommen immer eine Verguenstigung
@@ -312,8 +359,10 @@ public class FinanzielleSituationResource {
 		return verguenstigungGewuenscht;
 	}
 
-	@ApiOperation(value = "Berechnet die FinanzielleSituation fuer das uebergebene Gesuch. Die Berechnung wird " +
-		"nicht gespeichert.", response = FinanzielleSituationResultateDTO.class)
+	@Operation(
+		summary = "Berechnet die FinanzielleSituation fuer das uebergebene Gesuch. Die Berechnung wird "
+			+
+			"nicht gespeichert.")
 	@Nullable
 	@POST
 	@Path("/calculate")
@@ -321,12 +370,11 @@ public class FinanzielleSituationResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public Response calculateFinanzielleSituation(
-		@Nonnull @NotNull @Valid JaxGesuch gesuchJAXP,
-		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Nonnull @NotNull @Valid JaxGesuch gesuchJAXP
+	) {
 
 		Gesuch gesuch =
-			converter.gesuchToEntity(gesuchJAXP, new Gesuch()); // nur konvertieren, nicht mergen mit Gesuch von DB!
+			antragConverter.gesuchToEntity(gesuchJAXP, new Gesuch()); // nur konvertieren, nicht mergen mit Gesuch von DB!
 		FinanzielleSituationResultateDTO finanzielleSituationResultateDTO =
 			finanzielleSituationService.calculateResultate(gesuch);
 
@@ -337,11 +385,12 @@ public class FinanzielleSituationResource {
 	 * Finanzielle Situation wird hier im gegensatz zur /calculate mehtode nur als DTO mitgegeben statt als ganzes
 	 * gesuch
 	 */
-	@ApiOperation(value = "Berechnet die FinanzielleSituation fuer das Gesuch mit der uebergebenen Id. Die Berechnung "
-		+
-		"nicht gespeichert. Die FinanzielleSituation wird hier im Gegensatz zur /calculate mehtode nur als DTO "
-		+
-		"mitgegeben statt als ganzes Gesuch", response = FinanzielleSituationResultateDTO.class)
+	@Operation(
+		summary = "Berechnet die FinanzielleSituation fuer das Gesuch mit der uebergebenen Id. Die Berechnung "
+			+
+			"nicht gespeichert. Die FinanzielleSituation wird hier im Gegensatz zur /calculate mehtode nur als DTO "
+			+
+			"mitgegeben statt als ganzes Gesuch")
 	@Nullable
 	@POST
 	@Path("/calculateTemp")
@@ -349,9 +398,8 @@ public class FinanzielleSituationResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public Response calculateFinanzielleSituation(
-		@Nonnull @NotNull @Valid JaxFinanzModel jaxFinSitModel,
-		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Nonnull @NotNull @Valid JaxFinanzModel jaxFinSitModel
+	) {
 
 		Gesuch gesuch = new Gesuch();
 		gesuch.initFamiliensituationContainer();
@@ -362,24 +410,41 @@ public class FinanzielleSituationResource {
 		}
 		Familiensituation familiensituation = gesuch.extractFamiliensituation();
 		requireNonNull(familiensituation);
-		familiensituation.setGemeinsameSteuererklaerung(jaxFinSitModel.getJaxFamiliensituation().getGemeinsameSteuererklaerung());
+		familiensituation.setGemeinsameSteuererklaerung(
+			jaxFinSitModel.getFamiliensituation()
+				.getGemeinsameSteuererklaerung()
+		);
 		if (jaxFinSitModel.getFinanzielleSituationContainerGS1() != null) {
 			gesuch.setGesuchsteller1(new GesuchstellerContainer());
 			//noinspection ConstantConditions
-			gesuch.getGesuchsteller1().setFinanzielleSituationContainer(
-				converter.finanzielleSituationContainerToEntity(
-					jaxFinSitModel.getFinanzielleSituationContainerGS1(),
-					new FinanzielleSituationContainer()));
-			setFinSitAbfrageStatus(gesuch.getGesuchsteller1(), jaxFinSitModel.getFinanzielleSituationContainerGS1());
+			gesuch.getGesuchsteller1()
+				.setFinanzielleSituationContainer(
+					converter.finanzielleSituationContainerToEntity(
+						jaxFinSitModel
+							.getFinanzielleSituationContainerGS1(),
+						new FinanzielleSituationContainer()
+					)
+				);
+			setFinSitAbfrageStatus(
+				gesuch.getGesuchsteller1(),
+				jaxFinSitModel.getFinanzielleSituationContainerGS1()
+			);
 		}
 		if (jaxFinSitModel.getFinanzielleSituationContainerGS2() != null) {
 			gesuch.setGesuchsteller2(new GesuchstellerContainer());
 			//noinspection ConstantConditions
-			gesuch.getGesuchsteller2().setFinanzielleSituationContainer(
-				converter.finanzielleSituationContainerToEntity(
-					jaxFinSitModel.getFinanzielleSituationContainerGS2(),
-					new FinanzielleSituationContainer()));
-			setFinSitAbfrageStatus(gesuch.getGesuchsteller2(), jaxFinSitModel.getFinanzielleSituationContainerGS2());
+			gesuch.getGesuchsteller2()
+				.setFinanzielleSituationContainer(
+					converter.finanzielleSituationContainerToEntity(
+						jaxFinSitModel
+							.getFinanzielleSituationContainerGS2(),
+						new FinanzielleSituationContainer()
+					)
+				);
+			setFinSitAbfrageStatus(
+				gesuch.getGesuchsteller2(),
+				jaxFinSitModel.getFinanzielleSituationContainerGS2()
+			);
 		}
 
 		FinanzielleSituationResultateDTO finanzielleSituationResultateDTO =
@@ -391,156 +456,227 @@ public class FinanzielleSituationResource {
 
 	private void setFinSitAbfrageStatus(
 		@Nonnull GesuchstellerContainer gesuchstellerContainer,
-		@Nonnull JaxFinanzielleSituationContainer finanzielleSituationContainer) {
+		@Nonnull JaxFinanzielleSituationContainer finanzielleSituationContainer
+	) {
 		if (finanzielleSituationContainer.getId() != null) {
 			Optional<FinanzielleSituationContainer> finSitCont =
-				finanzielleSituationService.findFinanzielleSituation(finanzielleSituationContainer.getId());
+				finanzielleSituationService.findFinanzielleSituation(
+					finanzielleSituationContainer.getId()
+				);
 			if (finSitCont.isPresent()) {
-				assert gesuchstellerContainer.getFinanzielleSituationContainer() != null;
+				assert gesuchstellerContainer.getFinanzielleSituationContainer()
+					!= null;
 				gesuchstellerContainer.getFinanzielleSituationContainer()
 					.getFinanzielleSituationJA()
-					.setSteuerdatenAbfrageStatus(finSitCont.get()
-						.getFinanzielleSituationJA()
-						.getSteuerdatenAbfrageStatus());
+					.setSteuerdatenAbfrageStatus(
+						finSitCont.get()
+							.getFinanzielleSituationJA()
+							.getSteuerdatenAbfrageStatus()
+					);
 			}
 		}
 	}
 
-	@ApiOperation(value = "Sucht die FinanzielleSituation mit der uebergebenen Id in der Datenbank",
-		response = JaxFinanzielleSituationContainer.class)
+	@Operation(
+		summary = "Sucht die FinanzielleSituation mit der uebergebenen Id in der Datenbank")
 	@Nullable
 	@GET
 	@Path("/{finanzielleSituationId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, JURIST, REVISOR,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, JURIST, REVISOR,
 		GESUCHSTELLER, STEUERAMT,
-		ADMIN_TS, SACHBEARBEITER_TS, ADMIN_MANDANT, SACHBEARBEITER_MANDANT, ADMIN_SOZIALDIENST,
+		ADMIN_TS, SACHBEARBEITER_TS, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
+		ADMIN_SOZIALDIENST,
 		SACHBEARBEITER_SOZIALDIENST })
 	public JaxFinanzielleSituationContainer findFinanzielleSituation(
-		@Nonnull @NotNull @PathParam("finanzielleSituationId") JaxId finanzielleSituationId) {
+		@Nonnull
+		@NotNull
+		@PathParam("finanzielleSituationId") JaxId finanzielleSituationId
+	) {
 
 		requireNonNull(finanzielleSituationId.getId());
-		String finanzielleSituationID = converter.toEntityId(finanzielleSituationId);
+		String finanzielleSituationID = converter.toEntityId(
+			finanzielleSituationId
+		);
 		Optional<FinanzielleSituationContainer> optional =
-			finanzielleSituationService.findFinanzielleSituation(finanzielleSituationID);
+			finanzielleSituationService.findFinanzielleSituation(
+				finanzielleSituationID
+			);
 
 		if (!optional.isPresent()) {
 			return null;
 		}
-		FinanzielleSituationContainer finanzielleSituationToReturn = optional.get();
-		return converter.finanzielleSituationContainerToJAX(finanzielleSituationToReturn);
+		FinanzielleSituationContainer finanzielleSituationToReturn = optional
+			.get();
+		return converter.finanzielleSituationContainerToJAX(
+			finanzielleSituationToReturn
+		);
 	}
 
-	@ApiOperation(value = "Setzt die schon beantworte Fragen im Backend und update die FinSitDaten gemaess die Anruf "
-		+ "Ergebniss",
-		response = SteuerdatenResponse.class)
+	@Operation(
+		summary = "Setzt die schon beantworte Fragen im Backend und update die FinSitDaten gemaess die Anruf "
+			+ "Ergebniss")
 	@Nullable
 	@PUT
 	@Path("/kibonanfrage/{gesuchId}/{gesuchstellerNumber}/{isGemeinsam}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ GESUCHSTELLER, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_TS, SACHBEARBEITER_TS, ADMIN_GEMEINDE,
-		SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_GEMEINDE, SUPER_ADMIN})
+	@RolesAllowed({ GESUCHSTELLER, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_TS,
+		SACHBEARBEITER_TS, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, SACHBEARBEITER_GEMEINDE, SUPER_ADMIN })
 	@TransactionAttribute(TransactionAttributeType.NEVER)
 	public Response updateFinSitMitSteuerdaten(
-		@Nonnull @PathParam("gesuchstellerNumber") @NotNull int gesuchstellerNumber,
+		@PathParam("gesuchstellerNumber")
+		@NotNull int gesuchstellerNumber,
 		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchId,
-		@Nonnull @PathParam("isGemeinsam") @NotNull boolean isGemeinsam,
-		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response
+		@PathParam("isGemeinsam") @NotNull boolean isGemeinsam
 	) {
 
 		Objects.requireNonNull(gesuchId.getId());
 
 		//Antrag suchen
-		Gesuch gesuch = gesuchService.findGesuch(gesuchId.getId()).orElseThrow(()
-			-> new EbeguEntityNotFoundException(
-			"getSteuerdatenBeiAntragId",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			"Gesuch ID invalid: " + gesuchId.getId()));
+		Gesuch gesuch = gesuchService.findGesuch(gesuchId.getId())
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getSteuerdatenBeiAntragId",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"Gesuch ID invalid: " + gesuchId.getId()
+				)
+			);
 
-		GesuchstellerTyp gesuchstellerTyp = GesuchstellerTyp.getGesuchstellerTypByNummer(gesuchstellerNumber);
-		initFinanzielleSituationContainerForSteuerdatenRequest(gesuch, isGemeinsam, gesuchstellerTyp);
+		GesuchstellerTyp gesuchstellerTyp = GesuchstellerTyp
+			.getGesuchstellerTypByNummer(gesuchstellerNumber);
+		initFinanzielleSituationContainerForSteuerdatenRequest(
+			gesuch,
+			isGemeinsam,
+			gesuchstellerTyp
+		);
 
 		KibonAnfrageContext kibonAnfrageContext = null;
 		try {
-			kibonAnfrageContext = kibonAnfrageHandler.handleKibonAnfrage(gesuch, gesuchstellerTyp);
+			kibonAnfrageContext = kibonAnfrageHandler.handleKibonAnfrage(
+				gesuch,
+				gesuchstellerTyp
+			);
 		} catch (OIDCServiceException e) {
 			JsonObject errorJson = Json.createObjectBuilder()
 				.add("error", "Failed to obtain OIDC token")
 				.add("message", e.getMessage())
 				.build();
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 				.entity(errorJson.toString())
 				.build();
 		}
 
 		if (isGemeinsam) {
-			this.gesuchstellerService.saveGesuchsteller(requireNonNull(gesuch.getGesuchsteller2()), gesuch, 2, false);
-			this.finanzielleSituationService.
-					saveFinanzielleSituationTemp(kibonAnfrageContext.getFinSitCont(GesuchstellerTyp.GESUCHSTELLER_2));
+			this.gesuchstellerService.saveGesuchsteller(
+				requireNonNull(gesuch.getGesuchsteller2()),
+				gesuch,
+				2,
+				false
+			);
+			this.finanzielleSituationService.saveFinanzielleSituationTemp(
+				kibonAnfrageContext.getFinSitCont(
+					GesuchstellerTyp.GESUCHSTELLER_2
+				)
+			);
 		}
 		gesuchstellerService.saveGesuchsteller(
-				kibonAnfrageContext.getGesuchstellerContainerToUse(),
-				gesuch,
-				gesuchstellerNumber,
-				false);
-		FinanzielleSituationContainer persistedFinSit = this.finanzielleSituationService.saveFinanzielleSituationTemp(
-				kibonAnfrageContext.getFinanzielleSituationContainerToUse());
-		return Response.ok(converter.finanzielleSituationContainerToJAX(persistedFinSit)).build();
+			kibonAnfrageContext.getGesuchstellerContainerToUse(),
+			gesuch,
+			gesuchstellerNumber,
+			false
+		);
+		FinanzielleSituationContainer persistedFinSit =
+			this.finanzielleSituationService.saveFinanzielleSituationTemp(
+				kibonAnfrageContext
+					.getFinanzielleSituationContainerToUse()
+			);
+		return Response.ok(
+			converter.finanzielleSituationContainerToJAX(persistedFinSit)
+		).build();
 	}
 
 	private void initFinanzielleSituationContainerForSteuerdatenRequest(
-			Gesuch gesuch,
-			boolean isGemeinsam,
-			GesuchstellerTyp gesuchstellerTyp) {
+		Gesuch gesuch,
+		boolean isGemeinsam,
+		GesuchstellerTyp gesuchstellerTyp
+	) {
 
 		if (gesuchstellerTyp == GesuchstellerTyp.GESUCHSTELLER_1) {
 			Objects.requireNonNull(gesuch.getGesuchsteller1());
-			Objects.requireNonNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
-			gesuch.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA().setSteuerdatenZugriff(true);
+			Objects.requireNonNull(
+				gesuch.getGesuchsteller1()
+					.getFinanzielleSituationContainer()
+			);
+			gesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA()
+				.setSteuerdatenZugriff(true);
 		}
 
-		if (gesuchstellerTyp == GesuchstellerTyp.GESUCHSTELLER_2 || isGemeinsam) {
+		if (gesuchstellerTyp == GesuchstellerTyp.GESUCHSTELLER_2
+			|| isGemeinsam) {
 			initFinanzielleSituationGS2ContainerForSteuerdatenRequest(gesuch);
 
 			if (!isGemeinsam) {
 				Objects.requireNonNull(gesuch.getGesuchsteller2());
-				Objects.requireNonNull(gesuch.getGesuchsteller2().getFinanzielleSituationContainer());
-				gesuch.getGesuchsteller2().getFinanzielleSituationContainer().getFinanzielleSituationJA().setSteuerdatenZugriff(true);
+				Objects.requireNonNull(
+					gesuch.getGesuchsteller2()
+						.getFinanzielleSituationContainer()
+				);
+				gesuch.getGesuchsteller2()
+					.getFinanzielleSituationContainer()
+					.getFinanzielleSituationJA()
+					.setSteuerdatenZugriff(true);
 			}
 		}
 
 		Objects.requireNonNull(gesuch.getFamiliensituationContainer());
-		Objects.requireNonNull(gesuch.getFamiliensituationContainer().getFamiliensituationJA());
-		gesuch.getFamiliensituationContainer().getFamiliensituationJA().setGemeinsameSteuererklaerung(isGemeinsam);
+		Objects.requireNonNull(
+			gesuch.getFamiliensituationContainer().getFamiliensituationJA()
+		);
+		gesuch.getFamiliensituationContainer()
+			.getFamiliensituationJA()
+			.setGemeinsameSteuererklaerung(isGemeinsam);
 	}
 
-	private void initFinanzielleSituationGS2ContainerForSteuerdatenRequest(Gesuch gesuch) {
+	private void initFinanzielleSituationGS2ContainerForSteuerdatenRequest(
+		Gesuch gesuch
+	) {
 		Objects.requireNonNull(gesuch.getGesuchsteller2());
 
-		if (gesuch.getGesuchsteller2().getFinanzielleSituationContainer() != null)  {
+		if (gesuch.getGesuchsteller2().getFinanzielleSituationContainer()
+			!= null) {
 			return;
 		}
 
 		Objects.requireNonNull(gesuch.getGesuchsteller1());
-		Objects.requireNonNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
+		Objects.requireNonNull(
+			gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+		);
 
 		FinanzielleSituation finSitJa = new FinanzielleSituation();
 		finSitJa.setSteuererklaerungAusgefuellt(false); //default
 		finSitJa.setSteuerveranlagungErhalten(false); //default
 
-		FinanzielleSituationContainer finSit = new FinanzielleSituationContainer();
-		finSit.setJahr(gesuch.getGesuchsteller1().getFinanzielleSituationContainer().getJahr());
+		FinanzielleSituationContainer finSit =
+			new FinanzielleSituationContainer();
+		finSit.setJahr(
+			gesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getJahr()
+		);
 		finSit.setFinanzielleSituationJA(finSitJa);
 		finSit.setGesuchsteller(gesuch.getGesuchsteller2());
 		gesuch.getGesuchsteller2().setFinanzielleSituationContainer(finSit);
 	}
 
-	@ApiOperation(value = "reset die FinSit Status und Nettovermoegen falls gesetzt"
-		+ "Ergebniss",
-		response = SteuerdatenResponse.class)
+	@Operation(
+		summary = "reset die FinSit Status und Nettovermoegen falls gesetzt"
+			+ "Ergebniss")
 	@Nullable
 	@PUT
 	@Path("/kibonanfrage/reset/{kibonAnfrageId}/{gesuchstellerId}/{isGemeinsam}")
@@ -550,136 +686,196 @@ public class FinanzielleSituationResource {
 	@TransactionAttribute(TransactionAttributeType.NEVER)
 	public JaxFinanzielleSituationContainer resetFinSitSteuerdaten(
 		@Nonnull @NotNull @PathParam("kibonAnfrageId") JaxId kibonAnfrageId,
-		@Nonnull @NotNull @PathParam("gesuchstellerId") JaxId jaxGesuchstellerId,
-		@Nonnull @NotNull @PathParam("isGemeinsam") boolean isGemeinsam,
-		@Nonnull @NotNull @Valid JaxFinanzielleSituationContainer jaxFinanzielleSituationContainer,
-		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response
+		@Nonnull
+		@NotNull
+		@PathParam("gesuchstellerId") JaxId jaxGesuchstellerId,
+		@NotNull @PathParam("isGemeinsam") boolean isGemeinsam,
+		@Nonnull
+		@NotNull
+		@Valid JaxFinanzielleSituationContainer jaxFinanzielleSituationContainer
 	) {
 		Objects.requireNonNull(kibonAnfrageId.getId());
 		Objects.requireNonNull(jaxGesuchstellerId.getId());
 		//Antrag suchen
-		Gesuch gesuch = gesuchService.findGesuch(kibonAnfrageId.getId()).orElseThrow(()
-			-> new EbeguEntityNotFoundException(
-			"getSteuerdatenBeiAntragId",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			"Gesuch ID invalid: " + kibonAnfrageId.getId()));
+		Gesuch gesuch = gesuchService.findGesuch(kibonAnfrageId.getId())
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getSteuerdatenBeiAntragId",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"Gesuch ID invalid: " + kibonAnfrageId.getId()
+				)
+			);
 
 		//FinSit Suchen, Feldern updaten
 		GesuchstellerContainer gesuchsteller =
-			findGesuchstellerById(jaxGesuchstellerId.getId(), "resetFinSitSteuerdaten");
+			findGesuchstellerById(
+				jaxGesuchstellerId.getId(),
+				"resetFinSitSteuerdaten"
+			);
 
-		FinanzielleSituationContainer convertedFinSitCont = converter.finanzielleSituationContainerToStorableEntity(
-			jaxFinanzielleSituationContainer,
-			gesuchsteller.getFinanzielleSituationContainer());
+		FinanzielleSituationContainer convertedFinSitCont = converter
+			.finanzielleSituationContainerToStorableEntity(
+				jaxFinanzielleSituationContainer,
+				gesuchsteller.getFinanzielleSituationContainer()
+			);
 		convertedFinSitCont.setGesuchsteller(gesuchsteller);
 
 		// reset SteuerdatenAbfrageStatus und NettoVermoegen
-		convertedFinSitCont.getFinanzielleSituationJA().setSteuerdatenAbfrageStatus(null);
-		convertedFinSitCont.getFinanzielleSituationJA().setSteuerdatenAbfrageTimestamp(null);
+		convertedFinSitCont.getFinanzielleSituationJA()
+			.setSteuerdatenAbfrageStatus(null);
+		convertedFinSitCont.getFinanzielleSituationJA()
+			.setSteuerdatenAbfrageTimestamp(null);
 		convertedFinSitCont.getFinanzielleSituationJA().setNettoVermoegen(null);
 
 		// auch fuer GS2 wenn gemeinsam
 		if (isGemeinsam
 			&& gesuch.getGesuchsteller2() != null
-			&& gesuch.getGesuchsteller2().getFinanzielleSituationContainer() != null
-			&& gesuch.getGesuchsteller2().getFinanzielleSituationContainer().getFinanzielleSituationJA() != null) {
-			FinanzielleSituationContainer finSitGS2 = gesuch.getGesuchsteller2().getFinanzielleSituationContainer();
-			finSitGS2.getFinanzielleSituationJA().setSteuerdatenAbfrageStatus(null);
-			finSitGS2.getFinanzielleSituationJA().setSteuerdatenAbfrageTimestamp(null);
+			&& gesuch.getGesuchsteller2().getFinanzielleSituationContainer()
+				!= null
+			&& gesuch.getGesuchsteller2()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA()
+				!= null) {
+			FinanzielleSituationContainer finSitGS2 = gesuch.getGesuchsteller2()
+				.getFinanzielleSituationContainer();
+			finSitGS2.getFinanzielleSituationJA()
+				.setSteuerdatenAbfrageStatus(null);
+			finSitGS2.getFinanzielleSituationJA()
+				.setSteuerdatenAbfrageTimestamp(null);
 			finSitGS2.getFinanzielleSituationJA().setNettoVermoegen(null);
 			finSitGS2.getFinanzielleSituationJA()
-				.setSteuerdatenZugriff(convertedFinSitCont.getFinanzielleSituationJA().getSteuerdatenZugriff());
-			this.finanzielleSituationService.saveFinanzielleSituationTemp(finSitGS2);
+				.setSteuerdatenZugriff(
+					convertedFinSitCont.getFinanzielleSituationJA()
+						.getSteuerdatenZugriff()
+				);
+			this.finanzielleSituationService.saveFinanzielleSituationTemp(
+				finSitGS2
+			);
 		}
 
 		//und zusendlich speichern und zuruckgeben
 		FinanzielleSituationContainer persistedFinSit =
-			this.finanzielleSituationService.saveFinanzielleSituationTemp(convertedFinSitCont);
+			this.finanzielleSituationService.saveFinanzielleSituationTemp(
+				convertedFinSitCont
+			);
 		return converter.finanzielleSituationContainerToJAX(persistedFinSit);
 	}
 
-	@ApiOperation(value = "reset die FinSit Status und Nettovermoegen falls gesetzt"
-		+ "Ergebniss",
-		response = SteuerdatenResponse.class)
+	@Operation(
+		summary = "reset die FinSit Status und Nettovermoegen falls gesetzt"
+			+ "Ergebniss")
 	@GET
 	@Path("/geburtsdatum-matches-steuerabfrage/{containerId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
-		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST, ADMIN_MANDANT,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST,
+		SACHBEARBEITER_SOZIALDIENST, ADMIN_MANDANT,
 		SACHBEARBEITER_MANDANT })
 	@TransactionAttribute(TransactionAttributeType.NEVER)
 	public boolean doesGeburtsdatumMatchSteuerabfrage(
 		@Nonnull @NotNull @PathParam("containerId") JaxId jaxContainerId,
-		@Nonnull @NotNull @QueryParam("geburtsdatum") String geburtsdatum,
-		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response
+		@Nonnull @NotNull @QueryParam("geburtsdatum") String geburtsdatum
 	) {
 		//Antrag suchen
 		FinanzielleSituationContainer finSitContainer =
 			findFinanzielleSituationWithResponse(jaxContainerId);
 
-		LocalDate datumSteuerdatenAnfrage = requireNonNull(finSitContainer.getFinanzielleSituationJA()
-			.getSteuerdatenResponse()).getGeburtsdatumAntragsteller();
+		LocalDate datumSteuerdatenAnfrage = requireNonNull(
+			finSitContainer.getFinanzielleSituationJA()
+				.getSteuerdatenResponse()
+		).getGeburtsdatumAntragsteller();
 
-		LocalDate formattedGeburtsdatum = LocalDate.parse(geburtsdatum, Constants.DATE_FORMATTER);
+		LocalDate formattedGeburtsdatum = LocalDate.parse(
+			geburtsdatum,
+			Constants.DATE_FORMATTER
+		);
 
-		boolean isMatching = Objects.equals(datumSteuerdatenAnfrage, formattedGeburtsdatum);
+		boolean isMatching = Objects.equals(
+			datumSteuerdatenAnfrage,
+			formattedGeburtsdatum
+		);
 
 		if (!isMatching
-			&& finSitContainer.getFinanzielleSituationJA().getSteuerdatenResponse().getGeburtsdatumPartner() != null) {
-			isMatching = Objects.equals(finSitContainer.getFinanzielleSituationJA()
+			&& finSitContainer.getFinanzielleSituationJA()
 				.getSteuerdatenResponse()
-				.getGeburtsdatumPartner(), formattedGeburtsdatum);
+				.getGeburtsdatumPartner()
+				!= null) {
+			isMatching = Objects.equals(
+				finSitContainer.getFinanzielleSituationJA()
+					.getSteuerdatenResponse()
+					.getGeburtsdatumPartner(),
+				formattedGeburtsdatum
+			);
 		}
 
 		return isMatching;
 	}
 
 	@Nonnull
-	private FinanzielleSituationContainer findFinanzielleSituationWithResponse(JaxId jaxContainerId) {
+	private FinanzielleSituationContainer findFinanzielleSituationWithResponse(
+		JaxId jaxContainerId
+	) {
 		Objects.requireNonNull(jaxContainerId.getId());
 
 		FinanzielleSituationContainer finSitContainer =
-			finanzielleSituationService.findFinanzielleSituation(jaxContainerId.getId()).orElseThrow(()
-				-> new EbeguEntityNotFoundException(
-				"findFinanzielleSituationWithResponse",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				"FinSit ID invalid: " + jaxContainerId.getId()));
+			finanzielleSituationService.findFinanzielleSituation(
+				jaxContainerId.getId()
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"findFinanzielleSituationWithResponse",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						"FinSit ID invalid: "
+							+ jaxContainerId.getId()
+					)
+				);
 
-		while (finSitContainer.getFinanzielleSituationJA().getSteuerdatenResponse() == null) {
-			finSitContainer = findFinanzielleSituationVorgaenger(finSitContainer).orElseThrow(() ->
-				new EbeguEntityNotFoundException(
+		while (finSitContainer.getFinanzielleSituationJA()
+			.getSteuerdatenResponse()
+			== null) {
+			finSitContainer = findFinanzielleSituationVorgaenger(
+				finSitContainer
+			).orElseThrow(
+				() -> new EbeguEntityNotFoundException(
 					"Keine FinSit mit SteuerdatenResponse gefunden",
 					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND
-				));
+				)
+			);
 		}
 
 		return finSitContainer;
 	}
 
-	private Optional<FinanzielleSituationContainer> findFinanzielleSituationVorgaenger(FinanzielleSituationContainer finSitContainer) {
+	private Optional<FinanzielleSituationContainer> findFinanzielleSituationVorgaenger(
+		FinanzielleSituationContainer finSitContainer
+	) {
 		if (finSitContainer.getVorgaengerId() == null) {
 			return Optional.empty();
 		}
 
-		return finanzielleSituationService.findFinanzielleSituation(finSitContainer.getVorgaengerId());
+		return finanzielleSituationService.findFinanzielleSituation(
+			finSitContainer.getVorgaengerId()
+		);
 	}
 
-	@ApiOperation(value = "",
-		response = JaxFinanzielleSituationContainer.class)
+	@Operation(summary = "")
 	@Nullable
 	@PUT
 	@Path("/updateFromAufteilung/{gesuchId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
-		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST,
+		SACHBEARBEITER_SOZIALDIENST })
 	@TransactionAttribute(TransactionAttributeType.NEVER)
 	public Response updateFinSitFromAufteilung(
 		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchId,
-		@Nonnull @NotNull @Valid JaxFinanzielleSituationAufteilungDTO jaxFinanzielleSituationAufteilungDTO,
+		@Nonnull
+		@NotNull
+		@Valid JaxFinanzielleSituationAufteilungDTO jaxFinanzielleSituationAufteilungDTO,
 		@Context UriInfo uriInfo,
 		@Context HttpServletResponse response
 	) {
@@ -687,63 +883,92 @@ public class FinanzielleSituationResource {
 		Objects.requireNonNull(gesuchId.getId());
 
 		Gesuch gesuch = gesuchService.findGesuch(gesuchId.getId(), true)
-			.orElseThrow(()
-				-> new EbeguEntityNotFoundException(
-				"updateFinSitFromAufteilung",
-				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				"GesuchId invalid: " + gesuchId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"updateFinSitFromAufteilung",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"GesuchId invalid: " + gesuchId
+				)
 			);
 
 		Objects.requireNonNull(gesuch.getGesuchsteller1());
 		Objects.requireNonNull(gesuch.getGesuchsteller2());
-		Objects.requireNonNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
-		Objects.requireNonNull(gesuch.getGesuchsteller2().getFinanzielleSituationContainer());
+		Objects.requireNonNull(
+			gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+		);
+		Objects.requireNonNull(
+			gesuch.getGesuchsteller2().getFinanzielleSituationContainer()
+		);
 
 		this.finanzielleSituationService.setValuesFromAufteilungDTO(
-			gesuch.getGesuchsteller1().getFinanzielleSituationContainer().getFinanzielleSituationJA(),
-			gesuch.getGesuchsteller2().getFinanzielleSituationContainer().getFinanzielleSituationJA(),
+			gesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA(),
+			gesuch.getGesuchsteller2()
+				.getFinanzielleSituationContainer()
+				.getFinanzielleSituationJA(),
 			jaxFinanzielleSituationAufteilungDTO
 		);
 
-		this.finanzielleSituationService.saveFinanzielleSituation(gesuch.getGesuchsteller1()
-			.getFinanzielleSituationContainer(), gesuchId.getId());
-		this.finanzielleSituationService.saveFinanzielleSituation(gesuch.getGesuchsteller2()
-			.getFinanzielleSituationContainer(), gesuchId.getId());
+		this.finanzielleSituationService.saveFinanzielleSituation(
+			gesuch.getGesuchsteller1()
+				.getFinanzielleSituationContainer(),
+			gesuchId.getId()
+		);
+		this.finanzielleSituationService.saveFinanzielleSituation(
+			gesuch.getGesuchsteller2()
+				.getFinanzielleSituationContainer(),
+			gesuchId.getId()
+		);
 
 		return Response.ok().build();
 	}
 
 	private GesuchstellerContainer findGesuchstellerById(
 		@Nonnull String gesuchstellerId,
-		@Nonnull String methodeName) {
-		return gesuchstellerService.findGesuchsteller(gesuchstellerId).orElseThrow(()
-			-> new EbeguEntityNotFoundException(
-			methodeName,
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			"GesuchstellerId invalid: " + gesuchstellerId));
+		@Nonnull String methodeName
+	) {
+		return gesuchstellerService.findGesuchsteller(gesuchstellerId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					methodeName,
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"GesuchstellerId invalid: " + gesuchstellerId
+				)
+			);
 	}
 
-	@ApiOperation(value = "Remove FinanzielleSituation from Gesuchsteller", response = GesuchstellerContainer.class)
+	@Operation(summary = "Remove FinanzielleSituation from Gesuchsteller")
 	@Nullable
 	@DELETE
 	@Path("/remove/{gesuchstellerId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
-		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST })
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER,
+		SACHBEARBEITER_TS, ADMIN_TS, ADMIN_SOZIALDIENST,
+		SACHBEARBEITER_SOZIALDIENST })
 	public JaxGesuchstellerContainer removeFinanzielleSituationFromGesuchsteller(
-		@Nonnull @NotNull @PathParam("gesuchstellerId") JaxId jaxGesuchstellerId,
+		@Nonnull
+		@NotNull
+		@PathParam("gesuchstellerId") JaxId jaxGesuchstellerId,
 		@Context UriInfo uriInfo,
 		@Context HttpServletResponse response
 	) {
 		Objects.requireNonNull(jaxGesuchstellerId.getId());
 
 		GesuchstellerContainer gesuchsteller =
-			findGesuchstellerById(jaxGesuchstellerId.getId(), "removeFinanzielleSituationFromGesuchsteller");
+			findGesuchstellerById(
+				jaxGesuchstellerId.getId(),
+				"removeFinanzielleSituationFromGesuchsteller"
+			);
 
 		gesuchsteller.setFinanzielleSituationContainer(null);
 
-		GesuchstellerContainer updatedGesuchsteller = gesuchstellerService.updateGesuchsteller(gesuchsteller);
-		return converter.gesuchstellerContainerToJAX(updatedGesuchsteller);
+		GesuchstellerContainer updatedGesuchsteller = gesuchstellerService
+			.updateGesuchsteller(gesuchsteller);
+		return gesuchstellerConverter.gesuchstellerContainerToJAX(
+			updatedGesuchsteller
+		);
 	}
 }

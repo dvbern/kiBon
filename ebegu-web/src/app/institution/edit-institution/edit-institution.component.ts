@@ -27,38 +27,42 @@ import {
 import {NgForm} from '@angular/forms';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {
+    getBgInstitutionenBetreuungsangebote,
+    isJugendamt
+} from '@kibon/shared/util-fn/betreuungsangebot-typ';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
-import * as moment from 'moment';
-import {Observable, of} from 'rxjs';
+import moment from 'moment';
+import {firstValueFrom, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {
-    getBgInstitutionenBetreuungsangebote,
-    isJugendamt,
-    TSBetreuungsangebotTyp
-} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSInstitutionStatus} from '../../../models/enums/TSInstitutionStatus';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSAdresse} from '../../../models/TSAdresse';
+    TSBetreuungsangebotTyp,
+    TSInstitutionStatus,
+    TSRole
+} from '@kibon/shared/model/enums';
+import {
+    TSAdresse,
+    TSDateRange,
+    TSInstitution,
+    TSInstitutionStammdaten,
+    TSMandant,
+    TSTraegerschaft
+} from '@kibon/shared/model/entity';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSExternalClient} from '../../../models/TSExternalClient';
-import {TSInstitution} from '../../../models/TSInstitution';
 import {TSInstitutionExternalClient} from '../../../models/TSInstitutionExternalClient';
 import {TSInstitutionExternalClientAssignment} from '../../../models/TSInstitutionExternalClientAssignment';
-import {TSInstitutionStammdaten} from '../../../models/TSInstitutionStammdaten';
 import {TSInstitutionUpdate} from '../../../models/TSInstitutionUpdate';
-import {TSMandant} from '../../../models/TSMandant';
-import {TSTraegerschaft} from '../../../models/TSTraegerschaft';
-import {TSDateRange} from '../../../models/types/TSDateRange';
-import {DateUtil} from '../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {Permission} from '../../authorisation/Permission';
 import {PERMISSIONS} from '../../authorisation/Permissions';
 import {DvNgConfirmDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
-import {CONSTANTS} from '../../core/constants/CONSTANTS';
 import {ErrorService} from '../../core/errors/service/ErrorService';
-import {LogFactory} from '../../core/logging/LogFactory';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {InstitutionStammdatenRS} from '../../core/service/institutionStammdatenRS.rest';
 import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
@@ -71,13 +75,14 @@ const LOG = LogFactory.createLog('EditInstitutionComponent');
     selector: 'dv-edit-institution',
     templateUrl: './edit-institution.component.html',
     styleUrls: ['./edit-institution.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EditInstitutionComponent implements OnInit {
     public readonly CONSTANTS: any = CONSTANTS;
 
     @ViewChildren(NgForm) public forms: QueryList<NgForm>;
-    public readonly tomorrow: moment.Moment = DateUtil.today().add(1, 'days');
+    public readonly tomorrow: moment.Moment = MomentUtil.today().add(1, 'days');
 
     public traegerschaftenList: TSTraegerschaft[];
     public stammdaten: TSInstitutionStammdaten;
@@ -87,6 +92,7 @@ export class EditInstitutionComponent implements OnInit {
     // maping from TSExternalClient.id to TSDateRange, caching so users can readd removed clients without losing date
     // range
     private assignedClientGueltigkeitCache: Map<string, TSDateRange>;
+    private validateTimeout: any;
 
     @ViewChild(EditInstitutionBetreuungsgutscheineComponent)
     private readonly componentBetreuungsgutscheine: EditInstitutionBetreuungsgutscheineComponent;
@@ -235,7 +241,6 @@ export class EditInstitutionComponent implements OnInit {
 
     private initModel(stammdaten: TSInstitutionStammdaten): void {
         this.stammdaten = stammdaten;
-        this.isCheckRequired = stammdaten.institution.stammdatenCheckRequired;
         this.editMode =
             stammdaten.institution.status === TSInstitutionStatus.EINGELADEN ||
             this.editMode;
@@ -243,10 +248,9 @@ export class EditInstitutionComponent implements OnInit {
     }
 
     public getMitarbeiterVisibleRoles(): TSRole[] {
-        const allowedRoles = PERMISSIONS[Permission.ROLE_INSTITUTION].concat(
+        return PERMISSIONS[Permission.ROLE_INSTITUTION].concat(
             TSRole.SUPER_ADMIN
         );
-        return allowedRoles;
     }
 
     public isStammdatenEditable(): boolean {
@@ -401,10 +405,11 @@ export class EditInstitutionComponent implements OnInit {
                 )
             };
             if (
-                (await this.dialog
-                    .open(DvNgConfirmDialogComponent, dialogConfig)
-                    .afterClosed()
-                    .toPromise()) !== true
+                (await firstValueFrom(
+                    this.dialog
+                        .open(DvNgConfirmDialogComponent, dialogConfig)
+                        .afterClosed()
+                )) !== true
             ) {
                 return;
             }
@@ -583,7 +588,7 @@ export class EditInstitutionComponent implements OnInit {
     }
 
     public getGueltigkeitTodisplay(): string {
-        const date = DateUtil.momentToLocalDateFormat(
+        const date = MomentUtil.momentToLocalDateFormat(
             this.stammdaten.gueltigkeit.gueltigAb,
             CONSTANTS.DATE_FORMAT
         );
@@ -596,7 +601,7 @@ export class EditInstitutionComponent implements OnInit {
             return '';
         }
 
-        const date = DateUtil.momentToLocalDateFormat(
+        const date = MomentUtil.momentToLocalDateFormat(
             this.stammdaten.gueltigkeit.gueltigBis,
             CONSTANTS.DATE_FORMAT
         );
@@ -619,30 +624,6 @@ export class EditInstitutionComponent implements OnInit {
             'INSTITUTION_OEFFNUNGSZEITEN_PLACEHOLDER'
         );
     }
-
-    public deactivateStammdatenCheckRequired(): void {
-        this.institutionRS
-            .deactivateStammdatenCheckRequired(this.stammdaten.institution.id)
-            .subscribe(
-                () => this.navigateBack(),
-                error => LOG.error(error)
-            );
-    }
-
-    public isCheckRequiredEnabled(): boolean {
-        return (
-            this.isCheckRequired &&
-            !this.editMode &&
-            this.stammdatenCheckVisible()
-        );
-    }
-
-    private stammdatenCheckVisible(): boolean {
-        return this.authServiceRS.isOneOfRoles(
-            TSRoleUtil.getInstitutionProfilEditRoles()
-        );
-    }
-
     public isBetreuungsgutschein(): boolean {
         return isJugendamt(this.stammdaten.betreuungsangebotTyp);
     }
@@ -661,33 +642,26 @@ export class EditInstitutionComponent implements OnInit {
         );
     }
 
-    public isMittagstisch(): boolean {
-        return (
-            this.stammdaten.betreuungsangebotTyp ===
-            TSBetreuungsangebotTyp.MITTAGSTISCH
-        );
-    }
-
     public isExportableInstitution(): boolean {
-        return !this.isFerieninsel() && !this.isMittagstisch();
+        return !this.isFerieninsel();
     }
 
     public traegerschaftId(traegerschaft: TSTraegerschaft): string {
         return traegerschaft.id;
     }
 
-    public getMinStartDate(): Date {
+    public getMinStartDate(): moment.Moment {
         if (this.isFerieninsel() || this.isTagesschule()) {
-            return TSMandant.earliestDateOfTSAnmeldung.toDate();
+            return TSMandant.earliestDateOfTSAnmeldung;
         }
-        return new Date(0);
+        return moment(0);
     }
 
     public getGueltigAbDate(date: moment.Moment): string {
         if (!date || !date.isValid()) {
             return '';
         }
-        const formatedDate = DateUtil.momentToLocalDateFormat(
+        const formatedDate = MomentUtil.momentToLocalDateFormat(
             date,
             CONSTANTS.DATE_FORMAT
         );
@@ -698,7 +672,7 @@ export class EditInstitutionComponent implements OnInit {
         if (!date || !date.isValid()) {
             return '';
         }
-        const formatedDate = DateUtil.momentToLocalDateFormat(
+        const formatedDate = MomentUtil.momentToLocalDateFormat(
             date,
             CONSTANTS.DATE_FORMAT
         );
@@ -807,7 +781,7 @@ export class EditInstitutionComponent implements OnInit {
 
     public getMinByRole(): moment.Moment {
         return this.authServiceRS.isRole(TSRole.SUPER_ADMIN)
-            ? DateUtil.startOfTime()
+            ? MomentUtil.startOfTime()
             : this.tomorrow;
     }
 
@@ -846,5 +820,12 @@ export class EditInstitutionComponent implements OnInit {
                         this.changeDetectorRef.markForCheck();
                     });
             });
+    }
+
+    public isChangeInstitutionNameDisabled() {
+        if (this.isTagesschule() || this.isFerieninsel()) {
+            return false;
+        }
+        return !this.authServiceRS.isOneOfRoles(TSRoleUtil.getMandantRoles());
     }
 }

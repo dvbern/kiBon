@@ -1,0 +1,24 @@
+<lib-gesuch-page-layout>
+    <lib-gesuch-page-heading>
+        {{ 'Dagmar Wälti' | translate }}
+        <dv-bisher-x
+            [deklaration]="{}"
+            [showBisher]="hasBisher()"
+            [specificBisherText]="'DURCH_GEMEINDE_ERFASST' | translate"
+            [showSpecificBisherTextIfBisherNone]="true"
+            [showIfBisherNone]="true"
+        ></dv-bisher-x>
+    </lib-gesuch-page-heading>
+
+    <p>GesuchErwerbspensumView works!</p>
+    <fieldset>
+        <div class="inline">
+            <input type="checkbox" [(ngModel)]="hasBisher" id="has-bisher" />
+            <label
+                for="has-bisher"
+                class="inline ml-2 ignore-danger-font-color align-text-top"
+                >Toggle dv-bisher fürs Testing
+            </label>
+        </div>
+    </fieldset>
+</lib-gesuch-page-layout>

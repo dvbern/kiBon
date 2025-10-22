@@ -39,7 +39,7 @@ import static ch.dvbern.ebegu.enums.DokumentTyp.NACHWEIS_ERWERBSPENSUM;
 import static ch.dvbern.ebegu.enums.DokumentTyp.NACHWEIS_RAV;
 import static ch.dvbern.ebegu.enums.DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT;
 
-public class SchwyzErwerbspensumDokumente extends BernErwerbspensumDokumente {
+public class SchwyzErwerbspensumDokumente extends ErwerbspensumDokumente {
 
 	@Override
 	protected void getAllDokumenteGesuchsteller(
@@ -48,31 +48,64 @@ public class SchwyzErwerbspensumDokumente extends BernErwerbspensumDokumente {
 		@Nonnull Integer gesuchstellerNumber,
 		LocalDate gueltigAb,
 		@Nonnull Locale locale,
-		Mandant mandant) {
+		Mandant mandant
+	) {
 
-		if (gesuchsteller == null || gesuchsteller.getErwerbspensenContainers().isEmpty()) {
+		if (gesuchsteller == null
+			|| gesuchsteller.getErwerbspensenContainers().isEmpty()) {
 			return;
 		}
 
-		final Set<ErwerbspensumContainer> erwerbspensenContainers = gesuchsteller.getErwerbspensenContainers();
+		final Set<ErwerbspensumContainer> erwerbspensenContainers =
+			gesuchsteller.getErwerbspensenContainers();
 
-		Consumer<DokumentGrund> adder = dokumentGrund -> add(dokumentGrund, anlageVerzeichnis);
+		Consumer<DokumentGrund> adder = dokumentGrund -> add(
+			dokumentGrund,
+			anlageVerzeichnis
+		);
 		erwerbspensenContainers.stream()
 			.map(ErwerbspensumContainer::getErwerbspensumJA)
 			.filter(Objects::nonNull)
 			.forEach(pensumJA -> {
-				adder.accept(getDokument(
-					NACHWEIS_ERWERBSPENSUM,
-					pensumJA,
-					gueltigAb,
-					pensumJA.getName(locale, mandant),
-					DokumentGrundPersonType.GESUCHSTELLER,
-					gesuchstellerNumber,
-					DokumentGrundTyp.ERWERBSPENSUM,
-					null));
-				adder.accept(getDokument(gesuchstellerNumber, pensumJA, NACHWEIS_SELBSTAENDIGKEIT, locale, mandant));
-				adder.accept(getDokument(gesuchstellerNumber, pensumJA, NACHWEIS_AUSBILDUNG, locale, mandant));
-				adder.accept(getDokument(gesuchstellerNumber, pensumJA, NACHWEIS_RAV, locale, mandant));
+				adder.accept(
+					getDokument(
+						NACHWEIS_ERWERBSPENSUM,
+						pensumJA,
+						gueltigAb,
+						pensumJA.getName(locale, mandant),
+						DokumentGrundPersonType.GESUCHSTELLER,
+						gesuchstellerNumber,
+						DokumentGrundTyp.ERWERBSPENSUM,
+						null
+					)
+				);
+				adder.accept(
+					getDokument(
+						gesuchstellerNumber,
+						pensumJA,
+						NACHWEIS_SELBSTAENDIGKEIT,
+						locale,
+						mandant
+					)
+				);
+				adder.accept(
+					getDokument(
+						gesuchstellerNumber,
+						pensumJA,
+						NACHWEIS_AUSBILDUNG,
+						locale,
+						mandant
+					)
+				);
+				adder.accept(
+					getDokument(
+						gesuchstellerNumber,
+						pensumJA,
+						NACHWEIS_RAV,
+						locale,
+						mandant
+					)
+				);
 			});
 	}
 
@@ -88,7 +121,10 @@ public class SchwyzErwerbspensumDokumente extends BernErwerbspensumDokumente {
 	}
 
 	@Override
-	public boolean isDokumentNeeded(@Nonnull DokumentTyp dokumentTyp, @Nullable Erwerbspensum erwerbspensum) {
+	public boolean isDokumentNeeded(
+		@Nonnull DokumentTyp dokumentTyp,
+		@Nullable Erwerbspensum erwerbspensum
+	) {
 		if (erwerbspensum == null) {
 			return false;
 		}

@@ -18,8 +18,7 @@ import {ChangeDetectorRef} from '@angular/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
 import {TSFinanzielleSituationResultateDTO} from '../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {TSFinanzModel} from '../../../models/TSFinanzModel';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {BerechnungsManager} from '../../service/berechnungsManager';
@@ -28,8 +27,8 @@ import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewX} from '../abstractGesuchViewX';
 import {EKVViewUtil} from './EKVViewUtil';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {TSEinstellung} from '../../../models/TSEinstellung';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {take} from 'rxjs/operators';
 
 export abstract class AbstractEinkommensverschlechterungResultat extends AbstractGesuchViewX<TSFinanzModel> {
@@ -177,22 +176,9 @@ export abstract class AbstractEinkommensverschlechterungResultat extends Abstrac
      * Hier wird der Status von WizardStep auf OK (MUTIERT fuer Mutationen) aktualisiert aber nur wenn die letzte
      * Seite EVResultate gespeichert wird. Sonst liefern wir einfach den aktuellen GS als Promise zurueck.
      */
-    public updateStatus(changes: boolean): IPromise<any> {
+    public updateStatus(): IPromise<any> {
         if (this.isLastEinkVersStep()) {
-            if (this.gesuchModelManager.getGesuch().isMutation()) {
-                if (
-                    this.wizardStepManager.getCurrentStep().wizardStepStatus ===
-                        TSWizardStepStatus.NOK ||
-                    changes
-                ) {
-                    this.wizardStepManager.updateCurrentWizardStepStatusMutiert();
-                }
-            } else {
-                return this.wizardStepManager.updateCurrentWizardStepStatusSafe(
-                    this.wizardStepManager.getCurrentStepName(),
-                    TSWizardStepStatus.OK
-                );
-            }
+            return this.wizardStepManager.selfUpdateEKVStepStatus();
         }
         // wenn nichts gespeichert einfach den aktuellen GS zurueckgeben
         return Promise.resolve(

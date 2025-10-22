@@ -13,26 +13,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import angular from 'angular';
 import {BehaviorSubject, of} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {MANDANTS} from '../../../app/core/constants/MANDANTS';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {CORE_JS_MODULE} from '../../../app/core/core.angularjs.module';
-import {MandantService} from '../../../app/shared/services/mandant.service';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
 import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
-import {TSEinschulungTyp} from '../../../models/enums/TSEinschulungTyp';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
-import {TSFachstellenTyp} from '../../../models/enums/TSFachstellenTyp';
-import {TSIntegrationTyp} from '../../../models/enums/TSIntegrationTyp';
+import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
+import {TSEinschulungTyp} from '@kibon/shared/model/enums';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {
+    TSFachstellenTyp,
+    TSIntegrationTyp,
+    TSPensumFachstelle
+} from '@kibon/shared/model/entity';
 import {TSKinderabzugTyp} from '../../../models/enums/TSKinderabzugTyp';
 import {TSBetreuung} from '../../../models/TSBetreuung';
-import {TSEinstellung} from '../../../models/TSEinstellung';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSKind} from '../../../models/TSKind';
+import {TSKind} from '@kibon/kind/model/entity';
 import {TSKindContainer} from '../../../models/TSKindContainer';
-import {TSPensumFachstelle} from '../../../models/TSPensumFachstelle';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {IKindStateParams} from '../../gesuch.route';
@@ -40,7 +44,6 @@ import {BerechnungsManager} from '../../service/berechnungsManager';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {KindViewController} from './kindView';
-import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
 
 function createEinstellungen(
     sozialeIntegrationBis = TSEinschulungTyp.VORSCHULALTER,
@@ -150,9 +153,6 @@ describe('kindView', () => {
             einstellungRS = $injector.get('EinstellungRS');
             mandantService = $injector.get('MandantService');
             ebeguRestUtil = $injector.get('EbeguRestUtil');
-            const applicationPropertyRS = $injector.get(
-                'ApplicationPropertyRS'
-            );
             // they always need to be mocked
             TestDataUtil.mockDefaultGesuchModelManagerHttpCalls($httpBackend);
             TestDataUtil.mockDefaultGesuchModelManagerHttpCalls($httpBackend);
@@ -183,10 +183,6 @@ describe('kindView', () => {
                 'convertBetreuungNumberToBetreuungIndex'
             ).and.returnValue(0);
             spyOn(gesuchModelManager, 'isNeuestesGesuch').and.returnValue(true);
-            spyOn(
-                applicationPropertyRS,
-                'getPublicPropertiesCached'
-            ).and.resolveTo({});
             spyOn(einstellungRS, 'findEinstellung').and.returnValue(
                 of(new TSEinstellung())
             );

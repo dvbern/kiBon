@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -36,14 +36,18 @@ public interface PensumAusserordentlicherAnspruchService {
 	 * @return Die aktualisierte PensumAusserordentlicherAnspruch
 	 */
 	@Nonnull
-	PensumAusserordentlicherAnspruch savePensumAusserordentlicherAnspruch(@Nonnull PensumAusserordentlicherAnspruch pensumAusserordentlicherAnspruch);
+	PensumAusserordentlicherAnspruch savePensumAusserordentlicherAnspruch(
+		@Nonnull PensumAusserordentlicherAnspruch pensumAusserordentlicherAnspruch
+	);
 
 	/**
 	 * @param pensumAusserordentlicherAnspruchId PK (id) der PensumAusserordentlicherAnspruch
 	 * @return PensumAusserordentlicherAnspruch mit dem gegebenen key oder null falls nicht vorhanden
 	 */
 	@Nonnull
-	Optional<PensumAusserordentlicherAnspruch> findPensumAusserordentlicherAnspruch(@Nonnull String pensumAusserordentlicherAnspruchId);
+	Optional<PensumAusserordentlicherAnspruch> findPensumAusserordentlicherAnspruch(
+		@Nonnull String pensumAusserordentlicherAnspruchId
+	);
 
 	/**
 	 * Ermittelt, ob fuer das uebergebene Gesuch ein ausserordentlicher Anspruch erfasst werden kann

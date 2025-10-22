@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
@@ -40,68 +40,116 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 @Dependent
 public class ReportZahlungenExcelConverter implements ExcelConverter {
 
-    @Override
-    public void applyAutoSize(@Nonnull Sheet sheet) {
+	@Override
+	public void applyAutoSize(@Nonnull Sheet sheet) {
 		// No autosizing defined for columns
-    }
+	}
 
-    public void mergeRows(@Nonnull RowFiller rowFiller, @Nonnull List<ZahlungenDataRow> reportData) {
-        reportData.forEach(row -> {
-            ExcelMergerDTO excelRowGroup = new ExcelMergerDTO();
-            excelRowGroup.addValue(MergeFieldZahlungen.zahlungslaufTitle, row.getZahlungslaufTitle());
-            excelRowGroup.addValue(MergeFieldZahlungen.faelligkeitsDatum, row.getZahlungsFaelligkeitsDatum());
-            excelRowGroup.addValue(MergeFieldZahlungen.gemeinde, row.getGemeinde());
-            excelRowGroup.addValue(MergeFieldZahlungen.institution, row.getInstitution());
-            excelRowGroup.addValue(MergeFieldZahlungen.timestampZahlungslauf, row.getTimestampZahlungslauf());
-            excelRowGroup.addValue(MergeFieldZahlungen.kindVorname, row.getKindVorname());
-            excelRowGroup.addValue(MergeFieldZahlungen.kindNachname, row.getKindNachname());
-            excelRowGroup.addValue(MergeFieldZahlungen.referenzNummer, row.getReferenzNummer());
-            excelRowGroup.addValue(MergeFieldZahlungen.zeitabschnittVon, row.getZeitabschnittVon());
-            excelRowGroup.addValue(MergeFieldZahlungen.zeitabschnittBis, row.getZeitabschnittBis());
-            excelRowGroup.addValue(MergeFieldZahlungen.bgPensum, row.getBgPensum());
-            excelRowGroup.addValue(MergeFieldZahlungen.betrag, row.getBetrag());
-            excelRowGroup.addValue(MergeFieldZahlungen.korrektur, row.getKorrektur());
-            excelRowGroup.addValue(MergeFieldZahlungen.ignorieren, row.getIgnorieren());
-            excelRowGroup.addValue(MergeFieldZahlungen.ibanEltern, row.getIbanEltern());
-            excelRowGroup.addValue(MergeFieldZahlungen.kontoEltern, row.getKontoEltern());
-            rowFiller.fillRow(excelRowGroup);
-        });
-    }
+	public void mergeRows(
+		@Nonnull RowFiller rowFiller,
+		@Nonnull List<ZahlungenDataRow> reportData
+	) {
+		reportData.forEach(row -> {
+			ExcelMergerDTO excelRowGroup = new ExcelMergerDTO();
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.zahlungslaufTitle,
+				row.getZahlungslaufTitle()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.faelligkeitsDatum,
+				row.getZahlungsFaelligkeitsDatum()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.gemeinde,
+				row.getGemeinde()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.institution,
+				row.getInstitution()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.timestampZahlungslauf,
+				row.getTimestampZahlungslauf()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.kindVorname,
+				row.getKindVorname()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.kindNachname,
+				row.getKindNachname()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.referenzNummer,
+				row.getReferenzNummer()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.zeitabschnittVon,
+				row.getZeitabschnittVon()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.zeitabschnittBis,
+				row.getZeitabschnittBis()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.bgPensum,
+				row.getBgPensum()
+			);
+			excelRowGroup.addValue(MergeFieldZahlungen.betrag, row.getBetrag());
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.korrektur,
+				row.getKorrektur()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.ignorieren,
+				row.getIgnorieren()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.ibanEltern,
+				row.getIbanEltern()
+			);
+			excelRowGroup.addValue(
+				MergeFieldZahlungen.kontoEltern,
+				row.getKontoEltern()
+			);
+			rowFiller.fillRow(excelRowGroup);
+		});
+	}
 
-    @Nonnull
-    public XSSFSheet mergeHeaders(
-        @Nonnull XSSFSheet sheet,
-        @Nonnull Gesuchsperiode periode,
-        @Nullable Gemeinde gemeinde,
-        @Nullable Institution institution
-    ) throws ExcelMergeException {
+	@Nonnull
+	public XSSFSheet mergeHeaders(
+		@Nonnull XSSFSheet sheet,
+		@Nonnull Gesuchsperiode periode,
+		@Nullable Gemeinde gemeinde,
+		@Nullable Institution institution
+	) throws ExcelMergeException {
 
-        ExcelMergerDTO excelMergerDTO = new ExcelMergerDTO();
-        List<MergeField<?>> mergeFields = new ArrayList<>();
+		ExcelMergerDTO excelMergerDTO = new ExcelMergerDTO();
+		List<MergeField<?>> mergeFields = new ArrayList<>();
 
-        mergeFields.add(MergeFieldZahlungen.periodeParam.getMergeField());
-        excelMergerDTO.addValue(
-            MergeFieldZahlungen.periodeParam,
-            periode.getGesuchsperiodeString()
-        );
-        mergeFields.add(MergeFieldZahlungen.gemeindeParam.getMergeField());
-        excelMergerDTO.addValue(
-            MergeFieldZahlungen.gemeindeParam,
-            gemeinde != null ? gemeinde.getName() : ""
-        );
-        mergeFields.add(MergeFieldZahlungen.institutionParam.getMergeField());
-        excelMergerDTO.addValue(
-            MergeFieldZahlungen.institutionParam,
-            institution != null ? institution.getName() : ""
-        );
-        mergeFields.add(MergeFieldZahlungen.timestampParam.getMergeField());
-        excelMergerDTO.addValue(
-            MergeFieldZahlungen.timestampParam,
-            LocalDateTime.now()
-        );
+		mergeFields.add(MergeFieldZahlungen.periodeParam.getMergeField());
+		excelMergerDTO.addValue(
+			MergeFieldZahlungen.periodeParam,
+			periode.getGesuchsperiodeString()
+		);
+		mergeFields.add(MergeFieldZahlungen.gemeindeParam.getMergeField());
+		excelMergerDTO.addValue(
+			MergeFieldZahlungen.gemeindeParam,
+			gemeinde != null ? gemeinde.getName() : ""
+		);
+		mergeFields.add(MergeFieldZahlungen.institutionParam.getMergeField());
+		excelMergerDTO.addValue(
+			MergeFieldZahlungen.institutionParam,
+			institution != null ? institution.getName() : ""
+		);
+		mergeFields.add(MergeFieldZahlungen.timestampParam.getMergeField());
+		excelMergerDTO.addValue(
+			MergeFieldZahlungen.timestampParam,
+			LocalDateTime.now()
+		);
 
-        ExcelMerger.mergeData(sheet, mergeFields, excelMergerDTO);
+		ExcelMerger.mergeData(sheet, mergeFields, excelMergerDTO);
 
-        return sheet;
-    }
+		return sheet;
+	}
 }

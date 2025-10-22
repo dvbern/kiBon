@@ -15,25 +15,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
+import {
+    TSBetreuungsangebotTyp,
+    TSWizardStepName
+} from '@kibon/shared/model/enums';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {StateService} from '@uirouter/core';
-import {IComponentOptions} from 'angular';
-import {map} from 'rxjs/operators';
+import {copy, IComponentOptions} from 'angular';
+import {forkJoin} from 'rxjs';
+import {first, map} from 'rxjs/operators';
+import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {MANDANTS} from '../../../app/core/constants/MANDANTS';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {BetreuungRS} from '../../../app/core/service/betreuungRS.rest';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
-import {MandantService} from '../../../app/shared/services/mandant.service';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
+import {MandantService} from '@kibon/shared-util-mandant-service';
 import {TSBetreuungspensumAbweichungStatus} from '../../../models/enums/betreuung/TSBetreuungspensumAbweichungStatus';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
 import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSBetreuungsmitteilung} from '../../../models/TSBetreuungsmitteilung';
 import {TSBetreuungspensumAbweichung} from '../../../models/TSBetreuungspensumAbweichung';
-import {TSEinstellung} from '../../../models/TSEinstellung';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
@@ -91,8 +94,12 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
     public isSavingData: boolean; // Semaphore
     public dvDialog: DvDialog;
     public betreuungspensumAnzeigeTypEinstellung: TSPensumAnzeigeTyp;
+    public texteSz25Enabled: boolean = false;
+    public anwesenheitsTageBeiTFOAktiviert = false;
     private existingMutationsmeldung: TSBetreuungsmitteilung;
     private isLuzern: boolean;
+    public betreuungsAngebotTypTFO: boolean = false;
+    public betreuungsAngebotTypKita: boolean = false;
 
     public constructor(
         private readonly $state: StateService,
@@ -150,7 +157,7 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
                     this.gesuchModelManager.convertBetreuungNumberToBetreuungIndex(
                         betreuungNumber
                     );
-                this.model = angular.copy(
+                this.model = copy(
                     this.gesuchModelManager.getKindToWorkWith().betreuungen[
                         betreuungIndex
                     ]
@@ -167,9 +174,7 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
                 `There is no kind available with kind-number:${this.$stateParams.kindNumber}`
             );
         }
-        this.model = angular.copy(
-            this.gesuchModelManager.getBetreuungToWorkWith()
-        );
+        this.model = copy(this.gesuchModelManager.getBetreuungToWorkWith());
         this.loadAbweichungen();
 
         this.mitteilungRS
@@ -187,6 +192,33 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
                 },
                 error => LOG.error(error)
             );
+
+        forkJoin({
+            texteSz25: this.einstellungRS
+                .getEinstellung(
+                    this.gesuchModelManager.getGesuchsperiode().id,
+                    TSEinstellungKey.TEXTE_SZ_25
+                )
+                .pipe(first()),
+
+            anwesenheitsTagesBeiTFO: this.einstellungRS
+                .getEinstellung(
+                    this.gesuchModelManager.getGesuchsperiode().id,
+                    TSEinstellungKey.ANWESENHEITSTAGE_PRO_MONAT_AKTIVIERT
+                )
+                .pipe(first())
+        }).subscribe(({texteSz25, anwesenheitsTagesBeiTFO}) => {
+            this.texteSz25Enabled = texteSz25.getValueAsBoolean();
+            this.anwesenheitsTageBeiTFOAktiviert =
+                anwesenheitsTagesBeiTFO.getValueAsBoolean();
+        });
+
+        this.getBetreuungsAngebotsTyp().then(res => {
+            this.betreuungsAngebotTypTFO =
+                res.getAngebotTyp() == TSBetreuungsangebotTyp.TAGESFAMILIEN;
+            this.betreuungsAngebotTypKita =
+                res.getAngebotTyp() == TSBetreuungsangebotTyp.KITA;
+        });
     }
 
     private loadEinstellungPensumAnzeigeTyp(
@@ -281,16 +313,17 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
 
         // die felder sind not null und müssen auf 0 gesetzt werden, damit die validierung nicht fehlschlägt falls
         // die gemeinde die vergünstigung deaktiviert hat
-        if (
-            !this.isMahlzeitenverguenstigungEnabled() &&
-            this.getBetreuungsangebotTyp() !==
-                TSBetreuungsangebotTyp.MITTAGSTISCH
-        ) {
+        if (!this.isMahlzeitenverguenstigungEnabled()) {
             this.model.betreuungspensumAbweichungen.forEach(a => {
-                a.monatlicheNebenmahlzeiten ??= 0;
                 a.tarifProNebenmahlzeit ??= 0;
-                a.monatlicheHauptmahlzeiten ??= 0;
-                a.tarifProHauptmahlzeit ??= 0;
+                a.monatlicheNebenmahlzeiten ??= 0;
+                if (
+                    this.getBetreuungsangebotTyp() !==
+                    TSBetreuungsangebotTyp.MITTAGSTISCH
+                ) {
+                    a.tarifProHauptmahlzeit ??= 0;
+                    a.monatlicheHauptmahlzeiten ??= 0;
+                }
             });
         }
 
@@ -412,11 +445,21 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
     }
 
     public getHelpText(): string {
-        return this.$translate.instant('ABWEICHUNGEN_HELP', {
+        const key = this.texteSz25Enabled
+            ? this.getSZ25HelpText()
+            : 'ABWEICHUNGEN_HELP';
+        return this.$translate.instant(key, {
             vorname: this.kindModel.kindJA.vorname,
             name: this.kindModel.kindJA.nachname,
             institution: this.institution
         });
+    }
+
+    private getSZ25HelpText() {
+        return this.getBetreuungsangebotTyp() ===
+            TSBetreuungsangebotTyp.MITTAGSTISCH
+            ? 'ABWEICHUNGEN_HELP_MITTAGSTISCH_SZ_25'
+            : 'ABWEICHUNGEN_HELP_SZ_25';
     }
 
     public getBetreuungsangebotTyp(): TSBetreuungsangebotTyp {
@@ -427,8 +470,20 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
         return this.getBetreuungsangebotTyp() === TSBetreuungsangebotTyp.KITA &&
             this.betreuungspensumAnzeigeTypEinstellung !==
                 TSPensumAnzeigeTyp.NUR_STUNDEN
-            ? this.$translate.instant('DAYS')
+            ? this.getKitaTageLabel()
             : this.$translate.instant('HOURS');
+    }
+
+    private getKitaTageLabel() {
+        return this.texteSz25Enabled
+            ? this.$translate.instant('TOTAL_BETREUUNGSPENSUM_TAGEN')
+            : this.$translate.instant('DAYS');
+    }
+
+    public getTFOTableLabel() {
+        return this.texteSz25Enabled
+            ? this.$translate.instant('EFFEKTIVE_BETREUUNGSTAGE_MONAT')
+            : this.$translate.instant('DAYS');
     }
 
     public cancel(): void {
@@ -439,6 +494,16 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
     public isMahlzeitenverguenstigungEnabled(): boolean {
         return this.gesuchModelManager.gemeindeKonfiguration
             .konfigMahlzeitenverguenstigungEnabled;
+    }
+
+    public isAnwesenheitstageBeiTagesfamilienbetreuungenAktiviert() {
+        return this.anwesenheitsTageBeiTFOAktiviert;
+    }
+
+    private getBetreuungsAngebotsTyp() {
+        return this.betreuungRS.findBetreuung(this.model.id).then(response => {
+            return response;
+        });
     }
 
     public isRowRequired(abweichung: TSBetreuungspensumAbweichung): boolean {

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.sozialdienst;
@@ -21,14 +21,14 @@ import java.util.Collection;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.einladung.Einladung;
@@ -44,10 +44,11 @@ import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.AbstractBaseService;
 import ch.dvbern.ebegu.services.BenutzerService;
+import ch.dvbern.ebegu.services.CreateBenutzerService;
 import ch.dvbern.ebegu.services.SozialdienstService;
-import ch.dvbern.lib.cdipersistence.Persistence;
 
 import static java.util.Objects.requireNonNull;
 
@@ -56,7 +57,8 @@ import static java.util.Objects.requireNonNull;
  */
 @Stateless
 @Local(SozialdienstService.class)
-public class SozialdienstServiceBean extends AbstractBaseService implements SozialdienstService {
+public class SozialdienstServiceBean extends AbstractBaseService implements
+	SozialdienstService {
 
 	@Inject
 	private Persistence persistence;
@@ -67,10 +69,14 @@ public class SozialdienstServiceBean extends AbstractBaseService implements Sozi
 	@Inject
 	private BenutzerService benutzerService;
 
+	@Inject
+	private CreateBenutzerService createBenutzerService;
+
 	@Nonnull
 	@Override
 	public Sozialdienst saveSozialdienst(
-		@Nonnull Sozialdienst sozialdienst) {
+		@Nonnull Sozialdienst sozialdienst
+	) {
 		requireNonNull(sozialdienst);
 
 		if (sozialdienst.isNew()) {
@@ -82,13 +88,19 @@ public class SozialdienstServiceBean extends AbstractBaseService implements Sozi
 	@Nonnull
 	@Transactional
 	@Override
-	public Sozialdienst createSozialdienst(@Nonnull String adminMail, @Nonnull Sozialdienst sozialdienst) {
+	public Sozialdienst createSozialdienst(
+		@Nonnull String adminMail,
+		@Nonnull Sozialdienst sozialdienst
+	) {
 
 		Sozialdienst persistedSozialdienst = saveSozialdienst(sozialdienst);
 
 		final Mandant mandant = persistedSozialdienst.getMandant();
 
-		final Benutzer benutzer = benutzerService.findBenutzer(adminMail, mandant)
+		final Benutzer benutzer = benutzerService.findBenutzer(
+			adminMail,
+			mandant
+		)
 			.map(b -> {
 				if (b.getRole() != UserRole.GESUCHSTELLER) {
 					// an existing user cannot be used to create a new Sozial / Unterstuetzung Dienst
@@ -96,13 +108,22 @@ public class SozialdienstServiceBean extends AbstractBaseService implements Sozi
 						KibonLogLevel.INFO,
 						"createSozialdienst",
 						ErrorCodeEnum.EXISTING_USER_MAIL,
-						adminMail);
+						adminMail
+					);
 				}
 				return b;
 			})
-			.orElseGet(() -> benutzerService.createAdminSozialdienstByEmail(adminMail, persistedSozialdienst));
+			.orElseGet(
+				() -> createBenutzerService.createAdminSozialdienstByEmail(
+					adminMail,
+					persistedSozialdienst
+				)
+			);
 
-		benutzerService.einladen(Einladung.forSozialdienst(benutzer, persistedSozialdienst), mandant);
+		benutzerService.einladen(
+			Einladung.forSozialdienst(benutzer, persistedSozialdienst),
+			mandant
+		);
 
 		return persistedSozialdienst;
 	}
@@ -119,9 +140,14 @@ public class SozialdienstServiceBean extends AbstractBaseService implements Sozi
 	@Override
 	public Collection<Sozialdienst> getAllSozialdienste(Mandant mandant) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Sozialdienst> query = cb.createQuery(Sozialdienst.class);
+		final CriteriaQuery<Sozialdienst> query = cb.createQuery(
+			Sozialdienst.class
+		);
 		Root<Sozialdienst> root = query.from(Sozialdienst.class);
-		Predicate sameMandant = cb.equal(root.get(Sozialdienst_.mandant), mandant);
+		Predicate sameMandant = cb.equal(
+			root.get(Sozialdienst_.mandant),
+			mandant
+		);
 		query.orderBy(cb.asc(root.get(Sozialdienst_.name)));
 		query.where(sameMandant);
 		return persistence.getCriteriaResults(query);
@@ -129,28 +155,47 @@ public class SozialdienstServiceBean extends AbstractBaseService implements Sozi
 
 	@Nonnull
 	@Override
-	public Optional<SozialdienstStammdaten> getSozialdienstStammdaten(String id) {
+	public Optional<SozialdienstStammdaten> getSozialdienstStammdaten(
+		@Nonnull String id
+	) {
 		requireNonNull(id, "Sozialdienst Stammdaten id muss gesetzt sein");
-		SozialdienstStammdaten stammdaten = persistence.find(SozialdienstStammdaten.class, id);
+		SozialdienstStammdaten stammdaten = persistence.find(
+			SozialdienstStammdaten.class,
+			id
+		);
 		return Optional.ofNullable(stammdaten);
 	}
 
 	@Nonnull
 	@Override
-	public Optional<SozialdienstStammdaten> getSozialdienstStammdatenBySozialdienstId(@Nonnull String sozialdienstId) {
+	public Optional<SozialdienstStammdaten> getSozialdienstStammdatenBySozialdienstId(
+		@Nonnull String sozialdienstId
+	) {
 		requireNonNull(sozialdienstId, "Gemeinde id muss gesetzt sein");
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<SozialdienstStammdaten> query = cb.createQuery(SozialdienstStammdaten.class);
-		Root<SozialdienstStammdaten> root = query.from(SozialdienstStammdaten.class);
-		Predicate predicate = cb.equal(root.get(SozialdienstStammdaten_.sozialdienst).get(AbstractEntity_.id), sozialdienstId);
+		final CriteriaQuery<SozialdienstStammdaten> query = cb.createQuery(
+			SozialdienstStammdaten.class
+		);
+		Root<SozialdienstStammdaten> root = query.from(
+			SozialdienstStammdaten.class
+		);
+		Predicate predicate = cb.equal(
+			root.get(SozialdienstStammdaten_.sozialdienst)
+				.get(AbstractEntity_.id),
+			sozialdienstId
+		);
 		query.where(predicate);
-		SozialdienstStammdaten stammdaten = persistence.getCriteriaSingleResult(query);
+		SozialdienstStammdaten stammdaten = persistence.getCriteriaSingleResult(
+			query
+		);
 		return Optional.ofNullable(stammdaten);
 	}
 
 	@Nonnull
 	@Override
-	public SozialdienstStammdaten saveSozialdienstStammdaten(@Nonnull SozialdienstStammdaten stammdaten) {
+	public SozialdienstStammdaten saveSozialdienstStammdaten(
+		@Nonnull SozialdienstStammdaten stammdaten
+	) {
 		requireNonNull(stammdaten);
 		return persistence.merge(stammdaten);
 	}
@@ -158,8 +203,12 @@ public class SozialdienstServiceBean extends AbstractBaseService implements Sozi
 	@Nonnull
 	@Override
 	public Optional<SozialdienstFall> findSozialdienstFall(
-		@Nonnull String id) {
-		SozialdienstFall sozialdienstFall = persistence.find(SozialdienstFall.class, id);
+		@Nonnull String id
+	) {
+		SozialdienstFall sozialdienstFall = persistence.find(
+			SozialdienstFall.class,
+			id
+		);
 		return Optional.ofNullable(sozialdienstFall);
 	}
 }

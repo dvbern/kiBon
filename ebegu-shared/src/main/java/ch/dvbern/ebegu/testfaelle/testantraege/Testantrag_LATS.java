@@ -8,20 +8,21 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.testfaelle.testantraege;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Objects;
 
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
@@ -45,28 +46,52 @@ public class Testantrag_LATS {
 		Einstellung normlohnkosten,
 		Einstellung normlohnkostenLessThen50
 	) {
-		this.container = new LastenausgleichTagesschuleAngabenGemeindeContainer();
+		this.container =
+			new LastenausgleichTagesschuleAngabenGemeindeContainer();
 		this.container.setGemeinde(gemeinde);
 		this.container.setGesuchsperiode(gesuchsperiode);
 		// First set it to IN_BEARBEITUNG_GEMEINDE so we can calculate the deklaration correctly
-		this.container.setStatus(LastenausgleichTagesschuleAngabenGemeindeStatus.IN_BEARBEITUNG_GEMEINDE);
+		this.container.setStatus(
+			LastenausgleichTagesschuleAngabenGemeindeStatus.IN_BEARBEITUNG_GEMEINDE
+		);
 		this.container.setAlleAngabenInKibonErfasst(false);
+		if (status.atLeastInPruefungKantonOrZurueckgegeben()) {
+			this.container.setEinreichedatum(LocalDate.now());
+		}
 
-		allTagesschulenForGesuchsperiodeAndGemeinde.forEach(institutionStammdaten -> this.container.getAngabenInstitutionContainers()
-			.add((new Testantrag_LastenausgleichTagesschuleAngabenInstitutionContainer(
-				this.container,
-				status,
-				institutionStammdaten.getInstitution())).getContainer()));
+		allTagesschulenForGesuchsperiodeAndGemeinde.forEach(
+			institutionStammdaten -> this.container
+				.getAngabenInstitutionContainers()
+				.add(
+					(new Testantrag_LastenausgleichTagesschuleAngabenInstitutionContainer(
+						this.container,
+						status,
+						institutionStammdaten.getInstitution()
+					)).getContainer()
+				)
+		);
 
-		BigDecimal institutionsBetreuungsstundenSum = this.container.getAngabenInstitutionContainers()
+		BigDecimal institutionsBetreuungsstundenSum = this.container
+			.getAngabenInstitutionContainers()
 			.stream()
 			.reduce(
 				BigDecimal.ZERO,
-				(partialResult, instiContainer) -> partialResult.add(instiContainer.isAntragAtLeastInPruefungGemeinde() ?
-					Objects.requireNonNull(instiContainer.getAngabenKorrektur())
-						.getBetreuungsstundenEinschliesslichBesondereBeduerfnisse() :
-					Objects.requireNonNull(instiContainer.getAngabenDeklaration())
-						.getBetreuungsstundenEinschliesslichBesondereBeduerfnisse()), BigDecimal::add);
+				(partialResult, instiContainer) -> partialResult.add(
+					instiContainer
+						.isAntragAtLeastInPruefungGemeinde() ?
+							Objects.requireNonNull(
+								instiContainer
+									.getAngabenKorrektur()
+							)
+								.getBetreuungsstundenEinschliesslichBesondereBeduerfnisse() :
+							Objects.requireNonNull(
+								instiContainer
+									.getAngabenDeklaration()
+							)
+								.getBetreuungsstundenEinschliesslichBesondereBeduerfnisse()
+				),
+				BigDecimal::add
+			);
 
 		this.container.setAngabenDeklaration(
 			(new Testantrag_LastenausgleichTagesschuleAngabenGemeinde(
@@ -76,7 +101,8 @@ public class Testantrag_LATS {
 				normlohnkostenLessThen50
 			)).getAngaben()
 		);
-		if(status == LastenausgleichTagesschuleAngabenGemeindeStatus.IN_PRUEFUNG_KANTON) {
+		if (status
+			== LastenausgleichTagesschuleAngabenGemeindeStatus.IN_PRUEFUNG_KANTON) {
 			this.container.copyForFreigabe();
 		}
 		// now set correct state

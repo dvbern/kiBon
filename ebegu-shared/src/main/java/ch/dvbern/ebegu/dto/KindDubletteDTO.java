@@ -32,8 +32,13 @@ public class KindDubletteDTO {
 	private Integer kindNummerDublette;
 	private LocalDateTime timestampErstelltGesuch;
 
-	public KindDubletteDTO(String gesuchId, long fallNummer, Integer kindNummerOriginal, Integer kindNummerDublette,
-		LocalDateTime timestampErstelltGesuch) {
+	public KindDubletteDTO(
+		String gesuchId,
+		long fallNummer,
+		Integer kindNummerOriginal,
+		Integer kindNummerDublette,
+		LocalDateTime timestampErstelltGesuch
+	) {
 		this.gesuchId = gesuchId;
 		this.fallNummer = fallNummer;
 		this.kindNummerOriginal = kindNummerOriginal;
@@ -79,7 +84,9 @@ public class KindDubletteDTO {
 		return timestampErstelltGesuch;
 	}
 
-	public void setTimestampErstelltGesuch(LocalDateTime timestampErstelltGesuch) {
+	public void setTimestampErstelltGesuch(
+		LocalDateTime timestampErstelltGesuch
+	) {
 		this.timestampErstelltGesuch = timestampErstelltGesuch;
 	}
 
@@ -92,8 +99,12 @@ public class KindDubletteDTO {
 			return false;
 		}
 		KindDubletteDTO otherDublette = (KindDubletteDTO) obj;
-		return getFallNummer() == otherDublette.getFallNummer() &&
-			Objects.equals(getKindNummerOriginal(), otherDublette.getKindNummerOriginal());
+		return getFallNummer() == otherDublette.getFallNummer()
+			&&
+			Objects.equals(
+				getKindNummerOriginal(),
+				otherDublette.getKindNummerOriginal()
+			);
 	}
 
 	@Override

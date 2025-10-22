@@ -30,7 +30,8 @@ export interface DvMultiSelectDialogItem {
 @Component({
     selector: 'dv-ng-multi-select-dialog',
     templateUrl: './dv-ng-multi-select-dialog.template.html',
-    styleUrls: ['./dv-ng-multi-select-dialog.component.less']
+    styleUrls: ['./dv-ng-multi-select-dialog.component.less'],
+    standalone: false
 })
 export class DvNgMultiSelectDialogComponent {
     public title: string = '';
@@ -84,5 +85,11 @@ export class DvNgMultiSelectDialogComponent {
                     EbeguUtil.isNotNullAndFalse(option.selected)
                 )
             );
+    }
+
+    getLabel(option: DvMultiSelectDialogItem): string {
+        return option.labelSelectFunction
+            ? option.labelSelectFunction()
+            : option.item.name;
     }
 }

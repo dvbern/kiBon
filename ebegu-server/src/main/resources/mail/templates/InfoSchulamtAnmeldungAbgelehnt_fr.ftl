@@ -30,7 +30,7 @@ ${templateConfiguration.mailCss}
 	<p>
 		Votre inscription pour ${betreuung.kind.kindJA.fullName} / ${betreuung.institutionStammdaten.institution.name} a été rejetée.
 		Vous pouvez consulter la liste des offres de prise en charge
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/betreuungen/${betreuung.extractGesuch().id}">ici</a>.
+		<a href="${frontendUrl}/gesuch/betreuungen/${betreuung.extractGesuch().id}">ici</a>.
 	</p>
 	<p>
 		Nous vous présentons nos meilleures salutations.<br/>

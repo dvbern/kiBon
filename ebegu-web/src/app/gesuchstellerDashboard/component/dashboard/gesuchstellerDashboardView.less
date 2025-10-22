@@ -19,18 +19,28 @@
 @buttonHeight: 15rem;
 
 .gesuchsteller-dashboard-view {
-    background: url('../../../../assets/images/kitax_bg.jpg') no-repeat center
-        center fixed; /* fallback */
+    background: url('../../../../assets/images/kitax_bg_full.jpg') no-repeat
+        center 30%; /* fallback */
     background:
-        linear-gradient(rgba(40, 40, 40, 0.85), rgba(40, 40, 40, 0.85)),
-        url('../../../../assets/images/kitax_bg.jpg') no-repeat center center
-            fixed;
+        linear-gradient(rgba(40, 40, 40, 0.65), rgba(40, 40, 40, 0.85)),
+        url('../../../../assets/images/kitax_bg_full.jpg') no-repeat center 30%;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     color: @contrast-lightest;
     overflow-y: auto;
+
+    @media screen and (min-width: 2500px) {
+        background:
+            linear-gradient(rgba(40, 40, 40, 0.8), rgba(40, 40, 40, 0.85)),
+            url('../../../../assets/images/kitax_bg_full.jpg') no-repeat center
+                20%;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
 
     .ebegu-h3,
     h2 {
@@ -54,7 +64,6 @@
         display: flex;
         flex-direction: column;
         margin: 3rem;
-        width: 75%;
         &-gesuchstring {
             .ebeguBold();
             color: @contrast-light;
@@ -89,6 +98,18 @@
                 margin-right: auto;
             }
         }
+
+        &[class^='periode-'] {
+            .gdashboard-panel-button--margin {
+                margin-top: 0 !important;
+            }
+
+            &.show-ansehen {
+                .gdashboard-panel-button--margin {
+                    margin-top: auto !important;
+                }
+            }
+        }
     }
 
     .mobile-center-center {
@@ -105,5 +126,6 @@
 
     .dv-btn {
         border: 1px solid @primary-light;
+        text-wrap: pretty;
     }
 }

@@ -33,10 +33,10 @@ public enum WorkJobType {
 		WorkJobConstants.INKL_MISCH_GESUCHE,
 		WorkJobConstants.INKL_TS_GESUCHE,
 		WorkJobConstants.OHNE_ERNEUERUNGSGESUCHE,
-		WorkJobConstants.TEXT);
+		WorkJobConstants.TEXT
+	);
 
 	List<String> paramNames = new ArrayList<>();
-
 
 	WorkJobType(String... parameters) {
 		paramNames.addAll(Arrays.asList(parameters));

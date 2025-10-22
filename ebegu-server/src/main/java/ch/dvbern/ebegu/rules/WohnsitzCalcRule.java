@@ -15,15 +15,16 @@
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.dto.BGCalculationInput;
-import ch.dvbern.ebegu.entities.AbstractPlatz;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.MsgKey;
-import ch.dvbern.ebegu.types.DateRange;
-
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
+
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.dto.BGCalculationInput;
+import ch.dvbern.ebegu.entities.AbstractPlatz;
+import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.types.DateRange;
 
 /**
  * Regel für Wohnsitz in Bern (Zuzug und Wegzug):
@@ -34,8 +35,17 @@ import java.util.Locale;
  */
 public class WohnsitzCalcRule extends AbstractCalcRule {
 
-	public WohnsitzCalcRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.WOHNSITZ, RuleType.REDUKTIONSREGEL, RuleValidity.ASIV, validityPeriod, locale);
+	public WohnsitzCalcRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.WOHNSITZ,
+			RuleType.REDUKTIONSREGEL,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -45,13 +55,17 @@ public class WohnsitzCalcRule extends AbstractCalcRule {
 
 	@SuppressWarnings("PMD.CollapsibleIfStatements")
 	@Override
-	protected void executeRule(@Nonnull AbstractPlatz platz, @Nonnull BGCalculationInput inputData) {
+	protected void executeRule(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull BGCalculationInput inputData
+	) {
 		if (areNotInGemeinde(inputData)) {
 			inputData.setAnspruchZeroAndSaveRestanspruch();
 			inputData.addBemerkung(
 				MsgKey.WOHNSITZ_MSG,
 				getLocale(),
-				platz.extractGesuch().getDossier().getGemeinde().getName());
+				platz.extractGesuch().getDossier().getGemeinde().getName()
+			);
 		}
 	}
 

@@ -39,7 +39,10 @@ public class MutationConfig {
 	private MutationConfig() {
 	}
 
-	public static MutationConfig createEmptyMutationVerfuegt(@Nonnull LocalDate eingangsdatum, @Nonnull LocalDateTime timestampVerfuegt) {
+	public static MutationConfig createEmptyMutationVerfuegt(
+		@Nonnull LocalDate eingangsdatum,
+		@Nonnull LocalDateTime timestampVerfuegt
+	) {
 		MutationConfig config = new MutationConfig();
 		config.setBetreuungenBestaetigt(true); 		// Da verfuegt, muss es auch bestaetigt sein
 		config.setVerfuegt(true);
@@ -50,7 +53,12 @@ public class MutationConfig {
 		return config;
 	}
 
-	public static MutationConfig createMutationVerfuegt(@Nonnull LocalDate eingangsdatum, @Nonnull LocalDateTime timestampVerfuegt, @Nonnull Integer erwerbspensum, boolean ignorierenInZahlungslauf) {
+	public static MutationConfig createMutationVerfuegt(
+		@Nonnull LocalDate eingangsdatum,
+		@Nonnull LocalDateTime timestampVerfuegt,
+		@Nonnull Integer erwerbspensum,
+		boolean ignorierenInZahlungslauf
+	) {
 		MutationConfig config = new MutationConfig();
 		config.setBetreuungenBestaetigt(true); 		// Da verfuegt, muss es auch bestaetigt sein
 		config.setVerfuegt(true);
@@ -60,7 +68,6 @@ public class MutationConfig {
 		config.setErwerbspensum(erwerbspensum);
 		return config;
 	}
-
 
 	public boolean isBetreuungenBestaetigt() {
 		return betreuungenBestaetigt;

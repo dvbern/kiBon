@@ -37,6 +37,26 @@ const getBetreuungsstatus = (kindIndex: number, betreuungsIndex: number) => {
     );
 };
 
+const getAuszahlungAnInstitutionHeading = () => {
+    return cy.getByData('auszahlungAnInstitutionen');
+};
+const getAuszahlungAnInstitution = (zeitabschnittIndex: number) => {
+    return cy.getByData(
+        'container.zeitabschnitt#' + zeitabschnittIndex,
+        'showZahlungsstatusInstitutionen'
+    );
+};
+
+const getAuszahlungAnElternHeading = () => {
+    return cy.getByData('auszahlungAnEltern');
+};
+const getAuszahlungAnEltern = (zeitabschnittIndex: number) => {
+    return cy.getByData(
+        'container.zeitabschnitt#' + zeitabschnittIndex,
+        'showAuszahlungAnEltern'
+    );
+};
+
 const getFinSitAkzeptiert = (status: string) => {
     return cy.getByData('finSitStatus.radio-value.' + status);
 };
@@ -78,6 +98,10 @@ export const VerfuegenPO = {
     getBetreuungsstatus,
     getFinSitAkzeptiert,
     getAbschliessenButton,
+    getAuszahlungAnInstitutionHeading,
+    getAuszahlungAnInstitution,
+    getAuszahlungAnEltern,
+    getAuszahlungAnElternHeading,
     getGeprueftButton,
     getVerfuegung,
     getVerfuegenStartenButton,

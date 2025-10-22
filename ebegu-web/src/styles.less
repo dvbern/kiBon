@@ -17,8 +17,8 @@
 
 @import 'angular-material/angular-material.css';
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import 'bootstrap/less/bootstrap';
 @import 'font-awesome/less/font-awesome';
+@import './style/dv-bootstrap/less/bootstrap.less';
 //@fa-font-path: "~font-awesome/fonts/";
 
 @import 'style/atoms/mat-menu.less';
@@ -42,7 +42,7 @@
 // flex helper classes
 @import 'style/flex-helpers';
 
-.access-for-all-title {
+.access-for-all-title:not(.ignore-kibon-legacy) {
     display: block;
     font-size: 0;
     height: 0;
@@ -199,7 +199,6 @@ body {
     .mat-progress-bar-primary:after {
         animation: mat-progress-bar-primary-indeterminate-translate1 4s infinite !important;
     }
-
     .mat-progress-bar-secondary,
     .mat-progress-bar-secondary:after {
         animation:
@@ -1024,7 +1023,6 @@ _:-ms-fullscreen,
     }
 }
 
-.dv-mat-dialog-send-notrecht-mitteilung,
 .dv-mat-dialog-ts,
 .interne-pendenzen-dialog,
 .steuerdaten-email-dialog {
@@ -1054,4 +1052,77 @@ _:-ms-fullscreen,
 
 .red {
     color: @red;
+}
+
+.mat-mdc-radio-button
+    .mdc-radio__native-control:focus
+    + .mdc-radio__background::before {
+    opacity: 0 !important;
+}
+
+.dv-table .mat-sort-header-arrow svg,
+.meldungsfenster-table .mat-sort-header-arrow svg {
+    transform: scale(0.8);
+}
+
+// dv-radio-container component umrandung (boxshadow)
+md-radio-group {
+    &.radio {
+        &.ng-pristine {
+            md-radio-button {
+                &.md-checked {
+                    .md-container {
+                        // no box-shadow on new page load
+                        box-shadow: none !important;
+                    }
+                }
+            }
+        }
+
+        &.ng-not-empty {
+            // when clicked / focused
+            &:focus {
+                md-radio-button {
+                    &.md-checked {
+                        .md-container {
+                            // Set new box-shadow values
+                            box-shadow: 0 0 0 7px rgba(0, 0, 0, 0.09);
+                            border-radius: 10px;
+                        }
+                    }
+                }
+            }
+
+            // hover
+            md-radio-button {
+                // dv-radio-container component set new hover umrandung (boxshadow)
+                .md-container {
+                    &:hover {
+                        // Set new box-shadow values
+                        box-shadow: 0 0 0 7px rgba(0, 0, 0, 0.09) !important;
+                        border-radius: 10px;
+                    }
+                }
+            }
+
+            md-radio-button[disabled] {
+                .md-container {
+                    &:hover {
+                        // remove hover effect when geuch readonly / disabled radio button
+                        box-shadow: none !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.margin-bottom-40,
+ul.margin-bottom-40 {
+    margin-bottom: 4rem;
+}
+
+.flex-basis-0,
+.mdc-tab.flex-basis-0 {
+    flex-basis: 0;
 }

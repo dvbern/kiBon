@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
-import {TSAbstractEntity} from './TSAbstractEntity';
+import moment from 'moment';
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 import {TSGesuch} from './TSGesuch';
 
 export class TSInternePendenz extends TSAbstractEntity {

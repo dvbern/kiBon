@@ -8,24 +8,30 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.DokumentTyp;
-import ch.dvbern.ebegu.enums.Sprache;
-
-import javax.annotation.Nonnull;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
+
+import ch.dvbern.ebegu.entities.BfsGemeinde;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.GemeindeStammdaten;
+import ch.dvbern.ebegu.entities.GemeindeStammdatenGesuchsperiode;
+import ch.dvbern.ebegu.entities.Gesuchsperiode;
+import ch.dvbern.ebegu.entities.Mandant;
+import ch.dvbern.ebegu.enums.DokumentTyp;
+import ch.dvbern.ebegu.enums.Sprache;
 
 /**
  * Service zum Verwalten von Gemeinden
@@ -61,7 +67,6 @@ public interface GemeindeService {
 	/**
 	 * Gibt die nächste freie Gemeindenummer zurück
 	 */
-	@Nonnull
 	long getNextGemeindeNummer();
 
 	/**
@@ -76,13 +81,15 @@ public interface GemeindeService {
 	@Nonnull
 	Collection<Gemeinde> getAktiveGemeinden(@Nonnull Mandant mandant);
 
-
 	/**
 	 * Gibt alle Gemeinden im Status "AKTIV" und mit gueltigBis Datum nach datum zurueck.
 	 *
 	 */
 	@Nonnull
-	Collection<Gemeinde> getAktiveGemeindenGueltigAm(@Nonnull LocalDate date, @Nonnull Mandant mandant);
+	Collection<Gemeinde> getAktiveGemeindenGueltigAm(
+		@Nonnull LocalDate date,
+		@Nonnull Mandant mandant
+	);
 
 	/**
 	 * Gibt die GemeindeStammdaten anhand ihrer Id zurück
@@ -94,7 +101,9 @@ public interface GemeindeService {
 	 * Gibt die GemeindeStammdaten der jeweiligen Gemeinde zurück
 	 */
 	@Nonnull
-	Optional<GemeindeStammdaten> getGemeindeStammdatenByGemeindeId(@Nonnull String gemeindeId);
+	Optional<GemeindeStammdaten> getGemeindeStammdatenByGemeindeId(
+		@Nonnull String gemeindeId
+	);
 
 	/**
 	 * Speichert die GemeindeStammdaten neu in der DB falls der Key noch nicht existiert.
@@ -102,7 +111,9 @@ public interface GemeindeService {
 	 * @param stammdaten Die GemeindeStammdaten
 	 */
 	@Nonnull
-	GemeindeStammdaten saveGemeindeStammdaten(@Nonnull GemeindeStammdaten stammdaten);
+	GemeindeStammdaten saveGemeindeStammdaten(
+		@Nonnull GemeindeStammdaten stammdaten
+	);
 
 	/**
 	 * Updates the logo of the given Gemeinde wth the given content
@@ -112,7 +123,8 @@ public interface GemeindeService {
 		@Nonnull String gemeindeId,
 		@Nonnull byte[] content,
 		@Nonnull String name,
-		@Nonnull String type);
+		@Nonnull String type
+	);
 
 	/**
 	 * Updates the alternative tagesschule logo of the given Gemeinde wth the given content
@@ -122,26 +134,32 @@ public interface GemeindeService {
 		@Nonnull String gemeindeId,
 		@Nonnull byte[] content,
 		@Nonnull String name,
-		@Nonnull String type);
+		@Nonnull String type
+	);
 
 	/**
 	 * Deletes the alternative tagesschule logo of the given Gemeinde
 	 */
 	@Nonnull
 	GemeindeStammdaten deleteAlternativeLogoTagesschule(
-		@Nonnull String gemeindeId);
+		@Nonnull String gemeindeId
+	);
 
 	/**
 	 * Gibt eine Liste aller BFS Gemeinden dieses Mandanten zurueck, welche noch nicht fuer KiBon registriert sind.
 	 */
 	@Nonnull
-	Collection<BfsGemeinde> getUnregisteredBfsGemeinden(@Nonnull Mandant mandant);
+	Collection<BfsGemeinde> getUnregisteredBfsGemeinden(
+		@Nonnull Mandant mandant
+	);
 
 	/**
 	 * Gibt den zur BFS-Nummer gehoerenden Verbund zurueck.
 	 */
 	@Nonnull
-	Optional<Gemeinde> findRegistredGemeindeVerbundIfExist(@Nonnull Long gemeindeBfsNummer);
+	Optional<Gemeinde> findRegistredGemeindeVerbundIfExist(
+		@Nonnull Long gemeindeBfsNummer
+	);
 
 	@Nonnull
 	Collection<BfsGemeinde> getAllBfsGemeinden(@Nonnull Mandant mandant);
@@ -159,6 +177,7 @@ public interface GemeindeService {
 	 * aktiviert oder deaktiviert das BG Angebot
 	 */
 	void updateAngebotBG(@Nonnull Gemeinde gemeinde, boolean value);
+
 	/**
 	 * aktiviert oder deaktiviert das BG TFO Angebot
 	 */
@@ -167,7 +186,11 @@ public interface GemeindeService {
 	/**
 	 * aktiviert oder deaktiviert das TS Angebot
 	 */
-	void updateAngebotTS(@Nonnull Gemeinde gemeinde, boolean value, boolean nurLats);
+	void updateAngebotTS(
+		@Nonnull Gemeinde gemeinde,
+		boolean value,
+		boolean nurLats
+	);
 
 	/**
 	 * aktiviert oder deaktiviert das FI Angebot
@@ -179,30 +202,52 @@ public interface GemeindeService {
 		@Nonnull String gesuchsperiodeId,
 		@Nonnull Sprache sprache,
 		@Nonnull DokumentTyp dokumentTyp,
-		@Nonnull byte[] content);
+		@Nonnull byte[] content
+	);
 
-	byte[] downloadGemeindeGesuchsperiodeDokument(@Nonnull String gemeindeId, @Nonnull String gesuchsperiodeId,
-		@Nonnull Sprache sprache,
-		@Nonnull DokumentTyp dokumentTyp);
-
-	GemeindeStammdatenGesuchsperiode removeGemeindeGesuchsperiodeDokument(@Nonnull String gemeindeId,
+	byte[] downloadGemeindeGesuchsperiodeDokument(
+		@Nonnull String gemeindeId,
 		@Nonnull String gesuchsperiodeId,
-		@Nonnull Sprache sprache, @Nonnull DokumentTyp dokumentTyp);
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	);
 
-	boolean existGemeindeGesuchsperiodeDokument(@Nonnull String gemeindeId, @Nonnull String gesuchsperiodeId,
-		@Nonnull Sprache sprache, @Nonnull DokumentTyp dokumentTyp);
+	GemeindeStammdatenGesuchsperiode removeGemeindeGesuchsperiodeDokument(
+		@Nonnull String gemeindeId,
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	);
 
-	void copyGesuchsperiodeGemeindeStammdaten(@Nonnull Gesuchsperiode gesuchsperiode, @Nonnull Gesuchsperiode lastGesuchsperiode);
+	boolean existGemeindeGesuchsperiodeDokument(
+		@Nonnull String gemeindeId,
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	);
 
-	Collection<GemeindeStammdatenGesuchsperiode> findGemeindeStammdatenGesuchsperiode(@Nonnull Gesuchsperiode gesuchsperiode);
+	void copyGesuchsperiodeGemeindeStammdaten(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull Gesuchsperiode lastGesuchsperiode
+	);
 
-	Optional<GemeindeStammdatenGesuchsperiode> findGemeindeStammdatenGesuchsperiode(@Nonnull String gemeindeId,
-		@Nonnull String gesuchsperiodeId);
+	Collection<GemeindeStammdatenGesuchsperiode> findGemeindeStammdatenGesuchsperiode(
+		@Nonnull Gesuchsperiode gesuchsperiode
+	);
 
-	GemeindeStammdatenGesuchsperiode createGemeindeStammdatenGesuchsperiode(@Nonnull String gemeindeId,
-		@Nonnull String gesuchsperiodeId);
+	Optional<GemeindeStammdatenGesuchsperiode> findGemeindeStammdatenGesuchsperiode(
+		@Nonnull String gemeindeId,
+		@Nonnull String gesuchsperiodeId
+	);
 
-	GemeindeStammdatenGesuchsperiode saveGemeindeStammdatenGesuchsperiode(@Nonnull GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode);
+	GemeindeStammdatenGesuchsperiode createGemeindeStammdatenGesuchsperiode(
+		@Nonnull String gemeindeId,
+		@Nonnull String gesuchsperiodeId
+	);
+
+	GemeindeStammdatenGesuchsperiode saveGemeindeStammdatenGesuchsperiode(
+		@Nonnull GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode
+	);
 
 	/**
 	 * Gibt alle Gemeinden zurueck, die Mahlzeitenverguenstigungen auszahlen und fuer die
@@ -216,4 +261,6 @@ public interface GemeindeService {
 	List<Gemeinde> getGemeindenWithLats();
 
 	void fireGemeindeChangedEvent(@Nonnull Gemeinde gemeinde);
+
+	List<Gemeinde> getGemeindenWithInfoma(Mandant mandant);
 }

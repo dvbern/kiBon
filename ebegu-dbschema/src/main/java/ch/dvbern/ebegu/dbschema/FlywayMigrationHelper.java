@@ -18,16 +18,16 @@ package ch.dvbern.ebegu.dbschema;
 import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Resource;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RunAs;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.inject.spi.CDI;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RunAs;
+import jakarta.ejb.SessionContext;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import ch.dvbern.ebegu.enums.UserRoleName;
 
@@ -53,17 +53,23 @@ public class FlywayMigrationHelper {
 	 * so wird die @RunAs(SUPER_ADMIN) Annotation ignoriert. Diese Methode holt sich deshalb via SessionContext eine
 	 * Instanz des FlywayMigrationHelper, welcher dann die korrekte Rolle erhaelt.
 	 *
-	 * Mit CDI<Object>.select(MyService.class) koennen Services, welche fuer die Migration benoetigt werden injected werden.
+	 * Mit CDI<Object>.select(MyService.class) koennen Services, welche fuer die Migration benoetigt werden injected
+	 * werden.
 	 *
 	 * @param consumer die Funktion, welche die Migrierung durchfuert
 	 */
-	public void migrate(@Nonnull BiConsumer<CDI<Object>, EntityManager> consumer) {
-		ctx.getBusinessObject(FlywayMigrationHelper.class).migrateInternal(consumer);
+	public void migrate(
+		@Nonnull BiConsumer<CDI<Object>, EntityManager> consumer
+	) {
+		ctx.getBusinessObject(FlywayMigrationHelper.class)
+			.migrateInternal(consumer);
 	}
 
 	// Muss leider public sein, sollte aber nicht verwendet werden
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void migrateInternal(@Nonnull BiConsumer<CDI<Object>, EntityManager> consumer) {
+	public void migrateInternal(
+		@Nonnull BiConsumer<CDI<Object>, EntityManager> consumer
+	) {
 		consumer.accept(CDI.current(), em);
 	}
 }

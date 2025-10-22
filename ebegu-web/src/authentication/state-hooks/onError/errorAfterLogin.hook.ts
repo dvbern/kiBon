@@ -16,12 +16,13 @@
  */
 
 import {HookResult, Transition, TransitionService} from '@uirouter/core';
-import {map, mergeMap, take} from 'rxjs/operators';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {TSRole} from '../../../models/enums/TSRole';
+import {map, mergeMap} from 'rxjs/operators';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {TSRole} from '@kibon/shared/model/enums';
 import {navigateToStartPageForRole} from '../../../utils/AuthenticationUtil';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
 import {OnErrorPriorities} from './onErrorPriorities';
+import {firstValueFrom} from 'rxjs';
 
 /**
  * This hook navigates to a valid state when the failed transition originated from a login state.
@@ -60,9 +61,8 @@ function recover(transition: Transition): HookResult {
         .injector()
         .get('AuthServiceRS');
 
-    return authService.principal$
-        .pipe(
-            take(1),
+    return firstValueFrom(
+        authService.principal$.pipe(
             map(principal =>
                 principal ? principal.getCurrentRole() : TSRole.ANONYMOUS
             ),
@@ -71,5 +71,5 @@ function recover(transition: Transition): HookResult {
             ),
             map(() => true)
         )
-        .toPromise();
+    );
 }

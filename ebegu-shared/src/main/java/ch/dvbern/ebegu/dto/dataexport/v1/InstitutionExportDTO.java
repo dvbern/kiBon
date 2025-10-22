@@ -17,8 +17,8 @@ package ch.dvbern.ebegu.dto.dataexport.v1;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 /**
  * This is a DTO that is used to export the relevant Information about a {@link ch.dvbern.ebegu.entities.Institution}.
@@ -34,7 +34,12 @@ public class InstitutionExportDTO {
 	private String traegerschaft;
 	private AdresseExportDTO adresse;
 
-	public InstitutionExportDTO(String instID, String name, String traegerschaft, AdresseExportDTO adresse) {
+	public InstitutionExportDTO(
+		String instID,
+		String name,
+		String traegerschaft,
+		AdresseExportDTO adresse
+	) {
 		this.id = instID;
 		this.name = name;
 		this.traegerschaft = traegerschaft;
@@ -85,14 +90,22 @@ public class InstitutionExportDTO {
 			return false;
 		}
 		InstitutionExportDTO that = (InstitutionExportDTO) o;
-		return Objects.equals(getId(), that.getId()) &&
-			Objects.equals(getName(), that.getName()) &&
-			Objects.equals(getTraegerschaft(), that.getTraegerschaft()) &&
+		return Objects.equals(getId(), that.getId())
+			&&
+			Objects.equals(getName(), that.getName())
+			&&
+			Objects.equals(getTraegerschaft(), that.getTraegerschaft())
+			&&
 			Objects.equals(getAdresse(), that.getAdresse());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getId(), getName(), getTraegerschaft(), getAdresse());
+		return Objects.hash(
+			getId(),
+			getName(),
+			getTraegerschaft(),
+			getAdresse()
+		);
 	}
 }

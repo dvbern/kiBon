@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -48,7 +48,9 @@ public class PlatzbestaetigungEventHandlerLoggingTest extends EasyMockSupport {
 	private static final String KEY = "fake";
 
 	@TestSubject
-	private final PlatzbestaetigungEventHandler handler = partialMockBuilder(PlatzbestaetigungEventHandler.class)
+	private final PlatzbestaetigungEventHandler handler = partialMockBuilder(
+		PlatzbestaetigungEventHandler.class
+	)
 		.addMockedMethod("attemptProcessing")
 		.strictMock();
 
@@ -72,20 +74,37 @@ public class PlatzbestaetigungEventHandlerLoggingTest extends EasyMockSupport {
 		BetreuungEventDTO dto = mock(BetreuungEventDTO.class);
 		expect(dto.getRefnr()).andReturn(REF_NR).anyTimes();
 
-		logger.warn("Platzbestaetigung Event für Betreuung mit RefNr: {} nicht verarbeitet: {}", REF_NR, result);
+		logger.warn(
+			"Platzbestaetigung Event für Betreuung mit RefNr: {} nicht verarbeitet: {}",
+			REF_NR,
+			result
+		);
 
 		Capture<BetreuungMonitoring> captured = newCapture();
 		//noinspection DataFlowIssue
-		expect(betreuungMonitoringService.saveBetreuungMonitoring(capture(captured)))
+		expect(
+			betreuungMonitoringService.saveBetreuungMonitoring(
+				capture(captured)
+			)
+		)
 			.andReturn(mock(BetreuungMonitoring.class));
 
 		replayAll();
 
-		handler.processEvent(LocalDateTime.now(), EventType.PLATZBESTAETIGUNG_BETREUUNG, KEY, dto, CLIENT_NAME);
+		handler.processEvent(
+			LocalDateTime.now(),
+			EventType.PLATZBESTAETIGUNG_BETREUUNG,
+			KEY,
+			dto,
+			CLIENT_NAME
+		);
 
 		assertThat(
 			captured.getValue().getInfoText(),
-			is("Eine Platzbestaetigung Event wurde nicht verarbeitet: " + result)
+			is(
+				"Eine Platzbestaetigung Event wurde nicht verarbeitet: "
+					+ result
+			)
 		);
 	}
 
@@ -101,16 +120,27 @@ public class PlatzbestaetigungEventHandlerLoggingTest extends EasyMockSupport {
 		logger.info(
 			"Platzbestaetigung Event für Betreuung mit RefNr: {} wurde ignoriert und nicht verarbeitet: {}",
 			REF_NR,
-			result);
+			result
+		);
 
 		Capture<BetreuungMonitoring> captured = newCapture();
 		//noinspection DataFlowIssue
-		expect(betreuungMonitoringService.saveBetreuungMonitoring(capture(captured)))
+		expect(
+			betreuungMonitoringService.saveBetreuungMonitoring(
+				capture(captured)
+			)
+		)
 			.andReturn(mock(BetreuungMonitoring.class));
 
 		replayAll();
 
-		handler.processEvent(LocalDateTime.now(), EventType.PLATZBESTAETIGUNG_BETREUUNG, KEY, dto, CLIENT_NAME);
+		handler.processEvent(
+			LocalDateTime.now(),
+			EventType.PLATZBESTAETIGUNG_BETREUUNG,
+			KEY,
+			dto,
+			CLIENT_NAME
+		);
 
 		assertThat(
 			captured.getValue().getInfoText(),
@@ -128,11 +158,20 @@ public class PlatzbestaetigungEventHandlerLoggingTest extends EasyMockSupport {
 		BetreuungEventDTO dto = mock(BetreuungEventDTO.class);
 		expect(dto.getRefnr()).andReturn(REF_NR).anyTimes();
 
-		logger.debug("Platzbestaetigung Event für Betreuung mit RefNr: {} erfolgreich verarbeitet: {}", REF_NR, result);
-
+		logger.debug(
+			"Platzbestaetigung Event für Betreuung mit RefNr: {} erfolgreich verarbeitet: {}",
+			REF_NR,
+			result
+		);
 
 		replayAll();
 
-		handler.processEvent(LocalDateTime.now(), EventType.PLATZBESTAETIGUNG_BETREUUNG, KEY, dto, CLIENT_NAME);
+		handler.processEvent(
+			LocalDateTime.now(),
+			EventType.PLATZBESTAETIGUNG_BETREUUNG,
+			KEY,
+			dto,
+			CLIENT_NAME
+		);
 	}
 }

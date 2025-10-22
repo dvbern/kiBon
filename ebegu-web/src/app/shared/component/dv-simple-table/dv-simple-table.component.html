@@ -35,6 +35,7 @@
                 *matRowDef="let element; columns: getColumnsAttributeName()"
                 (click)="onRowClicked(element, $event)"
                 [ngClass]="{'pointer-cursor': config?.cursorPointer !== false}"
+                [attr.data-test]="getColumnsAttributeName()"
             ></mat-row>
         </mat-table>
     </div>

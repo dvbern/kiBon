@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@import 'style/mixins';
+@import './../../../../style/mixins';
 
 .pulldown-user-menu {
     border-radius: 2px;
@@ -25,6 +25,10 @@
 
 .user-menu-trigger {
     .ebeguFont-family();
+    --mdc-text-button-label-text-font:
+        'Open Sans', Arial, Helvetica, sans-serif;
+    --mdc-text-button-label-text-size: 1.4rem;
+
     &:hover {
         background: #cccccc;
         outline: 0;

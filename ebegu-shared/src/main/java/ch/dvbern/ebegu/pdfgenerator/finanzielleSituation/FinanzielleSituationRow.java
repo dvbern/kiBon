@@ -31,7 +31,8 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 public class FinanzielleSituationRow {
 
-	private static final String URSPRUENGLICH = "PdfGeneration_FinSit_Urspruenglich";
+	private static final String URSPRUENGLICH =
+		"PdfGeneration_FinSit_Urspruenglich";
 	public static final String LINE_FEED_SPACE = "\n ";
 
 	@Nonnull
@@ -54,19 +55,24 @@ public class FinanzielleSituationRow {
 
 	private boolean bold = false;
 
-
 	public FinanzielleSituationRow(@Nonnull String label, @Nonnull String gs1) {
 		this.label = label;
 		this.gs1 = gs1;
 	}
 
-	public FinanzielleSituationRow(@Nonnull String label, @Nullable BigDecimal gs1) {
+	public FinanzielleSituationRow(
+		@Nonnull String label,
+		@Nullable BigDecimal gs1
+	) {
 		this.label = label;
 		this.gs1 = PdfUtil.printBigDecimal(gs1);
 	}
 
 	@CanIgnoreReturnValue
-	public FinanzielleSituationRow withFooter(String footer, List<String> footers) {
+	public FinanzielleSituationRow withFooter(
+		String footer,
+		List<String> footers
+	) {
 		if (!footers.contains(footer)) {
 			footers.add(footer);
 		}
@@ -100,12 +106,12 @@ public class FinanzielleSituationRow {
 		return gs1;
 	}
 
-	@Nullable
+	@Nonnull
 	public String getGs2Urspruenglich() {
 		return gs2Urspruenglich;
 	}
 
-	@Nullable
+	@Nonnull
 	public String getGs1Urspruenglich() {
 		return gs1Urspruenglich;
 	}
@@ -115,7 +121,7 @@ public class FinanzielleSituationRow {
 		return gs2;
 	}
 
-	@Nullable
+	@Nonnull
 	public String getSupertext() {
 		return supertext;
 	}
@@ -136,15 +142,47 @@ public class FinanzielleSituationRow {
 		this.gs2 = PdfUtil.printBigDecimal(gs2);
 	}
 
-	public void setGs1Urspruenglich(@Nullable BigDecimal gs1Urspruenglich, Locale locale, Mandant mandant) {
-		this.gs1Urspruenglich = gs1Urspruenglich == null
-			? LINE_FEED_SPACE + ServerMessageUtil.getMessage(URSPRUENGLICH, locale, mandant) + " -"
-			: LINE_FEED_SPACE + ServerMessageUtil.getMessage(URSPRUENGLICH, locale, mandant) + PdfUtil.printBigDecimal(gs1Urspruenglich);
+	public void setGs1Urspruenglich(
+		@Nullable BigDecimal gs1Urspruenglich,
+		Locale locale,
+		Mandant mandant
+	) {
+		this.gs1Urspruenglich = gs1Urspruenglich == null ?
+			LINE_FEED_SPACE
+				+ ServerMessageUtil.getMessage(
+					URSPRUENGLICH,
+					locale,
+					mandant
+				)
+				+ " -" :
+			LINE_FEED_SPACE
+				+ ServerMessageUtil.getMessage(
+					URSPRUENGLICH,
+					locale,
+					mandant
+				)
+				+ PdfUtil.printBigDecimal(gs1Urspruenglich);
 	}
 
-	public void setGs2Urspruenglich(@Nullable BigDecimal gs2Urspruenglich, Locale locale, Mandant mandant) {
-		this.gs2Urspruenglich = gs2Urspruenglich == null
-			? LINE_FEED_SPACE + ServerMessageUtil.getMessage(URSPRUENGLICH, locale, mandant) + " -"
-			: LINE_FEED_SPACE + ServerMessageUtil.getMessage(URSPRUENGLICH, locale, mandant) + PdfUtil.printBigDecimal(gs2Urspruenglich);
+	public void setGs2Urspruenglich(
+		@Nullable BigDecimal gs2Urspruenglich,
+		Locale locale,
+		Mandant mandant
+	) {
+		this.gs2Urspruenglich = gs2Urspruenglich == null ?
+			LINE_FEED_SPACE
+				+ ServerMessageUtil.getMessage(
+					URSPRUENGLICH,
+					locale,
+					mandant
+				)
+				+ " -" :
+			LINE_FEED_SPACE
+				+ ServerMessageUtil.getMessage(
+					URSPRUENGLICH,
+					locale,
+					mandant
+				)
+				+ PdfUtil.printBigDecimal(gs2Urspruenglich);
 	}
 }

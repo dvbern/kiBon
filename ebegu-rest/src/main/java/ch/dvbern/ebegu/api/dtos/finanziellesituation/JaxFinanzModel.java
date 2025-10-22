@@ -8,19 +8,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.finanziellesituation;
 
-import javax.validation.Valid;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.Valid;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.api.dtos.JaxEinkommensverschlechterungContainer;
 import ch.dvbern.ebegu.api.dtos.JaxEinkommensverschlechterungInfoContainer;
@@ -28,7 +28,8 @@ import ch.dvbern.ebegu.api.dtos.JaxFamiliensituation;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 
 /**
- * DTO fuer die FinanzielleSituation, so verhindern wir, dass das ganze gesuch mitgegeben werden muss wenn wir berechnen wollen
+ * DTO fuer die FinanzielleSituation, so verhindern wir, dass das ganze gesuch mitgegeben werden muss wenn wir berechnen
+ * wollen
  */
 @XmlRootElement(name = "jaxFinSitModel")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -54,56 +55,74 @@ public class JaxFinanzModel {
 		return finanzielleSituationContainerGS1;
 	}
 
-	public void setFinanzielleSituationContainerGS1(JaxFinanzielleSituationContainer finanzielleSituationContainerGS1) {
-		this.finanzielleSituationContainerGS1 = finanzielleSituationContainerGS1;
+	public void setFinanzielleSituationContainerGS1(
+		JaxFinanzielleSituationContainer finanzielleSituationContainerGS1
+	) {
+		this.finanzielleSituationContainerGS1 =
+			finanzielleSituationContainerGS1;
 	}
 
 	public JaxFinanzielleSituationContainer getFinanzielleSituationContainerGS2() {
 		return finanzielleSituationContainerGS2;
 	}
 
-	public void setFinanzielleSituationContainerGS2(JaxFinanzielleSituationContainer finanzielleSituationContainerGS2) {
-		this.finanzielleSituationContainerGS2 = finanzielleSituationContainerGS2;
+	public void setFinanzielleSituationContainerGS2(
+		JaxFinanzielleSituationContainer finanzielleSituationContainerGS2
+	) {
+		this.finanzielleSituationContainerGS2 =
+			finanzielleSituationContainerGS2;
 	}
 
 	public JaxEinkommensverschlechterungContainer getEinkommensverschlechterungContainerGS1() {
 		return einkommensverschlechterungContainerGS1;
 	}
 
-	public void setEinkommensverschlechterungContainerGS1(JaxEinkommensverschlechterungContainer einkommensverschlechterungContainerGS1) {
-		this.einkommensverschlechterungContainerGS1 = einkommensverschlechterungContainerGS1;
+	public void setEinkommensverschlechterungContainerGS1(
+		JaxEinkommensverschlechterungContainer einkommensverschlechterungContainerGS1
+	) {
+		this.einkommensverschlechterungContainerGS1 =
+			einkommensverschlechterungContainerGS1;
 	}
 
 	public JaxEinkommensverschlechterungContainer getEinkommensverschlechterungContainerGS2() {
 		return einkommensverschlechterungContainerGS2;
 	}
 
-	public void setEinkommensverschlechterungContainerGS2(JaxEinkommensverschlechterungContainer einkommensverschlechterungContainerGS2) {
-		this.einkommensverschlechterungContainerGS2 = einkommensverschlechterungContainerGS2;
+	public void setEinkommensverschlechterungContainerGS2(
+		JaxEinkommensverschlechterungContainer einkommensverschlechterungContainerGS2
+	) {
+		this.einkommensverschlechterungContainerGS2 =
+			einkommensverschlechterungContainerGS2;
 	}
 
 	public JaxEinkommensverschlechterungInfoContainer getEinkommensverschlechterungInfoContainer() {
 		return einkommensverschlechterungInfoContainer;
 	}
 
-	public void setEinkommensverschlechterungInfoContainer(JaxEinkommensverschlechterungInfoContainer einkommensverschlechterungInfoContainer) {
-		this.einkommensverschlechterungInfoContainer = einkommensverschlechterungInfoContainer;
+	public void setEinkommensverschlechterungInfoContainer(
+		JaxEinkommensverschlechterungInfoContainer einkommensverschlechterungInfoContainer
+	) {
+		this.einkommensverschlechterungInfoContainer =
+			einkommensverschlechterungInfoContainer;
 	}
 
 	public FinanzielleSituationTyp getFinanzielleSituationTyp() {
 		return finanzielleSituationTyp;
 	}
 
-	public void setFinanzielleSituationTyp(FinanzielleSituationTyp finanzielleSituationTyp) {
+	public void setFinanzielleSituationTyp(
+		FinanzielleSituationTyp finanzielleSituationTyp
+	) {
 		this.finanzielleSituationTyp = finanzielleSituationTyp;
 	}
 
-	public JaxFamiliensituation getJaxFamiliensituation() {
+	public JaxFamiliensituation getFamiliensituation() {
 		return familiensituation;
 	}
 
-	public void setJaxFamiliensituation(JaxFamiliensituation jaxFamiliensituation) {
-		this.familiensituation = jaxFamiliensituation;
+	public void setFamiliensituation(
+		JaxFamiliensituation familiensituation
+	) {
+		this.familiensituation = familiensituation;
 	}
 }
-

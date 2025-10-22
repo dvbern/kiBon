@@ -20,28 +20,27 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
-import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.entities.Fachstelle;
 import ch.dvbern.ebegu.entities.Fachstelle_;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
-import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 /**
  * Service fuer fachstelle
  */
 @Stateless
 @Local(FachstelleService.class)
-public class FachstelleServiceBean extends AbstractBaseService implements FachstelleService {
+public class FachstelleServiceBean extends AbstractBaseService implements
+	FachstelleService {
 
 	@Inject
 	private Persistence persistence;
@@ -74,7 +73,14 @@ public class FachstelleServiceBean extends AbstractBaseService implements Fachst
 	@Override
 	public void removeFachstelle(@Nonnull String fachstelleId) {
 		Objects.requireNonNull(fachstelleId);
-		Fachstelle fachstelleToRemove = findFachstelle(fachstelleId).orElseThrow(() -> new EbeguEntityNotFoundException("removeFachstelle", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, fachstelleId));
+		Fachstelle fachstelleToRemove = findFachstelle(fachstelleId)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"removeFachstelle",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					fachstelleId
+				)
+			);
 		persistence.remove(fachstelleToRemove);
 	}
 

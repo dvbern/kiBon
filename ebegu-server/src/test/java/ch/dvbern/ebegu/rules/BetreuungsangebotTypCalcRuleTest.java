@@ -25,8 +25,8 @@ import ch.dvbern.ebegu.entities.Betreuungspensum;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.util.Constants;
 import org.junit.Assert;
@@ -41,58 +41,123 @@ public class BetreuungsangebotTypCalcRuleTest {
 
 	@Test
 	public void testAngebotKita() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareData(BetreuungsangebotTyp.KITA));
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareData(BetreuungsangebotTyp.KITA)
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, result.get(0).getAnspruchberechtigtesPensum());
+		Assert.assertEquals(
+			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
 		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertEquals(2, result.get(0).getBemerkungenDTOList().uniqueSize());
-		Assert.assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		Assert.assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
+		Assert.assertEquals(
+			2,
+			result.get(0).getBemerkungenDTOList().uniqueSize()
+		);
+		Assert.assertTrue(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
+		);
+		Assert.assertTrue(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
+		);
 	}
 
 	@Test
 	public void testAngebotTageselternKleinkind() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareData(BetreuungsangebotTyp.TAGESFAMILIEN));
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareData(BetreuungsangebotTyp.TAGESFAMILIEN)
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, result.get(0).getAnspruchberechtigtesPensum());
+		Assert.assertEquals(
+			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
 		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertEquals(2, result.get(0).getBemerkungenDTOList().uniqueSize());
-		Assert.assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH));
-		Assert.assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH));
+		Assert.assertEquals(
+			2,
+			result.get(0).getBemerkungenDTOList().uniqueSize()
+		);
+		Assert.assertTrue(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.ERWERBSPENSUM_ANSPRUCH)
+		);
+		Assert.assertTrue(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.VERFUEGUNG_MIT_ANSPRUCH)
+		);
 	}
 
 	@Test
 	public void testAngebotTagesschule() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(prepareData(BetreuungsangebotTyp.TAGESSCHULE));
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			prepareData(BetreuungsangebotTyp.TAGESSCHULE)
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(1, result.size());
 		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
 		Assert.assertFalse(result.get(0).getBemerkungenDTOList().isEmpty());
-		Assert.assertEquals(1, result.get(0).getBemerkungenDTOList().uniqueSize());
-		Assert.assertTrue(result.get(0).getBemerkungenDTOList().containsMsgKey(MsgKey.BETREUUNGSANGEBOT_MSG));
+		Assert.assertEquals(
+			1,
+			result.get(0).getBemerkungenDTOList().uniqueSize()
+		);
+		Assert.assertTrue(
+			result.get(0)
+				.getBemerkungenDTOList()
+				.containsMsgKey(MsgKey.BETREUUNGSANGEBOT_MSG)
+		);
 	}
 
-	private AbstractPlatz prepareData(BetreuungsangebotTyp betreuungsangebotTyp) {
-		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(false);
+	private AbstractPlatz prepareData(
+		BetreuungsangebotTyp betreuungsangebotTyp
+	) {
+		Betreuung betreuung = TestDataUtil.createGesuchWithBetreuungspensum(
+			false
+		);
+		betreuung.initVorgaengerVerfuegungen(null, null);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 		Gesuch gesuch = betreuung.extractGesuch();
-		betreuung.getInstitutionStammdaten().setBetreuungsangebotTyp(betreuungsangebotTyp);
+		betreuung.getInstitutionStammdaten()
+			.setBetreuungsangebotTyp(betreuungsangebotTyp);
 		Assert.assertNotNull(gesuch.getGesuchsteller1());
-		gesuch.getGesuchsteller1().addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE, 60));
-		BetreuungspensumContainer betreuungspensumContainer = new BetreuungspensumContainer();
+		gesuch.getGesuchsteller1()
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					60
+				)
+			);
+		BetreuungspensumContainer betreuungspensumContainer =
+			new BetreuungspensumContainer();
 		betreuungspensumContainer.setBetreuungspensumJA(new Betreuungspensum());
-		betreuungspensumContainer.getBetreuungspensumJA().setGueltigkeit(Constants.DEFAULT_GUELTIGKEIT);
-		betreuungspensumContainer.getBetreuungspensumJA().setPensum(BigDecimal.valueOf(80));
-		betreuungspensumContainer.getBetreuungspensumJA().setMonatlicheHauptmahlzeiten(BigDecimal.ZERO);
-		betreuungspensumContainer.getBetreuungspensumJA().setMonatlicheNebenmahlzeiten(BigDecimal.ZERO);
-		betreuung.getBetreuungspensumContainers().add(betreuungspensumContainer);
+		betreuungspensumContainer.getBetreuungspensumJA()
+			.setGueltigkeit(Constants.DEFAULT_GUELTIGKEIT);
+		betreuungspensumContainer.getBetreuungspensumJA()
+			.setPensum(BigDecimal.valueOf(80));
+		betreuungspensumContainer.getBetreuungspensumJA()
+			.setMonatlicheHauptmahlzeiten(BigDecimal.ZERO);
+		betreuungspensumContainer.getBetreuungspensumJA()
+			.setMonatlicheNebenmahlzeiten(BigDecimal.ZERO);
+		betreuung.getBetreuungspensumContainers()
+			.add(betreuungspensumContainer);
 		if (betreuungsangebotTyp.isTagesschule()) {
-			AnmeldungTagesschule anmeldung = TestDataUtil.createAnmeldungTagesschuleWithModules(betreuung.getKind(),
-				betreuung.extractGesuchsperiode());
+			AnmeldungTagesschule anmeldung = TestDataUtil
+				.createAnmeldungTagesschuleWithModules(
+					betreuung.getKind(),
+					betreuung.extractGesuchsperiode()
+				);
+			anmeldung.initVorgaengerVerfuegungen(null, null);
 			betreuung.getKind().getAnmeldungenTagesschule().add(anmeldung);
 			return anmeldung;
 		} else {

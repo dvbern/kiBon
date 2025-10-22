@@ -16,9 +16,9 @@
 package ch.dvbern.ebegu.api.errors;
 
 import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.Provider;
 
 import ch.dvbern.ebegu.api.validation.EbeguExceptionReport;
 import ch.dvbern.ebegu.entities.Mandant;
@@ -32,9 +32,12 @@ import org.slf4j.LoggerFactory;
  * ExceptionMapper fuer EbeguExceptions und Subklassen davon
  */
 @Provider
-public class EbeguExceptionMapper extends AbstractEbeguExceptionMapper<EbeguException> {
+public class EbeguExceptionMapper extends
+	AbstractEbeguExceptionMapper<EbeguException> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GesuchServiceBean.class.getSimpleName());
+	private static final Logger LOG = LoggerFactory.getLogger(
+		GesuchServiceBean.class.getSimpleName()
+	);
 
 	@Override
 	public Response toResponse(EbeguException exception) {
@@ -45,9 +48,19 @@ public class EbeguExceptionMapper extends AbstractEbeguExceptionMapper<EbeguExce
 
 	@Nonnull
 	@Override
-	protected Response buildViolationReportResponse(EbeguException exception, Response.Status status) {
-		Mandant mandant = exception.getMandant() != null ? exception.getMandant() : mandantService.getMandantBern();
-		return EbeguExceptionReport.buildResponse(status, exception, getLocaleFromHeader(), mandant, configuration.getIsDevmode());
+	protected Response buildViolationReportResponse(
+		EbeguException exception,
+		Response.Status status
+	) {
+		Mandant mandant = exception.getMandant() != null ?
+			exception.getMandant() :
+			mandantService.getMandantBern();
+		return EbeguExceptionReport.buildResponse(
+			status,
+			exception,
+			getLocaleFromHeader(),
+			mandant,
+			configuration.getIsDevmode()
+		);
 	}
 }
-

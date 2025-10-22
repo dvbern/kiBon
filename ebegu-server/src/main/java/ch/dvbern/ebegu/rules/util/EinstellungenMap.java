@@ -5,19 +5,28 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.entities.Einstellung;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 
 /**
  * Hilfsklasse fuer das Handling von EinstellungenMaps
  */
 public class EinstellungenMap {
-	private Map<EinstellungKey, Einstellung> einstellungen = new EnumMap<>(EinstellungKey.class);
+	private Map<EinstellungKey, Einstellung> einstellungen = new EnumMap<>(
+		EinstellungKey.class
+	);
 
-	public void addEinstellung(@Nonnull EinstellungKey key, @Nonnull String value, @Nonnull Gesuchsperiode gesuchsperiode) {
+	public void addEinstellung(
+		@Nonnull EinstellungKey key,
+		@Nonnull String value,
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		Einstellung einstellung = new Einstellung(
-			key, value, gesuchsperiode);
+			key,
+			value,
+			gesuchsperiode
+		);
 		einstellungen.put(key, einstellung);
 	}
 

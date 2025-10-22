@@ -16,7 +16,7 @@
  */
 
 import {EbeguUtil} from '../../utils/EbeguUtil';
-import {TSAbstractEntity} from '../TSAbstractEntity';
+import {TSAbstractEntity} from '@kibon/shared/model/entity';
 import {TSOeffnungszeitenTagesschule} from './TSOeffnungszeitenTagesschule';
 
 export class TSLastenausgleichTagesschuleAngabenInstitution extends TSAbstractEntity {

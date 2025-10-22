@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner;
@@ -52,43 +52,83 @@ import static org.hamcrest.Matchers.is;
 public class VerfuegungZeitabschnittRundungTest extends AbstractBGRechnerTest {
 
 	private final BGRechnerParameterDTO parameterDTO = getParameter();
-	private final TageselternBernRechner tageselternRechner = new TageselternBernRechner(Collections.emptyList());
+	private final TageselternRechner tageselternRechner =
+		new TageselternRechner(Collections.emptyList());
 
 	@Test
 	public void testVerguenstigungProZeiteinheit() {
-		BigDecimal verguenstigungProZeiteinheit = tageselternRechner.getVerguenstigungProZeiteinheit(
-			parameterDTO,
-			false,
-			false,
-			BigDecimal.valueOf(88600),
-			false,
-			EinschulungTyp.VORSCHULALTER
+		BGCalculationInput input = createZeitabschnitt(
+			new DateRange(
+				LocalDate.of(2019, 8, 1),
+				LocalDate.of(2020, 7, 31)
+			)
 		);
+		BigDecimal verguenstigungProZeiteinheit = tageselternRechner
+			.getVerguenstigungProZeiteinheit(
+				parameterDTO,
+				input,
+				BigDecimal.valueOf(88600)
+			);
 
 		assertThat(verguenstigungProZeiteinheit, of("5.1871794872"));
 	}
 
 	@Test
 	public void exactBGCalculationResult() {
-		DateRange gueltigkeit = new DateRange(LocalDate.of(2019, 11, 1), LocalDate.of(2019, 11, 1));
+		DateRange gueltigkeit = new DateRange(
+			LocalDate.of(2019, 11, 1),
+			LocalDate.of(2019, 11, 1)
+		);
 
-		BGCalculationResult result = tageselternRechner.calculateAsiv(createZeitabschnitt(gueltigkeit), parameterDTO);
+		BGCalculationResult result = tageselternRechner.calculateAsiv(
+			createZeitabschnitt(gueltigkeit),
+			parameterDTO
+		);
 
-		assertThat(result, pojo(BGCalculationResult.class)
-			// Minimalbetrag
-			.where(BGCalculationResult::getMinimalerElternbeitrag, of("5.1333333333"))
-			.where(BGCalculationResult::getVerguenstigungOhneBeruecksichtigungMinimalbeitrag, of("38.0393162393"))
-			// Vergünstigung vor Berücksichtigung Vollkosten
-			.where(BGCalculationResult::getVerguenstigungOhneBeruecksichtigungVollkosten, of("38.0393162393"))
-			// Vollkosten minus Minimaltarif
-			.where(BGCalculationResult::getVerguenstigung, of("38.0393162393"))
-			// Anteil der Vollkosten
-			.where(BGCalculationResult::getVollkosten, of("66.6666666"))
-			.where(BGCalculationResult::getElternbeitrag, of("28.6273504274"))
-			// Stunden gemäss Pensum und Anteil Monat
-			.where(BGCalculationResult::getBgPensumZeiteinheit, of("7.333333333"))
-			.where(BGCalculationResult::getAnspruchspensumZeiteinheit, of("7.333333333"))
-			.where(BGCalculationResult::getBetreuungspensumZeiteinheit, of("7.333333333"))
+		assertThat(
+			result,
+			pojo(BGCalculationResult.class)
+				// Minimalbetrag
+				.where(
+					BGCalculationResult::getMinimalerElternbeitrag,
+					of("5.1333333333")
+				)
+				.where(
+					BGCalculationResult::getVerguenstigungOhneBeruecksichtigungMinimalbeitrag,
+					of("38.0393162393")
+				)
+				// Vergünstigung vor Berücksichtigung Vollkosten
+				.where(
+					BGCalculationResult::getVerguenstigungOhneBeruecksichtigungVollkosten,
+					of("38.0393162393")
+				)
+				// Vollkosten minus Minimaltarif
+				.where(
+					BGCalculationResult::getVerguenstigung,
+					of("38.0393162393")
+				)
+				// Anteil der Vollkosten
+				.where(
+					BGCalculationResult::getVollkosten,
+					of("66.6666666")
+				)
+				.where(
+					BGCalculationResult::getElternbeitrag,
+					of("28.6273504274")
+				)
+				// Stunden gemäss Pensum und Anteil Monat
+				.where(
+					BGCalculationResult::getBgPensumZeiteinheit,
+					of("7.333333333")
+				)
+				.where(
+					BGCalculationResult::getAnspruchspensumZeiteinheit,
+					of("7.333333333")
+				)
+				.where(
+					BGCalculationResult::getBetreuungspensumZeiteinheit,
+					of("7.333333333")
+				)
 		);
 	}
 
@@ -98,24 +138,48 @@ public class VerfuegungZeitabschnittRundungTest extends AbstractBGRechnerTest {
 		result.roundAllValues();
 
 		// Default: Stunden mit 2 Kommastellen
-		assertThat(result, calculationResultMatcher()
-			.where(BGCalculationResult::getBgPensumZeiteinheit, twoDecimalsOf("7.23"))
-			.where(BGCalculationResult::getAnspruchspensumZeiteinheit, twoDecimalsOf("8.23"))
-			.where(BGCalculationResult::getBetreuungspensumZeiteinheit, twoDecimalsOf("9.23"))
+		assertThat(
+			result,
+			calculationResultMatcher()
+				.where(
+					BGCalculationResult::getBgPensumZeiteinheit,
+					twoDecimalsOf("7.23")
+				)
+				.where(
+					BGCalculationResult::getAnspruchspensumZeiteinheit,
+					twoDecimalsOf("8.23")
+				)
+				.where(
+					BGCalculationResult::getBetreuungspensumZeiteinheit,
+					twoDecimalsOf("9.23")
+				)
 		);
 	}
 
 	@Test
 	public void testBGCalculation_toVerfuegungZeitabschnitt_zeiteinheitenStrategy() {
 		BGCalculationResult result = createCalculationResult();
-		result.setZeiteinheitenRoundingStrategy(MathUtil::roundToNearestQuarter);
+		result.setZeiteinheitenRoundingStrategy(
+			MathUtil::roundToNearestQuarter
+		);
 		result.roundAllValues();
 
 		// Stunden in in Viertel
-		assertThat(result, calculationResultMatcher()
-			.where(BGCalculationResult::getBgPensumZeiteinheit, twoDecimalsOf("7.25"))
-			.where(BGCalculationResult::getAnspruchspensumZeiteinheit, twoDecimalsOf("8.25"))
-			.where(BGCalculationResult::getBetreuungspensumZeiteinheit, twoDecimalsOf("9.25"))
+		assertThat(
+			result,
+			calculationResultMatcher()
+				.where(
+					BGCalculationResult::getBgPensumZeiteinheit,
+					twoDecimalsOf("7.25")
+				)
+				.where(
+					BGCalculationResult::getAnspruchspensumZeiteinheit,
+					twoDecimalsOf("8.25")
+				)
+				.where(
+					BGCalculationResult::getBetreuungspensumZeiteinheit,
+					twoDecimalsOf("9.25")
+				)
 		);
 	}
 
@@ -123,27 +187,47 @@ public class VerfuegungZeitabschnittRundungTest extends AbstractBGRechnerTest {
 	private IsPojo<BGCalculationResult> calculationResultMatcher() {
 		return pojo(BGCalculationResult.class)
 			// Rappen
-			.where(BGCalculationResult::getMinimalerElternbeitrag, twoDecimalsOf("1.25"))
+			.where(
+				BGCalculationResult::getMinimalerElternbeitrag,
+				twoDecimalsOf("1.25")
+			)
 			// Rappen
 			.where(
 				BGCalculationResult::getVerguenstigungOhneBeruecksichtigungMinimalbeitrag,
-				twoDecimalsOf("2.25"))
+				twoDecimalsOf("2.25")
+			)
 			// 2 Kommastellen
-			.where(BGCalculationResult::getVerguenstigungOhneBeruecksichtigungVollkosten, twoDecimalsOf("3.25"))
+			.where(
+				BGCalculationResult::getVerguenstigungOhneBeruecksichtigungVollkosten,
+				twoDecimalsOf("3.25")
+			)
 			// 2 Kommastellen
-			.where(BGCalculationResult::getVerguenstigung, twoDecimalsOf("4.25"))
+			.where(
+				BGCalculationResult::getVerguenstigung,
+				twoDecimalsOf("4.25")
+			)
 			// 2 Kommastellen
-			.where(BGCalculationResult::getVollkosten, twoDecimalsOf("5.25"))
+			.where(
+				BGCalculationResult::getVollkosten,
+				twoDecimalsOf("5.25")
+			)
 			// Rappen
-			.where(BGCalculationResult::getElternbeitrag, twoDecimalsOf("6.25"));
+			.where(
+				BGCalculationResult::getElternbeitrag,
+				twoDecimalsOf("6.25")
+			);
 	}
 
 	@Nonnull
 	private BGCalculationResult createCalculationResult() {
 		BGCalculationResult result = new BGCalculationResult();
 		result.setMinimalerElternbeitrag(BigDecimal.valueOf(1.2345));
-		result.setVerguenstigungOhneBeruecksichtigungMinimalbeitrag(BigDecimal.valueOf(2.2345));
-		result.setVerguenstigungOhneBeruecksichtigungVollkosten(BigDecimal.valueOf(3.2345));
+		result.setVerguenstigungOhneBeruecksichtigungMinimalbeitrag(
+			BigDecimal.valueOf(2.2345)
+		);
+		result.setVerguenstigungOhneBeruecksichtigungVollkosten(
+			BigDecimal.valueOf(3.2345)
+		);
 		result.setVerguenstigung(BigDecimal.valueOf(4.2345));
 		result.setVollkosten(BigDecimal.valueOf(5.2345));
 		result.setElternbeitrag(BigDecimal.valueOf(6.2345));
@@ -155,12 +239,19 @@ public class VerfuegungZeitabschnittRundungTest extends AbstractBGRechnerTest {
 	}
 
 	@Nonnull
-	private BGCalculationInput createZeitabschnitt(@Nonnull DateRange gueltigkeit) {
-		VerfuegungZeitabschnitt zeitabschnitt = new VerfuegungZeitabschnitt(gueltigkeit);
-		BGCalculationInput inputAsiv = zeitabschnitt.getBgCalculationInputAsiv();
+	private BGCalculationInput createZeitabschnitt(
+		@Nonnull DateRange gueltigkeit
+	) {
+		VerfuegungZeitabschnitt zeitabschnitt = new VerfuegungZeitabschnitt(
+			gueltigkeit
+		);
+		BGCalculationInput inputAsiv = zeitabschnitt
+			.getBgCalculationInputAsiv();
 		inputAsiv.setMonatlicheBetreuungskosten(BigDecimal.valueOf(2000));
 		inputAsiv.setAnspruchspensumProzent(100);
-		inputAsiv.setMassgebendesEinkommenVorAbzugFamgr(BigDecimal.valueOf(88600));
+		inputAsiv.setMassgebendesEinkommenVorAbzugFamgr(
+			BigDecimal.valueOf(88600)
+		);
 		inputAsiv.setBetreuungspensumProzent(BigDecimal.valueOf(100));
 		inputAsiv.setEinschulungTyp(EinschulungTyp.VORSCHULALTER);
 		return inputAsiv;
@@ -168,7 +259,10 @@ public class VerfuegungZeitabschnittRundungTest extends AbstractBGRechnerTest {
 
 	@Nonnull
 	private Matcher<BigDecimal> of(@Nonnull String value) {
-		return BigDecimalCloseTo.closeTo(MathUtil.EXACT.from(value), new BigDecimal("1e-7"));
+		return BigDecimalCloseTo.closeTo(
+			MathUtil.EXACT.from(value),
+			new BigDecimal("1e-7")
+		);
 	}
 
 	@Nonnull

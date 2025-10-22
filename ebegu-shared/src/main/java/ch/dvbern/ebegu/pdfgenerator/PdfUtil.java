@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -73,7 +73,6 @@ import static com.lowagie.text.pdf.BaseFont.IDENTITY_H;
 
 public final class PdfUtil {
 
-
 	// Muss vor den FontFactory.getFont aufrufen definiert werden
 	static {
 		FontFactory.register("/font/OpenSans-Light.ttf", "OpenSans-Light");
@@ -84,25 +83,62 @@ public final class PdfUtil {
 	public static final String FONT_FACE_OPEN_SANS = "OpenSans-Light";
 	public static final String FONT_FACE_OPEN_SANS_BOLD = "OpenSans-Bold";
 	public static final String FONT_FACE_FONT_AWESOME = "fontAwesome";
-	public static final String FONT_FACE_PROXIMA_NOVA_BOLD = "Proxima Nova Semibold";
+	public static final String FONT_FACE_PROXIMA_NOVA_BOLD =
+		"Proxima Nova Semibold";
 
 	public static final float DEFAULT_FONT_SIZE = 10.0f;
 	public static final float FONT_SIZE = 10.0f;
 	public static final float FONT_SIZE_H1 = 14.0f;
 	public static final float FONT_SIZE_H2 = 12.0f;
 
-	public static final Font DEFAULT_FONT = FontFactory.getFont(FONT_FACE_OPEN_SANS, IDENTITY_H, EMBEDDED,
-		FONT_SIZE, Font.NORMAL, Color.BLACK);
-	public static final Font DEFAULT_FONT_BOLD = FontFactory.getFont(FONT_FACE_OPEN_SANS_BOLD, IDENTITY_H, EMBEDDED,
-		FONT_SIZE, Font.NORMAL, Color.BLACK);
-	public static final Font FONT_TITLE = FontFactory.getFont(FONT_FACE_OPEN_SANS_BOLD, IDENTITY_H, EMBEDDED,
-		FONT_SIZE_H1, Font.NORMAL, Color.BLACK);
-	public static final Font FONT_H1 = FontFactory.getFont(FONT_FACE_OPEN_SANS_BOLD, IDENTITY_H, EMBEDDED,
-		FONT_SIZE_H1, Font.NORMAL, Color.BLACK);
-	public static final Font FONT_H2 = FontFactory.getFont(FONT_FACE_OPEN_SANS_BOLD, IDENTITY_H, EMBEDDED,
-		FONT_SIZE_H2, Font.NORMAL, Color.BLACK);
-	public static final Font FONT_AWESOME = FontFactory.getFont(FONT_FACE_FONT_AWESOME, IDENTITY_H, EMBEDDED,
-		FONT_SIZE, Font.NORMAL, Color.BLACK);
+	public static final Font DEFAULT_FONT = FontFactory.getFont(
+		FONT_FACE_OPEN_SANS,
+		IDENTITY_H,
+		EMBEDDED,
+		FONT_SIZE,
+		Font.NORMAL,
+		Color.BLACK
+	);
+	public static final Font DEFAULT_FONT_BOLD = FontFactory.getFont(
+		FONT_FACE_OPEN_SANS_BOLD,
+		IDENTITY_H,
+		EMBEDDED,
+		FONT_SIZE,
+		Font.NORMAL,
+		Color.BLACK
+	);
+	public static final Font FONT_TITLE = FontFactory.getFont(
+		FONT_FACE_OPEN_SANS_BOLD,
+		IDENTITY_H,
+		EMBEDDED,
+		FONT_SIZE_H1,
+		Font.NORMAL,
+		Color.BLACK
+	);
+	public static final Font FONT_H1 = FontFactory.getFont(
+		FONT_FACE_OPEN_SANS_BOLD,
+		IDENTITY_H,
+		EMBEDDED,
+		FONT_SIZE_H1,
+		Font.NORMAL,
+		Color.BLACK
+	);
+	public static final Font FONT_H2 = FontFactory.getFont(
+		FONT_FACE_OPEN_SANS_BOLD,
+		IDENTITY_H,
+		EMBEDDED,
+		FONT_SIZE_H2,
+		Font.NORMAL,
+		Color.BLACK
+	);
+	public static final Font FONT_AWESOME = FontFactory.getFont(
+		FONT_FACE_FONT_AWESOME,
+		IDENTITY_H,
+		EMBEDDED,
+		FONT_SIZE,
+		Font.NORMAL,
+		Color.BLACK
+	);
 
 	private static final Logger LOG = LoggerFactory.getLogger(PdfUtil.class);
 	private static final String WATERMARK = "PdfGeneration_Watermark";
@@ -125,7 +161,9 @@ public final class PdfUtil {
 		Paragraph paragraph = new Paragraph(title, FONT_TITLE);
 		paragraph.setLeading(0.0F, PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
 		paragraph.add(NEWLINE);
-		paragraph.setSpacingAfter(DEFAULT_FONT_SIZE * 2 * PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		paragraph.setSpacingAfter(
+			DEFAULT_FONT_SIZE * 2 * PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+		);
 		return paragraph;
 	}
 
@@ -133,8 +171,12 @@ public final class PdfUtil {
 	public static Paragraph createSubTitle(@Nonnull String string) {
 		Paragraph paragraph = new Paragraph(string, DEFAULT_FONT_BOLD);
 		paragraph.setLeading(0, PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
-		paragraph.setSpacingBefore(1 * DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
-		paragraph.setSpacingAfter(1 * DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		paragraph.setSpacingBefore(
+			1 * DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+		);
+		paragraph.setSpacingAfter(
+			1 * DEFAULT_FONT_SIZE * PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+		);
 		return paragraph;
 	}
 
@@ -142,17 +184,21 @@ public final class PdfUtil {
 	public static PdfPTable createKeepTogetherTable(
 		@Nonnull java.util.List<Element> elements,
 		final int emptyLinesBetween,
-		final int emptyLinesAfter) {
+		final int emptyLinesAfter
+	) {
 		PdfPTable table = new PdfPTable(1);
 		table.setWidthPercentage(PdfElementGenerator.FULL_WIDTH);
 		table.setKeepTogether(true);
-		table.getDefaultCell().setLeading(0, PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		table.getDefaultCell()
+			.setLeading(0, PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
 		table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 		table.getDefaultCell().setPadding(0);
 		table.getDefaultCell()
-			.setPaddingBottom(emptyLinesBetween
-				* DEFAULT_FONT_SIZE
-				* PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+			.setPaddingBottom(
+				emptyLinesBetween
+					* DEFAULT_FONT_SIZE
+					* PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+			);
 		elements.forEach(element -> {
 			if (element instanceof List) {
 				PdfPCell phraseCell = new PdfPCell();
@@ -167,29 +213,43 @@ public final class PdfUtil {
 				table.addCell((Paragraph) element);
 			}
 		});
-		table.setSpacingAfter(emptyLinesAfter
-			* DEFAULT_FONT_SIZE
-			* PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		table.setSpacingAfter(
+			emptyLinesAfter
+				* DEFAULT_FONT_SIZE
+				* PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+		);
 		return table;
 	}
 
 	@Nonnull
-	public static Paragraph createParagraph(@Nonnull String string, final int emptyLinesAfter) {
+	public static Paragraph createParagraph(
+		@Nonnull String string,
+		final int emptyLinesAfter
+	) {
 		return createParagraph(string, emptyLinesAfter, DEFAULT_FONT);
 	}
 
 	@Nonnull
-	public static Paragraph createBoldParagraph(@Nonnull String string, final int emptyLinesAfter) {
+	public static Paragraph createBoldParagraph(
+		@Nonnull String string,
+		final int emptyLinesAfter
+	) {
 		return createParagraph(string, emptyLinesAfter, DEFAULT_FONT_BOLD);
 	}
 
 	@Nonnull
-	public static Paragraph createParagraph(@Nonnull String string, final int emptyLinesAfter, final Font font) {
+	public static Paragraph createParagraph(
+		@Nonnull String string,
+		final int emptyLinesAfter,
+		final Font font
+	) {
 		Paragraph paragraph = new Paragraph(string, font);
 		paragraph.setLeading(0, PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
-		paragraph.setSpacingAfter(emptyLinesAfter
-			* DEFAULT_FONT_SIZE
-			* PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		paragraph.setSpacingAfter(
+			emptyLinesAfter
+				* DEFAULT_FONT_SIZE
+				* PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+		);
 		return paragraph;
 	}
 
@@ -202,13 +262,20 @@ public final class PdfUtil {
 	public static Paragraph createParagraphHtml(@Nonnull String text) {
 		Paragraph paragraph = createParagraph("");
 		try {
-			java.util.List<Element> parsedList = HTMLWorker.parseToList(new StringReader(text), new StyleSheet());
+			java.util.List<Element> parsedList = HTMLWorker.parseToList(
+				new StringReader(text),
+				new StyleSheet()
+			);
 			// if the text contains actual HTML, there must be more than one chunk -> use HTML parsed output
 			formatParsedHtml(parsedList);
 			paragraph.addAll(parsedList);
 			return paragraph;
 		} catch (IOException e) {
-			throw new EbeguRuntimeException("createParagraphHtml()","Fehler bei HTML Parsen", e);
+			throw new EbeguRuntimeException(
+				"createParagraphHtml()",
+				"Fehler bei HTML Parsen",
+				e
+			);
 		}
 	}
 
@@ -216,13 +283,21 @@ public final class PdfUtil {
 	 * By default, the parsed html elements will have a font that differs from the one used in the rest of the PDF.
 	 * This method adjusts that as well as some other formatting issues.
 	 */
-	private static void formatParsedHtml(@Nonnull java.util.List<Element> parsedList) {
+	private static void formatParsedHtml(
+		@Nonnull java.util.List<Element> parsedList
+	) {
 		// chunks
 		parsedList.stream()
 			.flatMap(element -> element.getChunks().stream())
 			.filter(Chunk.class::isInstance)
 			.map(Chunk.class::cast)
-			.forEach(chunk -> chunk.setFont(getDefaultFont(Objects.requireNonNull(chunk.getFont()))));
+			.forEach(
+				chunk -> chunk.setFont(
+					getDefaultFont(
+						Objects.requireNonNull(chunk.getFont())
+					)
+				)
+			);
 
 		// paragraphs (<p>)
 		parsedList.stream()
@@ -237,7 +312,6 @@ public final class PdfUtil {
 			.map(element -> (com.lowagie.text.List) element)
 			.forEach(PdfUtil::applyHTMListStyle);
 	}
-
 
 	@Nonnull
 	public static Paragraph createListInParagraph(java.util.List<String> list) {
@@ -260,7 +334,8 @@ public final class PdfUtil {
 			list.getSymbol().setFont(getDefaultFont(font));
 		}
 
-		list.getItems().stream()
+		list.getItems()
+			.stream()
 			.filter(ListItem.class::isInstance)
 			.map(ListItem.class::cast)
 			.forEach(PdfUtil::applyHTMLListItemStyle);
@@ -288,8 +363,6 @@ public final class PdfUtil {
 			.build();
 	}
 
-
-
 	@Nonnull
 	public static List createList(java.util.List<String> list) {
 		final List itextList = new List(List.UNORDERED);
@@ -305,12 +378,17 @@ public final class PdfUtil {
 	}
 
 	@Nonnull
-	public static Paragraph createListInParagraph(java.util.List<String> list, final int emptyLinesAfter) {
+	public static Paragraph createListInParagraph(
+		java.util.List<String> list,
+		final int emptyLinesAfter
+	) {
 		Paragraph paragraph = new Paragraph();
 		final List itextList = createList(list);
-		paragraph.setSpacingAfter(emptyLinesAfter
-			* DEFAULT_FONT_SIZE
-			* PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		paragraph.setSpacingAfter(
+			emptyLinesAfter
+				* DEFAULT_FONT_SIZE
+				* PdfUtilities.DEFAULT_MULTIPLIED_LEADING
+		);
 		paragraph.add(itextList);
 		return paragraph;
 	}
@@ -326,12 +404,21 @@ public final class PdfUtil {
 			float[] columnWidths = { 1, 2 };
 			table.setWidths(columnWidths);
 		} catch (DocumentException e) {
-			LOG.error("Error while creating intro table: {}", e.getMessage(), e);
+			LOG.error(
+				"Error while creating intro table: {}",
+				e.getMessage(),
+				e
+			);
 		}
 		setTableDefaultStyles(table);
 
 		for (TableRowLabelValue entry : entries) {
-			table.addCell(new Phrase(entry.getTranslatedLabel(locale, mandant), DEFAULT_FONT));
+			table.addCell(
+				new Phrase(
+					entry.getTranslatedLabel(locale, mandant),
+					DEFAULT_FONT
+				)
+			);
 			table.addCell(new Phrase(entry.getValue(), DEFAULT_FONT));
 		}
 		table.setSpacingAfter(DEFAULT_MULTIPLIED_LEADING * FONT_SIZE * 2);
@@ -344,7 +431,8 @@ public final class PdfUtil {
 		table.setKeepTogether(true);
 		table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 		table.getDefaultCell().setPadding(0);
-		table.getDefaultCell().setLeading(0, PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
+		table.getDefaultCell()
+			.setLeading(0, PdfUtilities.DEFAULT_MULTIPLIED_LEADING);
 	}
 
 	public static ListItem createListItem(@Nonnull final String string) {
@@ -382,7 +470,9 @@ public final class PdfUtil {
 			}
 			first = false;
 		}
-		table.setSpacingAfter(DEFAULT_MULTIPLIED_LEADING * FONT_SIZE * emptyLinesAfter);
+		table.setSpacingAfter(
+			DEFAULT_MULTIPLIED_LEADING * FONT_SIZE * emptyLinesAfter
+		);
 		return table;
 	}
 
@@ -395,7 +485,9 @@ public final class PdfUtil {
 	}
 
 	@Nonnull
-	public static String printBigDecimal(@Nullable BigDecimal valueAsBigDecimal) {
+	public static String printBigDecimal(
+		@Nullable BigDecimal valueAsBigDecimal
+	) {
 		if (valueAsBigDecimal != null) {
 			// though CURRENCY_FORMAT is created with Locale de-CH, it is required in this case since in
 			// Switzerland we have always the same currency format independently of the language. So we
@@ -406,9 +498,12 @@ public final class PdfUtil {
 	}
 
 	@Nonnull
-	public static String printBigDecimalOneNachkomma(@Nullable BigDecimal valueAsBigDecimal) {
+	public static String printBigDecimalOneNachkomma(
+		@Nullable BigDecimal valueAsBigDecimal
+	) {
 		if (valueAsBigDecimal != null) {
-			return MathUtil.EINE_NACHKOMMASTELLE.from(valueAsBigDecimal).toString();
+			return MathUtil.EINE_NACHKOMMASTELLE.from(valueAsBigDecimal)
+				.toString();
 		}
 		return "";
 	}
@@ -444,7 +539,9 @@ public final class PdfUtil {
 	 * when the resulting pdf is printed as thoguh each single document was printed separately
 	 */
 	public static void doMerge(
-		java.util.List<InputStream> pdfToMergeList, OutputStream outputStream, boolean addOddPages
+		java.util.List<InputStream> pdfToMergeList,
+		OutputStream outputStream,
+		boolean addOddPages
 	) throws DocumentException, IOException {
 
 		try (outputStream; Document document = new Document()) {
@@ -457,13 +554,17 @@ public final class PdfUtil {
 					try (PdfReader reader = new PdfReader(in)) {
 						for (int i = 1; i <= reader.getNumberOfPages(); i++) {
 							//import the page from source pdf
-							PdfImportedPage page = writer.getImportedPage(reader, i);
+							PdfImportedPage page = writer.getImportedPage(
+								reader,
+								i
+							);
 							//add the page to the destination pdf
 							document.setPageSize(page.getBoundingBox());
 							document.newPage();
 							cb.addTemplate(page, 0, 0);
 						}
-						if (addOddPages && !MathUtil.isEven(writer.getPageNumber())) {
+						if (addOddPages
+							&& !MathUtil.isEven(writer.getPageNumber())) {
 							document.newPage();
 							// Use this method to make sure a page is added, even if it's empty.
 							writer.setPageEmpty(false);
@@ -478,7 +579,11 @@ public final class PdfUtil {
 	/**
 	 * Setzt ein Wasserzeichen auf jede Seite des PDF
 	 */
-	public static byte[] addEntwurfWatermark(byte[] content, @Nonnull Locale locale, @Nonnull Mandant mandant) throws IOException, DocumentException {
+	public static byte[] addEntwurfWatermark(
+		byte[] content,
+		@Nonnull Locale locale,
+		@Nonnull Mandant mandant
+	) throws IOException, DocumentException {
 		PdfReader reader = new PdfReader(new ByteArrayInputStream(content));
 		ByteArrayOutputStream destOutputStream = new ByteArrayOutputStream();
 
@@ -488,7 +593,10 @@ public final class PdfUtil {
 		// text watermark
 		Phrase watermarkPhrase = new Phrase(
 			ServerMessageUtil.getMessage(WATERMARK, locale, mandant),
-			FontFactory.getFont(FONT_FACE_PROXIMA_NOVA_BOLD, FONT_SIZE_WATERMARK)
+			FontFactory.getFont(
+				FONT_FACE_PROXIMA_NOVA_BOLD,
+				FONT_SIZE_WATERMARK
+			)
 		);
 
 		// Auf jeder Seite setzen
@@ -506,7 +614,14 @@ public final class PdfUtil {
 			over.setGState(state);
 
 			// add text
-			ColumnText.showTextAligned(over, Element.ALIGN_CENTER, watermarkPhrase, x, y, 45.0f);
+			ColumnText.showTextAligned(
+				over,
+				Element.ALIGN_CENTER,
+				watermarkPhrase,
+				x,
+				y,
+				45.0f
+			);
 
 			over.restoreState();
 		}
@@ -519,25 +634,37 @@ public final class PdfUtil {
 		return createSuperTextInText(supertext, 5, 3);
 	}
 
-	public static Chunk createSuperTextInText(final  String supertext, int fontSize, int textRise) {
-		final Chunk chunk = new Chunk(supertext, createFontWithSize(DEFAULT_FONT, fontSize));
+	public static Chunk createSuperTextInText(
+		final String supertext,
+		int fontSize,
+		int textRise
+	) {
+		final Chunk chunk = new Chunk(
+			supertext,
+			createFontWithSize(DEFAULT_FONT, fontSize)
+		);
 		chunk.setTextRise(textRise);
 		return chunk;
 	}
 
 	@Nonnull
-	public static Font createFontWithSize(@Nonnull Font originatingFont, float size) {
+	public static Font createFontWithSize(
+		@Nonnull Font originatingFont,
+		float size
+	) {
 		Font newFont = new Font(originatingFont);
 		newFont.setSize(size);
 		return newFont;
 	}
 
 	@Nonnull
-	public static Font createFontWithColor(@Nonnull Font originatingFont, @Nonnull Color color) {
+	public static Font createFontWithColor(
+		@Nonnull Font originatingFont,
+		@Nonnull Color color
+	) {
 		Font newFont = new Font(originatingFont);
 		newFont.setColor(color);
 		return newFont;
 	}
-
 
 }

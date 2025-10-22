@@ -23,5 +23,13 @@ export enum TSFinanzielleSituationTyp {
     APPENZELL = 'APPENZELL',
 
     APPENZELL_FOLGEMONAT = 'APPENZELL_FOLGEMONAT',
-    SCHWYZ = 'SCHWYZ'
+    SCHWYZ = 'SCHWYZ',
+    SCHWYZ_ERWEITERT = 'SCHWYZ_ERWEITERT'
+}
+
+export function getSchwyzFinSitTyp(): Array<TSFinanzielleSituationTyp> {
+    return [
+        TSFinanzielleSituationTyp.SCHWYZ,
+        TSFinanzielleSituationTyp.SCHWYZ_ERWEITERT
+    ];
 }

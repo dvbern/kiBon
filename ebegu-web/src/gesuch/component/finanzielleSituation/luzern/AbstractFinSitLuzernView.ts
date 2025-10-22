@@ -16,20 +16,19 @@
  */
 
 import {MatRadioChange} from '@angular/material/radio';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {IPromise} from 'angular';
-import {CONSTANTS} from '../../../../app/core/constants/CONSTANTS';
-import {ApplicationPropertyRS} from '../../../../app/core/rest-services/applicationPropertyRS.rest';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
-import {TSRole} from '../../../../models/enums/TSRole';
-import {TSWizardStepName} from '../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../models/enums/TSWizardStepStatus';
+import {TSRole} from '@kibon/shared/model/enums';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzielleSituationContainer} from '../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzielleSituationSelbstdeklaration} from '../../../../models/TSFinanzielleSituationSelbstdeklaration';
 import {TSFinanzModel} from '../../../../models/TSFinanzModel';
 import {TSGesuch} from '../../../../models/TSGesuch';
-import {DateUtil} from '../../../../utils/DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
@@ -47,7 +46,7 @@ export abstract class AbstractFinSitLuzernView extends AbstractGesuchViewX<TSFin
         protected finSitLuService: FinanzielleSituationLuzernService,
         protected authServiceRS: AuthServiceRS,
         protected readonly translate: TranslateService,
-        protected readonly applicationPropertyRS: ApplicationPropertyRS
+        protected readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
     ) {
         super(
             gesuchModelManager,
@@ -64,9 +63,11 @@ export abstract class AbstractFinSitLuzernView extends AbstractGesuchViewX<TSFin
         );
         this.setupForm();
         this.gesuchModelManager.setGesuchstellerNumber(gesuchstellerNumber);
-        this.applicationPropertyRS.getPublicPropertiesCached().then(res => {
-            this.isInfomazahlungenAktiv = res.infomaZahlungen;
-        });
+        this.applicationPropertyRS
+            .getPublicPropertiesCached()
+            .subscribe(res => {
+                this.isInfomazahlungenAktiv = res.infomaZahlungen;
+            });
     }
 
     private setupForm(): void {
@@ -336,7 +337,7 @@ export abstract class AbstractFinSitLuzernView extends AbstractGesuchViewX<TSFin
                 return this.gesuchModelManager
                     .getGesuch()
                     .gesuchsteller2.extractFullName();
-            } catch (error) {
+            } catch {
                 // Gesuchsteller has not yet filled in Form for Antragsteller 2
                 return '';
             }
@@ -401,7 +402,7 @@ export abstract class AbstractFinSitLuzernView extends AbstractGesuchViewX<TSFin
             ? this.getGesuch().regelnGueltigAb
             : this.getGesuch().eingangsdatum;
 
-        const formatedDate = DateUtil.momentToLocalDateFormat(
+        const formatedDate = MomentUtil.momentToLocalDateFormat(
             eingangsdatum,
             CONSTANTS.DATE_FORMAT
         );

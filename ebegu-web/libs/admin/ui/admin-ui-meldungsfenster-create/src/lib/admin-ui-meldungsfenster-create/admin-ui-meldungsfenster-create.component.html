@@ -1,0 +1,16 @@
+<div class="admin-modul dv-meldungsfenster padding-x-2-3 padding-t-25">
+    <div class="view-title">
+        <h2>
+            {{ 'MELDUNGSFENSTER_CREATE' | translate }}
+        </h2>
+        <hr class="header" />
+    </div>
+
+    <lib-admin-ui-meldungsfenster-form
+        class="background-grey"
+        [meldungsfenster]="toCreate"
+        [mode]="'CREATE'"
+        (formSubmitted)="createMeldungsfenster($event)"
+        (userCancelled)="stateService.go('admin.meldungfenster')"
+    ></lib-admin-ui-meldungsfenster-form>
+</div>

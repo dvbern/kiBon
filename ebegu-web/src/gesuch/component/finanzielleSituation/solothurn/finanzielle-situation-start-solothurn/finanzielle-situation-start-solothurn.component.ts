@@ -1,18 +1,20 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractFinSitsolothurnView} from '../AbstractFinSitsolothurnView';
 import {FinanzielleSituationSolothurnService} from '../finanzielle-situation-solothurn.service';
+import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/shared/util/dv-show-warning-angaben-vervollstaendingen';
 
 @Component({
     selector: 'dv-finanzielle-situation-start-solothurn',
     templateUrl: './finanzielle-situation-solothurn.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ['./finanzielle-situation-start-solothurn.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FinanzielleSituationStartSolothurnComponent
     extends AbstractFinSitsolothurnView
@@ -24,7 +26,8 @@ export class FinanzielleSituationStartSolothurnComponent
     public constructor(
         public gesuchModelManager: GesuchModelManager,
         protected readonly finSitSoService: FinanzielleSituationSolothurnService,
-        protected wizardStepManager: WizardStepManager
+        protected wizardStepManager: WizardStepManager,
+        protected dvShowWarningAngabenVervollstaendigenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
     ) {
         super(gesuchModelManager, wizardStepManager, finSitSoService, 1);
         this.wizardStepManager.updateCurrentWizardStepStatusSafe(

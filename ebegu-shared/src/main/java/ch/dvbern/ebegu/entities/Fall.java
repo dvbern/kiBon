@@ -19,31 +19,32 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
+import ch.dvbern.ebegu.dto.suchfilter.lucene.LongToStringBridge;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFall;
 import ch.dvbern.ebegu.util.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.bridge.builtin.LongBridge;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 /**
  * Entitaet zum Speichern von Fall in der Datenbank.
@@ -52,9 +53,12 @@ import org.hibernate.search.bridge.builtin.LongBridge;
 @Entity
 @Table(
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"fallNummer", "mandant_id"}, name = "UK_fall_nummer_mandant_id"),
-		@UniqueConstraint(columnNames = "besitzer_id", name = "UK_fall_besitzer"),
-		@UniqueConstraint(columnNames = "sozialdienst_fall_id", name = "UK_fall_sozialdienst_fall_id")
+		@UniqueConstraint(columnNames = { "fallNummer", "mandant_id" },
+			name = "UK_fall_nummer_mandant_id"),
+		@UniqueConstraint(columnNames = "besitzer_id",
+			name = "UK_fall_besitzer"),
+		@UniqueConstraint(columnNames = "sozialdienst_fall_id",
+			name = "UK_fall_sozialdienst_fall_id")
 	},
 	indexes = {
 		@Index(name = "IX_fall_fall_nummer", columnList = "fallNummer"),
@@ -63,7 +67,6 @@ import org.hibernate.search.bridge.builtin.LongBridge;
 	}
 )
 @Indexed
-@Analyzer(definition = "EBEGUGermanAnalyzer")
 public class Fall extends AbstractMutableEntity implements HasMandant {
 
 	private static final long serialVersionUID = -9154456879261811678L;
@@ -71,23 +74,28 @@ public class Fall extends AbstractMutableEntity implements HasMandant {
 	@NotNull
 	@Column(nullable = false)
 	@Min(1)
-	@Field(bridge = @FieldBridge(impl = LongBridge.class))
+	@GenericField(valueBridge = @ValueBridgeRef(
+		type = LongToStringBridge.class))
 	private long fallNummer = 1;
 
 	@Nullable
 	@ManyToOne(optional = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_fall_besitzer_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_fall_besitzer_id"),
+		updatable = false)
 	@IndexedEmbedded
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.NO) // https://hibernate.atlassian.net/browse/HSEARCH-5226
 	private Benutzer besitzer = null; // Erfassender (im IAM eingeloggter) Gesuchsteller
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_fall_sozialdienst_fall_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_fall_sozialdienst_fall_id"),
+		nullable = true)
 	private SozialdienstFall sozialdienstFall;
 
 	/**
 	 * nextNumberKind ist die Nummer, die das naechste Kind bekommen wird. Aus diesem Grund ist es by default 1
-	 * Dieses Feld darf nicht mit der Anzahl der Kinder verwechselt werden, da sie sehr unterschiedlich sein koennen falls mehrere Kinder geloescht wurden
+	 * Dieses Feld darf nicht mit der Anzahl der Kinder verwechselt werden, da sie sehr unterschiedlich sein koennen
+	 * falls mehrere Kinder geloescht wurden
 	 */
 	@NotNull
 	@Min(1)
@@ -96,8 +104,10 @@ public class Fall extends AbstractMutableEntity implements HasMandant {
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_fall_mandant_id"))
+	@JoinColumn(foreignKey = @ForeignKey(name = "FK_fall_mandant_id"),
+		updatable = false)
 	@IndexedEmbedded
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW) // automatic re-indexing requires bidirectional relationship
 	private Mandant mandant;
 
 	public long getFallNummer() {
@@ -125,7 +135,8 @@ public class Fall extends AbstractMutableEntity implements HasMandant {
 		this.nextNumberKind = nextNumberKind;
 	}
 
-	@Override @Nonnull
+	@Override
+	@Nonnull
 	public Mandant getMandant() {
 		return mandant;
 	}
@@ -151,13 +162,21 @@ public class Fall extends AbstractMutableEntity implements HasMandant {
 
 	@Transient
 	public String getPaddedFallnummer() {
-		return StringUtils.leftPad(String.valueOf(this.getFallNummer()), Constants.FALLNUMMER_LENGTH, '0');
+		return StringUtils.leftPad(
+			String.valueOf(this.getFallNummer()),
+			Constants.FALLNUMMER_LENGTH,
+			'0'
+		);
 	}
 
 	@Override
 	public String getMessageForAccessException() {
-		return "fallNummer: " + this.getFallNummer()
-			+ ", besitzer: " + (this.getBesitzer() != null ? this.getBesitzer().getUsername() : "null");
+		return "fallNummer: "
+			+ this.getFallNummer()
+			+ ", besitzer: "
+			+ (this.getBesitzer() != null ?
+				this.getBesitzer().getUsername() :
+				"null");
 	}
 
 	@Nullable
@@ -165,7 +184,9 @@ public class Fall extends AbstractMutableEntity implements HasMandant {
 		return sozialdienstFall;
 	}
 
-	public void setSozialdienstFall(@Nullable SozialdienstFall sozialdienstFall) {
+	public void setSozialdienstFall(
+		@Nullable SozialdienstFall sozialdienstFall
+	) {
 		this.sozialdienstFall = sozialdienstFall;
 	}
 

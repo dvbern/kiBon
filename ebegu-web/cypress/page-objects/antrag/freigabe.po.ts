@@ -24,6 +24,11 @@ const getFreigebenButton = () => {
 const getApproveCorrectDataValuesCheckbox = () => {
     return cy.getByData('gesuchfreigeben', 'checkbox').find('label');
 };
+
+const getConfirmButton = () => {
+    return cy.getByData('container.confirm');
+};
+
 const getFreigebenButtonSchwyz = () => {
     return cy.getByData('gesuchfreigeben', 'navigation-button');
 };
@@ -59,6 +64,7 @@ export const FreigabePO = {
     // PAGE OBJECTS
     getFreigebenButton,
     getFreigebenButtonSchwyz,
+    getConfirmButton,
     getFreigabequittungEinscannenSimulierenButton,
     // PAGE ACTIONS
     freigeben,

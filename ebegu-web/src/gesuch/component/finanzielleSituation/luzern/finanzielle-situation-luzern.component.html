@@ -32,7 +32,22 @@
             <hr class="header" />
         </div>
     </div>
-    <div class="row">
+
+    <div
+        *ngIf="
+            dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
+        "
+        class="well well-status-warten"
+    >
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        <span translate>WARNUNG_GS2_AUSFUELLEN</span>
+    </div>
+    <div
+        *ngIf="
+            !dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
+        "
+        class="row"
+    >
         <form #form="ngForm" class="col-md-12 gesuch" novalidate role="form">
             <fieldset [disabled]="isFinSitReadonly()">
                 <div *ngIf="showZahlungsinformationen()" class="row">
@@ -211,13 +226,22 @@
                                 id="quellenbesteuert_id"
                                 name="quellenbesteuert"
                                 required
+                                data-test="quellenbesteuert"
                             >
-                                <mat-radio-button [value]="true">{{
-                                    'LABEL_JA' | translate
-                                }}</mat-radio-button>
-                                <mat-radio-button [value]="false">{{
-                                    'LABEL_NEIN' | translate
-                                }}</mat-radio-button>
+                                <mat-radio-button
+                                    [value]="true"
+                                    data-test="radio-value.ja"
+                                    >{{
+                                        'LABEL_JA' | translate
+                                    }}</mat-radio-button
+                                >
+                                <mat-radio-button
+                                    [value]="false"
+                                    data-test="radio-value.nein"
+                                    >{{
+                                        'LABEL_NEIN' | translate
+                                    }}</mat-radio-button
+                                >
                             </mat-radio-group>
                             <dv-error-messages
                                 *ngIf="form.submitted"
@@ -262,13 +286,22 @@
                                 id="gemeinsameSteuererklaerung_id"
                                 name="gemeinsameSteuererklaerung"
                                 required
+                                data-test="gemeinsameSteuererklaerung"
                             >
-                                <mat-radio-button [value]="true">{{
-                                    'LABEL_JA' | translate
-                                }}</mat-radio-button>
-                                <mat-radio-button [value]="false">{{
-                                    'LABEL_NEIN' | translate
-                                }}</mat-radio-button>
+                                <mat-radio-button
+                                    [value]="true"
+                                    data-test="radio-value.ja"
+                                    >{{
+                                        'LABEL_JA' | translate
+                                    }}</mat-radio-button
+                                >
+                                <mat-radio-button
+                                    [value]="false"
+                                    data-test="radio-value.nein"
+                                    >{{
+                                        'LABEL_NEIN' | translate
+                                    }}</mat-radio-button
+                                >
                             </mat-radio-group>
                             <dv-error-messages
                                 *ngIf="form.submitted"
@@ -338,13 +371,22 @@
                                 id="veranlagt_id"
                                 name="veranlagt"
                                 required
+                                data-test="veranlagt"
                             >
-                                <mat-radio-button [value]="true">{{
-                                    'LABEL_JA' | translate
-                                }}</mat-radio-button>
-                                <mat-radio-button [value]="false">{{
-                                    'LABEL_NEIN' | translate
-                                }}</mat-radio-button>
+                                <mat-radio-button
+                                    [value]="true"
+                                    data-test="radio-value.ja"
+                                    >{{
+                                        'LABEL_JA' | translate
+                                    }}</mat-radio-button
+                                >
+                                <mat-radio-button
+                                    [value]="false"
+                                    data-test="radio-value.nein"
+                                    >{{
+                                        'LABEL_NEIN' | translate
+                                    }}</mat-radio-button
+                                >
                             </mat-radio-group>
                             <dv-error-messages
                                 *ngIf="form.submitted"
@@ -394,13 +436,22 @@
                                 id="veranlagtVorjahr_id"
                                 name="veranlagtVorjahr"
                                 required
+                                data-test="veranlagtVorjahr"
                             >
-                                <mat-radio-button [value]="true">{{
-                                    'LABEL_JA' | translate
-                                }}</mat-radio-button>
-                                <mat-radio-button [value]="false">{{
-                                    'LABEL_NEIN' | translate
-                                }}</mat-radio-button>
+                                <mat-radio-button
+                                    [value]="true"
+                                    data-test="radio-value.ja"
+                                    >{{
+                                        'LABEL_JA' | translate
+                                    }}</mat-radio-button
+                                >
+                                <mat-radio-button
+                                    [value]="false"
+                                    data-test="radio-value.nein"
+                                    >{{
+                                        'LABEL_NEIN' | translate
+                                    }}</mat-radio-button
+                                >
                             </mat-radio-group>
                             <dv-error-messages
                                 *ngIf="form.submitted"

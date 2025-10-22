@@ -15,15 +15,20 @@
 
 package ch.dvbern.ebegu.util;
 
-import ch.dvbern.ebegu.entities.Gesuch;
-import ch.dvbern.ebegu.enums.*;
-import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.enums.AntragStatus;
+import ch.dvbern.ebegu.enums.AntragStatusDTO;
+import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.GesuchBetreuungenStatus;
+import ch.dvbern.ebegu.enums.UserRole;
+import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 
 /**
  * Diese Klasse enthaelt Methoden, um den AntragStatus von DB in DTO umzuwandeln.
@@ -36,7 +41,8 @@ public final class AntragStatusConverterUtil {
 	}
 
 	/**
-	 * In dieser Methode wird der Status umgewandelt. Alle relevanten Daten werden geprueft und dadurch den entsprechenden
+	 * In dieser Methode wird der Status umgewandelt. Alle relevanten Daten werden geprueft und dadurch den
+	 * entsprechenden
 	 * AntragStatusDTO zurueckgeliefert
 	 *
 	 * @param status Der AntragStatus vom Entity
@@ -44,12 +50,20 @@ public final class AntragStatusConverterUtil {
 	 */
 	@SuppressWarnings("checkstyle:CyclomaticComplexity")
 	@Nonnull
-	public static AntragStatusDTO convertStatusToDTO(Gesuch antrag, AntragStatus status) {
-		return convertStatusToDTO(status, antrag.getGesuchBetreuungenStatus(), antrag.getId());
+	public static AntragStatusDTO convertStatusToDTO(
+		Gesuch antrag,
+		AntragStatus status
+	) {
+		return convertStatusToDTO(
+			status,
+			antrag.getGesuchBetreuungenStatus(),
+			antrag.getId()
+		);
 	}
 
 	/**
-	 * In dieser Methode wird der Status umgewandelt. Alle relevanten Daten werden geprueft und dadurch den entsprechenden
+	 * In dieser Methode wird der Status umgewandelt. Alle relevanten Daten werden geprueft und dadurch den
+	 * entsprechenden
 	 * AntragStatusDTO zurueckgeliefert
 	 *
 	 * @param status Der AntragStatus vom Entity
@@ -60,7 +74,8 @@ public final class AntragStatusConverterUtil {
 	public static AntragStatusDTO convertStatusToDTO(
 		AntragStatus status,
 		@Nullable GesuchBetreuungenStatus betreuungenStatus,
-		String gesuchId) {
+		String gesuchId
+	) {
 		switch (status) {
 		case IN_BEARBEITUNG_SOZIALDIENST:
 			return AntragStatusDTO.IN_BEARBEITUNG_SOZIALDIENST;
@@ -102,19 +117,24 @@ public final class AntragStatusConverterUtil {
 		case GEPRUEFT_STV:
 			return AntragStatusDTO.GEPRUEFT_STV;
 		case IGNORIERT:
-			return  AntragStatusDTO.IGNORIERT;
+			return AntragStatusDTO.IGNORIERT;
 		default:
-			throw new IllegalStateException("Unbekannter Status: " + status + " in Gesuch " + gesuchId);
+			throw new IllegalStateException(
+				"Unbekannter Status: " + status + " in Gesuch " + gesuchId
+			);
 		}
 	}
 
 	/**
-	 * Wenn alle Betreuungen bestaetigt sind, der Status ist GEPRUEFT, wenn eine Betreuung am Warten ist, ist der Status PLATZBESTAETIGUNG_WARTEN
+	 * Wenn alle Betreuungen bestaetigt sind, der Status ist GEPRUEFT, wenn eine Betreuung am Warten ist, ist der Status
+	 * PLATZBESTAETIGUNG_WARTEN
 	 * und wenn eine Betreuung abgewiesen wurde (Prioritaet A) ist der Status PLATZBESTAETIGUNG_ABGEWIESEN.
 	 * Beim Fehler oder Zweifelnfall ist der Status einfach GEPRUEFT
 	 */
 	@Nonnull
-	private static AntragStatusDTO convertGeprueftStatusToDTO(GesuchBetreuungenStatus status) {
+	private static AntragStatusDTO convertGeprueftStatusToDTO(
+		GesuchBetreuungenStatus status
+	) {
 		switch (status) {
 		case WARTEN:
 			return AntragStatusDTO.PLATZBESTAETIGUNG_WARTEN;
@@ -132,7 +152,9 @@ public final class AntragStatusConverterUtil {
 	 * @return Der AntragStatus fuer das Entity
 	 */
 	@Nonnull
-	public static AntragStatus convertStatusToEntity(AntragStatusDTO statusDTO) {
+	public static AntragStatus convertStatusToEntity(
+		AntragStatusDTO statusDTO
+	) {
 		switch (statusDTO) {
 		case IN_BEARBEITUNG_SOZIALDIENST:
 			return AntragStatus.IN_BEARBEITUNG_SOZIALDIENST;
@@ -177,11 +199,18 @@ public final class AntragStatusConverterUtil {
 		case IGNORIERT:
 			return AntragStatus.IGNORIERT;
 		default:
-			throw new EbeguRuntimeException("convertStatusToEntity", ErrorCodeEnum.ERROR_INVALID_EBEGUSTATE, statusDTO);
+			throw new EbeguRuntimeException(
+				"convertStatusToEntity",
+				ErrorCodeEnum.ERROR_INVALID_EBEGUSTATE,
+				statusDTO
+			);
 		}
 	}
 
-	public static Collection<AntragStatus> convertStatusToEntityForRole(AntragStatusDTO statusDTO, UserRole userrole) {
+	public static Collection<AntragStatus> convertStatusToEntityForRole(
+		AntragStatusDTO statusDTO,
+		UserRole userrole
+	) {
 		Collection<AntragStatus> tmp = new ArrayList<>();
 		switch (userrole) {
 		case GESUCHSTELLER:

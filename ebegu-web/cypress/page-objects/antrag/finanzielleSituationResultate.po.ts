@@ -17,6 +17,7 @@
 
 import {FixtureFinSit} from '@dv-e2e/fixtures';
 
+// !! -- PAGE OBJECTS -- !!
 const getBruttovermoegenGS1 = () => {
     return cy.getByData('bruttovermoegen1');
 };
@@ -53,6 +54,36 @@ const getMassgebendesEinkommenVorAbzugFamGroesse = () => {
     return cy.getByData('massgebendesEinkVorAbzFamGr');
 };
 
+const getMassgebendesEinkommen = (gs: string) => {
+    return cy.getByData('massgebendesEinkommen' + gs);
+};
+
+const getMassgebendesEinkommenLuzern = () => {
+    return cy.getByData('massgebendesEinkVorAbzFamGrGS1Gemeinsam');
+};
+
+const getMassgebendesEinkommenTotal = () => {
+    return cy.getByData('massgebendesEinkommenTotal');
+};
+
+const getMassgebendesEinkVorAbzFamGrGS1 = () => {
+    return cy.getByData('massgebendesEinkVorAbzFamGrGS1');
+};
+const getMassgebendesEinkVorAbzFamGrGS2 = () => {
+    return cy.getByData('massgebendesEinkVorAbzFamGrGS2');
+};
+const getMassgebendesEinkVorAbzFamGr = () => {
+    return cy.getByData('massgebendesEinkVorAbzFamGr');
+};
+
+const getMassgebendesEinkommenGS1 = () => {
+    return cy.getByData('massgebendesEinkommenGS1');
+};
+
+const getMassgebendesEinkommenGS2 = () => {
+    return cy.getByData('massgebendesEinkommenGS2');
+};
+
 // !! -- PAGE ACTIONS -- !!
 
 const fillFinSitResultate = (dataset: keyof typeof FixtureFinSit) => {
@@ -71,10 +102,18 @@ export const FinanzielleSituationResultatePO = {
     getSchuldenGS1,
     getSchuldenGS2,
     getEinkommenBeiderGesuchsteller,
+    getMassgebendesEinkommenTotal,
+    getMassgebendesEinkommen,
+    getMassgebendesEinkommenGS1,
+    getMassgebendesEinkommenGS2,
+    getMassgebendesEinkommenLuzern,
     getNettovermoegenFuenfProzent,
     getAnrechenbaresEinkommen,
     getAbzuegeBeiderGesuchstellenden,
     getMassgebendesEinkommenVorAbzugFamGroesse,
+    getMassgebendesEinkVorAbzFamGrGS1,
+    getMassgebendesEinkVorAbzFamGrGS2,
+    getMassgebendesEinkVorAbzFamGr,
     // page actions
     fillFinSitResultate
 };

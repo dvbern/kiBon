@@ -8,18 +8,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.ws.sts;
 
 import java.time.LocalDateTime;
 
-import javax.xml.soap.SOAPElement;
+import jakarta.xml.soap.SOAPElement;
 
 /**
  * DTO Klasse fuer die Assertion und das Renew Token welches aus dem STS Service zurueckkommt.
@@ -28,18 +28,26 @@ import javax.xml.soap.SOAPElement;
 public class STSAssertionExtractionResult {
 	private final String renewalToken;
 	private final SOAPElement assertionXMLElement;
-	private  LocalDateTime notBefore;
-	private  LocalDateTime notAtOrAfter;
-	private  LocalDateTime maxRenewalTime;
+	private LocalDateTime notBefore;
+	private LocalDateTime notAtOrAfter;
+	private LocalDateTime maxRenewalTime;
 
-	public STSAssertionExtractionResult(SOAPElement assertionXMLElement, String renewalToken) {
+	public STSAssertionExtractionResult(
+		SOAPElement assertionXMLElement,
+		String renewalToken
+	) {
 		this.assertionXMLElement = assertionXMLElement;
 		this.renewalToken = renewalToken;
 
-
 	}
 
-	public STSAssertionExtractionResult(SOAPElement assertionElement, String renewalToken, LocalDateTime notBefore, LocalDateTime notAtOrAfter, LocalDateTime maxRenewalTime) {
+	public STSAssertionExtractionResult(
+		SOAPElement assertionElement,
+		String renewalToken,
+		LocalDateTime notBefore,
+		LocalDateTime notAtOrAfter,
+		LocalDateTime maxRenewalTime
+	) {
 		this(assertionElement, renewalToken);
 		this.notBefore = notBefore;
 		this.notAtOrAfter = notAtOrAfter;

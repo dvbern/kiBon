@@ -14,6 +14,8 @@
  */
 
 import {
+    copy,
+    extend,
     IAttributes,
     IAugmentedJQuery,
     IDirective,
@@ -28,7 +30,7 @@ import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {TSAuthEvent} from '../../../../models/enums/TSAuthEvent';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {DVAntragListController} from '../../component/dv-antrag-list/dv-antrag-list';
-import {LogFactory} from '../../logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../service/benutzerRSX.rest';
 import {DVsTPersistService} from '../../service/dVsTPersistService';
 import {InstitutionRS} from '../../service/institutionRS.rest';
@@ -70,16 +72,16 @@ export class DVSTPersistAntraege implements IDirective {
         ) => {
             this.obss = this.authLifeCycleService
                 .get$(TSAuthEvent.LOGIN_SUCCESS)
-                .subscribe(
-                    () =>
+                .subscribe({
+                    next: () =>
                         this.loadData(
                             attrs,
                             ctrlArray,
                             scope,
                             this.dVsTPersistService
                         ),
-                    err => LOG.error(err)
-                );
+                    error: err => LOG.error(err)
+                });
 
             scope.$on('$destroy', () => {
                 this.destroy();
@@ -210,7 +212,7 @@ export class DVSTPersistAntraege implements IDirective {
             );
         }
         const tableState = stTableCtrl.tableState();
-        angular.extend(tableState, savedState);
+        extend(tableState, savedState);
         stTableCtrl.pipe();
     }
 
@@ -293,8 +295,8 @@ export class DVSTPersistAntraege implements IDirective {
 
         this.institutionRS
             .getInstitutionenReadableForCurrentBenutzer()
-            .subscribe(
-                institutionList => {
+            .subscribe({
+                next: institutionList => {
                     if (!Array.isArray(institutionList)) {
                         return;
                     }
@@ -306,8 +308,8 @@ export class DVSTPersistAntraege implements IDirective {
                         antragListController.selectedInstitution = found;
                     }
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     private setGemeindeFromName(
@@ -334,7 +336,7 @@ export class DVSTPersistAntraege implements IDirective {
         antragListController: DVAntragListController,
         savedState: any
     ): any {
-        let savedStateToReturn = angular.copy(savedState);
+        let savedStateToReturn = copy(savedState);
         if (antragListController.pendenz) {
             if (!savedStateToReturn) {
                 savedStateToReturn = {

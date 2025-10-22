@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler;
@@ -53,22 +53,47 @@ public class PlatzbestaetigungProcessing extends Processing {
 	}
 
 	@Nonnull
-	public static PlatzbestaetigungProcessing withImportFrom(ImportForm importForm, @Nonnull Processing processed) {
-		return new PlatzbestaetigungProcessing(processed.getState(), processed.getMessage(), importForm, List.of());
+	public static PlatzbestaetigungProcessing withImportFrom(
+		ImportForm importForm,
+		@Nonnull Processing processed
+	) {
+		return new PlatzbestaetigungProcessing(
+			processed.getState(),
+			processed.getMessage(),
+			importForm,
+			List.of()
+		);
 	}
 
 	@Nonnull
-	public static PlatzbestaetigungProcessing fromImport(@Nonnull List<PlatzbestaetigungProcessing> processed) {
+	public static PlatzbestaetigungProcessing fromImport(
+		@Nonnull List<PlatzbestaetigungProcessing> processed
+	) {
 		if (processed.isEmpty()) {
-			return new PlatzbestaetigungProcessing(FAILURE, "Platzbestätigung oder Mutation nicht möglich.", null, List.of());
+			return new PlatzbestaetigungProcessing(
+				FAILURE,
+				"Platzbestätigung oder Mutation nicht möglich.",
+				null,
+				List.of()
+			);
 		}
 
 		if (processed.stream().anyMatch(p -> p.getState() == SUCCESS)) {
-			return new PlatzbestaetigungProcessing(SUCCESS, null, null, processed);
+			return new PlatzbestaetigungProcessing(
+				SUCCESS,
+				null,
+				null,
+				processed
+			);
 		}
 
 		if (processed.stream().allMatch(p -> p.getState() == IGNORE)) {
-			return new PlatzbestaetigungProcessing(IGNORE, null, null, processed);
+			return new PlatzbestaetigungProcessing(
+				IGNORE,
+				null,
+				null,
+				processed
+			);
 		}
 
 		return new PlatzbestaetigungProcessing(FAILURE, null, null, processed);

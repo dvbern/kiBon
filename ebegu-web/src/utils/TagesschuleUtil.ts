@@ -15,16 +15,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {getWeekdaysValues, TSDayOfWeek} from '../models/enums/TSDayOfWeek';
-import {TSModulTagesschuleName} from '../models/enums/TSModulTagesschuleName';
+import {AdminModelEinstellungTagesschuleHasAnmeldung} from '@kibon/admin/model/institution-tagesschule-einstellungen';
+import {
+    TSEinstellungenTagesschule,
+    TSGesuchsperiode,
+    TSInstitutionStammdatenSummary,
+    TSModulTagesschule,
+    TSModulTagesschuleGroup
+} from '@kibon/shared/model/entity';
+import {
+    getWeekdaysValues,
+    TSDayOfWeek,
+    TSModulTagesschuleName
+} from '@kibon/shared/model/enums';
 import {TSBelegungTagesschuleModul} from '../models/TSBelegungTagesschuleModul';
 import {TSBelegungTagesschuleModulGroup} from '../models/TSBelegungTagesschuleModulGroup';
 import {TSBetreuung} from '../models/TSBetreuung';
-import {TSEinstellungenTagesschule} from '../models/TSEinstellungenTagesschule';
-import {TSGesuchsperiode} from '../models/TSGesuchsperiode';
-import {TSInstitutionStammdatenSummary} from '../models/TSInstitutionStammdatenSummary';
-import {TSModulTagesschule} from '../models/TSModulTagesschule';
-import {TSModulTagesschuleGroup} from '../models/TSModulTagesschuleGroup';
 import {EbeguUtil} from './EbeguUtil';
 
 export class TagesschuleUtil {
@@ -357,7 +363,9 @@ export class TagesschuleUtil {
      * Sortiert Tagesschuleinstellungen absteigend nach Periode
      */
     public static sortEinstellungenTagesschuleByPeriod(
-        einstellungen: TSEinstellungenTagesschule[]
+        einstellungen:
+            | TSEinstellungenTagesschule[]
+            | AdminModelEinstellungTagesschuleHasAnmeldung[]
     ): TSEinstellungenTagesschule[] {
         return einstellungen.sort((a, b) => {
             if (a.gesuchsperiode && b.gesuchsperiode) {

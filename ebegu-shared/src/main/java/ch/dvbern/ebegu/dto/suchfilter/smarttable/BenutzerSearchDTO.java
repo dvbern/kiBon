@@ -18,14 +18,14 @@ package ch.dvbern.ebegu.dto.suchfilter.smarttable;
 import java.io.Serializable;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * Leider generiert SmartTable  ein verschachteltes JSON Objekt fuer die Suchpredicates. Daher muessen wir das hier
+ * Leider generiert SmartTable ein verschachteltes JSON Objekt fuer die Suchpredicates. Daher muessen wir das hier
  * nachbauen
  */
 @XmlTransient
@@ -35,7 +35,8 @@ public class BenutzerSearchDTO implements Serializable {
 	private static final long serialVersionUID = 4561877549058241575L;
 
 	@Nonnull
-	private BenutzerPredicateObjectDTO predicateObject = new BenutzerPredicateObjectDTO();
+	private BenutzerPredicateObjectDTO predicateObject =
+		new BenutzerPredicateObjectDTO();
 
 	@Override
 	public String toString() {
@@ -49,7 +50,9 @@ public class BenutzerSearchDTO implements Serializable {
 		return predicateObject;
 	}
 
-	public void setPredicateObject(@Nonnull BenutzerPredicateObjectDTO predicateObject) {
+	public void setPredicateObject(
+		@Nonnull BenutzerPredicateObjectDTO predicateObject
+	) {
 		this.predicateObject = predicateObject;
 	}
 }

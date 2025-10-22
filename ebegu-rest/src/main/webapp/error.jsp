@@ -1,4 +1,4 @@
-<%@page isErrorPage="true" contentType="text/html" %>
+<%@ page isErrorPage="true" contentType="text/html" %>
 <!DOCTYPE html>
 <%--
   ~ Ki-Tax: System for the management of external childcare subsidies

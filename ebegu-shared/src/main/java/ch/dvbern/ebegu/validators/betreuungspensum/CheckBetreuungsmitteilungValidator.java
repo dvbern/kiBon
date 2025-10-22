@@ -18,13 +18,14 @@ package ch.dvbern.ebegu.validators.betreuungspensum;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Betreuungsmitteilung;
 import ch.dvbern.ebegu.entities.BetreuungsmitteilungPensum;
@@ -33,7 +34,6 @@ import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.util.BetreuungUtil;
 import ch.dvbern.ebegu.util.ValidationMessageUtil;
 
@@ -41,7 +41,8 @@ import ch.dvbern.ebegu.util.ValidationMessageUtil;
  * Validator for Betreuungspensen, checks that the entered betreuungspensum is bigger than the minimum
  * that is allowed for the Betreungstyp for a given date
  */
-public class CheckBetreuungsmitteilungValidator implements ConstraintValidator<CheckBetreuungsmitteilung, Betreuungsmitteilung> {
+public class CheckBetreuungsmitteilungValidator implements
+	ConstraintValidator<CheckBetreuungsmitteilung, Betreuungsmitteilung> {
 
 	@SuppressWarnings("CdiInjectionPointsInspection")
 	@Inject
@@ -60,45 +61,68 @@ public class CheckBetreuungsmitteilungValidator implements ConstraintValidator<C
 		if (entityManagerFactory != null) {
 			return entityManagerFactory.createEntityManager(); // creates a new EntityManager
 		}
-		throw new EbeguRuntimeException("createEntitymanager", "could not create entitymanger for betreuung validation ", "Validierung konnte nicht durchgefuehrt werden");
+		throw new EbeguRuntimeException(
+			"createEntitymanager",
+			"could not create entitymanger for betreuung validation ",
+			"Validierung konnte nicht durchgefuehrt werden"
+		);
 	}
 
-	private void closeEntityManager(EntityManager em) {
-		if (em != null) {
-			em.close();
-		}
-	}
-
-	@SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
 	@Override
-	public boolean isValid(Betreuungsmitteilung mitteilung, ConstraintValidatorContext context) {
+	public boolean isValid(
+		Betreuungsmitteilung mitteilung,
+		ConstraintValidatorContext context
+	) {
 
-		final EntityManager em = createEntityManager();
-		final Betreuung betreuung = em.find(Betreuung.class, mitteilung.getBetreuung().getId());
-		if (betreuung == null) {
-			throw new EbeguEntityNotFoundException("CheckBetreuungsmitteilungValidator.isValid", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				"Die Betreuung mit ID " + mitteilung.getBetreuung().getId() + " konnte nicht gefunden werden");
-		}
-		Gesuchsperiode gesuchsperiode = betreuung.getKind().getGesuch().getGesuchsperiode();
-		Gemeinde gemeinde = mitteilung.getDossier().getGemeinde();
-		int index = 0;
-		for (BetreuungsmitteilungPensum betPen : mitteilung.getBetreuungspensen()) {
-			BigDecimal betreuungsangebotTypMinValue = BetreuungUtil.getMinValueFromBetreuungsangebotTyp(
-				gesuchsperiode, gemeinde, mitteilung.getBetreuung().getBetreuungsangebotTyp(), einstellungService, em);
-
-			if (!validateBetreuungspensum(betPen, betreuungsangebotTypMinValue, index, context)) {
-				closeEntityManager(em);
-				return false;
+		try (EntityManager em = createEntityManager()) {
+			final Betreuung betreuung = em.find(
+				Betreuung.class,
+				mitteilung.getBetreuung().getId()
+			);
+			if (betreuung == null) {
+				throw new EbeguEntityNotFoundException(
+					"CheckBetreuungsmitteilungValidator.isValid",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"Die Betreuung mit ID "
+						+ mitteilung.getBetreuung().getId()
+						+ " konnte nicht gefunden werden"
+				);
 			}
-			index++;
+			Gesuchsperiode gesuchsperiode = betreuung.getKind()
+				.getGesuch()
+				.getGesuchsperiode();
+			Gemeinde gemeinde = mitteilung.getDossier().getGemeinde();
+			int index = 0;
+			for (BetreuungsmitteilungPensum betPen : mitteilung
+				.getBetreuungspensen()) {
+				BigDecimal betreuungsangebotTypMinValue = BetreuungUtil
+					.getMinValueFromBetreuungsangebotTyp(
+						gesuchsperiode,
+						gemeinde,
+						mitteilung.getBetreuung().getBetreuungsangebotTyp(),
+						einstellungService,
+						em
+					);
+
+				if (!validateBetreuungspensum(
+					betPen,
+					betreuungsangebotTypMinValue,
+					index,
+					context
+				)) {
+					return false;
+				}
+				index++;
+			}
 		}
-		closeEntityManager(em);
 		return true;
 	}
 
 	/**
-	 * With the given the pensumMin it checks if the introduced pensum is in the permitted range. Case not a ConstraintValidator will be created
-	 * with a message and a path indicating which object threw the error. False will be returned in the explained case. In case the value for pensum
+	 * With the given the pensumMin it checks if the introduced pensum is in the permitted range. Case not a
+	 * ConstraintValidator will be created
+	 * with a message and a path indicating which object threw the error. False will be returned in the explained case.
+	 * In case the value for pensum
 	 * is right, nothing will be done and true will be returned.
 	 *
 	 * @param betreuungspensum the betreuungspensum to check
@@ -113,13 +137,22 @@ public class CheckBetreuungsmitteilungValidator implements ConstraintValidator<C
 		int index,
 		ConstraintValidatorContext context
 	) {
-		if (betreuungspensum != null && betreuungspensum.getPensum().compareTo(pensumMin) < 0) {
-			String message = ValidationMessageUtil.getMessage("invalid_betreuungspensum");
-			message = MessageFormat.format(message, betreuungspensum.getPensum(), pensumMin);
+		if (betreuungspensum != null
+			&& betreuungspensum.getPensum().compareTo(pensumMin) < 0) {
+			String message = ValidationMessageUtil.getMessage(
+				"invalid_betreuungspensum"
+			);
+			message = MessageFormat.format(
+				message,
+				betreuungspensum.getPensum(),
+				pensumMin
+			);
 
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate(message)
-				.addPropertyNode("betreuungsmitteilung[" + index + "].pensum")
+				.addPropertyNode(
+					"betreuungsmitteilung[" + index + "].pensum"
+				)
 				.addConstraintViolation();
 
 			return false;

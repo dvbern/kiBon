@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Permission} from '../app/authorisation/Permission';
-import {PERMISSIONS} from '../app/authorisation/Permissions';
 import {
     getTSRoleValues,
     getTSRoleValuesWithoutSuperAdmin,
     rolePrefix,
     TSRole
-} from '../models/enums/TSRole';
+} from '@kibon/shared/model/enums';
+import {Permission} from '../app/authorisation/Permission';
+import {PERMISSIONS} from '../app/authorisation/Permissions';
 
 /**
  * Hier findet man unterschiedliche Hilfsmethoden, um die Rollen von TSRole zu holen
@@ -200,6 +200,18 @@ export class TSRoleUtil {
             TSRole.SACHBEARBEITER_INSTITUTION,
             TSRole.ADMIN_TRAEGERSCHAFT,
             TSRole.SACHBEARBEITER_TRAEGERSCHAFT
+        ];
+    }
+
+    public static getMutationsMitteilungAbweichungSendenRoles(): ReadonlyArray<TSRole> {
+        return [
+            TSRole.SUPER_ADMIN,
+            TSRole.ADMIN_INSTITUTION,
+            TSRole.SACHBEARBEITER_INSTITUTION,
+            TSRole.ADMIN_TRAEGERSCHAFT,
+            TSRole.SACHBEARBEITER_TRAEGERSCHAFT,
+            TSRole.ADMIN_BG,
+            TSRole.ADMIN_GEMEINDE
         ];
     }
 
@@ -738,18 +750,6 @@ export class TSRoleUtil {
             : rolePrefix() + role;
     }
 
-    public static getAllRolesForNotrecht(): ReadonlyArray<TSRole> {
-        return [
-            TSRole.SUPER_ADMIN,
-            TSRole.ADMIN_MANDANT,
-            TSRole.SACHBEARBEITER_MANDANT,
-            TSRole.ADMIN_INSTITUTION,
-            TSRole.SACHBEARBEITER_INSTITUTION,
-            TSRole.ADMIN_TRAEGERSCHAFT,
-            TSRole.SACHBEARBEITER_TRAEGERSCHAFT
-        ];
-    }
-
     public static getAllRolesForSozialdienst(): ReadonlyArray<TSRole> {
         return [
             TSRole.SUPER_ADMIN,
@@ -870,5 +870,9 @@ export class TSRoleUtil {
 
     public static getBGOnly(): ReadonlyArray<TSRole> {
         return [TSRole.ADMIN_BG, TSRole.SACHBEARBEITER_BG];
+    }
+
+    public static getZahlungslaufElternRoles(): ReadonlyArray<TSRole> {
+        return PERMISSIONS[Permission.ZAHLUNG_AN_ELTERN_READ];
     }
 }

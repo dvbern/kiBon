@@ -13,12 +13,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Transition} from '@uirouter/core';
 import {
     Ng1StateDeclaration,
     StateProvider,
     UIRouter
 } from '@uirouter/angularjs';
+import {Transition} from '@uirouter/core';
 import {ILocationProvider, IServiceProvider} from 'angular';
 
 export class RouterHelper {

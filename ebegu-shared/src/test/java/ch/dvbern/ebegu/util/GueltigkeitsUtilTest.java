@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util;
@@ -40,11 +40,20 @@ import static org.hamcrest.Matchers.is;
 
 class GueltigkeitsUtilTest {
 
-	final Gueltigkeit first = GueltigkeitImp.of(LocalDate.of(2015, 1, 5), LocalDate.of(2015, 1, 25));
+	final Gueltigkeit first = GueltigkeitImp.of(
+		LocalDate.of(2015, 1, 5),
+		LocalDate.of(2015, 1, 25)
+	);
 	// second: directly after first
-	final Gueltigkeit second = GueltigkeitImp.of(LocalDate.of(2015, 1, 26), LocalDate.of(2015, 3, 22));
+	final Gueltigkeit second = GueltigkeitImp.of(
+		LocalDate.of(2015, 1, 26),
+		LocalDate.of(2015, 3, 22)
+	);
 	// third: 8 days after second
-	final Gueltigkeit third = GueltigkeitImp.of(LocalDate.of(2015, 3, 30), LocalDate.of(2015, 4, 19));
+	final Gueltigkeit third = GueltigkeitImp.of(
+		LocalDate.of(2015, 3, 30),
+		LocalDate.of(2015, 4, 19)
+	);
 
 	final List<Gueltigkeit> items = Arrays.asList(first, second, third);
 
@@ -54,15 +63,19 @@ class GueltigkeitsUtilTest {
 		@Test
 		void shouldFindNoneOnStichtagOutside() {
 
-			Optional<Gueltigkeit> actualBefore = GueltigkeitsUtil.findAnyAtStichtag(
-				asList(first, second, third),
-				LocalDate.of(2000, 1, 1));
+			Optional<Gueltigkeit> actualBefore = GueltigkeitsUtil
+				.findAnyAtStichtag(
+					asList(first, second, third),
+					LocalDate.of(2000, 1, 1)
+				);
 
 			assertThat(actualBefore, isEmpty());
 
-			Optional<Gueltigkeit> actualAfter = GueltigkeitsUtil.findAnyAtStichtag(
-				asList(first, second, third),
-				LocalDate.of(2999, 1, 1));
+			Optional<Gueltigkeit> actualAfter = GueltigkeitsUtil
+				.findAnyAtStichtag(
+					asList(first, second, third),
+					LocalDate.of(2999, 1, 1)
+				);
 
 			assertThat(actualAfter, isEmpty());
 		}
@@ -71,22 +84,27 @@ class GueltigkeitsUtilTest {
 		void shouldFindTheOneWhenContaining() {
 			Optional<Gueltigkeit> actual = GueltigkeitsUtil.findAnyAtStichtag(
 				asList(first, second, third),
-				LocalDate.of(2015, 1, 12));
+				LocalDate.of(2015, 1, 12)
+			);
 
 			assertThat(actual, isPresentAndIs(first));
 		}
 
 		@Test
 		void shouldFindTheOneOnStichtagExact() {
-			Optional<Gueltigkeit> actualWhenAb = GueltigkeitsUtil.findAnyAtStichtag(
-				asList(first, second, third),
-				second.getGueltigkeit().getGueltigAb());
+			Optional<Gueltigkeit> actualWhenAb = GueltigkeitsUtil
+				.findAnyAtStichtag(
+					asList(first, second, third),
+					second.getGueltigkeit().getGueltigAb()
+				);
 
 			assertThat(actualWhenAb, isPresentAndIs(second));
 
-			Optional<Gueltigkeit> actualWhenBis = GueltigkeitsUtil.findAnyAtStichtag(
-				asList(first, second, third),
-				second.getGueltigkeit().getGueltigBis());
+			Optional<Gueltigkeit> actualWhenBis = GueltigkeitsUtil
+				.findAnyAtStichtag(
+					asList(first, second, third),
+					second.getGueltigkeit().getGueltigBis()
+				);
 
 			assertThat(actualWhenBis, isPresentAndIs(second));
 		}
@@ -97,7 +115,9 @@ class GueltigkeitsUtilTest {
 
 		@Test
 		void testFindLast_shouldReturnEmptyForEmptyCollection() {
-			Optional<Gueltigkeit> last = GueltigkeitsUtil.findLast(new HashSet<>());
+			Optional<Gueltigkeit> last = GueltigkeitsUtil.findLast(
+				new HashSet<>()
+			);
 
 			assertThat(last, OptionalMatchers.isEmpty());
 		}
@@ -116,15 +136,21 @@ class GueltigkeitsUtilTest {
 		assertThat(GueltigkeitsUtil.findFirst(empty).isPresent(), is(false));
 
 		List<Gueltigkeit> single = singletonList(first);
-		Optional<Gueltigkeit> firstFoundSingle = GueltigkeitsUtil.findFirst(single);
+		Optional<Gueltigkeit> firstFoundSingle = GueltigkeitsUtil.findFirst(
+			single
+		);
 		assertThat(firstFoundSingle, isPresentAndIs(first));
 
 		List<Gueltigkeit> ordered = asList(first, second, third);
-		Optional<Gueltigkeit> firstFoundOrdered = GueltigkeitsUtil.findFirst(ordered);
+		Optional<Gueltigkeit> firstFoundOrdered = GueltigkeitsUtil.findFirst(
+			ordered
+		);
 		assertThat(firstFoundOrdered, isPresentAndIs(first));
 
 		List<Gueltigkeit> unOrdered = asList(third, second, first);
-		Optional<Gueltigkeit> firstFoundUnOrdered = GueltigkeitsUtil.findFirst(unOrdered);
+		Optional<Gueltigkeit> firstFoundUnOrdered = GueltigkeitsUtil.findFirst(
+			unOrdered
+		);
 		assertThat(firstFoundUnOrdered, isPresentAndIs(first));
 	}
 
@@ -138,40 +164,72 @@ class GueltigkeitsUtilTest {
 
 		@Test
 		void singleRange() {
-			assertThat(GueltigkeitsUtil.hasOverlapingGueltigkeit(singletonList(first)), is(false));
+			assertThat(
+				GueltigkeitsUtil.hasOverlapingGueltigkeit(
+					singletonList(first)
+				),
+				is(false)
+			);
 		}
 
 		@Test
 		void adjacentRanges() {
-			assertThat(GueltigkeitsUtil.hasOverlapingGueltigkeit(asList(first, second)), is(false));
+			assertThat(
+				GueltigkeitsUtil.hasOverlapingGueltigkeit(
+					asList(first, second)
+				),
+				is(false)
+			);
 		}
 
 		@Test
 		void rangesWithGap() {
-			assertThat(GueltigkeitsUtil.hasOverlapingGueltigkeit(asList(first, third)), is(false));
+			assertThat(
+				GueltigkeitsUtil.hasOverlapingGueltigkeit(
+					asList(first, third)
+				),
+				is(false)
+			);
 		}
 
 		@Test
 		void adjacentOverlap() {
 			LocalDate firstBis = first.getGueltigkeit().getGueltigBis();
-			Gueltigkeit overlapping = GueltigkeitImp.of(firstBis, firstBis.plusDays(2));
+			Gueltigkeit overlapping = GueltigkeitImp.of(
+				firstBis,
+				firstBis.plusDays(2)
+			);
 
-			assertThat(GueltigkeitsUtil.hasOverlapingGueltigkeit(asList(first, overlapping)), is(true));
+			assertThat(
+				GueltigkeitsUtil.hasOverlapingGueltigkeit(
+					asList(first, overlapping)
+				),
+				is(true)
+			);
 		}
 
 		@Test
 		void extendedOverlap() {
 			// r1 gueltigBis is overlapping r2 and r3
 			DateRange r1 = new DateRange(
-				LocalDate.of(2018, 1, 1), LocalDate.of(2018, 1, 30));
+				LocalDate.of(2018, 1, 1),
+				LocalDate.of(2018, 1, 30)
+			);
 
 			DateRange r2 = new DateRange(
-				LocalDate.of(2018, 1, 10), LocalDate.of(2018, 1, 15));
+				LocalDate.of(2018, 1, 10),
+				LocalDate.of(2018, 1, 15)
+			);
 
 			DateRange r3 = new DateRange(
-				LocalDate.of(2018, 1, 16), LocalDate.of(2018, 1, 20));
+				LocalDate.of(2018, 1, 16),
+				LocalDate.of(2018, 1, 20)
+			);
 
-			assertThat(GueltigkeitsUtil.hasOverlap(asList(r1, r2, r3)), is(true));
+			assertThat(
+				GueltigkeitsUtil.hasOverlap(asList(r1, r2, r3)),
+				is(true)
+			);
 		}
 	}
 
@@ -184,7 +242,10 @@ class GueltigkeitsUtilTest {
 		}
 
 		@Nonnull
-		public static Gueltigkeit of(@Nonnull LocalDate von, @Nonnull LocalDate bis) {
+		public static Gueltigkeit of(
+			@Nonnull LocalDate von,
+			@Nonnull LocalDate bis
+		) {
 			return new GueltigkeitImp(new DateRange(von, bis));
 		}
 

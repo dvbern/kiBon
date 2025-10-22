@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.util.zahlungslauf;
@@ -51,7 +51,9 @@ public class ZahlungslaufAntragstellerHelper implements ZahlungslaufHelper {
 
 	@Nonnull
 	@Override
-	public VerfuegungsZeitabschnittZahlungsstatus getZahlungsstatus(@Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	public VerfuegungsZeitabschnittZahlungsstatus getZahlungsstatus(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		return zeitabschnitt.getZahlungsstatusAntragsteller();
 	}
 
@@ -65,25 +67,46 @@ public class ZahlungslaufAntragstellerHelper implements ZahlungslaufHelper {
 
 	@Nonnull
 	@Override
-	public BigDecimal getAuszahlungsbetrag(@Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	public BigDecimal getAuszahlungsbetrag(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		BigDecimal total = BigDecimal.ZERO;
 		if (zeitabschnitt.isAuszahlungAnEltern()) {
-			total = MathUtil.DEFAULT.addNullSafe(total, ZahlungslaufGutscheinUtil.getAuszahlungsbetrag(zeitabschnitt));
+			total = MathUtil.DEFAULT.addNullSafe(
+				total,
+				ZahlungslaufGutscheinUtil.getAuszahlungsbetrag(
+					zeitabschnitt
+				)
+			);
 		}
-		if (ZahlungslaufMahlzeitenverguenstigungUtil.isAuszuzahlen(zeitabschnitt)) {
-			total = MathUtil.DEFAULT.addNullSafe(total, ZahlungslaufMahlzeitenverguenstigungUtil.getAuszahlungsbetrag(zeitabschnitt));
+		if (ZahlungslaufMahlzeitenverguenstigungUtil.isAuszuzahlen(
+			zeitabschnitt
+		)) {
+			total = MathUtil.DEFAULT.addNullSafe(
+				total,
+				ZahlungslaufMahlzeitenverguenstigungUtil
+					.getAuszahlungsbetrag(zeitabschnitt)
+			);
 		}
 		return total;
 	}
 
 	@Nonnull
 	@Override
-	public Adresse getAuszahlungsadresseOrDefaultadresse(@Nonnull Zahlung zahlung) {
-		final Optional<Zahlungsposition> firstZahlungsposition = zahlung.getZahlungspositionen().stream().findFirst();
-		Adresse auszahlungsadresse = zahlung.getAuszahlungsdaten().getAdresseKontoinhaber();
+	public Adresse getAuszahlungsadresseOrDefaultadresse(
+		@Nonnull Zahlung zahlung
+	) {
+		final Optional<Zahlungsposition> firstZahlungsposition = zahlung
+			.getZahlungspositionen()
+			.stream()
+			.findFirst();
+		Adresse auszahlungsadresse = zahlung.getAuszahlungsdaten()
+			.getAdresseKontoinhaber();
 		// Wenn jeweils keine spezifische Adresse gesetzt ist, nehmen wir die Wohnadresse GS1
 		if (auszahlungsadresse == null && firstZahlungsposition.isPresent()) {
-			auszahlungsadresse = extractWohnadresseGS1(firstZahlungsposition.get());
+			auszahlungsadresse = extractWohnadresseGS1(
+				firstZahlungsposition.get()
+			);
 		}
 		// Jetzt muss zwingend eine Adresse vorhanden sein
 		Objects.requireNonNull(auszahlungsadresse);
@@ -91,7 +114,9 @@ public class ZahlungslaufAntragstellerHelper implements ZahlungslaufHelper {
 	}
 
 	@Nullable
-	protected static Adresse extractWohnadresseGS1(@Nonnull Zahlungsposition zahlungsposition) {
+	protected static Adresse extractWohnadresseGS1(
+		@Nonnull Zahlungsposition zahlungsposition
+	) {
 		final GesuchstellerContainer gesuchsteller1 =
 			zahlungsposition
 				.getVerfuegungZeitabschnitt()
@@ -109,23 +134,32 @@ public class ZahlungslaufAntragstellerHelper implements ZahlungslaufHelper {
 		@Nonnull VerfuegungZeitabschnitt newZeitabschnitt
 	) {
 		if (oldSameZeitabschnittOptional.isPresent()) {
-			VerfuegungZeitabschnitt oldSameZeitabschnitt = oldSameZeitabschnittOptional.get();
+			VerfuegungZeitabschnitt oldSameZeitabschnitt =
+				oldSameZeitabschnittOptional.get();
 			// Der Vergleich muuss fuer ASIV und Gemeinde separat erfolgen
 			setIsSameAusbezahlteVerguenstigung(
 				newZeitabschnitt.getBgCalculationInputAsiv(),
 				newZeitabschnitt.getBgCalculationResultAsiv(),
-				oldSameZeitabschnitt.getBgCalculationResultAsiv());
+				oldSameZeitabschnitt.getBgCalculationResultAsiv()
+			);
 			if (newZeitabschnitt.isHasGemeindeSpezifischeBerechnung()) {
-				Objects.requireNonNull(newZeitabschnitt.getBgCalculationResultGemeinde());
-				Objects.requireNonNull(oldSameZeitabschnitt.getBgCalculationResultGemeinde());
+				Objects.requireNonNull(
+					newZeitabschnitt.getBgCalculationResultGemeinde()
+				);
+				Objects.requireNonNull(
+					oldSameZeitabschnitt.getBgCalculationResultGemeinde()
+				);
 				setIsSameAusbezahlteVerguenstigung(
 					newZeitabschnitt.getBgCalculationInputGemeinde(),
 					newZeitabschnitt.getBgCalculationResultGemeinde(),
-					oldSameZeitabschnitt.getBgCalculationResultGemeinde());
+					oldSameZeitabschnitt.getBgCalculationResultGemeinde()
+				);
 			}
 		} else { // no Zeitabschnitt with the same Gueltigkeit has been found, so it must be different
-			newZeitabschnitt.getBgCalculationInputAsiv().setSameAusbezahlterBetragAntragsteller(false);
-			newZeitabschnitt.getBgCalculationInputGemeinde().setSameAusbezahlterBetragAntragsteller(false);
+			newZeitabschnitt.getBgCalculationInputAsiv()
+				.setSameAusbezahlterBetragAntragsteller(false);
+			newZeitabschnitt.getBgCalculationInputGemeinde()
+				.setSameAusbezahlterBetragAntragsteller(false);
 		}
 	}
 
@@ -136,35 +170,52 @@ public class ZahlungslaufAntragstellerHelper implements ZahlungslaufHelper {
 	) {
 		boolean result = true;
 		if (inputNeu.getParent().isAuszahlungAnEltern()) {
-			boolean sameGutschein = ZahlungslaufGutscheinUtil.isSameAusbezahlterBetrag(resultNeu, resultBisher);
+			boolean sameGutschein = ZahlungslaufGutscheinUtil
+				.isSameAusbezahlterBetrag(resultNeu, resultBisher);
 			result = sameGutschein;
 		}
-		if (ZahlungslaufMahlzeitenverguenstigungUtil.isAuszuzahlen(inputNeu.getParent())) {
-			boolean sameMahlzeitenverguenstigung = ZahlungslaufMahlzeitenverguenstigungUtil.isSameAusbezahlterBetrag(
-				resultNeu, resultBisher);
+		if (ZahlungslaufMahlzeitenverguenstigungUtil.isAuszuzahlen(
+			inputNeu.getParent()
+		)) {
+			boolean sameMahlzeitenverguenstigung =
+				ZahlungslaufMahlzeitenverguenstigungUtil
+					.isSameAusbezahlterBetrag(
+						resultNeu,
+						resultBisher
+					);
 			result = result && sameMahlzeitenverguenstigung;
 		}
 		inputNeu.setSameAusbezahlterBetragAntragsteller(result);
 	}
 
 	@Override
-	public boolean isSamePersistedValues(@Nonnull VerfuegungZeitabschnitt abschnitt, @Nonnull VerfuegungZeitabschnitt otherAbschnitt) {
+	public boolean isSamePersistedValues(
+		@Nonnull VerfuegungZeitabschnitt abschnitt,
+		@Nonnull VerfuegungZeitabschnitt otherAbschnitt
+	) {
 		boolean result = true;
 		if (abschnitt.isAuszahlungAnEltern()) {
-			boolean sameGutschein = ZahlungslaufGutscheinUtil.isSamePersistedValues(abschnitt, otherAbschnitt);
+			boolean sameGutschein = ZahlungslaufGutscheinUtil
+				.isSamePersistedValues(abschnitt, otherAbschnitt);
 			result = sameGutschein;
 		}
 		if (ZahlungslaufMahlzeitenverguenstigungUtil.isAuszuzahlen(abschnitt)) {
-			boolean sameMahlzeiten = ZahlungslaufMahlzeitenverguenstigungUtil.isSamePersistedValues(abschnitt, otherAbschnitt);
+			boolean sameMahlzeiten = ZahlungslaufMahlzeitenverguenstigungUtil
+				.isSamePersistedValues(abschnitt, otherAbschnitt);
 			result = result && sameMahlzeiten;
 		}
 		return result;
 	}
 
 	@Override
-	public boolean isAuszuzahlen(@Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	public boolean isAuszuzahlen(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		boolean isAuszuzahlenGutschein = zeitabschnitt.isAuszahlungAnEltern();
-		boolean isAuszuzahlenMahlzeiten = ZahlungslaufMahlzeitenverguenstigungUtil.isAuszuzahlen(zeitabschnitt);
+		boolean isAuszuzahlenMahlzeiten =
+			ZahlungslaufMahlzeitenverguenstigungUtil.isAuszuzahlen(
+				zeitabschnitt
+			);
 		return isAuszuzahlenGutschein || isAuszuzahlenMahlzeiten;
 	}
 }

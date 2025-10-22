@@ -47,7 +47,9 @@
                     <!-- Name -->
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label translate for="name_id">NAME</label>
+                            <label translate for="name_id" class="required"
+                                >NAME</label
+                            >
                             <input
                                 id="name_id"
                                 type="text"
@@ -67,12 +69,15 @@
                     <!-- E-Mail -->
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label translate for="email_id">EMAIL</label>
+                            <label translate for="email_id" class="required"
+                                >EMAIL</label
+                            >
                             <input
                                 id="email_id"
                                 type="email"
                                 name="email_id"
                                 #name="ngModel"
+                                placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
                                 [(ngModel)]="traegerschaft.email"
                                 email
                                 [maxlength]="255"

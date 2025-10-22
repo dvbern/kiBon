@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
@@ -42,16 +42,22 @@ import static ch.dvbern.ebegu.enums.DokumentGrundTyp.FINANZIELLESITUATION;
  * rechtskräftige Steuerveranlagung verlangt.
  * <p>
  * Bei getrennter Steuererklärung wird, je nach {@link FinanzielleSituation#getQuellenbesteuert}, die letzte
- * rechtskräftige Steuerveranlagung oder eine Bestätigung über abgerechnete Quellensteuern der Steuerverwaltung SZ verlangt.
+ * rechtskräftige Steuerveranlagung oder eine Bestätigung über abgerechnete Quellensteuern der Steuerverwaltung SZ
+ * verlangt.
  */
-public class SchwyzFinanzielleSituationDokumente extends AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> {
+public class SchwyzFinanzielleSituationDokumente extends
+	AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> {
 
 	private static final int BEIDE_GESUCHSTELLER = 0;
 	private static final int GESUCHSTELLER_1 = 1;
 	private static final int GESUCHSTELLER_2 = 2;
 
 	@Override
-	public void getAllDokumente(@Nonnull Gesuch gesuch, @Nonnull Set<DokumentGrund> anlageVerzeichnis, @Nonnull Locale locale) {
+	public void getAllDokumente(
+		@Nonnull Gesuch gesuch,
+		@Nonnull Set<DokumentGrund> anlageVerzeichnis,
+		@Nonnull Locale locale
+	) {
 		Stream<DokumentGrund> stream = isGemeinsameSteuererklaerung(gesuch) ?
 			nachweiseGemeinsam(gesuch) :
 			nachweiseIndividuell(gesuch);
@@ -61,15 +67,26 @@ public class SchwyzFinanzielleSituationDokumente extends AbstractDokumente<Abstr
 
 	private Stream<DokumentGrund> nachweiseGemeinsam(Gesuch gesuch) {
 		return findFinanzielleSituation(gesuch.getGesuchsteller1())
-			.map(finSit -> toDokument(DokumentTyp.STEUERVERANLAGUNG, BEIDE_GESUCHSTELLER))
+			.map(
+				finSit -> toDokument(
+					DokumentTyp.STEUERVERANLAGUNG,
+					BEIDE_GESUCHSTELLER
+				)
+			)
 			.stream();
 	}
 
 	@Nonnull
 	private Stream<DokumentGrund> nachweiseIndividuell(@Nonnull Gesuch gesuch) {
 		return Stream.concat(
-			streamDokumenteGesuchsteller(gesuch.getGesuchsteller1(), GESUCHSTELLER_1),
-			streamDokumenteGesuchsteller(gesuch.getGesuchsteller2(), GESUCHSTELLER_2)
+			streamDokumenteGesuchsteller(
+				gesuch.getGesuchsteller1(),
+				GESUCHSTELLER_1
+			),
+			streamDokumenteGesuchsteller(
+				gesuch.getGesuchsteller2(),
+				GESUCHSTELLER_2
+			)
 		);
 	}
 
@@ -79,7 +96,12 @@ public class SchwyzFinanzielleSituationDokumente extends AbstractDokumente<Abstr
 	) {
 		return findFinanzielleSituation(gesuchsteller)
 			.map(this::nachweisTyp)
-			.map(nachweisTyp -> toDokument(nachweisTyp, gesuchstellerNumber))
+			.map(
+				nachweisTyp -> toDokument(
+					nachweisTyp,
+					gesuchstellerNumber
+				)
+			)
 			.stream();
 	}
 
@@ -89,18 +111,32 @@ public class SchwyzFinanzielleSituationDokumente extends AbstractDokumente<Abstr
 			DokumentTyp.STEUERVERANLAGUNG;
 	}
 
-	private Optional<FinanzielleSituation> findFinanzielleSituation(@Nullable GesuchstellerContainer gesuchsteller) {
+	private Optional<FinanzielleSituation> findFinanzielleSituation(
+		@Nullable GesuchstellerContainer gesuchsteller
+	) {
 		return Optional.ofNullable(gesuchsteller)
 			.map(GesuchstellerContainer::getFinanzielleSituationContainer)
 			.map(FinanzielleSituationContainer::getFinanzielleSituationJA);
 	}
 
-	private DokumentGrund toDokument(DokumentTyp nachweisTyp, int gesuchstellerNumber) {
-		return new DokumentGrund(FINANZIELLESITUATION, null, GESUCHSTELLER, gesuchstellerNumber, nachweisTyp);
+	private DokumentGrund toDokument(
+		DokumentTyp nachweisTyp,
+		int gesuchstellerNumber
+	) {
+		return new DokumentGrund(
+			FINANZIELLESITUATION,
+			null,
+			GESUCHSTELLER,
+			gesuchstellerNumber,
+			nachweisTyp
+		);
 	}
 
 	@Override
-	public boolean isDokumentNeeded(@Nonnull DokumentTyp dokumentTyp, @Nullable AbstractFinanzielleSituation dataForDocument) {
+	public boolean isDokumentNeeded(
+		@Nonnull DokumentTyp dokumentTyp,
+		@Nullable AbstractFinanzielleSituation dataForDocument
+	) {
 		return true;
 	}
 }

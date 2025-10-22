@@ -1,5 +1,5 @@
 /*
- * Copyright (C)  2020 DV Bern AG, Switzerland
+ * Copyright (C) 2020 DV Bern AG, Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -25,15 +25,15 @@ import java.time.temporal.ChronoUnit;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.util.entitylisteners.PersonenSucheAuditLogListener;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -46,7 +46,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class PersonensucheAuditLog implements Serializable {
 
 	private static final long serialVersionUID = 2033061799557303703L;
-
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,7 +71,6 @@ public class PersonensucheAuditLog implements Serializable {
 		this.timestampResult = endTime;
 	}
 
-
 	@NotNull
 	@Column(nullable = false)
 	private String calledMethod;
@@ -97,7 +95,6 @@ public class PersonensucheAuditLog implements Serializable {
 	@Column(nullable = true)
 	@Nullable
 	private Long numResultsReceived;
-
 
 	@Column(nullable = false)
 	private LocalDateTime timestampSearchstart;
@@ -157,11 +154,14 @@ public class PersonensucheAuditLog implements Serializable {
 	}
 
 	@Transient
-	public long getRequestDurationMilis(){
+	public long getRequestDurationMilis() {
 		if (getTimestampSearchstart() == null || getTimestampResult() == null) {
 			return -1;
 		}
-		return ChronoUnit.MILLIS.between(getTimestampSearchstart(), getTimestampResult());
+		return ChronoUnit.MILLIS.between(
+			getTimestampSearchstart(),
+			getTimestampResult()
+		);
 	}
 
 	@Override

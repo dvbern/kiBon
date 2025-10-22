@@ -25,28 +25,33 @@ import {
     TestFaellePO
 } from '@dv-e2e/page-objects';
 import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 
 describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
     const userSB = getUser('[3-SB-Institution-Kita-Brünnen] Sophie Bergmann');
-    const adminUser = getUser('[1-Superadmin] E-BEGU Superuser');
+    const adminUser = getUser('[1-Superadmin] Super User');
     const sachbearbeiterGemeindeUser = getUser(
         '[6-L-SB-Gemeinde] Stefan Weibel'
     );
     const monatlichesPensum = '60';
     const monatlicheKosten = '1000';
-    const startdatum = '01.04.2023';
-    const enddatum = '30.06.2023';
+    const monatlicheKostenFormatted = Number(monatlicheKosten)
+        .toLocaleString('de-CH')
+        .replace(/\u202F/g, "'");
+    const startdatum = '01.04.2025';
+    const enddatum = '30.06.2025';
     let fallnummer: string;
 
     before(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.login(adminUser);
         cy.visit('/#/faelle');
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-1',
             betreuungsstatus: 'verfuegt',
             gemeinde: 'London',
-            periode: '2022/23'
+            periode: '2024/25'
         });
         FallToolbarPO.getFallnummer().should('not.be.empty');
         FallToolbarPO.getFallnummer().then(value => {
@@ -120,7 +125,7 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
         AntragBetreuungPO.getBetreuung(0, 1).click();
         AntragBetreuungPO.getMonatlicheBetreuungskosten(0).should(
             'have.value',
-            monatlicheKosten
+            monatlicheKostenFormatted
         );
         AntragBetreuungPO.getBetreuungspensumAb(0)
             .find('input')

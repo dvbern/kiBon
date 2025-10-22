@@ -33,48 +33,77 @@ public enum MergeFieldBenutzer implements MergeFieldProvider {
 
 	repeatBenutzerRow(new RepeatRowMergeField("repeatBenutzerRow")),
 
-	reportBenutzerTitle(new SimpleMergeField<>("reportBenutzerTitle", STRING_CONVERTER)),
+	reportBenutzerTitle(
+		new SimpleMergeField<>("reportBenutzerTitle", STRING_CONVERTER)
+	),
 
-	usernameTitle(new SimpleMergeField<>("usernameTitle", STRING_CONVERTER)),
-	vornameTitle(new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)),
-	nachnameTitle(new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)),
-	emailTitle(new SimpleMergeField<>("emailTitle", STRING_CONVERTER)),
-	roleTitle(new SimpleMergeField<>("roleTitle", STRING_CONVERTER)),
-	roleGueltigBisTitel(new SimpleMergeField<>("roleGueltigBisTitel", STRING_CONVERTER)),
-	gemeindenTitle(new SimpleMergeField<>("gemeindenTitle", STRING_CONVERTER)),
-	angebotGemeindenTitle(new SimpleMergeField<>("angebotGemeindenTitle", STRING_CONVERTER)),
-	institutionTitle(new SimpleMergeField<>("institutionTitle", STRING_CONVERTER)),
-	traegerschaftTitle(new SimpleMergeField<>("traegerschaftTitle", STRING_CONVERTER)),
-	kitaTitel(new SimpleMergeField<>("kitaTitel", STRING_CONVERTER)),
-	tagesfamilienTitle(new SimpleMergeField<>("tagesfamilienTitle", STRING_CONVERTER)),
-	tagesschulenTitel(new SimpleMergeField<>("tagesschulenTitel", STRING_CONVERTER)),
-	ferieninselTitle(new SimpleMergeField<>("ferieninselTitle", STRING_CONVERTER)),
-	isJugendamtTitle(new SimpleMergeField<>("isJugendamtTitle", STRING_CONVERTER)),
-	isSchulamtTitle(new SimpleMergeField<>("isSchulamtTitle", STRING_CONVERTER)),
-	statusTitle(new SimpleMergeField<>("statusTitle", STRING_CONVERTER)),
-	stichtagTitle(new SimpleMergeField<>("stichtagTitle", STRING_CONVERTER)),
+	usernameTitle(
+		new SimpleMergeField<>("usernameTitle", STRING_CONVERTER)
+	), vornameTitle(
+		new SimpleMergeField<>("vornameTitle", STRING_CONVERTER)
+	), nachnameTitle(
+		new SimpleMergeField<>("nachnameTitle", STRING_CONVERTER)
+	), emailTitle(
+		new SimpleMergeField<>("emailTitle", STRING_CONVERTER)
+	), roleTitle(
+		new SimpleMergeField<>("roleTitle", STRING_CONVERTER)
+	), roleGueltigBisTitel(
+		new SimpleMergeField<>("roleGueltigBisTitel", STRING_CONVERTER)
+	), gemeindenTitle(
+		new SimpleMergeField<>("gemeindenTitle", STRING_CONVERTER)
+	), angebotGemeindenTitle(
+		new SimpleMergeField<>("angebotGemeindenTitle", STRING_CONVERTER)
+	), institutionTitle(
+		new SimpleMergeField<>("institutionTitle", STRING_CONVERTER)
+	), traegerschaftTitle(
+		new SimpleMergeField<>("traegerschaftTitle", STRING_CONVERTER)
+	), kitaTitel(
+		new SimpleMergeField<>("kitaTitel", STRING_CONVERTER)
+	), tagesfamilienTitle(
+		new SimpleMergeField<>("tagesfamilienTitle", STRING_CONVERTER)
+	), tagesschulenTitel(
+		new SimpleMergeField<>("tagesschulenTitel", STRING_CONVERTER)
+	), ferieninselTitle(
+		new SimpleMergeField<>("ferieninselTitle", STRING_CONVERTER)
+	), isJugendamtTitle(
+		new SimpleMergeField<>("isJugendamtTitle", STRING_CONVERTER)
+	), isSchulamtTitle(
+		new SimpleMergeField<>("isSchulamtTitle", STRING_CONVERTER)
+	), statusTitle(
+		new SimpleMergeField<>("statusTitle", STRING_CONVERTER)
+	), stichtagTitle(new SimpleMergeField<>("stichtagTitle", STRING_CONVERTER)),
 
 	stichtag(new SimpleMergeField<>("stichtag", DATE_CONVERTER)),
 
-	username(new SimpleMergeField<>("username", STRING_CONVERTER)),
-	vorname(new SimpleMergeField<>("vorname", STRING_CONVERTER)),
-	nachname(new SimpleMergeField<>("nachname", STRING_CONVERTER)),
-	email(new SimpleMergeField<>("email", STRING_CONVERTER)),
-	role(new SimpleMergeField<>("role", STRING_CONVERTER)),
-	roleGueltigAb(new SimpleMergeField<>("roleGueltigAb", DATE_CONVERTER)),
-	roleGueltigBis(new SimpleMergeField<>("roleGueltigBis", DATE_CONVERTER)),
-	gemeinden(new SimpleMergeField<>("gemeinden", STRING_CONVERTER)),
-	angebotGemeinden(new SimpleMergeField<>("angebotGemeinden", STRING_CONVERTER)),
-	institution(new SimpleMergeField<>("institution", STRING_CONVERTER)),
-	traegerschaft(new SimpleMergeField<>("traegerschaft", STRING_CONVERTER)),
-	status(new SimpleMergeField<>("status", STRING_CONVERTER)),
-	isKita(new SimpleMergeField<>("isKita", BOOLEAN_X_CONVERTER)),
-	isTagesfamilien(new SimpleMergeField<>("isTagesfamilien", BOOLEAN_X_CONVERTER)),
-	isTagi(new SimpleMergeField<>("isTagi", BOOLEAN_X_CONVERTER)),
-	isTagesschule(new SimpleMergeField<>("isTagesschule", BOOLEAN_X_CONVERTER)),
-	isFerieninsel(new SimpleMergeField<>("isFerieninsel", BOOLEAN_X_CONVERTER)),
-	isJugendamt(new SimpleMergeField<>("isJugendamt", BOOLEAN_X_CONVERTER)),
-	isSchulamt(new SimpleMergeField<>("isSchulamt", BOOLEAN_X_CONVERTER));
+	username(new SimpleMergeField<>("username", STRING_CONVERTER)), vorname(
+		new SimpleMergeField<>("vorname", STRING_CONVERTER)
+	), nachname(new SimpleMergeField<>("nachname", STRING_CONVERTER)), email(
+		new SimpleMergeField<>("email", STRING_CONVERTER)
+	), role(new SimpleMergeField<>("role", STRING_CONVERTER)), roleGueltigAb(
+		new SimpleMergeField<>("roleGueltigAb", DATE_CONVERTER)
+	), roleGueltigBis(
+		new SimpleMergeField<>("roleGueltigBis", DATE_CONVERTER)
+	), gemeinden(
+		new SimpleMergeField<>("gemeinden", STRING_CONVERTER)
+	), angebotGemeinden(
+		new SimpleMergeField<>("angebotGemeinden", STRING_CONVERTER)
+	), institution(
+		new SimpleMergeField<>("institution", STRING_CONVERTER)
+	), traegerschaft(
+		new SimpleMergeField<>("traegerschaft", STRING_CONVERTER)
+	), status(new SimpleMergeField<>("status", STRING_CONVERTER)), isKita(
+		new SimpleMergeField<>("isKita", BOOLEAN_X_CONVERTER)
+	), isTagesfamilien(
+		new SimpleMergeField<>("isTagesfamilien", BOOLEAN_X_CONVERTER)
+	), isTagi(
+		new SimpleMergeField<>("isTagi", BOOLEAN_X_CONVERTER)
+	), isTagesschule(
+		new SimpleMergeField<>("isTagesschule", BOOLEAN_X_CONVERTER)
+	), isFerieninsel(
+		new SimpleMergeField<>("isFerieninsel", BOOLEAN_X_CONVERTER)
+	), isJugendamt(
+		new SimpleMergeField<>("isJugendamt", BOOLEAN_X_CONVERTER)
+	), isSchulamt(new SimpleMergeField<>("isSchulamt", BOOLEAN_X_CONVERTER));
 
 	@Nonnull
 	private final MergeField<?> mergeField;

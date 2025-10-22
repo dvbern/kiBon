@@ -16,10 +16,12 @@
  */
 
 import {TSGemeindeAntragTyp} from '../enums/TSGemeindeAntragTyp';
-import {TSAbstractEntity} from '../TSAbstractEntity';
+import {
+    TSAbstractEntity,
+    TSGemeinde,
+    TSGesuchsperiode
+} from '@kibon/shared/model/entity';
 import {TSBenutzerNoDetails} from '../TSBenutzerNoDetails';
-import {TSGemeinde} from '../TSGemeinde';
-import {TSGesuchsperiode} from '../TSGesuchsperiode';
 
 export class TSGemeindeAntrag extends TSAbstractEntity {
     public gemeindeAntragTyp: TSGemeindeAntragTyp;
@@ -28,4 +30,5 @@ export class TSGemeindeAntrag extends TSAbstractEntity {
     public statusString: string;
     public antragAbgeschlossen: boolean;
     public verantworlicher: TSBenutzerNoDetails;
+    public einreichedatum: Date;
 }

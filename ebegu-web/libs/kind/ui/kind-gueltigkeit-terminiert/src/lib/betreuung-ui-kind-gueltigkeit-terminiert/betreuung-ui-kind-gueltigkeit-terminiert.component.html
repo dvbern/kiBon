@@ -1,0 +1,70 @@
+<form>
+    <div class="row">
+        <div class="col-sm-12 dv-input-container-big">
+            <dv-checkbox-x
+                data-test="container.gueltigkeit-terminiert"
+                [label]="'GUELTIGKEIT_TERMINIERT'"
+                [(model)]="kind().gueltigkeitTerminiert"
+                (modelChange)="resetData()"
+                [readonly]="isReadonly()"
+                [tooltip]="'GUELTIGKEIT_TERMINIERT_INFO'"
+                [displayBisher]="false"
+            ></dv-checkbox-x>
+        </div>
+    </div>
+
+    @if (kind().gueltigkeitTerminiert) {
+        <div class="row">
+            <dv-input-container-x [noMargin]="true">
+                <div class="col-xs-12 dv-input-container-small">
+                    <dv-date-picker-x
+                        [label]="'GUELTIGKEIT_TERMINIERT_PER'"
+                        [tooltip]="'GUELTIGKEIT_TERMINIERT_PER_INFO'"
+                        class="input-element"
+                        data-test="container.gueltigkeit-terminiert-per"
+                        [(date)]="kind().gueltigkeitTerminiertPer"
+                        [datePickerEnabled]="false"
+                        [required]="true"
+                        [disabled]="isReadonly()"
+                    >
+                    </dv-date-picker-x>
+                </div>
+            </dv-input-container-x>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 dv-input-container-medium">
+                <dv-input-container-x class="form-group" [verticalAlign]="true">
+                    <label
+                        class="md-no-float required"
+                        for="gueltigkeitTerminiertKommentar"
+                        translate
+                        >GUELTIGKEIT_TERMINIERT_PER_KOMMENTAR</label
+                    >
+                    <textarea
+                        id="gueltigkeitTerminiertKommentar"
+                        class="form-control input-element"
+                        rows="6"
+                        name="gueltigkeitTerminiertKommentar"
+                        data-test="gueltigkeit-terminiert-per"
+                        #gueltigkeitTerminiertKommentar="ngModel"
+                        [(ngModel)]="kind().gueltigkeitTerminiertKommentar"
+                        [disabled]="isReadonly()"
+                        [required]="true"
+                        maxlength="4000"
+                    ></textarea>
+                    <div
+                        class="dv-error-messages dv-gueltigkeitTerminiertKommentar"
+                        *ngIf="
+                            (gueltigkeitTerminiertKommentar.dirty ||
+                                gueltigkeitTerminiertKommentar.touched) &&
+                            gueltigkeitTerminiertKommentar.errors?.['required']
+                        "
+                    >
+                        {{ 'ERROR_REQUIRED' | translate }}
+                    </div>
+                </dv-input-container-x>
+            </div>
+        </div>
+    }
+</form>

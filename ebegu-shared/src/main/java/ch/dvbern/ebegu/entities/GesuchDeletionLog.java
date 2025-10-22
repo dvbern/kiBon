@@ -20,21 +20,17 @@ import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 
-import ch.dvbern.ebegu.dto.suchfilter.lucene.EbeguLocalDateBridge;
 import ch.dvbern.ebegu.enums.GesuchDeletionCause;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.GesuchDeletionLogEntityListener;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.bridge.builtin.LongBridge;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 /**
  * Entity fuer die Protokollierung von Gesuch-Löschungen (durch BatchJob oder durch Admin)
@@ -62,7 +58,7 @@ public class GesuchDeletionLog extends AbstractSimpleEntity {
 
 	@NotNull
 	@Column(nullable = false)
-	@Field(bridge = @FieldBridge(impl = LongBridge.class))
+	@GenericField
 	private long fallNummer;
 
 	@NotNull
@@ -71,24 +67,24 @@ public class GesuchDeletionLog extends AbstractSimpleEntity {
 
 	@Nullable
 	@Column(nullable = true)
-	@Field
 	private String vorname;
 
 	@Nullable
 	@Column(nullable = true)
-	@Field
 	private String nachname;
 
 	@Nullable
 	@Column(nullable = true)
-	@FieldBridge(impl = EbeguLocalDateBridge.class)   //wir indizieren dates als string
-	@Field(analyze = Analyze.NO) //datumsfelder nicht tokenizen etc
+	@GenericField
 	private LocalDate geburtsdatum;
 
 	public GesuchDeletionLog() {
 	}
 
-	public GesuchDeletionLog(@Nonnull Gesuch gesuch, GesuchDeletionCause deletionCause) {
+	public GesuchDeletionLog(
+		@Nonnull Gesuch gesuch,
+		GesuchDeletionCause deletionCause
+	) {
 		this.cause = deletionCause;
 		this.fallNummer = gesuch.getFall().getFallNummer();
 		this.gesuchId = gesuch.getId();
@@ -128,7 +124,7 @@ public class GesuchDeletionLog extends AbstractSimpleEntity {
 		return vorname;
 	}
 
-	public void setVorname(String vorname) {
+	public void setVorname(@Nullable String vorname) {
 		this.vorname = vorname;
 	}
 
@@ -137,7 +133,7 @@ public class GesuchDeletionLog extends AbstractSimpleEntity {
 		return nachname;
 	}
 
-	public void setNachname(String nachname) {
+	public void setNachname(@Nullable String nachname) {
 		this.nachname = nachname;
 	}
 
@@ -146,7 +142,7 @@ public class GesuchDeletionLog extends AbstractSimpleEntity {
 		return geburtsdatum;
 	}
 
-	public void setGeburtsdatum(LocalDate geburtsdatum) {
+	public void setGeburtsdatum(@Nullable LocalDate geburtsdatum) {
 		this.geburtsdatum = geburtsdatum;
 	}
 

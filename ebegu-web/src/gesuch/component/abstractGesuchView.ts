@@ -17,15 +17,17 @@
 
 import {IController} from 'angular';
 import {
+    TSBetreuungsstatus,
+    TSWizardStepName,
+    TSRole,
+    TSGesuchsperiodeStatus
+} from '@kibon/shared/model/enums';
+import {
     isVerfuegtOrSTV,
     TSAntragStatus
 } from '../../models/enums/TSAntragStatus';
-import {TSBetreuungsstatus} from '../../models/enums/betreuung/TSBetreuungsstatus';
 import {TSMessageEvent} from '../../models/enums/TSErrorEvent';
 import {TSFinanzielleSituationTyp} from '../../models/enums/TSFinanzielleSituationTyp';
-import {TSGesuchsperiodeStatus} from '../../models/enums/TSGesuchsperiodeStatus';
-import {TSRole} from '../../models/enums/TSRole';
-import {TSWizardStepName} from '../../models/enums/TSWizardStepName';
 import {TSBetreuung} from '../../models/TSBetreuung';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';

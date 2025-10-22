@@ -34,24 +34,26 @@ import {MatDatepicker} from '@angular/material/datepicker';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {UIRouterGlobals} from '@uirouter/core';
+import moment from 'moment';
 import {Moment} from 'moment';
-import * as moment from 'moment';
 import {ibanValidator} from 'ngx-iban';
-import {combineLatest, Subscription} from 'rxjs';
+import {combineLatest, Observable, Subscription} from 'rxjs';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../../gesuch/service/gemeindeRS.rest';
 import {TSFerienbetreuungFormularStatus} from '../../../../models/enums/TSFerienbetreuungFormularStatus';
 import {TSFerienbetreuungAngabenStammdaten} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenStammdaten';
-import {TSAdresse} from '../../../../models/TSAdresse';
+import {TSAdresse} from '@kibon/shared/model/entity';
 import {TSBfsGemeinde} from '../../../../models/TSBfsGemeinde';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
-import {CONSTANTS} from '../../../core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {UnsavedChangesService} from '../../services/unsaved-changes.service';
 import {AbstractFerienbetreuungFormular} from '../abstract.ferienbetreuung-formular';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
+import {map} from 'rxjs/operators';
+import {FerienbetreuungPermissionUtil} from '../util/FerienbetreuungPermissionUtil';
 
 const LOG = LogFactory.createLog('FerienbetreuungStammdatenGemeindeComponent');
 
@@ -72,7 +74,8 @@ export const MY_FORMATS = {
     templateUrl: './ferienbetreuung-stammdaten-gemeinde.component.html',
     styleUrls: ['./ferienbetreuung-stammdaten-gemeinde.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [{provide: MAT_DATE_FORMATS, useValue: MY_FORMATS}]
+    providers: [{provide: MAT_DATE_FORMATS, useValue: MY_FORMATS}],
+    standalone: false
 })
 export class FerienbetreuungStammdatenGemeindeComponent
     extends AbstractFerienbetreuungFormular
@@ -135,9 +138,10 @@ export class FerienbetreuungStammdatenGemeindeComponent
     public ngOnInit(): void {
         this.subscription = combineLatest([
             this.ferienbetreuungService.getFerienbetreuungContainer(),
-            this.authServiceRS.principal$
+            this.authServiceRS.principal$,
+            this.ferienbetreuungService.getFerienbetreuungHistory()
         ]).subscribe(
-            ([container, principal]) => {
+            ([container, principal, history]) => {
                 this.container = container;
                 this.stammdaten =
                     container.isAtLeastInPruefungKantonOrZurueckgegeben()
@@ -146,7 +150,8 @@ export class FerienbetreuungStammdatenGemeindeComponent
                 this.setupFormAndPermissions(
                     container,
                     this.stammdaten,
-                    principal
+                    principal,
+                    history
                 );
                 this.unsavedChangesService.registerForm(this.form);
             },
@@ -509,10 +514,14 @@ export class FerienbetreuungStammdatenGemeindeComponent
         this.triggerFormValidation();
     }
 
-    public fillActionsVisible(): boolean {
-        return (
-            this.stammdaten?.status ===
-            TSFerienbetreuungFormularStatus.IN_BEARBEITUNG_GEMEINDE
+    public fillActionsVisible(): Observable<boolean> {
+        return this.isZweitPruefungAndSameUserAsPruefung().pipe(
+            map(
+                isSame =>
+                    !isSame &&
+                    this.stammdaten?.status ===
+                        TSFerienbetreuungFormularStatus.IN_BEARBEITUNG
+            )
         );
     }
 
@@ -533,4 +542,21 @@ export class FerienbetreuungStammdatenGemeindeComponent
         control.setValue(ctrlValue.startOf('month'));
         datepicker.close();
     }
+
+    public isZweitPruefungAndSameUserAsPruefung() {
+        return combineLatest([
+            this.authServiceRS.principal$,
+            this.ferienbetreuungService.getFerienbetreuungHistory()
+        ]).pipe(
+            map(([principal, history]) =>
+                FerienbetreuungPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    this.container,
+                    history
+                )
+            )
+        );
+    }
+
+    protected readonly CONSTANTS = CONSTANTS;
 }

@@ -54,7 +54,9 @@ public class FinanzDatenDTO implements Serializable {
 		return massgebendesEinkBjVorAbzFamGr;
 	}
 
-	public void setMassgebendesEinkBjVorAbzFamGr(BigDecimal massgebendesEinkBjVorAbzFamGr) {
+	public void setMassgebendesEinkBjVorAbzFamGr(
+		BigDecimal massgebendesEinkBjVorAbzFamGr
+	) {
 		this.massgebendesEinkBjVorAbzFamGr = massgebendesEinkBjVorAbzFamGr;
 	}
 
@@ -62,7 +64,9 @@ public class FinanzDatenDTO implements Serializable {
 		return massgebendesEinkBjP1VorAbzFamGr;
 	}
 
-	public void setMassgebendesEinkBjP1VorAbzFamGr(BigDecimal massgebendesEinkBjP1VorAbzFamGr) {
+	public void setMassgebendesEinkBjP1VorAbzFamGr(
+		BigDecimal massgebendesEinkBjP1VorAbzFamGr
+	) {
 		this.massgebendesEinkBjP1VorAbzFamGr = massgebendesEinkBjP1VorAbzFamGr;
 	}
 
@@ -70,7 +74,9 @@ public class FinanzDatenDTO implements Serializable {
 		return massgebendesEinkBjP2VorAbzFamGr;
 	}
 
-	public void setMassgebendesEinkBjP2VorAbzFamGr(BigDecimal massgebendesEinkBjP2VorAbzFamGr) {
+	public void setMassgebendesEinkBjP2VorAbzFamGr(
+		BigDecimal massgebendesEinkBjP2VorAbzFamGr
+	) {
 		this.massgebendesEinkBjP2VorAbzFamGr = massgebendesEinkBjP2VorAbzFamGr;
 	}
 

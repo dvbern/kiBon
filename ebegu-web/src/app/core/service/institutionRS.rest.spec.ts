@@ -13,12 +13,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {
+    HttpClient,
+    provideHttpClient,
+    withInterceptorsFromDi
+} from '@angular/common/http';
 import {TestBed} from '@angular/core/testing';
 import {of} from 'rxjs';
-import {TSInstitution} from '../../../models/TSInstitution';
-import {TSMandant} from '../../../models/TSMandant';
-import {TSTraegerschaft} from '../../../models/TSTraegerschaft';
+import {TSInstitution} from '@kibon/shared/model/entity';
+import {TSMandant} from '@kibon/shared/model/entity';
+import {TSTraegerschaft} from '@kibon/shared/model/entity';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {InstitutionRS} from './institutionRS.rest';
 
@@ -36,8 +40,11 @@ describe('institutionRS', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientModule],
-            providers: [{provide: HttpClient, useValue: mockHttpClient}]
+            imports: [],
+            providers: [
+                {provide: HttpClient, useValue: mockHttpClient},
+                provideHttpClient(withInterceptorsFromDi())
+            ]
         });
         institutionRS = TestBed.inject(InstitutionRS);
     });
@@ -70,13 +77,13 @@ describe('institutionRS', () => {
                 mockHttpClient.get.and.returnValue(of(mockInstitutionRest));
 
                 let foundInstitution: TSInstitution;
-                institutionRS.findInstitution(mockInstitution.id).subscribe(
-                    result => {
+                institutionRS.findInstitution(mockInstitution.id).subscribe({
+                    next: result => {
                         foundInstitution = result;
                         checkFieldValues(foundInstitution, mockInstitution);
                     },
-                    error => console.error(error)
-                );
+                    error: error => console.error(error)
+                });
             });
         });
 
@@ -89,8 +96,8 @@ describe('institutionRS', () => {
                 mockHttpClient.get.and.returnValue(of(institutionenRestArray));
 
                 let returnedInstitution: Array<TSInstitution>;
-                institutionRS.getAllInstitutionen().subscribe(
-                    result => {
+                institutionRS.getAllInstitutionen().subscribe({
+                    next: result => {
                         returnedInstitution = result;
 
                         expect(returnedInstitution).toBeDefined();
@@ -104,8 +111,8 @@ describe('institutionRS', () => {
                             institutionenRestArray[1]
                         );
                     },
-                    error => console.error(error)
-                );
+                    error: error => console.error(error)
+                });
             });
         });
     });

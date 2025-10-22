@@ -31,7 +31,7 @@ ${templateConfiguration.mailCss}
 	</p>
 	<p>
 		Für sämtliche Betreuungsangebote wurden die Plätze bestätigt. <#if isSozialdienst>Der Antrag für ${gesuchsteller.fullName}<#else>Der Antrag</#if> kann
-		<a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/freigabe/${gesuch.id}">hier</a>
+		<a href="${frontendUrl}/gesuch/freigabe/${gesuch.id}">hier</a>
 		freigegeben werden.
 	<p>
 		Freundliche Grüsse <br/>

@@ -16,10 +16,11 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {map} from 'rxjs/operators';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
-import {TSFerienname} from '../../models/enums/TSFerienname';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {TSFerienname} from '@kibon/shared/model/enums';
 import {TSFerieninselStammdaten} from '../../models/TSFerieninselStammdaten';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
+import {firstValueFrom} from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -41,48 +42,55 @@ export class FerieninselStammdatenRS {
             stammdaten
         );
 
-        return this.http
-            .put(this.serviceURL, stammdatenObj)
-            .pipe(
-                map((response: any) =>
-                    this.ebeguRestUtil.parseFerieninselStammdaten(
-                        new TSFerieninselStammdaten(),
-                        response
+        return firstValueFrom(
+            this.http
+                .put(this.serviceURL, stammdatenObj)
+                .pipe(
+                    map((response: any) =>
+                        this.ebeguRestUtil.parseFerieninselStammdaten(
+                            new TSFerieninselStammdaten(),
+                            response
+                        )
                     )
                 )
-            )
-            .toPromise();
+        );
     }
 
     public findFerieninselStammdaten(
         fachstelleID: string
     ): Promise<TSFerieninselStammdaten> {
-        return this.http
-            .get(`${this.serviceURL}/id/${encodeURIComponent(fachstelleID)}`)
-            .pipe(
-                map((response: any) =>
-                    this.ebeguRestUtil.parseFerieninselStammdaten(
-                        new TSFerieninselStammdaten(),
-                        response
+        return firstValueFrom(
+            this.http
+                .get(
+                    `${this.serviceURL}/id/${encodeURIComponent(fachstelleID)}`
+                )
+                .pipe(
+                    map((response: any) =>
+                        this.ebeguRestUtil.parseFerieninselStammdaten(
+                            new TSFerieninselStammdaten(),
+                            response
+                        )
                     )
                 )
-            )
-            .toPromise();
+        );
     }
 
     public findFerieninselStammdatenByGesuchsperiode(
         gesuchsperiodeId: string
     ): Promise<TSFerieninselStammdaten[]> {
-        return this.http
-            .get(
-                `${this.serviceURL}/gesuchsperiode/${encodeURIComponent(gesuchsperiodeId)}`
-            )
-            .pipe(
-                map((response: any) =>
-                    this.ebeguRestUtil.parseFerieninselStammdatenList(response)
+        return firstValueFrom(
+            this.http
+                .get(
+                    `${this.serviceURL}/gesuchsperiode/${encodeURIComponent(gesuchsperiodeId)}`
                 )
-            )
-            .toPromise();
+                .pipe(
+                    map((response: any) =>
+                        this.ebeguRestUtil.parseFerieninselStammdatenList(
+                            response
+                        )
+                    )
+                )
+        );
     }
 
     public findFerieninselStammdatenByGesuchsperiodeAndFerien(
@@ -91,17 +99,18 @@ export class FerieninselStammdatenRS {
         ferienname: TSFerienname
     ): Promise<TSFerieninselStammdaten> {
         const url = `${encodeURIComponent(gesuchsperiodeId)}/${encodeURIComponent(gemeindeId)}/${ferienname}`;
-        return this.http
-            .get(`${this.serviceURL}/gesuchsperiode/${url}`)
-            .pipe(
-                map((response: any) =>
-                    this.ebeguRestUtil.parseFerieninselStammdaten(
-                        new TSFerieninselStammdaten(),
-                        response
+        return firstValueFrom(
+            this.http
+                .get(`${this.serviceURL}/gesuchsperiode/${url}`)
+                .pipe(
+                    map((response: any) =>
+                        this.ebeguRestUtil.parseFerieninselStammdaten(
+                            new TSFerieninselStammdaten(),
+                            response
+                        )
                     )
                 )
-            )
-            .toPromise();
+        );
     }
 
     public getServiceName(): string {

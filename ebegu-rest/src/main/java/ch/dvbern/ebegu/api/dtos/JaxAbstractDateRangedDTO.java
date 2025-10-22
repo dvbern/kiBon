@@ -18,12 +18,12 @@ package ch.dvbern.ebegu.api.dtos;
 import java.time.LocalDate;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import ch.dvbern.lib.date.converters.LocalDateXMLConverter;
+import io.github.threetenjaxb.core.LocalDateXmlAdapter;
 import lombok.EqualsAndHashCode;
 
 @XmlTransient
@@ -34,11 +34,11 @@ public abstract class JaxAbstractDateRangedDTO extends JaxAbstractDTO {
 	private static final long serialVersionUID = -2898194827432548948L;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate gueltigAb = null;
 
 	@Nullable
-	@XmlJavaTypeAdapter(LocalDateXMLConverter.class)
+	@XmlJavaTypeAdapter(LocalDateXmlAdapter.class)
 	private LocalDate gueltigBis = null;
 
 	@Nullable
@@ -59,4 +59,3 @@ public abstract class JaxAbstractDateRangedDTO extends JaxAbstractDTO {
 		this.gueltigBis = gueltigBis;
 	}
 }
-

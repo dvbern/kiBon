@@ -16,36 +16,48 @@
  */
 
 import {
+    AbstractMandantDefaultVisitor,
+    KiBonMandant
+} from '@kibon/shared-model-mandant';
+import {
     getTSEinschulungTypGemeindeValues,
     getTSEinschulungTypValuesSchwyz,
+    getTSEinschulungTypValuesZug,
     TSEinschulungTyp
-} from '../../../models/enums/TSEinschulungTyp';
-import {KiBonMandant} from './MANDANTS';
-import {MandantVisitor} from './MandantVisitor';
+} from '@kibon/shared/model/enums';
 
-export class EinschulungTypesGemeindeVisitor
-    implements MandantVisitor<ReadonlyArray<TSEinschulungTyp>>
-{
+export class EinschulungTypesGemeindeVisitor extends AbstractMandantDefaultVisitor<
+    ReadonlyArray<TSEinschulungTyp>
+> {
     public process(mandant: KiBonMandant): ReadonlyArray<TSEinschulungTyp> {
         return mandant.accept(this);
     }
-    public visitBern(): ReadonlyArray<TSEinschulungTyp> {
+
+    protected visitDefault(): ReadonlyArray<TSEinschulungTyp> {
         return getTSEinschulungTypGemeindeValues();
     }
 
     public visitLuzern(): ReadonlyArray<TSEinschulungTyp> {
-        return this.visitBern();
+        return [
+            TSEinschulungTyp.VORSCHULALTER,
+            TSEinschulungTyp.FREIWILLIGER_KINDERGARTEN,
+            TSEinschulungTyp.OBLIGATORISCHER_KINDERGARTEN
+        ];
     }
 
     public visitAppenzellAusserrhoden(): ReadonlyArray<TSEinschulungTyp> {
-        return this.visitBern();
+        return [TSEinschulungTyp.VORSCHULALTER, TSEinschulungTyp.KINDERGARTEN1];
     }
 
     public visitSolothurn(): ReadonlyArray<TSEinschulungTyp> {
-        return this.visitBern();
+        return getTSEinschulungTypGemeindeValues();
     }
 
     public visitSchwyz(): ReadonlyArray<TSEinschulungTyp> {
         return getTSEinschulungTypValuesSchwyz();
+    }
+
+    public visitZug(): ReadonlyArray<TSEinschulungTyp> {
+        return getTSEinschulungTypValuesZug();
     }
 }

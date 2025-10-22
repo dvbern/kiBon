@@ -19,7 +19,8 @@ import {Directive, ElementRef, Injector, Input} from '@angular/core';
 import {UpgradeComponent} from '@angular/upgrade/static';
 
 @Directive({
-    selector: 'dv-tooltip'
+    selector: 'dv-tooltip',
+    standalone: false
 })
 export class TooltipDirective extends UpgradeComponent {
     @Input() public inputId: string;

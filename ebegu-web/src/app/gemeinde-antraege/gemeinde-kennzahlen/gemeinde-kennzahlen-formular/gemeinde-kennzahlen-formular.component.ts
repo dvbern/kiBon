@@ -24,22 +24,28 @@ import {
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatRadioChange} from '@angular/material/radio';
-import {TranslateService} from '@ngx-translate/core';
-import {combineLatest, Observable, ReplaySubject, Subject} from 'rxjs';
-import {map, takeUntil} from 'rxjs/operators';
-import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {
     getTSEinschulungTypValues,
-    TSEinschulungTyp
-} from '../../../../models/enums/TSEinschulungTyp';
-import {TSRole} from '../../../../models/enums/TSRole';
+    TSEinschulungTyp,
+    TSRole
+} from '@kibon/shared/model/enums';
+import {TranslateService} from '@ngx-translate/core';
+import {
+    combineLatest,
+    firstValueFrom,
+    Observable,
+    ReplaySubject,
+    Subject
+} from 'rxjs';
+import {map, takeUntil} from 'rxjs/operators';
+import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSGemeindeKennzahlen} from '../../../../models/gemeindeantrag/gemeindekennzahlen/TSGemeindeKennzahlen';
 import {TSBenutzer} from '../../../../models/TSBenutzer';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
-import {CONSTANTS} from '../../../core/constants/CONSTANTS';
+import {CONSTANTS} from '@kibon/shared/model/constants';
 import {ErrorServiceX} from '../../../core/errors/service/ErrorServiceX';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {GemeindeKennzahlenService} from '../gemeinde-kennzahlen.service';
 
 const LOG = LogFactory.createLog('GemeindeKennzahlenFormularComponent');
@@ -48,7 +54,8 @@ const LOG = LogFactory.createLog('GemeindeKennzahlenFormularComponent');
     selector: 'dv-gemeinde-kennzahlen-formular',
     templateUrl: './gemeinde-kennzahlen-formular.component.html',
     styleUrls: ['./gemeinde-kennzahlen-formular.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class GemeindeKennzahlenFormularComponent implements OnInit, OnDestroy {
     @ViewChild(NgForm) public form: NgForm;
@@ -59,7 +66,7 @@ export class GemeindeKennzahlenFormularComponent implements OnInit, OnDestroy {
         new ReplaySubject<boolean>();
 
     public abschlussValidationTriggered: boolean = false;
-    private readonly unsubscribe$: Subject<any> = new Subject<any>();
+    private readonly unsubscribe$ = new Subject<void>();
     public antragAndPrincipal$: Observable<
         [TSGemeindeKennzahlen, TSBenutzer | null]
     >;
@@ -214,10 +221,11 @@ export class GemeindeKennzahlenFormularComponent implements OnInit, OnDestroy {
         dialogConfig.data = {
             frage: this.translate.instant(frageKey)
         };
-        return this.dialog
-            .open(DvNgConfirmDialogComponent, dialogConfig)
-            .afterClosed()
-            .toPromise();
+        return firstValueFrom(
+            this.dialog
+                .open(DvNgConfirmDialogComponent, dialogConfig)
+                .afterClosed()
+        );
     }
 
     public getEinschulungTypes(): TSEinschulungTyp[] {

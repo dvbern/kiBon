@@ -17,8 +17,8 @@ package ch.dvbern.ebegu.entities;
 
 import java.util.List;
 
-import javax.persistence.PostLoad;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PreUpdate;
 
 import ch.dvbern.ebegu.enums.AntragEvents;
 import ch.dvbern.ebegu.enums.AntragStatus;
@@ -33,7 +33,8 @@ import static ch.dvbern.ebegu.statemachine.GesuchEventWithParam.getTrigger;
 
 /**
  * At the moment there are no events fired on EBEGU. In order to nevertheless be able to use this statemachine, we just
- * check all possible transitions from current state. If the required state transitions not our statemachine we throw an error.
+ * check all possible transitions from current state. If the required state transitions not our statemachine we throw an
+ * error.
  * TODO: This part of the code must replaced be events!
  */
 public class GesuchStatusListener {
@@ -48,15 +49,18 @@ public class GesuchStatusListener {
 	@PreUpdate
 	public void preUpdate(Gesuch gesuch) {
 
-		if (gesuch.getPreStatus() != null && gesuch.getPreStatus() != gesuch.getStatus()) {
+		if (gesuch.getPreStatus() != null
+			&& gesuch.getPreStatus() != gesuch.getStatus()) {
 
 			final AntragStatus preStatus = gesuch.getPreStatus();
 			final AntragStatus postStatus = gesuch.getStatus();
 
 			gesuch.setStatus(preStatus);
 
-			StateMachine<AntragStatus, AntragEvents> stateMachine = StateMachineFactory.getStateMachine(gesuch, getConfig());
-			final List<AntragEvents> permittedTriggers = stateMachine.getPermittedTriggers();
+			StateMachine<AntragStatus, AntragEvents> stateMachine =
+				StateMachineFactory.getStateMachine(gesuch, getConfig());
+			final List<AntragEvents> permittedTriggers = stateMachine
+				.getPermittedTriggers();
 
 			for (AntragEvents permittedTrigger : permittedTriggers) {
 				stateMachine.fire(getTrigger(permittedTrigger), gesuch);
@@ -64,11 +68,23 @@ public class GesuchStatusListener {
 					gesuch.setStatus(postStatus);
 					return;
 				}
-				stateMachine = StateMachineFactory.getStateMachine(gesuch, getConfig());
+				stateMachine = StateMachineFactory.getStateMachine(
+					gesuch,
+					getConfig()
+				);
 			}
 
-			String message = String.format("State Machine received unhandled transition from %s for current state %s", preStatus, postStatus);
-			throw new EbeguRuntimeException("handleFSMEvent", message, ErrorCodeEnum.ERROR_INVALID_EBEGUSTATE, postStatus);
+			String message = String.format(
+				"State Machine received unhandled transition from %s for current state %s",
+				preStatus,
+				postStatus
+			);
+			throw new EbeguRuntimeException(
+				"handleFSMEvent",
+				message,
+				ErrorCodeEnum.ERROR_INVALID_EBEGUSTATE,
+				postStatus
+			);
 		}
 	}
 
@@ -77,7 +93,8 @@ public class GesuchStatusListener {
 			/*Not working at the moment, No injection possible at the moment!!!*/
 			/*config = CDI.current().select(StateMachineConfig.class.getAnnotation(AntragStatus.class)).get();*/
 
-			StateMachineConfigProducer stateMachineConfigProducer = new StateMachineConfigProducer();
+			StateMachineConfigProducer stateMachineConfigProducer =
+				new StateMachineConfigProducer();
 			config = stateMachineConfigProducer.createStateMachineConfig();
 		}
 		return config;

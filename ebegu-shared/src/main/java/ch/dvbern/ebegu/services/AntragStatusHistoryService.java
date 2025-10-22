@@ -37,10 +37,14 @@ public interface AntragStatusHistoryService {
 	 * wird als benutzer hinterlegt, sonst wird saveAsUser als benutzer hinterlegt
 	 */
 	@Nonnull
-	AntragStatusHistory saveStatusChange(@Nonnull Gesuch gesuch, @Nullable Benutzer saveAsUser);
+	AntragStatusHistory saveStatusChange(
+		@Nonnull Gesuch gesuch,
+		@Nullable Benutzer saveAsUser
+	);
 
 	/**
 	 * Findet den letzten StatusChange furs gegebene Gesuch und gibt ihn zurueck
+	 * 
 	 * @param gesuchId
 	 */
 	@Nullable
@@ -55,25 +59,35 @@ public interface AntragStatusHistoryService {
 	 * Gibt eine Collection aller StatusHistory Objekte des uebergebenen Gesuchs zurueck-
 	 */
 	@Nonnull
-	Collection<AntragStatusHistory> findAllAntragStatusHistoryByGesuch(@Nonnull Gesuch gesuch);
+	Collection<AntragStatusHistory> findAllAntragStatusHistoryByGesuch(
+		@Nonnull Gesuch gesuch
+	);
 
 	/**
 	 * Gibt eine Collection aller StatusHistory Objekte fuer den uebergebenen Dossier in der uebergebenen
 	 * Gesuchsperiode zurueck.
 	 */
 	@Nonnull
-	Collection<AntragStatusHistory> findAllAntragStatusHistoryByGPForDossier(@Nonnull Gesuchsperiode gesuchsperiode, @Nonnull Dossier dossier);
+	Collection<AntragStatusHistory> findAllAntragStatusHistoryByGPForDossier(
+		@Nonnull Gesuchsperiode gesuchsperiode,
+		@Nonnull Dossier dossier
+	);
 
 	/**
-	 * Prueft dass die letzte Statusaenderung auf BESCHWERDE_HAENGIG war und dann gibt die vorletzte Statusaenderung zurueck.
+	 * Prueft dass die letzte Statusaenderung auf BESCHWERDE_HAENGIG war und dann gibt die vorletzte Statusaenderung
+	 * zurueck.
 	 */
 	@Nonnull
-	AntragStatusHistory findLastStatusChangeBeforeBeschwerde(@Nonnull Gesuch gesuch);
+	AntragStatusHistory findLastStatusChangeBeforeBeschwerde(
+		@Nonnull Gesuch gesuch
+	);
 
 	/**
 	 * Prueft dass die letzte Statusaenderung auf GEPRUEFT_STV war und dann gibt die Statusänderung die auf PRUEFUNG_STV
 	 * gewechselt hat.
 	 */
 	@Nonnull
-	AntragStatusHistory findLastStatusChangeBeforePruefungSTV(@Nonnull Gesuch gesuch);
+	AntragStatusHistory findLastStatusChangeBeforePruefungSTV(
+		@Nonnull Gesuch gesuch
+	);
 }

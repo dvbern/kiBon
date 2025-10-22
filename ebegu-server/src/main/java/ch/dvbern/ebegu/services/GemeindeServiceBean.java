@@ -28,24 +28,27 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
+import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.Einstellung_;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.BfsGemeinde;
 import ch.dvbern.ebegu.entities.BfsGemeinde_;
-import ch.dvbern.ebegu.entities.Einstellung;
-import ch.dvbern.ebegu.entities.Einstellung_;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.GemeindeStammdatenGesuchsperiode;
@@ -56,9 +59,7 @@ import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer;
 import ch.dvbern.ebegu.entities.gemeindeantrag.LastenausgleichTagesschuleAngabenGemeindeContainer_;
-import ch.dvbern.ebegu.enums.ApplicationPropertyKey;
 import ch.dvbern.ebegu.enums.DokumentTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.GemeindeAngebotTyp;
 import ch.dvbern.ebegu.enums.GemeindeStatus;
@@ -71,9 +72,9 @@ import ch.dvbern.ebegu.errors.KibonLogLevel;
 import ch.dvbern.ebegu.outbox.ExportedEvent;
 import ch.dvbern.ebegu.outbox.gemeinde.GemeindeEventConverter;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
-import ch.dvbern.lib.cdipersistence.Persistence;
 
 import static java.util.Objects.requireNonNull;
 
@@ -82,7 +83,8 @@ import static java.util.Objects.requireNonNull;
  */
 @Stateless
 @Local(GemeindeService.class)
-public class GemeindeServiceBean extends AbstractBaseService implements GemeindeService {
+public class GemeindeServiceBean extends AbstractBaseService implements
+	GemeindeService {
 
 	@Inject
 	private Persistence persistence;
@@ -127,22 +129,29 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 	@Override
 	public Gemeinde createGemeinde(@Nonnull Gemeinde gemeinde) {
 		Optional<Gemeinde> gemeindeOpt =
-			criteriaQueryHelper.getEntityByUniqueAttribute(Gemeinde.class, gemeinde.getName(), Gemeinde_.name);
+			criteriaQueryHelper.getEntityByUniqueAttribute(
+				Gemeinde.class,
+				gemeinde.getName(),
+				Gemeinde_.name
+			);
 		if (gemeindeOpt.isPresent()) {
 			throw new EntityExistsException(
 				KibonLogLevel.INFO,
 				Gemeinde.class,
 				"name",
 				gemeinde.getName(),
-				ErrorCodeEnum.ERROR_DUPLICATE_GEMEINDE_NAME);
+				ErrorCodeEnum.ERROR_DUPLICATE_GEMEINDE_NAME
+			);
 		}
 		final Long bfsNummer = gemeinde.getBfsNummer();
-		if (findGemeindeByBSF(bfsNummer).isPresent()) {
+		if (findGemeindeByBFS(bfsNummer).isPresent()) {
 			throw new EntityExistsException(
 				KibonLogLevel.INFO,
-				Gemeinde.class, "bsf",
+				Gemeinde.class,
+				"bsf",
 				Long.toString(bfsNummer),
-				ErrorCodeEnum.ERROR_DUPLICATE_GEMEINDE_BSF);
+				ErrorCodeEnum.ERROR_DUPLICATE_GEMEINDE_BSF
+			);
 		}
 		return saveGemeinde(gemeinde);
 	}
@@ -156,9 +165,13 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 	}
 
 	@Nonnull
-	private Optional<Gemeinde> findGemeindeByBSF(@Nullable Long bsf) {
+	private Optional<Gemeinde> findGemeindeByBFS(@Nonnull Long bsf) {
 		Optional<Gemeinde> gemeindeOpt =
-			criteriaQueryHelper.getEntityByUniqueAttribute(Gemeinde.class, bsf, Gemeinde_.bfsNummer);
+			criteriaQueryHelper.getEntityByUniqueAttribute(
+				Gemeinde.class,
+				bsf,
+				Gemeinde_.bfsNummer
+			);
 		return gemeindeOpt;
 	}
 
@@ -207,10 +220,16 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		List<Predicate> predicates = new ArrayList<>();
 
 		// Status muss aktiv sein
-		Predicate predicateStatusActive = cb.equal(root.get(Gemeinde_.status), GemeindeStatus.AKTIV);
+		Predicate predicateStatusActive = cb.equal(
+			root.get(Gemeinde_.status),
+			GemeindeStatus.AKTIV
+		);
 		predicates.add(predicateStatusActive);
 
-		Predicate predicateMandant = cb.equal(root.get(Gemeinde_.mandant), mandant);
+		Predicate predicateMandant = cb.equal(
+			root.get(Gemeinde_.mandant),
+			mandant
+		);
 		predicates.add(predicateMandant);
 
 		query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));
@@ -219,17 +238,28 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	@Nonnull
 	@Override
-	public Collection<Gemeinde> getAktiveGemeindenGueltigAm(@Nonnull LocalDate date, @Nonnull Mandant mandant) {
+	public Collection<Gemeinde> getAktiveGemeindenGueltigAm(
+		@Nonnull LocalDate date,
+		@Nonnull Mandant mandant
+	) {
 		return getAktiveGemeinden(mandant).stream()
-			.filter(gemeinde -> gemeinde.getGueltigBis().isAfter(date.minusDays(1)))
+			.filter(
+				gemeinde -> gemeinde.getGueltigBis()
+					.isAfter(date.minusDays(1))
+			)
 			.collect(Collectors.toList());
 	}
 
 	@Nonnull
 	@Override
-	public Optional<GemeindeStammdaten> getGemeindeStammdaten(@Nonnull String id) {
+	public Optional<GemeindeStammdaten> getGemeindeStammdaten(
+		@Nonnull String id
+	) {
 		requireNonNull(id, "Gemeinde Stammdaten id muss gesetzt sein");
-		GemeindeStammdaten stammdaten = persistence.find(GemeindeStammdaten.class, id);
+		GemeindeStammdaten stammdaten = persistence.find(
+			GemeindeStammdaten.class,
+			id
+		);
 		if (stammdaten != null) {
 			authorizer.checkReadAuthorization(stammdaten.getGemeinde());
 		}
@@ -238,14 +268,23 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	@Nonnull
 	@Override
-	public Optional<GemeindeStammdaten> getGemeindeStammdatenByGemeindeId(@Nonnull String gemeindeId) {
+	public Optional<GemeindeStammdaten> getGemeindeStammdatenByGemeindeId(
+		@Nonnull String gemeindeId
+	) {
 		requireNonNull(gemeindeId, "Gemeinde id muss gesetzt sein");
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<GemeindeStammdaten> query = cb.createQuery(GemeindeStammdaten.class);
+		final CriteriaQuery<GemeindeStammdaten> query = cb.createQuery(
+			GemeindeStammdaten.class
+		);
 		Root<GemeindeStammdaten> root = query.from(GemeindeStammdaten.class);
-		Predicate predicate = cb.equal(root.get(GemeindeStammdaten_.gemeinde).get(AbstractEntity_.id), gemeindeId);
+		Predicate predicate = cb.equal(
+			root.get(GemeindeStammdaten_.gemeinde).get(AbstractEntity_.id),
+			gemeindeId
+		);
 		query.where(predicate);
-		GemeindeStammdaten stammdaten = persistence.getCriteriaSingleResult(query);
+		GemeindeStammdaten stammdaten = persistence.getCriteriaSingleResult(
+			query
+		);
 		if (stammdaten != null) {
 			authorizer.checkReadAuthorization(stammdaten.getGemeinde());
 		}
@@ -254,7 +293,9 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	@Nonnull
 	@Override
-	public GemeindeStammdaten saveGemeindeStammdaten(@Nonnull GemeindeStammdaten stammdaten) {
+	public GemeindeStammdaten saveGemeindeStammdaten(
+		@Nonnull GemeindeStammdaten stammdaten
+	) {
 		requireNonNull(stammdaten);
 		authorizer.checkWriteAuthorization(stammdaten.getGemeinde());
 		if (stammdaten.isNew()) {
@@ -269,14 +310,21 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		@Nonnull String gemeindeId,
 		@Nonnull byte[] content,
 		@Nonnull String name,
-		@Nonnull String type) {
+		@Nonnull String type
+	) {
 		requireNonNull(gemeindeId);
 		requireNonNull(content);
 		requireNonNull(name);
 		requireNonNull(type);
 
-		final GemeindeStammdaten stammdaten = getGemeindeStammdatenByGemeindeId(gemeindeId).orElseThrow(
-			() -> new EbeguEntityNotFoundException("uploadLogo", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gemeindeId)
+		final GemeindeStammdaten stammdaten = getGemeindeStammdatenByGemeindeId(
+			gemeindeId
+		).orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"uploadLogo",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				gemeindeId
+			)
 		);
 		stammdaten.getGemeindeStammdatenKorrespondenz().setLogoContent(content);
 		stammdaten.getGemeindeStammdatenKorrespondenz().setLogoName(name);
@@ -292,9 +340,16 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		@Nonnull String name,
 		@Nonnull String type
 	) {
-		final GemeindeStammdaten stammdaten = getGemeindeStammdatenByGemeindeId(gemeindeId)
-			.orElseThrow(() ->
-				new EbeguEntityNotFoundException("uploadAlternativeLogoTagesschule", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gemeindeId));
+		final GemeindeStammdaten stammdaten = getGemeindeStammdatenByGemeindeId(
+			gemeindeId
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"uploadAlternativeLogoTagesschule",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gemeindeId
+				)
+			);
 		stammdaten.getGemeindeStammdatenKorrespondenz()
 			.setAlternativesLogoTagesschuleName(name)
 			.setAlternativesLogoTagesschuleType(type)
@@ -304,10 +359,19 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	@Nonnull
 	@Override
-	public GemeindeStammdaten deleteAlternativeLogoTagesschule(@Nonnull String gemeindeId) {
-		final GemeindeStammdaten stammdaten = getGemeindeStammdatenByGemeindeId(gemeindeId)
-			.orElseThrow(() ->
-				new EbeguEntityNotFoundException("uploadAlternativeLogoTagesschule", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, gemeindeId));
+	public GemeindeStammdaten deleteAlternativeLogoTagesschule(
+		@Nonnull String gemeindeId
+	) {
+		final GemeindeStammdaten stammdaten = getGemeindeStammdatenByGemeindeId(
+			gemeindeId
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"uploadAlternativeLogoTagesschule",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					gemeindeId
+				)
+			);
 		stammdaten.getGemeindeStammdatenKorrespondenz()
 			.setAlternativesLogoTagesschuleName(null)
 			.setAlternativesLogoTagesschuleType(null)
@@ -317,34 +381,49 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	@Nonnull
 	@Override
-	public Collection<BfsGemeinde> getUnregisteredBfsGemeinden(@Nonnull Mandant mandant) {
+	public Collection<BfsGemeinde> getUnregisteredBfsGemeinden(
+		@Nonnull Mandant mandant
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<BfsGemeinde> query = cb.createQuery(BfsGemeinde.class);
+		final CriteriaQuery<BfsGemeinde> query = cb.createQuery(
+			BfsGemeinde.class
+		);
 		Root<BfsGemeinde> root = query.from(BfsGemeinde.class);
 		List<Predicate> predicates = new ArrayList<>();
 
 		List<Long> registeredBfsNummern = getRegisteredBfsNummern(mandant);
 		if (!registeredBfsNummern.isEmpty()) {
-			Predicate predicate = root.get(BfsGemeinde_.bfsNummer).in(registeredBfsNummern).not();
+			Predicate predicate = root.get(BfsGemeinde_.bfsNummer)
+				.in(registeredBfsNummern)
+				.not();
 			predicates.add(predicate);
 		}
 
 		// Wenn das Tagesschule-Flag nicht gesetzt ist, dürfen Verbunds-Gemeinden nicht ausgewählt werden können.
-		boolean tagesschuleEnabled = Boolean.TRUE.equals(applicationPropertyService.findApplicationPropertyAsBoolean(
+		boolean tagesschuleEnabled = Boolean.TRUE.equals(
+			applicationPropertyService.findApplicationPropertyAsBoolean(
 				ApplicationPropertyKey.ANGEBOT_TS_ENABLED,
-				mandant));
+				mandant
+			)
+		);
 		if (!tagesschuleEnabled) {
 			List<Long> verbundsBfsNummern = getVerbundsBfsNummern(mandant);
 			if (verbundsBfsNummern.size() > 0) {
-				Predicate predicateNoVerbund = root.get(BfsGemeinde_.bfsNummer).in(verbundsBfsNummern).not();
+				Predicate predicateNoVerbund = root.get(BfsGemeinde_.bfsNummer)
+					.in(verbundsBfsNummern)
+					.not();
 				predicates.add(predicateNoVerbund);
 			}
 		}
 
-		Predicate predicateMandant = cb.equal(root.get(BfsGemeinde_.mandant), mandant);
+		Predicate predicateMandant = cb.equal(
+			root.get(BfsGemeinde_.mandant),
+			mandant
+		);
 		predicates.add(predicateMandant);
 		query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));
-		List<BfsGemeinde> unregisteredBfsGemeinden = persistence.getCriteriaResults(query);
+		List<BfsGemeinde> unregisteredBfsGemeinden = persistence
+			.getCriteriaResults(query);
 		return unregisteredBfsGemeinden;
 	}
 
@@ -354,7 +433,10 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		final CriteriaQuery<Long> query = cb.createQuery(Long.class);
 		Root<Gemeinde> root = query.from(Gemeinde.class);
 
-		Predicate predicateMandant = cb.equal(root.get(Gemeinde_.mandant), mandant);
+		Predicate predicateMandant = cb.equal(
+			root.get(Gemeinde_.mandant),
+			mandant
+		);
 		query.where(predicateMandant);
 		query.select(root.get(Gemeinde_.bfsNummer));
 		List<Long> registeredBfsNummern = persistence.getCriteriaResults(query);
@@ -367,24 +449,38 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		final CriteriaQuery<Long> query = cb.createQuery(Long.class);
 		Root<BfsGemeinde> root = query.from(BfsGemeinde.class);
 
-		Predicate predicateMandant = cb.equal(root.get(BfsGemeinde_.mandant), mandant);
+		Predicate predicateMandant = cb.equal(
+			root.get(BfsGemeinde_.mandant),
+			mandant
+		);
 		query.where(predicateMandant);
-		query.select(root.get(BfsGemeinde_.verbund).get(BfsGemeinde_.bfsNummer));
+		query.select(
+			root.get(BfsGemeinde_.verbund).get(BfsGemeinde_.bfsNummer)
+		);
 		List<Long> registeredBfsNummern = persistence.getCriteriaResults(query);
 		return registeredBfsNummern;
 	}
 
 	@Nonnull
 	@Override
-	public Optional<Gemeinde> findRegistredGemeindeVerbundIfExist(@Nonnull Long gemeindeBfsNummer) {
+	public Optional<Gemeinde> findRegistredGemeindeVerbundIfExist(
+		@Nonnull Long gemeindeBfsNummer
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Long> query = cb.createQuery(Long.class);
 		Root<BfsGemeinde> root = query.from(BfsGemeinde.class);
 
-		Predicate predicateBFS = cb.equal(root.get(BfsGemeinde_.bfsNummer), gemeindeBfsNummer);
+		Predicate predicateBFS = cb.equal(
+			root.get(BfsGemeinde_.bfsNummer),
+			gemeindeBfsNummer
+		);
 		query.where(predicateBFS);
-		query.select(root.get(BfsGemeinde_.verbund).get(BfsGemeinde_.bfsNummer));
-		Long gemeindeVerbundBfsNummer = persistence.getCriteriaSingleResult(query);
+		query.select(
+			root.get(BfsGemeinde_.verbund).get(BfsGemeinde_.bfsNummer)
+		);
+		Long gemeindeVerbundBfsNummer = persistence.getCriteriaSingleResult(
+			query
+		);
 		if (gemeindeVerbundBfsNummer == null) {
 			return Optional.empty();
 		}
@@ -394,11 +490,18 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	@Nonnull
 	@Override
-	public Collection<BfsGemeinde> getAllBfsGemeinden(@Nonnull Mandant mandant) {
+	public Collection<BfsGemeinde> getAllBfsGemeinden(
+		@Nonnull Mandant mandant
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<BfsGemeinde> query = cb.createQuery(BfsGemeinde.class);
+		final CriteriaQuery<BfsGemeinde> query = cb.createQuery(
+			BfsGemeinde.class
+		);
 		Root<BfsGemeinde> root = query.from(BfsGemeinde.class);
-		var mandantPredicate = cb.equal(root.get(BfsGemeinde_.mandant), mandant);
+		var mandantPredicate = cb.equal(
+			root.get(BfsGemeinde_.mandant),
+			mandant
+		);
 		query.where(mandantPredicate);
 		CriteriaQuery<BfsGemeinde> all = query.select(root);
 		return persistence.getCriteriaResults(all);
@@ -410,7 +513,10 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		persistence.merge(gemeinde);
 
 		if (value) {
-			mailService.sendInfoGemeineAngebotAktiviert(gemeinde, GemeindeAngebotTyp.BETREUUNGSGUTSCHEIN);
+			mailService.sendInfoGemeindeAngebotAktiviert(
+				gemeinde,
+				GemeindeAngebotTyp.BETREUUNGSGUTSCHEIN
+			);
 		}
 	}
 
@@ -421,13 +527,20 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 	}
 
 	@Override
-	public void updateAngebotTS(@Nonnull Gemeinde gemeinde, boolean value, boolean nurLats) {
+	public void updateAngebotTS(
+		@Nonnull Gemeinde gemeinde,
+		boolean value,
+		boolean nurLats
+	) {
 		gemeinde.setAngebotTS(value);
 		gemeinde.setNurLats(nurLats);
 		persistence.merge(gemeinde);
 
 		if (value && !nurLats) {
-			mailService.sendInfoGemeineAngebotAktiviert(gemeinde, GemeindeAngebotTyp.TAGESSCHULE);
+			mailService.sendInfoGemeindeAngebotAktiviert(
+				gemeinde,
+				GemeindeAngebotTyp.TAGESSCHULE
+			);
 		}
 	}
 
@@ -437,23 +550,34 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		persistence.merge(gemeinde);
 
 		if (value) {
-			mailService.sendInfoGemeineAngebotAktiviert(gemeinde, GemeindeAngebotTyp.FERIENINSEL);
+			mailService.sendInfoGemeindeAngebotAktiviert(
+				gemeinde,
+				GemeindeAngebotTyp.FERIENINSEL
+			);
 		}
 	}
 
 	@Nonnull
-	private Optional<Gemeinde> getAktiveGemeindeByBFSNummer(@Nonnull Long bfsNummer) {
+	private Optional<Gemeinde> getAktiveGemeindeByBFSNummer(
+		@Nonnull Long bfsNummer
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Gemeinde> query = cb.createQuery(Gemeinde.class);
 		Root<Gemeinde> root = query.from(Gemeinde.class);
 		List<Predicate> predicates = new ArrayList<>();
 
 		// Status muss aktiv sein
-		Predicate predicateStatusActive = cb.equal(root.get(Gemeinde_.status), GemeindeStatus.AKTIV);
+		Predicate predicateStatusActive = cb.equal(
+			root.get(Gemeinde_.status),
+			GemeindeStatus.AKTIV
+		);
 		predicates.add(predicateStatusActive);
 
 		//BfsNummer muss gesetzt sein
-		Predicate predicateBfsNummer = cb.equal(root.get(Gemeinde_.bfsNummer), bfsNummer);
+		Predicate predicateBfsNummer = cb.equal(
+			root.get(Gemeinde_.bfsNummer),
+			bfsNummer
+		);
 		predicates.add(predicateBfsNummer);
 
 		query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicates));
@@ -464,16 +588,25 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	@Nonnull
 	@Override
-	public List<BfsGemeinde> findGemeindeVonVerbund(@Nonnull Long verbundBfsNummer) {
+	public List<BfsGemeinde> findGemeindeVonVerbund(
+		@Nonnull Long verbundBfsNummer
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<BfsGemeinde> query = cb.createQuery(BfsGemeinde.class);
+		final CriteriaQuery<BfsGemeinde> query = cb.createQuery(
+			BfsGemeinde.class
+		);
 		Root<BfsGemeinde> root = query.from(BfsGemeinde.class);
 
 		Join<Object, Object> join = root.join(BfsGemeinde_.VERBUND);
 
-		Predicate predicateBFSVerbund = cb.equal(join.get(BfsGemeinde_.BFS_NUMMER), verbundBfsNummer);
+		Predicate predicateBFSVerbund = cb.equal(
+			join.get(BfsGemeinde_.BFS_NUMMER),
+			verbundBfsNummer
+		);
 		query.where(predicateBFSVerbund);
-		List<BfsGemeinde> gemeindenVonVerbund = persistence.getCriteriaResults(query);
+		List<BfsGemeinde> gemeindenVonVerbund = persistence.getCriteriaResults(
+			query
+		);
 
 		return gemeindenVonVerbund;
 	}
@@ -482,9 +615,14 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 	@Override
 	public Optional<BfsGemeinde> findBfsGemeinde(@Nonnull Long bfsNummer) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<BfsGemeinde> query = cb.createQuery(BfsGemeinde.class);
+		final CriteriaQuery<BfsGemeinde> query = cb.createQuery(
+			BfsGemeinde.class
+		);
 		Root<BfsGemeinde> root = query.from(BfsGemeinde.class);
-		Predicate predicateBFSVerbund = cb.equal(root.get(BfsGemeinde_.BFS_NUMMER), bfsNummer);
+		Predicate predicateBFSVerbund = cb.equal(
+			root.get(BfsGemeinde_.BFS_NUMMER),
+			bfsNummer
+		);
 		query.where(predicateBFSVerbund);
 		BfsGemeinde bfsGemeinde = persistence.getCriteriaSingleResult(query);
 
@@ -497,7 +635,10 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<Long> query = cb.createQuery(Long.class);
 		Root<Gemeinde> root = query.from(Gemeinde.class);
-		Predicate besondereVolksschulePredicate = cb.equal(root.get(Gemeinde_.besondereVolksschule), true);
+		Predicate besondereVolksschulePredicate = cb.equal(
+			root.get(Gemeinde_.besondereVolksschule),
+			true
+		);
 
 		query.where(besondereVolksschulePredicate);
 		query.select(cb.max(root.get(Gemeinde_.bfsNummer)));
@@ -510,7 +651,8 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		if (currentMaxBfsNummer + 1 > Constants.BESONDERE_VOLKSSCHULE_BFS_MAX) {
 			throw new EbeguRuntimeException(
 				"getNextBesondereVolksschuleBfsNummer",
-				"Besondere Volksschulen MAX erreicht");
+				"Besondere Volksschulen MAX erreicht"
+			);
 		}
 		return currentMaxBfsNummer + 1;
 	}
@@ -522,22 +664,32 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		@Nonnull String gesuchsperiodeId,
 		@Nonnull Sprache sprache,
 		@Nonnull DokumentTyp dokumentTyp,
-		@Nonnull byte[] content) {
+		@Nonnull byte[] content
+	) {
 		requireNonNull(gemeindeId);
 		requireNonNull(gesuchsperiodeId);
 		requireNonNull(sprache);
 		requireNonNull(content);
 		GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode =
-			findGemeindeStammdatenGesuchsperiode(gemeindeId, gesuchsperiodeId).orElse(null);
+			findGemeindeStammdatenGesuchsperiode(
+				gemeindeId,
+				gesuchsperiodeId
+			).orElse(null);
 		if (gemeindeStammdatenGesuchsperiode == null) {
-			gemeindeStammdatenGesuchsperiode = createGemeindeStammdatenGesuchsperiode(gemeindeId, gesuchsperiodeId);
+			gemeindeStammdatenGesuchsperiode =
+				createGemeindeStammdatenGesuchsperiode(
+					gemeindeId,
+					gesuchsperiodeId
+				);
 		}
 		// Aktuell hat man nur einen Typ bei allen anderen macht nichts
 		if (dokumentTyp.equals(DokumentTyp.MERKBLATT_ANMELDUNG_TS)) {
 			if (sprache == Sprache.DEUTSCH) {
-				gemeindeStammdatenGesuchsperiode.setMerkblattAnmeldungTagesschuleDe(content);
+				gemeindeStammdatenGesuchsperiode
+					.setMerkblattAnmeldungTagesschuleDe(content);
 			} else if (sprache == Sprache.FRANZOESISCH) {
-				gemeindeStammdatenGesuchsperiode.setMerkblattAnmeldungTagesschuleFr(content);
+				gemeindeStammdatenGesuchsperiode
+					.setMerkblattAnmeldungTagesschuleFr(content);
 			} else {
 				// in case we don't recognize the language we don't do anything, so we don't overwrite accidentaly
 				return gemeindeStammdatenGesuchsperiode;
@@ -545,21 +697,32 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		} else {
 			return gemeindeStammdatenGesuchsperiode;
 		}
-		return saveGemeindeStammdatenGesuchsperiode(gemeindeStammdatenGesuchsperiode);
+		return saveGemeindeStammdatenGesuchsperiode(
+			gemeindeStammdatenGesuchsperiode
+		);
 	}
 
 	@Nullable
 	@Override
 	public byte[] downloadGemeindeGesuchsperiodeDokument(
-		@Nonnull String gemeindeId, @Nonnull String gesuchsperiodeId,
+		@Nonnull String gemeindeId,
+		@Nonnull String gesuchsperiodeId,
 		@Nonnull Sprache sprache,
-		@Nonnull DokumentTyp dokumentTyp) {
+		@Nonnull DokumentTyp dokumentTyp
+	) {
 		final Optional<GemeindeStammdatenGesuchsperiode> gemeindeStammdatenGesuchsperiode =
-			findGemeindeStammdatenGesuchsperiode(gemeindeId, gesuchsperiodeId);
+			findGemeindeStammdatenGesuchsperiode(
+				gemeindeId,
+				gesuchsperiodeId
+			);
 		if (dokumentTyp.equals(DokumentTyp.MERKBLATT_ANMELDUNG_TS)) {
 			return gemeindeStammdatenGesuchsperiode
-				.map(gemeindeStammdatenGesuchsperiode1 -> gemeindeStammdatenGesuchsperiode1.getMerkblattAnmeldungTagesschuleWithSprache(
-					sprache))
+				.map(
+					gemeindeStammdatenGesuchsperiode1 -> gemeindeStammdatenGesuchsperiode1
+						.getMerkblattAnmeldungTagesschuleWithSprache(
+							sprache
+						)
+				)
 				.orElse(null);
 		}
 		return new byte[0];
@@ -567,57 +730,81 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	public Optional<GemeindeStammdatenGesuchsperiode> findGemeindeStammdatenGesuchsperiode(
 		@Nonnull String gemeindeId,
-		@Nonnull String gesuchsperiodeId) {
+		@Nonnull String gesuchsperiodeId
+	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<GemeindeStammdatenGesuchsperiode> query =
 			cb.createQuery(GemeindeStammdatenGesuchsperiode.class);
-		Root<GemeindeStammdatenGesuchsperiode> root = query.from(GemeindeStammdatenGesuchsperiode.class);
+		Root<GemeindeStammdatenGesuchsperiode> root = query.from(
+			GemeindeStammdatenGesuchsperiode.class
+		);
 		Predicate predicateGemeinde =
 			cb.equal(
-				root.get(GemeindeStammdatenGesuchsperiode_.gemeinde).get(AbstractEntity_.id),
-				gemeindeId);
+				root.get(GemeindeStammdatenGesuchsperiode_.gemeinde)
+					.get(AbstractEntity_.id),
+				gemeindeId
+			);
 		Predicate predicateGesuchsperiode =
 			cb.equal(
-				root.get(GemeindeStammdatenGesuchsperiode_.gesuchsperiode).get(AbstractEntity_.id),
-				gesuchsperiodeId);
+				root.get(
+					GemeindeStammdatenGesuchsperiode_.gesuchsperiode
+				).get(AbstractEntity_.id),
+				gesuchsperiodeId
+			);
 		query.where(predicateGemeinde, predicateGesuchsperiode);
-		GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode = persistence.getCriteriaSingleResult(query);
+		GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode =
+			persistence.getCriteriaSingleResult(query);
 		if (gemeindeStammdatenGesuchsperiode != null) {
-			authorizer.checkReadAuthorization(gemeindeStammdatenGesuchsperiode.getGemeinde());
+			authorizer.checkReadAuthorization(
+				gemeindeStammdatenGesuchsperiode.getGemeinde()
+			);
 		}
 		return Optional.ofNullable(gemeindeStammdatenGesuchsperiode);
 	}
 
 	@Override
 	public Collection<GemeindeStammdatenGesuchsperiode> findGemeindeStammdatenGesuchsperiode(
-		@Nonnull Gesuchsperiode gesuchsperiode) {
-		return
-			criteriaQueryHelper.getEntitiesByAttribute(GemeindeStammdatenGesuchsperiode.class, gesuchsperiode,
-				GemeindeStammdatenGesuchsperiode_.gesuchsperiode);
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
+		return criteriaQueryHelper.getEntitiesByAttribute(
+			GemeindeStammdatenGesuchsperiode.class,
+			gesuchsperiode,
+			GemeindeStammdatenGesuchsperiode_.gesuchsperiode
+		);
 	}
 
 	private Collection<GemeindeStammdatenGesuchsperiode> getGueltigeGemeindeStammdatenGesuchsperiodeByGesuchsperiodeId(
-		@Nonnull String gesuchsperiodeId, @Nonnull LocalDate gesuchsperiodeStart) {
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull LocalDate gesuchsperiodeStart
+	) {
 		requireNonNull(gesuchsperiodeId, "Gesuchsperiode id muss gesetzt sein");
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<GemeindeStammdatenGesuchsperiode> query =
 			cb.createQuery(GemeindeStammdatenGesuchsperiode.class);
-		Root<GemeindeStammdatenGesuchsperiode> root = query.from(GemeindeStammdatenGesuchsperiode.class);
+		Root<GemeindeStammdatenGesuchsperiode> root = query.from(
+			GemeindeStammdatenGesuchsperiode.class
+		);
 		Predicate predicateGesuchsperiode =
 			cb.equal(
-				root.get(GemeindeStammdatenGesuchsperiode_.gesuchsperiode).get(AbstractEntity_.id),
-				gesuchsperiodeId);
+				root.get(
+					GemeindeStammdatenGesuchsperiode_.gesuchsperiode
+				).get(AbstractEntity_.id),
+				gesuchsperiodeId
+			);
 		Predicate predicateGemeindeGueltig =
 			cb.greaterThanOrEqualTo(
-				root.get(GemeindeStammdatenGesuchsperiode_.gemeinde).get(Gemeinde_.gueltigBis),
-				gesuchsperiodeStart);
+				root.get(GemeindeStammdatenGesuchsperiode_.gemeinde)
+					.get(Gemeinde_.gueltigBis),
+				gesuchsperiodeStart
+			);
 		query.where(predicateGesuchsperiode, predicateGemeindeGueltig);
 		return persistence.getCriteriaResults(query);
 	}
 
 	@Nonnull
 	public GemeindeStammdatenGesuchsperiode saveGemeindeStammdatenGesuchsperiode(
-		@Nonnull GemeindeStammdatenGesuchsperiode stammdaten) {
+		@Nonnull GemeindeStammdatenGesuchsperiode stammdaten
+	) {
 		requireNonNull(stammdaten);
 		authorizer.checkWriteAuthorization(stammdaten.getGemeinde());
 		return persistence.merge(stammdaten);
@@ -625,19 +812,27 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	public GemeindeStammdatenGesuchsperiode createGemeindeStammdatenGesuchsperiode(
 		@Nonnull String gemeindeId,
-		@Nonnull String gesuchsperiodeId) {
-		GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode = new GemeindeStammdatenGesuchsperiode();
-		Gemeinde gemeinde = findGemeinde(gemeindeId).orElseThrow(() -> new EbeguEntityNotFoundException(
-			"uploadGesuchsperiodeDokument",
-			ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-			gemeindeId));
+		@Nonnull String gesuchsperiodeId
+	) {
+		GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode =
+			new GemeindeStammdatenGesuchsperiode();
+		Gemeinde gemeinde = findGemeinde(gemeindeId).orElseThrow(
+			() -> new EbeguEntityNotFoundException(
+				"uploadGesuchsperiodeDokument",
+				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+				gemeindeId
+			)
+		);
 		gemeindeStammdatenGesuchsperiode.setGemeinde(gemeinde);
 		Gesuchsperiode gesuchsperiode =
 			gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeId)
-				.orElseThrow(() -> new EbeguEntityNotFoundException(
-					"uploadGesuchsperiodeDokument",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					gesuchsperiodeId));
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"uploadGesuchsperiodeDokument",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						gesuchsperiodeId
+					)
+				);
 		gemeindeStammdatenGesuchsperiode.setGesuchsperiode(gesuchsperiode);
 		return gemeindeStammdatenGesuchsperiode;
 	}
@@ -646,20 +841,28 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 	public GemeindeStammdatenGesuchsperiode removeGemeindeGesuchsperiodeDokument(
 		@Nonnull String gemeindeId,
 		@Nonnull String gesuchsperiodeId,
-		@Nonnull Sprache sprache, @Nonnull DokumentTyp dokumentTyp) {
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	) {
 
 		final GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode =
-			findGemeindeStammdatenGesuchsperiode(gemeindeId, gesuchsperiodeId).orElseThrow(
+			findGemeindeStammdatenGesuchsperiode(
+				gemeindeId,
+				gesuchsperiodeId
+			).orElseThrow(
 				() -> new EbeguEntityNotFoundException(
 					"removeGemeindeGesuchsperiodeDokument",
 					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					gesuchsperiodeId)
+					gesuchsperiodeId
+				)
 			);
 		if (dokumentTyp.equals(DokumentTyp.MERKBLATT_ANMELDUNG_TS)) {
 			if (sprache == Sprache.DEUTSCH) {
-				gemeindeStammdatenGesuchsperiode.setMerkblattAnmeldungTagesschuleDe(null);
+				gemeindeStammdatenGesuchsperiode
+					.setMerkblattAnmeldungTagesschuleDe(null);
 			} else if (sprache == Sprache.FRANZOESISCH) {
-				gemeindeStammdatenGesuchsperiode.setMerkblattAnmeldungTagesschuleFr(null);
+				gemeindeStammdatenGesuchsperiode
+					.setMerkblattAnmeldungTagesschuleFr(null);
 			} else {
 				// in case we don't recognize the language we don't do anything, so we don't remove accidentaly
 				return gemeindeStammdatenGesuchsperiode;
@@ -668,24 +871,34 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 			return gemeindeStammdatenGesuchsperiode;
 		}
 
-		return saveGemeindeStammdatenGesuchsperiode(gemeindeStammdatenGesuchsperiode);
+		return saveGemeindeStammdatenGesuchsperiode(
+			gemeindeStammdatenGesuchsperiode
+		);
 	}
 
 	@Override
 	public boolean existGemeindeGesuchsperiodeDokument(
-		@Nonnull String gemeindeId, @Nonnull String gesuchsperiodeId,
-		@Nonnull Sprache sprache, @Nonnull DokumentTyp dokumentTyp) {
+		@Nonnull String gemeindeId,
+		@Nonnull String gesuchsperiodeId,
+		@Nonnull Sprache sprache,
+		@Nonnull DokumentTyp dokumentTyp
+	) {
 		requireNonNull(gesuchsperiodeId);
 		requireNonNull(sprache);
 
 		final GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode =
-			findGemeindeStammdatenGesuchsperiode(gemeindeId, gesuchsperiodeId).orElse(null);
+			findGemeindeStammdatenGesuchsperiode(
+				gemeindeId,
+				gesuchsperiodeId
+			).orElse(null);
 		if (gemeindeStammdatenGesuchsperiode == null) {
 			return false;
 		}
 
 		if (dokumentTyp.equals(DokumentTyp.MERKBLATT_ANMELDUNG_TS)) {
-			return gemeindeStammdatenGesuchsperiode.getMerkblattAnmeldungTagesschuleWithSprache(sprache).length != 0;
+			return gemeindeStammdatenGesuchsperiode
+				.getMerkblattAnmeldungTagesschuleWithSprache(sprache).length
+				!= 0;
 		}
 
 		return false;
@@ -694,14 +907,18 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 	@Override
 	public void copyGesuchsperiodeGemeindeStammdaten(
 		@Nonnull Gesuchsperiode gesuchsperiodeToCreate,
-		@Nonnull Gesuchsperiode lastGesuchsperiode) {
+		@Nonnull Gesuchsperiode lastGesuchsperiode
+	) {
 		getGueltigeGemeindeStammdatenGesuchsperiodeByGesuchsperiodeId(
 			lastGesuchsperiode.getId(),
 			gesuchsperiodeToCreate.getGueltigkeit().getGueltigAb()
 		).forEach(
 			gemeindeStammdatenGesuchsperiode -> {
 				GemeindeStammdatenGesuchsperiode newGemeindeStammdatenGesuchsperiode =
-					gemeindeStammdatenGesuchsperiode.copyForGesuchsperiode(gesuchsperiodeToCreate);
+					gemeindeStammdatenGesuchsperiode
+						.copyForGesuchsperiode(
+							gesuchsperiodeToCreate
+						);
 				persistence.merge(newGemeindeStammdatenGesuchsperiode);
 			}
 		);
@@ -721,33 +938,44 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		// noch Mahlzeitenverguenstigungen ausbezahlt werden!
 
 		Predicate predicateKey =
-			cb.equal(root.get(Einstellung_.key), EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED);
+			cb.equal(
+				root.get(Einstellung_.key),
+				EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_ENABLED
+			);
 		predicatesToUse.add(predicateKey);
 
-		Predicate predicateValue = cb.equal(root.get(Einstellung_.value), Boolean.TRUE.toString());
+		Predicate predicateValue = cb.equal(
+			root.get(Einstellung_.value),
+			Boolean.TRUE.toString()
+		);
 		predicatesToUse.add(predicateValue);
 
 		final Benutzer currentBenutzer = principalBean.getBenutzer();
-		Predicate predicateMandant = root.get(Einstellung_.mandant).in(currentBenutzer.getMandant());
+		Predicate predicateMandant = root.get(Einstellung_.mandant)
+			.in(currentBenutzer.getMandant());
 		predicatesToUse.add(predicateMandant);
 
 		if (!principalBean.isCallerInRole(UserRole.SUPER_ADMIN)) {
 			// Berechtigte Gemeinden im Sinne von "zustaendig fuer"
-			Set<Gemeinde> gemeindenBerechtigt = currentBenutzer.extractGemeindenForUser();
+			Set<Gemeinde> gemeindenBerechtigt = currentBenutzer
+				.extractGemeindenForUser();
 			//wenn der Benutzer ist fuer keine Gemeinde Berechtigt gibt man eine Empty Liste zurueck
 			// in kann keine empty Collection als Parameter nehmen sonst => Exception
 			if (gemeindenBerechtigt.isEmpty()) {
 				return Collections.emptySet();
 			}
 			// Die Gemeinde muss nur ueberprueft werden, wenn es kein Superadmin ist
-			Predicate predicateGemeinde = root.get(Einstellung_.gemeinde).in(gemeindenBerechtigt);
+			Predicate predicateGemeinde = root.get(Einstellung_.gemeinde)
+				.in(gemeindenBerechtigt);
 			predicatesToUse.add(predicateGemeinde);
 		}
 
 		query.distinct(true); // Jede Gemeinde nur einmal, auch wenn in verschiedenen GPs Mahlzeitenverguenstigungen
 		query.select(root.get(Einstellung_.gemeinde));
 
-		query.where(CriteriaQueryHelper.concatenateExpressions(cb, predicatesToUse));
+		query.where(
+			CriteriaQueryHelper.concatenateExpressions(cb, predicatesToUse)
+		);
 		return persistence.getCriteriaResults(query);
 	}
 
@@ -757,7 +985,10 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		final CriteriaQuery<Gemeinde> query = cb.createQuery(Gemeinde.class);
 		Root<Gemeinde> root = query.from(Gemeinde.class);
 
-		Predicate gemeindeNummerPredicate = cb.equal(root.get(Gemeinde_.gemeindeNummer), gemeindeNummer);
+		Predicate gemeindeNummerPredicate = cb.equal(
+			root.get(Gemeinde_.gemeindeNummer),
+			gemeindeNummer
+		);
 		query.where(gemeindeNummerPredicate);
 
 		return Optional.ofNullable(persistence.getCriteriaSingleResult(query));
@@ -769,9 +1000,14 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 		final CriteriaQuery<Gemeinde> query = cb.createQuery(Gemeinde.class);
 
 		Root<LastenausgleichTagesschuleAngabenGemeindeContainer> root =
-			query.from(LastenausgleichTagesschuleAngabenGemeindeContainer.class);
-		Path<Gemeinde> gemeinde = root.get(LastenausgleichTagesschuleAngabenGemeindeContainer_.gemeinde);
-		final CriteriaQuery<Gemeinde> gemeindeQuery = query.select(gemeinde).distinct(true);
+			query.from(
+				LastenausgleichTagesschuleAngabenGemeindeContainer.class
+			);
+		Path<Gemeinde> gemeinde = root.get(
+			LastenausgleichTagesschuleAngabenGemeindeContainer_.gemeinde
+		);
+		final CriteriaQuery<Gemeinde> gemeindeQuery = query.select(gemeinde)
+			.distinct(true);
 
 		List<Gemeinde> gde = persistence.getCriteriaResults(gemeindeQuery);
 		return gde;
@@ -779,8 +1015,25 @@ public class GemeindeServiceBean extends AbstractBaseService implements Gemeinde
 
 	@Override
 	public void fireGemeindeChangedEvent(@Nonnull Gemeinde gemeinde) {
-		if (gemeinde.getMandant().getMandantIdentifier() != MandantIdentifier.APPENZELL_AUSSERRHODEN) {
+		if (gemeinde.getMandant().getMandantIdentifier()
+			!= MandantIdentifier.APPENZELL_AUSSERRHODEN) {
 			event.fire(gemeindeEventConverter.of(gemeinde));
 		}
+	}
+
+	@Override
+	public List<Gemeinde> getGemeindenWithInfoma(Mandant mandant) {
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<Gemeinde> query = cb.createQuery(Gemeinde.class);
+		Root<Gemeinde> root = query.from(Gemeinde.class);
+
+		Predicate infomaPredicate = cb.equal(
+			root.get(Gemeinde_.INFOMA_ZAHLUNGEN),
+			true
+		);
+		var mandantPredicate = cb.equal(root.get(Gemeinde_.mandant), mandant);
+		query.where(infomaPredicate, mandantPredicate);
+
+		return persistence.getCriteriaResults(query);
 	}
 }

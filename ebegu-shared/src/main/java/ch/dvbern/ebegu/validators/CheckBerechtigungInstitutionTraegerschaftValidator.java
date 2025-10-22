@@ -16,8 +16,8 @@
 package ch.dvbern.ebegu.validators;
 
 import javax.annotation.Nullable;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.entities.Berechtigung;
 import ch.dvbern.ebegu.enums.UserRole;
@@ -26,7 +26,8 @@ import ch.dvbern.ebegu.util.EnumUtil;
 /**
  * Dieser Validator prueft dass die angelegte Benutzer, mit den richtigen Parameter erstellt werden.
  */
-public class CheckBerechtigungInstitutionTraegerschaftValidator implements ConstraintValidator<CheckBerechtigungInstitutionTraegerschaft, Berechtigung> {
+public class CheckBerechtigungInstitutionTraegerschaftValidator implements
+	ConstraintValidator<CheckBerechtigungInstitutionTraegerschaft, Berechtigung> {
 
 	/**
 	 * Folgende Regeln muessen erfuellt werden:
@@ -38,14 +39,26 @@ public class CheckBerechtigungInstitutionTraegerschaftValidator implements Const
 	 * @return true wenn die Regeln erfuellt sind
 	 */
 	@Override
-	public boolean isValid(Berechtigung berechtigung, @Nullable ConstraintValidatorContext context) {
-		if (EnumUtil.isOneOf(berechtigung.getRole(), UserRole.ADMIN_INSTITUTION, UserRole.SACHBEARBEITER_INSTITUTION)) {
+	public boolean isValid(
+		Berechtigung berechtigung,
+		@Nullable ConstraintValidatorContext context
+	) {
+		if (EnumUtil.isOneOf(
+			berechtigung.getRole(),
+			UserRole.ADMIN_INSTITUTION,
+			UserRole.SACHBEARBEITER_INSTITUTION
+		)) {
 			return berechtigung.getInstitution() != null;
 		}
-		if (EnumUtil.isOneOf(berechtigung.getRole(), UserRole.ADMIN_TRAEGERSCHAFT, UserRole.SACHBEARBEITER_TRAEGERSCHAFT)) {
+		if (EnumUtil.isOneOf(
+			berechtigung.getRole(),
+			UserRole.ADMIN_TRAEGERSCHAFT,
+			UserRole.SACHBEARBEITER_TRAEGERSCHAFT
+		)) {
 			return berechtigung.getTraegerschaft() != null;
 		}
 		// alle anderen Benutzer duerfen keine Inst/Traeg haben
-		return berechtigung.getTraegerschaft() == null && berechtigung.getInstitution() == null;
+		return berechtigung.getTraegerschaft() == null
+			&& berechtigung.getInstitution() == null;
 	}
 }

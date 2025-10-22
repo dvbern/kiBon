@@ -1,0 +1,311 @@
+<div class="meldung-heading">
+    <span>{{ 'MELDUNGSFENSTER_TABLE_VORSCHAU' | translate }}</span>
+    @if (appPropService.getFrenchEnabled() | async) {
+        <span class="float-right">
+            @for (
+                language of getTSSpracheValues();
+                track language;
+                let index = $index
+            ) {
+                <span
+                    (click)="onLanguageClick(language)"
+                    style="cursor: pointer"
+                    [ngClass]="{
+                        'active-language': language === activeLanguage
+                    }"
+                >
+                    {{ language | translate }}
+                </span>
+                @if (index < getTSSpracheValues().length - 1) {
+                    <span> | </span>
+                    <!-- Add the pipe only between items -->
+                }
+            }
+        </span>
+    }
+</div>
+<lib-shared-ui-meldungsfenster
+    [maxCount]="0"
+    [meldungsfenster]="form.form.getRawValue()"
+    [currentLanguage]="activeLanguage"
+></lib-shared-ui-meldungsfenster>
+
+<form
+    #form="ngForm"
+    class="background-grey dv-meldungsfenster-form"
+    (ngSubmit)="formSubmitted.emit(meldungsfenster())"
+>
+    <div class="p-t-1 form-group">
+        <label translate class="required"
+            >MELDUNGSFENSTER_TABLE_ZIELGRUPPE</label
+        >
+        <div class="flex-row">
+            <div
+                class="select-wrapper"
+                [ngClass]="{'margin-r-2': mode() !== 'READONLY'}"
+            >
+                <mat-select
+                    [(ngModel)]="meldungsfenster().zielgruppe"
+                    multiple
+                    id="zielgruppe"
+                    name="zielgruppe"
+                    class="form-control"
+                    [disabled]="mode() === 'READONLY'"
+                    data-test="zielgruppe"
+                    #zielgruppe="ngModel"
+                    required
+                >
+                    <mat-select-trigger>
+                        {{
+                            'FILTER_SET'
+                                | translate
+                                    : {
+                                          amount: meldungsfenster().zielgruppe
+                                              ? meldungsfenster().zielgruppe
+                                                    .length
+                                              : 'Kein'
+                                      }
+                        }}
+                    </mat-select-trigger>
+                    @for (role of roles; track role) {
+                        <mat-option [value]="role">
+                            {{ 'TSRole_' + role | translate }}
+                        </mat-option>
+                    }
+                </mat-select>
+            </div>
+            @if (mode() !== 'READONLY') {
+                @if (meldungsfenster().zielgruppe.length < roles.length) {
+                    <button
+                        (click)="selectAllRoles()"
+                        class="dv-btn"
+                        type="button"
+                        translate
+                    >
+                        ALLE_WAEHLEN
+                    </button>
+                } @else {
+                    <button
+                        (click)="unselectAllRoles()"
+                        class="dv-btn cancel-button"
+                        type="button"
+                        translate
+                    >
+                        ALLE_ABWAEHLEN
+                    </button>
+                }
+            }
+        </div>
+        @if (form.submitted || zielgruppe.touched) {
+            <dv-error-messages
+                [errorObject]="zielgruppe.errors"
+            ></dv-error-messages>
+        }
+    </div>
+    <div class="form-group">
+        <label translate class="required">MELDUNGSFENSTER_TABLE_STATUS</label>
+        <mat-select
+            [(ngModel)]="meldungsfenster().status"
+            id="status"
+            name="status"
+            class="form-control"
+            [disabled]="mode() === 'READONLY'"
+            data-test="status"
+            #status="ngModel"
+            required
+        >
+            @for (statusOption of statusOptions; track statusOption) {
+                <mat-option [value]="statusOption">
+                    {{ statusOption | translate }}
+                </mat-option>
+            }
+        </mat-select>
+        @if (form.submitted || status.touched) {
+            <dv-error-messages
+                [errorObject]="status.errors"
+            ></dv-error-messages>
+        }
+    </div>
+    <div class="flex-row">
+        <div
+            class="form-group flex-grow"
+            [ngClass]="{
+                'padding-r-2': appPropService.getFrenchEnabled() | async
+            }"
+        >
+            @if (appPropService.getFrenchEnabled() | async) {
+                <label class="required" translate for="title_de"
+                    >MELDUNGSFENSTER_TABLE_TITLE_DE</label
+                >
+            } @else {
+                <label class="required" translate for="title_de"
+                    >MELDUNGSFENSTER_TABLE_TITLE</label
+                >
+            }
+
+            <input
+                type="text"
+                name="titleDe"
+                id="title_de"
+                class="form-control"
+                #titleDe="ngModel"
+                [(ngModel)]="meldungsfenster().titleDe"
+                [disabled]="mode() === 'READONLY'"
+                data-test="title_de"
+                [maxlength]="255"
+                required
+            />
+            @if (form.submitted || titleDe.touched) {
+                <dv-error-messages
+                    [errorObject]="titleDe.errors"
+                ></dv-error-messages>
+            }
+        </div>
+        @if (appPropService.getFrenchEnabled() | async) {
+            <div class="form-group flex-grow">
+                <label class="required" translate for="title_fr"
+                    >MELDUNGSFENSTER_TABLE_TITLE_FR</label
+                >
+                <input
+                    type="text"
+                    name="titleFr"
+                    id="title_fr"
+                    class="form-control"
+                    #titleFr="ngModel"
+                    [(ngModel)]="meldungsfenster().titleFr"
+                    [disabled]="mode() === 'READONLY'"
+                    data-test="title_fr"
+                    [maxlength]="255"
+                    required
+                />
+                @if (form.submitted || titleFr.touched) {
+                    <dv-error-messages
+                        [errorObject]="titleFr.errors"
+                    ></dv-error-messages>
+                }
+            </div>
+        }
+    </div>
+    <div class="form-group flex-row">
+        <div class="flex-grow padding-r-2">
+            <lib-shared-ui-date-time-picker
+                [min]="min"
+                [label]="'VON'"
+                [disabled]="isGueltigAbDisabled()"
+                [(dateTime)]="meldungsfenster().gueltigAb"
+                [required]="true"
+            ></lib-shared-ui-date-time-picker>
+        </div>
+        <div class="flex-grow">
+            <lib-shared-ui-date-time-picker
+                [min]="minGueltigBis()"
+                [label]="'BIS'"
+                [(dateTime)]="meldungsfenster().gueltigBis"
+                [disabled]="mode() === 'READONLY'"
+                [required]="true"
+            ></lib-shared-ui-date-time-picker>
+        </div>
+    </div>
+    <div class="flex-row">
+        <div
+            class="form-group flex-grow"
+            [ngClass]="{
+                'padding-r-2': appPropService.getFrenchEnabled() | async
+            }"
+        >
+            @if (appPropService.getFrenchEnabled() | async) {
+                <label class="required" translate
+                    >MELDUNGSFENSTER_INHALT_DE</label
+                >
+            } @else {
+                <label class="required" translate>MELDUNGSFENSTER_INHALT</label>
+            }
+            <angular-editor
+                name="inhaltDe"
+                id="inhalt_de"
+                #inhaltDE="ngModel"
+                data-test="inhalt_de"
+                [dvMaxLength]="maxLength"
+                [required]="true"
+                [config]="editorConfig()"
+                [placeholder]="'Inhalt'"
+                [(ngModel)]="meldungsfenster().inhaltDe"
+            ></angular-editor>
+            @if (inhaltDE.touched) {
+                <dv-error-messages
+                    [errorObject]="
+                        getAngularEditorError(
+                            meldungsfenster().inhaltDe,
+                            inhaltDE.errors
+                        )
+                    "
+                ></dv-error-messages>
+            }
+        </div>
+        @if (appPropService.getFrenchEnabled() | async) {
+            <div class="form-group flex-grow">
+                <label class="required" translate
+                    >MELDUNGSFENSTER_INHALT_FR</label
+                >
+                <angular-editor
+                    name="inhaltFr"
+                    id="inhalt_fr"
+                    #inhaltFR="ngModel"
+                    data-test="inhalt_fr"
+                    [dvMaxLength]="maxLength"
+                    [config]="editorConfig()"
+                    [placeholder]="'Inhalt'"
+                    [(ngModel)]="meldungsfenster().inhaltFr"
+                ></angular-editor>
+
+                @if (inhaltFR.touched) {
+                    <dv-error-messages
+                        [errorObject]="
+                            getAngularEditorError(
+                                meldungsfenster().inhaltFr,
+                                inhaltFR.errors
+                            )
+                        "
+                    ></dv-error-messages>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="flex-row">
+        <div class="form-group flex-grow padding-r-2"></div>
+    </div>
+
+    <div class="m-t-2 p-b-2 flex-row-center-center">
+        @if (mode() !== 'READONLY') {
+            @if (appPropService.getFrenchEnabled() | async) {
+                <button
+                    [disabled]="!isFormWithFrenchValid()"
+                    type="submit"
+                    translate
+                    class="margin-r-2 dv-btn"
+                >
+                    SPEICHERN
+                </button>
+            } @else {
+                <button
+                    [disabled]="!isFormWithoutFrenchValid()"
+                    type="submit"
+                    translate
+                    class="margin-r-2 dv-btn"
+                >
+                    SPEICHERN
+                </button>
+            }
+        }
+
+        <button
+            type="button"
+            translate
+            class="dv-btn cancel-button"
+            (click)="userCancelled.emit()"
+        >
+            CANCEL
+        </button>
+    </div>
+</form>

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {TSBetreuungsangebotTyp} from '../../../../../models/enums/betreuung/TSBetreuungsangebotTyp';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSErweiterteBetreuung} from '../../../../../models/TSErweiterteBetreuung';
 import {
     ErweiterteBeduerfnisseBestaetigenEinstellungen,
@@ -14,7 +14,6 @@ import {
  */
 @Component({
     selector: 'dv-erweiterte-beduerfnisse-bestaetigung-wrapper',
-    standalone: true,
     imports: [ErweiterteBeduerfnisseBestaetigungComponent],
     templateUrl:
         './erweiterte-beduerfnisse-bestaetigung-wrapper.component.html',

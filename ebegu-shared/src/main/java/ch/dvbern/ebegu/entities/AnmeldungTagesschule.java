@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -22,22 +22,22 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.AssociationOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
 
 import ch.dvbern.ebegu.enums.AntragCopyType;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.Eingangsart;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.validators.CheckPlatzAndAngebottyp;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hibernate.envers.Audited;
@@ -50,12 +50,19 @@ import org.hibernate.envers.Audited;
 @CheckPlatzAndAngebottyp
 // Der ForeignKey-Name wird leider nicht richtig generiert, muss von Hand angepasst werden!
 @AssociationOverrides({
-	@AssociationOverride(name = "kind", joinColumns = @JoinColumn(name = "kind_id"), foreignKey = @ForeignKey(name = "FK_anmeldung_tagesschule_kind_id")),
-	@AssociationOverride(name="institutionStammdaten", joinColumns=@JoinColumn(name="institutionStammdaten_id"), foreignKey = @ForeignKey(name = "FK_anmeldung_tagesschule_institution_stammdaten_id"))
+	@AssociationOverride(name = "kind",
+		joinColumns = @JoinColumn(name = "kind_id"),
+		foreignKey = @ForeignKey(
+			name = "FK_anmeldung_tagesschule_kind_id")),
+	@AssociationOverride(name = "institutionStammdaten",
+		joinColumns = @JoinColumn(name = "institutionStammdaten_id"),
+		foreignKey = @ForeignKey(
+			name = "FK_anmeldung_tagesschule_institution_stammdaten_id"))
 })
 @Table(
-	uniqueConstraints =
-	@UniqueConstraint(columnNames = { "betreuungNummer", "kind_id" }, name = "UK_anmeldung_tagesschule_kind_betreuung_nummer")
+	uniqueConstraints = @UniqueConstraint(columnNames = { "betreuungNummer",
+		"kind_id" },
+		name = "UK_anmeldung_tagesschule_kind_betreuung_nummer")
 )
 public class AnmeldungTagesschule extends AbstractAnmeldung {
 
@@ -63,7 +70,9 @@ public class AnmeldungTagesschule extends AbstractAnmeldung {
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_anmeldung_tagesschule_belegung_tagesschule_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_anmeldung_tagesschule_belegung_tagesschule_id"),
+		nullable = true)
 	private BelegungTagesschule belegungTagesschule;
 
 	@Column(nullable = false)
@@ -74,23 +83,26 @@ public class AnmeldungTagesschule extends AbstractAnmeldung {
 
 	@Nullable
 	@Valid
-	@OneToOne(optional = true, cascade = CascadeType.REMOVE, orphanRemoval = true, mappedBy = "anmeldungTagesschule")
+	@OneToOne(optional = true,
+		cascade = CascadeType.REMOVE,
+		orphanRemoval = true,
+		mappedBy = "anmeldungTagesschule")
 	private Verfuegung verfuegung;
 	@Transient
 	@Nullable
 	private Verfuegung verfuegungPreview;
 
-
 	public AnmeldungTagesschule() {
 	}
-
 
 	@Nullable
 	public BelegungTagesschule getBelegungTagesschule() {
 		return belegungTagesschule;
 	}
 
-	public void setBelegungTagesschule(@Nullable BelegungTagesschule belegungTagesschule) {
+	public void setBelegungTagesschule(
+		@Nullable BelegungTagesschule belegungTagesschule
+	) {
 		this.belegungTagesschule = belegungTagesschule;
 	}
 
@@ -138,8 +150,12 @@ public class AnmeldungTagesschule extends AbstractAnmeldung {
 		if (!super.isSame(other)) {
 			return false;
 		}
-		final AnmeldungTagesschule otherBetreuung = (AnmeldungTagesschule) other;
-		return Objects.equals(this.getBelegungTagesschule(), otherBetreuung.getBelegungTagesschule());
+		final AnmeldungTagesschule otherBetreuung =
+			(AnmeldungTagesschule) other;
+		return Objects.equals(
+			this.getBelegungTagesschule(),
+			otherBetreuung.getBelegungTagesschule()
+		);
 	}
 
 	@Nonnull
@@ -149,31 +165,52 @@ public class AnmeldungTagesschule extends AbstractAnmeldung {
 		@Nonnull KindContainer targetKindContainer,
 		@Nonnull Eingangsart targetEingangsart
 	) {
-		super.copyAbstractAnmeldung(target, copyType, targetKindContainer, targetEingangsart);
+		super.copyAbstractAnmeldung(
+			target,
+			copyType,
+			targetKindContainer,
+			targetEingangsart
+		);
 		switch (copyType) {
 		case MUTATION:
 			if (belegungTagesschule != null) {
-				target.setBelegungTagesschule(belegungTagesschule.copyBelegungTagesschule(new BelegungTagesschule(), copyType));
+				target.setBelegungTagesschule(
+					belegungTagesschule.copyBelegungTagesschule(
+						new BelegungTagesschule(),
+						copyType
+					)
+				);
 			}
-			if (this.getBetreuungsstatus().isSchulamtAnmeldungUebernommen()){
-				target.setBetreuungsstatus(Betreuungsstatus.SCHULAMT_MODULE_AKZEPTIERT);
+			if (this.getBetreuungsstatus().isSchulamtAnmeldungUebernommen()) {
+				target.setBetreuungsstatus(
+					Betreuungsstatus.SCHULAMT_MODULE_AKZEPTIERT
+				);
 			}
 			// falls die Mutation ignoriert wurde, muss der Status in der neuen Mutation wieder auf den
 			// Status gesetzt werden, welcher vor der Mutation gesetzt war. Falls der Status bereits übernommen
 			// war, wird er zurückgesetzt auf MODULE_AKZEPTIERT, wie oben
 			if (this.getBetreuungsstatus().isIgnoriert()) {
 				var oldStatus = this.getStatusVorIgnorieren();
-				Objects.requireNonNull(oldStatus, "statusVorIgnorieren darf nicht null sein, falls ignoriert wurde");
+				Objects.requireNonNull(
+					oldStatus,
+					"statusVorIgnorieren darf nicht null sein, falls ignoriert wurde"
+				);
 				if (oldStatus.isSchulamtAnmeldungUebernommen()) {
-					target.setBetreuungsstatus(Betreuungsstatus.SCHULAMT_MODULE_AKZEPTIERT);
+					target.setBetreuungsstatus(
+						Betreuungsstatus.SCHULAMT_MODULE_AKZEPTIERT
+					);
 				} else {
 					target.setBetreuungsstatus(oldStatus);
 				}
 			}
-			target.setKeineDetailinformationen(this.isKeineDetailinformationen());
+			target.setKeineDetailinformationen(
+				this.isKeineDetailinformationen()
+			);
 			if (target.isKeineDetailinformationen()) {
 				// eine Anmeldung ohne Detailinformationen muss immer als Uebernommen gespeichert werden
-				target.setBetreuungsstatus(Betreuungsstatus.SCHULAMT_ANMELDUNG_UEBERNOMMEN);
+				target.setBetreuungsstatus(
+					Betreuungsstatus.SCHULAMT_ANMELDUNG_UEBERNOMMEN
+				);
 			}
 			target.setVerfuegung(null);
 
@@ -190,11 +227,18 @@ public class AnmeldungTagesschule extends AbstractAnmeldung {
 	@Override
 	public void copyAnmeldung(@Nonnull AbstractAnmeldung betreuung) {
 		super.copyAnmeldung(betreuung);
-		if (this.getBetreuungsstatus() != betreuung.getBetreuungsstatus() && betreuung instanceof AnmeldungTagesschule) {
+		if (this.getBetreuungsstatus() != betreuung.getBetreuungsstatus()
+			&& betreuung instanceof AnmeldungTagesschule) {
 			AnmeldungTagesschule that = (AnmeldungTagesschule) betreuung;
 			this.setKeineDetailinformationen(that.isKeineDetailinformationen());
 			if (that.getBelegungTagesschule() != null) {
-				this.setBelegungTagesschule(that.getBelegungTagesschule().copyBelegungTagesschule(new BelegungTagesschule(), AntragCopyType.MUTATION));
+				this.setBelegungTagesschule(
+					that.getBelegungTagesschule()
+						.copyBelegungTagesschule(
+							new BelegungTagesschule(),
+							AntragCopyType.MUTATION
+						)
+				);
 			}
 		}
 	}
@@ -204,11 +248,15 @@ public class AnmeldungTagesschule extends AbstractAnmeldung {
 		if (isKeineDetailinformationen()) {
 			return false;
 		}
-		final InstitutionStammdatenTagesschule stammdatenTagesschule = this.getInstitutionStammdaten().getInstitutionStammdatenTagesschule();
+		final InstitutionStammdatenTagesschule stammdatenTagesschule = this
+			.getInstitutionStammdaten()
+			.getInstitutionStammdatenTagesschule();
 		Objects.requireNonNull(stammdatenTagesschule);
-		final Set<EinstellungenTagesschule> einstellungenTagesschule = stammdatenTagesschule.getEinstellungenTagesschule();
+		final Set<EinstellungenTagesschule> einstellungenTagesschule =
+			stammdatenTagesschule.getEinstellungenTagesschule();
 		for (EinstellungenTagesschule einstellung : einstellungenTagesschule) {
-			if (einstellung.getGesuchsperiode().equals(this.extractGesuchsperiode())) {
+			if (einstellung.getGesuchsperiode()
+				.equals(this.extractGesuchsperiode())) {
 				return einstellung.isTagi();
 			}
 		}

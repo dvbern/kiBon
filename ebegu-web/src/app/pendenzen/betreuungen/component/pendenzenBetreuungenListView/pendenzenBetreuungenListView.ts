@@ -17,18 +17,20 @@ import {StateService} from '@uirouter/core';
 import {IComponentOptions, IController} from 'angular';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import {
+    TSGemeinde,
+    TSGesuchsperiode,
+    TSInstitution
+} from '@kibon/shared/model/entity';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {BerechnungsManager} from '../../../../../gesuch/service/berechnungsManager';
 import {GemeindeRS} from '../../../../../gesuch/service/gemeindeRS.rest';
 import {GesuchModelManager} from '../../../../../gesuch/service/gesuchModelManager';
-import {TSBetreuungsangebotTyp} from '../../../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {TSGemeinde} from '../../../../../models/TSGemeinde';
-import {TSGesuchsperiode} from '../../../../../models/TSGesuchsperiode';
-import {TSInstitution} from '../../../../../models/TSInstitution';
 import {TSPendenzBetreuung} from '../../../../../models/TSPendenzBetreuung';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
-import {LogFactory} from '../../../../core/logging/LogFactory';
 import {GesuchsperiodeRS} from '../../../../core/service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../../../../core/service/institutionRS.rest';
 import {InstitutionStammdatenRS} from '../../../../core/service/institutionStammdatenRS.rest';
@@ -63,7 +65,7 @@ export class PendenzenBetreuungenListViewController implements IController {
     public selectedBetreuungsangebotTyp: string;
     public selectedInstitution: string;
     public selectedGesuchsperiode: string;
-    public selectedGemeinde: TSGemeinde;
+    public selectedGemeinde: string;
     public institutionenList: Array<TSInstitution>;
     public betreuungsangebotTypList: Array<TSBetreuungsangebotTyp>;
     public activeGesuchsperiodenList: Array<string> = [];
@@ -71,7 +73,6 @@ export class PendenzenBetreuungenListViewController implements IController {
     public itemsByPage: number = 20;
     public numberOfPages: number = 1;
     public hasInstitutionenInStatusAngemeldet: boolean = false;
-    public isStammdatenCheckRequired: boolean = false;
 
     private readonly unsubscribe$ = new Subject<void>();
 
@@ -95,7 +96,6 @@ export class PendenzenBetreuungenListViewController implements IController {
         this.updateActiveGesuchsperiodenList();
         this.updateGemeindenList();
         this.initHasInstitutionenInStatusAngemeldet();
-        this.initIsStammdatenCheckRequired();
     }
 
     public $onDestroy(): void {
@@ -141,12 +141,12 @@ export class PendenzenBetreuungenListViewController implements IController {
     public updateInstitutionenList(): void {
         this.institutionRS
             .getInstitutionenReadableForCurrentBenutzer()
-            .subscribe(
-                response => {
+            .subscribe({
+                next: response => {
                     this.institutionenList = response;
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public updateBetreuungsangebotTypList(): void {
@@ -161,12 +161,12 @@ export class PendenzenBetreuungenListViewController implements IController {
         this.gemeindeRS
             .getGemeindenForPrincipal$()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                gemeinden => {
+            .subscribe({
+                next: gemeinden => {
                     this.gemeindenList = gemeinden;
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public getPendenzenList(): Array<TSPendenzBetreuung> {
@@ -223,27 +223,11 @@ export class PendenzenBetreuungenListViewController implements IController {
         ) {
             return;
         }
-        this.institutionRS.hasInstitutionenInStatusAngemeldet().subscribe(
-            result => {
+        this.institutionRS.hasInstitutionenInStatusAngemeldet().subscribe({
+            next: result => {
                 this.hasInstitutionenInStatusAngemeldet = result;
             },
-            error => LOG.error(error)
-        );
-    }
-
-    private initIsStammdatenCheckRequired(): void {
-        if (
-            !this.authServiceRS.isOneOfRoles(
-                TSRoleUtil.getInstitutionProfilEditRoles()
-            )
-        ) {
-            return;
-        }
-        this.institutionRS.isStammdatenCheckRequired().subscribe(
-            result => {
-                this.isStammdatenCheckRequired = result;
-            },
-            error => LOG.error(error)
-        );
+            error: error => LOG.error(error)
+        });
     }
 }

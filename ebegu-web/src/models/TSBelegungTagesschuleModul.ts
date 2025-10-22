@@ -16,8 +16,7 @@
  */
 
 import {TSBelegungTagesschuleModulIntervall} from './enums/TSBelegungTagesschuleModulIntervall';
-import {TSAbstractEntity} from './TSAbstractEntity';
-import {TSModulTagesschule} from './TSModulTagesschule';
+import {TSAbstractEntity, TSModulTagesschule} from '@kibon/shared/model/entity';
 
 export class TSBelegungTagesschuleModul extends TSAbstractEntity {
     public intervall: TSBelegungTagesschuleModulIntervall;

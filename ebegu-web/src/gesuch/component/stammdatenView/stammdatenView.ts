@@ -15,36 +15,41 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IComponentOptions} from 'angular';
+import {MANDANTS} from '@kibon/shared-model-mandant';
+import {MandantService} from '@kibon/shared-util-mandant-service';
+import {CONSTANTS, MAX_FILE_SIZE} from '@kibon/shared/model/constants';
+import {TSAdresse, TSGeschlecht} from '@kibon/shared/model/entity';
+import {
+    getTSSpracheValues,
+    TSAdressetyp,
+    TSDokumentUploadTyp,
+    TSRole,
+    TSSprache,
+    TSWizardStepName,
+    TSWizardStepStatus
+} from '@kibon/shared/model/enums';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {copy, IComponentOptions} from 'angular';
 import {map} from 'rxjs/operators';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {CONSTANTS, MAX_FILE_SIZE} from '../../../app/core/constants/CONSTANTS';
-import {MANDANTS} from '../../../app/core/constants/MANDANTS';
 import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
-import {ApplicationPropertyRS} from '../../../app/core/rest-services/applicationPropertyRS.rest';
 import {DemoFeatureRS} from '../../../app/core/service/demoFeatureRS.rest';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {EwkRS} from '../../../app/core/service/ewkRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
-import {MandantService} from '../../../app/shared/services/mandant.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSDokumenteDTO} from '../../../models/dto/TSDokumenteDTO';
-import {TSAdressetyp} from '../../../models/enums/TSAdressetyp';
+import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSDokumentGrundTyp} from '../../../models/enums/TSDokumentGrundTyp';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {TSEingangsart} from '../../../models/enums/TSEingangsart';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
 import {TSFamilienstatus} from '../../../models/enums/TSFamilienstatus';
-import {TSGeschlecht} from '../../../models/enums/TSGeschlecht';
 import {TSGesuchstellerKardinalitaet} from '../../../models/enums/TSGesuchstellerKardinalitaet';
-import {TSRole} from '../../../models/enums/TSRole';
-import {getTSSpracheValues, TSSprache} from '../../../models/enums/TSSprache';
-import {TSWizardStepName} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
+import {TSUnterhaltsvereinbarungAnswer} from '../../../models/enums/TSUnterhaltsvereinbarungAnswer';
 import {TSSozialdienstFallDokument} from '../../../models/sozialdienst/TSSozialdienstFallDokument';
-import {TSAdresse} from '../../../models/TSAdresse';
 import {TSAdresseContainer} from '../../../models/TSAdresseContainer';
 import {TSDokument} from '../../../models/TSDokument';
 import {TSDokumentGrund} from '../../../models/TSDokumentGrund';
@@ -62,7 +67,6 @@ import {DokumenteRS} from '../../service/dokumenteRS.rest';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
-import {TSUnterhaltsvereinbarungAnswer} from '../../../models/enums/TSUnterhaltsvereinbarungAnswer';
 import IPromise = angular.IPromise;
 import IQService = angular.IQService;
 import IRootScopeService = angular.IRootScopeService;
@@ -98,7 +102,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         'EinstellungRS',
         'UploadRS',
         'DownloadRS',
-        'ApplicationPropertyRS',
+        'SharedUtilApplicationPropertyRsService',
         'DokumenteRS',
         'MandantService',
         'DemoFeatureRS'
@@ -124,6 +128,11 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
     public demoFeature2754: boolean = false;
     private angebotTS: boolean;
     public sozialversicherungsnummerRequiredEinstellung: boolean;
+    public ausweisFileTypes = [
+        TSDokumentUploadTyp.IMAGE,
+        TSDokumentUploadTyp.WORD,
+        TSDokumentUploadTyp.PDF
+    ];
 
     public constructor(
         $stateParams: IStammdatenStateParams,
@@ -142,7 +151,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         private readonly einstellungRS: EinstellungRS,
         private readonly uploadRS: UploadRS,
         private readonly downloadRS: DownloadRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly dokumenteRS: DokumenteRS,
         private readonly mandantService: MandantService,
         private readonly demoFeatureRS: DemoFeatureRS
@@ -221,9 +230,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
 
     private initViewmodel(): void {
         this.gesuchModelManager.initStammdaten();
-        this.model = angular.copy(
-            this.gesuchModelManager.getStammdatenToWorkWith()
-        );
+        this.model = copy(this.gesuchModelManager.getStammdatenToWorkWith());
         this.wizardStepManager.updateCurrentWizardStepStatusSafe(
             TSWizardStepName.GESUCHSTELLER,
             TSWizardStepStatus.IN_BEARBEITUNG
@@ -263,7 +270,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
             );
         this.demoFeatureRS
             .isDemoFeatureAllowed(TSDemoFeature.KIBON_2754)
-            .then(isAllowed => (this.demoFeature2754 = isAllowed));
+            .subscribe(isAllowed => (this.demoFeature2754 = isAllowed));
     }
 
     public getFamilienSituationDisplayValue(): string {
@@ -404,6 +411,13 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
     private setLastVerfuegtesGesuch(): void {
         this.isLastVerfuegtesGesuch =
             this.gesuchModelManager.isNeuestesGesuch();
+    }
+
+    public isGesuchStatusBearbeitungGS() {
+        return (
+            this.getGesuch() &&
+            TSAntragStatus.IN_BEARBEITUNG_GS === this.getGesuch().status
+        );
     }
 
     public preSave(): IPromise<TSGesuchstellerContainer> {
@@ -692,19 +706,22 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         if (EbeguUtil.isNullOrUndefined(event?.target?.files?.length)) {
             return;
         }
-        const files = event.target.files;
+        const files = Array.from(event.target.files);
+
         if (this.checkFilesLength(files as File[])) {
             return;
         }
+
         if (EbeguUtil.isNullOrUndefined(this.dokumentGrund)) {
             this.dokumentGrund = new TSDokumentGrund();
             this.dokumentGrund.dokumentTyp = TSDokumentTyp.AUSWEIS_ID;
             this.dokumentGrund.dokumentGrundTyp =
                 TSDokumentGrundTyp.FAMILIENSITUATION;
         }
+
         this.uploadRS
             .uploadFile(
-                files,
+                files as File[],
                 this.dokumentGrund,
                 this.gesuchModelManager.getGesuch().id
             )
@@ -764,7 +781,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         this.downloadRS
             .getAccessTokenDokument(dokument.id)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     attachment,
@@ -779,7 +796,7 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
     private setFrenchEnabled(): void {
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then(properties => {
+            .subscribe(properties => {
                 this.frenchEnabled = properties.frenchEnabled;
                 this.angebotTS = properties.angebotTSActivated;
             });

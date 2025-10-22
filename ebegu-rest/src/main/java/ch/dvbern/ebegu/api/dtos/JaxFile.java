@@ -15,9 +15,9 @@
 
 package ch.dvbern.ebegu.api.dtos;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "file")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -27,8 +27,6 @@ public class JaxFile extends JaxAbstractDTO {
 
 	private String filename;
 
-	private String filepfad;
-
 	private String filesize;
 
 	public String getFilename() {
@@ -37,14 +35,6 @@ public class JaxFile extends JaxAbstractDTO {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
-	}
-
-	public String getFilepfad() {
-		return filepfad;
-	}
-
-	public void setFilepfad(String filepfad) {
-		this.filepfad = filepfad;
 	}
 
 	public String getFilesize() {
@@ -69,13 +59,14 @@ public class JaxFile extends JaxAbstractDTO {
 
 		JaxFile that = (JaxFile) o;
 
-		if (filename != null ? !filename.equals(that.filename) : that.filename != null) {
+		if (filename != null ?
+			!filename.equals(that.filename) :
+			that.filename != null) {
 			return false;
 		}
-		if (filepfad != null ? !filepfad.equals(that.filepfad) : that.filepfad != null) {
-			return false;
-		}
-		return filesize != null ? filesize.equals(that.filesize) : that.filesize == null;
+		return filesize != null ?
+			filesize.equals(that.filesize) :
+			that.filesize == null;
 
 	}
 
@@ -83,7 +74,6 @@ public class JaxFile extends JaxAbstractDTO {
 	public int hashCode() {
 		int result = super.hashCode();
 		result = 31 * result + (filename != null ? filename.hashCode() : 0);
-		result = 31 * result + (filepfad != null ? filepfad.hashCode() : 0);
 		result = 31 * result + (filesize != null ? filesize.hashCode() : 0);
 		return result;
 	}

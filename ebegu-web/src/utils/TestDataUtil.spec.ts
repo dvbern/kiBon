@@ -14,17 +14,28 @@
  */
 
 import {IHttpBackendService} from 'angular';
-import * as moment from 'moment';
-import {TSGemeindeStatus} from '../models/enums/TSGemeindeStatus';
-import {TSGesuchsperiodeStatus} from '../models/enums/TSGesuchsperiodeStatus';
-import {TSRole} from '../models/enums/TSRole';
+import moment from 'moment';
+import {
+    TSGemeindeStatus,
+    TSGesuchsperiodeStatus,
+    TSRole,
+    TSWizardStepName,
+    TSWizardStepStatus
+} from '@kibon/shared/model/enums';
 import {TSTaetigkeit} from '../models/enums/TSTaetigkeit';
-import {TSWizardStepName} from '../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../models/enums/TSWizardStepStatus';
-import {TSAbstractDateRangedEntity} from '../models/TSAbstractDateRangedEntity';
-import {TSAbstractEntity} from '../models/TSAbstractEntity';
-import {TSAbstractMutableEntity} from '../models/TSAbstractMutableEntity';
-import {TSAdresse} from '../models/TSAdresse';
+import {
+    TSAbstractDateRangedEntity,
+    TSAbstractEntity,
+    TSAbstractMutableEntity,
+    TSAdresse,
+    TSDateRange,
+    TSGemeinde,
+    TSGesuchsperiode,
+    TSMandant,
+    TSModulTagesschule,
+    TSModulTagesschuleGroup,
+    TSWizardStep
+} from '@kibon/shared/model/entity';
 import {TSAdresseContainer} from '../models/TSAdresseContainer';
 import {TSBenutzer} from '../models/TSBenutzer';
 import {TSBerechtigung} from '../models/TSBerechtigung';
@@ -32,18 +43,12 @@ import {TSDossier} from '../models/TSDossier';
 import {TSErwerbspensum} from '../models/TSErwerbspensum';
 import {TSErwerbspensumContainer} from '../models/TSErwerbspensumContainer';
 import {TSFall} from '../models/TSFall';
-import {TSGemeinde} from '../models/TSGemeinde';
+
 import {TSGemeindeKonfiguration} from '../models/TSGemeindeKonfiguration';
-import {TSGesuchsperiode} from '../models/TSGesuchsperiode';
 import {TSGesuchsteller} from '../models/TSGesuchsteller';
 import {TSGesuchstellerContainer} from '../models/TSGesuchstellerContainer';
-import {TSMandant} from '../models/TSMandant';
-import {TSModulTagesschule} from '../models/TSModulTagesschule';
-import {TSModulTagesschuleGroup} from '../models/TSModulTagesschuleGroup';
 import {TSVerfuegung} from '../models/TSVerfuegung';
-import {TSWizardStep} from '../models/TSWizardStep';
-import {TSDateRange} from '../models/types/TSDateRange';
-import {DateUtil} from './DateUtil';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 
 /* eslint-disable no-magic-numbers */
 export class TestDataUtil {
@@ -78,8 +83,8 @@ export class TestDataUtil {
         dummyErwerbspensum.taetigkeit = TSTaetigkeit.ANGESTELLT;
         dummyErwerbspensum.pensum = 100;
         dummyErwerbspensum.gueltigkeit = new TSDateRange(
-            DateUtil.today(),
-            DateUtil.today().add(7, 'months')
+            MomentUtil.today(),
+            MomentUtil.today().add(7, 'months')
         );
         dummyErwerbspensum.bezeichnung = undefined;
         dummyErwerbspensum.unbezahlterUrlaub = undefined;
@@ -248,7 +253,6 @@ export class TestDataUtil {
             data: {
                 parameterViolations: [],
                 classViolations: [],
-                fieldViolations: [],
                 propertyViolations: [
                     {
                         constraintType: 'PARAMETER',
@@ -308,6 +312,7 @@ export class TestDataUtil {
         gemeinde.nurLats = false;
         gemeinde.gueltigBis = moment('99991231', 'YYYYMMDD');
         gemeinde.infomaZahlungen = false;
+        gemeinde.adminMutationAbweichungMeldungEnabled = false;
         return gemeinde;
     }
 
@@ -340,6 +345,7 @@ export class TestDataUtil {
         gemeinde.nurLats = false;
         gemeinde.gueltigBis = moment('99991231', 'YYYYMMDD');
         gemeinde.infomaZahlungen = false;
+        gemeinde.adminMutationAbweichungMeldungEnabled = false;
         return gemeinde;
     }
 
@@ -423,8 +429,7 @@ export class TestDataUtil {
     }
 
     public static createModulTagesschuleGroup(): TSModulTagesschuleGroup {
-        const tsModul = new TSModulTagesschuleGroup();
-        return tsModul;
+        return new TSModulTagesschuleGroup();
     }
 
     public static createModulTagesschule(): TSModulTagesschule {

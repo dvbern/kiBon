@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.mutationsmerger;
@@ -51,35 +51,64 @@ public final class MutationsMergerTestUtil {
 	private MutationsMergerTestUtil() {
 	}
 
-	static Verfuegung prepareErstGesuchVerfuegung(int pbPensum, BigDecimal massgegebenesEinkommenVorAbzug) {
-		Betreuung erstgesuchBetreuung = prepareData(massgegebenesEinkommenVorAbzug, AntragTyp.ERSTGESUCH, pbPensum, START_PERIODE);
+	static Verfuegung prepareErstGesuchVerfuegung(
+		int pbPensum,
+		BigDecimal massgegebenesEinkommenVorAbzug
+	) {
+		Betreuung erstgesuchBetreuung = prepareData(
+			massgegebenesEinkommenVorAbzug,
+			AntragTyp.ERSTGESUCH,
+			pbPensum,
+			START_PERIODE
+		);
 		return prepareVerfuegungForBetreuung(erstgesuchBetreuung);
 	}
 
 	static Verfuegung prepareVerfuegungForBetreuung(Betreuung betreuung) {
-		List<VerfuegungZeitabschnitt> zabetrErtgesuch = EbeguRuleTestsHelper.calculate(betreuung);
+		List<VerfuegungZeitabschnitt> zabetrErtgesuch = EbeguRuleTestsHelper
+			.calculate(betreuung);
 		Verfuegung verfuegungErstgesuch = new Verfuegung();
 		final List<VerfuegungZeitabschnitt> verfuegungsZeitabschnitteErstgesuch =
-			EbeguRuleTestsHelper.runSingleAbschlussRule(MONATS_RULE, betreuung, zabetrErtgesuch);
-		verfuegungErstgesuch.setZeitabschnitte(verfuegungsZeitabschnitteErstgesuch);
+			EbeguRuleTestsHelper.runSingleAbschlussRule(
+				MONATS_RULE,
+				betreuung,
+				zabetrErtgesuch
+			);
+		verfuegungErstgesuch.setZeitabschnitte(
+			verfuegungsZeitabschnitteErstgesuch
+		);
 		betreuung.setVerfuegung(verfuegungErstgesuch);
 		betreuung.extractGesuch().setTimestampVerfuegt(LocalDateTime.now());
 		verfuegungErstgesuch.setBetreuung(betreuung);
 		return verfuegungErstgesuch;
 	}
 
-	static Betreuung prepareData(BigDecimal massgebendesEinkommen, AntragTyp antragTyp) {
-		return prepareData(massgebendesEinkommen, antragTyp, DEFAULT_PENSUM, START_PERIODE);
+	static Betreuung prepareData(
+		BigDecimal massgebendesEinkommen,
+		AntragTyp antragTyp
+	) {
+		return prepareData(
+			massgebendesEinkommen,
+			antragTyp,
+			DEFAULT_PENSUM,
+			START_PERIODE
+		);
 	}
 
 	static Betreuung prepareData(
 		BigDecimal massgebendesEinkommen,
 		AntragTyp antragTyp,
 		int bpPensum,
-		LocalDate aenderungsDatumBpPensum) {
+		LocalDate aenderungsDatumBpPensum
+	) {
 		Betreuung betreuung =
-			EbeguRuleTestsHelper.createBetreuungWithPensum(START_PERIODE, TestDataUtil.ENDE_PERIODE,
-				BetreuungsangebotTyp.KITA, 100, new BigDecimal(2000));
+			EbeguRuleTestsHelper.createBetreuungWithPensum(
+				START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				BetreuungsangebotTyp.KITA,
+				100,
+				new BigDecimal(2000)
+			);
 		final Gesuch gesuch = betreuung.extractGesuch();
 		gesuch.setTyp(antragTyp);
 		Set<KindContainer> kindContainers = new LinkedHashSet<>();
@@ -90,19 +119,37 @@ public final class MutationsMergerTestUtil {
 		kindContainers.add(betreuung.getKind());
 		gesuch.setKindContainers(kindContainers);
 
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
-		gesuch.getFinanzDatenDTO().setMassgebendesEinkBjVorAbzFamGr(massgebendesEinkommen);
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
+		gesuch.getFinanzDatenDTO()
+			.setMassgebendesEinkBjVorAbzFamGr(massgebendesEinkommen);
 		Objects.requireNonNull(gesuch.getGesuchsteller1());
-		gesuch.getGesuchsteller1().addErwerbspensumContainer(TestDataUtil.createErwerbspensum(
-			aenderungsDatumBpPensum, TestDataUtil.ENDE_PERIODE, bpPensum));
+		gesuch.getGesuchsteller1()
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					aenderungsDatumBpPensum,
+					TestDataUtil.ENDE_PERIODE,
+					bpPensum
+				)
+			);
 
-		gesuch.getGesuchsteller1().setFinanzielleSituationContainer(new FinanzielleSituationContainer());
-		Objects.requireNonNull(gesuch.getGesuchsteller1().getFinanzielleSituationContainer());
-		gesuch.getGesuchsteller1().getFinanzielleSituationContainer().setFinanzielleSituationJA(new FinanzielleSituation());
+		gesuch.getGesuchsteller1()
+			.setFinanzielleSituationContainer(
+				new FinanzielleSituationContainer()
+			);
+		Objects.requireNonNull(
+			gesuch.getGesuchsteller1().getFinanzielleSituationContainer()
+		);
+		gesuch.getGesuchsteller1()
+			.getFinanzielleSituationContainer()
+			.setFinanzielleSituationJA(new FinanzielleSituation());
 		gesuch.getGesuchsteller1()
 			.getFinanzielleSituationContainer()
 			.getFinanzielleSituationJA()
 			.setNettolohn(massgebendesEinkommen);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 		return betreuung;
 	}
 }

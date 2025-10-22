@@ -22,15 +22,15 @@ import {
     OnInit
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSBfsGemeinde} from '../../../models/TSBfsGemeinde';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {ApplicationPropertyRS} from '../../core/rest-services/applicationPropertyRS.rest';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
-
+import {MandantService} from '@kibon/shared-util-mandant-service';
 @Component({
     selector: 'dv-onboarding-info-gem',
     templateUrl: './onboarding-info-gemeinde.component.html',
@@ -38,7 +38,8 @@ import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.se
         './onboarding-info-gemeinde.component.less',
         '../onboarding.less'
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class OnboardingInfoGemeindeComponent implements OnInit {
     private readonly description1: string = 'ONBOARDING_GEMEINDE_DESC1';
@@ -58,7 +59,8 @@ export class OnboardingInfoGemeindeComponent implements OnInit {
         private readonly onboardingPlaceholderService: OnboardingPlaceholderService,
         private readonly translate: TranslateService,
         private readonly gemeindeRS: GemeindeRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly mandantService: MandantService,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly cd: ChangeDetectorRef
     ) {
         this.gemeinden$ = from(this.gemeindeRS.getAllBfsGemeinden()).pipe(
@@ -69,7 +71,7 @@ export class OnboardingInfoGemeindeComponent implements OnInit {
         );
         this.applicationPropertyRS
             .getPublicPropertiesCached()
-            .then(properties => {
+            .subscribe(properties => {
                 this.isTSEnabled = properties.angebotTSActivated;
                 this.cd.markForCheck();
             });
@@ -99,11 +101,24 @@ export class OnboardingInfoGemeindeComponent implements OnInit {
         const emailBody = '&body=';
         const zeilenUmbruch = '%0D%0A%0D%0A';
         const body: string = this.translate.instant(this.emailBody, {
-            gemeinde: this.gemeinde.name
+            gemeindeName: this.gemeinde.name,
+            mandantName: this.getMandantName()
         });
         const subject: string = this.translate.instant(this.subjectText);
         const endBody: string = this.translate.instant(this.emailEnd);
         window.location.href =
             mailto + subject + emailBody + body + zeilenUmbruch + endBody;
+    }
+
+    private getMandantName(): string {
+        let mandantName = this.mandantService
+            .parseHostnameForMandant()
+            .fullName.replace(/^\w+/, 'Mandant');
+
+        if (this.translate.currentLang === 'fr_be') {
+            mandantName = mandantName.replace(/\bBern\b/, 'Berne');
+        }
+
+        return mandantName;
     }
 }

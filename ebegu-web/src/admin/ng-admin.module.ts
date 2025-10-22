@@ -16,21 +16,28 @@
  */
 
 import {NgModule} from '@angular/core';
+import {StringSqlDateToDisplayDatePipe} from '../app/shared/pipe/string-sql-date-to-display-date.pipe';
 import {SharedModule} from '../app/shared/shared.module';
-import {AdminViewXComponent} from './component/admin-view-x/admin-view-x.component';
+import {AdminViewXComponent} from './einstellungen/admin-view-x/admin-view-x.component';
 import {BatchjobTriggerViewComponent} from './component/batchjobTriggerView/batchjobTriggerView.component';
 import {BenutzerListViewXComponent} from './component/benutzerListView/benutzer-list-view-x.component';
 import {BenutzerListXComponent} from './component/benutzerListView/dv-benutzer-list/benutzer-list-x.component';
 import {BetreuungMonitoringComponent} from './component/betreuung-monitoring/betreuung-monitoring.component';
 import {DebuggingComponent} from './component/debugging/debugging.component';
 import {GesuchsperiodeListViewXComponent} from './component/gesuchsperiode-list-view-x/gesuchsperiode-list-view-x.component';
-import {GesuchsperiodeViewXComponent} from './component/gesuchsperiode-view-x/gesuchsperiode-view-x.component';
+import {GesuchsperiodeViewXComponent} from './einstellungen/gesuchsperiode-view-x/gesuchsperiode-view-x.component';
 import {TestdatenViewComponent} from './component/testdatenView/testdatenView.component';
 import {UebersichtVersendeteMailsComponent} from './component/uebersichtVersendeteMails/uebersichtVersendeteMails.component';
+import {EditEinstellungComponent} from './einstellungen/edit-einstellung/edit-einstellung.component';
 import {NgAdminRoutingModule} from './ng-admin-routing.module';
 
 @NgModule({
-    imports: [SharedModule, NgAdminRoutingModule],
+    imports: [
+        SharedModule,
+        NgAdminRoutingModule,
+        EditEinstellungComponent,
+        StringSqlDateToDisplayDatePipe
+    ],
     declarations: [
         TestdatenViewComponent,
         BatchjobTriggerViewComponent,

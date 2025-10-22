@@ -15,20 +15,24 @@
 
 package ch.dvbern.ebegu.rules;
 
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.EinstellungKey;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.TreeSet;
+
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.entities.Fachstelle;
+import ch.dvbern.ebegu.entities.Gesuch;
+import ch.dvbern.ebegu.entities.PensumFachstelle;
+import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.IntegrationTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.MathUtil;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.TreeSet;
 
 import static ch.dvbern.ebegu.util.Constants.ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,266 +46,631 @@ public class FachstelleRuleTest {
 	@Test
 	public void testKitaMitFachstelleWenigerAlsPensum() {
 		Betreuung betreuung =
-			EbeguRuleTestsHelper.createBetreuungWithPensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE,
-				BetreuungsangebotTyp.KITA, 60, new BigDecimal(2000));
+			EbeguRuleTestsHelper.createBetreuungWithPensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				BetreuungsangebotTyp.KITA,
+				60,
+				new BigDecimal(2000)
+			);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 		final Gesuch gesuch = betreuung.extractGesuch();
 		setPensumFachstelle(
 			TestDataUtil.START_PERIODE,
 			TestDataUtil.ENDE_PERIODE,
 			40,
 			IntegrationTyp.SPRACHLICHE_INTEGRATION,
-			betreuung);
-		Assert.assertNotNull(betreuung.getKind().getGesuch().getGesuchsteller1());
+			betreuung
+		);
+		Assert.assertNotNull(
+			betreuung.getKind().getGesuch().getGesuchsteller1()
+		);
 		betreuung.getKind()
 			.getGesuch()
 			.getGesuchsteller1()
-			.addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE,
-				TestDataUtil.ENDE_PERIODE,
-				60));
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					60
+				)
+			);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(Integer.valueOf(60), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBetreuungspensumProzent());
-		Assert.assertEquals(60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBgPensum());
-		Assert.assertEquals(-1, result.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+		Assert.assertEquals(
+			Integer.valueOf(60),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBetreuungspensumProzent()
+		);
+		Assert.assertEquals(
+			60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			result.get(0).getAnspruchberechtigtesPensum()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBgPensum()
+		);
+		Assert.assertEquals(
+			-1,
+			result.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 		List<VerfuegungZeitabschnitt> nextZeitabschn =
-			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(betreuung, result);
+			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(
+				betreuung,
+				result
+			);
 		Assert.assertEquals(
 			0 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
-			nextZeitabschn.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+			nextZeitabschn.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 	}
 
 	@Test
 	public void testKitaMitFachstelleMehrAlsPensum() {
 		Betreuung betreuung =
-			EbeguRuleTestsHelper.createBetreuungWithPensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE,
-				BetreuungsangebotTyp.KITA, 60, new BigDecimal(2000));
-		final Gesuch gesuch = betreuung.extractGesuch();
+			EbeguRuleTestsHelper.createBetreuungWithPensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				BetreuungsangebotTyp.KITA,
+				60,
+				new BigDecimal(2000)
+			);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 		setPensumFachstelle(
 			TestDataUtil.START_PERIODE,
 			TestDataUtil.ENDE_PERIODE,
 			100,
 			IntegrationTyp.SOZIALE_INTEGRATION,
-			betreuung);
+			betreuung
+		);
 
-		Assert.assertNotNull(betreuung.getKind().getGesuch().getGesuchsteller1());
+		Assert.assertNotNull(
+			betreuung.getKind().getGesuch().getGesuchsteller1()
+		);
 		betreuung.getKind()
 			.getGesuch()
 			.getGesuchsteller1()
-			.addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE,
-				TestDataUtil.ENDE_PERIODE,
-				60));
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					60
+				)
+			);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(Integer.valueOf(60), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(60),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBgPensum());
-		Assert.assertEquals(-1, result.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBgPensum()
+		);
+		Assert.assertEquals(
+			-1,
+			result.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 		List<VerfuegungZeitabschnitt> nextZeitabschn =
-			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertEquals(40, nextZeitabschn.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(
+				betreuung,
+				result
+			);
+		Assert.assertEquals(
+			40,
+			nextZeitabschn.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 	}
 
 	@Test
 	public void testKitaMitMehrerenFachstelleMehrAlsPensum() {
 		Betreuung betreuung =
-			EbeguRuleTestsHelper.createBetreuungWithPensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE,
-				BetreuungsangebotTyp.KITA, 60, new BigDecimal(2000));
-		final Gesuch gesuch = betreuung.extractGesuch();
+			EbeguRuleTestsHelper.createBetreuungWithPensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				BetreuungsangebotTyp.KITA,
+				60,
+				new BigDecimal(2000)
+			);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 
 		var sep30 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 9, 30);
 		var oct1 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 10, 1);
 
-		setPensumFachstelle(TestDataUtil.START_PERIODE, sep30, 100, IntegrationTyp.SOZIALE_INTEGRATION, betreuung);
-		setPensumFachstelle(oct1, TestDataUtil.ENDE_PERIODE, 80, IntegrationTyp.SOZIALE_INTEGRATION, betreuung);
+		setPensumFachstelle(
+			TestDataUtil.START_PERIODE,
+			sep30,
+			100,
+			IntegrationTyp.SOZIALE_INTEGRATION,
+			betreuung
+		);
+		setPensumFachstelle(
+			oct1,
+			TestDataUtil.ENDE_PERIODE,
+			80,
+			IntegrationTyp.SOZIALE_INTEGRATION,
+			betreuung
+		);
 
-		Assert.assertNotNull(betreuung.getKind().getGesuch().getGesuchsteller1());
+		Assert.assertNotNull(
+			betreuung.getKind().getGesuch().getGesuchsteller1()
+		);
 		betreuung.getKind()
 			.getGesuch()
 			.getGesuchsteller1()
-			.addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE,
-				TestDataUtil.ENDE_PERIODE,
-				60));
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					60
+				)
+			);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(2, result.size());
 
-		Assert.assertEquals(Integer.valueOf(60), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(60),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBgPensum()
+		);
 
-		Assert.assertEquals(Integer.valueOf(60), result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(1).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(60),
+			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(1).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(80, result.get(1).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(1).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(1).getBgPensum()
+		);
 
-		Assert.assertEquals(-1, result.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+		Assert.assertEquals(
+			-1,
+			result.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 		List<VerfuegungZeitabschnitt> nextZeitabschn =
-			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertEquals(40, nextZeitabschn.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
-		Assert.assertEquals(20, nextZeitabschn.get(1).getBgCalculationInputAsiv().getAnspruchspensumRest());
+			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(
+				betreuung,
+				result
+			);
+		Assert.assertEquals(
+			40,
+			nextZeitabschn.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
+		Assert.assertEquals(
+			20,
+			nextZeitabschn.get(1)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 	}
 
 	@Test
 	public void testKitaMitMehrerenFachstelleUntermonatigMehrAlsPensum() {
 		Betreuung betreuung =
-			EbeguRuleTestsHelper.createBetreuungWithPensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE,
-				BetreuungsangebotTyp.KITA, 60, new BigDecimal(2000));
-		final Gesuch gesuch = betreuung.extractGesuch();
+			EbeguRuleTestsHelper.createBetreuungWithPensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				BetreuungsangebotTyp.KITA,
+				60,
+				new BigDecimal(2000)
+			);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 
 		var sep15 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 9, 15);
 		var nov1 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 11, 1);
 
-		setPensumFachstelle(TestDataUtil.START_PERIODE, sep15, 100, IntegrationTyp.SOZIALE_INTEGRATION, betreuung);
-		setPensumFachstelle(nov1, TestDataUtil.ENDE_PERIODE, 80, IntegrationTyp.SOZIALE_INTEGRATION, betreuung);
+		setPensumFachstelle(
+			TestDataUtil.START_PERIODE,
+			sep15,
+			100,
+			IntegrationTyp.SOZIALE_INTEGRATION,
+			betreuung
+		);
+		setPensumFachstelle(
+			nov1,
+			TestDataUtil.ENDE_PERIODE,
+			80,
+			IntegrationTyp.SOZIALE_INTEGRATION,
+			betreuung
+		);
 
-		Assert.assertNotNull(betreuung.getKind().getGesuch().getGesuchsteller1());
+		Assert.assertNotNull(
+			betreuung.getKind().getGesuch().getGesuchsteller1()
+		);
 		betreuung.getKind()
 			.getGesuch()
 			.getGesuchsteller1()
-			.addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE,
-				TestDataUtil.ENDE_PERIODE,
-				40));
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					40
+				)
+			);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(3, result.size());
 
-		Assert.assertEquals(Integer.valueOf(40), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBgPensum()
+		);
 
-		Assert.assertEquals(Integer.valueOf(40), result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(1).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(1).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(60, result.get(1).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(1).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(1).getBgPensum()
+		);
 
-		Assert.assertEquals(Integer.valueOf(40), result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(2).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(2).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(80, result.get(2).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(2).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(2).getBgPensum()
+		);
 
-		Assert.assertEquals(-1, result.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+		Assert.assertEquals(
+			-1,
+			result.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 		List<VerfuegungZeitabschnitt> nextZeitabschn =
-			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertEquals(40, nextZeitabschn.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
-		Assert.assertEquals(0, nextZeitabschn.get(1).getBgCalculationInputAsiv().getAnspruchspensumRest());
-		Assert.assertEquals(20, nextZeitabschn.get(2).getBgCalculationInputAsiv().getAnspruchspensumRest());
+			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(
+				betreuung,
+				result
+			);
+		Assert.assertEquals(
+			40,
+			nextZeitabschn.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
+		Assert.assertEquals(
+			0,
+			nextZeitabschn.get(1)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
+		Assert.assertEquals(
+			20,
+			nextZeitabschn.get(2)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 	}
 
 	@Test
 	public void testKitaMitMehrerenFachstelleUntermonatigPensumSinktMehrAlsPensum() {
 		Betreuung betreuung =
-			EbeguRuleTestsHelper.createBetreuungWithPensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE,
-				BetreuungsangebotTyp.KITA, 60, new BigDecimal(2000));
-		final Gesuch gesuch = betreuung.extractGesuch();
+			EbeguRuleTestsHelper.createBetreuungWithPensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				BetreuungsangebotTyp.KITA,
+				60,
+				new BigDecimal(2000)
+			);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 
 		var sep15 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 9, 15);
 		var sep16 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 9, 16);
 		var sep30 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 9, 30);
 
-		setPensumFachstelle(TestDataUtil.START_PERIODE, sep15, 100, IntegrationTyp.SOZIALE_INTEGRATION, betreuung);
-		setPensumFachstelle(sep16, sep30, 80, IntegrationTyp.SOZIALE_INTEGRATION, betreuung);
+		setPensumFachstelle(
+			TestDataUtil.START_PERIODE,
+			sep15,
+			100,
+			IntegrationTyp.SOZIALE_INTEGRATION,
+			betreuung
+		);
+		setPensumFachstelle(
+			sep16,
+			sep30,
+			80,
+			IntegrationTyp.SOZIALE_INTEGRATION,
+			betreuung
+		);
 
-		Assert.assertNotNull(betreuung.getKind().getGesuch().getGesuchsteller1());
+		Assert.assertNotNull(
+			betreuung.getKind().getGesuch().getGesuchsteller1()
+		);
 		betreuung.getKind()
 			.getGesuch()
 			.getGesuchsteller1()
-			.addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE,
-				TestDataUtil.ENDE_PERIODE,
-				40));
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					40
+				)
+			);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(2, result.size());
 
-		Assert.assertEquals(Integer.valueOf(40), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(100, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBgPensum()
+		);
 
-		Assert.assertEquals(Integer.valueOf(40), result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(1).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(1).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(60, result.get(1).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(1).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(1).getBgPensum()
+		);
 
-		Assert.assertEquals(-1, result.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+		Assert.assertEquals(
+			-1,
+			result.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 		List<VerfuegungZeitabschnitt> nextZeitabschn =
-			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertEquals(40, nextZeitabschn.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
-		Assert.assertEquals(0, nextZeitabschn.get(1).getBgCalculationInputAsiv().getAnspruchspensumRest());
+			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(
+				betreuung,
+				result
+			);
+		Assert.assertEquals(
+			40,
+			nextZeitabschn.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
+		Assert.assertEquals(
+			0,
+			nextZeitabschn.get(1)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 	}
 
 	@Test
 	public void testKitaMitMehrerenFachstelleUntermonatigPensumSteigtMehrAlsPensum() {
 		Betreuung betreuung =
-			EbeguRuleTestsHelper.createBetreuungWithPensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE,
-				BetreuungsangebotTyp.KITA, 60, new BigDecimal(2000));
-		final Gesuch gesuch = betreuung.extractGesuch();
+			EbeguRuleTestsHelper.createBetreuungWithPensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				BetreuungsangebotTyp.KITA,
+				60,
+				new BigDecimal(2000)
+			);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 
 		var sep15 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 9, 15);
 		var sep16 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 9, 16);
 		var sep30 = LocalDate.of(TestDataUtil.START_PERIODE.getYear(), 9, 30);
 
-		setPensumFachstelle(TestDataUtil.START_PERIODE, sep15, 80, IntegrationTyp.SOZIALE_INTEGRATION, betreuung);
-		setPensumFachstelle(sep16, sep30, 100, IntegrationTyp.SOZIALE_INTEGRATION, betreuung);
+		setPensumFachstelle(
+			TestDataUtil.START_PERIODE,
+			sep15,
+			80,
+			IntegrationTyp.SOZIALE_INTEGRATION,
+			betreuung
+		);
+		setPensumFachstelle(
+			sep16,
+			sep30,
+			100,
+			IntegrationTyp.SOZIALE_INTEGRATION,
+			betreuung
+		);
 
-		Assert.assertNotNull(betreuung.getKind().getGesuch().getGesuchsteller1());
+		Assert.assertNotNull(
+			betreuung.getKind().getGesuch().getGesuchsteller1()
+		);
 		betreuung.getKind()
 			.getGesuch()
 			.getGesuchsteller1()
-			.addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE,
-				TestDataUtil.ENDE_PERIODE,
-				40));
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					40
+				)
+			);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(4, result.size());
 
-		Assert.assertEquals(Integer.valueOf(40), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(80, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBgPensum()
+		);
 
-		Assert.assertEquals(Integer.valueOf(40), result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(1).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(1).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(1).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(80, result.get(1).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(1).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(1).getBgPensum()
+		);
 
-		Assert.assertEquals(Integer.valueOf(40), result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(2).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(2).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(2).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(100, result.get(2).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(2).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(2).getBgPensum()
+		);
 
-		Assert.assertEquals(Integer.valueOf(40), result.get(3).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(3).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(3).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(3).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(60, result.get(3).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(3).getBgPensum());
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(3).getBgPensum()
+		);
 
-		Assert.assertEquals(-1, result.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+		Assert.assertEquals(
+			-1,
+			result.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 		List<VerfuegungZeitabschnitt> nextZeitabschn =
-			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertEquals(20, nextZeitabschn.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
-		Assert.assertEquals(20, nextZeitabschn.get(1).getBgCalculationInputAsiv().getAnspruchspensumRest());
-		Assert.assertEquals(40, nextZeitabschn.get(2).getBgCalculationInputAsiv().getAnspruchspensumRest());
-		Assert.assertEquals(0, nextZeitabschn.get(3).getBgCalculationInputAsiv().getAnspruchspensumRest());
+			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(
+				betreuung,
+				result
+			);
+		Assert.assertEquals(
+			20,
+			nextZeitabschn.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
+		Assert.assertEquals(
+			20,
+			nextZeitabschn.get(1)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
+		Assert.assertEquals(
+			40,
+			nextZeitabschn.get(2)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
+		Assert.assertEquals(
+			0,
+			nextZeitabschn.get(3)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 	}
 
 	@Test
 	public void testKitaMitFachstelleUndRestPensum() {
 		Betreuung betreuung =
-			EbeguRuleTestsHelper.createBetreuungWithPensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE,
-				BetreuungsangebotTyp.KITA, 60, new BigDecimal(2000));
-		final Gesuch gesuch = betreuung.extractGesuch();
+			EbeguRuleTestsHelper.createBetreuungWithPensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				BetreuungsangebotTyp.KITA,
+				60,
+				new BigDecimal(2000)
+			);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 		betreuung.getKind().getKindJA().setPensumFachstelle(new TreeSet<>());
 
 		setPensumFachstelle(
@@ -309,56 +678,111 @@ public class FachstelleRuleTest {
 			TestDataUtil.ENDE_PERIODE,
 			80,
 			IntegrationTyp.SOZIALE_INTEGRATION,
-			betreuung);
+			betreuung
+		);
 
-		assertThat(betreuung.getKind().getKindJA().getPensumFachstelle().size(), is(1));
-		Assert.assertNotNull(betreuung.getKind().getGesuch().getGesuchsteller1());
+		assertThat(
+			betreuung.getKind().getKindJA().getPensumFachstelle().size(),
+			is(1)
+		);
+		Assert.assertNotNull(
+			betreuung.getKind().getGesuch().getGesuchsteller1()
+		);
 		betreuung.getKind()
 			.getGesuch()
 			.getGesuchsteller1()
-			.addErwerbspensumContainer(TestDataUtil.createErwerbspensum(TestDataUtil.START_PERIODE,
-				TestDataUtil.ENDE_PERIODE,
-				40));
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					40
+				)
+			);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(1, result.size());
-		Assert.assertEquals(Integer.valueOf(40), result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1());
-		Assert.assertEquals(MathUtil.DEFAULT.from(60), result.get(0).getBetreuungspensumProzent());
+		Assert.assertEquals(
+			Integer.valueOf(40),
+			result.get(0).getBgCalculationInputAsiv().getErwerbspensumGS1()
+		);
+		Assert.assertEquals(
+			MathUtil.DEFAULT.from(60),
+			result.get(0).getBetreuungspensumProzent()
+		);
 		Assert.assertEquals(80, result.get(0).getAnspruchberechtigtesPensum());
-		Assert.assertEquals(-1, result.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+		Assert.assertEquals(
+			-1,
+			result.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 		List<VerfuegungZeitabschnitt> nextZeitabschn =
-			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(betreuung, result);
-		Assert.assertEquals(20, nextZeitabschn.get(0).getBgCalculationInputAsiv().getAnspruchspensumRest());
+			EbeguRuleTestsHelper.initializeRestanspruchForNextBetreuung(
+				betreuung,
+				result
+			);
+		Assert.assertEquals(
+			20,
+			nextZeitabschn.get(0)
+				.getBgCalculationInputAsiv()
+				.getAnspruchspensumRest()
+		);
 	}
 
 	@Test
 	public void testKitaMitSpracheIntegrationUndSparchfoerderungNichtBestaetigt() {
-		List<VerfuegungZeitabschnitt> result = calculateZeitabschnittFuerSprachfoerderungTest(false);
+		List<VerfuegungZeitabschnitt> result =
+			calculateZeitabschnittFuerSprachfoerderungTest(false);
 		Assert.assertEquals(1, result.size());
-		assertThat(result.get(0)
-			.getVerfuegungZeitabschnittBemerkungList()
-			.stream()
-			.anyMatch(bemerkung -> bemerkung.getBemerkung()
-				.contains("der Anspruch aufgrund sprachlicher Indikation nicht gegeben")), is(true));
+		assertThat(
+			result.get(0)
+				.getVerfuegungZeitabschnittBemerkungList()
+				.stream()
+				.anyMatch(
+					bemerkung -> bemerkung.getBemerkung()
+						.contains(
+							"der Anspruch aufgrund sprachlicher Indikation nicht gegeben"
+						)
+				),
+			is(true)
+		);
 
 	}
 
 	@Test
 	public void testKitaMitSpracheIntegrationUndSparchfoerderungBestaetigt() {
-		List<VerfuegungZeitabschnitt> result = calculateZeitabschnittFuerSprachfoerderungTest(true);
+		List<VerfuegungZeitabschnitt> result =
+			calculateZeitabschnittFuerSprachfoerderungTest(true);
 		Assert.assertEquals(1, result.size());
-		assertThat(result.get(0)
-			.getVerfuegungZeitabschnittBemerkungList()
-			.stream()
-			.anyMatch(bemerkung -> bemerkung.getBemerkung()
-				.contains("der Anspruch aufgrund sprachlicher Indikation nicht gegeben")), is(false));
+		assertThat(
+			result.get(0)
+				.getVerfuegungZeitabschnittBemerkungList()
+				.stream()
+				.anyMatch(
+					bemerkung -> bemerkung.getBemerkung()
+						.contains(
+							"der Anspruch aufgrund sprachlicher Indikation nicht gegeben"
+						)
+				),
+			is(false)
+		);
 	}
 
-	private List<VerfuegungZeitabschnitt> calculateZeitabschnittFuerSprachfoerderungTest(boolean sprachfoerderungBestaetigt) {
+	private List<VerfuegungZeitabschnitt> calculateZeitabschnittFuerSprachfoerderungTest(
+		boolean sprachfoerderungBestaetigt
+	) {
 		Betreuung betreuung =
-			EbeguRuleTestsHelper.createBetreuungWithPensum(TestDataUtil.START_PERIODE, TestDataUtil.ENDE_PERIODE,
-				BetreuungsangebotTyp.KITA, 60, new BigDecimal(2000));
+			EbeguRuleTestsHelper.createBetreuungWithPensum(
+				TestDataUtil.START_PERIODE,
+				TestDataUtil.ENDE_PERIODE,
+				BetreuungsangebotTyp.KITA,
+				60,
+				new BigDecimal(2000)
+			);
+		betreuung.initVorgaengerVerfuegungen(null, null);
 		final Gesuch gesuch = betreuung.extractGesuch();
 		betreuung.getErweiterteBetreuungContainer()
 			.getErweiterteBetreuungJA()
@@ -369,16 +793,22 @@ public class FachstelleRuleTest {
 			TestDataUtil.ENDE_PERIODE,
 			40,
 			IntegrationTyp.SPRACHLICHE_INTEGRATION,
-			betreuung);
+			betreuung
+		);
 		betreuung.getKind()
 			.getGesuch()
 			.getGesuchsteller1()
-			.addErwerbspensumContainer(TestDataUtil.createErwerbspensum(
-				TestDataUtil.START_PERIODE,
-				TestDataUtil.ENDE_PERIODE,
-				40));
-		var einstellungen = EbeguRuleTestsHelper.getEinstellungenConfiguratorAsiv(gesuch.getGesuchsperiode());
-		einstellungen.get(EinstellungKey.SPRACHFOERDERUNG_BESTAETIGEN).setValue("true");
+			.addErwerbspensumContainer(
+				TestDataUtil.createErwerbspensum(
+					TestDataUtil.START_PERIODE,
+					TestDataUtil.ENDE_PERIODE,
+					40
+				)
+			);
+		var einstellungen = EbeguRuleTestsHelper
+			.getEinstellungenConfiguratorAsiv(gesuch.getGesuchsperiode());
+		einstellungen.get(EinstellungKey.SPRACHFOERDERUNG_BESTAETIGEN)
+			.setValue("true");
 		return EbeguRuleTestsHelper.calculate(betreuung, einstellungen);
 	}
 
@@ -387,7 +817,8 @@ public class FachstelleRuleTest {
 		LocalDate ende,
 		int pensum,
 		IntegrationTyp integrationTyp,
-		Betreuung betreuung) {
+		Betreuung betreuung
+	) {
 		final PensumFachstelle pensumFachstelle = new PensumFachstelle();
 		final Fachstelle fachstelle = new Fachstelle();
 		fachstelle.setMandant(TestDataUtil.createDefaultMandant());
@@ -395,6 +826,9 @@ public class FachstelleRuleTest {
 		pensumFachstelle.setPensum(pensum);
 		pensumFachstelle.setIntegrationTyp(integrationTyp);
 		pensumFachstelle.setGueltigkeit(new DateRange(start, ende));
-		betreuung.getKind().getKindJA().getPensumFachstelle().add(pensumFachstelle);
+		betreuung.getKind()
+			.getKindJA()
+			.getPensumFachstelle()
+			.add(pensumFachstelle);
 	}
 }

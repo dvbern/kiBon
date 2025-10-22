@@ -15,21 +15,33 @@
 
 package ch.dvbern.ebegu.entities;
 
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.util.Constants;
-import ch.dvbern.ebegu.util.EbeguUtil;
-import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.hibernate.envers.Audited;
+import java.time.LocalDate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.time.LocalDate;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.util.EbeguUtil;
+import ch.dvbern.ebegu.validators.CheckEmail;
+import ch.dvbern.ebegu.validators.CheckWebseite;
+import ch.dvbern.oss.lib.beanvalidation.embeddables.IBAN;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.hibernate.envers.Audited;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 
@@ -40,15 +52,20 @@ import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
 @Entity
 @Table(
 	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "adresse_id", name = "UK_institution_stammdaten_adresse_id"),
-		@UniqueConstraint(columnNames = "institution_id", name = "UK_institution_stammdaten_institution_id")
+		@UniqueConstraint(columnNames = "adresse_id",
+			name = "UK_institution_stammdaten_adresse_id"),
+		@UniqueConstraint(columnNames = "institution_id",
+			name = "UK_institution_stammdaten_institution_id")
 	},
 	indexes = {
-		@Index(name = "IX_institution_stammdaten_gueltig_ab", columnList = "gueltigAb"),
-		@Index(name = "IX_institution_stammdaten_gueltig_bis", columnList = "gueltigBis")
+		@Index(name = "IX_institution_stammdaten_gueltig_ab",
+			columnList = "gueltigAb"),
+		@Index(name = "IX_institution_stammdaten_gueltig_bis",
+			columnList = "gueltigBis")
 	}
 )
-public class InstitutionStammdaten extends AbstractDateRangedEntity implements KontaktAngaben {
+public class InstitutionStammdaten extends AbstractDateRangedEntity implements
+	KontaktAngaben {
 
 	private static final long serialVersionUID = -8403411439882700618L;
 
@@ -57,22 +74,25 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 	@Enumerated(EnumType.STRING)
 	private @NotNull BetreuungsangebotTyp betreuungsangebotTyp;
 
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_stammdaten_institution_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_institution_stammdaten_institution_id"),
+		nullable = false)
 	@OneToOne(optional = false)
 	private @NotNull Institution institution;
 
 	@Column(nullable = false)
-	@Email
+	@CheckEmail
 	@Size(min = 5, max = DB_DEFAULT_MAX_LENGTH)
 	private @NotNull String mail;
 
 	@Column(nullable = true, length = Constants.DB_DEFAULT_MAX_LENGTH)
 	@Nullable
-	private @Pattern(regexp = Constants.REGEX_TELEFON, message = "{validator.constraints.phonenumber.message}")
-	String telefon;
+	private @Pattern(regexp = Constants.REGEX_TELEFON,
+		message = "{validator.constraints.phonenumber.message}") String telefon;
 
 	@Column(nullable = true)
 	@Nullable
+	@CheckWebseite
 	private @Size(max = DB_DEFAULT_MAX_LENGTH) String webseite;
 
 	// Wird nur noch read-only verwendet, um die Daten-Migration durch die Institutions-Admins zu vereinfachen
@@ -80,7 +100,8 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 	@Nullable
 	private @Size(max = DB_DEFAULT_MAX_LENGTH) String oeffnungszeiten;
 
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_institution_stammdaten_adresse_id"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_institution_stammdaten_adresse_id"), nullable = false)
 	@OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Nonnull
 	private @NotNull Adresse adresse = new Adresse();
@@ -90,17 +111,22 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_inst_stammdaten_inst_stammdaten_bg_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_inst_stammdaten_inst_stammdaten_bg_id"), nullable = true)
 	private InstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine;
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_inst_stammdaten_inst_stammdaten_tagesschule_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_inst_stammdaten_inst_stammdaten_tagesschule_id"),
+		nullable = true)
 	private InstitutionStammdatenTagesschule institutionStammdatenTagesschule;
 
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_inst_stammdaten_inst_stammdaten_ferieninsel_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_inst_stammdaten_inst_stammdaten_ferieninsel_id"),
+		nullable = true)
 	private InstitutionStammdatenFerieninsel institutionStammdatenFerieninsel;
 
 	@Nullable
@@ -123,7 +149,9 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 		return betreuungsangebotTyp;
 	}
 
-	public void setBetreuungsangebotTyp(@Nonnull BetreuungsangebotTyp betreuungsangebotTyp) {
+	public void setBetreuungsangebotTyp(
+		@Nonnull BetreuungsangebotTyp betreuungsangebotTyp
+	) {
 		this.betreuungsangebotTyp = betreuungsangebotTyp;
 	}
 
@@ -152,8 +180,10 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 	}
 
 	public void setInstitutionStammdatenBetreuungsgutscheine(
-		@Nullable InstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine) {
-		this.institutionStammdatenBetreuungsgutscheine = institutionStammdatenBetreuungsgutscheine;
+		@Nullable InstitutionStammdatenBetreuungsgutscheine institutionStammdatenBetreuungsgutscheine
+	) {
+		this.institutionStammdatenBetreuungsgutscheine =
+			institutionStammdatenBetreuungsgutscheine;
 	}
 
 	@Nullable
@@ -162,8 +192,10 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 	}
 
 	public void setInstitutionStammdatenTagesschule(
-		@Nullable InstitutionStammdatenTagesschule institutionStammdatenTagesschule) {
-		this.institutionStammdatenTagesschule = institutionStammdatenTagesschule;
+		@Nullable InstitutionStammdatenTagesschule institutionStammdatenTagesschule
+	) {
+		this.institutionStammdatenTagesschule =
+			institutionStammdatenTagesschule;
 	}
 
 	@Nullable
@@ -172,8 +204,10 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 	}
 
 	public void setInstitutionStammdatenFerieninsel(
-		@Nullable InstitutionStammdatenFerieninsel institutionStammdatenFerieninsel) {
-		this.institutionStammdatenFerieninsel = institutionStammdatenFerieninsel;
+		@Nullable InstitutionStammdatenFerieninsel institutionStammdatenFerieninsel
+	) {
+		this.institutionStammdatenFerieninsel =
+			institutionStammdatenFerieninsel;
 	}
 
 	@Override
@@ -215,7 +249,9 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 		return sendMailWennOffenePendenzen;
 	}
 
-	public void setSendMailWennOffenePendenzen(boolean sendMailWennOffenePendenzen) {
+	public void setSendMailWennOffenePendenzen(
+		boolean sendMailWennOffenePendenzen
+	) {
 		this.sendMailWennOffenePendenzen = sendMailWennOffenePendenzen;
 	}
 
@@ -251,25 +287,42 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 		if (!super.isSame(other)) {
 			return false;
 		}
-		final InstitutionStammdaten otherInstStammdaten = (InstitutionStammdaten) other;
-		return EbeguUtil.isSame(getInstitution(), otherInstStammdaten.getInstitution()) &&
-			getBetreuungsangebotTyp() == otherInstStammdaten.getBetreuungsangebotTyp() &&
-			EbeguUtil.isSame(getAdresse(), otherInstStammdaten.getAdresse()) &&
+		final InstitutionStammdaten otherInstStammdaten =
+			(InstitutionStammdaten) other;
+		return EbeguUtil.isSame(
+			getInstitution(),
+			otherInstStammdaten.getInstitution()
+		)
+			&&
+			getBetreuungsangebotTyp()
+				== otherInstStammdaten.getBetreuungsangebotTyp()
+			&&
+			EbeguUtil.isSame(getAdresse(), otherInstStammdaten.getAdresse())
+			&&
 			EbeguUtil.isSame(
 				getInstitutionStammdatenBetreuungsgutscheine(),
-				otherInstStammdaten.getInstitutionStammdatenBetreuungsgutscheine()) &&
+				otherInstStammdaten
+					.getInstitutionStammdatenBetreuungsgutscheine()
+			)
+			&&
 			EbeguUtil.isSame(
 				getInstitutionStammdatenTagesschule(),
-				otherInstStammdaten.getInstitutionStammdatenTagesschule()) &&
+				otherInstStammdaten
+					.getInstitutionStammdatenTagesschule()
+			)
+			&&
 			EbeguUtil.isSame(
 				getInstitutionStammdatenFerieninsel(),
-				otherInstStammdaten.getInstitutionStammdatenFerieninsel());
+				otherInstStammdaten
+					.getInstitutionStammdatenFerieninsel()
+			);
 	}
 
 	@Nullable
 	public String extractKontoinhaber() {
 		if (getInstitutionStammdatenBetreuungsgutscheine() != null) {
-			return getInstitutionStammdatenBetreuungsgutscheine().extractKontoinhaber();
+			return getInstitutionStammdatenBetreuungsgutscheine()
+				.extractKontoinhaber();
 		}
 		return null;
 	}
@@ -277,7 +330,8 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 	@Nullable
 	public Adresse extractAdresseKontoinhaber() {
 		if (getInstitutionStammdatenBetreuungsgutscheine() != null) {
-			return getInstitutionStammdatenBetreuungsgutscheine().extractAdresseKontoinhaber();
+			return getInstitutionStammdatenBetreuungsgutscheine()
+				.extractAdresseKontoinhaber();
 		}
 		return null;
 	}
@@ -291,14 +345,18 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements K
 	}
 
 	public boolean isTagesschuleActivatable() {
-		final InstitutionStammdatenTagesschule stammdaten = this.getInstitutionStammdatenTagesschule();
-		return stammdaten != null && !stammdaten.extractAllModulTagesschuleGroup().isEmpty();
+		final InstitutionStammdatenTagesschule stammdaten = this
+			.getInstitutionStammdatenTagesschule();
+		return stammdaten != null
+			&& !stammdaten.extractAllModulTagesschuleGroup().isEmpty();
 	}
 
 	@Override
 	public String getMessageForAccessException() {
-		return "betreuungsangebotTyp: " + betreuungsangebotTyp
-			+ ", institution: " + institution.getMessageForAccessException();
+		return "betreuungsangebotTyp: "
+			+ betreuungsangebotTyp
+			+ ", institution: "
+			+ institution.getMessageForAccessException();
 	}
 
 	@Nullable

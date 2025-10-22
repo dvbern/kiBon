@@ -13,9 +13,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as moment from 'moment';
+import moment from 'moment';
 import {TSAntragStatus} from './enums/TSAntragStatus';
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {TSBenutzer} from './TSBenutzer';
 
 export class TSAntragStatusHistory extends TSAbstractMutableEntity {

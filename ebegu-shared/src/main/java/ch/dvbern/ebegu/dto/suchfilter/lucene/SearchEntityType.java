@@ -18,11 +18,9 @@ package ch.dvbern.ebegu.dto.suchfilter.lucene;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Dossier;
@@ -48,12 +46,24 @@ import static ch.dvbern.ebegu.dto.suchfilter.lucene.IndexedEBEGUFieldName.KIND_V
  */
 public enum SearchEntityType {
 	// Reihenfolge bitte entsprechend in der Wichtigkeit im GUI
-	GESUCHSTELLER_CONTAINER(GesuchstellerContainer.class, new IndexedEBEGUFieldName[] { GS_NACHNAME, GS_VORNAME, GS_GEBDATUM }),
-	KIND_CONTAINER(KindContainer.class, new IndexedEBEGUFieldName[] { KIND_NACHNAME, KIND_VORNAME, KIND_GEBDATUM }),
-	GESUCH(Gesuch.class, new IndexedEBEGUFieldName[] { GESUCH_FALL_NUMMER }),
-	DOSSIER(Dossier.class, new IndexedEBEGUFieldName[] {DOSSIER_FALLNUMMER, DOSSIER_BESITZER_NAME, DOSSIER_BESITZER_VORNAME}),
-	BETREUUNG(Betreuung.class, new IndexedEBEGUFieldName[] { BETREUUNG_BGNR });
-
+	GESUCHSTELLER_CONTAINER(
+		GesuchstellerContainer.class,
+		new IndexedEBEGUFieldName[] { GS_NACHNAME, GS_VORNAME, GS_GEBDATUM }
+	), KIND_CONTAINER(
+		KindContainer.class,
+		new IndexedEBEGUFieldName[] { KIND_NACHNAME, KIND_VORNAME,
+			KIND_GEBDATUM }
+	), GESUCH(
+		Gesuch.class,
+		new IndexedEBEGUFieldName[] { GESUCH_FALL_NUMMER }
+	), DOSSIER(
+		Dossier.class,
+		new IndexedEBEGUFieldName[] { DOSSIER_FALLNUMMER,
+			DOSSIER_BESITZER_NAME, DOSSIER_BESITZER_VORNAME }
+	), BETREUUNG(
+		Betreuung.class,
+		new IndexedEBEGUFieldName[] { BETREUUNG_BGNR }
+	);
 
 	@Nonnull
 	private final Class<? extends Searchable> entityClass;
@@ -66,14 +76,25 @@ public enum SearchEntityType {
 	@Nonnull
 	private final IndexedEBEGUFieldName[] indexedFields;
 
-	<T extends Searchable> SearchEntityType(@Nonnull Class<T> entityClass, @Nonnull IndexedEBEGUFieldName[] indexedFields) {
+	<T extends Searchable> SearchEntityType(
+		@Nonnull Class<T> entityClass,
+		@Nonnull IndexedEBEGUFieldName[] indexedFields
+	) {
 		this(entityClass, indexedFields, true);
 	}
 
-	<T extends Searchable> SearchEntityType(@Nonnull Class<T> entityClass, @Nonnull IndexedEBEGUFieldName[] indexedFields, boolean globalSearch) {
+	<T extends Searchable> SearchEntityType(
+		@Nonnull Class<T> entityClass,
+		@Nonnull IndexedEBEGUFieldName[] indexedFields,
+		boolean globalSearch
+	) {
 		this.entityClass = entityClass;
 		this.indexedFields = indexedFields.clone();
-		this.fieldNames = Collections.unmodifiableList(Arrays.stream(indexedFields).map(IndexedEBEGUFieldName::getIndexedFieldName).collect(Collectors.toList()));
+		this.fieldNames = Collections.unmodifiableList(
+			Arrays.stream(indexedFields)
+				.map(IndexedEBEGUFieldName::getIndexedFieldName)
+				.collect(Collectors.toList())
+		);
 		this.globalSearch = globalSearch;
 	}
 

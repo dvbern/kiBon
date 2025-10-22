@@ -15,7 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Ng1StateDeclaration} from '@uirouter/angularjs';
+import {Ng1StateDeclaration, Transition} from '@uirouter/angularjs';
+import {firstValueFrom} from 'rxjs';
 import {KindRS} from '../app/core/service/kindRS.rest';
 import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
 import {RouterHelper} from '../dvbModules/router/route-helper-provider';
@@ -24,7 +25,10 @@ import {TSEingangsart} from '../models/enums/TSEingangsart';
 import {TSGesuch} from '../models/TSGesuch';
 import {TSKindDublette} from '../models/TSKindDublette';
 import {TSMahnung} from '../models/TSMahnung';
+import {GesuchUtil} from '../utils/GesuchUtil';
 import {TSRoleUtil} from '../utils/TSRoleUtil';
+import {EinkommensverschlechterungAppenzellResultateViewComponent} from './component/einkommensverschlechterung/appenzell/einkommensverschlechterung-appenzell-resultate-view/einkommensverschlechterung-appenzell-resultate-view.component';
+import {EinkommensverschlechterungAppenzellViewComponent} from './component/einkommensverschlechterung/appenzell/einkommensverschlechterung-appenzell-view/einkommensverschlechterung-appenzell-view.component';
 import {EinkommensverschlechterungResultateViewComponent} from './component/einkommensverschlechterung/bern/einkommensverschlechterung-resultate-view/einkommensverschlechterung-resultate-view.component';
 import {EinkommensverschlechterungLuzernResultateViewComponent} from './component/einkommensverschlechterung/luzern/einkommensverschlechterung-luzern-resultate-view/einkommensverschlechterung-luzern-resultate-view.component';
 import {EinkommensverschlechterungLuzernViewComponent} from './component/einkommensverschlechterung/luzern/einkommensverschlechterung-luzern-view/einkommensverschlechterung-luzern-view.component';
@@ -39,6 +43,11 @@ import {FinanzielleSituationStartViewLuzernComponent} from './component/finanzie
 import {AngabenGs1Component} from './component/finanzielleSituation/solothurn/angaben-gs/angaben-gs1/angaben-gs1.component';
 import {AngabenGs2Component} from './component/finanzielleSituation/solothurn/angaben-gs/angaben-gs2/angaben-gs2.component';
 import {FinanzielleSituationStartSolothurnComponent} from './component/finanzielleSituation/solothurn/finanzielle-situation-start-solothurn/finanzielle-situation-start-solothurn.component';
+import {
+    freigabeMitQuittungState,
+    freigabeOnlineState,
+    freigabeRedirectState
+} from './freigabe/freigabe.route';
 import {GesuchRouteController} from './gesuch';
 import {BerechnungsManager} from './service/berechnungsManager';
 import {GesuchModelManager} from './service/gesuchModelManager';
@@ -46,13 +55,6 @@ import {MahnungRS} from './service/mahnungRS.rest';
 import ILogService = angular.ILogService;
 import IPromise = angular.IPromise;
 import IQService = angular.IQService;
-import {EinkommensverschlechterungAppenzellViewComponent} from './component/einkommensverschlechterung/appenzell/einkommensverschlechterung-appenzell-view/einkommensverschlechterung-appenzell-view.component';
-import {EinkommensverschlechterungAppenzellResultateViewComponent} from './component/einkommensverschlechterung/appenzell/einkommensverschlechterung-appenzell-resultate-view/einkommensverschlechterung-appenzell-resultate-view.component';
-import {
-    freigabeRedirectState,
-    freigabeMitQuittungState,
-    freigabeOnlineState
-} from './freigabe/freigabe.route';
 /* eslint-disable */
 
 const gesuchTpl = require('./gesuch.html');
@@ -202,7 +204,23 @@ export class EbeguStammdatenState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            '$transition$',
+            'gesuchModelManager',
+            (
+                $transition$: Transition,
+                gesuchModelManager: IPromise<GesuchModelManager>
+            ) => {
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+                return GesuchUtil.checkAmountOfAntragsteller(
+                    gesuchModelManager,
+                    gesuchstellerNumber
+                );
+            }
+        ]
     };
 
     public data = {
@@ -224,7 +242,7 @@ export class EbeguUmzugState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -235,6 +253,10 @@ export class EbeguUmzugState implements Ng1StateDeclaration {
 export class EbeguKinderListState implements Ng1StateDeclaration {
     public name = 'gesuch.kinder';
     public url = '/kinder/:gesuchId';
+    public params = {
+        gesuchId: '',
+        kindNumber: ''
+    };
 
     public views: {[name: string]: Ng1StateDeclaration} = {
         gesuchViewPort: {
@@ -247,7 +269,7 @@ export class EbeguKinderListState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager,
+        gesuch: getGesuchPromise,
         kinderDubletten: getKinderDubletten
     };
 
@@ -273,7 +295,20 @@ export class EbeguKindState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        auth: [
+            'gesuch',
+            '$transition$',
+            (gesuch: IPromise<TSGesuch>, $transition$: Transition) => {
+                const kindNumberParam = $transition$.params().kindNumber;
+                // attention: converting an empty string / undefined to a number with "+", results in 0
+                const kindNumber =
+                    kindNumberParam === undefined || kindNumberParam === ''
+                        ? undefined
+                        : +kindNumberParam;
+                return GesuchUtil.checkAmountOfChildren(gesuch, kindNumber);
+            }
+        ]
     };
 
     public data = {
@@ -295,7 +330,7 @@ export class EbeguBetreuungListState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -309,7 +344,8 @@ export class EbeguBetreuungState implements Ng1StateDeclaration {
         '/betreuungen/betreuung/:gesuchId/:kindNumber/:betreuungNumber/:betreuungsangebotTyp';
     public params = {
         betreuungsangebotTyp: '',
-        betreuungNumber: ''
+        betreuungNumber: '',
+        kindNumber: ''
     };
 
     public views: {[name: string]: Ng1StateDeclaration} = {
@@ -322,7 +358,38 @@ export class EbeguBetreuungState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        auth: [
+            'gesuch',
+            '$transition$',
+            async (gesuch: IPromise<TSGesuch>, $transition$: Transition) => {
+                const kindNumberParam = $transition$.params().kindNumber;
+                // attention: converting an empty string / undefined to a number with "+", results in 0
+                const kindNumber =
+                    kindNumberParam === undefined || kindNumberParam === ''
+                        ? undefined
+                        : +kindNumberParam;
+
+                const betreuungNumberParam =
+                    $transition$.params().betreuungNumber;
+                const betreuungNumber =
+                    betreuungNumberParam === undefined ||
+                    betreuungNumberParam === ''
+                        ? undefined
+                        : +betreuungNumberParam;
+
+                await Promise.all([
+                    GesuchUtil.checkAmountOfChildren(gesuch, kindNumber),
+                    GesuchUtil.checkBetreuungsNumber(
+                        gesuch,
+                        kindNumber,
+                        betreuungNumber
+                    )
+                ]).then(() => {
+                    return true;
+                });
+            }
+        ]
     };
 
     public data = {
@@ -336,7 +403,8 @@ export class EbeguBetreuungAbweichungenState implements Ng1StateDeclaration {
         '/betreuungen/betreuung/abweichungen/:gesuchId/:kindNumber/:betreuungNumber';
     public params = {
         betreuungsangebotTyp: '',
-        betreuungNumber: ''
+        betreuungNumber: '',
+        gesuchId: ''
     };
 
     public views: {[name: string]: Ng1StateDeclaration} = {
@@ -346,11 +414,11 @@ export class EbeguBetreuungAbweichungenState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
-        roles: TSRoleUtil.getTraegerschaftInstitutionRoles()
+        roles: TSRoleUtil.getMutationsMitteilungAbweichungSendenRoles()
     };
 }
 
@@ -368,7 +436,7 @@ export class EbeguAbwesenheitState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -390,7 +458,7 @@ export class EbeguErwerbspensenListState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -403,12 +471,23 @@ export class EbeguErwerbspensumState implements Ng1StateDeclaration {
     public url =
         '/erwerbspensen/erwerbspensum/:gesuchId/:gesuchstellerNumber/:erwerbspensumNum';
     public params = {
+        gesuchstellerNumber: '1',
         erwerbspensumNum: ''
     };
 
     public views: {[name: string]: Ng1StateDeclaration} = {
         gesuchViewPort: {
-            template: '<erwerbspensum-view>'
+            templateProvider: [
+                'SharedUtilApplicationPropertyRsService',
+                async (applicationService: any) => {
+                    const isEnabled = await firstValueFrom(
+                        applicationService.isAbgeloesteViewEnabled()
+                    );
+                    return isEnabled
+                        ? '<dv-gesuch-erwerbspensum-view>'
+                        : '<erwerbspensum-view>';
+                }
+            ]
         },
         kommentarViewPort: {
             template: kommentarView
@@ -416,7 +495,43 @@ export class EbeguErwerbspensumState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            'gesuch',
+            '$transition$',
+            'gesuchModelManager',
+            async (
+                gesuch: IPromise<TSGesuch>,
+                $transition$: Transition,
+                gesuchModelManager: IPromise<GesuchModelManager>
+            ) => {
+                const erwerbspensumNumParam =
+                    $transition$.params().erwerbspensumNum;
+                const erwerbspensumNum =
+                    erwerbspensumNumParam === undefined ||
+                    erwerbspensumNumParam === ''
+                        ? undefined
+                        : +erwerbspensumNumParam;
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+
+                await Promise.all([
+                    GesuchUtil.checkAmountOfAntragsteller(
+                        gesuchModelManager,
+                        gesuchstellerNumber
+                    ),
+                    GesuchUtil.checkErwerbspensumForGesuchsteller(
+                        gesuch,
+                        gesuchModelManager,
+                        gesuchstellerNumber,
+                        erwerbspensumNum
+                    )
+                ]).then(() => {
+                    return true;
+                });
+            }
+        ]
     };
 
     public data = {
@@ -441,7 +556,23 @@ export class EbeguFinanzielleSituationState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            '$transition$',
+            'gesuchModelManager',
+            (
+                $transition$: Transition,
+                gesuchModelManager: IPromise<GesuchModelManager>
+            ) => {
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+                return GesuchUtil.checkAmountOfAntragsteller(
+                    gesuchModelManager,
+                    gesuchstellerNumber
+                );
+            }
+        ]
     };
 
     public data = {
@@ -465,7 +596,7 @@ export class EbeguFinanzielleSituationStartState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -489,7 +620,7 @@ export class EbeguFinanzielleSituationResultateState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -513,7 +644,7 @@ export class EbeguFinanzielleSituationStartLuzernState
     };
 
     public resolve = {
-        gesuchModelManager: getGesuchModelManager
+        gesuchModelManager: getGesuchPromise
     };
 
     public data = {
@@ -537,7 +668,7 @@ export class EbeguFinanzielleSituationStartSolothurnState
     };
 
     public resolve = {
-        gesuchModelManager: getGesuchModelManager
+        gesuchModelManager: getGesuchPromise
     };
 
     public data = {
@@ -561,7 +692,7 @@ export class EbeguFinanzielleSituationGS1SolothurnState
     };
 
     public resolve = {
-        gesuchModelManager: getGesuchModelManager
+        gesuchModelManager: getGesuchPromise
     };
 
     public data = {
@@ -585,7 +716,7 @@ export class EbeguFinanzielleSituationGS2SolothurnState
     };
 
     public resolve = {
-        gesuchModelManager: getGesuchModelManager
+        gesuchModelManager: getGesuchPromise
     };
 
     public data = {
@@ -609,7 +740,7 @@ export class EbeguFinanzielleSituationGS2LuzernState
     };
 
     public resolve = {
-        gesuchModelManager: getGesuchModelManager
+        gesuchModelManager: getGesuchPromise
     };
 
     public data = {
@@ -623,7 +754,6 @@ export class EbeguFinanzielleSituationAppenzellState
     public name = 'gesuch.finanzielleSituationAppenzell';
     public url =
         '/finanzielleSituationAppenzell/:gesuchstellerNumber/:gesuchId';
-
     public params = {
         gesuchstellerNumber: '1'
     };
@@ -638,7 +768,25 @@ export class EbeguFinanzielleSituationAppenzellState
     };
 
     public resolve = {
-        gesuchModelManager: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            '$transition$',
+            'gesuchModelManager',
+            (
+                $transition$: Transition,
+                gesuchModelManager: GesuchModelManager
+            ) => {
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+                return gesuchModelManager.isSpezialFallAR()
+                    ? [1, 2].includes(gesuchstellerNumber)
+                    : GesuchUtil.checkAmountOfAntragsteller(
+                          Promise.resolve(gesuchModelManager),
+                          gesuchstellerNumber
+                      );
+            }
+        ]
     };
 
     public data = {
@@ -666,7 +814,25 @@ export class EbeguFinanzielleSituationAppenzellGS2State
     };
 
     public resolve = {
-        gesuchModelManager: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            '$transition$',
+            'gesuchModelManager',
+            (
+                $transition$: Transition,
+                gesuchModelManager: GesuchModelManager
+            ) => {
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+                return gesuchModelManager.isSpezialFallAR()
+                    ? gesuchstellerNumber === 2
+                    : GesuchUtil.checkAmountOfAntragsteller(
+                          Promise.resolve(gesuchModelManager),
+                          gesuchstellerNumber
+                      );
+            }
+        ]
     };
 
     public data = {
@@ -689,7 +855,7 @@ export class EbeguVerfuegenListState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager,
+        gesuch: getGesuchPromise,
         mahnungList: getMahnungen
     };
 
@@ -712,7 +878,7 @@ export class EbeguVerfuegenState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -736,7 +902,7 @@ export class EbeguEinkommensverschlechterungInfoState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -765,7 +931,32 @@ export class EbeguEinkommensverschlechterungState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            'gesuch',
+            '$transition$',
+            'gesuchModelManager',
+            async (
+                gesuch: IPromise<TSGesuch>,
+                $transition$: Transition,
+                gesuchModelManager: IPromise<GesuchModelManager>
+            ) => {
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+                const basisjahrPlus = +$transition$.params().basisjahrPlus;
+
+                await Promise.all([
+                    GesuchUtil.checkAmountOfAntragsteller(
+                        gesuchModelManager,
+                        gesuchstellerNumber
+                    ),
+                    GesuchUtil.checkBasisJahr(gesuch, basisjahrPlus)
+                ]).then(() => {
+                    return true;
+                });
+            }
+        ]
     };
 
     public data = {
@@ -794,7 +985,32 @@ export class EbeguEinkommensverschlechterungLuzernState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            'gesuch',
+            '$transition$',
+            'gesuchModelManager',
+            async (
+                gesuch: IPromise<TSGesuch>,
+                $transition$: Transition,
+                gesuchModelManager: IPromise<GesuchModelManager>
+            ) => {
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+                const basisjahrPlus = +$transition$.params().basisjahrPlus;
+
+                await Promise.all([
+                    GesuchUtil.checkAmountOfAntragsteller(
+                        gesuchModelManager,
+                        gesuchstellerNumber
+                    ),
+                    GesuchUtil.checkBasisJahr(gesuch, basisjahrPlus)
+                ]).then(() => {
+                    return true;
+                });
+            }
+        ]
     };
 
     public data = {
@@ -823,7 +1039,23 @@ export class EbeguEinkommensverschlechterungSchwyzState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            '$transition$',
+            'gesuchModelManager',
+            (
+                $transition$: Transition,
+                gesuchModelManager: IPromise<GesuchModelManager>
+            ) => {
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+                return GesuchUtil.checkAmountOfAntragsteller(
+                    gesuchModelManager,
+                    gesuchstellerNumber
+                );
+            }
+        ]
     };
 
     public data = {
@@ -847,7 +1079,7 @@ export class EbeguEinkommensverschlechterungSchwyzResultateState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -875,7 +1107,15 @@ export class EbeguEinkommensverschlechterungLuzernResultateState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        auth: [
+            'gesuch',
+            '$transition$',
+            (gesuch: IPromise<TSGesuch>, $transition$: Transition) => {
+                const basisjahrPlus = +$transition$.params().basisjahrPlus;
+                return GesuchUtil.checkBasisJahr(gesuch, basisjahrPlus);
+            }
+        ]
     };
 
     public data = {
@@ -903,7 +1143,15 @@ export class EbeguEinkommensverschlechterungResultateState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        auth: [
+            'gesuch',
+            '$transition$',
+            (gesuch: IPromise<TSGesuch>, $transition$: Transition) => {
+                const basisjahrPlus = +$transition$.params().basisjahrPlus;
+                return GesuchUtil.checkBasisJahr(gesuch, basisjahrPlus);
+            }
+        ]
     };
 
     public data = {
@@ -932,7 +1180,31 @@ export class EbeguEinkommensverschlechterungSolothurnState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            'gesuch',
+            '$transition$',
+            'gesuchModelManager',
+            async (
+                gesuch: IPromise<TSGesuch>,
+                $transition$: Transition,
+                gesuchModelManager: IPromise<GesuchModelManager>
+            ) => {
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+                const basisjahrPlus = +$transition$.params().basisjahrPlus;
+                await Promise.all([
+                    GesuchUtil.checkAmountOfAntragsteller(
+                        gesuchModelManager,
+                        gesuchstellerNumber
+                    ),
+                    GesuchUtil.checkBasisJahr(gesuch, basisjahrPlus)
+                ]).then(() => {
+                    return true;
+                });
+            }
+        ]
     };
 
     public data = {
@@ -960,7 +1232,15 @@ export class EbeguEinkommensverschlechterungSolothurnResultateState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        auth: [
+            'gesuch',
+            '$transition$',
+            (gesuch: IPromise<TSGesuch>, $transition$: Transition) => {
+                const basisjahrPlus = +$transition$.params().basisjahrPlus;
+                return GesuchUtil.checkBasisJahr(gesuch, basisjahrPlus);
+            }
+        ]
     };
 
     public data = {
@@ -989,7 +1269,34 @@ export class EbeguEinkommensverschlechterungAppenzellState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        gesuchModelManager: getGesuchModelManager,
+        auth: [
+            'gesuch',
+            '$transition$',
+            'gesuchModelManager',
+            async (
+                gesuch: IPromise<TSGesuch>,
+                $transition$: Transition,
+                gesuchModelManager: GesuchModelManager
+            ) => {
+                const gesuchstellerNumber =
+                    +$transition$.params().gesuchstellerNumber;
+                const basisjahrPlus = +$transition$.params().basisjahrPlus;
+
+                await Promise.all([
+                    gesuchModelManager.isSpezialFallAR()
+                        ? [1, 2].includes(gesuchstellerNumber)
+                        : GesuchUtil.checkAmountOfAntragsteller(
+                              Promise.resolve(gesuchModelManager),
+                              gesuchstellerNumber
+                          ),
+                    GesuchUtil.checkBasisJahr(gesuch, basisjahrPlus)
+                ]).then(() => {
+                    return true;
+                });
+            }
+        ]
     };
 
     public data = {
@@ -1017,7 +1324,15 @@ export class EbeguEinkommensverschlechterungAppenzellResultateState
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise,
+        auth: [
+            'gesuch',
+            '$transition$',
+            (gesuch: IPromise<TSGesuch>, $transition$: Transition) => {
+                const basisjahrPlus = +$transition$.params().basisjahrPlus;
+                return GesuchUtil.checkBasisJahr(gesuch, basisjahrPlus);
+            }
+        ]
     };
 
     public data = {
@@ -1027,10 +1342,7 @@ export class EbeguEinkommensverschlechterungAppenzellResultateState
 
 export class EbeguDokumenteState implements Ng1StateDeclaration {
     public name = 'gesuch.dokumente';
-    public url = '/dokumente/:gesuchId/:gesuchstellerNumber';
-    public params = {
-        gesuchstellerNumber: '1'
-    };
+    public url = '/dokumente/:gesuchId/';
 
     public views: {[name: string]: Ng1StateDeclaration} = {
         gesuchViewPort: {
@@ -1042,7 +1354,7 @@ export class EbeguDokumenteState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -1067,7 +1379,7 @@ export class EbeguBetreuungMitteilungState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -1089,7 +1401,7 @@ export class EbeguSozialhilfeZeitraumListState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -1115,7 +1427,7 @@ export class EbeguSozialhilfeZeitraumState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -1137,7 +1449,7 @@ export class EbeguInternePendenzenState implements Ng1StateDeclaration {
     };
 
     public resolve = {
-        gesuch: getGesuchModelManager
+        gesuch: getGesuchPromise
     };
 
     public data = {
@@ -1270,7 +1582,15 @@ export function getMahnungen(
     return $q.resolve([]);
 }
 
-getGesuchModelManager.$inject = [
+getGesuchModelManager.$inject = ['$q', 'GesuchModelManager'];
+export function getGesuchModelManager(
+    $q: IQService,
+    gesuchModelManager: GesuchModelManager
+): IPromise<GesuchModelManager> {
+    return $q.resolve(gesuchModelManager);
+}
+
+getGesuchPromise.$inject = [
     'GesuchModelManager',
     'BerechnungsManager',
     '$stateParams',
@@ -1278,7 +1598,7 @@ getGesuchModelManager.$inject = [
     '$log'
 ];
 
-export function getGesuchModelManager(
+export function getGesuchPromise(
     gesuchModelManager: GesuchModelManager,
     berechnungsManager: BerechnungsManager,
     $stateParams: IGesuchStateParams,

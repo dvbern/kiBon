@@ -24,6 +24,7 @@ import {
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import {CONSTANTS, MAX_FILE_SIZE} from '@kibon/shared/model/constants';
 import {TranslateService} from '@ngx-translate/core';
 import {Transition} from '@uirouter/core';
 import {StateDeclaration} from '@uirouter/core/lib/state/interface';
@@ -31,24 +32,28 @@ import {Moment} from 'moment';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
-import {TSGemeindeStatus} from '../../../models/enums/TSGemeindeStatus';
-import {TSGesuchsperiodeStatus} from '../../../models/enums/TSGesuchsperiodeStatus';
-import {TSRole} from '../../../models/enums/TSRole';
-import {TSSprache} from '../../../models/enums/TSSprache';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
+import {
+    TSDokumentUploadTyp,
+    TSGemeindeStatus,
+    TSGesuchsperiodeStatus,
+    TSRole,
+    TSSprache
+} from '@kibon/shared/model/enums';
 import {TSGemeindeKonfiguration} from '../../../models/TSGemeindeKonfiguration';
 import {DvNgOkDialogComponent} from '../../core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
-import {CONSTANTS, MAX_FILE_SIZE} from '../../core/constants/CONSTANTS';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
 import {GesuchsperiodeRS} from '../../core/service/gesuchsperiodeRS.rest';
 import {UploadRS} from '../../core/service/uploadRS.rest';
+import {FileUtil} from '@kibon/shared-util-fn-file';
 
 @Component({
     selector: 'dv-gemeinde-ts-konfiguration',
     templateUrl: './gemeinde-ts-konfig.component.html',
     styleUrls: ['./gemeinde-ts-konfig.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class GemeindeTsKonfigComponent implements OnInit {
     @ViewChild(NgForm) public form: NgForm;
@@ -102,7 +107,7 @@ export class GemeindeTsKonfigComponent implements OnInit {
     ): string {
         const datum = konfiguration.konfigTagesschuleAktivierungsdatum;
         if (datum && datum.isValid()) {
-            return datum.format(CONSTANTS.DATE_FORMAT);
+            return datum.format(CONSTANTS.SQL_FORMAT);
         }
         return '';
     }
@@ -127,7 +132,7 @@ export class GemeindeTsKonfigComponent implements OnInit {
     ): string {
         const datum = konfiguration.konfigTagesschuleErsterSchultag;
         if (datum && datum.isValid()) {
-            return datum.format(CONSTANTS.DATE_FORMAT);
+            return datum.format(CONSTANTS.SQL_FORMAT);
         }
         return '';
     }
@@ -181,6 +186,15 @@ export class GemeindeTsKonfigComponent implements OnInit {
         const selectedFile = event.target.files[0];
         if (selectedFile.size > MAX_FILE_SIZE) {
             this.showFileTooBigDialog();
+            return;
+        }
+
+        if (
+            !FileUtil.isFileEndingMatchingTypes(selectedFile, [
+                TSDokumentUploadTyp.PDF
+            ])
+        ) {
+            this.errorService.addMesageAsError('ERROR_WRONG_UPLOAD_FILETYPE');
             return;
         }
 
@@ -438,4 +452,6 @@ export class GemeindeTsKonfigComponent implements OnInit {
     public isSuperAdmin(): boolean {
         return this.authServiceRS.isRole(TSRole.SUPER_ADMIN);
     }
+
+    protected readonly TSDokumentUploadTyp = TSDokumentUploadTyp;
 }

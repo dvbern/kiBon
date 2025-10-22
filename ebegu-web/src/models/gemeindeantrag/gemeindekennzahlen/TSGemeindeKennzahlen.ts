@@ -15,10 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {TSEinschulungTyp} from '../../enums/TSEinschulungTyp';
-import {TSAbstractEntity} from '../../TSAbstractEntity';
-import {TSGemeinde} from '../../TSGemeinde';
-import {TSGesuchsperiode} from '../../TSGesuchsperiode';
+import {TSEinschulungTyp} from '@kibon/shared/model/enums';
+import {
+    TSAbstractEntity,
+    TSGemeinde,
+    TSGesuchsperiode
+} from '@kibon/shared/model/entity';
 import {TSGemeindeKennzahlenStatus} from './TSGemeindeKennzahlenStatus';
 
 export class TSGemeindeKennzahlen extends TSAbstractEntity {

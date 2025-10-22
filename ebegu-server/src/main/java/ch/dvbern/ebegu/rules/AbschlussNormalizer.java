@@ -48,7 +48,10 @@ public final class AbschlussNormalizer extends AbstractAbschlussRule {
 
 	@Nonnull
 	@Override
-	public List<VerfuegungZeitabschnitt> execute(@Nonnull AbstractPlatz platz, @Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte) {
+	public List<VerfuegungZeitabschnitt> execute(
+		@Nonnull AbstractPlatz platz,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		List<VerfuegungZeitabschnitt> result = new ArrayList<>();
 		for (VerfuegungZeitabschnitt zeitabschnitt : zeitabschnitte) {
 			normalizeZeitabschnitte(result, zeitabschnitt);
@@ -67,15 +70,29 @@ public final class AbschlussNormalizer extends AbstractAbschlussRule {
 		// Zuerst vergleichen, ob sich der neue Zeitabschnitt vom letzt hinzugefügten (und angrenzenden) unterscheidet
 		int indexOfLast = validZeitabschnitte.size() - 1;
 		if (indexOfLast >= 0) {
-			VerfuegungZeitabschnitt lastZeitabschnitt = validZeitabschnitte.get(indexOfLast);
-			if (lastZeitabschnitt.isSameSichtbareDaten(zeitabschnitt) && zeitabschnitt.getGueltigkeit().startsDayAfter(lastZeitabschnitt.getGueltigkeit())) {
+			VerfuegungZeitabschnitt lastZeitabschnitt = validZeitabschnitte.get(
+				indexOfLast
+			);
+			if (lastZeitabschnitt.isSameSichtbareDaten(zeitabschnitt)
+				&& zeitabschnitt.getGueltigkeit()
+					.startsDayAfter(
+						lastZeitabschnitt.getGueltigkeit()
+					)) {
 				// Gleiche Berechnungsgrundlagen:
 				// Zusammenfuegen, falls sie im gleichen Monat liegen, oder keepMonate = false
-				if (!keepMonate || isSameMonth(zeitabschnitt, lastZeitabschnitt)) {
-					lastZeitabschnitt.getGueltigkeit().setGueltigBis(zeitabschnitt.getGueltigkeit().getGueltigBis());
+				if (!keepMonate
+					|| isSameMonth(zeitabschnitt, lastZeitabschnitt)) {
+					lastZeitabschnitt.getGueltigkeit()
+						.setGueltigBis(
+							zeitabschnitt.getGueltigkeit()
+								.getGueltigBis()
+						);
 					// Die Bemerkungen zusammenfügen mit Vermeidung von Duplikaten
 					if (zeitabschnitt.getBemerkungenDTOList() != null) {
-						lastZeitabschnitt.getBemerkungenDTOList().mergeBemerkungenMap(zeitabschnitt.getBemerkungenDTOList());
+						lastZeitabschnitt.getBemerkungenDTOList()
+							.mergeBemerkungenMap(
+								zeitabschnitt.getBemerkungenDTOList()
+							);
 					}
 
 					validZeitabschnitte.remove(indexOfLast);
@@ -95,8 +112,15 @@ public final class AbschlussNormalizer extends AbstractAbschlussRule {
 		}
 	}
 
-	private boolean isSameMonth(@Nonnull VerfuegungZeitabschnitt abschnittA, @Nonnull VerfuegungZeitabschnitt abschnittB) {
-		return abschnittA.getGueltigkeit().getGueltigAb().getMonth() == abschnittB.getGueltigkeit().getGueltigAb().getMonth()
-			&& abschnittA.getGueltigkeit().getGueltigBis().getMonth() == abschnittB.getGueltigkeit().getGueltigBis().getMonth();
+	private boolean isSameMonth(
+		@Nonnull VerfuegungZeitabschnitt abschnittA,
+		@Nonnull VerfuegungZeitabschnitt abschnittB
+	) {
+		return abschnittA.getGueltigkeit().getGueltigAb().getMonth()
+			== abschnittB.getGueltigkeit().getGueltigAb().getMonth()
+			&& abschnittA.getGueltigkeit().getGueltigBis().getMonth()
+				== abschnittB.getGueltigkeit()
+					.getGueltigBis()
+					.getMonth();
 	}
 }

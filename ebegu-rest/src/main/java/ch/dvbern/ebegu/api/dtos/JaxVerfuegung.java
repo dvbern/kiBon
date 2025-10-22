@@ -21,10 +21,10 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.util.Constants;
 
@@ -59,7 +59,6 @@ public class JaxVerfuegung extends JaxAbstractDTO {
 	@Nullable
 	private BigDecimal veraenderungVerguenstigungGegenueberVorgaenger;
 
-	@Nonnull
 	private boolean ignorable = false;
 
 	@Nullable
@@ -91,7 +90,9 @@ public class JaxVerfuegung extends JaxAbstractDTO {
 		return zeitabschnitte;
 	}
 
-	public void setZeitabschnitte(@Nonnull List<JaxVerfuegungZeitabschnitt> zeitabschnitte) {
+	public void setZeitabschnitte(
+		@Nonnull List<JaxVerfuegungZeitabschnitt> zeitabschnitte
+	) {
 		this.zeitabschnitte = zeitabschnitte;
 	}
 
@@ -133,8 +134,10 @@ public class JaxVerfuegung extends JaxAbstractDTO {
 	}
 
 	public void setVeraenderungVerguenstigungGegenueberVorgaenger(
-		@Nullable BigDecimal veraenderungVerguenstigungGegenueberVorgaenger) {
-		this.veraenderungVerguenstigungGegenueberVorgaenger = veraenderungVerguenstigungGegenueberVorgaenger;
+		@Nullable BigDecimal veraenderungVerguenstigungGegenueberVorgaenger
+	) {
+		this.veraenderungVerguenstigungGegenueberVorgaenger =
+			veraenderungVerguenstigungGegenueberVorgaenger;
 	}
 
 	public boolean isIgnorable() {
@@ -150,7 +153,9 @@ public class JaxVerfuegung extends JaxAbstractDTO {
 		return korrekturAusbezahltInstitution;
 	}
 
-	public void setKorrekturAusbezahltInstitution(@Nullable BigDecimal korrekturAusbezahltInstitution) {
+	public void setKorrekturAusbezahltInstitution(
+		@Nullable BigDecimal korrekturAusbezahltInstitution
+	) {
 		this.korrekturAusbezahltInstitution = korrekturAusbezahltInstitution;
 	}
 
@@ -159,7 +164,9 @@ public class JaxVerfuegung extends JaxAbstractDTO {
 		return korrekturAusbezahltEltern;
 	}
 
-	public void setKorrekturAusbezahltEltern(@Nullable BigDecimal korrekturAusbezahltEltern) {
+	public void setKorrekturAusbezahltEltern(
+		@Nullable BigDecimal korrekturAusbezahltEltern
+	) {
 		this.korrekturAusbezahltEltern = korrekturAusbezahltEltern;
 	}
 }

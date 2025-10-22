@@ -26,6 +26,10 @@
         </div>
     </div>
 
+    @if (isZweitPruefungAndSameUserAsPruefung() | async) {
+        <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
+    }
+
     <form *ngIf="container" [formGroup]="form">
         <div class="max-width-container-750">
             <h3 translate class="uppercase" id="gemeinde-header">
@@ -165,17 +169,18 @@
                     </dv-tooltip>
                 </span>
                 <span class="flex-whitespace-item"></span>
-                <button
-                    type="button"
-                    (click)="fillAdress()"
-                    *ngIf="fillActionsVisible()"
-                    class="dv-btn cancel-button"
-                >
-                    {{
-                        'FERIENBETREUUNG_AUS_GEMEINDESTAMMDATEN_UEBERNEHMEN'
-                            | translate
-                    }}
-                </button>
+                @if (fillActionsVisible() | async) {
+                    <button
+                        type="button"
+                        (click)="fillAdress()"
+                        class="dv-btn cancel-button"
+                    >
+                        {{
+                            'FERIENBETREUUNG_AUS_GEMEINDESTAMMDATEN_UEBERNEHMEN'
+                                | translate
+                        }}
+                    </button>
+                }
             </h3>
 
             <div formGroupName="stammdatenAdresse">
@@ -461,16 +466,18 @@
                     </dv-tooltip>
                 </span>
                 <span class="flex-whitespace-item"></span>
-                <button
-                    type="button"
-                    (click)="fillBenutzer()"
-                    *ngIf="fillActionsVisible()"
-                    class="dv-btn cancel-button"
-                >
-                    {{
-                        'FERIENBETREUUNG_MEINE_ANGABEN_UEBERNEHMEN' | translate
-                    }}
-                </button>
+                @if (fillActionsVisible() | async) {
+                    <button
+                        type="button"
+                        (click)="fillBenutzer()"
+                        class="dv-btn cancel-button"
+                    >
+                        {{
+                            'FERIENBETREUUNG_MEINE_ANGABEN_UEBERNEHMEN'
+                                | translate
+                        }}
+                    </button>
+                }
             </h3>
 
             <div class="row">
@@ -674,11 +681,13 @@
                     </label>
                     <mat-form-field floatLabel="always">
                         <input
-                            type="text"
+                            type="email"
                             id="stammdaten_kontakt_email_id"
                             matInput
                             formControlName="stammdatenKontaktpersonEmail"
                             class="form-control dv-input"
+                            placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
+                            email
                         />
                         <mat-error
                             *ngIf="
@@ -1052,6 +1061,8 @@
                                     matInput
                                     formControlName="iban"
                                     isNotQrIbanN
+                                    ngxIban
+                                    placeholder="CHXX XXXX XXXX XXXX XXXX X"
                                     class="form-control dv-input"
                                 />
                                 <mat-error

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.inbox.handler.pensum;
@@ -41,7 +41,9 @@ class BetreuungInFerienzeitMapperFactoryTest {
 	@NullSource
 	@ValueSource(booleans = { true, false })
 	void importBetreuungInFerienzeit(Boolean betreuungInFerienzeit) {
-		ZeitabschnittDTO z = createZeitabschnittDTO(Constants.DEFAULT_GUELTIGKEIT);
+		ZeitabschnittDTO z = createZeitabschnittDTO(
+			Constants.DEFAULT_GUELTIGKEIT
+		);
 		z.setBetreuungInFerienzeit(betreuungInFerienzeit);
 
 		BetreuungEinstellungen einstellungen = BetreuungEinstellungen.builder()
@@ -52,8 +54,14 @@ class BetreuungInFerienzeitMapperFactoryTest {
 
 		BetreuungsmitteilungPensum actual = convert(ctx, z);
 
-		assertThat(actual.getBetreuungInFerienzeit(), is(betreuungInFerienzeit));
-		assertThat(ctx.isReadyForBestaetigen(), is(betreuungInFerienzeit != null));
+		assertThat(
+			actual.getBetreuungInFerienzeit(),
+			is(betreuungInFerienzeit)
+		);
+		assertThat(
+			ctx.isReadyForBestaetigen(),
+			is(betreuungInFerienzeit != null)
+		);
 		if (betreuungInFerienzeit == null) {
 			assertThat(actual.isVollstaendig(), is(false));
 		}
@@ -61,7 +69,9 @@ class BetreuungInFerienzeitMapperFactoryTest {
 
 	@Test
 	void ignoreWhenDisabled() {
-		ZeitabschnittDTO z = createZeitabschnittDTO(Constants.DEFAULT_GUELTIGKEIT);
+		ZeitabschnittDTO z = createZeitabschnittDTO(
+			Constants.DEFAULT_GUELTIGKEIT
+		);
 		z.setBetreuungInFerienzeit(true);
 
 		BetreuungEinstellungen einstellungen = BetreuungEinstellungen.builder()
@@ -76,9 +86,13 @@ class BetreuungInFerienzeitMapperFactoryTest {
 	}
 
 	@Nonnull
-	private BetreuungsmitteilungPensum convert(ProcessingContext ctx, ZeitabschnittDTO z) {
+	private BetreuungsmitteilungPensum convert(
+		ProcessingContext ctx,
+		ZeitabschnittDTO z
+	) {
 		BetreuungsmitteilungPensum actual = new BetreuungsmitteilungPensum();
-		BetreuungInFerienzeitMapperFactory.createForBetreuungInFerienzeit(ctx).toAbstractMahlzeitenPensum(actual, z);
+		BetreuungInFerienzeitMapperFactory.createForBetreuungInFerienzeit(ctx)
+			.toAbstractMahlzeitenPensum(actual, z);
 
 		return actual;
 	}

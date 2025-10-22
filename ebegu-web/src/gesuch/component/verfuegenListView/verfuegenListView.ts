@@ -15,14 +15,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {
+    getAllWizardStepsWithoutFinSitSteps,
+    isBetreuungsstatusStorniert,
+    TSBetreuungsstatus,
+    TSWizardStepName,
+    TSWizardStepStatus,
+    TSRole,
+    TSSprache,
+    TSBetreuungsangebotTyp
+} from '@kibon/shared/model/enums';
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, IPromise} from 'angular';
-import * as moment from 'moment';
+import moment from 'moment';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
+import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSBedarfsstufe} from '../../../models/enums/betreuung/TSBedarfsstufe';
 import {
@@ -33,25 +45,14 @@ import {
     TSAntragStatus
 } from '../../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
-import {TSBetreuungsangebotTyp} from '../../../models/enums/betreuung/TSBetreuungsangebotTyp';
-import {
-    isBetreuungsstatusStorniert,
-    TSBetreuungsstatus
-} from '../../../models/enums/betreuung/TSBetreuungsstatus';
-import {TSEinstellungKey} from '../../../models/enums/TSEinstellungKey';
+import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {TSFinSitStatus} from '../../../models/enums/TSFinSitStatus';
 import {TSMahnungTyp} from '../../../models/enums/TSMahnungTyp';
-import {TSRole} from '../../../models/enums/TSRole';
-import {
-    getAllWizardStepsWithoutFinSitSteps,
-    TSWizardStepName
-} from '../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../models/enums/TSWizardStepStatus';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
 import {TSFall} from '../../../models/TSFall';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {TSGesuchsperiode} from '../../../models/TSGesuchsperiode';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {TSMahnung} from '../../../models/TSMahnung';
 import {navigateToStartPageForRole} from '../../../utils/AuthenticationUtil';
@@ -68,6 +69,8 @@ import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
 import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {firstValueFrom} from 'rxjs';
 
 const removeDialogTempl = require('../../dialog/removeDialogTemplate.html');
 const bemerkungDialogTempl = require('../../dialog/bemerkungenDialogTemplate.html');
@@ -100,7 +103,9 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         '$timeout',
         '$translate',
         'EinstellungRS',
-        'EbeguUtil'
+        'GesuchsperiodeRS',
+        'EbeguUtil',
+        'SharedUtilApplicationPropertyRsService'
     ];
     public hasAnyNewOrStornierteBetreuung: boolean = false;
     public veraenderungBG: number;
@@ -111,6 +116,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
     public finSitStatusUpdateIsRunning: boolean = false;
     public hoehereBeitraegeBeeintraechtigungAktiviert: boolean;
     public missingBedarfsstufeChildNames: string[] = [];
+    public isErlaeuterungUploaded: boolean = false;
     private kinderWithBetreuungList: Array<TSKindContainer>;
     private mahnung: TSMahnung;
     private tempAntragStatus: TSAntragStatus;
@@ -122,6 +128,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
 
     public readonly demoFeatureFachstelleUebergangsloesung =
         TSDemoFeature.FACHSTELLEN_UEBERGANGSLOESUNG;
+
     public constructor(
         private readonly $state: StateService,
         gesuchModelManager: GesuchModelManager,
@@ -136,7 +143,9 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         $timeout: ITimeoutService,
         private readonly $translate: ITranslateService,
         private readonly einstellungRS: EinstellungRS,
-        ebeguUtil: EbeguUtil
+        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
+        ebeguUtil: EbeguUtil,
+        private readonly applicationPropertService: SharedUtilApplicationPropertyRsService
     ) {
         super(
             gesuchModelManager,
@@ -187,23 +196,31 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
     }
 
     public setMutationIgnorieren(): void {
-        this.dvDialog
-            .showRemoveDialog(
-                removeDialogTempl,
-                this.form,
-                RemoveDialogController,
-                {
-                    title: 'CONFIRM_GESUCH_STATUS_IGNORIEREN',
-                    deleteText: 'CONFIRM_GESUCH_STATUS_IGNORIEREN_BESCHREIBUNG',
-                    parentController: undefined,
-                    elementID: undefined
-                }
-            )
-            .then(() => this.gesuchModelManager.mutationIgnorieren())
-            .then(() => {
-                this.refreshKinderListe();
-                this.loadNeustesVerfuegtesGesuchFuerGesuch();
-            });
+        firstValueFrom(
+            this.applicationPropertService.isAngebotTSEnabled()
+        ).then(angebotTSEnabled => {
+            this.dvDialog
+                .showRemoveDialog(
+                    removeDialogTempl,
+                    this.form,
+                    RemoveDialogController,
+                    {
+                        title: angebotTSEnabled
+                            ? 'CONFIRM_GESUCH_STATUS_IGNORIEREN_BGTS'
+                            : 'CONFIRM_GESUCH_STATUS_IGNORIEREN_BG',
+                        deleteText: angebotTSEnabled
+                            ? 'CONFIRM_GESUCH_STATUS_IGNORIEREN_BESCHREIBUNG_BGTS'
+                            : 'CONFIRM_GESUCH_STATUS_IGNORIEREN_BESCHREIBUNG_BG',
+                        parentController: undefined,
+                        elementID: undefined
+                    }
+                )
+                .then(() => this.gesuchModelManager.mutationIgnorieren())
+                .then(() => {
+                    this.refreshKinderListe();
+                    this.loadNeustesVerfuegtesGesuchFuerGesuch();
+                });
+        });
     }
 
     /**
@@ -259,7 +276,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 betreuung.verfuegung.generatedBemerkungen
             )
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -341,6 +358,11 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         if (!this.gesuchModelManager.isFinanzielleSituationRequired()) {
             return false;
         }
+
+        if (this.hasOnlyFerienbetreuung()) {
+            return false;
+        }
+
         if (this.isGesuchstellerOrSozialdienst()) {
             return (
                 isAnyStatusOfVerfuegt(this.getAntragStatus()) &&
@@ -348,9 +370,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 !this.isGesuchIgnoriert()
             );
         }
-        if (this.hasOnlyFerienbetreuung()) {
-            return false;
-        }
+
         return !this.isFinSitAbglehnt() && !this.isGesuchIgnoriert();
     }
 
@@ -391,7 +411,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
             this.isBegleitschreibenVisible() &&
             isAnyStatusOfVerfuegtButIgnoriert(status) &&
             this.authServiceRs.isOneOfRoles(
-                this.TSRoleUtil.getJugendamtAndSchulamtRole()
+                this.TSRoleUtil.getAllRolesButTraegerschaftInstitution()
             )
         );
     }
@@ -837,7 +857,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 this.gesuchModelManager.getGesuch().id
             )
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -845,6 +865,71 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 );
             })
             .catch(ex => EbeguUtil.handleDownloadError(win, ex));
+    }
+
+    public openErlaeuterungPDF(): void {
+        if (!this.gesuchModelManager.getGesuch()) {
+            return;
+        }
+        const win = this.downloadRS.prepareDownloadWindow();
+        this.gesuchsperiodeRS
+            .downloadGesuchsperiodeDokument(
+                this.gesuchModelManager.getGesuchsperiode().id,
+                this.getErlaeuterungPDFSprache(),
+                TSDokumentTyp.ERLAUTERUNG_ZUR_VERFUEGUNG
+            )
+            .then(response => {
+                const file = new Blob([response], {type: 'application/pdf'});
+                const filename = this.$translate.instant(
+                    'ERLAUTERUNG_ZUR_VERFUEGUNG_DATEI_NAME'
+                );
+                this.downloadRS.openUploadedPDF(file, filename, win);
+                console.log(filename);
+            })
+            .catch(ex => EbeguUtil.handleDownloadError(win, ex));
+    }
+
+    public getBeilagenummerForErlaeuterungPDF(): number {
+        if (!this.isFinanziellesituationPDFVisible()) {
+            return 1;
+        }
+
+        return 2;
+    }
+
+    private updateExistErlaeuterungPDF(): void {
+        if (
+            !this.authServiceRs.isOneOfRoles(
+                this.TSRoleUtil.getAllRolesButTraegerschaftInstitution()
+            )
+        ) {
+            return;
+        }
+        this.gesuchsperiodeRS
+            .existDokument(
+                this.gesuchModelManager.getGesuchsperiode().id,
+                this.getErlaeuterungPDFSprache(),
+                TSDokumentTyp.ERLAUTERUNG_ZUR_VERFUEGUNG
+            )
+            .then(result => {
+                this.isErlaeuterungUploaded = !!result;
+            });
+    }
+
+    private getErlaeuterungPDFSprache(): TSSprache {
+        if (
+            this.gesuchModelManager.gemeindeStammdaten.korrespondenzspracheFr &&
+            this.gesuchModelManager.gemeindeStammdaten.korrespondenzspracheDe
+        ) {
+            return this.gesuchModelManager.getGesuch().gesuchsteller1
+                .gesuchstellerJA.korrespondenzSprache;
+        } else if (
+            this.gesuchModelManager.gemeindeStammdaten.korrespondenzspracheDe
+        ) {
+            return TSSprache.DEUTSCH;
+        } else {
+            return TSSprache.FRANZOESISCH;
+        }
     }
 
     public openBegleitschreibenPDF(): void {
@@ -857,7 +942,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 this.gesuchModelManager.getGesuch().id
             )
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -877,7 +962,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
                 this.gesuchModelManager.getGesuch().id
             )
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -892,7 +977,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         this.downloadRS
             .getAccessTokenMahnungGeneratedDokument(mahnung || this.mahnung)
             .then((downloadFile: TSDownloadFile) => {
-                this.downloadRS.startDownload(
+                this.downloadRS.startDownloadGeneratedPDF(
                     downloadFile.accessToken,
                     downloadFile.filename,
                     false,
@@ -1112,6 +1197,12 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         );
     }
 
+    public isTraegerschaftInstitutionRolle(): boolean {
+        return this.authServiceRs.isOneOfRoles(
+            TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
+        );
+    }
+
     public $postLink(): void {
         // eslint-disable-next-line no-magic-numbers
         this.doPostLinkActions(500);
@@ -1280,6 +1371,7 @@ export class VerfuegenListViewController extends AbstractGesuchViewController<an
         }
         this.missingBedarfsstufeChildNames = [];
         this.isBedarfsstufeNotSelected();
+        this.updateExistErlaeuterungPDF();
     }
 
     private refreshKinderListe(): IPromise<any> {

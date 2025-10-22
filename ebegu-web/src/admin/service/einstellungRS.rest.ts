@@ -19,10 +19,11 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {forkJoin, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {CONSTANTS} from '../../app/core/constants/CONSTANTS';
-import {TSEinstellungKey} from '../../models/enums/TSEinstellungKey';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {EbeguUtil} from '../../utils/EbeguUtil';
+import {TSEinstellungKey} from '../einstellungen/TSEinstellungKey';
 import {TSFerienbetreuungAngabenContainer} from '../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
-import {TSEinstellung} from '../../models/TSEinstellung';
+import {TSEinstellung} from '../einstellungen/TSEinstellung';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 
 @Injectable({
@@ -116,6 +117,11 @@ export class EinstellungRS {
         gesuchsperiodeId: string,
         key: TSEinstellungKey
     ): Observable<TSEinstellung> {
+        if (EbeguUtil.isNullOrUndefined(gesuchsperiodeId)) {
+            throw new Error(
+                `Einstellung cannot be searched, gesuchsperiodeId is undefined`
+            );
+        }
         return this.getAllEinstellungenBySystemCached(gesuchsperiodeId).pipe(
             map(einstellungen => {
                 const einstellung = einstellungen.find(

@@ -30,8 +30,7 @@ ${templateConfiguration.mailCss}
 	<p>
 		Ihre Anmeldung für ${betreuung.kind.kindJA.fullName} an der ${betreuung.institutionStammdaten.institution
 		.name} wurde entgegengenommen. Sie erhalten die definitive Bestätigung der Anmeldung von der gewählten Institution. <br/>
-		Die Betreuungen können <a href="<#if configuration
-		.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/gesuch/verfuegen/${betreuung.extractGesuch().id}">hier</a> eingesehen werden.
+		Die Betreuungen können <a href="${frontendUrl}/gesuch/verfuegen/${betreuung.extractGesuch().id}">hier</a> eingesehen werden.
 	</p>
 	<p>
 		Freundliche Grüsse <br/>

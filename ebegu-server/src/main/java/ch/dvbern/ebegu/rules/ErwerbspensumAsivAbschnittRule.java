@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -52,19 +52,35 @@ public class ErwerbspensumAsivAbschnittRule extends ErwerbspensumAbschnittRule {
 
 	@Nullable
 	@Override
-	protected VerfuegungZeitabschnitt createZeitAbschnitt(@Nonnull DateRange gueltigkeit, @Nonnull Erwerbspensum erwerbspensum, boolean isGesuchsteller1) {
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
-		zeitabschnitt.addTaetigkeitForAsivAndGemeinde(erwerbspensum.getTaetigkeit());
+	protected VerfuegungZeitabschnitt createZeitAbschnitt(
+		@Nonnull DateRange gueltigkeit,
+		@Nonnull Erwerbspensum erwerbspensum,
+		boolean isGesuchsteller1
+	) {
+		VerfuegungZeitabschnitt zeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(gueltigkeit);
+		zeitabschnitt.addTaetigkeitForAsivAndGemeinde(
+			erwerbspensum.getTaetigkeit()
+		);
 		if (isGesuchsteller1) {
-			zeitabschnitt.setErwerbspensumGS1ForAsivAndGemeinde(erwerbspensum.getPensum());
+			zeitabschnitt.setErwerbspensumGS1ForAsivAndGemeinde(
+				erwerbspensum.getPensum()
+			);
 		} else {
-			zeitabschnitt.setErwerbspensumGS2ForAsivAndGemeinde(erwerbspensum.getPensum());
+			zeitabschnitt.setErwerbspensumGS2ForAsivAndGemeinde(
+				erwerbspensum.getPensum()
+			);
 		}
 		return zeitabschnitt;
 	}
 
 	@Override
-	protected void setErwerbspensumZuschlag(@Nonnull VerfuegungZeitabschnitt zeitabschnitt, int zuschlagErwerbspensum) {
-		zeitabschnitt.setErwerbspensumZuschlagForAsivAndGemeinde(zuschlagErwerbspensum);
+	protected void setErwerbspensumZuschlag(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
+		int zuschlagErwerbspensum
+	) {
+		zeitabschnitt.setErwerbspensumZuschlagForAsivAndGemeinde(
+			zuschlagErwerbspensum
+		);
 	}
 }

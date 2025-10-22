@@ -15,6 +15,28 @@
 
 package ch.dvbern.ebegu.entities;
 
+import java.time.LocalDate;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.Geschlecht;
@@ -23,19 +45,10 @@ import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.EbeguUtil;
 import ch.dvbern.ebegu.validators.CheckKinderabzug;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.envers.Audited;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import java.time.LocalDate;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Entity fuer Kinder.
@@ -43,9 +56,9 @@ import java.util.TreeSet;
 @Audited
 @Entity
 @Table(
-	indexes = @Index(columnList = "geburtsdatum", name = "IX_kind_geburtsdatum")
+	indexes = @Index(columnList = "geburtsdatum",
+		name = "IX_kind_geburtsdatum")
 )
-@EntityListeners({ AlleFaelleKindListener.class })
 @CheckKinderabzug
 public class Kind extends AbstractPersonEntity {
 
@@ -115,17 +128,20 @@ public class Kind extends AbstractPersonEntity {
 	@Nonnull
 	private Boolean keinPlatzInSchulhort = false;
 
-
 	@Valid
 	@Nonnull
-	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "kind",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true)
 	@SortNatural
 	private Set<PensumFachstelle> pensumFachstelle = new TreeSet<>();
 
 	@Valid
 	@Nullable
 	@OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_kind_pensum_ausserordentlicheranspruch_id"), nullable = true)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_kind_pensum_ausserordentlicheranspruch_id"),
+		nullable = true)
 	private PensumAusserordentlicherAnspruch pensumAusserordentlicherAnspruch;
 
 	@Column(nullable = true)
@@ -134,7 +150,8 @@ public class Kind extends AbstractPersonEntity {
 
 	@Column(nullable = true)
 	@Nullable
-	@Pattern(regexp = Constants.REGEX_ZEMIS, message = "{validator.constraints.zemis.message}")
+	@Pattern(regexp = Constants.REGEX_ZEMIS,
+		message = "{validator.constraints.zemis.message}")
 	private String zemisNummer;
 
 	@Column(nullable = false)
@@ -157,6 +174,23 @@ public class Kind extends AbstractPersonEntity {
 	@Nullable
 	private Boolean hoehereBeitraegeUnterlagenDigital;
 
+	@Setter
+	@Getter
+	@Column(nullable = false)
+	private boolean gueltigkeitTerminiert;
+
+	@Setter
+	@Getter
+	@Nullable
+	@Column()
+	private LocalDate gueltigkeitTerminiertPer;
+
+	@Setter
+	@Getter
+	@Nullable
+	@Column()
+	private String gueltigkeitTerminiertKommentar;
+
 	public Kind() {
 	}
 
@@ -176,7 +210,9 @@ public class Kind extends AbstractPersonEntity {
 		return kinderabzugErstesHalbjahr;
 	}
 
-	public void setKinderabzugErstesHalbjahr(@Nullable Kinderabzug kinderabzugErstesHalbjahr) {
+	public void setKinderabzugErstesHalbjahr(
+		@Nullable Kinderabzug kinderabzugErstesHalbjahr
+	) {
 		this.kinderabzugErstesHalbjahr = kinderabzugErstesHalbjahr;
 	}
 
@@ -185,7 +221,9 @@ public class Kind extends AbstractPersonEntity {
 		return kinderabzugZweitesHalbjahr;
 	}
 
-	public void setKinderabzugZweitesHalbjahr(@Nullable Kinderabzug kinderabzugZweitesHalbjahr) {
+	public void setKinderabzugZweitesHalbjahr(
+		@Nullable Kinderabzug kinderabzugZweitesHalbjahr
+	) {
 		this.kinderabzugZweitesHalbjahr = kinderabzugZweitesHalbjahr;
 	}
 
@@ -203,7 +241,9 @@ public class Kind extends AbstractPersonEntity {
 		return pflegeEntschaedigungErhalten;
 	}
 
-	public void setPflegeEntschaedigungErhalten(@Nullable Boolean pflegeEntschaedigungErhalten) {
+	public void setPflegeEntschaedigungErhalten(
+		@Nullable Boolean pflegeEntschaedigungErhalten
+	) {
 		this.pflegeEntschaedigungErhalten = pflegeEntschaedigungErhalten;
 	}
 
@@ -212,7 +252,9 @@ public class Kind extends AbstractPersonEntity {
 		return obhutAlternierendAusueben;
 	}
 
-	public void setObhutAlternierendAusueben(@Nullable Boolean obhutAlternierendAusueben) {
+	public void setObhutAlternierendAusueben(
+		@Nullable Boolean obhutAlternierendAusueben
+	) {
 		this.obhutAlternierendAusueben = obhutAlternierendAusueben;
 	}
 
@@ -239,7 +281,9 @@ public class Kind extends AbstractPersonEntity {
 		return lebtKindAlternierend;
 	}
 
-	public void setLebtKindAlternierend(@Nullable Boolean lebtKindAlternierend) {
+	public void setLebtKindAlternierend(
+		@Nullable Boolean lebtKindAlternierend
+	) {
 		this.lebtKindAlternierend = lebtKindAlternierend;
 	}
 
@@ -265,7 +309,9 @@ public class Kind extends AbstractPersonEntity {
 		return familienErgaenzendeBetreuung;
 	}
 
-	public void setFamilienErgaenzendeBetreuung(Boolean familienErgaenzendeBetreuung) {
+	public void setFamilienErgaenzendeBetreuung(
+		Boolean familienErgaenzendeBetreuung
+	) {
 		this.familienErgaenzendeBetreuung = familienErgaenzendeBetreuung;
 	}
 
@@ -292,11 +338,15 @@ public class Kind extends AbstractPersonEntity {
 		return pensumFachstelle;
 	}
 
-	public void setPensumFachstelle(@Nonnull Set<PensumFachstelle> pensumFachstelle) {
+	public void setPensumFachstelle(
+		@Nonnull Set<PensumFachstelle> pensumFachstelle
+	) {
 		this.pensumFachstelle = pensumFachstelle;
 	}
 
-	public void addPensumFachstelle(@Nonnull PensumFachstelle pensumFachstelle) {
+	public void addPensumFachstelle(
+		@Nonnull PensumFachstelle pensumFachstelle
+	) {
 		this.pensumFachstelle.add(pensumFachstelle);
 	}
 
@@ -306,9 +356,11 @@ public class Kind extends AbstractPersonEntity {
 	}
 
 	public void setPensumAusserordentlicherAnspruch(
-		@Nullable PensumAusserordentlicherAnspruch pensumAusserordentlicherAnspruch) {
+		@Nullable PensumAusserordentlicherAnspruch pensumAusserordentlicherAnspruch
+	) {
 
-		this.pensumAusserordentlicherAnspruch = pensumAusserordentlicherAnspruch;
+		this.pensumAusserordentlicherAnspruch =
+			pensumAusserordentlicherAnspruch;
 	}
 
 	@Nullable
@@ -343,9 +395,12 @@ public class Kind extends AbstractPersonEntity {
 		@Nonnull Kind target,
 		@Nonnull AntragCopyType copyType,
 		@Nonnull Gesuchsperiode gesuchsperiode,
-		@Nonnull LocalDate regelStartDatum) {
+		@Nonnull LocalDate regelStartDatum
+	) {
 		super.copyAbstractPersonEntity(target, copyType);
-		target.setFamilienErgaenzendeBetreuung(this.getFamilienErgaenzendeBetreuung());
+		target.setFamilienErgaenzendeBetreuung(
+			this.getFamilienErgaenzendeBetreuung()
+		);
 		target.setSprichtAmtssprache(this.getSprichtAmtssprache());
 		target.setAusAsylwesen(this.getAusAsylwesen());
 		target.setZemisNummer(this.getZemisNummer());
@@ -374,25 +429,50 @@ public class Kind extends AbstractPersonEntity {
 		return target;
 	}
 
-	private void copyKindForMutation(@Nonnull Kind target, @Nonnull LocalDate regelStartDatum) {
+	private void copyKindForMutation(
+		@Nonnull Kind target,
+		@Nonnull LocalDate regelStartDatum
+	) {
 		target.setEinschulungTyp(this.getEinschulungTyp());
-		target.setKinderabzugErstesHalbjahr(this.getKinderabzugErstesHalbjahr());
-		target.setKinderabzugZweitesHalbjahr(this.getKinderabzugZweitesHalbjahr());
+		target.setKinderabzugErstesHalbjahr(
+			this.getKinderabzugErstesHalbjahr()
+		);
+		target.setKinderabzugZweitesHalbjahr(
+			this.getKinderabzugZweitesHalbjahr()
+		);
 		target.setPflegekind(this.getPflegekind());
-		target.setPflegeEntschaedigungErhalten(this.getPflegeEntschaedigungErhalten());
-		target.setObhutAlternierendAusueben(this.getObhutAlternierendAusueben());
+		target.setPflegeEntschaedigungErhalten(
+			this.getPflegeEntschaedigungErhalten()
+		);
+		target.setObhutAlternierendAusueben(
+			this.getObhutAlternierendAusueben()
+		);
 		target.setGemeinsamesGesuch(this.getGemeinsamesGesuch());
 		target.setInErstausbildung(this.getInErstausbildung());
 		target.setLebtKindAlternierend(this.getLebtKindAlternierend());
 		target.setAlimenteErhalten(this.getAlimenteErhalten());
 		target.setAlimenteBezahlen(this.getAlimenteBezahlen());
 		target.setUnterhaltspflichtig(this.getUnterhaltspflichtig());
-		target.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(this.getHoehereBeitraegeWegenBeeintraechtigungBeantragen());
-		target.setHoehereBeitraegeUnterlagenDigital(this.getHoehereBeitraegeUnterlagenDigital());
-		target.setZukunftigeGeburtsdatum(target.getGeburtsdatum().isAfter(regelStartDatum));
+		target.setHoehereBeitraegeWegenBeeintraechtigungBeantragen(
+			this.getHoehereBeitraegeWegenBeeintraechtigungBeantragen()
+		);
+		target.setHoehereBeitraegeUnterlagenDigital(
+			this.getHoehereBeitraegeUnterlagenDigital()
+		);
+		target.setZukunftigeGeburtsdatum(
+			target.getGeburtsdatum().isAfter(regelStartDatum)
+		);
+		target.setGueltigkeitTerminiert(this.isGueltigkeitTerminiert());
+		target.setGueltigkeitTerminiertPer(this.getGueltigkeitTerminiertPer());
+		target.setGueltigkeitTerminiertKommentar(
+			this.getGueltigkeitTerminiertKommentar()
+		);
 	}
 
-	private void copyFachstelle(@Nonnull Kind target, @Nonnull AntragCopyType copyType) {
+	private void copyFachstelle(
+		@Nonnull Kind target,
+		@Nonnull AntragCopyType copyType
+	) {
 		for (PensumFachstelle pensumFachstelle1 : this.getPensumFachstelle()) {
 			copyFachstellePensum(target, copyType, pensumFachstelle1);
 		}
@@ -401,12 +481,15 @@ public class Kind extends AbstractPersonEntity {
 	private void copyFachstelleIfStillValid(
 		@Nonnull Kind target,
 		@Nonnull AntragCopyType copyType,
-		@Nonnull Gesuchsperiode gesuchsperiode) {
+		@Nonnull Gesuchsperiode gesuchsperiode
+	) {
 		// Fachstelle nur kopieren, wenn sie noch gueltig ist
 		for (PensumFachstelle pensumFachstelle1 : this.getPensumFachstelle()) {
 			if (pensumFachstelle1
 				.getGueltigkeit()
-				.endsBefore(gesuchsperiode.getGueltigkeit().getGueltigAb())) {
+				.endsBefore(
+					gesuchsperiode.getGueltigkeit().getGueltigAb()
+				)) {
 				copyFachstellePensum(target, copyType, pensumFachstelle1);
 			}
 		}
@@ -416,16 +499,26 @@ public class Kind extends AbstractPersonEntity {
 	private static void copyFachstellePensum(
 		@Nonnull Kind target,
 		@Nonnull AntragCopyType copyType,
-		PensumFachstelle pensumFachstelle1) {
-		PensumFachstelle pensumFachstelleCopy = pensumFachstelle1.copyPensumFachstelle(new PensumFachstelle(), copyType);
+		PensumFachstelle pensumFachstelle1
+	) {
+		PensumFachstelle pensumFachstelleCopy = pensumFachstelle1
+			.copyPensumFachstelle(new PensumFachstelle(), copyType);
 		pensumFachstelleCopy.setKind(target);
 		target.addPensumFachstelle(pensumFachstelleCopy);
 	}
 
-	private void copyAusserordentlicherAnspruch(@Nonnull Kind target, @Nonnull AntragCopyType copyType) {
+	private void copyAusserordentlicherAnspruch(
+		@Nonnull Kind target,
+		@Nonnull AntragCopyType copyType
+	) {
 		if (this.getPensumAusserordentlicherAnspruch() != null) {
-			target.setPensumAusserordentlicherAnspruch(this.getPensumAusserordentlicherAnspruch()
-				.copyPensumAusserordentlicherAnspruch(new PensumAusserordentlicherAnspruch(), copyType));
+			target.setPensumAusserordentlicherAnspruch(
+				this.getPensumAusserordentlicherAnspruch()
+					.copyPensumAusserordentlicherAnspruch(
+						new PensumAusserordentlicherAnspruch(),
+						copyType
+					)
+			);
 		}
 	}
 
@@ -445,27 +538,61 @@ public class Kind extends AbstractPersonEntity {
 		}
 		final Kind otherKind = (Kind) other;
 		boolean sameFachstellen = isSameFachstellen(otherKind);
-		return getKinderabzugErstesHalbjahr() == otherKind.getKinderabzugErstesHalbjahr() &&
-			getKinderabzugZweitesHalbjahr() == otherKind.getKinderabzugZweitesHalbjahr() &&
-			Objects.equals(getFamilienErgaenzendeBetreuung(), otherKind.getFamilienErgaenzendeBetreuung()) &&
-			Objects.equals(getSprichtAmtssprache(), otherKind.getSprichtAmtssprache()) &&
-			Objects.equals(getUnterhaltspflichtig(), otherKind.getUnterhaltspflichtig()) &&
+		return getKinderabzugErstesHalbjahr()
+			== otherKind.getKinderabzugErstesHalbjahr()
+			&&
+			getKinderabzugZweitesHalbjahr()
+				== otherKind.getKinderabzugZweitesHalbjahr()
+			&&
+			Objects.equals(
+				getFamilienErgaenzendeBetreuung(),
+				otherKind.getFamilienErgaenzendeBetreuung()
+			)
+			&&
+			Objects.equals(
+				getSprichtAmtssprache(),
+				otherKind.getSprichtAmtssprache()
+			)
+			&&
+			Objects.equals(
+				getUnterhaltspflichtig(),
+				otherKind.getUnterhaltspflichtig()
+			)
+			&&
 			Objects.equals(
 				getHoehereBeitraegeWegenBeeintraechtigungBeantragen(),
-				otherKind.hoehereBeitraegeWegenBeeintraechtigungBeantragen) &&
+				otherKind.hoehereBeitraegeWegenBeeintraechtigungBeantragen
+			)
+			&&
 			Objects.equals(
 				getHoehereBeitraegeUnterlagenDigital(),
-				otherKind.hoehereBeitraegeUnterlagenDigital) &&
-			getEinschulungTyp() == otherKind.getEinschulungTyp() &&
-			sameFachstellen &&
+				otherKind.hoehereBeitraegeUnterlagenDigital
+			)
+			&&
+			getEinschulungTyp() == otherKind.getEinschulungTyp()
+			&&
+			sameFachstellen
+			&&
 			EbeguUtil.isSame(
 				getPensumAusserordentlicherAnspruch(),
-				otherKind.getPensumAusserordentlicherAnspruch());
+				otherKind.getPensumAusserordentlicherAnspruch()
+			)
+			&&
+			isGueltigkeitTerminiert() == otherKind.isGueltigkeitTerminiert()
+			&& Objects.equals(
+				getGueltigkeitTerminiertPer(),
+				otherKind.getGueltigkeitTerminiertPer()
+			)
+			&& Objects.equals(
+				getGueltigkeitTerminiertKommentar(),
+				otherKind.getGueltigkeitTerminiertKommentar()
+			);
 	}
 
 	private boolean isSameFachstellen(Kind otherKind) {
 		boolean sameFachstellen = true;
-		if (getPensumFachstelle().size() != otherKind.getPensumFachstelle().size()) {
+		if (getPensumFachstelle().size()
+			!= otherKind.getPensumFachstelle().size()) {
 			sameFachstellen = false;
 		}
 		for (PensumFachstelle pensumFachstelle1 : pensumFachstelle) {
@@ -512,8 +639,10 @@ public class Kind extends AbstractPersonEntity {
 	}
 
 	public void setHoehereBeitraegeWegenBeeintraechtigungBeantragen(
-		Boolean hoehereBeitraegeWegenBeeintraechtigungBeantragen) {
-		this.hoehereBeitraegeWegenBeeintraechtigungBeantragen = hoehereBeitraegeWegenBeeintraechtigungBeantragen;
+		Boolean hoehereBeitraegeWegenBeeintraechtigungBeantragen
+	) {
+		this.hoehereBeitraegeWegenBeeintraechtigungBeantragen =
+			hoehereBeitraegeWegenBeeintraechtigungBeantragen;
 	}
 
 	@Nullable
@@ -521,7 +650,11 @@ public class Kind extends AbstractPersonEntity {
 		return hoehereBeitraegeUnterlagenDigital;
 	}
 
-	public void setHoehereBeitraegeUnterlagenDigital(@Nullable Boolean hoehereBeitraegeUnterlagenDigital) {
-		this.hoehereBeitraegeUnterlagenDigital = hoehereBeitraegeUnterlagenDigital;
+	public void setHoehereBeitraegeUnterlagenDigital(
+		@Nullable Boolean hoehereBeitraegeUnterlagenDigital
+	) {
+		this.hoehereBeitraegeUnterlagenDigital =
+			hoehereBeitraegeUnterlagenDigital;
 	}
+
 }

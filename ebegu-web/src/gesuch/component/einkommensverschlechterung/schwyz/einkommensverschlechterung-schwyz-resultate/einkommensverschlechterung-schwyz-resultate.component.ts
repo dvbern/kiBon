@@ -4,9 +4,8 @@ import {
     Component,
     OnInit
 } from '@angular/core';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
-import {TSWizardStepStatus} from '../../../../../models/enums/TSWizardStepStatus';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
@@ -24,7 +23,8 @@ const LOG = LogFactory.createLog(
 @Component({
     selector: 'dv-einkommensverschlechterung-schwyz-resultate',
     templateUrl: './einkommensverschlechterung-schwyz-resultate.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EinkommensverschlechterungSchwyzResultateComponent
     extends AbstractGesuchViewX<TSFinanzModel>
@@ -77,6 +77,7 @@ export class EinkommensverschlechterungSchwyzResultateComponent
             this.gesuchModelManager.getGesuch()
         );
         this.gesuchModelManager.setBasisJahrPlusNumber(this.BASISJAHR);
+        this.cd.detectChanges();
     }
 
     public save(onResult: (arg: any) => any): void {
@@ -98,11 +99,5 @@ export class EinkommensverschlechterungSchwyzResultateComponent
                     .gemeinsameSteuererklaerung
             )
         );
-    }
-
-    public veraenderungTotalToPercentageString(): string {
-        return this.resultate?.veraenderung?.total
-            ? `${this.resultate.veraenderung.total}%`
-            : '';
     }
 }

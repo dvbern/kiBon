@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -21,9 +21,9 @@ import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotEmpty;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotEmpty;
 
 import com.google.common.base.Objects;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -53,7 +53,8 @@ public class BetreuungMonitoring extends AbstractEntity {
 	 * just for JPA
 	 */
 	@SuppressWarnings("ConstantConditions")
-	@SuppressFBWarnings(value = "NP_STORE_INTO_NONNULL_FIELD", justification = "just for JPA")
+	@SuppressFBWarnings(value = "NP_STORE_INTO_NONNULL_FIELD",
+		justification = "just for JPA")
 	protected BetreuungMonitoring() {
 		this.refNummer = "";
 		this.benutzer = "";
@@ -61,9 +62,12 @@ public class BetreuungMonitoring extends AbstractEntity {
 		this.timestamp = null;
 	}
 
-	public BetreuungMonitoring(@Nonnull @NotEmpty String refNummer, @Nonnull @NotEmpty String benutzer,
+	public BetreuungMonitoring(
+		@Nonnull @NotEmpty String refNummer,
+		@Nonnull @NotEmpty String benutzer,
 		@Nonnull @NotEmpty String infoText,
-		@Nonnull LocalDateTime timestamp) {
+		@Nonnull LocalDateTime timestamp
+	) {
 		this.refNummer = refNummer;
 		this.benutzer = benutzer;
 		this.infoText = infoText;
@@ -101,7 +105,8 @@ public class BetreuungMonitoring extends AbstractEntity {
 			getRefNummer(),
 			getBenutzer(),
 			getInfoText(),
-			getTimestamp());
+			getTimestamp()
+		);
 	}
 
 	@Nonnull

@@ -15,7 +15,6 @@
 
 package ch.dvbern.ebegu.util;
 
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -38,17 +37,23 @@ public final class DokumenteUtil {
 	}
 
 	/**
-	 * Zusammenfügen der benötigten Dokument-Gruende (Dokumente die gem. den Angeben des GS gebraucht werden  und der
+	 * Zusammenfügen der benötigten Dokument-Gruende (Dokumente die gem. den Angeben des GS gebraucht werden und der
 	 * Dokument-Gruende auf der DB (vorhandene Dokumente). Das entspricht allso einer Union der beiden Sets
 	 */
-	public static Set<DokumentGrund> mergeNeededAndPersisted(Set<DokumentGrund> dokumentGrundsNeeded, Collection<DokumentGrund> persistedDokumentGrunds) {
+	public static Set<DokumentGrund> mergeNeededAndPersisted(
+		Set<DokumentGrund> dokumentGrundsNeeded,
+		Collection<DokumentGrund> persistedDokumentGrunds
+	) {
 
 		Set<DokumentGrund> dokumentGrundsMerged = new HashSet<>();
 		Set<DokumentGrund> persistedDokumentAdded = new HashSet<>();
 
 		// Ersetzen des Placeholder mit dem vorhandenen Dokument, falls schon ein Dokument gespeichert wurde...
 		for (DokumentGrund dokumentGrundNeeded : dokumentGrundsNeeded) {
-			Set<DokumentGrund> persistedForNeeded = getPersistedForNeeded(persistedDokumentGrunds, dokumentGrundNeeded);
+			Set<DokumentGrund> persistedForNeeded = getPersistedForNeeded(
+				persistedDokumentGrunds,
+				dokumentGrundNeeded
+			);
 
 			if (!persistedForNeeded.isEmpty()) {
 				persistedDokumentAdded.addAll(persistedForNeeded);
@@ -69,10 +74,16 @@ public final class DokumenteUtil {
 
 	}
 
-	private static Set<DokumentGrund> getPersistedForNeeded(Collection<DokumentGrund> persistedDokumentGrunds, DokumentGrund dokumentGrundNeeded) {
+	private static Set<DokumentGrund> getPersistedForNeeded(
+		Collection<DokumentGrund> persistedDokumentGrunds,
+		DokumentGrund dokumentGrundNeeded
+	) {
 		Set<DokumentGrund> persisted = new HashSet<>();
 		for (DokumentGrund persistedDokumentGrund : persistedDokumentGrunds) {
-			if (compareDokumentGrunds(persistedDokumentGrund, dokumentGrundNeeded) == 0) {
+			if (compareDokumentGrunds(
+				persistedDokumentGrund,
+				dokumentGrundNeeded
+			) == 0) {
 				persisted.add(persistedDokumentGrund);
 			}
 		}
@@ -83,19 +94,36 @@ public final class DokumenteUtil {
 	 * Compares two DokumentGrund. In order to support the old version where the name of the linked person
 	 * was saved statically in the DokumentGrund we cannot just compare both elements as usual.
 	 */
-	public static int compareDokumentGrunds(DokumentGrund persistedDok, DokumentGrund neededDok) {
+	public static int compareDokumentGrunds(
+		DokumentGrund persistedDok,
+		DokumentGrund neededDok
+	) {
 		CompareToBuilder builder = new CompareToBuilder();
-		builder.append(persistedDok.getDokumentGrundTyp(), neededDok.getDokumentGrundTyp());
-		builder.append(persistedDok.getDokumentTyp(), neededDok.getDokumentTyp());
+		builder.append(
+			persistedDok.getDokumentGrundTyp(),
+			neededDok.getDokumentGrundTyp()
+		);
+		builder.append(
+			persistedDok.getDokumentTyp(),
+			neededDok.getDokumentTyp()
+		);
 		if (persistedDok.getTag() != null && neededDok.getTag() != null) {
 			builder.append(persistedDok.getTag(), neededDok.getTag());
 		}
-		if (persistedDok.getPersonType() != null && neededDok.getPersonType() != null) {
+		if (persistedDok.getPersonType() != null
+			&& neededDok.getPersonType() != null) {
 			// in this case the persistedDok was created after the implementation of personType
 			// and can therefore be compared normally. In this case fullName doesn't matter
-			builder.append(persistedDok.getPersonType(), neededDok.getPersonType());
-			if (persistedDok.getPersonNumber() != null && neededDok.getPersonNumber() != null) {
-				builder.append(persistedDok.getPersonNumber(), neededDok.getPersonNumber());
+			builder.append(
+				persistedDok.getPersonType(),
+				neededDok.getPersonType()
+			);
+			if (persistedDok.getPersonNumber() != null
+				&& neededDok.getPersonNumber() != null) {
+				builder.append(
+					persistedDok.getPersonNumber(),
+					neededDok.getPersonNumber()
+				);
 			}
 		}
 		return builder.toComparison();
@@ -114,41 +142,89 @@ public final class DokumenteUtil {
 		//Liste in server-messages.properties erganzen.
 		switch (typ) {
 		case BEGLEITSCHREIBEN:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.BEGLEITSCHREIBEN, locale, mandant, identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.BEGLEITSCHREIBEN,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		case FINANZIELLE_SITUATION:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.FINANZIELLE_SITUATION, locale, mandant, identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.FINANZIELLE_SITUATION,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		case VERFUEGUNG:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.VERFUEGUNG, locale, mandant, identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.VERFUEGUNG,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		case MAHNUNG:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.MAHNUNG, locale, mandant, identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.MAHNUNG,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		case NICHTEINTRETEN:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.NICHTEINTRETEN, locale, mandant, identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.NICHTEINTRETEN,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		case FREIGABEQUITTUNG:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.FREIGABEQUITTUNG, locale, mandant, identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.FREIGABEQUITTUNG,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		case PAIN001:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.PAIN001, locale, mandant, identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.PAIN001,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		case INFOMA:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.INFOMA, locale, mandant, identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.INFOMA,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		case ANMELDEBESTAETIGUNGMITTARIF:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.ANMELDEBESTAETIGUNGMITTARIF, locale, mandant,
-				identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.ANMELDEBESTAETIGUNGMITTARIF,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		case ANMELDEBESTAETIGUNGOHNETARIF:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.ANMELDEBESTAETIGUNGOHNETARIF, locale, mandant,
-				identificationNumber);
-		case NOTRECHT_PROVISORISCHE_VERFUEGUNG:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.NOTRECHT_PROVISORISCHE_VERFUEGUNG,
-				locale, mandant, identificationNumber);
-		case NOTRECHT_DEFINITIVE_VERFUEGUNG:
-			return ServerMessageUtil.translateEnumValue(GeneratedDokumentTyp.NOTRECHT_DEFINITIVE_VERFUEGUNG,
-				locale, mandant, identificationNumber);
+			return ServerMessageUtil.translateEnumValue(
+				GeneratedDokumentTyp.ANMELDEBESTAETIGUNGOHNETARIF,
+				locale,
+				mandant,
+				identificationNumber
+			);
 		default:
 			return "file.pdf";
 		}
 	}
 
-	public static void validateDokumentDirectory(String filePath, String directoryPath) throws EbeguRuntimeException {
+	public static void validateDokumentDirectory(
+		String filePath,
+		String directoryPath
+	) throws EbeguRuntimeException {
 		if (!filePath.startsWith(directoryPath) || filePath.contains("..")) {
-			throw new EbeguRuntimeException("validate file path", "illegal document path");
+			throw new EbeguRuntimeException(
+				"validate file path",
+				"illegal document path"
+			);
 		}
 	}
 }

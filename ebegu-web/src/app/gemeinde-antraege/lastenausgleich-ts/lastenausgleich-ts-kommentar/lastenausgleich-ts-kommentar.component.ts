@@ -30,7 +30,7 @@ import {ReplaySubject, Subscription} from 'rxjs';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {TSBenutzerNoDetails} from '../../../../models/TSBenutzerNoDetails';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../../../core/service/benutzerRSX.rest';
 import {LastenausgleichTSService} from '../services/lastenausgleich-ts.service';
 
@@ -40,7 +40,8 @@ const LOG = LogFactory.createLog('LastenausgleichTsKommentarComponent');
     selector: 'dv-lastenausgleich-ts-kommentar',
     templateUrl: './lastenausgleich-ts-kommentar.component.html',
     styleUrls: ['./lastenausgleich-ts-kommentar.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LastenausgleichTsKommentarComponent implements OnInit, OnDestroy {
     public lATSAngabenGemeindeContainer: TSLastenausgleichTagesschuleAngabenGemeindeContainer;
@@ -63,14 +64,14 @@ export class LastenausgleichTsKommentarComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.subscription = this.lastenausgleichTSService
             .getLATSAngabenGemeindeContainer()
-            .subscribe(
-                container => {
+            .subscribe({
+                next: container => {
                     this.lATSAngabenGemeindeContainer = container;
                     this.initForm();
                     this.ref.markForCheck();
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public ngOnDestroy(): void {
@@ -87,13 +88,13 @@ export class LastenausgleichTsKommentarComponent implements OnInit, OnDestroy {
                 this.lATSAngabenGemeindeContainer.id,
                 this.kommentarControl.value
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.saving$.next(false);
                 },
-                (error: HttpErrorResponse) =>
+                error: (error: HttpErrorResponse) =>
                     this.handleErrorOnSave(error, 'ERROR_LATS_KOMMENTAR_SAVE')
-            );
+            });
     }
 
     private initForm(): void {
@@ -128,11 +129,11 @@ export class LastenausgleichTsKommentarComponent implements OnInit, OnDestroy {
                 this.lATSAngabenGemeindeContainer.id,
                 this.lATSAngabenGemeindeContainer.verantwortlicher?.username
             )
-            .subscribe(
-                () => {},
-                (error: HttpErrorResponse) =>
+            .subscribe({
+                next: () => {},
+                error: (error: HttpErrorResponse) =>
                     this.handleErrorOnSave(error, 'ERROR_VERANTWORTLICHER_SAVE')
-            );
+            });
     }
 
     private handleErrorOnSave(

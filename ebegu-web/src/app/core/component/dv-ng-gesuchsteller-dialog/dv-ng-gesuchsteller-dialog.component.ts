@@ -27,7 +27,8 @@ import {TranslateService} from '@ngx-translate/core';
  */
 @Component({
     selector: 'dv-ng-gemeinde-dialog',
-    templateUrl: './dv-ng-gesuchsteller-dialog.template.html'
+    templateUrl: './dv-ng-gesuchsteller-dialog.template.html',
+    standalone: false
 })
 export class DvNgGesuchstellerDialogComponent {
     public emailAdresse: string;

@@ -8,32 +8,42 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.types.DateRange;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 /**
  * Regel für den Betreuungsangebot Typ. Schreibt nur diesen ins Zwischenresultat
  */
 public class BetreuungsangebotTypAbschnittRule extends AbstractAbschnittRule {
 
-	public BetreuungsangebotTypAbschnittRule(@Nonnull DateRange validityPeriod, @Nonnull Locale locale) {
-		super(RuleKey.BETREUUNGSANGEBOT_TYP, RuleType.GRUNDREGEL_DATA, RuleValidity.ASIV, validityPeriod, locale);
+	public BetreuungsangebotTypAbschnittRule(
+		@Nonnull DateRange validityPeriod,
+		@Nonnull Locale locale
+	) {
+		super(
+			RuleKey.BETREUUNGSANGEBOT_TYP,
+			RuleType.GRUNDREGEL_DATA,
+			RuleValidity.ASIV,
+			validityPeriod,
+			locale
+		);
 	}
 
 	@Override
@@ -43,16 +53,26 @@ public class BetreuungsangebotTypAbschnittRule extends AbstractAbschnittRule {
 
 	@Nonnull
 	@Override
-	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(@Nonnull AbstractPlatz platz) {
-		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte = new ArrayList<>();
+	protected List<VerfuegungZeitabschnitt> createVerfuegungsZeitabschnitte(
+		@Nonnull AbstractPlatz platz
+	) {
+		List<VerfuegungZeitabschnitt> betreuungspensumAbschnitte =
+			new ArrayList<>();
 		betreuungspensumAbschnitte.add(toVerfuegungZeitabschnitt(platz));
 		return betreuungspensumAbschnitte;
 	}
 
 	@Nonnull
-	private VerfuegungZeitabschnitt toVerfuegungZeitabschnitt(@Nonnull AbstractPlatz platz) {
-		VerfuegungZeitabschnitt zeitabschnitt = createZeitabschnittWithinValidityPeriodOfRule(platz.extractGesuchsperiode().getGueltigkeit());
-		zeitabschnitt.setBetreuungsangebotTypForAsivAndGemeinde(platz.getBetreuungsangebotTyp());
+	private VerfuegungZeitabschnitt toVerfuegungZeitabschnitt(
+		@Nonnull AbstractPlatz platz
+	) {
+		VerfuegungZeitabschnitt zeitabschnitt =
+			createZeitabschnittWithinValidityPeriodOfRule(
+				platz.extractGesuchsperiode().getGueltigkeit()
+			);
+		zeitabschnitt.setBetreuungsangebotTypForAsivAndGemeinde(
+			platz.getBetreuungsangebotTyp()
+		);
 		return zeitabschnitt;
 	}
 }

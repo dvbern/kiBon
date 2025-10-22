@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -51,16 +51,28 @@ public class ErwerbspensumZuschlagRuleTest extends AbstractEbeguRuleTest {
 	@Before
 	public void init() {
 		betreuung = createGesuchWithBetreuung();
-		GP_START = betreuung.extractGesuchsperiode().getGueltigkeit().getGueltigAb();
-		GP_END = betreuung.extractGesuchsperiode().getGueltigkeit().getGueltigBis();
+		GP_START = betreuung.extractGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigAb();
+		GP_END = betreuung.extractGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigBis();
 	}
 
 	@Test
 	public void keinEwerbspensum() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 		assertNotNull(result);
 		assertEquals(1, result.size());
-		assertZeitabschnitt(result.get(0), 100, 0, 0, MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH);
+		assertZeitabschnitt(
+			result.get(0),
+			100,
+			0,
+			0,
+			MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH
+		);
 	}
 
 	@Test
@@ -68,10 +80,18 @@ public class ErwerbspensumZuschlagRuleTest extends AbstractEbeguRuleTest {
 		int pensum = 20;
 		addErwerbspensum(pensum, GP_START, GP_END, null, null);
 
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 		assertNotNull(result);
 		assertEquals(1, result.size());
-		assertZeitabschnitt(result.get(0), 100, pensum + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, pensum + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, null);
+		assertZeitabschnitt(
+			result.get(0),
+			100,
+			pensum + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			pensum + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			null
+		);
 
 	}
 
@@ -80,7 +100,9 @@ public class ErwerbspensumZuschlagRuleTest extends AbstractEbeguRuleTest {
 		int pensum = 100;
 		addErwerbspensum(pensum, GP_START, GP_END, null, null);
 
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 		assertNotNull(result);
 		assertEquals(1, result.size());
 		assertZeitabschnitt(result.get(0), 100, pensum, pensum, null);
@@ -92,23 +114,57 @@ public class ErwerbspensumZuschlagRuleTest extends AbstractEbeguRuleTest {
 		int pensum = 15;
 		addErwerbspensum(pensum, GP_START, GP_END, null, null);
 
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 		assertNotNull(result);
 		assertEquals(1, result.size());
-		assertZeitabschnitt(result.get(0), 100, 0, 0, MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH);
+		assertZeitabschnitt(
+			result.get(0),
+			100,
+			0,
+			0,
+			MsgKey.ERWERBSPENSUM_KEIN_ANSPRUCH
+		);
 	}
 
 	@Test
 	public void einGesuchstellerZuschlagNichtGewaehrtWegenUrlaub() {
 		int pensum = 30;
-		addErwerbspensum(pensum, GP_START, GP_END, GP_START.plusMonths(1), GP_START.plusMonths(5));
+		addErwerbspensum(
+			pensum,
+			GP_START,
+			GP_END,
+			GP_START.plusMonths(1),
+			GP_START.plusMonths(5)
+		);
 
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 		assertNotNull(result);
 		assertEquals(5, result.size());
-		assertZeitabschnitt(result.get(0), 100, pensum + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, 50, null);
-		assertZeitabschnitt(result.get(1), 100, 0, 0, MsgKey.UNBEZAHLTER_URLAUB_MSG);
-		assertZeitabschnitt(result.get(3), 100, pensum + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, 50, null);
+		assertZeitabschnitt(
+			result.get(0),
+			100,
+			pensum + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			50,
+			null
+		);
+		assertZeitabschnitt(
+			result.get(1),
+			100,
+			0,
+			0,
+			MsgKey.UNBEZAHLTER_URLAUB_MSG
+		);
+		assertZeitabschnitt(
+			result.get(3),
+			100,
+			pensum + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			50,
+			null
+		);
 	}
 
 	@Test
@@ -116,14 +172,40 @@ public class ErwerbspensumZuschlagRuleTest extends AbstractEbeguRuleTest {
 		int pensum1 = 20;
 		int pensum2 = 50;
 		addErwerbspensum(pensum1, GP_START, GP_END, null, null);
-		addErwerbspensum(pensum2, GP_START, GP_END, GP_START.plusMonths(1), GP_START.plusMonths(5));
+		addErwerbspensum(
+			pensum2,
+			GP_START,
+			GP_END,
+			GP_START.plusMonths(1),
+			GP_START.plusMonths(5)
+		);
 
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 		assertNotNull(result);
 		assertEquals(5, result.size());
-		assertZeitabschnitt(result.get(0), 100, pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, null);
-		assertZeitabschnitt(result.get(1), 100, pensum1 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, pensum1 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, MsgKey.UNBEZAHLTER_URLAUB_MSG);
-		assertZeitabschnitt(result.get(3), 100, pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, null);
+		assertZeitabschnitt(
+			result.get(0),
+			100,
+			pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			null
+		);
+		assertZeitabschnitt(
+			result.get(1),
+			100,
+			pensum1 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			pensum1 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			MsgKey.UNBEZAHLTER_URLAUB_MSG
+		);
+		assertZeitabschnitt(
+			result.get(3),
+			100,
+			pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			null
+		);
 
 	}
 
@@ -132,24 +214,55 @@ public class ErwerbspensumZuschlagRuleTest extends AbstractEbeguRuleTest {
 		int pensum1 = 15;
 		int pensum2 = 10;
 		addErwerbspensum(pensum1, GP_START, GP_END, null, null);
-		addErwerbspensum(pensum2, GP_START, GP_END, GP_START.plusMonths(1), GP_START.plusMonths(5));
+		addErwerbspensum(
+			pensum2,
+			GP_START,
+			GP_END,
+			GP_START.plusMonths(1),
+			GP_START.plusMonths(5)
+		);
 
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(betreuung);
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			betreuung
+		);
 		assertNotNull(result);
 		assertEquals(5, result.size());
-		assertZeitabschnitt(result.get(0), 100, pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, null);
-		assertZeitabschnitt(result.get(1), 100, 0, 0, MsgKey.UNBEZAHLTER_URLAUB_MSG);
-		assertZeitabschnitt(result.get(3), 100, pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, null);
+		assertZeitabschnitt(
+			result.get(0),
+			100,
+			pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			null
+		);
+		assertZeitabschnitt(
+			result.get(1),
+			100,
+			0,
+			0,
+			MsgKey.UNBEZAHLTER_URLAUB_MSG
+		);
+		assertZeitabschnitt(
+			result.get(3),
+			100,
+			pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			pensum1 + pensum2 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+			null
+		);
 
 	}
 
-
 	private Betreuung createGesuchWithBetreuung() {
-		final Betreuung betreuungToCreate = TestDataUtil.createGesuchWithBetreuungspensum(false);
+		final Betreuung betreuungToCreate = TestDataUtil
+			.createGesuchWithBetreuungspensum(false);
+		betreuungToCreate.initVorgaengerVerfuegungen(null, null);
 		final Gesuch gesuch = betreuungToCreate.extractGesuch();
-		BetreuungspensumContainer betPensContainer = TestDataUtil.createBetPensContainer(betreuungToCreate);
-		betPensContainer.getBetreuungspensumJA().getGueltigkeit().setGueltigAb(Constants.START_OF_TIME);
-		betPensContainer.getBetreuungspensumJA().setPensum(MathUtil.DEFAULT.from(100));
+		BetreuungspensumContainer betPensContainer = TestDataUtil
+			.createBetPensContainer(betreuungToCreate);
+		betPensContainer.getBetreuungspensumJA()
+			.getGueltigkeit()
+			.setGueltigAb(Constants.START_OF_TIME);
+		betPensContainer.getBetreuungspensumJA()
+			.setPensum(MathUtil.DEFAULT.from(100));
 		betreuungToCreate.getBetreuungspensumContainers().add(betPensContainer);
 		assertNotNull(gesuch.getGesuchsteller1());
 		gesuch.setDossier(TestDataUtil.createDefaultDossier());
@@ -162,9 +275,14 @@ public class ErwerbspensumZuschlagRuleTest extends AbstractEbeguRuleTest {
 		@Nonnull LocalDate ewpStart,
 		@Nonnull LocalDate ewpEnd,
 		@Nullable LocalDate urlaubStart,
-		@Nullable LocalDate urlaubEnd) {
+		@Nullable LocalDate urlaubEnd
+	) {
 
-		ErwerbspensumContainer erwerbspensum = TestDataUtil.createErwerbspensum(ewpStart, ewpEnd, pensum);
+		ErwerbspensumContainer erwerbspensum = TestDataUtil.createErwerbspensum(
+			ewpStart,
+			ewpEnd,
+			pensum
+		);
 		assertNotNull(erwerbspensum.getErwerbspensumJA());
 		if (urlaubStart != null) {
 			if (urlaubEnd == null) {
@@ -173,7 +291,8 @@ public class ErwerbspensumZuschlagRuleTest extends AbstractEbeguRuleTest {
 			TestDataUtil.addUnbezahlterUrlaubToErwerbspensum(
 				erwerbspensum.getErwerbspensumJA(),
 				urlaubStart,
-				urlaubEnd);
+				urlaubEnd
+			);
 		}
 		Gesuch gesuch = betreuung.extractGesuch();
 		assertNotNull(gesuch.getGesuchsteller1());

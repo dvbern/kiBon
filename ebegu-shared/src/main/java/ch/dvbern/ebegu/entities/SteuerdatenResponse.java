@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.entities;
@@ -22,10 +22,10 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import ch.dvbern.ebegu.dto.neskovanp.Veranlagungsstand;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -212,7 +212,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return beginnGesuchsperiode;
 	}
 
-	public void setBeginnGesuchsperiode(@Nullable Integer beginnGesuchsperiode) {
+	public void setBeginnGesuchsperiode(
+		@Nullable Integer beginnGesuchsperiode
+	) {
 		this.beginnGesuchsperiode = beginnGesuchsperiode;
 	}
 
@@ -257,7 +259,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return veranlagungsstand;
 	}
 
-	public void setVeranlagungsstand(@Nullable Veranlagungsstand veranlagungsstand) {
+	public void setVeranlagungsstand(
+		@Nullable Veranlagungsstand veranlagungsstand
+	) {
 		this.veranlagungsstand = veranlagungsstand;
 	}
 
@@ -276,8 +280,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setErwerbseinkommenUnselbstaendigkeitDossiertraeger(
-		@Nullable BigDecimal erwerbseinkommenUnselbstaendigkeitDossiertraeger) {
-		this.erwerbseinkommenUnselbstaendigkeitDossiertraeger = erwerbseinkommenUnselbstaendigkeitDossiertraeger;
+		@Nullable BigDecimal erwerbseinkommenUnselbstaendigkeitDossiertraeger
+	) {
+		this.erwerbseinkommenUnselbstaendigkeitDossiertraeger =
+			erwerbseinkommenUnselbstaendigkeitDossiertraeger;
 	}
 
 	@Nullable
@@ -286,8 +292,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setErwerbseinkommenUnselbstaendigkeitPartner(
-		@Nullable BigDecimal erwerbseinkommenUnselbstaendigkeitPartner) {
-		this.erwerbseinkommenUnselbstaendigkeitPartner = erwerbseinkommenUnselbstaendigkeitPartner;
+		@Nullable BigDecimal erwerbseinkommenUnselbstaendigkeitPartner
+	) {
+		this.erwerbseinkommenUnselbstaendigkeitPartner =
+			erwerbseinkommenUnselbstaendigkeitPartner;
 	}
 
 	@Nullable
@@ -296,8 +304,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setSteuerpflichtigesErsatzeinkommenDossiertraeger(
-		@Nullable BigDecimal steuerpflichtigesErsatzeinkommenDossiertraeger) {
-		this.steuerpflichtigesErsatzeinkommenDossiertraeger = steuerpflichtigesErsatzeinkommenDossiertraeger;
+		@Nullable BigDecimal steuerpflichtigesErsatzeinkommenDossiertraeger
+	) {
+		this.steuerpflichtigesErsatzeinkommenDossiertraeger =
+			steuerpflichtigesErsatzeinkommenDossiertraeger;
 	}
 
 	@Nullable
@@ -306,8 +316,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setSteuerpflichtigesErsatzeinkommenPartner(
-		@Nullable BigDecimal steuerpflichtigesErsatzeinkommenPartner) {
-		this.steuerpflichtigesErsatzeinkommenPartner = steuerpflichtigesErsatzeinkommenPartner;
+		@Nullable BigDecimal steuerpflichtigesErsatzeinkommenPartner
+	) {
+		this.steuerpflichtigesErsatzeinkommenPartner =
+			steuerpflichtigesErsatzeinkommenPartner;
 	}
 
 	@Nullable
@@ -316,8 +328,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setErhalteneUnterhaltsbeitraegeDossiertraeger(
-		@Nullable BigDecimal erhalteneUnterhaltsbeitraegeDossiertraeger) {
-		this.erhalteneUnterhaltsbeitraegeDossiertraeger = erhalteneUnterhaltsbeitraegeDossiertraeger;
+		@Nullable BigDecimal erhalteneUnterhaltsbeitraegeDossiertraeger
+	) {
+		this.erhalteneUnterhaltsbeitraegeDossiertraeger =
+			erhalteneUnterhaltsbeitraegeDossiertraeger;
 	}
 
 	@Nullable
@@ -325,8 +339,11 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return erhalteneUnterhaltsbeitraegePartner;
 	}
 
-	public void setErhalteneUnterhaltsbeitraegePartner(@Nullable BigDecimal erhalteneUnterhaltsbeitraegePartner) {
-		this.erhalteneUnterhaltsbeitraegePartner = erhalteneUnterhaltsbeitraegePartner;
+	public void setErhalteneUnterhaltsbeitraegePartner(
+		@Nullable BigDecimal erhalteneUnterhaltsbeitraegePartner
+	) {
+		this.erhalteneUnterhaltsbeitraegePartner =
+			erhalteneUnterhaltsbeitraegePartner;
 	}
 
 	@Nullable
@@ -335,8 +352,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setAusgewiesenerGeschaeftsertragDossiertraeger(
-		@Nullable BigDecimal ausgewiesenerGeschaeftsertragDossiertraeger) {
-		this.ausgewiesenerGeschaeftsertragDossiertraeger = ausgewiesenerGeschaeftsertragDossiertraeger;
+		@Nullable BigDecimal ausgewiesenerGeschaeftsertragDossiertraeger
+	) {
+		this.ausgewiesenerGeschaeftsertragDossiertraeger =
+			ausgewiesenerGeschaeftsertragDossiertraeger;
 	}
 
 	@Nullable
@@ -344,8 +363,11 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return ausgewiesenerGeschaeftsertragPartner;
 	}
 
-	public void setAusgewiesenerGeschaeftsertragPartner(@Nullable BigDecimal ausgewiesenerGeschaeftsertragPartner) {
-		this.ausgewiesenerGeschaeftsertragPartner = ausgewiesenerGeschaeftsertragPartner;
+	public void setAusgewiesenerGeschaeftsertragPartner(
+		@Nullable BigDecimal ausgewiesenerGeschaeftsertragPartner
+	) {
+		this.ausgewiesenerGeschaeftsertragPartner =
+			ausgewiesenerGeschaeftsertragPartner;
 	}
 
 	@Nullable
@@ -354,7 +376,8 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setAusgewiesenerGeschaeftsertragVorperiodeDossiertraeger(
-		@Nullable BigDecimal ausgewiesenerGeschaeftsertragVorperiodeDossiertraeger) {
+		@Nullable BigDecimal ausgewiesenerGeschaeftsertragVorperiodeDossiertraeger
+	) {
 		this.ausgewiesenerGeschaeftsertragVorperiodeDossiertraeger =
 			ausgewiesenerGeschaeftsertragVorperiodeDossiertraeger;
 	}
@@ -365,8 +388,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setAusgewiesenerGeschaeftsertragVorperiodePartner(
-		@Nullable BigDecimal ausgewiesenerGeschaeftsertragVorperiodePartner) {
-		this.ausgewiesenerGeschaeftsertragVorperiodePartner = ausgewiesenerGeschaeftsertragVorperiodePartner;
+		@Nullable BigDecimal ausgewiesenerGeschaeftsertragVorperiodePartner
+	) {
+		this.ausgewiesenerGeschaeftsertragVorperiodePartner =
+			ausgewiesenerGeschaeftsertragVorperiodePartner;
 	}
 
 	@Nullable
@@ -375,7 +400,8 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setAusgewiesenerGeschaeftsertragVorperiode2Dossiertraeger(
-		@Nullable BigDecimal ausgewiesenerGeschaeftsertragVorperiode2Dossiertraeger) {
+		@Nullable BigDecimal ausgewiesenerGeschaeftsertragVorperiode2Dossiertraeger
+	) {
 		this.ausgewiesenerGeschaeftsertragVorperiode2Dossiertraeger =
 			ausgewiesenerGeschaeftsertragVorperiode2Dossiertraeger;
 	}
@@ -386,8 +412,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setAusgewiesenerGeschaeftsertragVorperiode2Partner(
-		@Nullable BigDecimal ausgewiesenerGeschaeftsertragVorperiode2Partner) {
-		this.ausgewiesenerGeschaeftsertragVorperiode2Partner = ausgewiesenerGeschaeftsertragVorperiode2Partner;
+		@Nullable BigDecimal ausgewiesenerGeschaeftsertragVorperiode2Partner
+	) {
+		this.ausgewiesenerGeschaeftsertragVorperiode2Partner =
+			ausgewiesenerGeschaeftsertragVorperiode2Partner;
 	}
 
 	@Nullable
@@ -396,8 +424,10 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setWeitereSteuerbareEinkuenfteDossiertraeger(
-		@Nullable BigDecimal weitereSteuerbareEinkuenfteDossiertraeger) {
-		this.weitereSteuerbareEinkuenfteDossiertraeger = weitereSteuerbareEinkuenfteDossiertraeger;
+		@Nullable BigDecimal weitereSteuerbareEinkuenfteDossiertraeger
+	) {
+		this.weitereSteuerbareEinkuenfteDossiertraeger =
+			weitereSteuerbareEinkuenfteDossiertraeger;
 	}
 
 	@Nullable
@@ -405,8 +435,11 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return weitereSteuerbareEinkuenftePartner;
 	}
 
-	public void setWeitereSteuerbareEinkuenftePartner(@Nullable BigDecimal weitereSteuerbareEinkuenftePartner) {
-		this.weitereSteuerbareEinkuenftePartner = weitereSteuerbareEinkuenftePartner;
+	public void setWeitereSteuerbareEinkuenftePartner(
+		@Nullable BigDecimal weitereSteuerbareEinkuenftePartner
+	) {
+		this.weitereSteuerbareEinkuenftePartner =
+			weitereSteuerbareEinkuenftePartner;
 	}
 
 	@Nullable
@@ -415,7 +448,8 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	public void setBruttoertraegeAusVermoegenOhneLiegenschaftenUndOhneEgme(
-		@Nullable BigDecimal bruttoertraegeAusVermoegenOhneLiegenschaftenUndOhneEGME) {
+		@Nullable BigDecimal bruttoertraegeAusVermoegenOhneLiegenschaftenUndOhneEGME
+	) {
 		this.bruttoertraegeAusVermoegenOhneLiegenschaftenUndOhneEgme =
 			bruttoertraegeAusVermoegenOhneLiegenschaftenUndOhneEGME;
 	}
@@ -425,7 +459,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return bruttoertraegeAusLiegenschaften;
 	}
 
-	public void setBruttoertraegeAusLiegenschaften(@Nullable BigDecimal bruttoertraegeAusLiegenschaften) {
+	public void setBruttoertraegeAusLiegenschaften(
+		@Nullable BigDecimal bruttoertraegeAusLiegenschaften
+	) {
 		this.bruttoertraegeAusLiegenschaften = bruttoertraegeAusLiegenschaften;
 	}
 
@@ -434,8 +470,11 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return nettoertraegeAusEgmeDossiertraeger;
 	}
 
-	public void setNettoertraegeAusEgmeDossiertraeger(@Nullable BigDecimal nettoertraegeAusEGMEDossiertraeger) {
-		this.nettoertraegeAusEgmeDossiertraeger = nettoertraegeAusEGMEDossiertraeger;
+	public void setNettoertraegeAusEgmeDossiertraeger(
+		@Nullable BigDecimal nettoertraegeAusEGMEDossiertraeger
+	) {
+		this.nettoertraegeAusEgmeDossiertraeger =
+			nettoertraegeAusEGMEDossiertraeger;
 	}
 
 	@Nullable
@@ -443,7 +482,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return nettoertraegeAusEgmePartner;
 	}
 
-	public void setNettoertraegeAusEgmePartner(@Nullable BigDecimal nettoertraegeAusEGMEPartner) {
+	public void setNettoertraegeAusEgmePartner(
+		@Nullable BigDecimal nettoertraegeAusEGMEPartner
+	) {
 		this.nettoertraegeAusEgmePartner = nettoertraegeAusEGMEPartner;
 	}
 
@@ -452,7 +493,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return geleisteteUnterhaltsbeitraege;
 	}
 
-	public void setGeleisteteUnterhaltsbeitraege(@Nullable BigDecimal geleisteteUnterhaltsbeitraege) {
+	public void setGeleisteteUnterhaltsbeitraege(
+		@Nullable BigDecimal geleisteteUnterhaltsbeitraege
+	) {
 		this.geleisteteUnterhaltsbeitraege = geleisteteUnterhaltsbeitraege;
 	}
 
@@ -470,8 +513,11 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return gewinnungskostenBeweglichesVermoegen;
 	}
 
-	public void setGewinnungskostenBeweglichesVermoegen(@Nullable BigDecimal gewinnungskostenBeweglichesVermoegen) {
-		this.gewinnungskostenBeweglichesVermoegen = gewinnungskostenBeweglichesVermoegen;
+	public void setGewinnungskostenBeweglichesVermoegen(
+		@Nullable BigDecimal gewinnungskostenBeweglichesVermoegen
+	) {
+		this.gewinnungskostenBeweglichesVermoegen =
+			gewinnungskostenBeweglichesVermoegen;
 	}
 
 	@Nullable
@@ -479,7 +525,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return liegenschaftsAbzuege;
 	}
 
-	public void setLiegenschaftsAbzuege(@Nullable BigDecimal liegenschaftsAbzuege) {
+	public void setLiegenschaftsAbzuege(
+		@Nullable BigDecimal liegenschaftsAbzuege
+	) {
 		this.liegenschaftsAbzuege = liegenschaftsAbzuege;
 	}
 
@@ -499,7 +547,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return geburtsdatumAntragsteller;
 	}
 
-	public void setGeburtsdatumAntragsteller(@Nullable LocalDate geburtsdatumAntragsteller) {
+	public void setGeburtsdatumAntragsteller(
+		@Nullable LocalDate geburtsdatumAntragsteller
+	) {
 		this.geburtsdatumAntragsteller = geburtsdatumAntragsteller;
 	}
 
@@ -508,7 +558,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return geburtsdatumDossiertraeger;
 	}
 
-	public void setGeburtsdatumDossiertraeger(@Nullable LocalDate geburtsdatumDossiertraeger) {
+	public void setGeburtsdatumDossiertraeger(
+		@Nullable LocalDate geburtsdatumDossiertraeger
+	) {
 		this.geburtsdatumDossiertraeger = geburtsdatumDossiertraeger;
 	}
 
@@ -526,7 +578,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return geburtsdatumPartner;
 	}
 
-	public void setGeburtsdatumPartner(@Nullable LocalDate geburtsdatumPartner) {
+	public void setGeburtsdatumPartner(
+		@Nullable LocalDate geburtsdatumPartner
+	) {
 		this.geburtsdatumPartner = geburtsdatumPartner;
 	}
 
@@ -535,8 +589,11 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return unregelmaessigkeitInDerVeranlagung;
 	}
 
-	public void setUnregelmaessigkeitInDerVeranlagung(@Nullable Boolean unregelmaessigkeitInDerVeranlagung) {
-		this.unregelmaessigkeitInDerVeranlagung = unregelmaessigkeitInDerVeranlagung;
+	public void setUnregelmaessigkeitInDerVeranlagung(
+		@Nullable Boolean unregelmaessigkeitInDerVeranlagung
+	) {
+		this.unregelmaessigkeitInDerVeranlagung =
+			unregelmaessigkeitInDerVeranlagung;
 	}
 
 	@Nullable
@@ -544,7 +601,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return veraendertePartnerschaft;
 	}
 
-	public void setVeraendertePartnerschaft(@Nullable Boolean veraendertePartnerschaft) {
+	public void setVeraendertePartnerschaft(
+		@Nullable Boolean veraendertePartnerschaft
+	) {
 		this.veraendertePartnerschaft = veraendertePartnerschaft;
 	}
 
@@ -560,51 +619,165 @@ public class SteuerdatenResponse extends AbstractEntity {
 			return false;
 		}
 		SteuerdatenResponse o = (SteuerdatenResponse) other;
-		return Objects.equals(this.zpvNrAntragsteller, o.zpvNrAntragsteller) &&
-			Objects.equals(this.geburtsdatumAntragsteller, o.geburtsdatumAntragsteller) &&
-			StringUtils.equals(this.kibonAntragId, o.kibonAntragId) &&
-			Objects.equals(this.beginnGesuchsperiode, o.beginnGesuchsperiode) &&
-			Objects.equals(this.zpvNrDossiertraeger, o.zpvNrDossiertraeger) &&
-			Objects.equals(this.geburtsdatumDossiertraeger, o.geburtsdatumDossiertraeger) &&
-			Objects.equals(this.zpvNrPartner, o.zpvNrPartner) &&
-			Objects.equals(this.geburtsdatumPartner, o.geburtsdatumPartner) &&
-			Objects.equals(this.fallId, o.fallId) &&
-			Objects.equals(this.synchroneAntwort, o.synchroneAntwort) &&
-			this.veranlagungsstand == o.veranlagungsstand &&
-			Objects.equals(this.unterjaehrigerFall, o.unterjaehrigerFall) &&
-			Objects.equals(this.unregelmaessigkeitInDerVeranlagung, o.unregelmaessigkeitInDerVeranlagung) &&
-			Objects.equals(this.veraendertePartnerschaft, o.veraendertePartnerschaft) &&
-			isSame(this.erwerbseinkommenUnselbstaendigkeitDossiertraeger, o.erwerbseinkommenUnselbstaendigkeitDossiertraeger) &&
-			isSame(this.erwerbseinkommenUnselbstaendigkeitPartner, o.erwerbseinkommenUnselbstaendigkeitPartner) &&
-			isSame(this.steuerpflichtigesErsatzeinkommenDossiertraeger, o.steuerpflichtigesErsatzeinkommenDossiertraeger) &&
-			isSame(this.steuerpflichtigesErsatzeinkommenPartner, o.steuerpflichtigesErsatzeinkommenPartner) &&
-			isSame(this.erhalteneUnterhaltsbeitraegeDossiertraeger, o.erhalteneUnterhaltsbeitraegeDossiertraeger) &&
-			isSame(this.erhalteneUnterhaltsbeitraegePartner, o.erhalteneUnterhaltsbeitraegePartner) &&
-			isSame(this.ausgewiesenerGeschaeftsertragDossiertraeger, o.ausgewiesenerGeschaeftsertragDossiertraeger) &&
-			isSame(this.ausgewiesenerGeschaeftsertragPartner, o.ausgewiesenerGeschaeftsertragPartner) &&
-			isSame(this.ausgewiesenerGeschaeftsertragVorperiodeDossiertraeger, o.ausgewiesenerGeschaeftsertragVorperiodeDossiertraeger) &&
-			isSame(this.ausgewiesenerGeschaeftsertragVorperiodePartner, o.ausgewiesenerGeschaeftsertragVorperiodePartner) &&
-			isSame(this.ausgewiesenerGeschaeftsertragVorperiode2Dossiertraeger, o.ausgewiesenerGeschaeftsertragVorperiode2Dossiertraeger) &&
-			isSame(this.ausgewiesenerGeschaeftsertragVorperiode2Partner, o.ausgewiesenerGeschaeftsertragVorperiode2Partner) &&
-			isSame(this.weitereSteuerbareEinkuenfteDossiertraeger, o.weitereSteuerbareEinkuenfteDossiertraeger) &&
-			isSame(this.weitereSteuerbareEinkuenftePartner, o.weitereSteuerbareEinkuenftePartner) &&
-			isSame(this.bruttoertraegeAusVermoegenOhneLiegenschaftenUndOhneEgme, o.bruttoertraegeAusVermoegenOhneLiegenschaftenUndOhneEgme) &&
-			isSame(this.bruttoertraegeAusLiegenschaften, o.bruttoertraegeAusLiegenschaften) &&
-			isSame(this.nettoertraegeAusEgmeDossiertraeger, o.nettoertraegeAusEgmeDossiertraeger) &&
-			isSame(this.nettoertraegeAusEgmePartner, o.nettoertraegeAusEgmePartner) &&
-			isSame(this.geleisteteUnterhaltsbeitraege, o.geleisteteUnterhaltsbeitraege) &&
-			isSame(this.schuldzinsen, o.schuldzinsen) &&
-			isSame(this.gewinnungskostenBeweglichesVermoegen, o.gewinnungskostenBeweglichesVermoegen) &&
-			isSame(this.liegenschaftsAbzuege, o.liegenschaftsAbzuege) &&
+		return Objects.equals(this.zpvNrAntragsteller, o.zpvNrAntragsteller)
+			&&
+			Objects.equals(
+				this.geburtsdatumAntragsteller,
+				o.geburtsdatumAntragsteller
+			)
+			&&
+			StringUtils.equals(this.kibonAntragId, o.kibonAntragId)
+			&&
+			Objects.equals(
+				this.beginnGesuchsperiode,
+				o.beginnGesuchsperiode
+			)
+			&&
+			Objects.equals(this.zpvNrDossiertraeger, o.zpvNrDossiertraeger)
+			&&
+			Objects.equals(
+				this.geburtsdatumDossiertraeger,
+				o.geburtsdatumDossiertraeger
+			)
+			&&
+			Objects.equals(this.zpvNrPartner, o.zpvNrPartner)
+			&&
+			Objects.equals(this.geburtsdatumPartner, o.geburtsdatumPartner)
+			&&
+			Objects.equals(this.fallId, o.fallId)
+			&&
+			Objects.equals(this.synchroneAntwort, o.synchroneAntwort)
+			&&
+			this.veranlagungsstand == o.veranlagungsstand
+			&&
+			Objects.equals(this.unterjaehrigerFall, o.unterjaehrigerFall)
+			&&
+			Objects.equals(
+				this.unregelmaessigkeitInDerVeranlagung,
+				o.unregelmaessigkeitInDerVeranlagung
+			)
+			&&
+			Objects.equals(
+				this.veraendertePartnerschaft,
+				o.veraendertePartnerschaft
+			)
+			&&
+			isSame(
+				this.erwerbseinkommenUnselbstaendigkeitDossiertraeger,
+				o.erwerbseinkommenUnselbstaendigkeitDossiertraeger
+			)
+			&&
+			isSame(
+				this.erwerbseinkommenUnselbstaendigkeitPartner,
+				o.erwerbseinkommenUnselbstaendigkeitPartner
+			)
+			&&
+			isSame(
+				this.steuerpflichtigesErsatzeinkommenDossiertraeger,
+				o.steuerpflichtigesErsatzeinkommenDossiertraeger
+			)
+			&&
+			isSame(
+				this.steuerpflichtigesErsatzeinkommenPartner,
+				o.steuerpflichtigesErsatzeinkommenPartner
+			)
+			&&
+			isSame(
+				this.erhalteneUnterhaltsbeitraegeDossiertraeger,
+				o.erhalteneUnterhaltsbeitraegeDossiertraeger
+			)
+			&&
+			isSame(
+				this.erhalteneUnterhaltsbeitraegePartner,
+				o.erhalteneUnterhaltsbeitraegePartner
+			)
+			&&
+			isSame(
+				this.ausgewiesenerGeschaeftsertragDossiertraeger,
+				o.ausgewiesenerGeschaeftsertragDossiertraeger
+			)
+			&&
+			isSame(
+				this.ausgewiesenerGeschaeftsertragPartner,
+				o.ausgewiesenerGeschaeftsertragPartner
+			)
+			&&
+			isSame(
+				this.ausgewiesenerGeschaeftsertragVorperiodeDossiertraeger,
+				o.ausgewiesenerGeschaeftsertragVorperiodeDossiertraeger
+			)
+			&&
+			isSame(
+				this.ausgewiesenerGeschaeftsertragVorperiodePartner,
+				o.ausgewiesenerGeschaeftsertragVorperiodePartner
+			)
+			&&
+			isSame(
+				this.ausgewiesenerGeschaeftsertragVorperiode2Dossiertraeger,
+				o.ausgewiesenerGeschaeftsertragVorperiode2Dossiertraeger
+			)
+			&&
+			isSame(
+				this.ausgewiesenerGeschaeftsertragVorperiode2Partner,
+				o.ausgewiesenerGeschaeftsertragVorperiode2Partner
+			)
+			&&
+			isSame(
+				this.weitereSteuerbareEinkuenfteDossiertraeger,
+				o.weitereSteuerbareEinkuenfteDossiertraeger
+			)
+			&&
+			isSame(
+				this.weitereSteuerbareEinkuenftePartner,
+				o.weitereSteuerbareEinkuenftePartner
+			)
+			&&
+			isSame(
+				this.bruttoertraegeAusVermoegenOhneLiegenschaftenUndOhneEgme,
+				o.bruttoertraegeAusVermoegenOhneLiegenschaftenUndOhneEgme
+			)
+			&&
+			isSame(
+				this.bruttoertraegeAusLiegenschaften,
+				o.bruttoertraegeAusLiegenschaften
+			)
+			&&
+			isSame(
+				this.nettoertraegeAusEgmeDossiertraeger,
+				o.nettoertraegeAusEgmeDossiertraeger
+			)
+			&&
+			isSame(
+				this.nettoertraegeAusEgmePartner,
+				o.nettoertraegeAusEgmePartner
+			)
+			&&
+			isSame(
+				this.geleisteteUnterhaltsbeitraege,
+				o.geleisteteUnterhaltsbeitraege
+			)
+			&&
+			isSame(this.schuldzinsen, o.schuldzinsen)
+			&&
+			isSame(
+				this.gewinnungskostenBeweglichesVermoegen,
+				o.gewinnungskostenBeweglichesVermoegen
+			)
+			&&
+			isSame(this.liegenschaftsAbzuege, o.liegenschaftsAbzuege)
+			&&
 			isSame(this.nettovermoegen, o.nettovermoegen);
 	}
 
-	private boolean isSame(@Nullable BigDecimal that, @Nullable BigDecimal other) {
+	private boolean isSame(
+		@Nullable BigDecimal that,
+		@Nullable BigDecimal other
+	) {
 		if (that == null && other == null) {
 			return true;
 		}
 
-		if(that == null) {
+		if (that == null) {
 			return false;
 		}
 
@@ -612,7 +785,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	@Nullable
-	public BigDecimal getErwerbseinkommenUnselbstaendigkeit(SteuerdatenDatenTraeger steuerdatenDatenTraeger) {
+	public BigDecimal getErwerbseinkommenUnselbstaendigkeit(
+		SteuerdatenDatenTraeger steuerdatenDatenTraeger
+	) {
 		if (steuerdatenDatenTraeger == SteuerdatenDatenTraeger.PARTNER) {
 			return getErwerbseinkommenUnselbstaendigkeitPartner();
 		}
@@ -621,7 +796,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	@Nullable
-	public BigDecimal getWeitereSteuerbareEinkuenfte(SteuerdatenDatenTraeger steuerdatenDatenTraeger) {
+	public BigDecimal getWeitereSteuerbareEinkuenfte(
+		SteuerdatenDatenTraeger steuerdatenDatenTraeger
+	) {
 		if (steuerdatenDatenTraeger == SteuerdatenDatenTraeger.PARTNER) {
 			return getWeitereSteuerbareEinkuenftePartner();
 		}
@@ -630,7 +807,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	@Nullable
-	public BigDecimal getSteuerpflichtigesErsatzeinkommen(SteuerdatenDatenTraeger steuerdatenDatenTraeger) {
+	public BigDecimal getSteuerpflichtigesErsatzeinkommen(
+		SteuerdatenDatenTraeger steuerdatenDatenTraeger
+	) {
 		if (steuerdatenDatenTraeger == SteuerdatenDatenTraeger.PARTNER) {
 			return getSteuerpflichtigesErsatzeinkommenPartner();
 		}
@@ -639,7 +818,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	@Nullable
-	public BigDecimal getErhalteneUnterhaltsbeitraege(SteuerdatenDatenTraeger steuerdatenDatenTraeger) {
+	public BigDecimal getErhalteneUnterhaltsbeitraege(
+		SteuerdatenDatenTraeger steuerdatenDatenTraeger
+	) {
 		if (steuerdatenDatenTraeger == SteuerdatenDatenTraeger.PARTNER) {
 			return getErhalteneUnterhaltsbeitraegePartner();
 		}
@@ -648,7 +829,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	@Nullable
-	public BigDecimal getNettoertraegeAusEgme(SteuerdatenDatenTraeger steuerdatenDatenTraeger) {
+	public BigDecimal getNettoertraegeAusEgme(
+		SteuerdatenDatenTraeger steuerdatenDatenTraeger
+	) {
 		if (steuerdatenDatenTraeger == SteuerdatenDatenTraeger.PARTNER) {
 			return getNettoertraegeAusEgmePartner();
 		}
@@ -657,7 +840,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	@Nullable
-	public BigDecimal getAusgewiesenerGeschaeftsertrag(SteuerdatenDatenTraeger steuerdatenDatenTraeger) {
+	public BigDecimal getAusgewiesenerGeschaeftsertrag(
+		SteuerdatenDatenTraeger steuerdatenDatenTraeger
+	) {
 		if (steuerdatenDatenTraeger == SteuerdatenDatenTraeger.PARTNER) {
 			return getAusgewiesenerGeschaeftsertragPartner();
 		}
@@ -666,7 +851,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	@Nullable
-	public BigDecimal getAusgewiesenerGeschaeftsertragVorperiode(SteuerdatenDatenTraeger steuerdatenDatenTraeger) {
+	public BigDecimal getAusgewiesenerGeschaeftsertragVorperiode(
+		SteuerdatenDatenTraeger steuerdatenDatenTraeger
+	) {
 		if (steuerdatenDatenTraeger == SteuerdatenDatenTraeger.PARTNER) {
 			return getAusgewiesenerGeschaeftsertragVorperiodePartner();
 		}
@@ -675,7 +862,9 @@ public class SteuerdatenResponse extends AbstractEntity {
 	}
 
 	@Nullable
-	public BigDecimal getAusgewiesenerGeschaeftsertragVorperiode2(SteuerdatenDatenTraeger steuerdatenDatenTraeger) {
+	public BigDecimal getAusgewiesenerGeschaeftsertragVorperiode2(
+		SteuerdatenDatenTraeger steuerdatenDatenTraeger
+	) {
 		if (steuerdatenDatenTraeger == SteuerdatenDatenTraeger.PARTNER) {
 			return getAusgewiesenerGeschaeftsertragVorperiode2Partner();
 		}
@@ -683,12 +872,7 @@ public class SteuerdatenResponse extends AbstractEntity {
 		return getAusgewiesenerGeschaeftsertragVorperiode2Dossiertraeger();
 	}
 
-
-
 	public enum SteuerdatenDatenTraeger {
-		DOSSIERTRAEGER,
-		PARTNER
+		DOSSIERTRAEGER, PARTNER
 	}
 }
-
-

@@ -13,6 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import * as angular from 'angular';
 import {of} from 'rxjs';
@@ -23,14 +24,13 @@ import {SearchRS} from '../../../../gesuch/service/searchRS.rest';
 import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSAntragTyp} from '../../../../models/enums/TSAntragTyp';
-import {TSBetreuungsangebotTyp} from '../../../../models/enums/betreuung/TSBetreuungsangebotTyp';
 import {TSAntragDTO} from '../../../../models/TSAntragDTO';
 import {TSAntragSearchresultDTO} from '../../../../models/TSAntragSearchresultDTO';
 import {TSGesuch} from '../../../../models/TSGesuch';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../../../core/core.angularjs.module';
-import {ApplicationPropertyRS} from '../../../core/rest-services/applicationPropertyRS.rest';
 import {GesuchsperiodeRS} from '../../../core/service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../../../core/service/institutionRS.rest';
 import {DVQuicksearchListController} from './dv-quicksearch-list';
@@ -49,7 +49,7 @@ describe('DVQuicksearchList', () => {
     let wizardStepManager: WizardStepManager;
     let authServiceRS: AuthServiceRS;
     let gemeindeRS: GemeindeRS;
-    let applicationPropertyRS: ApplicationPropertyRS;
+    let applicationPropertyRS: SharedUtilApplicationPropertyRsService;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
 

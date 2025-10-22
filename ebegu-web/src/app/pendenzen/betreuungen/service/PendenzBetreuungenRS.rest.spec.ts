@@ -13,12 +13,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {IHttpBackendService} from 'angular';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
+import angular, {IHttpBackendService} from 'angular';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../hybridTools/translationsMock';
-import {TSBetreuungsangebotTyp} from '../../../../models/enums/betreuung/TSBetreuungsangebotTyp';
 import {TSPendenzBetreuung} from '../../../../models/TSPendenzBetreuung';
-import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {PENDENZEN_BETREUUNGEN_JS_MODULE} from '../pendenzenBetreuungen.module';
 import {PendenzBetreuungenRS} from './PendenzBetreuungenRS.rest';
@@ -26,7 +25,6 @@ import {PendenzBetreuungenRS} from './PendenzBetreuungenRS.rest';
 describe('pendenzBetreuungenRS', () => {
     let pendenzBetreuungenRS: PendenzBetreuungenRS;
     let $httpBackend: IHttpBackendService;
-    let ebeguRestUtil: EbeguRestUtil;
     let mockPendenzBetreuungen: TSPendenzBetreuung;
     let mockPendenzBetreuungenRest: any;
 
@@ -40,13 +38,13 @@ describe('pendenzBetreuungenRS', () => {
         angular.mock.inject($injector => {
             pendenzBetreuungenRS = $injector.get('PendenzBetreuungenRS');
             $httpBackend = $injector.get('$httpBackend');
-            ebeguRestUtil = $injector.get('EbeguRestUtil');
         })
     );
 
     beforeEach(() => {
         mockPendenzBetreuungen = new TSPendenzBetreuung(
-            '123.12.12',
+            '123.12.12.12',
+            'TestGemeinde',
             '123',
             '123',
             '123',
@@ -54,18 +52,26 @@ describe('pendenzBetreuungenRS', () => {
             'Kilian',
             undefined,
             'Platzbestaetigung',
-            undefined,
-            undefined,
+            '2024/2025',
             undefined,
             TSBetreuungsangebotTyp.KITA,
+            undefined,
+            undefined,
+            undefined,
             undefined
         );
-        mockPendenzBetreuungenRest =
-            ebeguRestUtil.pendenzBetreuungenToRestObject(
-                {},
-                mockPendenzBetreuungen
-            );
-
+        mockPendenzBetreuungenRest = {
+            betreuungsNummer: '123.12.12.12',
+            gemeindeName: 'TestGemeinde',
+            betreuungsId: '123',
+            gesuchId: '123',
+            kindId: '123',
+            vorname: 'Kilian',
+            name: 'Kind',
+            typ: 'Platzbestaetigung',
+            gesuchsperiodeString: '2024/2025',
+            betreuungsangebotTyp: 'KITA'
+        };
         TestDataUtil.mockDefaultGesuchModelManagerHttpCalls($httpBackend);
     });
 

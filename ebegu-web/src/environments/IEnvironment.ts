@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {LogLevel, LogModules} from '../app/core/logging/log-level';
+import {LogLevel, LogModules} from '@kibon/shared/util-fn/log-factory';
 
 export interface Environment {
     production: boolean;

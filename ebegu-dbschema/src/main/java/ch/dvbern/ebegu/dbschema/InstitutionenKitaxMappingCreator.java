@@ -8,38 +8,48 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.dbschema;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Locale;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Locale;
-
 /**
  * Liest die Liste der Institutionen (Excel) ein
  * Info:
- * Es gibt Institutionen mit mehreren Angeboten. Teilweise sollen sich diese nicht sehen können; In diesen Faellen machen
+ * Es gibt Institutionen mit mehreren Angeboten. Teilweise sollen sich diese nicht sehen können; In diesen Faellen
+ * machen
  * wir zwei Institutionen daraus. Im Excel muss dazu die Spalte Institutions-Id leer bleiben, bzw. dort wo für mehrere
  * Angebote die gleiche InstitutionsId drinn steht, werden die Angebote als InstitutiosStammdaten importiert.
  */
-@SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed", "TooBroadScope", "PMD.AvoidDuplicateLiterals" })
+@SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed", "TooBroadScope",
+	"PMD.AvoidDuplicateLiterals" })
 @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
 public class InstitutionenKitaxMappingCreator {
 
-	private static final Logger LOG = LoggerFactory.getLogger(InstitutionenKitaxMappingCreator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		InstitutionenKitaxMappingCreator.class
+	);
 
 	private PrintWriter printWriter;
 
@@ -52,15 +62,24 @@ public class InstitutionenKitaxMappingCreator {
 	private static final String OUTPUT_FILE = "resultMapping.sql";
 
 	public static void main(String[] args) {
-		InstitutionenKitaxMappingCreator creator = new InstitutionenKitaxMappingCreator();
+		InstitutionenKitaxMappingCreator creator =
+			new InstitutionenKitaxMappingCreator();
 		creator.readKitax();
 	}
 
 	private void readKitax() {
 		BufferedReader reader = null;
-		try (InputStream resourceAsStream = InstitutionenKitaxMappingCreator.class.getResourceAsStream(INPUT_FILE)) {
+		try (InputStream resourceAsStream =
+			InstitutionenKitaxMappingCreator.class.getResourceAsStream(
+				INPUT_FILE
+			)) {
 			String str = "";
-			reader = new BufferedReader(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8));
+			reader = new BufferedReader(
+				new InputStreamReader(
+					resourceAsStream,
+					StandardCharsets.UTF_8
+				)
+			);
 			// Die erste Zeile ist der Header
 			reader.readLine();
 			while ((str = reader.readLine()) != null) {
@@ -91,7 +110,9 @@ public class InstitutionenKitaxMappingCreator {
 	private PrintWriter getPrintWriter() {
 		if (printWriter == null) {
 			File output = new File(OUTPUT_FILE);
-			try (FileOutputStream fos = new FileOutputStream(output.getAbsolutePath())) {
+			try (FileOutputStream fos = new FileOutputStream(
+				output.getAbsolutePath()
+			)) {
 				printWriter = new PrintWriter(fos);
 				LOG.info("File generiert: {}", output.getAbsolutePath());
 			} catch (IOException e) {
@@ -104,11 +125,10 @@ public class InstitutionenKitaxMappingCreator {
 	@SuppressWarnings("PMD.CloseResource")
 	private void println(String s) {
 		PrintWriter printWriter = getPrintWriter();
-		if(printWriter != null){
+		if (printWriter != null) {
 			printWriter.println(s);
 		}
 	}
-
 
 	static class KitaxInstitution {
 
@@ -127,13 +147,23 @@ public class InstitutionenKitaxMappingCreator {
 
 				this.oeffnungstage = new BigDecimal(sOeffnungstage);
 			} catch (Exception e) {
-				LOG.info("{} konnte nicht in Number formatiert werden, {}", sOeffnungstage, Arrays.toString(kitaArray), e);
+				LOG.info(
+					"{} konnte nicht in Number formatiert werden, {}",
+					sOeffnungstage,
+					Arrays.toString(kitaArray),
+					e
+				);
 			}
 			String sOeffnungsstunden = kitaArray[i++].trim().replace(" ", "");
 			try {
 				this.oeffnungsstunden = new BigDecimal(sOeffnungsstunden);
 			} catch (Exception e) {
-				LOG.info("{} konnte nicht in Number formatiert werden, {}", sOeffnungsstunden, Arrays.toString(kitaArray), e);
+				LOG.info(
+					"{} konnte nicht in Number formatiert werden, {}",
+					sOeffnungsstunden,
+					Arrays.toString(kitaArray),
+					e
+				);
 			}
 			this.nameKitax = normalize(kitaArray[i++]);
 			this.nameKibon = normalize(kitaArray[i++]);
@@ -144,9 +174,18 @@ public class InstitutionenKitaxMappingCreator {
 		}
 
 		public String toSqlInsert() {
-			String sql = "INSERT INTO kitax_uebergangsloesung_institution_oeffnungszeiten VALUES ("
-				+ "UNHEX(REPLACE(UUID(), '-','')), '2020-06-01', '2020-06-01', 'flyway', 'flyway', 0, "
-				+ "' " + nameKibon + "', '" + nameKitax + "', " + oeffnungsstunden + ", " + oeffnungstage + ");";
+			String sql =
+				"INSERT INTO kitax_uebergangsloesung_institution_oeffnungszeiten VALUES ("
+					+ "UNHEX(REPLACE(UUID(), '-','')), '2020-06-01', '2020-06-01', 'flyway', 'flyway', 0, "
+					+ "' "
+					+ nameKibon
+					+ "', '"
+					+ nameKitax
+					+ "', "
+					+ oeffnungsstunden
+					+ ", "
+					+ oeffnungstage
+					+ ");";
 			return sql;
 		}
 	}

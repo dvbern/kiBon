@@ -15,13 +15,21 @@
 
 package ch.dvbern.ebegu.api.dtos.batch;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.annotation.Nullable;
+import jakarta.batch.runtime.JobExecution;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 import ch.dvbern.ebegu.enums.WorkJobType;
 import ch.dvbern.ebegu.enums.reporting.BatchJobStatus;
+import io.github.threetenjaxb.core.LocalDateTimeXmlAdapter;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,7 +42,6 @@ public class JaxWorkJob extends JaxAbstractDTO {
 	@NotNull
 	private String name = "";
 
-	private JaxBatchJobInformation execution;
 	private WorkJobType workJobType;
 	private String startinguser;
 	private BatchJobStatus batchJobStatus;
@@ -42,11 +49,17 @@ public class JaxWorkJob extends JaxAbstractDTO {
 	private Long executionId;
 	private String resultData;
 	private String requestURI;
+	@Nullable
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
+	private LocalDateTime endTime = null;
+	@Nullable
+	@XmlJavaTypeAdapter(LocalDateTimeXmlAdapter.class)
+	private LocalDateTime startTime = null;
 
-
-	public JaxWorkJob(String name, JaxBatchJobInformation execution) {
+	public JaxWorkJob(String name, JobExecution execution) {
 		this.name = checkNotNull(name);
-		this.execution = execution;
+		this.startTime = mangleDate(execution.getStartTime());
+		this.endTime = mangleDate(execution.getEndTime());
 	}
 
 	public JaxWorkJob() {
@@ -60,14 +73,6 @@ public class JaxWorkJob extends JaxAbstractDTO {
 
 	public void setName(@Nonnull String name) {
 		this.name = checkNotNull(name);
-	}
-
-	public JaxBatchJobInformation getExecution() {
-		return execution;
-	}
-
-	public void setExecution(JaxBatchJobInformation execution) {
-		this.execution = execution;
 	}
 
 	public void setWorkJobType(WorkJobType workJobType) {
@@ -102,14 +107,6 @@ public class JaxWorkJob extends JaxAbstractDTO {
 		return params;
 	}
 
-	public void setExecutionId(Long executionId) {
-		this.executionId = executionId;
-	}
-
-	public Long getExecutionId() {
-		return executionId;
-	}
-
 	public void setResultData(String resultData) {
 		this.resultData = resultData;
 	}
@@ -124,5 +121,47 @@ public class JaxWorkJob extends JaxAbstractDTO {
 
 	public String getRequestURI() {
 		return requestURI;
+	}
+
+	public Long getExecutionId() {
+		return executionId;
+	}
+
+	public void setExecutionId(Long executionId) {
+		this.executionId = executionId;
+	}
+
+	@Nullable
+	public LocalDateTime getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(@Nullable LocalDateTime endTime) {
+		this.endTime = endTime;
+	}
+
+	@Nullable
+	public LocalDateTime getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(@Nullable LocalDateTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public void setExecutionRelevantValue(JobExecution execution) {
+		this.startTime = mangleDate(execution.getStartTime());
+		this.endTime = mangleDate(execution.getEndTime());
+	}
+
+	@Nullable
+	private LocalDateTime mangleDate(@Nullable Date date) {
+		if (date == null) {
+			return null;
+		}
+		return LocalDateTime.ofInstant(
+			date.toInstant(),
+			ZoneId.systemDefault()
+		);
 	}
 }

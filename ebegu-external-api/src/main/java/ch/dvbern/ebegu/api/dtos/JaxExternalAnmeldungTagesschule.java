@@ -17,7 +17,7 @@ package ch.dvbern.ebegu.api.dtos;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import ch.dvbern.ebegu.api.enums.JaxExternalBetreuungsangebotTyp;
 import ch.dvbern.ebegu.api.enums.JaxExternalBetreuungsstatus;
@@ -33,16 +33,23 @@ public class JaxExternalAnmeldungTagesschule extends JaxExternalAnmeldung {
 	@Nonnull
 	private List<JaxExternalModul> anmeldungen;
 
-
 	public JaxExternalAnmeldungTagesschule(
 		@Nonnull String referenznummer,
 		@Nonnull JaxExternalBetreuungsstatus betreuungsstatus,
 		@Nonnull String institutionName,
 		@Nonnull List<JaxExternalModul> anmeldungen,
 		@Nonnull String kindName,
-		@Nonnull String kindVorname) {
+		@Nonnull String kindVorname
+	) {
 
-		super(referenznummer, betreuungsstatus, JaxExternalBetreuungsangebotTyp.TAGESSCHULE, institutionName, kindName, kindVorname);
+		super(
+			referenznummer,
+			betreuungsstatus,
+			JaxExternalBetreuungsangebotTyp.TAGESSCHULE,
+			institutionName,
+			kindName,
+			kindVorname
+		);
 		this.anmeldungen = anmeldungen;
 	}
 

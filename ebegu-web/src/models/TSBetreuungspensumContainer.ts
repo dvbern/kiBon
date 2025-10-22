@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {TSAbstractMutableEntity} from './TSAbstractMutableEntity';
+import {TSAbstractMutableEntity} from '@kibon/shared/model/entity';
 import {TSBetreuungspensum} from './TSBetreuungspensum';
 
 export class TSBetreuungspensumContainer extends TSAbstractMutableEntity {

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.finanziellesituation;
@@ -91,7 +91,9 @@ public class JaxFinSitZusatzangabenAppenzell extends JaxAbstractDTO {
 		return liegenschaftsaufwand;
 	}
 
-	public void setLiegenschaftsaufwand(@Nullable BigDecimal liegenschaftsaufwand) {
+	public void setLiegenschaftsaufwand(
+		@Nullable BigDecimal liegenschaftsaufwand
+	) {
 		this.liegenschaftsaufwand = liegenschaftsaufwand;
 	}
 
@@ -118,7 +120,9 @@ public class JaxFinSitZusatzangabenAppenzell extends JaxAbstractDTO {
 		return politischeParteiSpende;
 	}
 
-	public void setPolitischeParteiSpende(@Nullable BigDecimal politischeParteiSpende) {
+	public void setPolitischeParteiSpende(
+		@Nullable BigDecimal politischeParteiSpende
+	) {
 		this.politischeParteiSpende = politischeParteiSpende;
 	}
 
@@ -127,7 +131,9 @@ public class JaxFinSitZusatzangabenAppenzell extends JaxAbstractDTO {
 		return leistungAnJuristischePersonen;
 	}
 
-	public void setLeistungAnJuristischePersonen(@Nullable BigDecimal leistungAnJuristischePersonen) {
+	public void setLeistungAnJuristischePersonen(
+		@Nullable BigDecimal leistungAnJuristischePersonen
+	) {
 		this.leistungAnJuristischePersonen = leistungAnJuristischePersonen;
 	}
 
@@ -136,7 +142,9 @@ public class JaxFinSitZusatzangabenAppenzell extends JaxAbstractDTO {
 		return zusatzangabenPartner;
 	}
 
-	public void setZusatzangabenPartner(@Nullable JaxFinSitZusatzangabenAppenzell zusatzangabenPartner) {
+	public void setZusatzangabenPartner(
+		@Nullable JaxFinSitZusatzangabenAppenzell zusatzangabenPartner
+	) {
 		this.zusatzangabenPartner = zusatzangabenPartner;
 	}
 
@@ -145,7 +153,9 @@ public class JaxFinSitZusatzangabenAppenzell extends JaxAbstractDTO {
 		return steuerbaresEinkommen;
 	}
 
-	public void setSteuerbaresEinkommen(@Nullable BigDecimal steuerbaresEinkommen) {
+	public void setSteuerbaresEinkommen(
+		@Nullable BigDecimal steuerbaresEinkommen
+	) {
 		this.steuerbaresEinkommen = steuerbaresEinkommen;
 	}
 
@@ -154,7 +164,9 @@ public class JaxFinSitZusatzangabenAppenzell extends JaxAbstractDTO {
 		return steuerbaresVermoegen;
 	}
 
-	public void setSteuerbaresVermoegen(@Nullable BigDecimal steuerbaresVermoegen) {
+	public void setSteuerbaresVermoegen(
+		@Nullable BigDecimal steuerbaresVermoegen
+	) {
 		this.steuerbaresVermoegen = steuerbaresVermoegen;
 	}
 }

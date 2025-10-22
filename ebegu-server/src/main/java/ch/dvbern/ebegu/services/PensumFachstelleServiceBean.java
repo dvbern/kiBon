@@ -19,28 +19,34 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.PensumFachstelle;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 
 /**
  * Service fuer pensumFachstelle
  */
 @Stateless
 @Local(PensumFachstelleService.class)
-public class PensumFachstelleServiceBean extends AbstractBaseService implements PensumFachstelleService {
+public class PensumFachstelleServiceBean extends AbstractBaseService implements
+	PensumFachstelleService {
 
 	@Inject
 	private Persistence persistence;
 
 	@Override
 	@Nonnull
-	public Optional<PensumFachstelle> findPensumFachstelle(@Nonnull String pensumFachstelleId) {
+	public Optional<PensumFachstelle> findPensumFachstelle(
+		@Nonnull String pensumFachstelleId
+	) {
 		Objects.requireNonNull(pensumFachstelleId, "id muss gesetzt sein");
-		PensumFachstelle a = persistence.find(PensumFachstelle.class, pensumFachstelleId);
+		PensumFachstelle a = persistence.find(
+			PensumFachstelle.class,
+			pensumFachstelleId
+		);
 		return Optional.ofNullable(a);
 	}
 }

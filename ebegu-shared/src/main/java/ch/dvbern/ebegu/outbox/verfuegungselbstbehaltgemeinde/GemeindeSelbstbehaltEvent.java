@@ -1,10 +1,11 @@
 package ch.dvbern.ebegu.outbox.verfuegungselbstbehaltgemeinde;
 
-import ch.dvbern.ebegu.outbox.ExportedEvent;
-import org.apache.avro.Schema;
+import java.util.Arrays;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
+
+import ch.dvbern.ebegu.outbox.ExportedEvent;
+import org.apache.avro.Schema;
 
 public class GemeindeSelbstbehaltEvent implements ExportedEvent {
 
@@ -17,14 +18,16 @@ public class GemeindeSelbstbehaltEvent implements ExportedEvent {
 	@Nonnull
 	private final Schema schema;
 
-
 	public GemeindeSelbstbehaltEvent(
 		@Nonnull String platzId,
 		@Nonnull byte[] gemeindeSelbstbehalt,
 		@Nonnull Schema schema
 	) {
 		this.platzId = platzId;
-		this.gemeindeSelbstbehalt =  Arrays.copyOf(gemeindeSelbstbehalt, gemeindeSelbstbehalt.length);
+		this.gemeindeSelbstbehalt = Arrays.copyOf(
+			gemeindeSelbstbehalt,
+			gemeindeSelbstbehalt.length
+		);
 		this.schema = schema;
 	}
 

@@ -38,7 +38,8 @@ import org.apache.commons.collections.CollectionUtils;
 
 import static ch.dvbern.ebegu.enums.DokumentTyp.NACHWEIS_ERWERBSPENSUM_UNREGELMAESSIG;
 
-public class LuzernErwerbspensumDokumente extends AbstractDokumente<Erwerbspensum, LocalDate> {
+public class LuzernErwerbspensumDokumente extends
+	AbstractDokumente<Erwerbspensum, LocalDate> {
 
 	@Override
 	public void getAllDokumente(
@@ -46,17 +47,30 @@ public class LuzernErwerbspensumDokumente extends AbstractDokumente<Erwerbspensu
 		@Nonnull Set<DokumentGrund> anlageVerzeichnis,
 		@Nonnull Locale locale
 	) {
-		addAllDokumenteForGesuchsteller(anlageVerzeichnis, gesuch, gesuch.getGesuchsteller1(), 1, locale);
+		addAllDokumenteForGesuchsteller(
+			anlageVerzeichnis,
+			gesuch,
+			gesuch.getGesuchsteller1(),
+			1,
+			locale
+		);
 
 		if (gesuch.hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode()) {
-			addAllDokumenteForGesuchsteller(anlageVerzeichnis, gesuch, gesuch.getGesuchsteller2(), 2, locale);
+			addAllDokumenteForGesuchsteller(
+				anlageVerzeichnis,
+				gesuch,
+				gesuch.getGesuchsteller2(),
+				2,
+				locale
+			);
 		}
 	}
 
 	@Override
 	public boolean isDokumentNeeded(
 		@Nonnull DokumentTyp dokumentTyp,
-		@Nullable Erwerbspensum erwerbspensum) {
+		@Nullable Erwerbspensum erwerbspensum
+	) {
 
 		if (erwerbspensum == null) {
 			return false;
@@ -70,11 +84,15 @@ public class LuzernErwerbspensumDokumente extends AbstractDokumente<Erwerbspensu
 		case NACHWEIS_SELBSTAENDIGKEIT:
 			return erwerbspensum.getTaetigkeit() == Taetigkeit.SELBSTAENDIG;
 		case NACHWEIS_GESUNDHEITLICHE_INDIKATION:
-			return erwerbspensum.getTaetigkeit() == Taetigkeit.GESUNDHEITLICHE_EINSCHRAENKUNGEN;
+			return erwerbspensum.getTaetigkeit()
+				== Taetigkeit.GESUNDHEITLICHE_EINSCHRAENKUNGEN;
 		case NACHWEIS_ERWERBSPENSUM_UNREGELMAESSIG:
-			return EbeguUtil.isNotNullAndTrue(erwerbspensum.getUnregelmaessigeArbeitszeiten());
+			return EbeguUtil.isNotNullAndTrue(
+				erwerbspensum.getUnregelmaessigeArbeitszeiten()
+			);
 		case NACHWEIS_INTEGRATION_BESCHAEFTIGUNSPROGRAMM:
-			return erwerbspensum.getTaetigkeit() == Taetigkeit.INTEGRATION_BESCHAEFTIGUNSPROGRAMM;
+			return erwerbspensum.getTaetigkeit()
+				== Taetigkeit.INTEGRATION_BESCHAEFTIGUNSPROGRAMM;
 		default:
 			return false;
 		}
@@ -85,9 +103,13 @@ public class LuzernErwerbspensumDokumente extends AbstractDokumente<Erwerbspensu
 		@Nonnull Gesuch gesuch,
 		@Nullable GesuchstellerContainer gesuchsteller,
 		@Nonnull Integer gesuchstellerNumber,
-		@Nonnull Locale local) {
+		@Nonnull Locale local
+	) {
 
-		if (gesuchsteller == null || CollectionUtils.isEmpty(gesuchsteller.getErwerbspensenContainers())) {
+		if (gesuchsteller == null
+			|| CollectionUtils.isEmpty(
+				gesuchsteller.getErwerbspensenContainers()
+			)) {
 			return;
 		}
 
@@ -98,35 +120,66 @@ public class LuzernErwerbspensumDokumente extends AbstractDokumente<Erwerbspensu
 			.map(ErwerbspensumContainer::getErwerbspensumJA)
 			.filter(Objects::nonNull)
 			.forEach(erwerbspensum -> {
-				add(getDokument(
-					gesuchstellerNumber,
-					erwerbspensum,
-					DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
-					local,
-					mandant), anlageVerzeichnis);
 				add(
-					getDokument(gesuchstellerNumber, erwerbspensum, DokumentTyp.NACHWEIS_AUSBILDUNG, local, mandant),
-					anlageVerzeichnis);
-				add(getDokument(
-					gesuchstellerNumber,
-					erwerbspensum,
-					DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
-					local,
-					mandant), anlageVerzeichnis);
-				add(getDokument(
-					gesuchstellerNumber,
-					erwerbspensum,
-					DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
-					local,
-					mandant), anlageVerzeichnis);
-				add(getDokument(gesuchstellerNumber, erwerbspensum, NACHWEIS_ERWERBSPENSUM_UNREGELMAESSIG,
-					local, mandant), anlageVerzeichnis);
-				add(getDokument(
-					gesuchstellerNumber,
-					erwerbspensum,
-					DokumentTyp.NACHWEIS_INTEGRATION_BESCHAEFTIGUNSPROGRAMM,
-					local,
-					mandant), anlageVerzeichnis);
+					getDokument(
+						gesuchstellerNumber,
+						erwerbspensum,
+						DokumentTyp.NACHWEIS_ARBEITSSUCHEND,
+						local,
+						mandant
+					),
+					anlageVerzeichnis
+				);
+				add(
+					getDokument(
+						gesuchstellerNumber,
+						erwerbspensum,
+						DokumentTyp.NACHWEIS_AUSBILDUNG,
+						local,
+						mandant
+					),
+					anlageVerzeichnis
+				);
+				add(
+					getDokument(
+						gesuchstellerNumber,
+						erwerbspensum,
+						DokumentTyp.NACHWEIS_GESUNDHEITLICHE_INDIKATION,
+						local,
+						mandant
+					),
+					anlageVerzeichnis
+				);
+				add(
+					getDokument(
+						gesuchstellerNumber,
+						erwerbspensum,
+						DokumentTyp.NACHWEIS_SELBSTAENDIGKEIT,
+						local,
+						mandant
+					),
+					anlageVerzeichnis
+				);
+				add(
+					getDokument(
+						gesuchstellerNumber,
+						erwerbspensum,
+						NACHWEIS_ERWERBSPENSUM_UNREGELMAESSIG,
+						local,
+						mandant
+					),
+					anlageVerzeichnis
+				);
+				add(
+					getDokument(
+						gesuchstellerNumber,
+						erwerbspensum,
+						DokumentTyp.NACHWEIS_INTEGRATION_BESCHAEFTIGUNSPROGRAMM,
+						local,
+						mandant
+					),
+					anlageVerzeichnis
+				);
 			});
 	}
 
@@ -145,7 +198,7 @@ public class LuzernErwerbspensumDokumente extends AbstractDokumente<Erwerbspensu
 			erwerbspensumJA.getName(locale, mandant),
 			DokumentGrundPersonType.GESUCHSTELLER,
 			gesuchstellerNumber,
-			DokumentGrundTyp.ERWERBSPENSUM);
+			DokumentGrundTyp.ERWERBSPENSUM
+		);
 	}
 }
-

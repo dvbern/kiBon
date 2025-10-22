@@ -13,13 +13,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {TSRole} from '@kibon/shared/model/enums';
+import {
+    TSAbstractDateRangedEntity,
+    TSInstitution,
+    TSTraegerschaft
+} from '@kibon/shared/model/entity';
 import {EbeguUtil} from '../utils/EbeguUtil';
 import {TSBenutzerStatus} from './enums/TSBenutzerStatus';
-import {TSRole} from './enums/TSRole';
 import {TSSozialdienst} from './sozialdienst/TSSozialdienst';
-import {TSAbstractDateRangedEntity} from './TSAbstractDateRangedEntity';
-import {TSInstitution} from './TSInstitution';
-import {TSTraegerschaft} from './TSTraegerschaft';
 
 export class TSBerechtigungHistory extends TSAbstractDateRangedEntity {
     private _userErstellt: string;

@@ -17,6 +17,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {StateService, Transition} from '@uirouter/angular';
+import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {SharedModule} from '../../../../../app/shared/shared.module';
 import {SHARED_MODULE_OVERRIDES} from '../../../../../hybridTools/mockUpgradedDirective';
@@ -36,7 +37,6 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 import {WizardStepManager} from '../../../../service/wizardStepManager';
 
 import {EinkommensverschlechterungLuzernResultateViewComponent} from './einkommensverschlechterung-luzern-resultate-view.component';
-import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 
 const gesuchModelManagerSpy = jasmine.createSpyObj<GesuchModelManager>(
     GesuchModelManager.name,

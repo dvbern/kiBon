@@ -25,7 +25,7 @@ import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
 import {EinstellungRS} from '../../../../../admin/service/einstellungRS.rest';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
-import {TSWizardStepName} from '../../../../../models/enums/TSWizardStepName';
+import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {BerechnungsManager} from '../../../../service/berechnungsManager';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
@@ -33,13 +33,14 @@ import {WizardStepManager} from '../../../../service/wizardStepManager';
 import {AbstractEinkommensverschlechterungResultat} from '../../AbstractEinkommensverschlechterungResultat';
 
 @Component({
-    selector: 'dv-einkommensverschlechterung-solothurn-resultate-view',
+    selector: 'dv-einkommensverschlechterung-appenzell-resultate-view',
     templateUrl:
         './einkommensverschlechterung-appenzell-resultate-view.component.html',
     styleUrls: [
         './einkommensverschlechterung-appenzell-resultate-view.component.less'
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EinkommensverschlechterungAppenzellResultateViewComponent extends AbstractEinkommensverschlechterungResultat {
     public resultatBasisjahr?: TSFinanzielleSituationResultateDTO;
@@ -67,7 +68,7 @@ export class EinkommensverschlechterungAppenzellResultateViewComponent extends A
 
     public save(onResult: (arg: any) => any): IPromise<any> {
         //hier müssen wir nur den WizardStep Updaten. Die EKV ist schon gespeichert.
-        this.updateStatus(true);
+        this.updateStatus();
         return onResult(true);
     }
 

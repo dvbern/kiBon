@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules;
@@ -42,68 +42,155 @@ public class KindTarifAbschnittRuleTest {
 	@Before
 	public void init() {
 		betreuung = createKindWithBetreuung();
-		GP_START = betreuung.extractGesuchsperiode().getGueltigkeit().getGueltigAb();
-		GP_END = betreuung.extractGesuchsperiode().getGueltigkeit().getGueltigBis();
+		GP_START = betreuung.extractGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigAb();
+		GP_END = betreuung.extractGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigBis();
 	}
 
 	@Test
 	public void kindVonAnfangAnAelterNichtEingeschult() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(changeBetreuung(GP_START.minusYears(2), EinschulungTyp.VORSCHULALTER));
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			changeBetreuung(
+				GP_START.minusYears(2),
+				EinschulungTyp.VORSCHULALTER
+			)
+		);
 		assertNotNull(result);
 		assertEquals(1, result.size());
-		assertZeitabschnitt(result.get(0), GP_START, GP_END, false, EinschulungTyp.VORSCHULALTER);
+		assertZeitabschnitt(
+			result.get(0),
+			GP_START,
+			GP_END,
+			false,
+			EinschulungTyp.VORSCHULALTER
+		);
 	}
 
 	@Test
 	public void kindVonAnfangAnAelterEingeschult() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(changeBetreuung(GP_START.minusYears(2), EinschulungTyp.KINDERGARTEN1));
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			changeBetreuung(
+				GP_START.minusYears(2),
+				EinschulungTyp.KINDERGARTEN1
+			)
+		);
 		assertNotNull(result);
 		assertEquals(1, result.size());
-		assertZeitabschnitt(result.get(0), GP_START, GP_END, false, EinschulungTyp.KINDERGARTEN1);
+		assertZeitabschnitt(
+			result.get(0),
+			GP_START,
+			GP_END,
+			false,
+			EinschulungTyp.KINDERGARTEN1
+		);
 	}
 
 	@Test
 	public void kindErstNachPeriodeAelterNichtEingeschult() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(changeBetreuung(GP_START.minusDays(1), EinschulungTyp.VORSCHULALTER));
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			changeBetreuung(
+				GP_START.minusDays(1),
+				EinschulungTyp.VORSCHULALTER
+			)
+		);
 		assertNotNull(result);
 		assertEquals(1, result.size());
-		assertZeitabschnitt(result.get(0), GP_START, GP_END, true, EinschulungTyp.VORSCHULALTER);
+		assertZeitabschnitt(
+			result.get(0),
+			GP_START,
+			GP_END,
+			true,
+			EinschulungTyp.VORSCHULALTER
+		);
 	}
 
 	@Test
 	public void kindErstNachPeriodeAelterEingeschult() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(changeBetreuung(GP_START.minusDays(1), EinschulungTyp.KINDERGARTEN1));
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			changeBetreuung(
+				GP_START.minusDays(1),
+				EinschulungTyp.KINDERGARTEN1
+			)
+		);
 		assertNotNull(result);
 		assertEquals(1, result.size());
-		assertZeitabschnitt(result.get(0), GP_START, GP_END, true, EinschulungTyp.KINDERGARTEN1);
+		assertZeitabschnitt(
+			result.get(0),
+			GP_START,
+			GP_END,
+			true,
+			EinschulungTyp.KINDERGARTEN1
+		);
 	}
 
 	@Test
 	public void kindWaehrendPeriodeAelterNichtEingeschult() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(changeBetreuung(GP_START.minusMonths(2), EinschulungTyp.VORSCHULALTER));
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			changeBetreuung(
+				GP_START.minusMonths(2),
+				EinschulungTyp.VORSCHULALTER
+			)
+		);
 		assertNotNull(result);
 		assertEquals(2, result.size());
-		assertZeitabschnitt(result.get(0), GP_START, GP_END.minusMonths(1), true, EinschulungTyp.VORSCHULALTER);
-		assertZeitabschnitt(result.get(1), GP_END.minusMonths(1).plusDays(1), GP_END, false, EinschulungTyp.VORSCHULALTER);
+		assertZeitabschnitt(
+			result.get(0),
+			GP_START,
+			GP_END.minusMonths(1),
+			true,
+			EinschulungTyp.VORSCHULALTER
+		);
+		assertZeitabschnitt(
+			result.get(1),
+			GP_END.minusMonths(1).plusDays(1),
+			GP_END,
+			false,
+			EinschulungTyp.VORSCHULALTER
+		);
 	}
 
 	@Test
 	public void kindWaehrendPeriodeAelterEingeschult() {
-		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(changeBetreuung(GP_START.minusMonths(2), EinschulungTyp.KINDERGARTEN1));
+		List<VerfuegungZeitabschnitt> result = EbeguRuleTestsHelper.calculate(
+			changeBetreuung(
+				GP_START.minusMonths(2),
+				EinschulungTyp.KINDERGARTEN1
+			)
+		);
 		assertNotNull(result);
 		assertEquals(2, result.size());
-		assertZeitabschnitt(result.get(0), GP_START, GP_END.minusMonths(1), true, EinschulungTyp.KINDERGARTEN1);
-		assertZeitabschnitt(result.get(1), GP_END.minusMonths(1).plusDays(1), GP_END, false, EinschulungTyp.KINDERGARTEN1);
+		assertZeitabschnitt(
+			result.get(0),
+			GP_START,
+			GP_END.minusMonths(1),
+			true,
+			EinschulungTyp.KINDERGARTEN1
+		);
+		assertZeitabschnitt(
+			result.get(1),
+			GP_END.minusMonths(1).plusDays(1),
+			GP_END,
+			false,
+			EinschulungTyp.KINDERGARTEN1
+		);
 	}
 
 	private Betreuung createKindWithBetreuung() {
-		final Betreuung betreuungToCreate = TestDataUtil.createGesuchWithBetreuungspensum(false);
+		final Betreuung betreuungToCreate = TestDataUtil
+			.createGesuchWithBetreuungspensum(false);
+		betreuungToCreate.initVorgaengerVerfuegungen(null, null);
 		final Gesuch gesuch = betreuungToCreate.extractGesuch();
 		gesuch.setDossier(TestDataUtil.createDefaultDossier());
 		return betreuungToCreate;
 	}
 
-	private Betreuung changeBetreuung(@Nonnull LocalDate geburtsdatum, @Nonnull EinschulungTyp einschulungTyp) {
+	private Betreuung changeBetreuung(
+		@Nonnull LocalDate geburtsdatum,
+		@Nonnull EinschulungTyp einschulungTyp
+	) {
 		betreuung.getKind().getKindJA().setGeburtsdatum(geburtsdatum);
 		betreuung.getKind().getKindJA().setEinschulungTyp(einschulungTyp);
 		return betreuung;
@@ -114,11 +201,24 @@ public class KindTarifAbschnittRuleTest {
 		LocalDate expectedDateFrom,
 		LocalDate expectedDateTo,
 		boolean expectedBabyTarif,
-		EinschulungTyp einschulungstyp) {
+		EinschulungTyp einschulungstyp
+	) {
 
-		assertEquals(expectedDateFrom, zeitabschnitt.getGueltigkeit().getGueltigAb());
-		assertEquals(expectedDateTo, zeitabschnitt.getGueltigkeit().getGueltigBis());
-		assertEquals(expectedBabyTarif, zeitabschnitt.getBgCalculationInputAsiv().isBabyTarif());
-		assertEquals(einschulungstyp, zeitabschnitt.getBgCalculationInputAsiv().getEinschulungTyp());
+		assertEquals(
+			expectedDateFrom,
+			zeitabschnitt.getGueltigkeit().getGueltigAb()
+		);
+		assertEquals(
+			expectedDateTo,
+			zeitabschnitt.getGueltigkeit().getGueltigBis()
+		);
+		assertEquals(
+			expectedBabyTarif,
+			zeitabschnitt.getBgCalculationInputAsiv().isBabyTarif()
+		);
+		assertEquals(
+			einschulungstyp,
+			zeitabschnitt.getBgCalculationInputAsiv().getEinschulungTyp()
+		);
 	}
 }

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  */
 
@@ -27,53 +27,74 @@ import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterGemeindeDTO;
 import ch.dvbern.ebegu.rechner.KantonBernRechnerUtil;
 
-public class StaedtischerZuschlagLinearRechner extends StaedtischerZuschlagRechner {
+public class StaedtischerZuschlagLinearRechner extends
+	StaedtischerZuschlagRechner {
 
 	@Override
 	public BigDecimal calculateForTfo(
-			BGCalculationInput inputGemeinde,
-			BGRechnerParameterDTO rechnerParameterDTO) {
+		BGCalculationInput inputGemeinde,
+		BGRechnerParameterDTO rechnerParameterDTO
+	) {
 		return calculateStaedtischerZuschlag(
-				rechnerParameterDTO,
-				inputGemeinde,
-				BGRechnerParameterGemeindeDTO::getGemeindeZusaetzlicherGutscheinLinearTfoMax);
+			rechnerParameterDTO,
+			inputGemeinde,
+			BGRechnerParameterGemeindeDTO::getGemeindeZusaetzlicherGutscheinLinearTfoMax
+		);
 	}
 
 	@Override
 	public BigDecimal calculateForKita(
-			BGCalculationInput inputGemeinde,
-			BGRechnerParameterDTO rechnerParameterDTO) {
+		BGCalculationInput inputGemeinde,
+		BGRechnerParameterDTO rechnerParameterDTO
+	) {
 		return calculateStaedtischerZuschlag(
-				rechnerParameterDTO,
-				inputGemeinde,
-				BGRechnerParameterGemeindeDTO::getGemeindeZusaetzlicherGutscheinLinearKitaMax);
-	}
-
-	private BigDecimal calculateStaedtischerZuschlag(
-			BGRechnerParameterDTO rechnerParameterDTO,
-			BGCalculationInput inputGemeinde,
-			Function<BGRechnerParameterGemeindeDTO, BigDecimal> getMaxVerguenstigung) {
-		var minMassgebendesEinkommen = getMinMassgebendesEinkommen(rechnerParameterDTO);
-		var maxMassgebendesEinkommen = getMaxMassgebendesEinkommen(rechnerParameterDTO);
-		var massgebendesEinkommen = inputGemeinde.getMassgebendesEinkommen();
-		var maximaleVerguenstigung = getMaxVerguenstigung.apply(rechnerParameterDTO.getGemeindeParameter());
-
-		return KantonBernRechnerUtil.calculateKantonalerZuschlag(
-				minMassgebendesEinkommen, maxMassgebendesEinkommen, massgebendesEinkommen, maximaleVerguenstigung
+			rechnerParameterDTO,
+			inputGemeinde,
+			BGRechnerParameterGemeindeDTO::getGemeindeZusaetzlicherGutscheinLinearKitaMax
 		);
 	}
 
-	private BigDecimal getMinMassgebendesEinkommen(BGRechnerParameterDTO rechnerParameterDTO) {
-		return Objects.requireNonNullElse(
-				rechnerParameterDTO.getGemeindeParameter()
-						.getGemeindeZusaetzlicherGutscheinMinMassgebendesEinkommen(),
-				rechnerParameterDTO.getMinMassgebendesEinkommen());
+	private BigDecimal calculateStaedtischerZuschlag(
+		BGRechnerParameterDTO rechnerParameterDTO,
+		BGCalculationInput inputGemeinde,
+		Function<BGRechnerParameterGemeindeDTO, BigDecimal> getMaxVerguenstigung
+	) {
+		var minMassgebendesEinkommen = getMinMassgebendesEinkommen(
+			rechnerParameterDTO
+		);
+		var maxMassgebendesEinkommen = getMaxMassgebendesEinkommen(
+			rechnerParameterDTO
+		);
+		var massgebendesEinkommen = inputGemeinde.getMassgebendesEinkommen();
+		var maximaleVerguenstigung = getMaxVerguenstigung.apply(
+			rechnerParameterDTO.getGemeindeParameter()
+		);
+
+		return KantonBernRechnerUtil.calculateKantonalerZuschlag(
+			minMassgebendesEinkommen,
+			maxMassgebendesEinkommen,
+			massgebendesEinkommen,
+			maximaleVerguenstigung
+		);
 	}
 
-	private BigDecimal getMaxMassgebendesEinkommen(BGRechnerParameterDTO rechnerParameterDTO) {
+	private BigDecimal getMinMassgebendesEinkommen(
+		BGRechnerParameterDTO rechnerParameterDTO
+	) {
 		return Objects.requireNonNullElse(
-				rechnerParameterDTO.getGemeindeParameter()
-						.getGemeindeZusaetzlicherGutscheinMaxMassgebendesEinkommen(),
-				rechnerParameterDTO.getMaxMassgebendesEinkommen());
+			rechnerParameterDTO.getGemeindeParameter()
+				.getGemeindeZusaetzlicherGutscheinMinMassgebendesEinkommen(),
+			rechnerParameterDTO.getMinMassgebendesEinkommen()
+		);
+	}
+
+	private BigDecimal getMaxMassgebendesEinkommen(
+		BGRechnerParameterDTO rechnerParameterDTO
+	) {
+		return Objects.requireNonNullElse(
+			rechnerParameterDTO.getGemeindeParameter()
+				.getGemeindeZusaetzlicherGutscheinMaxMassgebendesEinkommen(),
+			rechnerParameterDTO.getMaxMassgebendesEinkommen()
+		);
 	}
 }

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.reporting.lastenausgleich;
@@ -22,15 +22,19 @@ import java.math.BigDecimal;
 /**
  * DTO für den Lastenausgleich von KiBon
  */
-public class LastenausgleichBerechnungCSVDataRow extends LastenausgleichBerechnungDataRow {
+public class LastenausgleichBerechnungCSVDataRow extends
+	LastenausgleichBerechnungDataRow {
 
 	private BigDecimal totalRevision;
 	private BigDecimal totalBelegung;
 	private BigDecimal totalGutscheine;
 
-	public LastenausgleichBerechnungCSVDataRow() {};
+	public LastenausgleichBerechnungCSVDataRow() {
+	};
 
-	public LastenausgleichBerechnungCSVDataRow(LastenausgleichBerechnungDataRow parent) {
+	public LastenausgleichBerechnungCSVDataRow(
+		LastenausgleichBerechnungDataRow parent
+	) {
 		super(parent);
 	}
 

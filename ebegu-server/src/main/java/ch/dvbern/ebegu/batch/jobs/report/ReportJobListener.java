@@ -15,24 +15,25 @@
 
 package ch.dvbern.ebegu.batch.jobs.report;
 
-import javax.batch.api.listener.AbstractJobListener;
-import javax.batch.runtime.BatchStatus;
-import javax.batch.runtime.context.JobContext;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.batch.api.listener.AbstractJobListener;
+import jakarta.batch.runtime.BatchStatus;
+import jakarta.batch.runtime.context.JobContext;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import ch.dvbern.ebegu.enums.reporting.BatchJobStatus;
 import ch.dvbern.ebegu.services.WorkjobService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named("reportJobListener")
 @Dependent
 public class ReportJobListener extends AbstractJobListener {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ReportJobListener.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		ReportJobListener.class
+	);
 
 	@Inject
 	private JobContext ctx;
@@ -43,18 +44,31 @@ public class ReportJobListener extends AbstractJobListener {
 	@Override
 	public void beforeJob() {
 		LOG.debug("ReportJobListener started: {}", ctx.getExecutionId());
-		workjobService.changeStateOfWorkjob(ctx.getExecutionId(), BatchJobStatus.RUNNING);
+		workjobService.changeStateOfWorkjob(
+			ctx.getExecutionId(),
+			BatchJobStatus.RUNNING
+		);
 	}
 
 	@Override
 	public void afterJob() {
-		LOG.debug("ReportJobListener finished: {}, status: {},{}",
-			ctx.getExecutionId(), ctx.getBatchStatus(), ctx.getExitStatus());
+		LOG.debug(
+			"ReportJobListener finished: {}, status: {},{}",
+			ctx.getExecutionId(),
+			ctx.getBatchStatus(),
+			ctx.getExitStatus()
+		);
 		//wenn interner job completed ist sehen wir das auch als erfolgreich an, alles andere sehen wir als fehlschlag
 		if (ctx.getExitStatus().equals(BatchStatus.COMPLETED.name())) {
-			workjobService.changeStateOfWorkjob(ctx.getExecutionId(), BatchJobStatus.FINISHED);
+			workjobService.changeStateOfWorkjob(
+				ctx.getExecutionId(),
+				BatchJobStatus.FINISHED
+			);
 		} else {
-			workjobService.changeStateOfWorkjob(ctx.getExecutionId(), BatchJobStatus.FAILED);
+			workjobService.changeStateOfWorkjob(
+				ctx.getExecutionId(),
+				BatchJobStatus.FAILED
+			);
 		}
 	}
 }

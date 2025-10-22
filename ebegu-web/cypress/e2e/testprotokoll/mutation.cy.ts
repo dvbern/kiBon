@@ -26,16 +26,19 @@ import {
     UmzugPO,
     VerfuegenPO
 } from '@dv-e2e/page-objects';
-import {getUser, normalizeUser} from '@dv-e2e/types';
+import {getUser} from '@dv-e2e/types';
+import {MANDANTS} from '@kibon/shared-model-mandant';
 import {SidenavPO} from '../../page-objects/antrag/sidenav.po';
 import {VerfuegungPO} from '../../page-objects/antrag/verfuegung.po';
 
 describe('Kibon - mutationen [Gesuchsteller]', () => {
-    const userSuperadmin = getUser('[1-Superadmin] E-BEGU Superuser');
+    const userSuperadmin = getUser('[1-Superadmin] Super User');
     const userGS = getUser('[5-GS] Michael Berger');
     const userSB = getUser('[6-L-Admin-Gemeinde] Gerlinde Bader');
     let gesuchUrl: string;
+
     before(() => {
+        cy.changeMandant(MANDANTS.BERN);
         cy.intercept({resourceType: 'xhr'}, {log: false}); // don't log XHRs
         cy.login(userSuperadmin);
         cy.visit('/#/faelle');
@@ -65,8 +68,10 @@ describe('Kibon - mutationen [Gesuchsteller]', () => {
         cy.wait('@mutationReady');
 
         NavigationPO.getSaveAndNextButton().contains('Erstellen').click();
+        AntragCreationPO.getMutationErstellenInOldPeriodeConfirmButton().click();
         cy.url().should('not.contain', 'CREATE_NEW_MUTATION/ONLINE');
 
+        // UMZUG
         SidenavPO.goTo('UMZUG');
         UmzugPO.getUmzugHinzufuegenButton().click();
 
@@ -75,18 +80,24 @@ describe('Kibon - mutationen [Gesuchsteller]', () => {
         UmzugPO.getUmzugPlz(0).type('3000');
         UmzugPO.getUmzugOrt(0).type('Bern');
         UmzugPO.getUmzugGueltigAb(0).find('input').type('01.11.2023');
-        cy.intercept(
-            'GET',
-            '**/einstellung/key/FINANZIELLE_SITUATION_TYP/gemeinde/**'
-        ).as('goingToAbwesenheit');
-        NavigationPO.saveAndGoNext();
-        cy.wait('@goingToAbwesenheit');
+        cy.wait(1500);
+        NavigationPO.getSaveAndNextButton().focus();
 
+        cy.waitForRequest(
+            'GET',
+            '**/einstellung/key/FINANZIELLE_SITUATION_TYP/gemeinde/**',
+            () => {
+                NavigationPO.saveAndGoNext();
+            }
+        );
+
+        // ABWESENHEIT
         SidenavPO.goTo('ABWESENHEIT');
         AbwesenheitPo.getAbwesenheitErfassenButton().click();
         AbwesenheitPo.getKind().select('Tamara Feutz - Weissenstein');
         AbwesenheitPo.getAbwesenheitAb().find('input').type('01.10.2023');
         AbwesenheitPo.getAbwesenheitBis().find('input').type('30.11.2023');
+        NavigationPO.getSaveAndNextButton().focus();
 
         cy.intercept(
             'GET',
@@ -97,7 +108,9 @@ describe('Kibon - mutationen [Gesuchsteller]', () => {
 
         SidenavPO.goTo('FREIGABE');
         FreigabePO.getFreigebenButton().click();
+        cy.wait(1500);
         ConfirmDialogPO.getDvLoadingConfirmButton().click();
+        cy.wait(1500);
         cy.changeLogin(userSB);
         cy.visit(gesuchUrl);
 

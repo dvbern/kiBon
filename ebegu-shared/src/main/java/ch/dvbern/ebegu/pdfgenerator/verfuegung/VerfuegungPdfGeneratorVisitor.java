@@ -8,17 +8,17 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator.verfuegung;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
@@ -26,7 +26,8 @@ import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.pdfgenerator.verfuegung.AbstractVerfuegungPdfGenerator.Art;
 import ch.dvbern.ebegu.util.mandant.MandantVisitor;
 
-public class VerfuegungPdfGeneratorVisitor implements MandantVisitor<AbstractVerfuegungPdfGenerator> {
+public class VerfuegungPdfGeneratorVisitor implements
+	MandantVisitor<AbstractVerfuegungPdfGenerator> {
 
 	private final Betreuung betreuung;
 	private final GemeindeStammdaten stammdaten;
@@ -42,35 +43,83 @@ public class VerfuegungPdfGeneratorVisitor implements MandantVisitor<AbstractVer
 		this.betreuung = betreuung;
 		this.stammdaten = stammdaten;
 		this.art = art;
-		this.verfuegungPdfGeneratorKonfiguration = verfuegungPdfGeneratorKonfiguration;
+		this.verfuegungPdfGeneratorKonfiguration =
+			verfuegungPdfGeneratorKonfiguration;
 	}
 
-	public AbstractVerfuegungPdfGenerator getVerfuegungPdfGeneratorForMandant(@NotNull Mandant mandant) {
+	public AbstractVerfuegungPdfGenerator getVerfuegungPdfGeneratorForMandant(
+		@NotNull Mandant mandant
+	) {
 		return mandant.getMandantIdentifier().accept(this);
 	}
 
 	@Override
 	public AbstractVerfuegungPdfGenerator visitBern() {
-		return new VerfuegungPdfGeneratorBern(betreuung, stammdaten, art, verfuegungPdfGeneratorKonfiguration);
+		return new VerfuegungPdfGeneratorBern(
+			betreuung,
+			stammdaten,
+			art,
+			verfuegungPdfGeneratorKonfiguration
+		);
 	}
 
 	@Override
 	public AbstractVerfuegungPdfGenerator visitLuzern() {
-		return new VerfuegungPdfGeneratorLuzern(betreuung, stammdaten, art, verfuegungPdfGeneratorKonfiguration);
+		return new VerfuegungPdfGeneratorLuzern(
+			betreuung,
+			stammdaten,
+			art,
+			verfuegungPdfGeneratorKonfiguration
+		);
 	}
 
 	@Override
 	public AbstractVerfuegungPdfGenerator visitSolothurn() {
-		return new VerfuegungPdfGeneratorSolothurn(betreuung, stammdaten, art, verfuegungPdfGeneratorKonfiguration);
+		return new VerfuegungPdfGeneratorSolothurn(
+			betreuung,
+			stammdaten,
+			art,
+			verfuegungPdfGeneratorKonfiguration
+		);
 	}
 
 	@Override
 	public AbstractVerfuegungPdfGenerator visitAppenzellAusserrhoden() {
-		return new VerfuegungPdfGeneratorAppenzell(betreuung, stammdaten, art, verfuegungPdfGeneratorKonfiguration);
+		return new VerfuegungPdfGeneratorAppenzell(
+			betreuung,
+			stammdaten,
+			art,
+			verfuegungPdfGeneratorKonfiguration
+		);
 	}
 
 	@Override
 	public AbstractVerfuegungPdfGenerator visitSchwyz() {
-		return new VerfuegungPdfGeneratorSchwyz(betreuung, stammdaten, art, verfuegungPdfGeneratorKonfiguration);
+		return new VerfuegungPdfGeneratorSchwyz(
+			betreuung,
+			stammdaten,
+			art,
+			verfuegungPdfGeneratorKonfiguration
+		);
+	}
+
+	@Override
+	public AbstractVerfuegungPdfGenerator visitZug() {
+		return new VerfuegungPdfGeneratorSchwyz(
+			betreuung,
+			stammdaten,
+			art,
+			verfuegungPdfGeneratorKonfiguration
+		);
+	}
+
+	@Override
+	public AbstractVerfuegungPdfGenerator visitDvb() {
+		return new VerfuegungPdfGeneratorSchwyz(
+			betreuung,
+			stammdaten,
+			art,
+			verfuegungPdfGeneratorKonfiguration
+		);
 	}
 }

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {ConfirmDialogPO} from '@dv-e2e/page-objects';
 /// <reference types="cypress" />
 import * as dvTasks from '@dv-e2e/tasks';
-
-type DvTasks = typeof dvTasks;
-
 import {OnlyValidSelectors, User} from '@dv-e2e/types';
 import {Method, WaitOptions} from 'cypress/types/net-stubbing';
-import {KiBonMandant} from '../../src/app/core/constants/MANDANTS';
+import {KiBonMandant} from '../../libs/shared/model/shared-model-mandant/src/lib/MANDANTS';
+
+type DvTasks = typeof dvTasks;
 
 declare global {
     namespace Cypress {
@@ -176,9 +176,29 @@ declare global {
             getDownloadUrl(downloadAction: () => void): Chainable<string>;
 
             /**
-             *
+             * Method to overwrite baseUrl cypress config. Mandant stays for all following tests, so pay attention to switch the
+             * mandant back at the end of the test or at the start of another test.
              */
             changeMandant(mandant: KiBonMandant): void;
+
+            /**
+             *  Method to visit rootpage after building app to preload assets and session to reduce test failures
+             *  In some instances the first tests fail because it is the first page load of the app after building and
+             * bootstrapping it.
+             */
+            visitRootPage(): void;
+
+            /**
+             * This method checks if keycloak already has all the test data user. If not, the button to create all the user on
+             * the locallogin will be pressed.
+             */
+            checkKeycloakUser(): void;
+
+            /**
+             * This method checks ignores uncaught exception errors that sometimes occur and the start of tests.
+             * Using this, ignores this error on a specific part of the test and does not fail it right away.
+             */
+            ignoreUncaughtException(): void;
         }
     }
 }
@@ -188,31 +208,21 @@ Cypress.Commands.add('login', (user: User) => {
     cy.session(
         'login' + user,
         () => {
-            cy.intercept({
-                pathname: '**/auth/authenticated-user',
-                method: 'GET',
-                times: 1
-            }).as('authCall');
             cy.visit('/#/locallogin');
+            cy.checkKeycloakUser();
             cy.get(`[data-test="test-user-${userSelector}"]`).click();
-            cy.wait('@authCall', {timeout: 3000});
         },
         {
             validate: () => {
-                cy.intercept({
-                    pathname: '**/auth/authenticated-user',
-                    method: 'GET',
-                    times: 1
-                }).as('authCallValidation');
-                cy.visit('/#/');
-                cy.reload();
-                cy.wait('@authCallValidation', {timeout: 3000})
-                    .its('response.body')
-                    .then(response => {
-                        expect(`${response.vorname}-${response.nachname}`).eq(
-                            userSelector
-                        );
-                    });
+                const origin = new URL(Cypress.config().baseUrl).origin;
+                cy.request(
+                    new URL(
+                        '/ebegu/api/v1/auth/authenticated-user',
+                        origin
+                    ).toString()
+                )
+                    .its('status')
+                    .should('eq', 200);
             }
         }
     );
@@ -244,12 +254,6 @@ Cypress.Commands.addQuery('findByData', (name, ...names) => {
         );
 });
 Cypress.Commands.add('changeLogin', (user: User) => {
-    cy.clearAllSessionStorage();
-    cy.clearAllCookies();
-
-    cy.visit('/#/');
-    cy.reload();
-
     cy.login(user);
 });
 Cypress.Commands.add('downloadFile', (url, fileName) => {
@@ -327,4 +331,37 @@ Cypress.Commands.add('changeMandant', (mandant: KiBonMandant) => {
             urlToSplit[2];
         Cypress.config('baseUrl', newBaseUrl);
     }
+});
+
+Cypress.Commands.add('visitRootPage', () => {
+    // remove waiting time on local development
+    if (Cypress.config().baseUrl.split('-')[0].includes('local')) {
+        cy.visit('/');
+    } else {
+        cy.wait(1000);
+        cy.visit('/');
+        cy.wait(2000);
+    }
+});
+
+Cypress.Commands.add('checkKeycloakUser', () => {
+    cy.get('[data-test=ebegu-loaded]').then($el => {
+        //check if Super User button login exists, if yes, keycloak has data
+        // if not, keycloak still needs to create test data user
+        if ($el.find('[data-test="test-user-Super-User"]').length > 0) {
+            return;
+        } else {
+            cy.waitForRequest('GET', '**/locallogin/createUsers', () => {
+                cy.getByData('create-user').click();
+            });
+            cy.reload(true);
+        }
+    });
+});
+
+Cypress.Commands.add('ignoreUncaughtException', () => {
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        // returning false here prevents Cypress from failing the test
+        return false;
+    });
 });

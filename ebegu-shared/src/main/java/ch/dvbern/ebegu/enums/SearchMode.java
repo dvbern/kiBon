@@ -20,6 +20,5 @@ package ch.dvbern.ebegu.enums;
  */
 public enum SearchMode {
 
-	COUNT,
-	SEARCH;
+	COUNT, SEARCH;
 }

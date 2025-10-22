@@ -1,6 +1,209 @@
 {
     "root": true,
+    "plugins": ["@nx"],
     "overrides": [
+        {
+            "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+            "rules": {
+                "@nx/enforce-module-boundaries": [
+                    "error",
+                    {
+                        "enforceBuildableLibDependency": false,
+                        "banTransitiveDependencies": true,
+                        "allow": [
+                            "../../../../../../src/models/TSBetreuung",
+                            "../../../../../../src/models/TSGesuch",
+                            "../**/src/utils/EbeguRestUtil",
+                            "../**/src/utils/EbeguUtil",
+                            "../**/src/app/core/errors/service/ErrorServiceX",
+                            "../**/src/app/shared/shared.module",
+                            "../**/src/authentication/service/AuthServiceRS.rest",
+                            "../../../../../../src/utils/TestDataUtil.spec",
+                            "../../../../../../src/hybridTools/translationsMock",
+                            "../../../../../../src/hybridTools/ngServicesMocks",
+                            "../../../../../../src/gesuch/service/wizardStepManager",
+                            "../../../../../../src/gesuch/service/gesuchModelManager",
+                            "../../../../../../src/gesuch/service/gesuchRS.rest",
+                            "../../../../../../src/app/core/core.angularjs.module",
+                            "../**/environments/environment",
+                            "../**/src/app/core/errors/service/ErrorService"
+                        ],
+                        "depConstraints": [
+                            {
+                                "sourceTag": "feature:zahlung",
+                                "onlyDependOnLibsWithTags": [
+                                    "feature:zahlung",
+                                    "feature:shared"
+                                ]
+                            },
+                            {
+                                "sourceTag": "feature:admin",
+                                "onlyDependOnLibsWithTags": [
+                                    "feature:admin",
+                                    "feature:shared"
+                                ]
+                            },
+                            {
+                                "sourceTag": "feature:kind",
+                                "onlyDependOnLibsWithTags": [
+                                    "feature:kind",
+                                    "feature:shared"
+                                ]
+                            },
+                            {
+                                "sourceTag": "feature:gesuch",
+                                "onlyDependOnLibsWithTags": ["feature:gesuch"]
+                            },
+                            {
+                                "sourceTag": "feature:betreuung",
+                                "onlyDependOnLibsWithTags": [
+                                    "feature:betreuung",
+                                    "feature:shared"
+                                ]
+                            },
+                            {
+                                "sourceTag": "feature:shared",
+                                "onlyDependOnLibsWithTags": ["feature:shared"]
+                            },
+                            {
+                                "sourceTag": "scope:tooling",
+                                "onlyDependOnLibsWithTags": ["scope:tooling"]
+                            },
+                            {
+                                "sourceTag": "type:app",
+                                "onlyDependOnLibsWithTags": [
+                                    "type:feature",
+                                    "type:data-access",
+                                    "type:pattern",
+                                    "type:model",
+                                    "type:util"
+                                ]
+                            },
+                            {
+                                "sourceTag": "type:feature",
+                                "onlyDependOnLibsWithTags": [
+                                    "type:feature",
+                                    "type:pattern",
+                                    "type:data-access",
+                                    "type:event",
+                                    "type:ui",
+                                    "type:util",
+                                    "type:util-fn",
+                                    "type:model"
+                                ]
+                            },
+                            {
+                                "sourceTag": "type:pattern",
+                                "onlyDependOnLibsWithTags": [
+                                    "type:pattern",
+                                    "type:data-access",
+                                    "type:event",
+                                    "type:ui",
+                                    "type:util",
+                                    "type:util-fn",
+                                    "type:model"
+                                ]
+                            },
+                            {
+                                "sourceTag": "type:data-access",
+                                "onlyDependOnLibsWithTags": [
+                                    "type:data-access",
+                                    "type:event",
+                                    "type:util",
+                                    "type:util-data-access",
+                                    "type:util-fn",
+                                    "type:model"
+                                ]
+                            },
+                            {
+                                "sourceTag": "type:event",
+                                "onlyDependOnLibsWithTags": ["type:model"]
+                            },
+                            {
+                                "sourceTag": "type:ui",
+                                "onlyDependOnLibsWithTags": [
+                                    "type:ui",
+                                    "type:util",
+                                    "type:util-fn",
+                                    "type:model"
+                                ],
+                                "bannedExternalImports": ["@ngrx/*"]
+                            },
+                            {
+                                "sourceTag": "type:util",
+                                "onlyDependOnLibsWithTags": [
+                                    "type:util",
+                                    "type:util-fn",
+                                    "type:model"
+                                ],
+                                "bannedExternalImports": [
+                                    "@ngrx/component-store",
+                                    "@ngrx/effects",
+                                    "@ngrx/entity",
+                                    "@ngrx/eslint-plugin",
+                                    "@ngrx/router-store"
+                                ]
+                            },
+                            {
+                                "sourceTag": "type:util-data-access",
+                                "onlyDependOnLibsWithTags": [
+                                    "type:data-access",
+                                    "type:util",
+                                    "type:util-fn",
+                                    "type:model"
+                                ],
+                                "bannedExternalImports": [
+                                    "@ngrx/component-store",
+                                    "@ngrx/effects",
+                                    "@ngrx/entity",
+                                    "@ngrx/eslint-plugin",
+                                    "@ngrx/router-store",
+                                    "@ngrx/signals",
+                                    "@ngrx/store-devtools"
+                                ]
+                            },
+                            {
+                                "sourceTag": "type:util-fn",
+                                "onlyDependOnLibsWithTags": [
+                                    "type:util-fn",
+                                    "type:model"
+                                ],
+                                "bannedExternalImports": [
+                                    "@angular/*",
+                                    "@ngrx/*"
+                                ]
+                            },
+                            {
+                                "sourceTag": "type:model",
+                                "onlyDependOnLibsWithTags": ["type:model"],
+                                "bannedExternalImports": ["@ngrx/*"]
+                            },
+                            {
+                                "sourceTag": "type:e2e",
+                                "onlyDependOnLibsWithTags": [
+                                    "type:util",
+                                    "type:util-fn",
+                                    "type:model"
+                                ]
+                            },
+                            {
+                                "sourceTag": "type:styles",
+                                "onlyDependOnLibsWithTags": ["type:styles"]
+                            },
+                            {
+                                "sourceTag": "*",
+                                "onlyDependOnLibsWithTags": ["*"]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "files": "*.json",
+            "parser": "jsonc-eslint-parser",
+            "rules": {}
+        },
         {
             "files": ["**/*.ts"],
             "parser": "@typescript-eslint/parser",
@@ -22,7 +225,9 @@
             ],
             "rules": {
                 "@typescript-eslint/no-explicit-any": "off",
-                "@typescript-eslint/no-var-requires": "off"
+                "@typescript-eslint/no-var-requires": "off",
+                "@typescript-eslint/no-require-imports": "off",
+                "@angular-eslint/prefer-standalone": "off"
             }
         },
         {

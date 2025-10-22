@@ -12,27 +12,29 @@ import {
     ViewChild
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
-import {CONSTANTS} from '../../../../app/core/constants/CONSTANTS';
-import {LogFactory} from '../../../../app/core/logging/LogFactory';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSEinstellungKey} from '../../../../models/enums/TSEinstellungKey';
-import {TSFachstelleName} from '../../../../models/enums/TSFachstelleName';
-import {TSFachstellenTyp} from '../../../../models/enums/TSFachstellenTyp';
-import {TSGruendeZusatzleistung} from '../../../../models/enums/TSGruendeZusatzleistung';
-import {TSIntegrationTyp} from '../../../../models/enums/TSIntegrationTyp';
-import {TSRole} from '../../../../models/enums/TSRole';
-import {TSEinstellung} from '../../../../models/TSEinstellung';
-import {TSFachstelle} from '../../../../models/TSFachstelle';
-import {TSPensumFachstelle} from '../../../../models/TSPensumFachstelle';
+import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
+import {
+    TSFachstelleName,
+    TSFachstellenTyp,
+    TSGruendeZusatzleistung,
+    TSIntegrationTyp,
+    TSPensumFachstelle,
+    TSFachstelle
+} from '@kibon/shared/model/entity';
+import {TSRole} from '@kibon/shared/model/enums';
+import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
 import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {EnumEx} from '../../../../utils/EnumEx';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
-import {HybridFormBridgeService} from '../../../service/hybrid-form-bridge.service';
 
 const LOG = LogFactory.createLog('KindFachstelleComponennt');
 
@@ -40,7 +42,8 @@ const LOG = LogFactory.createLog('KindFachstelleComponennt');
     selector: 'dv-kind-fachstelle',
     templateUrl: './kind-fachstelle.component.html',
     styleUrls: ['./kind-fachstelle.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class KindFachstelleComponent
     implements OnInit, OnChanges, AfterViewInit, OnDestroy
@@ -288,4 +291,6 @@ export class KindFachstelleComponent
 
         return null;
     }
+
+    protected readonly onblur = onblur;
 }

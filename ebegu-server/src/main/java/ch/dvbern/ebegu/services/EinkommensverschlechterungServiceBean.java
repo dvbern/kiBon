@@ -24,9 +24,9 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.dto.FinanzielleSituationResultateDTO;
 import ch.dvbern.ebegu.entities.Einkommensverschlechterung;
@@ -38,20 +38,21 @@ import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.Sprache;
-import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.finanzielleSituationRechner.AbstractFinanzielleSituationRechner;
 import ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationRechnerFactory;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.MathUtil;
-import ch.dvbern.lib.cdipersistence.Persistence;
 
 /**
  * Service fuer Einkommensverschlechterung
  */
 @Stateless
 @Local(EinkommensverschlechterungService.class)
-public class EinkommensverschlechterungServiceBean extends AbstractBaseService implements EinkommensverschlechterungService {
+public class EinkommensverschlechterungServiceBean extends AbstractBaseService
+	implements
+	EinkommensverschlechterungService {
 
 	@Inject
 	private Persistence persistence;
@@ -71,58 +72,111 @@ public class EinkommensverschlechterungServiceBean extends AbstractBaseService i
 	@Override
 	@Nonnull
 	public EinkommensverschlechterungContainer saveEinkommensverschlechterungContainer(
-		@Nonnull EinkommensverschlechterungContainer einkommensverschlechterungContainer, Gesuch gesuch) {
+		@Nonnull EinkommensverschlechterungContainer einkommensverschlechterungContainer,
+		Gesuch gesuch
+	) {
 		Objects.requireNonNull(einkommensverschlechterungContainer);
-		final EinkommensverschlechterungContainer persistedEKV = persistence.merge(einkommensverschlechterungContainer);
+		final EinkommensverschlechterungContainer persistedEKV = persistence
+			.merge(einkommensverschlechterungContainer);
 		if (gesuch != null) {
-			wizardStepService.updateSteps(gesuch.getId(), null, einkommensverschlechterungContainer, wizardStepService.getEKVWizardStepNameForGesuch(gesuch));
+			wizardStepService.updateSteps(
+				gesuch.getId(),
+				null,
+				einkommensverschlechterungContainer,
+				wizardStepService.getEKVWizardStepNameForGesuch(gesuch)
+			);
 		}
 		return persistedEKV;
 	}
 
 	@Override
 	@Nonnull
-	public Optional<EinkommensverschlechterungContainer> findEinkommensverschlechterungContainer(@Nonnull String key) {
+	public Optional<EinkommensverschlechterungContainer> findEinkommensverschlechterungContainer(
+		@Nonnull String key
+	) {
 		Objects.requireNonNull(key, "id muss gesetzt sein");
-		EinkommensverschlechterungContainer a = persistence.find(EinkommensverschlechterungContainer.class, key);
+		EinkommensverschlechterungContainer a = persistence.find(
+			EinkommensverschlechterungContainer.class,
+			key
+		);
 		return Optional.ofNullable(a);
 	}
 
 	@Override
 	@Nonnull
 	public Collection<EinkommensverschlechterungContainer> getAllEinkommensverschlechterungContainer() {
-		return new ArrayList<>(criteriaQueryHelper.getAll(EinkommensverschlechterungContainer.class));
+		return new ArrayList<>(
+			criteriaQueryHelper.getAll(
+				EinkommensverschlechterungContainer.class
+			)
+		);
 	}
 
 	@Override
-	public void removeEinkommensverschlechterungContainer(@Nonnull EinkommensverschlechterungContainer einkommensverschlechterungContainer) {
+	public void removeEinkommensverschlechterungContainer(
+		@Nonnull EinkommensverschlechterungContainer einkommensverschlechterungContainer
+	) {
 		Objects.requireNonNull(einkommensverschlechterungContainer);
-		einkommensverschlechterungContainer.getGesuchsteller().setEinkommensverschlechterungContainer(null);
-		persistence.merge(einkommensverschlechterungContainer.getGesuchsteller());
+		einkommensverschlechterungContainer.getGesuchsteller()
+			.setEinkommensverschlechterungContainer(null);
+		persistence.merge(
+			einkommensverschlechterungContainer.getGesuchsteller()
+		);
 
-		EinkommensverschlechterungContainer entityToRemove = findEinkommensverschlechterungContainer(einkommensverschlechterungContainer.getId())
-			.orElseThrow(() -> new EbeguEntityNotFoundException("removeEinkommensverschlechterungContainer", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-				einkommensverschlechterungContainer));
-		persistence.remove(EinkommensverschlechterungContainer.class, entityToRemove.getId());
+		EinkommensverschlechterungContainer entityToRemove =
+			findEinkommensverschlechterungContainer(
+				einkommensverschlechterungContainer.getId()
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"removeEinkommensverschlechterungContainer",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						einkommensverschlechterungContainer
+					)
+				);
+		persistence.remove(
+			EinkommensverschlechterungContainer.class,
+			entityToRemove.getId()
+		);
 	}
 
 	@Override
-	public void removeEinkommensverschlechterung(@Nonnull Einkommensverschlechterung einkommensverschlechterung) {
+	public void removeEinkommensverschlechterung(
+		@Nonnull Einkommensverschlechterung einkommensverschlechterung
+	) {
 		Objects.requireNonNull(einkommensverschlechterung);
-		persistence.remove(Einkommensverschlechterung.class, einkommensverschlechterung.getId());
+		persistence.remove(
+			Einkommensverschlechterung.class,
+			einkommensverschlechterung.getId()
+		);
 	}
 
 	@Override
 	@Nonnull
-	public FinanzielleSituationResultateDTO calculateResultate(@Nonnull Gesuch gesuch, int basisJahrPlus) {
+	public FinanzielleSituationResultateDTO calculateResultate(
+		@Nonnull Gesuch gesuch,
+		int basisJahrPlus
+	) {
 
-		return FinanzielleSituationRechnerFactory.getRechner(gesuch).calculateResultateEinkommensverschlechterung(gesuch, basisJahrPlus, true);
+		return FinanzielleSituationRechnerFactory.getRechner(gesuch)
+			.calculateResultateEinkommensverschlechterung(
+				gesuch,
+				basisJahrPlus,
+				true
+			);
 	}
 
 	@Override
 	@Nonnull
-	public String calculateProzentualeDifferenz(@Nullable BigDecimal einkommenJahr, @Nullable BigDecimal einkommenJahrPlus1) {
-		BigDecimal resultGerundet = AbstractFinanzielleSituationRechner.getCalculatedProzentualeDifferenzRounded(einkommenJahr, einkommenJahrPlus1);
+	public String calculateProzentualeDifferenz(
+		@Nullable BigDecimal einkommenJahr,
+		@Nullable BigDecimal einkommenJahrPlus1
+	) {
+		BigDecimal resultGerundet = AbstractFinanzielleSituationRechner
+			.getCalculatedProzentualeDifferenzRounded(
+				einkommenJahr,
+				einkommenJahrPlus1
+			);
 		String sign = MathUtil.isPositive(resultGerundet) ? "+" : "-";
 		return sign + resultGerundet.abs().intValue();
 	}
@@ -139,13 +193,18 @@ public class EinkommensverschlechterungServiceBean extends AbstractBaseService i
 
 	@Nonnull
 	@Override
-	public BigDecimal getMinimalesMassgebendesEinkommenForGesuch(@Nonnull Gesuch gesuch) {
+	public BigDecimal getMinimalesMassgebendesEinkommenForGesuch(
+		@Nonnull Gesuch gesuch
+	) {
 		authorizer.checkReadAuthorizationFinSit(gesuch);
 		// we disable EKV for calculation, since we want to simulate calculation as it would be without EKV
-		EinkommensverschlechterungInfoContainer container = gesuch.getEinkommensverschlechterungInfoContainer();
+		EinkommensverschlechterungInfoContainer container = gesuch
+			.getEinkommensverschlechterungInfoContainer();
 		gesuch.setEinkommensverschlechterungInfoContainer(null);
-		final Verfuegung famGroessenVerfuegung = verfuegungService.calculateFamGroessenVerfuegung(gesuch, Sprache.DEUTSCH);
-		BigDecimal temp = famGroessenVerfuegung.getZeitabschnitte().stream()
+		final Verfuegung famGroessenVerfuegung = verfuegungService
+			.calculateFamGroessenVerfuegung(gesuch, Sprache.DEUTSCH);
+		BigDecimal temp = famGroessenVerfuegung.getZeitabschnitte()
+			.stream()
 			.map(VerfuegungZeitabschnitt::getMassgebendesEinkommen)
 			.min(Comparator.naturalOrder())
 			.orElse(BigDecimal.ZERO);
@@ -153,15 +212,33 @@ public class EinkommensverschlechterungServiceBean extends AbstractBaseService i
 		return temp;
 	}
 
-	private void removeAllEKVForGSAndYear(GesuchstellerContainer gesuchsteller, int yearPlus) {
+	private void removeAllEKVForGSAndYear(
+		GesuchstellerContainer gesuchsteller,
+		int yearPlus
+	) {
 		if (gesuchsteller != null
-			&& gesuchsteller.getEinkommensverschlechterungContainer() != null) {
-			if (yearPlus == 1 && gesuchsteller.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1() != null) {
-				removeEinkommensverschlechterung(gesuchsteller.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1());
-				gesuchsteller.getEinkommensverschlechterungContainer().setEkvJABasisJahrPlus1(null);
-			} else if (yearPlus == 2 && gesuchsteller.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus2() != null) {
-				removeEinkommensverschlechterung(gesuchsteller.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus2());
-				gesuchsteller.getEinkommensverschlechterungContainer().setEkvJABasisJahrPlus2(null);
+			&& gesuchsteller.getEinkommensverschlechterungContainer()
+				!= null) {
+			if (yearPlus == 1
+				&& gesuchsteller.getEinkommensverschlechterungContainer()
+					.getEkvJABasisJahrPlus1()
+					!= null) {
+				removeEinkommensverschlechterung(
+					gesuchsteller.getEinkommensverschlechterungContainer()
+						.getEkvJABasisJahrPlus1()
+				);
+				gesuchsteller.getEinkommensverschlechterungContainer()
+					.setEkvJABasisJahrPlus1(null);
+			} else if (yearPlus == 2
+				&& gesuchsteller.getEinkommensverschlechterungContainer()
+					.getEkvJABasisJahrPlus2()
+					!= null) {
+				removeEinkommensverschlechterung(
+					gesuchsteller.getEinkommensverschlechterungContainer()
+						.getEkvJABasisJahrPlus2()
+				);
+				gesuchsteller.getEinkommensverschlechterungContainer()
+					.setEkvJABasisJahrPlus2(null);
 			}
 		}
 	}

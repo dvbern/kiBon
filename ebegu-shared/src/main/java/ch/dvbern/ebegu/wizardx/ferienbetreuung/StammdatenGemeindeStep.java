@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.wizardx.ferienbetreuung;
@@ -26,7 +26,8 @@ import ch.dvbern.ebegu.wizardx.WizardStateEnum;
 import ch.dvbern.ebegu.wizardx.WizardStep;
 import ch.dvbern.ebegu.wizardx.WizardTyp;
 
-public class StammdatenGemeindeStep implements WizardStep<FerienbetreuungWizard> {
+public class StammdatenGemeindeStep implements
+	WizardStep<FerienbetreuungWizard> {
 
 	@Override
 	public void next(@Nonnull FerienbetreuungWizard wizard) {
@@ -42,23 +43,27 @@ public class StammdatenGemeindeStep implements WizardStep<FerienbetreuungWizard>
 	public WizardStateEnum getStatus(@Nonnull FerienbetreuungWizard wizard) {
 		var container = wizard.getFerienbetreuungAngabenContainer();
 		if (container.isAtLeastInPruefungKantonOrZurueckAnGemeinde()) {
-			if (wizard.getRole().isRoleGemeindeabhaengig() && container.getStatus() != FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE) {
+			if (wizard.getRole().isRoleGemeindeabhaengig()
+				&& container.getStatus()
+					!= FerienbetreuungAngabenStatus.ZURUECK_AN_GEMEINDE) {
 				return WizardStateEnum.OK;
 			}
-			return Objects.requireNonNull(container
-				.getAngabenKorrektur())
+			return Objects.requireNonNull(
+				container
+					.getAngabenKorrektur()
+			)
 				.getFerienbetreuungAngabenStammdaten()
 				.isAbgeschlossen() ?
-				WizardStateEnum.OK :
-				WizardStateEnum.IN_BEARBEITUNG;
+					WizardStateEnum.OK :
+					WizardStateEnum.IN_BEARBEITUNG;
 		}
 
 		return container
 			.getAngabenDeklaration()
 			.getFerienbetreuungAngabenStammdaten()
 			.isAbgeschlossen() ?
-			WizardStateEnum.OK :
-			WizardStateEnum.IN_BEARBEITUNG;
+				WizardStateEnum.OK :
+				WizardStateEnum.IN_BEARBEITUNG;
 	}
 
 	@Override

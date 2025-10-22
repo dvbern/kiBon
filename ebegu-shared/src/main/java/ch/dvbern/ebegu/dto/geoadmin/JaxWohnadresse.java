@@ -20,7 +20,7 @@ package ch.dvbern.ebegu.dto.geoadmin;
 import java.io.Serializable;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Response von GeoAdmin API.
@@ -56,7 +56,8 @@ public class JaxWohnadresse implements Serializable {
 		@Nonnull String plz,
 		@Nonnull String ort,
 		@Nonnull Long gemeindeBfsNr,
-		@Nonnull String gemeinde) {
+		@Nonnull String gemeinde
+	) {
 		this.externalId = externalId;
 		this.strasse = strasse;
 		this.hausnummer = hausnummer;

@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services;
@@ -28,7 +28,9 @@ import ch.dvbern.ebegu.entities.InternePendenz;
 public interface InternePendenzService {
 
 	@Nonnull
-	Optional<InternePendenz> findInternePendenz(@Nonnull String internePendenzId);
+	Optional<InternePendenz> findInternePendenz(
+		@Nonnull String internePendenzId
+	);
 
 	/**
 	 * Erstellt oder migriert die interne Pendenz
@@ -41,10 +43,13 @@ public interface InternePendenzService {
 
 	/**
 	 * Gibt alle internen Pendenzen für das Gesuch zurück
+	 *
 	 * @return
 	 */
 	@Nonnull
-	Collection<InternePendenz> findInternePendenzenForGesuch(@Nonnull Gesuch gesuch);
+	Collection<InternePendenz> findInternePendenzenForGesuch(
+		@Nonnull Gesuch gesuch
+	);
 
 	/**
 	 * Gibt die Anzahl der internen Pendenzen für das Gesuch zurück
@@ -66,7 +71,6 @@ public interface InternePendenzService {
 	/**
 	 * return eine Liste von alle Interne Pendenzen die sind abgelaufen
 	 */
-	@Nonnull
 	boolean hasGesuchAbgelaufeneInternePendenzen(@Nonnull Gesuch gesuch);
 
 	void deleteAllInternePendenz(@Nonnull Gesuch gesuch);

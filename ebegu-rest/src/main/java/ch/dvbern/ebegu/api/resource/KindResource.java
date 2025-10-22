@@ -22,27 +22,24 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
+import ch.dvbern.ebegu.api.converter.gesuch.JaxKindConverter;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxKindContainer;
 import ch.dvbern.ebegu.api.resource.util.ResourceHelper;
@@ -52,14 +49,13 @@ import ch.dvbern.ebegu.dto.KindDubletteDTO;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.KindContainer;
-import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
+import ch.dvbern.ebegu.kind.KindResetDecisionBasis;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.InstitutionService;
 import ch.dvbern.ebegu.services.KindService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
@@ -85,7 +81,6 @@ import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
  */
 @Path("kinder")
 @Stateless
-@Api(description = "Resource zum Verwalten von Kindern eines Gesuchstellers")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class KindResource {
 
@@ -94,7 +89,7 @@ public class KindResource {
 	@Inject
 	private GesuchService gesuchService;
 	@Inject
-	private JaxBConverter converter;
+	private JaxKindConverter converter;
 	@Inject
 	private InstitutionService institutionService;
 	@Inject
@@ -102,42 +97,64 @@ public class KindResource {
 	@Inject
 	private PrincipalBean principalBean;
 
-	@ApiOperation(value = "Speichert ein Kind in der Datenbank", response = JaxKindContainer.class)
+	@Operation(summary = "Speichert ein Kind in der Datenbank")
 	@Nullable
 	@PUT
 	@Path("/{gesuchId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER, SACHBEARBEITER_TS, ADMIN_TS,
-		ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION, ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_TRAEGERSCHAFT,
-		ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST})
+	@RolesAllowed({ ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER, SACHBEARBEITER_TS, ADMIN_TS,
+		ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION, ADMIN_TRAEGERSCHAFT,
+		SACHBEARBEITER_TRAEGERSCHAFT,
+		ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST })
 	public JaxKindContainer saveKind(
 		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchId,
-		@Nonnull @NotNull @Valid JaxKindContainer kindContainerJAXP,
-		@Context UriInfo uriInfo,
-		@Context HttpServletResponse response) {
+		@Nonnull @NotNull @Valid JaxKindContainer kindContainerJAXP
+	) {
 
-		Gesuch gesuch = gesuchService.findGesuch(gesuchId.getId()).orElseThrow(() -> new EbeguEntityNotFoundException("saveKind", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, "GesuchId invalid: " + gesuchId.getId()));
+		Gesuch gesuch = gesuchService.findGesuch(gesuchId.getId())
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"saveKind",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"GesuchId invalid: " + gesuchId.getId()
+				)
+			);
 
 		// Sicherstellen, dass das dazugehoerige Gesuch ueberhaupt noch editiert werden darf fuer meine Rolle
 		resourceHelper.assertGesuchStatusForBenutzerRole(gesuch);
 
 		KindContainer kindToMerge = new KindContainer();
-		KindContainer copyOldKind = null;
+		KindResetDecisionBasis copyOldKind = null;
 
 		if (kindContainerJAXP.getId() != null) {
-			Optional<KindContainer> optional = kindService.findKind(kindContainerJAXP.getId());
+			Optional<KindContainer> optional = kindService.findKind(
+				kindContainerJAXP.getId()
+			);
 			kindToMerge = optional.orElse(new KindContainer());
-			copyOldKind = kindToMerge.copyKindContainer(new KindContainer(), AntragCopyType.MUTATION, gesuch, gesuch.getGesuchsperiode(), gesuch.getRegelStartDatum());
+			copyOldKind = KindResetDecisionBasis.builder()
+				.einschulungTyp(kindToMerge.getKindJA().getEinschulungTyp())
+				.hoehereBeitraegeWegenBeeintraechtigungBeantragen(
+					kindToMerge.getKindJA()
+						.getHoehereBeitraegeWegenBeeintraechtigungBeantragen()
+				)
+				.build();
 		}
-		KindContainer convertedKind = converter.kindContainerToEntity(kindContainerJAXP, kindToMerge);
+		KindContainer convertedKind = converter.kindContainerToEntity(
+			kindContainerJAXP,
+			kindToMerge
+		);
 		convertedKind.setGesuch(gesuch);
-		KindContainer persistedKind = this.kindService.saveKind(convertedKind, copyOldKind);
+		KindContainer persistedKind = this.kindService.saveKind(
+			convertedKind,
+			copyOldKind
+		);
 
 		return converter.kindContainerToJAX(persistedKind);
 	}
 
-	@ApiOperation(value = "Gibt das Kind mit der uebergebenen Id zurueck", response = JaxKindContainer.class)
+	@Operation(summary = "Gibt das Kind mit der uebergebenen Id zurueck")
 	@Nullable
 	@GET
 	@Path("/find/{kindContainerId}")
@@ -145,7 +162,8 @@ public class KindResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 	public JaxKindContainer findKind(
-		@Nonnull @NotNull @PathParam("kindContainerId") JaxId kindJAXPId) {
+		@Nonnull @NotNull @PathParam("kindContainerId") JaxId kindJAXPId
+	) {
 
 		Objects.requireNonNull(kindJAXPId.getId());
 		String kindID = converter.toEntityId(kindJAXPId);
@@ -154,32 +172,52 @@ public class KindResource {
 		if (!optional.isPresent()) {
 			return null;
 		}
-		JaxKindContainer jaxKindContainer = converter.kindContainerToJAX(optional.get());
+		JaxKindContainer jaxKindContainer = converter.kindContainerToJAX(
+			optional.get()
+		);
 
 		// Es wird gecheckt ob der Benutzer zu einer Institution/Traegerschaft gehoert. Wenn ja, werden die Kinder gefilter
 		// damit nur die relevanten Kinder geschickt werden
-		if (principalBean.isCallerInAnyOfRole(ADMIN_TRAEGERSCHAFT, ADMIN_INSTITUTION, SACHBEARBEITER_TRAEGERSCHAFT, SACHBEARBEITER_INSTITUTION)) {
-			Collection<Institution> instForCurrBenutzer = institutionService.getInstitutionenReadableForCurrentBenutzer(false);
-			RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(jaxKindContainer, instForCurrBenutzer);
+		if (principalBean.isCallerInAnyOfRole(
+			ADMIN_TRAEGERSCHAFT,
+			ADMIN_INSTITUTION,
+			SACHBEARBEITER_TRAEGERSCHAFT,
+			SACHBEARBEITER_INSTITUTION
+		)) {
+			Collection<Institution> instForCurrBenutzer = institutionService
+				.getInstitutionenReadableForCurrentBenutzer(false);
+			RestUtil.purgeSingleKindAndBetreuungenOfInstitutionen(
+				jaxKindContainer,
+				instForCurrBenutzer
+			);
 		}
 
 		return jaxKindContainer;
 	}
 
-	@ApiOperation("Loescht das Kind mit der uebergebenen Id aus der Datenbank")
+	@Operation(
+		summary = "Loescht das Kind mit der uebergebenen Id aus der Datenbank")
 	@SuppressWarnings("NonBooleanMethodNameMayNotStartWithQuestion")
 	@Nullable
 	@DELETE
 	@Path("/{kindContainerId}")
 	@Consumes(MediaType.WILDCARD)
-	@RolesAllowed({ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, GESUCHSTELLER, SACHBEARBEITER_TS, ADMIN_TS,
-		ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST})
+	@RolesAllowed({ ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, GESUCHSTELLER, SACHBEARBEITER_TS, ADMIN_TS,
+		ADMIN_SOZIALDIENST, SACHBEARBEITER_SOZIALDIENST })
 	public Response removeKind(
-		@Nonnull @NotNull @PathParam("kindContainerId") JaxId kindJAXPId,
-		@Context HttpServletResponse response) {
+		@Nonnull @NotNull @PathParam("kindContainerId") JaxId kindJAXPId
+	) {
 
 		Objects.requireNonNull(kindJAXPId.getId());
-		KindContainer kind = kindService.findKind(kindJAXPId.getId()).orElseThrow(() -> new EbeguEntityNotFoundException("removeKind", ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND, "KindID invalid: " + kindJAXPId.getId()));
+		KindContainer kind = kindService.findKind(kindJAXPId.getId())
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"removeKind",
+					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+					"KindID invalid: " + kindJAXPId.getId()
+				)
+			);
 
 		// Sicherstellen, dass das dazugehoerige Gesuch ueberhaupt noch editiert werden darf fuer meine Rolle
 		resourceHelper.assertGesuchStatusForBenutzerRole(kind.getGesuch());
@@ -188,17 +226,24 @@ public class KindResource {
 		return Response.ok().build();
 	}
 
-	@ApiOperation(value = "Sucht in der Datenbank nach moeglichen Dubletten fuer alle Kinder des uebergebenen " +
-		"Gesuchs. Als moegliche Dublette gelten alle Kinder mit demselben Namen, Vornamen und Geburtsdatum, welche " +
-		"in einem anderen Fall vorkommen.", responseContainer = "Set", response = KindDubletteDTO.class)
+	@Operation(
+		summary = "Sucht in der Datenbank nach moeglichen Dubletten fuer alle Kinder des uebergebenen "
+			+
+			"Gesuchs. Als moegliche Dublette gelten alle Kinder mit demselben Namen, Vornamen und Geburtsdatum, welche "
+			+
+			"in einem anderen Fall vorkommen.")
 	@Nullable
 	@GET
 	@Path("/dubletten/{gesuchId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, JURIST, REVISOR, SACHBEARBEITER_TS, ADMIN_TS,
-		ADMIN_MANDANT, SACHBEARBEITER_MANDANT})
-	public Set<KindDubletteDTO> getKindDubletten(@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJaxId) {
+	@RolesAllowed({ ADMIN_BG, SUPER_ADMIN, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, JURIST, REVISOR, SACHBEARBEITER_TS,
+		ADMIN_TS,
+		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
+	public Set<KindDubletteDTO> getKindDubletten(
+		@Nonnull @NotNull @PathParam("gesuchId") JaxId gesuchJaxId
+	) {
 		Objects.requireNonNull(gesuchJaxId.getId());
 		String gesuchId = converter.toEntityId(gesuchJaxId);
 		return kindService.getKindDubletten(gesuchId);

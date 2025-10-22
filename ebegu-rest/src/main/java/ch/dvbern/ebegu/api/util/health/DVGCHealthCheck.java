@@ -8,25 +8,27 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package ch.dvbern.ebegu.api.util.health;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 
 import ch.dvbern.oss.healthcheck.gc.GCHealthCheck;
-import org.eclipse.microprofile.health.Health;
+import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Readiness;
 
 @ApplicationScoped
-@Health
-public class DVGCHealthCheck implements org.eclipse.microprofile.health.HealthCheck {
+@Readiness
+public class DVGCHealthCheck implements
+	HealthCheck {
 
 	private static final int MAX_GC_TIME_PERCETAGE = 20;
 	private GCHealthCheck gcHealthCheck = null;
@@ -44,11 +46,21 @@ public class DVGCHealthCheck implements org.eclipse.microprofile.health.HealthCh
 	@Override
 	public HealthCheckResponse call() {
 		final boolean gcHealthy = gcHealthCheck.current().isHealthy();
-		return HealthCheckResponse.builder().name("dv-gc-health-check")
+		return HealthCheckResponse.named("dv-gc-health-check")
 			.withData("gc healthy", gcHealthy)
-			.withData("gcTimeInPercent", String.valueOf(gcHealthCheck.current().getGcTimeInPercent()))
-			.withData("accessTimeMillis", String.valueOf(gcHealthCheck.current().getAccessTimeMillis()))
-			.state(gcHealthy)
+			.withData(
+				"gcTimeInPercent",
+				String.valueOf(
+					gcHealthCheck.current().getGcTimeInPercent()
+				)
+			)
+			.withData(
+				"accessTimeMillis",
+				String.valueOf(
+					gcHealthCheck.current().getAccessTimeMillis()
+				)
+			)
+			.status(gcHealthy)
 			.build();
 	}
 }

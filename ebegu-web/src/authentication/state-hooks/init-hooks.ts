@@ -16,9 +16,9 @@
  */
 
 import {NgModuleRef} from '@angular/core';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TransitionService} from '@uirouter/angular';
 import {AppModule} from '../../app/app.module';
-import {ApplicationPropertyRS} from '../../app/core/rest-services/applicationPropertyRS.rest';
 import {I18nServiceRSRest} from '../../app/i18n/services/i18nServiceRS.rest';
 import {AuthServiceRS} from '../service/AuthServiceRS.rest';
 import {authenticationHookRunBlockX} from './onBefore/authenticationX.hook';
@@ -40,7 +40,9 @@ export function initHooks(platformRef: NgModuleRef<AppModule>): void {
     );
     languageEnabledHookRunBlockX(
         platformRef.injector.get<TransitionService>(TransitionService),
-        platformRef.injector.get<ApplicationPropertyRS>(ApplicationPropertyRS),
+        platformRef.injector.get<SharedUtilApplicationPropertyRsService>(
+            SharedUtilApplicationPropertyRsService
+        ),
         platformRef.injector.get<I18nServiceRSRest>(I18nServiceRSRest)
     );
 }

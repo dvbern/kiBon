@@ -1,5 +1,12 @@
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
 
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import ch.dvbern.ebegu.entities.AbstractFinanzielleSituation;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Einkommensverschlechterung;
@@ -10,45 +17,60 @@ import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
-
 public class SchwyzEinkommensverschlechterungDokumente
-	extends AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> {
+	extends
+	AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> {
 	@Override
-	public void getAllDokumente(@Nonnull Gesuch gesuch, @Nonnull Set<DokumentGrund> anlageVerzeichnis, @Nonnull Locale locale) {
-		final GesuchstellerContainer gesuchsteller1 = gesuch.getGesuchsteller1();
-		if (gesuchsteller1 == null || gesuch.getEinkommensverschlechterungInfoContainer() == null) {
+	public void getAllDokumente(
+		@Nonnull Gesuch gesuch,
+		@Nonnull Set<DokumentGrund> anlageVerzeichnis,
+		@Nonnull Locale locale
+	) {
+		final GesuchstellerContainer gesuchsteller1 = gesuch
+			.getGesuchsteller1();
+		if (gesuchsteller1 == null
+			|| gesuch.getEinkommensverschlechterungInfoContainer()
+				== null) {
 			return;
 		}
 
-		final Boolean gesuchHasEKV = gesuch.getEinkommensverschlechterungInfoContainer()
+		final Boolean gesuchHasEKV = gesuch
+			.getEinkommensverschlechterungInfoContainer()
 			.getEinkommensverschlechterungInfoJA()
 			.getEinkommensverschlechterung();
 
-		if (Boolean.FALSE.equals(gesuchHasEKV) || gesuchsteller1.getEinkommensverschlechterungContainer() == null) {
+		if (Boolean.FALSE.equals(gesuchHasEKV)
+			|| gesuchsteller1.getEinkommensverschlechterungContainer()
+				== null) {
 			return;
 		}
 
 		Familiensituation familiensituation = gesuch.extractFamiliensituation();
 		Objects.requireNonNull(familiensituation);
 
-		Einkommensverschlechterung ekv = gesuchsteller1.getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1();
+		Einkommensverschlechterung ekv = gesuchsteller1
+			.getEinkommensverschlechterungContainer()
+			.getEkvJABasisJahrPlus1();
 
-		boolean gemeinsam = Boolean.TRUE.equals(familiensituation.getGemeinsameSteuererklaerung());
+		boolean gemeinsam = Boolean.TRUE.equals(
+			familiensituation.getGemeinsameSteuererklaerung()
+		);
 
 		getAllDokumenteForGS(gesuch, anlageVerzeichnis, ekv, gemeinsam ? 0 : 1);
 
-		if (gesuch.getGesuchsteller2() != null && Boolean.FALSE.equals(familiensituation.getGemeinsameSteuererklaerung())) {
-			if (gesuch.getGesuchsteller2().getEinkommensverschlechterungContainer() == null) {
+		if (gesuch.getGesuchsteller2() != null
+			&& Boolean.FALSE.equals(
+				familiensituation.getGemeinsameSteuererklaerung()
+			)) {
+			if (gesuch.getGesuchsteller2()
+				.getEinkommensverschlechterungContainer()
+				== null) {
 				return;
 			}
 			Einkommensverschlechterung ekvGS2 =
-				gesuch.getGesuchsteller2().getEinkommensverschlechterungContainer().getEkvJABasisJahrPlus1();
+				gesuch.getGesuchsteller2()
+					.getEinkommensverschlechterungContainer()
+					.getEkvJABasisJahrPlus1();
 			getAllDokumenteForGS(gesuch, anlageVerzeichnis, ekvGS2, 2);
 		}
 	}
@@ -56,21 +78,63 @@ public class SchwyzEinkommensverschlechterungDokumente
 	private void getAllDokumenteForGS(
 		@Nonnull Gesuch gesuch,
 		@Nonnull Set<DokumentGrund> anlageVerzeichnis,
-		Einkommensverschlechterung ekv,
-		int gesuchstellerNummer) {
-		add(getDokument(DokumentTyp.NACHWEIS_NETTOLOHN, ekv, gesuch, gesuchstellerNummer), anlageVerzeichnis);
-		add(getDokument(DokumentTyp.NACHWEIS_EINKAEUFE_VORSORGE, ekv, gesuch, gesuchstellerNummer), anlageVerzeichnis);
-		add(getDokument(DokumentTyp.NACHWEIS_ABZUEGE_LIEGENSCHAFT, ekv, gesuch, gesuchstellerNummer), anlageVerzeichnis);
-		add(getDokument(DokumentTyp.NACHWEIS_VERMOEGEN, ekv, gesuch, gesuchstellerNummer), anlageVerzeichnis);
-		add(getDokument(DokumentTyp.NACHWEIS_BRUTTOLOHN, ekv, gesuch, gesuchstellerNummer), anlageVerzeichnis);
+		@Nullable Einkommensverschlechterung ekv,
+		int gesuchstellerNummer
+	) {
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_NETTOLOHN,
+				ekv,
+				gesuch,
+				gesuchstellerNummer
+			),
+			anlageVerzeichnis
+		);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_EINKAEUFE_VORSORGE,
+				ekv,
+				gesuch,
+				gesuchstellerNummer
+			),
+			anlageVerzeichnis
+		);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_ABZUEGE_LIEGENSCHAFT,
+				ekv,
+				gesuch,
+				gesuchstellerNummer
+			),
+			anlageVerzeichnis
+		);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_VERMOEGEN,
+				ekv,
+				gesuch,
+				gesuchstellerNummer
+			),
+			anlageVerzeichnis
+		);
+		add(
+			getDokument(
+				DokumentTyp.NACHWEIS_BRUTTOLOHN,
+				ekv,
+				gesuch,
+				gesuchstellerNummer
+			),
+			anlageVerzeichnis
+		);
 	}
 
 	@Nullable
 	private DokumentGrund getDokument(
 		DokumentTyp dokumentTyp,
-		Einkommensverschlechterung einkommensverschlechterung,
+		@Nullable Einkommensverschlechterung einkommensverschlechterung,
 		Gesuch gesuch,
-		int gesuchstellerNummer) {
+		int gesuchstellerNummer
+	) {
 		return getDokument(
 			dokumentTyp,
 			einkommensverschlechterung,
@@ -84,7 +148,10 @@ public class SchwyzEinkommensverschlechterungDokumente
 	}
 
 	@Override
-	public boolean isDokumentNeeded(@Nonnull DokumentTyp dokumentTyp, @Nullable AbstractFinanzielleSituation dataForDocument) {
+	public boolean isDokumentNeeded(
+		@Nonnull DokumentTyp dokumentTyp,
+		@Nullable AbstractFinanzielleSituation dataForDocument
+	) {
 		if (dataForDocument == null) {
 			return false;
 		}

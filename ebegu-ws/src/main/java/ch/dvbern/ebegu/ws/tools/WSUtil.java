@@ -8,17 +8,17 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.ws.tools;
 
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPElement;
+import jakarta.xml.soap.SOAPException;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -30,19 +30,27 @@ public class WSUtil {
 	 * Die neue Lib generiert leider einen falschen XML Struktur bei der SAML Assertion Nodes
 	 * Wir muessen deswegen gewisse Namespace addieren und gewisse loeschen
 	 * Dieser Methode ist dafuer geeignet
+	 * 
 	 * @param nodeList
 	 * @throws SOAPException
 	 */
-	public static void correctAssertionNodes(NodeList nodeList) throws SOAPException {
+	public static void correctAssertionNodes(NodeList nodeList)
+		throws SOAPException {
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
-			if(node.getNodeName().equals("Assertion")){
+			if (node.getNodeName().equals("Assertion")) {
 				SOAPElement assertion = (SOAPElement) node;
-				assertion.addNamespaceDeclaration("saml","urn:oasis:names:tc:SAML:1.0:assertion");
-				assertion.addNamespaceDeclaration("samlp","urn:oasis:names:tc:SAML:1.0:protocol");
+				assertion.addNamespaceDeclaration(
+					"saml",
+					"urn:oasis:names:tc:SAML:1.0:assertion"
+				);
+				assertion.addNamespaceDeclaration(
+					"samlp",
+					"urn:oasis:names:tc:SAML:1.0:protocol"
+				);
 				assertion.removeNamespaceDeclaration("ds");
 			}
-			if(node.getNodeName().equals("AttributeValue")){
+			if (node.getNodeName().equals("AttributeValue")) {
 				SOAPElement attributeValue = (SOAPElement) node;
 				attributeValue.removeAttribute("xmlns");
 			}

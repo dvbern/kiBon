@@ -21,20 +21,20 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.enums.Ferienname;
 import ch.dvbern.ebegu.validators.dateranges.CheckGueltigkeiten;
@@ -47,7 +47,8 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class GemeindeStammdatenGesuchsperiodeFerieninsel extends AbstractMutableEntity {
+public class GemeindeStammdatenGesuchsperiodeFerieninsel extends
+	AbstractMutableEntity {
 
 	private static final long serialVersionUID = 6703477164293147908L;
 
@@ -58,7 +59,10 @@ public class GemeindeStammdatenGesuchsperiodeFerieninsel extends AbstractMutable
 
 	@NotNull
 	@ManyToOne(optional = false)
-	@JoinColumn(foreignKey = @ForeignKey(name = "FK_ferieninsel_stammdaten_gemeinde_stammdaten_gesuchsperiodeId"), nullable = false)
+	@JoinColumn(foreignKey = @ForeignKey(
+		name = "FK_ferieninsel_stammdaten_gemeinde_stammdaten_gesuchsperiodeId"),
+		nullable = false,
+		updatable = false)
 	private GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode;
 
 	@NotNull
@@ -68,16 +72,24 @@ public class GemeindeStammdatenGesuchsperiodeFerieninsel extends AbstractMutable
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinTable(
 		name = "gemeinde_stammdaten_gp_fi_gemeinde_stammdaten_gp_fi_zeitraum",
-		joinColumns = @JoinColumn(name = "ferieninsel_stammdaten_id", nullable = false),
-		inverseJoinColumns = @JoinColumn(name = "zeitraum_id", nullable = false),
-		foreignKey = @ForeignKey(name = "FK_ferieninsel_stammdaten_ferieninsel_stammdaten_id"),
-		inverseForeignKey = @ForeignKey(name = "FK_ferieninsel_stammdaten_ferieninsel_zeitraum_id"),
-		uniqueConstraints = @UniqueConstraint(columnNames = "zeitraum_id", name = "UK_ferieninsel_stammdaten_zeitraum_id"),
+		joinColumns = @JoinColumn(name = "ferieninsel_stammdaten_id",
+			nullable = false),
+		inverseJoinColumns = @JoinColumn(name = "zeitraum_id",
+			nullable = false),
+		foreignKey = @ForeignKey(
+			name = "FK_ferieninsel_stammdaten_ferieninsel_stammdaten_id"),
+		inverseForeignKey = @ForeignKey(
+			name = "FK_ferieninsel_stammdaten_ferieninsel_zeitraum_id"),
+		uniqueConstraints = @UniqueConstraint(columnNames = "zeitraum_id",
+			name = "UK_ferieninsel_stammdaten_zeitraum_id"),
 		indexes = {
-			@Index(name = "IX_ferieninsel_stammdaten_ferieninsel_stammdaten_id", columnList = "ferieninsel_stammdaten_id"),
-			@Index(name = "IX_ferieninsel_stammdaten_zeitraum_id", columnList = "zeitraum_id"),
+			@Index(name = "IX_ferieninsel_stammdaten_ferieninsel_stammdaten_id",
+				columnList = "ferieninsel_stammdaten_id"),
+			@Index(name = "IX_ferieninsel_stammdaten_zeitraum_id",
+				columnList = "zeitraum_id"),
 		})
-	private List<GemeindeStammdatenGesuchsperiodeFerieninselZeitraum> zeitraumList = new ArrayList<>();
+	private List<GemeindeStammdatenGesuchsperiodeFerieninselZeitraum> zeitraumList =
+		new ArrayList<>();
 
 	@Nullable
 	@Column(nullable = true)
@@ -95,15 +107,18 @@ public class GemeindeStammdatenGesuchsperiodeFerieninsel extends AbstractMutable
 		return zeitraumList;
 	}
 
-	public void setZeitraumList(List<GemeindeStammdatenGesuchsperiodeFerieninselZeitraum> zeitraumList) {
+	public void setZeitraumList(
+		List<GemeindeStammdatenGesuchsperiodeFerieninselZeitraum> zeitraumList
+	) {
 		this.zeitraumList = zeitraumList;
 	}
 
+	@Nullable
 	public LocalDate getAnmeldeschluss() {
 		return anmeldeschluss;
 	}
 
-	public void setAnmeldeschluss(LocalDate anmeldeschluss) {
+	public void setAnmeldeschluss(@Nullable LocalDate anmeldeschluss) {
 		this.anmeldeschluss = anmeldeschluss;
 	}
 
@@ -118,25 +133,39 @@ public class GemeindeStammdatenGesuchsperiodeFerieninsel extends AbstractMutable
 			return false;
 		}
 		// TODO: Ferieninsel. Validator schreiben
-		final GemeindeStammdatenGesuchsperiodeFerieninsel otherFerieninselStammdaten = (GemeindeStammdatenGesuchsperiodeFerieninsel) other;
-		return Objects.equals(getFerienname(), otherFerieninselStammdaten.getFerienname());
+		final GemeindeStammdatenGesuchsperiodeFerieninsel otherFerieninselStammdaten =
+			(GemeindeStammdatenGesuchsperiodeFerieninsel) other;
+		return Objects.equals(
+			getFerienname(),
+			otherFerieninselStammdaten.getFerienname()
+		);
 	}
 
 	public GemeindeStammdatenGesuchsperiode getGemeindeStammdatenGesuchsperiode() {
 		return gemeindeStammdatenGesuchsperiode;
 	}
 
-	public void setGemeindeStammdatenGesuchsperiode(GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode) {
-		this.gemeindeStammdatenGesuchsperiode = gemeindeStammdatenGesuchsperiode;
+	public void setGemeindeStammdatenGesuchsperiode(
+		GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode
+	) {
+		this.gemeindeStammdatenGesuchsperiode =
+			gemeindeStammdatenGesuchsperiode;
 	}
 
 	public boolean isFerienActive() {
-		return anmeldeschluss != null && anmeldeschluss.isAfter(LocalDate.now()) && zeitraumList.size() > 0;
+		return anmeldeschluss != null
+			&& anmeldeschluss.isAfter(LocalDate.now())
+			&& zeitraumList.size() > 0;
 	}
 
-	GemeindeStammdatenGesuchsperiodeFerieninsel copyForGesuchsperiode(GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode) {
-		GemeindeStammdatenGesuchsperiodeFerieninsel copy = new GemeindeStammdatenGesuchsperiodeFerieninsel();
-		copy.setGemeindeStammdatenGesuchsperiode(gemeindeStammdatenGesuchsperiode);
+	GemeindeStammdatenGesuchsperiodeFerieninsel copyForGesuchsperiode(
+		GemeindeStammdatenGesuchsperiode gemeindeStammdatenGesuchsperiode
+	) {
+		GemeindeStammdatenGesuchsperiodeFerieninsel copy =
+			new GemeindeStammdatenGesuchsperiodeFerieninsel();
+		copy.setGemeindeStammdatenGesuchsperiode(
+			gemeindeStammdatenGesuchsperiode
+		);
 		copy.setFerienname(this.getFerienname());
 		return copy;
 	}

@@ -1,0 +1,112 @@
+<div>
+    @if (
+        authServiceRS.isOneOfRoles(
+            TSRoleUtil.getGesuchstellerSozialdienstRolle()
+        )
+    ) {
+        @if (EbeguUtil.isNotNullAndTrue(mandant.hostname === 'lu')) {
+            <h3>{{ 'PER_TELEFON_MAIL_KONTAKTIEREN' | translate }}</h3>
+        } @else if (EbeguUtil.isNotNullAndFalse(mandant.hostname === 'be')) {
+            <h3>{{ 'BEI_FRAGEN_GEMEINDE_KONTAKTIEREN' | translate }}</h3>
+        }
+    }
+    <div class="margin-top-20">
+        @if (stammdaten.bgAdresse && stammdaten.gemeinde.angebotBG) {
+            <h2>
+                {{ 'KONTAKT_BETREUUNGSGUTSCHEINE_TITLE' | translate }}
+            </h2>
+            @if (stammdaten.bgAdresse.organisation) {
+                <span>{{ stammdaten.bgAdresse.organisation }}</span
+                ><br />
+            }
+            <span>{{ getStrasseHausnummer(stammdaten.bgAdresse) }}</span>
+            <br />
+            <span>{{
+                stammdaten.bgAdresse.plz + ' ' + stammdaten.bgAdresse.ort
+            }}</span
+            ><br />
+            <a href="mailto:{{ stammdaten.bgEmail || stammdaten.mail }}">{{
+                stammdaten.bgEmail || stammdaten.mail
+            }}</a
+            ><br />
+            <a href="tel:{{ stammdaten.bgTelefon || stammdaten.telefon }}">{{
+                stammdaten.bgTelefon || stammdaten.telefon
+            }}</a>
+        }
+    </div>
+    <div class="margin-top-20">
+        @if (!stammdaten.bgAdresse && stammdaten.gemeinde.angebotBG) {
+            <h2>
+                {{ 'KONTAKT_BETREUUNGSGUTSCHEINE_TITLE' | translate }}
+            </h2>
+            @if (stammdaten.adresse.organisation) {
+                <span>{{ stammdaten.adresse.organisation }}</span
+                ><br />
+            }
+            <span>{{ getStrasseHausnummer(stammdaten.adresse) }}</span>
+            <br />
+            <span>{{
+                stammdaten.adresse.plz + ' ' + stammdaten.adresse.ort
+            }}</span
+            ><br />
+            <a href="mailto:{{ stammdaten.bgEmail || stammdaten.mail }}">{{
+                stammdaten.bgEmail || stammdaten.mail
+            }}</a
+            ><br />
+            <a href="tel:{{ stammdaten.bgTelefon || stammdaten.telefon }}">{{
+                stammdaten.bgTelefon || stammdaten.telefon
+            }}</a
+            ><br />
+        }
+    </div>
+    <div class="margin-top-20">
+        @if (stammdaten.tsAdresse && stammdaten.gemeinde.angebotTS) {
+            <h2>
+                {{ 'KONTAKT_TAGESCHSCHULANMELDUNGEN_TITLE' | translate }}
+            </h2>
+            @if (stammdaten.tsAdresse.organisation) {
+                <span>{{ stammdaten.tsAdresse.organisation }}</span
+                ><br />
+            }
+            <span>{{ getStrasseHausnummer(stammdaten.tsAdresse) }}</span
+            ><br />
+            <span>{{
+                stammdaten.tsAdresse.plz + ' ' + stammdaten.tsAdresse.ort
+            }}</span
+            ><br />
+            <a href="mailto:{{ stammdaten.tsEmail || stammdaten.mail }}">{{
+                stammdaten.tsEmail || stammdaten.mail
+            }}</a
+            ><br />
+            <a href="tel:{{ stammdaten.tsTelefon || stammdaten.telefon }}">{{
+                stammdaten.tsTelefon || stammdaten.telefon
+            }}</a>
+        }
+    </div>
+    <div class="margin-top-20">
+        @if (!stammdaten.tsAdresse && stammdaten.gemeinde.angebotTS) {
+            <h2>
+                {{ 'KONTAKT_TAGESCHSCHULANMELDUNGEN_TITLE' | translate }}
+            </h2>
+            @if (stammdaten.adresse.organisation) {
+                <span>{{ stammdaten.adresse.organisation }}</span
+                ><br />
+            }
+
+            <span>{{ getStrasseHausnummer(stammdaten.adresse) }}</span
+            ><br />
+            <span>{{
+                stammdaten.adresse.plz + ' ' + stammdaten.adresse.ort
+            }}</span
+            ><br />
+            <a href="mailto:{{ stammdaten.tsEmail || stammdaten.mail }}">{{
+                stammdaten.tsEmail || stammdaten.mail
+            }}</a
+            ><br />
+            <a href="tel:{{ stammdaten.tsTelefon || stammdaten.telefon }}">{{
+                stammdaten.tsTelefon || stammdaten.telefon
+            }}</a
+            ><br />
+        }
+    </div>
+</div>

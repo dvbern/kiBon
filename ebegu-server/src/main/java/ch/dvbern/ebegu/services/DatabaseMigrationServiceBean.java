@@ -19,36 +19,39 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
-import javax.ejb.AsyncResult;
-import javax.ejb.Asynchronous;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
+import jakarta.ejb.AsyncResult;
+import jakarta.ejb.Asynchronous;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
 
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.Constants;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import org.jboss.ejb3.annotation.TransactionTimeout;
-
-import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 
 /**
  * Service zum Ausfuehren von manuellen DB-Migrationen.
- * Hier koennen Skripts hinzugefuegt werden, die dann Asynchron ausgefuehrt werden. Vor allem fuer Scripts gemeint, die eine
+ * Hier koennen Skripts hinzugefuegt werden, die dann Asynchron ausgefuehrt werden. Vor allem fuer Scripts gemeint, die
+ * eine
  * Aenderung in der Datenbank bedeuten.
  */
 @Stateless
 @Local(DatabaseMigrationService.class)
-@SuppressWarnings({ "PMD.AvoidDuplicateLiterals", "LocalVariableNamingConvention", "PMD.NcssTypeCount", "InstanceMethodNamingConvention" })
-public class DatabaseMigrationServiceBean extends AbstractBaseService implements DatabaseMigrationService {
+@SuppressWarnings({ "PMD.AvoidDuplicateLiterals",
+	"LocalVariableNamingConvention",
+	"InstanceMethodNamingConvention" })
+public class DatabaseMigrationServiceBean extends AbstractBaseService implements
+	DatabaseMigrationService {
 
 	@Inject
 	private Persistence persistence;
 
 	@Override
 	@Asynchronous
-	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public Future<Boolean> processScript(@Nonnull String scriptId) {
 

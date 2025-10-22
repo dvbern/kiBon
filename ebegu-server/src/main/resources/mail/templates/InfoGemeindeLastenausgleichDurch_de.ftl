@@ -5,7 +5,7 @@
 <#-- @ftlvariable name="hostname" type="java.lang.String" -->
 From: ${configuration.senderAddress}
 To: ${empfaengerMail}
-Subject: <@base64Header>kiBon - Lastenausgleich verbucht</@base64Header>
+Subject: <@base64Header>kiBon <#if configuration.isDevmode>Testsystem</#if> - Lastenausgleich verbucht</@base64Header>
 Content-Type: text/html;charset=utf-8
 
 <html>
@@ -24,13 +24,16 @@ Content-Type: text/html;charset=utf-8
 		Guten Tag
 	</p>
 	<p>
-		Der Lastenausgleich des Jahres ${jahr} wurde verbucht. Die Berechnungsresultate sind <a href="<#if configuration.clientUsingHTTPS>https://<#else>http://</#if>${hostname}/lastenausgleich">hier</a> ersichtlich
+		Der Lastenausgleich des Jahres ${jahr} wurde verbucht. Die Berechnungsresultate sind <a href="${frontendUrl}/lastenausgleich">hier</a> ersichtlich
 	</p>
 	<p>
 		Freundliche Grüsse<br/>
 		Ihr Kanton Bern
 	</p>
 	<p>
+		<#if configuration.isDevmode>
+			<b>Hierbei handelt es sich um eine Nachricht von einem Testsystem. Dieses Testsystem wird zu Testzwecken verwendet. Über dieses System abgehandelte Anträge verfügen über keine Zahlungsberechtigung!</b><br><br>
+		</#if>
 		Dies ist eine automatisch versendete E-Mail. Bitte antworten Sie nicht auf diese Nachricht.
 	</p>
 </div>

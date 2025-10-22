@@ -1,0 +1,22 @@
+@if (text) {
+    <h2 mat-dialog-title>
+        <span [innerHTML]="text | translate"></span>
+    </h2>
+}
+
+<mat-dialog-actions>
+    <div class="dv-dialog-actions">
+        <button
+            class="dv-btn uppercase-text-disalbed"
+            (click)="ok()"
+            [textContent]="'LABEL_JA' | translate"
+            data-test="remove-ok"
+        ></button>
+        <button
+            class="dv-btn dv-cancel uppercase-text-disalbed"
+            (click)="cancel()"
+            [textContent]="'LABEL_NEIN_ZURUECK_STARTSEITE' | translate"
+            data-test="remove-cancel"
+        ></button>
+    </div>
+</mat-dialog-actions>

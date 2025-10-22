@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rules.anlageverzeichnis;
@@ -35,15 +35,17 @@ import ch.dvbern.ebegu.enums.DokumentGrundPersonType;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.DokumentTyp;
 
-public class AppenzellFinanzielleSituationDokumente extends AbstractDokumente<AbstractFinanzielleSituation, Familiensituation>   {
+public class AppenzellFinanzielleSituationDokumente extends
+	AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> {
 
 	@Override
 	public void getAllDokumente(
 		@Nonnull Gesuch gesuch,
 		@Nonnull Set<DokumentGrund> anlageVerzeichnis,
-		@Nonnull Locale locale) {
+		@Nonnull Locale locale
+	) {
 
-		if (isGemeinsameSteuererklaerung(gesuch))  {
+		if (isGemeinsameSteuererklaerung(gesuch)) {
 			addDokumenteGemeinsam(gesuch, anlageVerzeichnis);
 		} else {
 			addDokumenteGS1(gesuch, anlageVerzeichnis);
@@ -51,34 +53,55 @@ public class AppenzellFinanzielleSituationDokumente extends AbstractDokumente<Ab
 		}
 	}
 
-	private void addDokumenteGemeinsam(Gesuch gesuch, Set<DokumentGrund> anlageVerzeichnis) {
+	private void addDokumenteGemeinsam(
+		Gesuch gesuch,
+		Set<DokumentGrund> anlageVerzeichnis
+	) {
 		GesuchstellerContainer gesuchsteller1 = gesuch.getGesuchsteller1();
 
-		if (gesuchsteller1 == null || gesuchsteller1.getFinanzielleSituationContainer() == null) {
+		if (gesuchsteller1 == null
+			|| gesuchsteller1.getFinanzielleSituationContainer() == null) {
 			return;
 		}
 
-		final FinanzielleSituation finanzielleSituationGS1JA = gesuchsteller1.getFinanzielleSituationContainer().getFinanzielleSituationJA();
+		final FinanzielleSituation finanzielleSituationGS1JA = gesuchsteller1
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA();
 		addDokumentVeranlagung(anlageVerzeichnis, 0, finanzielleSituationGS1JA);
 	}
 
-	private void addDokumenteGS1(Gesuch gesuch, Set<DokumentGrund> anlageVerzeichnis) {
-		final GesuchstellerContainer gesuchsteller1 = gesuch.getGesuchsteller1();
+	private void addDokumenteGS1(
+		Gesuch gesuch,
+		Set<DokumentGrund> anlageVerzeichnis
+	) {
+		final GesuchstellerContainer gesuchsteller1 = gesuch
+			.getGesuchsteller1();
 		Objects.requireNonNull(gesuchsteller1);
 		addDokumenteGesuchsteller(gesuchsteller1, 1, anlageVerzeichnis);
 
 		Familiensituation familiensituation = gesuch.extractFamiliensituation();
 		if (familiensituation != null && familiensituation.isSpezialFallAR()) {
-			addDokumentAppenzellSpezialFall(gesuchsteller1.getFinanzielleSituationContainer(), anlageVerzeichnis);
+			addDokumentAppenzellSpezialFall(
+				gesuchsteller1.getFinanzielleSituationContainer(),
+				anlageVerzeichnis
+			);
 		}
 	}
 
 	private void addDokumentAppenzellSpezialFall(
-			@Nullable FinanzielleSituationContainer finanzielleSituationContainer,
-			Set<DokumentGrund> anlageVerzeichnis) {
-		if (finanzielleSituationContainer == null ||
-			finanzielleSituationContainer.getFinanzielleSituationJA().getFinSitZusatzangabenAppenzell() == null ||
-			finanzielleSituationContainer.getFinanzielleSituationJA().getFinSitZusatzangabenAppenzell().getZusatzangabenPartner() == null
+		@Nullable FinanzielleSituationContainer finanzielleSituationContainer,
+		Set<DokumentGrund> anlageVerzeichnis
+	) {
+		if (finanzielleSituationContainer == null
+			||
+			finanzielleSituationContainer.getFinanzielleSituationJA()
+				.getFinSitZusatzangabenAppenzell()
+				== null
+			||
+			finanzielleSituationContainer.getFinanzielleSituationJA()
+				.getFinSitZusatzangabenAppenzell()
+				.getZusatzangabenPartner()
+				== null
 		) {
 			return;
 		}
@@ -86,42 +109,59 @@ public class AppenzellFinanzielleSituationDokumente extends AbstractDokumente<Ab
 		addDokumentVeranlagung(anlageVerzeichnis, 2, null);
 	}
 
-	private void addDokumenteGS2(Gesuch gesuch, Set<DokumentGrund> anlageVerzeichnis) {
-		final GesuchstellerContainer gesuchsteller2 = gesuch.getGesuchsteller2();
+	private void addDokumenteGS2(
+		Gesuch gesuch,
+		Set<DokumentGrund> anlageVerzeichnis
+	) {
+		final GesuchstellerContainer gesuchsteller2 = gesuch
+			.getGesuchsteller2();
 		addDokumenteGesuchsteller(gesuchsteller2, 2, anlageVerzeichnis);
 	}
 
 	private void addDokumenteGesuchsteller(
-			@Nullable GesuchstellerContainer gesuchsteller,
-			int gesuchstellerNumber,
-			Set<DokumentGrund> anlageVerzeichnis) {
-		if (gesuchsteller == null || gesuchsteller.getFinanzielleSituationContainer() == null) {
+		@Nullable GesuchstellerContainer gesuchsteller,
+		int gesuchstellerNumber,
+		Set<DokumentGrund> anlageVerzeichnis
+	) {
+		if (gesuchsteller == null
+			|| gesuchsteller.getFinanzielleSituationContainer() == null) {
 			return;
 		}
 
-		final FinanzielleSituation finanzielleSituationJA = gesuchsteller.getFinanzielleSituationContainer().getFinanzielleSituationJA();
-		addDokumentVeranlagung(anlageVerzeichnis, gesuchstellerNumber, finanzielleSituationJA);
+		final FinanzielleSituation finanzielleSituationJA = gesuchsteller
+			.getFinanzielleSituationContainer()
+			.getFinanzielleSituationJA();
+		addDokumentVeranlagung(
+			anlageVerzeichnis,
+			gesuchstellerNumber,
+			finanzielleSituationJA
+		);
 	}
 
 	private void addDokumentVeranlagung(
 		Set<DokumentGrund> anlageVerzeichnis,
 		int gesuchstellerNumber,
-		@Nullable FinanzielleSituation finanzielleSituationJA) {
+		@Nullable FinanzielleSituation finanzielleSituationJA
+	) {
 
-		add(getDokument(
+		add(
+			getDokument(
 				DokumentTyp.STEUERVERANLAGUNG,
 				finanzielleSituationJA,
 				null,
 				DokumentGrundPersonType.GESUCHSTELLER,
 				gesuchstellerNumber,
-				DokumentGrundTyp.FINANZIELLESITUATION),
-			anlageVerzeichnis);
+				DokumentGrundTyp.FINANZIELLESITUATION
+			),
+			anlageVerzeichnis
+		);
 	}
 
 	@Override
 	public boolean isDokumentNeeded(
 		@Nonnull DokumentTyp dokumentTyp,
-		@Nullable AbstractFinanzielleSituation dataForDocument) {
+		@Nullable AbstractFinanzielleSituation dataForDocument
+	) {
 		return true;
 	}
 }

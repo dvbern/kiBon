@@ -19,13 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.metamodel.EntityType;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.metamodel.EntityType;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
-import ch.dvbern.lib.cdipersistence.Persistence;
+import ch.dvbern.ebegu.persistence.Persistence;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.hibernate.envers.query.AuditQuery;
@@ -35,18 +35,30 @@ import org.hibernate.envers.query.AuditQuery;
  */
 @Stateless
 @Local(HistorizationService.class)
-public class HistorizationServiceBean extends AbstractBaseService implements HistorizationService {
+public class HistorizationServiceBean extends AbstractBaseService implements
+	HistorizationService {
 
 	@Inject
 	private Persistence persistence;
 
 	@Override
-	public List<Object[]> getAllRevisionsById(@Nonnull String entityName, @Nonnull String entityId) {
-		for (EntityType<?> entityType : persistence.getEntityManager().getMetamodel().getEntities()) {
+	public List<Object[]> getAllRevisionsById(
+		@Nonnull String entityName,
+		@Nonnull String entityId
+	) {
+		for (EntityType<?> entityType : persistence.getEntityManager()
+			.getMetamodel()
+			.getEntities()) {
 			if (entityType.getName().equalsIgnoreCase(entityName)) {
-				AuditQuery query = AuditReaderFactory.get(persistence.getEntityManager())
+				AuditQuery query = AuditReaderFactory.get(
+					persistence.getEntityManager()
+				)
 					.createQuery()
-					.forRevisionsOfEntity(entityType.getJavaType(), false, true)
+					.forRevisionsOfEntity(
+						entityType.getJavaType(),
+						false,
+						true
+					)
 					.add(AuditEntity.id().eq(entityId));
 				return query.getResultList();
 			}
@@ -55,12 +67,22 @@ public class HistorizationServiceBean extends AbstractBaseService implements His
 	}
 
 	@Override
-	public List<AbstractEntity> getAllEntitiesByRevision(@Nonnull String entityName, @Nonnull Integer revision) {
-		for (EntityType<?> entityType : persistence.getEntityManager().getMetamodel().getEntities()) {
+	public List<AbstractEntity> getAllEntitiesByRevision(
+		@Nonnull String entityName,
+		@Nonnull Integer revision
+	) {
+		for (EntityType<?> entityType : persistence.getEntityManager()
+			.getMetamodel()
+			.getEntities()) {
 			if (entityType.getName().equalsIgnoreCase(entityName)) {
-				AuditQuery query = AuditReaderFactory.get(persistence.getEntityManager())
+				AuditQuery query = AuditReaderFactory.get(
+					persistence.getEntityManager()
+				)
 					.createQuery()
-					.forEntitiesAtRevision(entityType.getJavaType(), revision);
+					.forEntitiesAtRevision(
+						entityType.getJavaType(),
+						revision
+					);
 				return query.getResultList();
 			}
 		}

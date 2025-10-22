@@ -16,9 +16,9 @@
 package ch.dvbern.ebegu.api.errors;
 
 import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.Provider;
 
 import ch.dvbern.ebegu.api.validation.EbeguExceptionReport;
 import ch.dvbern.ebegu.entities.Mandant;
@@ -31,7 +31,8 @@ import ch.dvbern.ebegu.errors.EbeguRuntimeException;
  * Exception Mapper fuer Runtime Exceptions
  */
 @Provider
-public class EbeguRuntimeExceptionMapper extends AbstractEbeguExceptionMapper<EbeguRuntimeException> {
+public class EbeguRuntimeExceptionMapper extends
+	AbstractEbeguExceptionMapper<EbeguRuntimeException> {
 
 	@Override
 	public Response toResponse(EbeguRuntimeException exception) {
@@ -40,23 +41,45 @@ public class EbeguRuntimeExceptionMapper extends AbstractEbeguExceptionMapper<Eb
 
 		if (exception instanceof EbeguExistingAntragRuntimeException) {
 			// wollen wir das hier so handhaben?
-			EbeguExistingAntragRuntimeException ebeguExistingAntragRuntimeException = EbeguExistingAntragRuntimeException.class.cast(exception);
-			return buildViolationReportResponse(ebeguExistingAntragRuntimeException, Status.CONFLICT);
+			EbeguExistingAntragRuntimeException ebeguExistingAntragRuntimeException =
+				EbeguExistingAntragRuntimeException.class.cast(exception);
+			return buildViolationReportResponse(
+				ebeguExistingAntragRuntimeException,
+				Status.CONFLICT
+			);
 		}
 		if (exception instanceof EbeguEntityNotFoundException) {
 			// wollen wir das hier so handhaben?
-			EbeguEntityNotFoundException ebeguEntityNotFoundException = EbeguEntityNotFoundException.class.cast(exception);
-			return buildViolationReportResponse(ebeguEntityNotFoundException, Status.NOT_FOUND);
+			EbeguEntityNotFoundException ebeguEntityNotFoundException =
+				EbeguEntityNotFoundException.class.cast(exception);
+			return buildViolationReportResponse(
+				ebeguEntityNotFoundException,
+				Status.NOT_FOUND
+			);
 		}
-		return buildViolationReportResponse(exception, Status.INTERNAL_SERVER_ERROR);
+		return buildViolationReportResponse(
+			exception,
+			Status.INTERNAL_SERVER_ERROR
+		);
 
 	}
 
 	@Nonnull
 	@Override
-	protected Response buildViolationReportResponse(EbeguRuntimeException exception, Response.Status status) {
-		Mandant mandant = exception.getMandant() != null ? exception.getMandant() : mandantService.getMandantBern();
-		return EbeguExceptionReport.buildResponse(status, exception, getLocaleFromHeader(), mandant, configuration.getIsDevmode());
+	protected Response buildViolationReportResponse(
+		EbeguRuntimeException exception,
+		Response.Status status
+	) {
+		Mandant mandant = exception.getMandant() != null ?
+			exception.getMandant() :
+			mandantService.getMandantBern();
+		return EbeguExceptionReport.buildResponse(
+			status,
+			exception,
+			getLocaleFromHeader(),
+			mandant,
+			configuration.getIsDevmode()
+		);
 	}
 
 }

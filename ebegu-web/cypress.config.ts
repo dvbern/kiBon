@@ -1,9 +1,9 @@
 import {defineConfig} from 'cypress';
-
-import * as dvTasks from './cypress/support/tasks';
 import * as fs from 'fs';
 
-const baseUrl = process.env.baseURL ?? 'http://local-be.kibon.ch:4200/';
+import * as dvTasks from './cypress/support/tasks';
+
+const baseUrl = process.env.baseURL ?? 'https://local-be.kibon.ch:4200/';
 
 export default defineConfig({
     watchForFileChanges: false,
@@ -37,6 +37,8 @@ export default defineConfig({
                 const width = 1920;
                 const height = 1080;
 
+                launchOptions.args.push('--js-flags=--max-old-space-size=7000');
+
                 if (browser.name === 'chrome' && browser.isHeadless) {
                     launchOptions.args.push(`--window-size=${width},${height}`);
 
@@ -68,13 +70,23 @@ export default defineConfig({
         baseUrl,
         fixturesFolder: './cypress/fixtures',
         experimentalRunAllSpecs: true,
+        testIsolation: true,
+        numTestsKeptInMemory: 10,
         requestTimeout: 10000,
         reporter: 'junit',
         reporterOptions: {
             mochaFile: './cypress/results/test-result-[hash].xml'
         },
         video: true,
-        videoCompression: 0
+        videoCompression: 0,
+        retries: {
+            // Configure retry attempts for `cypress run`
+            runMode: 0,
+            // Configure retry attempts for `cypress open`
+            openMode: 0
+        },
+        experimentalMemoryManagement: true
     },
-    scrollBehavior: 'nearest'
+    scrollBehavior: 'nearest',
+    chromeWebSecurity: false
 });

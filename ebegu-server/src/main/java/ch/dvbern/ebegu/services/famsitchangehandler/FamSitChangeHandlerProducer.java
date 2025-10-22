@@ -8,21 +8,21 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.famsitchangehandler;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.servlet.http.HttpServletRequest;
 
-import ch.dvbern.ebegu.services.EinstellungService;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.services.FinanzielleSituationService;
 import ch.dvbern.ebegu.services.GesuchstellerService;
 import ch.dvbern.ebegu.util.mandant.MandantCookieUtil;
@@ -36,16 +36,30 @@ public class FamSitChangeHandlerProducer {
 		EinstellungService einstellungService,
 		GesuchstellerService gesuchstellerService,
 		HttpServletRequest request,
-		FinanzielleSituationService finanzielleSituationService) {
+		FinanzielleSituationService finanzielleSituationService
+	) {
 		switch (MandantCookieUtil.getMandantFromCookie(request)) {
 		case LUZERN:
-			return new FamSitChangeHandlerLU(gesuchstellerService, einstellungService);
+			return new FamSitChangeHandlerLU(
+				gesuchstellerService,
+				einstellungService
+			);
 		case APPENZELL_AUSSERRHODEN:
-			return new FamSitChangeHandlerAR(gesuchstellerService, einstellungService);
+			return new FamSitChangeHandlerAR(
+				gesuchstellerService,
+				einstellungService
+			);
 		case SCHWYZ:
-			return new FamSitChangeHandlerSchwyz(gesuchstellerService, einstellungService, finanzielleSituationService);
+			return new FamSitChangeHandlerSchwyz(
+				gesuchstellerService,
+				einstellungService,
+				finanzielleSituationService
+			);
 		default:
-			return new SharedFamSitChangeDefaultHandler(gesuchstellerService, einstellungService);
+			return new SharedFamSitChangeDefaultHandler(
+				gesuchstellerService,
+				einstellungService
+			);
 		}
 	}
 

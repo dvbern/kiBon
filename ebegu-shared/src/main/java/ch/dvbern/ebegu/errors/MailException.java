@@ -15,26 +15,18 @@
 
 package ch.dvbern.ebegu.errors;
 
-import javax.ejb.ApplicationException;
+import jakarta.ejb.ApplicationException;
+
+import lombok.NoArgsConstructor;
 
 /**
  * Exception that gets thrown if the transmission of an email fails
  */
-@ApplicationException(rollback = false)
-public class MailException extends Exception {
+@ApplicationException(rollback = true)
+@NoArgsConstructor
+public class MailException extends RuntimeException {
 
 	private static final long serialVersionUID = 663284993138581412L;
-
-	public MailException() {
-	}
-
-	public MailException(final Throwable cause) {
-		super(cause);
-	}
-
-	public MailException(final String message) {
-		super(message);
-	}
 
 	public MailException(final String message, final Throwable cause) {
 		super(message, cause);

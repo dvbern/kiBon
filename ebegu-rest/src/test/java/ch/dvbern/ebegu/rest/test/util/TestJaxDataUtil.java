@@ -57,8 +57,6 @@ import ch.dvbern.ebegu.api.dtos.JaxPensumFachstelle;
 import ch.dvbern.ebegu.api.dtos.JaxTraegerschaft;
 import ch.dvbern.ebegu.entities.AdresseTyp;
 import ch.dvbern.ebegu.enums.AntragStatusDTO;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
-import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.enums.Eingangsart;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.FachstelleName;
@@ -69,6 +67,8 @@ import ch.dvbern.ebegu.enums.Kinderabzug;
 import ch.dvbern.ebegu.enums.Land;
 import ch.dvbern.ebegu.enums.Taetigkeit;
 import ch.dvbern.ebegu.enums.UserRole;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.util.Constants;
 import org.apache.commons.lang3.StringUtils;
 
@@ -81,7 +81,8 @@ public final class TestJaxDataUtil {
 	}
 
 	public static JaxGesuchstellerContainer createTestJaxGesuchsteller() {
-		JaxGesuchstellerContainer jaxGesuchstellerContainer = new JaxGesuchstellerContainer();
+		JaxGesuchstellerContainer jaxGesuchstellerContainer =
+			new JaxGesuchstellerContainer();
 		JaxGesuchsteller jaxGesuchsteller = new JaxGesuchsteller();
 		jaxGesuchsteller.setNachname("Jaxter");
 		jaxGesuchsteller.setVorname("Jack");
@@ -99,7 +100,8 @@ public final class TestJaxDataUtil {
 	}
 
 	public static JaxGesuchstellerContainer createTestJaxGesuchstellerWithUmzug() {
-		JaxGesuchstellerContainer jaxGesuchsteller = createTestJaxGesuchsteller();
+		JaxGesuchstellerContainer jaxGesuchsteller =
+			createTestJaxGesuchsteller();
 
 		JaxAdresseContainer jaxAdresseContainer = new JaxAdresseContainer();
 		JaxAdresse umzugAdr = new JaxAdresse();
@@ -116,12 +118,18 @@ public final class TestJaxDataUtil {
 
 		jaxGesuchsteller.addAdresse(jaxAdresseContainer);
 
-		JaxAdresseContainer jaxAltAdresseContainer = createTestJaxAdr("alternativ");
-		jaxAltAdresseContainer.getAdresseJA().setAdresseTyp(AdresseTyp.KORRESPONDENZADRESSE);
+		JaxAdresseContainer jaxAltAdresseContainer = createTestJaxAdr(
+			"alternativ"
+		);
+		jaxAltAdresseContainer.getAdresseJA()
+			.setAdresseTyp(AdresseTyp.KORRESPONDENZADRESSE);
 		jaxGesuchsteller.setAlternativeAdresse(jaxAltAdresseContainer);
 
-		JaxAdresseContainer jaxRechnungsAdresseContainer = createTestJaxAdr("rechnung");
-		jaxRechnungsAdresseContainer.getAdresseJA().setAdresseTyp(AdresseTyp.RECHNUNGSADRESSE);
+		JaxAdresseContainer jaxRechnungsAdresseContainer = createTestJaxAdr(
+			"rechnung"
+		);
+		jaxRechnungsAdresseContainer.getAdresseJA()
+			.setAdresseTyp(AdresseTyp.RECHNUNGSADRESSE);
 		jaxGesuchsteller.setRechnungsAdresse(jaxRechnungsAdresseContainer);
 
 		return jaxGesuchsteller;
@@ -129,11 +137,15 @@ public final class TestJaxDataUtil {
 	}
 
 	public static JaxGesuchstellerContainer createTestJaxGesuchstellerWithErwerbsbensum() {
-		JaxGesuchstellerContainer testJaxGesuchsteller = createTestJaxGesuchsteller();
-		JaxErwerbspensumContainer container = createTestJaxErwerbspensumContainer();
-		JaxErwerbspensumContainer container2 = createTestJaxErwerbspensumContainer();
+		JaxGesuchstellerContainer testJaxGesuchsteller =
+			createTestJaxGesuchsteller();
+		JaxErwerbspensumContainer container =
+			createTestJaxErwerbspensumContainer();
+		JaxErwerbspensumContainer container2 =
+			createTestJaxErwerbspensumContainer();
 		Objects.requireNonNull(container2.getErwerbspensumGS());
-		container2.getErwerbspensumGS().setGueltigAb(LocalDate.now().plusYears(1));
+		container2.getErwerbspensumGS()
+			.setGueltigAb(LocalDate.now().plusYears(1));
 		container2.getErwerbspensumGS().setGueltigBis(null);
 
 		Collection<JaxErwerbspensumContainer> list = new ArrayList<>();
@@ -160,13 +172,17 @@ public final class TestJaxDataUtil {
 
 	}
 
-	public static List<JaxAdresseContainer> createTestJaxAdressenList(@Nullable String postfix) {
+	public static List<JaxAdresseContainer> createTestJaxAdressenList(
+		@Nullable String postfix
+	) {
 		final List<JaxAdresseContainer> adressen = new ArrayList<>();
 		adressen.add(createTestJaxAdr(postfix));
 		return adressen;
 	}
 
-	public static JaxAdresseContainer createTestJaxAdr(@Nullable String postfix) {
+	public static JaxAdresseContainer createTestJaxAdr(
+		@Nullable String postfix
+	) {
 		JaxAdresseContainer jaxAdresseContainer = new JaxAdresseContainer();
 
 		postfix = StringUtils.isEmpty(postfix) ? "" : postfix;
@@ -192,7 +208,9 @@ public final class TestJaxDataUtil {
 		return jaxFall;
 	}
 
-	public static JaxDossier createTestJaxDossier(@Nullable JaxGemeinde gemeinde) {
+	public static JaxDossier createTestJaxDossier(
+		@Nullable JaxGemeinde gemeinde
+	) {
 		JaxDossier jaxDossier = new JaxDossier();
 		jaxDossier.setVerantwortlicherBG(createTestJaxBenutzerNoDetails());
 		jaxDossier.setFall(createTestJaxFall());
@@ -238,11 +256,16 @@ public final class TestJaxDataUtil {
 		JaxGesuch jaxGesuch = new JaxGesuch();
 		jaxGesuch.setEingangsart(Eingangsart.PAPIER);
 		jaxGesuch.setDossier(createTestJaxDossier(gemeinde));
-		jaxGesuch.setGesuchsperiode(jaxGesuchsperiode != null ? jaxGesuchsperiode : createTestJaxGesuchsperiode());
+		jaxGesuch.setGesuchsperiode(
+			jaxGesuchsperiode != null ?
+				jaxGesuchsperiode :
+				createTestJaxGesuchsperiode()
+		);
 		jaxGesuch.setGesuchsteller1(createTestJaxGesuchsteller());
 		jaxGesuch.setEingangsdatum(LocalDate.now());
 		jaxGesuch.setStatus(AntragStatusDTO.IN_BEARBEITUNG_JA);
-		JaxGesuchstellerContainer testJaxGesuchsteller = createTestJaxGesuchsteller();
+		JaxGesuchstellerContainer testJaxGesuchsteller =
+			createTestJaxGesuchsteller();
 		testJaxGesuchsteller.getGesuchstellerJA().setNachname("Gesuchsteller2");
 		jaxGesuch.setGesuchsteller2(testJaxGesuchsteller);
 		return jaxGesuch;
@@ -274,7 +297,9 @@ public final class TestJaxDataUtil {
 		jaxPensumFachstelle.setGueltigBis(LocalDate.now().plusMonths(1));
 		jaxPensumFachstelle.setGueltigAb(LocalDate.now());
 		jaxPensumFachstelle.setPensum(50);
-		jaxPensumFachstelle.setIntegrationTyp(IntegrationTyp.SOZIALE_INTEGRATION);
+		jaxPensumFachstelle.setIntegrationTyp(
+			IntegrationTyp.SOZIALE_INTEGRATION
+		);
 		jaxPensumFachstelle.setFachstelle(createTestJaxFachstelle());
 		return Set.of(jaxPensumFachstelle);
 	}
@@ -286,7 +311,10 @@ public final class TestJaxDataUtil {
 		return jaxKindContainer;
 	}
 
-	public static JaxBetreuungspensum createTestJaxBetreuungspensum(LocalDate from, LocalDate to) {
+	public static JaxBetreuungspensum createTestJaxBetreuungspensum(
+		LocalDate from,
+		LocalDate to
+	) {
 		JaxBetreuungspensum jaxBetreuungspensum = new JaxBetreuungspensum();
 		jaxBetreuungspensum.setGueltigAb(from);
 		jaxBetreuungspensum.setGueltigBis(to);
@@ -300,20 +328,28 @@ public final class TestJaxDataUtil {
 		return jaxBetreuungspensum;
 	}
 
-	public static JaxBetreuungspensumContainer createBetreuungspensumContainer(int year) {
+	public static JaxBetreuungspensumContainer createBetreuungspensumContainer(
+		int year
+	) {
 
 		LocalDate from = LocalDate.of(year, 8, 1);
 		LocalDate to = LocalDate.of(year + 1, 7, 31);
 
-		JaxBetreuungspensumContainer jaxBetrPenCnt = new JaxBetreuungspensumContainer();
-		jaxBetrPenCnt.setBetreuungspensumJA(createTestJaxBetreuungspensum(from, to));
-		jaxBetrPenCnt.setBetreuungspensumGS(createTestJaxBetreuungspensum(from, to));
+		JaxBetreuungspensumContainer jaxBetrPenCnt =
+			new JaxBetreuungspensumContainer();
+		jaxBetrPenCnt.setBetreuungspensumJA(
+			createTestJaxBetreuungspensum(from, to)
+		);
+		jaxBetrPenCnt.setBetreuungspensumGS(
+			createTestJaxBetreuungspensum(from, to)
+		);
 		return jaxBetrPenCnt;
 	}
 
 	public static JaxBetreuung createTestJaxBetreuung() {
 		JaxBetreuung betreuung = new JaxBetreuung();
-		JaxInstitutionStammdatenSummary jaxInst = createTestJaxInstitutionsStammdatenSummary();
+		JaxInstitutionStammdatenSummary jaxInst =
+			createTestJaxInstitutionsStammdatenSummary();
 		betreuung.setInstitutionStammdaten(jaxInst);
 		betreuung.setBetreuungsstatus(Betreuungsstatus.BESTAETIGT);
 		betreuung.setBetreuungspensumContainers(new ArrayList<>());
@@ -321,18 +357,28 @@ public final class TestJaxDataUtil {
 	}
 
 	public static JaxInstitutionStammdaten createTestJaxInstitutionsStammdaten() {
-		JaxInstitutionStammdaten institutionStammdaten = new JaxInstitutionStammdaten();
-		institutionStammdaten.setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
-		institutionStammdaten.setGueltigAb(Constants.DEFAULT_GUELTIGKEIT.getGueltigAb());
+		JaxInstitutionStammdaten institutionStammdaten =
+			new JaxInstitutionStammdaten();
+		institutionStammdaten.setBetreuungsangebotTyp(
+			BetreuungsangebotTyp.KITA
+		);
+		institutionStammdaten.setGueltigAb(
+			Constants.DEFAULT_GUELTIGKEIT.getGueltigAb()
+		);
 		institutionStammdaten.setMail("mail@example.com");
 		institutionStammdaten.setAdresse(createTestJaxAdr("JA").getAdresseJA());
 		return institutionStammdaten;
 	}
 
 	public static JaxInstitutionStammdatenSummary createTestJaxInstitutionsStammdatenSummary() {
-		JaxInstitutionStammdatenSummary institutionStammdaten = new JaxInstitutionStammdatenSummary();
-		institutionStammdaten.setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
-		institutionStammdaten.setGueltigAb(Constants.DEFAULT_GUELTIGKEIT.getGueltigAb());
+		JaxInstitutionStammdatenSummary institutionStammdaten =
+			new JaxInstitutionStammdatenSummary();
+		institutionStammdaten.setBetreuungsangebotTyp(
+			BetreuungsangebotTyp.KITA
+		);
+		institutionStammdaten.setGueltigAb(
+			Constants.DEFAULT_GUELTIGKEIT.getGueltigAb()
+		);
 		institutionStammdaten.setMail("mail@example.com");
 		institutionStammdaten.setAdresse(createTestJaxAdr("JA").getAdresseJA());
 		return institutionStammdaten;
@@ -347,43 +393,65 @@ public final class TestJaxDataUtil {
 	}
 
 	public static JaxEinkommensverschlechterungInfoContainer createTestJaxEinkommensverschlechterungInfoContainer() {
-		JaxEinkommensverschlechterungInfoContainer jaxEinkommensverschlechterungInfoContainer = new JaxEinkommensverschlechterungInfoContainer();
-		jaxEinkommensverschlechterungInfoContainer.setEinkommensverschlechterungInfoJA(createTestJaxEinkommensverschlechterungInfo());
+		JaxEinkommensverschlechterungInfoContainer jaxEinkommensverschlechterungInfoContainer =
+			new JaxEinkommensverschlechterungInfoContainer();
+		jaxEinkommensverschlechterungInfoContainer
+			.setEinkommensverschlechterungInfoJA(
+				createTestJaxEinkommensverschlechterungInfo()
+			);
 		return jaxEinkommensverschlechterungInfoContainer;
 	}
 
 	public static JaxEinkommensverschlechterungInfo createTestJaxEinkommensverschlechterungInfo() {
-		JaxEinkommensverschlechterungInfo jaxEinkommensverschlechterungInfo = new JaxEinkommensverschlechterungInfo();
+		JaxEinkommensverschlechterungInfo jaxEinkommensverschlechterungInfo =
+			new JaxEinkommensverschlechterungInfo();
 		jaxEinkommensverschlechterungInfo.setEinkommensverschlechterung(true);
 		jaxEinkommensverschlechterungInfo.setEkvFuerBasisJahrPlus1(true);
 		jaxEinkommensverschlechterungInfo.setEkvFuerBasisJahrPlus2(false);
-		jaxEinkommensverschlechterungInfo.setEkvBasisJahrPlus1Annulliert(Boolean.FALSE);
-		jaxEinkommensverschlechterungInfo.setEkvBasisJahrPlus2Annulliert(Boolean.FALSE);
+		jaxEinkommensverschlechterungInfo.setEkvBasisJahrPlus1Annulliert(
+			Boolean.FALSE
+		);
+		jaxEinkommensverschlechterungInfo.setEkvBasisJahrPlus2Annulliert(
+			Boolean.FALSE
+		);
 		return jaxEinkommensverschlechterungInfo;
 	}
 
 	public static JaxEinkommensverschlechterungContainer createTestJaxEinkommensverschlechterungContianer() {
-		JaxEinkommensverschlechterungContainer einkommensverschlechterungContainer = new JaxEinkommensverschlechterungContainer();
+		JaxEinkommensverschlechterungContainer einkommensverschlechterungContainer =
+			new JaxEinkommensverschlechterungContainer();
 
-		einkommensverschlechterungContainer.setEkvGSBasisJahrPlus1(createDefaultJaxEinkommensverschlechterungs());
+		einkommensverschlechterungContainer.setEkvGSBasisJahrPlus1(
+			createDefaultJaxEinkommensverschlechterungs()
+		);
 
-		final JaxEinkommensverschlechterung ekvGSBasisJahrPlus2 = createDefaultJaxEinkommensverschlechterungs();
+		final JaxEinkommensverschlechterung ekvGSBasisJahrPlus2 =
+			createDefaultJaxEinkommensverschlechterungs();
 		ekvGSBasisJahrPlus2.setNettolohn(BigDecimal.valueOf(2));
-		einkommensverschlechterungContainer.setEkvGSBasisJahrPlus2(ekvGSBasisJahrPlus2);
+		einkommensverschlechterungContainer.setEkvGSBasisJahrPlus2(
+			ekvGSBasisJahrPlus2
+		);
 
-		final JaxEinkommensverschlechterung ekvJABasisJahrPlus1 = createDefaultJaxEinkommensverschlechterungs();
+		final JaxEinkommensverschlechterung ekvJABasisJahrPlus1 =
+			createDefaultJaxEinkommensverschlechterungs();
 		ekvJABasisJahrPlus1.setNettolohn(BigDecimal.valueOf(3));
-		einkommensverschlechterungContainer.setEkvJABasisJahrPlus1(ekvJABasisJahrPlus1);
+		einkommensverschlechterungContainer.setEkvJABasisJahrPlus1(
+			ekvJABasisJahrPlus1
+		);
 
-		final JaxEinkommensverschlechterung ekvJABasisJahrPlus2 = createDefaultJaxEinkommensverschlechterungs();
+		final JaxEinkommensverschlechterung ekvJABasisJahrPlus2 =
+			createDefaultJaxEinkommensverschlechterungs();
 		ekvJABasisJahrPlus2.setNettolohn(BigDecimal.valueOf(4));
-		einkommensverschlechterungContainer.setEkvJABasisJahrPlus2(ekvJABasisJahrPlus2);
+		einkommensverschlechterungContainer.setEkvJABasisJahrPlus2(
+			ekvJABasisJahrPlus2
+		);
 
 		return einkommensverschlechterungContainer;
 	}
 
 	public static JaxEinkommensverschlechterung createDefaultJaxEinkommensverschlechterungs() {
-		JaxEinkommensverschlechterung einkommensverschlechterung = new JaxEinkommensverschlechterung();
+		JaxEinkommensverschlechterung einkommensverschlechterung =
+			new JaxEinkommensverschlechterung();
 		einkommensverschlechterung.setNettolohn(BigDecimal.ONE);
 		return einkommensverschlechterung;
 	}

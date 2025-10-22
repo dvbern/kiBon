@@ -16,9 +16,8 @@
 package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
-import ch.dvbern.ebegu.types.DateRange;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
@@ -27,15 +26,25 @@ import org.hibernate.envers.Audited;
  */
 @Audited
 @Entity
-public class GemeindeStammdatenGesuchsperiodeFerieninselZeitraum extends AbstractDateRangedEntity implements Comparable<GemeindeStammdatenGesuchsperiodeFerieninselZeitraum> {
+public class GemeindeStammdatenGesuchsperiodeFerieninselZeitraum extends
+	AbstractDateRangedEntity implements
+	Comparable<GemeindeStammdatenGesuchsperiodeFerieninselZeitraum> {
 
 	private static final long serialVersionUID = 2918865169295094143L;
 
 	@Override
-	public int compareTo(@Nonnull GemeindeStammdatenGesuchsperiodeFerieninselZeitraum o) {
+	public int compareTo(
+		@Nonnull GemeindeStammdatenGesuchsperiodeFerieninselZeitraum o
+	) {
 		CompareToBuilder builder = new CompareToBuilder();
-		builder.append(this.getGueltigkeit().getGueltigAb(), o.getGueltigkeit().getGueltigAb());
-		builder.append(this.getGueltigkeit().getGueltigBis(), o.getGueltigkeit().getGueltigBis());
+		builder.append(
+			this.getGueltigkeit().getGueltigAb(),
+			o.getGueltigkeit().getGueltigAb()
+		);
+		builder.append(
+			this.getGueltigkeit().getGueltigBis(),
+			o.getGueltigkeit().getGueltigBis()
+		);
 		return builder.toComparison();
 	}
 }

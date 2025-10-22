@@ -22,28 +22,48 @@ import java.math.BigDecimal;
 import javax.annotation.Nullable;
 
 public class FerienbetreuungDocxDTO {
-	@Nullable private String userName;
-	@Nullable private String userEmail;
-	@Nullable private String gemeindeAnschrift;
-	@Nullable private String gemeindeStrasse;
-	@Nullable private String gemeindeNamen;
-	@Nullable private String gemeindeNr;
-	@Nullable private String gemeindePLZ;
-	@Nullable private String gemeindeOrt;
-	@Nullable private String fallNummer;
-	@Nullable private String periode;
-	@Nullable private String angebot;
-	@Nullable private String traegerschaft;
-	@Nullable private BigDecimal tageSonderschueler;
-	@Nullable private BigDecimal chfSonderschueler;
-	@Nullable private BigDecimal tageOhneSonderschueler;
-	@Nullable private BigDecimal chfOhneSonderschueler;
-	@Nullable private BigDecimal totalTage;
-	@Nullable private BigDecimal totalChf;
-	@Nullable private String iban;
-	@Nullable private BigDecimal pauschale;
-	@Nullable private BigDecimal pauschaleSonderschueler;
-
+	@Nullable
+	private String userName;
+	@Nullable
+	private String userEmail;
+	@Nullable
+	private String gemeindeAnschrift;
+	@Nullable
+	private String gemeindeStrasse;
+	@Nullable
+	private String gemeindeNamen;
+	@Nullable
+	private String gemeindeNr;
+	@Nullable
+	private String gemeindePLZ;
+	@Nullable
+	private String gemeindeOrt;
+	@Nullable
+	private String fallNummer;
+	@Nullable
+	private String periode;
+	@Nullable
+	private String angebot;
+	@Nullable
+	private String traegerschaft;
+	@Nullable
+	private BigDecimal tageSonderschueler;
+	@Nullable
+	private BigDecimal chfSonderschueler;
+	@Nullable
+	private BigDecimal tageOhneSonderschueler;
+	@Nullable
+	private BigDecimal chfOhneSonderschueler;
+	@Nullable
+	private BigDecimal totalTage;
+	@Nullable
+	private BigDecimal totalChf;
+	@Nullable
+	private String iban;
+	@Nullable
+	private BigDecimal pauschale;
+	@Nullable
+	private BigDecimal pauschaleSonderschueler;
 
 	public FerienbetreuungDocxDTO() {
 	}
@@ -170,7 +190,9 @@ public class FerienbetreuungDocxDTO {
 		return tageOhneSonderschueler;
 	}
 
-	public void setTageOhneSonderschuelertage(@Nullable BigDecimal tageOhneSonderschueler) {
+	public void setTageOhneSonderschuelertage(
+		@Nullable BigDecimal tageOhneSonderschueler
+	) {
 		this.tageOhneSonderschueler = tageOhneSonderschueler;
 	}
 
@@ -179,7 +201,9 @@ public class FerienbetreuungDocxDTO {
 		return chfOhneSonderschueler;
 	}
 
-	public void setChfOhneSonderschueler(@Nullable BigDecimal chfOhneSonderschueler) {
+	public void setChfOhneSonderschueler(
+		@Nullable BigDecimal chfOhneSonderschueler
+	) {
 		this.chfOhneSonderschueler = chfOhneSonderschueler;
 	}
 
@@ -210,7 +234,9 @@ public class FerienbetreuungDocxDTO {
 		this.iban = iban;
 	}
 
-	public void setTageOhneSonderschueler(@Nullable BigDecimal tageOhneSonderschueler) {
+	public void setTageOhneSonderschueler(
+		@Nullable BigDecimal tageOhneSonderschueler
+	) {
 		this.tageOhneSonderschueler = tageOhneSonderschueler;
 	}
 
@@ -228,7 +254,9 @@ public class FerienbetreuungDocxDTO {
 		return pauschaleSonderschueler;
 	}
 
-	public void setPauschaleSonderschueler(@Nullable BigDecimal pauschaleSonderschueler) {
+	public void setPauschaleSonderschueler(
+		@Nullable BigDecimal pauschaleSonderschueler
+	) {
 		this.pauschaleSonderschueler = pauschaleSonderschueler;
 	}
 

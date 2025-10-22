@@ -14,8 +14,8 @@
  */
 
 import {IController, IDirective, IDirectiveFactory} from 'angular';
-import * as moment from 'moment';
-import {DateUtil} from '../../../../utils/DateUtil';
+import moment from 'moment';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import IAttributes = angular.IAttributes;
 import ILogService = angular.ILogService;
 import INgModelController = angular.INgModelController;
@@ -98,7 +98,8 @@ export class TimepickerController implements IController {
         }
         // Wenn kein Minimumdatum gesetzt ist, verwenden wir 01.01.1900 als Minimum
         if (this.dvMinDateTime === undefined) {
-            this.dvMinDateTime = DateUtil.localDateToMoment('1900-01-01 00:00');
+            this.dvMinDateTime =
+                MomentUtil.localDateToMoment('1900-01-01 00:00');
         }
         const noFuture = 'noFuture' in this.$attrs;
         // wenn kein Placeholder gesetzt wird wird der standardplaceholder verwendet. kann mit placeholder=""
@@ -213,12 +214,7 @@ export class TimepickerController implements IController {
     private getInputAsMoment(modelValue: any, viewValue: any): moment.Moment {
         const value =
             modelValue || TimepickerController.stringToMoment(viewValue);
-        const inputdateTime = moment(
-            value,
-            TimepickerController.allowedFormats,
-            true
-        );
-        return inputdateTime;
+        return moment(value, TimepickerController.allowedFormats, true);
     }
 
     public onBlur(): void {

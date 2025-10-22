@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.rechner.rules;
@@ -41,13 +41,16 @@ public class MahlzeitenverguenstigungBGRechnerRuleTest {
 	private final BigDecimal einkommenStufe1 = MathUtil.DEFAULT.from(10000);
 	private final BigDecimal einkommenStufe2 = MathUtil.DEFAULT.from(60000);
 
-	private final AbstractPlatz platz = TestDataUtil.createTestgesuchDagmar(new FinanzielleSituationBernRechner()).extractAllBetreuungen().get(0);
+	private final AbstractPlatz platz = TestDataUtil.createTestgesuchDagmar(
+		new FinanzielleSituationBernRechner()
+	).extractAllBetreuungen().get(0);
 	private MahlzeitenverguenstigungBGRechnerRule rule = null;
 	private MahlzeitenverguenstigungParameter parameter;
 
 	@Before
 	public void setUp() {
-		final Familiensituation familiensituation = platz.extractGesuch().extractFamiliensituation();
+		final Familiensituation familiensituation = platz.extractGesuch()
+			.extractFamiliensituation();
 		Assert.assertNotNull(familiensituation);
 		familiensituation.setKeineMahlzeitenverguenstigungBeantragt(false);
 		this.parameter = new MahlzeitenverguenstigungParameter(
@@ -174,14 +177,29 @@ public class MahlzeitenverguenstigungBGRechnerRuleTest {
 		);
 	}
 
-	private void assertResults(@Nonnull BGCalculationInput inputData, int expectedVerguenstigungMahlzeitenTotal) {
-		BGRechnerParameterDTO bgRechnerParameterDTO = new BGRechnerParameterDTO();
-		bgRechnerParameterDTO.setMahlzeitenverguenstigungParameter(this.parameter);
-		RechnerRuleParameterDTO rechnerRuleParameterDTO = new RechnerRuleParameterDTO();
-		rule.prepareParameter(inputData, bgRechnerParameterDTO, rechnerRuleParameterDTO);
-		final BigDecimal verguenstigungMahlzeitenTotal = rechnerRuleParameterDTO.getVerguenstigungMahlzeitenTotal();
+	private void assertResults(
+		@Nonnull BGCalculationInput inputData,
+		int expectedVerguenstigungMahlzeitenTotal
+	) {
+		BGRechnerParameterDTO bgRechnerParameterDTO =
+			new BGRechnerParameterDTO();
+		bgRechnerParameterDTO.setMahlzeitenverguenstigungParameter(
+			this.parameter
+		);
+		RechnerRuleParameterDTO rechnerRuleParameterDTO =
+			new RechnerRuleParameterDTO();
+		rule.prepareParameter(
+			inputData,
+			bgRechnerParameterDTO,
+			rechnerRuleParameterDTO
+		);
+		final BigDecimal verguenstigungMahlzeitenTotal = rechnerRuleParameterDTO
+			.getVerguenstigungMahlzeitenTotal();
 		Assert.assertNotNull(verguenstigungMahlzeitenTotal);
-		Assert.assertEquals(expectedVerguenstigungMahlzeitenTotal, verguenstigungMahlzeitenTotal.intValue());
+		Assert.assertEquals(
+			expectedVerguenstigungMahlzeitenTotal,
+			verguenstigungMahlzeitenTotal.intValue()
+		);
 	}
 
 	@Nonnull
@@ -198,7 +216,8 @@ public class MahlzeitenverguenstigungBGRechnerRuleTest {
 			anzahlNebenmahlzeiten,
 			kostenProHauptmahlzeit,
 			kostenProNebenmahlzeit,
-			100);
+			100
+		);
 	}
 
 	@Nonnull
@@ -214,12 +233,22 @@ public class MahlzeitenverguenstigungBGRechnerRuleTest {
 		BGCalculationInput input = abschnitt.getBgCalculationInputAsiv();
 		input.setMassgebendesEinkommenVorAbzugFamgr(einkommen);
 		input.setAbzugFamGroesse(BigDecimal.ZERO);
-		input.setAnzahlHauptmahlzeiten(MathUtil.DEFAULT.from(anzahlHauptmahlzeiten));
-		input.setAnzahlNebenmahlzeiten(MathUtil.DEFAULT.from(anzahlNebenmahlzeiten));
-		input.setTarifHauptmahlzeit(MathUtil.DEFAULT.from(kostenProHauptmahlzeit));
-		input.setTarifNebenmahlzeit(MathUtil.DEFAULT.from(kostenProNebenmahlzeit));
+		input.setAnzahlHauptmahlzeiten(
+			MathUtil.DEFAULT.from(anzahlHauptmahlzeiten)
+		);
+		input.setAnzahlNebenmahlzeiten(
+			MathUtil.DEFAULT.from(anzahlNebenmahlzeiten)
+		);
+		input.setTarifHauptmahlzeit(
+			MathUtil.DEFAULT.from(kostenProHauptmahlzeit)
+		);
+		input.setTarifNebenmahlzeit(
+			MathUtil.DEFAULT.from(kostenProNebenmahlzeit)
+		);
 		input.setAnspruchspensumProzent(anspruchsPensum);
-		input.setBetreuungspensumProzent(MathUtil.DEFAULT.from(anspruchsPensum));
+		input.setBetreuungspensumProzent(
+			MathUtil.DEFAULT.from(anspruchsPensum)
+		);
 		return input;
 	}
 }

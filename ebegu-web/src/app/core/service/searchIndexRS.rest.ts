@@ -35,7 +35,9 @@ export class SearchIndexRS {
      * @param query searchstring
      */
     public quickSearch(query: string): IPromise<TSQuickSearchResult> {
-        return this.search(`${this.serviceURL}quicksearch/${query}`);
+        return this.search(
+            `${this.serviceURL}quicksearch/${encodeURIComponent(query)}`
+        );
     }
 
     /**

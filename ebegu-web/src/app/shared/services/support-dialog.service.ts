@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {DvNgSupportDialogComponent} from '../../../gesuch/dialog/dv-ng-support-dialog.component';
+import {DvNgSupportDialogComponent} from '../../../gesuch/dialog/dv-ng-support-dialog/dv-ng-support-dialog.component';
 
 @Injectable({
     providedIn: 'root'

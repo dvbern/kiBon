@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -65,7 +65,9 @@ public class JaxGemeindeKonfiguration implements Serializable {
 		return konfigurationen;
 	}
 
-	public void setKonfigurationen(@Nonnull List<JaxEinstellung> konfigurationen) {
+	public void setKonfigurationen(
+		@Nonnull List<JaxEinstellung> konfigurationen
+	) {
 		this.konfigurationen = konfigurationen;
 	}
 
@@ -82,7 +84,9 @@ public class JaxGemeindeKonfiguration implements Serializable {
 		return gesuchsperiodeStatusName;
 	}
 
-	public void setGesuchsperiodeStatusName(@Nonnull String gesuchsperiodeStatusName) {
+	public void setGesuchsperiodeStatusName(
+		@Nonnull String gesuchsperiodeStatusName
+	) {
 		this.gesuchsperiodeStatusName = gesuchsperiodeStatusName;
 	}
 
@@ -91,7 +95,9 @@ public class JaxGemeindeKonfiguration implements Serializable {
 		return ferieninselStammdaten;
 	}
 
-	public void setFerieninselStammdaten(@Nonnull List<JaxGemeindeStammdatenGesuchsperiodeFerieninsel> ferieninselStammdaten) {
+	public void setFerieninselStammdaten(
+		@Nonnull List<JaxGemeindeStammdatenGesuchsperiodeFerieninsel> ferieninselStammdaten
+	) {
 		this.ferieninselStammdaten = ferieninselStammdaten;
 	}
 
@@ -99,15 +105,21 @@ public class JaxGemeindeKonfiguration implements Serializable {
 		return erwerbspensumMiminumVorschuleMax;
 	}
 
-	public void setErwerbspensumMiminumVorschuleMax(int erwerbspensumMiminumVorschuleMax) {
-		this.erwerbspensumMiminumVorschuleMax = erwerbspensumMiminumVorschuleMax;
+	public void setErwerbspensumMiminumVorschuleMax(
+		int erwerbspensumMiminumVorschuleMax
+	) {
+		this.erwerbspensumMiminumVorschuleMax =
+			erwerbspensumMiminumVorschuleMax;
 	}
 
 	public int getErwerbspensumMiminumSchulkinderMax() {
 		return erwerbspensumMiminumSchulkinderMax;
 	}
 
-	public void setErwerbspensumMiminumSchulkinderMax(int erwerbspensumMiminumSchulkinderMax) {
-		this.erwerbspensumMiminumSchulkinderMax = erwerbspensumMiminumSchulkinderMax;
+	public void setErwerbspensumMiminumSchulkinderMax(
+		int erwerbspensumMiminumSchulkinderMax
+	) {
+		this.erwerbspensumMiminumSchulkinderMax =
+			erwerbspensumMiminumSchulkinderMax;
 	}
 }

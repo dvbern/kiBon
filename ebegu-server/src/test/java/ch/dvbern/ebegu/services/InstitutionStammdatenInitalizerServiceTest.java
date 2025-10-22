@@ -1,5 +1,8 @@
 package ch.dvbern.ebegu.services;
 
+import java.util.List;
+import java.util.Optional;
+
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
@@ -14,19 +17,19 @@ import org.easymock.TestSubject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.List;
-import java.util.Optional;
-
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(EasyMockExtension.class)
 class InstitutionStammdatenInitalizerServiceTest extends EasyMockSupport {
 
 	@TestSubject
-	private final InstitutionStammdatenInitializerServiceBean institutionStammdatenInitializerServiceBean = new InstitutionStammdatenInitializerServiceBean();
+	private final InstitutionStammdatenInitializerServiceBean institutionStammdatenInitializerServiceBean =
+		new InstitutionStammdatenInitializerServiceBean();
 
 	@Mock
 	private GesuchsperiodeService gesuchsperiodeService;
@@ -39,91 +42,182 @@ class InstitutionStammdatenInitalizerServiceTest extends EasyMockSupport {
 	@Test
 	void initInstitutionStammdatenBetreuungsgutschein() {
 		InstitutionStammdaten institutionStammdaten =
-			institutionStammdatenInitializerServiceBean.initInstitutionStammdatenBetreuungsgutschein();
+			institutionStammdatenInitializerServiceBean
+				.initInstitutionStammdatenBetreuungsgutschein();
 
-		assertThat(institutionStammdaten.getInstitutionStammdatenBetreuungsgutscheine(), notNullValue());
-		assertThat(institutionStammdaten.getInstitutionStammdatenTagesschule(), nullValue());
-		assertThat(institutionStammdaten.getInstitutionStammdatenFerieninsel(), nullValue());
+		assertThat(
+			institutionStammdaten
+				.getInstitutionStammdatenBetreuungsgutscheine(),
+			notNullValue()
+		);
+		assertThat(
+			institutionStammdaten.getInstitutionStammdatenTagesschule(),
+			nullValue()
+		);
+		assertThat(
+			institutionStammdaten.getInstitutionStammdatenFerieninsel(),
+			nullValue()
+		);
 	}
 
 	@Test
 	void initTagesschule_gemeindNull() {
-		EbeguRuntimeException e = assertThrows(EbeguRuntimeException.class, () -> {
-			institutionStammdatenInitializerServiceBean.initInstitutionStammdatenTagesschule(null);
-		});
+		EbeguRuntimeException e = assertThrows(
+			EbeguRuntimeException.class,
+			() -> {
+				institutionStammdatenInitializerServiceBean
+					.initInstitutionStammdatenTagesschule(null);
+			}
+		);
 
 		assertThat(e.getMessage(), is("missing gemeindeId"));
 	}
 
 	@Test
 	void initFerieninsel_gemeindNull() {
-		EbeguRuntimeException e = assertThrows(EbeguRuntimeException.class, () -> {
-			institutionStammdatenInitializerServiceBean.initInstitutionStammdatenTagesschule(null);
-		});
+		EbeguRuntimeException e = assertThrows(
+			EbeguRuntimeException.class,
+			() -> {
+				institutionStammdatenInitializerServiceBean
+					.initInstitutionStammdatenTagesschule(null);
+			}
+		);
 
 		assertThat(e.getMessage(), is("missing gemeindeId"));
 	}
 
 	@Test
 	void initTagesschule_gemeindNotFound() {
-		expect(gemeindeService.findGemeinde(GEMEINDE_ID)).andReturn(Optional.empty());
+		expect(gemeindeService.findGemeinde(GEMEINDE_ID)).andReturn(
+			Optional.empty()
+		);
 		replayAll();
 
-		EbeguRuntimeException e = assertThrows(EbeguEntityNotFoundException.class, () -> {
-			institutionStammdatenInitializerServiceBean.initInstitutionStammdatenTagesschule(GEMEINDE_ID);
-		});
+		EbeguRuntimeException e = assertThrows(
+			EbeguEntityNotFoundException.class,
+			() -> {
+				institutionStammdatenInitializerServiceBean
+					.initInstitutionStammdatenTagesschule(GEMEINDE_ID);
+			}
+		);
 
-		assertThat(e.getErrorCodeEnum(), is(ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND));
+		assertThat(
+			e.getErrorCodeEnum(),
+			is(ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND)
+		);
 	}
 
 	@Test
 	void initFerieninsel_gemeindNotFound() {
-		expect(gemeindeService.findGemeinde(GEMEINDE_ID)).andReturn(Optional.empty());
+		expect(gemeindeService.findGemeinde(GEMEINDE_ID)).andReturn(
+			Optional.empty()
+		);
 		replayAll();
 
-		EbeguRuntimeException e = assertThrows(EbeguEntityNotFoundException.class, () -> {
-			institutionStammdatenInitializerServiceBean.initInstitutionStammdatenFerieninsel(GEMEINDE_ID);
-		});
+		EbeguRuntimeException e = assertThrows(
+			EbeguEntityNotFoundException.class,
+			() -> {
+				institutionStammdatenInitializerServiceBean
+					.initInstitutionStammdatenFerieninsel(GEMEINDE_ID);
+			}
+		);
 
-		assertThat(e.getErrorCodeEnum(), is(ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND));
+		assertThat(
+			e.getErrorCodeEnum(),
+			is(ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND)
+		);
 	}
+
 	@Test
 	void initTagesschule() {
-		expect(gemeindeService.findGemeinde(GEMEINDE_ID)).andReturn(Optional.of(new Gemeinde()));
-		expect(gesuchsperiodeService.getAllNichtAbgeschlosseneGesuchsperioden()).andReturn(List.of(new Gesuchsperiode()));
+		expect(gemeindeService.findGemeinde(GEMEINDE_ID)).andReturn(
+			Optional.of(new Gemeinde())
+		);
+		expect(gesuchsperiodeService.getAllNichtAbgeschlosseneGesuchsperioden())
+			.andReturn(List.of(new Gesuchsperiode()));
 		replayAll();
 
 		InstitutionStammdaten stammdaten =
-			institutionStammdatenInitializerServiceBean.initInstitutionStammdatenTagesschule(GEMEINDE_ID);
+			institutionStammdatenInitializerServiceBean
+				.initInstitutionStammdatenTagesschule(GEMEINDE_ID);
 
-		assertThat(stammdaten.getInstitutionStammdatenTagesschule(), notNullValue());
-		assertThat(stammdaten.getInstitutionStammdatenTagesschule().getGemeinde(), notNullValue());
-		assertThat(stammdaten.getInstitutionStammdatenTagesschule().getEinstellungenTagesschule(), notNullValue());
-		stammdaten.getInstitutionStammdatenTagesschule().getEinstellungenTagesschule().forEach(einstellung -> {
-			assertThat(einstellung.getInstitutionStammdatenTagesschule(), notNullValue());
-			assertThat(einstellung.getGesuchsperiode(), notNullValue());
-			assertThat(einstellung.getModulTagesschuleTyp(), is(ModulTagesschuleTyp.DYNAMISCH));
-		});
-		assertThat(stammdaten.getInstitutionStammdatenBetreuungsgutscheine(), nullValue());
-		assertThat(stammdaten.getInstitutionStammdatenFerieninsel(), nullValue());
+		assertThat(
+			stammdaten.getInstitutionStammdatenTagesschule(),
+			notNullValue()
+		);
+		assertThat(
+			stammdaten.getInstitutionStammdatenTagesschule().getGemeinde(),
+			notNullValue()
+		);
+		assertThat(
+			stammdaten.getInstitutionStammdatenTagesschule()
+				.getEinstellungenTagesschule(),
+			notNullValue()
+		);
+		stammdaten.getInstitutionStammdatenTagesschule()
+			.getEinstellungenTagesschule()
+			.forEach(einstellung -> {
+				assertThat(
+					einstellung.getInstitutionStammdatenTagesschule(),
+					notNullValue()
+				);
+				assertThat(einstellung.getGesuchsperiode(), notNullValue());
+				assertThat(
+					einstellung.getModulTagesschuleTyp(),
+					is(ModulTagesschuleTyp.DYNAMISCH)
+				);
+			});
+		assertThat(
+			stammdaten.getInstitutionStammdatenBetreuungsgutscheine(),
+			nullValue()
+		);
+		assertThat(
+			stammdaten.getInstitutionStammdatenFerieninsel(),
+			nullValue()
+		);
 	}
 
 	@Test
 	void initFerieninsel() {
-		expect(gemeindeService.findGemeinde(GEMEINDE_ID)).andReturn(Optional.of(new Gemeinde()));
-		expect(gesuchsperiodeService.getAllNichtAbgeschlosseneGesuchsperioden()).andReturn(List.of(new Gesuchsperiode()));
+		expect(gemeindeService.findGemeinde(GEMEINDE_ID)).andReturn(
+			Optional.of(new Gemeinde())
+		);
+		expect(gesuchsperiodeService.getAllNichtAbgeschlosseneGesuchsperioden())
+			.andReturn(List.of(new Gesuchsperiode()));
 		replayAll();
 
 		InstitutionStammdaten stammdaten =
-			institutionStammdatenInitializerServiceBean.initInstitutionStammdatenFerieninsel(GEMEINDE_ID);
-		assertThat(stammdaten.getInstitutionStammdatenFerieninsel(), notNullValue());
-		assertThat(stammdaten.getInstitutionStammdatenFerieninsel().getGemeinde(), notNullValue());
-		assertThat(stammdaten.getInstitutionStammdatenFerieninsel().getEinstellungenFerieninsel(), notNullValue());
-		stammdaten.getInstitutionStammdatenFerieninsel().getEinstellungenFerieninsel().forEach(einstellung -> {
-			assertThat(einstellung.getInstitutionStammdatenFerieninsel(), notNullValue());
-			assertThat(einstellung.getGesuchsperiode(), notNullValue());
-		});
-		assertThat(stammdaten.getInstitutionStammdatenBetreuungsgutscheine(), nullValue());
-		assertThat(stammdaten.getInstitutionStammdatenTagesschule(), nullValue());
+			institutionStammdatenInitializerServiceBean
+				.initInstitutionStammdatenFerieninsel(GEMEINDE_ID);
+		assertThat(
+			stammdaten.getInstitutionStammdatenFerieninsel(),
+			notNullValue()
+		);
+		assertThat(
+			stammdaten.getInstitutionStammdatenFerieninsel().getGemeinde(),
+			notNullValue()
+		);
+		assertThat(
+			stammdaten.getInstitutionStammdatenFerieninsel()
+				.getEinstellungenFerieninsel(),
+			notNullValue()
+		);
+		stammdaten.getInstitutionStammdatenFerieninsel()
+			.getEinstellungenFerieninsel()
+			.forEach(einstellung -> {
+				assertThat(
+					einstellung.getInstitutionStammdatenFerieninsel(),
+					notNullValue()
+				);
+				assertThat(einstellung.getGesuchsperiode(), notNullValue());
+			});
+		assertThat(
+			stammdaten.getInstitutionStammdatenBetreuungsgutscheine(),
+			nullValue()
+		);
+		assertThat(
+			stammdaten.getInstitutionStammdatenTagesschule(),
+			nullValue()
+		);
 	}
 }

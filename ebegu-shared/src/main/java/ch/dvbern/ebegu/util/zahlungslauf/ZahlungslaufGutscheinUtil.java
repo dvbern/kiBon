@@ -14,7 +14,9 @@ public final class ZahlungslaufGutscheinUtil {
 	}
 
 	@Nonnull
-	public static BigDecimal getAuszahlungsbetrag(@Nonnull VerfuegungZeitabschnitt zeitabschnitt) {
+	public static BigDecimal getAuszahlungsbetrag(
+		@Nonnull VerfuegungZeitabschnitt zeitabschnitt
+	) {
 		return zeitabschnitt.getVerguenstigung();
 	}
 
@@ -22,7 +24,10 @@ public final class ZahlungslaufGutscheinUtil {
 		@Nonnull BGCalculationResult resultNeu,
 		@Nonnull BGCalculationResult resultBisher
 	) {
-		return MathUtil.isSame(resultNeu.getVerguenstigung(), resultBisher.getVerguenstigung());
+		return MathUtil.isSame(
+			resultNeu.getVerguenstigung(),
+			resultBisher.getVerguenstigung()
+		);
 	}
 
 	public static boolean isSamePersistedValues(

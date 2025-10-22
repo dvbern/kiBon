@@ -21,43 +21,42 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
-import * as Sentry from '@sentry/browser';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '../../../../models/enums/TSRole';
+import {TSRole} from '@kibon/shared/model/enums';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
-import {ApplicationPropertyRS} from '../../rest-services/applicationPropertyRS.rest';
 
 @Component({
     selector: 'dv-pulldown-user-menu',
     templateUrl: './pulldown-user-menu.component.html',
     styleUrls: ['./pulldown-user-menu.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class PulldownUserMenuComponent implements OnInit {
-    // Replace with Observable once ApplicationPropertyRS is migrated in KIBON-2963
-    public multimandantAktiv: boolean = false;
-    public frenchEnabled: boolean = false;
-    public testfaelleEnabled: boolean = false;
+    public multimandantAktiv: boolean;
+    public frenchEnabled: boolean;
+    public testfaelleEnabled: boolean;
 
     public constructor(
         private readonly authService: AuthServiceRS,
-        private readonly applicationPropertyRS: ApplicationPropertyRS,
+        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly state: StateService
     ) {}
 
     public ngOnInit(): void {
         this.initMandantSwitch();
         this.initFrenchEnabled();
-        this.initTestFaelleEnabled().catch(e => Sentry.captureException(e));
+        this.initTestFaelleEnabled();
     }
 
-    public getFullName(): Observable<string> {
+    public getFullName(): Observable<string | undefined> {
         return this.authService.principal$.pipe(
-            map(principal => principal.getFullName())
+            map(principal => principal?.getFullName())
         );
     }
 
@@ -77,14 +76,14 @@ export class PulldownUserMenuComponent implements OnInit {
         return TSRoleUtil.getMandantRoles();
     }
 
-    public getTraegerschaftId(): Observable<string> {
+    public getTraegerschaftId(): Observable<string | undefined> {
         return this.authService.principal$.pipe(
-            map(principal => principal.currentBerechtigung?.traegerschaft?.id)
+            map(principal => principal?.currentBerechtigung?.traegerschaft?.id)
         );
     }
 
-    public getAdministratorMandantRevisorRole(): ReadonlyArray<TSRole> {
-        return TSRoleUtil.getAdministratorMandantRevisorRole();
+    public getAdministratorBgTsGemeindeOrMandantRole(): ReadonlyArray<TSRole> {
+        return TSRoleUtil.getAdministratorBgTsGemeindeOrMandantRole();
     }
 
     public getAllRolesForSozialdienst(): ReadonlyArray<TSRole> {
@@ -92,29 +91,28 @@ export class PulldownUserMenuComponent implements OnInit {
     }
 
     private initMandantSwitch(): void {
-        this.applicationPropertyRS
-            .getPublicPropertiesCached()
-            .then(publicAppConfig => publicAppConfig.mulitmandantAktiv)
-            .then(active => {
-                this.multimandantAktiv = active;
-            });
+        this.applicationPropertyRS.isMultimandantEnabled().subscribe(res => {
+            this.multimandantAktiv = res;
+        });
     }
 
     private initFrenchEnabled(): void {
-        this.applicationPropertyRS
-            .getPublicPropertiesCached()
-            .then(publicAppConfig => publicAppConfig.frenchEnabled)
-            .then(enabled => {
-                this.frenchEnabled = enabled;
-            });
+        this.applicationPropertyRS.getFrenchEnabled().subscribe(res => {
+            this.frenchEnabled = res;
+        });
     }
 
-    private async initTestFaelleEnabled(): Promise<void> {
-        this.testfaelleEnabled =
-            await this.applicationPropertyRS.isTestfaelleEnabled();
+    private initTestFaelleEnabled() {
+        this.applicationPropertyRS.isTestfaelleEnabled().subscribe(res => {
+            this.testfaelleEnabled = res;
+        });
+    }
+
+    public isDevMode() {
+        return this.applicationPropertyRS.isDevMode();
     }
 
     public logout(): void {
-        this.state.go('authentication.login', {type: 'logout'});
+        this.authService.initLogout();
     }
 }

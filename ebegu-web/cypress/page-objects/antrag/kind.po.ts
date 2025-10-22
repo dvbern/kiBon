@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {FixtureKind} from '@dv-e2e/fixtures';
-import {getName} from 'domutils';
+import {FixtureKind, FixtureKinderFeutz} from '@dv-e2e/fixtures';
 
 // !! -- PAGE OBJECTS -- !!
 const getPageTitle = () => {
@@ -46,11 +45,30 @@ const getObhutAlternierend = (answer: string) => {
     );
 };
 
+const getKinderabzugErstesHalbjahr = (answer: string) => {
+    return cy.getByData(
+        'kinderabzugErstesHalbjahr.radio-group',
+        'kinderabzugErstesHalbjahr.radio-value.' + answer
+    );
+};
+
 const getFamErgaenzendeBetreuungAnmelden = (answer: string) => {
     return cy.getByData(
         'container.ergaenzende-betreuung-beide',
         'radio-value.' + answer
     );
+};
+
+const getFamErgaenzendeBetreuung = (answer: string) => {
+    return cy.getByData('familienErgaenzendeBetreuung.radio-value.' + answer);
+};
+
+const getFamErgaenzendeBetreuungAppenzell = (answer: string) => {
+    return cy.getByData('familienErgaenzendeBetreuung.radio-value.' + answer);
+};
+
+const getLeiblicheKind = (answer: string) => {
+    return cy.getByData('leibliche-kind', 'radio-value.' + answer);
 };
 
 const getSprichtAmtsprache = (answer: string) => {
@@ -112,7 +130,6 @@ const getAusserordentlicherAnspruchBis = () => {
 };
 
 // !! -- PAGE ACTIONS -- !!
-
 const createNewKind = () => {
     cy.getByData('container.create-kind', 'navigation-button').click();
 };
@@ -128,6 +145,65 @@ const fillKindForm = (dataset: keyof typeof FixtureKind) => {
         getObhutAlternierend('ja').find('label').click();
         getFamErgaenzendeBetreuungAnmelden('ja').find('label').click();
         getSprichtAmtsprache('ja').click();
+        getEinschulungstyp().select(kind1.einschulungstyp);
+    });
+};
+
+const fillKindFormSolothurn = (dataset: keyof typeof FixtureKind) => {
+    FixtureKind[dataset](({kind1}) => {
+        cy.url().should('include', 'kinder/kind');
+        cy.wait(2000);
+        getGeschlecht(kind1.geschlecht).click();
+        getVorname().type(kind1.vorname);
+        getNachname().type(kind1.nachname);
+        getGeburtsdatum().find('input').type(kind1.geburtsdatum);
+        getFamErgaenzendeBetreuung('ja').click();
+        getEinschulungstyp().select(kind1.einschulungstyp);
+    });
+};
+
+const fillKindFormFamilyFeutz = (dataset: keyof typeof FixtureKinderFeutz) => {
+    FixtureKinderFeutz[dataset](({kind1}) => {
+        cy.url().should('include', 'kinder/kind');
+        cy.wait(2000);
+        getGeschlecht(kind1.geschlecht).click();
+        getVorname().type(kind1.vorname);
+        getNachname().type(kind1.nachname);
+        getGeburtsdatum().find('input').type(kind1.geburtsdatum);
+        getKinderabzugErstesHalbjahr('GANZER_ABZUG').click();
+        getFamErgaenzendeBetreuung('ja').click();
+        getObhutAlternierend('ja').find('label').click();
+        getFamErgaenzendeBetreuungAnmelden('ja').find('label').click();
+        getEinschulungstyp().select(kind1.einschulungstyp);
+        getLeiblicheKind('ja').find('label').click();
+    });
+};
+
+const fillKindFormFamilyFeutzLuzern = (
+    dataset: keyof typeof FixtureKinderFeutz
+) => {
+    FixtureKinderFeutz[dataset](({kind1}) => {
+        cy.url().should('include', 'kinder/kind');
+        cy.wait(2000);
+        getGeschlecht(kind1.geschlecht).click();
+        getVorname().type(kind1.vorname);
+        getNachname().type(kind1.nachname);
+        getGeburtsdatum().find('input').type(kind1.geburtsdatum);
+        getFamErgaenzendeBetreuung('ja').click();
+        getEinschulungstyp().select(kind1.einschulungstyp);
+    });
+};
+
+const fillKindFormFeutzAppenzell = (
+    dataset: keyof typeof FixtureKinderFeutz
+) => {
+    FixtureKinderFeutz[dataset](({kind1}) => {
+        cy.url().should('include', 'kinder/kind');
+        cy.wait(2000);
+        getVorname().type(kind1.vorname);
+        getNachname().type(kind1.nachname);
+        getGeburtsdatum().find('input').type(kind1.geburtsdatum);
+        getFamErgaenzendeBetreuungAppenzell('ja').click();
         getEinschulungstyp().select(kind1.einschulungstyp);
     });
 };
@@ -170,7 +246,11 @@ export const AntragKindPO = {
     // page actions
     createNewKind,
     fillKindForm,
+    fillKindFormFamilyFeutz,
+    fillKindFormSolothurn,
     fillPflegekind,
     fillFachstelle,
-    fillAusserordentlicherAnspruch
+    fillAusserordentlicherAnspruch,
+    fillKindFormFamilyFeutzLuzern,
+    fillKindFormFeutzAppenzell
 };

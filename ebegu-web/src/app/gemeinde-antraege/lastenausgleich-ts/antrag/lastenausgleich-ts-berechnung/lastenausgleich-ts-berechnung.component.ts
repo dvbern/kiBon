@@ -24,13 +24,13 @@ import {
 import {TranslateService} from '@ngx-translate/core';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
-import {TSSprache} from '../../../../../models/enums/TSSprache';
+import {TSSprache} from '@kibon/shared/model/enums';
 import {TSLastenausgleichTagesschuleAngabenGemeindeContainer} from '../../../../../models/gemeindeantrag/TSLastenausgleichTagesschuleAngabenGemeindeContainer';
 import {TSBenutzer} from '../../../../../models/TSBenutzer';
 import {EbeguUtil} from '../../../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../../../utils/TSRoleUtil';
 import {ErrorService} from '../../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DownloadRS} from '../../../../core/service/downloadRS.rest';
 import {LastenausgleichTSService} from '../../services/lastenausgleich-ts.service';
 
@@ -40,7 +40,8 @@ const LOG = LogFactory.createLog('LastenausgleichTsBerechnungComponent');
     selector: 'dv-lastenausgleich-ts-berechnung',
     templateUrl: './lastenausgleich-ts-berechnung.component.html',
     styleUrls: ['./lastenausgleich-ts-berechnung.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LastenausgleichTsBerechnungComponent implements OnInit {
     private static readonly FILENAME_DE = 'Verfügung Tagesschulen kiBon';
@@ -73,8 +74,8 @@ export class LastenausgleichTsBerechnungComponent implements OnInit {
         combineLatest([
             this.latsService.getLATSAngabenGemeindeContainer(),
             this.authService.principal$
-        ]).subscribe(
-            values => {
+        ]).subscribe({
+            next: values => {
                 this.latsContainer = values[0];
                 this.principal = values[1];
                 this.canViewDokumentErstellenButton.next(
@@ -87,11 +88,11 @@ export class LastenausgleichTsBerechnungComponent implements OnInit {
                     );
                 this.cd.markForCheck();
             },
-            () =>
+            error: () =>
                 this.errorService.addMesageAsInfo(
                     this.translate.instant('DATA_RETRIEVAL_ERROR')
                 )
-        );
+        });
     }
 
     public createLatsDocumentDe(): void {
@@ -102,12 +103,12 @@ export class LastenausgleichTsBerechnungComponent implements OnInit {
                 TSSprache.DEUTSCH,
                 this.latsContainer.betreuungsstundenPrognose
             )
-            .subscribe(
-                response => {
+            .subscribe({
+                next: response => {
                     this.createDownloadFile(response, TSSprache.DEUTSCH);
                     this.downloadingDeFile.next(false);
                 },
-                async err => {
+                error: err => {
                     LOG.error(err);
                     this.errorService.addMesageAsError(
                         err?.translatedMessage ||
@@ -115,7 +116,7 @@ export class LastenausgleichTsBerechnungComponent implements OnInit {
                     );
                     this.downloadingDeFile.next(false);
                 }
-            );
+            });
     }
 
     public createLatsDocumentFr(): void {
@@ -126,12 +127,12 @@ export class LastenausgleichTsBerechnungComponent implements OnInit {
                 TSSprache.FRANZOESISCH,
                 this.latsContainer.betreuungsstundenPrognose
             )
-            .subscribe(
-                response => {
+            .subscribe({
+                next: response => {
                     this.createDownloadFile(response, TSSprache.FRANZOESISCH);
                     this.downloadingFrFile.next(false);
                 },
-                async err => {
+                error: err => {
                     LOG.error(err);
                     this.errorService.addMesageAsError(
                         err?.translatedMessage ||
@@ -139,7 +140,7 @@ export class LastenausgleichTsBerechnungComponent implements OnInit {
                     );
                     this.downloadingFrFile.next(false);
                 }
-            );
+            });
     }
 
     private createDownloadFile(response: BlobPart, sprache: TSSprache): void {
@@ -162,13 +163,13 @@ export class LastenausgleichTsBerechnungComponent implements OnInit {
     private initErwarteteBetreuungsstundenFromKiBon(): void {
         this.latsService
             .getErwarteteBetreuungsstundenPrognose(this.latsContainer)
-            .subscribe(
-                res => {
+            .subscribe({
+                next: res => {
                     this.betreuungsstundenPrognoseFromKiBon = res;
                     this.cd.markForCheck();
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public saveContainerWithPrognose(): void {
@@ -178,16 +179,16 @@ export class LastenausgleichTsBerechnungComponent implements OnInit {
                 this.latsContainer.betreuungsstundenPrognose,
                 this.latsContainer.bemerkungenBetreuungsstundenPrognose
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.errorService.addMesageAsInfo(
                         this.translate.instant('SAVED')
                     );
                 },
-                err => {
+                error: err => {
                     LOG.error(err);
                 }
-            );
+            });
     }
 
     public antragAbschliessen(): void {

@@ -9,7 +9,8 @@ import {EwkRS} from '../core/service/ewkRS.rest';
     selector: 'dv-personensuche',
     templateUrl: './personensuche.component.html',
     styleUrls: ['./personensuche.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PersonensucheComponent {
     public personen$: Observable<TSEWKPerson[]> = null;

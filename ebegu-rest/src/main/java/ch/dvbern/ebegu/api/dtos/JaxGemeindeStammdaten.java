@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -21,11 +21,13 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
+import ch.dvbern.ebegu.validators.bicswift.CheckBicSwift;
 
 /**
  * Created by imanol on 17.03.16.
@@ -63,6 +65,7 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 	@Nullable
 	private String kontoinhaber;
 	@Nullable
+	@CheckBicSwift
 	private String bic;
 	@Nullable
 	private String iban;
@@ -179,7 +182,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return gemeindeStammdatenKorrespondenz;
 	}
 
-	public void setGemeindeStammdatenKorrespondenz(@Nonnull JaxGemeindeStammdatenKorrespondenz gemeindeStammdatenKorrespondenz) {
+	public void setGemeindeStammdatenKorrespondenz(
+		@Nonnull JaxGemeindeStammdatenKorrespondenz gemeindeStammdatenKorrespondenz
+	) {
 		this.gemeindeStammdatenKorrespondenz = gemeindeStammdatenKorrespondenz;
 	}
 
@@ -188,7 +193,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return benutzerListeBG;
 	}
 
-	public void setBenutzerListeBG(@Nullable List<JaxBenutzer> benutzerListeBG) {
+	public void setBenutzerListeBG(
+		@Nullable List<JaxBenutzer> benutzerListeBG
+	) {
 		this.benutzerListeBG = benutzerListeBG;
 	}
 
@@ -197,7 +204,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return benutzerListeTS;
 	}
 
-	public void setBenutzerListeTS(@Nullable List<JaxBenutzer> benutzerListeTS) {
+	public void setBenutzerListeTS(
+		@Nullable List<JaxBenutzer> benutzerListeTS
+	) {
 		this.benutzerListeTS = benutzerListeTS;
 	}
 
@@ -233,7 +242,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return standardRechtsmittelbelehrung;
 	}
 
-	public void setStandardRechtsmittelbelehrung(@Nonnull Boolean standardRechtsmittelbelehrung) {
+	public void setStandardRechtsmittelbelehrung(
+		@Nonnull Boolean standardRechtsmittelbelehrung
+	) {
 		this.standardRechtsmittelbelehrung = standardRechtsmittelbelehrung;
 	}
 
@@ -242,7 +253,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return rechtsmittelbelehrung;
 	}
 
-	public void setRechtsmittelbelehrung(@Nullable JaxTextRessource rechtsmittelbelehrung) {
+	public void setRechtsmittelbelehrung(
+		@Nullable JaxTextRessource rechtsmittelbelehrung
+	) {
 		this.rechtsmittelbelehrung = rechtsmittelbelehrung;
 	}
 
@@ -278,7 +291,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return benachrichtigungBgEmailAuto;
 	}
 
-	public void setBenachrichtigungBgEmailAuto(@Nonnull Boolean benachrichtigungBgEmailAuto) {
+	public void setBenachrichtigungBgEmailAuto(
+		@Nonnull Boolean benachrichtigungBgEmailAuto
+	) {
 		this.benachrichtigungBgEmailAuto = benachrichtigungBgEmailAuto;
 	}
 
@@ -287,7 +302,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return benachrichtigungTsEmailAuto;
 	}
 
-	public void setBenachrichtigungTsEmailAuto(@Nonnull Boolean benachrichtigungTsEmailAuto) {
+	public void setBenachrichtigungTsEmailAuto(
+		@Nonnull Boolean benachrichtigungTsEmailAuto
+	) {
 		this.benachrichtigungTsEmailAuto = benachrichtigungTsEmailAuto;
 	}
 
@@ -313,7 +330,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return standardDokUnterschriftTitel;
 	}
 
-	public void setStandardDokUnterschriftTitel(@Nullable String standardDokUnterschriftTitel) {
+	public void setStandardDokUnterschriftTitel(
+		@Nullable String standardDokUnterschriftTitel
+	) {
 		this.standardDokUnterschriftTitel = standardDokUnterschriftTitel;
 	}
 
@@ -322,7 +341,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return standardDokUnterschriftName;
 	}
 
-	public void setStandardDokUnterschriftName(@Nullable String standardDokUnterschriftName) {
+	public void setStandardDokUnterschriftName(
+		@Nullable String standardDokUnterschriftName
+	) {
 		this.standardDokUnterschriftName = standardDokUnterschriftName;
 	}
 
@@ -331,7 +352,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return standardDokUnterschriftTitel2;
 	}
 
-	public void setStandardDokUnterschriftTitel2(@Nullable String standardDokUnterschriftTitel2) {
+	public void setStandardDokUnterschriftTitel2(
+		@Nullable String standardDokUnterschriftTitel2
+	) {
 		this.standardDokUnterschriftTitel2 = standardDokUnterschriftTitel2;
 	}
 
@@ -340,7 +363,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return standardDokUnterschriftName2;
 	}
 
-	public void setStandardDokUnterschriftName2(@Nullable String standardDokUnterschriftName2) {
+	public void setStandardDokUnterschriftName2(
+		@Nullable String standardDokUnterschriftName2
+	) {
 		this.standardDokUnterschriftName2 = standardDokUnterschriftName2;
 	}
 
@@ -348,17 +373,16 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return tsVerantwortlicherNachVerfuegungBenachrichtigen;
 	}
 
-	public void setTsVerantwortlicherNachVerfuegungBenachrichtigen(Boolean tsVerantwortlicherNachVerfuegungBenachrichtigen) {
-		this.tsVerantwortlicherNachVerfuegungBenachrichtigen = tsVerantwortlicherNachVerfuegungBenachrichtigen;
+	public void setTsVerantwortlicherNachVerfuegungBenachrichtigen(
+		Boolean tsVerantwortlicherNachVerfuegungBenachrichtigen
+	) {
+		this.tsVerantwortlicherNachVerfuegungBenachrichtigen =
+			tsVerantwortlicherNachVerfuegungBenachrichtigen;
 	}
 
 	@Nullable
 	public List<String> getExternalClients() {
 		return externalClients;
-	}
-
-	public void setExternalClients(@Nullable List<String> externalClients) {
-		this.externalClients = externalClients;
 	}
 
 	@Nullable
@@ -411,7 +435,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return emailBeiGesuchsperiodeOeffnung;
 	}
 
-	public void setEmailBeiGesuchsperiodeOeffnung(@Nonnull Boolean emailBeiGesuchsperiodeOeffnung) {
+	public void setEmailBeiGesuchsperiodeOeffnung(
+		@Nonnull Boolean emailBeiGesuchsperiodeOeffnung
+	) {
 		this.emailBeiGesuchsperiodeOeffnung = emailBeiGesuchsperiodeOeffnung;
 	}
 
@@ -420,7 +446,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return gutscheinSelberAusgestellt;
 	}
 
-	public void setGutscheinSelberAusgestellt(@Nonnull Boolean gutscheinSelberAusgestellt) {
+	public void setGutscheinSelberAusgestellt(
+		@Nonnull Boolean gutscheinSelberAusgestellt
+	) {
 		this.gutscheinSelberAusgestellt = gutscheinSelberAusgestellt;
 	}
 
@@ -429,7 +457,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return gemeindeAusgabestelle;
 	}
 
-	public void setGemeindeAusgabestelle(@Nullable JaxGemeinde gemeindeAusgabestelle) {
+	public void setGemeindeAusgabestelle(
+		@Nullable JaxGemeinde gemeindeAusgabestelle
+	) {
 		this.gemeindeAusgabestelle = gemeindeAusgabestelle;
 	}
 
@@ -438,7 +468,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return hasZusatzTextVerfuegung;
 	}
 
-	public void setHasZusatzTextVerfuegung(@Nonnull Boolean hasZusatzTextVerfuegung) {
+	public void setHasZusatzTextVerfuegung(
+		@Nonnull Boolean hasZusatzTextVerfuegung
+	) {
 		this.hasZusatzTextVerfuegung = hasZusatzTextVerfuegung;
 	}
 
@@ -456,7 +488,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return hasZusatzTextFreigabequittung;
 	}
 
-	public void setHasZusatzTextFreigabequittung(@Nonnull Boolean hasZusatzTextFreigabequittung) {
+	public void setHasZusatzTextFreigabequittung(
+		@Nonnull Boolean hasZusatzTextFreigabequittung
+	) {
 		this.hasZusatzTextFreigabequittung = hasZusatzTextFreigabequittung;
 	}
 
@@ -465,7 +499,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return zusatzTextFreigabequittung;
 	}
 
-	public void setZusatzTextFreigabequittung(@Nullable String zusatzTextFreigabequittung) {
+	public void setZusatzTextFreigabequittung(
+		@Nullable String zusatzTextFreigabequittung
+	) {
 		this.zusatzTextFreigabequittung = zusatzTextFreigabequittung;
 	}
 
@@ -474,7 +510,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return alleBgInstitutionenZugelassen;
 	}
 
-	public void setAlleBgInstitutionenZugelassen(@Nonnull Boolean alleBgInstitutionenZugelassen) {
+	public void setAlleBgInstitutionenZugelassen(
+		@Nonnull Boolean alleBgInstitutionenZugelassen
+	) {
 		this.alleBgInstitutionenZugelassen = alleBgInstitutionenZugelassen;
 	}
 
@@ -483,7 +521,9 @@ public class JaxGemeindeStammdaten extends JaxAbstractGemeindeStammdaten {
 		return zugelasseneBgInstitutionen;
 	}
 
-	public void setZugelasseneBgInstitutionen(@Nonnull List<JaxInstitution> zugelasseneBgInstitutionen) {
+	public void setZugelasseneBgInstitutionen(
+		@Nonnull List<JaxInstitution> zugelasseneBgInstitutionen
+	) {
 		this.zugelasseneBgInstitutionen = zugelasseneBgInstitutionen;
 	}
 }

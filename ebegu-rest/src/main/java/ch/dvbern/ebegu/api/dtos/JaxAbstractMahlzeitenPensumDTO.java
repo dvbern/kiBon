@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos;
@@ -21,18 +21,18 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
-
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  * Superklasse fuer ein Betreuungspensum mit Mahlzeiten
  */
 @XmlTransient
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JaxAbstractMahlzeitenPensumDTO extends JaxAbstractDecimalPensumDTO {
+public class JaxAbstractMahlzeitenPensumDTO extends
+	JaxAbstractDecimalPensumDTO {
 
 	private static final long serialVersionUID = -3035958327660443564L;
 
@@ -52,7 +52,9 @@ public class JaxAbstractMahlzeitenPensumDTO extends JaxAbstractDecimalPensumDTO 
 		return monatlicheHauptmahlzeiten;
 	}
 
-	public void setMonatlicheHauptmahlzeiten(BigDecimal monatlicheHauptmahlzeiten) {
+	public void setMonatlicheHauptmahlzeiten(
+		BigDecimal monatlicheHauptmahlzeiten
+	) {
 		this.monatlicheHauptmahlzeiten = monatlicheHauptmahlzeiten;
 	}
 
@@ -60,7 +62,9 @@ public class JaxAbstractMahlzeitenPensumDTO extends JaxAbstractDecimalPensumDTO 
 		return monatlicheNebenmahlzeiten;
 	}
 
-	public void setMonatlicheNebenmahlzeiten(BigDecimal monatlicheNebenmahlzeiten) {
+	public void setMonatlicheNebenmahlzeiten(
+		BigDecimal monatlicheNebenmahlzeiten
+	) {
 		this.monatlicheNebenmahlzeiten = monatlicheNebenmahlzeiten;
 	}
 
@@ -68,7 +72,9 @@ public class JaxAbstractMahlzeitenPensumDTO extends JaxAbstractDecimalPensumDTO 
 		return Optional.ofNullable(tarifProHauptmahlzeit);
 	}
 
-	public void setTarifProHauptmahlzeit(@Nullable BigDecimal tarifProHauptmahlzeit) {
+	public void setTarifProHauptmahlzeit(
+		@Nullable BigDecimal tarifProHauptmahlzeit
+	) {
 		this.tarifProHauptmahlzeit = tarifProHauptmahlzeit;
 	}
 
@@ -76,7 +82,9 @@ public class JaxAbstractMahlzeitenPensumDTO extends JaxAbstractDecimalPensumDTO 
 		return Optional.ofNullable(tarifProNebenmahlzeit);
 	}
 
-	public void setTarifProNebenmahlzeit(@Nullable BigDecimal tarifProNebenmahlzeit) {
+	public void setTarifProNebenmahlzeit(
+		@Nullable BigDecimal tarifProNebenmahlzeit
+	) {
 		this.tarifProNebenmahlzeit = tarifProNebenmahlzeit;
 	}
 }

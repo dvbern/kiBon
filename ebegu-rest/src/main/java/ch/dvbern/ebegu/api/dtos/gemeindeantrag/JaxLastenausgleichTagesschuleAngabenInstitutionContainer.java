@@ -8,31 +8,35 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.gemeindeantrag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 import ch.dvbern.ebegu.api.dtos.JaxInstitution;
 import ch.dvbern.ebegu.enums.gemeindeantrag.LastenausgleichTagesschuleAngabenInstitutionStatus;
 
-public class JaxLastenausgleichTagesschuleAngabenInstitutionContainer extends JaxAbstractDTO {
+public class JaxLastenausgleichTagesschuleAngabenInstitutionContainer extends
+	JaxAbstractDTO {
 
 	private static final long serialVersionUID = -4016185471589625587L;
 
-	@NotNull @Nonnull
-	private LastenausgleichTagesschuleAngabenInstitutionStatus status = LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN;
+	@NotNull
+	@Nonnull
+	private LastenausgleichTagesschuleAngabenInstitutionStatus status =
+		LastenausgleichTagesschuleAngabenInstitutionStatus.OFFEN;
 
-	@NotNull @Nonnull
+	@NotNull
+	@Nonnull
 	private JaxInstitution institution;
 
 	@Nullable
@@ -41,13 +45,14 @@ public class JaxLastenausgleichTagesschuleAngabenInstitutionContainer extends Ja
 	@Nullable
 	private JaxLastenausgleichTagesschuleAngabenInstitution angabenKorrektur;
 
-
 	@Nonnull
 	public LastenausgleichTagesschuleAngabenInstitutionStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(@Nonnull LastenausgleichTagesschuleAngabenInstitutionStatus status) {
+	public void setStatus(
+		@Nonnull LastenausgleichTagesschuleAngabenInstitutionStatus status
+	) {
 		this.status = status;
 	}
 
@@ -65,7 +70,9 @@ public class JaxLastenausgleichTagesschuleAngabenInstitutionContainer extends Ja
 		return angabenDeklaration;
 	}
 
-	public void setAngabenDeklaration(@Nullable JaxLastenausgleichTagesschuleAngabenInstitution angabenDeklaration) {
+	public void setAngabenDeklaration(
+		@Nullable JaxLastenausgleichTagesschuleAngabenInstitution angabenDeklaration
+	) {
 		this.angabenDeklaration = angabenDeklaration;
 	}
 
@@ -74,7 +81,9 @@ public class JaxLastenausgleichTagesschuleAngabenInstitutionContainer extends Ja
 		return angabenKorrektur;
 	}
 
-	public void setAngabenKorrektur(@Nullable JaxLastenausgleichTagesschuleAngabenInstitution angabenKorrektur) {
+	public void setAngabenKorrektur(
+		@Nullable JaxLastenausgleichTagesschuleAngabenInstitution angabenKorrektur
+	) {
 		this.angabenKorrektur = angabenKorrektur;
 	}
 }

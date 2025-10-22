@@ -14,14 +14,14 @@
  */
 
 import {StateService} from '@uirouter/core';
-import {IHttpBackendService, IQService, IScope} from 'angular';
+import angular, {IHttpBackendService, IQService, IScope} from 'angular';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 import {BerechnungsManager} from '../../../../../gesuch/service/berechnungsManager';
 import {GemeindeRS} from '../../../../../gesuch/service/gemeindeRS.rest';
 import {GesuchModelManager} from '../../../../../gesuch/service/gesuchModelManager';
 import {ngServicesMock} from '../../../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../../../hybridTools/translationsMock';
-import {TSBetreuungsangebotTyp} from '../../../../../models/enums/betreuung/TSBetreuungsangebotTyp';
+import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSPendenzBetreuung} from '../../../../../models/TSPendenzBetreuung';
 import {TestDataUtil} from '../../../../../utils/TestDataUtil.spec';
 import {GesuchsperiodeRS} from '../../../../core/service/gesuchsperiodeRS.rest';
@@ -113,6 +113,7 @@ describe('pendenzenBetreuungenListView', () => {
     function mockGetPendenzenList(): TSPendenzBetreuung {
         const mockPendenz = new TSPendenzBetreuung(
             '123.12.12.12',
+            'TestGemeinde',
             '123',
             '123',
             '123',
@@ -120,10 +121,12 @@ describe('pendenzenBetreuungenListView', () => {
             'Kilian',
             undefined,
             'Platzbestaetigung',
-            undefined,
-            undefined,
+            '2024/2025',
             undefined,
             TSBetreuungsangebotTyp.KITA,
+            undefined,
+            undefined,
+            undefined,
             undefined
         );
         const result = [mockPendenz];

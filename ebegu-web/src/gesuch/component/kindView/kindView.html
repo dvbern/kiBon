@@ -86,7 +86,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="VORNAME"
                                     for="vorname_ID"
                                 ></label>
@@ -116,7 +116,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group secondColumn">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="NAME"
                                     for="name_ID"
                                 ></label>
@@ -150,7 +150,7 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float ignore-danger-font-color"
                                     data-translate="GEBURTSDATUM"
                                     for="geburtsdatum_ID"
                                 >
@@ -192,6 +192,15 @@
                             </div>
                         </div>
                     </div>
+
+                    <dv-demo-feature-wrapper
+                        [demo-feature]="vm.demoFeatureKindTerminiert"
+                    >
+                        <dv-betreuung-ui-kind-gueltigkeit-terminiert-angular-j-s-wrapper
+                            ng-if="vm.hasGueltigkeitTerminiertReadPermission()"
+                            [kind]="vm.getContainer().kindJA"
+                        ></dv-betreuung-ui-kind-gueltigkeit-terminiert-angular-j-s-wrapper>
+                    </dv-demo-feature-wrapper>
 
                     <ng-container ng-if="vm.showKinderabzugHalbjahr1()">
                         <!-- Kinderabzug: Erstes Halbjahr -->
@@ -294,7 +303,10 @@
                     ></dv-fkjv-kinderabzug>
 
                     <!--familienErgaenzendeBetreuung-->
-                    <div class="row" ng-if="!vm.showFkjvKinderabzug()">
+                    <div
+                        class="row fam-ergaenzende-betreuung"
+                        ng-if="!vm.showFkjvKinderabzug()"
+                    >
                         <div class="col-xs-12 dv-input-container-question">
                             <div class="form-group">
                                 <span class="ebegu-h1 required">
@@ -311,7 +323,6 @@
                                         data-translate="FAM_ERGAENZENDE_BETREUUNG_BEIDE"
                                     ></span>
                                 </span>
-                                <!-- TODO @Franzi warum ist der check anders bei der Text als bei der Checkbox? -->
                                 <span
                                     ng-if="
                                         !vm.isGesuchReadonly() &&
@@ -335,6 +346,7 @@
                                         'FAM_ERGAENZENDE_BETREUUNG' | translate
                                     }}"
                                     aria-described-by="familienErgaenzendeBetreuung-error"
+                                    data-test="familienErgaenzendeBetreuung"
                                 >
                                 </dv-radio-container>
                                 <dv-bisher
@@ -519,6 +531,10 @@
                                 >
                                     <div
                                         class="checkbox checkbox-with-margin"
+                                        ng-class="{
+                                            'fachstellen-wrapper':
+                                                !vm.isGesuchStatusBearbeitungGS()
+                                        }"
                                         ng-show="
                                             vm.getModel()
                                                 .familienErgaenzendeBetreuung
@@ -536,14 +552,17 @@
                                             ng-disabled="vm.isGesuchReadonly()"
                                             ng-change="vm.showFachstelleClicked()"
                                         >
-                                            <span
-                                                data-translate="INVOLVIERTE_FACHSTELLE"
-                                            ></span>
+                                            <span>
+                                                {{
+                                                    'INVOLVIERTE_FACHSTELLE'
+                                                        | translate
+                                                }}
+                                                <dv-tooltip
+                                                    input-id="showFachstelle"
+                                                    text="'INVOLVIERTE_FACHSTELLE_HELP' | translate"
+                                                ></dv-tooltip>
+                                            </span>
                                         </md-checkbox>
-                                        <dv-tooltip
-                                            input-id="showFachstelle"
-                                            text="'INVOLVIERTE_FACHSTELLE_HELP' | translate"
-                                        ></dv-tooltip>
                                         <dv-bisher
                                             gs="vm.showFachstelleGS"
                                             ja="vm.showFachstelle"
@@ -553,7 +572,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div ng-if="vm.isFachstelleRequired()">
+                            <div
+                                ng-if="vm.isFachstelleRequired()"
+                                ng-class="{
+                                    'fachstellen-wrapper':
+                                        !vm.isGesuchStatusBearbeitungGS()
+                                }"
+                            >
                                 <div
                                     ng-repeat="pensumFachstelle in vm.getPensumFachstellen() track by $index"
                                 >
@@ -608,7 +633,9 @@
                                 </div>
 
                                 <dv-demo-feature-wrapper
-                                    [demo-feature]="vm.demoFeature"
+                                    [demo-feature]="
+                                        vm.demoFeatureMehrereFachstellen
+                                    "
                                 >
                                     <div class="row margin-bottom-50">
                                         <div class="col-md-12">
@@ -660,14 +687,18 @@
                                             ng-change="vm.deleteZemisNummer(vm.getModel())"
                                             ng-disabled="vm.isGesuchReadonly()"
                                         >
-                                            <span
-                                                data-translate="KIND_AUS_ASYLWESEN"
-                                            ></span>
+                                            <span>
+                                                {{
+                                                    'KIND_AUS_ASYLWESEN'
+                                                        | translate
+                                                }}
+                                                <dv-tooltip
+                                                    input-id="showAsylwesen"
+                                                    text="'KIND_AUS_ASYLWESEN_HELP' | translate"
+                                                ></dv-tooltip>
+                                            </span>
                                         </md-checkbox>
-                                        <dv-tooltip
-                                            input-id="showAsylwesen"
-                                            text="'KIND_AUS_ASYLWESEN_HELP' | translate"
-                                        ></dv-tooltip>
+
                                         <dv-error-messages
                                             for="vm.form.showAsylwesen.$error"
                                             class="error"
@@ -684,7 +715,7 @@
                                     >
                                         <dv-input-container class="form-group">
                                             <label
-                                                class="md-no-float"
+                                                class="md-no-float ignore-danger-font-color"
                                                 data-translate="ZEMIS_NUMMER"
                                                 for="zemisNummer"
                                             ></label>
@@ -764,26 +795,18 @@
                                             ng-disabled="vm.isGesuchReadonly() || !vm.isAusserordentlicherAnspruchEnabled()"
                                             ng-change="vm.showAusserordentlicherAnspruchClicked()"
                                         >
-                                            <span
-                                                data-translate="AUSSERORDENTLICHER_ANSPRUCH"
-                                            ></span>
+                                            <span>
+                                                {{
+                                                    'AUSSERORDENTLICHER_ANSPRUCH'
+                                                        | translate
+                                                }}
+                                                <dv-tooltip
+                                                    input-id="showAusserordentlicherAnspruch"
+                                                    text="'AUSSERORDENTLICHER_ANSPRUCH_HINT' | translate"
+                                                ></dv-tooltip>
+                                            </span>
                                         </md-checkbox>
-                                        <dv-tooltip
-                                            ng-if="
-                                                !vm.gesuchModelManager
-                                                    .isFKJVTexte
-                                            "
-                                            input-id="showAusserordentlicherAnspruch"
-                                            text="'AUSSERORDENTLICHER_ANSPRUCH_HINT' | translate"
-                                        ></dv-tooltip>
-                                        <dv-tooltip
-                                            ng-if="
-                                                vm.gesuchModelManager
-                                                    .isFKJVTexte
-                                            "
-                                            input-id="showAusserordentlicherAnspruch"
-                                            text="'AUSSERORDENTLICHER_ANSPRUCH_HINT_FKJV' | translate"
-                                        ></dv-tooltip>
+
                                         <dv-error-messages
                                             for="vm.form.showAusserordentlicherAnspruch.$error"
                                             class="error"
@@ -803,7 +826,7 @@
                                     >
                                         <dv-input-container class="form-group">
                                             <label
-                                                class="md-no-float"
+                                                class="md-no-float ignore-danger-font-color"
                                                 for="begruendung"
                                                 data-translate="AUSSERORDENTLICHER_ANSPRUCH_BEGRUENDUNG"
                                             ></label>
@@ -823,7 +846,9 @@
                                             >
                                             </textarea>
                                             <dv-error-messages
-                                                input-id="begruendung"
+                                                ng-if="
+                                                    vm.form.begruendung.$touched
+                                                "
                                                 for="vm.form.begruendung.$error"
                                                 class="error"
                                             ></dv-error-messages>
@@ -838,7 +863,7 @@
                                     >
                                         <dv-input-container class="form-group">
                                             <label
-                                                class="md-no-float"
+                                                class="md-no-float ignore-danger-font-color"
                                                 data-translate="AUSSERORDENTLICHER_ANSPRUCH_BETREUUNGSPENSUM"
                                                 for="betreuungspensumAusserordentlicherAnspruch"
                                             ></label>
@@ -877,7 +902,7 @@
                                     >
                                         <dv-input-container class="form-group">
                                             <label
-                                                class="md-no-float"
+                                                class="md-no-float ignore-danger-font-color"
                                                 data-translate="VON"
                                                 for="aussAnspruchDatumAb"
                                             ></label>
@@ -907,7 +932,7 @@
                                     >
                                         <dv-input-container class="form-group">
                                             <label
-                                                class="md-no-float"
+                                                class="md-no-float ignore-danger-font-color"
                                                 data-translate="BIS"
                                                 for="aussAnspruchDatumBis"
                                             >

@@ -15,40 +15,6 @@
 
 package ch.dvbern.ebegu.api.resource;
 
-import ch.dvbern.ebegu.api.converter.JaxBConverter;
-import ch.dvbern.ebegu.api.dtos.JaxId;
-import ch.dvbern.ebegu.api.dtos.JaxPaginationDTO;
-import ch.dvbern.ebegu.api.dtos.JaxZahlung;
-import ch.dvbern.ebegu.api.dtos.JaxZahlungsauftrag;
-import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.dto.ZahlungenSearchParamsDTO;
-import ch.dvbern.ebegu.entities.*;
-import ch.dvbern.ebegu.enums.ErrorCodeEnum;
-import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
-import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
-import ch.dvbern.ebegu.errors.EbeguRuntimeException;
-import ch.dvbern.ebegu.services.GemeindeService;
-import ch.dvbern.ebegu.services.GeneratedDokumentService;
-import ch.dvbern.ebegu.services.InstitutionService;
-import ch.dvbern.ebegu.services.ZahlungService;
-import ch.dvbern.ebegu.util.Constants;
-import ch.dvbern.ebegu.util.DateUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.CollectionUtils;
-import org.jboss.ejb3.annotation.TransactionTimeout;
-
-import javax.activation.MimeTypeParseException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -57,7 +23,64 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static ch.dvbern.ebegu.enums.UserRoleName.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jakarta.activation.MimeTypeParseException;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+
+import ch.dvbern.ebegu.api.converter.JaxZahlungConverter;
+import ch.dvbern.ebegu.api.dtos.JaxId;
+import ch.dvbern.ebegu.api.dtos.JaxPaginationDTO;
+import ch.dvbern.ebegu.api.dtos.JaxZahlung;
+import ch.dvbern.ebegu.api.dtos.JaxZahlungsauftrag;
+import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.dto.ZahlungenSearchParamsDTO;
+import ch.dvbern.ebegu.entities.AbstractEntity;
+import ch.dvbern.ebegu.entities.Gemeinde;
+import ch.dvbern.ebegu.entities.Institution;
+import ch.dvbern.ebegu.entities.Zahlung;
+import ch.dvbern.ebegu.entities.Zahlungsauftrag;
+import ch.dvbern.ebegu.enums.ErrorCodeEnum;
+import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
+import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
+import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.services.GemeindeService;
+import ch.dvbern.ebegu.services.GeneratedDokumentService;
+import ch.dvbern.ebegu.services.InstitutionService;
+import ch.dvbern.ebegu.services.ZahlungService;
+import ch.dvbern.ebegu.services.zahlungen.WorkjobZahlungUeberpruefungService;
+import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.util.DateUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.jboss.ejb3.annotation.TransactionTimeout;
+
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_INSTITUTION;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TRAEGERSCHAFT;
+import static ch.dvbern.ebegu.enums.UserRoleName.JURIST;
+import static ch.dvbern.ebegu.enums.UserRoleName.REVISOR;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_INSTITUTION;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_TRAEGERSCHAFT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -65,7 +88,6 @@ import static java.util.Objects.requireNonNull;
  */
 @Path("zahlungen")
 @Stateless
-@Api(description = "Resource zum Verwalten von Zahlungen")
 @DenyAll // Absichtlich keine Rolle zugelassen, erzwingt, dass es für neue Methoden definiert werden muss
 public class ZahlungResource {
 
@@ -73,7 +95,7 @@ public class ZahlungResource {
 	private ZahlungService zahlungService;
 
 	@Inject
-	private JaxBConverter converter;
+	private JaxZahlungConverter converter;
 
 	@Inject
 	private GeneratedDokumentService generatedDokumentService;
@@ -87,14 +109,17 @@ public class ZahlungResource {
 	@Inject
 	private GemeindeService gemeindeService;
 
-	@ApiOperation(value = "Gibt alle Zahlungsauftraege zurueck.",
-		response = JaxPaginationDTO.class)
+	@Inject
+	private WorkjobZahlungUeberpruefungService workjobZahlungUeberpruefungService;
+
+	@Operation(summary = "Gibt alle Zahlungsauftraege zurueck.")
 	@Nullable
 	@GET
 	@Path("/all")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, JURIST, REVISOR,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, JURIST, REVISOR,
 		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public JaxPaginationDTO<JaxZahlungsauftrag> getAllZahlungsauftraege(
 		@Nullable @QueryParam("gemeinde") String filterGemeinde,
@@ -115,26 +140,38 @@ public class ZahlungResource {
 				null
 			);
 
-		List<JaxZahlungsauftrag> zahlungsauftraege = zahlungService.getAllZahlungsauftraege(zahlungenSearchParamsDTO).stream()
-			.map(zahlungsauftrag -> converter.zahlungsauftragToJAX(zahlungsauftrag, false))
+		List<JaxZahlungsauftrag> zahlungsauftraege = zahlungService
+			.getAllZahlungsauftraege(zahlungenSearchParamsDTO)
+			.stream()
+			.map(
+				zahlungsauftrag -> converter.zahlungsauftragToJAX(
+					zahlungsauftrag,
+					false
+				)
+			)
 			.collect(Collectors.toList());
-		Long count = zahlungService.countAllZahlungsauftraege(zahlungenSearchParamsDTO);
+		Long count = zahlungService.countAllZahlungsauftraege(
+			zahlungenSearchParamsDTO
+		);
 
-		JaxPaginationDTO<JaxZahlungsauftrag> jaxPaginationDTO = new JaxPaginationDTO<>();
+		JaxPaginationDTO<JaxZahlungsauftrag> jaxPaginationDTO =
+			new JaxPaginationDTO<>();
 		jaxPaginationDTO.setResultList(zahlungsauftraege);
 		jaxPaginationDTO.setTotalCount(count);
 		return jaxPaginationDTO;
 	}
 
-	@ApiOperation(value = "Gibt alle Zahlungsauftraege aller Institutionen zurueck, fuer welche der eingeloggte " +
-		"Benutzer zustaendig ist.",
-		responseContainer = "List", response = JaxZahlungsauftrag.class)
+	@Operation(
+		summary = "Gibt alle Zahlungsauftraege aller Institutionen zurueck, fuer welche der eingeloggte "
+			+
+			"Benutzer zustaendig ist.")
 	@Nullable
 	@GET
 	@Path("/institution")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_TRAEGERSCHAFT, SACHBEARBEITER_INSTITUTION, ADMIN_INSTITUTION,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_TRAEGERSCHAFT,
+		SACHBEARBEITER_INSTITUTION, ADMIN_INSTITUTION,
 		SACHBEARBEITER_TRAEGERSCHAFT })
 	public JaxPaginationDTO<JaxZahlungsauftrag> getAllZahlungsauftraegeInstitution(
 		@Nullable @QueryParam("gemeinde") String filterGemeinde,
@@ -144,31 +181,41 @@ public class ZahlungResource {
 		@Nonnull @QueryParam("pageSize") String pageSizeParam
 	) {
 
-		JaxPaginationDTO<JaxZahlungsauftrag> jaxPaginationDTO = new JaxPaginationDTO<>();
-		Collection<Institution> allowedInst = institutionService.getInstitutionenReadableForCurrentBenutzer(false);
+		JaxPaginationDTO<JaxZahlungsauftrag> jaxPaginationDTO =
+			new JaxPaginationDTO<>();
+		Collection<Institution> allowedInst = institutionService
+			.getInstitutionenReadableForCurrentBenutzer(false);
 
 		if (CollectionUtils.isEmpty(allowedInst)) {
 			return jaxPaginationDTO;
 		}
 
-		ZahlungenSearchParamsDTO zahlungenSearchParamsDTO = toZahlungenSearchParamsDTO(
-			filterGemeinde,
-			sortPredicate,
-			sortReverseParam,
-			pageParam,
-			pageSizeParam,
-			ZahlungslaufTyp.GEMEINDE_INSTITUTION,
-			allowedInst
-		);
+		ZahlungenSearchParamsDTO zahlungenSearchParamsDTO =
+			toZahlungenSearchParamsDTO(
+				filterGemeinde,
+				sortPredicate,
+				sortReverseParam,
+				pageParam,
+				pageSizeParam,
+				ZahlungslaufTyp.GEMEINDE_INSTITUTION,
+				allowedInst
+			);
 
-		List<JaxZahlungsauftrag> zahlungenList = zahlungService.getAllZahlungsauftraege(zahlungenSearchParamsDTO).stream()
-			.map(zahlungsauftrag -> converter.zahlungsauftragToJAX(
-				zahlungsauftrag,
-				principalBean.discoverMostPrivilegedRole(),
-				allowedInst))
+		List<JaxZahlungsauftrag> zahlungenList = zahlungService
+			.getAllZahlungsauftraege(zahlungenSearchParamsDTO)
+			.stream()
+			.map(
+				zahlungsauftrag -> converter.zahlungsauftragToJAX(
+					zahlungsauftrag,
+					principalBean.discoverMostPrivilegedRole(),
+					allowedInst
+				)
+			)
 			.collect(Collectors.toList());
 
-		Long count = zahlungService.countAllZahlungsauftraege(zahlungenSearchParamsDTO);
+		Long count = zahlungService.countAllZahlungsauftraege(
+			zahlungenSearchParamsDTO
+		);
 
 		jaxPaginationDTO.setResultList(zahlungenList);
 		jaxPaginationDTO.setTotalCount(count);
@@ -198,16 +245,30 @@ public class ZahlungResource {
 		} catch (NumberFormatException e) {
 			throw new BadRequestException(message + "pageSize", e);
 		}
-		ZahlungenSearchParamsDTO zahlungenParams = new ZahlungenSearchParamsDTO(page, pageSize);
+		ZahlungenSearchParamsDTO zahlungenParams = new ZahlungenSearchParamsDTO(
+			page,
+			pageSize
+		);
 
 		if (filterGemeindeParam != null) {
-			Gemeinde gemeinde = gemeindeService.findGemeinde(filterGemeindeParam)
-				.orElseThrow(() -> new EbeguEntityNotFoundException("toZahlungenSearchParamsDTO", filterGemeindeParam));
+			Gemeinde gemeinde = gemeindeService.findGemeinde(
+				filterGemeindeParam
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"toZahlungenSearchParamsDTO",
+						filterGemeindeParam
+					)
+				);
 			zahlungenParams.setGemeinde(gemeinde);
 		}
-		if (sortReverseParam == null || sortReverseParam.equals("true") || sortReverseParam.equals("false")) {
+		if (sortReverseParam == null
+			|| sortReverseParam.equals("true")
+			|| sortReverseParam.equals("false")) {
 			zahlungenParams.setSortPredicate(sortPredicate);
-			zahlungenParams.setSortReverse(Boolean.parseBoolean(sortReverseParam));
+			zahlungenParams.setSortReverse(
+				Boolean.parseBoolean(sortReverseParam)
+			);
 		} else {
 			throw new BadRequestException(message + "sortReverse");
 		}
@@ -227,53 +288,84 @@ public class ZahlungResource {
 		return zahlungenParams;
 	}
 
-	@ApiOperation(value = "Gibt den Zahlungsauftrag mit der uebergebenen Id zurueck.",
-		response = JaxZahlungsauftrag.class)
+	@Operation(
+		summary = "Gibt den Zahlungsauftrag mit der uebergebenen Id zurueck.")
 	@Nullable
 	@GET
 	@Path("/zahlungsauftrag/{zahlungsauftragId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE, JURIST, REVISOR,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE, JURIST, REVISOR,
 		ADMIN_MANDANT, SACHBEARBEITER_MANDANT })
 	public JaxZahlungsauftrag findZahlungsauftrag(
-		@Nonnull @NotNull @PathParam("zahlungsauftragId") JaxId zahlungsauftragJAXPId) {
+		@Nonnull
+		@NotNull
+		@PathParam("zahlungsauftragId") JaxId zahlungsauftragJAXPId
+	) {
 
 		requireNonNull(zahlungsauftragJAXPId.getId());
 		String zahlungsauftragId = converter.toEntityId(zahlungsauftragJAXPId);
-		Optional<Zahlungsauftrag> optional = zahlungService.findZahlungsauftrag(zahlungsauftragId);
+		Optional<Zahlungsauftrag> optional = zahlungService.findZahlungsauftrag(
+			zahlungsauftragId
+		);
 
 		return optional
-			.map(zahlungsauftrag -> converter.zahlungsauftragToJAX(zahlungsauftrag, true))
+			.map(
+				zahlungsauftrag -> converter.zahlungsauftragToJAX(
+					zahlungsauftrag,
+					true
+				)
+			)
 			.orElse(null);
 	}
 
-	@ApiOperation(value = "Gibt den Zahlungsauftrag mit der uebebergebenen Id zurueck, jedoch nur mit den Eintraegen " +
-		"derjenigen Institutionen, fuer welche der eingeloggte Benutzer zustaendig ist",
-		response = JaxZahlungsauftrag.class)
+	@Operation(
+		summary = "Gibt den Zahlungsauftrag mit der uebebergebenen Id zurueck, jedoch nur mit den Eintraegen "
+			+
+			"derjenigen Institutionen, fuer welche der eingeloggte Benutzer zustaendig ist")
 	@Nullable
 	@GET
 	@Path("/zahlungsauftraginstitution/{zahlungsauftragId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION, ADMIN_TRAEGERSCHAFT,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION,
+		ADMIN_TRAEGERSCHAFT,
 		SACHBEARBEITER_TRAEGERSCHAFT })
 	public JaxZahlungsauftrag findZahlungsauftraginstitution(
-		@Nonnull @NotNull @PathParam("zahlungsauftragId") JaxId zahlungsauftragJAXPId) {
+		@Nonnull
+		@NotNull
+		@PathParam("zahlungsauftragId") JaxId zahlungsauftragJAXPId
+	) {
 
 		requireNonNull(zahlungsauftragJAXPId.getId());
 		String zahlungsauftragId = converter.toEntityId(zahlungsauftragJAXPId);
-		Optional<Zahlungsauftrag> optional = zahlungService.findZahlungsauftrag(zahlungsauftragId);
+		Optional<Zahlungsauftrag> optional = zahlungService.findZahlungsauftrag(
+			zahlungsauftragId
+		);
 
 		return optional
-			.filter(zahlungsauftrag -> zahlungsauftrag.getZahlungslaufTyp() == ZahlungslaufTyp.GEMEINDE_INSTITUTION)
-			.map(zahlungsauftrag -> converter.zahlungsauftragToJAX(zahlungsauftrag, principalBean.discoverMostPrivilegedRole(),
-				institutionService.getInstitutionenReadableForCurrentBenutzer(false)))
+			.filter(
+				zahlungsauftrag -> zahlungsauftrag.getZahlungslaufTyp()
+					== ZahlungslaufTyp.GEMEINDE_INSTITUTION
+			)
+			.map(
+				zahlungsauftrag -> converter.zahlungsauftragToJAX(
+					zahlungsauftrag,
+					principalBean.discoverMostPrivilegedRole(),
+					institutionService
+						.getInstitutionenReadableForCurrentBenutzer(
+							false
+						)
+				)
+			)
 			.orElse(null);
 	}
 
-	@ApiOperation(value = "Setzt den Status des Zahlungsautrags auf ausgeloest. Danach kann er nicht mehr veraendert " +
-		"werden", response = JaxZahlungsauftrag.class)
+	@Operation(
+		summary = "Setzt den Status des Zahlungsautrags auf ausgeloest. Danach kann er nicht mehr veraendert "
+			+
+			"werden")
 	@Nullable
 	@PUT
 	@Path("/ausloesen/{zahlungsauftragId}")
@@ -281,12 +373,16 @@ public class ZahlungResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_GEMEINDE })
 	public JaxZahlungsauftrag zahlungsauftragAusloesen(
-		@Nonnull @NotNull @PathParam("zahlungsauftragId") JaxId zahlungsauftragJAXPId) throws MimeTypeParseException {
+		@Nonnull
+		@NotNull
+		@PathParam("zahlungsauftragId") JaxId zahlungsauftragJAXPId
+	) throws MimeTypeParseException {
 
 		requireNonNull(zahlungsauftragJAXPId.getId());
 		String zahlungsauftragId = converter.toEntityId(zahlungsauftragJAXPId);
 
-		final Zahlungsauftrag zahlungsauftrag = zahlungService.zahlungsauftragAusloesen(zahlungsauftragId);
+		final Zahlungsauftrag zahlungsauftrag = zahlungService
+			.zahlungsauftragAusloesen(zahlungsauftragId);
 
 		//Force creation and saving of ZahlungsFile Pain001
 		generatedDokumentService.createZahlungsFiles(zahlungsauftrag);
@@ -294,27 +390,36 @@ public class ZahlungResource {
 		return converter.zahlungsauftragToJAX(zahlungsauftrag, false);
 	}
 
-	@ApiOperation(value = "Erstellt einen neue Zahlungsauftrag", response = JaxZahlungsauftrag.class)
+	@Operation(summary = "Erstellt einen neue Zahlungsauftrag")
 	@Nullable
 	@GET
 	@Path("/create")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE })
-	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES, unit = TimeUnit.MINUTES)
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, SACHBEARBEITER_BG, ADMIN_GEMEINDE,
+		SACHBEARBEITER_GEMEINDE })
+	@TransactionTimeout(value = Constants.MAX_TIMEOUT_MINUTES,
+		unit = TimeUnit.MINUTES)
 	public JaxZahlungsauftrag createZahlung(
 		@QueryParam("zahlungslaufTyp") String sZahlungslaufTyp,
 		@QueryParam("gemeindeId") String gemeindeId,
 		@QueryParam("faelligkeitsdatum") String stringFaelligkeitsdatum,
 		@QueryParam("beschrieb") String beschrieb,
 		@QueryParam("auszahlungInZukunft") Boolean auszahlungInZukunft,
-		@Nullable @QueryParam("datumGeneriert") String stringDatumGeneriert) throws EbeguRuntimeException {
+		@Nullable @QueryParam("datumGeneriert") String stringDatumGeneriert
+	) throws EbeguRuntimeException {
 
-		ZahlungslaufTyp zahlungslaufTyp = ZahlungslaufTyp.valueOf(sZahlungslaufTyp);
-		LocalDate faelligkeitsdatum = DateUtil.parseStringToDateOrReturnNow(stringFaelligkeitsdatum);
+		ZahlungslaufTyp zahlungslaufTyp = ZahlungslaufTyp.valueOf(
+			sZahlungslaufTyp
+		);
+		LocalDate faelligkeitsdatum = DateUtil.parseStringToDateOrReturnNow(
+			stringFaelligkeitsdatum
+		);
 		LocalDateTime datumGeneriert;
 		if (stringDatumGeneriert != null) {
-			datumGeneriert = DateUtil.parseStringToDateOrReturnNow(stringDatumGeneriert).atStartOfDay();
+			datumGeneriert = DateUtil.parseStringToDateOrReturnNow(
+				stringDatumGeneriert
+			).atStartOfDay();
 			validateDatumGeneriert(datumGeneriert);
 		} else {
 			datumGeneriert = LocalDateTime.now();
@@ -328,9 +433,14 @@ public class ZahlungResource {
 				beschrieb,
 				auszahlungInZukunft,
 				datumGeneriert,
-				requireNonNull(principalBean.getMandant()));
+				requireNonNull(principalBean.getMandant())
+			);
 
-		zahlungService.zahlungenKontrollieren(zahlungslaufTyp, gemeindeId, auszahlungInZukunft);
+		workjobZahlungUeberpruefungService.startZahlungUeberpruefungWorkjob(
+			zahlungslaufTyp,
+			gemeindeId,
+			auszahlungInZukunft
+		);
 
 		return converter.zahlungsauftragToJAX(zahlungsauftrag, false);
 	}
@@ -339,11 +449,12 @@ public class ZahlungResource {
 		if (LocalDate.now().atStartOfDay().isAfter(datumGeneriert)) {
 			throw new EbeguRuntimeException(
 				"validateDatumGeneriert",
-				ErrorCodeEnum.ERROR_GENERIERT_DATUM_MUSS_IN_ZUKUNFT_LIEGEN);
+				ErrorCodeEnum.ERROR_GENERIERT_DATUM_MUSS_IN_ZUKUNFT_LIEGEN
+			);
 		}
 	}
 
-	@ApiOperation(value = "Aktualisiert einen Zahlungsauftrag", response = JaxZahlungsauftrag.class)
+	@Operation(summary = "Aktualisiert einen Zahlungsauftrag")
 	@Nullable
 	@GET
 	@Path("/update")
@@ -353,24 +464,34 @@ public class ZahlungResource {
 	public JaxZahlungsauftrag updateZahlung(
 		@QueryParam("beschrieb") String beschrieb,
 		@QueryParam("faelligkeitsdatum") String stringFaelligkeitsdatum,
-		@QueryParam("id") String id) throws EbeguRuntimeException {
+		@QueryParam("id") String id
+	) throws EbeguRuntimeException {
 
-		LocalDate faelligkeitsdatum = DateUtil.parseStringToDateOrReturnNow(stringFaelligkeitsdatum);
+		LocalDate faelligkeitsdatum = DateUtil.parseStringToDateOrReturnNow(
+			stringFaelligkeitsdatum
+		);
 		final Zahlungsauftrag zahlungsauftragUpdated =
-			zahlungService.zahlungsauftragAktualisieren(id, faelligkeitsdatum, beschrieb);
+			zahlungService.zahlungsauftragAktualisieren(
+				id,
+				faelligkeitsdatum,
+				beschrieb
+			);
 		return converter.zahlungsauftragToJAX(zahlungsauftragUpdated, false);
 	}
 
-	@ApiOperation(value = "Setzt eine Zahlung eines Zahlungsauftrags auf bestaetigt", response = JaxZahlung.class)
+	@Operation(
+		summary = "Setzt eine Zahlung eines Zahlungsauftrags auf bestaetigt")
 	@Nullable
 	@PUT
 	@Path("/bestaetigen/{zahlungId}")
 	@Consumes(MediaType.WILDCARD)
 	@Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ SUPER_ADMIN, ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION, ADMIN_TRAEGERSCHAFT,
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_INSTITUTION, SACHBEARBEITER_INSTITUTION,
+		ADMIN_TRAEGERSCHAFT,
 		SACHBEARBEITER_TRAEGERSCHAFT })
 	public JaxZahlung zahlungBestaetigen(
-		@Nonnull @NotNull @PathParam("zahlungId") JaxId zahlungJAXPId) {
+		@Nonnull @NotNull @PathParam("zahlungId") JaxId zahlungJAXPId
+	) {
 
 		requireNonNull(zahlungJAXPId.getId());
 		String zahlungId = converter.toEntityId(zahlungJAXPId);

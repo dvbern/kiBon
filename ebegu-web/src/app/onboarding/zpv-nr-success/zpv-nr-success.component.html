@@ -16,37 +16,26 @@
   -->
 <div style="display: inline-block; max-width: 100%">
     <div class="onboarding-welcome">
-        <p translate *ngIf="isZpvNummerErfolgreichVerknuepft">
-            ZPV_GS2_SUCCESS
-        </p>
-        <p
-            translate
-            *ngIf="!isZpvNummerErfolgreichVerknuepft"
-            class="well well-status-abgewiesen"
-        >
-            ZPV_GS_NICHT_VERKNUEPFT
-        </p>
+        @if (isZpvNummerErfolgreichVerknuepft) {
+            <p translate style="margin-bottom: 20px">ZPV_GS2_SUCCESS</p>
+        } @else {
+            <p translate class="well well-status-abgewiesen">
+                ZPV_GS_NICHT_VERKNUEPFT
+            </p>
+        }
+
+        <p translate>ZPV_LOGOUT</p>
     </div>
 
     <div class="onboarding-login">
         <div class="onboarding-login-buttons">
-            <button
-                *ngIf="!isAuthenticated"
-                uiSref="authentication.login"
-                [uiOptions]="{location: false}"
-                class="dv-btn onboarding-red-border-button onboarding-login-button-width"
-            >
-                <span translate>ONBOARDING_ANMELDEN</span>
-            </button>
-            <button
-                *ngIf="isAuthenticated"
-                uiSref="gesuch.finanzielleSituation"
-                [uiParams]="getParams()"
-                [uiOptions]="{location: false}"
-                class="dv-btn onboarding-red-border-button onboarding-login-button-width"
-            >
-                <span translate>ONBOARDING_TO_FIN_SIT</span>
-            </button>
+            <a href="https://www.be.ch/belogin">
+                <button
+                    class="dv-btn onboarding-red-border-button onboarding-login-button-width"
+                >
+                    <span translate>ZPV_ZUM_BE_LOGIN</span>
+                </button>
+            </a>
         </div>
     </div>
 </div>

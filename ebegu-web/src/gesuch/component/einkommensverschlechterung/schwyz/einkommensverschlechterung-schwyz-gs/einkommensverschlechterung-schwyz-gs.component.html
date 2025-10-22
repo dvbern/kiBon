@@ -13,6 +13,18 @@
         </div>
     </div>
 
+    @if (model.finanzielleSituationTyp === 'SCHWYZ_ERWEITERT') {
+        <div class="row margin-bottom-3rem">
+            <div class="col-md-12">
+                <span
+                    [innerHTML]="
+                        'EINKOMMENSVERSCHLECHTERUNG_PRE_TEXT' | translate
+                    "
+                ></span>
+            </div>
+        </div>
+    }
+
     <ng-container
         *ngIf="
             isFinSitVollstaendigAusgefuellt;
@@ -45,6 +57,10 @@
                     [finSitGS]="model.getEkvToWorkWith_GS()"
                     [readonly]="gesuchmodelManager.isGesuchReadonly()"
                     [showHeader]="false"
+                    [schwyzErweiterteFinSit]="
+                        isSchwyzFinSitTypSchwyzErweitert()
+                    "
+                    [ekvMode]="true"
                     (valueChanged)="recalculatedMassgebendesEinkommen()"
                 >
                 </dv-steuerveranlagt-schwyz>

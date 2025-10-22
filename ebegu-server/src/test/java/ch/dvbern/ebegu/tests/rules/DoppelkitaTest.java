@@ -48,46 +48,104 @@ import static ch.dvbern.ebegu.util.Constants.ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS;
  */
 public class DoppelkitaTest extends AbstractBGRechnerTest {
 
-	private KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter = TestDataUtil.geKitaxUebergangsloesungParameter();
+	private KitaxUebergangsloesungParameter kitaxUebergangsloesungParameter =
+		TestDataUtil.geKitaxUebergangsloesungParameter();
 
 	/**
 	 * Testet Regel 1: Bei gleichzeitigem Beginn gewinnt die Kita mit dem höheren Pensum
 	 */
 	@Test
 	public void testfall_Doppelkita_01() {
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaBruennen());
-		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
-		Testfall_DoppelKita_Regel1 testfall = new Testfall_DoppelKita_Regel1(gesuchsperiode1718, new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718));
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaBruennen()
+		);
+		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+			.createGesuchsperiode1718();
+		Testfall_DoppelKita_Regel1 testfall = new Testfall_DoppelKita_Regel1(
+			gesuchsperiode1718,
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718)
+		);
 
 		testfall.createFall();
 		testfall.createGesuch(LocalDate.of(2016, 7, 1));
 		Gesuch gesuch = testfall.fillInGesuch();
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
 		gesuch.setGesuchsperiode(gesuchsperiode1718);
-		evaluator.evaluate(gesuch, getParameter(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			getParameter(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 
 		for (KindContainer kindContainer : gesuch.getKindContainers()) {
 			for (Betreuung betreuung : kindContainer.getBetreuungen()) {
 				Verfuegung verfuegung = betreuung.getVerfuegungPreview();
 				Assert.assertNotNull(verfuegung);
-				if (betreuung.getInstitutionStammdaten().getId().equals(ID_INSTITUTION_STAMMDATEN_WEISSENSTEIN_KITA)) {
-					Assert.assertEquals(12, verfuegung.getZeitabschnitte().size());
+				if (betreuung.getInstitutionStammdaten()
+					.getId()
+					.equals(ID_INSTITUTION_STAMMDATEN_WEISSENSTEIN_KITA)) {
+					Assert.assertEquals(
+						12,
+						verfuegung.getZeitabschnitte().size()
+					);
 					// August
-					VerfuegungZeitabschnitt august = verfuegung.getZeitabschnitte().get(0);
-					assertZeitabschnitt(august, new BigDecimal(40), 10 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(10 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS));
+					VerfuegungZeitabschnitt august = verfuegung
+						.getZeitabschnitte()
+						.get(0);
+					assertZeitabschnitt(
+						august,
+						new BigDecimal(40),
+						10 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(
+							10 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS
+						)
+					);
 					// Januar
-					VerfuegungZeitabschnitt januar = verfuegung.getZeitabschnitte().get(5);
-					assertZeitabschnitt(januar, new BigDecimal(50), 20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS));
+					VerfuegungZeitabschnitt januar = verfuegung
+						.getZeitabschnitte()
+						.get(5);
+					assertZeitabschnitt(
+						januar,
+						new BigDecimal(50),
+						20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(
+							20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS
+						)
+					);
 				} else {     //KITA Bruennen
-					Assert.assertEquals(12, verfuegung.getZeitabschnitte().size());
+					Assert.assertEquals(
+						12,
+						verfuegung.getZeitabschnitte().size()
+					);
 					// August
-					VerfuegungZeitabschnitt august = verfuegung.getZeitabschnitte().get(0);
-					assertZeitabschnitt(august, new BigDecimal(50), 60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(50));
+					VerfuegungZeitabschnitt august = verfuegung
+						.getZeitabschnitte()
+						.get(0);
+					assertZeitabschnitt(
+						august,
+						new BigDecimal(50),
+						60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(50)
+					);
 					// Januar
-					VerfuegungZeitabschnitt januar = verfuegung.getZeitabschnitte().get(5);
-					assertZeitabschnitt(januar, new BigDecimal(40), 60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(40));
+					VerfuegungZeitabschnitt januar = verfuegung
+						.getZeitabschnitte()
+						.get(5);
+					assertZeitabschnitt(
+						januar,
+						new BigDecimal(40),
+						60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(40)
+					);
 				}
 			}
 		}
@@ -98,39 +156,96 @@ public class DoppelkitaTest extends AbstractBGRechnerTest {
 	 */
 	@Test
 	public void testfall_Doppelkita_02() {
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaBruennen());
-		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
-		Testfall_DoppelKita_Regel2 testfall = new Testfall_DoppelKita_Regel2(gesuchsperiode1718, new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718));
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaBruennen()
+		);
+		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+			.createGesuchsperiode1718();
+		Testfall_DoppelKita_Regel2 testfall = new Testfall_DoppelKita_Regel2(
+			gesuchsperiode1718,
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718)
+		);
 
 		testfall.createFall();
 		testfall.createGesuch(LocalDate.of(2016, 7, 1));
 		Gesuch gesuch = testfall.fillInGesuch();
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
 		gesuch.setGesuchsperiode(gesuchsperiode1718);
-		evaluator.evaluate(gesuch, getParameter(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			getParameter(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 
 		for (KindContainer kindContainer : gesuch.getKindContainers()) {
 			for (Betreuung betreuung : kindContainer.getBetreuungen()) {
 				Verfuegung verfuegung = betreuung.getVerfuegungPreview();
 				Assert.assertNotNull(verfuegung);
-				if (betreuung.getInstitutionStammdaten().getId().equals(ID_INSTITUTION_STAMMDATEN_WEISSENSTEIN_KITA)) {
-					Assert.assertEquals(12, verfuegung.getZeitabschnitte().size());
+				if (betreuung.getInstitutionStammdaten()
+					.getId()
+					.equals(ID_INSTITUTION_STAMMDATEN_WEISSENSTEIN_KITA)) {
+					Assert.assertEquals(
+						12,
+						verfuegung.getZeitabschnitte().size()
+					);
 					// Erster Monat
-					VerfuegungZeitabschnitt august = verfuegung.getZeitabschnitte().get(0);
-					assertZeitabschnitt(august, new BigDecimal(40), 60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(40));
+					VerfuegungZeitabschnitt august = verfuegung
+						.getZeitabschnitte()
+						.get(0);
+					assertZeitabschnitt(
+						august,
+						new BigDecimal(40),
+						60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(40)
+					);
 					// Januar
-					VerfuegungZeitabschnitt januar = verfuegung.getZeitabschnitte().get(5);
-					assertZeitabschnitt(januar, new BigDecimal(50), 60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(50));
+					VerfuegungZeitabschnitt januar = verfuegung
+						.getZeitabschnitte()
+						.get(5);
+					assertZeitabschnitt(
+						januar,
+						new BigDecimal(50),
+						60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(50)
+					);
 				} else {     //KITA Bruennen
-					Assert.assertEquals(12, verfuegung.getZeitabschnitte().size());
+					Assert.assertEquals(
+						12,
+						verfuegung.getZeitabschnitte().size()
+					);
 					// Erster Monat
-					VerfuegungZeitabschnitt okbober = verfuegung.getZeitabschnitte().get(2); // Oktober
-					assertZeitabschnitt(okbober, new BigDecimal(50), 20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS));
+					VerfuegungZeitabschnitt okbober = verfuegung
+						.getZeitabschnitte()
+						.get(2); // Oktober
+					assertZeitabschnitt(
+						okbober,
+						new BigDecimal(50),
+						20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(
+							20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS
+						)
+					);
 					// Januar
-					VerfuegungZeitabschnitt januar = verfuegung.getZeitabschnitte().get(5);
-					assertZeitabschnitt(januar, new BigDecimal(40), 10 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(10 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS));
+					VerfuegungZeitabschnitt januar = verfuegung
+						.getZeitabschnitte()
+						.get(5);
+					assertZeitabschnitt(
+						januar,
+						new BigDecimal(40),
+						10 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(
+							10 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS
+						)
+					);
 				}
 			}
 		}
@@ -141,39 +256,96 @@ public class DoppelkitaTest extends AbstractBGRechnerTest {
 	 */
 	@Test
 	public void testfall_Doppelkita_03() {
-		List<InstitutionStammdaten> institutionStammdatenList = new ArrayList<>();
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaWeissenstein());
-		institutionStammdatenList.add(TestDataUtil.createInstitutionStammdatenKitaBruennen());
-		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil.createGesuchsperiode1718();
-		Testfall_DoppelKita_Regel3 testfall = new Testfall_DoppelKita_Regel3(gesuchsperiode1718, new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718));
+		List<InstitutionStammdaten> institutionStammdatenList =
+			new ArrayList<>();
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaWeissenstein()
+		);
+		institutionStammdatenList.add(
+			TestDataUtil.createInstitutionStammdatenKitaBruennen()
+		);
+		final Gesuchsperiode gesuchsperiode1718 = TestDataUtil
+			.createGesuchsperiode1718();
+		Testfall_DoppelKita_Regel3 testfall = new Testfall_DoppelKita_Regel3(
+			gesuchsperiode1718,
+			new TestDataInstitutionStammdatenBuilder(gesuchsperiode1718)
+		);
 
 		testfall.createFall();
 		testfall.createGesuch(LocalDate.of(2016, 7, 1));
 		Gesuch gesuch = testfall.fillInGesuch();
-		TestDataUtil.calculateFinanzDaten(gesuch, new FinanzielleSituationBernRechner());
+		TestDataUtil.calculateFinanzDaten(
+			gesuch,
+			new FinanzielleSituationBernRechner()
+		);
 		gesuch.setGesuchsperiode(gesuchsperiode1718);
-		evaluator.evaluate(gesuch, getParameter(), kitaxUebergangsloesungParameter, Constants.DEFAULT_LOCALE);
+		evaluator.evaluate(
+			gesuch,
+			getParameter(),
+			kitaxUebergangsloesungParameter,
+			Constants.DEFAULT_LOCALE
+		);
 
 		for (KindContainer kindContainer : gesuch.getKindContainers()) {
 			for (Betreuung betreuung : kindContainer.getBetreuungen()) {
 				Verfuegung verfuegung = betreuung.getVerfuegungPreview();
 				Assert.assertNotNull(verfuegung);
-				if (betreuung.getInstitutionStammdaten().getId().equals(ID_INSTITUTION_STAMMDATEN_WEISSENSTEIN_KITA)) {
-					Assert.assertEquals(12, verfuegung.getZeitabschnitte().size());
+				if (betreuung.getInstitutionStammdaten()
+					.getId()
+					.equals(ID_INSTITUTION_STAMMDATEN_WEISSENSTEIN_KITA)) {
+					Assert.assertEquals(
+						12,
+						verfuegung.getZeitabschnitte().size()
+					);
 					// Erster Monat
-					VerfuegungZeitabschnitt august = verfuegung.getZeitabschnitte().get(0);
-					assertZeitabschnitt(august, new BigDecimal(40), 60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(40));
+					VerfuegungZeitabschnitt august = verfuegung
+						.getZeitabschnitte()
+						.get(0);
+					assertZeitabschnitt(
+						august,
+						new BigDecimal(40),
+						60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(40)
+					);
 					// Januar
-					VerfuegungZeitabschnitt januar = verfuegung.getZeitabschnitte().get(5);
-					assertZeitabschnitt(januar, new BigDecimal(30), 60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(30));
+					VerfuegungZeitabschnitt januar = verfuegung
+						.getZeitabschnitte()
+						.get(5);
+					assertZeitabschnitt(
+						januar,
+						new BigDecimal(30),
+						60 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(30)
+					);
 				} else {     //KITA Bruennen
-					Assert.assertEquals(12, verfuegung.getZeitabschnitte().size());
+					Assert.assertEquals(
+						12,
+						verfuegung.getZeitabschnitte().size()
+					);
 					// Erster Monat
-					VerfuegungZeitabschnitt august = verfuegung.getZeitabschnitte().get(0);
-					assertZeitabschnitt(august, new BigDecimal(40), 20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS));
+					VerfuegungZeitabschnitt august = verfuegung
+						.getZeitabschnitte()
+						.get(0);
+					assertZeitabschnitt(
+						august,
+						new BigDecimal(40),
+						20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(
+							20 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS
+						)
+					);
 					// Januar
-					VerfuegungZeitabschnitt januar = verfuegung.getZeitabschnitte().get(5);
-					assertZeitabschnitt(januar, new BigDecimal(50), 30 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS, new BigDecimal(30 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS));
+					VerfuegungZeitabschnitt januar = verfuegung
+						.getZeitabschnitte()
+						.get(5);
+					assertZeitabschnitt(
+						januar,
+						new BigDecimal(50),
+						30 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS,
+						new BigDecimal(
+							30 + ZUSCHLAG_ERWERBSPENSUM_FUER_TESTS
+						)
+					);
 				}
 			}
 		}

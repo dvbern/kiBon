@@ -8,19 +8,20 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.api.dtos.gemeindeantrag;
 
-import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
+import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
-import java.math.BigDecimal;
+
+import ch.dvbern.ebegu.api.dtos.JaxAbstractDTO;
 
 public class JaxFerienbetreuungBerechnungen extends JaxAbstractDTO {
 
@@ -65,9 +66,10 @@ public class JaxFerienbetreuungBerechnungen extends JaxAbstractDTO {
 	}
 
 	public void setBetreuungstageKinderDieserGemeindeMinusSonderschueler(
-			@Nullable BigDecimal betreuungstageKinderDieserGemeindeMinusSonderschueler) {
+		@Nullable BigDecimal betreuungstageKinderDieserGemeindeMinusSonderschueler
+	) {
 		this.betreuungstageKinderDieserGemeindeMinusSonderschueler =
-				betreuungstageKinderDieserGemeindeMinusSonderschueler;
+			betreuungstageKinderDieserGemeindeMinusSonderschueler;
 	}
 
 	@Nullable
@@ -76,9 +78,10 @@ public class JaxFerienbetreuungBerechnungen extends JaxAbstractDTO {
 	}
 
 	public void setBetreuungstageKinderAndererGemeindeMinusSonderschueler(
-			@Nullable BigDecimal betreuungstageKinderAndererGemeindeMinusSonderschueler) {
+		@Nullable BigDecimal betreuungstageKinderAndererGemeindeMinusSonderschueler
+	) {
 		this.betreuungstageKinderAndererGemeindeMinusSonderschueler =
-				betreuungstageKinderAndererGemeindeMinusSonderschueler;
+			betreuungstageKinderAndererGemeindeMinusSonderschueler;
 	}
 
 	@Nullable
@@ -86,7 +89,9 @@ public class JaxFerienbetreuungBerechnungen extends JaxAbstractDTO {
 		return totalKantonsbeitrag;
 	}
 
-	public void setTotalKantonsbeitrag(@Nullable BigDecimal totalKantonsbeitrag) {
+	public void setTotalKantonsbeitrag(
+		@Nullable BigDecimal totalKantonsbeitrag
+	) {
 		this.totalKantonsbeitrag = totalKantonsbeitrag;
 	}
 
@@ -104,8 +109,11 @@ public class JaxFerienbetreuungBerechnungen extends JaxAbstractDTO {
 		return beitragKinderAnbietendenGemeinde;
 	}
 
-	public void setBeitragKinderAnbietendenGemeinde(@Nullable BigDecimal beitragKinderAnbietendenGemeinde) {
-		this.beitragKinderAnbietendenGemeinde = beitragKinderAnbietendenGemeinde;
+	public void setBeitragKinderAnbietendenGemeinde(
+		@Nullable BigDecimal beitragKinderAnbietendenGemeinde
+	) {
+		this.beitragKinderAnbietendenGemeinde =
+			beitragKinderAnbietendenGemeinde;
 	}
 
 	@Nullable
@@ -113,7 +121,9 @@ public class JaxFerienbetreuungBerechnungen extends JaxAbstractDTO {
 		return beteiligungAnbietendenGemeinde;
 	}
 
-	public void setBeteiligungAnbietendenGemeinde(@Nullable BigDecimal beteiligungAnbietendenGemeinde) {
+	public void setBeteiligungAnbietendenGemeinde(
+		@Nullable BigDecimal beteiligungAnbietendenGemeinde
+	) {
 		this.beteiligungAnbietendenGemeinde = beteiligungAnbietendenGemeinde;
 	}
 

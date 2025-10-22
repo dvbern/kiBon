@@ -20,17 +20,22 @@ package ch.dvbern.ebegu.util;
 import ch.dvbern.oss.lib.excelmerger.converters.Converter;
 
 public class ExcelMergerUtil {
-	public static final Converter<Boolean> BOOLEAN_NULL_CONVERTER = (cell, pattern, value) -> {
+	public static final Converter<Boolean> BOOLEAN_NULL_CONVERTER = (
+		cell,
+		pattern,
+		value
+	) -> {
 		if (value != null) {
 			if (pattern.equals(cell.getStringCellValue())) {
 				cell.setCellValue(value);
 			} else {
-				cell.setCellValue(cell.getStringCellValue().replace(pattern, String.valueOf(value)));
+				cell.setCellValue(
+					cell.getStringCellValue()
+						.replace(pattern, String.valueOf(value))
+				);
 			}
-		}
-		else {
+		} else {
 			cell.setCellValue(cell.getStringCellValue().replace(pattern, ""));
 		}
 	};
 }
-

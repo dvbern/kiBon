@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.services.gemeindeantrag;
@@ -23,36 +23,36 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.docxmerger.DocxDocument;
 import ch.dvbern.ebegu.docxmerger.ferienbetreuung.FerienbetreuungDocxDTO;
 import ch.dvbern.ebegu.docxmerger.ferienbetreuung.FerienbetreuungDocxMerger;
+import ch.dvbern.ebegu.einstellung.EinstellungKey;
+import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngaben;
 import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungAngabenContainer;
 import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungDokument;
 import ch.dvbern.ebegu.entities.gemeindeantrag.FerienbetreuungDokument_;
-import ch.dvbern.ebegu.enums.EinstellungKey;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.AbstractBaseService;
 import ch.dvbern.ebegu.services.Authorizer;
-import ch.dvbern.ebegu.services.EinstellungService;
 import ch.dvbern.ebegu.services.GemeindeService;
-import ch.dvbern.lib.cdipersistence.Persistence;
 
 /**
  * Service fuer die Dokumente der Ferienbetreuungen
@@ -60,7 +60,8 @@ import ch.dvbern.lib.cdipersistence.Persistence;
 @Stateless
 @Local(FerienbetreuungDokumentService.class)
 public class FerienbetreuungDokumentServiceBean extends AbstractBaseService
-	implements FerienbetreuungDokumentService {
+	implements
+	FerienbetreuungDokumentService {
 
 	public static final String ID_MUSS_GESETZT_SEIN = "id muss gesetzt sein";
 
@@ -84,44 +85,76 @@ public class FerienbetreuungDokumentServiceBean extends AbstractBaseService
 
 	@Nonnull
 	@Override
-	public FerienbetreuungDokument saveDokument(@Nonnull FerienbetreuungDokument ferienbetreuungDokument) {
+	public FerienbetreuungDokument saveDokument(
+		@Nonnull FerienbetreuungDokument ferienbetreuungDokument
+	) {
 		Objects.requireNonNull(ferienbetreuungDokument);
-		authorizer.checkWriteAuthorization(ferienbetreuungDokument.getFerienbetreuungAngabenContainer());
+		authorizer.checkWriteAuthorization(
+			ferienbetreuungDokument.getFerienbetreuungAngabenContainer()
+		);
 
 		return persistence.merge(ferienbetreuungDokument);
 	}
 
 	@Nonnull
 	@Override
-	public Optional<FerienbetreuungDokument> findDokument(@Nonnull String dokumentId) {
+	public Optional<FerienbetreuungDokument> findDokument(
+		@Nonnull String dokumentId
+	) {
 		Objects.requireNonNull(dokumentId, ID_MUSS_GESETZT_SEIN);
-		FerienbetreuungDokument dokument = persistence.find(FerienbetreuungDokument.class, dokumentId);
-		authorizer.checkReadAuthorization(dokument.getFerienbetreuungAngabenContainer());
+		FerienbetreuungDokument dokument = persistence.find(
+			FerienbetreuungDokument.class,
+			dokumentId
+		);
+		authorizer.checkReadAuthorization(
+			dokument.getFerienbetreuungAngabenContainer()
+		);
 		return Optional.ofNullable(dokument);
 	}
 
 	@Override
 	public void removeDokument(@Nonnull FerienbetreuungDokument dokument) {
-		authorizer.checkWriteAuthorization(dokument.getFerienbetreuungAngabenContainer());
+		authorizer.checkWriteAuthorization(
+			dokument.getFerienbetreuungAngabenContainer()
+		);
 		persistence.remove(dokument);
 	}
 
 	@Nonnull
 	@Override
-	public List<FerienbetreuungDokument> findDokumente(@Nonnull String ferienbetreuungContainerId) {
+	public List<FerienbetreuungDokument> findDokumente(
+		@Nonnull String ferienbetreuungContainerId
+	) {
 		Objects.requireNonNull(ferienbetreuungContainerId);
-		authorizer.checkReadAuthorizationFerienbetreuung(ferienbetreuungContainerId);
+		authorizer.checkReadAuthorizationFerienbetreuung(
+			ferienbetreuungContainerId
+		);
 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<FerienbetreuungDokument> query = cb.createQuery(FerienbetreuungDokument.class);
-		Root<FerienbetreuungDokument> root = query.from(FerienbetreuungDokument.class);
+		final CriteriaQuery<FerienbetreuungDokument> query = cb.createQuery(
+			FerienbetreuungDokument.class
+		);
+		Root<FerienbetreuungDokument> root = query.from(
+			FerienbetreuungDokument.class
+		);
 
-		ParameterExpression<String> containerIdParam = cb.parameter(String.class, "ferienbetreuungContainerId");
+		ParameterExpression<String> containerIdParam = cb.parameter(
+			String.class,
+			"ferienbetreuungContainerId"
+		);
 
-		Predicate predicateFerienbetreuungFormularId = cb.equal(root.get(FerienbetreuungDokument_.ferienbetreuungAngabenContainer).get(AbstractEntity_.id), containerIdParam);
+		Predicate predicateFerienbetreuungFormularId = cb.equal(
+			root.get(
+				FerienbetreuungDokument_.ferienbetreuungAngabenContainer
+			).get(AbstractEntity_.id),
+			containerIdParam
+		);
 		query.where(predicateFerienbetreuungFormularId);
-		query.orderBy(cb.asc(root.get(FerienbetreuungDokument_.timestampUpload)));
-		TypedQuery<FerienbetreuungDokument> q = persistence.getEntityManager().createQuery(query);
+		query.orderBy(
+			cb.asc(root.get(FerienbetreuungDokument_.timestampUpload))
+		);
+		TypedQuery<FerienbetreuungDokument> q = persistence.getEntityManager()
+			.createQuery(query);
 		q.setParameter(containerIdParam, ferienbetreuungContainerId);
 
 		return q.getResultList();
@@ -129,22 +162,34 @@ public class FerienbetreuungDokumentServiceBean extends AbstractBaseService
 
 	@Override
 	@Nonnull
-	public byte[] createDocx(@Nonnull String containerId, @Nonnull Sprache sprache) {
+	public byte[] createDocx(
+		@Nonnull String containerId,
+		@Nonnull Sprache sprache
+	) {
 		FerienbetreuungAngabenContainer container =
-			ferienbetreuungService.findFerienbetreuungAngabenContainer(containerId)
-				.orElseThrow(() -> new EbeguEntityNotFoundException(
-					"createDocx",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					containerId)
+			ferienbetreuungService.findFerienbetreuungAngabenContainer(
+				containerId
+			)
+				.orElseThrow(
+					() -> new EbeguEntityNotFoundException(
+						"createDocx",
+						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+						containerId
+					)
 				);
 
 		authorizer.checkReadAuthorization(container);
 
-		final byte[] template = container.getGesuchsperiode().getVorlageVerfuegungFerienbetreuungWithSprache(sprache);
+		final byte[] template = container.getGesuchsperiode()
+			.getVorlageVerfuegungFerienbetreuungWithSprache(sprache);
 		if (template.length == 0) {
 			throw new EbeguRuntimeException(
 				"createDocx",
-				"Ferienbetreuung Template not found für Gesuchsperiode " + container.getGesuchsperiode().getGesuchsperiodeString() + " und Sprache " + sprache,
+				"Ferienbetreuung Template not found für Gesuchsperiode "
+					+ container.getGesuchsperiode()
+						.getGesuchsperiodeString()
+					+ " und Sprache "
+					+ sprache,
 				ErrorCodeEnum.ERROR_FERIENBETREUUNG_VERFUEGUNG_TEMPLATE_NOT_FOUND,
 				container.getGesuchsperiode().getGesuchsperiodeString(),
 				sprache
@@ -152,42 +197,89 @@ public class FerienbetreuungDokumentServiceBean extends AbstractBaseService
 		}
 
 		DocxDocument document = new DocxDocument(template);
-		FerienbetreuungDocxMerger merger = new FerienbetreuungDocxMerger(document);
+		FerienbetreuungDocxMerger merger = new FerienbetreuungDocxMerger(
+			document
+		);
 		merger.addMergeFields(toFerienbetreuungDocxDTO(container));
 		merger.merge();
 		return document.getDocument();
 	}
 
 	@Nonnull
-	private FerienbetreuungDocxDTO toFerienbetreuungDocxDTO(@Nonnull FerienbetreuungAngabenContainer container) {
+	private FerienbetreuungDocxDTO toFerienbetreuungDocxDTO(
+		@Nonnull FerienbetreuungAngabenContainer container
+	) {
 		Objects.requireNonNull(container.getAngabenKorrektur());
-		FerienbetreuungAngaben angabenKorrektur = container.getAngabenKorrektur();
+		FerienbetreuungAngaben angabenKorrektur = container
+			.getAngabenKorrektur();
 
 		FerienbetreuungDocxDTO dto = new FerienbetreuungDocxDTO();
 		dto.setUserName(this.principalBean.getBenutzer().getFullName());
 		dto.setUserEmail(this.principalBean.getBenutzer().getEmail());
 
-		GemeindeStammdaten stammdaten = this.gemeindeService.getGemeindeStammdatenByGemeindeId(container.getGemeinde().getId()).orElseThrow(() ->
-			new EbeguEntityNotFoundException("toFerienbetreuungDocxDTO", container.getGemeinde().getId())
-		);
+		GemeindeStammdaten stammdaten = this.gemeindeService
+			.getGemeindeStammdatenByGemeindeId(
+				container.getGemeinde().getId()
+			)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"toFerienbetreuungDocxDTO",
+					container.getGemeinde().getId()
+				)
+			);
 
-		dto.setGemeindeAnschrift(angabenKorrektur.getFerienbetreuungAngabenStammdaten().getStammdatenAdresse().getOrganisation());
+		dto.setGemeindeAnschrift(
+			angabenKorrektur.getFerienbetreuungAngabenStammdaten()
+				.getStammdatenAdresse()
+				.getOrganisation()
+		);
 		dto.setGemeindeNamen(stammdaten.getGemeinde().getName());
-		dto.setGemeindeStrasse(angabenKorrektur.getFerienbetreuungAngabenStammdaten().getStammdatenAdresse().getStrasse());
-		dto.setGemeindeNr(angabenKorrektur.getFerienbetreuungAngabenStammdaten().getStammdatenAdresse().getHausnummer());
-		dto.setGemeindePLZ(angabenKorrektur.getFerienbetreuungAngabenStammdaten().getStammdatenAdresse().getPlz());
-		dto.setGemeindeOrt(angabenKorrektur.getFerienbetreuungAngabenStammdaten().getStammdatenAdresse().getOrt());
+		dto.setGemeindeStrasse(
+			angabenKorrektur.getFerienbetreuungAngabenStammdaten()
+				.getStammdatenAdresse()
+				.getStrasse()
+		);
+		dto.setGemeindeNr(
+			angabenKorrektur.getFerienbetreuungAngabenStammdaten()
+				.getStammdatenAdresse()
+				.getHausnummer()
+		);
+		dto.setGemeindePLZ(
+			angabenKorrektur.getFerienbetreuungAngabenStammdaten()
+				.getStammdatenAdresse()
+				.getPlz()
+		);
+		dto.setGemeindeOrt(
+			angabenKorrektur.getFerienbetreuungAngabenStammdaten()
+				.getStammdatenAdresse()
+				.getOrt()
+		);
 		dto.setFallNummer(buildFallNummer(container, stammdaten));
 		dto.setPeriode(container.getGesuchsperiode().getGesuchsperiodeString());
-		dto.setAngebot(angabenKorrektur.getFerienbetreuungAngabenAngebot().getAngebot());
-		var traegerschaft = angabenKorrektur.getFerienbetreuungAngabenStammdaten().getTraegerschaft() != null
-			? angabenKorrektur.getFerienbetreuungAngabenStammdaten().getTraegerschaft()
-			: container.getGemeinde().getName();
+		dto.setAngebot(
+			angabenKorrektur.getFerienbetreuungAngabenAngebot().getAngebot()
+		);
+		var traegerschaft = angabenKorrektur
+			.getFerienbetreuungAngabenStammdaten()
+			.getTraegerschaft()
+			!= null ?
+				angabenKorrektur.getFerienbetreuungAngabenStammdaten()
+					.getTraegerschaft() :
+				container.getGemeinde().getName();
 		dto.setTraegerschaft(traegerschaft);
 
-		dto.setTotalTage(angabenKorrektur.getFerienbetreuungAngabenNutzung().getAnzahlBetreuungstageKinderBern());
-		dto.setTageSonderschueler(angabenKorrektur.getFerienbetreuungAngabenNutzung().getAnzahlTageSonderschueler());
-		dto.setTageOhneSonderschuelertage(angabenKorrektur.getFerienbetreuungAngabenNutzung().getAnzahlTageOhneSonderschueler());
+		dto.setTotalTage(
+			angabenKorrektur.getFerienbetreuungAngabenNutzung()
+				.getAnzahlBetreuungstageKinderBern()
+		);
+		dto.setTageSonderschueler(
+			angabenKorrektur.getFerienbetreuungAngabenNutzung()
+				.getAnzahlTageSonderschueler()
+		);
+		dto.setTageOhneSonderschuelertage(
+			angabenKorrektur.getFerienbetreuungAngabenNutzung()
+				.getAnzahlTageOhneSonderschueler()
+		);
 
 		var pauschale = einstellungService.findEinstellung(
 			EinstellungKey.FERIENBETREUUNG_CHF_PAUSCHALBETRAG,
@@ -203,23 +295,44 @@ public class FerienbetreuungDokumentServiceBean extends AbstractBaseService
 
 		dto.setPauschale(pauschale);
 		dto.setPauschaleSonderschueler(pauschaleSonderschueler);
-		dto.setChfOhneSonderschueler(pauschale.multiply(dto.getTageOhneSonderschueler()));
-		dto.setChfSonderschueler(pauschaleSonderschueler.multiply(dto.getTageSonderschueler()));
+		dto.setChfOhneSonderschueler(
+			pauschale.multiply(dto.getTageOhneSonderschueler())
+		);
+		dto.setChfSonderschueler(
+			pauschaleSonderschueler.multiply(dto.getTageSonderschueler())
+		);
 
-		dto.setTotalTage(angabenKorrektur.getFerienbetreuungAngabenNutzung().getAnzahlBetreuungstageKinderBern());
+		dto.setTotalTage(
+			angabenKorrektur.getFerienbetreuungAngabenNutzung()
+				.getAnzahlBetreuungstageKinderBern()
+		);
 		Objects.requireNonNull(dto.getChfSonderschueler());
-		dto.setTotalChf(dto.getChfSonderschueler().add(dto.getChfOhneSonderschueler()));
+		dto.setTotalChf(
+			dto.getChfSonderschueler().add(dto.getChfOhneSonderschueler())
+		);
 
-		Objects.requireNonNull(angabenKorrektur.getFerienbetreuungAngabenStammdaten().getAuszahlungsdaten());
-		dto.setIban(angabenKorrektur.getFerienbetreuungAngabenStammdaten().getAuszahlungsdaten().getIban().getIban());
+		Objects.requireNonNull(
+			angabenKorrektur.getFerienbetreuungAngabenStammdaten()
+				.getAuszahlungsdaten()
+		);
+		dto.setIban(
+			angabenKorrektur.getFerienbetreuungAngabenStammdaten()
+				.getAuszahlungsdaten()
+				.getIban()
+				.getIban()
+		);
 
 		return dto;
 	}
 
-	private String buildFallNummer(FerienbetreuungAngabenContainer container, GemeindeStammdaten stammdaten) {
-		String year = container.getGesuchsperiode().getGueltigkeit().getGueltigAb().format(DateTimeFormatter.ofPattern("yy"));
+	private String buildFallNummer(
+		FerienbetreuungAngabenContainer container,
+		GemeindeStammdaten stammdaten
+	) {
+		String year = container.getGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigAb()
+			.format(DateTimeFormatter.ofPattern("yy"));
 		return year + '.' + stammdaten.getGemeinde().getBfsNummer();
 	}
 }
-
-

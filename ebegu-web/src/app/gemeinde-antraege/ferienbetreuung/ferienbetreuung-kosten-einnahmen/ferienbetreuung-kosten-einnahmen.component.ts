@@ -27,13 +27,13 @@ import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import {combineLatest, Observable, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {map, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSFerienbetreuungAngaben} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngaben';
 import {TSFerienbetreuungAngabenContainer} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenContainer';
 import {TSFerienbetreuungAngabenKostenEinnahmen} from '../../../../models/gemeindeantrag/TSFerienbetreuungAngabenKostenEinnahmen';
 import {ErrorService} from '../../../core/errors/service/ErrorService';
-import {LogFactory} from '../../../core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {WizardStepXRS} from '../../../core/service/wizardStepXRS.rest';
 import {
     numberValidator,
@@ -42,6 +42,7 @@ import {
 import {UnsavedChangesService} from '../../services/unsaved-changes.service';
 import {AbstractFerienbetreuungFormular} from '../abstract.ferienbetreuung-formular';
 import {FerienbetreuungService} from '../services/ferienbetreuung.service';
+import {FerienbetreuungPermissionUtil} from '../util/FerienbetreuungPermissionUtil';
 
 const LOG = LogFactory.createLog('FerienbetreuungKostenEinnahmenComponent');
 
@@ -49,14 +50,15 @@ const LOG = LogFactory.createLog('FerienbetreuungKostenEinnahmenComponent');
     selector: 'dv-ferienbetreuung-kosten-einnahmen',
     templateUrl: './ferienbetreuung-kosten-einnahmen.component.html',
     styleUrls: ['./ferienbetreuung-kosten-einnahmen.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FerienbetreuungKostenEinnahmenComponent
     extends AbstractFerienbetreuungFormular
     implements OnInit, OnDestroy
 {
     private kostenEinnahmen: TSFerienbetreuungAngabenKostenEinnahmen;
-    private readonly unsubscribe$ = new Subject();
+    private readonly unsubscribe$ = new Subject<void>();
     public vorgaenger$: Observable<TSFerienbetreuungAngabenContainer>;
     public isDelegationsmodell: boolean = false;
 
@@ -93,11 +95,12 @@ export class FerienbetreuungKostenEinnahmenComponent
     public ngOnInit(): void {
         combineLatest([
             this.ferienbetreuungService.getFerienbetreuungContainer(),
-            this.authService.principal$
+            this.authService.principal$,
+            this.ferienbetreuungService.getFerienbetreuungHistory()
         ])
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(
-                ([container, principal]) => {
+                ([container, principal, history]) => {
                     this.container = container;
                     const angaben =
                         container.isAtLeastInPruefungKantonOrZurueckgegeben()
@@ -108,7 +111,8 @@ export class FerienbetreuungKostenEinnahmenComponent
                     this.setupFormAndPermissions(
                         container,
                         this.kostenEinnahmen,
-                        principal
+                        principal,
+                        history
                     );
                     this.unsavedChangesService.registerForm(this.form);
                 },
@@ -330,5 +334,20 @@ export class FerienbetreuungKostenEinnahmenComponent
                 () => this.handleSaveSuccess(),
                 error => this.handleSaveErrors(error)
             );
+    }
+
+    public isZweitPruefungAndSameUserAsPruefung() {
+        return combineLatest([
+            this.authService.principal$,
+            this.ferienbetreuungService.getFerienbetreuungHistory()
+        ]).pipe(
+            map(([principal, history]) =>
+                FerienbetreuungPermissionUtil.isInZweitpruefungAndSameUser(
+                    principal,
+                    this.container,
+                    history
+                )
+            )
+        );
     }
 }

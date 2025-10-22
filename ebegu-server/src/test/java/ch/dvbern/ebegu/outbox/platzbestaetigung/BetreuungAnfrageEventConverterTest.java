@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox.platzbestaetigung;
@@ -40,14 +40,16 @@ import static org.hamcrest.Matchers.is;
 public class BetreuungAnfrageEventConverterTest {
 
 	@Nonnull
-	private final BetreuungAnfrageEventConverter converter = new BetreuungAnfrageEventConverter();
+	private final BetreuungAnfrageEventConverter converter =
+		new BetreuungAnfrageEventConverter();
 
 	@Test
 	public void testCreatedEvent() {
 		//die default Betreuung hat keinen Gesuch und keinen Gesuchsteller
 		Betreuung kitaBetreuung = TestDataUtil.createDefaultBetreuung();
 		Gesuchsteller gesuchsteller = TestDataUtil.createDefaultGesuchsteller();
-		GesuchstellerContainer gesuchstellerContainer = new GesuchstellerContainer();
+		GesuchstellerContainer gesuchstellerContainer =
+			new GesuchstellerContainer();
 		gesuchstellerContainer.setGesuchstellerJA(gesuchsteller);
 		Gesuch gesuch = TestDataUtil.createDefaultGesuch();
 		gesuch.setGesuchsteller1(gesuchstellerContainer);
@@ -57,36 +59,127 @@ public class BetreuungAnfrageEventConverterTest {
 
 		BetreuungAnfrageAddedEvent event = converter.of(kitaBetreuung);
 
-		assertThat(event, is(pojo(ExportedEvent.class)
-			.where(ExportedEvent::getAggregateId, is(kitaBetreuung.getReferenzNummer()))
-			.where(ExportedEvent::getAggregateType, is("BetreuungAnfrage"))
-			.where(ExportedEvent::getType, is("BetreuungAnfrageAdded")))
+		assertThat(
+			event,
+			is(
+				pojo(ExportedEvent.class)
+					.where(
+						ExportedEvent::getAggregateId,
+						is(kitaBetreuung.getReferenzNummer())
+					)
+					.where(
+						ExportedEvent::getAggregateType,
+						is("BetreuungAnfrage")
+					)
+					.where(
+						ExportedEvent::getType,
+						is("BetreuungAnfrageAdded")
+					)
+			)
 		);
 
 		//noinspection deprecation
-		BetreuungAnfrageEventDTO specificRecord = AvroConverter.fromAvroBinary(event.getSchema(), event.getPayload());
+		BetreuungAnfrageEventDTO specificRecord = AvroConverter.fromAvroBinary(
+			event.getSchema(),
+			event.getPayload()
+		);
 
-		assertThat(specificRecord, is(pojo(BetreuungAnfrageEventDTO.class)
-			.where(BetreuungAnfrageEventDTO::getRefnr, is(kitaBetreuung.getReferenzNummer()))
-			.where(BetreuungAnfrageEventDTO::getInstitutionId,
-				is(kitaBetreuung.getInstitutionStammdaten().getInstitution().getId()))
-			.where(BetreuungAnfrageEventDTO::getPeriodeVon,
-				is(kitaBetreuung.extractGesuchsperiode().getGueltigkeit().getGueltigAb()))
-			.where(BetreuungAnfrageEventDTO::getPeriodeBis,
-				is(kitaBetreuung.extractGesuchsperiode().getGueltigkeit().getGueltigBis()))
-			.where(BetreuungAnfrageEventDTO::getBetreuungsArt, is(BetreuungsangebotTyp.KITA))
-			.where(BetreuungAnfrageEventDTO::getAbgelehntVonGesuchsteller, is(false))
-			.where(BetreuungAnfrageEventDTO::getKind, is(pojo(KindDTO.class)
-				.where(KindDTO::getNachname, is(kind.getNachname()))
-				.where(KindDTO::getVorname, is(kind.getVorname()))
-				.where(KindDTO::getGeburtsdatum, is(kind.getGeburtsdatum()))
-			))
-			.where(BetreuungAnfrageEventDTO::getGesuchsteller, is(pojo(GesuchstellerDTO.class)
-				.where(GesuchstellerDTO::getNachname, is(gesuchsteller.getNachname()))
-				.where(GesuchstellerDTO::getVorname, is(gesuchsteller.getVorname()))
-				.where(GesuchstellerDTO::getEmail, is(gesuchsteller.getMail()))
-			))
-		));
+		assertThat(
+			specificRecord,
+			is(
+				pojo(BetreuungAnfrageEventDTO.class)
+					.where(
+						BetreuungAnfrageEventDTO::getRefnr,
+						is(kitaBetreuung.getReferenzNummer())
+					)
+					.where(
+						BetreuungAnfrageEventDTO::getInstitutionId,
+						is(
+							kitaBetreuung
+								.getInstitutionStammdaten()
+								.getInstitution()
+								.getId()
+						)
+					)
+					.where(
+						BetreuungAnfrageEventDTO::getPeriodeVon,
+						is(
+							kitaBetreuung
+								.extractGesuchsperiode()
+								.getGueltigkeit()
+								.getGueltigAb()
+						)
+					)
+					.where(
+						BetreuungAnfrageEventDTO::getPeriodeBis,
+						is(
+							kitaBetreuung
+								.extractGesuchsperiode()
+								.getGueltigkeit()
+								.getGueltigBis()
+						)
+					)
+					.where(
+						BetreuungAnfrageEventDTO::getBetreuungsArt,
+						is(BetreuungsangebotTyp.KITA)
+					)
+					.where(
+						BetreuungAnfrageEventDTO::getAbgelehntVonGesuchsteller,
+						is(false)
+					)
+					.where(
+						BetreuungAnfrageEventDTO::getKind,
+						is(
+							pojo(KindDTO.class)
+								.where(
+									KindDTO::getNachname,
+									is(
+										kind.getNachname()
+									)
+								)
+								.where(
+									KindDTO::getVorname,
+									is(
+										kind.getVorname()
+									)
+								)
+								.where(
+									KindDTO::getGeburtsdatum,
+									is(
+										kind.getGeburtsdatum()
+									)
+								)
+						)
+					)
+					.where(
+						BetreuungAnfrageEventDTO::getGesuchsteller,
+						is(
+							pojo(GesuchstellerDTO.class)
+								.where(
+									GesuchstellerDTO::getNachname,
+									is(
+										gesuchsteller
+											.getNachname()
+									)
+								)
+								.where(
+									GesuchstellerDTO::getVorname,
+									is(
+										gesuchsteller
+											.getVorname()
+									)
+								)
+								.where(
+									GesuchstellerDTO::getEmail,
+									is(
+										gesuchsteller
+											.getMail()
+									)
+								)
+						)
+					)
+			)
+		);
 	}
 
 }

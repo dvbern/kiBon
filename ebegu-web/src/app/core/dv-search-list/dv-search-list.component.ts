@@ -38,7 +38,8 @@ import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
     selector: 'dv-search-list',
     templateUrl: './dv-search-list.component.html',
     styleUrls: ['./dv-search-list.component.less'],
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false
 })
 export class DvSearchListComponent implements OnInit, OnChanges, AfterViewInit {
     /**
@@ -125,14 +126,14 @@ export class DvSearchListComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     private loadData(): void {
-        this.data$.subscribe(
-            (result: DVAntragListItem[]) => {
+        this.data$.subscribe({
+            next: (result: DVAntragListItem[]) => {
                 this.dataSource.data = result;
                 this.dataSource.paginator = this.paginator;
                 this.changeDetectorRef.markForCheck();
             },
-            () => {}
-        );
+            error: () => {}
+        });
     }
 
     /**

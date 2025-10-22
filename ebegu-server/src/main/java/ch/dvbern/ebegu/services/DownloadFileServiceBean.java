@@ -21,17 +21,17 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.ejb.Local;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
+import jakarta.inject.Inject;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.DownloadFile;
@@ -39,9 +39,9 @@ import ch.dvbern.ebegu.entities.DownloadFile_;
 import ch.dvbern.ebegu.entities.FileMetadata;
 import ch.dvbern.ebegu.enums.TokenLifespan;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
+import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.UploadFileInfo;
-import ch.dvbern.lib.cdipersistence.Persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,9 @@ import static java.util.Objects.requireNonNull;
 @Local(DownloadFileService.class)
 public class DownloadFileServiceBean implements DownloadFileService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DownloadFileServiceBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		DownloadFileServiceBean.class
+	);
 
 	@Inject
 	private Persistence persistence;
@@ -66,10 +68,12 @@ public class DownloadFileServiceBean implements DownloadFileService {
 	@Inject
 	private FileSaverService fileSaverService;
 
-
 	@Nonnull
 	@Override
-	public DownloadFile create(@Nonnull FileMetadata fileMetadata, @Nonnull String ip) {
+	public DownloadFile create(
+		@Nonnull FileMetadata fileMetadata,
+		@Nonnull String ip
+	) {
 		requireNonNull(fileMetadata);
 		requireNonNull(ip);
 
@@ -78,7 +82,11 @@ public class DownloadFileServiceBean implements DownloadFileService {
 
 	@Nonnull
 	@Override
-	public DownloadFile create(@Nonnull UploadFileInfo fileInfo, @Nonnull TokenLifespan lifespan, @Nonnull String ip) {
+	public DownloadFile create(
+		@Nonnull UploadFileInfo fileInfo,
+		@Nonnull TokenLifespan lifespan,
+		@Nonnull String ip
+	) {
 		requireNonNull(fileInfo);
 		requireNonNull(lifespan);
 		requireNonNull(ip);
@@ -89,10 +97,17 @@ public class DownloadFileServiceBean implements DownloadFileService {
 
 	@Nullable
 	@Override
-	public DownloadFile getDownloadFileByAccessToken(@Nonnull String accessToken) {
+	public DownloadFile getDownloadFileByAccessToken(
+		@Nonnull String accessToken
+	) {
 		requireNonNull(accessToken);
 
-		Optional<DownloadFile> tempDokumentOptional = criteriaQueryHelper.getEntityByUniqueAttribute(DownloadFile.class, accessToken, DownloadFile_.accessToken);
+		Optional<DownloadFile> tempDokumentOptional = criteriaQueryHelper
+			.getEntityByUniqueAttribute(
+				DownloadFile.class,
+				accessToken,
+				DownloadFile_.accessToken
+			);
 
 		if (!tempDokumentOptional.isPresent()) {
 			return null;
@@ -112,16 +127,27 @@ public class DownloadFileServiceBean implements DownloadFileService {
 		deleteLongTermAccessTokens();
 		// Auch die physischen Files loeschen
 		fileSaverService.deleteAllFilesInTempReportsFolder();
-		fileSaverService.deleteAllFilesInTempNotverordnungFolder();
 	}
 
 	private void deleteShortTermAccessTokens() {
-		LocalDateTime deleteOlderThan = LocalDateTime.now().minus(Constants.MAX_SHORT_TEMP_DOWNLOAD_AGE_MINUTES, ChronoUnit.MINUTES);
-		LOG.debug("Deleting {} ShortTerm TempDocuments before {}", TokenLifespan.SHORT, deleteOlderThan);
+		LocalDateTime deleteOlderThan = LocalDateTime.now()
+			.minus(
+				Constants.MAX_SHORT_TEMP_DOWNLOAD_AGE_MINUTES,
+				ChronoUnit.MINUTES
+			);
+		LOG.debug(
+			"Deleting {} ShortTerm TempDocuments before {}",
+			TokenLifespan.SHORT,
+			deleteOlderThan
+		);
 
 		try {
 			requireNonNull(deleteOlderThan);
-			int result = this.deleteAllTokensBefore(DownloadFile.class, TokenLifespan.SHORT, deleteOlderThan);
+			int result = this.deleteAllTokensBefore(
+				DownloadFile.class,
+				TokenLifespan.SHORT,
+				deleteOlderThan
+			);
 			LOG.info("... Deleteted {} ShortTerm TempDocuments", result);
 		} catch (RuntimeException rte) {
 			// timer methods may not throw exceptions or the timer will get cancelled (as per spec)
@@ -131,12 +157,24 @@ public class DownloadFileServiceBean implements DownloadFileService {
 	}
 
 	private void deleteLongTermAccessTokens() {
-		LocalDateTime deleteOlderThan = LocalDateTime.now().minus(Constants.MAX_LONGER_TEMP_DOWNLOAD_AGE_MINUTES, ChronoUnit.MINUTES);
-		LOG.debug("Deleting {} LongTerm TempDocuments before {}", TokenLifespan.LONG, deleteOlderThan);
+		LocalDateTime deleteOlderThan = LocalDateTime.now()
+			.minus(
+				Constants.MAX_LONGER_TEMP_DOWNLOAD_AGE_MINUTES,
+				ChronoUnit.MINUTES
+			);
+		LOG.debug(
+			"Deleting {} LongTerm TempDocuments before {}",
+			TokenLifespan.LONG,
+			deleteOlderThan
+		);
 
 		try {
 			requireNonNull(deleteOlderThan);
-			int result = this.deleteAllTokensBefore(DownloadFile.class, TokenLifespan.LONG, deleteOlderThan);
+			int result = this.deleteAllTokensBefore(
+				DownloadFile.class,
+				TokenLifespan.LONG,
+				deleteOlderThan
+			);
 			LOG.info("... Deleteted {} LongTerm TempDocuments", result);
 		} catch (RuntimeException rte) {
 			// timer methods may not throw exceptions or the timer will get cancelled (as per spec)
@@ -145,7 +183,11 @@ public class DownloadFileServiceBean implements DownloadFileService {
 		}
 	}
 
-	private <T extends DownloadFile> int deleteAllTokensBefore(@Nonnull Class<T> entityClazz, @Nonnull TokenLifespan lifespan, @Nonnull LocalDateTime before) {
+	private <T extends DownloadFile> int deleteAllTokensBefore(
+		@Nonnull Class<T> entityClazz,
+		@Nonnull TokenLifespan lifespan,
+		@Nonnull LocalDateTime before
+	) {
 		checkNotNull(entityClazz);
 		checkNotNull(before);
 
@@ -153,12 +195,24 @@ public class DownloadFileServiceBean implements DownloadFileService {
 		CriteriaDelete<T> delete = cb.createCriteriaDelete(entityClazz);
 		Root<T> root = delete.from(entityClazz);
 
-		ParameterExpression<LocalDateTime> beforeParam = cb.parameter(LocalDateTime.class, "before");
-		Predicate timePred = cb.lessThan(root.get(AbstractDateRangedEntity_.timestampMutiert), beforeParam);
+		ParameterExpression<LocalDateTime> beforeParam = cb.parameter(
+			LocalDateTime.class,
+			"before"
+		);
+		Predicate timePred = cb.lessThan(
+			root.get(AbstractDateRangedEntity_.timestampMutiert),
+			beforeParam
+		);
 
-		ParameterExpression<TokenLifespan> lifespanParam = cb.parameter(TokenLifespan.class, "type");
+		ParameterExpression<TokenLifespan> lifespanParam = cb.parameter(
+			TokenLifespan.class,
+			"type"
+		);
 		root.get(DownloadFile_.ip);
-		Predicate lifespanPred = cb.equal(root.get(DownloadFile_.lifespan), lifespanParam);
+		Predicate lifespanPred = cb.equal(
+			root.get(DownloadFile_.lifespan),
+			lifespanParam
+		);
 
 		delete.where(timePred, lifespanPred);
 		Query query = persistence.getEntityManager().createQuery(delete);
@@ -171,10 +225,24 @@ public class DownloadFileServiceBean implements DownloadFileService {
 	 * Access Token fuer Download ist nur fuer eine bestimmte Zeitspanne (3Min) gueltig
 	 */
 	private boolean isFileDownloadExpired(@Nonnull DownloadFile tempBlob) {
-		LocalDateTime timestampMutiert = checkNotNull(tempBlob.getTimestampMutiert());
+		LocalDateTime timestampMutiert = checkNotNull(
+			tempBlob.getTimestampMutiert()
+		);
 		if (tempBlob.getLifespan() == TokenLifespan.SHORT) {
-			return timestampMutiert.isBefore(LocalDateTime.now().minus(Constants.MAX_SHORT_TEMP_DOWNLOAD_AGE_MINUTES, ChronoUnit.MINUTES));
+			return timestampMutiert.isBefore(
+				LocalDateTime.now()
+					.minus(
+						Constants.MAX_SHORT_TEMP_DOWNLOAD_AGE_MINUTES,
+						ChronoUnit.MINUTES
+					)
+			);
 		}
-		return timestampMutiert.isBefore(LocalDateTime.now().minus(Constants.MAX_LONGER_TEMP_DOWNLOAD_AGE_MINUTES, ChronoUnit.MINUTES));
+		return timestampMutiert.isBefore(
+			LocalDateTime.now()
+				.minus(
+					Constants.MAX_LONGER_TEMP_DOWNLOAD_AGE_MINUTES,
+					ChronoUnit.MINUTES
+				)
+		);
 	}
 }

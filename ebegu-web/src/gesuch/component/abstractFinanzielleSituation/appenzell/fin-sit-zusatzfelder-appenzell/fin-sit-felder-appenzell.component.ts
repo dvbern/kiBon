@@ -24,7 +24,7 @@ import {
     OnInit,
     Output
 } from '@angular/core';
-import {LogFactory} from '../../../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
 import {TSFinSitZusatzangabenAppenzell} from '../../../../../models/TSFinSitZusatzangabenAppenzell';
@@ -38,7 +38,8 @@ const LOG = LogFactory.createLog('FinSitZusatzfelderAppenzell');
     selector: 'dv-fin-sit-felder-appenzell',
     templateUrl: './fin-sit-felder-appenzell.component.html',
     styleUrls: ['./fin-sit-felder-appenzell.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class FinSitFelderAppenzellComponent implements OnInit {
     @Input()

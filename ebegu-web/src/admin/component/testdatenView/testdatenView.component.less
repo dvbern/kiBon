@@ -41,10 +41,21 @@
 
     .testfall-button {
         margin-top: 3rem;
+        display: inline-grid;
+
+        & + .testfall-button {
+            margin-left: 2rem;
+        }
     }
-    .testfall-button-duo + .testfall-button-duo {
-        margin-left: 32px;
+
+    #anfrage-schnittstelle-loading-button {
+        margin-top: 1.5rem;
     }
+
+    .testfall-button-thin-margin {
+        margin-top: 0.5rem;
+    }
+
     label {
         color: @black;
     }

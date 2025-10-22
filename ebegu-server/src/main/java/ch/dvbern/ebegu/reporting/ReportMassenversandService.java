@@ -42,7 +42,6 @@ public interface ReportMassenversandService {
 		@Nonnull Locale locale
 	);
 
-
 	@Nonnull
 	UploadFileInfo generateExcelReportMassenversand(
 		@Nonnull LocalDate datumVon,

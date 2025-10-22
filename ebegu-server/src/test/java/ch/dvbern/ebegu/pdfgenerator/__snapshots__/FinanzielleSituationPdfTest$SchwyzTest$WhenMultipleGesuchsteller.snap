@@ -1,5 +1,5 @@
 ch.dvbern.ebegu.pdfgenerator.FinanzielleSituationPdfTest$SchwyzTest$WhenMultipleGesuchsteller.beideQuellenbesteuert=[
-Berechnung der finanziellen Verhältnisse (Beilage 1) 
+Berechnung der finanziellen Verhältnisse 
  
  
  
@@ -45,7 +45,7 @@ Einkommen in CHF
 
 
 ch.dvbern.ebegu.pdfgenerator.FinanzielleSituationPdfTest$SchwyzTest$WhenMultipleGesuchsteller.mixed=[
-Berechnung der finanziellen Verhältnisse (Beilage 1) 
+Berechnung der finanziellen Verhältnisse 
  
  
  
@@ -57,10 +57,10 @@ Abzüge
 20% Bruttopauschale vom Bruttoeinkommen 16’000.00
 Massgebendes Einkommen in CHF 64’000.00
 Einkünfte Hanna Tester
-Reineinkommen 88’000.00
+Bundes Reineinkommen 88’000.00
 Einkäufe berufliche Vorsorge (BVG / 2. Säule) 5’000.00
 Abzüge
-Ausserordentlicher Liegenschaftsaufwand 1’000.00
+Ausserordentlicher Liegenschaftsunterhalt 1’000.00
 Vermögen
 Reinvermögen 1 123’456.00
 Massgebendes Einkommen in CHF 94’000.00
@@ -97,17 +97,17 @@ Einkommen in CHF
 
 
 ch.dvbern.ebegu.pdfgenerator.FinanzielleSituationPdfTest$SchwyzTest$WhenMultipleGesuchsteller.withEinkommensverschlaechterung=[
-Berechnung der finanziellen Verhältnisse (Beilage 1) 
+Berechnung der finanziellen Verhältnisse 
  
  
  
 Referenznummer 17.000001.002
 Gesuchsperiode 2017/2018
 Einkünfte Tim Tester
-Reineinkommen 88’000.00
+Bundes Reineinkommen 88’000.00
 Einkäufe berufliche Vorsorge (BVG / 2. Säule) 5’000.00
 Abzüge
-Ausserordentlicher Liegenschaftsaufwand 1’000.00
+Ausserordentlicher Liegenschaftsunterhalt 1’000.00
 Vermögen
 Reinvermögen 1 123’456.00
 Massgebendes Einkommen in CHF 94’000.00
@@ -140,10 +140,10 @@ Provisorisches Einkommen (Einkommensänderung)
  
 Referenznummer 17.000001.002
 Einkünfte Tim Tester
-Reineinkommen 75’000.00
+Bundes Reineinkommen 75’000.00
 Einkäufe berufliche Vorsorge (BVG / 2. Säule) 4’000.00
 Abzüge
-Ausserordentlicher Liegenschaftsaufwand 2’000.00
+Ausserordentlicher Liegenschaftsunterhalt 2’000.00
 Vermögen
 Reinvermögen 1 90’000.00
 Massgebendes Einkommen in CHF 81’000.00
@@ -151,31 +151,6 @@ Einkünfte Hanna Tester
 Bruttolohn 70’000.00
 Abzüge
 20% Bruttopauschale vom Bruttoeinkommen 14’000.00
-Massgebendes Einkommen in CHF 56’000.00
-Zusammenzug
-Massgebendes Einkommen Tim Tester 81’000.00
-Massgebendes Einkommen Hanna Tester 56’000.00
-Massgebendes Einkommen in CHF 137’000.00
-1 Für die Berechnung des massgebenden Einkommens sind 10% des Reinvermögens nach Abzug des Freibetrages von 200'000 CHF
-relevant. Falls für das Gesuch zwei Gesuchsteller vorhanden sind und beide eine separate Steuererklärung ausgefüllt haben, wird der
-Freibetrag beiden Personen nur anteilsmässig gewährt.
-Provisorisches Einkommen (Einkommensänderung)
- 
- 
- 
-Referenznummer 17.000001.002
-Einkünfte Tim Tester
-Reineinkommen 70’000.00
-Einkäufe berufliche Vorsorge (BVG / 2. Säule) 2’000.00
-Abzüge
-Ausserordentlicher Liegenschaftsaufwand 500.00
-Vermögen
-Reinvermögen 1 85’000.00
-Massgebendes Einkommen in CHF 81’000.00
-Einkünfte Hanna Tester
-Bruttolohn 74’000.00
-Abzüge
-20% Bruttopauschale vom Bruttoeinkommen 18’000.00
 Massgebendes Einkommen in CHF 56’000.00
 Zusammenzug
 Massgebendes Einkommen Tim Tester 81’000.00
@@ -199,16 +174,16 @@ Einkommen in CHF
 
 
 finsit-schwyz-gemeinsam-veranlagt=[
-Berechnung der finanziellen Verhältnisse (Beilage 1) 
+Berechnung der finanziellen Verhältnisse 
  
 Referenznummer 17.000001.002
 Gesuchsperiode 2017/2018
 Einkünfte Tim Tester
 & Hanna Tester
-Reineinkommen 88’000.00
+Bundes Reineinkommen 88’000.00
 Einkäufe berufliche Vorsorge (BVG / 2. Säule) 5’000.00
 Abzüge
-Ausserordentlicher Liegenschaftsaufwand 1’000.00
+Ausserordentlicher Liegenschaftsunterhalt 1’000.00
 Vermögen
 Reinvermögen 1 123’456.00
 Massgebendes Einkommen in CHF 94’000.00

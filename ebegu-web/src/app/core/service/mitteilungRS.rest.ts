@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IHttpService, ILogService, IPromise} from 'angular';
+import {IHttpService, ILogService, IPromise, copy} from 'angular';
 import {EMPTY, from, Observable} from 'rxjs';
 import {catchError, concatMap} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
@@ -306,7 +306,7 @@ export class MitteilungRS {
     ): Array<TSBetreuungspensum> {
         const pensen: Array<TSBetreuungspensum> = [];
         betreuung.betreuungspensumContainers.forEach(betpenContainer => {
-            const pensumJA = angular.copy(betpenContainer.betreuungspensumJA);
+            const pensumJA = copy(betpenContainer.betreuungspensumJA);
             pensumJA.id = undefined; // the id must be set to undefined in order no to duplicate it
             if (EbeguUtil.isNotNullOrUndefined(pensumJA.eingewoehnung)) {
                 pensumJA.eingewoehnung.id = undefined;

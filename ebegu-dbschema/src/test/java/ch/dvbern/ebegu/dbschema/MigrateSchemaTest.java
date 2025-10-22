@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.dbschema;
@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
 
 public class MigrateSchemaTest {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MigrateSchemaTest.class);
+	private static final Logger LOG = LoggerFactory.getLogger(
+		MigrateSchemaTest.class
+	);
 
 	@Test
 	public void flywayMigrationNumbersCorrect() {
@@ -42,10 +44,16 @@ public class MigrateSchemaTest {
 			if (files != null) {
 				for (File file : files) {
 					if (file.isFile()) {
-						String revNbr = getRevisionNumberFromFilename(file.getName());
+						String revNbr = getRevisionNumberFromFilename(
+							file.getName()
+						);
 						if (usedNumbers.contains(revNbr)) {
-							Assertions.fail("Fehler in Flyway-Skripts: Die Nummer " + revNbr +
-								" ist mehrmals vergeben!");
+							Assertions.fail(
+								"Fehler in Flyway-Skripts: Die Nummer "
+									+ revNbr
+									+
+									" ist mehrmals vergeben!"
+							);
 						}
 						usedNumbers.add(revNbr);
 					}
@@ -57,6 +65,9 @@ public class MigrateSchemaTest {
 
 	private String getRevisionNumberFromFilename(String filename) {
 		// Der Text zwischen V und dem _ ist die Nummer
-		return StringUtils.substringBefore(StringUtils.substring(filename, 1), "_");
+		return StringUtils.substringBefore(
+			StringUtils.substring(filename, 1),
+			"_"
+		);
 	}
 }

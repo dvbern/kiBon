@@ -14,10 +14,18 @@
  */
 
 .familiensituation-view {
-    textarea[md-no-autogrow].md-input {
+    textarea[md-no-autogrow] {
         border: 0.1rem solid;
-        border-color: lightgray;
+        border-color: transparent;
         height: inherit;
         overflow-y: auto;
+    }
+
+    ::ng-deep dv-input-container-x .dv-input-container {
+        display: block;
+    }
+
+    ::ng-deep dv-input-container-x dv-error-messages {
+        position: absolute;
     }
 }

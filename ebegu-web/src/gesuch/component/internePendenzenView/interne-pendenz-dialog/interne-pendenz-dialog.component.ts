@@ -19,11 +19,13 @@ import {Component, Inject, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TSInternePendenz} from '../../../../models/TSInternePendenz';
+import moment from 'moment';
 
 @Component({
     selector: 'interne-pendenz-dialog',
     templateUrl: './interne-pendenz-dialog.template.html',
-    styleUrls: ['./interne-pendenz-dialog.component.less']
+    styleUrls: ['./interne-pendenz-dialog.component.less'],
+    standalone: false
 })
 export class InternePendenzDialogComponent {
     @ViewChild(NgForm, {static: true}) public form: NgForm;
@@ -49,8 +51,8 @@ export class InternePendenzDialogComponent {
         }
     }
 
-    public getMinDateTermin(): Date {
-        return new Date();
+    public getMinDateTermin(): moment.Moment {
+        return moment();
     }
 
     public isNew(): boolean {

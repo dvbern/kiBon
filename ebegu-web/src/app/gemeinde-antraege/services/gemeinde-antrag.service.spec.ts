@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {TestBed} from '@angular/core/testing';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSGemeindeAntragTyp} from '../../../models/enums/TSGemeindeAntragTyp';
@@ -31,8 +31,11 @@ describe('GemeindeAntragService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientModule],
-            providers: [{provide: AuthServiceRS, useValue: authServiceSpy}]
+            imports: [],
+            providers: [
+                {provide: AuthServiceRS, useValue: authServiceSpy},
+                provideHttpClient(withInterceptorsFromDi())
+            ]
         });
         service = TestBed.inject(GemeindeAntragService);
     });

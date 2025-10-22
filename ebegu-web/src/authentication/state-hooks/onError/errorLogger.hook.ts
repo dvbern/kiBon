@@ -21,7 +21,7 @@ import {
     Transition,
     TransitionService
 } from '@uirouter/core';
-import {LogFactory} from '../../../app/core/logging/LogFactory';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {OnErrorPriorities} from './onErrorPriorities';
 
 const LOG = LogFactory.createLog('errorLoggerHookRunBlock');

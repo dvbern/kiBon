@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.pdfgenerator;
@@ -30,16 +30,21 @@ import com.lowagie.text.Element;
 import static ch.dvbern.ebegu.pdfgenerator.PdfUtil.createBoldParagraph;
 import static ch.dvbern.ebegu.pdfgenerator.PdfUtil.createParagraph;
 
-public class FreigabequittungPdfGeneratorLuzern extends AbstractFreigabequittungPdfGenerator {
+public class FreigabequittungPdfGeneratorLuzern extends
+	AbstractFreigabequittungPdfGenerator {
 
-	private static final String BITTE_AUSDRUCKEN = "PdfGeneration_BitteAusdrucken";
-	private static final String BITTE_SOFORT_EINREICHEN = "PdfGeneration_BitteSofortEinreichen";
-	private static final String BENOETIGTE_UNTERLAGEN_INFO = "PdfGeneration_BenoetigteUnterlagen_Info";
+	private static final String BITTE_AUSDRUCKEN =
+		"PdfGeneration_BitteAusdrucken";
+	private static final String BITTE_SOFORT_EINREICHEN =
+		"PdfGeneration_BitteSofortEinreichen";
+	private static final String BENOETIGTE_UNTERLAGEN_INFO =
+		"PdfGeneration_BenoetigteUnterlagen_Info";
 
 	public FreigabequittungPdfGeneratorLuzern(
 		@Nonnull Gesuch gesuch,
 		@Nonnull GemeindeStammdaten stammdaten,
-		@Nonnull List<DokumentGrund> benoetigteUnterlagen) {
+		@Nonnull List<DokumentGrund> benoetigteUnterlagen
+	) {
 		super(gesuch, stammdaten, benoetigteUnterlagen);
 	}
 
@@ -55,8 +60,12 @@ public class FreigabequittungPdfGeneratorLuzern extends AbstractFreigabequittung
 	}
 
 	@Override
-	protected void createParagraphSofortEinrichten(List<Element> paragraphlist) {
-		paragraphlist.add(createBoldParagraph(translate(BITTE_SOFORT_EINREICHEN), 1));
+	protected void createParagraphSofortEinrichten(
+		List<Element> paragraphlist
+	) {
+		paragraphlist.add(
+			createBoldParagraph(translate(BITTE_SOFORT_EINREICHEN), 1)
+		);
 	}
 
 }

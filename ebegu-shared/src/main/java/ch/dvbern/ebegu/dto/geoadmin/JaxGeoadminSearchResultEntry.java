@@ -19,8 +19,8 @@ package ch.dvbern.ebegu.dto.geoadmin;
 import java.io.Serializable;
 
 import javax.annotation.Nonnull;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -42,7 +42,8 @@ public class JaxGeoadminSearchResultEntry implements Serializable {
 
 	@NotNull
 	@Nonnull
-	private JaxGeoadminSearchResultEntryAttrs attrs = new JaxGeoadminSearchResultEntryAttrs();
+	private JaxGeoadminSearchResultEntryAttrs attrs =
+		new JaxGeoadminSearchResultEntryAttrs();
 
 	@Nonnull
 	public JaxGeoadminSearchResultEntryAttrs getAttrs() {

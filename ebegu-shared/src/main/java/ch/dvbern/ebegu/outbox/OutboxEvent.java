@@ -8,11 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package ch.dvbern.ebegu.outbox;
@@ -21,12 +21,12 @@ import java.util.Arrays;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import com.google.common.base.Objects;
@@ -71,7 +71,8 @@ public class OutboxEvent extends AbstractEntity {
 	 * just for JPA
 	 */
 	@SuppressWarnings("ConstantConditions")
-	@SuppressFBWarnings(value = "NP_STORE_INTO_NONNULL_FIELD", justification = "just for JPA")
+	@SuppressFBWarnings(value = "NP_STORE_INTO_NONNULL_FIELD",
+		justification = "just for JPA")
 	protected OutboxEvent() {
 		this.aggregateType = "";
 		this.aggregateId = "";
@@ -85,7 +86,8 @@ public class OutboxEvent extends AbstractEntity {
 		@Nonnull String aggregateId,
 		@Nonnull String type,
 		@Nonnull byte[] jsonPayload,
-		@Nonnull Schema avroSchema) {
+		@Nonnull Schema avroSchema
+	) {
 		this.aggregateType = aggregateType;
 		this.aggregateId = aggregateId;
 		this.type = type;
@@ -114,9 +116,12 @@ public class OutboxEvent extends AbstractEntity {
 
 		OutboxEvent that = (OutboxEvent) o;
 
-		return Objects.equal(getAggregateType(), that.getAggregateType()) &&
-			Objects.equal(getAggregateId(), that.getAggregateId()) &&
-			Objects.equal(getType(), that.getType()) &&
+		return Objects.equal(getAggregateType(), that.getAggregateType())
+			&&
+			Objects.equal(getAggregateId(), that.getAggregateId())
+			&&
+			Objects.equal(getType(), that.getType())
+			&&
 			Objects.equal(getAvroSchema(), that.getAvroSchema());
 	}
 
@@ -128,7 +133,8 @@ public class OutboxEvent extends AbstractEntity {
 			getAggregateId(),
 			getType(),
 			getPayload(),
-			getAvroSchema());
+			getAvroSchema()
+		);
 	}
 
 	@Nonnull
