@@ -1,78 +1,81 @@
 <!--
-  ~ Copyright (C) 2022 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2022 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
-<div class="form-group" *ngIf="isGemeinsam">
-    <div class="row">
-        <div class="col-sm-12 dv-input-container-medium">
-            <dv-input-label-field
-                [model]="resultate?.massgebendesEinkVorAbzFamGrGS1"
-                [labelMessageKey]="
-                    'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN'
-                "
-                [inputDisabled]="true"
-                data-test="massgebendesEinkVorAbzFamGrGS1"
-            >
-            </dv-input-label-field>
-        </div>
-    </div>
-</div>
-<div class="form-group" *ngIf="!isGemeinsam">
-    <div class="row">
-        <div class="col-sm-12 dv-input-container-medium">
-            <dv-input-label-field
-                [model]="resultate?.massgebendesEinkVorAbzFamGrGS1"
-                [labelMessageKey]="
-                    'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN_MIT_GS'
-                "
-                [labelMessageKeyArgs]="{namegs: nameGS1}"
-                [inputDisabled]="true"
-                data-test="massgebendesEinkVorAbzFamGrGS1"
-            >
-            </dv-input-label-field>
-        </div>
-    </div>
-    <ng-container *ngIf="antragstellerNummer === 2">
+@if (isGemeinsam) {
+    <div class="form-group">
         <div class="row">
             <div class="col-sm-12 dv-input-container-medium">
                 <dv-input-label-field
-                    [model]="resultate?.massgebendesEinkVorAbzFamGrGS2"
-                    [labelMessageKey]="
-                        'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN_MIT_GS'
-                    "
-                    [labelMessageKeyArgs]="{namegs: nameGS2}"
-                    [inputDisabled]="true"
-                    data-test="massgebendesEinkVorAbzFamGrGS2"
-                >
-                </dv-input-label-field>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-12 dv-input-container-medium">
-                <dv-input-label-field
-                    [model]="resultate?.massgebendesEinkVorAbzFamGr"
+                    [model]="resultate?.massgebendesEinkVorAbzFamGrGS1"
                     [labelMessageKey]="
                         'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN'
                     "
                     [inputDisabled]="true"
-                    data-test="massgebendesEinkVorAbzFamGr"
+                    data-test="massgebendesEinkVorAbzFamGrGS1"
                 >
                 </dv-input-label-field>
             </div>
         </div>
-    </ng-container>
-</div>
+    </div>
+}
+@if (!isGemeinsam) {
+    <div class="form-group">
+        <div class="row">
+            <div class="col-sm-12 dv-input-container-medium">
+                <dv-input-label-field
+                    [model]="resultate?.massgebendesEinkVorAbzFamGrGS1"
+                    [labelMessageKey]="
+                        'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN_MIT_GS'
+                    "
+                    [labelMessageKeyArgs]="{namegs: nameGS1}"
+                    [inputDisabled]="true"
+                    data-test="massgebendesEinkVorAbzFamGrGS1"
+                >
+                </dv-input-label-field>
+            </div>
+        </div>
+        @if (antragstellerNummer === 2) {
+            <div class="row">
+                <div class="col-sm-12 dv-input-container-medium">
+                    <dv-input-label-field
+                        [model]="resultate?.massgebendesEinkVorAbzFamGrGS2"
+                        [labelMessageKey]="
+                            'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN_MIT_GS'
+                        "
+                        [labelMessageKeyArgs]="{namegs: nameGS2}"
+                        [inputDisabled]="true"
+                        data-test="massgebendesEinkVorAbzFamGrGS2"
+                    >
+                    </dv-input-label-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 dv-input-container-medium">
+                    <dv-input-label-field
+                        [model]="resultate?.massgebendesEinkVorAbzFamGr"
+                        [labelMessageKey]="
+                            'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN'
+                        "
+                        [inputDisabled]="true"
+                        data-test="massgebendesEinkVorAbzFamGr"
+                    >
+                    </dv-input-label-field>
+                </div>
+            </div>
+        }
+    </div>
+}

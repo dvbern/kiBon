@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2020 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2020 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 <div>
     <table class="table outer-table" width="100%">
         <thead></thead>
@@ -27,12 +27,13 @@
             >
                 <td style="white-space: pre-wrap">
                     {{ title | translate }}
-                    <dv-tooltip
-                        style="white-space: normal"
-                        *ngIf="tooltipText?.length > 0"
-                        [text]="tooltipText"
-                        (click)="$event.stopPropagation()"
-                    ></dv-tooltip>
+                    @if (tooltipText?.length > 0) {
+                        <dv-tooltip
+                            style="white-space: normal"
+                            [text]="tooltipText"
+                            (click)="$event.stopPropagation()"
+                        ></dv-tooltip>
+                    }
                 </td>
                 <td
                     width="2%"
@@ -63,86 +64,108 @@
                     ></button>
                 </td>
             </tr>
-            <tr *ngIf="files?.length">
-                <td colspan="5" class="no-padding">
-                    <table class="table inner-table" width="100%">
-                        <thead>
-                            <th translate="DATEINAME" width="70%"></th>
-                            <th translate="DATUM" width="10%"></th>
-                            <th translate="SIZE" width="10%"></th>
-                            <th colspan="3" width="10%"></th>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let file of files">
-                                <td>
-                                    {{ file.filename }}
-                                </td>
-                                <td>
-                                    {{ formatDate(file.timestampUpload) }}
-                                </td>
-                                <td>
-                                    {{ file.filesize }}
-                                </td>
-                                <td width="2%" class="symbol" tabindex="-1">
-                                    <button
-                                        type="button"
-                                        (click)="
-                                            onDownload(file, true);
-                                            $event.stopPropagation()
-                                        "
-                                        class="dv-btn fa fa-download dv-btn-operation"
-                                        title="{{
-                                            'DOKUMENT_DOWNLOAD' | translate
-                                        }}"
-                                        [attr.aria-label]="
-                                            'DOKUMENT_DOWNLOAD' | translate
-                                        "
-                                        aria-hidden="true"
-                                        tabindex="0"
-                                    ></button>
-                                </td>
-                                <td width="2%" class="symbol" tabindex="-1">
-                                    <button
-                                        type="button"
-                                        (click)="
-                                            onDownload(file, false);
-                                            $event.stopPropagation()
-                                        "
-                                        class="dv-btn fa fa-eye dv-btn-operation"
-                                        title="{{
-                                            'DOKUMENT_LOOK' | translate
-                                        }}"
-                                        [attr.aria-label]="
-                                            'DOKUMENT_LOOK' | translate
-                                        "
-                                        aria-hidden="true"
-                                        tabindex="0"
-                                    ></button>
-                                </td>
-                                <td width="2%" class="symbol" tabindex="-1">
-                                    <button
-                                        type="button"
-                                        (click)="
-                                            onDelete(file);
-                                            $event.stopPropagation()
-                                        "
-                                        class="dv-btn fa fa-trash dv-btn-operation"
-                                        title="{{
-                                            'DOKUMENT_DELETE' | translate
-                                        }}"
-                                        [attr.aria-label]="
-                                            'DOKUMENT_DELETE' | translate
-                                        "
-                                        aria-hidden="true"
-                                        [disabled]="readOnlyDelete"
-                                        tabindex="0"
-                                    ></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
+            @if (files?.length) {
+                <tr>
+                    <td colspan="5" class="no-padding">
+                        <table class="table inner-table" width="100%">
+                            <thead>
+                                <th translate="DATEINAME" width="70%"></th>
+                                <th translate="DATUM" width="10%"></th>
+                                <th translate="SIZE" width="10%"></th>
+                                <th colspan="3" width="10%"></th>
+                            </thead>
+                            <tbody>
+                                @for (file of files; track file) {
+                                    <tr>
+                                        <td>
+                                            {{ file.filename }}
+                                        </td>
+                                        <td>
+                                            {{
+                                                formatDate(file.timestampUpload)
+                                            }}
+                                        </td>
+                                        <td>
+                                            {{ file.filesize }}
+                                        </td>
+                                        <td
+                                            width="2%"
+                                            class="symbol"
+                                            tabindex="-1"
+                                        >
+                                            <button
+                                                type="button"
+                                                (click)="
+                                                    onDownload(file, true);
+                                                    $event.stopPropagation()
+                                                "
+                                                class="dv-btn fa fa-download dv-btn-operation"
+                                                title="{{
+                                                    'DOKUMENT_DOWNLOAD'
+                                                        | translate
+                                                }}"
+                                                [attr.aria-label]="
+                                                    'DOKUMENT_DOWNLOAD'
+                                                        | translate
+                                                "
+                                                aria-hidden="true"
+                                                tabindex="0"
+                                            ></button>
+                                        </td>
+                                        <td
+                                            width="2%"
+                                            class="symbol"
+                                            tabindex="-1"
+                                        >
+                                            <button
+                                                type="button"
+                                                (click)="
+                                                    onDownload(file, false);
+                                                    $event.stopPropagation()
+                                                "
+                                                class="dv-btn fa fa-eye dv-btn-operation"
+                                                title="{{
+                                                    'DOKUMENT_LOOK' | translate
+                                                }}"
+                                                [attr.aria-label]="
+                                                    'DOKUMENT_LOOK' | translate
+                                                "
+                                                aria-hidden="true"
+                                                tabindex="0"
+                                            ></button>
+                                        </td>
+                                        <td
+                                            width="2%"
+                                            class="symbol"
+                                            tabindex="-1"
+                                        >
+                                            <button
+                                                type="button"
+                                                (click)="
+                                                    onDelete(file);
+                                                    $event.stopPropagation()
+                                                "
+                                                class="dv-btn fa fa-trash dv-btn-operation"
+                                                title="{{
+                                                    'DOKUMENT_DELETE'
+                                                        | translate
+                                                }}"
+                                                [attr.aria-label]="
+                                                    'DOKUMENT_DELETE'
+                                                        | translate
+                                                "
+                                                aria-hidden="true"
+                                                [disabled]="readOnlyDelete"
+                                                tabindex="0"
+                                            ></button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>

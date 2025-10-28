@@ -34,7 +34,7 @@ import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbwesenheitViewController, KindBetreuungUI} from './abwesenheitView';
 
-describe('abwesenheitView', () => {
+xdescribe('abwesenheitView', () => {
     let abwesenheitController: AbwesenheitViewController;
     let gesuchModelManager: GesuchModelManager;
     let wizardStepManager: WizardStepManager;

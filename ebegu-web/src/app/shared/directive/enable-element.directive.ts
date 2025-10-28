@@ -1,4 +1,10 @@
-import {Directive, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {
+    Directive,
+    Input,
+    OnChanges,
+    SimpleChanges,
+    inject
+} from '@angular/core';
 import {NgControl} from '@angular/forms';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSRole} from '@kibon/shared/model/enums';
@@ -9,14 +15,12 @@ import {TSRoleUtil} from '../../../utils/TSRoleUtil';
     standalone: false
 })
 export class EnableElementDirective implements OnChanges {
+    private readonly authService = inject(AuthServiceRS);
+    ngControl = inject(NgControl);
+
     @Input() public allowedRoles: ReadonlyArray<TSRole> =
         TSRoleUtil.getAllRoles();
     @Input() public enableExpression: boolean = true;
-
-    public constructor(
-        private readonly authService: AuthServiceRS,
-        public ngControl: NgControl
-    ) {}
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (

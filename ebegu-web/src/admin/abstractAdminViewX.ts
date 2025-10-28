@@ -1,4 +1,4 @@
-import {Directive} from '@angular/core';
+import {Directive, inject} from '@angular/core';
 import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
 import {TSGesuchsperiodeStatus, TSRole} from '@kibon/shared/model/enums';
@@ -6,10 +6,10 @@ import {TSRoleUtil} from '../utils/TSRoleUtil';
 
 @Directive()
 export class AbstractAdminViewX {
+    authServiceRS = inject(AuthServiceRS);
+
     public readonly TSRole = TSRole;
     public readonly TSRoleUtil = TSRoleUtil;
-
-    public constructor(public authServiceRS: AuthServiceRS) {}
 
     public isReadonly(): boolean {
         return !this.authServiceRS.isOneOfRoles(

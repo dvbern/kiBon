@@ -19,7 +19,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
 import moment from 'moment';
@@ -42,6 +43,14 @@ import {DvSimpleTableConfig} from '../shared/component/dv-simple-table/dv-simple
     standalone: false
 })
 export class VerlaufComponent implements OnInit {
+    private readonly $state = inject(StateService);
+    private readonly gesuchRS = inject(GesuchRS);
+    private readonly antragStatusHistoryRS = inject(AntragStatusHistoryRS);
+    private readonly uiRouterGlobals = inject(UIRouterGlobals);
+    private readonly ebeguUtil = inject(EbeguUtil);
+    private readonly authService = inject(AuthServiceRS);
+    private readonly cd = inject(ChangeDetectorRef);
+
     public dossier: TSDossier;
     public gesuche: {[gesuchId: string]: string} = {};
     public itemsByPage: number = 20;
@@ -65,16 +74,6 @@ export class VerlaufComponent implements OnInit {
         false,
         5
     );
-
-    public constructor(
-        private readonly $state: StateService,
-        private readonly gesuchRS: GesuchRS,
-        private readonly antragStatusHistoryRS: AntragStatusHistoryRS,
-        private readonly uiRouterGlobals: UIRouterGlobals,
-        private readonly ebeguUtil: EbeguUtil,
-        private readonly authService: AuthServiceRS,
-        private readonly cd: ChangeDetectorRef
-    ) {}
 
     public async ngOnInit(): Promise<void> {
         if (!this.uiRouterGlobals.params.gesuchId) {

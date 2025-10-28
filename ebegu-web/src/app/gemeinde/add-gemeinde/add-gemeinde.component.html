@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2018 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2018 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <dv-full-height-container>
     <form
@@ -51,15 +51,15 @@
                                 (change)="bfsGemeindeSelected()"
                             >
                                 <option value=""></option>
-                                <option
-                                    *ngFor="
-                                        let bfsGemeinde of unregisteredGemeinden$
-                                            | async
-                                    "
-                                    [ngValue]="bfsGemeinde"
-                                >
-                                    {{ bfsGemeinde.name }}
-                                </option>
+                                @for (
+                                    bfsGemeinde of unregisteredGemeinden$
+                                        | async;
+                                    track bfsGemeinde
+                                ) {
+                                    <option [ngValue]="bfsGemeinde">
+                                        {{ bfsGemeinde.name }}
+                                    </option>
+                                }
                             </select>
                             <dv-error-messages
                                 [errorObject]="
@@ -102,163 +102,166 @@
                     <!-- Konfiguration der Angebote -->
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label
-                                class="md-no-float"
-                                translate
-                                for="begu_start_ID"
-                                *ngIf="tageschuleEnabledForMandant"
-                                >GEMEINDE_ANGEBOT</label
-                            >
-
-                            <mat-checkbox
-                                id="angebotBG"
-                                name="angebotBG"
-                                [(ngModel)]="gemeinde.angebotBG"
-                                *ngIf="tageschuleEnabledForMandant"
-                            >
-                                {{
-                                    'GEMEINDE_ANGEBOT_BETREUUNGSGUTSCHEINE'
-                                        | translate
-                                }}</mat-checkbox
-                            >
-
-                            <div
-                                class="form-group {{
-                                    getCssClassAngebotBGInput()
-                                }}"
-                                *ngIf="gemeinde.angebotBG"
-                            >
-                                <dv-date-picker-x
-                                    id="begu_start_ID"
-                                    [label]="'BEGU_START'"
-                                    [(date)]="
-                                        gemeinde.betreuungsgutscheineStartdatum
-                                    "
-                                    [datePickerEnabled]="true"
-                                    [required]="true"
-                                ></dv-date-picker-x>
-                            </div>
-
-                            <mat-checkbox
-                                id="angebotTS"
-                                name="angebotTS"
-                                [(ngModel)]="gemeinde.angebotTS"
-                                (ngModelChange)="handleAngebotTSChange()"
-                                *ngIf="tageschuleEnabledForMandant"
-                            >
-                                {{
-                                    'GEMEINDE_ANGEBOT_TAGESSCHULE' | translate
-                                }}</mat-checkbox
-                            >
-
-                            <div
-                                *ngIf="gemeinde.angebotTS"
-                                class="inner-option"
-                            >
-                                <dv-date-picker-x
-                                    id="ts_start_ID"
-                                    [label]="'TS_START'"
-                                    [(date)]="
-                                        gemeinde.tagesschulanmeldungenStartdatum
-                                    "
-                                    [datePickerEnabled]="true"
-                                    [minDate]="minDateTSFI"
-                                    [required]="true"
+                            @if (tageschuleEnabledForMandant) {
+                                <label
+                                    class="md-no-float"
+                                    translate
+                                    for="begu_start_ID"
+                                    >GEMEINDE_ANGEBOT</label
                                 >
-                                </dv-date-picker-x>
+                            }
 
+                            @if (tageschuleEnabledForMandant) {
                                 <mat-checkbox
-                                    id="besondereVolksschule"
-                                    name="besondereVolksschule"
-                                    [(ngModel)]="gemeinde.besondereVolksschule"
-                                    (ngModelChange)="
-                                        handleIsBesondereVolksschuleChange(
-                                            $event
-                                        )
-                                    "
+                                    id="angebotBG"
+                                    name="angebotBG"
+                                    [(ngModel)]="gemeinde.angebotBG"
                                 >
                                     {{
-                                        'GEMEINDE_ANGEBOT_BESONDERE_VOLKSSCHULE'
+                                        'GEMEINDE_ANGEBOT_BETREUUNGSGUTSCHEINE'
                                             | translate
                                     }}</mat-checkbox
                                 >
+                            }
 
+                            @if (gemeinde.angebotBG) {
                                 <div
-                                    class="form-group margin-top-10"
-                                    *ngIf="gemeinde.besondereVolksschule"
+                                    class="form-group {{
+                                        getCssClassAngebotBGInput()
+                                    }}"
                                 >
-                                    <label
-                                        class="md-no-float"
-                                        translate
-                                        for="besondere_volksschule_name"
-                                        >NAME</label
-                                    >
-                                    <input
-                                        type="text"
-                                        name="besondere_volksschule_name"
-                                        id="besondere_volksschule_name"
-                                        [(ngModel)]="gemeinde.name"
-                                        required
-                                    />
-                                    <dv-error-messages
-                                        input-id="besondere_volksschule_name"
-                                        [errorObject]="
-                                            form.controls
-                                                .besondere_volksschule_name
-                                                ?.errors
+                                    <dv-date-picker-x
+                                        id="begu_start_ID"
+                                        [label]="'BEGU_START'"
+                                        [(date)]="
+                                            gemeinde.betreuungsgutscheineStartdatum
                                         "
-                                    >
-                                    </dv-error-messages>
+                                        [datePickerEnabled]="true"
+                                        [required]="true"
+                                    ></dv-date-picker-x>
                                 </div>
+                            }
 
+                            @if (tageschuleEnabledForMandant) {
                                 <mat-checkbox
-                                    id="nurLats"
-                                    name="nurLats"
-                                    [(ngModel)]="gemeinde.nurLats"
+                                    id="angebotTS"
+                                    name="angebotTS"
+                                    [(ngModel)]="gemeinde.angebotTS"
+                                    (ngModelChange)="handleAngebotTSChange()"
                                 >
                                     {{
-                                        'GEMEINDE_ANGEBOT_NUR_LATS' | translate
+                                        'GEMEINDE_ANGEBOT_TAGESSCHULE'
+                                            | translate
                                     }}</mat-checkbox
                                 >
-                            </div>
+                            }
 
-                            <mat-checkbox
-                                id="angebotFI"
-                                name="angebotFI"
-                                [(ngModel)]="gemeinde.angebotFI"
-                                *ngIf="tageschuleEnabledForMandant"
-                            >
-                                {{
-                                    'GEMEINDE_ANGEBOT_FERIENINSEL' | translate
-                                }}</mat-checkbox
-                            >
+                            @if (gemeinde.angebotTS) {
+                                <div class="inner-option">
+                                    <dv-date-picker-x
+                                        id="ts_start_ID"
+                                        [label]="'TS_START'"
+                                        [(date)]="
+                                            gemeinde.tagesschulanmeldungenStartdatum
+                                        "
+                                        [datePickerEnabled]="true"
+                                        [minDate]="minDateTSFI"
+                                        [required]="true"
+                                    >
+                                    </dv-date-picker-x>
+                                    <mat-checkbox
+                                        id="besondereVolksschule"
+                                        name="besondereVolksschule"
+                                        [(ngModel)]="
+                                            gemeinde.besondereVolksschule
+                                        "
+                                        (ngModelChange)="
+                                            handleIsBesondereVolksschuleChange(
+                                                $event
+                                            )
+                                        "
+                                    >
+                                        {{
+                                            'GEMEINDE_ANGEBOT_BESONDERE_VOLKSSCHULE'
+                                                | translate
+                                        }}</mat-checkbox
+                                    >
+                                    @if (gemeinde.besondereVolksschule) {
+                                        <div class="form-group margin-top-10">
+                                            <label
+                                                class="md-no-float"
+                                                translate
+                                                for="besondere_volksschule_name"
+                                                >NAME</label
+                                            >
+                                            <input
+                                                type="text"
+                                                name="besondere_volksschule_name"
+                                                id="besondere_volksschule_name"
+                                                [(ngModel)]="gemeinde.name"
+                                                required
+                                            />
+                                            <dv-error-messages
+                                                input-id="besondere_volksschule_name"
+                                                [errorObject]="
+                                                    form.controls
+                                                        .besondere_volksschule_name
+                                                        ?.errors
+                                                "
+                                            >
+                                            </dv-error-messages>
+                                        </div>
+                                    }
+                                    <mat-checkbox
+                                        id="nurLats"
+                                        name="nurLats"
+                                        [(ngModel)]="gemeinde.nurLats"
+                                    >
+                                        {{
+                                            'GEMEINDE_ANGEBOT_NUR_LATS'
+                                                | translate
+                                        }}</mat-checkbox
+                                    >
+                                </div>
+                            }
 
-                            <div
-                                class="form-group inner-option"
-                                *ngIf="gemeinde.angebotFI"
-                            >
-                                <dv-date-picker-x
-                                    id="fi_start_ID"
-                                    [label]="'FI_START'"
-                                    [required]="true"
-                                    [datePickerEnabled]="true"
-                                    [minDate]="minDateTSFI"
-                                    [(date)]="
-                                        gemeinde.ferieninselanmeldungenStartdatum
-                                    "
+                            @if (tageschuleEnabledForMandant) {
+                                <mat-checkbox
+                                    id="angebotFI"
+                                    name="angebotFI"
+                                    [(ngModel)]="gemeinde.angebotFI"
                                 >
-                                </dv-date-picker-x>
-                            </div>
+                                    {{
+                                        'GEMEINDE_ANGEBOT_FERIENINSEL'
+                                            | translate
+                                    }}</mat-checkbox
+                                >
+                            }
 
-                            <div
-                                class="dv-error-messages"
-                                *ngIf="showMessageKeinAngebotSelected"
-                            >
-                                <span>{{
-                                    'GEMEINDE_ANGEBOT_EMPTY_SELECTION'
-                                        | translate
-                                }}</span>
-                            </div>
+                            @if (gemeinde.angebotFI) {
+                                <div class="form-group inner-option">
+                                    <dv-date-picker-x
+                                        id="fi_start_ID"
+                                        [label]="'FI_START'"
+                                        [required]="true"
+                                        [datePickerEnabled]="true"
+                                        [minDate]="minDateTSFI"
+                                        [(date)]="
+                                            gemeinde.ferieninselanmeldungenStartdatum
+                                        "
+                                    >
+                                    </dv-date-picker-x>
+                                </div>
+                            }
+
+                            @if (showMessageKeinAngebotSelected) {
+                                <div class="dv-error-messages">
+                                    <span>{{
+                                        'GEMEINDE_ANGEBOT_EMPTY_SELECTION'
+                                            | translate
+                                    }}</span>
+                                </div>
+                            }
                         </div>
                     </div>
                     <div class="col-sm-6">

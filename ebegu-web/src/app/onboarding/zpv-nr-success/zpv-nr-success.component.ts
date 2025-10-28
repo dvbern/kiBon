@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, inject} from '@angular/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
 
@@ -9,12 +9,10 @@ import {GesuchRS} from '../../../gesuch/service/gesuchRS.rest';
     standalone: false
 })
 export class ZpvNrSuccessComponent implements OnInit {
-    public isZpvNummerErfolgreichVerknuepft: boolean;
+    private readonly gesuchRS = inject(GesuchRS);
+    private readonly uiRouterGlobals = inject(UIRouterGlobals);
 
-    public constructor(
-        private readonly gesuchRS: GesuchRS,
-        private readonly uiRouterGlobals: UIRouterGlobals
-    ) {}
+    public isZpvNummerErfolgreichVerknuepft: boolean;
 
     public ngOnInit(): void {
         this.gesuchRS

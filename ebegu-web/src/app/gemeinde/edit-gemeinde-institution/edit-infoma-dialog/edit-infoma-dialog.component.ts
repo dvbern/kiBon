@@ -13,8 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {NgIf} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
     MAT_DIALOG_DATA,
@@ -35,7 +34,6 @@ import {TableAuswahlInstitution} from '../edit-gemeinde-institution.component';
         TranslateModule,
         FormsModule,
         MatDialogContent,
-        NgIf,
         ReactiveFormsModule,
         SharedModule
     ],
@@ -43,12 +41,15 @@ import {TableAuswahlInstitution} from '../edit-gemeinde-institution.component';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditInfomaDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<EditInfomaDialogComponent>>(MatDialogRef);
+    private readonly data = inject<TableAuswahlInstitution>(MAT_DIALOG_DATA);
+
     public infomaData: TableAuswahlInstitution;
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<EditInfomaDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: TableAuswahlInstitution
-    ) {
+    public constructor() {
+        const data = this.data;
+
         if (data) {
             this.infomaData = data;
         }

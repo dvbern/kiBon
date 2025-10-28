@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
 import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
@@ -36,19 +36,25 @@ import {EKVViewUtil} from '../../EKVViewUtil';
     standalone: false
 })
 export class EinkommensverschlechterungLuzernViewComponent extends AbstractGesuchViewX<TSFinanzModel> {
+    gesuchModelManager: GesuchModelManager;
+    protected wizardStepManager: WizardStepManager;
+    protected finSitLuService = inject(FinanzielleSituationLuzernService);
+    private readonly $transition$ = inject(Transition);
+
     public ekvViewUtil = EKVViewUtil;
 
-    public constructor(
-        public gesuchModelManager: GesuchModelManager,
-        protected wizardStepManager: WizardStepManager,
-        protected finSitLuService: FinanzielleSituationLuzernService,
-        private readonly $transition$: Transition
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const wizardStepManager = inject(WizardStepManager);
+
         super(
             gesuchModelManager,
             wizardStepManager,
             TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG_LUZERN
         );
+        this.gesuchModelManager = gesuchModelManager;
+        this.wizardStepManager = wizardStepManager;
+
         const parsedGesuchstelllerNum = parseInt(
             this.$transition$.params().gesuchstellerNumber,
             10

@@ -21,7 +21,8 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -55,6 +56,18 @@ const LOG = LogFactory.createLog('LastenausgleichViewXComponent');
     standalone: false
 })
 export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
+    private readonly lastenausgleichRS = inject(LastenausgleichRS);
+    private readonly dialog = inject(MatDialog);
+    private readonly translate = inject(TranslateService);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly uploadRS = inject(UploadRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly errorService = inject(ErrorService);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+
     // ab dem Jahr 2022 wird der Lastenausgleich ohne Selbstbehalt generiert
     private readonly FIRST_YEAR_WITHOUT_SELBSTBEHALT = 2022;
 
@@ -69,18 +82,6 @@ export class LastenausgleichViewXComponent implements OnInit, OnDestroy {
     @ViewChild(NgForm) private readonly form: NgForm;
 
     private readonly unsubscribe$ = new Subject<void>();
-
-    public constructor(
-        private readonly lastenausgleichRS: LastenausgleichRS,
-        private readonly dialog: MatDialog,
-        private readonly translate: TranslateService,
-        private readonly downloadRS: DownloadRS,
-        private readonly uploadRS: UploadRS,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly errorService: ErrorService,
-        private readonly cd: ChangeDetectorRef,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
-    ) {}
 
     private static handleDownloadError(err: Error, win: Window): void {
         LOG.error(err);

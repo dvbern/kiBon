@@ -14,7 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    inject
+} from '@angular/core';
 import {TSWizardStepXTyp} from '../../../../models/enums/TSWizardStepXTyp';
 import {TSGemeindeKennzahlen} from '../../../../models/gemeindeantrag/gemeindekennzahlen/TSGemeindeKennzahlen';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -31,16 +37,16 @@ const LOG = LogFactory.createLog('GemeindeKennzahlenUiComponent');
     standalone: false
 })
 export class GemeindeKennzahlenUiComponent implements OnInit {
+    private readonly gemeindeKennzahlenService = inject(
+        GemeindeKennzahlenService
+    );
+    private readonly wizardService = inject(WizardStepXRS);
+
     @Input()
     public gemeindeKennzahlenId: string;
 
     public wizardTyp = TSWizardStepXTyp.GEMEINDE_KENNZAHLEN;
     public gemeindeKennzahlen: TSGemeindeKennzahlen;
-
-    public constructor(
-        private readonly gemeindeKennzahlenService: GemeindeKennzahlenService,
-        private readonly wizardService: WizardStepXRS
-    ) {}
 
     public ngOnInit(): void {
         this.gemeindeKennzahlenService.getGemeindeKennzahlenAntrag().subscribe(

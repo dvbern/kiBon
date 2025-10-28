@@ -1,4 +1,9 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    inject
+} from '@angular/core';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
 import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
@@ -20,16 +25,26 @@ export class FinanzielleSituationStartSolothurnComponent
     extends AbstractFinSitsolothurnView
     implements OnInit
 {
+    gesuchModelManager: GesuchModelManager;
+    protected readonly finSitSoService: FinanzielleSituationSolothurnService;
+    protected wizardStepManager: WizardStepManager;
+    protected dvShowWarningAngabenVervollstaendigenService = inject(
+        SharedUtilDvShowWarningAngabenVervollstaendingenService
+    );
+
     public sozialhilfeBezueger: boolean;
     public finanzielleSituationRequired: boolean = false;
 
-    public constructor(
-        public gesuchModelManager: GesuchModelManager,
-        protected readonly finSitSoService: FinanzielleSituationSolothurnService,
-        protected wizardStepManager: WizardStepManager,
-        protected dvShowWarningAngabenVervollstaendigenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const finSitSoService = inject(FinanzielleSituationSolothurnService);
+        const wizardStepManager = inject(WizardStepManager);
+
         super(gesuchModelManager, wizardStepManager, finSitSoService, 1);
+        this.gesuchModelManager = gesuchModelManager;
+        this.finSitSoService = finSitSoService;
+        this.wizardStepManager = wizardStepManager;
+
         this.wizardStepManager.updateCurrentWizardStepStatusSafe(
             TSWizardStepName.FINANZIELLE_SITUATION_SOLOTHURN,
             TSWizardStepStatus.IN_BEARBEITUNG

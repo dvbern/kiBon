@@ -11,7 +11,10 @@
             "angular-translate",
             "angular-mocks",
             "jquery"
-        ]
+        ],
+        "moduleResolution": "bundler",
+        "module": "es2020",
+        "target": "es2020"
     },
     "files": ["./test.ts", "./polyfills.ts"],
     "include": ["**/*.spec.ts", "**/*.d.ts"]

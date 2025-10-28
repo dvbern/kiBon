@@ -1,78 +1,76 @@
 <!--
-  ~ Copyright (C) 2021 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2021 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 @if (isZweitPruefungAndSameUserAsPruefung() | async) {
     <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
 }
 
-<button
-    type="button"
-    class="dv-btn btn-link link-underline"
-    *ngIf="verfuegungErstellenVisible()"
-    (click)="createVerfuegungDocumentDe()"
->
-    <i
-        *ngIf="(downloadingDeFile | async) === false"
-        class="fa fa-file-text-o"
-    ></i>
-    <i
-        *ngIf="downloadingDeFile | async"
-        class="fa fa-circle-o-notch fa-spin fa-fw"
-    ></i>
-    &nbsp;
-    <span translate>FERIENBETREUUNG_DOKUMENT_ERSTELLEN_DE</span>
-</button>
+@if (verfuegungErstellenVisible()) {
+    <button
+        type="button"
+        class="dv-btn btn-link link-underline"
+        (click)="createVerfuegungDocumentDe()"
+    >
+        @if ((downloadingDeFile | async) === false) {
+            <i class="fa fa-file-text-o"></i>
+        }
+        @if (downloadingDeFile | async) {
+            <i class="fa fa-circle-o-notch fa-spin fa-fw"></i>
+        }
+        &nbsp;
+        <span translate>FERIENBETREUUNG_DOKUMENT_ERSTELLEN_DE</span>
+    </button>
+}
 <br />
-<button
-    type="button"
-    class="dv-btn btn-link link-underline margin-bottom-20"
-    *ngIf="verfuegungErstellenVisible()"
-    (click)="createVerfuegungDocumentFr()"
->
-    <i
-        *ngIf="(downloadingFrFile | async) === false"
-        class="fa fa-file-text-o"
-    ></i>
-    <i
-        *ngIf="downloadingFrFile | async"
-        class="fa fa-circle-o-notch fa-spin fa-fw"
-    ></i>
-    &nbsp;
-    <span translate>FERIENBETREUUNG_DOKUMENT_ERSTELLEN_FR</span>
-</button>
+@if (verfuegungErstellenVisible()) {
+    <button
+        type="button"
+        class="dv-btn btn-link link-underline margin-bottom-20"
+        (click)="createVerfuegungDocumentFr()"
+    >
+        @if ((downloadingFrFile | async) === false) {
+            <i class="fa fa-file-text-o"></i>
+        }
+        @if (downloadingFrFile | async) {
+            <i class="fa fa-circle-o-notch fa-spin fa-fw"></i>
+        }
+        &nbsp;
+        <span translate>FERIENBETREUUNG_DOKUMENT_ERSTELLEN_FR</span>
+    </button>
+}
 
-<div *ngIf="isBeteiligungGemeindeZuTief()" class="well well-status-warten">
-    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-    <span
-        [innerHTML]="
-            'FERIENBETREUUNG_FAZIT_ZU_TIEF_WARNUNG'
-                | translate: {link: getKostenEinnahmenLink()}
-        "
-    ></span>
-</div>
+@if (isBeteiligungGemeindeZuTief()) {
+    <div class="well well-status-warten">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        <span
+            [innerHTML]="
+                'FERIENBETREUUNG_FAZIT_ZU_TIEF_WARNUNG'
+                    | translate: {link: getKostenEinnahmenLink()}
+            "
+        ></span>
+    </div>
+}
 
 <div class="actions">
-    <dv-loading-button
-        *ngIf="(abschliessenVisible() | async) && !alreadyFreigegeben()"
-        (buttonClick)="freigeben()"
-        type="button"
-    >
-        <span translate>FERIENBETREUUNG_FREIGABE_AN_KANTON</span>
-    </dv-loading-button>
+    @if ((abschliessenVisible() | async) && !alreadyFreigegeben()) {
+        <dv-loading-button (buttonClick)="freigeben()" type="button">
+            <span translate>FERIENBETREUUNG_FREIGABE_AN_KANTON</span>
+        </dv-loading-button>
+    }
     @if (
         (geprueftVisible() | async) &&
         !alreadyGeprueft() &&
@@ -87,63 +85,65 @@
             <span translate>ZURUECK_AN_GEMEINDE_TITLE</span>
         </dv-loading-button>
     }
-    <dv-loading-button
-        *ngIf="
-            (geprueftVisible() | async) &&
-            !alreadyGeprueft() &&
-            readyForGeprueft()
-        "
-        [buttonDisabled]="alreadyGeprueft()"
-        (buttonClick)="geprueft()"
-    >
-        <span translate>LATS_GEPRUEFT_KANTON</span>
-    </dv-loading-button>
+    @if (
+        (geprueftVisible() | async) && !alreadyGeprueft() && readyForGeprueft()
+    ) {
+        <dv-loading-button
+            [buttonDisabled]="alreadyGeprueft()"
+            (buttonClick)="geprueft()"
+        >
+            <span translate>LATS_GEPRUEFT_KANTON</span>
+        </dv-loading-button>
+    }
 
-    <dv-loading-button
-        *ngIf="
-            (geprueftVisible() | async) &&
-            !alreadyGeprueft() &&
-            readyForGeprueft() &&
-            !isAlreadyInZweitpruefung()
-        "
-        [buttonDisabled]="alreadyGeprueft()"
-        (buttonClick)="inZweitpruefungGeben()"
-    >
-        <span translate>ZUR_ZWEITPRUEFUNG</span>
-    </dv-loading-button>
-    <dv-loading-button
-        *ngIf="verfuegungErstellenVisible()"
-        type="button"
-        class="secondary"
-        (buttonClick)="zurueckAnKanton()"
-    >
-        <span translate>ZURUECK_IN_PRUEFUNG_TITLE</span>
-    </dv-loading-button>
-    <dv-loading-button
-        *ngIf="verfuegungErstellenVisible()"
-        type="button"
-        (buttonClick)="abschliessen()"
-    >
-        <span translate>ABSCHLIESSEN</span>
-    </dv-loading-button>
-</div>
-<p
-    class="margin-bottom-20"
-    *ngIf="(abschliessenVisible() | async) && alreadyFreigegeben()"
-    [innerHTML]="'FERIENBETREUUNG_FREIGEGEBEN_AN_KANTON' | translate"
-></p>
-<p
-    class="margin-bottom-20"
-    *ngIf="
+    @if (
         (geprueftVisible() | async) &&
-        alreadyGeprueft() &&
-        !verfuegungErstellenVisible() &&
-        !abgeschlossen()
-    "
-    [innerHTML]="'FERIENBETREUUNG_GEPRUEFT' | translate"
-></p>
-<p
-    class="margin-bottom-20"
-    *ngIf="abgeschlossen()"
-    [innerHTML]="'FERIENBETREUUNG_ABGESCHLOSSEN' | translate"
-></p>
+        !alreadyGeprueft() &&
+        readyForGeprueft() &&
+        !isAlreadyInZweitpruefung()
+    ) {
+        <dv-loading-button
+            [buttonDisabled]="alreadyGeprueft()"
+            (buttonClick)="inZweitpruefungGeben()"
+        >
+            <span translate>ZUR_ZWEITPRUEFUNG</span>
+        </dv-loading-button>
+    }
+    @if (verfuegungErstellenVisible()) {
+        <dv-loading-button
+            type="button"
+            class="secondary"
+            (buttonClick)="zurueckAnKanton()"
+        >
+            <span translate>ZURUECK_IN_PRUEFUNG_TITLE</span>
+        </dv-loading-button>
+    }
+    @if (verfuegungErstellenVisible()) {
+        <dv-loading-button type="button" (buttonClick)="abschliessen()">
+            <span translate>ABSCHLIESSEN</span>
+        </dv-loading-button>
+    }
+</div>
+@if ((abschliessenVisible() | async) && alreadyFreigegeben()) {
+    <p
+        class="margin-bottom-20"
+        [innerHTML]="'FERIENBETREUUNG_FREIGEGEBEN_AN_KANTON' | translate"
+    ></p>
+}
+@if (
+    (geprueftVisible() | async) &&
+    alreadyGeprueft() &&
+    !verfuegungErstellenVisible() &&
+    !abgeschlossen()
+) {
+    <p
+        class="margin-bottom-20"
+        [innerHTML]="'FERIENBETREUUNG_GEPRUEFT' | translate"
+    ></p>
+}
+@if (abgeschlossen()) {
+    <p
+        class="margin-bottom-20"
+        [innerHTML]="'FERIENBETREUUNG_ABGESCHLOSSEN' | translate"
+    ></p>
+}

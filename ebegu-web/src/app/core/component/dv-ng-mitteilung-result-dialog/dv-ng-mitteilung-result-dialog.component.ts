@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, OnInit, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {StateService} from '@uirouter/core';
 import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
@@ -41,16 +41,15 @@ const LOG = LogFactory.createLog('DvNgMitteilungResultDialogComponent');
     standalone: false
 })
 export class DvNgMitteilungResultDialogComponent implements OnInit {
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgMitteilungResultDialogComponent>>(MatDialogRef);
+    private readonly $state = inject(StateService);
+    private readonly ebeguUtil = inject(EbeguUtil);
+    private readonly mitteilungRS = inject(MitteilungRS);
+    private readonly errorService = inject(ErrorServiceX);
+    private readonly mitteilungenToProcess = inject(MAT_DIALOG_DATA);
+
     public verarbeitung?: TSMitteilungVerarbeitungResult;
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DvNgMitteilungResultDialogComponent>,
-        private readonly $state: StateService,
-        private readonly ebeguUtil: EbeguUtil,
-        private readonly mitteilungRS: MitteilungRS,
-        private readonly errorService: ErrorServiceX,
-        @Inject(MAT_DIALOG_DATA)
-        private readonly mitteilungenToProcess: TSBetreuungsmitteilung[]
-    ) {}
 
     public ngOnInit(): void {
         if (EbeguUtil.isEmptyArrayNullOrUndefined(this.mitteilungenToProcess)) {

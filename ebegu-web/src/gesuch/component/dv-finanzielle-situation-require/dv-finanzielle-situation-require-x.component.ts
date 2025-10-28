@@ -18,7 +18,8 @@ import {
     EventEmitter,
     Input,
     OnInit,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -44,6 +45,13 @@ const LOG = LogFactory.createLog('DvFinanzielleSituationRequireXComponent');
     standalone: false
 })
 export class DvFinanzielleSituationRequireXComponent implements OnInit {
+    form = inject(NgForm);
+    readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly translate = inject(TranslateService);
+    private readonly einstellungRS = inject(EinstellungRS);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly finanzielleSituationRS = inject(FinanzielleSituationRS);
+
     @Input()
     public hideVerguenstigungGewunscht: boolean = false;
 
@@ -77,15 +85,6 @@ export class DvFinanzielleSituationRequireXComponent implements OnInit {
     private isFinSitTypFkjv: boolean = false;
 
     public allowedRoles: ReadonlyArray<TSRole>;
-
-    public constructor(
-        public form: NgForm,
-        public readonly gesuchModelManager: GesuchModelManager,
-        private readonly translate: TranslateService,
-        private readonly einstellungRS: EinstellungRS,
-        private readonly cd: ChangeDetectorRef,
-        private readonly finanzielleSituationRS: FinanzielleSituationRS
-    ) {}
 
     public ngOnInit(): void {
         this.setFinanziellesituationRequired();

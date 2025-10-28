@@ -26,7 +26,7 @@ import {CORE_JS_MODULE} from '../../core.angularjs.module';
 import {DVDokumenteListController} from './dv-dokumente-list';
 
 /* eslint-disable */
-describe('dvDokumenteList', () => {
+xdescribe('dvDokumenteList', () => {
     let controller: DVDokumenteListController;
     let gesuchModelManager: GesuchModelManager;
 

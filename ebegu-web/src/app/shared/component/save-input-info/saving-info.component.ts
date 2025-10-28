@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     Input,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -35,14 +36,14 @@ const LOG = LogFactory.createLog('SavingInfo');
     standalone: false
 })
 export class SavingInfoComponent implements OnInit {
+    private readonly ref = inject(ChangeDetectorRef);
+
     private static readonly HIDE_SAVED_AFTER_MS = 3000;
 
     @Input() private readonly saving$: Observable<boolean>;
     public showSaving: boolean;
     public showSaved: boolean;
     private subscription: Subscription;
-
-    public constructor(private readonly ref: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
         this.subscription = this.saving$.subscribe({

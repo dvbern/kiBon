@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {CONSTANTS} from '@kibon/shared/model/constants';
 import {
     TSApplicationProperty,
@@ -14,16 +14,14 @@ import {EbeguRestUtil} from '../../../../../../src/utils/EbeguRestUtil';
     providedIn: 'root'
 })
 export class SharedUtilApplicationPropertyRsService {
+    http = inject(HttpClient);
+    ebeguRestUtil = inject(EbeguRestUtil);
+
     public serviceUrl: string = `${CONSTANTS.REST_API}application-properties`;
 
     private store = this.http
         .get<TSPublicAppConfig>(`${this.serviceUrl}/public/all`)
         .pipe(shareReplay(1));
-
-    public constructor(
-        public http: HttpClient,
-        public ebeguRestUtil: EbeguRestUtil
-    ) {}
 
     public getAllowedMimetypes(): Observable<string> {
         return this.getPublicPropertiesCached().pipe(

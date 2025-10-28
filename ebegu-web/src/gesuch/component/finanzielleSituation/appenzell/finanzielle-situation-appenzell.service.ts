@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {TSFinanzielleSituationResultateDTO} from '../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSFamilienstatus} from '../../../../models/enums/TSFamilienstatus';
@@ -28,12 +28,10 @@ import {BerechnungsManager} from '../../../service/berechnungsManager';
     providedIn: 'root'
 })
 export class FinanzielleSituationAppenzellService {
+    private readonly berechnungsManager = inject(BerechnungsManager);
+
     private readonly _massgebendesEinkommenStore: Subject<TSFinanzielleSituationResultateDTO> =
         new ReplaySubject(1);
-
-    public constructor(
-        private readonly berechnungsManager: BerechnungsManager
-    ) {}
 
     public get massgebendesEinkommenStore(): Observable<TSFinanzielleSituationResultateDTO> {
         return this._massgebendesEinkommenStore.asObservable();

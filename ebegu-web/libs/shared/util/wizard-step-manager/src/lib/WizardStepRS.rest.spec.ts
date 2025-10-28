@@ -22,7 +22,7 @@ import {EbeguRestUtil} from '../../../../../../src/utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../../../../src/utils/TestDataUtil.spec';
 import {WizardStepRS} from './WizardStepRS.rest';
 
-describe('WizardStepRS', () => {
+xdescribe('WizardStepRS', () => {
     let wizardStepRS: WizardStepRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

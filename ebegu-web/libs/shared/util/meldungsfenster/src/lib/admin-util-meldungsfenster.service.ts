@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {
     MeldungsfensterData,
     MeldungsfensterRestDTO,
@@ -17,12 +17,10 @@ import {DateUtil} from '@kibon/shared/util-fn/date';
     providedIn: 'root'
 })
 export class AdminUtilMeldungsfensterService {
-    private serviceURL = `${CONSTANTS.REST_API}meldungsfenster`;
+    private readonly http = inject(HttpClient);
+    private readonly mandantService = inject(MandantService);
 
-    public constructor(
-        private readonly http: HttpClient,
-        private readonly mandantService: MandantService
-    ) {}
+    private serviceURL = `${CONSTANTS.REST_API}meldungsfenster`;
 
     public getAllMeldungsfensters() {
         const url = `${this.serviceURL}/all`;

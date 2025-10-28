@@ -1,33 +1,33 @@
 <!--
-  ~ Copyright (C) 2021 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2021 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="dv-date-picker-x">
     <dv-input-container-x class="form-group">
-        <label
-            *ngIf="label"
-            class="md-no-float"
-            [ngClass]="{required: required}"
-            [for]="(inputId ? inputId : 'date-') + randId"
-            >{{ label | translate
-            }}<dv-tooltip
-                *ngIf="tooltip"
-                [text]="tooltip | translate"
-            ></dv-tooltip>
-        </label>
+        @if (label) {
+            <label
+                class="md-no-float"
+                [ngClass]="{required: required}"
+                [for]="(inputId ? inputId : 'date-') + randId"
+                >{{ label | translate }}
+                @if (tooltip) {
+                    <dv-tooltip [text]="tooltip | translate"></dv-tooltip>
+                }
+            </label>
+        }
         <input
             [ngClass]="{
                 'dv-mat-datepicker': datePickerEnabled,
@@ -51,11 +51,12 @@
             [required]="required"
             [disabled]="disabled"
         />
-        <mat-datepicker-toggle
-            *ngIf="datePickerEnabled"
-            matSuffix
-            [for]="datePicker"
-        ></mat-datepicker-toggle>
+        @if (datePickerEnabled) {
+            <mat-datepicker-toggle
+                matSuffix
+                [for]="datePicker"
+            ></mat-datepicker-toggle>
+        }
         <mat-datepicker #datePicker></mat-datepicker>
         @if (dateRef.touched) {
             <dv-error-messages

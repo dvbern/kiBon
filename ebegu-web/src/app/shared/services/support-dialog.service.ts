@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {DvNgSupportDialogComponent} from '../../../gesuch/dialog/dv-ng-support-dialog/dv-ng-support-dialog.component';
 
@@ -6,9 +6,9 @@ import {DvNgSupportDialogComponent} from '../../../gesuch/dialog/dv-ng-support-d
     providedIn: 'root'
 })
 export class SupportDialogService {
-    private supportDialogRef: MatDialogRef<DvNgSupportDialogComponent>;
+    private readonly supportDialog = inject(MatDialog);
 
-    public constructor(private readonly supportDialog: MatDialog) {}
+    private supportDialogRef: MatDialogRef<DvNgSupportDialogComponent>;
 
     public openDialog(): void {
         this.supportDialogRef = this.supportDialog.open(

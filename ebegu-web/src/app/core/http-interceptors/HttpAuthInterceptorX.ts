@@ -22,7 +22,7 @@ import {
     HttpInterceptor,
     HttpRequest
 } from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {CONSTANTS, HTTP_CODES} from '@kibon/shared/model/constants';
 import {Observable, Subject} from 'rxjs';
 import {catchError} from 'rxjs/operators';
@@ -34,9 +34,7 @@ import {HttpErrorInterceptorX} from '../errors/service/HttpErrorInterceptorX';
     providedIn: 'root'
 })
 export class HttpAuthInterceptorX implements HttpInterceptor {
-    public constructor(
-        private readonly authLifeCycleService: AuthLifeCycleService
-    ) {}
+    private readonly authLifeCycleService = inject(AuthLifeCycleService);
 
     public intercept(
         req: HttpRequest<any>,

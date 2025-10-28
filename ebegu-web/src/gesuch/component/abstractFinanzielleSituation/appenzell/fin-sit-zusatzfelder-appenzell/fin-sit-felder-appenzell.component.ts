@@ -22,7 +22,8 @@ import {
     EventEmitter,
     Input,
     OnInit,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
@@ -42,6 +43,12 @@ const LOG = LogFactory.createLog('FinSitZusatzfelderAppenzell');
     standalone: false
 })
 export class FinSitFelderAppenzellComponent implements OnInit {
+    private readonly finSitAppenzellService = inject(
+        FinanzielleSituationAppenzellService
+    );
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly ref = inject(ChangeDetectorRef);
+
     @Input()
     public finSitZusatzangabenAppenzell: TSFinSitZusatzangabenAppenzell;
 
@@ -65,12 +72,6 @@ export class FinSitFelderAppenzellComponent implements OnInit {
         new EventEmitter<TSFinSitZusatzangabenAppenzell>();
 
     public resultate: TSFinanzielleSituationResultateDTO;
-
-    public constructor(
-        private readonly finSitAppenzellService: FinanzielleSituationAppenzellService,
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly ref: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         this.finSitAppenzellService.massgebendesEinkommenStore.subscribe(

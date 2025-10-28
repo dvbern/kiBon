@@ -18,7 +18,8 @@
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Component
+    Component,
+    inject
 } from '@angular/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
@@ -41,19 +42,26 @@ import {AbstractEinkommensverschlechterungResultat} from '../../AbstractEinkomme
     standalone: false
 })
 export class EinkommensverschlechterungResultateViewComponent extends AbstractEinkommensverschlechterungResultat {
+    gesuchModelManager: GesuchModelManager;
+    protected wizardStepManager: WizardStepManager;
+    protected berechnungsManager: BerechnungsManager;
+    protected ref: ChangeDetectorRef;
+    protected readonly einstellungRS: EinstellungRS;
+    protected readonly $transition$: Transition;
+    private readonly errorService = inject(ErrorService);
+
     public resultatBasisjahr?: TSFinanzielleSituationResultateDTO;
     public resultatProzent: string;
     public readOnly: boolean = false;
 
-    public constructor(
-        public gesuchModelManager: GesuchModelManager,
-        protected wizardStepManager: WizardStepManager,
-        protected berechnungsManager: BerechnungsManager,
-        protected ref: ChangeDetectorRef,
-        protected readonly einstellungRS: EinstellungRS,
-        protected readonly $transition$: Transition,
-        private readonly errorService: ErrorService
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const wizardStepManager = inject(WizardStepManager);
+        const berechnungsManager = inject(BerechnungsManager);
+        const ref = inject(ChangeDetectorRef);
+        const einstellungRS = inject(EinstellungRS);
+        const $transition$ = inject(Transition);
+
         super(
             gesuchModelManager,
             wizardStepManager,
@@ -63,6 +71,13 @@ export class EinkommensverschlechterungResultateViewComponent extends AbstractEi
             einstellungRS,
             $transition$
         );
+        this.gesuchModelManager = gesuchModelManager;
+        this.wizardStepManager = wizardStepManager;
+        this.berechnungsManager = berechnungsManager;
+        this.ref = ref;
+        this.einstellungRS = einstellungRS;
+        this.$transition$ = $transition$;
+
         this.readOnly = this.gesuchModelManager.isGesuchReadonly();
     }
 

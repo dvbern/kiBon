@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {TSFinanzielleSituationSubStepName} from '../../../../../../models/enums/TSFinanzielleSituationSubStepName';
 import {TSFinanzielleSituationContainer} from '../../../../../../models/TSFinanzielleSituationContainer';
 import {EbeguUtil} from '../../../../../../utils/EbeguUtil';
@@ -14,12 +14,20 @@ import {FinanzielleSituationSolothurnService} from '../../finanzielle-situation-
     standalone: false
 })
 export class AngabenGs2Component extends AbstractFinSitsolothurnView {
-    public constructor(
-        public gesuchModelManager: GesuchModelManager,
-        protected readonly finSitSoService: FinanzielleSituationSolothurnService,
-        public wizardStepManager: WizardStepManager
-    ) {
+    gesuchModelManager: GesuchModelManager;
+    protected readonly finSitSoService: FinanzielleSituationSolothurnService;
+    wizardStepManager: WizardStepManager;
+
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const finSitSoService = inject(FinanzielleSituationSolothurnService);
+        const wizardStepManager = inject(WizardStepManager);
+
         super(gesuchModelManager, wizardStepManager, finSitSoService, 2);
+
+        this.gesuchModelManager = gesuchModelManager;
+        this.finSitSoService = finSitSoService;
+        this.wizardStepManager = wizardStepManager;
     }
 
     public getAntragstellerNummer(): number {

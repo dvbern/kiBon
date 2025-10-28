@@ -4,7 +4,8 @@ import {
     ChangeDetectorRef,
     Component,
     Input,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import moment from 'moment';
@@ -26,6 +27,14 @@ const LOG = LogFactory.createLog('VerlaufComponent');
     standalone: false
 })
 export class VerlaufComponent implements OnInit {
+    private readonly lastenausgleichTSService = inject(
+        LastenausgleichTSService
+    );
+    private readonly errorService = inject(ErrorService);
+    private readonly $translate = inject(TranslateService);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly location = inject(Location);
+
     @Input() public lastenausgleichId: string;
 
     public history: {timestampVon: number; status: string; benutzer: string}[];
@@ -46,14 +55,6 @@ export class VerlaufComponent implements OnInit {
         }
     ];
     public tableConfig = new DvSimpleTableConfig('timestampVon', 'desc', false);
-
-    public constructor(
-        private readonly lastenausgleichTSService: LastenausgleichTSService,
-        private readonly errorService: ErrorService,
-        private readonly $translate: TranslateService,
-        private readonly cd: ChangeDetectorRef,
-        private readonly location: Location
-    ) {}
 
     public ngOnInit(): void {
         this.lastenausgleichTSService

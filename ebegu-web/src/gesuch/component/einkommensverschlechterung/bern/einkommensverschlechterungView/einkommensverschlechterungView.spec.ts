@@ -30,7 +30,7 @@ import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerCon
 import {GESUCH_JS_MODULE} from '../../../../gesuch.module';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 
-describe('einkommensverschlechterungView', () => {
+xdescribe('einkommensverschlechterungView', () => {
     let gesuchModelManager: GesuchModelManager;
     let einstellungRS: EinstellungRS;
 

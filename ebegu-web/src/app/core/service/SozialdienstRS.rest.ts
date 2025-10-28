@@ -16,7 +16,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSSozialdienst} from '../../../models/sozialdienst/TSSozialdienst';
@@ -31,10 +31,10 @@ const LOG = LogFactory.createLog('SozialdienstRS');
     providedIn: 'root'
 })
 export class SozialdienstRS {
+    readonly $http = inject(HttpClient);
+
     public readonly serviceURL: string = `${CONSTANTS.REST_API}sozialdienst`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(public readonly $http: HttpClient) {}
 
     public getServiceName(): string {
         return 'SozialdienstRS';

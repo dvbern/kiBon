@@ -21,7 +21,8 @@ import {
     Component,
     OnInit,
     QueryList,
-    ViewChildren
+    ViewChildren,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -63,6 +64,19 @@ const LOG = LogFactory.createLog('EditGemeindeComponent');
     standalone: false
 })
 export class EditGemeindeComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+    private readonly $state = inject(StateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly translate = inject(TranslateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly dialog = inject(MatDialog);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly gemeindeWarningService = inject(GemeindeWarningService);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+
     @ViewChildren(NgForm) public forms: QueryList<NgForm>;
 
     public stammdaten$: Observable<TSGemeindeStammdaten>;
@@ -95,19 +109,6 @@ export class EditGemeindeComponent implements OnInit {
     public externalClients: TSExternalClientAssignment;
     public usernameScolaris: string;
     public gemeindeList$: Observable<TSGemeinde[]>;
-
-    public constructor(
-        private readonly $transition$: Transition,
-        private readonly $state: StateService,
-        private readonly errorService: ErrorService,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly translate: TranslateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly dialog: MatDialog,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly gemeindeWarningService: GemeindeWarningService,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
-    ) {}
 
     public ngOnInit(): void {
         this.gemeindeId = this.$transition$.params().gemeindeId;

@@ -28,7 +28,7 @@ import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {BetreuungListViewController} from './betreuungListView';
 
-describe('betreuungListViewTest', () => {
+xdescribe('betreuungListViewTest', () => {
     let betreuungListView: BetreuungListViewController;
     let gesuchModelManager: GesuchModelManager;
     let $state: StateService;

@@ -23,7 +23,8 @@ import {
     Input,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {MatPaginator} from '@angular/material/paginator';
@@ -68,6 +69,17 @@ export interface TableAuswahlInstitution {
     imports: [SharedModule, EditGemeindeInstitutionTableComponent]
 })
 export class EditGemeindeInstitutionComponent implements OnInit, OnDestroy {
+    private readonly translate = inject(TranslateService);
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly institutionenStammdatenRS = inject(
+        InstitutionStammdatenRS
+    );
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly cd = inject(ChangeDetectorRef);
+
     @Input() public editMode: boolean;
     @Input() public stammdaten: TSGemeindeStammdaten;
 
@@ -93,15 +105,6 @@ export class EditGemeindeInstitutionComponent implements OnInit, OnDestroy {
     private readonly unsubscribe$ = new Subject<void>();
     @ViewChild(MatSort, {static: true}) public sort: MatSort;
     @ViewChild(MatPaginator, {static: true}) public paginator: MatPaginator;
-
-    public constructor(
-        private readonly translate: TranslateService,
-        private readonly institutionRS: InstitutionRS,
-        private readonly institutionenStammdatenRS: InstitutionStammdatenRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly cd: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         this.applicationPropertyRS

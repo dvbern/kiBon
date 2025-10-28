@@ -16,7 +16,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSWizardStepXTyp} from '../../../models/enums/TSWizardStepXTyp';
@@ -31,11 +31,11 @@ const LOG = LogFactory.createLog('WizardStepXRS');
     providedIn: 'root'
 })
 export class WizardStepXRS {
+    http = inject(HttpClient);
+
     public serviceURL: string = `${CONSTANTS.REST_API}wizardstepX`;
     public wizardSteps = new ReplaySubject<TSWizardStepX[]>(1);
     private readonly ebeguRestUtil: EbeguRestUtil = new EbeguRestUtil();
-
-    public constructor(public http: HttpClient) {}
 
     public getServiceName(): string {
         return 'WizardStepXRS';

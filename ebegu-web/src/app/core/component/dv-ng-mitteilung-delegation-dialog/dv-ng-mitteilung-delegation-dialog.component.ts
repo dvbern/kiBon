@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {
     MAT_DIALOG_DATA,
@@ -40,19 +40,24 @@ import {MitteilungRS} from '../../service/mitteilungRS.rest';
     standalone: false
 })
 export class DvNgMitteilungDelegationDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgMitteilungDelegationDialogComponent>>(
+            MatDialogRef
+        );
+    private readonly dialogSupport = inject(MatDialog);
+    private readonly mitteilungRS = inject(MitteilungRS);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     public benutzerList: TSBenutzer[];
     public filteredBenutzerList$: Observable<TSBenutzer[]>;
     public selectedBenutzer: TSBenutzer;
     public mitteilungId: string;
     public myControl = new FormControl<TSBenutzer>(null);
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DvNgMitteilungDelegationDialogComponent>,
-        private readonly dialogSupport: MatDialog,
-        private readonly mitteilungRS: MitteilungRS,
-        private readonly benutzerRS: BenutzerRSX,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         this.mitteilungId = data.mitteilungId;
         this.selectedBenutzer = null;
         this.benutzerRS

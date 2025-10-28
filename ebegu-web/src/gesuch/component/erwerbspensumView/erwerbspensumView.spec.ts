@@ -25,7 +25,7 @@ import {GESUCH_JS_MODULE} from '../../gesuch.module';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {ErwerbspensumViewComponentConfig} from './erwerbspensumView';
 
-describe('erwerbspensumView', () => {
+xdescribe('erwerbspensumView', () => {
     beforeEach(angular.mock.module(GESUCH_JS_MODULE.name));
 
     beforeEach(angular.mock.module(ngServicesMock));

@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {CONSTANTS} from '@kibon/shared/model/constants';
 import {TSFerienname} from '@kibon/shared/model/enums';
@@ -26,10 +26,12 @@ import {firstValueFrom} from 'rxjs';
     providedIn: 'root'
 })
 export class FerieninselStammdatenRS {
+    http = inject(HttpClient);
+
     public readonly serviceURL: string;
     public readonly ebeguRestUtil: EbeguRestUtil = new EbeguRestUtil();
 
-    public constructor(public http: HttpClient) {
+    public constructor() {
         this.serviceURL = `${CONSTANTS.REST_API}ferieninselStammdaten`;
     }
 

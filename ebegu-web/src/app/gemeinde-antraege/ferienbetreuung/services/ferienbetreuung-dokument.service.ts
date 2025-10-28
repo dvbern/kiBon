@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSSprache} from '@kibon/shared/model/enums';
@@ -11,10 +11,10 @@ import {CONSTANTS} from '@kibon/shared/model/constants';
     providedIn: 'root'
 })
 export class FerienbetreuungDokumentService {
+    private readonly http = inject(HttpClient);
+
     private readonly API_BASE_URL = `${CONSTANTS.REST_API}ferienbetreuung/dokument`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(private readonly http: HttpClient) {}
 
     public getAllDokumente(
         containerId: string

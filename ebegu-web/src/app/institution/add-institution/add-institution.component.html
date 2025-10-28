@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2018 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2018 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <dv-full-height-container>
     <form
@@ -33,21 +33,21 @@
             <fieldset>
                 <!-- Betreuungsangebot -->
 
-                <div
-                    class="row"
-                    *ngIf="!isBGInstitution && gemeinden.length === 0"
-                    translate
-                >
-                    <div
-                        class="col-sm-12 well well-status-abgewiesen"
-                        translate
-                    >
-                        KEINE_GEMEINDE_KONFIGURATION
+                @if (!isBGInstitution && gemeinden.length === 0) {
+                    <div class="row" translate>
+                        <div
+                            class="col-sm-12 well well-status-abgewiesen"
+                            translate
+                        >
+                            KEINE_GEMEINDE_KONFIGURATION
+                        </div>
                     </div>
-                </div>
-                <div *ngIf="isLatsInstitution" translate>
-                    <dv-warning>LATS_ONLY_WARNUNG</dv-warning>
-                </div>
+                }
+                @if (isLatsInstitution) {
+                    <div translate>
+                        <dv-warning>LATS_ONLY_WARNUNG</dv-warning>
+                    </div>
+                }
                 <div class="row">
                     <div class="col-sm-6">
                         <div
@@ -68,11 +68,11 @@
                                 class="form-control"
                                 required
                             >
-                                <mat-option
-                                    *ngFor="let ba of betreuungsangebote"
-                                    [value]="ba"
-                                    >{{ ba | translate }}
-                                </mat-option>
+                                @for (ba of betreuungsangebote; track ba) {
+                                    <mat-option [value]="ba"
+                                        >{{ ba | translate }}
+                                    </mat-option>
+                                }
                             </mat-select>
                             <dv-error-messages
                                 [errorObject]="
@@ -83,38 +83,46 @@
                             </dv-error-messages>
                         </div>
                     </div>
-                    <div class="col-sm-6" *ngIf="selectGemeindeVisible()">
-                        <div class="form-group">
-                            <label
-                                [ngClass]="{required: selectGemeindeRequired()}"
-                                class="md-no-float"
-                                translate
-                                for="gemeinde"
-                                >GEMEINDE_AUSWAEHLEN</label
-                            >
-                            <select
-                                [(ngModel)]="selectedGemeinde"
-                                name="gemeinde"
-                                class="form-control"
-                                id="gemeinde"
-                                data-test="institution.create-tagesschule.gemeinde-auswaehlen"
-                                [required]="selectGemeindeRequired()"
-                            >
-                                <option
-                                    *ngFor="let gemeinde of gemeinden"
-                                    [ngValue]="gemeinde"
+                    @if (selectGemeindeVisible()) {
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label
+                                    [ngClass]="{
+                                        required: selectGemeindeRequired()
+                                    }"
+                                    class="md-no-float"
+                                    translate
+                                    for="gemeinde"
+                                    >GEMEINDE_AUSWAEHLEN</label
                                 >
-                                    {{ gemeinde.name }}
-                                </option>
-                            </select>
-                            <dv-error-messages
-                                [errorObject]="form.controls.gemeindeId?.errors"
-                                inputId="gemeinde"
-                                class="input-error"
-                            >
-                            </dv-error-messages>
+                                <select
+                                    [(ngModel)]="selectedGemeinde"
+                                    name="gemeinde"
+                                    class="form-control"
+                                    id="gemeinde"
+                                    data-test="institution.create-tagesschule.gemeinde-auswaehlen"
+                                    [required]="selectGemeindeRequired()"
+                                >
+                                    @for (
+                                        gemeinde of gemeinden;
+                                        track gemeinde
+                                    ) {
+                                        <option [ngValue]="gemeinde">
+                                            {{ gemeinde.name }}
+                                        </option>
+                                    }
+                                </select>
+                                <dv-error-messages
+                                    [errorObject]="
+                                        form.controls.gemeindeId?.errors
+                                    "
+                                    inputId="gemeinde"
+                                    class="input-error"
+                                >
+                                </dv-error-messages>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
 
                 <!-- Institutionname | Betreuungsgutscheine akzeptieren ab -->
@@ -147,15 +155,17 @@
                             </dv-error-messages>
                         </div>
                     </div>
-                    <div class="col-sm-6" *ngIf="isBGInstitution">
-                        <dv-date-picker-x
-                            id="begu_start_ID"
-                            [label]="'INSTITUTION_BEGU_START'"
-                            [(date)]="startDate"
-                            [datePickerEnabled]="true"
-                            [required]="true"
-                        ></dv-date-picker-x>
-                    </div>
+                    @if (isBGInstitution) {
+                        <div class="col-sm-6">
+                            <dv-date-picker-x
+                                id="begu_start_ID"
+                                [label]="'INSTITUTION_BEGU_START'"
+                                [(date)]="startDate"
+                                [datePickerEnabled]="true"
+                                [required]="true"
+                            ></dv-date-picker-x>
+                        </div>
+                    }
                 </div>
 
                 <!-- Administrator - E-Mail Adresse | Trägerschaft -->
@@ -168,34 +178,37 @@
                                     justify-content: space-between;
                                 "
                             >
+                                @if (isBGInstitution) {
+                                    <label
+                                        class="required"
+                                        translate
+                                        for="admin_mail_ID"
+                                        >ADMIN_MAIL</label
+                                    >
+                                }
+                                @if (institution.traegerschaft) {
+                                    <button
+                                        type="button"
+                                        class="dv-btn btn-link link-underline link-color-primary"
+                                        style="height: 100%"
+                                        (click)="selectAdminMail()"
+                                    >
+                                        <span
+                                            [textContent]="
+                                                'ADMIN_MAIL_BUTTON' | translate
+                                            "
+                                        ></span>
+                                    </button>
+                                }
+                            </div>
+                            @if (!isBGInstitution) {
                                 <label
-                                    *ngIf="isBGInstitution"
                                     class="required"
                                     translate
                                     for="admin_mail_ID"
-                                    >ADMIN_MAIL</label
+                                    >KONTAKT_MAIL</label
                                 >
-                                <button
-                                    type="button"
-                                    class="dv-btn btn-link link-underline link-color-primary"
-                                    style="height: 100%"
-                                    (click)="selectAdminMail()"
-                                    *ngIf="institution.traegerschaft"
-                                >
-                                    <span
-                                        [textContent]="
-                                            'ADMIN_MAIL_BUTTON' | translate
-                                        "
-                                    ></span>
-                                </button>
-                            </div>
-                            <label
-                                *ngIf="!isBGInstitution"
-                                class="required"
-                                translate
-                                for="admin_mail_ID"
-                                >KONTAKT_MAIL</label
-                            >
+                            }
                             <input
                                 id="admin_mail_ID"
                                 type="email"
@@ -215,58 +228,61 @@
                             </dv-error-messages>
                         </div>
                     </div>
-                    <div class="col-sm-6" *ngIf="isBGInstitution">
-                        <div class="form-group">
-                            <label translate for="traegerschaft_id"
-                                >TRAEGERSCHAFT</label
-                            >
-                            <mat-select
-                                [(ngModel)]="institution.traegerschaft"
-                                id="traegerschaft_id"
-                                name="traegerschaft_id"
-                                class="form-control"
-                            >
-                                <mat-option value="">{{
-                                    'KEINE' | translate
-                                }}</mat-option>
-                                <mat-option
-                                    *ngFor="let tr of traegerschaften"
-                                    [value]="tr"
+                    @if (isBGInstitution) {
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label translate for="traegerschaft_id"
+                                    >TRAEGERSCHAFT</label
                                 >
-                                    {{ tr.name }}
-                                </mat-option>
-                            </mat-select>
-                            <dv-error-messages
-                                [errorObject]="
-                                    form.controls.traegerschaft_id?.errors
-                                "
-                                input-id="traegerschaft_id"
-                            >
-                            </dv-error-messages>
+                                <mat-select
+                                    [(ngModel)]="institution.traegerschaft"
+                                    id="traegerschaft_id"
+                                    name="traegerschaft_id"
+                                    class="form-control"
+                                >
+                                    <mat-option value="">{{
+                                        'KEINE' | translate
+                                    }}</mat-option>
+                                    @for (tr of traegerschaften; track tr) {
+                                        <mat-option [value]="tr">
+                                            {{ tr.name }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                                <dv-error-messages
+                                    [errorObject]="
+                                        form.controls.traegerschaft_id?.errors
+                                    "
+                                    input-id="traegerschaft_id"
+                                >
+                                </dv-error-messages>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
             </fieldset>
         </div>
 
         <!-- Buttons -->
         <div class="dv-footer">
-            <button
-                *ngIf="isBGInstitution"
-                (click)="institutionErstellen()"
-                class="dv-btn next-button"
-            >
-                <span translate>EINLADUNG_SENDEN</span>
-            </button>
+            @if (isBGInstitution) {
+                <button
+                    (click)="institutionErstellen()"
+                    class="dv-btn next-button"
+                >
+                    <span translate>EINLADUNG_SENDEN</span>
+                </button>
+            }
 
-            <button
-                *ngIf="!isBGInstitution"
-                (click)="institutionErstellen()"
-                class="dv-btn next-button"
-                data-test="institution.create-tagesschule.submit"
-            >
-                <span translate>INSTITUTION_ERSTELLEN</span>
-            </button>
+            @if (!isBGInstitution) {
+                <button
+                    (click)="institutionErstellen()"
+                    class="dv-btn next-button"
+                    data-test="institution.create-tagesschule.submit"
+                >
+                    <span translate>INSTITUTION_ERSTELLEN</span>
+                </button>
+            }
 
             <button
                 type="button"

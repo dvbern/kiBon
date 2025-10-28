@@ -20,7 +20,8 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
@@ -61,6 +62,18 @@ const LOG = LogFactory.createLog('FerienbetreuungAbschlussComponent');
     standalone: false
 })
 export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
+    private readonly ferienbetreuungsService = inject(FerienbetreuungService);
+    private readonly translate = inject(TranslateService);
+    private readonly dialog = inject(MatDialog);
+    private readonly errorService = inject(ErrorService);
+    private readonly wizardRS = inject(WizardStepXRS);
+    private readonly authService = inject(AuthServiceRS);
+    private readonly stateService = inject(StateService);
+    private readonly ferienbetreuungDokumentService = inject(
+        FerienbetreuungDokumentService
+    );
+    private readonly downloadRS = inject(DownloadRS);
+
     private static readonly FILENAME_DE = 'Verfügung Ferienbetreuung kiBon';
     private static readonly FILENAME_FR = 'Modèle Décisions VAC kibon';
 
@@ -74,18 +87,6 @@ export class FerienbetreuungAbschlussComponent implements OnInit, OnDestroy {
     public downloadingFrFile: BehaviorSubject<boolean> = new BehaviorSubject(
         false
     );
-
-    public constructor(
-        private readonly ferienbetreuungsService: FerienbetreuungService,
-        private readonly translate: TranslateService,
-        private readonly dialog: MatDialog,
-        private readonly errorService: ErrorService,
-        private readonly wizardRS: WizardStepXRS,
-        private readonly authService: AuthServiceRS,
-        private readonly stateService: StateService,
-        private readonly ferienbetreuungDokumentService: FerienbetreuungDokumentService,
-        private readonly downloadRS: DownloadRS
-    ) {}
 
     public ngOnInit(): void {
         this.ferienbetreuungsService

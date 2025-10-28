@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {DOCUMENT} from '@angular/common';
-import {ErrorHandler, Inject, Injectable} from '@angular/core';
+import {ErrorHandler, Injectable, DOCUMENT, inject} from '@angular/core';
 import {GuidedTourService, WindowRefService} from 'ngx-guided-tour';
 import {BehaviorSubject, Observable} from 'rxjs';
 
@@ -24,15 +23,23 @@ import {BehaviorSubject, Observable} from 'rxjs';
     providedIn: 'root'
 })
 export class KiBonGuidedTourService extends GuidedTourService {
+    errorHandler: ErrorHandler;
+    private readonly window: WindowRefService;
+    private readonly domEl: any;
+
     private readonly guidedTourSubject$ = new BehaviorSubject(false);
     private readonly _guidedTour$ = this.guidedTourSubject$.asObservable();
 
-    private constructor(
-        public errorHandler: ErrorHandler,
-        private readonly window: WindowRefService,
-        @Inject(DOCUMENT) private readonly domEl: any
-    ) {
+    private constructor() {
+        const errorHandler = inject(ErrorHandler);
+        const window = inject(WindowRefService);
+        const domEl = inject(DOCUMENT);
+
         super(errorHandler, window, domEl);
+
+        this.errorHandler = errorHandler;
+        this.window = window;
+        this.domEl = domEl;
     }
 
     public emit(): void {

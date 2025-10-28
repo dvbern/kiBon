@@ -16,7 +16,7 @@
  */
 
 import {Clipboard} from '@angular/cdk/clipboard';
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TSInstitution} from '@kibon/shared/model/entity';
 import {TSModulTagesschuleGroup} from '@kibon/shared/model/entity';
@@ -29,6 +29,11 @@ import {SharedModule} from '../../../../../../../src/app/shared/shared.module';
     imports: [SharedModule]
 })
 export class InfoSchnittstelleDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<InfoSchnittstelleDialogComponent>>(MatDialogRef);
+    private readonly data = inject(MAT_DIALOG_DATA);
+    private readonly clipboard = inject(Clipboard);
+
     public modulTagesschuleGroup: TSModulTagesschuleGroup;
     public institution: TSInstitution;
     public copied: any = {};
@@ -36,11 +41,9 @@ export class InfoSchnittstelleDialogComponent {
 
     private readonly resetCopiedAfterMS = 1000;
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<InfoSchnittstelleDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any,
-        private readonly clipboard: Clipboard
-    ) {
+    public constructor() {
+        const data = this.data;
+
         this.modulTagesschuleGroup = data.modulTagesschuleGroup;
         this.institution = data.institution;
         this.editMode = data.editMode;

@@ -21,7 +21,8 @@ import {
     EventEmitter,
     Input,
     OnInit,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, TransitionPromise} from '@uirouter/core';
@@ -49,6 +50,13 @@ import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
     standalone: false
 })
 export class DvNavigationXComponent implements OnInit {
+    private readonly wizardStepManager = inject(WizardStepManager);
+    private readonly finanzielleSituationRS = inject(FinanzielleSituationRS);
+    private readonly $state = inject(StateService);
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly translate = inject(TranslateService);
+    private readonly errorService = inject(ErrorService);
+
     private readonly log: Log = LogFactory.createLog('DvNavigationXComponent');
 
     @Input() public dvPrevious: boolean;
@@ -67,15 +75,6 @@ export class DvNavigationXComponent implements OnInit {
     @Input() public containerClass: string;
 
     private finSitWizardSubStepManager: FinanzielleSituationSubStepManager;
-
-    public constructor(
-        private readonly wizardStepManager: WizardStepManager,
-        private readonly finanzielleSituationRS: FinanzielleSituationRS,
-        private readonly $state: StateService,
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly translate: TranslateService,
-        private readonly errorService: ErrorService
-    ) {}
 
     // wird von angular aufgerufen
     public ngOnInit(): void {

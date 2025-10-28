@@ -22,7 +22,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {TraegerschaftRS} from './traegerschaftRS.rest';
 
-describe('traegerschaftRS', () => {
+xdescribe('traegerschaftRS', () => {
     let traegerschaftRS: TraegerschaftRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

@@ -20,7 +20,8 @@ import {
     Component,
     EventEmitter,
     Input,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {MatRadioChange} from '@angular/material/radio';
@@ -38,6 +39,9 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     standalone: false
 })
 export class DvRadioInputXComponent {
+    readonly form = inject(NgForm);
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+
     @Input()
     public label: string;
 
@@ -71,11 +75,6 @@ export class DvRadioInputXComponent {
 
     // unique name for this radio
     public uniqueName: string = `radio_${EbeguUtil.generateRandomName(10)}`;
-
-    public constructor(
-        public readonly form: NgForm,
-        private readonly gesuchModelManager: GesuchModelManager
-    ) {}
 
     public change($event: MatRadioChange): void {
         this.modelChange.emit($event.value);

@@ -19,7 +19,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
@@ -79,6 +80,21 @@ const LOG = LogFactory.createLog('NavbarComponent');
     standalone: false
 })
 export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly dialog = inject(MatDialog);
+    private readonly $state = inject(StateService);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly guidedTourService = inject(GuidedTourService);
+    private readonly translate = inject(TranslateService);
+    private readonly kibonGuidedTourService = inject(KiBonGuidedTourService);
+    private readonly sozialdienstRS = inject(SozialdienstRS);
+    private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly institutionService = inject(InstitutionRS);
+
     public readonly TSRoleUtil = TSRoleUtil;
 
     private readonly unsubscribe$ = new Subject<void>();
@@ -88,21 +104,6 @@ export class NavbarComponent implements OnDestroy, AfterViewInit, OnInit {
     public gemeindeAntragVisible: BehaviorSubject<boolean> =
         new BehaviorSubject<boolean>(false);
     private tagesschulangebotEnabled: boolean;
-
-    public constructor(
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly dialog: MatDialog,
-        private readonly $state: StateService,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly guidedTourService: GuidedTourService,
-        private readonly translate: TranslateService,
-        private readonly kibonGuidedTourService: KiBonGuidedTourService,
-        private readonly sozialdienstRS: SozialdienstRS,
-        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly institutionService: InstitutionRS
-    ) {}
 
     public ngOnInit(): void {
         // navbar depends on the principal. trigger change detection when the principal changes

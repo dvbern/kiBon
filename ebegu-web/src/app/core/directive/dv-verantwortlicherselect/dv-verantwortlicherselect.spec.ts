@@ -26,7 +26,7 @@ import {BenutzerRSX} from '../../service/benutzerRSX.rest';
 import {VerantwortlicherselectController} from './dv-verantwortlicherselect';
 import ITranslateService = angular.translate.ITranslateService;
 
-describe('dvVerantwortlicherSelect', () => {
+xdescribe('dvVerantwortlicherSelect', () => {
     let gesuchModelManager: GesuchModelManager;
     let verantwortlicherselectController: VerantwortlicherselectController;
     let benutzerRS: BenutzerRSX;

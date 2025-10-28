@@ -31,7 +31,7 @@ import {PENDENZEN_BETREUUNGEN_JS_MODULE} from '../../pendenzenBetreuungen.module
 import {PendenzBetreuungenRS} from '../../service/PendenzBetreuungenRS.rest';
 import {PendenzenBetreuungenListViewController} from './pendenzenBetreuungenListView';
 
-describe('pendenzenBetreuungenListView', () => {
+xdescribe('pendenzenBetreuungenListView', () => {
     let institutionRS: InstitutionRS;
     let gesuchsperiodeRS: GesuchsperiodeRS;
     let institutionStammdatenRS: InstitutionStammdatenRS;

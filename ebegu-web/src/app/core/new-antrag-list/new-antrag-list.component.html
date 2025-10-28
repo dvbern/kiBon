@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2023 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2023 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 <div class="dv-table">
     <div class="row view-title">
         <div class="col-md-12">
@@ -33,15 +33,16 @@
         </div>
         <div class="col-md-4">
             <div id="box-right">
-                <dv-checkbox-x
-                    *ngIf="showSearchInaktivePerioden()"
-                    [model]="searchInaktivePerioden"
-                    [marginClass]="'no-margin-bottom'"
-                    (modelChange)="changeSearchInaktivePerioden($event)"
-                    [displayBisher]="false"
-                    [label]="'SEARCH_INAKTIVE_PERIODEN' | translate"
-                >
-                </dv-checkbox-x>
+                @if (showSearchInaktivePerioden()) {
+                    <dv-checkbox-x
+                        [model]="searchInaktivePerioden"
+                        [marginClass]="'no-margin-bottom'"
+                        (modelChange)="changeSearchInaktivePerioden($event)"
+                        [displayBisher]="false"
+                        [label]="'SEARCH_INAKTIVE_PERIODEN' | translate"
+                    >
+                    </dv-checkbox-x>
+                }
             </div>
         </div>
     </div>
@@ -115,24 +116,19 @@
                     ><span translate>TYP</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <i
-                        class="fa fa-desktop margin-ri"
-                        *ngIf="
-                            element.hasBesitzer?.call() &&
-                            !element.isSozialdienst
-                        "
-                    ></i>
-                    <i
-                        class="fa fa-file-text-o margin-ri"
-                        *ngIf="
-                            !element.hasBesitzer?.call() &&
-                            !element.isSozialdienst
-                        "
-                    ></i>
-                    <i
-                        class="fa fa-handshake-o margin-ri"
-                        *ngIf="element.isSozialdienst"
-                    ></i>
+                    @if (
+                        element.hasBesitzer?.call() && !element.isSozialdienst
+                    ) {
+                        <i class="fa fa-desktop margin-ri"></i>
+                    }
+                    @if (
+                        !element.hasBesitzer?.call() && !element.isSozialdienst
+                    ) {
+                        <i class="fa fa-file-text-o margin-ri"></i>
+                    }
+                    @if (element.isSozialdienst) {
+                        <i class="fa fa-handshake-o margin-ri"></i>
+                    }
                     <span
                         class="margin-left-5"
                         [title]="element.antragTyp | translate"
@@ -202,21 +198,22 @@
                     ><span translate>INTERNE_PENDENZ_KURZ</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <span
-                        *ngIf="element.internePendenz"
-                        [title]="'INTERNE_PENDENZ' | translate"
-                    >
-                        <i
-                            *ngIf="!element.internePendenzAbgelaufen"
-                            class="fa fa-thumb-tack pendenz-icon"
-                            aria-hidden="true"
-                        ></i>
-                        <i
-                            *ngIf="element.internePendenzAbgelaufen"
-                            class="fa fa-thumb-tack pendenz-icon abgelaufen"
-                            aria-hidden="true"
-                        ></i>
-                    </span>
+                    @if (element.internePendenz) {
+                        <span [title]="'INTERNE_PENDENZ' | translate">
+                            @if (!element.internePendenzAbgelaufen) {
+                                <i
+                                    class="fa fa-thumb-tack pendenz-icon"
+                                    aria-hidden="true"
+                                ></i>
+                            }
+                            @if (element.internePendenzAbgelaufen) {
+                                <i
+                                    class="fa fa-thumb-tack pendenz-icon abgelaufen"
+                                    aria-hidden="true"
+                                ></i>
+                            }
+                        </span>
+                    }
                 </mat-cell>
             </ng-container>
 
@@ -227,12 +224,11 @@
                     ><span translate>DOKUMENTE_HOCHGELADEN_KURZ</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                    <span
-                        *ngIf="element.dokumenteHochgeladen"
-                        [title]="'DOKUMENTE_HOCHGELADEN' | translate"
-                    >
-                        <i class="fa fa-file-o" aria-hidden="true"></i>
-                    </span>
+                    @if (element.dokumenteHochgeladen) {
+                        <span [title]="'DOKUMENTE_HOCHGELADEN' | translate">
+                            <i class="fa fa-file-o" aria-hidden="true"></i>
+                        </span>
+                    }
                 </mat-cell>
             </ng-container>
 
@@ -244,14 +240,19 @@
                     ><span
                         [title]="createAngeboteString(element.angebote) | async"
                     >
-                        <span
-                            *ngFor="let angebot of element.angebote; index as i"
-                            >{{ angebot | translate
-                            }}{{
-                                i < element.angebote.length - 1 ? ',' : ''
-                            }}</span
-                        ></span
-                    ></mat-cell
+                        @for (
+                            angebot of element.angebote;
+                            track angebot;
+                            let i = $index
+                        ) {
+                            <span
+                                >{{ angebot | translate
+                                }}{{
+                                    i < element.angebote.length - 1 ? ',' : ''
+                                }}</span
+                            >
+                        }
+                    </span></mat-cell
                 >
             </ng-container>
 
@@ -274,14 +275,15 @@
                     *matCellDef="let element"
                     (click)="$event.stopPropagation()"
                 >
-                    <button
-                        *ngIf="element.antragAbgeschlossen === false"
-                        type="button"
-                        class="dv-btn dv-btn-operation"
-                        (click)="removeClicked.emit(element)"
-                    >
-                        <i class="fa fa-lg fa-trash-o"></i>
-                    </button>
+                    @if (element.antragAbgeschlossen === false) {
+                        <button
+                            type="button"
+                            class="dv-btn dv-btn-operation"
+                            (click)="removeClicked.emit(element)"
+                        >
+                            <i class="fa fa-lg fa-trash-o"></i>
+                        </button>
+                    }
                 </mat-cell>
             </ng-container>
 
@@ -376,11 +378,11 @@
                             data-test="gemeindeantraege-gemeinde-tabelle"
                         >
                             <mat-option><span translate>ALLE</span></mat-option>
-                            <mat-option
-                                *ngFor="let gemeinde of gemeindenList"
-                                [value]="gemeinde.name"
-                                >{{ gemeinde.name }}</mat-option
-                            >
+                            @for (gemeinde of gemeindenList; track gemeinde) {
+                                <mat-option [value]="gemeinde.name">{{
+                                    gemeinde.name
+                                }}</mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                 </mat-header-cell>
@@ -402,13 +404,16 @@
                             <mat-option selected
                                 ><span translate>ALLE</span></mat-option
                             >
-                            <mat-option
-                                *ngFor="let type of getAntragTypen()"
-                                [value]="type"
-                                [attr.data-test]="type"
-                            >
-                                <span translate>{{ type }}</span></mat-option
-                            >
+                            @for (type of getAntragTypen(); track type) {
+                                <mat-option
+                                    [value]="type"
+                                    [attr.data-test]="type"
+                                >
+                                    <span translate>{{
+                                        type
+                                    }}</span></mat-option
+                                >
+                            }
                         </mat-select>
                     </mat-form-field>
                 </mat-header-cell>
@@ -429,11 +434,13 @@
                             <mat-option selected
                                 ><span translate>ALLE</span></mat-option
                             >
-                            <mat-option
-                                *ngFor="let status of getAntragStatus()"
-                                [value]="status"
-                                ><span translate>{{ status }}</span></mat-option
-                            >
+                            @for (status of getAntragStatus(); track status) {
+                                <mat-option [value]="status"
+                                    ><span translate>{{
+                                        status
+                                    }}</span></mat-option
+                                >
+                            }
                         </mat-select>
                     </mat-form-field>
                 </mat-header-cell>
@@ -454,15 +461,16 @@
                             <mat-option selected
                                 ><span translate>ALLE</span></mat-option
                             >
-                            <mat-option
-                                *ngFor="
-                                    let angebot of getBetreuungsangebotTypen()
-                                "
-                                [value]="angebot"
-                                ><span translate>{{
-                                    angebot
-                                }}</span></mat-option
-                            >
+                            @for (
+                                angebot of getBetreuungsangebotTypen();
+                                track angebot
+                            ) {
+                                <mat-option [value]="angebot"
+                                    ><span translate>{{
+                                        angebot
+                                    }}</span></mat-option
+                                >
+                            }
                         </mat-select>
                     </mat-form-field>
                 </mat-header-cell>
@@ -484,12 +492,16 @@
                             <mat-option selected
                                 ><span translate>ALLE</span></mat-option
                             >
-                            <mat-option
-                                *ngFor="let periode of gesuchsperiodenList"
-                                [value]="periode"
-                                [attr.data-test]="'periode-' + periode"
-                                >{{ periode }}</mat-option
-                            >
+                            @for (
+                                periode of gesuchsperiodenList;
+                                track periode
+                            ) {
+                                <mat-option
+                                    [value]="periode"
+                                    [attr.data-test]="'periode-' + periode"
+                                    >{{ periode }}</mat-option
+                                >
+                            }
                         </mat-select>
                     </mat-form-field>
                 </mat-header-cell>
@@ -628,15 +640,17 @@
                             filterInstitution($event.option.value)
                         "
                     >
-                        <mat-option
-                            *ngFor="
-                                let institution of institutionenList$ | async
-                            "
-                            [value]="institution.name"
-                            style="font-size: 1.6rem"
-                        >
-                            {{ institution.name }}</mat-option
-                        >
+                        @for (
+                            institution of institutionenList$ | async;
+                            track institution
+                        ) {
+                            <mat-option
+                                [value]="institution.name"
+                                style="font-size: 1.6rem"
+                            >
+                                {{ institution.name }}</mat-option
+                            >
+                        }
                     </mat-autocomplete>
                 </mat-header-cell>
             </ng-container>
@@ -734,25 +748,26 @@
             ></mat-row>
         </mat-table>
 
-        <div class="bottom-pagination" *ngIf="!disablePagination">
-            <nav>
-                <ul class="pagination">
-                    <li
-                        *ngFor="let index of paginationItems"
-                        [ngClass]="{active: index - 1 === page}"
-                    >
-                        <a
-                            (click)="
-                                handlePagination({
-                                    pageIndex: index - 1,
-                                    pageSize: pageSize
-                                })
-                            "
-                            >{{ index }}</a
-                        >
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        @if (!disablePagination) {
+            <div class="bottom-pagination">
+                <nav>
+                    <ul class="pagination">
+                        @for (index of paginationItems; track index) {
+                            <li [ngClass]="{active: index - 1 === page}">
+                                <a
+                                    (click)="
+                                        handlePagination({
+                                            pageIndex: index - 1,
+                                            pageSize: pageSize
+                                        })
+                                    "
+                                    >{{ index }}</a
+                                >
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        }
     </div>
 </div>

@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -62,6 +63,21 @@ const LOG = LogFactory.createLog('AddInstitutionComponent');
     standalone: false
 })
 export class AddInstitutionComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+    private readonly $state = inject(StateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly traegerschaftRS = inject(TraegerschaftRS);
+    private readonly translate = inject(TranslateService);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly dialog = inject(MatDialog);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly cd = inject(ChangeDetectorRef);
+
     private readonly log: Log = LogFactory.createLog('AddInstitutionComponent');
 
     @ViewChild(NgForm, {static: true}) public form: NgForm;
@@ -78,21 +94,6 @@ export class AddInstitutionComponent implements OnInit {
     public isLatsInstitution: boolean;
 
     private institutionenDurchGemeindenEinladen: boolean = false;
-
-    public constructor(
-        private readonly $transition$: Transition,
-        private readonly $state: StateService,
-        private readonly errorService: ErrorService,
-        private readonly institutionRS: InstitutionRS,
-        private readonly traegerschaftRS: TraegerschaftRS,
-        private readonly translate: TranslateService,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly dialog: MatDialog,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly cd: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         this.betreuungsangebot = this.$transition$.params().betreuungsangebot;

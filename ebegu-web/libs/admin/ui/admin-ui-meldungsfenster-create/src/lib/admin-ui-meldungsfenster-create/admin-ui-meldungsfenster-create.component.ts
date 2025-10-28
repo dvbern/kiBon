@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {AdminUiMeldungsfensterFormComponent} from '@kibon/admin-ui-meldungsfenster-form';
 import {TranslateModule} from '@ngx-translate/core';
 import {
@@ -13,11 +13,7 @@ import {DateUtil} from '@kibon/shared/util-fn/date';
 
 @Component({
     selector: 'lib-admin-ui-meldungsfenster-create',
-    imports: [
-        CommonModule,
-        AdminUiMeldungsfensterFormComponent,
-        TranslateModule
-    ],
+    imports: [AdminUiMeldungsfensterFormComponent, TranslateModule],
     templateUrl: './admin-ui-meldungsfenster-create.component.html',
     styleUrl: './admin-ui-meldungsfenster-create.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush

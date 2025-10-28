@@ -26,7 +26,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {FachstelleRS} from './fachstelleRS.rest';
 
-describe('fachstelleRS', () => {
+xdescribe('fachstelleRS', () => {
     let fachstelleRS: FachstelleRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

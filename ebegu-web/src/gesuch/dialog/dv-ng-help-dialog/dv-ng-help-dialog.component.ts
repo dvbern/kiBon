@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {MANDANTS} from '@kibon/shared-model-mandant';
@@ -33,19 +33,20 @@ import {MandantService} from '@kibon/shared-util-mandant-service';
     standalone: false
 })
 export class DvNgHelpDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgHelpDialogComponent>>(MatDialogRef);
+    private readonly dialogSupport = inject(MatDialog);
+    private readonly kibonGuidedTourService = inject(KiBonGuidedTourService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly supportDialogService = inject(SupportDialogService);
+    private readonly mandantService = inject(MandantService);
+
     public hasRoleGemeinde: boolean = false;
     public hasRoleInstitution: boolean = false;
     public mandant$: Observable<MANDANTS>;
     public mandantTypes = MANDANTS;
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DvNgHelpDialogComponent>,
-        private readonly dialogSupport: MatDialog,
-        private readonly kibonGuidedTourService: KiBonGuidedTourService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly supportDialogService: SupportDialogService,
-        private readonly mandantService: MandantService
-    ) {
+    public constructor() {
         this.hasRoleGemeinde = this.isGemeinde();
         this.hasRoleInstitution = this.isInstitution();
         this.mandant$ = this.mandantService.mandant$;

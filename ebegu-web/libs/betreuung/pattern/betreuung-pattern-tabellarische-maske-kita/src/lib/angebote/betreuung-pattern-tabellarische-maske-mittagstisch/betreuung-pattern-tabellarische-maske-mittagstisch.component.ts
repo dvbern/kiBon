@@ -1,5 +1,5 @@
 import {Component, inject, model} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {SharedModule} from '../../../../../../../../src/app/shared/shared.module';
 import {TabellarischeMaskeTitleComponent} from '../../styling/tabellarische-maske-title/tabellarische-maske-title.component';
 import {TabellarischeMaskeTableComponent} from '../../styling/tabellarische-maske-table/tabellarische-maske-table.component';
@@ -11,7 +11,6 @@ import {InputUtil} from '../../util/InputUtil';
 
 @Component({
     imports: [
-        CommonModule,
         SharedModule,
         TabellarischeMaskeTitleComponent,
         TabellarischeMaskeTableComponent

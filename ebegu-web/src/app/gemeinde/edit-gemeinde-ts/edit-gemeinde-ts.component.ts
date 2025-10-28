@@ -21,7 +21,8 @@ import {
     EventEmitter,
     Input,
     OnInit,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {StateService} from '@uirouter/core';
@@ -49,6 +50,10 @@ const LOG = LogFactory.createLog('EditGemeidneComponentTS');
     standalone: false
 })
 export class EditGemeindeTSComponent implements OnInit {
+    private readonly $state = inject(StateService);
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly gemeindeRS = inject(GemeindeRS);
+
     @Input() public stammdaten$: Observable<TSGemeindeStammdaten>;
     @Input() private readonly gemeindeId: string;
     @Input() public editMode: boolean;
@@ -72,12 +77,6 @@ export class EditGemeindeTSComponent implements OnInit {
     public showTSList: boolean = false;
     public altLogoImageUrl$: Observable<string>;
     private fileToUpload: File;
-
-    public constructor(
-        private readonly $state: StateService,
-        private readonly institutionRS: InstitutionRS,
-        private readonly gemeindeRS: GemeindeRS
-    ) {}
 
     public ngOnInit(): void {
         if (!this.gemeindeId) {

@@ -1,30 +1,38 @@
 <!--
-  ~ Copyright (C) 2020 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2020 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div id="sidenavContainer">
     <div class="mobile-sidenav-scroll">
-        <div class="sidenav gesuch-gemeinde" *ngIf="gemeinde || gesuchsperiode">
-            <span *ngIf="gemeinde" class="gemeinde">{{ gemeinde?.name }}</span>
-            <br />
-            <span *ngIf="subHeader" class="sub-title">{{ subHeader }}</span>
-            <span *ngIf="gesuchsperiode" class="sub-title">
-                {{ gesuchsperiode?.gesuchsperiodeString }}</span
-            >
-        </div>
+        @if (gemeinde || gesuchsperiode) {
+            <div class="sidenav gesuch-gemeinde">
+                @if (gemeinde) {
+                    <span class="gemeinde">{{ gemeinde?.name }}</span>
+                }
+                <br />
+                @if (subHeader) {
+                    <span class="sub-title">{{ subHeader }}</span>
+                }
+                @if (gesuchsperiode) {
+                    <span class="sub-title">
+                        {{ gesuchsperiode?.gesuchsperiodeString }}</span
+                    >
+                }
+            </div>
+        }
         <div class="sidenav gesuch-status">
             <h2 class="access-for-all-title">
                 {{ 'AFA_GESUCHSTATUS' | translate }}
@@ -37,46 +45,62 @@
                 data-translate="AFA_SIDENAVMENU"
             ></h2>
 
-            <li
-                *ngFor="let entry of wizardSteps$ | async"
-                class="row"
-                uiSrefActive="active-element"
-                [attr.data-test]="'LATS-sidenav'"
-            >
-                <div *ngIf="!entry.disabled">
-                    <button
-                        class="col-xs-10"
-                        *ngIf="!entry.disabled"
-                        uiSref="{{ wizardTyp }}.{{ entry.stepName }}"
-                        [uiParams]="{id: id}"
-                        [attr.data-test]="'LATS-sidenav.' + entry.stepName"
-                    >
-                        <span translate
-                            >{{ wizardTyp }}_{{ entry.stepName }}</span
-                        >
-                    </button>
-                    <span
-                        class="col-xs-2 font-awesome fa-pencil black"
-                        *ngIf="isInBearbeitung(entry)"
-                    ></span>
-                    <span
-                        class="col-xs-2 font-awesome fa-check green"
-                        *ngIf="isOK(entry)"
-                    ></span>
-                    <span
-                        class="col-xs-2 font-awesome fa-close red"
-                        *ngIf="isNOK(entry)"
-                    ></span>
-                </div>
-                <button
-                    [attr.data-test]="'LATS-sidenav.' + entry.stepName"
-                    class="col-xs-10"
-                    *ngIf="entry.disabled"
-                    disabled
+            @for (entry of wizardSteps$ | async; track entry) {
+                <li
+                    class="row"
+                    uiSrefActive="active-element"
+                    [attr.data-test]="'LATS-sidenav'"
                 >
-                    <span translate>{{ wizardTyp }}_{{ entry.stepName }}</span>
-                </button>
-            </li>
+                    @if (!entry.disabled) {
+                        <div>
+                            @if (!entry.disabled) {
+                                <button
+                                    class="col-xs-10"
+                                    uiSref="{{ wizardTyp }}.{{
+                                        entry.stepName
+                                    }}"
+                                    [uiParams]="{id: id}"
+                                    [attr.data-test]="
+                                        'LATS-sidenav.' + entry.stepName
+                                    "
+                                >
+                                    <span translate
+                                        >{{ wizardTyp }}_{{
+                                            entry.stepName
+                                        }}</span
+                                    >
+                                </button>
+                            }
+                            @if (isInBearbeitung(entry)) {
+                                <span
+                                    class="col-xs-2 font-awesome fa-pencil black"
+                                ></span>
+                            }
+                            @if (isOK(entry)) {
+                                <span
+                                    class="col-xs-2 font-awesome fa-check green"
+                                ></span>
+                            }
+                            @if (isNOK(entry)) {
+                                <span
+                                    class="col-xs-2 font-awesome fa-close red"
+                                ></span>
+                            }
+                        </div>
+                    }
+                    @if (entry.disabled) {
+                        <button
+                            [attr.data-test]="'LATS-sidenav.' + entry.stepName"
+                            class="col-xs-10"
+                            disabled
+                        >
+                            <span translate
+                                >{{ wizardTyp }}_{{ entry.stepName }}</span
+                            >
+                        </button>
+                    }
+                </li>
+            }
         </ul>
     </div>
 </div>

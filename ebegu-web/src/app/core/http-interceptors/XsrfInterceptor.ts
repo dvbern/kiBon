@@ -26,14 +26,12 @@ import {
     HttpRequest,
     HttpXsrfTokenExtractor
 } from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 
 @Injectable()
 export class XsrfInterceptor implements HttpInterceptor {
-    public constructor(
-        private readonly tokenExtractor: HttpXsrfTokenExtractor
-    ) {}
+    private readonly tokenExtractor = inject(HttpXsrfTokenExtractor);
 
     public intercept(
         req: HttpRequest<any>,

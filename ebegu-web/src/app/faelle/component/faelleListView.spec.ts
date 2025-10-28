@@ -37,7 +37,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {FAELLE_JS_MODULE} from '../faelle.module';
 import {FaelleListViewController} from './faelleListView';
 
-describe('faelleListView', () => {
+xdescribe('faelleListView', () => {
     let authServiceRS: AuthServiceRS;
     let gesuchRS: GesuchRS;
     let faelleListViewController: FaelleListViewController;

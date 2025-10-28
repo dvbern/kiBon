@@ -1,66 +1,71 @@
 <!--
-  ~ Copyright (C) 2023 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2023 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="familiensituation-view gesuch-modul static-position">
     <h1 class="access-for-all-title" translate>AFA_GESUCHSFORMULAR</h1>
     <div class="row view-title">
         <div class="col-md-12">
             <h2>
-                <span *ngIf="isMutation()" data-test="page-title" translate
-                    >MUTATION_FAMSITUATION_TITLE</span
-                >
-                <span *ngIf="!isMutation()" data-test="page-title" translate
-                    >FAMILIENSITUATION</span
-                >
+                @if (isMutation()) {
+                    <span data-test="page-title" translate
+                        >MUTATION_FAMSITUATION_TITLE</span
+                    >
+                }
+                @if (!isMutation()) {
+                    <span data-test="page-title" translate
+                        >FAMILIENSITUATION</span
+                    >
+                }
             </h2>
             <hr class="header" />
-            <p
-                *ngIf="showError()"
-                role="alert"
-                translate
-                class="dv-error-messages"
-            >
-                ERROR_DATUM_GESETZT_BEI_MUTATION
-            </p>
+            @if (showError()) {
+                <p role="alert" translate class="dv-error-messages">
+                    ERROR_DATUM_GESETZT_BEI_MUTATION
+                </p>
+            }
         </div>
-        <div class="row" *ngIf="isNotPartnerIdentischMitVorgesuch()">
-            <div class="col-xs-12">
-                <div class="well well-status-warten minus-margin">
-                    <i
-                        class="fa fa-exclamation-triangle"
-                        aria-hidden="true"
-                    ></i>
-                    <span>{{
-                        getNotPertnerIdentischMitVorgesuchWarning()
-                    }}</span>
+        @if (isNotPartnerIdentischMitVorgesuch()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="well well-status-warten minus-margin">
+                        <i
+                            class="fa fa-exclamation-triangle"
+                            aria-hidden="true"
+                        ></i>
+                        <span>{{
+                            getNotPertnerIdentischMitVorgesuchWarning()
+                        }}</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row" *ngIf="antragWirdBeendet()">
-            <div class="col-xs-12">
-                <div class="well well-status-warten minus-margin">
-                    <i
-                        class="fa fa-exclamation-triangle"
-                        aria-hidden="true"
-                    ></i>
-                    <span>{{ getAntragStellerZweiAendertWarning() }}</span>
+        }
+        @if (antragWirdBeendet()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="well well-status-warten minus-margin">
+                        <i
+                            class="fa fa-exclamation-triangle"
+                            aria-hidden="true"
+                        ></i>
+                        <span>{{ getAntragStellerZweiAendertWarning() }}</span>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -73,48 +78,52 @@
             >
                 <fieldset>
                     <!--Aenderung per-->
-                    <div class="row" *ngIf="isMutation()">
-                        <div class="col-md-12">
-                            <dv-input-container-x class="form-group">
-                                <div class="row">
-                                    <div
-                                        class="col-xs-12 dv-input-container-small"
-                                    >
-                                        <label
-                                            class="md-no-float"
-                                            translate=""
-                                            for="aenderungPer_ID"
-                                            >AENDERUNG_PER</label
+                    @if (isMutation()) {
+                        <div class="row">
+                            <div class="col-md-12">
+                                <dv-input-container-x class="form-group">
+                                    <div class="row">
+                                        <div
+                                            class="col-xs-12 dv-input-container-small"
                                         >
-                                        <dv-date-picker-x
-                                            [inputId]="'aenderungPer_ID'"
-                                            class="input-element"
-                                            data-test="container.aenderungen-per"
-                                            [(date)]="
-                                                getFamiliensituation()
-                                                    .aenderungPer
-                                            "
-                                            (dateChange)="aenderungPerChanged()"
-                                            [datePickerEnabled]="false"
-                                            [disabled]="isGesuchReadonly()"
-                                        >
-                                        </dv-date-picker-x>
-                                        <dv-bisher-x
-                                            [showBisher]="showBisher()"
-                                            [deklaration]="
-                                                getFamiliensituationGS()
-                                                    ?.aenderungPer
-                                            "
-                                            [korrektur]="
-                                                getFamiliensituation()
-                                                    ?.aenderungPer
-                                            "
-                                        ></dv-bisher-x>
+                                            <label
+                                                class="md-no-float"
+                                                translate=""
+                                                for="aenderungPer_ID"
+                                                >AENDERUNG_PER</label
+                                            >
+                                            <dv-date-picker-x
+                                                [inputId]="'aenderungPer_ID'"
+                                                class="input-element"
+                                                data-test="container.aenderungen-per"
+                                                [(date)]="
+                                                    getFamiliensituation()
+                                                        .aenderungPer
+                                                "
+                                                (dateChange)="
+                                                    aenderungPerChanged()
+                                                "
+                                                [datePickerEnabled]="false"
+                                                [disabled]="isGesuchReadonly()"
+                                            >
+                                            </dv-date-picker-x>
+                                            <dv-bisher-x
+                                                [showBisher]="showBisher()"
+                                                [deklaration]="
+                                                    getFamiliensituationGS()
+                                                        ?.aenderungPer
+                                                "
+                                                [korrektur]="
+                                                    getFamiliensituation()
+                                                        ?.aenderungPer
+                                                "
+                                            ></dv-bisher-x>
+                                        </div>
                                     </div>
-                                </div>
-                            </dv-input-container-x>
+                                </dv-input-container-x>
+                            </div>
                         </div>
-                    </div>
+                    }
 
                     <!--familienstatus-->
                     <div class="row">
@@ -124,14 +133,15 @@
                                     <span translate
                                         >FAMILIENSITUATION_FRAGE_1</span
                                     >
-                                    <dv-tooltip
-                                        *ngIf="isFKJVFamSit()"
-                                        [inputId]="'familienstatus'"
-                                        [text]="
-                                            'FAMILIENSITUATION_FRAGE_1_NEU_INFO'
-                                                | translate
-                                        "
-                                    ></dv-tooltip>
+                                    @if (isFKJVFamSit()) {
+                                        <dv-tooltip
+                                            [inputId]="'familienstatus'"
+                                            [text]="
+                                                'FAMILIENSITUATION_FRAGE_1_NEU_INFO'
+                                                    | translate
+                                            "
+                                        ></dv-tooltip>
+                                    }
                                 </span>
                                 <dv-radio-container-x>
                                     <mat-radio-group
@@ -155,28 +165,29 @@
                                         "
                                         aria-describedby="familienstatus-error"
                                     >
-                                        <mat-radio-button
-                                            *ngFor="
-                                                let famSit of getFamiliensituationValues()
-                                            "
-                                            [attr.data-test]="
-                                                'familienstatus.' + famSit
-                                            "
-                                            [value]="famSit"
-                                            >{{
-                                                famSit | translate
-                                            }}</mat-radio-button
-                                        >
+                                        @for (
+                                            famSit of getFamiliensituationValues();
+                                            track famSit
+                                        ) {
+                                            <mat-radio-button
+                                                [attr.data-test]="
+                                                    'familienstatus.' + famSit
+                                                "
+                                                [value]="famSit"
+                                                >{{
+                                                    famSit | translate
+                                                }}</mat-radio-button
+                                            >
+                                        }
                                     </mat-radio-group>
                                 </dv-radio-container-x>
-                                <dv-error-messages
-                                    *ngIf="
-                                        savedClicked || familienstatus.touched
-                                    "
-                                    [inputId]="'familienstatus'"
-                                    [errorObject]="familienstatus.errors"
-                                    class="error"
-                                ></dv-error-messages>
+                                @if (savedClicked || familienstatus.touched) {
+                                    <dv-error-messages
+                                        [inputId]="'familienstatus'"
+                                        [errorObject]="familienstatus.errors"
+                                        class="error"
+                                    ></dv-error-messages>
+                                }
                                 <dv-bisher-x
                                     [showBisher]="showBisher()"
                                     [deklaration]="
@@ -190,382 +201,420 @@
                         </div>
                     </div>
                     <!--Start Konkubinat-->
-                    <div class="row" *ngIf="isStartKonkubinatVisible()">
-                        <div class="col-md-12">
-                            <dv-input-container-x class="form-group">
-                                <label
-                                    class="md-no-float"
-                                    for="startKonkubinat_ID"
-                                >
-                                    {{ 'START_KONKUBINAT' | translate }}
-                                </label>
-                                <div class="dv-input-container-medium-label">
-                                    <dv-date-picker-x
-                                        [inputId]="'startKonkubinat_ID'"
-                                        [(date)]="
-                                            getFamiliensituation()
-                                                .startKonkubinat
-                                        "
-                                        class="input-element"
-                                        [required]="true"
-                                        [noFutureDate]="true"
-                                        (dateChange)="onDatumBlur()"
-                                        data-test="container.konkubinat-start"
-                                        [datePickerEnabled]="false"
-                                        [disabled]="isStartKonkubinatDisabled()"
+                    @if (isStartKonkubinatVisible()) {
+                        <div class="row">
+                            <div class="col-md-12">
+                                <dv-input-container-x class="form-group">
+                                    <label
+                                        class="md-no-float"
+                                        for="startKonkubinat_ID"
                                     >
-                                    </dv-date-picker-x>
+                                        {{ 'START_KONKUBINAT' | translate }}
+                                    </label>
+                                    <div
+                                        class="dv-input-container-medium-label"
+                                    >
+                                        <dv-date-picker-x
+                                            [inputId]="'startKonkubinat_ID'"
+                                            [(date)]="
+                                                getFamiliensituation()
+                                                    .startKonkubinat
+                                            "
+                                            class="input-element"
+                                            [required]="true"
+                                            [noFutureDate]="true"
+                                            (dateChange)="onDatumBlur()"
+                                            data-test="container.konkubinat-start"
+                                            [datePickerEnabled]="false"
+                                            [disabled]="
+                                                isStartKonkubinatDisabled()
+                                            "
+                                        >
+                                        </dv-date-picker-x>
+                                        <dv-bisher-x
+                                            [showBisher]="showBisher()"
+                                            [deklaration]="
+                                                getFamiliensituationGS()
+                                                    ?.startKonkubinat
+                                            "
+                                            [korrektur]="
+                                                model.familiensituationJA
+                                                    .startKonkubinat
+                                            "
+                                        ></dv-bisher-x>
+                                    </div>
+                                </dv-input-container-x>
+                            </div>
+                        </div>
+                    }
+
+                    <!--Geteilte Obhut-->
+                    @if (showFrageGeteilteObhut()) {
+                        <div class="row margin-top-10">
+                            <div class="col-xs-12 dv-input-container-question">
+                                <div class="form-group">
+                                    <span class="ebegu-h1 required">
+                                        <span translate
+                                            >FAMILIENSITUATION_FRAGE_GEMEINSAME_OBHUT</span
+                                        >
+                                        <dv-tooltip
+                                            [inputId]="'getilteObhut'"
+                                            [text]="
+                                                getTextForFamSitGeteilteObhut()
+                                            "
+                                        ></dv-tooltip>
+                                    </span>
+                                    <dv-radio-container-x>
+                                        <mat-radio-group
+                                            [(ngModel)]="
+                                                getFamiliensituation()
+                                                    .geteilteObhut
+                                            "
+                                            (ngModelChange)="
+                                                frageGeteiltObhutClicked()
+                                            "
+                                            [required]="true"
+                                            #geteilteObhut="ngModel"
+                                            name="geteilteObhut"
+                                            class="input-element sp"
+                                            data-test="container.geteilte-obhut"
+                                            [disabled]="
+                                                !(
+                                                    isFamiliensituationEnabled() &&
+                                                    isOneOfRoles(allowedRoles)
+                                                )
+                                            "
+                                            [attr.aria-label]="
+                                                'FAMILIENSITUATION_FRAGE_GEMEINSAME_OBHUT'
+                                                    | translate
+                                            "
+                                            aria-describedby="geteilteObhut-error"
+                                        >
+                                            <mat-radio-button
+                                                [value]="true"
+                                                data-test="geteilte-obhut-ja"
+                                                >{{
+                                                    'LABEL_JA' | translate
+                                                }}</mat-radio-button
+                                            >
+                                            <mat-radio-button
+                                                [value]="false"
+                                                data-test="geteilte-obhut-nein"
+                                                >{{
+                                                    'LABEL_NEIN' | translate
+                                                }}</mat-radio-button
+                                            >
+                                        </mat-radio-group>
+                                    </dv-radio-container-x>
+                                    @if (
+                                        savedClicked || geteilteObhut.touched
+                                    ) {
+                                        <dv-error-messages
+                                            [inputId]="'geteilteObhut'"
+                                            [errorObject]="geteilteObhut.errors"
+                                            class="error"
+                                        ></dv-error-messages>
+                                    }
                                     <dv-bisher-x
                                         [showBisher]="showBisher()"
                                         [deklaration]="
                                             getFamiliensituationGS()
-                                                ?.startKonkubinat
+                                                ?.geteilteObhut
                                         "
                                         [korrektur]="
-                                            model.familiensituationJA
-                                                .startKonkubinat
+                                            getFamiliensituation()
+                                                ?.geteilteObhut
                                         "
                                     ></dv-bisher-x>
                                 </div>
-                            </dv-input-container-x>
-                        </div>
-                    </div>
-
-                    <!--Geteilte Obhut-->
-                    <div
-                        class="row margin-top-10"
-                        *ngIf="showFrageGeteilteObhut()"
-                    >
-                        <div class="col-xs-12 dv-input-container-question">
-                            <div class="form-group">
-                                <span class="ebegu-h1 required">
-                                    <span translate
-                                        >FAMILIENSITUATION_FRAGE_GEMEINSAME_OBHUT</span
-                                    >
-                                    <dv-tooltip
-                                        [inputId]="'getilteObhut'"
-                                        [text]="getTextForFamSitGeteilteObhut()"
-                                    ></dv-tooltip>
-                                </span>
-                                <dv-radio-container-x>
-                                    <mat-radio-group
-                                        [(ngModel)]="
-                                            getFamiliensituation().geteilteObhut
-                                        "
-                                        (ngModelChange)="
-                                            frageGeteiltObhutClicked()
-                                        "
-                                        [required]="true"
-                                        #geteilteObhut="ngModel"
-                                        name="geteilteObhut"
-                                        class="input-element sp"
-                                        data-test="container.geteilte-obhut"
-                                        [disabled]="
-                                            !(
-                                                isFamiliensituationEnabled() &&
-                                                isOneOfRoles(allowedRoles)
-                                            )
-                                        "
-                                        [attr.aria-label]="
-                                            'FAMILIENSITUATION_FRAGE_GEMEINSAME_OBHUT'
-                                                | translate
-                                        "
-                                        aria-describedby="geteilteObhut-error"
-                                    >
-                                        <mat-radio-button
-                                            [value]="true"
-                                            data-test="geteilte-obhut-ja"
-                                            >{{
-                                                'LABEL_JA' | translate
-                                            }}</mat-radio-button
-                                        >
-                                        <mat-radio-button
-                                            [value]="false"
-                                            data-test="geteilte-obhut-nein"
-                                            >{{
-                                                'LABEL_NEIN' | translate
-                                            }}</mat-radio-button
-                                        >
-                                    </mat-radio-group>
-                                </dv-radio-container-x>
-                                <dv-error-messages
-                                    *ngIf="
-                                        savedClicked || geteilteObhut.touched
-                                    "
-                                    [inputId]="'geteilteObhut'"
-                                    [errorObject]="geteilteObhut.errors"
-                                    class="error"
-                                ></dv-error-messages>
-                                <dv-bisher-x
-                                    [showBisher]="showBisher()"
-                                    [deklaration]="
-                                        getFamiliensituationGS()?.geteilteObhut
-                                    "
-                                    [korrektur]="
-                                        getFamiliensituation()?.geteilteObhut
-                                    "
-                                ></dv-bisher-x>
                             </div>
                         </div>
-                    </div>
+                    }
 
                     <!--Frage zu abgeschlossener Unterhaltsvereinbarung-->
-                    <div class="row" *ngIf="showFrageUnterhaltsvereinbarung()">
-                        <div class="col-xs-12 dv-input-container-question">
-                            <div class="form-group">
-                                <span class="ebegu-h1 required">
-                                    <span translate
-                                        >FAMILIENSITUATION_FRAGE_UNTERHALTSVEREINBARUNG</span
-                                    >
-                                    <dv-tooltip
-                                        [inputId]="'unterhaltsvereinbarung'"
-                                        [text]="
-                                            getTextForFamSitUnterhaltsvereinbarung()
-                                        "
-                                    ></dv-tooltip>
-                                </span>
-                                <dv-radio-container-x>
-                                    <mat-radio-group
-                                        [(ngModel)]="
-                                            getFamiliensituation()
-                                                .unterhaltsvereinbarung
-                                        "
-                                        (ngModelChange)="
-                                            frageUnterhaltsvereinbarungClicked()
-                                        "
-                                        [required]="true"
-                                        #unterhaltsvereinbarung="ngModel"
-                                        name="unterhaltsvereinbarung"
-                                        data-test="container.unterhaltsvereinbarung"
-                                        class="input-element sp"
-                                        [disabled]="
-                                            !(
-                                                isFamiliensituationEnabled() &&
-                                                isOneOfRoles(allowedRoles)
-                                            )
-                                        "
-                                        [attr.aria-label]="
-                                            'FAMILIENSITUATION_FRAGE_UNTERHALTSVEREINBARUNG'
-                                                | translate
-                                        "
-                                        aria-describedby="unterhaltsvereinbarung-error"
-                                    >
-                                        <mat-radio-button
-                                            *ngFor="
-                                                let unerhaltsverinharungValue of getUnterhaltvereinbarungValues()
-                                            "
-                                            [value]="unerhaltsverinharungValue"
-                                            [attr.data-test]="
-                                                unerhaltsverinharungValue
-                                            "
+                    @if (showFrageUnterhaltsvereinbarung()) {
+                        <div class="row">
+                            <div class="col-xs-12 dv-input-container-question">
+                                <div class="form-group">
+                                    <span class="ebegu-h1 required">
+                                        <span translate
+                                            >FAMILIENSITUATION_FRAGE_UNTERHALTSVEREINBARUNG</span
                                         >
-                                            {{
-                                                unerhaltsverinharungValue
+                                        <dv-tooltip
+                                            [inputId]="'unterhaltsvereinbarung'"
+                                            [text]="
+                                                getTextForFamSitUnterhaltsvereinbarung()
+                                            "
+                                        ></dv-tooltip>
+                                    </span>
+                                    <dv-radio-container-x>
+                                        <mat-radio-group
+                                            [(ngModel)]="
+                                                getFamiliensituation()
+                                                    .unterhaltsvereinbarung
+                                            "
+                                            (ngModelChange)="
+                                                frageUnterhaltsvereinbarungClicked()
+                                            "
+                                            [required]="true"
+                                            #unterhaltsvereinbarung="ngModel"
+                                            name="unterhaltsvereinbarung"
+                                            data-test="container.unterhaltsvereinbarung"
+                                            class="input-element sp"
+                                            [disabled]="
+                                                !(
+                                                    isFamiliensituationEnabled() &&
+                                                    isOneOfRoles(allowedRoles)
+                                                )
+                                            "
+                                            [attr.aria-label]="
+                                                'FAMILIENSITUATION_FRAGE_UNTERHALTSVEREINBARUNG'
                                                     | translate
-                                            }}
-                                        </mat-radio-button>
-                                    </mat-radio-group>
-                                </dv-radio-container-x>
-                                <dv-error-messages
-                                    *ngIf="
+                                            "
+                                            aria-describedby="unterhaltsvereinbarung-error"
+                                        >
+                                            @for (
+                                                unerhaltsverinharungValue of getUnterhaltvereinbarungValues();
+                                                track unerhaltsverinharungValue
+                                            ) {
+                                                <mat-radio-button
+                                                    [value]="
+                                                        unerhaltsverinharungValue
+                                                    "
+                                                    [attr.data-test]="
+                                                        unerhaltsverinharungValue
+                                                    "
+                                                >
+                                                    {{
+                                                        unerhaltsverinharungValue
+                                                            | translate
+                                                    }}
+                                                </mat-radio-button>
+                                            }
+                                        </mat-radio-group>
+                                    </dv-radio-container-x>
+                                    @if (
                                         savedClicked ||
                                         unterhaltsvereinbarung.touched
-                                    "
-                                    [errorObject]="
-                                        unterhaltsvereinbarung.errors
-                                    "
-                                    [inputId]="'unterhaltsvereinbarung'"
-                                    class="error"
-                                ></dv-error-messages>
-                                <dv-bisher-x
-                                    [showBisher]="showBisher()"
-                                    [deklaration]="
-                                        getFamiliensituationGS()
-                                            ?.unterhaltsvereinbarung
-                                    "
-                                    [korrektur]="
-                                        getFamiliensituation()
-                                            ?.unterhaltsvereinbarung
-                                    "
-                                ></dv-bisher-x>
+                                    ) {
+                                        <dv-error-messages
+                                            [errorObject]="
+                                                unterhaltsvereinbarung.errors
+                                            "
+                                            [inputId]="'unterhaltsvereinbarung'"
+                                            class="error"
+                                        ></dv-error-messages>
+                                    }
+                                    <dv-bisher-x
+                                        [showBisher]="showBisher()"
+                                        [deklaration]="
+                                            getFamiliensituationGS()
+                                                ?.unterhaltsvereinbarung
+                                        "
+                                        [korrektur]="
+                                            getFamiliensituation()
+                                                ?.unterhaltsvereinbarung
+                                        "
+                                    ></dv-bisher-x>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
 
-                    <div
-                        class="row"
-                        *ngIf="showBemerkungUnterhaltsvereinbarung()"
-                    >
-                        <div
-                            class="col-sm-12 dv-input-container-medium form-group"
-                        >
-                            <dv-input-container-x class="form-group">
-                                <label for="begruendung">
-                                    <span class="required" translate
-                                        >UNTERHALTSVEREINBARUNG_GRUND</span
-                                    >
-                                    <dv-tooltip
-                                        [inputId]="'begruendung'"
-                                        [text]="
-                                            getTextForFamSitUnterhaltsvereinbarungGrund()
-                                        "
-                                    ></dv-tooltip>
-                                </label>
-
-                                <textarea
-                                    md-no-autogrow
-                                    class="form-control"
-                                    rows="6"
-                                    maxlength="4000"
-                                    ng-maxlength="3000"
-                                    ng-minlength="5"
-                                    id="begruendung"
-                                    name="begruendung"
-                                    [(ngModel)]="
-                                        getFamiliensituation()
-                                            .unterhaltsvereinbarungBemerkung
-                                    "
-                                    [required]="true"
-                                    #begruendung="ngModel"
-                                    dvNgEnableElement
-                                    data-test="begruendung-unterhaltsvereinbarung-nicht-moeglich"
-                                    [dvEnableAllowedRoles]="allowedRoles"
-                                    [dvEnabled]="isFamiliensituationEnabled()"
-                                >
-                                </textarea>
-                                <dv-error-messages
-                                    *ngIf="savedClicked || begruendung.touched"
-                                    [errorObject]="begruendung.errors"
-                                    [inputId]="'begruendung'"
-                                    class="error"
-                                ></dv-error-messages>
-                            </dv-input-container-x>
-                        </div>
-                    </div>
-
-                    <!--gesuchstellerKardinalitaet-->
-                    <div class="row" *ngIf="showGesuchstellerKardinalitaet()">
-                        <div class="col-xs-12 dv-input-container-question">
-                            <div class="form-group">
-                                <span class="ebegu-h1 required">
-                                    <span translate
-                                        >FAMILIENSITUATION_FRAGE_2</span
-                                    >
-                                    <dv-tooltip
-                                        [inputId]="'gesuchstellerKardinalitaet'"
-                                        [text]="getTextForFamSitFrage2Tooltip()"
-                                    ></dv-tooltip>
-                                </span>
-                                <dv-radio-container-x>
-                                    <mat-radio-group
+                    @if (showBemerkungUnterhaltsvereinbarung()) {
+                        <div class="row">
+                            <div
+                                class="col-sm-12 dv-input-container-medium form-group"
+                            >
+                                <dv-input-container-x class="form-group">
+                                    <label for="begruendung">
+                                        <span class="required" translate
+                                            >UNTERHALTSVEREINBARUNG_GRUND</span
+                                        >
+                                        <dv-tooltip
+                                            [inputId]="'begruendung'"
+                                            [text]="
+                                                getTextForFamSitUnterhaltsvereinbarungGrund()
+                                            "
+                                        ></dv-tooltip>
+                                    </label>
+                                    <textarea
+                                        md-no-autogrow
+                                        class="form-control"
+                                        rows="6"
+                                        maxlength="4000"
+                                        ng-maxlength="3000"
+                                        ng-minlength="5"
+                                        id="begruendung"
+                                        name="begruendung"
                                         [(ngModel)]="
                                             getFamiliensituation()
-                                                .gesuchstellerKardinalitaet
+                                                .unterhaltsvereinbarungBemerkung
                                         "
                                         [required]="true"
-                                        #gesuchstellerKardinalitaet="ngModel"
-                                        name="gesuchstellerKardinalitaet"
-                                        data-test="container.gesuchsteller-kardinalitaet"
-                                        class="input-element sp"
-                                        (change)="
-                                            gesuchstellerKardinalitaetChange()
+                                        #begruendung="ngModel"
+                                        dvNgEnableElement
+                                        data-test="begruendung-unterhaltsvereinbarung-nicht-moeglich"
+                                        [dvEnableAllowedRoles]="allowedRoles"
+                                        [dvEnabled]="
+                                            isFamiliensituationEnabled()
                                         "
-                                        [disabled]="
-                                            !(
-                                                isFamiliensituationEnabled() &&
-                                                isOneOfRoles(allowedRoles)
-                                            )
-                                        "
-                                        [attr.aria-label]="
-                                            'FAMILIENSITUATION_FRAGE_2'
-                                                | translate
-                                        "
-                                        aria-describedby="gesuchstellerKardinalitaet-error"
                                     >
-                                        <mat-radio-button
-                                            *ngFor="
-                                                let kardinalitaet of gesuchstellerKardinalitaetValues
-                                            "
-                                            [attr.data-test]="
-                                                'gesuchsteller-kardinalitaet.' +
-                                                kardinalitaet
-                                            "
-                                            [value]="kardinalitaet"
-                                            >{{
-                                                kardinalitaet | translate
-                                            }}</mat-radio-button
+                                    </textarea>
+                                    @if (savedClicked || begruendung.touched) {
+                                        <dv-error-messages
+                                            [errorObject]="begruendung.errors"
+                                            [inputId]="'begruendung'"
+                                            class="error"
+                                        ></dv-error-messages>
+                                    }
+                                </dv-input-container-x>
+                            </div>
+                        </div>
+                    }
+
+                    <!--gesuchstellerKardinalitaet-->
+                    @if (showGesuchstellerKardinalitaet()) {
+                        <div class="row">
+                            <div class="col-xs-12 dv-input-container-question">
+                                <div class="form-group">
+                                    <span class="ebegu-h1 required">
+                                        <span translate
+                                            >FAMILIENSITUATION_FRAGE_2</span
                                         >
-                                    </mat-radio-group>
-                                </dv-radio-container-x>
-                                <dv-error-messages
-                                    *ngIf="
+                                        <dv-tooltip
+                                            [inputId]="
+                                                'gesuchstellerKardinalitaet'
+                                            "
+                                            [text]="
+                                                getTextForFamSitFrage2Tooltip()
+                                            "
+                                        ></dv-tooltip>
+                                    </span>
+                                    <dv-radio-container-x>
+                                        <mat-radio-group
+                                            [(ngModel)]="
+                                                getFamiliensituation()
+                                                    .gesuchstellerKardinalitaet
+                                            "
+                                            [required]="true"
+                                            #gesuchstellerKardinalitaet="ngModel"
+                                            name="gesuchstellerKardinalitaet"
+                                            data-test="container.gesuchsteller-kardinalitaet"
+                                            class="input-element sp"
+                                            (change)="
+                                                gesuchstellerKardinalitaetChange()
+                                            "
+                                            [disabled]="
+                                                !(
+                                                    isFamiliensituationEnabled() &&
+                                                    isOneOfRoles(allowedRoles)
+                                                )
+                                            "
+                                            [attr.aria-label]="
+                                                'FAMILIENSITUATION_FRAGE_2'
+                                                    | translate
+                                            "
+                                            aria-describedby="gesuchstellerKardinalitaet-error"
+                                        >
+                                            @for (
+                                                kardinalitaet of gesuchstellerKardinalitaetValues;
+                                                track kardinalitaet
+                                            ) {
+                                                <mat-radio-button
+                                                    [attr.data-test]="
+                                                        'gesuchsteller-kardinalitaet.' +
+                                                        kardinalitaet
+                                                    "
+                                                    [value]="kardinalitaet"
+                                                    >{{
+                                                        kardinalitaet
+                                                            | translate
+                                                    }}</mat-radio-button
+                                                >
+                                            }
+                                        </mat-radio-group>
+                                    </dv-radio-container-x>
+                                    @if (
                                         savedClicked ||
                                         gesuchstellerKardinalitaet.touched
-                                    "
-                                    [inputId]="'gesuchstellerKardinalitaet'"
-                                    class="error"
-                                ></dv-error-messages>
-                                <dv-bisher-x
-                                    [showBisher]="showBisher()"
-                                    [deklaration]="
-                                        getFamiliensituationGS()
-                                            ?.gesuchstellerKardinalitaet
-                                    "
-                                    [korrektur]="
-                                        getFamiliensituation()
-                                            ?.gesuchstellerKardinalitaet
-                                    "
-                                ></dv-bisher-x>
+                                    ) {
+                                        <dv-error-messages
+                                            [inputId]="
+                                                'gesuchstellerKardinalitaet'
+                                            "
+                                            class="error"
+                                        ></dv-error-messages>
+                                    }
+                                    <dv-bisher-x
+                                        [showBisher]="showBisher()"
+                                        [deklaration]="
+                                            getFamiliensituationGS()
+                                                ?.gesuchstellerKardinalitaet
+                                        "
+                                        [korrektur]="
+                                            getFamiliensituation()
+                                                ?.gesuchstellerKardinalitaet
+                                        "
+                                    ></dv-bisher-x>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                     <!--Partner wie bisher-->
-                    <div class="row" *ngIf="showFragePartnerWieBisher()">
-                        <div class="col-xs-12 dv-input-container-question">
-                            <div class="form-group">
-                                <span class="ebegu-h1 required">
-                                    <span>{{
-                                        getPartnerIdentischFrage()
-                                    }}</span>
-                                </span>
-                                <dv-radio-container-x>
-                                    <mat-radio-group
-                                        [(ngModel)]="
-                                            getFamiliensituation()
-                                                .partnerIdentischMitVorgesuch
-                                        "
-                                        [required]="gesuchBeendenFamSitActive"
-                                        #partnerIdentischMitVorgesuch="ngModel"
-                                        name="partnerIdentischMitVorgesuch"
-                                        class="input-element sp"
-                                        [disabled]="isGesuchReadonly()"
-                                        [attr.aria-label]="
+                    @if (showFragePartnerWieBisher()) {
+                        <div class="row">
+                            <div class="col-xs-12 dv-input-container-question">
+                                <div class="form-group">
+                                    <span class="ebegu-h1 required">
+                                        <span>{{
                                             getPartnerIdentischFrage()
-                                        "
-                                        aria-describedby="partnerIdentischMitVorgesuch-error"
-                                    >
-                                        <mat-radio-button [value]="true">{{
-                                            'LABEL_JA' | translate
-                                        }}</mat-radio-button>
-                                        <mat-radio-button [value]="false">{{
-                                            'LABEL_NEIN' | translate
-                                        }}</mat-radio-button>
-                                    </mat-radio-group>
-                                </dv-radio-container-x>
-                                <dv-error-messages
-                                    *ngIf="
+                                        }}</span>
+                                    </span>
+                                    <dv-radio-container-x>
+                                        <mat-radio-group
+                                            [(ngModel)]="
+                                                getFamiliensituation()
+                                                    .partnerIdentischMitVorgesuch
+                                            "
+                                            [required]="
+                                                gesuchBeendenFamSitActive
+                                            "
+                                            #partnerIdentischMitVorgesuch="ngModel"
+                                            name="partnerIdentischMitVorgesuch"
+                                            class="input-element sp"
+                                            [disabled]="isGesuchReadonly()"
+                                            [attr.aria-label]="
+                                                getPartnerIdentischFrage()
+                                            "
+                                            aria-describedby="partnerIdentischMitVorgesuch-error"
+                                        >
+                                            <mat-radio-button [value]="true">{{
+                                                'LABEL_JA' | translate
+                                            }}</mat-radio-button>
+                                            <mat-radio-button [value]="false">{{
+                                                'LABEL_NEIN' | translate
+                                            }}</mat-radio-button>
+                                        </mat-radio-group>
+                                    </dv-radio-container-x>
+                                    @if (
                                         savedClicked ||
                                         partnerIdentischMitVorgesuch.touched
-                                    "
-                                    [inputId]="'partnerIdentischMitVorgesuch'"
-                                    [errorObject]="
-                                        partnerIdentischMitVorgesuch.errors
-                                    "
-                                    class="error"
-                                ></dv-error-messages>
+                                    ) {
+                                        <dv-error-messages
+                                            [inputId]="
+                                                'partnerIdentischMitVorgesuch'
+                                            "
+                                            [errorObject]="
+                                                partnerIdentischMitVorgesuch.errors
+                                            "
+                                            class="error"
+                                        ></dv-error-messages>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </fieldset>
                 <div class="row">
                     <div class="col-md-12">

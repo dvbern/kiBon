@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSVersendeteMail} from '../../../models/TSVersendeteMail';
@@ -26,10 +26,9 @@ import {SortDirection} from '@angular/material/sort';
     providedIn: 'root'
 })
 export class UebersichtVersendeteMailsRS {
+    http = inject(HttpClient);
     public readonly serviceURL = `${CONSTANTS.REST_API}versendeteMails`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(public http: HttpClient) {}
 
     public getAllMails(params: {
         active: string;

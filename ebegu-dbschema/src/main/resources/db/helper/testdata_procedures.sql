@@ -82,7 +82,7 @@ BEGIN
 								 angebotbgtfo)
 	SELECT p_gemeinde_id, NOW(), NOW(), 'system', 'system', 0,
 		   p_gemeinde_name, COALESCE(MAX(gemeinde_nummer), 0) +1, p_mandant_id, 'AKTIV', p_bfs_nummer,
-		   '2020-01-01', '2020-01-01', '2020-01-01',
+		   '2020-01-01', '2020-08-01', '2020-08-01',
 		   p_angebotbg, p_angebotts, p_angebotfi, '9999-12-31', FALSE, FALSE, FALSE, FALSE
 	FROM gemeinde;
 

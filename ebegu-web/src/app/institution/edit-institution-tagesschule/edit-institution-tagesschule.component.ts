@@ -22,7 +22,8 @@ import {
     input,
     Input,
     model,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {ControlContainer, NgForm} from '@angular/forms';
@@ -75,9 +76,16 @@ import {DialogImportFromOtherInstitutionComponent} from './dialog-import-from-ot
     standalone: false
 })
 export class EditInstitutionTagesschuleComponent implements OnInit {
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly institutionStammdatenRS = inject(InstitutionStammdatenRS);
+    private readonly errorService = inject(ErrorService);
+    private readonly dialog = inject(MatDialog);
+    private readonly ref = inject(ChangeDetectorRef);
+    private readonly authServiceRS = inject(AuthServiceRS);
+
     stammdaten = model.required<TSInstitutionStammdaten>();
     editMode = input(false);
-    @Input() readonly assignedClients: TSInstitutionExternalClient[];
+    @Input() assignedClients: TSInstitutionExternalClient[];
 
     einstellungenTagesschule$: Observable<
         AdminModelEinstellungTagesschuleHasAnmeldung[]
@@ -112,15 +120,6 @@ export class EditInstitutionTagesschuleComponent implements OnInit {
     public gemeindeList: TSGemeinde[] = [];
     private readonly panelClass = 'dv-mat-dialog-ts';
     private konfigurationsListe: TSGemeindeKonfiguration[];
-
-    public constructor(
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly institutionStammdatenRS: InstitutionStammdatenRS,
-        private readonly errorService: ErrorService,
-        private readonly dialog: MatDialog,
-        private readonly ref: ChangeDetectorRef,
-        private readonly authServiceRS: AuthServiceRS
-    ) {}
 
     public ngOnInit(): void {
         this.gemeindeRS.getAllGemeinden().then(allGemeinden => {

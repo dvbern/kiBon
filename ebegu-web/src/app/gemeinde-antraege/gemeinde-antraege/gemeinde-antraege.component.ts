@@ -20,7 +20,8 @@ import {
     Component,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {FormBuilder, NgForm, Validators} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -84,6 +85,21 @@ const LOG = LogFactory.createLog('GemeindeAntraegeComponent');
     standalone: false
 })
 export class GemeindeAntraegeComponent implements OnInit {
+    private readonly gemeindeAntragService = inject(GemeindeAntragService);
+    private readonly gesuchsperiodenService = inject(GesuchsperiodeRS);
+    private readonly fb = inject(FormBuilder);
+    private readonly $state = inject(StateService);
+    private readonly errorService = inject(ErrorServiceX);
+    private readonly translate = inject(TranslateService);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly wizardStepXRS = inject(WizardStepXRS);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly authService = inject(AuthServiceRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly dialog = inject(MatDialog);
+
     @ViewChild(NgForm) public form: NgForm;
 
     public hiddenDVTableColumns = [
@@ -129,21 +145,6 @@ export class GemeindeAntraegeComponent implements OnInit {
     public creatableTypes: TSGemeindeAntragTyp[];
     public latsDeletePossible$: Observable<boolean>;
     private gemeindenWithExistingLATS: TSGemeinde[];
-
-    public constructor(
-        private readonly gemeindeAntragService: GemeindeAntragService,
-        private readonly gesuchsperiodenService: GesuchsperiodeRS,
-        private readonly fb: FormBuilder,
-        private readonly $state: StateService,
-        private readonly errorService: ErrorServiceX,
-        private readonly translate: TranslateService,
-        private readonly cd: ChangeDetectorRef,
-        private readonly wizardStepXRS: WizardStepXRS,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly authService: AuthServiceRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly dialog: MatDialog
-    ) {}
 
     public ngOnInit(): void {
         this.loadAntragList();

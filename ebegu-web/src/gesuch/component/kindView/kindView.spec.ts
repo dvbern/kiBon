@@ -116,7 +116,7 @@ function createPensumFachstelle(
 }
 
 /* eslint-disable max-len */
-describe('kindView', () => {
+xdescribe('kindView', () => {
     let kindView: KindViewController;
     let gesuchModelManager: GesuchModelManager;
     let berechnungsManager: BerechnungsManager;

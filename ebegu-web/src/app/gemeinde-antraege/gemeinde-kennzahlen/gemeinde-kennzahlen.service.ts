@@ -16,7 +16,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {TSGemeindeKennzahlen} from '../../../models/gemeindeantrag/gemeindekennzahlen/TSGemeindeKennzahlen';
@@ -30,13 +30,13 @@ const LOG = LogFactory.createLog('GemeindeKennzahlenService');
     providedIn: 'root'
 })
 export class GemeindeKennzahlenService {
+    private readonly http = inject(HttpClient);
+
     private readonly API_URL = `${CONSTANTS.REST_API}gemeindekennzahlen`;
     private readonly restUtil = new EbeguRestUtil();
 
     private readonly _gemeindeKennzahlenAntragStore$ =
         new Subject<TSGemeindeKennzahlen>();
-
-    public constructor(private readonly http: HttpClient) {}
 
     public getGemeindeKennzahlenAntrag(): Observable<TSGemeindeKennzahlen> {
         return this._gemeindeKennzahlenAntragStore$.asObservable();

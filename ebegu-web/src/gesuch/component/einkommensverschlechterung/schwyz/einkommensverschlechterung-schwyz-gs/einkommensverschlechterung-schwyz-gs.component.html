@@ -25,33 +25,20 @@
         </div>
     }
 
-    <ng-container
-        *ngIf="
-            isFinSitVollstaendigAusgefuellt;
-            then finSitAusgefuellt;
-            else finSitNichtAusgefuellt
-        "
-    ></ng-container>
-
-    <ng-template #finSitNichtAusgefuellt>
-        <div
-            data-test="warnung-ekv-fin-sit-ausfuellen"
-            class="well well-status-warten"
-        >
-            <span translate>WARNUNG_FIN_SIT_AUSFUELLEN</span>
-        </div>
-    </ng-template>
-    <ng-template #finSitAusgefuellt>
+    @if (isFinSitVollstaendigAusgefuellt) {
         <form #form="ngForm">
-            <ng-container
-                *ngIf="
-                    model.getFiSiConToWorkWith().finanzielleSituationJA
-                        .quellenbesteuert;
-                    then bruttolohnFragen;
-                    else steuerveranlagFragen
-                "
-            ></ng-container>
-            <ng-template #steuerveranlagFragen>
+            @if (
+                model.getFiSiConToWorkWith().finanzielleSituationJA
+                    .quellenbesteuert
+            ) {
+                <dv-bruttolohn-schwyz
+                    [finSitJA]="model.getEkvToWorkWith()"
+                    [finSitGS]="model.getEkvToWorkWith_GS()"
+                    [readonly]="gesuchmodelManager.isGesuchReadonly()"
+                    (valueChanged)="recalculatedMassgebendesEinkommen()"
+                >
+                </dv-bruttolohn-schwyz>
+            } @else {
                 <dv-steuerveranlagt-schwyz
                     [finSitJA]="model.getEkvToWorkWith()"
                     [finSitGS]="model.getEkvToWorkWith_GS()"
@@ -64,23 +51,20 @@
                     (valueChanged)="recalculatedMassgebendesEinkommen()"
                 >
                 </dv-steuerveranlagt-schwyz>
-            </ng-template>
-            <ng-template #bruttolohnFragen>
-                <dv-bruttolohn-schwyz
-                    [finSitJA]="model.getEkvToWorkWith()"
-                    [finSitGS]="model.getEkvToWorkWith_GS()"
-                    [readonly]="gesuchmodelManager.isGesuchReadonly()"
-                    (valueChanged)="recalculatedMassgebendesEinkommen()"
-                >
-                </dv-bruttolohn-schwyz>
-            </ng-template>
+            }
         </form>
-
         <dv-navigation-x
             (dvSave)="prepareSave($event.onResult)"
             [dvNext]="true"
             [dvPrevious]="true"
             [dvSubStep]="3"
         ></dv-navigation-x>
-    </ng-template>
+    } @else {
+        <div
+            data-test="warnung-ekv-fin-sit-ausfuellen"
+            class="well well-status-warten"
+        >
+            <span translate>WARNUNG_FIN_SIT_AUSFUELLEN</span>
+        </div>
+    }
 </div>

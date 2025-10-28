@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2021 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2021 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="filter">
     <input
@@ -104,13 +104,11 @@
         <ng-container matColumnDef="detail">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let item">
-                <button
-                    class="dv-btn dv-btn-sm"
-                    (click)="open(item.id)"
-                    *ngIf="item.canEdit"
-                >
-                    <i class="fa fa-eye"></i>
-                </button>
+                @if (item.canEdit) {
+                    <button class="dv-btn dv-btn-sm" (click)="open(item.id)">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                }
             </mat-cell>
         </ng-container>
 
@@ -118,14 +116,15 @@
         <ng-container matColumnDef="remove">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let item">
-                <dv-loading-button
-                    buttonClass="dv-btn-sm"
-                    data-test="remove-entry"
-                    (buttonClick)="remove(item.id)"
-                    *ngIf="item.canRemove"
-                >
-                    <i class="fa fa-trash"></i>
-                </dv-loading-button>
+                @if (item.canRemove) {
+                    <dv-loading-button
+                        buttonClass="dv-btn-sm"
+                        data-test="remove-entry"
+                        (buttonClick)="remove(item.id)"
+                    >
+                        <i class="fa fa-trash"></i>
+                    </dv-loading-button>
+                }
             </mat-cell>
         </ng-container>
 
@@ -138,9 +137,10 @@
         ></mat-row>
     </mat-table>
     <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
-    <div
-        class="mat-row"
-        *ngIf="showNoContentMessage()"
-        [textContent]="columnName + '_NOCH_KEINE' | translate"
-    ></div>
+    @if (showNoContentMessage()) {
+        <div
+            class="mat-row"
+            [textContent]="columnName + '_NOCH_KEINE' | translate"
+        ></div>
+    }
 </div>

@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import moment from 'moment';
@@ -47,6 +47,18 @@ const LOG = LogFactory.createLog('TestdatenView');
     standalone: false
 })
 export class TestdatenViewComponent implements OnInit {
+    readonly testFaelleRS = inject(TestFaelleRS);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly errorService = inject(ErrorService);
+    private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly dialog = inject(MatDialog);
+    private readonly gemeindeAntragRS = inject(GemeindeAntragService);
+    private readonly gesuchRS = inject(GesuchRS);
+
     public dossierid: string;
     public eingangsdatum: moment.Moment;
     public ereignisdatum: moment.Moment;
@@ -78,18 +90,6 @@ export class TestdatenViewComponent implements OnInit {
     public gesuchsperiodeBeginnJahr: number = 2020;
     public geburtsdatum: moment.Moment = moment('1964-12-09', 'YYYY-MM-DD');
     public kibonAnfrageTestEnabled: boolean = false;
-
-    public constructor(
-        public readonly testFaelleRS: TestFaelleRS,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly errorService: ErrorService,
-        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly dialog: MatDialog,
-        private readonly gemeindeAntragRS: GemeindeAntragService,
-        private readonly gesuchRS: GesuchRS
-    ) {}
 
     public ngOnInit(): void {
         this.benutzerRS.getAllGesuchsteller().then(result => {

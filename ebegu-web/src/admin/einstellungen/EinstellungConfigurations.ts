@@ -5,6 +5,7 @@ import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../models/enums/TSAns
 import {TSAusserordentlicherAnspruchTyp} from '../../models/enums/TSAusserordentlicherAnspruchTyp';
 import {TSEingewoehnungTyp} from '../../models/enums/TSEingewoehnungTyp';
 import {
+    BetreuungComparator,
     TSBetreuungsangebotTyp,
     TSEinschulungTyp
 } from '@kibon/shared/model/enums';
@@ -51,7 +52,8 @@ const configEnums = [
     TSPensumAnzeigeTyp,
     TSGeschwisterbonusTyp,
     TSAusserordentlicherAnspruchTyp,
-    TSBetreuungsangebotTyp
+    TSBetreuungsangebotTyp,
+    BetreuungComparator
 ] as const;
 
 const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
@@ -94,6 +96,7 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
     BACKGROUND_COLOR: createConfiguration(String),
     BEGRUENDUNG_MUTATION_AKTIVIERT: createConfiguration(Boolean),
     BESONDERE_BEDUERFNISSE_LUZERN: createConfiguration(Boolean),
+    BETREUUNG_COMPARATOR: createConfiguration(BetreuungComparator),
     CHECKBOX_AUSZAHLEN_IN_ZUKUNFT: createConfiguration(Boolean),
     DAUER_BABYTARIF: createConfiguration(Number),
     DIPLOMATENSTATUS_DEAKTIVIERT: createConfiguration(Boolean),

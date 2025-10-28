@@ -21,7 +21,8 @@ import {
     Input,
     OnChanges,
     OnInit,
-    SimpleChanges
+    SimpleChanges,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {
@@ -42,12 +43,12 @@ import {EbeguUtil} from '../../../utils/EbeguUtil';
     standalone: false
 })
 export class EditInstitutionFerieninselComponent implements OnInit, OnChanges {
+    private readonly gemeindeRS = inject(GemeindeRS);
+
     @Input() public stammdaten: TSInstitutionStammdaten;
     @Input() public editMode: boolean;
 
     public gemeindeList: TSGemeinde[] = [];
-
-    public constructor(private readonly gemeindeRS: GemeindeRS) {}
 
     public ngOnInit(): void {
         this.gemeindeRS.getAllGemeinden().then(allGemeinden => {

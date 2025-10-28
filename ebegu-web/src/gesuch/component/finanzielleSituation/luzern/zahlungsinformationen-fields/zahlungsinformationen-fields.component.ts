@@ -15,7 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    inject
+} from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {ListResourceRS} from '../../../../../app/core/service/listResourceRS.rest';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
@@ -35,17 +41,15 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
     standalone: false
 })
 export class ZahlungsinformationenFieldsComponent implements OnInit {
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly listResourceRS = inject(ListResourceRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+
     @Input() public readonly: boolean;
     @Input() public model: TSFinanzModel;
 
     @Input() public infomaAktiv: boolean;
     public laenderList: TSLand[];
-
-    public constructor(
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly listResourceRS: ListResourceRS,
-        private readonly authServiceRS: AuthServiceRS
-    ) {}
 
     public ngOnInit(): void {
         this.listResourceRS.getLaenderList().then((laenderList: TSLand[]) => {

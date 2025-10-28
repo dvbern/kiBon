@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
@@ -33,6 +33,10 @@ const LOG = LogFactory.createLog('LastenausgleichTSService');
     providedIn: 'root'
 })
 export class LastenausgleichTSService {
+    private readonly http = inject(HttpClient);
+    private readonly errorService = inject(ErrorService);
+    private readonly translate = inject(TranslateService);
+
     private readonly API_BASE_URL = `${CONSTANTS.REST_API}lats/gemeinde`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
     // return last item but don't provide initial value like BehaviourSubject does
@@ -40,12 +44,6 @@ export class LastenausgleichTSService {
         new ReplaySubject<TSLastenausgleichTagesschuleAngabenGemeindeContainer>(
             1
         );
-
-    public constructor(
-        private readonly http: HttpClient,
-        private readonly errorService: ErrorService,
-        private readonly translate: TranslateService
-    ) {}
 
     public updateLATSAngabenGemeindeContainerStore(id: string): void {
         const url = `${this.API_BASE_URL}/find/${encodeURIComponent(id)}`;

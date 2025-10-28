@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {DOCUMENT} from '@angular/common';
-import {ChangeDetectorRef, Component, Inject} from '@angular/core';
+
+import {ChangeDetectorRef, Component, DOCUMENT, inject} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {
     GuidedTourComponent,
@@ -30,16 +30,24 @@ import {
     standalone: false
 })
 export class KiBonGuidedTourComponent extends GuidedTourComponent {
+    private readonly translate = inject(TranslateService);
+    readonly guidedTourService: GuidedTourService;
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly window: WindowRefService;
+    private readonly domEl: any;
+
     public tourStepWidth = 500;
     /* eslint-disable */
-    public constructor(
-        private readonly translate: TranslateService,
-        public readonly guidedTourService: GuidedTourService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly window: WindowRefService,
-        @Inject(DOCUMENT) private readonly domEl: any
-    ) {
+    public constructor() {
+        const guidedTourService = inject(GuidedTourService);
+        const window = inject(WindowRefService);
+        const domEl = inject(DOCUMENT);
+
         super(guidedTourService, window, domEl);
+
+        this.guidedTourService = guidedTourService;
+        this.window = window;
+        this.domEl = domEl;
     }
 
     /* eslint-enable */

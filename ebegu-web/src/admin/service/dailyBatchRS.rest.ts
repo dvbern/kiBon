@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CONSTANTS} from '@kibon/shared/model/constants';
 import {CoreModule} from '../../app/core/core.module';
@@ -23,9 +23,11 @@ import {CoreModule} from '../../app/core/core.module';
     providedIn: CoreModule
 })
 export class DailyBatchRS {
+    $http = inject(HttpClient);
+
     public readonly serviceURL: string;
 
-    public constructor(public $http: HttpClient) {
+    public constructor() {
         this.serviceURL = `${CONSTANTS.REST_API}dailybatch`;
     }
 

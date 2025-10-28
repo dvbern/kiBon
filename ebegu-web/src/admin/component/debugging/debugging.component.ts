@@ -21,7 +21,8 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import * as Sentry from '@sentry/browser';
@@ -42,12 +43,16 @@ const LOG = LogFactory.createLog('DebuggingComponent');
     standalone: false
 })
 export class DebuggingComponent implements OnInit, OnDestroy {
+    private readonly router = inject(UIRouter);
+    private readonly gesuchRS = inject(GesuchRS);
+    private readonly cd = inject(ChangeDetectorRef);
+
     @ViewChild('traceForm', {static: true}) private readonly traceForm: NgForm;
 
     public readonly TRACE_CATEGORY = Category;
-    public readonly TRACE_CATEGORY_KEYS = Object.keys(Category).filter(
-        k => typeof Category[k as any] === 'number'
-    );
+    public readonly TRACE_CATEGORY_KEYS = Object.keys(Category).filter(k =>
+        isNaN(Number(k))
+    ) as (keyof typeof Category)[];
 
     public routerTraceCategories: Category[];
     public hasVisualizer: boolean;
@@ -58,11 +63,9 @@ export class DebuggingComponent implements OnInit, OnDestroy {
 
     private readonly unsubscribe$ = new Subject<void>();
 
-    public constructor(
-        private readonly router: UIRouter,
-        private readonly gesuchRS: GesuchRS,
-        private readonly cd: ChangeDetectorRef
-    ) {
+    public constructor() {
+        const router = this.router;
+
         this.routerTraceCategories = this.TRACE_CATEGORY_KEYS.map(
             k => Category[k as any] as any
         ).filter(c => router.trace.enabled(c));

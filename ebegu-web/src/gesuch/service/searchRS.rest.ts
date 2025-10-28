@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -26,10 +26,10 @@ import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
     providedIn: 'root'
 })
 export class SearchRS {
+    http = inject(HttpClient);
+
     private readonly serviceURL = `${CONSTANTS.REST_API}search`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(public http: HttpClient) {}
 
     public searchAntraege(
         antragSearch: any

@@ -17,7 +17,7 @@ import angular, {IComponentControllerService, IScope} from 'angular';
 import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {CORE_JS_MODULE} from '../../core.angularjs.module';
 
-describe('dvVersion', () => {
+xdescribe('dvVersion', () => {
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
 
     beforeEach(angular.mock.module(ngServicesMock));

@@ -22,7 +22,8 @@ import {
     EventEmitter,
     Input,
     OnInit,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
@@ -61,6 +62,14 @@ const LOG = LogFactory.createLog('BenutzerListXComponent');
     standalone: false
 })
 export class BenutzerListXComponent implements OnInit {
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly traegerschaftRS = inject(TraegerschaftRS);
+    private readonly sozialdienstRS = inject(SozialdienstRS);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly benutzerRS = inject(BenutzerRSX);
+
     @Input()
     public tableTitle: string;
 
@@ -119,16 +128,6 @@ export class BenutzerListXComponent implements OnInit {
      */
     private keyupTimeout: NodeJS.Timeout;
     private readonly timeoutMS = CONSTANTS.KEYUP_TIMEOUT;
-
-    public constructor(
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly institutionRS: InstitutionRS,
-        private readonly traegerschaftRS: TraegerschaftRS,
-        private readonly sozialdienstRS: SozialdienstRS,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly cd: ChangeDetectorRef,
-        private readonly benutzerRS: BenutzerRSX
-    ) {}
 
     public ngOnInit(): void {
         this.initFilterSortPaginate();

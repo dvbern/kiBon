@@ -1,37 +1,39 @@
 <!--
-  ~ Copyright (C) 2022 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2022 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="form-group">
-    <label
-        *ngIf="label"
-        [for]="uniqueName + '_id'"
-        class="ebegu-h1"
-        [class.required]="required"
-    >
-        <span>{{ label | translate }}</span>
-        <dv-tooltip
-            *ngIf="tooltip"
-            [text]="tooltip | translate"
-            [inputId]="uniqueName + '_id'"
-        ></dv-tooltip>
-    </label>
-    <span *ngIf="inlineHint" class="inline-hint">{{
-        inlineHint | translate
-    }}</span>
+    @if (label) {
+        <label
+            [for]="uniqueName + '_id'"
+            class="ebegu-h1"
+            [class.required]="required"
+        >
+            <span>{{ label | translate }}</span>
+            @if (tooltip) {
+                <dv-tooltip
+                    [text]="tooltip | translate"
+                    [inputId]="uniqueName + '_id'"
+                ></dv-tooltip>
+            }
+        </label>
+    }
+    @if (inlineHint) {
+        <span class="inline-hint">{{ inlineHint | translate }}</span>
+    }
     <mat-radio-group
         (change)="change($event)"
         [(ngModel)]="model"
@@ -53,10 +55,11 @@
         [deklaration]="dvBisherValue"
         [showBisher]="showBisher()"
     ></dv-bisher-x>
-    <dv-error-messages
-        *ngIf="form?.submitted"
-        [errorObject]="radio.errors"
-        [inputId]="uniqueName + '_id'"
-    >
-    </dv-error-messages>
+    @if (form?.submitted) {
+        <dv-error-messages
+            [errorObject]="radio.errors"
+            [inputId]="uniqueName + '_id'"
+        >
+        </dv-error-messages>
+    }
 </div>

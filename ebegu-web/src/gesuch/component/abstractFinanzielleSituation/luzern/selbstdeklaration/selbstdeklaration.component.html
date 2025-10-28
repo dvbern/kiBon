@@ -1,55 +1,62 @@
 <!--
-  ~ Copyright (C) 2023 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2023 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
-<div class="row" *ngIf="!isEKV">
-    <div class="col-xs-12">
-        <mat-divider class="margin-bottom-50"></mat-divider>
-        <h3 class="uppercase ebegu-h1" *ngIf="isGemeinsam">
-            {{
-                'SELBSTDEKLARATION_GEMEINSAM_TITLE'
-                    | translate
-                        : {
-                              gs1: antragsteller1Name(),
-                              gs2: antragsteller2Name(),
-                              year: basisJahr
-                          }
-            }}
-        </h3>
-        <h3 class="uppercase ebegu-h1" *ngIf="!isGemeinsam">
-            {{
-                'SELBSTDEKLARATION_ALLEINE_TITLE'
-                    | translate
-                        : {gs1: getCurrentAntragstellerName(), year: basisJahr}
-            }}
-        </h3>
-        <p
-            class="inline-hint margin-top-10 margin-bottom-10"
-            *ngIf="!isQuellenbesteuert"
-            translate
-        >
-            SELBSTDEKLARATION_SUBTITLE
-        </p>
+@if (!isEKV) {
+    <div class="row">
+        <div class="col-xs-12">
+            <mat-divider class="margin-bottom-50"></mat-divider>
+            @if (isGemeinsam) {
+                <h3 class="uppercase ebegu-h1">
+                    {{
+                        'SELBSTDEKLARATION_GEMEINSAM_TITLE'
+                            | translate
+                                : {
+                                      gs1: antragsteller1Name(),
+                                      gs2: antragsteller2Name(),
+                                      year: basisJahr
+                                  }
+                    }}
+                </h3>
+            }
+            @if (!isGemeinsam) {
+                <h3 class="uppercase ebegu-h1">
+                    {{
+                        'SELBSTDEKLARATION_ALLEINE_TITLE'
+                            | translate
+                                : {
+                                      gs1: getCurrentAntragstellerName(),
+                                      year: basisJahr
+                                  }
+                    }}
+                </h3>
+            }
+            @if (!isQuellenbesteuert) {
+                <p class="inline-hint margin-top-10 margin-bottom-10" translate>
+                    SELBSTDEKLARATION_SUBTITLE
+                </p>
+            }
+        </div>
     </div>
-</div>
+}
 
 <div class="row">
-    <dv-warning *ngIf="!isQuellenbesteuert"
-        >SELBSTDEKLARATION_WARNING</dv-warning
-    >
+    @if (!isQuellenbesteuert) {
+        <dv-warning>SELBSTDEKLARATION_WARNING</dv-warning>
+    }
     <div class="col-xs-12">
         <h3 class="margin-bottom-20">
             {{ 'EINKUENFTE_IM_JAHR' | translate }} {{ basisJahr }}

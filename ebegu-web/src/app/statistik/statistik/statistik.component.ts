@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -71,6 +72,23 @@ const LOG = LogFactory.createLog('StatistikComponent');
     standalone: false
 })
 export class StatistikComponent implements OnInit, OnDestroy {
+    private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
+    private readonly institutionStammdatenRS = inject(InstitutionStammdatenRS);
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly reportAsyncRS = inject(ReportAsyncRS);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly batchJobRS = inject(BatchJobRS);
+    private readonly errorService = inject(ErrorService);
+    private readonly translate = inject(TranslateService);
+    private readonly dialog = inject(MatDialog);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly lastenausgleichRS = inject(LastenausgleichRS);
+    readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+
     public readonly TSStatistikParameterType = TSStatistikParameterType;
     public readonly TSRole = TSRole;
     public readonly TSRoleUtil = TSRoleUtil;
@@ -105,23 +123,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
     public lastenausgleichTagesschulenActive: boolean = false;
     public tagesschulenActive = false;
     public lastenausgleichYears: number[] = [];
-
-    public constructor(
-        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly institutionStammdatenRS: InstitutionStammdatenRS,
-        private readonly institutionRS: InstitutionRS,
-        private readonly reportAsyncRS: ReportAsyncRS,
-        private readonly downloadRS: DownloadRS,
-        private readonly batchJobRS: BatchJobRS,
-        private readonly errorService: ErrorService,
-        private readonly translate: TranslateService,
-        private readonly dialog: MatDialog,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly cd: ChangeDetectorRef,
-        private readonly lastenausgleichRS: LastenausgleichRS,
-        public readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
-    ) {}
 
     private static sortInstitutions(
         stammdaten: TSInstitutionStammdaten[]

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Transition} from '@uirouter/core';
 
 @Component({
@@ -26,10 +26,12 @@ import {Transition} from '@uirouter/core';
     standalone: false
 })
 export class OnboardingBeLoginComponent {
+    private readonly transition = inject(Transition);
+
     public readonly gemeindenId: string;
     public readonly gemeindeBGId: string;
 
-    public constructor(private readonly transition: Transition) {
+    public constructor() {
         this.gemeindenId = this.transition.params().gemeindenId;
         this.gemeindeBGId = this.transition.params().gemeindeBGId;
     }

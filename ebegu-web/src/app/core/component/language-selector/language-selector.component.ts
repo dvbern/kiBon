@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, inject} from '@angular/core';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSBrowserLanguage} from '@kibon/shared/model/enums';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
@@ -32,16 +32,14 @@ const LOG = LogFactory.createLog('LangageSelectorComponent');
     standalone: false
 })
 export class LanguageSelectorComponent {
+    private readonly i18nServiceRS = inject(I18nServiceRSRest);
+    private readonly authService = inject(AuthServiceRS);
+
     @Input()
     public hideForLoggedUser: boolean = false;
 
     public readonly DE = TSBrowserLanguage.DE;
     public readonly FR = TSBrowserLanguage.FR;
-
-    public constructor(
-        private readonly i18nServiceRS: I18nServiceRSRest,
-        private readonly authService: AuthServiceRS
-    ) {}
 
     public changeLanguage(language: TSBrowserLanguage): void {
         this.i18nServiceRS.changeClientLanguage(language);

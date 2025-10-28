@@ -20,7 +20,8 @@ import {
     Component,
     Input,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {Transition} from '@uirouter/core';
@@ -47,6 +48,8 @@ import {CONSTANTS} from '@kibon/shared/model/constants';
     standalone: false
 })
 export class GemeindeFiKonfigComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+
     @ViewChild(NgForm) public form: NgForm;
     @Input() public konfigurationsListe: TSGemeindeKonfiguration[];
     @Input() public gemeindeStatus: TSGemeindeStatus;
@@ -54,8 +57,6 @@ export class GemeindeFiKonfigComponent implements OnInit {
     @Input() public fiAnmeldungenStartDatum: Moment;
 
     private navigationDest: StateDeclaration;
-
-    public constructor(private readonly $transition$: Transition) {}
 
     public ngOnInit(): void {
         this.navigationDest = this.$transition$.to();

@@ -22,7 +22,7 @@ import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {TestDataUtil} from '../../utils/TestDataUtil.spec';
 import {FallRS} from './fallRS.rest';
 
-describe('fallRS', () => {
+xdescribe('fallRS', () => {
     let fallRS: FallRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

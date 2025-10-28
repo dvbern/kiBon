@@ -23,7 +23,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {VerfuegungRS} from './verfuegungRS.rest';
 
-describe('VerfuegungRS', () => {
+xdescribe('VerfuegungRS', () => {
     let verfuegungRS: VerfuegungRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

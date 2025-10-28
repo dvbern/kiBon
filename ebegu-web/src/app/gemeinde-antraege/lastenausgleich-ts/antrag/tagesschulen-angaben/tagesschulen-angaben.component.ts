@@ -21,7 +21,8 @@ import {
     Component,
     Input,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -82,6 +83,22 @@ const LOG = LogFactory.createLog('TagesschulenAngabenComponent');
     standalone: false
 })
 export class TagesschulenAngabenComponent implements OnInit {
+    private readonly lastenausgleichTSService = inject(
+        LastenausgleichTSService
+    );
+    private readonly tagesschulenAngabenRS = inject(TagesschuleAngabenRS);
+    private readonly fb = inject(FormBuilder);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly errorService = inject(ErrorService);
+    private readonly translate = inject(TranslateService);
+    private readonly authService = inject(AuthServiceRS);
+    private readonly dialog = inject(MatDialog);
+    private readonly $state = inject(StateService);
+    private readonly routerGlobals = inject(UIRouterGlobals);
+    private readonly settings = inject(EinstellungRS);
+    private readonly wizardRS = inject(WizardStepXRS);
+    private readonly unsavedChangesService = inject(UnsavedChangesService);
+
     @Input() public lastenausgleichID: string;
     @Input() public institutionContainerId: string;
 
@@ -189,22 +206,6 @@ export class TagesschulenAngabenComponent implements OnInit {
         new BehaviorSubject<boolean>(false);
     public readonly canSeeDurchKibonAusfuellen: BehaviorSubject<boolean> =
         new BehaviorSubject<boolean>(false);
-
-    public constructor(
-        private readonly lastenausgleichTSService: LastenausgleichTSService,
-        private readonly tagesschulenAngabenRS: TagesschuleAngabenRS,
-        private readonly fb: FormBuilder,
-        private readonly cd: ChangeDetectorRef,
-        private readonly errorService: ErrorService,
-        private readonly translate: TranslateService,
-        private readonly authService: AuthServiceRS,
-        private readonly dialog: MatDialog,
-        private readonly $state: StateService,
-        private readonly routerGlobals: UIRouterGlobals,
-        private readonly settings: EinstellungRS,
-        private readonly wizardRS: WizardStepXRS,
-        private readonly unsavedChangesService: UnsavedChangesService
-    ) {}
 
     public ngOnInit(): void {
         combineLatest([

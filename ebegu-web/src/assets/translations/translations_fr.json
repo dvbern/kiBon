@@ -3113,5 +3113,6 @@
     "ERROR_WRONG_UPLOAD_FILETYPE": "Le format de ce fichier n’est pas pris en charge. Veuillez télécharger un document dans un format valide.",
     "ABGELOESTE_VIEW": "Abgelöste View (Gesuch AngularJS)",
     "GEMEINDE_KENNZAHLEN_REMINDER_ACTIVATED": "Les e-mails de rappel pour les indicateurs communaux sont-ils activés pour les communes et le canton",
+    "DOPPELBETREUUNG_PRIO": "Doppelbetreuung Priorität",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

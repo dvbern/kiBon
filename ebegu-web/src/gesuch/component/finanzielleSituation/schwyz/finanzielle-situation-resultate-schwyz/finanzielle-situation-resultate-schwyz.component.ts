@@ -18,7 +18,8 @@
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Component
+    Component,
+    inject
 } from '@angular/core';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
@@ -42,19 +43,27 @@ const LOG = LogFactory.createLog(
     standalone: false
 })
 export class FinanzielleSituationResultateSchwyzComponent extends AbstractGesuchViewX<TSFinanzModel> {
+    protected ref = inject(ChangeDetectorRef);
+    protected readonly gesuchmodelManager: GesuchModelManager;
+    protected readonly wizardstepManager: WizardStepManager;
+    private readonly finanzielleSituationSchwyzService = inject(
+        FinanzielleSituationSchwyzService
+    );
+
     public resultate?: TSFinanzielleSituationResultateDTO;
 
-    public constructor(
-        protected ref: ChangeDetectorRef,
-        protected readonly gesuchmodelManager: GesuchModelManager,
-        protected readonly wizardstepManager: WizardStepManager,
-        private readonly finanzielleSituationSchwyzService: FinanzielleSituationSchwyzService
-    ) {
+    public constructor() {
+        const gesuchmodelManager = inject(GesuchModelManager);
+        const wizardstepManager = inject(WizardStepManager);
+
         super(
             gesuchmodelManager,
             wizardstepManager,
             TSWizardStepName.FINANZIELLE_SITUATION_SCHWYZ
         );
+        this.gesuchmodelManager = gesuchmodelManager;
+        this.wizardstepManager = wizardstepManager;
+
         this.model = new TSFinanzModel(
             this.gesuchModelManager.getBasisjahr(),
             this.gesuchModelManager.isGesuchsteller2Required(),

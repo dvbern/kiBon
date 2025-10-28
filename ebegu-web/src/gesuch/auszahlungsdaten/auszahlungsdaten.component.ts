@@ -4,7 +4,8 @@ import {
     EventEmitter,
     Input,
     OnInit,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {ListResourceRS} from '../../app/core/service/listResourceRS.rest';
@@ -22,6 +23,9 @@ import {GesuchModelManager} from '../service/gesuchModelManager';
     standalone: false
 })
 export class AuszahlungsdatenComponent implements OnInit {
+    private readonly gesuchsmodelManager = inject(GesuchModelManager);
+    private readonly listResourceRS = inject(ListResourceRS);
+
     @Input()
     public auszahlungsdaten: TSZahlungsinformationen;
 
@@ -36,11 +40,6 @@ export class AuszahlungsdatenComponent implements OnInit {
         new EventEmitter<TSZahlungsinformationen>();
 
     public laenderList: TSLand[];
-
-    public constructor(
-        private readonly gesuchsmodelManager: GesuchModelManager,
-        private readonly listResourceRS: ListResourceRS
-    ) {}
 
     public ngOnInit(): void {
         this.listResourceRS.getLaenderList().then((laenderList: TSLand[]) => {

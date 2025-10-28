@@ -5,22 +5,21 @@
     <div class="row view-title">
         <div class="col-md-12">
             <h2>
-                <span *ngIf="isMutation()" translate
-                    >MUTATION_FAMSITUATION_TITLE</span
-                >
-                <span *ngIf="!isMutation()" translate data-test="gesuchtitle"
-                    >FAMILIENSITUATION</span
-                >
+                @if (isMutation()) {
+                    <span translate>MUTATION_FAMSITUATION_TITLE</span>
+                }
+                @if (!isMutation()) {
+                    <span translate data-test="gesuchtitle"
+                        >FAMILIENSITUATION</span
+                    >
+                }
             </h2>
             <hr class="header" />
-            <p
-                *ngIf="showError()"
-                role="alert"
-                translate
-                class="dv-error-messages"
-            >
-                ERROR_DATUM_GESETZT_BEI_MUTATION
-            </p>
+            @if (showError()) {
+                <p role="alert" translate class="dv-error-messages">
+                    ERROR_DATUM_GESETZT_BEI_MUTATION
+                </p>
+            }
         </div>
     </div>
 
@@ -28,54 +27,58 @@
         <div class="col-md-12">
             <form name="form" class="" novalidate unsaved-warning-form>
                 <!--Aenderung per-->
-                <div class="row" *ngIf="isMutation()">
-                    <div class="col-md-12">
-                        <dv-input-container-x class="form-group">
-                            <div class="row">
-                                <div
-                                    class="col-xs-12 dv-input-container-medium"
-                                >
-                                    <label
-                                        class="md-no-float"
-                                        translate=""
-                                        for="aenderungPer_ID"
-                                        >AENDERUNG_PER
-                                        <dv-tooltip
-                                            [text]="'AENDERUNG_PER_DATUM_INFO'"
-                                        ></dv-tooltip>
-                                    </label>
+                @if (isMutation()) {
+                    <div class="row">
+                        <div class="col-md-12">
+                            <dv-input-container-x class="form-group">
+                                <div class="row">
                                     <div
-                                        class="dv-input-container-medium-label"
+                                        class="col-xs-12 dv-input-container-medium"
                                     >
-                                        <dv-date-picker-x
-                                            [inputId]="'aenderungPer_ID'"
-                                            class="input-element"
-                                            [(date)]="
-                                                getFamiliensituation()
-                                                    .aenderungPer
-                                            "
-                                            (dateChange)="onDatumBlur()"
-                                            [datePickerEnabled]="false"
-                                            [disabled]="isGesuchReadonly()"
+                                        <label
+                                            class="md-no-float"
+                                            translate=""
+                                            for="aenderungPer_ID"
+                                            >AENDERUNG_PER
+                                            <dv-tooltip
+                                                [text]="
+                                                    'AENDERUNG_PER_DATUM_INFO'
+                                                "
+                                            ></dv-tooltip>
+                                        </label>
+                                        <div
+                                            class="dv-input-container-medium-label"
                                         >
-                                        </dv-date-picker-x>
-                                        <dv-bisher-x
-                                            [showBisher]="showBisher()"
-                                            [deklaration]="
-                                                getFamiliensituationGS()
-                                                    ?.aenderungPer
-                                            "
-                                            [korrektur]="
-                                                getFamiliensituation()
-                                                    ?.aenderungPer
-                                            "
-                                        ></dv-bisher-x>
+                                            <dv-date-picker-x
+                                                [inputId]="'aenderungPer_ID'"
+                                                class="input-element"
+                                                [(date)]="
+                                                    getFamiliensituation()
+                                                        .aenderungPer
+                                                "
+                                                (dateChange)="onDatumBlur()"
+                                                [datePickerEnabled]="false"
+                                                [disabled]="isGesuchReadonly()"
+                                            >
+                                            </dv-date-picker-x>
+                                            <dv-bisher-x
+                                                [showBisher]="showBisher()"
+                                                [deklaration]="
+                                                    getFamiliensituationGS()
+                                                        ?.aenderungPer
+                                                "
+                                                [korrektur]="
+                                                    getFamiliensituation()
+                                                        ?.aenderungPer
+                                                "
+                                            ></dv-bisher-x>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </dv-input-container-x>
+                            </dv-input-container-x>
+                        </div>
                     </div>
-                </div>
+                }
 
                 <!--gesuchstellerKardinalitaet-->
                 <div class="row">
@@ -136,14 +139,15 @@
                                     >
                                 </mat-radio-group>
                             </dv-radio-container-x>
-                            <dv-error-messages
-                                *ngIf="
-                                    savedClicked ||
-                                    gesuchstellerKardinalitaet.touched
-                                "
-                                [inputId]="'gesuchstellerKardinalitaet'"
-                                class="error"
-                            ></dv-error-messages>
+                            @if (
+                                savedClicked ||
+                                gesuchstellerKardinalitaet.touched
+                            ) {
+                                <dv-error-messages
+                                    [inputId]="'gesuchstellerKardinalitaet'"
+                                    class="error"
+                                ></dv-error-messages>
+                            }
                             <dv-bisher-x
                                 [showBisher]="showBisher()"
                                 [specificBisherText]="getBisherText()"

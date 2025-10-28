@@ -6,7 +6,7 @@ import {
     output,
     OutputEmitterRef
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {MatDialog} from '@angular/material/dialog';
 import {TSModulTagesschuleGroupHasAnmeldung} from '@kibon/admin/model/institution-tagesschule-einstellungen';
 import {
@@ -21,7 +21,7 @@ import {EbeguUtil} from '../../../../../../../src/utils/EbeguUtil';
 
 @Component({
     selector: 'lib-admin-ui-tagesschule-modul-list',
-    imports: [CommonModule, SharedModule],
+    imports: [SharedModule],
     templateUrl: './admin-ui-tagesschule-modul-list.component.html',
     styleUrl: './admin-ui-tagesschule-modul-list.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush

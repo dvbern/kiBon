@@ -1265,8 +1265,16 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 			if (AntragStatus.VERFUEGEN == neustesGesuch.getStatus()
 				||
 				AntragStatus.GEPRUEFT == neustesGesuch.getStatus()
-				|| AntragStatus.IN_BEARBEITUNG_JA == neustesGesuch.getStatus()
+				|| (AntragStatus.IN_BEARBEITUNG_JA == neustesGesuch.getStatus()
+					&& mitteilung instanceof NeueVeranlagungsMitteilung)
 			) {
+				if (mitteilung instanceof NeueVeranlagungsMitteilung) {
+					throw new EbeguException(
+						"doApplymitteilung",
+						ErrorCodeEnum.ERROR_NEUE_VERANLAGUNG_MUTATIONSMELDUNG_STATUS_IN_BEARBEITUNG_GEPRUEFT_VERFUEGEN,
+						neustesGesuch.getId()
+					);
+				}
 				throw new EbeguException(
 					"doApplymitteilung",
 					ErrorCodeEnum.ERROR_MUTATIONSMELDUNG_STATUS_GEPRUEFT_VERFUEGEN,

@@ -4,7 +4,8 @@ import {
     ChangeDetectorRef,
     Component,
     Input,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -22,6 +23,9 @@ const LOG = LogFactory.createLog('HoehereBetraegeBeeintraechtigungComponent');
 export class HoehereBetraegeBeeintraechtigungComponent
     implements AfterViewInit
 {
+    private readonly formExchangeService = inject(KinderabzugExchangeService);
+    private readonly cd = inject(ChangeDetectorRef);
+
     @ViewChild(NgForm) public form!: NgForm;
 
     @Input()
@@ -29,11 +33,6 @@ export class HoehereBetraegeBeeintraechtigungComponent
 
     @Input()
     public readOnly = false;
-
-    public constructor(
-        private readonly formExchangeService: KinderabzugExchangeService,
-        private readonly cd: ChangeDetectorRef
-    ) {}
 
     public ngAfterViewInit(): void {
         this.formExchangeService.addForm(this.form);

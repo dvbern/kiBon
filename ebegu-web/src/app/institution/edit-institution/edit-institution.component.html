@@ -1,776 +1,885 @@
 <!--
-  ~ Copyright (C) 2018 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2018 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <dv-full-height-inner-padding-container>
-    <form
-        #form="ngForm"
-        (ngSubmit)="onSubmit()"
-        *ngIf="stammdaten"
-        [ngClass]="{'ng-submitted': form.submitted}"
-        novalidate
-        role="form"
-    >
-        <dv-stammdaten-header
-            [administratoren]="stammdaten.administratoren"
-            [allowedRoles]="getMitarbeiterVisibleRoles()"
-            [editMode]="isStammdatenEditable()"
-            [logoImageUrl]="undefined"
-            [preTitel]="getHeaderPreTitle()"
-            [sachbearbeiter]="stammdaten.sachbearbeiter"
-            [titel]="stammdaten.institution.name"
+    @if (stammdaten) {
+        <form
+            #form="ngForm"
+            (ngSubmit)="onSubmit()"
+            [ngClass]="{'ng-submitted': form.submitted}"
+            novalidate
+            role="form"
         >
-        </dv-stammdaten-header>
-
-        <div class="dv-content">
-            <fieldset *ngIf="editMode; else showViewMode">
-                <div class="view-sub-title">
-                    <h3 translate>INSTITUTION_STAMMDATEN</h3>
-                    <hr class="header" />
-                </div>
-
-                <div class="row">
-                    <!-- Name der Institution -->
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <h3 class="required" for="name_id" translate>
-                                NAME_INSTITUTION
-                            </h3>
-                            <input
-                                #name="ngModel"
-                                [(ngModel)]="stammdaten.institution.name"
-                                [maxlength]="255"
-                                class="form-control"
-                                data-test="institution.edit.name"
-                                id="name_id"
-                                name="name_id"
-                                required
-                                type="text"
-                                [disabled]="isChangeInstitutionNameDisabled()"
-                            />
-                            <dv-error-messages
-                                [errorObject]="form.controls.name_id?.errors"
-                                inputId="name_id"
-                            ></dv-error-messages>
+            <dv-stammdaten-header
+                [administratoren]="stammdaten.administratoren"
+                [allowedRoles]="getMitarbeiterVisibleRoles()"
+                [editMode]="isStammdatenEditable()"
+                [logoImageUrl]="undefined"
+                [preTitel]="getHeaderPreTitle()"
+                [sachbearbeiter]="stammdaten.sachbearbeiter"
+                [titel]="stammdaten.institution.name"
+            >
+            </dv-stammdaten-header>
+            <div class="dv-content">
+                @if (editMode) {
+                    <fieldset>
+                        <div class="view-sub-title">
+                            <h3 translate>INSTITUTION_STAMMDATEN</h3>
+                            <hr class="header" />
                         </div>
-                    </div>
-                    <!-- Traegerschaft -->
-                    <div *ngIf="isMandant()" class="col-sm-6">
-                        <div class="form-group">
-                            <h3 for="traegerschaft_id" translate>
-                                TRAEGERSCHAFT
-                            </h3>
-                            <mat-select
-                                [(ngModel)]="
-                                    stammdaten.institution.traegerschaft
-                                "
-                                [compareWith]="compareTraegerschaft"
-                                class="form-control"
-                                id="traegerschaft_id"
-                                name="traegerschaft_id"
-                            >
-                                <mat-option value="">{{
-                                    'KEINE' | translate
-                                }}</mat-option>
-                                <mat-option
-                                    *ngFor="
-                                        let traegerschaft of traegerschaftenList;
-                                        trackBy: traegerschaftId
-                                    "
-                                    [value]="traegerschaft"
-                                >
-                                    {{ traegerschaft.name }}
-                                </mat-option>
-                            </mat-select>
-                            <dv-error-messages
-                                [errorObject]="
-                                    form.controls.traegerschaft_id?.errors
-                                "
-                                inputId="traegerschaft_id"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="title">
-                    <h3 translate>KONTAKTADRESSE</h3>
-                </div>
-                <div class="row">
-                    <!-- Anschrift -->
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label class="required" for="anschrift_id" translate
-                                >INSTITUTION_ANSCHRIFT</label
-                            >
-                            <input
-                                #name="ngModel"
-                                [(ngModel)]="stammdaten.adresse.organisation"
-                                [maxlength]="255"
-                                class="form-control"
-                                data-test="institution.edit.anschrift"
-                                id="anschrift_id"
-                                name="anschrift_id"
-                                required
-                                type="text"
-                            />
-                            <dv-error-messages
-                                [errorObject]="
-                                    form.controls.anschrift_id?.errors
-                                "
-                                inputId="anschrift_id"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                    <!-- E-Mail -->
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label
-                                *ngIf="isBetreuungsgutschein()"
-                                class="required"
-                                for="e_mail_id"
-                                translate
-                                >EMAIL_BG</label
-                            >
-                            <label
-                                *ngIf="!isBetreuungsgutschein()"
-                                class="required"
-                                for="e_mail_id"
-                                translate
-                                >EMAIL</label
-                            >
-                            <input
-                                #name="ngModel"
-                                [(ngModel)]="stammdaten.mail"
-                                placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
-                                [maxlength]="255"
-                                class="form-control"
-                                data-test="institution.edit.email"
-                                id="e_mail_id"
-                                name="e_mail_id"
-                                required
-                                type="email"
-                                email
-                            />
-                            <dv-error-messages
-                                [errorObject]="form.controls.e_mail_id?.errors"
-                                inputId="e_mail_id"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <!-- Strasse -->
-                    <div class="col-sm-5">
-                        <div class="form-group">
-                            <label class="required" for="strasse_id" translate
-                                >ADRESSE_STRASSE</label
-                            >
-                            <input
-                                #name="ngModel"
-                                [(ngModel)]="stammdaten.adresse.strasse"
-                                [maxlength]="255"
-                                class="form-control"
-                                data-test="institution.edit.strasse"
-                                id="strasse_id"
-                                name="strasse_id"
-                                required
-                                type="text"
-                            />
-                            <dv-error-messages
-                                [errorObject]="form.controls.strasse_id?.errors"
-                                inputId="strasse_id"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                    <!-- Hausnummer -->
-                    <div class="col-sm-1">
-                        <div class="form-group">
-                            <label for="hausnummer_id" translate
-                                >ADRESSE_NUMMER</label
-                            >
-                            <input
-                                #name="ngModel"
-                                [(ngModel)]="stammdaten.adresse.hausnummer"
-                                [maxlength]="255"
-                                class="form-control"
-                                data-test="institution.edit.hausnummer"
-                                id="hausnummer_id"
-                                name="hausnummer_id"
-                                type="text"
-                            />
-                            <dv-error-messages
-                                [errorObject]="
-                                    form.controls.hausnummer_id?.errors
-                                "
-                                inputId="hausnummer_id"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                    <!-- Telefon -->
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label for="telefon_id" translate>TELEFON</label>
-                            <input
-                                #name="ngModel"
-                                [(ngModel)]="stammdaten.telefon"
-                                [maxlength]="255"
-                                [pattern]="CONSTANTS.PATTERN_PHONE"
-                                class="form-control"
-                                data-test="institution.edit.telefon"
-                                id="telefon_id"
-                                name="telefon_id"
-                                type="text"
-                                placeholder="{{
-                                    'BEISPIEL_TELEFON_NUMMER' | translate
-                                }}"
-                            />
-                            <dv-error-messages
-                                [errorObject]="form.controls.telefon_id?.errors"
-                                inputId="telefon_id"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <!-- PLZ -->
-                    <div class="col-sm-1">
-                        <div class="form-group">
-                            <label class="required" for="plz_id" translate
-                                >ADRESSE_PLZ</label
-                            >
-                            <input
-                                #name="ngModel"
-                                [(ngModel)]="stammdaten.adresse.plz"
-                                [maxlength]="255"
-                                class="form-control"
-                                data-test="institution.edit.plz"
-                                id="plz_id"
-                                name="plz_id"
-                                required
-                                type="text"
-                            />
-                            <dv-error-messages
-                                [errorObject]="form.controls.plz_id?.errors"
-                                inputId="plz_id"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                    <!-- Ort -->
-                    <div class="col-sm-5">
-                        <div class="form-group">
-                            <label class="required" for="ort_id" translate
-                                >ADRESSE_ORT</label
-                            >
-                            <input
-                                #name="ngModel"
-                                [(ngModel)]="stammdaten.adresse.ort"
-                                [maxlength]="255"
-                                class="form-control"
-                                data-test="institution.edit.ort"
-                                id="ort_id"
-                                name="ort_id"
-                                required
-                                type="text"
-                            />
-                            <dv-error-messages
-                                [errorObject]="form.controls.ort_id?.errors"
-                                inputId="ort_id"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                    <!-- Webseite -->
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label for="webseite_id" translate>WEBSEITE</label>
-                            <input
-                                #name="ngModel"
-                                [(ngModel)]="stammdaten.webseite"
-                                [maxlength]="255"
-                                class="form-control"
-                                data-test="institution.edit.webseite"
-                                id="webseite_id"
-                                name="webseite_id"
-                                type="text"
-                                placeholder="{{
-                                    'BEISPIEL_WEBSITE' | translate
-                                }}"
-                                isValidWebseite
-                            />
-                            <dv-error-messages
-                                [errorObject]="
-                                    form.controls.webseite_id?.errors
-                                "
-                                inputId="webseite_id"
-                            ></dv-error-messages>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <!-- Betreuungsgutscheine akzeptieren ab/bis -->
-                    <div class="col-sm-6">
-                        <label
-                            class="labelAnmeldungStartEnd"
-                            for="containerVonBisPickers_id"
-                            translate
-                        >
-                            {{
-                                isBetreuungsgutschein()
-                                    ? 'INSTITUTION_BEGU_START_END'
-                                    : isTagesschule()
-                                      ? 'TAGESSCHULE_ANMELDUNG_START_END'
-                                      : 'FERIENINSEL_ANMELDUNG_START_END'
-                            }}
-                        </label>
                         <div class="row">
-                            <dv-input-container-x
-                                id="containerVonBisPickers_id"
-                            >
-                                <div class="col-sm-6">
-                                    <dv-date-picker-x
-                                        id="begu_start_id"
-                                        [(date)]="
-                                            stammdaten.gueltigkeit.gueltigAb
-                                        "
-                                        [datePickerEnabled]="true"
-                                        [disabled]="isDateStartEndDisabled()"
-                                        [required]="true"
-                                        [minDate]="getMinStartDate()"
-                                        data-test="institution.edit.gueltigAb"
-                                    ></dv-date-picker-x>
-                                </div>
-                                <div class="col-sm-6">
-                                    <dv-date-picker-x
-                                        [(date)]="
-                                            stammdaten.gueltigkeit.gueltigBis
-                                        "
-                                        [datePickerEnabled]="true"
-                                        [disabled]="isDateStartEndDisabled()"
-                                        [minDate]="getMinByRole()"
-                                        data-test="institution.edit.gueltigBis"
-                                    ></dv-date-picker-x>
-                                    <div class="custom-errors">
-                                        <div
-                                            *ngIf="
-                                                showWarningInstitutionRueckwirkendSchliessen()
-                                            "
-                                        >
-                                            <i
-                                                aria-hidden="true"
-                                                class="fa fa-exclamation-triangle"
-                                            ></i>
-                                            <span translate
-                                                >WARNING_SUPERADMIN_INSTITUTION_SCHLIESSEN_RUECKWIRKEND</span
-                                            >
-                                        </div>
-                                    </div>
-                                </div>
-                            </dv-input-container-x>
-                        </div>
-                        <div
-                            *ngIf="stammdaten.gueltigkeit.gueltigBis"
-                            class="row"
-                        >
-                            <div class="col-sm-12">
+                            <!-- Name der Institution -->
+                            <div class="col-sm-6">
                                 <div class="form-group">
-                                    <label
+                                    <h3
                                         class="required"
-                                        for="grundSchliessung_id"
+                                        for="name_id"
                                         translate
-                                        >INSTITUTION_GRUND_SCHLIESSUNG</label
                                     >
-                                    <textarea
-                                        #grundSchliessung="ngModel"
+                                        NAME_INSTITUTION
+                                    </h3>
+                                    <input
+                                        #name="ngModel"
                                         [(ngModel)]="
-                                            stammdaten.grundSchliessung
+                                            stammdaten.institution.name
                                         "
+                                        [maxlength]="255"
                                         class="form-control"
-                                        id="grundSchliessung_id"
-                                        maxlength="4000"
-                                        name="grundSchliessung_name"
+                                        data-test="institution.edit.name"
+                                        id="name_id"
+                                        name="name_id"
                                         required
-                                        rows="3"
-                                    >
-                                    </textarea>
+                                        type="text"
+                                        [disabled]="
+                                            isChangeInstitutionNameDisabled()
+                                        "
+                                    />
                                     <dv-error-messages
-                                        [errorObject]="grundSchliessung.errors"
-                                        inputId="grundSchliessung_id"
+                                        [errorObject]="
+                                            form.controls.name_id?.errors
+                                        "
+                                        inputId="name_id"
                                     ></dv-error-messages>
                                 </div>
                             </div>
+                            <!-- Traegerschaft -->
+                            @if (isMandant()) {
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <h3 for="traegerschaft_id" translate>
+                                            TRAEGERSCHAFT
+                                        </h3>
+                                        <mat-select
+                                            [(ngModel)]="
+                                                stammdaten.institution
+                                                    .traegerschaft
+                                            "
+                                            [compareWith]="compareTraegerschaft"
+                                            class="form-control"
+                                            id="traegerschaft_id"
+                                            name="traegerschaft_id"
+                                        >
+                                            <mat-option value="">{{
+                                                'KEINE' | translate
+                                            }}</mat-option>
+                                            @for (
+                                                traegerschaft of traegerschaftenList;
+                                                track traegerschaftId(
+                                                    traegerschaft
+                                                )
+                                            ) {
+                                                <mat-option
+                                                    [value]="traegerschaft"
+                                                >
+                                                    {{ traegerschaft.name }}
+                                                </mat-option>
+                                            }
+                                        </mat-select>
+                                        <dv-error-messages
+                                            [errorObject]="
+                                                form.controls.traegerschaft_id
+                                                    ?.errors
+                                            "
+                                            inputId="traegerschaft_id"
+                                        ></dv-error-messages>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="title">
+                            <h3 translate>KONTAKTADRESSE</h3>
                         </div>
                         <div class="row">
-                            <!-- Mail senden bei offenen Pendenzen -->
-                            <div class="col-sm-12">
-                                <h3 translate>
-                                    INSTITUTION_BENACHRICHTIGUNGEN
-                                </h3>
-                                <div class="form-group">
-                                    <mat-checkbox
-                                        [(ngModel)]="
-                                            stammdaten.sendMailWennOffenePendenzen
-                                        "
-                                        id="sendMailWennOffenePendenzen_id"
-                                        name="sendMailWennOffenePendenzen_id"
-                                    >
-                                        {{
-                                            'INSTITUTION_BENACHRICHTIGUNG_PENDENZEN'
-                                                | translate
-                                        }}
-                                    </mat-checkbox>
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            *ngIf="stammdaten.sendMailWennOffenePendenzen"
-                            class="row"
-                        >
-                            <!-- E-Mail -->
-                            <div class="col-sm-12">
+                            <!-- Anschrift -->
+                            <div class="col-sm-6">
                                 <div class="form-group">
                                     <label
                                         class="required"
-                                        for="erinnerung_mail_id"
+                                        for="anschrift_id"
                                         translate
+                                        >INSTITUTION_ANSCHRIFT</label
                                     >
-                                        {{
-                                            'INSTITUTION_ERINNERUNG_MAIL'
-                                                | translate
-                                        }}
-                                    </label>
                                     <input
                                         #name="ngModel"
-                                        [(ngModel)]="stammdaten.erinnerungMail"
+                                        [(ngModel)]="
+                                            stammdaten.adresse.organisation
+                                        "
                                         [maxlength]="255"
+                                        class="form-control"
+                                        data-test="institution.edit.anschrift"
+                                        id="anschrift_id"
+                                        name="anschrift_id"
+                                        required
+                                        type="text"
+                                    />
+                                    <dv-error-messages
+                                        [errorObject]="
+                                            form.controls.anschrift_id?.errors
+                                        "
+                                        inputId="anschrift_id"
+                                    ></dv-error-messages>
+                                </div>
+                            </div>
+                            <!-- E-Mail -->
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @if (isBetreuungsgutschein()) {
+                                        <label
+                                            class="required"
+                                            for="e_mail_id"
+                                            translate
+                                            >EMAIL_BG</label
+                                        >
+                                    }
+                                    @if (!isBetreuungsgutschein()) {
+                                        <label
+                                            class="required"
+                                            for="e_mail_id"
+                                            translate
+                                            >EMAIL</label
+                                        >
+                                    }
+                                    <input
+                                        #name="ngModel"
+                                        [(ngModel)]="stammdaten.mail"
                                         placeholder="{{
                                             'BEISPIEL_EMAIL' | translate
                                         }}"
+                                        [maxlength]="255"
                                         class="form-control"
-                                        id="erinnerung_mail_id"
-                                        name="erinnerung_mail_id"
-                                        type="email"
+                                        data-test="institution.edit.email"
+                                        id="e_mail_id"
+                                        name="e_mail_id"
                                         required
+                                        type="email"
                                         email
                                     />
                                     <dv-error-messages
                                         [errorObject]="
-                                            form.controls.erinnerung_mail_id
-                                                ?.errors
+                                            form.controls.e_mail_id?.errors
                                         "
-                                        inputId="erinnerung_mail_id"
+                                        inputId="e_mail_id"
                                     ></dv-error-messages>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div
-                        *ngIf="
-                            externalClients &&
-                            allPossibleClients.length &&
-                            isExportableInstitution()
-                        "
-                        class="col-sm-6"
-                    >
-                        <h3 translate>PERMITTED_EXTERNAL_CLIENTS</h3>
-                        <div *ngFor="let client of allPossibleClients">
-                            <div class="row picker-min-height">
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <mat-checkbox
-                                            (change)="
-                                                changeAssignmentClient(
-                                                    $event,
-                                                    client
-                                                )
-                                            "
-                                            [checked]="isClientAssigned(client)"
-                                        >
-                                            {{ client.clientName }}
-                                        </mat-checkbox>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <dv-month-picker
-                                            (dateChange)="
-                                                dateAbChange(
-                                                    $event,
-                                                    getAssignedInstitutionClient(
-                                                        client
-                                                    )
-                                                )
-                                            "
-                                            *ngIf="isClientAssigned(client)"
-                                            [date]="
-                                                getAssignedInstitutionClient(
-                                                    client
-                                                ).gueltigkeit.gueltigAb
-                                            "
-                                            [required]="true"
-                                        >
-                                        </dv-month-picker>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <dv-month-picker
-                                            (dateChange)="
-                                                dateBisChange(
-                                                    $event,
-                                                    getAssignedInstitutionClient(
-                                                        client
-                                                    )
-                                                )
-                                            "
-                                            *ngIf="isClientAssigned(client)"
-                                            [date]="
-                                                getAssignedInstitutionClient(
-                                                    client
-                                                ).gueltigkeit.gueltigBis
-                                            "
-                                        >
-                                        </dv-month-picker>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-
-            <div *ngIf="isBetreuungsgutschein() && stammdaten">
-                <dv-edit-institution-betreuungsgutscheine
-                    [editMode]="editMode"
-                    [stammdaten]="stammdaten"
-                >
-                </dv-edit-institution-betreuungsgutscheine>
-            </div>
-
-            <div
-                *ngIf="
-                    isTagesschule() &&
-                    stammdaten &&
-                    stammdaten.institutionStammdatenTagesschule
-                "
-            >
-                <dv-edit-institution-tagesschule
-                    [assignedClients]="this.externalClients.assignedClients"
-                    [editMode]="editMode"
-                    [(stammdaten)]="stammdaten"
-                >
-                </dv-edit-institution-tagesschule>
-            </div>
-
-            <div *ngIf="isFerieninsel() && stammdaten">
-                <dv-edit-institution-ferieninsel
-                    [editMode]="editMode"
-                    [stammdaten]="stammdaten"
-                >
-                </dv-edit-institution-ferieninsel>
-            </div>
-
-            <ng-template #showViewMode>
-                <fieldset>
-                    <div class="view-sub-title">
-                        <h3 translate>INSTITUTION_STAMMDATEN</h3>
-                        <hr class="header" />
-                    </div>
-                    <div class="row">
-                        <!-- Kontaktadresse -->
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <h3 translate>KONTAKTADRESSE</h3>
-                                <p>{{ stammdaten.adresse.organisation }}</p>
-                                <p>
-                                    {{ stammdaten.adresse.strasse }}
-                                    {{ stammdaten.adresse.hausnummer }}
-                                </p>
-                                <p>
-                                    {{ stammdaten.adresse.plz }}
-                                    {{ stammdaten.adresse.ort }}
-                                </p>
-                                <p *ngIf="stammdaten.adresse.gemeinde">
-                                    <span translate>GEMEINDE</span>
-                                    {{ stammdaten.adresse.gemeinde }} (
-                                    <span translate>GEMEINDE_BFS_NR</span>
-                                    {{ stammdaten.adresse.bfsNummer }})
-                                </p>
-                            </div>
-                        </div>
-                        <!-- E-Mail, Telefon, Webseite -->
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <h3>&nbsp;</h3>
-                                <p>
-                                    <a href="mailto:{{ stammdaten.mail }}">{{
-                                        stammdaten.mail
-                                    }}</a>
-                                </p>
-                                <p>
-                                    <a href="tel:{{ stammdaten.telefon }}">{{
-                                        stammdaten.telefon
-                                    }}</a>
-                                </p>
-                                <p>
-                                    <a
-                                        href="{{
-                                            ebeguUtil.formatHrefUrl(
-                                                stammdaten.webseite
-                                            )
-                                        }}"
-                                        target="tah"
-                                        >{{ stammdaten.webseite }}</a
+                        <div class="row">
+                            <!-- Strasse -->
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label
+                                        class="required"
+                                        for="strasse_id"
+                                        translate
+                                        >ADRESSE_STRASSE</label
                                     >
-                                </p>
+                                    <input
+                                        #name="ngModel"
+                                        [(ngModel)]="stammdaten.adresse.strasse"
+                                        [maxlength]="255"
+                                        class="form-control"
+                                        data-test="institution.edit.strasse"
+                                        id="strasse_id"
+                                        name="strasse_id"
+                                        required
+                                        type="text"
+                                    />
+                                    <dv-error-messages
+                                        [errorObject]="
+                                            form.controls.strasse_id?.errors
+                                        "
+                                        inputId="strasse_id"
+                                    ></dv-error-messages>
+                                </div>
+                            </div>
+                            <!-- Hausnummer -->
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    <label for="hausnummer_id" translate
+                                        >ADRESSE_NUMMER</label
+                                    >
+                                    <input
+                                        #name="ngModel"
+                                        [(ngModel)]="
+                                            stammdaten.adresse.hausnummer
+                                        "
+                                        [maxlength]="255"
+                                        class="form-control"
+                                        data-test="institution.edit.hausnummer"
+                                        id="hausnummer_id"
+                                        name="hausnummer_id"
+                                        type="text"
+                                    />
+                                    <dv-error-messages
+                                        [errorObject]="
+                                            form.controls.hausnummer_id?.errors
+                                        "
+                                        inputId="hausnummer_id"
+                                    ></dv-error-messages>
+                                </div>
+                            </div>
+                            <!-- Telefon -->
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="telefon_id" translate
+                                        >TELEFON</label
+                                    >
+                                    <input
+                                        #name="ngModel"
+                                        [(ngModel)]="stammdaten.telefon"
+                                        [maxlength]="255"
+                                        [pattern]="CONSTANTS.PATTERN_PHONE"
+                                        class="form-control"
+                                        data-test="institution.edit.telefon"
+                                        id="telefon_id"
+                                        name="telefon_id"
+                                        type="text"
+                                        placeholder="{{
+                                            'BEISPIEL_TELEFON_NUMMER'
+                                                | translate
+                                        }}"
+                                    />
+                                    <dv-error-messages
+                                        [errorObject]="
+                                            form.controls.telefon_id?.errors
+                                        "
+                                        inputId="telefon_id"
+                                    ></dv-error-messages>
+                                </div>
                             </div>
                         </div>
-                        <div
-                            *ngIf="stammdaten.institution.traegerschaft"
-                            class="col-sm-3"
-                        >
-                            <div class="form-group">
-                                <h3 translate>TRAEGERSCHAFT</h3>
-                                <p>
-                                    {{
-                                        stammdaten.institution.traegerschaft
-                                            .name
-                                    }}
-                                </p>
+                        <div class="row">
+                            <!-- PLZ -->
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    <label
+                                        class="required"
+                                        for="plz_id"
+                                        translate
+                                        >ADRESSE_PLZ</label
+                                    >
+                                    <input
+                                        #name="ngModel"
+                                        [(ngModel)]="stammdaten.adresse.plz"
+                                        [maxlength]="255"
+                                        class="form-control"
+                                        data-test="institution.edit.plz"
+                                        id="plz_id"
+                                        name="plz_id"
+                                        required
+                                        type="text"
+                                    />
+                                    <dv-error-messages
+                                        [errorObject]="
+                                            form.controls.plz_id?.errors
+                                        "
+                                        inputId="plz_id"
+                                    ></dv-error-messages>
+                                </div>
+                            </div>
+                            <!-- Ort -->
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label
+                                        class="required"
+                                        for="ort_id"
+                                        translate
+                                        >ADRESSE_ORT</label
+                                    >
+                                    <input
+                                        #name="ngModel"
+                                        [(ngModel)]="stammdaten.adresse.ort"
+                                        [maxlength]="255"
+                                        class="form-control"
+                                        data-test="institution.edit.ort"
+                                        id="ort_id"
+                                        name="ort_id"
+                                        required
+                                        type="text"
+                                    />
+                                    <dv-error-messages
+                                        [errorObject]="
+                                            form.controls.ort_id?.errors
+                                        "
+                                        inputId="ort_id"
+                                    ></dv-error-messages>
+                                </div>
+                            </div>
+                            <!-- Webseite -->
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="webseite_id" translate
+                                        >WEBSEITE</label
+                                    >
+                                    <input
+                                        #name="ngModel"
+                                        [(ngModel)]="stammdaten.webseite"
+                                        [maxlength]="255"
+                                        class="form-control"
+                                        data-test="institution.edit.webseite"
+                                        id="webseite_id"
+                                        name="webseite_id"
+                                        type="text"
+                                        placeholder="{{
+                                            'BEISPIEL_WEBSITE' | translate
+                                        }}"
+                                        isValidWebseite
+                                    />
+                                    <dv-error-messages
+                                        [errorObject]="
+                                            form.controls.webseite_id?.errors
+                                        "
+                                        inputId="webseite_id"
+                                    ></dv-error-messages>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <!-- Betreuungsgutschien akzeptieren ab / bis -->
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <h3 *ngIf="isBetreuungsgutschein()" translate>
-                                    INSTITUTION_BEGU_START_END
-                                </h3>
-                                <h3 *ngIf="isTagesschule()" translate>
-                                    TAGESSCHULE_ANMELDUNG_START_END
-                                </h3>
-                                <h3 *ngIf="isFerieninsel()" translate>
-                                    FERIENINSEL_ANMELDUNG_START_END
-                                </h3>
-                                <p>{{ getGueltigkeitTodisplay() }}</p>
-                                <p>{{ stammdaten.grundSchliessung }}</p>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-6">
-                            <div
-                                *ngIf="
-                                    externalClients &&
-                                    getSortedAssignedClients().length &&
-                                    !isFerieninsel()
-                                "
-                                class="form-group"
-                            >
-                                <h3 translate>PERMITTED_EXTERNAL_CLIENTS</h3>
-                                <div
-                                    *ngFor="
-                                        let assignedClient of getSortedAssignedClients();
-                                        let i = index
-                                    "
+                        <div class="row">
+                            <!-- Betreuungsgutscheine akzeptieren ab/bis -->
+                            <div class="col-sm-6">
+                                <label
+                                    class="labelAnmeldungStartEnd"
+                                    for="containerVonBisPickers_id"
+                                    translate
                                 >
+                                    {{
+                                        isBetreuungsgutschein()
+                                            ? 'INSTITUTION_BEGU_START_END'
+                                            : isTagesschule()
+                                              ? 'TAGESSCHULE_ANMELDUNG_START_END'
+                                              : 'FERIENINSEL_ANMELDUNG_START_END'
+                                    }}
+                                </label>
+                                <div class="row">
+                                    <dv-input-container-x
+                                        id="containerVonBisPickers_id"
+                                    >
+                                        <div class="col-sm-6">
+                                            <dv-date-picker-x
+                                                id="begu_start_id"
+                                                [(date)]="
+                                                    stammdaten.gueltigkeit
+                                                        .gueltigAb
+                                                "
+                                                [datePickerEnabled]="true"
+                                                [disabled]="
+                                                    isDateStartEndDisabled()
+                                                "
+                                                [required]="true"
+                                                [minDate]="getMinStartDate()"
+                                                data-test="institution.edit.gueltigAb"
+                                            ></dv-date-picker-x>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <dv-date-picker-x
+                                                [(date)]="
+                                                    stammdaten.gueltigkeit
+                                                        .gueltigBis
+                                                "
+                                                [datePickerEnabled]="true"
+                                                [disabled]="
+                                                    isDateStartEndDisabled()
+                                                "
+                                                [minDate]="getMinByRole()"
+                                                data-test="institution.edit.gueltigBis"
+                                            ></dv-date-picker-x>
+                                            <div class="custom-errors">
+                                                @if (
+                                                    showWarningInstitutionRueckwirkendSchliessen()
+                                                ) {
+                                                    <div>
+                                                        <i
+                                                            aria-hidden="true"
+                                                            class="fa fa-exclamation-triangle"
+                                                        ></i>
+                                                        <span translate
+                                                            >WARNING_SUPERADMIN_INSTITUTION_SCHLIESSEN_RUECKWIRKEND</span
+                                                        >
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </dv-input-container-x>
+                                </div>
+                                @if (stammdaten.gueltigkeit.gueltigBis) {
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            {{
-                                                assignedClient.externalClient
-                                                    .clientName
-                                            }}
-                                            {{
-                                                getGueltigAbDate(
-                                                    assignedClient.gueltigkeit
-                                                        .gueltigAb
-                                                )
-                                            }}
-                                            {{
-                                                getGueltigBisDate(
-                                                    assignedClient.gueltigkeit
-                                                        .gueltigBis
-                                                )
-                                            }}
+                                            <div class="form-group">
+                                                <label
+                                                    class="required"
+                                                    for="grundSchliessung_id"
+                                                    translate
+                                                    >INSTITUTION_GRUND_SCHLIESSUNG</label
+                                                >
+                                                <textarea
+                                                    #grundSchliessung="ngModel"
+                                                    [(ngModel)]="
+                                                        stammdaten.grundSchliessung
+                                                    "
+                                                    class="form-control"
+                                                    id="grundSchliessung_id"
+                                                    maxlength="4000"
+                                                    name="grundSchliessung_name"
+                                                    required
+                                                    rows="3"
+                                                >
+                                                </textarea>
+                                                <dv-error-messages
+                                                    [errorObject]="
+                                                        grundSchliessung.errors
+                                                    "
+                                                    inputId="grundSchliessung_id"
+                                                ></dv-error-messages>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="row">
+                                    <!-- Mail senden bei offenen Pendenzen -->
+                                    <div class="col-sm-12">
+                                        <h3 translate>
+                                            INSTITUTION_BENACHRICHTIGUNGEN
+                                        </h3>
+                                        <div class="form-group">
+                                            <mat-checkbox
+                                                [(ngModel)]="
+                                                    stammdaten.sendMailWennOffenePendenzen
+                                                "
+                                                id="sendMailWennOffenePendenzen_id"
+                                                name="sendMailWennOffenePendenzen_id"
+                                            >
+                                                {{
+                                                    'INSTITUTION_BENACHRICHTIGUNG_PENDENZEN'
+                                                        | translate
+                                                }}
+                                            </mat-checkbox>
                                         </div>
                                     </div>
                                 </div>
+                                @if (stammdaten.sendMailWennOffenePendenzen) {
+                                    <div class="row">
+                                        <!-- E-Mail -->
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label
+                                                    class="required"
+                                                    for="erinnerung_mail_id"
+                                                    translate
+                                                >
+                                                    {{
+                                                        'INSTITUTION_ERINNERUNG_MAIL'
+                                                            | translate
+                                                    }}
+                                                </label>
+                                                <input
+                                                    #name="ngModel"
+                                                    [(ngModel)]="
+                                                        stammdaten.erinnerungMail
+                                                    "
+                                                    [maxlength]="255"
+                                                    placeholder="{{
+                                                        'BEISPIEL_EMAIL'
+                                                            | translate
+                                                    }}"
+                                                    class="form-control"
+                                                    id="erinnerung_mail_id"
+                                                    name="erinnerung_mail_id"
+                                                    type="email"
+                                                    required
+                                                    email
+                                                />
+                                                <dv-error-messages
+                                                    [errorObject]="
+                                                        form.controls
+                                                            .erinnerung_mail_id
+                                                            ?.errors
+                                                    "
+                                                    inputId="erinnerung_mail_id"
+                                                ></dv-error-messages>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            @if (
+                                externalClients &&
+                                allPossibleClients.length &&
+                                isExportableInstitution()
+                            ) {
+                                <div class="col-sm-6">
+                                    <h3 translate>
+                                        PERMITTED_EXTERNAL_CLIENTS
+                                    </h3>
+                                    @for (
+                                        client of allPossibleClients;
+                                        track client
+                                    ) {
+                                        <div>
+                                            <div class="row picker-min-height">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <mat-checkbox
+                                                            (change)="
+                                                                changeAssignmentClient(
+                                                                    $event,
+                                                                    client
+                                                                )
+                                                            "
+                                                            [checked]="
+                                                                isClientAssigned(
+                                                                    client
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                client.clientName
+                                                            }}
+                                                        </mat-checkbox>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        @if (
+                                                            isClientAssigned(
+                                                                client
+                                                            )
+                                                        ) {
+                                                            <dv-month-picker
+                                                                (dateChange)="
+                                                                    dateAbChange(
+                                                                        $event,
+                                                                        getAssignedInstitutionClient(
+                                                                            client
+                                                                        )
+                                                                    )
+                                                                "
+                                                                [date]="
+                                                                    getAssignedInstitutionClient(
+                                                                        client
+                                                                    )
+                                                                        .gueltigkeit
+                                                                        .gueltigAb
+                                                                "
+                                                                [required]="
+                                                                    true
+                                                                "
+                                                            >
+                                                            </dv-month-picker>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        @if (
+                                                            isClientAssigned(
+                                                                client
+                                                            )
+                                                        ) {
+                                                            <dv-month-picker
+                                                                (dateChange)="
+                                                                    dateBisChange(
+                                                                        $event,
+                                                                        getAssignedInstitutionClient(
+                                                                            client
+                                                                        )
+                                                                    )
+                                                                "
+                                                                [date]="
+                                                                    getAssignedInstitutionClient(
+                                                                        client
+                                                                    )
+                                                                        .gueltigkeit
+                                                                        .gueltigBis
+                                                                "
+                                                            >
+                                                            </dv-month-picker>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </fieldset>
+                } @else {
+                    <fieldset>
+                        <div class="view-sub-title">
+                            <h3 translate>INSTITUTION_STAMMDATEN</h3>
+                            <hr class="header" />
+                        </div>
+                        <div class="row">
+                            <!-- Kontaktadresse -->
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <h3 translate>KONTAKTADRESSE</h3>
+                                    <p>{{ stammdaten.adresse.organisation }}</p>
+                                    <p>
+                                        {{ stammdaten.adresse.strasse }}
+                                        {{ stammdaten.adresse.hausnummer }}
+                                    </p>
+                                    <p>
+                                        {{ stammdaten.adresse.plz }}
+                                        {{ stammdaten.adresse.ort }}
+                                    </p>
+                                    @if (stammdaten.adresse.gemeinde) {
+                                        <p>
+                                            <span translate>GEMEINDE</span>
+                                            {{ stammdaten.adresse.gemeinde }} (
+                                            <span translate
+                                                >GEMEINDE_BFS_NR</span
+                                            >
+                                            {{ stammdaten.adresse.bfsNummer }})
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+                            <!-- E-Mail, Telefon, Webseite -->
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <h3>&nbsp;</h3>
+                                    <p>
+                                        <a
+                                            href="mailto:{{ stammdaten.mail }}"
+                                            >{{ stammdaten.mail }}</a
+                                        >
+                                    </p>
+                                    <p>
+                                        <a
+                                            href="tel:{{ stammdaten.telefon }}"
+                                            >{{ stammdaten.telefon }}</a
+                                        >
+                                    </p>
+                                    <p>
+                                        <a
+                                            href="{{
+                                                ebeguUtil.formatHrefUrl(
+                                                    stammdaten.webseite
+                                                )
+                                            }}"
+                                            target="tah"
+                                            >{{ stammdaten.webseite }}</a
+                                        >
+                                    </p>
+                                </div>
+                            </div>
+                            @if (stammdaten.institution.traegerschaft) {
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <h3 translate>TRAEGERSCHAFT</h3>
+                                        <p>
+                                            {{
+                                                stammdaten.institution
+                                                    .traegerschaft.name
+                                            }}
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="row">
+                            <!-- Betreuungsgutschien akzeptieren ab / bis -->
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    @if (isBetreuungsgutschein()) {
+                                        <h3 translate>
+                                            INSTITUTION_BEGU_START_END
+                                        </h3>
+                                    }
+                                    @if (isTagesschule()) {
+                                        <h3 translate>
+                                            TAGESSCHULE_ANMELDUNG_START_END
+                                        </h3>
+                                    }
+                                    @if (isFerieninsel()) {
+                                        <h3 translate>
+                                            FERIENINSEL_ANMELDUNG_START_END
+                                        </h3>
+                                    }
+                                    <p>{{ getGueltigkeitTodisplay() }}</p>
+                                    <p>{{ stammdaten.grundSchliessung }}</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                @if (
+                                    externalClients &&
+                                    getSortedAssignedClients().length &&
+                                    !isFerieninsel()
+                                ) {
+                                    <div class="form-group">
+                                        <h3 translate>
+                                            PERMITTED_EXTERNAL_CLIENTS
+                                        </h3>
+                                        @for (
+                                            assignedClient of getSortedAssignedClients();
+                                            track assignedClient;
+                                            let i = $index
+                                        ) {
+                                            <div>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        {{
+                                                            assignedClient
+                                                                .externalClient
+                                                                .clientName
+                                                        }}
+                                                        {{
+                                                            getGueltigAbDate(
+                                                                assignedClient
+                                                                    .gueltigkeit
+                                                                    .gueltigAb
+                                                            )
+                                                        }}
+                                                        {{
+                                                            getGueltigBisDate(
+                                                                assignedClient
+                                                                    .gueltigkeit
+                                                                    .gueltigBis
+                                                            )
+                                                        }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <!-- Benachrichtugnseinstellungen -->
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <h3 translate>
-                                    INSTITUTION_BENACHRICHTIGUNGEN
-                                </h3>
-                                <p
-                                    *ngIf="
+                        <div class="row">
+                            <!-- Benachrichtugnseinstellungen -->
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <h3 translate>
+                                        INSTITUTION_BENACHRICHTIGUNGEN
+                                    </h3>
+                                    @if (
                                         stammdaten.sendMailWennOffenePendenzen
-                                    "
-                                    translate
-                                >
-                                    INSTITUTION_BENACHRICHTIGUNG_PENDENZEN
-                                </p>
-                                <p *ngIf="stammdaten.erinnerungMail">
-                                    {{
-                                        'INSTITUTION_ERINNERUNG_MAIL'
-                                            | translate
-                                    }}:&nbsp;<a
-                                        href="mailto:{{
-                                            stammdaten.erinnerungMail
-                                        }}"
-                                        >{{ stammdaten.erinnerungMail }}</a
-                                    >
-                                </p>
+                                    ) {
+                                        <p translate>
+                                            INSTITUTION_BENACHRICHTIGUNG_PENDENZEN
+                                        </p>
+                                    }
+                                    @if (stammdaten.erinnerungMail) {
+                                        <p>
+                                            {{
+                                                'INSTITUTION_ERINNERUNG_MAIL'
+                                                    | translate
+                                            }}:&nbsp;<a
+                                                href="mailto:{{
+                                                    stammdaten.erinnerungMail
+                                                }}"
+                                                >{{
+                                                    stammdaten.erinnerungMail
+                                                }}</a
+                                            >
+                                        </p>
+                                    }
+                                </div>
                             </div>
                         </div>
+                    </fieldset>
+                }
+                @if (isBetreuungsgutschein() && stammdaten) {
+                    <div>
+                        <dv-edit-institution-betreuungsgutscheine
+                            [editMode]="editMode"
+                            [stammdaten]="stammdaten"
+                        >
+                        </dv-edit-institution-betreuungsgutscheine>
                     </div>
-                </fieldset>
-            </ng-template>
-        </div>
-
-        <!-- Buttons -->
-        <div class="dv-footer">
-            <button
-                (click)="nurLatsInstitutionUmwandeln()"
-                *ngIf="isNurLats() && !editMode"
-                class="dv-btn next-button"
-                translate
-                type="button"
-            >
-                {{ 'NUR_LATS_UMWANDELN' | translate }}
-            </button>
-            <button
-                *ngIf="isStammdatenEditable()"
-                [type]="'submit'"
-                class="dv-btn next-button"
-                data-test="institution.edit.submit"
-            >
-                {{ submitButtonLabel() }}
-            </button>
-            <button
-                (click)="cancel()"
-                *ngIf="!isRegistering()"
-                [textContent]="'CANCEL' | translate"
-                class="dv-btn cancel-button"
-                data-test="institution.edit.cancel"
-                type="button"
-            ></button>
-        </div>
-    </form>
+                }
+                @if (
+                    isTagesschule() &&
+                    stammdaten &&
+                    stammdaten.institutionStammdatenTagesschule
+                ) {
+                    <div>
+                        <dv-edit-institution-tagesschule
+                            [assignedClients]="
+                                this.externalClients.assignedClients
+                            "
+                            [editMode]="editMode"
+                            [(stammdaten)]="stammdaten"
+                        >
+                        </dv-edit-institution-tagesschule>
+                    </div>
+                }
+                @if (isFerieninsel() && stammdaten) {
+                    <div>
+                        <dv-edit-institution-ferieninsel
+                            [editMode]="editMode"
+                            [stammdaten]="stammdaten"
+                        >
+                        </dv-edit-institution-ferieninsel>
+                    </div>
+                }
+            </div>
+            <!-- Buttons -->
+            <div class="dv-footer">
+                @if (isNurLats() && !editMode) {
+                    <button
+                        (click)="nurLatsInstitutionUmwandeln()"
+                        class="dv-btn next-button"
+                        translate
+                        type="button"
+                    >
+                        {{ 'NUR_LATS_UMWANDELN' | translate }}
+                    </button>
+                }
+                @if (isStammdatenEditable()) {
+                    <button
+                        [type]="'submit'"
+                        class="dv-btn next-button"
+                        data-test="institution.edit.submit"
+                    >
+                        {{ submitButtonLabel() }}
+                    </button>
+                }
+                @if (!isRegistering()) {
+                    <button
+                        (click)="cancel()"
+                        [textContent]="'CANCEL' | translate"
+                        class="dv-btn cancel-button"
+                        data-test="institution.edit.cancel"
+                        type="button"
+                    ></button>
+                }
+            </div>
+        </form>
+    }
 </dv-full-height-inner-padding-container>

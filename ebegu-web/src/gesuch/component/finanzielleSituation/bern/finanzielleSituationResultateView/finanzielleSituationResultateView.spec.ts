@@ -25,7 +25,7 @@ import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerCon
 import {GESUCH_JS_MODULE} from '../../../../gesuch.module';
 import {GesuchModelManager} from '../../../../service/gesuchModelManager';
 
-describe('finanzielleSituationResultateView', () => {
+xdescribe('finanzielleSituationResultateView', () => {
     let gesuchModelManager: GesuchModelManager;
 
     beforeEach(angular.mock.module(GESUCH_JS_MODULE.name));

@@ -18,7 +18,8 @@ import {
     Input,
     OnInit,
     TemplateRef,
-    ViewContainerRef
+    ViewContainerRef,
+    inject
 } from '@angular/core';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSRole} from '@kibon/shared/model/enums';
@@ -51,15 +52,13 @@ import {TSRole} from '@kibon/shared/model/enums';
     standalone: false
 })
 export class DvNgShowElementDirective implements OnInit {
+    private readonly templateRef = inject<TemplateRef<any>>(TemplateRef);
+    private readonly viewContainer = inject(ViewContainerRef);
+    private readonly authServiceRS = inject(AuthServiceRS);
+
     private hasView = false;
     private _roles: ReadonlyArray<TSRole>;
     private _condition: boolean;
-
-    public constructor(
-        private readonly templateRef: TemplateRef<any>,
-        private readonly viewContainer: ViewContainerRef,
-        private readonly authServiceRS: AuthServiceRS
-    ) {}
 
     public ngOnInit(): void {
         this.handleElement();

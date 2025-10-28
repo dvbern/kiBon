@@ -22,8 +22,6 @@ import {
     LOCALE_ID,
     ModuleWithProviders,
     NgModule,
-    Optional,
-    SkipSelf,
     inject,
     provideAppInitializer
 } from '@angular/core';
@@ -101,9 +99,14 @@ export function initMandantCookie(
     ]
 })
 export class CoreModule {
-    public constructor(
-        @Optional() @SkipSelf() private readonly parentModule: CoreModule
-    ) {
+    private readonly parentModule = inject(CoreModule, {
+        optional: true,
+        skipSelf: true
+    });
+
+    public constructor() {
+        const parentModule = this.parentModule;
+
         if (parentModule) {
             throw new Error(
                 'CoreModule has already been loaded. Import Core modules in the AppModule only.'

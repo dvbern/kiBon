@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -51,6 +52,19 @@ import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
     standalone: false
 })
 export class AddGemeindeComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+    private readonly $state = inject(StateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly translate = inject(TranslateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly dialog = inject(MatDialog);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+
     private readonly log: Log = LogFactory.createLog('AddGemeindeComponent');
 
     @ViewChild(NgForm, {static: true}) public form: NgForm;
@@ -67,19 +81,6 @@ export class AddGemeindeComponent implements OnInit {
     public tageschuleEnabledForMandant: boolean;
 
     public showMessageKeinAngebotSelected: boolean = false;
-
-    public constructor(
-        private readonly $transition$: Transition,
-        private readonly $state: StateService,
-        private readonly errorService: ErrorService,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly translate: TranslateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly dialog: MatDialog,
-        private readonly cd: ChangeDetectorRef,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
-    ) {}
 
     public ngOnInit(): void {
         const gemeindeId: string = this.$transition$.params().gemeindeId;

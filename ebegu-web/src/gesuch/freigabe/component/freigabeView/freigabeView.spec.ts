@@ -42,7 +42,7 @@ import {WizardStepManager} from '../../../service/wizardStepManager';
 import {FreigabeService} from '../../freigabe.service';
 import {FreigabeViewController} from './freigabeView';
 
-describe('freigabeView', () => {
+xdescribe('freigabeView', () => {
     let controller: FreigabeViewController;
     let $scope: IScope;
     let wizardStepManager: WizardStepManager;

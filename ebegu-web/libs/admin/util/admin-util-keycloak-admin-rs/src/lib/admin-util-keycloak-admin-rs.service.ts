@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {CONSTANTS} from '@kibon/shared/model/constants';
 import {Observable} from 'rxjs';
 
@@ -7,9 +7,9 @@ import {Observable} from 'rxjs';
     providedIn: 'root'
 })
 export class AdminUtilKeycloakAdminRsService {
-    public serviceUrl: string = `${CONSTANTS.REST_API}admin/keycloak`;
+    http = inject(HttpClient);
 
-    public constructor(public http: HttpClient) {}
+    public serviceUrl: string = `${CONSTANTS.REST_API}admin/keycloak`;
 
     public mitarbeiterRechteErstellen(): Observable<any> {
         return this.http.get(`${this.serviceUrl}/accessrechte/erstellen`, {

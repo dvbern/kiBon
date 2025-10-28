@@ -21,7 +21,8 @@ import {
     Component,
     Input,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
@@ -50,6 +51,14 @@ import {TSLastenausgleichTagesschulenStatusHistory} from '../../../../../models/
     standalone: false
 })
 export class FreigabeComponent implements OnInit {
+    private readonly translate = inject(TranslateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly latsService = inject(LastenausgleichTSService);
+    private readonly dialog = inject(MatDialog);
+    private readonly $state = inject(StateService);
+    private readonly authService = inject(AuthServiceRS);
+    private readonly cd = inject(ChangeDetectorRef);
+
     private readonly ROUTING_DELAY = 3000; // ms
 
     @Input() public lastenausgleichID: string;
@@ -69,16 +78,6 @@ export class FreigabeComponent implements OnInit {
         new BehaviorSubject<boolean>(false);
     public canSeeAbgeschlossenText: BehaviorSubject<boolean> =
         new BehaviorSubject<boolean>(false);
-
-    public constructor(
-        private readonly translate: TranslateService,
-        private readonly errorService: ErrorService,
-        private readonly latsService: LastenausgleichTSService,
-        private readonly dialog: MatDialog,
-        private readonly $state: StateService,
-        private readonly authService: AuthServiceRS,
-        private readonly cd: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         combineLatest([

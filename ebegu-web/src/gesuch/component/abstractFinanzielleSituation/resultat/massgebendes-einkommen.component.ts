@@ -21,7 +21,8 @@ import {
     Component,
     Input,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -37,6 +38,8 @@ const LOG = LogFactory.createLog('ResultatComponent');
     standalone: false
 })
 export class MassgebendesEinkommenComponent implements OnInit, OnDestroy {
+    protected ref = inject(ChangeDetectorRef);
+
     @Input()
     public massgebendesEinkommen$: Observable<TSFinanzielleSituationResultateDTO>;
 
@@ -54,8 +57,6 @@ export class MassgebendesEinkommenComponent implements OnInit, OnDestroy {
 
     public resultate?: TSFinanzielleSituationResultateDTO;
     private subscription: Subscription;
-
-    public constructor(protected ref: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
         this.setupCalculation();

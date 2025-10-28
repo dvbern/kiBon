@@ -1,4 +1,9 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    inject
+} from '@angular/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import {TSFinanzielleSituationSubStepName} from '../../../../../models/enums/TSFinanzielleSituationSubStepName';
 import {TSWizardStepName} from '@kibon/shared/model/enums';
@@ -21,21 +26,29 @@ export class FinanzielleSituationGsSchwyzComponent
     extends AbstractGesuchViewX<TSFinanzModel>
     implements OnInit
 {
+    protected readonly gesuchmodelManager: GesuchModelManager;
+    protected readonly wizardStepManager: WizardStepManager;
+    private readonly $stateParams = inject(UIRouterGlobals);
+    private readonly finSitSchwyzService = inject(
+        FinanzielleSituationSchwyzService
+    );
+
     public massgebendesEinkommen = 0;
     public gesuchstellerNumber: number;
     public gesuchsteller: TSGesuchstellerContainer;
 
-    public constructor(
-        protected readonly gesuchmodelManager: GesuchModelManager,
-        protected readonly wizardStepManager: WizardStepManager,
-        private readonly $stateParams: UIRouterGlobals,
-        private readonly finSitSchwyzService: FinanzielleSituationSchwyzService
-    ) {
+    public constructor() {
+        const gesuchmodelManager = inject(GesuchModelManager);
+        const wizardStepManager = inject(WizardStepManager);
+
         super(
             gesuchmodelManager,
             wizardStepManager,
             TSWizardStepName.FINANZIELLE_SITUATION_SCHWYZ
         );
+
+        this.gesuchmodelManager = gesuchmodelManager;
+        this.wizardStepManager = wizardStepManager;
     }
 
     public ngOnInit(): void {

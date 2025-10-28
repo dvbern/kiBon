@@ -15,7 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, HostBinding} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    HostBinding,
+    inject
+} from '@angular/core';
 import {StateService} from '@uirouter/angular';
 import {Permission} from '../../../app/authorisation/Permission';
 import {PERMISSIONS} from '../../../app/authorisation/Permissions';
@@ -31,14 +36,12 @@ import {TSBenutzer} from '../../../models/TSBenutzer';
     standalone: false
 })
 export class BenutzerListViewXComponent {
+    private readonly state = inject(StateService);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly authServiceRS = inject(AuthServiceRS);
+
     @HostBinding('class') public class = 'overflow-scroll';
     @HostBinding('flex') public flex = 'auto';
-
-    public constructor(
-        private readonly state: StateService,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly authServiceRS: AuthServiceRS
-    ) {}
 
     /**
      * Fuer Benutzer mit der Rolle SACHBEARBEITER_INSTITUTION oder SACHBEARBEITER_TRAEGERSCHAFT oeffnet es das Gesuch

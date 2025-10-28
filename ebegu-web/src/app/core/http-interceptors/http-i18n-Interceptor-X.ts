@@ -21,14 +21,14 @@ import {
     HttpInterceptor,
     HttpRequest
 } from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {HEADER_ACCEPT_LANGUAGE} from '@kibon/shared/model/constants';
 import {Observable} from 'rxjs';
 import {I18nServiceRSRest} from '../../i18n/services/i18nServiceRS.rest';
 
 @Injectable()
 export class HttpI18nInterceptorX implements HttpInterceptor {
-    public constructor(private readonly i18nService: I18nServiceRSRest) {}
+    private readonly i18nService = inject(I18nServiceRSRest);
 
     public intercept(
         req: HttpRequest<any>,

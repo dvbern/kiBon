@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
@@ -55,24 +56,24 @@ const LOG = LogFactory.createLog('FerienbetreuungUploadComponent');
     standalone: false
 })
 export class FerienbetreuungUploadComponent implements OnInit, OnDestroy {
+    private readonly ferienbetreuungService = inject(FerienbetreuungService);
+    private readonly ferienbetreuungDokumentService = inject(
+        FerienbetreuungDokumentService
+    );
+    private readonly uploadRS = inject(UploadRS);
+    private readonly errorService = inject(ErrorService);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly translate = inject(TranslateService);
+    private readonly dialog = inject(MatDialog);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly wizardRS = inject(WizardStepXRS);
+    private readonly authService = inject(AuthServiceRS);
+
     public dokumente: TSFerienbetreuungDokument[];
     public filesTooBig: File[];
 
     private container: TSFerienbetreuungAngabenContainer;
     private subscription: Subscription;
-
-    public constructor(
-        private readonly ferienbetreuungService: FerienbetreuungService,
-        private readonly ferienbetreuungDokumentService: FerienbetreuungDokumentService,
-        private readonly uploadRS: UploadRS,
-        private readonly errorService: ErrorService,
-        private readonly cd: ChangeDetectorRef,
-        private readonly translate: TranslateService,
-        private readonly dialog: MatDialog,
-        private readonly downloadRS: DownloadRS,
-        private readonly wizardRS: WizardStepXRS,
-        private readonly authService: AuthServiceRS
-    ) {}
 
     public ngOnInit(): void {
         this.subscription = this.ferienbetreuungService

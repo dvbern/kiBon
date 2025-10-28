@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.dvbern.ebegu.util;
+package ch.dvbern.ebegu.util.doppelbetreuung;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -25,6 +25,7 @@ import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Betreuungspensum;
 import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
+import ch.dvbern.ebegu.util.BetreuungspensumContainerComparator;
 
 /**
  * Comparator, der die Betreuungen nach folgender Regel sortiert:
@@ -41,8 +42,6 @@ public class BetreuungComparator implements
 
 	@Override
 	public int compare(AbstractPlatz platz1, AbstractPlatz platz2) {
-		// Reihenfolge ist nur fuer Betreuungen relevant für Restanspruch, daher werden nur Betreuungen verglichen.
-		// Anmeldungen Tagesschule beliben immer am gleichen Ort in Relation zu Betreuungen
 		if (!(platz1 instanceof Betreuung && platz2 instanceof Betreuung)) {
 			return 0;
 		}

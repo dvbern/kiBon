@@ -130,15 +130,16 @@
                 class="dv-align-right"
             ></mat-header-cell>
             <mat-cell *matCellDef="let item" class="dv-align-right">
-                <dv-loading-button
-                    *ngIf="!editMode() && checkInstitutionStatusAktiv(item)"
-                    [type]="'button'"
-                    title="edit"
-                    (buttonClick)="editInfoma(item)"
-                    disabled="false"
-                >
-                    <i class="fa fa-pencil"> </i>
-                </dv-loading-button>
+                @if (!editMode() && checkInstitutionStatusAktiv(item)) {
+                    <dv-loading-button
+                        [type]="'button'"
+                        title="edit"
+                        (buttonClick)="editInfoma(item)"
+                        disabled="false"
+                    >
+                        <i class="fa fa-pencil"> </i>
+                    </dv-loading-button>
+                }
             </mat-cell>
         </ng-container>
 

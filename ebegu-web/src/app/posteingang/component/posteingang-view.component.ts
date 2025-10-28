@@ -22,7 +22,8 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {PageEvent} from '@angular/material/paginator';
@@ -78,6 +79,21 @@ const LOG = LogFactory.createLog('PosteingangViewComponent');
 export class PosteingangViewComponent
     implements OnInit, OnDestroy, AfterViewInit
 {
+    private readonly mitteilungRS = inject(MitteilungRS);
+    private readonly $state = inject(StateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly transitionService = inject(TransitionService);
+    private readonly stateStore = inject(StateStoreService);
+    private readonly uiRouterGlobals = inject(UIRouterGlobals);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly posteingangService = inject(PosteingangService);
+    private readonly dialog = inject(MatDialog);
+    private readonly translate = inject(TranslateService);
+    private readonly errorService = inject(ErrorServiceX);
+    private readonly demoFeatureRS = inject(DemoFeatureRS);
+
     @ViewChild(MatSort) private readonly matSort: MatSort;
 
     private readonly log: Log = LogFactory.createLog(
@@ -166,23 +182,6 @@ export class PosteingangViewComponent
 
     public readonly mutationsMeldungDemoFeature =
         TSDemoFeature.ALLE_MUTATIONSMELDUNGEN_VERFUEGEN;
-
-    public constructor(
-        private readonly mitteilungRS: MitteilungRS,
-        private readonly $state: StateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly transitionService: TransitionService,
-        private readonly stateStore: StateStoreService,
-        private readonly uiRouterGlobals: UIRouterGlobals,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly posteingangService: PosteingangService,
-        private readonly dialog: MatDialog,
-        private readonly translate: TranslateService,
-        private readonly errorService: ErrorServiceX,
-        private readonly demoFeatureRS: DemoFeatureRS
-    ) {}
 
     public ngOnInit(): void {
         this.updateGemeindenList();

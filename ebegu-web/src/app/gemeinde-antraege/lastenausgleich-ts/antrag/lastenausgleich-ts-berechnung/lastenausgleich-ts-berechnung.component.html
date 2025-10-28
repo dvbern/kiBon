@@ -1,23 +1,22 @@
 <!--
-  ~ Copyright (C) 2020 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2020 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
-<ng-container *ngIf="latsContainer">
+@if (latsContainer) {
     <h2 class="margin-bottom-50" translate>LATS_VERFUEGUNG</h2>
-
     <form role="form" #form="ngForm" name="form">
         <div class="flex-row-start-center">
             <div class="form-group">
@@ -71,53 +70,52 @@
             <span translate>SAVE</span>
         </dv-loading-button>
     </form>
-
-    <button
-        type="button"
-        class="dv-btn btn-link link-underline"
-        *ngIf="canViewDokumentErstellenButton | async"
-        [disabled]="!hasSavedBetreuungsstundenPrognose"
-        (click)="createLatsDocumentDe()"
-    >
-        <i
-            *ngIf="(downloadingDeFile | async) === false"
-            class="fa fa-file-text-o"
-        ></i>
-        <i
-            *ngIf="downloadingDeFile | async"
-            class="fa fa-circle-o-notch fa-spin fa-fw"
-        ></i>
-        &nbsp;
-        <span translate>LATS_DOKUMENT_ERSTELLEN_DE</span>
-    </button>
-    <br />
-    <button
-        type="button"
-        class="dv-btn btn-link link-underline"
-        *ngIf="canViewDokumentErstellenButton | async"
-        [disabled]="!hasSavedBetreuungsstundenPrognose"
-        (click)="createLatsDocumentFr()"
-    >
-        <i
-            *ngIf="(downloadingFrFile | async) === false"
-            class="fa fa-file-text-o"
-        ></i>
-        <i
-            *ngIf="downloadingFrFile | async"
-            class="fa fa-circle-o-notch fa-spin fa-fw"
-        ></i>
-        &nbsp;
-        <span translate>LATS_DOKUMENT_ERSTELLEN_FR</span>
-    </button>
-
-    <div class="actions">
-        <dv-loading-button
+    @if (canViewDokumentErstellenButton | async) {
+        <button
             type="button"
-            *ngIf="isAbschliessenVisible()"
-            (buttonClick)="antragAbschliessen()"
+            class="dv-btn btn-link link-underline"
+            [disabled]="!hasSavedBetreuungsstundenPrognose"
+            (click)="createLatsDocumentDe()"
         >
-            <span translate>ABSCHLIESSEN</span>
-        </dv-loading-button>
+            @if ((downloadingDeFile | async) === false) {
+                <i class="fa fa-file-text-o"></i>
+            }
+            @if (downloadingDeFile | async) {
+                <i class="fa fa-circle-o-notch fa-spin fa-fw"></i>
+            }
+            &nbsp;
+            <span translate>LATS_DOKUMENT_ERSTELLEN_DE</span>
+        </button>
+    }
+    <br />
+    @if (canViewDokumentErstellenButton | async) {
+        <button
+            type="button"
+            class="dv-btn btn-link link-underline"
+            [disabled]="!hasSavedBetreuungsstundenPrognose"
+            (click)="createLatsDocumentFr()"
+        >
+            @if ((downloadingFrFile | async) === false) {
+                <i class="fa fa-file-text-o"></i>
+            }
+            @if (downloadingFrFile | async) {
+                <i class="fa fa-circle-o-notch fa-spin fa-fw"></i>
+            }
+            &nbsp;
+            <span translate>LATS_DOKUMENT_ERSTELLEN_FR</span>
+        </button>
+    }
+    <div class="actions">
+        @if (isAbschliessenVisible()) {
+            <dv-loading-button
+                type="button"
+                (buttonClick)="antragAbschliessen()"
+            >
+                <span translate>ABSCHLIESSEN</span>
+            </dv-loading-button>
+        }
     </div>
-    <p translate *ngIf="latsContainer?.isAbgeschlossen()">LATS_ABGESCHLOSSEN</p>
-</ng-container>
+    @if (latsContainer?.isAbgeschlossen()) {
+        <p translate>LATS_ABGESCHLOSSEN</p>
+    }
+}

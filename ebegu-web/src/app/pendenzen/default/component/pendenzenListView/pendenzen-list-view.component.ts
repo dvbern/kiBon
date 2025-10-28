@@ -19,7 +19,8 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {StateService} from '@uirouter/core';
 import {BehaviorSubject, Subject, Subscription} from 'rxjs';
@@ -45,6 +46,12 @@ const LOG = LogFactory.createLog('PendenzenListViewComponent');
     standalone: false
 })
 export class PendenzenListViewComponent implements OnInit, OnDestroy {
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly $state = inject(StateService);
+    private readonly searchRS = inject(SearchRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly gemeindeRS = inject(GemeindeRS);
+
     public hasGemeindenInStatusAngemeldet: boolean = false;
 
     public data$: BehaviorSubject<DVAntragListItem[]> = new BehaviorSubject<
@@ -74,14 +81,6 @@ export class PendenzenListViewComponent implements OnInit, OnDestroy {
 
     // used to cancel the previous subscription so we don't have two data loads racing each other
     private dataLoadingSubscription: Subscription;
-
-    public constructor(
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly $state: StateService,
-        private readonly searchRS: SearchRS,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly gemeindeRS: GemeindeRS
-    ) {}
 
     public ngOnInit(): void {
         this.authServiceRS.principal$

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {map} from 'rxjs/operators';
 import {TSDemoFeature} from '../directive/dv-hide-feature/TSDemoFeature';
@@ -24,9 +24,9 @@ import {TSDemoFeature} from '../directive/dv-hide-feature/TSDemoFeature';
     providedIn: 'root'
 })
 export class DemoFeatureRS {
-    public constructor(
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
-    ) {}
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
 
     public isDemoFeatureAllowed(dvDemoFeature: TSDemoFeature) {
         return this.applicationPropertyRS.getActivatedDemoFeatures().pipe(

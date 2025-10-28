@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DvNgHelpDialogComponent} from '../../../../gesuch/dialog/dv-ng-help-dialog/dv-ng-help-dialog.component';
 
@@ -24,9 +24,9 @@ import {DvNgHelpDialogComponent} from '../../../../gesuch/dialog/dv-ng-help-dial
     standalone: false
 })
 export class DvHelpmenuComponent {
-    public display: boolean = false;
+    private readonly dialog = inject(MatDialog);
 
-    public constructor(private readonly dialog: MatDialog) {}
+    public display: boolean = false;
 
     public showDialog(): void {
         this.dialog.open(DvNgHelpDialogComponent);

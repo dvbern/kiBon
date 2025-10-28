@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 
@@ -25,14 +25,19 @@ import {TranslateService} from '@ngx-translate/core';
     standalone: false
 })
 export class DvNgSelectTraegerschaftEmailDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgSelectTraegerschaftEmailDialogComponent>>(
+            MatDialogRef
+        );
+    private readonly translate = inject(TranslateService);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     public adminMails: string[];
     public selectedMail: string;
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DvNgSelectTraegerschaftEmailDialogComponent>,
-        private readonly translate: TranslateService,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         this.adminMails = data;
     }
 

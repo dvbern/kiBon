@@ -141,40 +141,48 @@
             </div>
 
             <!-- Suchindex -->
-            <div *ngIf="!isReadonly() && isSuperadmin()">
-                <div class="view-title margin-top-40">
-                    <h1>{{ 'CREATE_SEARCHINDEX' | translate }}</h1>
-                </div>
-                <div class="row margin-top-10">
-                    <div class="col-md-12 form-group">
-                        <dv-loading-button
-                            [buttonDisabled]="reindexInProgress"
-                            (buttonClick)="startReindex()"
-                        >
-                            <span>{{ 'CREATE_SEARCHINDEX' | translate }}</span>
-                        </dv-loading-button>
+            @if (!isReadonly() && isSuperadmin()) {
+                <div>
+                    <div class="view-title margin-top-40">
+                        <h1>{{ 'CREATE_SEARCHINDEX' | translate }}</h1>
+                    </div>
+                    <div class="row margin-top-10">
+                        <div class="col-md-12 form-group">
+                            <dv-loading-button
+                                [buttonDisabled]="reindexInProgress"
+                                (buttonClick)="startReindex()"
+                            >
+                                <span>{{
+                                    'CREATE_SEARCHINDEX' | translate
+                                }}</span>
+                            </dv-loading-button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div *ngIf="!isReadonly() && isSuperadmin()">
-                <div class="view-title margin-top-40">
-                    <h1>{{ 'MITARBEITERRECHTE_ERSTELLEN' | translate }}</h1>
-                </div>
-                <div class="row margin-top-10">
-                    <div class="col-md-12 form-group">
-                        <dv-loading-button
-                            [buttonDisabled]="
-                                mitarbeiterRechteErstellenInProgress
-                            "
-                            (buttonClick)="startMitarbeiterRechteErstellen()"
-                        >
-                            <span>{{
-                                'MITARBEITERRECHTE_ERSTELLEN' | translate
-                            }}</span>
-                        </dv-loading-button>
+            }
+            @if (!isReadonly() && isSuperadmin()) {
+                <div>
+                    <div class="view-title margin-top-40">
+                        <h1>{{ 'MITARBEITERRECHTE_ERSTELLEN' | translate }}</h1>
+                    </div>
+                    <div class="row margin-top-10">
+                        <div class="col-md-12 form-group">
+                            <dv-loading-button
+                                [buttonDisabled]="
+                                    mitarbeiterRechteErstellenInProgress
+                                "
+                                (buttonClick)="
+                                    startMitarbeiterRechteErstellen()
+                                "
+                            >
+                                <span>{{
+                                    'MITARBEITERRECHTE_ERSTELLEN' | translate
+                                }}</span>
+                            </dv-loading-button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>

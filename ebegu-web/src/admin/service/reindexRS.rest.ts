@@ -14,16 +14,16 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CONSTANTS} from '@kibon/shared/model/constants';
 @Injectable({
     providedIn: 'root'
 })
 export class ReindexRS {
-    public readonly serviceURL: string = `${CONSTANTS.REST_API}admin/reindex`;
+    readonly $http = inject(HttpClient);
 
-    public constructor(public readonly $http: HttpClient) {}
+    public readonly serviceURL: string = `${CONSTANTS.REST_API}admin/reindex`;
 
     public reindex(): Observable<any> {
         return this.$http.get(`${this.serviceURL}/`, {

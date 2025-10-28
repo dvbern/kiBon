@@ -3,7 +3,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -50,6 +51,19 @@ export class GesuchsperiodeViewXComponent
     extends AbstractAdminViewX
     implements OnInit
 {
+    private readonly einstellungenRS = inject(EinstellungRS);
+    private readonly dvDialog = inject(MatDialog);
+    private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
+    private readonly $stateParams = inject(UIRouterGlobals);
+    private readonly $state = inject(StateService);
+    private readonly $translate = inject(TranslateService);
+    private readonly uploadRS = inject(UploadRS);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly globalCacheService = inject(GlobalCacheService);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly errorService = inject(ErrorServiceX);
+    public authServiceRS = inject(AuthServiceRS);
+
     private static readonly DOKUMENT_TYP_NOT_DEFINED =
         'DokumentTyp not defined';
 
@@ -88,21 +102,8 @@ export class GesuchsperiodeViewXComponent
     public readonly VORLAGE_VERFUEGUNG_FERIENBETREUUNG: TSDokumentTyp =
         TSDokumentTyp.VORLAGE_VERFUEGUNG_FERIENBETREUUNG;
 
-    public constructor(
-        private readonly einstellungenRS: EinstellungRS,
-        private readonly dvDialog: MatDialog,
-        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly $stateParams: UIRouterGlobals,
-        private readonly $state: StateService,
-        private readonly $translate: TranslateService,
-        private readonly uploadRS: UploadRS,
-        private readonly downloadRS: DownloadRS,
-        private readonly globalCacheService: GlobalCacheService,
-        authServiceRS: AuthServiceRS,
-        private readonly cd: ChangeDetectorRef,
-        private readonly errorService: ErrorServiceX
-    ) {
-        super(authServiceRS);
+    public constructor() {
+        super();
     }
 
     public ngOnInit(): void {

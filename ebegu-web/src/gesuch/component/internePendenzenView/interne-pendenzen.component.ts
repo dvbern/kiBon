@@ -20,7 +20,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -41,15 +42,13 @@ const LOG = LogFactory.createLog('InternePendenzenComponent');
     standalone: false
 })
 export class InternePendenzenComponent implements OnInit {
-    public internePendenzen: TSInternePendenz[] = [];
+    private readonly location = inject(Location);
+    private readonly dialog = inject(MatDialog);
+    private readonly internePendenzenRS = inject(InternePendenzenRS);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly gesuchModelManager = inject(GesuchModelManager);
 
-    public constructor(
-        private readonly location: Location,
-        private readonly dialog: MatDialog,
-        private readonly internePendenzenRS: InternePendenzenRS,
-        private readonly cd: ChangeDetectorRef,
-        private readonly gesuchModelManager: GesuchModelManager
-    ) {}
+    public internePendenzen: TSInternePendenz[] = [];
 
     public ngOnInit(): void {
         this.getPendenzen();

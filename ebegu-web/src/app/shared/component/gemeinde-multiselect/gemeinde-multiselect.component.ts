@@ -15,7 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    inject
+} from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {MatOptionSelectionChange} from '@angular/material/core';
 import {Observable} from 'rxjs';
@@ -40,6 +46,9 @@ let nextId = 0;
     standalone: false
 })
 export class GemeindeMultiselectComponent implements OnInit {
+    private readonly gemeindeRS = inject(GemeindeRS);
+    readonly form = inject(NgForm);
+
     @Input() public required: boolean = false;
     @Input() public selected!: TSGemeinde[]; // Die selektierten Gemeinden
     @Input() public disabled: boolean = false;
@@ -48,11 +57,6 @@ export class GemeindeMultiselectComponent implements OnInit {
 
     public allowedMap$: Observable<Map<TSGemeinde, boolean>>; // Die Gemeinden, die zur Auswahl stehen sollen
     public inputId = `gemeinde-select-${nextId++}`;
-
-    public constructor(
-        private readonly gemeindeRS: GemeindeRS,
-        public readonly form: NgForm
-    ) {}
 
     public ngOnInit(): void {
         this.allowedMap$ =

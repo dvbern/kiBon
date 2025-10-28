@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {IPromise} from 'angular';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AntragStatusHistoryRS} from '../../app/core/service/antragStatusHistoryRS.rest';
@@ -55,17 +55,15 @@ const LOG = LogFactory.createLog('GesuchGenerator');
     providedIn: 'root'
 })
 export class GesuchGenerator {
-    public constructor(
-        private readonly gesuchRS: GesuchRS,
-        private readonly antragStatusHistoryRS: AntragStatusHistoryRS,
-        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly dossierRS: DossierRS,
-        private readonly wizardStepManager: WizardStepManager,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly fallRS: FallRS,
-        private readonly sozialdienstRS: SozialdienstRS
-    ) {}
+    private readonly gesuchRS = inject(GesuchRS);
+    private readonly antragStatusHistoryRS = inject(AntragStatusHistoryRS);
+    private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly dossierRS = inject(DossierRS);
+    private readonly wizardStepManager = inject(WizardStepManager);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly fallRS = inject(FallRS);
+    private readonly sozialdienstRS = inject(SozialdienstRS);
 
     /**
      * Erstellt ein neues Gesuch mit der angegebenen Eingangsart und Gesuchsperiode. Damit dies im resolve des

@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Directive, ElementRef, Input, OnInit} from '@angular/core';
+import {Directive, ElementRef, Input, OnInit, inject} from '@angular/core';
 import {DemoFeatureRS} from '../../service/demoFeatureRS.rest';
 import {TSDemoFeature} from './TSDemoFeature';
 
@@ -26,13 +26,11 @@ import {TSDemoFeature} from './TSDemoFeature';
 })
 // Directive class
 export class DvDemoFeatureDirective implements OnInit {
+    private readonly elementRef = inject(ElementRef);
+    private readonly demofeatureRS = inject(DemoFeatureRS);
+
     @Input() public dvDemoFeature: TSDemoFeature;
     @Input() private readonly hideIfDemoFeatureActive: boolean = false;
-
-    public constructor(
-        private readonly elementRef: ElementRef,
-        private readonly demofeatureRS: DemoFeatureRS
-    ) {}
 
     public ngOnInit(): void {
         this.setElementDisplayValue('none');

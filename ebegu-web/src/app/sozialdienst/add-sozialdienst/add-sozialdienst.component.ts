@@ -18,7 +18,8 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -41,6 +42,12 @@ import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
     standalone: false
 })
 export class AddSozialdienstComponent implements OnInit {
+    private readonly $state = inject(StateService);
+    private readonly sozialdienstRS = inject(SozialdienstRS);
+    private readonly errorService = inject(ErrorService);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly dialog = inject(MatDialog);
+
     private readonly log: Log = LogFactory.createLog(
         'AddSozialdienstComponent'
     );
@@ -49,14 +56,6 @@ export class AddSozialdienstComponent implements OnInit {
 
     public sozialdienst: TSSozialdienst = undefined;
     public adminEmail: string = undefined;
-
-    public constructor(
-        private readonly $state: StateService,
-        private readonly sozialdienstRS: SozialdienstRS,
-        private readonly errorService: ErrorService,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly dialog: MatDialog
-    ) {}
 
     public ngOnInit(): void {
         this.sozialdienst = new TSSozialdienst();

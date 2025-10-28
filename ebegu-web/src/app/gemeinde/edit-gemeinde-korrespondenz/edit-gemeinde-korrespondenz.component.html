@@ -1,377 +1,383 @@
 <!--
-  ~ Copyright (C) 2019 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2019 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
-<div class="dv-content" *ngIf="stammdaten$ | async as stammdaten">
-    <div *ngIf="editMode; else viewModeTemplate">
-        <fieldset ngModelGroup="dv-edit-gemeinde-stammdaten">
-            <div class="row margin-top-20">
-                <div class="col-sm-12">
-                    <h2 translate>PDF_GENERIERUNG</h2>
-                </div>
-
-                <!-- senderAddress -->
-                <div class="col-sm-12">
-                    <h3 translate>KORRESPONDENZ_SENDER_ADDRESS</h3>
-                </div>
-                <!-- senderAddressSpacingLeft -->
-                <div class="col-sm-6">
-                    <dv-input-label-field
-                        [(model)]="
-                            stammdaten.gemeindeStammdatenKorrespondenz
-                                .senderAddressSpacingLeft
-                        "
-                        [labelMessageKey]="
-                            'KORRESPONDENZ_SENDER_ADDRESS_SPACING_LEFT'
-                        "
-                        [inputRequired]="true"
-                        [isMediumWith]="false"
-                        [id]="'senderAddressSpacingLeft_id'"
-                    ></dv-input-label-field>
-                </div>
-                <!-- senderAddressSpacingTop -->
-                <div class="col-sm-6">
-                    <dv-input-label-field
-                        [(model)]="
-                            stammdaten.gemeindeStammdatenKorrespondenz
-                                .senderAddressSpacingTop
-                        "
-                        [labelMessageKey]="
-                            'KORRESPONDENZ_SENDER_ADDRESS_SPACING_TOP'
-                        "
-                        [inputRequired]="true"
-                        [isMediumWith]="false"
-                        [id]="'senderAddressSpacingTop_id'"
-                    ></dv-input-label-field>
-                </div>
-
-                <!-- receiverAddress -->
-                <div class="col-sm-12">
-                    <h3 translate>KORRESPONDENZ_RECEIVER_ADDRESS</h3>
-                </div>
-                <!-- receiverAddressSpacingLeft -->
-                <div class="col-sm-6">
-                    <dv-input-label-field
-                        [(model)]="
-                            stammdaten.gemeindeStammdatenKorrespondenz
-                                .receiverAddressSpacingLeft
-                        "
-                        [labelMessageKey]="
-                            'KORRESPONDENZ_RECEIVER_ADDRESS_SPACING_LEFT'
-                        "
-                        [inputRequired]="true"
-                        [isMediumWith]="false"
-                        [id]="'receiverAddressSpacingLeft_id'"
-                    ></dv-input-label-field>
-                </div>
-                <!-- receiverAddressSpacingTop -->
-                <div class="col-sm-6">
-                    <dv-input-label-field
-                        [(model)]="
-                            stammdaten.gemeindeStammdatenKorrespondenz
-                                .receiverAddressSpacingTop
-                        "
-                        [labelMessageKey]="
-                            'KORRESPONDENZ_RECEIVER_ADDRESS_SPACING_TOP'
-                        "
-                        [inputRequired]="true"
-                        [isMediumWith]="false"
-                        [id]="'receiverAddressSpacingTop_id'"
-                    ></dv-input-label-field>
-                </div>
-
-                <!-- logo -->
-                <div class="col-sm-12">
-                    <h3 translate>KORRESPONDENZ_LOGO</h3>
-                </div>
-                <!-- logoSpacingLeft -->
-                <div class="col-sm-6">
-                    <dv-input-label-field
-                        [(model)]="
-                            stammdaten.gemeindeStammdatenKorrespondenz
-                                .logoSpacingLeft
-                        "
-                        [labelMessageKey]="'KORRESPONDENZ_LOGO_SPACING_LEFT'"
-                        [inputRequired]="true"
-                        [isMediumWith]="false"
-                        [id]="'logoSpacingLeft_id'"
-                    ></dv-input-label-field>
-                </div>
-                <!-- logoSpacingTop -->
-                <div class="col-sm-6">
-                    <dv-input-label-field
-                        [(model)]="
-                            stammdaten.gemeindeStammdatenKorrespondenz
-                                .logoSpacingTop
-                        "
-                        [labelMessageKey]="'KORRESPONDENZ_LOGO_SPACING_TOP'"
-                        [inputRequired]="true"
-                        [isMediumWith]="false"
-                        [id]="'logoSpacingTop_id'"
-                    ></dv-input-label-field>
-                </div>
-                <!-- logoWidth -->
-                <div class="col-sm-6">
-                    <dv-input-label-field
-                        [(model)]="
-                            stammdaten.gemeindeStammdatenKorrespondenz.logoWidth
-                        "
-                        [labelMessageKey]="'KORRESPONDENZ_LOGO_WIDTH'"
-                        [tooltipMessageKey]="'KORRESPONDENZ_LOGO_WIDTH_HELP'"
-                        [inputRequired]="false"
-                        [isMediumWith]="false"
-                        [id]="'logoWidth_id'"
-                    ></dv-input-label-field>
-                </div>
-                @if (isOnlineFreigabeDeactivatedInAtLeastOnePeriode()) {
-                    <!-- barcode -->
-                    <div class="col-sm-12">
-                        <h3 translate>KORRESPONDENZ_BARCODE</h3>
-                    </div>
-                    <!-- logoSpacingLeft -->
-                    <div class="col-sm-6">
-                        <dv-input-label-field
-                            [(model)]="
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .barcodeSpacingLeft
-                            "
-                            [labelMessageKey]="
-                                'KORRESPONDENZ_BARCODE_SPACING_LEFT'
-                            "
-                            [inputRequired]="true"
-                            [isMediumWith]="false"
-                            [id]="'barcodeSpacingLeft_id'"
-                        ></dv-input-label-field>
-                    </div>
-                    <!-- barcodeSpacingTop -->
-                    <div class="col-sm-6">
-                        <dv-input-label-field
-                            [(model)]="
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .barcodeSpacingTop
-                            "
-                            [labelMessageKey]="
-                                'KORRESPONDENZ_BARCODE_SPACING_TOP'
-                            "
-                            [inputRequired]="true"
-                            [isMediumWith]="false"
-                            [id]="'barcodeSpacingTop_id'"
-                        ></dv-input-label-field>
-                    </div>
-                }
-
-                <div class="col-sm-12">
-                    <h2 translate>KIBON_MITTEILUNGEN</h2>
-                </div>
-                <!-- standardSignatur -->
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <label translate for="standardSignatur_id"
-                            >KORRESPONDENZ_STANDARD_SIGNATUR
-                            <dv-tooltip
-                                id="standardSignatur_tooltip"
-                                [text]="
-                                    'KORRESPONDENZ_STANDARD_SIGNATUR_HELP'
-                                        | translate
+@if (stammdaten$ | async; as stammdaten) {
+    <div class="dv-content">
+        @if (editMode) {
+            <div>
+                <fieldset ngModelGroup="dv-edit-gemeinde-stammdaten">
+                    <div class="row margin-top-20">
+                        <div class="col-sm-12">
+                            <h2 translate>PDF_GENERIERUNG</h2>
+                        </div>
+                        <!-- senderAddress -->
+                        <div class="col-sm-12">
+                            <h3 translate>KORRESPONDENZ_SENDER_ADDRESS</h3>
+                        </div>
+                        <!-- senderAddressSpacingLeft -->
+                        <div class="col-sm-6">
+                            <dv-input-label-field
+                                [(model)]="
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .senderAddressSpacingLeft
                                 "
-                            ></dv-tooltip
-                        ></label>
-
-                        <textarea
-                            id="standardSignatur_id"
-                            name="standardSignatur"
-                            #standardSignatur="ngModel"
-                            [(ngModel)]="
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .standardSignatur
-                            "
-                            class="form-control"
-                        ></textarea>
-
-                        <dv-error-messages
-                            [errorObject]="standardSignatur.errors"
-                            inputId="standardSignatur_id"
-                        ></dv-error-messages>
+                                [labelMessageKey]="
+                                    'KORRESPONDENZ_SENDER_ADDRESS_SPACING_LEFT'
+                                "
+                                [inputRequired]="true"
+                                [isMediumWith]="false"
+                                [id]="'senderAddressSpacingLeft_id'"
+                            ></dv-input-label-field>
+                        </div>
+                        <!-- senderAddressSpacingTop -->
+                        <div class="col-sm-6">
+                            <dv-input-label-field
+                                [(model)]="
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .senderAddressSpacingTop
+                                "
+                                [labelMessageKey]="
+                                    'KORRESPONDENZ_SENDER_ADDRESS_SPACING_TOP'
+                                "
+                                [inputRequired]="true"
+                                [isMediumWith]="false"
+                                [id]="'senderAddressSpacingTop_id'"
+                            ></dv-input-label-field>
+                        </div>
+                        <!-- receiverAddress -->
+                        <div class="col-sm-12">
+                            <h3 translate>KORRESPONDENZ_RECEIVER_ADDRESS</h3>
+                        </div>
+                        <!-- receiverAddressSpacingLeft -->
+                        <div class="col-sm-6">
+                            <dv-input-label-field
+                                [(model)]="
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .receiverAddressSpacingLeft
+                                "
+                                [labelMessageKey]="
+                                    'KORRESPONDENZ_RECEIVER_ADDRESS_SPACING_LEFT'
+                                "
+                                [inputRequired]="true"
+                                [isMediumWith]="false"
+                                [id]="'receiverAddressSpacingLeft_id'"
+                            ></dv-input-label-field>
+                        </div>
+                        <!-- receiverAddressSpacingTop -->
+                        <div class="col-sm-6">
+                            <dv-input-label-field
+                                [(model)]="
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .receiverAddressSpacingTop
+                                "
+                                [labelMessageKey]="
+                                    'KORRESPONDENZ_RECEIVER_ADDRESS_SPACING_TOP'
+                                "
+                                [inputRequired]="true"
+                                [isMediumWith]="false"
+                                [id]="'receiverAddressSpacingTop_id'"
+                            ></dv-input-label-field>
+                        </div>
+                        <!-- logo -->
+                        <div class="col-sm-12">
+                            <h3 translate>KORRESPONDENZ_LOGO</h3>
+                        </div>
+                        <!-- logoSpacingLeft -->
+                        <div class="col-sm-6">
+                            <dv-input-label-field
+                                [(model)]="
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .logoSpacingLeft
+                                "
+                                [labelMessageKey]="
+                                    'KORRESPONDENZ_LOGO_SPACING_LEFT'
+                                "
+                                [inputRequired]="true"
+                                [isMediumWith]="false"
+                                [id]="'logoSpacingLeft_id'"
+                            ></dv-input-label-field>
+                        </div>
+                        <!-- logoSpacingTop -->
+                        <div class="col-sm-6">
+                            <dv-input-label-field
+                                [(model)]="
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .logoSpacingTop
+                                "
+                                [labelMessageKey]="
+                                    'KORRESPONDENZ_LOGO_SPACING_TOP'
+                                "
+                                [inputRequired]="true"
+                                [isMediumWith]="false"
+                                [id]="'logoSpacingTop_id'"
+                            ></dv-input-label-field>
+                        </div>
+                        <!-- logoWidth -->
+                        <div class="col-sm-6">
+                            <dv-input-label-field
+                                [(model)]="
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .logoWidth
+                                "
+                                [labelMessageKey]="'KORRESPONDENZ_LOGO_WIDTH'"
+                                [tooltipMessageKey]="
+                                    'KORRESPONDENZ_LOGO_WIDTH_HELP'
+                                "
+                                [inputRequired]="false"
+                                [isMediumWith]="false"
+                                [id]="'logoWidth_id'"
+                            ></dv-input-label-field>
+                        </div>
+                        @if (isOnlineFreigabeDeactivatedInAtLeastOnePeriode()) {
+                            <!-- barcode -->
+                            <div class="col-sm-12">
+                                <h3 translate>KORRESPONDENZ_BARCODE</h3>
+                            </div>
+                            <!-- logoSpacingLeft -->
+                            <div class="col-sm-6">
+                                <dv-input-label-field
+                                    [(model)]="
+                                        stammdaten
+                                            .gemeindeStammdatenKorrespondenz
+                                            .barcodeSpacingLeft
+                                    "
+                                    [labelMessageKey]="
+                                        'KORRESPONDENZ_BARCODE_SPACING_LEFT'
+                                    "
+                                    [inputRequired]="true"
+                                    [isMediumWith]="false"
+                                    [id]="'barcodeSpacingLeft_id'"
+                                ></dv-input-label-field>
+                            </div>
+                            <!-- barcodeSpacingTop -->
+                            <div class="col-sm-6">
+                                <dv-input-label-field
+                                    [(model)]="
+                                        stammdaten
+                                            .gemeindeStammdatenKorrespondenz
+                                            .barcodeSpacingTop
+                                    "
+                                    [labelMessageKey]="
+                                        'KORRESPONDENZ_BARCODE_SPACING_TOP'
+                                    "
+                                    [inputRequired]="true"
+                                    [isMediumWith]="false"
+                                    [id]="'barcodeSpacingTop_id'"
+                                ></dv-input-label-field>
+                            </div>
+                        }
+                        <div class="col-sm-12">
+                            <h2 translate>KIBON_MITTEILUNGEN</h2>
+                        </div>
+                        <!-- standardSignatur -->
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label translate for="standardSignatur_id"
+                                    >KORRESPONDENZ_STANDARD_SIGNATUR
+                                    <dv-tooltip
+                                        id="standardSignatur_tooltip"
+                                        [text]="
+                                            'KORRESPONDENZ_STANDARD_SIGNATUR_HELP'
+                                                | translate
+                                        "
+                                    ></dv-tooltip
+                                ></label>
+                                <textarea
+                                    id="standardSignatur_id"
+                                    name="standardSignatur"
+                                    #standardSignatur="ngModel"
+                                    [(ngModel)]="
+                                        stammdaten
+                                            .gemeindeStammdatenKorrespondenz
+                                            .standardSignatur
+                                    "
+                                    class="form-control"
+                                ></textarea>
+                                <dv-error-messages
+                                    [errorObject]="standardSignatur.errors"
+                                    inputId="standardSignatur_id"
+                                ></dv-error-messages>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </fieldset>
             </div>
-        </fieldset>
-    </div>
-
-    <ng-template #viewModeTemplate>
-        <fieldset>
-            <div class="row">
-                <div class="col-sm-12 margin-top-20">
-                    <h2 translate>PDF_GENERIERUNG</h2>
-                </div>
-
-                <!-- Absender -->
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <h3 translate>KORRESPONDENZ_SENDER_ADDRESS</h3>
-                        <p>
-                            <span translate
-                                >KORRESPONDENZ_SENDER_ADDRESS_SPACING_LEFT</span
-                            >:
-                            {{
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .senderAddressSpacingLeft
-                            }}
-                        </p>
-                        <p>
-                            <span translate
-                                >KORRESPONDENZ_SENDER_ADDRESS_SPACING_TOP</span
-                            >:
-                            {{
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .senderAddressSpacingTop
-                            }}
-                        </p>
+        } @else {
+            <fieldset>
+                <div class="row">
+                    <div class="col-sm-12 margin-top-20">
+                        <h2 translate>PDF_GENERIERUNG</h2>
                     </div>
-                </div>
-                <!-- Empfaenger -->
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <h3 translate>KORRESPONDENZ_RECEIVER_ADDRESS</h3>
-                        <p>
-                            <span translate
-                                >KORRESPONDENZ_RECEIVER_ADDRESS_SPACING_LEFT</span
-                            >:
-                            {{
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .receiverAddressSpacingLeft
-                            }}
-                        </p>
-                        <p>
-                            <span translate
-                                >KORRESPONDENZ_RECEIVER_ADDRESS_SPACING_TOP</span
-                            >:
-                            {{
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .receiverAddressSpacingTop
-                            }}
-                        </p>
-                    </div>
-                </div>
-                <!-- Logo -->
-                <div class="col-sm-12">
-                    <div class="form-group">
-                        <h3 translate>KORRESPONDENZ_LOGO</h3>
-                        <p>
-                            <span translate
-                                >KORRESPONDENZ_LOGO_SPACING_LEFT</span
-                            >:
-                            {{
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .logoSpacingLeft
-                            }}
-                        </p>
-                        <p>
-                            <span translate>KORRESPONDENZ_LOGO_SPACING_TOP</span
-                            >:
-                            {{
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .logoSpacingTop
-                            }}
-                        </p>
-                        <p>
-                            <span translate>KORRESPONDENZ_LOGO_WIDTH</span>:
-                            {{
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .logoWidth
-                            }}
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Barcode -->
-                @if (isOnlineFreigabeDeactivatedInAtLeastOnePeriode()) {
+                    <!-- Absender -->
                     <div class="col-sm-12">
                         <div class="form-group">
-                            <h3 translate>KORRESPONDENZ_BARCODE</h3>
+                            <h3 translate>KORRESPONDENZ_SENDER_ADDRESS</h3>
                             <p>
                                 <span translate
-                                    >KORRESPONDENZ_BARCODE_SPACING_LEFT</span
+                                    >KORRESPONDENZ_SENDER_ADDRESS_SPACING_LEFT</span
                                 >:
                                 {{
                                     stammdaten.gemeindeStammdatenKorrespondenz
-                                        .barcodeSpacingLeft
+                                        .senderAddressSpacingLeft
                                 }}
                             </p>
                             <p>
                                 <span translate
-                                    >KORRESPONDENZ_BARCODE_SPACING_TOP</span
+                                    >KORRESPONDENZ_SENDER_ADDRESS_SPACING_TOP</span
                                 >:
                                 {{
                                     stammdaten.gemeindeStammdatenKorrespondenz
-                                        .barcodeSpacingTop
+                                        .senderAddressSpacingTop
                                 }}
                             </p>
                         </div>
                     </div>
-                }
-                <div class="col-sm-12">
-                    <a
-                        role="button"
-                        (click)="
-                            downloadMusterdokumentKorrespondenz(
-                                stammdaten.gemeinde.id
-                            );
-                            $event.stopPropagation()
-                        "
-                    >
-                        {{ 'KORRESPONDENZ_MUSTERDOKUMENT_LINK' | translate }}</a
-                    >
-                </div>
-
-                @if (isOnlineFreigabeDeactivatedInAtLeastOnePeriode()) {
+                    <!-- Empfaenger -->
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <h3 translate>KORRESPONDENZ_RECEIVER_ADDRESS</h3>
+                            <p>
+                                <span translate
+                                    >KORRESPONDENZ_RECEIVER_ADDRESS_SPACING_LEFT</span
+                                >:
+                                {{
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .receiverAddressSpacingLeft
+                                }}
+                            </p>
+                            <p>
+                                <span translate
+                                    >KORRESPONDENZ_RECEIVER_ADDRESS_SPACING_TOP</span
+                                >:
+                                {{
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .receiverAddressSpacingTop
+                                }}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Logo -->
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <h3 translate>KORRESPONDENZ_LOGO</h3>
+                            <p>
+                                <span translate
+                                    >KORRESPONDENZ_LOGO_SPACING_LEFT</span
+                                >:
+                                {{
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .logoSpacingLeft
+                                }}
+                            </p>
+                            <p>
+                                <span translate
+                                    >KORRESPONDENZ_LOGO_SPACING_TOP</span
+                                >:
+                                {{
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .logoSpacingTop
+                                }}
+                            </p>
+                            <p>
+                                <span translate>KORRESPONDENZ_LOGO_WIDTH</span>:
+                                {{
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .logoWidth
+                                }}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Barcode -->
+                    @if (isOnlineFreigabeDeactivatedInAtLeastOnePeriode()) {
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <h3 translate>KORRESPONDENZ_BARCODE</h3>
+                                <p>
+                                    <span translate
+                                        >KORRESPONDENZ_BARCODE_SPACING_LEFT</span
+                                    >:
+                                    {{
+                                        stammdaten
+                                            .gemeindeStammdatenKorrespondenz
+                                            .barcodeSpacingLeft
+                                    }}
+                                </p>
+                                <p>
+                                    <span translate
+                                        >KORRESPONDENZ_BARCODE_SPACING_TOP</span
+                                    >:
+                                    {{
+                                        stammdaten
+                                            .gemeindeStammdatenKorrespondenz
+                                            .barcodeSpacingTop
+                                    }}
+                                </p>
+                            </div>
+                        </div>
+                    }
                     <div class="col-sm-12">
                         <a
                             role="button"
                             (click)="
-                                downloadMusterdokumentFreigabequittung(
+                                downloadMusterdokumentKorrespondenz(
                                     stammdaten.gemeinde.id
                                 );
                                 $event.stopPropagation()
                             "
                         >
                             {{
-                                'KORRESPONDENZ_MUSTERDOKUMENT_FREIGABEQUITTUNG_LINK'
-                                    | translate
+                                'KORRESPONDENZ_MUSTERDOKUMENT_LINK' | translate
                             }}</a
                         >
                     </div>
-                }
-
-                <div class="col-sm-12 margin-top-20">
-                    <h2 translate>KIBON_MITTEILUNGEN</h2>
+                    @if (isOnlineFreigabeDeactivatedInAtLeastOnePeriode()) {
+                        <div class="col-sm-12">
+                            <a
+                                role="button"
+                                (click)="
+                                    downloadMusterdokumentFreigabequittung(
+                                        stammdaten.gemeinde.id
+                                    );
+                                    $event.stopPropagation()
+                                "
+                            >
+                                {{
+                                    'KORRESPONDENZ_MUSTERDOKUMENT_FREIGABEQUITTUNG_LINK'
+                                        | translate
+                                }}</a
+                            >
+                        </div>
+                    }
+                    <div class="col-sm-12 margin-top-20">
+                        <h2 translate>KIBON_MITTEILUNGEN</h2>
+                    </div>
+                    <div class="col-sm-12">
+                        <h3 translate>KORRESPONDENZ_STANDARD_SIGNATUR</h3>
+                        <p
+                            [innerHTML]="
+                                escapeSignatur(
+                                    stammdaten.gemeindeStammdatenKorrespondenz
+                                        .standardSignatur
+                                )
+                            "
+                        ></p>
+                    </div>
                 </div>
-
-                <div class="col-sm-12">
-                    <h3 translate>KORRESPONDENZ_STANDARD_SIGNATUR</h3>
-                    <p
-                        [innerHTML]="
-                            escapeSignatur(
-                                stammdaten.gemeindeStammdatenKorrespondenz
-                                    .standardSignatur
-                            )
-                        "
-                    ></p>
-                </div>
-            </div>
-        </fieldset>
-    </ng-template>
-</div>
+            </fieldset>
+        }
+    </div>
+}

@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 import {HttpClient} from '@angular/common/http';
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy, inject} from '@angular/core';
 import {CONSTANTS, HTTP_CODES} from '@kibon/shared/model/constants';
 import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {filter, map, mergeMap, takeUntil, tap} from 'rxjs/operators';
@@ -41,6 +41,9 @@ const LOG = LogFactory.createLog('FerienbetreuungService');
     providedIn: 'root'
 })
 export class FerienbetreuungService implements OnDestroy {
+    private readonly http = inject(HttpClient);
+    private readonly einstellungRS = inject(EinstellungRS);
+
     private readonly API_BASE_URL = `${CONSTANTS.REST_API}ferienbetreuung`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
     // return last item but don't provide initial value like BehaviourSubject does
@@ -57,10 +60,7 @@ export class FerienbetreuungService implements OnDestroy {
 
     private readonly unsubscribe = new Subject<void>();
 
-    public constructor(
-        private readonly http: HttpClient,
-        private readonly einstellungRS: EinstellungRS
-    ) {
+    public constructor() {
         this.ferienbetreuungAngabenContainerStore
             .pipe(
                 takeUntil(this.unsubscribe),

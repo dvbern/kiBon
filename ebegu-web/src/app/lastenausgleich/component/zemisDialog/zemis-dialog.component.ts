@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject, ViewChild} from '@angular/core';
+import {Component, ViewChild, inject} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ZemisDialogDTO} from './zemisDialog.interface';
@@ -27,16 +27,19 @@ import {ZemisDialogDTO} from './zemisDialog.interface';
     standalone: false
 })
 export class ZemisDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<ZemisDialogComponent>>(MatDialogRef);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     public jahr: number;
     public file: File;
     public upload: boolean;
 
     @ViewChild(NgForm) private readonly form: NgForm;
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<ZemisDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         this.upload = data?.upload;
     }
 

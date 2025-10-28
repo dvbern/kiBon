@@ -16,7 +16,7 @@
  */
 
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import moment from 'moment';
 import {Observable, of} from 'rxjs';
@@ -41,10 +41,10 @@ const LOG = LogFactory.createLog('ZahlungUtilZahlungService');
     providedIn: 'root'
 })
 export class ZahlungUtilZahlungService {
+    private readonly http = inject(HttpClient);
+
     private readonly serviceURL = `${CONSTANTS.REST_API}zahlungen`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(private readonly http: HttpClient) {}
 
     private static getSearchParams(
         sort: MatSort | undefined,

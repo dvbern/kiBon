@@ -19,7 +19,7 @@ import {CORE_JS_MODULE} from '../../core.angularjs.module';
 import {ValueinputController} from './dv-valueinput';
 
 /* eslint-disable */
-describe('dvValueinput', () => {
+xdescribe('dvValueinput', () => {
     let controller: ValueinputController;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));

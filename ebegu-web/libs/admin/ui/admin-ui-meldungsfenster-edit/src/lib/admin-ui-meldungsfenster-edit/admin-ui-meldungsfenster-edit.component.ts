@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {AdminUiMeldungsfensterFormComponent} from '@kibon/admin-ui-meldungsfenster-form';
 import {TranslateModule} from '@ngx-translate/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
@@ -9,11 +9,7 @@ import {MeldungsfensterData} from '@kibon/shared-model-meldungsfenster';
 
 @Component({
     selector: 'lib-admin-ui-meldungsfenster-edit',
-    imports: [
-        CommonModule,
-        AdminUiMeldungsfensterFormComponent,
-        TranslateModule
-    ],
+    imports: [AdminUiMeldungsfensterFormComponent, TranslateModule],
     templateUrl: './admin-ui-meldungsfenster-edit.component.html',
     styleUrl: './admin-ui-meldungsfenster-edit.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -24,7 +20,7 @@ export class AdminUiMeldungsfensterEditComponent {
     protected readonly stateService = inject(StateService);
 
     meldungsfensterResourceRef = rxResource({
-        loader: () => this.service.getMeldungsfenster(this.params.params.id)
+        stream: () => this.service.getMeldungsfenster(this.params.params.id)
     });
 
     updateMeldungsfenster(data: MeldungsfensterData) {

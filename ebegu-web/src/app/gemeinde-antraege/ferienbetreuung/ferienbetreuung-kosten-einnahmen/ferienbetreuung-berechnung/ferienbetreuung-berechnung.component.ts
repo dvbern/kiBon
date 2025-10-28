@@ -23,7 +23,8 @@ import {
     OnChanges,
     OnDestroy,
     OnInit,
-    SimpleChanges
+    SimpleChanges,
+    inject
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {combineLatest, Subscription} from 'rxjs';
@@ -47,6 +48,10 @@ const LOG = LogFactory.createLog('FerienbetreuungBerechnungComponent');
 export class FerienbetreuungBerechnungComponent
     implements OnInit, OnDestroy, OnChanges
 {
+    private readonly ferienbetreuungService = inject(FerienbetreuungService);
+    private readonly einstellungRS = inject(EinstellungRS);
+    private readonly cd = inject(ChangeDetectorRef);
+
     @Input()
     private readonly form: FormGroup<{
         personalkosten: FormControl<null | number>;
@@ -69,12 +74,6 @@ export class FerienbetreuungBerechnungComponent
     private subscription: Subscription;
 
     public berechnung: TSFerienbetreuungBerechnung;
-
-    public constructor(
-        private readonly ferienbetreuungService: FerienbetreuungService,
-        private readonly einstellungRS: EinstellungRS,
-        private readonly cd: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         this.subscription = this.ferienbetreuungService

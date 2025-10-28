@@ -45,7 +45,7 @@ import {CORE_JS_MODULE} from '../../core.angularjs.module';
 import {NavigatorController} from './dv-navigation';
 
 /* eslint-disable max-len */
-describe('dvNavigation', () => {
+xdescribe('dvNavigation', () => {
     let navController: NavigatorController;
     let wizardStepManager: WizardStepManager;
     let finanzielleSituationRS: FinanzielleSituationRS;

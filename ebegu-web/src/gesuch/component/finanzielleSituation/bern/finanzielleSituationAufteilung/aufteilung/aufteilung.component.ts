@@ -15,7 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    inject
+} from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {BehaviorSubject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
@@ -31,6 +37,8 @@ import {GesuchModelManager} from '../../../../../service/gesuchModelManager';
     standalone: false
 })
 export class AufteilungComponent implements OnInit {
+    private readonly gesuchModelManger = inject(GesuchModelManager);
+
     @Input()
     public aufteilung: TSAufteilungDTO;
 
@@ -51,10 +59,6 @@ export class AufteilungComponent implements OnInit {
     public rest: number;
 
     private readonly _dueTime = 500;
-
-    public constructor(
-        private readonly gesuchModelManger: GesuchModelManager
-    ) {}
 
     public ngOnInit(): void {
         this.gs1Name = this.gesuchModelManger

@@ -32,42 +32,42 @@
         >
         </dv-auszahlungsdaten>
 
-        <ng-container
-            *ngIf="hasMultipleGS; then mehrereGS; else alleinigesGesuch"
-        ></ng-container>
-
-        <ng-template #mehrereGS>
+        @if (hasMultipleGS) {
             <dv-steuerveranlagung-gemeinsam
                 [model]="model"
                 (gemeinsamChanged)="this.gemeinsamChanged($event)"
             ></dv-steuerveranlagung-gemeinsam>
-            <dv-steuerveranlagt-schwyz
-                *ngIf="model.familienSituation.gemeinsameSteuererklaerung"
-                [finSitJA]="model.getFiSiConToWorkWith().finanzielleSituationJA"
-                [finSitGS]="model.getFiSiConToWorkWith().finanzielleSituationGS"
-                [readonly]="gesuchModelManager.isGesuchReadonly()"
-                [schwyzErweiterteFinSit]="isSchwyzFinSitTypSchwyzErweitert()"
-                (valueChanged)="recalculateMassgendesEinkommen()"
-            >
-            </dv-steuerveranlagt-schwyz>
-            <div
-                class="row margin-bottom-20"
-                *ngIf="model.familienSituation.gemeinsameSteuererklaerung"
-            >
-                <div class="col-sm-6">
-                    <dv-input-label-field
-                        [model]="resultate?.massgebendesEinkVorAbzFamGr"
-                        [labelMessageKey]="
-                            'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN'
-                        "
-                        [inputDisabled]="true"
-                    >
-                    </dv-input-label-field>
+            @if (model.familienSituation.gemeinsameSteuererklaerung) {
+                <dv-steuerveranlagt-schwyz
+                    [finSitJA]="
+                        model.getFiSiConToWorkWith().finanzielleSituationJA
+                    "
+                    [finSitGS]="
+                        model.getFiSiConToWorkWith().finanzielleSituationGS
+                    "
+                    [readonly]="gesuchModelManager.isGesuchReadonly()"
+                    [schwyzErweiterteFinSit]="
+                        isSchwyzFinSitTypSchwyzErweitert()
+                    "
+                    (valueChanged)="recalculateMassgendesEinkommen()"
+                >
+                </dv-steuerveranlagt-schwyz>
+            }
+            @if (model.familienSituation.gemeinsameSteuererklaerung) {
+                <div class="row margin-bottom-20">
+                    <div class="col-sm-6">
+                        <dv-input-label-field
+                            [model]="resultate?.massgebendesEinkVorAbzFamGr"
+                            [labelMessageKey]="
+                                'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN'
+                            "
+                            [inputDisabled]="true"
+                        >
+                        </dv-input-label-field>
+                    </div>
                 </div>
-            </div>
-        </ng-template>
-
-        <ng-template #alleinigesGesuch>
+            }
+        } @else {
             <dv-finanzielle-situation-single-gs-schwyz
                 [readonly]="gesuchModelManager.isGesuchReadonly()"
                 (valueChanged)="recalculateMassgendesEinkommen()"
@@ -75,27 +75,25 @@
                 [schwyzErweiterteFinSit]="isSchwyzFinSitTypSchwyzErweitert()"
             >
             </dv-finanzielle-situation-single-gs-schwyz>
-
-            <div
-                class="row margin-bottom-20"
-                *ngIf="
-                    isNotNullOrUndefined(
-                        getModel().finanzielleSituationJA.quellenbesteuert
-                    )
-                "
-            >
-                <div class="col-sm-6">
-                    <dv-input-label-field
-                        [model]="resultate?.massgebendesEinkVorAbzFamGr"
-                        [labelMessageKey]="
-                            'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN'
-                        "
-                        [inputDisabled]="true"
-                    >
-                    </dv-input-label-field>
+            @if (
+                isNotNullOrUndefined(
+                    getModel().finanzielleSituationJA.quellenbesteuert
+                )
+            ) {
+                <div class="row margin-bottom-20">
+                    <div class="col-sm-6">
+                        <dv-input-label-field
+                            [model]="resultate?.massgebendesEinkVorAbzFamGr"
+                            [labelMessageKey]="
+                                'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN'
+                            "
+                            [inputDisabled]="true"
+                        >
+                        </dv-input-label-field>
+                    </div>
                 </div>
-            </div>
-        </ng-template>
+            }
+        }
     </form>
 
     <dv-navigation-x

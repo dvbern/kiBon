@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import moment from 'moment';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -35,10 +35,12 @@ import {CONSTANTS} from '@kibon/shared/model/constants';
     providedIn: 'root'
 })
 export class InstitutionRS {
+    $http = inject(HttpClient);
+
     public readonly serviceURL: string;
     public readonly ebeguRestUtil: EbeguRestUtil = new EbeguRestUtil();
 
-    public constructor(public $http: HttpClient) {
+    public constructor() {
         this.serviceURL = `${CONSTANTS.REST_API}institutionen`;
     }
 

@@ -192,7 +192,7 @@ public class NeueVeranlagungMitteilungTest extends EasyMockSupport {
 		);
 		replayAll();
 		testExceptionWithErrorCode(
-			ErrorCodeEnum.ERROR_MUTATIONSMELDUNG_STATUS_GEPRUEFT_VERFUEGEN
+			ErrorCodeEnum.ERROR_NEUE_VERANLAGUNG_MUTATIONSMELDUNG_STATUS_IN_BEARBEITUNG_GEPRUEFT_VERFUEGEN
 		);
 		verifyAll();
 	}

@@ -31,6 +31,7 @@ import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungComparator;
 import ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationBernRechner;
 import ch.dvbern.ebegu.rechner.AbstractBGRechnerTest;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
@@ -95,6 +96,7 @@ public class KitaxUebergangsloesungTest extends AbstractBGRechnerTest {
 			.setGemeindeZusaetzlicherGutscheinBetragKita(
 				MathUtil.DEFAULT.from(11)
 			);
+		parameter.setBetreuungComparator(BetreuungComparator.DEFAULT);
 
 		// "Normalfall": Bern wechselt unter dem Jahr zu ASIV, die Konfiguration ist noch nicht klar
 		kitaxParameter.setStadtBernAsivConfiguered(false);

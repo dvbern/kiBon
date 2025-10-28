@@ -42,7 +42,7 @@ export class SharedPatternMeldungsfensterComponent {
     protected translationService = inject(TranslateService);
 
     meldungsfensterResourceRef = rxResource({
-        loader: () => this.meldungsfensterService.getAllPublicMeldungsfenster()
+        stream: () => this.meldungsfensterService.getAllPublicMeldungsfenster()
     });
 
     meldungenToDisplay = computed(() => {

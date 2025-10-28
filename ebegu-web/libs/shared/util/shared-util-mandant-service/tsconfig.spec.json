@@ -2,8 +2,6 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "outDir": "../../../../dist/out-tsc",
-        "module": "commonjs",
-        "target": "es2016",
         "strict": false,
         "types": [
             "node",
@@ -15,7 +13,8 @@
             "angular-material",
             "angular-translate",
             "jquery"
-        ]
+        ],
+        "moduleResolution": "bundler"
     },
     "files": ["../../../../src/polyfills.ts", "../../../../src/test.ts"],
     "include": ["src/**/*.test.ts", "src/**/*.spec.ts", "src/**/*.d.ts"]

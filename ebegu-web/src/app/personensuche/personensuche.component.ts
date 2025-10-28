@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {GesuchModelManager} from '../../gesuch/service/gesuchModelManager';
 import {TSEWKPerson} from '../../models/TSEWKPerson';
@@ -13,13 +13,11 @@ import {EwkRS} from '../core/service/ewkRS.rest';
     standalone: false
 })
 export class PersonensucheComponent {
-    public personen$: Observable<TSEWKPerson[]> = null;
+    private readonly ewkRS = inject(EwkRS);
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly errorService = inject(ErrorService);
 
-    public constructor(
-        private readonly ewkRS: EwkRS,
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly errorService: ErrorService
-    ) {}
+    public personen$: Observable<TSEWKPerson[]> = null;
 
     public isGesuchsteller1New(): boolean {
         if (

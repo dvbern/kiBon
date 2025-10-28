@@ -23,7 +23,8 @@ import {
     Input,
     OnInit,
     Output,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm, NgModelGroup} from '@angular/forms';
 import {MatButtonToggleChange} from '@angular/material/button-toggle';
@@ -72,6 +73,17 @@ const LOG = LogFactory.createLog('EditGemeindeBGComponent');
     standalone: false
 })
 export class EditGemeindeBGComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+    private readonly translate = inject(TranslateService);
+    private readonly authServiceRs = inject(AuthServiceRS);
+    private readonly einstellungRS = inject(EinstellungRS);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly mandantService = inject(MandantService);
+
     @Input() public stammdaten$: Observable<TSGemeindeStammdaten>;
     @Input() public beguStartStr: string;
     @Input() private readonly gemeindeId: string;
@@ -120,17 +132,6 @@ export class EditGemeindeBGComponent implements OnInit {
         string,
         number
     > = new Map<string, number>();
-
-    public constructor(
-        private readonly $transition$: Transition,
-        private readonly translate: TranslateService,
-        private readonly authServiceRs: AuthServiceRS,
-        private readonly einstellungRS: EinstellungRS,
-        private readonly cd: ChangeDetectorRef,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly institutionRS: InstitutionRS,
-        private readonly mandantService: MandantService
-    ) {}
 
     public ngOnInit(): void {
         if (!this.gemeindeId) {

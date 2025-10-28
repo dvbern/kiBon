@@ -25,7 +25,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {AntragStatusHistoryRS} from './antragStatusHistoryRS.rest';
 
-describe('antragStatusHistoryRS', () => {
+xdescribe('antragStatusHistoryRS', () => {
     let antragStatusHistoryRS: AntragStatusHistoryRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

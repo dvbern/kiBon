@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2018 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2018 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="stammdaten-header row">
     <div class="col-md-12">
@@ -26,42 +26,50 @@
 
         <fieldset>
             <div class="row">
-                <div class="col-sm-6" *ngIf="areMitarbeiterVisible()">
-                    <div class="form-group">
-                        <p><strong translate>ADMINISTRATOREN</strong></p>
-                        <p class="margin-bottom-10">{{ administratoren }}</p>
-                        <p><strong translate>SACHBEARBEITER</strong></p>
-                        <p>{{ sachbearbeiter }}</p>
+                @if (areMitarbeiterVisible()) {
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <p><strong translate>ADMINISTRATOREN</strong></p>
+                            <p class="margin-bottom-10">
+                                {{ administratoren }}
+                            </p>
+                            <p><strong translate>SACHBEARBEITER</strong></p>
+                            <p>{{ sachbearbeiter }}</p>
+                        </div>
+                        <div class="form-group">
+                            <button
+                                type="button"
+                                class="dv-btn mitarbeiter-bearbeiten-button"
+                                (click)="mitarbeiterBearbeiten()"
+                                translate
+                            >
+                                BENUTZER_EDIT
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <button
-                            type="button"
-                            class="dv-btn mitarbeiter-bearbeiten-button"
-                            (click)="mitarbeiterBearbeiten()"
-                            translate
-                        >
-                            BENUTZER_EDIT
-                        </button>
-                    </div>
-                </div>
+                }
                 <div class="col-sm-6">
-                    <div class="form-group" *ngIf="logoImageUrl">
-                        <div>
-                            <img
-                                [src]="logoImageUrl$ | async"
-                                class="gemeinde-profil-image"
-                            />
+                    @if (logoImageUrl) {
+                        <div class="form-group">
+                            <div>
+                                <img
+                                    [src]="logoImageUrl$ | async"
+                                    class="gemeinde-profil-image"
+                                />
+                            </div>
+                            @if (editMode) {
+                                <div>
+                                    <input
+                                        #fileInput
+                                        type="file"
+                                        accept="image/png,image/jpeg"
+                                        (change)="srcChange(fileInput.files)"
+                                        class="gemeinde-profil-fileinput"
+                                    />
+                                </div>
+                            }
                         </div>
-                        <div *ngIf="editMode">
-                            <input
-                                #fileInput
-                                type="file"
-                                accept="image/png,image/jpeg"
-                                (change)="srcChange(fileInput.files)"
-                                class="gemeinde-profil-fileinput"
-                            />
-                        </div>
-                    </div>
+                    }
                 </div>
             </div>
         </fieldset>

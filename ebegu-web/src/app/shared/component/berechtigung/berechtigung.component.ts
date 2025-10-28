@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, inject} from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {from, Observable, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
@@ -42,6 +42,12 @@ let nextId = 0;
     standalone: false
 })
 export class BerechtigungComponent {
+    readonly form = inject(NgForm);
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly traegerschaftenRS = inject(TraegerschaftRS);
+    private readonly sozialdienstRS = inject(SozialdienstRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+
     @Input() public berechtigung: TSBerechtigung;
     @Input() public disabled: boolean = false;
     @Input() public readonly excludedRoles: TSRole[] = [];
@@ -60,13 +66,7 @@ export class BerechtigungComponent {
 
     public readonly compareById = EbeguUtil.compareById;
 
-    public constructor(
-        public readonly form: NgForm,
-        private readonly institutionRS: InstitutionRS,
-        private readonly traegerschaftenRS: TraegerschaftRS,
-        private readonly sozialdienstRS: SozialdienstRS,
-        private readonly authServiceRS: AuthServiceRS
-    ) {
+    public constructor() {
         this.rolleId = `rolle-${this.inputId}`;
         this.institutionId = `institution-${this.inputId}`;
         this.traegerschaftId = `treagerschaft-${this.inputId}`;

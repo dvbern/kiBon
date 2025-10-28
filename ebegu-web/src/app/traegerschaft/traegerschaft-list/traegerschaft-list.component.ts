@@ -21,7 +21,8 @@ import {
     Component,
     Input,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -46,6 +47,12 @@ export class TraegerschaftListComponent
     extends AbstractAdminViewX
     implements OnInit
 {
+    private readonly traegerschaftRS = inject(TraegerschaftRS);
+    private readonly dialog = inject(MatDialog);
+    private readonly $state = inject(StateService);
+    private readonly cd = inject(ChangeDetectorRef);
+    public authServiceRS = inject(AuthServiceRS);
+
     private readonly log: Log = LogFactory.createLog(
         'TraegerschaftListComponent'
     );
@@ -58,14 +65,8 @@ export class TraegerschaftListComponent
 
     @ViewChild(NgForm) public form: NgForm;
 
-    public constructor(
-        private readonly traegerschaftRS: TraegerschaftRS,
-        private readonly dialog: MatDialog,
-        authServiceRS: AuthServiceRS,
-        private readonly $state: StateService,
-        private readonly cd: ChangeDetectorRef
-    ) {
-        super(authServiceRS);
+    public constructor() {
+        super();
     }
 
     public ngOnInit(): void {

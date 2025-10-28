@@ -34,6 +34,10 @@ import {from} from 'rxjs';
     standalone: false
 })
 export class DvNgSupportDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgSupportDialogComponent>>(MatDialogRef);
+    private readonly supportRS = inject(SupportRS);
+
     public beschreibung: string = '';
     public betroffeneFaelle: string;
     public betroffenePeriode: string;
@@ -43,11 +47,6 @@ export class DvNgSupportDialogComponent {
     public allActiveGesuchsperioden$ = from(
         this.gesuchsPeriodenService.getAllActiveGesuchsperioden()
     );
-
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DvNgSupportDialogComponent>,
-        private readonly supportRS: SupportRS
-    ) {}
 
     public send(): void {
         if (this.anfrageForm().invalid) {

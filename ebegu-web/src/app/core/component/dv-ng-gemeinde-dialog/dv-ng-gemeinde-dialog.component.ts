@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
@@ -34,6 +34,11 @@ import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
     standalone: false
 })
 export class DvNgGemeindeDialogComponent {
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgGemeindeDialogComponent>>(MatDialogRef);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     public selectedGemeinde: TSGemeinde;
     public gemeindeList: TSGemeinde[];
 
@@ -45,11 +50,10 @@ export class DvNgGemeindeDialogComponent {
     private readonly allGemeinden: TSGemeinde[];
     public besondereVolksschulen = false;
 
-    public constructor(
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly dialogRef: MatDialogRef<DvNgGemeindeDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const authServiceRS = this.authServiceRS;
+        const data = this.data;
+
         this.isUserSozialdienst = authServiceRS.isOneOfRoles(
             TSRoleUtil.getSozialdienstRolle()
         );

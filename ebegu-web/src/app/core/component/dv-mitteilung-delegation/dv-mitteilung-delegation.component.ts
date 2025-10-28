@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {DvNgMitteilungDelegationDialogComponent} from '../dv-ng-mitteilung-delegation-dialog/dv-ng-mitteilung-delegation-dialog.component';
@@ -28,11 +28,11 @@ const LOG = LogFactory.createLog('DvMitteilungDelegationComponent');
     standalone: false
 })
 export class DvMitteilungDelegationComponent {
+    private readonly dialog = inject(MatDialog);
+
     @Input() public mitteilungId: string;
     @Input() public gemeindeId: string;
     @Output() public readonly valueChange = new EventEmitter<undefined>();
-
-    public constructor(private readonly dialog: MatDialog) {}
 
     public showDialog(): void {
         const dialogConfig = new MatDialogConfig();

@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatSort} from '@angular/material/sort';
@@ -45,6 +46,11 @@ export class GemeindeListComponent
     extends AbstractAdminViewX
     implements OnInit
 {
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly $state = inject(StateService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    public authServiceRS = inject(AuthServiceRS);
+
     public hiddenDVTableColumns = [
         'institutionCount',
         'type',
@@ -57,13 +63,8 @@ export class GemeindeListComponent
     @ViewChild(NgForm) public form: NgForm;
     @ViewChild(MatSort, {static: true}) public sort: MatSort;
 
-    public constructor(
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly $state: StateService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        authServiceRS: AuthServiceRS
-    ) {
-        super(authServiceRS);
+    public constructor() {
+        super();
     }
 
     public ngOnInit(): void {

@@ -19,7 +19,8 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
@@ -38,15 +39,15 @@ import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
     standalone: false
 })
 export class PulldownUserMenuComponent implements OnInit {
+    private readonly authService = inject(AuthServiceRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly state = inject(StateService);
+
     public multimandantAktiv: boolean;
     public frenchEnabled: boolean;
     public testfaelleEnabled: boolean;
-
-    public constructor(
-        private readonly authService: AuthServiceRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly state: StateService
-    ) {}
 
     public ngOnInit(): void {
         this.initMandantSwitch();

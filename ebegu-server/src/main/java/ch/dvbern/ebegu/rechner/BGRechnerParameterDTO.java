@@ -26,11 +26,13 @@ import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungComparator;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.rules.util.MahlzeitenverguenstigungParameter;
 import lombok.Getter;
 import lombok.Setter;
 
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.BETREUUNG_COMPARATOR;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_PAUSCHALE_BEI_ANSPRUCH;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_TEXTE;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_1_MAX_EINKOMMEN;
@@ -102,6 +104,8 @@ public final class BGRechnerParameterDTO {
 	private boolean besondereBeduerfnisseOnlyWhenAnspruch;
 
 	private GeschwisterbonusTyp geschwisterbonusTyp;
+
+	private BetreuungComparator betreuungComparator;
 
 	private MahlzeitenverguenstigungParameter mahlzeitenverguenstigungParameter =
 		new MahlzeitenverguenstigungParameter();
@@ -341,6 +345,10 @@ public final class BGRechnerParameterDTO {
 		);
 		this.geschwisterbonusTyp = GeschwisterbonusTyp.getEnumValue(
 			paramMap.get(GESCHWISTERNBONUS_TYP)
+		);
+
+		this.betreuungComparator = BetreuungComparator.getEnumValue(
+			paramMap.get(BETREUUNG_COMPARATOR)
 		);
 	}
 

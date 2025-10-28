@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2023 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2023 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 <div class="dv-table">
     <div class="col-md-12">
         <div class="row view-title">
@@ -48,20 +48,21 @@
                     }
                 </div>
             </div>
-            <div
-                *ngIf="!isSozialdienstOrInstitution()"
-                class="col-md-2 text-right closed-mitteilungen dv-table-resultCombo"
-            >
-                <dv-checkbox-x
-                    [model]="includeClosed"
-                    [marginClass]="'no-margin-bottom'"
-                    (modelChange)="clickedIncludeClosed($event)"
-                    [label]="'POSTEINGANG_INCLUDE_CLOSED' | translate"
-                    [displayBisher]="false"
+            @if (!isSozialdienstOrInstitution()) {
+                <div
+                    class="col-md-2 text-right closed-mitteilungen dv-table-resultCombo"
                 >
-                </dv-checkbox-x>
-                <h3 class="dv-table-resultcount">{{ totalResultCount }}</h3>
-            </div>
+                    <dv-checkbox-x
+                        [model]="includeClosed"
+                        [marginClass]="'no-margin-bottom'"
+                        (modelChange)="clickedIncludeClosed($event)"
+                        [label]="'POSTEINGANG_INCLUDE_CLOSED' | translate"
+                        [displayBisher]="false"
+                    >
+                    </dv-checkbox-x>
+                    <h3 class="dv-table-resultcount">{{ totalResultCount }}</h3>
+                </div>
+            }
         </div>
         <div class="row">
             <div class="col-md-10 col-md-offset-1 ebegu-table table-responsive">
@@ -132,28 +133,30 @@
                     </ng-container>
 
                     <!-- Familie -->
-                    <ng-container
-                        *ngIf="!isSozialdienst()"
-                        matColumnDef="familienName"
-                    >
-                        <mat-header-cell
-                            mat-sort-header="familienName"
-                            *matHeaderCellDef
-                            class="ellipsis"
-                        >
-                            <span translate>POSTEINGANG_FAMILIE</span>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let element" class="ellipsis">
-                            <span
-                                [title]="
-                                    element.dossier.fall.besitzer?.getFullName()
-                                "
-                                >{{
-                                    element.dossier.fall.besitzer?.getFullName()
-                                }}</span
+                    @if (!isSozialdienst()) {
+                        <ng-container matColumnDef="familienName">
+                            <mat-header-cell
+                                mat-sort-header="familienName"
+                                *matHeaderCellDef
+                                class="ellipsis"
                             >
-                        </mat-cell>
-                    </ng-container>
+                                <span translate>POSTEINGANG_FAMILIE</span>
+                            </mat-header-cell>
+                            <mat-cell
+                                *matCellDef="let element"
+                                class="ellipsis"
+                            >
+                                <span
+                                    [title]="
+                                        element.dossier.fall.besitzer?.getFullName()
+                                    "
+                                    >{{
+                                        element.dossier.fall.besitzer?.getFullName()
+                                    }}</span
+                                >
+                            </mat-cell>
+                        </ng-container>
+                    }
 
                     <!-- Betreff -->
                     <ng-container matColumnDef="subject">
@@ -190,46 +193,44 @@
                     </ng-container>
 
                     <!-- An -->
-                    <ng-container
-                        *ngIf="!isSozialdienstOrInstitution()"
-                        matColumnDef="empfaenger"
-                    >
-                        <mat-header-cell
-                            mat-sort-header="empfaenger"
-                            *matHeaderCellDef
-                            translate
-                        >
-                            <span translate
-                                >POSTEINGANG_AN</span
-                            ></mat-header-cell
-                        >
-                        <mat-cell *matCellDef="let element">
-                            <dv-benutzer-entry
-                                [benutzer]="element.empfaenger"
-                                [noIcons]="true"
-                            ></dv-benutzer-entry>
-                        </mat-cell>
-                    </ng-container>
+                    @if (!isSozialdienstOrInstitution()) {
+                        <ng-container matColumnDef="empfaenger">
+                            <mat-header-cell
+                                mat-sort-header="empfaenger"
+                                *matHeaderCellDef
+                                translate
+                            >
+                                <span translate
+                                    >POSTEINGANG_AN</span
+                                ></mat-header-cell
+                            >
+                            <mat-cell *matCellDef="let element">
+                                <dv-benutzer-entry
+                                    [benutzer]="element.empfaenger"
+                                    [noIcons]="true"
+                                ></dv-benutzer-entry>
+                            </mat-cell>
+                        </ng-container>
+                    }
 
                     <!-- Amt -->
-                    <ng-container
-                        *ngIf="!isSozialdienstOrInstitution()"
-                        matColumnDef="empfaengerVerantwortung"
-                    >
-                        <mat-header-cell
-                            mat-sort-header="empfaengerVerantwortung"
-                            *matHeaderCellDef
-                            translate
-                        >
-                            <span translate>POSTEINGANG_VERANTWORTUNG</span>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let element">
-                            <dv-benutzer-entry
-                                [benutzer]="element.empfaenger"
-                                [noName]="true"
-                            ></dv-benutzer-entry>
-                        </mat-cell>
-                    </ng-container>
+                    @if (!isSozialdienstOrInstitution()) {
+                        <ng-container matColumnDef="empfaengerVerantwortung">
+                            <mat-header-cell
+                                mat-sort-header="empfaengerVerantwortung"
+                                *matHeaderCellDef
+                                translate
+                            >
+                                <span translate>POSTEINGANG_VERANTWORTUNG</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                <dv-benutzer-entry
+                                    [benutzer]="element.empfaenger"
+                                    [noName]="true"
+                                ></dv-benutzer-entry>
+                            </mat-cell>
+                        </ng-container>
+                    }
 
                     <!-- Status -->
                     <ng-container matColumnDef="mitteilungStatus">
@@ -256,61 +257,64 @@
                             <span translate></span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let element">
-                            <button
-                                type="button"
-                                class="dv-btn dv-btn-operation"
-                                (click)="
-                                    $event.stopPropagation();
-                                    setUngelesen(element)
-                                "
-                                *ngIf="
-                                    isSuperAdmin() && isStatusGelesen(element)
-                                "
-                            >
-                                <i
-                                    class="fa fa-envelope fa-lg"
-                                    [title]="'MITTEILUNG_UNGELESEN' | translate"
-                                ></i>
-                            </button>
-                            <button
-                                type="button"
-                                class="dv-btn dv-btn-operation"
-                                (click)="
-                                    $event.stopPropagation();
-                                    setIgnoriert(element)
-                                "
-                                *ngIf="
-                                    isSuperAdminOrGemeinde() &&
-                                    canBeIgnored(element)
-                                "
-                            >
-                                <i
-                                    class="fa fa-eye-slash fa-lg"
-                                    [title]="
-                                        'MITTEILUNG_IGNORIEREN' | translate
+                            @if (isSuperAdmin() && isStatusGelesen(element)) {
+                                <button
+                                    type="button"
+                                    class="dv-btn dv-btn-operation"
+                                    (click)="
+                                        $event.stopPropagation();
+                                        setUngelesen(element)
                                     "
-                                ></i>
-                            </button>
-                            <button
-                                type="button"
-                                class="dv-btn dv-btn-operation"
-                                (click)="
-                                    $event.stopPropagation();
-                                    setGelesen(element)
-                                "
-                                *ngIf="
-                                    isSuperAdminOrGemeinde() &&
-                                    canMitteilungStatusBeReverted(element)
-                                "
-                            >
-                                <i
-                                    class="fa fa-eye fa-lg"
-                                    [title]="
-                                        'MITTEILUNG_NICHT_IGNORIEREN'
-                                            | translate
+                                >
+                                    <i
+                                        class="fa fa-envelope fa-lg"
+                                        [title]="
+                                            'MITTEILUNG_UNGELESEN' | translate
+                                        "
+                                    ></i>
+                                </button>
+                            }
+                            @if (
+                                isSuperAdminOrGemeinde() &&
+                                canBeIgnored(element)
+                            ) {
+                                <button
+                                    type="button"
+                                    class="dv-btn dv-btn-operation"
+                                    (click)="
+                                        $event.stopPropagation();
+                                        setIgnoriert(element)
                                     "
-                                ></i>
-                            </button>
+                                >
+                                    <i
+                                        class="fa fa-eye-slash fa-lg"
+                                        [title]="
+                                            'MITTEILUNG_IGNORIEREN' | translate
+                                        "
+                                    ></i>
+                                </button>
+                            }
+                            @if (
+                                isSuperAdminOrGemeinde() &&
+                                canMitteilungStatusBeReverted(element)
+                            ) {
+                                <button
+                                    type="button"
+                                    class="dv-btn dv-btn-operation"
+                                    (click)="
+                                        $event.stopPropagation();
+                                        setGelesen(element)
+                                    "
+                                >
+                                    <i
+                                        class="fa fa-eye fa-lg"
+                                        [title]="
+                                            'MITTEILUNG_NICHT_IGNORIEREN'
+                                                | translate
+                                        "
+                                    ></i>
+                                </button>
+                            }
                         </mat-cell>
                     </ng-container>
 
@@ -345,11 +349,14 @@
                                     <mat-option
                                         ><span translate>ALLE</span></mat-option
                                     >
-                                    <mat-option
-                                        *ngFor="let gemeinde of gemeindenList"
-                                        [value]="gemeinde.name"
-                                        >{{ gemeinde.name }}</mat-option
-                                    >
+                                    @for (
+                                        gemeinde of gemeindenList;
+                                        track gemeinde
+                                    ) {
+                                        <mat-option [value]="gemeinde.name">{{
+                                            gemeinde.name
+                                        }}</mat-option>
+                                    }
                                 </mat-select>
                             </mat-form-field>
                         </mat-header-cell>
@@ -416,62 +423,70 @@
                     </ng-container>
 
                     <!-- An -->
-                    <ng-container
-                        *ngIf="!isSozialdienstOrInstitution()"
-                        matColumnDef="empfaenger-filter"
-                        st-table=""
-                    >
-                        <mat-header-cell *matHeaderCellDef="let column">
-                            <div
-                                dvNewUserSelect
-                                data-test="container.empfaenger-select"
-                                [selectedUser]="initialEmpfaenger"
-                                [showSelectionAll]="true"
-                                [angular2]="true"
-                                [initialAll]="true"
-                                [bgAndTs]="true"
-                                (userChanged)="filterEmpfaenger($event.user)"
-                            ></div>
-                        </mat-header-cell>
-                    </ng-container>
+                    @if (!isSozialdienstOrInstitution()) {
+                        <ng-container
+                            matColumnDef="empfaenger-filter"
+                            st-table=""
+                        >
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <div
+                                    dvNewUserSelect
+                                    data-test="container.empfaenger-select"
+                                    [selectedUser]="initialEmpfaenger"
+                                    [showSelectionAll]="true"
+                                    [angular2]="true"
+                                    [initialAll]="true"
+                                    [bgAndTs]="true"
+                                    (userChanged)="
+                                        filterEmpfaenger($event.user)
+                                    "
+                                ></div>
+                            </mat-header-cell>
+                        </ng-container>
+                    }
 
                     <!-- Verantwortung -->
-                    <ng-container
-                        *ngIf="!isSozialdienstOrInstitution()"
-                        matColumnDef="empfaengerVerantwortung-filter"
-                        st-table=""
-                    >
-                        <mat-header-cell *matHeaderCellDef="let column">
-                            <mat-form-field
-                                class="dv-table-mat-form-field"
-                                floatLabel="never"
-                            >
-                                <mat-select
-                                    [value]="
-                                        filterPredicate.empfaengerVerantwortung
-                                    "
-                                    (selectionChange)="
-                                        filterVerantwortung($event.value)
-                                    "
-                                    panelClass="mat-select-panel1"
-                                    [placeholder]="'ALLE' | translate"
+                    @if (!isSozialdienstOrInstitution()) {
+                        <ng-container
+                            matColumnDef="empfaengerVerantwortung-filter"
+                            st-table=""
+                        >
+                            <mat-header-cell *matHeaderCellDef="let column">
+                                <mat-form-field
+                                    class="dv-table-mat-form-field"
+                                    floatLabel="never"
                                 >
-                                    <mat-option
-                                        ><span translate>ALLE</span></mat-option
-                                    >
-                                    <mat-option
-                                        *ngFor="
-                                            let verantwortung of getVerantwortungList()
+                                    <mat-select
+                                        [value]="
+                                            filterPredicate.empfaengerVerantwortung
                                         "
-                                        [value]="verantwortung"
-                                        >{{
-                                            verantwortung | translate
-                                        }}</mat-option
+                                        (selectionChange)="
+                                            filterVerantwortung($event.value)
+                                        "
+                                        panelClass="mat-select-panel1"
+                                        [placeholder]="'ALLE' | translate"
                                     >
-                                </mat-select>
-                            </mat-form-field>
-                        </mat-header-cell>
-                    </ng-container>
+                                        <mat-option
+                                            ><span translate
+                                                >ALLE</span
+                                            ></mat-option
+                                        >
+                                        @for (
+                                            verantwortung of getVerantwortungList();
+                                            track verantwortung
+                                        ) {
+                                            <mat-option
+                                                [value]="verantwortung"
+                                                >{{
+                                                    verantwortung | translate
+                                                }}</mat-option
+                                            >
+                                        }
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-header-cell>
+                        </ng-container>
+                    }
 
                     <!-- Status -->
                     <ng-container matColumnDef="mitteilungStatus-filter">
@@ -491,15 +506,16 @@
                                     <mat-option selected
                                         ><span translate>ALLE</span></mat-option
                                     >
-                                    <mat-option
-                                        *ngFor="
-                                            let status of getMitteilungsStatus()
-                                        "
-                                        [value]="status"
-                                        ><span translate>{{
-                                            status
-                                        }}</span></mat-option
-                                    >
+                                    @for (
+                                        status of getMitteilungsStatus();
+                                        track status
+                                    ) {
+                                        <mat-option [value]="status"
+                                            ><span translate>{{
+                                                status
+                                            }}</span></mat-option
+                                        >
+                                    }
                                 </mat-select>
                             </mat-form-field>
                         </mat-header-cell>
@@ -538,20 +554,19 @@
                 <div class="bottom-pagination">
                     <nav>
                         <ul class="pagination">
-                            <li
-                                *ngFor="let index of paginationItems"
-                                [ngClass]="{active: index - 1 === page}"
-                            >
-                                <a
-                                    (click)="
-                                        handlePagination({
-                                            pageIndex: index - 1,
-                                            pageSize: 20
-                                        })
-                                    "
-                                    >{{ index }}</a
-                                >
-                            </li>
+                            @for (index of paginationItems; track index) {
+                                <li [ngClass]="{active: index - 1 === page}">
+                                    <a
+                                        (click)="
+                                            handlePagination({
+                                                pageIndex: index - 1,
+                                                pageSize: 20
+                                            })
+                                        "
+                                        >{{ index }}</a
+                                    >
+                                </li>
+                            }
                         </ul>
                     </nav>
                 </div>

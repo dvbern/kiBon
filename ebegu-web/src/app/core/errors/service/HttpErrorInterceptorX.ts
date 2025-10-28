@@ -20,7 +20,7 @@ import {
     HttpInterceptor,
     HttpRequest
 } from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {TSErrorLevel} from '../../../../models/enums/TSErrorLevel';
@@ -35,7 +35,7 @@ const LOG = LogFactory.createLog('HttpErrorInterceptorX');
 
 @Injectable()
 export class HttpErrorInterceptorX implements HttpInterceptor {
-    public constructor(private readonly errorService: ErrorServiceX) {}
+    private readonly errorService = inject(ErrorServiceX);
 
     public static isIgnorableHttpError<T>(request: HttpRequest<T>): boolean {
         return (

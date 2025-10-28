@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, inject} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {isNullOrUndefined} from '@uirouter/core';
@@ -65,23 +65,29 @@ export class FamiliensituationViewXComponent
     extends AbstractFamiliensitutaionView
     implements OnInit
 {
+    protected readonly gesuchModelManager: GesuchModelManager;
+    private readonly berechnungsManager = inject(BerechnungsManager);
+    protected readonly errorService: ErrorService;
+    protected readonly wizardStepManager: WizardStepManager;
+    private readonly dialog = inject(MatDialog);
+    private readonly $translate = inject(TranslateService);
+    protected readonly familiensituationRS: FamiliensituationRS;
+    private readonly einstellungRS = inject(EinstellungRS);
+    protected readonly authService: AuthServiceRS;
+
     private readonly familienstatusValues: Array<TSFamilienstatus>;
     public initialFamiliensituation: TSFamiliensituation;
     public gesuchstellerKardinalitaetValues: Array<TSGesuchstellerKardinalitaet>;
     public unterhaltsvereinbarungAnswerValues: Array<TSUnterhaltsvereinbarungAnswer>;
     public gesuchBeendenFamSitActive: boolean;
 
-    public constructor(
-        protected readonly gesuchModelManager: GesuchModelManager,
-        private readonly berechnungsManager: BerechnungsManager,
-        protected readonly errorService: ErrorService,
-        protected readonly wizardStepManager: WizardStepManager,
-        private readonly dialog: MatDialog,
-        private readonly $translate: TranslateService,
-        protected readonly familiensituationRS: FamiliensituationRS,
-        private readonly einstellungRS: EinstellungRS,
-        protected readonly authService: AuthServiceRS
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const errorService = inject(ErrorService);
+        const wizardStepManager = inject(WizardStepManager);
+        const familiensituationRS = inject(FamiliensituationRS);
+        const authService = inject(AuthServiceRS);
+
         super(
             gesuchModelManager,
             errorService,
@@ -89,6 +95,12 @@ export class FamiliensituationViewXComponent
             familiensituationRS,
             authService
         );
+        this.gesuchModelManager = gesuchModelManager;
+        this.errorService = errorService;
+        this.wizardStepManager = wizardStepManager;
+        this.familiensituationRS = familiensituationRS;
+        this.authService = authService;
+
         this.initialFamiliensituation =
             this.gesuchModelManager.getFamiliensituation();
         this.gesuchstellerKardinalitaetValues =

@@ -1,22 +1,22 @@
 <!--
-  ~ Copyright (C) 2022 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2022 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <form role="form" class="fkjv-kinderabzug">
-    <ng-container *ngIf="kindContainer?.kindJA">
+    @if (kindContainer?.kindJA) {
         <div class="row">
             <div
                 class="col-sm-12 dv-input-container-medium kinderabzug-pflegekind"
@@ -31,145 +31,177 @@
                 ></dv-checkbox-x>
             </div>
         </div>
-        <div class="row" *ngIf="pflegeEntschaedigungErhaltenVisible()">
-            <div class="col-xs-12">
-                <dv-radio-container-x>
-                    <dv-radio-input-x
-                        data-test="container.pflege-entschaedigung-erhalten"
-                        [label]="'KINDERABZUG_PFLEGE_ENTSCHAEDIGUNG_ERHALTEN'"
-                        [tooltip]="
-                            'KINDERABZUG_PFLEGE_ENTSCHAEDIGUNG_ERHALTEN_INFO'
-                        "
-                        [(model)]="
-                            kindContainer.kindJA.pflegeEntschaedigungErhalten
-                        "
-                        (modelChange)="change()"
-                        [readonly]="isReadOnly()"
-                        [dvBisherValue]="
-                            kindContainer.kindGS?.pflegeEntschaedigungErhalten
-                        "
-                        [required]="true"
-                    ></dv-radio-input-x>
-                </dv-radio-container-x>
+        @if (pflegeEntschaedigungErhaltenVisible()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            data-test="container.pflege-entschaedigung-erhalten"
+                            [label]="
+                                'KINDERABZUG_PFLEGE_ENTSCHAEDIGUNG_ERHALTEN'
+                            "
+                            [tooltip]="
+                                'KINDERABZUG_PFLEGE_ENTSCHAEDIGUNG_ERHALTEN_INFO'
+                            "
+                            [(model)]="
+                                kindContainer.kindJA
+                                    .pflegeEntschaedigungErhalten
+                            "
+                            (modelChange)="change()"
+                            [readonly]="isReadOnly()"
+                            [dvBisherValue]="
+                                kindContainer.kindGS
+                                    ?.pflegeEntschaedigungErhalten
+                            "
+                            [required]="true"
+                        ></dv-radio-input-x>
+                    </dv-radio-container-x>
+                </div>
             </div>
-        </div>
-        <div class="row" *ngIf="obhutAlternierendAusuebenVisible()">
-            <div class="col-xs-12">
-                <dv-radio-container-x>
-                    <dv-radio-input-x
-                        data-test="container.obhut-alternierend-ausueben"
-                        [label]="'KINDERABZUG_OBHUT_ALTERNIEREND_AUSUEBEN'"
-                        [tooltip]="
-                            'KINDERABZUG_OBHUT_ALTERNIEREND_AUSUEBEN_INFO'
-                        "
-                        [(model)]="
-                            kindContainer.kindJA.obhutAlternierendAusueben
-                        "
-                        (modelChange)="change()"
-                        [dvBisherValue]="
-                            kindContainer.kindGS?.obhutAlternierendAusueben
-                        "
-                        [required]="true"
-                        [readonly]="isReadOnly()"
-                    ></dv-radio-input-x>
-                </dv-radio-container-x>
+        }
+        @if (obhutAlternierendAusuebenVisible()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            data-test="container.obhut-alternierend-ausueben"
+                            [label]="'KINDERABZUG_OBHUT_ALTERNIEREND_AUSUEBEN'"
+                            [tooltip]="
+                                'KINDERABZUG_OBHUT_ALTERNIEREND_AUSUEBEN_INFO'
+                            "
+                            [(model)]="
+                                kindContainer.kindJA.obhutAlternierendAusueben
+                            "
+                            (modelChange)="change()"
+                            [dvBisherValue]="
+                                kindContainer.kindGS?.obhutAlternierendAusueben
+                            "
+                            [required]="true"
+                            [readonly]="isReadOnly()"
+                        ></dv-radio-input-x>
+                    </dv-radio-container-x>
+                </div>
             </div>
-        </div>
-        <div class="row" *ngIf="famErgaenzendeBetreuuungVisible()">
-            <div class="col-xs-12">
-                <dv-radio-container-x>
-                    <dv-radio-input-x
-                        data-test="container.ergaenzende-betreuung-beide"
-                        [label]="'FAM_ERGAENZENDE_BETREUUNG_BEIDE'"
-                        [(model)]="
-                            kindContainer.kindJA.familienErgaenzendeBetreuung
-                        "
-                        (modelChange)="change()"
-                        [readonly]="hasKindBetreuungen()"
-                        [dvBisherValue]="
-                            kindContainer.kindGS?.familienErgaenzendeBetreuung
-                        "
-                        [inlineHint]="'FAM_ERGAENZENDE_BETREUUNG_NOT_EDITABLE'"
-                        [required]="true"
-                    ></dv-radio-input-x>
-                </dv-radio-container-x>
+        }
+        @if (famErgaenzendeBetreuuungVisible()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            data-test="container.ergaenzende-betreuung-beide"
+                            [label]="'FAM_ERGAENZENDE_BETREUUNG_BEIDE'"
+                            [(model)]="
+                                kindContainer.kindJA
+                                    .familienErgaenzendeBetreuung
+                            "
+                            (modelChange)="change()"
+                            [readonly]="hasKindBetreuungen()"
+                            [dvBisherValue]="
+                                kindContainer.kindGS
+                                    ?.familienErgaenzendeBetreuung
+                            "
+                            [inlineHint]="
+                                'FAM_ERGAENZENDE_BETREUUNG_NOT_EDITABLE'
+                            "
+                            [required]="true"
+                        ></dv-radio-input-x>
+                    </dv-radio-container-x>
+                </div>
             </div>
-        </div>
-        <div class="row" *ngIf="gemeinsamesGesuchVisible()">
-            <div class="col-xs-12">
-                <dv-radio-container-x>
-                    <dv-radio-input-x
-                        data-test="container.gemeinsames-gesuch"
-                        [label]="'KINDERABZUG_GEMEINSAMES_GESUCH'"
-                        [tooltip]="'KINDERABZUG_GEMEINSAMES_GESUCH_INFO'"
-                        [(model)]="kindContainer.kindJA.gemeinsamesGesuch"
-                        (modelChange)="change()"
-                        [dvBisherValue]="
-                            kindContainer.kindGS?.gemeinsamesGesuch
-                        "
-                        [required]="true"
-                    ></dv-radio-input-x>
-                </dv-radio-container-x>
+        }
+        @if (gemeinsamesGesuchVisible()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            data-test="container.gemeinsames-gesuch"
+                            [label]="'KINDERABZUG_GEMEINSAMES_GESUCH'"
+                            [tooltip]="'KINDERABZUG_GEMEINSAMES_GESUCH_INFO'"
+                            [(model)]="kindContainer.kindJA.gemeinsamesGesuch"
+                            (modelChange)="change()"
+                            [dvBisherValue]="
+                                kindContainer.kindGS?.gemeinsamesGesuch
+                            "
+                            [required]="true"
+                        ></dv-radio-input-x>
+                    </dv-radio-container-x>
+                </div>
             </div>
-        </div>
-        <div class="row" *ngIf="inErstausbildungVisible()">
-            <div class="col-xs-12">
-                <dv-radio-container-x>
-                    <dv-radio-input-x
-                        data-test="container.in-erstausbildung"
-                        [label]="'KINDERABZUG_IN_ERSTAUSBILDUNG'"
-                        [tooltip]="'KINDERABZUG_IN_ERSTAUSBILDUNG_INFO'"
-                        [(model)]="kindContainer.kindJA.inErstausbildung"
-                        (modelChange)="change()"
-                        [dvBisherValue]="kindContainer.kindGS?.inErstausbildung"
-                        [required]="true"
-                    ></dv-radio-input-x>
-                </dv-radio-container-x>
+        }
+        @if (inErstausbildungVisible()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            data-test="container.in-erstausbildung"
+                            [label]="'KINDERABZUG_IN_ERSTAUSBILDUNG'"
+                            [tooltip]="'KINDERABZUG_IN_ERSTAUSBILDUNG_INFO'"
+                            [(model)]="kindContainer.kindJA.inErstausbildung"
+                            (modelChange)="change()"
+                            [dvBisherValue]="
+                                kindContainer.kindGS?.inErstausbildung
+                            "
+                            [required]="true"
+                        ></dv-radio-input-x>
+                    </dv-radio-container-x>
+                </div>
             </div>
-        </div>
-        <div class="row" *ngIf="lebtKindAlternierendVisible()">
-            <div class="col-xs-12">
-                <dv-radio-container-x>
-                    <dv-radio-input-x
-                        data-test="container.lebt-kind-alternierend"
-                        [label]="'KINDERABZUG_LEBT_KIND_ALTERNIEREND'"
-                        [(model)]="kindContainer.kindJA.lebtKindAlternierend"
-                        (modelChange)="change()"
-                        [dvBisherValue]="
-                            kindContainer.kindGS?.lebtKindAlternierend
-                        "
-                        [required]="true"
-                    ></dv-radio-input-x>
-                </dv-radio-container-x>
+        }
+        @if (lebtKindAlternierendVisible()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            data-test="container.lebt-kind-alternierend"
+                            [label]="'KINDERABZUG_LEBT_KIND_ALTERNIEREND'"
+                            [(model)]="
+                                kindContainer.kindJA.lebtKindAlternierend
+                            "
+                            (modelChange)="change()"
+                            [dvBisherValue]="
+                                kindContainer.kindGS?.lebtKindAlternierend
+                            "
+                            [required]="true"
+                        ></dv-radio-input-x>
+                    </dv-radio-container-x>
+                </div>
             </div>
-        </div>
-        <div class="row" *ngIf="alimenteErhaltenVisible()">
-            <div class="col-xs-12">
-                <dv-radio-container-x>
-                    <dv-radio-input-x
-                        data-test="container.alimente-erhalten"
-                        [label]="'KINDERABZUG_ALIMENTE_ERHALTEN'"
-                        [(model)]="kindContainer.kindJA.alimenteErhalten"
-                        (modelChange)="change()"
-                        [dvBisherValue]="kindContainer.kindGS?.alimenteErhalten"
-                        [required]="true"
-                    ></dv-radio-input-x>
-                </dv-radio-container-x>
+        }
+        @if (alimenteErhaltenVisible()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            data-test="container.alimente-erhalten"
+                            [label]="'KINDERABZUG_ALIMENTE_ERHALTEN'"
+                            [(model)]="kindContainer.kindJA.alimenteErhalten"
+                            (modelChange)="change()"
+                            [dvBisherValue]="
+                                kindContainer.kindGS?.alimenteErhalten
+                            "
+                            [required]="true"
+                        ></dv-radio-input-x>
+                    </dv-radio-container-x>
+                </div>
             </div>
-        </div>
-        <div class="row" *ngIf="alimenteBezahlenVisible()">
-            <div class="col-xs-12">
-                <dv-radio-container-x>
-                    <dv-radio-input-x
-                        data-test="container.alimente-bezahlen"
-                        [label]="'KINDERABZUG_ALIMENTE_BEZAHLEN'"
-                        [(model)]="kindContainer.kindJA.alimenteBezahlen"
-                        (modelChange)="change()"
-                        [dvBisherValue]="kindContainer.kindGS?.alimenteBezahlen"
-                        [required]="true"
-                    ></dv-radio-input-x>
-                </dv-radio-container-x>
+        }
+        @if (alimenteBezahlenVisible()) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            data-test="container.alimente-bezahlen"
+                            [label]="'KINDERABZUG_ALIMENTE_BEZAHLEN'"
+                            [(model)]="kindContainer.kindJA.alimenteBezahlen"
+                            (modelChange)="change()"
+                            [dvBisherValue]="
+                                kindContainer.kindGS?.alimenteBezahlen
+                            "
+                            [required]="true"
+                        ></dv-radio-input-x>
+                    </dv-radio-container-x>
+                </div>
             </div>
-        </div>
-    </ng-container>
+        }
+    }
 </form>

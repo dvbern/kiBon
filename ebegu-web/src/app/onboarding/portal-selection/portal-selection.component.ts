@@ -19,7 +19,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {UIRouterGlobals} from '@uirouter/core';
 import {fromEvent, Observable} from 'rxjs';
@@ -37,18 +38,16 @@ const LOG = LogFactory.createLog('PortalSelectionComponent');
     standalone: false
 })
 export class PortalSelectionComponent implements OnInit {
+    private readonly mandantService = inject(MandantService);
+    private readonly routerGlobals = inject(UIRouterGlobals);
+    private readonly cd = inject(ChangeDetectorRef);
+
     public mandantFilter: string;
     public mandants: TSMandant[];
     public isScreenMobile$: Observable<boolean>;
 
     private readonly MOBILE_THRESHOLD = 700;
     private readonly THROTTLE_TIME = 50;
-
-    public constructor(
-        private readonly mandantService: MandantService,
-        private readonly routerGlobals: UIRouterGlobals,
-        private readonly cd: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         this.mandantService.getAll().subscribe({

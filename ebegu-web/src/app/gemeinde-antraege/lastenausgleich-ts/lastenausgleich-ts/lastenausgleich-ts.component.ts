@@ -20,7 +20,8 @@ import {
     Component,
     Input,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Observable, Subscription} from 'rxjs';
@@ -44,6 +45,14 @@ const LOG = LogFactory.createLog('LastenausgleichTSComponent');
     standalone: false
 })
 export class LastenausgleichTSComponent implements OnInit, OnDestroy {
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly lastenausgleichTSService = inject(
+        LastenausgleichTSService
+    );
+    private readonly wizardStepXRS = inject(WizardStepXRS);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly translate = inject(TranslateService);
+
     @Input() public lastenausgleichId: string;
 
     private subscription: Subscription;
@@ -51,14 +60,6 @@ export class LastenausgleichTSComponent implements OnInit, OnDestroy {
     public lATSAngabenGemeindeContainer: TSLastenausgleichTagesschuleAngabenGemeindeContainer;
     public wizardSteps$: Observable<TSWizardStepX[]>;
     public wizardTyp = TSWizardStepXTyp.LASTENAUSGLEICH_TAGESSCHULEN;
-
-    public constructor(
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly lastenausgleichTSService: LastenausgleichTSService,
-        private readonly wizardStepXRS: WizardStepXRS,
-        private readonly downloadRS: DownloadRS,
-        private readonly translate: TranslateService
-    ) {}
 
     public ngOnInit(): void {
         this.lastenausgleichTSService.updateLATSAngabenGemeindeContainerStore(

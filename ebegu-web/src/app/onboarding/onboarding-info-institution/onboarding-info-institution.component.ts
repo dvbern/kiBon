@@ -15,7 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    inject
+} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
@@ -31,6 +36,12 @@ import {MandantService} from '@kibon/shared-util-mandant-service';
     standalone: false
 })
 export class OnboardingInfoInstitutionComponent implements OnInit {
+    private readonly onboardingPlaceholderService = inject(
+        OnboardingPlaceholderService
+    );
+    private readonly mandantService = inject(MandantService);
+    private readonly translate = inject(TranslateService);
+
     private readonly description1: string = 'ONBOARDING_INSTITUTION_DESC1';
     private readonly description2: string = 'ONBOARDING_INSTITUTION_DESC2';
     private readonly description3: string = 'ONBOARDING_INSTITUTION_DESC3';
@@ -41,12 +52,6 @@ export class OnboardingInfoInstitutionComponent implements OnInit {
 
     public testZugangBeantragen: boolean;
     public institutionName: string;
-
-    public constructor(
-        private readonly onboardingPlaceholderService: OnboardingPlaceholderService,
-        private readonly mandantService: MandantService,
-        private readonly translate: TranslateService
-    ) {}
 
     public ngOnInit(): void {
         this.onboardingPlaceholderService.setDescription1(

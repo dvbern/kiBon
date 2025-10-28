@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, inject} from '@angular/core';
 import {TargetState, Transition} from '@uirouter/core';
 import {TSEinladungTyp} from '../../../models/enums/TSEinladungTyp';
 import {TSBenutzer} from '../../../models/TSBenutzer';
@@ -29,9 +29,9 @@ import {getEntityTargetState} from '../einladung-routing/einladung-helpers';
     standalone: false
 })
 export class EinladungAbschliessenComponent {
-    @Input() public principal: TSBenutzer;
+    private readonly transition = inject(Transition);
 
-    public constructor(private readonly transition: Transition) {}
+    @Input() public principal: TSBenutzer;
 
     public next(): void {
         const target = this.setParamIsRegistering(

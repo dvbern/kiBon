@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, OnInit, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {
     TSEinstellungenTagesschule,
@@ -32,16 +32,21 @@ import {InstitutionStammdatenRS} from '../../../core/service/institutionStammdat
     standalone: false
 })
 export class DialogImportFromOtherInstitutionComponent implements OnInit {
+    private readonly dialogRef =
+        inject<MatDialogRef<DialogImportFromOtherInstitutionComponent>>(
+            MatDialogRef
+        );
+    private readonly institutionStammdatenRS = inject(InstitutionStammdatenRS);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     public selectedInstitutionStammdaten: TSInstitutionStammdaten;
     public institutionStammdatenList: TSInstitutionStammdaten[];
     public selectedEinstellungTagesschule: TSEinstellungenTagesschule;
     public einstellungenTagesschule: TSEinstellungenTagesschule[];
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DialogImportFromOtherInstitutionComponent>,
-        private readonly institutionStammdatenRS: InstitutionStammdatenRS,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         this.institutionStammdatenList = data.institutionList;
     }
 

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
@@ -11,15 +11,20 @@ import {GSRemovalConfirmationDialogData} from '../dv-ng-gs-removal-confirmation-
     standalone: false
 })
 export class DvNgGsRemovalQuestionDialogComponent {
+    private readonly $translate = inject(TranslateService);
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgGsRemovalQuestionDialogComponent>>(
+            MatDialogRef
+        );
+    private readonly data =
+        inject<GSRemovalConfirmationDialogData>(MAT_DIALOG_DATA);
+
     public readonly text: string;
     public readonly frage: string;
 
-    public constructor(
-        private readonly $translate: TranslateService,
-        private readonly dialogRef: MatDialogRef<DvNgGsRemovalQuestionDialogComponent>,
-        @Inject(MAT_DIALOG_DATA)
-        private readonly data: GSRemovalConfirmationDialogData
-    ) {
+    public constructor() {
+        const data = this.data;
+
         if (
             EbeguUtil.isNullOrUndefined(this.data) ||
             EbeguUtil.isNullOrUndefined(data.gsFullName)

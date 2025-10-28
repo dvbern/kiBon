@@ -1,17 +1,17 @@
 <!--
-  ~ Ki-Tax: System for the management of external childcare subsidies
-  ~ Copyright (C) 2017 City of Bern Switzerland
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
-  -->
+~ Ki-Tax: System for the management of external childcare subsidies
+~ Copyright (C) 2017 City of Bern Switzerland
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
 
 <div class="testdaten-view testdatenModul admin-modul">
     <div class="row">
@@ -61,13 +61,16 @@
                         class="input-testfall"
                         data-test="gesuchsteller"
                     >
-                        <mat-option
-                            *ngFor="let gs of gesuchstellerList"
-                            [value]="gs"
-                            [attr.data-test]="getGesuchstellerDataTestValue(gs)"
-                        >
-                            {{ gs.vorname }} {{ gs.nachname }}
-                        </mat-option>
+                        @for (gs of gesuchstellerList; track gs) {
+                            <mat-option
+                                [value]="gs"
+                                [attr.data-test]="
+                                    getGesuchstellerDataTestValue(gs)
+                                "
+                            >
+                                {{ gs.vorname }} {{ gs.nachname }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </div>
                 <div class="col-sm-3">
@@ -79,13 +82,14 @@
                         class="input-testfall"
                         data-test="gemeinde"
                     >
-                        <mat-option
-                            *ngFor="let gem of gemeindeList"
-                            [value]="gem"
-                            [attr.data-test]="'gemeinde.' + gem.name"
-                        >
-                            {{ gem.name }}
-                        </mat-option>
+                        @for (gem of gemeindeList; track gem) {
+                            <mat-option
+                                [value]="gem"
+                                [attr.data-test]="'gemeinde.' + gem.name"
+                            >
+                                {{ gem.name }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </div>
                 <div class="col-sm-3">
@@ -99,15 +103,16 @@
                         class="input-testfall"
                         data-test="periode"
                     >
-                        <mat-option
-                            *ngFor="let gp of gesuchsperiodeList"
-                            [value]="gp"
-                            [attr.data-test]="
-                                'periode.' + gp.gesuchsperiodeString
-                            "
-                        >
-                            {{ gp.gesuchsperiodeString }}
-                        </mat-option>
+                        @for (gp of gesuchsperiodeList; track gp) {
+                            <mat-option
+                                [value]="gp"
+                                [attr.data-test]="
+                                    'periode.' + gp.gesuchsperiodeString
+                                "
+                            >
+                                {{ gp.gesuchsperiodeString }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </div>
             </div>
@@ -248,14 +253,14 @@
                         </button>
                     </li>
                     <!-- TODO: When an Instiution with (Tagesschule/Ferien insel) for the 18/19 period
-                    can be included in the flyway DB scripts, this test case can be enabled client side. NOTE: The
-                    exisiting test UUIDS for Tagesschule and Ferien insel will also have to be updated.
-                     -->
+              can be included in the flyway DB scripts, this test case can be enabled client side. NOTE: The
+              exisiting test UUIDS for Tagesschule and Ferien insel will also have to be updated.
+              -->
                     <!-- <li>
-                        <button type="button" class="btn-link btn-testfall" (click)="createTestFallType('11')">
-                            <span [textContent]="'Schulamt Only'"></span>
-                        </button>
-                    </li> -->
+              <button type="button" class="btn-link btn-testfall" (click)="createTestFallType('11')">
+                <span [textContent]="'Schulamt Only'"></span>
+              </button>
+            </li> -->
                     <li>
                         <button
                             type="button"
@@ -356,28 +361,34 @@
                             <span [textContent]="'Testfall ASIV 10'"></span>
                         </button>
                     </li>
-                    <li *ngIf="!this.selectedBesitzer">
-                        <button
-                            type="button"
-                            class="dv-btn btn-link btn-testfall"
-                            data-test="testfall-Sozialdienst"
-                            (click)="createTestFallType('Sozialdienst')"
-                        >
-                            <span
-                                [textContent]="'Testfall Unterstützungsdienste'"
-                            ></span>
-                        </button>
-                    </li>
-                    <li *ngIf="!this.selectedBesitzer">
-                        <button
-                            type="button"
-                            class="dv-btn btn-link btn-testfall"
-                            data-test="testfall-LATS"
-                            (click)="createTestFallType('LATS')"
-                        >
-                            <span [textContent]="'Testfall LATS'"></span>
-                        </button>
-                    </li>
+                    @if (!this.selectedBesitzer) {
+                        <li>
+                            <button
+                                type="button"
+                                class="dv-btn btn-link btn-testfall"
+                                data-test="testfall-Sozialdienst"
+                                (click)="createTestFallType('Sozialdienst')"
+                            >
+                                <span
+                                    [textContent]="
+                                        'Testfall Unterstützungsdienste'
+                                    "
+                                ></span>
+                            </button>
+                        </li>
+                    }
+                    @if (!this.selectedBesitzer) {
+                        <li>
+                            <button
+                                type="button"
+                                class="dv-btn btn-link btn-testfall"
+                                data-test="testfall-LATS"
+                                (click)="createTestFallType('LATS')"
+                            >
+                                <span [textContent]="'Testfall LATS'"></span>
+                            </button>
+                        </li>
+                    }
                 </ul>
             </div>
 
@@ -415,12 +426,14 @@
                                 name="gemeindeAntragTyp"
                                 class="input-testfall"
                             >
-                                <mat-option
-                                    *ngFor="let typ of gemeindeAntragTypeList"
-                                    [value]="typ"
-                                >
-                                    {{ typ | translate }}
-                                </mat-option>
+                                @for (
+                                    typ of gemeindeAntragTypeList;
+                                    track typ
+                                ) {
+                                    <mat-option [value]="typ">
+                                        {{ typ | translate }}
+                                    </mat-option>
+                                }
                             </mat-select>
                         </div>
                         <div class="col-sm-2">
@@ -433,12 +446,11 @@
                                 name="gemeindeGemeindeAntrag"
                                 class="input-testfall"
                             >
-                                <mat-option
-                                    *ngFor="let gem of gemeindeList"
-                                    [value]="gem"
-                                >
-                                    {{ gem.name }}
-                                </mat-option>
+                                @for (gem of gemeindeList; track gem) {
+                                    <mat-option [value]="gem">
+                                        {{ gem.name }}
+                                    </mat-option>
+                                }
                             </mat-select>
                         </div>
                         <div class="col-sm-2">
@@ -451,12 +463,11 @@
                                 name="gesuchsperiodeGemeindeAntrag"
                                 class="input-testfall"
                             >
-                                <mat-option
-                                    *ngFor="let gp of gesuchsperiodeList"
-                                    [value]="gp"
-                                >
-                                    {{ gp.gesuchsperiodeString }}
-                                </mat-option>
+                                @for (gp of gesuchsperiodeList; track gp) {
+                                    <mat-option [value]="gp">
+                                        {{ gp.gesuchsperiodeString }}
+                                    </mat-option>
+                                }
                             </mat-select>
                         </div>
                         <div class="col-sm-3">
@@ -487,15 +498,17 @@
                         class="input-testfall"
                         data-test="gesuchsteller-faelle-loeschen"
                     >
-                        <mat-option
-                            *ngFor="let gp of gesuchstellerList"
-                            [value]="gp"
-                            [attr.data-test]="
-                                getGesuchstellerDataTestValue(gp) + '-loeschen'
-                            "
-                        >
-                            {{ gp.getFullName() }}
-                        </mat-option>
+                        @for (gp of gesuchstellerList; track gp) {
+                            <mat-option
+                                [value]="gp"
+                                [attr.data-test]="
+                                    getGesuchstellerDataTestValue(gp) +
+                                    '-loeschen'
+                                "
+                            >
+                                {{ gp.getFullName() }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </div>
                 <div class="col-sm-4">
@@ -522,12 +535,11 @@
                         name="periodeLoeschen"
                         class="input-testfall"
                     >
-                        <mat-option
-                            *ngFor="let gpDel of gesuchsperiodeList"
-                            [value]="gpDel"
-                        >
-                            {{ gpDel.gesuchsperiodeString }}
-                        </mat-option>
+                        @for (gpDel of gesuchsperiodeList; track gpDel) {
+                            <mat-option [value]="gpDel">
+                                {{ gpDel.gesuchsperiodeString }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </div>
                 <div class="col-sm-4">
@@ -635,13 +647,14 @@
                         class="input-testfall"
                         data-test="gemeindeMails"
                     >
-                        <mat-option
-                            *ngFor="let gem of gemeindeList"
-                            [value]="gem"
-                            [attr.data-test]="'gemeindeMails.' + gem.name"
-                        >
-                            {{ gem.name }}
-                        </mat-option>
+                        @for (gem of gemeindeList; track gem) {
+                            <mat-option
+                                [value]="gem"
+                                [attr.data-test]="'gemeindeMails.' + gem.name"
+                            >
+                                {{ gem.name }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </div>
                 <div>
@@ -672,85 +685,87 @@
             </div>
 
             <!-- KiBon Anfrage Schnittstelle Testen -->
-            <div *ngIf="this.kibonAnfrageTestEnabled">
-                <h2 class="margin-top-20" translate>KIBON_ANFRAGE</h2>
-                <div class="row">
-                    <div class="col-sm-2 dv-input-container-small">
-                        <label class="md-no-float" for="zpvNummer"
-                            >zpv-Nummer:</label
-                        >
-                        <input
-                            id="zpvNummer"
-                            type="text"
-                            name="zpvNummer"
-                            [(ngModel)]="zpvNummer"
-                            class="input-testfall"
-                        />
+            @if (this.kibonAnfrageTestEnabled) {
+                <div>
+                    <h2 class="margin-top-20" translate>KIBON_ANFRAGE</h2>
+                    <div class="row">
+                        <div class="col-sm-2 dv-input-container-small">
+                            <label class="md-no-float" for="zpvNummer"
+                                >zpv-Nummer:</label
+                            >
+                            <input
+                                id="zpvNummer"
+                                type="text"
+                                name="zpvNummer"
+                                [(ngModel)]="zpvNummer"
+                                class="input-testfall"
+                            />
+                        </div>
+                        <div class="col-sm-2 dv-input-container-small">
+                            <label class="md-no-float" for="antragId"
+                                >Antrag-Id:</label
+                            >
+                            <input
+                                id="antragId"
+                                type="text"
+                                name="antragId"
+                                [(ngModel)]="antragId"
+                                class="input-testfall"
+                            />
+                        </div>
+                        <div class="col-sm-2 dv-input-container-small">
+                            <label
+                                class="md-no-float"
+                                for="gesuchsperiodeBeginnJahr"
+                                >gesuchsperiodeBeginnJahr:</label
+                            >
+                            <input
+                                id="gesuchsperiodeBeginnJahr"
+                                type="text"
+                                name="gesuchsperiodeBeginnJahr"
+                                [(ngModel)]="gesuchsperiodeBeginnJahr"
+                                class="input-testfall"
+                            />
+                        </div>
+                        <div class="col-sm-2 dv-input-container-small">
+                            <label
+                                class="required md-no-float"
+                                translate
+                                for="begu_start_ID"
+                                >GEBURTSDATUM</label
+                            >
+                            <input
+                                class="dv-mat-datepicker"
+                                type="text"
+                                name="geburtsdatum_name"
+                                id="begu_start_ID"
+                                [(ngModel)]="geburtsdatum"
+                                [matDatepicker]="geburtsdatum_name"
+                                placeholder="{{
+                                    'DATE_PLACEHOLDER_FIRSTOFMONTH' | translate
+                                }}"
+                                required
+                            />
+                            <mat-datepicker-toggle
+                                matSuffix
+                                [for]="geburtsdatum_name"
+                            ></mat-datepicker-toggle>
+                            <mat-datepicker #geburtsdatum_name></mat-datepicker>
+                        </div>
                     </div>
-                    <div class="col-sm-2 dv-input-container-small">
-                        <label class="md-no-float" for="antragId"
-                            >Antrag-Id:</label
-                        >
-                        <input
-                            id="antragId"
-                            type="text"
-                            name="antragId"
-                            [(ngModel)]="antragId"
-                            class="input-testfall"
-                        />
-                    </div>
-                    <div class="col-sm-2 dv-input-container-small">
-                        <label
-                            class="md-no-float"
-                            for="gesuchsperiodeBeginnJahr"
-                            >gesuchsperiodeBeginnJahr:</label
-                        >
-                        <input
-                            id="gesuchsperiodeBeginnJahr"
-                            type="text"
-                            name="gesuchsperiodeBeginnJahr"
-                            [(ngModel)]="gesuchsperiodeBeginnJahr"
-                            class="input-testfall"
-                        />
-                    </div>
-                    <div class="col-sm-2 dv-input-container-small">
-                        <label
-                            class="required md-no-float"
-                            translate
-                            for="begu_start_ID"
-                            >GEBURTSDATUM</label
-                        >
-                        <input
-                            class="dv-mat-datepicker"
-                            type="text"
-                            name="geburtsdatum_name"
-                            id="begu_start_ID"
-                            [(ngModel)]="geburtsdatum"
-                            [matDatepicker]="geburtsdatum_name"
-                            placeholder="{{
-                                'DATE_PLACEHOLDER_FIRSTOFMONTH' | translate
-                            }}"
-                            required
-                        />
-                        <mat-datepicker-toggle
-                            matSuffix
-                            [for]="geburtsdatum_name"
-                        ></mat-datepicker-toggle>
-                        <mat-datepicker #geburtsdatum_name></mat-datepicker>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <dv-loading-button
+                                id="anfrage-schnittstelle-loading-button"
+                                (buttonClick)="testKibonAnfrageResponse()"
+                                class="testfall-button"
+                            >
+                                KiBon Anfrage Schnittstelle testen
+                            </dv-loading-button>
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <dv-loading-button
-                            id="anfrage-schnittstelle-loading-button"
-                            (buttonClick)="testKibonAnfrageResponse()"
-                            class="testfall-button"
-                        >
-                            KiBon Anfrage Schnittstelle testen
-                        </dv-loading-button>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>

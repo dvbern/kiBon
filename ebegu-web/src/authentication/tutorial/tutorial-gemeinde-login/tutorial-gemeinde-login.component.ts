@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, inject} from '@angular/core';
 import {TargetState} from '@uirouter/core';
 import {AuthServiceRS} from '../../service/AuthServiceRS.rest';
 import {MandantService} from '@kibon/shared-util-mandant-service';
@@ -28,14 +28,14 @@ import {KiBonMandant} from '@kibon/shared-model-mandant';
     standalone: false
 })
 export class TutorialGemeindeLoginComponent {
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly mandantService = inject(MandantService);
+
     @Input() public returnTo: TargetState;
 
     private mandant: KiBonMandant;
 
-    public constructor(
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly mandantService: MandantService
-    ) {
+    public constructor() {
         this.mandantService.mandant$.subscribe(mandant => {
             this.mandant = mandant;
         });

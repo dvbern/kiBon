@@ -18,7 +18,8 @@
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Component
+    Component,
+    inject
 } from '@angular/core';
 import {Transition} from '@uirouter/core';
 import {IPromise} from 'angular';
@@ -39,20 +40,26 @@ import {AbstractGesuchViewX} from '../../../abstractGesuchViewX';
     standalone: false
 })
 export class EinkommensverschlechterungSolothurnViewComponent extends AbstractGesuchViewX<TSFinanzModel> {
+    gesuchModelManager: GesuchModelManager;
+    protected wizardStepManager: WizardStepManager;
+    protected berechnungsManager = inject(BerechnungsManager);
+    private readonly $transition$ = inject(Transition);
+    protected ref = inject(ChangeDetectorRef);
+
     public readOnly: boolean = false;
 
-    public constructor(
-        public gesuchModelManager: GesuchModelManager,
-        protected wizardStepManager: WizardStepManager,
-        protected berechnungsManager: BerechnungsManager,
-        private readonly $transition$: Transition,
-        protected ref: ChangeDetectorRef
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const wizardStepManager = inject(WizardStepManager);
+
         super(
             gesuchModelManager,
             wizardStepManager,
             TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG_SOLOTHURN
         );
+        this.gesuchModelManager = gesuchModelManager;
+        this.wizardStepManager = wizardStepManager;
+
         const parsedGesuchstelllerNum = parseInt(
             this.$transition$.params().gesuchstellerNumber,
             10

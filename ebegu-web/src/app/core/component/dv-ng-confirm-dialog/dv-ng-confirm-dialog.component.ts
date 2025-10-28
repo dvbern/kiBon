@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 /**
@@ -27,12 +27,15 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     standalone: false
 })
 export class DvNgConfirmDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgConfirmDialogComponent>>(MatDialogRef);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     public frage: string = '';
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DvNgConfirmDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         if (data) {
             this.frage = data.frage;
         }

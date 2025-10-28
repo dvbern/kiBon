@@ -1,485 +1,510 @@
 <!--
-  ~ Copyright (C) 2019 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2019 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="row">
     <div class="col-sm-12 mt-2">
         <dv-accordion class="konfigurationList" allow-multiple-sections="true">
-            <ng-container
-                *ngFor="let konf of konfigurationsListe; let i = index"
-            >
-                <dv-accordion-tab
-                    [tabid]="i"
-                    *ngIf="
-                        konfigurationsListe[
-                            i
-                        ].gesuchsperiode.gueltigkeit.gueltigBis.isAfter(
-                            fiAnmeldungenStartDatum
-                        )
-                    "
-                >
-                    <tab-title>
-                        <div class="message-header">
-                            <p class="fa fa-angle-right"></p>
-                            <span
-                                translate
-                                [translateParams]="{
-                                    fromTo: konf.gesuchsperiodeName,
-                                    status: konf.gesuchsperiodeStatusName
-                                }"
-                            >
-                                GEMEINDE_TAB_FI_GP_TITLE
-                            </span>
-                        </div>
-                    </tab-title>
-                    <tab-body>
-                        <div class="row">
-                            <!-- readonly -->
-                            <div class="form-group">
-                                <div
-                                    *ngIf="
+            @for (konf of konfigurationsListe; track konf; let i = $index) {
+                @if (
+                    konfigurationsListe[
+                        i
+                    ].gesuchsperiode.gueltigkeit.gueltigBis.isAfter(
+                        fiAnmeldungenStartDatum
+                    )
+                ) {
+                    <dv-accordion-tab [tabid]="i">
+                        <tab-title>
+                            <div class="message-header">
+                                <p class="fa fa-angle-right"></p>
+                                <span
+                                    translate
+                                    [translateParams]="{
+                                        fromTo: konf.gesuchsperiodeName,
+                                        status: konf.gesuchsperiodeStatusName
+                                    }"
+                                >
+                                    GEMEINDE_TAB_FI_GP_TITLE
+                                </span>
+                            </div>
+                        </tab-title>
+                        <tab-body>
+                            <div class="row">
+                                <!-- readonly -->
+                                <div class="form-group">
+                                    @if (
                                         !isKonfigurationEditable(
                                             konfigurationsListe[i]
                                         )
-                                    "
-                                    class="col-sm-12"
-                                >
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <label
-                                                >{{
-                                                    'FI_START' | translate
-                                                }}&nbsp;
-                                                <strong>{{
-                                                    getFerieninselAktivierungsdatumAsDisplayString(
-                                                        konfigurationsListe[i]
-                                                    )
-                                                }}</strong>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div
-                                        *ngFor="
-                                            let fiStammdaten of konfigurationsListe[
-                                                i
-                                            ].ferieninselStammdaten;
-                                            trackBy: trackById
-                                        "
-                                    >
-                                        <div
-                                            *ngIf="
-                                                areAnyFerienConfiguredForStammdaten(
-                                                    fiStammdaten
-                                                )
-                                            "
-                                            class="ferien"
-                                        >
+                                    ) {
+                                        <div class="col-sm-12">
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <b>
-                                                        <span>{{
-                                                            fiStammdaten.ferienname
+                                                    <label
+                                                        >{{
+                                                            'FI_START'
                                                                 | translate
-                                                        }}</span>
-                                                    </b>
+                                                        }}&nbsp;
+                                                        <strong>{{
+                                                            getFerieninselAktivierungsdatumAsDisplayString(
+                                                                konfigurationsListe[
+                                                                    i
+                                                                ]
+                                                            )
+                                                        }}</strong>
+                                                    </label>
                                                 </div>
                                             </div>
-
-                                            <div class="row">
-                                                <div class="col-md-8">
-                                                    <p>
-                                                        <span
-                                                            >{{
+                                            @for (
+                                                fiStammdaten of konfigurationsListe[
+                                                    i
+                                                ].ferieninselStammdaten;
+                                                track trackById(fiStammdaten)
+                                            ) {
+                                                <div>
+                                                    @if (
+                                                        areAnyFerienConfiguredForStammdaten(
+                                                            fiStammdaten
+                                                        )
+                                                    ) {
+                                                        <div class="ferien">
+                                                            <div class="row">
+                                                                <div
+                                                                    class="col-md-8"
+                                                                >
+                                                                    <b>
+                                                                        <span>{{
+                                                                            fiStammdaten.ferienname
+                                                                                | translate
+                                                                        }}</span>
+                                                                    </b>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div
+                                                                    class="col-md-8"
+                                                                >
+                                                                    <p>
+                                                                        <span
+                                                                            >{{
+                                                                                'ANMELDESCHLUSS'
+                                                                                    | translate
+                                                                            }}
+                                                                            :&nbsp;{{
+                                                                                formatDate(
+                                                                                    fiStammdaten.anmeldeschluss
+                                                                                )
+                                                                            }}</span
+                                                                        >
+                                                                    </p>
+                                                                    <div>
+                                                                        <span
+                                                                            >Zeiträume:</span
+                                                                        >
+                                                                        <ul>
+                                                                            @for (
+                                                                                zeitraum of fiStammdaten.zeitraumList;
+                                                                                track zeitraum
+                                                                            ) {
+                                                                                <span>
+                                                                                    @if (
+                                                                                        zeitraum.gueltigkeit &&
+                                                                                        zeitraum
+                                                                                            .gueltigkeit
+                                                                                            .gueltigAb
+                                                                                    ) {
+                                                                                        <li>
+                                                                                            <span
+                                                                                                >{{
+                                                                                                    formatDate(
+                                                                                                        zeitraum
+                                                                                                            .gueltigkeit
+                                                                                                            .gueltigAb
+                                                                                                    )
+                                                                                                }}</span
+                                                                                            >
+                                                                                            -
+                                                                                            <span
+                                                                                                >{{
+                                                                                                    formatDate(
+                                                                                                        zeitraum
+                                                                                                            .gueltigkeit
+                                                                                                            .gueltigBis
+                                                                                                    )
+                                                                                                }}</span
+                                                                                            >
+                                                                                        </li>
+                                                                                    }
+                                                                                </span>
+                                                                            }
+                                                                            @if (
+                                                                                !hasZeitraeume(
+                                                                                    fiStammdaten
+                                                                                )
+                                                                            ) {
+                                                                                <li>
+                                                                                    <span
+                                                                                        >{{
+                                                                                            'KEINE_FERIENINSELZEITRAUME'
+                                                                                                | translate
+                                                                                        }}</span
+                                                                                    >
+                                                                                </li>
+                                                                            }
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                            @if (
+                                                !areAnyFerienConfiguredForStammdatenArray(
+                                                    konfigurationsListe[i]
+                                                        .ferieninselStammdaten
+                                                )
+                                            ) {
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <p translate>
+                                                            KEINE_FERIEN_DEFINIERT
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                <!-- editable -->
+                                <div class="form-group">
+                                    <div
+                                        class="col-sm-12"
+                                        ngModelGroup="fiStammdaten"
+                                        [appOverlappingZeitraum]="
+                                            konfigurationsListe[i]
+                                                .ferieninselStammdaten
+                                        "
+                                        #fiStammdatenGroup="ngModelGroup"
+                                    >
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <dv-date-picker-x
+                                                    id="fiAktivierungsdatum_{{
+                                                        i
+                                                    }}"
+                                                    [label]="'FI_START'"
+                                                    [(date)]="
+                                                        konfigurationsListe[i]
+                                                            .konfigFerieninselAktivierungsdatum
+                                                    "
+                                                    [disabled]="!editMode"
+                                                    [required]="true"
+                                                    (dateChange)="
+                                                        ferieninselAktivierungsdatumChanged(
+                                                            konfigurationsListe[
+                                                                i
+                                                            ]
+                                                        )
+                                                    "
+                                                ></dv-date-picker-x>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row">
+                                            @if (fiStammdatenGroup.errors) {
+                                                <div
+                                                    class="col-sm-12"
+                                                    id="error-overlapping-zeitraum"
+                                                >
+                                                    <dv-error-messages
+                                                        [errorObject]="
+                                                            fiStammdatenGroup.errors
+                                                        "
+                                                    ></dv-error-messages>
+                                                </div>
+                                            }
+                                            @for (
+                                                fiStammdaten of konfigurationsListe[
+                                                    i
+                                                ].ferieninselStammdaten;
+                                                track fiStammdaten
+                                            ) {
+                                                <div class="ferien">
+                                                    <div class="row">
+                                                        <div class="col-md-8">
+                                                            <b>
+                                                                <span>{{
+                                                                    fiStammdaten.ferienname
+                                                                        | translate
+                                                                }}</span>
+                                                            </b>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Titelzeile-->
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <span>{{
+                                                                'VON'
+                                                                    | translate
+                                                            }}</span>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <span>{{
+                                                                'BIS'
+                                                                    | translate
+                                                            }}</span>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <span>{{
                                                                 'ANMELDESCHLUSS'
                                                                     | translate
-                                                            }}
-                                                            :&nbsp;{{
-                                                                formatDate(
-                                                                    fiStammdaten.anmeldeschluss
-                                                                )
-                                                            }}</span
-                                                        >
-                                                    </p>
-                                                    <div>
-                                                        <span>Zeiträume:</span>
-                                                        <ul>
-                                                            <span
-                                                                *ngFor="
-                                                                    let zeitraum of fiStammdaten.zeitraumList
+                                                            }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        class="row zeitabschnitt"
+                                                    >
+                                                        <div class="col-md-4">
+                                                            <dv-date-picker-x
+                                                                [id]="
+                                                                    fiStammdaten.ferienname +
+                                                                    '_gueltigAb_' +
+                                                                    i
+                                                                "
+                                                                [(date)]="
+                                                                    fiStammdaten
+                                                                        .zeitraumList[0]
+                                                                        .gueltigkeit
+                                                                        .gueltigAb
+                                                                "
+                                                                [datePickerEnabled]="
+                                                                    true
+                                                                "
+                                                                [required]="
+                                                                    isDatumAbRequired(
+                                                                        fiStammdaten
+                                                                            .zeitraumList[0],
+                                                                        fiStammdaten
+                                                                    )
+                                                                "
+                                                                [maxDate]="
+                                                                    fiStammdaten
+                                                                        .zeitraumList[0]
+                                                                        .gueltigkeit
+                                                                        .gueltigBis
                                                                 "
                                                             >
-                                                                <li
-                                                                    *ngIf="
-                                                                        zeitraum.gueltigkeit &&
+                                                            </dv-date-picker-x>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <dv-date-picker-x
+                                                                [id]="
+                                                                    fiStammdaten.ferienname +
+                                                                    '_gueltigBis_' +
+                                                                    i
+                                                                "
+                                                                [(date)]="
+                                                                    fiStammdaten
+                                                                        .zeitraumList[0]
+                                                                        .gueltigkeit
+                                                                        .gueltigBis
+                                                                "
+                                                                [datePickerEnabled]="
+                                                                    true
+                                                                "
+                                                                [required]="
+                                                                    isDatumBisRequired(
+                                                                        fiStammdaten
+                                                                            .zeitraumList[0],
+                                                                        fiStammdaten
+                                                                    )
+                                                                "
+                                                                [minDate]="
+                                                                    fiStammdaten
+                                                                        .zeitraumList[0]
+                                                                        .gueltigkeit
+                                                                        .gueltigAb
+                                                                "
+                                                            >
+                                                            </dv-date-picker-x>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <dv-date-picker-x
+                                                                [id]="
+                                                                    fiStammdaten.ferienname +
+                                                                    '_anmeldeschluss_' +
+                                                                    i
+                                                                "
+                                                                [required]="
+                                                                    isAnmeldeschlussRequired(
+                                                                        fiStammdaten
+                                                                    )
+                                                                "
+                                                                [(date)]="
+                                                                    fiStammdaten.anmeldeschluss
+                                                                "
+                                                                [datePickerEnabled]="
+                                                                    true
+                                                                "
+                                                            >
+                                                            </dv-date-picker-x>
+                                                        </div>
+                                                    </div>
+                                                    @for (
+                                                        zeitraum of fiStammdaten.zeitraumList
+                                                            | slice: 1;
+                                                        track zeitraum;
+                                                        let j = $index
+                                                    ) {
+                                                        <div
+                                                            class="row zeitabschnitt"
+                                                        >
+                                                            <div
+                                                                class="col-md-4"
+                                                            >
+                                                                <dv-date-picker-x
+                                                                    [id]="
+                                                                        fiStammdaten.ferienname +
+                                                                        zeitraum.id +
+                                                                        '-gueltigAb-' +
+                                                                        j
+                                                                    "
+                                                                    [required]="
+                                                                        isDatumAbRequired(
+                                                                            zeitraum,
+                                                                            fiStammdaten
+                                                                        )
+                                                                    "
+                                                                    [maxDate]="
+                                                                        zeitraum
+                                                                            .gueltigkeit
+                                                                            .gueltigBis
+                                                                    "
+                                                                    [datePickerEnabled]="
+                                                                        true
+                                                                    "
+                                                                    [(date)]="
                                                                         zeitraum
                                                                             .gueltigkeit
                                                                             .gueltigAb
                                                                     "
                                                                 >
-                                                                    <span>{{
-                                                                        formatDate(
-                                                                            zeitraum
-                                                                                .gueltigkeit
-                                                                                .gueltigAb
+                                                                </dv-date-picker-x>
+                                                            </div>
+                                                            <div
+                                                                class="col-md-4"
+                                                            >
+                                                                <dv-date-picker-x
+                                                                    [id]="
+                                                                        fiStammdaten.ferienname +
+                                                                        zeitraum.id +
+                                                                        '-gueltigBis-' +
+                                                                        j
+                                                                    "
+                                                                    [(date)]="
+                                                                        zeitraum
+                                                                            .gueltigkeit
+                                                                            .gueltigBis
+                                                                    "
+                                                                    [datePickerEnabled]="
+                                                                        true
+                                                                    "
+                                                                    [required]="
+                                                                        isDatumBisRequired(
+                                                                            zeitraum,
+                                                                            fiStammdaten
                                                                         )
-                                                                    }}</span>
-                                                                    -
-                                                                    <span>{{
-                                                                        formatDate(
+                                                                    "
+                                                                    [minDate]="
+                                                                        zeitraum
+                                                                            .gueltigkeit
+                                                                            .gueltigAb
+                                                                    "
+                                                                ></dv-date-picker-x>
+                                                            </div>
+                                                            <div
+                                                                class="col-md-1 absolute-height"
+                                                            >
+                                                                <a
+                                                                    (click)="
+                                                                        removeFerieninselZeitraum(
+                                                                            fiStammdaten,
                                                                             zeitraum
-                                                                                .gueltigkeit
-                                                                                .gueltigBis
                                                                         )
-                                                                    }}</span>
-                                                                </li>
-                                                            </span>
-                                                            <li
-                                                                *ngIf="
-                                                                    !hasZeitraeume(
+                                                                    "
+                                                                    class="pointer remove-ferieninsel"
+                                                                    title="{{
+                                                                        'FERIENINSELZEITRAUM_DELETE'
+                                                                            | translate
+                                                                    }}"
+                                                                    [attr.aria-label]="
+                                                                        'FERIENINSELZEITRAUM_DELETE'
+                                                                            | translate
+                                                                    "
+                                                                >
+                                                                    <i
+                                                                        class="fa fa-lg fa-trash-o"
+                                                                        [attr.aria-label]="
+                                                                            'FERIENINSELZEITRAUM_DELETE'
+                                                                                | translate
+                                                                        "
+                                                                    ></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <a
+                                                                class="add-zeitraum pointer"
+                                                                (click)="
+                                                                    addFerieninselZeitraum(
                                                                         fiStammdaten
                                                                     )
                                                                 "
-                                                            >
-                                                                <span>{{
-                                                                    'KEINE_FERIENINSELZEITRAUME'
+                                                                title="{{
+                                                                    'FERIENINSELZEITRAUM_ADD'
                                                                         | translate
-                                                                }}</span>
-                                                            </li>
-                                                        </ul>
+                                                                }}"
+                                                                [attr.aria-label]="
+                                                                    'FERIENINSELZEITRAUM_ADD'
+                                                                        | translate
+                                                                "
+                                                            >
+                                                                <i
+                                                                    class="fa fa-plus-circle"
+                                                                ></i>
+                                                                {{
+                                                                    'FERIENINSELZEITRAUM_ADD'
+                                                                        | translate
+                                                                }}
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="row"
-                                        *ngIf="
-                                            !areAnyFerienConfiguredForStammdatenArray(
-                                                konfigurationsListe[i]
-                                                    .ferieninselStammdaten
-                                            )
-                                        "
-                                    >
-                                        <div class="col-md-8">
-                                            <p translate>
-                                                KEINE_FERIEN_DEFINIERT
-                                            </p>
+                                            }
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- editable -->
-                            <div class="form-group">
-                                <div
-                                    class="col-sm-12"
-                                    ngModelGroup="fiStammdaten"
-                                    [appOverlappingZeitraum]="
-                                        konfigurationsListe[i]
-                                            .ferieninselStammdaten
-                                    "
-                                    #fiStammdatenGroup="ngModelGroup"
-                                >
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <dv-date-picker-x
-                                                id="fiAktivierungsdatum_{{ i }}"
-                                                [label]="'FI_START'"
-                                                [(date)]="
-                                                    konfigurationsListe[i]
-                                                        .konfigFerieninselAktivierungsdatum
-                                                "
-                                                [disabled]="!editMode"
-                                                [required]="true"
-                                                (dateChange)="
-                                                    ferieninselAktivierungsdatumChanged(
-                                                        konfigurationsListe[i]
-                                                    )
-                                                "
-                                            ></dv-date-picker-x>
-                                        </div>
-                                    </div>
-                                    <br />
-                                    <div class="row">
-                                        <div
-                                            class="col-sm-12"
-                                            id="error-overlapping-zeitraum"
-                                            *ngIf="fiStammdatenGroup.errors"
-                                        >
-                                            <dv-error-messages
-                                                [errorObject]="
-                                                    fiStammdatenGroup.errors
-                                                "
-                                            ></dv-error-messages>
-                                        </div>
-                                        <div
-                                            *ngFor="
-                                                let fiStammdaten of konfigurationsListe[
-                                                    i
-                                                ].ferieninselStammdaten
-                                            "
-                                            class="ferien"
-                                        >
-                                            <div class="row">
-                                                <div class="col-md-8">
-                                                    <b>
-                                                        <span>{{
-                                                            fiStammdaten.ferienname
-                                                                | translate
-                                                        }}</span>
-                                                    </b>
-                                                </div>
-                                            </div>
-
-                                            <!-- Titelzeile-->
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <span>{{
-                                                        'VON' | translate
-                                                    }}</span>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <span>{{
-                                                        'BIS' | translate
-                                                    }}</span>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <span>{{
-                                                        'ANMELDESCHLUSS'
-                                                            | translate
-                                                    }}</span>
-                                                </div>
-                                            </div>
-                                            <div class="row zeitabschnitt">
-                                                <div class="col-md-4">
-                                                    <dv-date-picker-x
-                                                        [id]="
-                                                            fiStammdaten.ferienname +
-                                                            '_gueltigAb_' +
-                                                            i
-                                                        "
-                                                        [(date)]="
-                                                            fiStammdaten
-                                                                .zeitraumList[0]
-                                                                .gueltigkeit
-                                                                .gueltigAb
-                                                        "
-                                                        [datePickerEnabled]="
-                                                            true
-                                                        "
-                                                        [required]="
-                                                            isDatumAbRequired(
-                                                                fiStammdaten
-                                                                    .zeitraumList[0],
-                                                                fiStammdaten
-                                                            )
-                                                        "
-                                                        [maxDate]="
-                                                            fiStammdaten
-                                                                .zeitraumList[0]
-                                                                .gueltigkeit
-                                                                .gueltigBis
-                                                        "
-                                                    >
-                                                    </dv-date-picker-x>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <dv-date-picker-x
-                                                        [id]="
-                                                            fiStammdaten.ferienname +
-                                                            '_gueltigBis_' +
-                                                            i
-                                                        "
-                                                        [(date)]="
-                                                            fiStammdaten
-                                                                .zeitraumList[0]
-                                                                .gueltigkeit
-                                                                .gueltigBis
-                                                        "
-                                                        [datePickerEnabled]="
-                                                            true
-                                                        "
-                                                        [required]="
-                                                            isDatumBisRequired(
-                                                                fiStammdaten
-                                                                    .zeitraumList[0],
-                                                                fiStammdaten
-                                                            )
-                                                        "
-                                                        [minDate]="
-                                                            fiStammdaten
-                                                                .zeitraumList[0]
-                                                                .gueltigkeit
-                                                                .gueltigAb
-                                                        "
-                                                    >
-                                                    </dv-date-picker-x>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <dv-date-picker-x
-                                                        [id]="
-                                                            fiStammdaten.ferienname +
-                                                            '_anmeldeschluss_' +
-                                                            i
-                                                        "
-                                                        [required]="
-                                                            isAnmeldeschlussRequired(
-                                                                fiStammdaten
-                                                            )
-                                                        "
-                                                        [(date)]="
-                                                            fiStammdaten.anmeldeschluss
-                                                        "
-                                                        [datePickerEnabled]="
-                                                            true
-                                                        "
-                                                    >
-                                                    </dv-date-picker-x>
-                                                </div>
-                                            </div>
-
-                                            <div
-                                                class="row zeitabschnitt"
-                                                *ngFor="
-                                                    let zeitraum of fiStammdaten.zeitraumList
-                                                        | slice: 1;
-                                                    let j = index
-                                                "
-                                            >
-                                                <div class="col-md-4">
-                                                    <dv-date-picker-x
-                                                        [id]="
-                                                            fiStammdaten.ferienname +
-                                                            zeitraum.id +
-                                                            '-gueltigAb-' +
-                                                            j
-                                                        "
-                                                        [required]="
-                                                            isDatumAbRequired(
-                                                                zeitraum,
-                                                                fiStammdaten
-                                                            )
-                                                        "
-                                                        [maxDate]="
-                                                            zeitraum.gueltigkeit
-                                                                .gueltigBis
-                                                        "
-                                                        [datePickerEnabled]="
-                                                            true
-                                                        "
-                                                        [(date)]="
-                                                            zeitraum.gueltigkeit
-                                                                .gueltigAb
-                                                        "
-                                                    >
-                                                    </dv-date-picker-x>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <dv-date-picker-x
-                                                        [id]="
-                                                            fiStammdaten.ferienname +
-                                                            zeitraum.id +
-                                                            '-gueltigBis-' +
-                                                            j
-                                                        "
-                                                        [(date)]="
-                                                            zeitraum.gueltigkeit
-                                                                .gueltigBis
-                                                        "
-                                                        [datePickerEnabled]="
-                                                            true
-                                                        "
-                                                        [required]="
-                                                            isDatumBisRequired(
-                                                                zeitraum,
-                                                                fiStammdaten
-                                                            )
-                                                        "
-                                                        [minDate]="
-                                                            zeitraum.gueltigkeit
-                                                                .gueltigAb
-                                                        "
-                                                    ></dv-date-picker-x>
-                                                </div>
-                                                <div
-                                                    class="col-md-1 absolute-height"
-                                                >
-                                                    <a
-                                                        (click)="
-                                                            removeFerieninselZeitraum(
-                                                                fiStammdaten,
-                                                                zeitraum
-                                                            )
-                                                        "
-                                                        class="pointer remove-ferieninsel"
-                                                        title="{{
-                                                            'FERIENINSELZEITRAUM_DELETE'
-                                                                | translate
-                                                        }}"
-                                                        [attr.aria-label]="
-                                                            'FERIENINSELZEITRAUM_DELETE'
-                                                                | translate
-                                                        "
-                                                    >
-                                                        <i
-                                                            class="fa fa-lg fa-trash-o"
-                                                            [attr.aria-label]="
-                                                                'FERIENINSELZEITRAUM_DELETE'
-                                                                    | translate
-                                                            "
-                                                        ></i>
-                                                    </a>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <a
-                                                        class="add-zeitraum pointer"
-                                                        (click)="
-                                                            addFerieninselZeitraum(
-                                                                fiStammdaten
-                                                            )
-                                                        "
-                                                        title="{{
-                                                            'FERIENINSELZEITRAUM_ADD'
-                                                                | translate
-                                                        }}"
-                                                        [attr.aria-label]="
-                                                            'FERIENINSELZEITRAUM_ADD'
-                                                                | translate
-                                                        "
-                                                    >
-                                                        <i
-                                                            class="fa fa-plus-circle"
-                                                        ></i>
-                                                        {{
-                                                            'FERIENINSELZEITRAUM_ADD'
-                                                                | translate
-                                                        }}
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </tab-body>
-                </dv-accordion-tab>
-            </ng-container>
+                        </tab-body>
+                    </dv-accordion-tab>
+                }
+            }
         </dv-accordion>
     </div>
 </div>

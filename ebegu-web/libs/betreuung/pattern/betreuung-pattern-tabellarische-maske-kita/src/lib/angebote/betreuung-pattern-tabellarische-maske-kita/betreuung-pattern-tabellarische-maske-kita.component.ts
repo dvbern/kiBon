@@ -1,5 +1,5 @@
 import {Component, inject, model} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {SharedPatternTooltipXComponent} from '@kibon/shared-pattern-tooltip-x';
 import {SharedModule} from '../../../../../../../../src/app/shared/shared.module';
 import {TabellarischeMaskeTitleComponent} from '../../styling/tabellarische-maske-title/tabellarische-maske-title.component';
@@ -16,7 +16,6 @@ import {InputUtil} from '../../util/InputUtil';
 
 @Component({
     imports: [
-        CommonModule,
         SharedModule,
         TabellarischeMaskeTitleComponent,
         TabellarischeMaskeTableComponent,

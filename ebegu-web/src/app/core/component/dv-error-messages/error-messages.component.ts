@@ -22,7 +22,8 @@ import {
     Input,
     OnChanges,
     OnDestroy,
-    SimpleChanges
+    SimpleChanges,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm, ValidationErrors} from '@angular/forms';
 import {Subject} from 'rxjs';
@@ -40,6 +41,9 @@ const LOG = LogFactory.createLog('ErrorMessagesComponent');
     standalone: false
 })
 export class ErrorMessagesComponent implements OnChanges, OnDestroy {
+    readonly form = inject(NgForm);
+    readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @Input() public errorObject: ValidationErrors | null;
     @Input() public inputId: string;
 
@@ -47,10 +51,7 @@ export class ErrorMessagesComponent implements OnChanges, OnDestroy {
 
     private readonly unsubscribe$ = new Subject<void>();
 
-    public constructor(
-        public readonly form: NgForm,
-        public readonly changeDetectorRef: ChangeDetectorRef
-    ) {
+    public constructor() {
         this.form.ngSubmit.pipe(takeUntil(this.unsubscribe$)).subscribe({
             next: () => this.changeDetectorRef.markForCheck(),
             error: err => LOG.error(err)

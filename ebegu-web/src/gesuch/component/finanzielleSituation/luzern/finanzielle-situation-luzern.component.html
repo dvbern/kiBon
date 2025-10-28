@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2021 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2021 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="gesuch-modul">
     <h1 class="access-for-all-title" translate>AFA_GESUCHSFORMULAR</h1>
@@ -33,477 +33,550 @@
         </div>
     </div>
 
-    <div
-        *ngIf="
-            dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
-        "
-        class="well well-status-warten"
-    >
-        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-        <span translate>WARNUNG_GS2_AUSFUELLEN</span>
-    </div>
-    <div
-        *ngIf="
-            !dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
-        "
-        class="row"
-    >
-        <form #form="ngForm" class="col-md-12 gesuch" novalidate role="form">
-            <fieldset [disabled]="isFinSitReadonly()">
-                <div *ngIf="showZahlungsinformationen()" class="row">
-                    <div class="col-md-12 margin-bottom-20">
-                        <h3 class="uppercase ebegu-h1" translate>
-                            ZAHLUNGSINFORMATIONEN
-                        </h3>
-                        <div class="margin-top-10">
-                            <p class="italic" translate>
-                                ANGABEN_ZAHLUNGSINFORMATIONEN
-                            </p>
+    @if (
+        dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
+    ) {
+        <div class="well well-status-warten">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            <span translate>WARNUNG_GS2_AUSFUELLEN</span>
+        </div>
+    }
+    @if (
+        !dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
+    ) {
+        <div class="row">
+            <form
+                #form="ngForm"
+                class="col-md-12 gesuch"
+                novalidate
+                role="form"
+            >
+                <fieldset [disabled]="isFinSitReadonly()">
+                    @if (showZahlungsinformationen()) {
+                        <div class="row">
+                            <div class="col-md-12 margin-bottom-20">
+                                <h3 class="uppercase ebegu-h1" translate>
+                                    ZAHLUNGSINFORMATIONEN
+                                </h3>
+                                <div class="margin-top-10">
+                                    <p class="italic" translate>
+                                        ANGABEN_ZAHLUNGSINFORMATIONEN
+                                    </p>
+                                </div>
+                                @if (isMutation()) {
+                                    <div class="margin-top-10 margin-bottom-30">
+                                        <p class="italic" translate>
+                                            MUTATION_AENDERUNG_AUSZAHLUNGSKONTO
+                                        </p>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-12">
+                                <dv-zahlungsinformationen-fields
+                                    [infomaAktiv]="showInfomaFields()"
+                                    [model]="model"
+                                ></dv-zahlungsinformationen-fields>
+                                <mat-divider
+                                    class="margin-bottom-50"
+                                ></mat-divider>
+                            </div>
                         </div>
-                        <div
-                            class="margin-top-10 margin-bottom-30"
-                            *ngIf="isMutation()"
-                        >
-                            <p class="italic" translate>
-                                MUTATION_AENDERUNG_AUSZAHLUNGSKONTO
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <dv-zahlungsinformationen-fields
-                            [infomaAktiv]="showInfomaFields()"
-                            [model]="model"
-                        ></dv-zahlungsinformationen-fields>
-                        <mat-divider class="margin-bottom-50"></mat-divider>
-                    </div>
-                </div>
-
-                <!--Datum Finanzielle Situtaion gueltig ab-->
-                <div *ngIf="showFinSitDatumGueltigAb()" class="row">
-                    <div
-                        class="col-md-12 dv-input-container-medium margin-bottom-20"
-                    >
-                        <dv-input-container class="form-group">
-                            <label
-                                class="md-no-float"
-                                for="finSitGueltigAbDatum"
-                            >
-                                <span
-                                    [translate]="
-                                        'FINANZIELLE_SITUATION_GUELTIG_AB'
-                                    "
-                                ></span>
-                            </label>
+                    }
+                    <!--Datum Finanzielle Situtaion gueltig ab-->
+                    @if (showFinSitDatumGueltigAb()) {
+                        <div class="row">
                             <div
-                                *ngIf="showFinSitDatumGueltigAbText()"
-                                class="margin-bottom-10"
+                                class="col-md-12 dv-input-container-medium margin-bottom-20"
                             >
-                                <p class="italic">
-                                    {{ getFinSitDatumGueltigAbText() }}
-                                </p>
-                            </div>
-                            <div class="dv-input-container-medium-label">
-                                <dv-date-picker-x
-                                    [(date)]="
-                                        getGesuch()
-                                            .finSitAenderungGueltigAbDatum
-                                    "
-                                    [datePickerEnabled]="false"
-                                    [disabled]="!isRoleGemeindeOrSuperAdmin()"
-                                    [inputId]="'finSitGueltigAbDatum'"
-                                    class="input-element"
-                                    id="finSitGueltigAbDatum"
-                                >
-                                </dv-date-picker-x>
-                            </div>
-                        </dv-input-container>
-                    </div>
-                </div>
-
-                <dv-finanzielle-situation-require-x
-                    (sozialhilfeBezuegerChange)="sozialhilfeBezuegerChange()"
-                    [(sozialhilfeBezueger)]="
-                        model.familienSituation.sozialhilfeBezueger
-                    "
-                    [disabled]="isFinSitReadonly()"
-                    [hideSozialhilfeQuestion]="!isGS1()"
-                    [hideVerguenstigungGewunscht]="true"
-                >
-                </dv-finanzielle-situation-require-x>
-
-                <dv-warning *ngIf="isSozialhilfeBezueger()"
-                    >SOZIALHILFEBEZUEGER_WARNING</dv-warning
-                >
-
-                <div *ngIf="model.familienSituation.sozialhilfeBezueger">
-                    <div class="row">
-                        <div class="col-sm-12 dv-input-container-medium">
-                            <div class="form-group">
-                                <label
-                                    class="required long-label"
-                                    for="zustaendige_amtsstelle_id"
-                                >
-                                    {{
-                                        'ZUSTAENDIGE_AMTSSTELLE' | translate
-                                    }}</label
-                                >
-                                <input
-                                    id="zustaendige_amtsstelle_id"
-                                    type="text"
-                                    name="zustaendigeAmtsstelle"
-                                    #zustaendigeAmtsstelle="ngModel"
-                                    [(ngModel)]="
-                                        model.familienSituation
-                                            .zustaendigeAmtsstelle
-                                    "
-                                    class="form-control"
-                                    [maxlength]="255"
-                                    [disabled]="isFinSitReadonly()"
-                                    required
-                                />
-                                <dv-error-messages
-                                    [errorObject]="zustaendigeAmtsstelle.errors"
-                                    inputId="iban_id"
-                                >
-                                </dv-error-messages>
+                                <dv-input-container class="form-group">
+                                    <label
+                                        class="md-no-float"
+                                        for="finSitGueltigAbDatum"
+                                    >
+                                        <span
+                                            [translate]="
+                                                'FINANZIELLE_SITUATION_GUELTIG_AB'
+                                            "
+                                        ></span>
+                                    </label>
+                                    @if (showFinSitDatumGueltigAbText()) {
+                                        <div class="margin-bottom-10">
+                                            <p class="italic">
+                                                {{
+                                                    getFinSitDatumGueltigAbText()
+                                                }}
+                                            </p>
+                                        </div>
+                                    }
+                                    <div
+                                        class="dv-input-container-medium-label"
+                                    >
+                                        <dv-date-picker-x
+                                            [(date)]="
+                                                getGesuch()
+                                                    .finSitAenderungGueltigAbDatum
+                                            "
+                                            [datePickerEnabled]="false"
+                                            [disabled]="
+                                                !isRoleGemeindeOrSuperAdmin()
+                                            "
+                                            [inputId]="'finSitGueltigAbDatum'"
+                                            class="input-element"
+                                            id="finSitGueltigAbDatum"
+                                        >
+                                        </dv-date-picker-x>
+                                    </div>
+                                </dv-input-container>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 dv-input-container-medium">
-                            <div class="form-group">
-                                <label
-                                    class="required long-label"
-                                    for="nameBetreuer_id"
-                                >
-                                    {{ 'NAME_BETREUUER' | translate }}</label
-                                >
-                                <input
-                                    id="nameBetreuer_id"
-                                    type="text"
-                                    name="nameBetreuer"
-                                    #nameBetreuer="ngModel"
-                                    [(ngModel)]="
-                                        model.familienSituation.nameBetreuer
-                                    "
-                                    class="form-control"
-                                    [maxlength]="255"
-                                    [disabled]="isFinSitReadonly()"
-                                    required
-                                />
-                                <dv-error-messages
-                                    [errorObject]="nameBetreuer.errors"
-                                    inputId="iban_id"
-                                >
-                                </dv-error-messages>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div *ngIf="isNotSozialhilfeBezueger()">
-                    <div class="form-group">
-                        <dv-radio-container-x>
-                            <span>
-                                <label
-                                    for="quellenbesteuert_id"
-                                    class="required ebegu-h1"
-                                >
-                                    {{ 'QUELLENBESTEUERT' | translate }}
-                                </label>
-                                <dv-tooltip
-                                    [text]="'QUELLENBESTEUERT_HINT' | translate"
-                                ></dv-tooltip>
-                            </span>
-                            <mat-radio-group
-                                #quellenbesteuert="ngModel"
-                                (change)="quellenBesteuertChange($event)"
-                                [(ngModel)]="
-                                    getModel().finanzielleSituationJA
-                                        .quellenbesteuert
-                                "
-                                [disabled]="isFinSitReadonly()"
-                                id="quellenbesteuert_id"
-                                name="quellenbesteuert"
-                                required
-                                data-test="quellenbesteuert"
-                            >
-                                <mat-radio-button
-                                    [value]="true"
-                                    data-test="radio-value.ja"
-                                    >{{
-                                        'LABEL_JA' | translate
-                                    }}</mat-radio-button
-                                >
-                                <mat-radio-button
-                                    [value]="false"
-                                    data-test="radio-value.nein"
-                                    >{{
-                                        'LABEL_NEIN' | translate
-                                    }}</mat-radio-button
-                                >
-                            </mat-radio-group>
-                            <dv-error-messages
-                                *ngIf="form.submitted"
-                                [errorObject]="quellenbesteuert.errors"
-                                inputId="quellenbesteuert_id"
-                            >
-                            </dv-error-messages>
-                        </dv-radio-container-x>
-                    </div>
-
-                    <dv-warning
-                        *ngIf="
-                            getModel().finanzielleSituationJA.quellenbesteuert
+                    }
+                    <dv-finanzielle-situation-require-x
+                        (sozialhilfeBezuegerChange)="
+                            sozialhilfeBezuegerChange()
                         "
-                        [text]="'QUELLSTEUERPFLICHTIG_WARNING' | translate"
-                    ></dv-warning>
-
-                    <div *ngIf="gemeinsameStekVisible()" class="form-group">
-                        <dv-radio-container-x>
-                            <label
-                                for="gemeinsameSteuererklaerung_id"
-                                class="required ebegu-h1"
-                            >
-                                {{
-                                    'GEMEINSAME_STEK'
-                                        | translate
-                                            : {
-                                                  antragsteller2:
-                                                      getAntragsteller2Name(),
-                                                  jahr: getBasisjahr()
-                                              }
-                                }}</label
-                            >
-                            <mat-radio-group
-                                #gemeinsameSteuererklaerung="ngModel"
-                                (change)="gemeinsameStekChange($event)"
-                                [(ngModel)]="
-                                    getModel().finanzielleSituationJA
-                                        .gemeinsameStekVorjahr
-                                "
-                                [disabled]="isFinSitReadonly()"
-                                id="gemeinsameSteuererklaerung_id"
-                                name="gemeinsameSteuererklaerung"
-                                required
-                                data-test="gemeinsameSteuererklaerung"
-                            >
-                                <mat-radio-button
-                                    [value]="true"
-                                    data-test="radio-value.ja"
-                                    >{{
-                                        'LABEL_JA' | translate
-                                    }}</mat-radio-button
-                                >
-                                <mat-radio-button
-                                    [value]="false"
-                                    data-test="radio-value.nein"
-                                    >{{
-                                        'LABEL_NEIN' | translate
-                                    }}</mat-radio-button
-                                >
-                            </mat-radio-group>
-                            <dv-error-messages
-                                *ngIf="form.submitted"
-                                [errorObject]="
-                                    gemeinsameSteuererklaerung.errors
-                                "
-                                inputId="gemeinsameSteuererklaerung_id"
-                            >
-                            </dv-error-messages>
-                        </dv-radio-container-x>
-                    </div>
-
-                    <div *ngIf="alleinigeStekVisible()" class="form-group">
-                        <dv-radio-container-x>
-                            <label
-                                for="alleinigeStekVorjahr_id"
-                                class="required ebegu-h1"
-                            >
-                                {{
-                                    'ALLEINIGE_STEK'
-                                        | translate: {jahr: getBasisjahr()}
-                                }}</label
-                            >
-                            <mat-radio-group
-                                #alleinigeStekVorjahr="ngModel"
-                                (change)="alleinigeStekVorjahrChange($event)"
-                                [(ngModel)]="
-                                    getModel().finanzielleSituationJA
-                                        .alleinigeStekVorjahr
-                                "
-                                [disabled]="isFinSitReadonly()"
-                                id="alleinigeStekVorjahr_id"
-                                name="alleinigeStekVorjahr"
-                                required
-                            >
-                                <mat-radio-button [value]="true">{{
-                                    'LABEL_JA' | translate
-                                }}</mat-radio-button>
-                                <mat-radio-button [value]="false">{{
-                                    'LABEL_NEIN' | translate
-                                }}</mat-radio-button>
-                            </mat-radio-group>
-                            <dv-error-messages
-                                *ngIf="form.submitted"
-                                [errorObject]="alleinigeStekVorjahr.errors"
-                                inputId="alleinigeStekVorjahr_id"
-                            >
-                            </dv-error-messages>
-                        </dv-radio-container-x>
-                    </div>
-
-                    <div *ngIf="veranlagtVisible()" class="form-group">
-                        <dv-radio-container-x>
-                            <label class="required ebegu-h1" for="veranlagt_id">
-                                {{
-                                    'VERANLAGT'
-                                        | translate: {jahr: getBasisjahr()}
-                                }}</label
-                            >
-                            <mat-radio-group
-                                #veranlagt="ngModel"
-                                [(ngModel)]="
-                                    getModel().finanzielleSituationJA.veranlagt
-                                "
-                                (change)="veranlagtChange()"
-                                [disabled]="isFinSitReadonly()"
-                                id="veranlagt_id"
-                                name="veranlagt"
-                                required
-                                data-test="veranlagt"
-                            >
-                                <mat-radio-button
-                                    [value]="true"
-                                    data-test="radio-value.ja"
-                                    >{{
-                                        'LABEL_JA' | translate
-                                    }}</mat-radio-button
-                                >
-                                <mat-radio-button
-                                    [value]="false"
-                                    data-test="radio-value.nein"
-                                    >{{
-                                        'LABEL_NEIN' | translate
-                                    }}</mat-radio-button
-                                >
-                            </mat-radio-group>
-                            <dv-error-messages
-                                *ngIf="form.submitted"
-                                [errorObject]="veranlagt.errors"
-                                inputId="veranlagt_id"
-                            >
-                            </dv-error-messages>
-                        </dv-radio-container-x>
-                    </div>
-
-                    <div *ngIf="veranlagtVorjahrVisible()" class="form-group">
-                        <dv-radio-container-x>
-                            <label
-                                class="required ebegu-h1"
-                                for="veranlagtVorjahr_id"
-                            >
-                                <ng-container *ngIf="isGemeinsam()"
-                                    >{{
-                                        'VERANLAGT_VORJAHR_GEMEINSAM'
-                                            | translate
-                                                : {
-                                                      vorjahr:
-                                                          getBasisjahrMinus1(),
-                                                      gs2: getAntragsteller2Name()
-                                                  }
-                                    }}
-                                </ng-container>
-                                <ng-container *ngIf="!isGemeinsam()"
-                                    >{{
-                                        'VERANLAGT_VORJAHR'
-                                            | translate
-                                                : {
-                                                      vorjahr:
-                                                          getBasisjahrMinus1()
-                                                  }
-                                    }}
-                                </ng-container>
-                            </label>
-                            <mat-radio-group
-                                #veranlagtVorjahr="ngModel"
-                                (change)="veranlagtVorjahrChange()"
-                                [(ngModel)]="
-                                    getModel().finanzielleSituationJA
-                                        .veranlagtVorjahr
-                                "
-                                [disabled]="isFinSitReadonly()"
-                                id="veranlagtVorjahr_id"
-                                name="veranlagtVorjahr"
-                                required
-                                data-test="veranlagtVorjahr"
-                            >
-                                <mat-radio-button
-                                    [value]="true"
-                                    data-test="radio-value.ja"
-                                    >{{
-                                        'LABEL_JA' | translate
-                                    }}</mat-radio-button
-                                >
-                                <mat-radio-button
-                                    [value]="false"
-                                    data-test="radio-value.nein"
-                                    >{{
-                                        'LABEL_NEIN' | translate
-                                    }}</mat-radio-button
-                                >
-                            </mat-radio-group>
-                            <dv-error-messages
-                                *ngIf="form.submitted"
-                                [errorObject]="veranlagtVorjahr.errors"
-                                inputId="veranlagt_id"
-                            >
-                            </dv-error-messages>
-                        </dv-radio-container-x>
-                    </div>
-
-                    <dv-selbstdeklaration
-                        *ngIf="showSelbstdeklaration()"
-                        [antragstellerNummer]="getAntragstellerNummer()"
-                        [basisJahr]="getYearForSelbstdeklaration()"
-                        [finanzModel]="model"
-                        [isGemeinsam]="isGemeinsam()"
-                        [isKorrekturModusJungendamtOrFreigegeben]="
-                            this.isKorrekturModusJugendamtOrFreigegeben()
+                        [(sozialhilfeBezueger)]="
+                            model.familienSituation.sozialhilfeBezueger
                         "
-                        [isQuellenbesteuert]="
-                            getModel().finanzielleSituationJA?.quellenbesteuert
-                        "
-                        [model]="getModel().finanzielleSituationJA"
-                        [readOnly]="isFinSitReadonly()"
-                    ></dv-selbstdeklaration>
-                    <dv-veranlagung
-                        *ngIf="showVeranlagung()"
-                        [antragstellerNummer]="getAntragstellerNummer()"
-                        [finanzModel]="model"
-                        [isGemeinsam]="isGemeinsam()"
-                        [model]="getModel()"
-                        [readOnly]="isFinSitReadonly()"
-                        [year]="getYearForVeranlagung()"
-                    ></dv-veranlagung>
-                    <dv-resultat
-                        *ngIf="showSelbstdeklaration() || showVeranlagung()"
-                        [antragstellerNummer]="getAntragstellerNummer()"
-                        [isGemeinsam]="isGemeinsam()"
-                        [year]="getYearForDeklaration()"
+                        [disabled]="isFinSitReadonly()"
+                        [hideSozialhilfeQuestion]="!isGS1()"
+                        [hideVerguenstigungGewunscht]="true"
                     >
-                    </dv-resultat>
+                    </dv-finanzielle-situation-require-x>
+                    @if (isSozialhilfeBezueger()) {
+                        <dv-warning>SOZIALHILFEBEZUEGER_WARNING</dv-warning>
+                    }
+                    @if (model.familienSituation.sozialhilfeBezueger) {
+                        <div>
+                            <div class="row">
+                                <div
+                                    class="col-sm-12 dv-input-container-medium"
+                                >
+                                    <div class="form-group">
+                                        <label
+                                            class="required long-label"
+                                            for="zustaendige_amtsstelle_id"
+                                        >
+                                            {{
+                                                'ZUSTAENDIGE_AMTSSTELLE'
+                                                    | translate
+                                            }}</label
+                                        >
+                                        <input
+                                            id="zustaendige_amtsstelle_id"
+                                            type="text"
+                                            name="zustaendigeAmtsstelle"
+                                            #zustaendigeAmtsstelle="ngModel"
+                                            [(ngModel)]="
+                                                model.familienSituation
+                                                    .zustaendigeAmtsstelle
+                                            "
+                                            class="form-control"
+                                            [maxlength]="255"
+                                            [disabled]="isFinSitReadonly()"
+                                            required
+                                        />
+                                        <dv-error-messages
+                                            [errorObject]="
+                                                zustaendigeAmtsstelle.errors
+                                            "
+                                            inputId="iban_id"
+                                        >
+                                        </dv-error-messages>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div
+                                    class="col-sm-12 dv-input-container-medium"
+                                >
+                                    <div class="form-group">
+                                        <label
+                                            class="required long-label"
+                                            for="nameBetreuer_id"
+                                        >
+                                            {{
+                                                'NAME_BETREUUER' | translate
+                                            }}</label
+                                        >
+                                        <input
+                                            id="nameBetreuer_id"
+                                            type="text"
+                                            name="nameBetreuer"
+                                            #nameBetreuer="ngModel"
+                                            [(ngModel)]="
+                                                model.familienSituation
+                                                    .nameBetreuer
+                                            "
+                                            class="form-control"
+                                            [maxlength]="255"
+                                            [disabled]="isFinSitReadonly()"
+                                            required
+                                        />
+                                        <dv-error-messages
+                                            [errorObject]="nameBetreuer.errors"
+                                            inputId="iban_id"
+                                        >
+                                        </dv-error-messages>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (isNotSozialhilfeBezueger()) {
+                        <div>
+                            <div class="form-group">
+                                <dv-radio-container-x>
+                                    <span>
+                                        <label
+                                            for="quellenbesteuert_id"
+                                            class="required ebegu-h1"
+                                        >
+                                            {{ 'QUELLENBESTEUERT' | translate }}
+                                        </label>
+                                        <dv-tooltip
+                                            [text]="
+                                                'QUELLENBESTEUERT_HINT'
+                                                    | translate
+                                            "
+                                        ></dv-tooltip>
+                                    </span>
+                                    <mat-radio-group
+                                        #quellenbesteuert="ngModel"
+                                        (change)="
+                                            quellenBesteuertChange($event)
+                                        "
+                                        [(ngModel)]="
+                                            getModel().finanzielleSituationJA
+                                                .quellenbesteuert
+                                        "
+                                        [disabled]="isFinSitReadonly()"
+                                        id="quellenbesteuert_id"
+                                        name="quellenbesteuert"
+                                        required
+                                        data-test="quellenbesteuert"
+                                    >
+                                        <mat-radio-button
+                                            [value]="true"
+                                            data-test="radio-value.ja"
+                                            >{{
+                                                'LABEL_JA' | translate
+                                            }}</mat-radio-button
+                                        >
+                                        <mat-radio-button
+                                            [value]="false"
+                                            data-test="radio-value.nein"
+                                            >{{
+                                                'LABEL_NEIN' | translate
+                                            }}</mat-radio-button
+                                        >
+                                    </mat-radio-group>
+                                    @if (form.submitted) {
+                                        <dv-error-messages
+                                            [errorObject]="
+                                                quellenbesteuert.errors
+                                            "
+                                            inputId="quellenbesteuert_id"
+                                        >
+                                        </dv-error-messages>
+                                    }
+                                </dv-radio-container-x>
+                            </div>
+                            @if (
+                                getModel().finanzielleSituationJA
+                                    .quellenbesteuert
+                            ) {
+                                <dv-warning
+                                    [text]="
+                                        'QUELLSTEUERPFLICHTIG_WARNING'
+                                            | translate
+                                    "
+                                ></dv-warning>
+                            }
+                            @if (gemeinsameStekVisible()) {
+                                <div class="form-group">
+                                    <dv-radio-container-x>
+                                        <label
+                                            for="gemeinsameSteuererklaerung_id"
+                                            class="required ebegu-h1"
+                                        >
+                                            {{
+                                                'GEMEINSAME_STEK'
+                                                    | translate
+                                                        : {
+                                                              antragsteller2:
+                                                                  getAntragsteller2Name(),
+                                                              jahr: getBasisjahr()
+                                                          }
+                                            }}</label
+                                        >
+                                        <mat-radio-group
+                                            #gemeinsameSteuererklaerung="ngModel"
+                                            (change)="
+                                                gemeinsameStekChange($event)
+                                            "
+                                            [(ngModel)]="
+                                                getModel()
+                                                    .finanzielleSituationJA
+                                                    .gemeinsameStekVorjahr
+                                            "
+                                            [disabled]="isFinSitReadonly()"
+                                            id="gemeinsameSteuererklaerung_id"
+                                            name="gemeinsameSteuererklaerung"
+                                            required
+                                            data-test="gemeinsameSteuererklaerung"
+                                        >
+                                            <mat-radio-button
+                                                [value]="true"
+                                                data-test="radio-value.ja"
+                                                >{{
+                                                    'LABEL_JA' | translate
+                                                }}</mat-radio-button
+                                            >
+                                            <mat-radio-button
+                                                [value]="false"
+                                                data-test="radio-value.nein"
+                                                >{{
+                                                    'LABEL_NEIN' | translate
+                                                }}</mat-radio-button
+                                            >
+                                        </mat-radio-group>
+                                        @if (form.submitted) {
+                                            <dv-error-messages
+                                                [errorObject]="
+                                                    gemeinsameSteuererklaerung.errors
+                                                "
+                                                inputId="gemeinsameSteuererklaerung_id"
+                                            >
+                                            </dv-error-messages>
+                                        }
+                                    </dv-radio-container-x>
+                                </div>
+                            }
+                            @if (alleinigeStekVisible()) {
+                                <div class="form-group">
+                                    <dv-radio-container-x>
+                                        <label
+                                            for="alleinigeStekVorjahr_id"
+                                            class="required ebegu-h1"
+                                        >
+                                            {{
+                                                'ALLEINIGE_STEK'
+                                                    | translate
+                                                        : {jahr: getBasisjahr()}
+                                            }}</label
+                                        >
+                                        <mat-radio-group
+                                            #alleinigeStekVorjahr="ngModel"
+                                            (change)="
+                                                alleinigeStekVorjahrChange(
+                                                    $event
+                                                )
+                                            "
+                                            [(ngModel)]="
+                                                getModel()
+                                                    .finanzielleSituationJA
+                                                    .alleinigeStekVorjahr
+                                            "
+                                            [disabled]="isFinSitReadonly()"
+                                            id="alleinigeStekVorjahr_id"
+                                            name="alleinigeStekVorjahr"
+                                            required
+                                        >
+                                            <mat-radio-button [value]="true">{{
+                                                'LABEL_JA' | translate
+                                            }}</mat-radio-button>
+                                            <mat-radio-button [value]="false">{{
+                                                'LABEL_NEIN' | translate
+                                            }}</mat-radio-button>
+                                        </mat-radio-group>
+                                        @if (form.submitted) {
+                                            <dv-error-messages
+                                                [errorObject]="
+                                                    alleinigeStekVorjahr.errors
+                                                "
+                                                inputId="alleinigeStekVorjahr_id"
+                                            >
+                                            </dv-error-messages>
+                                        }
+                                    </dv-radio-container-x>
+                                </div>
+                            }
+                            @if (veranlagtVisible()) {
+                                <div class="form-group">
+                                    <dv-radio-container-x>
+                                        <label
+                                            class="required ebegu-h1"
+                                            for="veranlagt_id"
+                                        >
+                                            {{
+                                                'VERANLAGT'
+                                                    | translate
+                                                        : {jahr: getBasisjahr()}
+                                            }}</label
+                                        >
+                                        <mat-radio-group
+                                            #veranlagt="ngModel"
+                                            [(ngModel)]="
+                                                getModel()
+                                                    .finanzielleSituationJA
+                                                    .veranlagt
+                                            "
+                                            (change)="veranlagtChange()"
+                                            [disabled]="isFinSitReadonly()"
+                                            id="veranlagt_id"
+                                            name="veranlagt"
+                                            required
+                                            data-test="veranlagt"
+                                        >
+                                            <mat-radio-button
+                                                [value]="true"
+                                                data-test="radio-value.ja"
+                                                >{{
+                                                    'LABEL_JA' | translate
+                                                }}</mat-radio-button
+                                            >
+                                            <mat-radio-button
+                                                [value]="false"
+                                                data-test="radio-value.nein"
+                                                >{{
+                                                    'LABEL_NEIN' | translate
+                                                }}</mat-radio-button
+                                            >
+                                        </mat-radio-group>
+                                        @if (form.submitted) {
+                                            <dv-error-messages
+                                                [errorObject]="veranlagt.errors"
+                                                inputId="veranlagt_id"
+                                            >
+                                            </dv-error-messages>
+                                        }
+                                    </dv-radio-container-x>
+                                </div>
+                            }
+                            @if (veranlagtVorjahrVisible()) {
+                                <div class="form-group">
+                                    <dv-radio-container-x>
+                                        <label
+                                            class="required ebegu-h1"
+                                            for="veranlagtVorjahr_id"
+                                        >
+                                            @if (isGemeinsam()) {
+                                                {{
+                                                    'VERANLAGT_VORJAHR_GEMEINSAM'
+                                                        | translate
+                                                            : {
+                                                                  vorjahr:
+                                                                      getBasisjahrMinus1(),
+                                                                  gs2: getAntragsteller2Name()
+                                                              }
+                                                }}
+                                            }
+                                            @if (!isGemeinsam()) {
+                                                {{
+                                                    'VERANLAGT_VORJAHR'
+                                                        | translate
+                                                            : {
+                                                                  vorjahr:
+                                                                      getBasisjahrMinus1()
+                                                              }
+                                                }}
+                                            }
+                                        </label>
+                                        <mat-radio-group
+                                            #veranlagtVorjahr="ngModel"
+                                            (change)="veranlagtVorjahrChange()"
+                                            [(ngModel)]="
+                                                getModel()
+                                                    .finanzielleSituationJA
+                                                    .veranlagtVorjahr
+                                            "
+                                            [disabled]="isFinSitReadonly()"
+                                            id="veranlagtVorjahr_id"
+                                            name="veranlagtVorjahr"
+                                            required
+                                            data-test="veranlagtVorjahr"
+                                        >
+                                            <mat-radio-button
+                                                [value]="true"
+                                                data-test="radio-value.ja"
+                                                >{{
+                                                    'LABEL_JA' | translate
+                                                }}</mat-radio-button
+                                            >
+                                            <mat-radio-button
+                                                [value]="false"
+                                                data-test="radio-value.nein"
+                                                >{{
+                                                    'LABEL_NEIN' | translate
+                                                }}</mat-radio-button
+                                            >
+                                        </mat-radio-group>
+                                        @if (form.submitted) {
+                                            <dv-error-messages
+                                                [errorObject]="
+                                                    veranlagtVorjahr.errors
+                                                "
+                                                inputId="veranlagt_id"
+                                            >
+                                            </dv-error-messages>
+                                        }
+                                    </dv-radio-container-x>
+                                </div>
+                            }
+                            @if (showSelbstdeklaration()) {
+                                <dv-selbstdeklaration
+                                    [antragstellerNummer]="
+                                        getAntragstellerNummer()
+                                    "
+                                    [basisJahr]="getYearForSelbstdeklaration()"
+                                    [finanzModel]="model"
+                                    [isGemeinsam]="isGemeinsam()"
+                                    [isKorrekturModusJungendamtOrFreigegeben]="
+                                        this.isKorrekturModusJugendamtOrFreigegeben()
+                                    "
+                                    [isQuellenbesteuert]="
+                                        getModel().finanzielleSituationJA
+                                            ?.quellenbesteuert
+                                    "
+                                    [model]="getModel().finanzielleSituationJA"
+                                    [readOnly]="isFinSitReadonly()"
+                                ></dv-selbstdeklaration>
+                            }
+                            @if (showVeranlagung()) {
+                                <dv-veranlagung
+                                    [antragstellerNummer]="
+                                        getAntragstellerNummer()
+                                    "
+                                    [finanzModel]="model"
+                                    [isGemeinsam]="isGemeinsam()"
+                                    [model]="getModel()"
+                                    [readOnly]="isFinSitReadonly()"
+                                    [year]="getYearForVeranlagung()"
+                                ></dv-veranlagung>
+                            }
+                            @if (showSelbstdeklaration() || showVeranlagung()) {
+                                <dv-resultat
+                                    [antragstellerNummer]="
+                                        getAntragstellerNummer()
+                                    "
+                                    [isGemeinsam]="isGemeinsam()"
+                                    [year]="getYearForDeklaration()"
+                                >
+                                </dv-resultat>
+                            }
+                        </div>
+                    }
+                </fieldset>
+                <div class="col-md-12">
+                    <dv-navigation-x
+                        (dvSave)="prepareSave($event.onResult)"
+                        [dvNext]="hasNext"
+                        [dvPrevious]="hasPrevious"
+                        [dvSubStepName]="getSubStepName()"
+                        [dvSubStep]="getSubStepIndex()"
+                    ></dv-navigation-x>
                 </div>
-            </fieldset>
-            <div class="col-md-12">
-                <dv-navigation-x
-                    (dvSave)="prepareSave($event.onResult)"
-                    [dvNext]="hasNext"
-                    [dvPrevious]="hasPrevious"
-                    [dvSubStepName]="getSubStepName()"
-                    [dvSubStep]="getSubStepIndex()"
-                ></dv-navigation-x>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
+    }
 </div>

@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.dvbern.ebegu.util;
+package ch.dvbern.ebegu.util.doppelbetreuung;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -21,6 +21,7 @@ import java.util.Comparator;
 
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Betreuung;
+import ch.dvbern.ebegu.util.MathUtil;
 
 public class BetreuungComparatorAppenzell implements
 	Comparator<AbstractPlatz>,

@@ -19,7 +19,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
@@ -63,6 +64,22 @@ export class FallCreationViewXComponent
     extends AbstractGesuchViewX<TSGesuch>
     implements OnInit
 {
+    readonly gesuchModelManager: GesuchModelManager;
+    private readonly errorService = inject(ErrorService);
+    protected readonly wizardStepManager: WizardStepManager;
+    private readonly $translate = inject(TranslateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly uiRouterGlobals = inject(UIRouterGlobals);
+    private readonly einstellungService = inject(EinstellungRS);
+    private readonly $state = inject(StateService);
+    private readonly gesuchRS = inject(GesuchRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly dialog = inject(MatDialog);
+
     public gesuchsperiodeId: string;
     // @ViewChild(NgForm) protected readonly form: NgForm;
 
@@ -72,26 +89,18 @@ export class FallCreationViewXComponent
 
     private isBegruendungMutationActiv: boolean;
 
-    public constructor(
-        public readonly gesuchModelManager: GesuchModelManager,
-        private readonly errorService: ErrorService,
-        protected readonly wizardStepManager: WizardStepManager,
-        private readonly $translate: TranslateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly cd: ChangeDetectorRef,
-        private readonly uiRouterGlobals: UIRouterGlobals,
-        private readonly einstellungService: EinstellungRS,
-        private readonly $state: StateService,
-        private readonly gesuchRS: GesuchRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly dialog: MatDialog
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const wizardStepManager = inject(WizardStepManager);
+
         super(
             gesuchModelManager,
             wizardStepManager,
             TSWizardStepName.GESUCH_ERSTELLEN
         );
+
+        this.gesuchModelManager = gesuchModelManager;
+        this.wizardStepManager = wizardStepManager;
     }
 
     public async ngOnInit(): Promise<void> {

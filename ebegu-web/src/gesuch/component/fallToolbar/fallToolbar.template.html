@@ -1,98 +1,95 @@
 <!--
-  ~ Ki-Tax: System for the management of external childcare subsidies
-  ~ Copyright (C) 2018 City of Bern Switzerland
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
-  -->
+~ Ki-Tax: System for the management of external childcare subsidies
+~ Copyright (C) 2018 City of Bern Switzerland
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
 
-<div
-    class="fall-toolbar"
-    *ngIf="!mobileMode; else mobileModeTemplate"
-    data-test="fall-toolbar"
->
-    <div layout="row" class="fall-toolbar-content">
-        <div class="dossier-list col-md-12">
-            <button
-                *ngFor="let dossier of dossierList"
-                class="dossier-element"
-                [ngClass]="{
-                    'dossier-active-gesuchsteller':
-                        isDossierActive(dossier) && isGesuchsteller(),
-                    'dossier-active':
-                        isDossierActive(dossier) && !isGesuchsteller()
-                }"
-                (click)="openDossier$(dossier)"
-                [disabled]="isNavigationDisabled()"
-            >
-                {{ dossier.extractGemeindeName() }}
-            </button>
-
-            <button
-                *dvNgShowElement="
-                    showCreateNewDossier();
-                    roles: TSRoleUtil.getGesuchstellerJugendamtSchulamtRoles()
-                "
-                (click)="createNewDossier()"
-                class="dossier-element add-dossier"
-                (mouseover)="toggleGemeindeText()"
-                (mouseout)="toggleGemeindeText()"
-                [disabled]="isNavigationDisabled()"
-            >
-                <i class="fa fa-plus" *ngIf="!showAddGemeindeText()"></i>
-                {{ gemeindeText | translate }}
-            </button>
-
-            <div
-                class="pull-right dossier-element fall-nummer"
-                [ngClass]="{'fall-nummer-gesuchsteller': isGesuchsteller()}"
-            >
-                <span
-                    [textContent]="nameGs"
-                    class="fall-toolbar-symbol-padding"
-                ></span>
-                <span
-                    data-test="fallnummer"
-                    [textContent]="fallNummer"
-                    class="fall-toolbar-symbol-padding"
-                ></span>
-                <span
-                    class="kitax-link"
-                    *ngIf="kitaxResponse && isGemeindeUserOrSuperAdmin()"
-                >
-                    (<a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        [href]="kitaxHost + kitaxResponse.url"
-                        >Ki-Tax {{ kitaxResponse.fallNummer }}</a
-                    >)
-                </span>
-                <i
+@if (!mobileMode) {
+    <div class="fall-toolbar" data-test="fall-toolbar">
+        <div layout="row" class="fall-toolbar-content">
+            <div class="dossier-list col-md-12">
+                @for (dossier of dossierList; track dossier) {
+                    <button
+                        class="dossier-element"
+                        [ngClass]="{
+                            'dossier-active-gesuchsteller':
+                                isDossierActive(dossier) && isGesuchsteller(),
+                            'dossier-active':
+                                isDossierActive(dossier) && !isGesuchsteller()
+                        }"
+                        (click)="openDossier$(dossier)"
+                        [disabled]="isNavigationDisabled()"
+                    >
+                        {{ dossier.extractGemeindeName() }}
+                    </button>
+                }
+                <button
                     *dvNgShowElement="
-                        true;
-                        roles: TSRoleUtil.getAllRolesButGesuchsteller()
+                        showCreateNewDossier();
+                        roles: TSRoleUtil.getGesuchstellerJugendamtSchulamtRoles()
                     "
-                    class="fa"
-                    [ngClass]="{
-                        'fa-desktop':
-                            isOnlineGesuch() && !isSozialdienstGesuch(),
-                        'fa-file-text-o':
-                            !isOnlineGesuch() && !isSozialdienstGesuch(),
-                        'fa-handshake-o': isSozialdienstGesuch()
-                    }"
-                ></i>
+                    (click)="createNewDossier()"
+                    class="dossier-element add-dossier"
+                    (mouseover)="toggleGemeindeText()"
+                    (mouseout)="toggleGemeindeText()"
+                    [disabled]="isNavigationDisabled()"
+                >
+                    @if (!showAddGemeindeText()) {
+                        <i class="fa fa-plus"></i>
+                    }
+                    {{ gemeindeText | translate }}
+                </button>
+                <div
+                    class="pull-right dossier-element fall-nummer"
+                    [ngClass]="{'fall-nummer-gesuchsteller': isGesuchsteller()}"
+                >
+                    <span
+                        [textContent]="nameGs"
+                        class="fall-toolbar-symbol-padding"
+                    ></span>
+                    <span
+                        data-test="fallnummer"
+                        [textContent]="fallNummer"
+                        class="fall-toolbar-symbol-padding"
+                    ></span>
+                    @if (kitaxResponse && isGemeindeUserOrSuperAdmin()) {
+                        <span class="kitax-link">
+                            (<a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                [href]="kitaxHost + kitaxResponse.url"
+                                >Ki-Tax {{ kitaxResponse.fallNummer }}</a
+                            >)
+                        </span>
+                    }
+                    <i
+                        *dvNgShowElement="
+                            true;
+                            roles: TSRoleUtil.getAllRolesButGesuchsteller()
+                        "
+                        class="fa"
+                        [ngClass]="{
+                            'fa-desktop':
+                                isOnlineGesuch() && !isSozialdienstGesuch(),
+                            'fa-file-text-o':
+                                !isOnlineGesuch() && !isSozialdienstGesuch(),
+                            'fa-handshake-o': isSozialdienstGesuch()
+                        }"
+                    ></i>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<ng-template #mobileModeTemplate>
+} @else {
     <div class="fall-toolbar-mobile">
         <div class="fall-toolbar-mobile-dropdown">
             <button
@@ -104,33 +101,42 @@
                 {{ getCurrentGemeindeName() }}
                 <i class="fa fa-angle-down fall-toolbar-mobile-caret"></i>
             </button>
-            <ul class="fall-toolbar-mobile-dropdown-menu" *ngIf="showdropdown">
-                <li *ngFor="let dossier of this.dossierListWithoutSelected">
-                    <button
-                        (click)="openDossier$(dossier)"
-                        class="fall-toolbar-mobile-dropdown-button"
-                        [disabled]="isNavigationDisabled()"
+            @if (showdropdown) {
+                <ul class="fall-toolbar-mobile-dropdown-menu">
+                    @for (
+                        dossier of this.dossierListWithoutSelected;
+                        track dossier
+                    ) {
+                        <li>
+                            <button
+                                (click)="openDossier$(dossier)"
+                                class="fall-toolbar-mobile-dropdown-button"
+                                [disabled]="isNavigationDisabled()"
+                            >
+                                {{ dossier.extractGemeindeName() }}
+                            </button>
+                        </li>
+                    }
+                    <li
+                        *dvNgShowElement="
+                            showCreateNewDossier();
+                            roles: TSRoleUtil.getGesuchstellerSozialdienstJugendamtSchulamtRoles()
+                        "
                     >
-                        {{ dossier.extractGemeindeName() }}
-                    </button>
-                </li>
-                <li
-                    *dvNgShowElement="
-                        showCreateNewDossier();
-                        roles: TSRoleUtil.getGesuchstellerSozialdienstJugendamtSchulamtRoles()
-                    "
-                >
-                    <button
-                        href
-                        class="fall-toolbar-mobile-dropdown-button"
-                        (click)="createNewDossier()"
-                        [disabled]="isNavigationDisabled()"
-                    >
-                        <i class="fa fa-plus fall-toolbar-symbol-padding"></i>
-                        {{ 'GEMEINDE_HINZUFUEGEN' | translate }}
-                    </button>
-                </li>
-            </ul>
+                        <button
+                            href
+                            class="fall-toolbar-mobile-dropdown-button"
+                            (click)="createNewDossier()"
+                            [disabled]="isNavigationDisabled()"
+                        >
+                            <i
+                                class="fa fa-plus fall-toolbar-symbol-padding"
+                            ></i>
+                            {{ 'GEMEINDE_HINZUFUEGEN' | translate }}
+                        </button>
+                    </li>
+                </ul>
+            }
         </div>
     </div>
-</ng-template>
+}

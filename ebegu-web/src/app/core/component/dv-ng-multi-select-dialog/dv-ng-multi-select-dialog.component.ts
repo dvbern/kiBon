@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 
@@ -34,16 +34,19 @@ export interface DvMultiSelectDialogItem {
     standalone: false
 })
 export class DvNgMultiSelectDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgMultiSelectDialogComponent>>(MatDialogRef);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     public title: string = '';
     public text: string = '';
     public selectOptions: DvMultiSelectDialogItem[];
     public allChecked: boolean;
     public someChecked: boolean;
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DvNgMultiSelectDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         if (data) {
             this.title = data.title;
             this.text = data.text;

@@ -1,4 +1,9 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    inject
+} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {mergeMap} from 'rxjs/operators';
@@ -37,20 +42,26 @@ export class FamiliensituationSchwyzComponent
     extends AbstractFamiliensitutaionView
     implements OnInit
 {
+    protected readonly gesuchModelManager: GesuchModelManager;
+    protected readonly errorService: ErrorService;
+    protected readonly wizardStepManager: WizardStepManager;
+    protected readonly familiensituationRS: FamiliensituationRS;
+    protected readonly authService: AuthServiceRS;
+    private readonly einstellungRS = inject(EinstellungRS);
+    private readonly translate = inject(TranslateService);
+    private readonly dialog = inject(MatDialog);
+
     protected readonly TSGesuchstellerKardinalitaet =
         TSGesuchstellerKardinalitaet;
     private readonly initialFamiliensituation: TSFamiliensituation;
 
-    public constructor(
-        protected readonly gesuchModelManager: GesuchModelManager,
-        protected readonly errorService: ErrorService,
-        protected readonly wizardStepManager: WizardStepManager,
-        protected readonly familiensituationRS: FamiliensituationRS,
-        protected readonly authService: AuthServiceRS,
-        private readonly einstellungRS: EinstellungRS,
-        private readonly translate: TranslateService,
-        private readonly dialog: MatDialog
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const errorService = inject(ErrorService);
+        const wizardStepManager = inject(WizardStepManager);
+        const familiensituationRS = inject(FamiliensituationRS);
+        const authService = inject(AuthServiceRS);
+
         super(
             gesuchModelManager,
             errorService,
@@ -58,6 +69,12 @@ export class FamiliensituationSchwyzComponent
             familiensituationRS,
             authService
         );
+        this.gesuchModelManager = gesuchModelManager;
+        this.errorService = errorService;
+        this.wizardStepManager = wizardStepManager;
+        this.familiensituationRS = familiensituationRS;
+        this.authService = authService;
+
         this.getFamiliensituation().familienstatus = TSFamilienstatus.SCHWYZ;
         this.initialFamiliensituation =
             this.gesuchModelManager.getFamiliensituation();

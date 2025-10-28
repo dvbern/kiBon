@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSEWKPerson} from '../../../models/TSEWKPerson';
@@ -27,14 +27,14 @@ import {LogFactory} from '@kibon/shared/util-fn/log-factory';
     providedIn: 'root'
 })
 export class EwkRS {
+    private readonly http = inject(HttpClient);
+    private readonly ebeguRestUtil = inject(EbeguRestUtil);
+
     private readonly log = LogFactory.createLog('EwkRS');
 
     public serviceURL: string;
 
-    public constructor(
-        private readonly http: HttpClient,
-        private readonly ebeguRestUtil: EbeguRestUtil
-    ) {
+    public constructor() {
         this.serviceURL = `${CONSTANTS.REST_API}gesuche`;
     }
 

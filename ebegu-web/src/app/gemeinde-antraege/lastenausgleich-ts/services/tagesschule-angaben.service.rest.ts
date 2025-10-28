@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSAnzahlEingeschriebeneKinder} from '../../../../models/gemeindeantrag/TSAnzahlEingeschriebeneKinder';
@@ -28,11 +28,11 @@ import {CONSTANTS} from '@kibon/shared/model/constants';
     providedIn: 'root'
 })
 export class TagesschuleAngabenRS {
+    private readonly http = inject(HttpClient);
+
     private readonly ebeguRestUtils = new EbeguRestUtil();
 
     private readonly apiUrl = `${CONSTANTS.REST_API}lats/institution/`;
-
-    public constructor(private readonly http: HttpClient) {}
 
     public saveTagesschuleAngaben(
         latsInstitutionAngabenContainer: TSLastenausgleichTagesschuleAngabenInstitutionContainer

@@ -15,7 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    inject
+} from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
@@ -32,6 +38,11 @@ import {FinanzielleSituationLuzernService} from '../finanzielle-situation-luzern
     standalone: false
 })
 export class VeranlagungComponent implements OnInit {
+    private readonly finSitLuService = inject(
+        FinanzielleSituationLuzernService
+    );
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+
     @Input()
     public isGemeinsam: boolean;
 
@@ -48,11 +59,6 @@ export class VeranlagungComponent implements OnInit {
 
     @Input()
     public finanzModel: TSFinanzModel;
-
-    public constructor(
-        private readonly finSitLuService: FinanzielleSituationLuzernService,
-        private readonly gesuchModelManager: GesuchModelManager
-    ) {}
 
     public ngOnInit(): void {
         this.finSitLuService.calculateMassgebendesEinkommen(this.finanzModel);

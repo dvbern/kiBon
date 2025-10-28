@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2021 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2021 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 <h1 class="access-for-all-title" translate>LATS_ANGABEN_TAGESSCHULEN</h1>
 <div class="row view-title">
     <div class="col-md-12">
@@ -26,15 +26,17 @@
     <dv-warning [text]="'WARNING_SAME_ZWEITPRUEFUNG_USER'"></dv-warning>
 }
 
-<dv-simple-table
-    *ngIf="tableColumns"
-    [data]="data"
-    [columns]="tableColumns"
-    (rowClicked)="navigate($event)"
-></dv-simple-table>
-<button
-    class="dv-btn cancel-button margin-top-20"
-    *ngIf="isGemeindeOrSuperadmin() && (isInBearbeitungGemeinde() | async)"
-    (click)="createMissingTagesschuleFormulare()"
-    [textContent]="'CREATE_MISSING_FORMULARE' | translate"
-></button>
+@if (tableColumns) {
+    <dv-simple-table
+        [data]="data"
+        [columns]="tableColumns"
+        (rowClicked)="navigate($event)"
+    ></dv-simple-table>
+}
+@if (isGemeindeOrSuperadmin() && (isInBearbeitungGemeinde() | async)) {
+    <button
+        class="dv-btn cancel-button margin-top-20"
+        (click)="createMissingTagesschuleFormulare()"
+        [textContent]="'CREATE_MISSING_FORMULARE' | translate"
+    ></button>
+}

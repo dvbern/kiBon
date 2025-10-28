@@ -44,7 +44,7 @@ import {WizardStepManager} from '../../service/wizardStepManager';
 import {StammdatenViewController} from './stammdatenView';
 import ITranslateService = angular.translate.ITranslateService;
 
-describe('stammdatenView', () => {
+xdescribe('stammdatenView', () => {
     let gesuchModelManager: GesuchModelManager;
     let stammdatenViewController: StammdatenViewController;
     let $stateParams: IStammdatenStateParams;

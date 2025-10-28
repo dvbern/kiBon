@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSWorkJob} from '../../../models/TSWorkJob';
@@ -27,10 +27,10 @@ import {CONSTANTS} from '@kibon/shared/model/constants';
     providedIn: 'root'
 })
 export class BatchJobRS {
+    http = inject(HttpClient);
+
     public readonly serviceURL = `${CONSTANTS.REST_API}admin/batch`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(public http: HttpClient) {}
 
     public getAllJobs(): Observable<TSWorkJob[]> {
         return this.getInfo(`${this.serviceURL}/jobs`);

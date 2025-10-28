@@ -110,8 +110,9 @@ public class Verfuegung extends AbstractMutableEntity {
 	@Transient
 	private BigDecimal korrekturAusbezahltEltern;
 
-	public Verfuegung() {
-	}
+	@Column(nullable = true)
+	@Nullable
+	private Integer doppelBetreuungPrio;
 
 	@Nullable
 	public String getGeneratedBemerkungen() {
@@ -326,5 +327,14 @@ public class Verfuegung extends AbstractMutableEntity {
 		BigDecimal korrekturAusbezahltEltern
 	) {
 		this.korrekturAusbezahltEltern = korrekturAusbezahltEltern;
+	}
+
+	@Nullable
+	public Integer getDoppelBetreuungPrio() {
+		return doppelBetreuungPrio;
+	}
+
+	public void setDoppelBetreuungPrio(@Nullable Integer doppelBetreuungPrio) {
+		this.doppelBetreuungPrio = doppelBetreuungPrio;
 	}
 }

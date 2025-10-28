@@ -19,60 +19,69 @@
         </div>
     </div>
 </div>
-<div *ngIf="showVeranlagungErhalten()" class="row">
-    <div class="col-xs-12 dv-input-container-question">
-        <div class="form-group">
-            <span
-                *ngIf="
+@if (showVeranlagungErhalten()) {
+    <div class="row">
+        <div class="col-xs-12 dv-input-container-question">
+            <div class="form-group">
+                @if (
                     model.finanzielleSituationJA.momentanSelbststaendig ===
                     false
-                "
-                class="ebegu-h1 required"
-                >{{
-                    'FINANZIELLE_SITUATION_STEUERVERANLAGUNG'
-                        | translate
-                            : {
-                                  basisjahr: gesuchModelManager.getBasisjahr(),
-                                  basisjahrMinus:
-                                      gesuchModelManager.getBasisjahrMinus(1),
-                                  basisjahrMinus2:
-                                      gesuchModelManager.getBasisjahrMinus(2)
-                              }
-                }}</span
-            ><span
-                *ngIf="
+                ) {
+                    <span class="ebegu-h1 required">{{
+                        'FINANZIELLE_SITUATION_STEUERVERANLAGUNG'
+                            | translate
+                                : {
+                                      basisjahr:
+                                          gesuchModelManager.getBasisjahr(),
+                                      basisjahrMinus:
+                                          gesuchModelManager.getBasisjahrMinus(
+                                              1
+                                          ),
+                                      basisjahrMinus2:
+                                          gesuchModelManager.getBasisjahrMinus(
+                                              2
+                                          )
+                                  }
+                    }}</span>
+                }
+                @if (
                     model.finanzielleSituationJA.momentanSelbststaendig === true
-                "
-                class="ebegu-h1 required"
-                >{{
-                    'FINANZIELLE_SITUATION_STEUERVERANLAGUNG_SELBSTSTAENDIG'
-                        | translate
-                            : {
-                                  basisjahr: gesuchModelManager.getBasisjahr(),
-                                  basisjahrMinus:
-                                      gesuchModelManager.getBasisjahrMinus(1),
-                                  basisjahrMinus2:
-                                      gesuchModelManager.getBasisjahrMinus(2)
-                              }
-                }}</span
-            >
-            <dv-input-container-x [verticalAlign]="true">
-                <dv-radio-container-x>
-                    <dv-radio-input-x
-                        [(model)]="
-                            model.finanzielleSituationJA
-                                .steuerveranlagungErhalten
-                        "
-                        (modelChange)="setSteuerveranlagungErhalten($event)"
-                        [readonly]="isGesuchReadonly()"
-                        [dvBisherValue]="!isGesuchReadonly()"
-                        labelNo="LABEL_NICHT_ERHALTEN_ODER_QUELLENBESTEUERT"
-                        [required]="true"
-                        data-test="steuerveranlagungErhalten"
-                    >
-                    </dv-radio-input-x>
-                </dv-radio-container-x>
-            </dv-input-container-x>
+                ) {
+                    <span class="ebegu-h1 required">{{
+                        'FINANZIELLE_SITUATION_STEUERVERANLAGUNG_SELBSTSTAENDIG'
+                            | translate
+                                : {
+                                      basisjahr:
+                                          gesuchModelManager.getBasisjahr(),
+                                      basisjahrMinus:
+                                          gesuchModelManager.getBasisjahrMinus(
+                                              1
+                                          ),
+                                      basisjahrMinus2:
+                                          gesuchModelManager.getBasisjahrMinus(
+                                              2
+                                          )
+                                  }
+                    }}</span>
+                }
+                <dv-input-container-x [verticalAlign]="true">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            [(model)]="
+                                model.finanzielleSituationJA
+                                    .steuerveranlagungErhalten
+                            "
+                            (modelChange)="setSteuerveranlagungErhalten($event)"
+                            [readonly]="isGesuchReadonly()"
+                            [dvBisherValue]="!isGesuchReadonly()"
+                            labelNo="LABEL_NICHT_ERHALTEN_ODER_QUELLENBESTEUERT"
+                            [required]="true"
+                            data-test="steuerveranlagungErhalten"
+                        >
+                        </dv-radio-input-x>
+                    </dv-radio-container-x>
+                </dv-input-container-x>
+            </div>
         </div>
     </div>
-</div>
+}

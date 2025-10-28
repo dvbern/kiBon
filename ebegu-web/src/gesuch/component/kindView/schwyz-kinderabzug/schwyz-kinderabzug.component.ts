@@ -6,7 +6,8 @@ import {
     Input,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {Subject} from 'rxjs';
@@ -29,6 +30,10 @@ const LOG = LogFactory.createLog('SchwyzKinderabzugComponent');
 export class SchwyzKinderabzugComponent
     implements OnInit, AfterViewInit, OnDestroy
 {
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly exchangeService = inject(KinderabzugExchangeService);
+
     @ViewChild(NgForm)
     public readonly form: NgForm;
 
@@ -36,12 +41,6 @@ export class SchwyzKinderabzugComponent
     public kindContainer: TSKindContainer;
 
     private readonly unsubscribe$: Subject<void> = new Subject<void>();
-
-    public constructor(
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly cd: ChangeDetectorRef,
-        private readonly exchangeService: KinderabzugExchangeService
-    ) {}
 
     public ngOnInit(): void {
         this.exchangeService

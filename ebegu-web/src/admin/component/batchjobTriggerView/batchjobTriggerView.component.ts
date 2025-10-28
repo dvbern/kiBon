@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -29,11 +29,9 @@ const LOG = LogFactory.createLog('BatchjobTriggerViewComponent');
     standalone: false
 })
 export class BatchjobTriggerViewComponent {
-    public constructor(
-        private readonly dialog: MatDialog,
-        private readonly databaseMigrationRS: DatabaseMigrationRS,
-        private readonly dailyBatchRS: DailyBatchRS
-    ) {}
+    private readonly dialog = inject(MatDialog);
+    private readonly databaseMigrationRS = inject(DatabaseMigrationRS);
+    private readonly dailyBatchRS = inject(DailyBatchRS);
 
     public processScript(script: string): void {
         this.databaseMigrationRS.processScript(script);

@@ -33,7 +33,7 @@ import {TSFerieninselZeitraum} from '../../../models/TSFerieninselZeitraum';
 })
 export class OverlappingZeitraumDirective implements Validator {
     @Input('appOverlappingZeitraum')
-    private readonly fiStammdatenList: TSFerieninselStammdaten[];
+    public fiStammdatenList: TSFerieninselStammdaten[];
 
     public validate(): {[key: string]: any} | null {
         return this.fiStammdatenList

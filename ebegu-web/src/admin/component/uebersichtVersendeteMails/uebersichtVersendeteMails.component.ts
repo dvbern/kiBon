@@ -66,12 +66,12 @@ export class UebersichtVersendeteMailsComponent implements OnInit {
     });
     private debouncedFilter = debounceSignal<string>(this.filter, 500);
     private resource = rxResource({
-        request: () => ({
+        params: () => ({
             sort: this.sortValue(),
             pagination: this.paginationValue(),
             filter: this.debouncedFilter()
         }),
-        loader: ({request: {sort, pagination, filter}}) =>
+        stream: ({params: {sort, pagination, filter}}) =>
             this.uebersichtVersendeteMailsRS.getAllMails({
                 filter,
                 active: sort.active,

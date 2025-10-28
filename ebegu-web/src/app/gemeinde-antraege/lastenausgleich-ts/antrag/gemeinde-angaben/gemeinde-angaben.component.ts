@@ -22,7 +22,8 @@ import {
     Input,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {
     AbstractControl,
@@ -88,6 +89,21 @@ const LOG = LogFactory.createLog('GemeindeAngabenComponent');
     standalone: false
 })
 export class GemeindeAngabenComponent implements OnInit, OnDestroy {
+    private readonly fb = inject(FormBuilder);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly lastenausgleichTSService = inject(
+        LastenausgleichTSService
+    );
+    private readonly errorService = inject(ErrorService);
+    private readonly translateService = inject(TranslateService);
+    private readonly settings = inject(EinstellungRS);
+    private readonly wizardRS = inject(WizardStepXRS);
+    private readonly uiRouterGlobals = inject(UIRouterGlobals);
+    private readonly dialog = inject(MatDialog);
+    private readonly unsavedChangesService = inject(UnsavedChangesService);
+    private readonly $state = inject(StateService);
+
     @Input() public lastenausgleichID: string;
     @Input() public triggerValidationOnInit = false;
 
@@ -257,21 +273,6 @@ export class GemeindeAngabenComponent implements OnInit, OnDestroy {
     private readonly WIZARD_TYPE: TSWizardStepXTyp =
         TSWizardStepXTyp.LASTENAUSGLEICH_TAGESSCHULEN;
     public hasStarkeVeraenderung: boolean = false;
-
-    public constructor(
-        private readonly fb: FormBuilder,
-        private readonly cd: ChangeDetectorRef,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly lastenausgleichTSService: LastenausgleichTSService,
-        private readonly errorService: ErrorService,
-        private readonly translateService: TranslateService,
-        private readonly settings: EinstellungRS,
-        private readonly wizardRS: WizardStepXRS,
-        private readonly uiRouterGlobals: UIRouterGlobals,
-        private readonly dialog: MatDialog,
-        private readonly unsavedChangesService: UnsavedChangesService,
-        private readonly $state: StateService
-    ) {}
 
     public ngOnInit(): void {
         this.subscription = combineLatest([

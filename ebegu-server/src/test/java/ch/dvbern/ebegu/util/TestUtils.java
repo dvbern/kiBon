@@ -26,6 +26,7 @@ import ch.dvbern.ebegu.entities.EinkommensverschlechterungInfoContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.GesuchstellerContainer;
 import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungComparator;
 import ch.dvbern.ebegu.enums.gemeindekonfiguration.GemeindeZusaetzlicherGutscheinTyp;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
 
@@ -75,6 +76,7 @@ public final class TestUtils {
 			MathUtil.DEFAULT.from(6.11)
 		);
 		parameterDTO.setMinTarifTagesschule(MathUtil.DEFAULT.from(0.78));
+		parameterDTO.setBetreuungComparator(BetreuungComparator.DEFAULT);
 		parameterDTO.getGemeindeParameter()
 			.setGemeindeZusaetzlicherGutscheinEnabled(false);
 		parameterDTO.getGemeindeParameter()

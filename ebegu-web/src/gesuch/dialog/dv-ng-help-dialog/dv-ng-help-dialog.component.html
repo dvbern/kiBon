@@ -1,42 +1,39 @@
 <!--
-  ~ Ki-Tax: System for the management of external childcare subsidies
-  ~ Copyright (C) 2017 City of Bern Switzerland
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
-  -->
+~ Ki-Tax: System for the management of external childcare subsidies
+~ Copyright (C) 2017 City of Bern Switzerland
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
 
 <mat-dialog-content id="dialogContent" role="document" tabindex="-1">
-    <ng-container [ngSwitch]="mandant$ | async">
-        <ng-container
-            *ngSwitchCase="mandantTypes.BERN"
-            [ngTemplateOutlet]="be"
-        ></ng-container>
-        <ng-container
-            *ngSwitchCase="mandantTypes.LUZERN"
-            [ngTemplateOutlet]="lu"
-        ></ng-container>
-        <ng-container
-            *ngSwitchCase="mandantTypes.SOLOTHURN"
-            [ngTemplateOutlet]="so"
-        ></ng-container>
-        <ng-container
-            *ngSwitchCase="mandantTypes.APPENZELL_AUSSERRHODEN"
-            [ngTemplateOutlet]="ar"
-        ></ng-container>
-        <ng-container
-            *ngSwitchCase="mandantTypes.SCHWYZ"
-            [ngTemplateOutlet]="sz"
-        ></ng-container>
-        <ng-container *ngSwitchDefault [ngTemplateOutlet]="be"></ng-container>
-    </ng-container>
+    @switch (mandant$ | async) {
+        @case (mandantTypes.BERN) {
+            <ng-container [ngTemplateOutlet]="be"></ng-container>
+        }
+        @case (mandantTypes.LUZERN) {
+            <ng-container [ngTemplateOutlet]="lu"></ng-container>
+        }
+        @case (mandantTypes.SOLOTHURN) {
+            <ng-container [ngTemplateOutlet]="so"></ng-container>
+        }
+        @case (mandantTypes.APPENZELL_AUSSERRHODEN) {
+            <ng-container [ngTemplateOutlet]="ar"></ng-container>
+        }
+        @case (mandantTypes.SCHWYZ) {
+            <ng-container [ngTemplateOutlet]="sz"></ng-container>
+        }
+        @default {
+            <ng-container [ngTemplateOutlet]="be"></ng-container>
+        }
+    }
 </mat-dialog-content>
 
 <mat-dialog-actions class="margin-top-40" layout-align="center center">
@@ -104,18 +101,20 @@
 </ng-template>
 
 <ng-template #blog>
-    <div *ngIf="hasRoleGemeinde || hasRoleInstitution" class="margin-top-40">
-        <h2>{{ 'BLOG_SECTION_BLOG' | translate }}</h2>
-        <p>
-            <a
-                href="{{ 'BLOG_LINK' | translate }}"
-                rel="noopener noreferrer"
-                target="_blank"
-            >
-                <span>{{ 'BLOG_FOOTER_LINK' | translate }}</span>
-            </a>
-        </p>
-    </div>
+    @if (hasRoleGemeinde || hasRoleInstitution) {
+        <div class="margin-top-40">
+            <h2>{{ 'BLOG_SECTION_BLOG' | translate }}</h2>
+            <p>
+                <a
+                    href="{{ 'BLOG_LINK' | translate }}"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                >
+                    <span>{{ 'BLOG_FOOTER_LINK' | translate }}</span>
+                </a>
+            </p>
+        </div>
+    }
 </ng-template>
 
 <ng-template #so>

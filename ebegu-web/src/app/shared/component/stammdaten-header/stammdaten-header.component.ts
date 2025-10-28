@@ -22,7 +22,8 @@ import {
     Input,
     OnInit,
     Output,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {StateService} from '@uirouter/core';
@@ -38,6 +39,10 @@ import {TSRole} from '@kibon/shared/model/enums';
     standalone: false
 })
 export class StammdatenHeaderComponent implements OnInit {
+    private readonly $state = inject(StateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly gemeindeRS = inject(GemeindeRS);
+
     @ViewChild(NgForm) public form: NgForm;
     @Input() public preTitel: string;
     @Input() public titel: string;
@@ -51,12 +56,6 @@ export class StammdatenHeaderComponent implements OnInit {
 
     public logoImageUrl$: Observable<string>;
     private fileToUpload: File;
-
-    public constructor(
-        private readonly $state: StateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly gemeindeRS: GemeindeRS
-    ) {}
 
     public ngOnInit(): void {
         this.logoImageUrl$ = of(this.logoImageUrl);

@@ -2,7 +2,8 @@
     "extends": "../tsconfig.base.json",
     "compilerOptions": {
         "outDir": "../out-tsc/app",
-        "types": ["webpack-env"]
+        "types": ["webpack-env"],
+        "moduleResolution": "bundler"
     },
     "exclude": ["test.ts", "**/*.spec.ts", "hybridTools/*.ts"]
 }

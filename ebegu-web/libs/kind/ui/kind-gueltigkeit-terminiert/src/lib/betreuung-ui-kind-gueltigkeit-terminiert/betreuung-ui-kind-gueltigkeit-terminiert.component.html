@@ -53,16 +53,17 @@
                         [required]="true"
                         maxlength="4000"
                     ></textarea>
-                    <div
-                        class="dv-error-messages dv-gueltigkeitTerminiertKommentar"
-                        *ngIf="
-                            (gueltigkeitTerminiertKommentar.dirty ||
-                                gueltigkeitTerminiertKommentar.touched) &&
-                            gueltigkeitTerminiertKommentar.errors?.['required']
-                        "
-                    >
-                        {{ 'ERROR_REQUIRED' | translate }}
-                    </div>
+                    @if (
+                        (gueltigkeitTerminiertKommentar.dirty ||
+                            gueltigkeitTerminiertKommentar.touched) &&
+                        gueltigkeitTerminiertKommentar.errors?.['required']
+                    ) {
+                        <div
+                            class="dv-error-messages dv-gueltigkeitTerminiertKommentar"
+                        >
+                            {{ 'ERROR_REQUIRED' | translate }}
+                        </div>
+                    }
                 </dv-input-container-x>
             </div>
         </div>

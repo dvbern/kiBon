@@ -1,182 +1,67 @@
 <!--
-  ~ Copyright (C) 2022 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2022 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="gesuch-modul">
     <h1 class="access-for-all-title" translate>AFA_GESUCHSFORMULAR</h1>
-    <div
-        class="row view-title"
-        *ngIf="this.gesuchModelManager.getStammdatenToWorkWith()"
-    >
-        <div class="col-md-12">
-            <h2>
-                <span
-                    data-test="page-title"
-                    translate
-                    [translateParams]="{
-                        gesuchsteller: this.gesuchModelManager
-                            .getStammdatenToWorkWith()
-                            .extractFullName(),
-                        basisjahr:
-                            this.gesuchModelManager.getBasisjahrToWorkWith()
-                    }"
-                    >EKVI_EINKOMMENSVERSCHLECHTERUNG_FUER_BASISJAHR</span
-                >
-            </h2>
-            <hr class="header" />
-            <!-- Infotext -->
-            <p class="inline-hint">{{ 'EKV_SOLOTHURN_HINT' | translate }}</p>
-        </div>
-    </div>
-    <div class="row" *ngIf="this.gesuchModelManager.getStammdatenToWorkWith()">
-        <form role="form" #form="ngForm" novalidate>
+    @if (this.gesuchModelManager.getStammdatenToWorkWith()) {
+        <div class="row view-title">
             <div class="col-md-12">
-                <fieldset ngModelGroup="bruttolohn">
-                    <div class="row">
-                        <div class="col-sm-12 dv-input-container-medium">
-                            <div class="form-group">
-                                <dv-input-label-field
-                                    [name]="'bruttolohnAbrechnung1'"
-                                    [(model)]="
-                                        model.getEkvToWorkWith()
-                                            .bruttolohnAbrechnung1
-                                    "
-                                    [labelMessageKey]="
-                                        'BRUTTOLOHNE_ABRECHNUNG_1'
-                                    "
-                                    [inputDisabled]="readOnly"
-                                    [dvOnBlur]="onBruttoLohnChange"
-                                    [inputRequired]="true"
-                                    [showBisher]="
-                                        showBisher(model.getEkvToWorkWith_GS())
-                                    "
-                                    [deklaration]="
-                                        model.getEkvToWorkWith_GS()
-                                            ?.bruttolohnAbrechnung1
-                                    "
-                                    [korrektur]="
-                                        model.getEkvToWorkWith()
-                                            .bruttolohnAbrechnung1
-                                    "
-                                >
-                                </dv-input-label-field>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 dv-input-container-medium">
-                            <div class="form-group">
-                                <dv-input-label-field
-                                    [name]="'bruttolohnAbrechnung2'"
-                                    [(model)]="
-                                        model.getEkvToWorkWith()
-                                            .bruttolohnAbrechnung2
-                                    "
-                                    [labelMessageKey]="
-                                        'BRUTTOLOHNE_ABRECHNUNG_2'
-                                    "
-                                    [inputDisabled]="readOnly"
-                                    [dvOnBlur]="onBruttoLohnChange"
-                                    [inputRequired]="true"
-                                    [showBisher]="
-                                        showBisher(model.getEkvToWorkWith_GS())
-                                    "
-                                    [deklaration]="
-                                        model.getEkvToWorkWith_GS()
-                                            ?.bruttolohnAbrechnung2
-                                    "
-                                    [korrektur]="
-                                        model.getEkvToWorkWith()
-                                            .bruttolohnAbrechnung2
-                                    "
-                                >
-                                </dv-input-label-field>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 dv-input-container-medium">
-                            <div class="form-group">
-                                <dv-input-label-field
-                                    [name]="'bruttolohnAbrechnung3'"
-                                    [(model)]="
-                                        model.getEkvToWorkWith()
-                                            .bruttolohnAbrechnung3
-                                    "
-                                    [labelMessageKey]="
-                                        'BRUTTOLOHNE_ABRECHNUNG_3'
-                                    "
-                                    [inputDisabled]="readOnly"
-                                    [dvOnBlur]="onBruttoLohnChange"
-                                    [inputRequired]="true"
-                                    [showBisher]="
-                                        showBisher(model.getEkvToWorkWith_GS())
-                                    "
-                                    [deklaration]="
-                                        model.getEkvToWorkWith_GS()
-                                            ?.bruttolohnAbrechnung3
-                                    "
-                                    [korrektur]="
-                                        model.getEkvToWorkWith()
-                                            .bruttolohnAbrechnung3
-                                    "
-                                >
-                                </dv-input-label-field>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-12 dv-input-container-medium">
-                            <div class="form-group">
-                                <dv-radio-container-x>
-                                    <label
-                                        for="extraLohn_id"
-                                        class="required ebegu-h1"
-                                    >
-                                        {{ 'ANZAHL_LOHNE_FRAGE' | translate }}
-                                    </label>
-                                    <mat-radio-group
-                                        (change)="onBruttoLohnChange()"
-                                        [(ngModel)]="
-                                            model.getEkvToWorkWith().extraLohn
+                <h2>
+                    <span
+                        data-test="page-title"
+                        translate
+                        [translateParams]="{
+                            gesuchsteller: this.gesuchModelManager
+                                .getStammdatenToWorkWith()
+                                .extractFullName(),
+                            basisjahr:
+                                this.gesuchModelManager.getBasisjahrToWorkWith()
+                        }"
+                        >EKVI_EINKOMMENSVERSCHLECHTERUNG_FUER_BASISJAHR</span
+                    >
+                </h2>
+                <hr class="header" />
+                <!-- Infotext -->
+                <p class="inline-hint">
+                    {{ 'EKV_SOLOTHURN_HINT' | translate }}
+                </p>
+            </div>
+        </div>
+    }
+    @if (this.gesuchModelManager.getStammdatenToWorkWith()) {
+        <div class="row">
+            <form role="form" #form="ngForm" novalidate>
+                <div class="col-md-12">
+                    <fieldset ngModelGroup="bruttolohn">
+                        <div class="row">
+                            <div class="col-sm-12 dv-input-container-medium">
+                                <div class="form-group">
+                                    <dv-input-label-field
+                                        [name]="'bruttolohnAbrechnung1'"
+                                        [(model)]="
+                                            model.getEkvToWorkWith()
+                                                .bruttolohnAbrechnung1
                                         "
-                                        name="extraLohn"
-                                        id="extraLohn_id"
-                                        #extraLohn="ngModel"
-                                        [disabled]="readOnly"
-                                        required
-                                        data-test="extraLohn"
-                                    >
-                                        <mat-radio-button
-                                            [value]="false"
-                                            data-test="radio-value.ja"
-                                            >{{
-                                                'LABEL_12' | translate
-                                            }}</mat-radio-button
-                                        >
-                                        <mat-radio-button
-                                            [value]="true"
-                                            data-test="radio-value.nein"
-                                            >{{
-                                                'LABEL_13' | translate
-                                            }}</mat-radio-button
-                                        >
-                                    </mat-radio-group>
-                                    <dv-bisher-x
+                                        [labelMessageKey]="
+                                            'BRUTTOLOHNE_ABRECHNUNG_1'
+                                        "
+                                        [inputDisabled]="readOnly"
+                                        [dvOnBlur]="onBruttoLohnChange"
+                                        [inputRequired]="true"
                                         [showBisher]="
                                             showBisher(
                                                 model.getEkvToWorkWith_GS()
@@ -184,100 +69,227 @@
                                         "
                                         [deklaration]="
                                             model.getEkvToWorkWith_GS()
-                                                ?.extraLohn
+                                                ?.bruttolohnAbrechnung1
                                         "
                                         [korrektur]="
-                                            model.getEkvToWorkWith().extraLohn
-                                        "
-                                        [specificBisherText]="
-                                            getLabelExtralohn() | translate
+                                            model.getEkvToWorkWith()
+                                                .bruttolohnAbrechnung1
                                         "
                                     >
-                                    </dv-bisher-x>
-                                    <dv-error-messages
-                                        *ngIf="form.submitted"
-                                        [errorObject]="extraLohn.errors"
-                                        inputId="extraLohn_id"
-                                    >
-                                    </dv-error-messages>
-                                </dv-radio-container-x>
+                                    </dv-input-label-field>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </fieldset>
-
-                <div class="row">
-                    <div class="col-sm-6">
-                        <dv-input-label-field
-                            [model]="getBruttolohnJahr()"
-                            [labelMessageKey]="'EVK_BRUTTOLOHN_JAHR'"
-                            [tooltipMessageKey]="'EVK_BRUTTOLOHN_JAHR_HINT'"
-                            [labelMessageKeyArgs]="{
-                                basisjahr:
-                                    this.gesuchModelManager.getBasisjahrToWorkWith()
-                            }"
-                            [inputDisabled]="true"
-                            data-test="bruttoLohnJahr"
-                        >
-                        </dv-input-label-field>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-12 dv-input-container-medium">
-                        <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-12 dv-input-container-medium">
+                                <div class="form-group">
+                                    <dv-input-label-field
+                                        [name]="'bruttolohnAbrechnung2'"
+                                        [(model)]="
+                                            model.getEkvToWorkWith()
+                                                .bruttolohnAbrechnung2
+                                        "
+                                        [labelMessageKey]="
+                                            'BRUTTOLOHNE_ABRECHNUNG_2'
+                                        "
+                                        [inputDisabled]="readOnly"
+                                        [dvOnBlur]="onBruttoLohnChange"
+                                        [inputRequired]="true"
+                                        [showBisher]="
+                                            showBisher(
+                                                model.getEkvToWorkWith_GS()
+                                            )
+                                        "
+                                        [deklaration]="
+                                            model.getEkvToWorkWith_GS()
+                                                ?.bruttolohnAbrechnung2
+                                        "
+                                        [korrektur]="
+                                            model.getEkvToWorkWith()
+                                                .bruttolohnAbrechnung2
+                                        "
+                                    >
+                                    </dv-input-label-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 dv-input-container-medium">
+                                <div class="form-group">
+                                    <dv-input-label-field
+                                        [name]="'bruttolohnAbrechnung3'"
+                                        [(model)]="
+                                            model.getEkvToWorkWith()
+                                                .bruttolohnAbrechnung3
+                                        "
+                                        [labelMessageKey]="
+                                            'BRUTTOLOHNE_ABRECHNUNG_3'
+                                        "
+                                        [inputDisabled]="readOnly"
+                                        [dvOnBlur]="onBruttoLohnChange"
+                                        [inputRequired]="true"
+                                        [showBisher]="
+                                            showBisher(
+                                                model.getEkvToWorkWith_GS()
+                                            )
+                                        "
+                                        [deklaration]="
+                                            model.getEkvToWorkWith_GS()
+                                                ?.bruttolohnAbrechnung3
+                                        "
+                                        [korrektur]="
+                                            model.getEkvToWorkWith()
+                                                .bruttolohnAbrechnung3
+                                        "
+                                    >
+                                    </dv-input-label-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 dv-input-container-medium">
+                                <div class="form-group">
+                                    <dv-radio-container-x>
+                                        <label
+                                            for="extraLohn_id"
+                                            class="required ebegu-h1"
+                                        >
+                                            {{
+                                                'ANZAHL_LOHNE_FRAGE' | translate
+                                            }}
+                                        </label>
+                                        <mat-radio-group
+                                            (change)="onBruttoLohnChange()"
+                                            [(ngModel)]="
+                                                model.getEkvToWorkWith()
+                                                    .extraLohn
+                                            "
+                                            name="extraLohn"
+                                            id="extraLohn_id"
+                                            #extraLohn="ngModel"
+                                            [disabled]="readOnly"
+                                            required
+                                            data-test="extraLohn"
+                                        >
+                                            <mat-radio-button
+                                                [value]="false"
+                                                data-test="radio-value.ja"
+                                                >{{
+                                                    'LABEL_12' | translate
+                                                }}</mat-radio-button
+                                            >
+                                            <mat-radio-button
+                                                [value]="true"
+                                                data-test="radio-value.nein"
+                                                >{{
+                                                    'LABEL_13' | translate
+                                                }}</mat-radio-button
+                                            >
+                                        </mat-radio-group>
+                                        <dv-bisher-x
+                                            [showBisher]="
+                                                showBisher(
+                                                    model.getEkvToWorkWith_GS()
+                                                )
+                                            "
+                                            [deklaration]="
+                                                model.getEkvToWorkWith_GS()
+                                                    ?.extraLohn
+                                            "
+                                            [korrektur]="
+                                                model.getEkvToWorkWith()
+                                                    .extraLohn
+                                            "
+                                            [specificBisherText]="
+                                                getLabelExtralohn() | translate
+                                            "
+                                        >
+                                        </dv-bisher-x>
+                                        @if (form.submitted) {
+                                            <dv-error-messages
+                                                [errorObject]="extraLohn.errors"
+                                                inputId="extraLohn_id"
+                                            >
+                                            </dv-error-messages>
+                                        }
+                                    </dv-radio-container-x>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="row">
+                        <div class="col-sm-6">
                             <dv-input-label-field
-                                [name]="'nettoVermoegen'"
-                                [(model)]="
-                                    model.getEkvToWorkWith().nettoVermoegen
-                                "
-                                [labelMessageKey]="'NETTO_VERMOEGEN_STAND'"
-                                [labelMessageKeyArgs]="{year: getBasisjahr()}"
-                                [tooltipMessageKey]="
-                                    'NETTO_VERMOEGEN_STAND_HINT'
-                                "
-                                [inputDisabled]="readOnly"
-                                [dvOnBlur]="onValueChangeFunction"
-                                [inputRequired]="true"
-                                [showBisher]="
-                                    showBisher(model.getEkvToWorkWith_GS())
-                                "
-                                [deklaration]="
-                                    model.getEkvToWorkWith_GS()?.nettoVermoegen
-                                "
-                                [korrektur]="
-                                    model.getEkvToWorkWith().nettoVermoegen
-                                "
-                                data-test="nettoVermoegen"
+                                [model]="getBruttolohnJahr()"
+                                [labelMessageKey]="'EVK_BRUTTOLOHN_JAHR'"
+                                [tooltipMessageKey]="'EVK_BRUTTOLOHN_JAHR_HINT'"
+                                [labelMessageKeyArgs]="{
+                                    basisjahr:
+                                        this.gesuchModelManager.getBasisjahrToWorkWith()
+                                }"
+                                [inputDisabled]="true"
+                                data-test="bruttoLohnJahr"
                             >
                             </dv-input-label-field>
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-sm-6">
-                        <dv-input-label-field
-                            [model]="getMassgebendesEinkVorAbzFamGrGSX()"
-                            [labelMessageKey]="'EVK_EINKOMMEN_JAHR'"
-                            [labelMessageKeyArgs]="{
-                                basisjahr:
-                                    this.gesuchModelManager.getBasisjahrToWorkWith()
-                            }"
-                            [inputDisabled]="true"
-                            data-test="massgebendesEinkVorAbzFamGrGSX"
-                        >
-                        </dv-input-label-field>
+                    <div class="row">
+                        <div class="col-sm-12 dv-input-container-medium">
+                            <div class="form-group">
+                                <dv-input-label-field
+                                    [name]="'nettoVermoegen'"
+                                    [(model)]="
+                                        model.getEkvToWorkWith().nettoVermoegen
+                                    "
+                                    [labelMessageKey]="'NETTO_VERMOEGEN_STAND'"
+                                    [labelMessageKeyArgs]="{
+                                        year: getBasisjahr()
+                                    }"
+                                    [tooltipMessageKey]="
+                                        'NETTO_VERMOEGEN_STAND_HINT'
+                                    "
+                                    [inputDisabled]="readOnly"
+                                    [dvOnBlur]="onValueChangeFunction"
+                                    [inputRequired]="true"
+                                    [showBisher]="
+                                        showBisher(model.getEkvToWorkWith_GS())
+                                    "
+                                    [deklaration]="
+                                        model.getEkvToWorkWith_GS()
+                                            ?.nettoVermoegen
+                                    "
+                                    [korrektur]="
+                                        model.getEkvToWorkWith().nettoVermoegen
+                                    "
+                                    data-test="nettoVermoegen"
+                                >
+                                </dv-input-label-field>
+                            </div>
+                        </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <dv-input-label-field
+                                [model]="getMassgebendesEinkVorAbzFamGrGSX()"
+                                [labelMessageKey]="'EVK_EINKOMMEN_JAHR'"
+                                [labelMessageKeyArgs]="{
+                                    basisjahr:
+                                        this.gesuchModelManager.getBasisjahrToWorkWith()
+                                }"
+                                [inputDisabled]="true"
+                                data-test="massgebendesEinkVorAbzFamGrGSX"
+                            >
+                            </dv-input-label-field>
+                        </div>
+                    </div>
+                    <dv-navigation-x
+                        (dvSave)="save($event.onResult)"
+                        [dvPrevious]="true"
+                        [dvNext]="true"
+                        [dvSubStep]="3"
+                    ></dv-navigation-x>
                 </div>
-
-                <dv-navigation-x
-                    (dvSave)="save($event.onResult)"
-                    [dvPrevious]="true"
-                    [dvNext]="true"
-                    [dvSubStep]="3"
-                ></dv-navigation-x>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
+    }
 </div>

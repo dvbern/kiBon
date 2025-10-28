@@ -11,54 +11,7 @@
 
     <div class="row">
         <form role="form" class="col-md-12" #form="ngForm" novalidate>
-            <ng-container
-                *ngIf="hasMultipleFinSits(); then multipleGS; else oneGS"
-            ></ng-container>
-
-            <dv-navigation-x
-                (dvSave)="save($event.onResult)"
-                [dvPrevious]="true"
-                [dvNext]="true"
-                [dvSubStep]="4"
-            ></dv-navigation-x>
-
-            <ng-template #oneGS>
-                <div class="row margin-bottom-20">
-                    <div class="col-sm-6">
-                        <dv-input-label-field
-                            [model]="
-                                resultate?.finSitResultate
-                                    ?.massgebendesEinkVorAbzFamGr
-                            "
-                            [labelMessageKey]="
-                                'EKV_MASSGEBENDES_EINKOMMEN_FIN_SIT'
-                            "
-                            [inputDisabled]="true"
-                            data-test="massgebendesEinkommenVorher"
-                        >
-                        </dv-input-label-field>
-                        <dv-input-label-field
-                            [model]="
-                                resultate?.ekvResultate
-                                    ?.massgebendesEinkVorAbzFamGr
-                            "
-                            [labelMessageKey]="'EKV_MASSGEBENDES_EINKOMMEN'"
-                            [inputDisabled]="true"
-                            data-test="massgebendesEinkommenNachher"
-                        >
-                        </dv-input-label-field>
-                        <dv-input-label-field
-                            [model]="resultate?.veraenderung?.total"
-                            [labelMessageKey]="'EVK_IN_PROZENT'"
-                            [inputDisabled]="true"
-                            data-test="aenderungPercent"
-                        >
-                        </dv-input-label-field>
-                    </div>
-                </div>
-            </ng-template>
-
-            <ng-template #multipleGS>
+            @if (hasMultipleFinSits()) {
                 <div class="row">
                     <div class="col-sm-6 margin-bottom-20">
                         <dv-input-label-field
@@ -134,7 +87,48 @@
                         </dv-input-label-field>
                     </div>
                 </div>
-            </ng-template>
+            } @else {
+                <div class="row margin-bottom-20">
+                    <div class="col-sm-6">
+                        <dv-input-label-field
+                            [model]="
+                                resultate?.finSitResultate
+                                    ?.massgebendesEinkVorAbzFamGr
+                            "
+                            [labelMessageKey]="
+                                'EKV_MASSGEBENDES_EINKOMMEN_FIN_SIT'
+                            "
+                            [inputDisabled]="true"
+                            data-test="massgebendesEinkommenVorher"
+                        >
+                        </dv-input-label-field>
+                        <dv-input-label-field
+                            [model]="
+                                resultate?.ekvResultate
+                                    ?.massgebendesEinkVorAbzFamGr
+                            "
+                            [labelMessageKey]="'EKV_MASSGEBENDES_EINKOMMEN'"
+                            [inputDisabled]="true"
+                            data-test="massgebendesEinkommenNachher"
+                        >
+                        </dv-input-label-field>
+                        <dv-input-label-field
+                            [model]="resultate?.veraenderung?.total"
+                            [labelMessageKey]="'EVK_IN_PROZENT'"
+                            [inputDisabled]="true"
+                            data-test="aenderungPercent"
+                        >
+                        </dv-input-label-field>
+                    </div>
+                </div>
+            }
+
+            <dv-navigation-x
+                (dvSave)="save($event.onResult)"
+                [dvPrevious]="true"
+                [dvNext]="true"
+                [dvSubStep]="4"
+            ></dv-navigation-x>
         </form>
     </div>
 </div>

@@ -1,77 +1,83 @@
 <!--
-  ~ Copyright (C) 2020 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2020 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="kommentar-view">
-    <form *ngIf="form" role="form" [formGroup]="form" class="" layout="column">
-        <div class="kommentar-padding">
-            <div class="kommentarTop">
-                <div class="form-group kommentar-feld">
-                    <label class="md-no-float" for="kommmentar" translate
-                        >BEMERKUNGEN_INTERN</label
-                    >
-                    <textarea
-                        class="form-control"
-                        rows="10"
-                        id="kommmentar"
-                        maxlength="4000"
-                        formControlName="kommentar"
-                        (blur)="saveKommentar()"
-                    ></textarea>
-                    <dv-saving-info [saving$]="saving$"></dv-saving-info>
+    @if (form) {
+        <form role="form" [formGroup]="form" class="" layout="column">
+            <div class="kommentar-padding">
+                <div class="kommentarTop">
+                    <div class="form-group kommentar-feld">
+                        <label class="md-no-float" for="kommmentar" translate
+                            >BEMERKUNGEN_INTERN</label
+                        >
+                        <textarea
+                            class="form-control"
+                            rows="10"
+                            id="kommmentar"
+                            maxlength="4000"
+                            formControlName="kommentar"
+                            (blur)="saveKommentar()"
+                        ></textarea>
+                        <dv-saving-info [saving$]="saving$"></dv-saving-info>
+                    </div>
                 </div>
-            </div>
-            <div class="margin-top-30">
-                <button (click)="showVerlauf()" type="button" class="dv-btn">
-                    <span translate>VERLAUF_ANZEIGEN</span>
-                </button>
-            </div>
-            <div class="margin-top-30 verantwortlicher-view">
-                <div class="form-group">
-                    <mat-select
-                        [(ngModel)]="
-                            lATSAngabenGemeindeContainer.verantwortlicher
-                        "
-                        id="verantwortlicher"
-                        class="form-control"
-                        (selectionChange)="saveVerantwortlicher()"
-                        [ngModelOptions]="{standalone: true}"
-                        placeholder=" {{
-                            'VERANTWORTLICHER'
-                                | translate
-                                    : {name: getVerantwortlicherFullName()}
-                        }}"
+                <div class="margin-top-30">
+                    <button
+                        (click)="showVerlauf()"
+                        type="button"
+                        class="dv-btn"
                     >
-                        <mat-option [value]="undefined">
-                            {{
-                                'NO_VERANTWORTLICHER_SELECTED' | translate
-                            }}</mat-option
-                        >
-                        <mat-option
-                            *ngFor="let benutzer of userList"
-                            [value]="benutzer"
-                        >
-                            {{
+                        <span translate>VERLAUF_ANZEIGEN</span>
+                    </button>
+                </div>
+                <div class="margin-top-30 verantwortlicher-view">
+                    <div class="form-group">
+                        <mat-select
+                            [(ngModel)]="
+                                lATSAngabenGemeindeContainer.verantwortlicher
+                            "
+                            id="verantwortlicher"
+                            class="form-control"
+                            (selectionChange)="saveVerantwortlicher()"
+                            [ngModelOptions]="{standalone: true}"
+                            placeholder=" {{
                                 'VERANTWORTLICHER'
-                                    | translate: {name: benutzer.getFullName()}
-                            }}</mat-option
+                                    | translate
+                                        : {name: getVerantwortlicherFullName()}
+                            }}"
                         >
-                    </mat-select>
+                            <mat-option [value]="undefined">
+                                {{
+                                    'NO_VERANTWORTLICHER_SELECTED' | translate
+                                }}</mat-option
+                            >
+                            @for (benutzer of userList; track benutzer) {
+                                <mat-option [value]="benutzer">
+                                    {{
+                                        'VERANTWORTLICHER'
+                                            | translate
+                                                : {name: benutzer.getFullName()}
+                                    }}</mat-option
+                                >
+                            }
+                        </mat-select>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    }
 </div>

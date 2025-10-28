@@ -19,7 +19,8 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -37,18 +38,16 @@ import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
     standalone: false
 })
 export class TraegerschaftEditComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+    private readonly $state = inject(StateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly traegerschaftRS = inject(TraegerschaftRS);
+
     @ViewChild(NgForm) public form: NgForm;
 
     public traegerschaft$: Observable<TSTraegerschaft>;
     private traegerschaftId: string;
     private navigationSource: StateDeclaration;
-
-    public constructor(
-        private readonly $transition$: Transition,
-        private readonly $state: StateService,
-        private readonly errorService: ErrorService,
-        private readonly traegerschaftRS: TraegerschaftRS
-    ) {}
 
     public ngOnInit(): void {
         this.navigationSource = this.$transition$.from();

@@ -1,152 +1,157 @@
 <!--
-  ~ Copyright (C) 2023 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2023 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
-<div
-    *ngIf="
-        showWarningRetry() ||
-        showWarningWithoutRetry() ||
-        showZugriffKeineZPVNummer()
-    "
-    class="well well-status-warten minus-margin"
->
-    <p class="ebegu-h3" [innerHTML]="getWarningText()"></p>
-    <a
-        *ngIf="
+@if (
+    showWarningRetry() ||
+    showWarningWithoutRetry() ||
+    showZugriffKeineZPVNummer()
+) {
+    <div class="well well-status-warten minus-margin">
+        <p class="ebegu-h3" [innerHTML]="getWarningText()"></p>
+        @if (
             showWarningRetry() &&
             (isGesuchsteller() || showRetryForGemeinde()) &&
             !isGesuchReadonly()
-        "
-        class="pointer-cursor"
-        translate
-        (click)="tryAgain()"
-        >ERNEUT_VERSUCHEN</a
-    >
-    <a
-        *ngIf="
+        ) {
+            <a class="pointer-cursor" translate (click)="tryAgain()"
+                >ERNEUT_VERSUCHEN</a
+            >
+        }
+        @if (
             showZugriffKeineZPVNummer() &&
             isGesuchsteller() &&
             !isGesuchReadonly()
-        "
-        class="pointer-cursor"
-        translate
-        (click)="openDialogGSZPVVerknuepfen()"
-        >FINANZIELLE_SITUATION_STEUERDATEN_ZPV_VERKNUEPFEN_AUSLOESEN</a
-    >
-</div>
-
-<div
-    *ngIf="showZugriffErfolgreich(status)"
-    class="well well-status-bestaetigt minus-margin"
->
-    <!--    wir haben den timestamp erst später hinzugefügt. deshalb kann es sein, dass dieser leer ist-->
-    <p
-        class="ebegu-h3"
-        *ngIf="timestampAbruf"
-        [innerHTML]="
-            'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_ERFOLGREICH'
-                | translate
-                    : {
-                          timestamp: timestampAbruf | ebeguDateTime,
-                          veranlagungsstand: translateVeranlagungsstand()
-                      }
-        "
-    ></p>
-    <p
-        class="ebegu-h3"
-        *ngIf="!timestampAbruf"
-        [innerHTML]="
-            'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_ERFOLGREICH_WITHOUT_TIMESTAMP'
-                | translate: {veranlagungsstand: translateVeranlagungsstand()}
-        "
-    ></p>
-
-    <div
-        class="margin-bottom-20"
-        *ngIf="tryAgainPossible() && !steuerAbfrageRequestRunning"
-    >
-        <a class="pointer-cursor" translate (click)="tryAgain()"
-            >ERNEUT_VERSUCHEN</a
-        >
-        <dv-tooltip
-            class="black-font"
-            [text]="'ERNEUT_VERSUCHEN_HINT' | translate"
-        ></dv-tooltip>
+        ) {
+            <a
+                class="pointer-cursor"
+                translate
+                (click)="openDialogGSZPVVerknuepfen()"
+                >FINANZIELLE_SITUATION_STEUERDATEN_ZPV_VERKNUEPFEN_AUSLOESEN</a
+            >
+        }
     </div>
-    <div *ngIf="steuerAbfrageRequestRunning">
+}
+
+@if (showZugriffErfolgreich(status)) {
+    <div class="well well-status-bestaetigt minus-margin">
+        <!--    wir haben den timestamp erst später hinzugefügt. deshalb kann es sein, dass dieser leer ist-->
+        @if (timestampAbruf) {
+            <p
+                class="ebegu-h3"
+                [innerHTML]="
+                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_ERFOLGREICH'
+                        | translate
+                            : {
+                                  timestamp: timestampAbruf | ebeguDateTime,
+                                  veranlagungsstand:
+                                      translateVeranlagungsstand()
+                              }
+                "
+            ></p>
+        }
+        @if (!timestampAbruf) {
+            <p
+                class="ebegu-h3"
+                [innerHTML]="
+                    'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_ERFOLGREICH_WITHOUT_TIMESTAMP'
+                        | translate
+                            : {veranlagungsstand: translateVeranlagungsstand()}
+                "
+            ></p>
+        }
+        @if (tryAgainPossible() && !steuerAbfrageRequestRunning) {
+            <div class="margin-bottom-20">
+                <a class="pointer-cursor" translate (click)="tryAgain()"
+                    >ERNEUT_VERSUCHEN</a
+                >
+                <dv-tooltip
+                    class="black-font"
+                    [text]="'ERNEUT_VERSUCHEN_HINT' | translate"
+                ></dv-tooltip>
+            </div>
+        }
+        @if (steuerAbfrageRequestRunning) {
+            <div>
+                <p
+                    class="ebegu-h3 black-font"
+                    [innerHTML]="steuerAbfrageResponeHintStatusText"
+                ></p>
+            </div>
+        }
+        <p></p>
+        @if (checkboxInformierenPossible()) {
+            <div>
+                <dv-checkbox-x
+                    [dvBisherValue]="
+                        gesuchModelManager.getGesuch().markiertFuerKontroll
+                    "
+                    [label]="'CHECKBOX_MARKED_FUER_KONTROLL'"
+                    [(model)]="
+                        gesuchModelManager.getGesuch().markiertFuerKontroll
+                    "
+                    (modelChange)="
+                        gesuchModelManager.updateGesuchMarkiertFuerKontroll(
+                            $event
+                        )
+                    "
+                    [tooltip]="'CHECKBOX_MARKED_FUER_KONTROLL_INFO'"
+                ></dv-checkbox-x>
+            </div>
+        }
+    </div>
+}
+
+@if (showRetry()) {
+    <div class="well well-status-warten minus-margin">
         <p
-            class="ebegu-h3 black-font"
-            [innerHTML]="steuerAbfrageResponeHintStatusText"
+            class="ebegu-h3"
+            [innerHTML]="
+                'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_RETRY' | translate
+            "
         ></p>
+        <dv-loading-button
+            [buttonDisabled]="!isGesuchsteller() && !showRetryForGemeinde()"
+            type="button"
+            (buttonClick)="tryAgain()"
+        >
+            {{ 'STEUERDATEN_ABHOLEN' | translate }}
+        </dv-loading-button>
     </div>
-    <p></p>
+}
 
-    <div *ngIf="checkboxInformierenPossible()">
-        <dv-checkbox-x
-            [dvBisherValue]="
-                gesuchModelManager.getGesuch().markiertFuerKontroll
-            "
-            [label]="'CHECKBOX_MARKED_FUER_KONTROLL'"
-            [(model)]="gesuchModelManager.getGesuch().markiertFuerKontroll"
-            (modelChange)="
-                gesuchModelManager.updateGesuchMarkiertFuerKontroll($event)
-            "
-            [tooltip]="'CHECKBOX_MARKED_FUER_KONTROLL_INFO'"
-        ></dv-checkbox-x>
+@if (showWarningNeueVeranlagung()) {
+    <div class="well well-status-warten minus-margin">
+        <p class="ebegu-h3" translate>
+            FINANZIELLE_SITUATION_STEUERDATEN_NEUE_VERANLAGUNG_VORHANDEN
+        </p>
     </div>
-</div>
+}
+@if (showWarningNeueVeranlagungInStatusFreigegeben()) {
+    <div class="well well-status-warten minus-margin">
+        <p class="ebegu-h3" translate>
+            FINANZIELLE_SITUATION_STEUERDATEN_NEUE_VERANLAGUNG_VORHANDEN_FREIGABEQUITTUNG_PENDING
+        </p>
+    </div>
+}
 
-<div *ngIf="showRetry()" class="well well-status-warten minus-margin">
-    <p
-        class="ebegu-h3"
-        [innerHTML]="
-            'FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_RETRY' | translate
-        "
-    ></p>
-    <dv-loading-button
-        [buttonDisabled]="!isGesuchsteller() && !showRetryForGemeinde()"
-        type="button"
-        (buttonClick)="tryAgain()"
-    >
-        {{ 'STEUERDATEN_ABHOLEN' | translate }}
-    </dv-loading-button>
-</div>
-
-<div
-    *ngIf="showWarningNeueVeranlagung()"
-    class="well well-status-warten minus-margin"
->
-    <p class="ebegu-h3" translate>
-        FINANZIELLE_SITUATION_STEUERDATEN_NEUE_VERANLAGUNG_VORHANDEN
-    </p>
-</div>
-<div
-    *ngIf="showWarningNeueVeranlagungInStatusFreigegeben()"
-    class="well well-status-warten minus-margin"
->
-    <p class="ebegu-h3" translate>
-        FINANZIELLE_SITUATION_STEUERDATEN_NEUE_VERANLAGUNG_VORHANDEN_FREIGABEQUITTUNG_PENDING
-    </p>
-</div>
-
-<div
-    *ngIf="geburtstagNotMatching$ | async"
-    class="well well-status-warten minus-margin"
->
-    <p class="ebegu-h3" translate>
-        FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_WARNING_GEBURTSTDAUM_CHANGED
-    </p>
-</div>
+@if (geburtstagNotMatching$ | async) {
+    <div class="well well-status-warten minus-margin">
+        <p class="ebegu-h3" translate>
+            FINANZIELLE_SITUATION_STEUERDATEN_ZUGRIFF_WARNING_GEBURTSTDAUM_CHANGED
+        </p>
+    </div>
+}

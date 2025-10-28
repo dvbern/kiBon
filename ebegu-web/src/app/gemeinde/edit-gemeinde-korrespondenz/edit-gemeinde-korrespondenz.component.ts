@@ -20,7 +20,8 @@ import {
     Component,
     Input,
     OnInit,
-    signal
+    signal,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -41,17 +42,15 @@ import {TSMusterDokumentTyp} from '../../../models/enums/TSMusterDokumentTyp';
     standalone: false
 })
 export class EditGemeindeKorrespondenzComponent implements OnInit {
+    gemeindeRS = inject(GemeindeRS);
+    downloadRS = inject(DownloadRS);
+    einstellungRS = inject(EinstellungRS);
+    $translate = inject(TranslateService);
+
     @Input() public stammdaten$: Observable<TSGemeindeStammdaten>;
     @Input() public editMode: boolean;
 
     isOnlineFreigabeDeactivatedInAtLeastOnePeriode = signal<boolean>(false);
-
-    public constructor(
-        public gemeindeRS: GemeindeRS,
-        public downloadRS: DownloadRS,
-        public einstellungRS: EinstellungRS,
-        public $translate: TranslateService
-    ) {}
 
     public ngOnInit(): void {
         this.einstellungRS

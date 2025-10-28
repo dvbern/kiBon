@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {TSFinanzielleSituationResultateDTO} from '../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSFinanzModel} from '../../../../models/TSFinanzModel';
@@ -36,16 +36,14 @@ interface MassgebendesEinkommenVeraenderung {
     providedIn: 'root'
 })
 export class FinanzielleSituationSchwyzService {
+    private readonly berechnungsManager = inject(BerechnungsManager);
+
     private readonly _massgebendesEinkommenStore: BehaviorSubject<MassgebendesEinkommenResultate> =
         new BehaviorSubject({
             ekvResultate: null,
             finSitResultate: null,
             veraenderung: null
         });
-
-    public constructor(
-        private readonly berechnungsManager: BerechnungsManager
-    ) {}
 
     public get massgebendesEinkommenStore(): Observable<MassgebendesEinkommenResultate> {
         return this._massgebendesEinkommenStore.asObservable();

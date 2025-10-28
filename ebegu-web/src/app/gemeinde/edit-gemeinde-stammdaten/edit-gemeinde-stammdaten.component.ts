@@ -22,7 +22,8 @@ import {
     Input,
     OnDestroy,
     OnInit,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
@@ -51,6 +52,13 @@ const LOG = LogFactory.createLog('EditGemeindeStammdatenComponent');
     standalone: false
 })
 export class EditGemeindeStammdatenComponent implements OnInit, OnDestroy {
+    private readonly translate = inject(TranslateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly einstellungRS = inject(EinstellungRS);
+
     @Input() public stammdaten$: Observable<TSGemeindeStammdaten>;
     @Input() private readonly gemeindeId: string;
     @Input() public editMode: boolean;
@@ -79,13 +87,6 @@ export class EditGemeindeStammdatenComponent implements OnInit, OnDestroy {
 
     private readonly unsubscribe$ = new Subject<void>();
     public ebeguUtil = EbeguUtil;
-
-    public constructor(
-        private readonly translate: TranslateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly einstellungRS: EinstellungRS
-    ) {}
 
     public ngOnInit(): void {
         if (!this.gemeindeId) {

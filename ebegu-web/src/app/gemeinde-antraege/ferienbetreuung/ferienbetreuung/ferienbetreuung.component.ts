@@ -20,7 +20,8 @@ import {
     Component,
     Input,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Subscription} from 'rxjs';
@@ -43,6 +44,12 @@ const LOG = LogFactory.createLog('FerienbetreuungComponent');
     standalone: false
 })
 export class FerienbetreuungComponent implements OnInit, OnDestroy {
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly ferienbetreuungService = inject(FerienbetreuungService);
+    private readonly wizardStepXRS = inject(WizardStepXRS);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly translate = inject(TranslateService);
+
     @Input()
     public ferienbetreuungId: string;
 
@@ -50,14 +57,6 @@ export class FerienbetreuungComponent implements OnInit, OnDestroy {
     public ferienbetreuungContainer: TSFerienbetreuungAngabenContainer;
 
     private subscription: Subscription;
-
-    public constructor(
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly ferienbetreuungService: FerienbetreuungService,
-        private readonly wizardStepXRS: WizardStepXRS,
-        private readonly downloadRS: DownloadRS,
-        private readonly translate: TranslateService
-    ) {}
 
     public ngOnInit(): void {
         this.ferienbetreuungService.updateFerienbetreuungContainerStores(

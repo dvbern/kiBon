@@ -29,14 +29,14 @@
                                 required
                             >
                                 <option [ngValue]="null"></option>
-                                <option
-                                    *ngFor="
-                                        let gemeindeEntry of gemeindenList()
-                                    "
-                                    [ngValue]="gemeindeEntry"
-                                >
-                                    {{ gemeindeEntry.name }}
-                                </option>
+                                @for (
+                                    gemeindeEntry of gemeindenList();
+                                    track gemeindeEntry
+                                ) {
+                                    <option [ngValue]="gemeindeEntry">
+                                        {{ gemeindeEntry.name }}
+                                    </option>
+                                }
                             </select>
                             <dv-error-messages
                                 [errorObject]="gemeinde.errors"
@@ -87,35 +87,41 @@
                         ></dv-error-messages>
                     </div>
                 </div>
-                <div class="col-md-2" *ngIf="settings().testMode">
-                    <div class="form-group">
-                        <label
-                            class="md-no-float"
-                            for="datumGeneriertPicker"
-                            translate
-                            >ZAHLUNG_GENERIERT</label
-                        >
-                        <input
-                            class="dv-mat-datepicker"
-                            type="text"
-                            name="datumGeneriertPicker"
-                            id="datumGeneriertPicker"
-                            #datumGeneriert="ngModel"
-                            [(ngModel)]="model.datumGeneriert"
-                            [matDatepicker]="datumGeneriertPicker"
-                            placeholder="{{ 'DATE_PLACEHOLDER' | translate }}"
-                        />
-                        <mat-datepicker-toggle
-                            matSuffix
-                            [for]="datumGeneriertPicker"
-                        ></mat-datepicker-toggle>
-                        <mat-datepicker #datumGeneriertPicker></mat-datepicker>
-                        <dv-error-messages
-                            [errorObject]="datumGeneriert.errors"
-                            class="error"
-                        ></dv-error-messages>
+                @if (settings().testMode) {
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label
+                                class="md-no-float"
+                                for="datumGeneriertPicker"
+                                translate
+                                >ZAHLUNG_GENERIERT</label
+                            >
+                            <input
+                                class="dv-mat-datepicker"
+                                type="text"
+                                name="datumGeneriertPicker"
+                                id="datumGeneriertPicker"
+                                #datumGeneriert="ngModel"
+                                [(ngModel)]="model.datumGeneriert"
+                                [matDatepicker]="datumGeneriertPicker"
+                                placeholder="{{
+                                    'DATE_PLACEHOLDER' | translate
+                                }}"
+                            />
+                            <mat-datepicker-toggle
+                                matSuffix
+                                [for]="datumGeneriertPicker"
+                            ></mat-datepicker-toggle>
+                            <mat-datepicker
+                                #datumGeneriertPicker
+                            ></mat-datepicker>
+                            <dv-error-messages
+                                [errorObject]="datumGeneriert.errors"
+                                class="error"
+                            ></dv-error-messages>
+                        </div>
                     </div>
-                </div>
+                }
                 <div
                     [ngClass]="{
                         'col-md-4': !settings().testMode,
@@ -151,16 +157,15 @@
                         }}</span>
                     </dv-loading-button>
                 </div>
-                <div
-                    class="col-md-3"
-                    *ngIf="settings().checkboxAuszahlungInZukunft"
-                >
-                    <dv-checkbox-x
-                        [label]="'CHECKBOX_AUSZAHLUNG_IN_ZUKUNFT'"
-                        [(model)]="model.auszahlungInZukunft"
-                        [displayBisher]="false"
-                    ></dv-checkbox-x>
-                </div>
+                @if (settings().checkboxAuszahlungInZukunft) {
+                    <div class="col-md-3">
+                        <dv-checkbox-x
+                            [label]="'CHECKBOX_AUSZAHLUNG_IN_ZUKUNFT'"
+                            [(model)]="model.auszahlungInZukunft"
+                            [displayBisher]="false"
+                        ></dv-checkbox-x>
+                    </div>
+                }
             </div>
         </div>
     </div>

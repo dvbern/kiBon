@@ -1,9 +1,8 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
 
 @Component({
     selector: 'lib-gesuch-page-heading',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './gesuch-page-heading.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })

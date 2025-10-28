@@ -20,7 +20,8 @@ import {
     Component,
     EventEmitter,
     Input,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {MatRadioChange} from '@angular/material/radio';
@@ -37,15 +38,13 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
     standalone: false
 })
 export class SteuerveranlagungGemeinsamComponent {
+    gesuchModelManager = inject(GesuchModelManager);
+    private readonly $translate = inject(TranslateService);
+
     @Input() public model: TSFinanzModel;
 
     @Output() public readonly gemeinsamChanged =
         new EventEmitter<MatRadioChange>();
-
-    public constructor(
-        public gesuchModelManager: GesuchModelManager,
-        private readonly $translate: TranslateService
-    ) {}
 
     public change($event: MatRadioChange): void {
         this.gemeinsamChanged.emit($event);

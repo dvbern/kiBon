@@ -1,4 +1,3 @@
-import {CommonModule} from '@angular/common';
 import {Component, inject, Input, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {TSDateRange, TSGesuchsperiode} from '@kibon/shared/model/entity';
@@ -15,7 +14,7 @@ import {ErrorServiceX} from '../../../../../../src/app/core/errors/service/Error
 import {EbeguUtil} from '../../../../../../src/utils/EbeguUtil';
 
 @Component({
-    imports: [CommonModule, SharedModule],
+    imports: [SharedModule],
     templateUrl: 'open-tabellarische-maske-button.component.html',
     styleUrl: './open-tabellarische-maske-button.component.less'
 })

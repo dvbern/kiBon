@@ -18,7 +18,8 @@
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Component
+    Component,
+    inject
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Transition} from '@uirouter/core';
@@ -43,18 +44,25 @@ import {AbstractEinkommensverschlechterungResultat} from '../../AbstractEinkomme
     standalone: false
 })
 export class EinkommensverschlechterungAppenzellResultateViewComponent extends AbstractEinkommensverschlechterungResultat {
+    gesuchModelManager: GesuchModelManager;
+    protected wizardStepManager: WizardStepManager;
+    protected berechnungsManager: BerechnungsManager;
+    protected ref: ChangeDetectorRef;
+    protected readonly einstellungRS: EinstellungRS;
+    protected readonly $transition$: Transition;
+    private readonly translate = inject(TranslateService);
+
     public resultatBasisjahr?: TSFinanzielleSituationResultateDTO;
     public resultatProzent: string;
 
-    public constructor(
-        public gesuchModelManager: GesuchModelManager,
-        protected wizardStepManager: WizardStepManager,
-        protected berechnungsManager: BerechnungsManager,
-        protected ref: ChangeDetectorRef,
-        protected readonly einstellungRS: EinstellungRS,
-        protected readonly $transition$: Transition,
-        private readonly translate: TranslateService
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const wizardStepManager = inject(WizardStepManager);
+        const berechnungsManager = inject(BerechnungsManager);
+        const ref = inject(ChangeDetectorRef);
+        const einstellungRS = inject(EinstellungRS);
+        const $transition$ = inject(Transition);
+
         super(
             gesuchModelManager,
             wizardStepManager,
@@ -64,6 +72,13 @@ export class EinkommensverschlechterungAppenzellResultateViewComponent extends A
             einstellungRS,
             $transition$
         );
+
+        this.gesuchModelManager = gesuchModelManager;
+        this.wizardStepManager = wizardStepManager;
+        this.berechnungsManager = berechnungsManager;
+        this.ref = ref;
+        this.einstellungRS = einstellungRS;
+        this.$transition$ = $transition$;
     }
 
     public save(onResult: (arg: any) => any): IPromise<any> {

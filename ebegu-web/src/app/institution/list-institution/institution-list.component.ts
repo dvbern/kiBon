@@ -21,7 +21,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -55,6 +56,17 @@ export class InstitutionListComponent
     extends AbstractAdminViewX
     implements OnInit
 {
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly dialog = inject(MatDialog);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly $state = inject(StateService);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    public authServiceRS = inject(AuthServiceRS);
+
     private readonly log: Log = LogFactory.createLog(
         'InstitutionListComponent'
     );
@@ -71,17 +83,8 @@ export class InstitutionListComponent
     private angebotFIActivated: boolean;
     private angebotMittagstischActivated: boolean;
 
-    public constructor(
-        private readonly institutionRS: InstitutionRS,
-        private readonly dialog: MatDialog,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly $state: StateService,
-        authServiceRS: AuthServiceRS,
-        private readonly cd: ChangeDetectorRef,
-        private readonly gemeindeRS: GemeindeRS,
-        public readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
-    ) {
-        super(authServiceRS);
+    public constructor() {
+        super();
     }
 
     public ngOnInit(): void {

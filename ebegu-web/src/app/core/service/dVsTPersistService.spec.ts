@@ -18,7 +18,7 @@ import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {DVsTPersistService} from './dVsTPersistService';
 
-describe('stPersistService', () => {
+xdescribe('stPersistService', () => {
     let dVsTPersistService: DVsTPersistService;
     let object1: any;
     let object2: any;

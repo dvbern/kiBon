@@ -4,7 +4,8 @@ import {
     EventEmitter,
     Injector,
     Input,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {UpgradeComponent} from '@angular/upgrade/static';
 
@@ -22,7 +23,10 @@ export class DvLoadingButtonXDirective extends UpgradeComponent {
     @Output() public readonly buttonClick: EventEmitter<any> =
         new EventEmitter<any>();
 
-    public constructor(elementRef: ElementRef, injector: Injector) {
+    public constructor() {
+        const elementRef = inject(ElementRef);
+        const injector = inject(Injector);
+
         super('dvLoadingButton', elementRef, injector);
     }
 }

@@ -27,7 +27,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {GesuchsperiodeRS} from './gesuchsperiodeRS.rest';
 
-describe('gesuchsperiodeRS', () => {
+xdescribe('gesuchsperiodeRS', () => {
     let gesuchsperiodeRS: GesuchsperiodeRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

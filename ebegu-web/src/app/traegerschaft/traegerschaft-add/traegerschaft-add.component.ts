@@ -18,7 +18,8 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -39,6 +40,12 @@ import {TraegerschaftRS} from '../../core/service/traegerschaftRS.rest';
     standalone: false
 })
 export class TraegerschaftAddComponent implements OnInit {
+    private readonly $state = inject(StateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly traegerschaftRS = inject(TraegerschaftRS);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly dialog = inject(MatDialog);
+
     private readonly log: Log = LogFactory.createLog(
         'TraegerschaftAddComponent'
     );
@@ -49,14 +56,6 @@ export class TraegerschaftAddComponent implements OnInit {
 
     // this semaphore will prevent a navigation to be executed again until the process is not finished
     public isTransitionInProgress: boolean = false;
-
-    public constructor(
-        private readonly $state: StateService,
-        private readonly errorService: ErrorService,
-        private readonly traegerschaftRS: TraegerschaftRS,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly dialog: MatDialog
-    ) {}
 
     public ngOnInit(): void {
         this.traegerschaft = new TSTraegerschaft();

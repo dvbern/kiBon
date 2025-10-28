@@ -1,41 +1,40 @@
 <!--
-  ~ Copyright (C) 2023 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2023 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="familiensituation-view gesuch-modul static-position">
     <h1 class="access-for-all-title" translate>AFA_GESUCHSFORMULAR</h1>
     <div class="row view-title">
         <div class="col-md-12">
             <h2>
-                <span *ngIf="isMutation()" translate
-                    >MUTATION_FAMSITUATION_TITLE</span
-                >
-                <span data-test="page-title" *ngIf="!isMutation()" translate
-                    >FAMILIENSITUATION</span
-                >
+                @if (isMutation()) {
+                    <span translate>MUTATION_FAMSITUATION_TITLE</span>
+                }
+                @if (!isMutation()) {
+                    <span data-test="page-title" translate
+                        >FAMILIENSITUATION</span
+                    >
+                }
             </h2>
             <hr class="header" />
-            <p
-                *ngIf="showError()"
-                role="alert"
-                translate
-                class="dv-error-messages"
-            >
-                ERROR_DATUM_GESETZT_BEI_MUTATION
-            </p>
+            @if (showError()) {
+                <p role="alert" translate class="dv-error-messages">
+                    ERROR_DATUM_GESETZT_BEI_MUTATION
+                </p>
+            }
         </div>
     </div>
 
@@ -50,47 +49,49 @@
             >
                 <fieldset>
                     <!--Aenderung per-->
-                    <div class="row" *ngIf="isMutation()">
-                        <div class="col-md-12">
-                            <dv-input-container-x class="form-group">
-                                <div class="row">
-                                    <div
-                                        class="col-xs-12 dv-input-container-small"
-                                    >
-                                        <label
-                                            class="md-no-float"
-                                            translate=""
-                                            for="aenderungPer_ID"
-                                            >AENDERUNG_PER</label
+                    @if (isMutation()) {
+                        <div class="row">
+                            <div class="col-md-12">
+                                <dv-input-container-x class="form-group">
+                                    <div class="row">
+                                        <div
+                                            class="col-xs-12 dv-input-container-small"
                                         >
-                                        <dv-date-picker-x
-                                            [inputId]="'aenderungPer_ID'"
-                                            class="input-element"
-                                            [(date)]="
-                                                getFamiliensituation()
-                                                    .aenderungPer
-                                            "
-                                            (dateChange)="onDatumBlur()"
-                                            [datePickerEnabled]="false"
-                                            [disabled]="isGesuchReadonly()"
-                                        >
-                                        </dv-date-picker-x>
-                                        <dv-bisher-x
-                                            [showBisher]="showBisher()"
-                                            [deklaration]="
-                                                getFamiliensituationGS()
-                                                    ?.aenderungPer
-                                            "
-                                            [korrektur]="
-                                                getFamiliensituation()
-                                                    ?.aenderungPer
-                                            "
-                                        ></dv-bisher-x>
+                                            <label
+                                                class="md-no-float"
+                                                translate=""
+                                                for="aenderungPer_ID"
+                                                >AENDERUNG_PER</label
+                                            >
+                                            <dv-date-picker-x
+                                                [inputId]="'aenderungPer_ID'"
+                                                class="input-element"
+                                                [(date)]="
+                                                    getFamiliensituation()
+                                                        .aenderungPer
+                                                "
+                                                (dateChange)="onDatumBlur()"
+                                                [datePickerEnabled]="false"
+                                                [disabled]="isGesuchReadonly()"
+                                            >
+                                            </dv-date-picker-x>
+                                            <dv-bisher-x
+                                                [showBisher]="showBisher()"
+                                                [deklaration]="
+                                                    getFamiliensituationGS()
+                                                        ?.aenderungPer
+                                                "
+                                                [korrektur]="
+                                                    getFamiliensituation()
+                                                        ?.aenderungPer
+                                                "
+                                            ></dv-bisher-x>
+                                        </div>
                                     </div>
-                                </div>
-                            </dv-input-container-x>
+                                </dv-input-container-x>
+                            </div>
                         </div>
-                    </div>
+                    }
 
                     <!--Geteilte Obhut-->
                     <div class="row">
@@ -146,14 +147,13 @@
                                         >
                                     </mat-radio-group>
                                 </dv-radio-container-x>
-                                <dv-error-messages
-                                    *ngIf="
-                                        savedClicked || geteilteObhut.touched
-                                    "
-                                    [inputId]="'geteilteObhut'"
-                                    [errorObject]="geteilteObhut.errors"
-                                    class="error"
-                                ></dv-error-messages>
+                                @if (savedClicked || geteilteObhut.touched) {
+                                    <dv-error-messages
+                                        [inputId]="'geteilteObhut'"
+                                        [errorObject]="geteilteObhut.errors"
+                                        class="error"
+                                    ></dv-error-messages>
+                                }
                                 <dv-bisher-x
                                     [showBisher]="showBisher()"
                                     [deklaration]="
@@ -168,159 +168,161 @@
                     </div>
 
                     <!--Gemeinsamer Haushalt-->
-                    <div
-                        class="row"
-                        *ngIf="
-                            showGemeinsamerHausltMitObhutsberchtigterPersonFrage()
-                        "
-                    >
-                        <div class="col-xs-12 dv-input-container-question">
-                            <div class="form-group">
-                                <span class="ebegu-h1 required">
-                                    <span translate
-                                        >FAMILIEN_SITUATION_GEMEINSAMER_HAUSHALT</span
-                                    >
-                                    <dv-tooltip
-                                        [text]="
-                                            'FAMILIEN_SITUATION_GEMEINSAMER_HAUSHALT_HELP'
-                                                | translate
-                                        "
-                                    ></dv-tooltip>
-                                </span>
-                                <dv-radio-container-x>
-                                    <mat-radio-group
-                                        data-test="gemeinsamerHaushalt"
-                                        [(ngModel)]="
-                                            getFamiliensituation()
-                                                .gemeinsamerHaushaltMitObhutsberechtigterPerson
-                                        "
-                                        [required]="true"
-                                        (change)="
-                                            onGemeinsamerHausaltMitObhutsberechtigerPersionChange()
-                                        "
-                                        #gemeinsamerHaushalt="ngModel"
-                                        name="gemeinsamerHaushalt"
-                                        class="input-element sp"
-                                        [disabled]="
-                                            !(
-                                                isFamiliensituationEnabled() &&
-                                                isOneOfRoles(allowedRoles)
-                                            )
-                                        "
-                                        [attr.aria-label]="
-                                            'FAMILIEN_SITUATION_GEMEINSAMER_HAUSHALT'
-                                                | translate
-                                        "
-                                        aria-described-by="gemeinsamerHaushalt-error"
-                                    >
-                                        <mat-radio-button
-                                            data-test="radio-value.JA"
-                                            [value]="true"
-                                            >{{
-                                                'LABEL_JA' | translate
-                                            }}</mat-radio-button
+                    @if (
+                        showGemeinsamerHausltMitObhutsberchtigterPersonFrage()
+                    ) {
+                        <div class="row">
+                            <div class="col-xs-12 dv-input-container-question">
+                                <div class="form-group">
+                                    <span class="ebegu-h1 required">
+                                        <span translate
+                                            >FAMILIEN_SITUATION_GEMEINSAMER_HAUSHALT</span
                                         >
-                                        <mat-radio-button
-                                            data-test="radio-value.NEIN"
-                                            [value]="false"
-                                            >{{
-                                                'LABEL_NEIN' | translate
-                                            }}</mat-radio-button
+                                        <dv-tooltip
+                                            [text]="
+                                                'FAMILIEN_SITUATION_GEMEINSAMER_HAUSHALT_HELP'
+                                                    | translate
+                                            "
+                                        ></dv-tooltip>
+                                    </span>
+                                    <dv-radio-container-x>
+                                        <mat-radio-group
+                                            data-test="gemeinsamerHaushalt"
+                                            [(ngModel)]="
+                                                getFamiliensituation()
+                                                    .gemeinsamerHaushaltMitObhutsberechtigterPerson
+                                            "
+                                            [required]="true"
+                                            (change)="
+                                                onGemeinsamerHausaltMitObhutsberechtigerPersionChange()
+                                            "
+                                            #gemeinsamerHaushalt="ngModel"
+                                            name="gemeinsamerHaushalt"
+                                            class="input-element sp"
+                                            [disabled]="
+                                                !(
+                                                    isFamiliensituationEnabled() &&
+                                                    isOneOfRoles(allowedRoles)
+                                                )
+                                            "
+                                            [attr.aria-label]="
+                                                'FAMILIEN_SITUATION_GEMEINSAMER_HAUSHALT'
+                                                    | translate
+                                            "
+                                            aria-described-by="gemeinsamerHaushalt-error"
                                         >
-                                    </mat-radio-group>
-                                </dv-radio-container-x>
-                                <dv-error-messages
-                                    *ngIf="
+                                            <mat-radio-button
+                                                data-test="radio-value.JA"
+                                                [value]="true"
+                                                >{{
+                                                    'LABEL_JA' | translate
+                                                }}</mat-radio-button
+                                            >
+                                            <mat-radio-button
+                                                data-test="radio-value.NEIN"
+                                                [value]="false"
+                                                >{{
+                                                    'LABEL_NEIN' | translate
+                                                }}</mat-radio-button
+                                            >
+                                        </mat-radio-group>
+                                    </dv-radio-container-x>
+                                    @if (
                                         savedClicked ||
                                         gemeinsamerHaushalt.touched
-                                    "
-                                    [inputId]="'gemeinsamerHaushalt'"
-                                    [errorObject]="gemeinsamerHaushalt.errors"
-                                    class="error"
-                                ></dv-error-messages>
-                                <dv-bisher-x
-                                    [showBisher]="showBisher()"
-                                    [deklaration]="
-                                        getFamiliensituationGS()
-                                            ?.gemeinsamerHaushaltMitObhutsberechtigterPerson
-                                    "
-                                    [korrektur]="
-                                        getFamiliensituation()
-                                            ?.gemeinsamerHaushaltMitObhutsberechtigterPerson
-                                    "
-                                ></dv-bisher-x>
+                                    ) {
+                                        <dv-error-messages
+                                            [inputId]="'gemeinsamerHaushalt'"
+                                            [errorObject]="
+                                                gemeinsamerHaushalt.errors
+                                            "
+                                            class="error"
+                                        ></dv-error-messages>
+                                    }
+                                    <dv-bisher-x
+                                        [showBisher]="showBisher()"
+                                        [deklaration]="
+                                            getFamiliensituationGS()
+                                                ?.gemeinsamerHaushaltMitObhutsberechtigterPerson
+                                        "
+                                        [korrektur]="
+                                            getFamiliensituation()
+                                                ?.gemeinsamerHaushaltMitObhutsberechtigterPerson
+                                        "
+                                    ></dv-bisher-x>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
 
                     <!--Verheiratet-->
-                    <div
-                        class="row"
-                        *ngIf="showGemeinsamerHausltMitPartnerFrage()"
-                    >
-                        <div class="col-xs-12 dv-input-container-question">
-                            <div class="form-group">
-                                <span class="ebegu-h1 required">
-                                    <span translate
-                                        >FAMILIEN_SITUATION_VERHEIRATET</span
-                                    >
-                                    <dv-tooltip
-                                        [text]="
-                                            'FAMILIEN_SITUATION_VERHEIRATET_HELP'
-                                                | translate
+                    @if (showGemeinsamerHausltMitPartnerFrage()) {
+                        <div class="row">
+                            <div class="col-xs-12 dv-input-container-question">
+                                <div class="form-group">
+                                    <span class="ebegu-h1 required">
+                                        <span translate
+                                            >FAMILIEN_SITUATION_VERHEIRATET</span
+                                        >
+                                        <dv-tooltip
+                                            [text]="
+                                                'FAMILIEN_SITUATION_VERHEIRATET_HELP'
+                                                    | translate
+                                            "
+                                        ></dv-tooltip>
+                                    </span>
+                                    <dv-radio-container-x>
+                                        <mat-radio-group
+                                            [(ngModel)]="
+                                                getFamiliensituation()
+                                                    .gemeinsamerHaushaltMitPartner
+                                            "
+                                            [required]="true"
+                                            #verheiratet="ngModel"
+                                            name="verheiratet"
+                                            class="input-element sp"
+                                            [disabled]="
+                                                !(
+                                                    isFamiliensituationEnabled() &&
+                                                    isOneOfRoles(allowedRoles)
+                                                )
+                                            "
+                                            [attr.aria-label]="
+                                                'FAMILIEN_SITUATION_VERHEIRATET'
+                                                    | translate
+                                            "
+                                            aria-described-by="verheiratet-error"
+                                        >
+                                            <mat-radio-button [value]="true">{{
+                                                'LABEL_JA' | translate
+                                            }}</mat-radio-button>
+                                            <mat-radio-button [value]="false">{{
+                                                'LABEL_NEIN' | translate
+                                            }}</mat-radio-button>
+                                        </mat-radio-group>
+                                    </dv-radio-container-x>
+                                    @if (savedClicked || verheiratet.touched) {
+                                        <dv-error-messages
+                                            [inputId]="'verheiratet'"
+                                            [errorObject]="verheiratet.errors"
+                                            class="error"
+                                        ></dv-error-messages>
+                                    }
+                                    <dv-bisher-x
+                                        [showBisher]="showBisher()"
+                                        [deklaration]="
+                                            getFamiliensituationGS()
+                                                ?.gemeinsamerHaushaltMitPartner
                                         "
-                                    ></dv-tooltip>
-                                </span>
-                                <dv-radio-container-x>
-                                    <mat-radio-group
-                                        [(ngModel)]="
+                                        [korrektur]="
                                             getFamiliensituation()
-                                                .gemeinsamerHaushaltMitPartner
+                                                ?.gemeinsamerHaushaltMitPartner
                                         "
-                                        [required]="true"
-                                        #verheiratet="ngModel"
-                                        name="verheiratet"
-                                        class="input-element sp"
-                                        [disabled]="
-                                            !(
-                                                isFamiliensituationEnabled() &&
-                                                isOneOfRoles(allowedRoles)
-                                            )
-                                        "
-                                        [attr.aria-label]="
-                                            'FAMILIEN_SITUATION_VERHEIRATET'
-                                                | translate
-                                        "
-                                        aria-described-by="verheiratet-error"
-                                    >
-                                        <mat-radio-button [value]="true">{{
-                                            'LABEL_JA' | translate
-                                        }}</mat-radio-button>
-                                        <mat-radio-button [value]="false">{{
-                                            'LABEL_NEIN' | translate
-                                        }}</mat-radio-button>
-                                    </mat-radio-group>
-                                </dv-radio-container-x>
-                                <dv-error-messages
-                                    *ngIf="savedClicked || verheiratet.touched"
-                                    [inputId]="'verheiratet'"
-                                    [errorObject]="verheiratet.errors"
-                                    class="error"
-                                ></dv-error-messages>
-                                <dv-bisher-x
-                                    [showBisher]="showBisher()"
-                                    [deklaration]="
-                                        getFamiliensituationGS()
-                                            ?.gemeinsamerHaushaltMitPartner
-                                    "
-                                    [korrektur]="
-                                        getFamiliensituation()
-                                            ?.gemeinsamerHaushaltMitPartner
-                                    "
-                                ></dv-bisher-x>
+                                    ></dv-bisher-x>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </fieldset>
 
                 <div class="row">

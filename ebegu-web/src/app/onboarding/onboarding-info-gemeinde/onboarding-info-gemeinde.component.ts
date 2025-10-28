@@ -19,7 +19,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
@@ -42,6 +43,17 @@ import {MandantService} from '@kibon/shared-util-mandant-service';
     standalone: false
 })
 export class OnboardingInfoGemeindeComponent implements OnInit {
+    private readonly onboardingPlaceholderService = inject(
+        OnboardingPlaceholderService
+    );
+    private readonly translate = inject(TranslateService);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly mandantService = inject(MandantService);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly cd = inject(ChangeDetectorRef);
+
     private readonly description1: string = 'ONBOARDING_GEMEINDE_DESC1';
     private readonly description2: string = 'ONBOARDING_GEMEINDE_DESC2';
     private readonly description3: string = 'ONBOARDING_GEMEINDE_DESC3';
@@ -55,14 +67,7 @@ export class OnboardingInfoGemeindeComponent implements OnInit {
     public gemeinde?: TSBfsGemeinde;
     public isTSEnabled: boolean;
 
-    public constructor(
-        private readonly onboardingPlaceholderService: OnboardingPlaceholderService,
-        private readonly translate: TranslateService,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly mandantService: MandantService,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly cd: ChangeDetectorRef
-    ) {
+    public constructor() {
         this.gemeinden$ = from(this.gemeindeRS.getAllBfsGemeinden()).pipe(
             map(bfsGemeinden => {
                 bfsGemeinden.sort(EbeguUtil.compareByName);

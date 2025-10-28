@@ -15,7 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    inject
+} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSRole} from '@kibon/shared/model/enums';
@@ -30,17 +36,15 @@ import {TSZahlungsstatusIconLabel} from './TSZahlungsstatusIconLabel';
     standalone: false
 })
 export class ZahlungsstatusIconComponent implements OnInit {
+    private readonly translate = inject(TranslateService);
+    private readonly authService = inject(AuthServiceRS);
+
     @Input()
     public zahlungsstatus: TSVerfuegungZeitabschnittZahlungsstatus;
 
     @Input()
     public isBetreuungGueltig: boolean;
     public iconLabel: TSZahlungsstatusIconLabel;
-
-    public constructor(
-        private readonly translate: TranslateService,
-        private readonly authService: AuthServiceRS
-    ) {}
 
     public ngOnInit(): void {
         this.iconLabel = new TSZahlungsstatusIconLabel(

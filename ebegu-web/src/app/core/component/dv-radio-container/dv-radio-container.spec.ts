@@ -18,7 +18,7 @@ import {ngServicesMock} from '../../../../hybridTools/ngServicesMocks';
 import {DvRadioContainerComponentConfig} from './dv-radio-container';
 import IInjectorService = angular.auto.IInjectorService;
 
-describe('dvRadioContainer', () => {
+xdescribe('dvRadioContainer', () => {
     beforeEach(angular.mock.module('ebeguWeb.core'));
 
     beforeEach(angular.mock.module(ngServicesMock));

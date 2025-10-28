@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {WizardStepManager} from '../../../../../../src/gesuch/service/wizardStepManager';
 
@@ -6,7 +6,7 @@ import {WizardStepManager} from '../../../../../../src/gesuch/service/wizardStep
     providedIn: 'root'
 })
 export class SharedUtilDvShowWarningAngabenVervollstaendingenService {
-    constructor(private wizardStepManager: WizardStepManager) {}
+    private wizardStepManager = inject(WizardStepManager);
 
     public showWarningAngabenVervollstaendigen(): boolean {
         if (

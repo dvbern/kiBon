@@ -23,16 +23,14 @@ import {
     HttpRequest,
     HttpResponse
 } from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {catchError, filter, finalize} from 'rxjs/operators';
 import {HttpPendingService} from '../../services/http-pending.service';
 
 @Injectable()
 export class HttpPendingInterceptor implements HttpInterceptor {
-    public constructor(
-        private readonly httpPendingService: HttpPendingService
-    ) {}
+    private readonly httpPendingService = inject(HttpPendingService);
 
     public intercept(
         request: HttpRequest<unknown>,

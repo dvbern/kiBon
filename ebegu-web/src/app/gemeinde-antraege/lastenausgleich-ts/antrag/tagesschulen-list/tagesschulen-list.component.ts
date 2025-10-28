@@ -20,7 +20,8 @@ import {
     Component,
     Input,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService} from '@uirouter/core';
@@ -55,6 +56,16 @@ const LOG = LogFactory.createLog('TagesschulenListComponent');
     standalone: false
 })
 export class TagesschulenListComponent implements OnInit {
+    private readonly tagesschuleAngabenService = inject(TagesschuleAngabenRS);
+    private readonly lastenausgleichTSService = inject(
+        LastenausgleichTSService
+    );
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly translate = inject(TranslateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly $state = inject(StateService);
+    private readonly authService = inject(AuthServiceRS);
+
     @Input() public lastenausgleichId: string;
 
     public data: {
@@ -66,16 +77,6 @@ export class TagesschulenListComponent implements OnInit {
     private latsHistory$: Subject<
         TSLastenausgleichTagesschulenStatusHistory[]
     > = new ReplaySubject(1);
-
-    public constructor(
-        private readonly tagesschuleAngabenService: TagesschuleAngabenRS,
-        private readonly lastenausgleichTSService: LastenausgleichTSService,
-        private readonly cd: ChangeDetectorRef,
-        private readonly translate: TranslateService,
-        private readonly errorService: ErrorService,
-        private readonly $state: StateService,
-        private readonly authService: AuthServiceRS
-    ) {}
 
     private static areKontrollfragenOk(
         latsInstitutionContainer: TSLastenausgleichTagesschuleAngabenInstitutionContainer

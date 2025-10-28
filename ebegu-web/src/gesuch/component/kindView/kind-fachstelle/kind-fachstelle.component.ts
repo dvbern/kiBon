@@ -9,7 +9,8 @@ import {
     OnInit,
     Output,
     SimpleChanges,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
@@ -48,6 +49,11 @@ const LOG = LogFactory.createLog('KindFachstelleComponennt');
 export class KindFachstelleComponent
     implements OnInit, OnChanges, AfterViewInit, OnDestroy
 {
+    private readonly einstellungRS = inject(EinstellungRS);
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly authService = inject(AuthServiceRS);
+    private readonly formBridgeService = inject(HybridFormBridgeService);
+
     @Input()
     public pensumFachstelle: TSPensumFachstelle;
 
@@ -78,13 +84,6 @@ export class KindFachstelleComponent
         TSGruendeZusatzleistung
     );
     public readonly PATTERN_PERCENTAGE = CONSTANTS.PATTERN_PERCENTAGE;
-
-    public constructor(
-        private readonly einstellungRS: EinstellungRS,
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly authService: AuthServiceRS,
-        private readonly formBridgeService: HybridFormBridgeService
-    ) {}
 
     public ngOnInit(): void {
         this.einstellungRS

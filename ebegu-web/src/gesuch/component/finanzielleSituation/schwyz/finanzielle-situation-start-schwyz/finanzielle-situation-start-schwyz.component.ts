@@ -2,7 +2,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {MatRadioChange} from '@angular/material/radio';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -31,6 +32,16 @@ export class FinanzielleSituationStartSchwyzComponent
     extends AbstractGesuchViewX<TSFinanzModel>
     implements OnInit
 {
+    protected ref = inject(ChangeDetectorRef);
+    protected readonly gesuchModelManager: GesuchModelManager;
+    private readonly finanzielleSituationSchwyzService = inject(
+        FinanzielleSituationSchwyzService
+    );
+    private readonly wizardstepManager: WizardStepManager;
+    protected dvShowWarningAngabenVervollstaendigenService = inject(
+        SharedUtilDvShowWarningAngabenVervollstaendingenService
+    );
+
     public hasMultipleGS = false;
 
     private finSitGS1JAToRestore: TSFinanzielleSituation;
@@ -38,18 +49,18 @@ export class FinanzielleSituationStartSchwyzComponent
 
     public resultate?: TSFinanzielleSituationResultateDTO;
 
-    public constructor(
-        protected ref: ChangeDetectorRef,
-        protected readonly gesuchModelManager: GesuchModelManager,
-        private readonly finanzielleSituationSchwyzService: FinanzielleSituationSchwyzService,
-        private readonly wizardstepManager: WizardStepManager,
-        protected dvShowWarningAngabenVervollstaendigenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const wizardstepManager = inject(WizardStepManager);
+
         super(
             gesuchModelManager,
             wizardstepManager,
             TSWizardStepName.FINANZIELLE_SITUATION_SCHWYZ
         );
+
+        this.gesuchModelManager = gesuchModelManager;
+        this.wizardstepManager = wizardstepManager;
     }
 
     public ngOnInit(): void {

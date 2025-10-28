@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     Input,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
@@ -41,6 +42,12 @@ const LOG = LogFactory.createLog('SelbstdeklarationComponent');
     standalone: false
 })
 export class SelbstdeklarationComponent implements OnInit {
+    private readonly finSitLuService = inject(
+        FinanzielleSituationLuzernService
+    );
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly ref = inject(ChangeDetectorRef);
+
     @Input()
     public antragstellerNummer: number; // antragsteller 1 or 2
 
@@ -72,12 +79,6 @@ export class SelbstdeklarationComponent implements OnInit {
     public isQuellenbesteuert: boolean = false;
 
     public resultate: TSFinanzielleSituationResultateDTO;
-
-    public constructor(
-        private readonly finSitLuService: FinanzielleSituationLuzernService,
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly ref: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         if (!this.model.selbstdeklaration) {

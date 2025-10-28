@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Directive, ElementRef, Injector, Input} from '@angular/core';
+import {Directive, ElementRef, Injector, Input, inject} from '@angular/core';
 import {UpgradeComponent} from '@angular/upgrade/static';
 
 @Directive({
@@ -26,7 +26,10 @@ export class TooltipDirective extends UpgradeComponent {
     @Input() public inputId: string;
     @Input() public text: string;
 
-    public constructor(elementRef: ElementRef, injector: Injector) {
+    public constructor() {
+        const elementRef = inject(ElementRef);
+        const injector = inject(Injector);
+
         super('dvTooltip', elementRef, injector);
     }
 }

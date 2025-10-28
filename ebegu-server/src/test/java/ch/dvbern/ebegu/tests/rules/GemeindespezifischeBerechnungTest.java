@@ -22,6 +22,7 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.Taetigkeit;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungComparator;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.finanzielleSituationRechner.FinanzielleSituationBernRechner;
 import ch.dvbern.ebegu.rechner.AbstractBGRechnerTest;
@@ -474,6 +475,8 @@ public class GemeindespezifischeBerechnungTest extends AbstractBGRechnerTest {
 			.setValue(String.valueOf(minEwpEingeschult));
 		einstellungenGemeinde.get(EinstellungKey.ERWERBSPENSUM_ZUSCHLAG)
 			.setValue(String.valueOf(zuschlagEWP));
+		einstellungenGemeinde.get(EinstellungKey.BETREUUNG_COMPARATOR)
+			.setValue(String.valueOf(BetreuungComparator.DEFAULT));
 		return einstellungenGemeinde;
 	}
 

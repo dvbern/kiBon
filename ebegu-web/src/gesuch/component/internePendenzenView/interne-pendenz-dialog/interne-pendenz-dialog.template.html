@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2021 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2021 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 <form
     role="form"
     #form="ngForm"
@@ -22,57 +22,61 @@
     novalidate
 >
     <mat-dialog-content>
-        <div *ngIf="internePendenz">
-            <h2 translate *ngIf="!isNew() && readonlyMode">PENDENZ</h2>
-            <h2 translate *ngIf="!isNew() && !readonlyMode">
-                PENDENZ_BEARBEITEN
-            </h2>
-            <h2 translate *ngIf="isNew()">PENDENZ_ERSTELLEN</h2>
-            <dv-date-picker-x
-                id="termin_id"
-                [label]="'TERMIN'"
-                [(date)]="internePendenz.termin"
-                [datePickerEnabled]="true"
-                [disabled]="readonlyMode"
-                [required]="true"
-                [minDate]="getMinDateTermin()"
-                class="margin-top-20"
-            >
-            </dv-date-picker-x>
-
-            <div class="form-group">
-                <label class="md-no-float" translate for="text_id"
-                    >PENDENZ</label
-                >
-                <textarea
-                    name="text"
-                    class="form-control"
-                    rows="5"
-                    #text="ngModel"
-                    id="text_id"
-                    required
+        @if (internePendenz) {
+            <div>
+                @if (!isNew() && readonlyMode) {
+                    <h2 translate>PENDENZ</h2>
+                }
+                @if (!isNew() && !readonlyMode) {
+                    <h2 translate>PENDENZ_BEARBEITEN</h2>
+                }
+                @if (isNew()) {
+                    <h2 translate>PENDENZ_ERSTELLEN</h2>
+                }
+                <dv-date-picker-x
+                    id="termin_id"
+                    [label]="'TERMIN'"
+                    [(date)]="internePendenz.termin"
+                    [datePickerEnabled]="true"
                     [disabled]="readonlyMode"
-                    [(ngModel)]="internePendenz.text"
-                    maxlength="4000"
+                    [required]="true"
+                    [minDate]="getMinDateTermin()"
+                    class="margin-top-20"
                 >
-                </textarea>
-                <dv-error-messages
-                    input-id="text_id"
-                    [errorObject]="text.errors"
-                >
-                </dv-error-messages>
+                </dv-date-picker-x>
+                <div class="form-group">
+                    <label class="md-no-float" translate for="text_id"
+                        >PENDENZ</label
+                    >
+                    <textarea
+                        name="text"
+                        class="form-control"
+                        rows="5"
+                        #text="ngModel"
+                        id="text_id"
+                        required
+                        [disabled]="readonlyMode"
+                        [(ngModel)]="internePendenz.text"
+                        maxlength="4000"
+                    >
+                    </textarea>
+                    <dv-error-messages
+                        input-id="text_id"
+                        [errorObject]="text.errors"
+                    >
+                    </dv-error-messages>
+                </div>
+                <div class="form-group">
+                    <mat-checkbox
+                        id="erledigt_id"
+                        name="erledigt_name"
+                        [(ngModel)]="internePendenz.erledigt"
+                    >
+                        {{ 'PENDENZ_ERLEDIGT_CHECKBOX' | translate }}
+                    </mat-checkbox>
+                </div>
             </div>
-
-            <div class="form-group">
-                <mat-checkbox
-                    id="erledigt_id"
-                    name="erledigt_name"
-                    [(ngModel)]="internePendenz.erledigt"
-                >
-                    {{ 'PENDENZ_ERLEDIGT_CHECKBOX' | translate }}
-                </mat-checkbox>
-            </div>
-        </div>
+        }
     </mat-dialog-content>
 
     <mat-dialog-actions>
@@ -82,13 +86,14 @@
                 class="dv-btn"
                 [textContent]="'OK' | translate"
             ></button>
-            <button
-                type="button"
-                class="dv-btn"
-                [textContent]="'BEARBEITEN' | translate"
-                *ngIf="readonlyMode"
-                (click)="readonlyMode = false"
-            ></button>
+            @if (readonlyMode) {
+                <button
+                    type="button"
+                    class="dv-btn"
+                    [textContent]="'BEARBEITEN' | translate"
+                    (click)="readonlyMode = false"
+                ></button>
+            }
             <button
                 type="button"
                 class="dv-btn cancel-button"

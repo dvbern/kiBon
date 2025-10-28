@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+
 import {
     MAT_DIALOG_DATA,
     MatDialogActions,
@@ -18,20 +18,22 @@ export interface GesuchUiMutationDialogData {
 
 @Component({
     selector: 'lib-gesuch-ui-mutation-dialog',
-    imports: [CommonModule, MatDialogActions, MatDialogTitle, TranslateModule],
+    imports: [MatDialogActions, MatDialogTitle, TranslateModule],
     templateUrl: './gesuch-ui-mutation-dialog.component.html',
     styleUrl: './gesuch-ui-mutation-dialog.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GesuchUiMutationDialogComponent {
+    private readonly $translate = inject(TranslateService);
+    private readonly dialogRef =
+        inject<MatDialogRef<GesuchUiMutationDialogComponent>>(MatDialogRef);
+    private readonly data = inject<GesuchUiMutationDialogData>(MAT_DIALOG_DATA);
+
     public readonly text: string;
 
-    public constructor(
-        private readonly $translate: TranslateService,
-        private readonly dialogRef: MatDialogRef<GesuchUiMutationDialogComponent>,
-        @Inject(MAT_DIALOG_DATA)
-        private readonly data: GesuchUiMutationDialogData
-    ) {
+    public constructor() {
+        const data = this.data;
+
         if (
             EbeguUtil.isNullOrUndefined(this.data) ||
             EbeguUtil.isNullOrUndefined(data.periode)

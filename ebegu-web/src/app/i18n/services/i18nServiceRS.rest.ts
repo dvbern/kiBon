@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy, inject} from '@angular/core';
 import {DateAdapter} from '@angular/material/core';
 import {TranslateService} from '@ngx-translate/core';
 import {combineLatest, ReplaySubject, Subject} from 'rxjs';
@@ -43,6 +43,12 @@ const suffix = `.json?t=${Date.now()}`;
     providedIn: 'root'
 })
 export class I18nServiceRSRest implements OnDestroy {
+    private readonly translate = inject(TranslateService);
+    private readonly $window = inject(WindowRef);
+    private readonly dateAdapter = inject<DateAdapter<any>>(DateAdapter);
+    private readonly gemeindeService = inject(GemeindeService);
+    private readonly mandantService = inject(MandantService);
+
     public serviceURL: string;
     public static readonly LOCALE_SEPARATOR = '_';
     private $translate: ITranslateService; // will be removed in KIBON-2962
@@ -50,13 +56,7 @@ export class I18nServiceRSRest implements OnDestroy {
     private readonly unsubscribe$ = new Subject<void>();
     private readonly selectedLanguage$ = new ReplaySubject<string>(1);
 
-    public constructor(
-        private readonly translate: TranslateService,
-        private readonly $window: WindowRef,
-        private readonly dateAdapter: DateAdapter<any>,
-        private readonly gemeindeService: GemeindeService,
-        private readonly mandantService: MandantService
-    ) {
+    public constructor() {
         this.serviceURL = `${CONSTANTS.REST_API}i18n`;
         this.selectedLanguage$.next(this.extractPreferredLanguage());
     }

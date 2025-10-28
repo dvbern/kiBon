@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TransitionService} from '@uirouter/core';
@@ -10,12 +10,12 @@ import {DvNgBackDialogComponent} from '../../core/component/dv-ng-back-dialog/dv
     providedIn: 'root'
 })
 export class UnsavedChangesService {
+    private readonly $transition = inject(TransitionService);
+    private readonly dialog = inject(MatDialog);
+
     private formGroup: FormGroup;
 
-    public constructor(
-        private readonly $transition: TransitionService,
-        private readonly dialog: MatDialog
-    ) {
+    public constructor() {
         this.$transition.onStart({}, async () =>
             this.checkUnsavedChanges().then(userAccepted => {
                 if (userAccepted) {

@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -57,6 +58,17 @@ export class FerienbetreuungKostenEinnahmenComponent
     extends AbstractFerienbetreuungFormular
     implements OnInit, OnDestroy
 {
+    protected readonly cd: ChangeDetectorRef;
+    protected readonly errorService: ErrorService;
+    protected readonly translate: TranslateService;
+    protected readonly dialog: MatDialog;
+    protected readonly wizardRS: WizardStepXRS;
+    protected readonly uiRouterGlobals: UIRouterGlobals;
+    private readonly ferienbetreuungService = inject(FerienbetreuungService);
+    private readonly fb = inject(FormBuilder);
+    private readonly authService = inject(AuthServiceRS);
+    private readonly unsavedChangesService = inject(UnsavedChangesService);
+
     private kostenEinnahmen: TSFerienbetreuungAngabenKostenEinnahmen;
     private readonly unsubscribe$ = new Subject<void>();
     public vorgaenger$: Observable<TSFerienbetreuungAngabenContainer>;
@@ -77,19 +89,22 @@ export class FerienbetreuungKostenEinnahmenComponent
         eigenleistungenGemeinde: [<null | number>null]
     });
 
-    public constructor(
-        protected readonly cd: ChangeDetectorRef,
-        protected readonly errorService: ErrorService,
-        protected readonly translate: TranslateService,
-        protected readonly dialog: MatDialog,
-        protected readonly wizardRS: WizardStepXRS,
-        protected readonly uiRouterGlobals: UIRouterGlobals,
-        private readonly ferienbetreuungService: FerienbetreuungService,
-        private readonly fb: FormBuilder,
-        private readonly authService: AuthServiceRS,
-        private readonly unsavedChangesService: UnsavedChangesService
-    ) {
+    public constructor() {
+        const cd = inject(ChangeDetectorRef);
+        const errorService = inject(ErrorService);
+        const translate = inject(TranslateService);
+        const dialog = inject(MatDialog);
+        const wizardRS = inject(WizardStepXRS);
+        const uiRouterGlobals = inject(UIRouterGlobals);
+
         super(errorService, translate, dialog, cd, wizardRS, uiRouterGlobals);
+
+        this.cd = cd;
+        this.errorService = errorService;
+        this.translate = translate;
+        this.dialog = dialog;
+        this.wizardRS = wizardRS;
+        this.uiRouterGlobals = uiRouterGlobals;
     }
 
     public ngOnInit(): void {

@@ -25,7 +25,8 @@ import {
     OnInit,
     Output,
     SimpleChanges,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
@@ -42,6 +43,8 @@ import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
     standalone: false
 })
 export class DvSearchListComponent implements OnInit, OnChanges, AfterViewInit {
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     /**
      * Emits when the user clicks on a row
      */
@@ -81,8 +84,6 @@ export class DvSearchListComponent implements OnInit, OnChanges, AfterViewInit {
 
     @ViewChild(MatSort, {static: true}) public sort: MatSort;
     @ViewChild(MatPaginator, {static: true}) public paginator: MatPaginator;
-
-    public constructor(private readonly changeDetectorRef: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
         this.initTable();

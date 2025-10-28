@@ -6,7 +6,8 @@ import {
     OnChanges,
     OnInit,
     Output,
-    SimpleChanges
+    SimpleChanges,
+    inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatSort, Sort, SortDirection} from '@angular/material/sort';
@@ -24,6 +25,8 @@ import {firstValueFrom} from 'rxjs';
     standalone: false
 })
 export class InternePendenzenTableComponent implements OnInit, OnChanges {
+    private readonly dialog = inject(MatDialog);
+
     @Input()
     public internePendenzen: TSInternePendenz[] = [];
 
@@ -41,7 +44,7 @@ export class InternePendenzenTableComponent implements OnInit, OnChanges {
 
     private currentSort: Sort = new MatSort();
 
-    public constructor(private readonly dialog: MatDialog) {
+    public constructor() {
         this.datasource = new MatTableDataSource<TSInternePendenz>(
             this.internePendenzen
         );

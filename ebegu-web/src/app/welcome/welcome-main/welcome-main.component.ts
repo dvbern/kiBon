@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {StateService} from '@uirouter/core';
 import {map} from 'rxjs/operators';
 import {MandantLogoNameVisitor} from '@kibon/shared-model-mandant';
@@ -37,12 +37,10 @@ import {KiBonGuidedTourService} from '../../kibonTour/service/KiBonGuidedTourSer
     standalone: false
 })
 export class WelcomeMainComponent {
-    public constructor(
-        private readonly authServiceRs: AuthServiceRS,
-        private readonly $state: StateService,
-        private readonly kibonGuidedTourService: KiBonGuidedTourService,
-        private readonly mandantService: MandantService
-    ) {}
+    private readonly authServiceRs = inject(AuthServiceRS);
+    private readonly $state = inject(StateService);
+    private readonly kibonGuidedTourService = inject(KiBonGuidedTourService);
+    private readonly mandantService = inject(MandantService);
 
     logoUrl$ = this.mandantService.mandant$.pipe(
         map(mandant => {

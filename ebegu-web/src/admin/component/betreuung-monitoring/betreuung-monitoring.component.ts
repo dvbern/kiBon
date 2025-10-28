@@ -4,7 +4,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
@@ -22,6 +23,9 @@ import {BetreuungMonitoringRS} from '../../service/betreuungMonitoringRS.rest';
     standalone: false
 })
 export class BetreuungMonitoringComponent implements OnInit, AfterViewInit {
+    private readonly betreuungMonitoringRS = inject(BetreuungMonitoringRS);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     public displayedColumns: string[] = [
         'refNummer',
         'benutzer',
@@ -41,11 +45,6 @@ export class BetreuungMonitoringComponent implements OnInit, AfterViewInit {
     private readonly MIN_REF_NUMMER_SIZE = 17;
     private keyupTimeout: NodeJS.Timeout;
     private readonly timeoutMS = 700;
-
-    public constructor(
-        private readonly betreuungMonitoringRS: BetreuungMonitoringRS,
-        private readonly changeDetectorRef: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         this.passFilterToServer();

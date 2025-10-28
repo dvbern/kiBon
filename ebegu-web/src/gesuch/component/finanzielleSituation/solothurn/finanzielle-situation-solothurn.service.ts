@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {TSFinanzielleSituationResultateDTO} from '../../../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSFinanzModel} from '../../../../models/TSFinanzModel';
@@ -26,12 +26,10 @@ import {GesuchModelManager} from '../../../service/gesuchModelManager';
     providedIn: 'root'
 })
 export class FinanzielleSituationSolothurnService {
+    private readonly berechnungsManager = inject(BerechnungsManager);
+
     private readonly _massgebendesEinkommenStore: Subject<TSFinanzielleSituationResultateDTO> =
         new ReplaySubject(1);
-
-    public constructor(
-        private readonly berechnungsManager: BerechnungsManager
-    ) {}
 
     public static finSitIsGemeinsam(
         gesuchModelManager: GesuchModelManager

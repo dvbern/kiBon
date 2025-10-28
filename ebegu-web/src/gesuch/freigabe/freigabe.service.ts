@@ -16,7 +16,7 @@
  *
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {TSAntragStatus} from '../../models/enums/TSAntragStatus';
 import {TSSozialdienstFallStatus} from '../../models/enums/TSSozialdienstFallStatus';
 import {TSWizardStepName} from '@kibon/shared/model/enums';
@@ -27,10 +27,8 @@ import {WizardStepManager} from '../service/wizardStepManager';
     providedIn: 'root'
 })
 export class FreigabeService {
-    public constructor(
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly wizardStepManager: WizardStepManager
-    ) {}
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly wizardStepManager = inject(WizardStepManager);
 
     /**
      * Die Methodes wizardStepManager.areAllStepsOK() erlaubt dass die Betreuungen in Status PLATZBESTAETIGUNG sind

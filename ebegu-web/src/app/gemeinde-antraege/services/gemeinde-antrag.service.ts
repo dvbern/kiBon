@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {CONSTANTS} from '@kibon/shared/model/constants';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -37,13 +37,11 @@ const LOG = LogFactory.createLog('GemeindeAntragService');
     providedIn: 'root'
 })
 export class GemeindeAntragService {
+    private readonly http = inject(HttpClient);
+    private readonly authServiceRS = inject(AuthServiceRS);
+
     private readonly API_BASE_URL = `${CONSTANTS.REST_API}gemeindeantrag`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(
-        private readonly http: HttpClient,
-        private readonly authServiceRS: AuthServiceRS
-    ) {}
 
     public getGemeindeAntraege(
         filter: DVAntragListFilter,

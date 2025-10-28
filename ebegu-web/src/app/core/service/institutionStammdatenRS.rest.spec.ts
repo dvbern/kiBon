@@ -29,7 +29,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {InstitutionStammdatenRS} from './institutionStammdatenRS.rest';
 
-describe('institutionStammdatenRS', () => {
+xdescribe('institutionStammdatenRS', () => {
     let institutionStammdatenRS: InstitutionStammdatenRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

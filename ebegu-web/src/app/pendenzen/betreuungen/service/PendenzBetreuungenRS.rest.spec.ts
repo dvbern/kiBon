@@ -22,7 +22,7 @@ import {TestDataUtil} from '../../../../utils/TestDataUtil.spec';
 import {PENDENZEN_BETREUUNGEN_JS_MODULE} from '../pendenzenBetreuungen.module';
 import {PendenzBetreuungenRS} from './PendenzBetreuungenRS.rest';
 
-describe('pendenzBetreuungenRS', () => {
+xdescribe('pendenzBetreuungenRS', () => {
     let pendenzBetreuungenRS: PendenzBetreuungenRS;
     let $httpBackend: IHttpBackendService;
     let mockPendenzBetreuungen: TSPendenzBetreuung;

@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2023 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2023 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="gesuch-modul">
     <h1 class="access-for-all-title" translate>AFA_GESUCHSFORMULAR</h1>
@@ -32,81 +32,95 @@
             <hr class="header" />
         </div>
     </div>
-    <div
-        *ngIf="
-            dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
-        "
-        class="well well-status-warten"
-    >
-        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-        <span translate>WARNUNG_GS2_AUSFUELLEN</span>
-    </div>
-    <div
-        *ngIf="
-            !dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
-        "
-    >
-        <form #form="ngForm" class="gesuch">
-            <dv-finanzielle-situation-require-x
-                class="finsit-exception"
-                [hideVerguenstigungGewunscht]="true"
-                [disabled]="readonly"
-                [(sozialhilfeBezueger)]="
-                    model.familienSituation.sozialhilfeBezueger
-                "
-                (sozialhilfeBezuegerChange)="
-                    onSozialhilfeBezuegerChange($event)
-                "
-            >
-            </dv-finanzielle-situation-require-x>
-            <div *ngIf="finanzielleSituationRequired && !isGemeinsam()">
-                <dv-steuerveranlagung-erhalten
-                    [model]="getModel()"
-                    (steuerveranlagungErhaltenChange)="
-                        steuerveranlagungErhaltenChange($event)
+    @if (
+        dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
+    ) {
+        <div class="well well-status-warten">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            <span translate>WARNUNG_GS2_AUSFUELLEN</span>
+        </div>
+    }
+    @if (
+        !dvShowWarningAngabenVervollstaendigenService.showWarningAngabenVervollstaendigen()
+    ) {
+        <div>
+            <form #form="ngForm" class="gesuch">
+                <dv-finanzielle-situation-require-x
+                    class="finsit-exception"
+                    [hideVerguenstigungGewunscht]="true"
+                    [disabled]="readonly"
+                    [(sozialhilfeBezueger)]="
+                        model.familienSituation.sozialhilfeBezueger
                     "
-                ></dv-steuerveranlagung-erhalten>
-                <div *ngIf="isSelbststaendigErwerbendAnswered()">
-                    <dv-veranlagung-solothurn
-                        *ngIf="hasSteuerveranlagungErhalten()"
-                        [model]="getModel()"
-                        [dvValueChange]="onValueChangeFunction"
-                        [readOnly]="gesuchModelManager.isGesuchReadonly()"
-                    ></dv-veranlagung-solothurn>
-                    <dv-bruttolohn
-                        *ngIf="!hasSteuerveranlagungErhalten()"
-                        [model]="getModel()"
-                        [dvValueChange]="onValueChangeFunction"
-                    ></dv-bruttolohn>
-                    <dv-massgebendes-einkommen
-                        [massgebendesEinkommen$]="getMassgebendesEinkommen$()"
-                        [nameGS1]="extractFullNameGS1()"
-                        [nameGS2]="extractFullNameGS2()"
-                        [isGemeinsam]="isGemeinsam()"
-                        [antragstellerNummer]="getAntragstellerNummer()"
-                    >
-                    </dv-massgebendes-einkommen>
-                </div>
-            </div>
-            <div *ngIf="finanzielleSituationRequired && isGemeinsam()">
-                <dv-steuerveranlagung-gemeinsam
-                    [model]="model"
-                ></dv-steuerveranlagung-gemeinsam>
-                <dv-steuerveranlagung-erhalten
-                    *ngIf="isSteuerveranlagungGemeinsam()"
-                    (steuerveranlagungErhaltenChange)="
-                        steuerveranlagungErhaltenChange($event)
+                    (sozialhilfeBezuegerChange)="
+                        onSozialhilfeBezuegerChange($event)
                     "
-                    [model]="getModel()"
-                ></dv-steuerveranlagung-erhalten>
-            </div>
-            <dv-navigation-x
-                (dvSave)="prepareSave($event.onResult)"
-                [dvNext]="true"
-                [dvPrevious]="true"
-                [dvSubStep]="getSubStepIndex()"
-                [dvSubStepName]="getSubStepName()"
-            ></dv-navigation-x>
-        </form>
-    </div>
+                >
+                </dv-finanzielle-situation-require-x>
+                @if (finanzielleSituationRequired && !isGemeinsam()) {
+                    <div>
+                        <dv-steuerveranlagung-erhalten
+                            [model]="getModel()"
+                            (steuerveranlagungErhaltenChange)="
+                                steuerveranlagungErhaltenChange($event)
+                            "
+                        ></dv-steuerveranlagung-erhalten>
+                        @if (isSelbststaendigErwerbendAnswered()) {
+                            <div>
+                                @if (hasSteuerveranlagungErhalten()) {
+                                    <dv-veranlagung-solothurn
+                                        [model]="getModel()"
+                                        [dvValueChange]="onValueChangeFunction"
+                                        [readOnly]="
+                                            gesuchModelManager.isGesuchReadonly()
+                                        "
+                                    ></dv-veranlagung-solothurn>
+                                }
+                                @if (!hasSteuerveranlagungErhalten()) {
+                                    <dv-bruttolohn
+                                        [model]="getModel()"
+                                        [dvValueChange]="onValueChangeFunction"
+                                    ></dv-bruttolohn>
+                                }
+                                <dv-massgebendes-einkommen
+                                    [massgebendesEinkommen$]="
+                                        getMassgebendesEinkommen$()
+                                    "
+                                    [nameGS1]="extractFullNameGS1()"
+                                    [nameGS2]="extractFullNameGS2()"
+                                    [isGemeinsam]="isGemeinsam()"
+                                    [antragstellerNummer]="
+                                        getAntragstellerNummer()
+                                    "
+                                >
+                                </dv-massgebendes-einkommen>
+                            </div>
+                        }
+                    </div>
+                }
+                @if (finanzielleSituationRequired && isGemeinsam()) {
+                    <div>
+                        <dv-steuerveranlagung-gemeinsam
+                            [model]="model"
+                        ></dv-steuerveranlagung-gemeinsam>
+                        @if (isSteuerveranlagungGemeinsam()) {
+                            <dv-steuerveranlagung-erhalten
+                                (steuerveranlagungErhaltenChange)="
+                                    steuerveranlagungErhaltenChange($event)
+                                "
+                                [model]="getModel()"
+                            ></dv-steuerveranlagung-erhalten>
+                        }
+                    </div>
+                }
+                <dv-navigation-x
+                    (dvSave)="prepareSave($event.onResult)"
+                    [dvNext]="true"
+                    [dvPrevious]="true"
+                    [dvSubStep]="getSubStepIndex()"
+                    [dvSubStepName]="getSubStepName()"
+                ></dv-navigation-x>
+            </form>
+        </div>
+    }
 </div>

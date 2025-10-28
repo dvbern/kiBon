@@ -3,7 +3,8 @@ import {
     Component,
     EventEmitter,
     Input,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {TSFinanzielleSituationContainer} from '../../../../../models/TSFinanzielleSituationContainer';
@@ -18,13 +19,13 @@ import {GesuchModelManager} from '../../../../service/gesuchModelManager';
     standalone: false
 })
 export class SteuerveranlagungErhaltenComponent {
+    gesuchModelManager = inject(GesuchModelManager);
+
     @Input() public model: TSFinanzielleSituationContainer;
 
     @Output()
     public readonly steuerveranlagungErhaltenChange: EventEmitter<boolean> =
         new EventEmitter<boolean>();
-
-    public constructor(public gesuchModelManager: GesuchModelManager) {}
 
     public isGesuchReadonly(): boolean {
         return this.gesuchModelManager.isGesuchReadonly();

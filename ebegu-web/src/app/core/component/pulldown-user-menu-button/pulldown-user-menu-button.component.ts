@@ -21,7 +21,8 @@ import {
     EventEmitter,
     Input,
     OnChanges,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {StateService} from '@uirouter/core';
 import {TSRole} from '@kibon/shared/model/enums';
@@ -35,6 +36,8 @@ import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
     standalone: false
 })
 export class PulldownUserMenuButtonComponent implements OnChanges {
+    private readonly stateService = inject(StateService);
+
     @Input()
     public allowedRoles: ReadonlyArray<TSRole>;
 
@@ -49,8 +52,6 @@ export class PulldownUserMenuButtonComponent implements OnChanges {
 
     public allRoles = TSRoleUtil.getAllRoles();
     public href: string;
-
-    public constructor(private readonly stateService: StateService) {}
 
     public ngOnChanges(): void {
         this.href = this.stateService.href(this.uiSRef);

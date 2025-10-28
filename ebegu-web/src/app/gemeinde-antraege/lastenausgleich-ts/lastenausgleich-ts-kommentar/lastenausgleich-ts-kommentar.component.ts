@@ -21,7 +21,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -44,6 +45,15 @@ const LOG = LogFactory.createLog('LastenausgleichTsKommentarComponent');
     standalone: false
 })
 export class LastenausgleichTsKommentarComponent implements OnInit, OnDestroy {
+    private readonly lastenausgleichTSService = inject(
+        LastenausgleichTSService
+    );
+    private readonly ref = inject(ChangeDetectorRef);
+    private readonly errorService = inject(ErrorService);
+    private readonly translate = inject(TranslateService);
+    private readonly $state = inject(StateService);
+    private readonly benutzerRS = inject(BenutzerRSX);
+
     public lATSAngabenGemeindeContainer: TSLastenausgleichTagesschuleAngabenGemeindeContainer;
     public form: FormGroup;
     private kommentarControl: FormControl;
@@ -51,15 +61,6 @@ export class LastenausgleichTsKommentarComponent implements OnInit, OnDestroy {
     private subscription: Subscription;
 
     public userList: Array<TSBenutzerNoDetails>;
-
-    public constructor(
-        private readonly lastenausgleichTSService: LastenausgleichTSService,
-        private readonly ref: ChangeDetectorRef,
-        private readonly errorService: ErrorService,
-        private readonly translate: TranslateService,
-        private readonly $state: StateService,
-        private readonly benutzerRS: BenutzerRSX
-    ) {}
 
     public ngOnInit(): void {
         this.subscription = this.lastenausgleichTSService

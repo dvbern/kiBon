@@ -2,7 +2,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
@@ -30,21 +31,29 @@ export class EinkommensverschlechterungSchwyzResultateComponent
     extends AbstractGesuchViewX<TSFinanzModel>
     implements OnInit
 {
+    protected readonly gesuchmodelManager: GesuchModelManager;
+    protected readonly wizardstepManager: WizardStepManager;
+    private readonly finanzielleSituationSchwyzService = inject(
+        FinanzielleSituationSchwyzService
+    );
+    private readonly cd = inject(ChangeDetectorRef);
+
     public resultate?: MassgebendesEinkommenResultate;
 
     private readonly BASISJAHR = 1;
 
-    public constructor(
-        protected readonly gesuchmodelManager: GesuchModelManager,
-        protected readonly wizardstepManager: WizardStepManager,
-        private readonly finanzielleSituationSchwyzService: FinanzielleSituationSchwyzService,
-        private readonly cd: ChangeDetectorRef
-    ) {
+    public constructor() {
+        const gesuchmodelManager = inject(GesuchModelManager);
+        const wizardstepManager = inject(WizardStepManager);
+
         super(
             gesuchmodelManager,
             wizardstepManager,
             TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG_SCHWYZ
         );
+
+        this.gesuchmodelManager = gesuchmodelManager;
+        this.wizardstepManager = wizardstepManager;
     }
 
     public ngOnInit(): void {

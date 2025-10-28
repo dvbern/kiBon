@@ -1,59 +1,62 @@
 <!--
-  ~ Copyright (C) 2019 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2019 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
-<div class="dv-content" *ngIf="stammdaten$ | async as stammdaten">
-    <div *ngIf="editMode; else viewModeTemplate">
-        <div class="row">
-            <!-- Anmeldungen akzeptieren ab -->
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <h3 translate>FI_START</h3>
-                    <p>{{ fiAnmeldungenStartStr }}</p>
-                </div>
-            </div>
-        </div>
-        <fieldset ngModelGroup="dv-edit-gemeinde-fi">
-            <dv-gemeinde-fi-konfiguration
-                [konfigurationsListe]="stammdaten.konfigurationsListe"
-                [gemeindeStatus]="stammdaten.gemeinde.status"
-                [editMode]="editMode"
-                [fiAnmeldungenStartDatum]="fiAnmeldungenStartDatum"
-            >
-            </dv-gemeinde-fi-konfiguration>
-        </fieldset>
-    </div>
-    <ng-template #viewModeTemplate>
-        <fieldset>
-            <div class="row">
-                <!-- Anmeldungen akzeptieren ab -->
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <h3 translate>FI_START</h3>
-                        <p>{{ fiAnmeldungenStartStr }}</p>
+@if (stammdaten$ | async; as stammdaten) {
+    <div class="dv-content">
+        @if (editMode) {
+            <div>
+                <div class="row">
+                    <!-- Anmeldungen akzeptieren ab -->
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <h3 translate>FI_START</h3>
+                            <p>{{ fiAnmeldungenStartStr }}</p>
+                        </div>
                     </div>
                 </div>
+                <fieldset ngModelGroup="dv-edit-gemeinde-fi">
+                    <dv-gemeinde-fi-konfiguration
+                        [konfigurationsListe]="stammdaten.konfigurationsListe"
+                        [gemeindeStatus]="stammdaten.gemeinde.status"
+                        [editMode]="editMode"
+                        [fiAnmeldungenStartDatum]="fiAnmeldungenStartDatum"
+                    >
+                    </dv-gemeinde-fi-konfiguration>
+                </fieldset>
             </div>
-            <dv-gemeinde-fi-konfiguration
-                [konfigurationsListe]="stammdaten.konfigurationsListe"
-                [gemeindeStatus]="stammdaten.gemeinde.status"
-                [editMode]="editMode"
-                [fiAnmeldungenStartDatum]="fiAnmeldungenStartDatum"
-            >
-            </dv-gemeinde-fi-konfiguration>
-        </fieldset>
-    </ng-template>
-</div>
+        } @else {
+            <fieldset>
+                <div class="row">
+                    <!-- Anmeldungen akzeptieren ab -->
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <h3 translate>FI_START</h3>
+                            <p>{{ fiAnmeldungenStartStr }}</p>
+                        </div>
+                    </div>
+                </div>
+                <dv-gemeinde-fi-konfiguration
+                    [konfigurationsListe]="stammdaten.konfigurationsListe"
+                    [gemeindeStatus]="stammdaten.gemeinde.status"
+                    [editMode]="editMode"
+                    [fiAnmeldungenStartDatum]="fiAnmeldungenStartDatum"
+                >
+                </dv-gemeinde-fi-konfiguration>
+            </fieldset>
+        }
+    </div>
+}

@@ -42,6 +42,7 @@ import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.ZahlungslaufTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.rechner.BGRechnerParameterDTO;
@@ -57,9 +58,9 @@ import ch.dvbern.ebegu.rules.mutationsmerger.MutationsMerger;
 import ch.dvbern.ebegu.rules.mutationsmerger.OneVorgaengerEnsurer;
 import ch.dvbern.ebegu.rules.util.BemerkungsMerger;
 import ch.dvbern.ebegu.rules.veraenderung.VeraenderungCalculator;
-import ch.dvbern.ebegu.util.BetreuungComparatorDefaultVisitor;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
 import ch.dvbern.ebegu.util.VerfuegungUtil;
+import ch.dvbern.ebegu.util.doppelbetreuung.BetreuungComparatorDefaultVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -273,11 +274,13 @@ public class BetreuungsgutscheinEvaluator {
 			);
 			plaetzeList.addAll(kindContainer.getAnmeldungenTagesschule());
 			plaetzeList.sort(
-				new BetreuungComparatorDefaultVisitor().getComparatorForMandant(
-					gesuch.extractMandant()
-				)
+				new BetreuungComparatorDefaultVisitor()
+					.getComparatorForEinstellung(
+						bgRechnerParameterDTO.getBetreuungComparator()
+					)
 			);
 
+			int position = 0;
 			for (AbstractPlatz platz : plaetzeList) {
 				BetreuungsgutscheinExecutor.initFaktorBgStunden(
 					Objects.requireNonNull(
@@ -328,6 +331,7 @@ public class BetreuungsgutscheinEvaluator {
 							true
 						);
 					}
+					position++;
 					continue;
 				}
 
@@ -365,6 +369,15 @@ public class BetreuungsgutscheinEvaluator {
 				platz.setVerfuegungPreview(verfuegungPreview);
 				verfuegungPreview.setPlatz(platz);
 
+				long count = plaetzeList.stream()
+					.map(AbstractPlatz::getBetreuungsangebotTyp)
+					.filter(BetreuungsangebotTyp::isBetreuungsgutscheinAngebot)
+					.count();
+
+				if (count >= 2) {
+					// set Prio Only When Betreuung Count > 1 and only bg btreuungen
+					verfuegungPreview.setDoppelBetreuungPrio(position++);
+				}
 				executor.calculateRechner(
 					bgRechnerParameterDTO,
 					kitaxParameter,

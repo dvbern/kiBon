@@ -27,6 +27,7 @@ import ch.dvbern.ebegu.enums.FachstellenTyp;
 import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.enums.GeschwisterbonusTyp;
 import ch.dvbern.ebegu.enums.KinderabzugTyp;
+import ch.dvbern.ebegu.enums.betreuung.BetreuungComparator;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
 import ch.dvbern.ebegu.enums.gemeindekonfiguration.GemeindeZusaetzlicherGutscheinTyp;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
@@ -628,7 +629,13 @@ public enum EinstellungKey {
 		MandantIdentifier.getAll()
 	),
 
-	@BooleanEinstellung TABELLE_EINGABEMASKE(MandantIdentifier.SCHWYZ);
+	@BooleanEinstellung TABELLE_EINGABEMASKE(MandantIdentifier.SCHWYZ),
+
+	// Doppelbetreuung Prio
+	// Siehe KIBONBE-186
+	@EnumEinstellung(BetreuungComparator.class) BETREUUNG_COMPARATOR(
+		MandantIdentifier.getAll()
+	);
 
 	private EinstellungTyp typ;
 	private List<MandantIdentifier> activeForMandant;

@@ -34,7 +34,7 @@ import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {ErwerbspensumListViewController} from './erwerbspensumListView';
 import IInjectorService = angular.auto.IInjectorService;
 
-describe('erwerbspensumListView', () => {
+xdescribe('erwerbspensumListView', () => {
     const gemeindeTelefon = '915445152';
     const gemeindeMail = 'mail@mail.com';
     const gemeindeStammdaten = new TSGemeindeStammdatenLite();

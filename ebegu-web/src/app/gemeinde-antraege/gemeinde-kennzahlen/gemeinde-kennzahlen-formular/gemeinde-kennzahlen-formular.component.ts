@@ -19,7 +19,8 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -58,6 +59,14 @@ const LOG = LogFactory.createLog('GemeindeKennzahlenFormularComponent');
     standalone: false
 })
 export class GemeindeKennzahlenFormularComponent implements OnInit, OnDestroy {
+    private readonly gemeindeKennzahlenService = inject(
+        GemeindeKennzahlenService
+    );
+    private readonly authService = inject(AuthServiceRS);
+    private readonly errorService = inject(ErrorServiceX);
+    private readonly translate = inject(TranslateService);
+    private readonly dialog = inject(MatDialog);
+
     @ViewChild(NgForm) public form: NgForm;
 
     public canSeeSaveAndAbschliessen$: ReplaySubject<boolean> =
@@ -72,14 +81,6 @@ export class GemeindeKennzahlenFormularComponent implements OnInit, OnDestroy {
     >;
 
     public readonly CONSTANTS = CONSTANTS;
-
-    public constructor(
-        private readonly gemeindeKennzahlenService: GemeindeKennzahlenService,
-        private readonly authService: AuthServiceRS,
-        private readonly errorService: ErrorServiceX,
-        private readonly translate: TranslateService,
-        private readonly dialog: MatDialog
-    ) {}
 
     public ngOnInit(): void {
         this.setupCanSeeSaveAndAbschliessen();

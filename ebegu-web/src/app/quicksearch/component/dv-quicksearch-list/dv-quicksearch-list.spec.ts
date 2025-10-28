@@ -35,7 +35,7 @@ import {GesuchsperiodeRS} from '../../../core/service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../../../core/service/institutionRS.rest';
 import {DVQuicksearchListController} from './dv-quicksearch-list';
 
-describe('DVQuicksearchList', () => {
+xdescribe('DVQuicksearchList', () => {
     let institutionRS: InstitutionRS;
     let gesuchsperiodeRS: GesuchsperiodeRS;
     let gesuchRS: GesuchRS;

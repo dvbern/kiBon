@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, Input, OnChanges, OnDestroy} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
@@ -52,6 +52,17 @@ const LOG = LogFactory.createLog('FallToolbarComponent');
     standalone: false
 })
 export class FallToolbarComponent implements OnChanges, OnDestroy {
+    private readonly dossierRS = inject(DossierRS);
+    private readonly dialog = inject(MatDialog);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly $state = inject(StateService);
+    private readonly gesuchRS = inject(GesuchRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly gemeindeService = inject(GemeindeService);
+
     public readonly TSRoleUtil: any = TSRoleUtil;
 
     @Input() public fallId: string;
@@ -70,17 +81,6 @@ export class FallToolbarComponent implements OnChanges, OnDestroy {
     public showdropdown: boolean = false;
     public kitaxResponse: TSKitaxResponse;
     public kitaxHost: string;
-
-    public constructor(
-        private readonly dossierRS: DossierRS,
-        private readonly dialog: MatDialog,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly $state: StateService,
-        private readonly gesuchRS: GesuchRS,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly gemeindeService: GemeindeService
-    ) {}
 
     public ngOnChanges(changes: any): void {
         if (changes.fallId || changes.dossierId || changes.currentDossier) {

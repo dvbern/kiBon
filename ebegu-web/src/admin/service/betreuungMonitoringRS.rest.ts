@@ -16,7 +16,7 @@
  */
 
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -29,10 +29,10 @@ import {EbeguUtil} from '../../utils/EbeguUtil';
     providedIn: 'root'
 })
 export class BetreuungMonitoringRS {
+    readonly $http = inject(HttpClient);
+
     public readonly serviceURL: string = `${CONSTANTS.REST_API}betreuungMonitoring`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(public readonly $http: HttpClient) {}
 
     public getServiceName(): string {
         return 'BetreuungMonitoringRS';

@@ -20,7 +20,8 @@ import {
     Component,
     Input,
     OnChanges,
-    SimpleChanges
+    SimpleChanges,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {
@@ -39,12 +40,12 @@ let nextId = 0;
     standalone: false
 })
 export class ExternalClientMultiselectComponent implements OnChanges {
+    readonly form = inject(NgForm);
+
     @Input() public externalClients: TSExternalClientAssignment;
 
     public inputId = `external-client-multiselect-${nextId++}`;
     public options: TSExternalClient[] = [];
-
-    public constructor(public readonly form: NgForm) {}
 
     private static getOptions(
         currentValue?: TSExternalClientAssignment

@@ -3272,5 +3272,6 @@
     "ABGELOESTE_VIEW": "Abgelöste View (Gesuch AngularJS)",
     "GEMEINDE_KENNZAHLEN_REMINDER_ACTIVATED": "Sind die Erinnerungsmails für die Gemeinde-Kennzahlen an Gemeinden und Kanton aktiviert",
     "MITARBEITERRECHTE_ERSTELLEN": "Mitarbeiter Access Rechte erstellen",
+    "BETREUUNG_COMPARATOR": "Doppelbetreuung Priorität",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

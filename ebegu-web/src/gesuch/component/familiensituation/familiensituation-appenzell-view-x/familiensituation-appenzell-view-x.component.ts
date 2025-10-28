@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, inject} from '@angular/core';
 import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -24,19 +24,25 @@ export class FamiliensituationAppenzellViewXComponent
     extends AbstractFamiliensitutaionView
     implements OnInit
 {
+    protected readonly gesuchModelManager: GesuchModelManager;
+    protected readonly errorService: ErrorService;
+    protected readonly wizardStepManager: WizardStepManager;
+    protected readonly familiensituationRS: FamiliensituationRS;
+    protected readonly authService: AuthServiceRS;
+    private readonly einstellungRS = inject(EinstellungRS);
+
     protected async confirm(onResult: (arg: any) => void): Promise<void> {
         const savedContaier = await this.saveFamiliensituationAndHandleChange();
         onResult(savedContaier);
     }
 
-    public constructor(
-        protected readonly gesuchModelManager: GesuchModelManager,
-        protected readonly errorService: ErrorService,
-        protected readonly wizardStepManager: WizardStepManager,
-        protected readonly familiensituationRS: FamiliensituationRS,
-        protected readonly authService: AuthServiceRS,
-        private readonly einstellungRS: EinstellungRS
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const errorService = inject(ErrorService);
+        const wizardStepManager = inject(WizardStepManager);
+        const familiensituationRS = inject(FamiliensituationRS);
+        const authService = inject(AuthServiceRS);
+
         super(
             gesuchModelManager,
             errorService,
@@ -44,6 +50,12 @@ export class FamiliensituationAppenzellViewXComponent
             familiensituationRS,
             authService
         );
+        this.gesuchModelManager = gesuchModelManager;
+        this.errorService = errorService;
+        this.wizardStepManager = wizardStepManager;
+        this.familiensituationRS = familiensituationRS;
+        this.authService = authService;
+
         this.getFamiliensituation().familienstatus = TSFamilienstatus.APPENZELL;
     }
 

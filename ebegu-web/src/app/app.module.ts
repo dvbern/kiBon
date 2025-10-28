@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {DoBootstrap, NgModule} from '@angular/core';
+import {DoBootstrap, NgModule, inject} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {UpgradeModule} from '@angular/upgrade/static';
@@ -95,11 +95,12 @@ export function createTranslateLoader(http: HttpClient): TranslateLoader {
     ]
 })
 export class AppModule implements DoBootstrap {
-    public constructor(
-        private readonly upgrade: UpgradeModule,
-        translate: TranslateService,
-        i18nServiceRS: I18nServiceRSRest
-    ) {
+    private readonly upgrade = inject(UpgradeModule);
+
+    public constructor() {
+        const translate = inject(TranslateService);
+        const i18nServiceRS = inject(I18nServiceRSRest);
+
         AppModule.initTranslateService(translate, i18nServiceRS);
     }
 

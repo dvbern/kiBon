@@ -16,3 +16,4 @@ export * from './lib/TSSprache';
 export * from './lib/TSBrowserLanguage';
 export * from './lib/betreuung/TSBetreuungsstatus';
 export * from './lib/TSDokumentUploadTyp';
+export * from './lib/BetreuungComparator';

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {CONSTANTS} from '@kibon/shared/model/constants';
 import {TSRole} from '@kibon/shared/model/enums';
@@ -35,6 +35,15 @@ import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
     standalone: false
 })
 export class BenutzerEinladenComponent {
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly stateService = inject(StateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly translate = inject(TranslateService);
+    readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+
     public readonly benutzer = new TSBenutzer();
     public readonly excludedRoles: ReadonlyArray<TSRole> = [
         TSRole.GESUCHSTELLER
@@ -49,15 +58,6 @@ export class BenutzerEinladenComponent {
         TSRole.SACHBEARBEITER_TS
     ];
     public readonly CONSTANTS = CONSTANTS;
-
-    public constructor(
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly stateService: StateService,
-        private readonly errorService: ErrorService,
-        private readonly translate: TranslateService,
-        public readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
-    ) {}
 
     public onSubmit(form: NgForm): void {
         if (!form.valid) {

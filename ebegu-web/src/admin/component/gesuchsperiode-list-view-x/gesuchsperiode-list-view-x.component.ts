@@ -19,7 +19,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {StateService} from '@uirouter/core';
 import moment from 'moment';
@@ -42,6 +43,11 @@ export class GesuchsperiodeListViewXComponent
     extends AbstractAdminViewX
     implements OnInit
 {
+    private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
+    private readonly $state = inject(StateService);
+    private readonly cd = inject(ChangeDetectorRef);
+    public authServiceRS = inject(AuthServiceRS);
+
     public gesuchsperioden: Array<TSGesuchsperiode> = [];
     public jahr: number;
 
@@ -65,13 +71,8 @@ export class GesuchsperiodeListViewXComponent
         true
     );
 
-    public constructor(
-        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly $state: StateService,
-        authServiceRS: AuthServiceRS,
-        private readonly cd: ChangeDetectorRef
-    ) {
-        super(authServiceRS);
+    public constructor() {
+        super();
     }
 
     public ngOnInit(): void {

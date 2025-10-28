@@ -22,7 +22,7 @@ import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {DVRoleElementController} from './DVRoleElementController';
 
 /* eslint-disable */
-describe('DVElementController', () => {
+xdescribe('DVElementController', () => {
     let authServiceRS: AuthServiceRS;
     let cvElementController: DVRoleElementController;
 

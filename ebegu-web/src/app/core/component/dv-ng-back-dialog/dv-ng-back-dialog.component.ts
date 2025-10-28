@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 /**
@@ -25,13 +25,16 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     standalone: false
 })
 export class DvNgBackDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgBackDialogComponent>>(MatDialogRef);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     public title: string = '';
     public text: string = '';
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DvNgBackDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         if (data) {
             this.title = data.title;
             this.text = data.text;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -29,16 +29,21 @@ import {TSGesuchstellerContainer} from '../../../../../models/TSGesuchstellerCon
     standalone: false
 })
 export class DialogInitZPVNummerVerknuepfenComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<DialogInitZPVNummerVerknuepfenComponent>>(
+            MatDialogRef
+        );
+    private readonly gesuchstellerRS = inject(GesuchstellerRS);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     private readonly gs: TSGesuchstellerContainer;
     private readonly korrespondenzSprache: TSSprache;
     public email: string;
     public readonly CONSTANTS = CONSTANTS;
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DialogInitZPVNummerVerknuepfenComponent>,
-        private readonly gesuchstellerRS: GesuchstellerRS,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         this.gs = data.gs;
         this.korrespondenzSprache = data.korrespondenzSprache;
     }

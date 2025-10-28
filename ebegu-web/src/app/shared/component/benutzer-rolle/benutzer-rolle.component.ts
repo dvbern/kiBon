@@ -21,7 +21,8 @@ import {
     EventEmitter,
     Input,
     OnInit,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
@@ -36,6 +37,9 @@ import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
     standalone: false
 })
 export class BenutzerRolleComponent implements OnInit {
+    private readonly authServiceRS = inject(AuthServiceRS);
+    readonly form = inject(NgForm);
+
     @Input() public name: string;
     @Input() public readonly inputId: string;
     @Input() public readonly required: boolean = false;
@@ -47,11 +51,6 @@ export class BenutzerRolleComponent implements OnInit {
     public roles: Map<TSRole, string>;
 
     private _benutzerRolle: TSRole;
-
-    public constructor(
-        private readonly authServiceRS: AuthServiceRS,
-        public readonly form: NgForm
-    ) {}
 
     public ngOnInit(): void {
         this.roles = this.authServiceRS

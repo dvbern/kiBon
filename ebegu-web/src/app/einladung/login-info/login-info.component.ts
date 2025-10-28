@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Transition} from '@uirouter/core';
 
 @Component({
@@ -26,7 +26,7 @@ import {Transition} from '@uirouter/core';
     standalone: false
 })
 export class LoginInfoComponent {
-    public constructor(public transition: Transition) {}
+    transition = inject(Transition);
 
     public goToLoginWithReturnToState(): void {
         const params = this.transition.params();

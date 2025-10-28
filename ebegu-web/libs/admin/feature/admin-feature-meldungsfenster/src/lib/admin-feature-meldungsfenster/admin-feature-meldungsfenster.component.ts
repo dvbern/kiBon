@@ -67,6 +67,10 @@ import {SharedModule} from '../../../../../../../src/app/shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminFeatureMeldungsfensterComponent implements AfterViewInit {
+    private meldungsFensterService = inject(AdminUtilMeldungsfensterService);
+    private readonly dialog = inject(MatDialog);
+    private readonly translate = inject(TranslateService);
+
     appPropService = inject(SharedUtilApplicationPropertyRsService);
     newTableSort = viewChild.required(MatSort);
     newTablePaginator = viewChild.required(MatPaginator);
@@ -75,7 +79,7 @@ export class AdminFeatureMeldungsfensterComponent implements AfterViewInit {
     archivedTablePaginator = viewChild.required(MatPaginator);
 
     getMeldungsfenster = rxResource({
-        loader: () => this.meldungsFensterService.getAllMeldungsfensters()
+        stream: () => this.meldungsFensterService.getAllMeldungsfensters()
     });
 
     public newDataSource = new MatTableDataSource<MeldungsfensterData>();
@@ -98,11 +102,7 @@ export class AdminFeatureMeldungsfensterComponent implements AfterViewInit {
     public filterValues: {[key: string]: string} = {};
     protected readonly MeldungsfensterTableType = MeldungsfensterTableType;
 
-    constructor(
-        private meldungsFensterService: AdminUtilMeldungsfensterService,
-        private readonly dialog: MatDialog,
-        private readonly translate: TranslateService
-    ) {
+    constructor() {
         effect(() => {
             const allData = this.getMeldungsfenster.value() ?? [];
             const now = new Date();

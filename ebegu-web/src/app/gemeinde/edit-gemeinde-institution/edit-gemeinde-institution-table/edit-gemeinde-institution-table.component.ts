@@ -5,7 +5,8 @@ import {
     input,
     InputSignal,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {
@@ -37,6 +38,11 @@ import {EditInfomaDialogComponent} from '../edit-infoma-dialog/edit-infoma-dialo
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}]
 })
 export class EditGemeindeInstitutionTableComponent implements OnInit {
+    private readonly dialog = inject(MatDialog);
+    private readonly cd = inject(ChangeDetectorRef);
+    private institutionRS = inject(InstitutionRS);
+    private institutionStammdatenRS = inject(InstitutionStammdatenRS);
+
     displayedColumns: InputSignal<string[]> = input<string[]>();
     dataSource: InputSignal<MatTableDataSource<TableAuswahlInstitution>> =
         input<MatTableDataSource<TableAuswahlInstitution>>();
@@ -60,13 +66,6 @@ export class EditGemeindeInstitutionTableComponent implements OnInit {
         this.paginator = mp;
         this.setDataSourceAttributes();
     }
-
-    constructor(
-        private readonly dialog: MatDialog,
-        private readonly cd: ChangeDetectorRef,
-        private institutionRS: InstitutionRS,
-        private institutionStammdatenRS: InstitutionStammdatenRS
-    ) {}
 
     public ngOnInit(): void {
         this.sortTable();

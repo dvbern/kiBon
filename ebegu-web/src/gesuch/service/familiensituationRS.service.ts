@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -29,13 +29,11 @@ const LOG = LogFactory.createLog('FamiliensituationRS');
     providedIn: 'root'
 })
 export class FamiliensituationRS {
+    $http = inject(HttpClient);
+    private readonly wizardStepManager = inject(WizardStepManager);
+
     private readonly serviceURL = `${CONSTANTS.REST_API}familiensituation`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(
-        public $http: HttpClient,
-        private readonly wizardStepManager: WizardStepManager
-    ) {}
 
     public saveFamiliensituationAndHandleChange(
         familiensituation: TSFamiliensituationContainer,

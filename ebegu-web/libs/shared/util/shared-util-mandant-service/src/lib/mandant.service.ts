@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {CookieService} from 'ngx-cookie-service';
 import {firstValueFrom, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -21,6 +21,10 @@ const LOG = LogFactory.createLog('MandantService');
     providedIn: 'root'
 })
 export class MandantService {
+    private readonly windowRef = inject(WindowRef);
+    private readonly http = inject(HttpClient);
+    private readonly cookieService = inject(CookieService);
+
     private readonly _mandant$: ReplaySubject<KiBonMandant> =
         new ReplaySubject<KiBonMandant>(1);
 
@@ -31,18 +35,6 @@ export class MandantService {
 
     public get mandant$(): Observable<KiBonMandant> {
         return this._mandant$.asObservable();
-    }
-
-    public constructor(
-        private readonly windowRef: WindowRef,
-        private readonly http: HttpClient,
-        private readonly cookieService: CookieService
-    ) {
-        // Workaround, we somehow get a cyclic dependency when we try to inject this directly
-        // TODO: reenable once ApplicationPropertyRS is migrated
-        // this.applicationPropertyService.getPublicPropertiesCached().then(properties => {
-        //     this._multimandantActive$.next(properties.mulitmandantAktiv);
-        // });
     }
 
     private static hostnameToMandant(hostname: string): KiBonMandant {

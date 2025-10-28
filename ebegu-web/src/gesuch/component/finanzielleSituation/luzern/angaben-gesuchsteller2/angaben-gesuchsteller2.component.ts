@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import {IPromise} from 'angular';
@@ -35,15 +35,26 @@ import {SharedUtilDvShowWarningAngabenVervollstaendingenService} from '@kibon/sh
     standalone: false
 })
 export class AngabenGesuchsteller2Component extends AbstractFinSitLuzernView {
-    public constructor(
-        protected gesuchModelManager: GesuchModelManager,
-        protected wizardStepManager: WizardStepManager,
-        protected finSitLuService: FinanzielleSituationLuzernService,
-        protected authServiceRS: AuthServiceRS,
-        protected readonly translate: TranslateService,
-        protected readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        protected dvShowWarningAngabenVervollstaendigenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
-    ) {
+    protected gesuchModelManager: GesuchModelManager;
+    protected wizardStepManager: WizardStepManager;
+    protected finSitLuService: FinanzielleSituationLuzernService;
+    protected authServiceRS: AuthServiceRS;
+    protected readonly translate: TranslateService;
+    protected readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService;
+    protected dvShowWarningAngabenVervollstaendigenService = inject(
+        SharedUtilDvShowWarningAngabenVervollstaendingenService
+    );
+
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const wizardStepManager = inject(WizardStepManager);
+        const finSitLuService = inject(FinanzielleSituationLuzernService);
+        const authServiceRS = inject(AuthServiceRS);
+        const translate = inject(TranslateService);
+        const applicationPropertyRS = inject(
+            SharedUtilApplicationPropertyRsService
+        );
+
         super(
             gesuchModelManager,
             wizardStepManager,
@@ -53,6 +64,13 @@ export class AngabenGesuchsteller2Component extends AbstractFinSitLuzernView {
             translate,
             applicationPropertyRS
         );
+
+        this.gesuchModelManager = gesuchModelManager;
+        this.wizardStepManager = wizardStepManager;
+        this.finSitLuService = finSitLuService;
+        this.authServiceRS = authServiceRS;
+        this.translate = translate;
+        this.applicationPropertyRS = applicationPropertyRS;
     }
 
     public isGemeinsam(): boolean {

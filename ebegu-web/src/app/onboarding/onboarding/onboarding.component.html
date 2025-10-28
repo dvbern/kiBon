@@ -1,92 +1,98 @@
 <!--
-  ~ Copyright (C) 2023 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2023 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div style="display: inline-block; max-width: 100%">
     <div class="onboarding-welcome">
         <p translate>ONBOARDING_KIBON_BGTS_BEANTRAGEN</p>
     </div>
 
-    <div class="onboarding-login" *ngIf="showLogin">
-        <div class="onboarding-login-buttons">
-            <button
-                uiSref="onboarding.neubenutzer"
-                class="dv-btn onboarding-big-red-button onboarding-login-button-width"
-                autofocus
+    @if (showLogin) {
+        <div class="onboarding-login">
+            <div class="onboarding-login-buttons">
+                <button
+                    uiSref="onboarding.neubenutzer"
+                    class="dv-btn onboarding-big-red-button onboarding-login-button-width"
+                    autofocus
+                >
+                    <span translate>ONBOARDING_NEU_BENUTZER</span>
+                </button>
+                <br />
+                <br />
+                <button
+                    uiSref="authentication.login"
+                    [uiOptions]="{location: false}"
+                    class="dv-btn onboarding-red-border-button onboarding-login-button-width"
+                >
+                    <span translate>ONBOARDING_ANMELDEN</span>
+                </button>
+            </div>
+            <br />
+            <ng-container>
+                <span class="fa fa-question-circle"></span>
+                <a href="" (click)="openHelp($event)" translate
+                    >ONBOARDING_HILFE</a
+                >
+                <br />
+                <br />
+            </ng-container>
+            @if (isMultimandantEnabled$ | async) {
+                <a
+                    class="pointer-cursor"
+                    (click)="switchToDifferentPortal()"
+                    translate
+                    >PORTAL_WECHSELN</a
+                >
+                <br />
+                <br />
+            }
+            <a class="pointer-cursor" uiSref="onboarding.infogemeinde" translate
+                >ONBOARDING_INFO_GEMEINDE_LINK</a
             >
-                <span translate>ONBOARDING_NEU_BENUTZER</span>
-            </button>
-            <br />
-            <br />
-            <button
-                uiSref="authentication.login"
-                [uiOptions]="{location: false}"
-                class="dv-btn onboarding-red-border-button onboarding-login-button-width"
-            >
-                <span translate>ONBOARDING_ANMELDEN</span>
-            </button>
-        </div>
-        <br />
-        <ng-container>
-            <span class="fa fa-question-circle"></span>
-            <a href="" (click)="openHelp($event)" translate>ONBOARDING_HILFE</a>
-            <br />
-            <br />
-        </ng-container>
-        <ng-container *ngIf="isMultimandantEnabled$ | async">
-            <a
-                class="pointer-cursor"
-                (click)="switchToDifferentPortal()"
-                translate
-                >PORTAL_WECHSELN</a
-            >
-            <br />
-            <br />
-        </ng-container>
-        <a class="pointer-cursor" uiSref="onboarding.infogemeinde" translate
-            >ONBOARDING_INFO_GEMEINDE_LINK</a
-        >
-        <br />
-        <a class="pointer-cursor" uiSref="onboarding.infoinstitution" translate
-            >ONBOARDING_INFO_INSTITUTION_LINK</a
-        >
-        <ng-container *ngIf="isDummyMode$ | async">
-            <br />
             <br />
             <a
                 class="pointer-cursor"
-                uiSref="authentication.locallogin"
+                uiSref="onboarding.infoinstitution"
                 translate
-                >ONBOARDING_LOCAL_LOGIN</a
+                >ONBOARDING_INFO_INSTITUTION_LINK</a
             >
-        </ng-container>
-        <div
-            class="onboarding-iframe-tutorial"
-            *ngIf="this.youtubeLink$ | async as link"
-        >
-            <iframe
-                [src]="link"
-                frameborder="0"
-                allow="accelerometer;
+            @if (isDummyMode$ | async) {
+                <br />
+                <br />
+                <a
+                    class="pointer-cursor"
+                    uiSref="authentication.locallogin"
+                    translate
+                    >ONBOARDING_LOCAL_LOGIN</a
+                >
+            }
+            @if (this.youtubeLink$ | async; as link) {
+                <div class="onboarding-iframe-tutorial">
+                    <iframe
+                        [src]="link"
+                        frameborder="0"
+                        allow="accelerometer;
                     encrypted-media;
                     gyroscope;
                     picture-in-picture"
-                allowfullscreen
-            >
-            </iframe>
+                        allowfullscreen
+                    >
+                    </iframe>
+                </div>
+            }
         </div>
-    </div>
+    }
 </div>

@@ -22,7 +22,8 @@ import {
     Input,
     OnChanges,
     OnInit,
-    SimpleChanges
+    SimpleChanges,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
@@ -48,6 +49,13 @@ import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 export class EditInstitutionBetreuungsgutscheineComponent
     implements OnInit, OnChanges
 {
+    private readonly translate = inject(TranslateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly cd = inject(ChangeDetectorRef);
+
     @Input() public stammdaten: TSInstitutionStammdaten;
     @Input() public editMode: boolean;
 
@@ -56,13 +64,6 @@ export class EditInstitutionBetreuungsgutscheineComponent
     public zusatzinformationenInstitution: boolean;
 
     public readonly CONSTANTS = CONSTANTS;
-
-    public constructor(
-        private readonly translate: TranslateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly cd: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         const stammdatenBg: TSInstitutionStammdatenBetreuungsgutscheine =

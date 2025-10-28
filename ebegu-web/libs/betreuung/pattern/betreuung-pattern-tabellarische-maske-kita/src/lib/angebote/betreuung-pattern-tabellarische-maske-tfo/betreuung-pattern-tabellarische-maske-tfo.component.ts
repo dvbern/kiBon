@@ -1,5 +1,5 @@
 import {Component, inject, model} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {SharedModule} from '../../../../../../../../src/app/shared/shared.module';
 import {TSBetreuungspensum} from '../../../../../../../../src/models/TSBetreuungspensum';
 import {TabellarischeMaskeTitleComponent} from '../../styling/tabellarische-maske-title/tabellarische-maske-title.component';
@@ -14,7 +14,6 @@ import {MonthUmrechnungsUtil} from '../../util/MonthUmrechnungsUtil';
 import {InputUtil} from '../../util/InputUtil';
 @Component({
     imports: [
-        CommonModule,
         SharedModule,
         TabellarischeMaskeTitleComponent,
         TabellarischeMaskeTableComponent

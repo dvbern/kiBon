@@ -21,7 +21,8 @@ import {
     EventEmitter,
     OnInit,
     Output,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
@@ -43,6 +44,9 @@ const LOG = LogFactory.createLog('FinanzielleSituationAufteilungComponent');
     standalone: false
 })
 export class FinanzielleSituationAufteilungComponent implements OnInit {
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly finanzielleSituationRS = inject(FinanzielleSituationRS);
+
     @ViewChild(NgForm) public form: NgForm;
 
     @Output()
@@ -50,11 +54,6 @@ export class FinanzielleSituationAufteilungComponent implements OnInit {
 
     public aufteilungDTO: TSFinanzielleSituationAufteilungDTO =
         new TSFinanzielleSituationAufteilungDTO();
-
-    public constructor(
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly finanzielleSituationRS: FinanzielleSituationRS
-    ) {}
 
     public ngOnInit(): void {
         this.assertContainersNotNull();

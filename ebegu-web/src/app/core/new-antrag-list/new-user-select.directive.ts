@@ -20,7 +20,8 @@ import {
     EventEmitter,
     Injector,
     Input,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {UpgradeComponent} from '@angular/upgrade/static';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
@@ -68,7 +69,10 @@ export class NewUserSelectDirective extends UpgradeComponent {
     public readonly userChanged: EventEmitter<{user: TSBenutzerNoDetails}> =
         new EventEmitter<{user: TSBenutzerNoDetails}>();
 
-    public constructor(elementRef: ElementRef, injector: Injector) {
+    public constructor() {
+        const elementRef = inject(ElementRef);
+        const injector = inject(Injector);
+
         super('dvUserselect', elementRef, injector);
     }
 }

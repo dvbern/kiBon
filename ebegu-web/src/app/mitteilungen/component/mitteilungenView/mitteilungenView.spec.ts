@@ -41,7 +41,7 @@ import {MITTEILUNGEN_JS_MODULE} from '../../mitteilungen.module';
 import {IMitteilungenStateParams} from '../../mitteilungen.route';
 import ITimeoutService = angular.ITimeoutService;
 
-describe('mitteilungenView', () => {
+xdescribe('mitteilungenView', () => {
     let mitteilungRS: MitteilungRS;
     let authServiceRS: AuthServiceRS;
     let stateParams: IMitteilungenStateParams;

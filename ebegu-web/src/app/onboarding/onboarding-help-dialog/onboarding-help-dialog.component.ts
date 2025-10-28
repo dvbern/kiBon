@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 
 @Component({
@@ -24,9 +24,8 @@ import {MatDialogRef} from '@angular/material/dialog';
     standalone: false
 })
 export class OnboardingHelpDialogComponent {
-    public constructor(
-        private readonly dialogRef: MatDialogRef<OnboardingHelpDialogComponent>
-    ) {}
+    private readonly dialogRef =
+        inject<MatDialogRef<OnboardingHelpDialogComponent>>(MatDialogRef);
 
     public close(): void {
         this.dialogRef.close();

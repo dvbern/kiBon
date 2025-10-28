@@ -22,7 +22,8 @@ import {
     OnInit,
     QueryList,
     ViewChild,
-    ViewChildren
+    ViewChildren,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatCheckboxChange} from '@angular/material/checkbox';
@@ -79,6 +80,17 @@ const LOG = LogFactory.createLog('EditInstitutionComponent');
     standalone: false
 })
 export class EditInstitutionComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+    private readonly $state = inject(StateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly institutionStammdatenRS = inject(InstitutionStammdatenRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly translate = inject(TranslateService);
+    private readonly traegerschaftRS = inject(TraegerschaftRS);
+    private readonly dialog = inject(MatDialog);
+
     public readonly CONSTANTS: any = CONSTANTS;
 
     @ViewChildren(NgForm) public forms: QueryList<NgForm>;
@@ -106,19 +118,6 @@ export class EditInstitutionComponent implements OnInit {
     public allPossibleClients: TSExternalClient[];
 
     private preEditGueltigkeit: TSDateRange;
-
-    public constructor(
-        private readonly $transition$: Transition,
-        private readonly $state: StateService,
-        private readonly errorService: ErrorService,
-        private readonly institutionRS: InstitutionRS,
-        private readonly institutionStammdatenRS: InstitutionStammdatenRS,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly translate: TranslateService,
-        private readonly traegerschaftRS: TraegerschaftRS,
-        private readonly dialog: MatDialog
-    ) {}
 
     private static createInstitutionStammdaten(
         institution: TSInstitution

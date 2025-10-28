@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2023 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2023 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <div class="gesuch-modul static-position">
     <h1 class="access-for-all-title" translate="'AFA_GESUCHSFORMULAR'"></h1>
@@ -34,14 +34,13 @@
             >
                 <fieldset [disabled]="isGesuchReadonly()">
                     <!-- Bei neuen Gesuchen für inaktive Periode: Warnen -->
-                    <div
-                        *ngIf="isSelectedGesuchsperiodeInaktiv()"
-                        class="well well-status-warten"
-                    >
-                        <p class="ebegu-h3" translate>
-                            GESUCHSPERIODE_INAKTIV_HINT
-                        </p>
-                    </div>
+                    @if (isSelectedGesuchsperiodeInaktiv()) {
+                        <div class="well well-status-warten">
+                            <p class="ebegu-h3" translate>
+                                GESUCHSPERIODE_INAKTIV_HINT
+                            </p>
+                        </div>
+                    }
                     <!-- Folgegesuch: Info, dass Daten uebernommen wurden -->
                     <div
                         *dvNgShowElement="
@@ -54,45 +53,56 @@
                     </div>
 
                     <!--Willkommnstext bei Erstgesuch-->
-                    <div *ngIf="gesuchModelManager.isGesuch()">
-                        <p *ngIf="isTagesschuleEnabledForMandant">
-                            {{
-                                'ERSTGESUCH_WILLKOMMEN_TEXT_2_MIT_TS'
-                                    | translate
-                            }}
-                            {{ 'ERSTGESUCH_WILLKOMMEN_TEXT_3' | translate }}
-                        </p>
-                        <p *ngIf="!isTagesschuleEnabledForMandant">
-                            {{
-                                'ERSTGESUCH_WILLKOMMEN_TEXT_2_OHNE_TS'
-                                    | translate
-                            }}
-                            {{ 'ERSTGESUCH_WILLKOMMEN_TEXT_3' | translate }}
-                        </p>
-                    </div>
+                    @if (gesuchModelManager.isGesuch()) {
+                        <div>
+                            @if (isTagesschuleEnabledForMandant) {
+                                <p>
+                                    {{
+                                        'ERSTGESUCH_WILLKOMMEN_TEXT_2_MIT_TS'
+                                            | translate
+                                    }}
+                                    {{
+                                        'ERSTGESUCH_WILLKOMMEN_TEXT_3'
+                                            | translate
+                                    }}
+                                </p>
+                            }
+                            @if (!isTagesschuleEnabledForMandant) {
+                                <p>
+                                    {{
+                                        'ERSTGESUCH_WILLKOMMEN_TEXT_2_OHNE_TS'
+                                            | translate
+                                    }}
+                                    {{
+                                        'ERSTGESUCH_WILLKOMMEN_TEXT_3'
+                                            | translate
+                                    }}
+                                </p>
+                            }
+                        </div>
+                    }
 
                     <!--Mutationelemente auswaehlen. Nur fuer Mutationen-->
-                    <div
-                        *ngIf="!gesuchModelManager.isGesuch()"
-                        class="margin-bottom-20"
-                    >
-                        <h3 class="ebegu-h2" translate>
-                            MUTATION_AUSWAHL_TEXT_1
-                        </h3>
-                        <br />
-                        <p>
-                            <span
-                                [innerHTML]="
-                                    'MUTATION_AUSWAHL_TEXT_2' | translate
-                                "
-                            ></span>
-                            <span
-                                [innerHTML]="
-                                    'MUTATION_AUSWAHL_TEXT_3' | translate
-                                "
-                            ></span>
-                        </p>
-                    </div>
+                    @if (!gesuchModelManager.isGesuch()) {
+                        <div class="margin-bottom-20">
+                            <h3 class="ebegu-h2" translate>
+                                MUTATION_AUSWAHL_TEXT_1
+                            </h3>
+                            <br />
+                            <p>
+                                <span
+                                    [innerHTML]="
+                                        'MUTATION_AUSWAHL_TEXT_2' | translate
+                                    "
+                                ></span>
+                                <span
+                                    [innerHTML]="
+                                        'MUTATION_AUSWAHL_TEXT_3' | translate
+                                    "
+                                ></span>
+                            </p>
+                        </div>
+                    }
 
                     <!--Eingangsdatum-->
                     <div
@@ -180,37 +190,36 @@
                     </div>
 
                     <!-- Mutationsbegruendung -->
-                    <div
-                        class="row margin-bottom-20"
-                        *ngIf="isShowInputBegruendungMutation()"
-                    >
-                        <dv-input-container class="form-group">
-                            <div class="col-sm-12">
-                                <label
-                                    class="md-no-float required"
-                                    for="begruendungMutation"
-                                >
-                                    <span
-                                        [translate]="'BEGRUENDUNG_MUTATION'"
-                                    ></span>
-                                </label>
-                            </div>
-                            <div class="col-sm-6">
-                                <textarea
-                                    class="form-control"
-                                    rows="10"
-                                    id="begruendungMutation"
-                                    maxlength="4000"
-                                    required="true"
-                                    name="begruendungMutation"
-                                    #begruendungMutation="ngModel"
-                                    [(ngModel)]="
-                                        getGesuchModel().begruendungMutation
-                                    "
-                                ></textarea>
-                            </div>
-                        </dv-input-container>
-                    </div>
+                    @if (isShowInputBegruendungMutation()) {
+                        <div class="row margin-bottom-20">
+                            <dv-input-container class="form-group">
+                                <div class="col-sm-12">
+                                    <label
+                                        class="md-no-float required"
+                                        for="begruendungMutation"
+                                    >
+                                        <span
+                                            [translate]="'BEGRUENDUNG_MUTATION'"
+                                        ></span>
+                                    </label>
+                                </div>
+                                <div class="col-sm-6">
+                                    <textarea
+                                        class="form-control"
+                                        rows="10"
+                                        id="begruendungMutation"
+                                        maxlength="4000"
+                                        required="true"
+                                        name="begruendungMutation"
+                                        #begruendungMutation="ngModel"
+                                        [(ngModel)]="
+                                            getGesuchModel().begruendungMutation
+                                        "
+                                    ></textarea>
+                                </div>
+                            </dv-input-container>
+                        </div>
+                    }
 
                     <!-- Gesuchsperiode: Auswahl -->
                     <div
@@ -234,30 +243,31 @@
                                                 "
                                                 [required]="true"
                                             >
-                                                <mat-radio-button
-                                                    *ngFor="
-                                                        let gp of getAllActiveGesuchsperioden()
-                                                    "
-                                                    [value]="gp.id"
-                                                    [attr.data-test]="
-                                                        'gesuchsperioden.' +
-                                                        gp.gesuchsperiodeString
-                                                    "
-                                                    [aria-label]="
-                                                        gp.gesuchsperiodeString
-                                                    "
-                                                    >{{
-                                                        gp.gesuchsperiodeString
-                                                    }}
-                                                </mat-radio-button>
-                                                <dv-error-messages
-                                                    *ngIf="
-                                                        gesuchsperioden.touched
-                                                    "
-                                                    [errorObject]="
-                                                        gesuchsperioden.errors
-                                                    "
-                                                ></dv-error-messages>
+                                                @for (
+                                                    gp of getAllActiveGesuchsperioden();
+                                                    track gp
+                                                ) {
+                                                    <mat-radio-button
+                                                        [value]="gp.id"
+                                                        [attr.data-test]="
+                                                            'gesuchsperioden.' +
+                                                            gp.gesuchsperiodeString
+                                                        "
+                                                        [aria-label]="
+                                                            gp.gesuchsperiodeString
+                                                        "
+                                                        >{{
+                                                            gp.gesuchsperiodeString
+                                                        }}
+                                                    </mat-radio-button>
+                                                }
+                                                @if (gesuchsperioden.touched) {
+                                                    <dv-error-messages
+                                                        [errorObject]="
+                                                            gesuchsperioden.errors
+                                                        "
+                                                    ></dv-error-messages>
+                                                }
                                             </mat-radio-group>
                                         </dv-radio-container-x>
                                     </div>

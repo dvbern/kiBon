@@ -1,721 +1,808 @@
 <!--
-  ~ Copyright (C) 2019 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2019 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
-<div
-    class="dv-content dv-edit-gemeinde-stammdaten"
-    *ngIf="stammdaten$ | async as stammdaten"
->
-    <div *ngIf="editMode; else viewModeTemplate">
-        <fieldset ngModelGroup="dv-edit-gemeinde-stammdaten">
-            <div class="row margin-top-20">
-                <!-- Anschrift -->
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label class="required" translate for="anschrift_id"
-                            >ADRESSE_ANSCHRIFT</label
-                        >
-                        <input
-                            id="anschrift_id"
-                            type="text"
-                            name="anschrift_id"
-                            #nameAnschrift="ngModel"
-                            [(ngModel)]="stammdaten.adresse.organisation"
-                            data-test="anschrift"
-                            [maxlength]="255"
-                            class="form-control"
-                            required
-                            ng-required="true"
-                            placeholder="{{
-                                'GEMEINDE_ANSCHRIFT_PLACEHOLDER' | translate
-                            }}"
-                        />
-                        <dv-error-messages
-                            [errorObject]="nameAnschrift.errors"
-                            inputId="anschrift_id"
-                        ></dv-error-messages>
-                    </div>
-                </div>
-                <!-- E-Mail -->
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label class="required" translate for="e_mail_id"
-                            >EMAIL</label
-                        >
-                        <input
-                            id="e_mail_id"
-                            type="email"
-                            name="e_mail_id"
-                            #nameEmail="ngModel"
-                            [(ngModel)]="stammdaten.mail"
-                            email
-                            placeholder="{{ 'BEISPIEL_EMAIL' | translate }}"
-                            data-test="email"
-                            [maxlength]="255"
-                            class="form-control"
-                            required
-                        />
-                        <dv-error-messages
-                            [errorObject]="nameEmail.errors"
-                            inputId="e_mail_id"
-                        ></dv-error-messages>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <!-- Strasse -->
-                <div class="col-sm-5">
-                    <div class="form-group">
-                        <label class="required" translate for="strasse_id"
-                            >ADRESSE_STRASSE</label
-                        >
-                        <input
-                            id="strasse_id"
-                            type="text"
-                            name="strasse_id"
-                            #nameStrasse="ngModel"
-                            [(ngModel)]="stammdaten.adresse.strasse"
-                            data-test="strasse"
-                            [maxlength]="255"
-                            class="form-control"
-                            required
-                        />
-                        <dv-error-messages
-                            [errorObject]="nameStrasse.errors"
-                            inputId="strasse_id"
-                        ></dv-error-messages>
-                    </div>
-                </div>
-                <!-- Hausnummer -->
-                <div class="col-sm-1">
-                    <div class="form-group">
-                        <label translate for="hausnummer_id"
-                            >ADRESSE_NUMMER</label
-                        >
-                        <input
-                            id="hausnummer_id"
-                            type="text"
-                            name="hausnummer_id"
-                            #nameHausnummer="ngModel"
-                            [(ngModel)]="stammdaten.adresse.hausnummer"
-                            data-test="hausnummer"
-                            [maxlength]="255"
-                            class="form-control"
-                        />
-                        <dv-error-messages
-                            [errorObject]="nameHausnummer.errors"
-                            inputId="hausnummer_id"
-                        ></dv-error-messages>
-                    </div>
-                </div>
-                <!-- Telefon -->
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label class="required" translate for="telefon_id"
-                            >TELEFON</label
-                        >
-                        <input
-                            id="telefon_id"
-                            type="text"
-                            name="telefon_id"
-                            #nameTelefon="ngModel"
-                            [(ngModel)]="stammdaten.telefon"
-                            [maxlength]="255"
-                            [pattern]="CONSTANTS.PATTERN_PHONE"
-                            placeholder="{{
-                                'BEISPIEL_TELEFON_NUMMER' | translate
-                            }}"
-                            class="form-control"
-                            data-test="telefon"
-                            required
-                        />
-                        <dv-error-messages
-                            [errorObject]="nameTelefon.errors"
-                            inputId="telefon_id"
-                        ></dv-error-messages>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <!-- PLZ -->
-                <div class="col-sm-1">
-                    <div class="form-group">
-                        <label class="required" translate for="plz_id"
-                            >ADRESSE_PLZ</label
-                        >
-                        <input
-                            id="plz_id"
-                            type="text"
-                            name="plz_id"
-                            #namePLZ="ngModel"
-                            [(ngModel)]="stammdaten.adresse.plz"
-                            data-test="plz"
-                            [maxlength]="255"
-                            class="form-control"
-                            required
-                        />
-                        <dv-error-messages
-                            [errorObject]="namePLZ.errors"
-                            inputId="plz_id"
-                        ></dv-error-messages>
-                    </div>
-                </div>
-                <!-- Ort -->
-                <div class="col-sm-5">
-                    <div class="form-group">
-                        <label class="required" translate for="ort_id"
-                            >ADRESSE_ORT</label
-                        >
-                        <input
-                            id="ort_id"
-                            type="text"
-                            name="ort_id"
-                            #nameOrt="ngModel"
-                            [(ngModel)]="stammdaten.adresse.ort"
-                            data-test="ort"
-                            [maxlength]="255"
-                            class="form-control"
-                            required
-                        />
-                        <dv-error-messages
-                            [errorObject]="nameOrt.errors"
-                            inputId="ort_id"
-                        ></dv-error-messages>
-                    </div>
-                </div>
-                <!-- Webseite -->
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label translate for="webseite_id">WEBSEITE</label>
-                        <input
-                            id="webseite_id"
-                            type="text"
-                            name="webseite_id"
-                            #nameWebsite="ngModel"
-                            data-test="gemeinde.edit.webseite"
-                            [(ngModel)]="stammdaten.webseite"
-                            [maxlength]="255"
-                            class="form-control"
-                            placeholder="{{ 'BEISPIEL_WEBSITE' | translate }}"
-                            isValidWebseite
-                        />
-                        <dv-error-messages
-                            [errorObject]="nameWebsite.errors"
-                            inputId="webseite_id"
-                        ></dv-error-messages>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <!-- Standardverantwortliche -->
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <h3 class="required" for="verantwortliche_id">
-                            {{ 'STANDARD_VERANTWORTLICHE' | translate }}
-
-                            <dv-tooltip
-                                id="STANDARD_VERANTWORTLICHE"
-                                [text]="
-                                    'STANDARD_VERANTWORTLICHE_HELP' | translate
-                                "
-                            ></dv-tooltip>
-                        </h3>
-                        <mat-select
-                            [(ngModel)]="stammdaten.defaultBenutzer"
-                            id="verantwortliche_id"
-                            name="verantwortliche_id"
-                            class="form-control"
-                            data-test="standardverantwortliche"
-                            #nameVerantwortliche="ngModel"
-                            [compareWith]="compareBenutzer"
-                            required
-                        >
-                            <mat-option
-                                *ngFor="let vgem of benutzerListe"
-                                [value]="vgem"
-                            >
-                                {{ vgem.vorname }} {{ vgem.nachname }}
-                            </mat-option>
-                        </mat-select>
-                        <dv-error-messages
-                            [errorObject]="nameVerantwortliche.errors"
-                            inputId="verantwortliche_id"
-                        ></dv-error-messages>
-                    </div>
-                </div>
-                <!-- Korrespondenzsprache -->
-                <div class="col-sm-6" *ngIf="frenchEnabled">
-                    <div class="form-group">
-                        <h3
-                            class="required"
-                            translate
-                            for="korrespondenzsprache_id"
-                        >
-                            KORRESPONDENZSPRACHE
-                        </h3>
-                        <div class="form-group" id="korrespondenzsprache_id">
-                            <mat-checkbox
-                                id="korrespondenzspracheDe_id"
-                                name="korrespondenzspracheDe_id"
-                                [(ngModel)]="stammdaten.korrespondenzspracheDe"
-                            >
-                                {{ 'DEUTSCH' | translate }}
-                            </mat-checkbox>
-                            <mat-checkbox
-                                id="korrespondenzspracheFr_id"
-                                name="korrespondenzspracheFr_id"
-                                [(ngModel)]="stammdaten.korrespondenzspracheFr"
-                            >
-                                {{ 'FRANZOESISCH' | translate }}
-                            </mat-checkbox>
-                            <div
-                                class="dv-error-messages"
-                                *ngIf="
-                                    !stammdaten.korrespondenzspracheDe &&
-                                    !stammdaten.korrespondenzspracheFr
-                                "
-                            >
-                                <div class="error">
-                                    {{ 'ERROR_REQUIRED' | translate }}
-                                </div>
+@if (stammdaten$ | async; as stammdaten) {
+    <div class="dv-content dv-edit-gemeinde-stammdaten">
+        @if (editMode) {
+            <div>
+                <fieldset ngModelGroup="dv-edit-gemeinde-stammdaten">
+                    <div class="row margin-top-20">
+                        <!-- Anschrift -->
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label
+                                    class="required"
+                                    translate
+                                    for="anschrift_id"
+                                    >ADRESSE_ANSCHRIFT</label
+                                >
+                                <input
+                                    id="anschrift_id"
+                                    type="text"
+                                    name="anschrift_id"
+                                    #nameAnschrift="ngModel"
+                                    [(ngModel)]="
+                                        stammdaten.adresse.organisation
+                                    "
+                                    data-test="anschrift"
+                                    [maxlength]="255"
+                                    class="form-control"
+                                    required
+                                    ng-required="true"
+                                    placeholder="{{
+                                        'GEMEINDE_ANSCHRIFT_PLACEHOLDER'
+                                            | translate
+                                    }}"
+                                />
+                                <dv-error-messages
+                                    [errorObject]="nameAnschrift.errors"
+                                    inputId="anschrift_id"
+                                ></dv-error-messages>
+                            </div>
+                        </div>
+                        <!-- E-Mail -->
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label
+                                    class="required"
+                                    translate
+                                    for="e_mail_id"
+                                    >EMAIL</label
+                                >
+                                <input
+                                    id="e_mail_id"
+                                    type="email"
+                                    name="e_mail_id"
+                                    #nameEmail="ngModel"
+                                    [(ngModel)]="stammdaten.mail"
+                                    email
+                                    placeholder="{{
+                                        'BEISPIEL_EMAIL' | translate
+                                    }}"
+                                    data-test="email"
+                                    [maxlength]="255"
+                                    class="form-control"
+                                    required
+                                />
+                                <dv-error-messages
+                                    [errorObject]="nameEmail.errors"
+                                    inputId="e_mail_id"
+                                ></dv-error-messages>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <!-- Konfiguration der Angebote -->
-                <div class="col-sm-6">
-                    <dv-date-picker-x
-                        id="gemeinde_end_ID"
-                        [label]="'GEMEINDE_GUELTIG_BIS'"
-                        [(date)]="stammdaten.gemeinde.gueltigBis"
-                        [datePickerEnabled]="true"
-                        [disabled]="!isSuperadminOrMandant()"
-                    >
-                    </dv-date-picker-x>
-                </div>
-                <!-- Alternatives Kontaktfeld -->
-                <div class="col-sm-6 checkboxes">
-                    @if (isAPeriodeOffline) {
-                        <div class="row">
-                            <div class="col-sm-12">
+                    <div class="row">
+                        <!-- Strasse -->
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <label
+                                    class="required"
+                                    translate
+                                    for="strasse_id"
+                                    >ADRESSE_STRASSE</label
+                                >
+                                <input
+                                    id="strasse_id"
+                                    type="text"
+                                    name="strasse_id"
+                                    #nameStrasse="ngModel"
+                                    [(ngModel)]="stammdaten.adresse.strasse"
+                                    data-test="strasse"
+                                    [maxlength]="255"
+                                    class="form-control"
+                                    required
+                                />
+                                <dv-error-messages
+                                    [errorObject]="nameStrasse.errors"
+                                    inputId="strasse_id"
+                                ></dv-error-messages>
+                            </div>
+                        </div>
+                        <!-- Hausnummer -->
+                        <div class="col-sm-1">
+                            <div class="form-group">
+                                <label translate for="hausnummer_id"
+                                    >ADRESSE_NUMMER</label
+                                >
+                                <input
+                                    id="hausnummer_id"
+                                    type="text"
+                                    name="hausnummer_id"
+                                    #nameHausnummer="ngModel"
+                                    [(ngModel)]="stammdaten.adresse.hausnummer"
+                                    data-test="hausnummer"
+                                    [maxlength]="255"
+                                    class="form-control"
+                                />
+                                <dv-error-messages
+                                    [errorObject]="nameHausnummer.errors"
+                                    inputId="hausnummer_id"
+                                ></dv-error-messages>
+                            </div>
+                        </div>
+                        <!-- Telefon -->
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label
+                                    class="required"
+                                    translate
+                                    for="telefon_id"
+                                    >TELEFON</label
+                                >
+                                <input
+                                    id="telefon_id"
+                                    type="text"
+                                    name="telefon_id"
+                                    #nameTelefon="ngModel"
+                                    [(ngModel)]="stammdaten.telefon"
+                                    [maxlength]="255"
+                                    [pattern]="CONSTANTS.PATTERN_PHONE"
+                                    placeholder="{{
+                                        'BEISPIEL_TELEFON_NUMMER' | translate
+                                    }}"
+                                    class="form-control"
+                                    data-test="telefon"
+                                    required
+                                />
+                                <dv-error-messages
+                                    [errorObject]="nameTelefon.errors"
+                                    inputId="telefon_id"
+                                ></dv-error-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- PLZ -->
+                        <div class="col-sm-1">
+                            <div class="form-group">
+                                <label class="required" translate for="plz_id"
+                                    >ADRESSE_PLZ</label
+                                >
+                                <input
+                                    id="plz_id"
+                                    type="text"
+                                    name="plz_id"
+                                    #namePLZ="ngModel"
+                                    [(ngModel)]="stammdaten.adresse.plz"
+                                    data-test="plz"
+                                    [maxlength]="255"
+                                    class="form-control"
+                                    required
+                                />
+                                <dv-error-messages
+                                    [errorObject]="namePLZ.errors"
+                                    inputId="plz_id"
+                                ></dv-error-messages>
+                            </div>
+                        </div>
+                        <!-- Ort -->
+                        <div class="col-sm-5">
+                            <div class="form-group">
+                                <label class="required" translate for="ort_id"
+                                    >ADRESSE_ORT</label
+                                >
+                                <input
+                                    id="ort_id"
+                                    type="text"
+                                    name="ort_id"
+                                    #nameOrt="ngModel"
+                                    [(ngModel)]="stammdaten.adresse.ort"
+                                    data-test="ort"
+                                    [maxlength]="255"
+                                    class="form-control"
+                                    required
+                                />
+                                <dv-error-messages
+                                    [errorObject]="nameOrt.errors"
+                                    inputId="ort_id"
+                                ></dv-error-messages>
+                            </div>
+                        </div>
+                        <!-- Webseite -->
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label translate for="webseite_id"
+                                    >WEBSEITE</label
+                                >
+                                <input
+                                    id="webseite_id"
+                                    type="text"
+                                    name="webseite_id"
+                                    #nameWebsite="ngModel"
+                                    data-test="gemeinde.edit.webseite"
+                                    [(ngModel)]="stammdaten.webseite"
+                                    [maxlength]="255"
+                                    class="form-control"
+                                    placeholder="{{
+                                        'BEISPIEL_WEBSITE' | translate
+                                    }}"
+                                    isValidWebseite
+                                />
+                                <dv-error-messages
+                                    [errorObject]="nameWebsite.errors"
+                                    inputId="webseite_id"
+                                ></dv-error-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- Standardverantwortliche -->
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <h3 class="required" for="verantwortliche_id">
+                                    {{ 'STANDARD_VERANTWORTLICHE' | translate }}
+                                    <dv-tooltip
+                                        id="STANDARD_VERANTWORTLICHE"
+                                        [text]="
+                                            'STANDARD_VERANTWORTLICHE_HELP'
+                                                | translate
+                                        "
+                                    ></dv-tooltip>
+                                </h3>
+                                <mat-select
+                                    [(ngModel)]="stammdaten.defaultBenutzer"
+                                    id="verantwortliche_id"
+                                    name="verantwortliche_id"
+                                    class="form-control"
+                                    data-test="standardverantwortliche"
+                                    #nameVerantwortliche="ngModel"
+                                    [compareWith]="compareBenutzer"
+                                    required
+                                >
+                                    @for (vgem of benutzerListe; track vgem) {
+                                        <mat-option [value]="vgem">
+                                            {{ vgem.vorname }}
+                                            {{ vgem.nachname }}
+                                        </mat-option>
+                                    }
+                                </mat-select>
+                                <dv-error-messages
+                                    [errorObject]="nameVerantwortliche.errors"
+                                    inputId="verantwortliche_id"
+                                ></dv-error-messages>
+                            </div>
+                        </div>
+                        <!-- Korrespondenzsprache -->
+                        @if (frenchEnabled) {
+                            <div class="col-sm-6">
                                 <div class="form-group">
+                                    <h3
+                                        class="required"
+                                        translate
+                                        for="korrespondenzsprache_id"
+                                    >
+                                        KORRESPONDENZSPRACHE
+                                    </h3>
                                     <div
-                                        class="form-group checkbox-with-tooltip"
+                                        class="form-group"
+                                        id="korrespondenzsprache_id"
                                     >
                                         <mat-checkbox
-                                            id="zusatzTextFreigabequittung_id"
-                                            name="zusatzTextFreigabequittung_name"
-                                            (change)="
-                                                hasZusatzTextFreigabequittungChange(
-                                                    stammdaten
-                                                )
-                                            "
+                                            id="korrespondenzspracheDe_id"
+                                            name="korrespondenzspracheDe_id"
                                             [(ngModel)]="
-                                                stammdaten.hasZusatzTextFreigabequittung
+                                                stammdaten.korrespondenzspracheDe
                                             "
                                         >
-                                            {{
-                                                'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_JA'
-                                                    | translate
-                                            }}
-
-                                            <dv-tooltip
-                                                id="zusatzText_tooltip"
-                                                [text]="
-                                                    'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_HELP'
-                                                        | translate
-                                                "
-                                            ></dv-tooltip>
+                                            {{ 'DEUTSCH' | translate }}
                                         </mat-checkbox>
-                                    </div>
-                                    <div
-                                        *ngIf="
-                                            stammdaten.hasZusatzTextFreigabequittung
-                                        "
-                                    >
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="form-group">
-                                                    <dv-input-container-x
-                                                        [verticalAlign]="true"
-                                                    >
-                                                        <label
-                                                            class="required"
-                                                            translate
-                                                            for="zusatzTextFreigabequittungTitle_id"
-                                                            >ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_TITEL</label
-                                                        >
-                                                        <mat-form-field
-                                                            floatLabel="always"
-                                                            class="no-margin-left"
-                                                        >
-                                                            <textarea
-                                                                matInput
-                                                                id="zusatzTextFreigabequittungTitle_id"
-                                                                name="zusatzTextFreigabequittungTitle_name"
-                                                                #nameZusatzText="ngModel"
-                                                                [(ngModel)]="
-                                                                    stammdaten.zusatzTextFreigabequittung
-                                                                "
-                                                                type="text"
-                                                                class="form-control"
-                                                                required
-                                                            ></textarea>
-                                                            <dv-error-messages
-                                                                [errorObject]="
-                                                                    nameZusatzText.errors
-                                                                "
-                                                                inputId="zusatzTextFreigabequittungTitle_id"
-                                                            ></dv-error-messages>
-                                                        </mat-form-field>
-                                                    </dv-input-container-x>
+                                        <mat-checkbox
+                                            id="korrespondenzspracheFr_id"
+                                            name="korrespondenzspracheFr_id"
+                                            [(ngModel)]="
+                                                stammdaten.korrespondenzspracheFr
+                                            "
+                                        >
+                                            {{ 'FRANZOESISCH' | translate }}
+                                        </mat-checkbox>
+                                        @if (
+                                            !stammdaten.korrespondenzspracheDe &&
+                                            !stammdaten.korrespondenzspracheFr
+                                        ) {
+                                            <div class="dv-error-messages">
+                                                <div class="error">
+                                                    {{
+                                                        'ERROR_REQUIRED'
+                                                            | translate
+                                                    }}
                                                 </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="row">
+                        <!-- Konfiguration der Angebote -->
+                        <div class="col-sm-6">
+                            <dv-date-picker-x
+                                id="gemeinde_end_ID"
+                                [label]="'GEMEINDE_GUELTIG_BIS'"
+                                [(date)]="stammdaten.gemeinde.gueltigBis"
+                                [datePickerEnabled]="true"
+                                [disabled]="!isSuperadminOrMandant()"
+                            >
+                            </dv-date-picker-x>
+                        </div>
+                        <!-- Alternatives Kontaktfeld -->
+                        <div class="col-sm-6 checkboxes">
+                            @if (isAPeriodeOffline) {
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <div
+                                                class="form-group checkbox-with-tooltip"
+                                            >
+                                                <mat-checkbox
+                                                    id="zusatzTextFreigabequittung_id"
+                                                    name="zusatzTextFreigabequittung_name"
+                                                    (change)="
+                                                        hasZusatzTextFreigabequittungChange(
+                                                            stammdaten
+                                                        )
+                                                    "
+                                                    [(ngModel)]="
+                                                        stammdaten.hasZusatzTextFreigabequittung
+                                                    "
+                                                >
+                                                    {{
+                                                        'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_JA'
+                                                            | translate
+                                                    }}
+                                                    <dv-tooltip
+                                                        id="zusatzText_tooltip"
+                                                        [text]="
+                                                            'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_HELP'
+                                                                | translate
+                                                        "
+                                                    ></dv-tooltip>
+                                                </mat-checkbox>
+                                            </div>
+                                            @if (
+                                                stammdaten.hasZusatzTextFreigabequittung
+                                            ) {
+                                                <div>
+                                                    <div class="row">
+                                                        <div class="col-sm-12">
+                                                            <div
+                                                                class="form-group"
+                                                            >
+                                                                <dv-input-container-x
+                                                                    [verticalAlign]="
+                                                                        true
+                                                                    "
+                                                                >
+                                                                    <label
+                                                                        class="required"
+                                                                        translate
+                                                                        for="zusatzTextFreigabequittungTitle_id"
+                                                                        >ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_TITEL</label
+                                                                    >
+                                                                    <mat-form-field
+                                                                        floatLabel="always"
+                                                                        class="no-margin-left"
+                                                                    >
+                                                                        <textarea
+                                                                            matInput
+                                                                            id="zusatzTextFreigabequittungTitle_id"
+                                                                            name="zusatzTextFreigabequittungTitle_name"
+                                                                            #nameZusatzText="ngModel"
+                                                                            [(ngModel)]="
+                                                                                stammdaten.zusatzTextFreigabequittung
+                                                                            "
+                                                                            type="text"
+                                                                            class="form-control"
+                                                                            required
+                                                                        ></textarea>
+                                                                        <dv-error-messages
+                                                                            [errorObject]="
+                                                                                nameZusatzText.errors
+                                                                            "
+                                                                            inputId="zusatzTextFreigabequittungTitle_id"
+                                                                        ></dv-error-messages>
+                                                                    </mat-form-field>
+                                                                </dv-input-container-x>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (isInfomazahlungen) {
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <div
+                                                class="form-group checkbox-with-tooltip"
+                                            >
+                                                <mat-checkbox
+                                                    id="infomaZahlungen_id"
+                                                    name="infomaZahlungen_name"
+                                                    [disabled]="!isSuperadmin()"
+                                                    [(ngModel)]="
+                                                        stammdaten.gemeinde
+                                                            .infomaZahlungen
+                                                    "
+                                                >
+                                                    {{
+                                                        'INFOMA_ZAHLUNGEN'
+                                                            | translate
+                                                    }}
+                                                </mat-checkbox>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    }
-                    <div class="row" *ngIf="isInfomazahlungen">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <div class="form-group checkbox-with-tooltip">
-                                    <mat-checkbox
-                                        id="infomaZahlungen_id"
-                                        name="infomaZahlungen_name"
-                                        [disabled]="!isSuperadmin()"
-                                        [(ngModel)]="
-                                            stammdaten.gemeinde.infomaZahlungen
-                                        "
-                                    >
-                                        {{ 'INFOMA_ZAHLUNGEN' | translate }}
-                                    </mat-checkbox>
+                            }
+                            @if (isSuperadmin()) {
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <div
+                                                class="form-group checkbox-with-tooltip"
+                                            >
+                                                <mat-checkbox
+                                                    id="adminMutationAbweichungMeldungEnabled_id"
+                                                    name="adminMutationAbweichungMeldungEnabled_name"
+                                                    [(ngModel)]="
+                                                        stammdaten.gemeinde
+                                                            .adminMutationAbweichungMeldungEnabled
+                                                    "
+                                                >
+                                                    {{
+                                                        'ADMIN_MUTATION_ABWEICHUNG_MELDUNG_ENABLED'
+                                                            | translate
+                                                    }}
+                                                    <dv-tooltip
+                                                        inputId="adminMutationAbweichungMeldungEnabled_id"
+                                                        [text]="
+                                                            'ADMIN_MUTATION_ABWEICHUNG_MELDUNG_ENABLED_INFO'
+                                                                | translate
+                                                        "
+                                                    ></dv-tooltip>
+                                                </mat-checkbox>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                     </div>
-                    <div class="row" *ngIf="isSuperadmin()">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <div class="form-group checkbox-with-tooltip">
-                                    <mat-checkbox
-                                        id="adminMutationAbweichungMeldungEnabled_id"
-                                        name="adminMutationAbweichungMeldungEnabled_name"
-                                        [(ngModel)]="
-                                            stammdaten.gemeinde
-                                                .adminMutationAbweichungMeldungEnabled
-                                        "
-                                    >
-                                        {{
-                                            'ADMIN_MUTATION_ABWEICHUNG_MELDUNG_ENABLED'
-                                                | translate
-                                        }}
-
-                                        <dv-tooltip
-                                            inputId="adminMutationAbweichungMeldungEnabled_id"
-                                            [text]="
-                                                'ADMIN_MUTATION_ABWEICHUNG_MELDUNG_ENABLED_INFO'
-                                                    | translate
-                                            "
-                                        ></dv-tooltip>
-                                    </mat-checkbox>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Angebote Gemeinde-->
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group margin-top-30">
-                        <h3
-                            class="md-no-float margin-top-30"
-                            translate
-                            for="begu_start_ID"
-                        >
-                            GEMEINDE_ANGEBOT
-                        </h3>
-
-                        <mat-checkbox
-                            id="angebotBG"
-                            name="angebotBG"
-                            [(ngModel)]="stammdaten.gemeinde.angebotBG"
-                            [disabled]="!isSuperadminOrMandant()"
-                            (ngModelChange)="angeboteChanged(stammdaten)"
-                        >
-                            {{
-                                'GEMEINDE_ANGEBOT_BETREUUNGSGUTSCHEINE'
-                                    | translate
-                            }}</mat-checkbox
-                        >
-
-                        <div
-                            class="form-group inner-option"
-                            *ngIf="stammdaten.gemeinde.angebotBG"
-                        >
-                            <dv-date-picker-x
-                                id="begu_start_ID"
-                                [label]="'BEGU_START'"
-                                [datePickerEnabled]="true"
-                                [(date)]="
-                                    stammdaten.gemeinde
-                                        .betreuungsgutscheineStartdatum
-                                "
-                                [disabled]="!isSuperadminOrMandant()"
-                            ></dv-date-picker-x>
-                            <div
-                                class="form-group"
-                                *ngIf="
-                                    tfoEnabledForMandant &&
-                                    !gemeindeVereinfachteKonfigAktiv
-                                "
-                            >
+                    <!-- Angebote Gemeinde-->
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group margin-top-30">
+                                <h3
+                                    class="md-no-float margin-top-30"
+                                    translate
+                                    for="begu_start_ID"
+                                >
+                                    GEMEINDE_ANGEBOT
+                                </h3>
                                 <mat-checkbox
-                                    id="angebotBGTFO"
-                                    name="angebotBGTFO"
-                                    [(ngModel)]="
-                                        stammdaten.gemeinde.angebotBGTFO
-                                    "
+                                    id="angebotBG"
+                                    name="angebotBG"
+                                    [(ngModel)]="stammdaten.gemeinde.angebotBG"
                                     [disabled]="!isSuperadminOrMandant()"
+                                    (ngModelChange)="
+                                        angeboteChanged(stammdaten)
+                                    "
                                 >
                                     {{
-                                        'GEMEINDE_ANGEBOT_BETREUUNGSGUTSCHEINE_TFO'
+                                        'GEMEINDE_ANGEBOT_BETREUUNGSGUTSCHEINE'
                                             | translate
                                     }}</mat-checkbox
                                 >
-                            </div>
-                        </div>
-
-                        <div *ngIf="isAppConfigAngebotTSActivated">
-                            <mat-checkbox
-                                id="angebotTS"
-                                name="angebotTS"
-                                [disabled]="!isSuperadminOrMandant()"
-                                [(ngModel)]="stammdaten.gemeinde.angebotTS"
-                                (ngModelChange)="
-                                    handleAngebotTSChange(stammdaten)
-                                "
-                                *ngIf="tageschuleEnabledForMandant"
-                            >
-                                {{
-                                    'GEMEINDE_ANGEBOT_TAGESSCHULE' | translate
-                                }}</mat-checkbox
-                            >
-
-                            <div
-                                class="inner-option"
-                                *ngIf="stammdaten.gemeinde.angebotTS"
-                            >
-                                <dv-date-picker-x
-                                    id="ts_start_ID"
-                                    [label]="'TS_START'"
-                                    [datePickerEnabled]="true"
-                                    [(date)]="
-                                        stammdaten.gemeinde
-                                            .tagesschulanmeldungenStartdatum
-                                    "
-                                    [minDate]="minDateTSFI"
-                                    [disabled]="!isSuperadminOrMandant()"
-                                >
-                                </dv-date-picker-x>
-                                <div
-                                    class="form-group"
-                                    *ngIf="stammdaten.gemeinde.angebotTS"
-                                >
-                                    <mat-checkbox
-                                        id="nurLats"
-                                        name="nurLats"
-                                        [disabled]="!isSuperadminOrMandant()"
-                                        [(ngModel)]="
-                                            stammdaten.gemeinde.nurLats
-                                        "
-                                        *ngIf="tageschuleEnabledForMandant"
-                                    >
-                                        {{
-                                            'GEMEINDE_ANGEBOT_NUR_LATS'
-                                                | translate
-                                        }}</mat-checkbox
-                                    >
-                                </div>
-                            </div>
-                        </div>
-
-                        <div *ngIf="isAppConfigAngebotFIActivated">
-                            <mat-checkbox
-                                id="angebotFI"
-                                name="angebotFI"
-                                [disabled]="!isSuperadmin()"
-                                [(ngModel)]="stammdaten.gemeinde.angebotFI"
-                                *ngIf="tageschuleEnabledForMandant"
-                                (ngModelChange)="angeboteChanged(stammdaten)"
-                            >
-                                {{
-                                    'GEMEINDE_ANGEBOT_FERIENINSEL' | translate
-                                }}</mat-checkbox
-                            >
-
-                            <div
-                                class="form-group inner-option"
-                                *ngIf="stammdaten.gemeinde.angebotFI"
-                            >
-                                <dv-date-picker-x
-                                    id="fi_start_ID"
-                                    [label]="'FI_START'"
-                                    [minDate]="minDateTSFI"
-                                    [(date)]="
-                                        stammdaten.gemeinde
-                                            .ferieninselanmeldungenStartdatum
-                                    "
-                                    [disabled]="!isSuperadmin()"
-                                    [datePickerEnabled]="true"
-                                ></dv-date-picker-x>
-                            </div>
-
-                            <div
-                                class="dv-error-messages"
-                                *ngIf="showMessageKeinAngebotSelected"
-                            >
-                                <span>{{
-                                    'GEMEINDE_ANGEBOT_EMPTY_SELECTION'
-                                        | translate
-                                }}</span>
+                                @if (stammdaten.gemeinde.angebotBG) {
+                                    <div class="form-group inner-option">
+                                        <dv-date-picker-x
+                                            id="begu_start_ID"
+                                            [label]="'BEGU_START'"
+                                            [datePickerEnabled]="true"
+                                            [(date)]="
+                                                stammdaten.gemeinde
+                                                    .betreuungsgutscheineStartdatum
+                                            "
+                                            [disabled]="
+                                                !isSuperadminOrMandant()
+                                            "
+                                        ></dv-date-picker-x>
+                                        @if (
+                                            tfoEnabledForMandant &&
+                                            !gemeindeVereinfachteKonfigAktiv
+                                        ) {
+                                            <div class="form-group">
+                                                <mat-checkbox
+                                                    id="angebotBGTFO"
+                                                    name="angebotBGTFO"
+                                                    [(ngModel)]="
+                                                        stammdaten.gemeinde
+                                                            .angebotBGTFO
+                                                    "
+                                                    [disabled]="
+                                                        !isSuperadminOrMandant()
+                                                    "
+                                                >
+                                                    {{
+                                                        'GEMEINDE_ANGEBOT_BETREUUNGSGUTSCHEINE_TFO'
+                                                            | translate
+                                                    }}</mat-checkbox
+                                                >
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                @if (isAppConfigAngebotTSActivated) {
+                                    <div>
+                                        @if (tageschuleEnabledForMandant) {
+                                            <mat-checkbox
+                                                id="angebotTS"
+                                                name="angebotTS"
+                                                [disabled]="
+                                                    !isSuperadminOrMandant()
+                                                "
+                                                [(ngModel)]="
+                                                    stammdaten.gemeinde
+                                                        .angebotTS
+                                                "
+                                                (ngModelChange)="
+                                                    handleAngebotTSChange(
+                                                        stammdaten
+                                                    )
+                                                "
+                                            >
+                                                {{
+                                                    'GEMEINDE_ANGEBOT_TAGESSCHULE'
+                                                        | translate
+                                                }}</mat-checkbox
+                                            >
+                                        }
+                                        @if (stammdaten.gemeinde.angebotTS) {
+                                            <div class="inner-option">
+                                                <dv-date-picker-x
+                                                    id="ts_start_ID"
+                                                    [label]="'TS_START'"
+                                                    [datePickerEnabled]="true"
+                                                    [(date)]="
+                                                        stammdaten.gemeinde
+                                                            .tagesschulanmeldungenStartdatum
+                                                    "
+                                                    [minDate]="minDateTSFI"
+                                                    [disabled]="
+                                                        !isSuperadminOrMandant()
+                                                    "
+                                                >
+                                                </dv-date-picker-x>
+                                                @if (
+                                                    stammdaten.gemeinde
+                                                        .angebotTS
+                                                ) {
+                                                    <div class="form-group">
+                                                        @if (
+                                                            tageschuleEnabledForMandant
+                                                        ) {
+                                                            <mat-checkbox
+                                                                id="nurLats"
+                                                                name="nurLats"
+                                                                [disabled]="
+                                                                    !isSuperadminOrMandant()
+                                                                "
+                                                                [(ngModel)]="
+                                                                    stammdaten
+                                                                        .gemeinde
+                                                                        .nurLats
+                                                                "
+                                                            >
+                                                                {{
+                                                                    'GEMEINDE_ANGEBOT_NUR_LATS'
+                                                                        | translate
+                                                                }}</mat-checkbox
+                                                            >
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                @if (isAppConfigAngebotFIActivated) {
+                                    <div>
+                                        @if (tageschuleEnabledForMandant) {
+                                            <mat-checkbox
+                                                id="angebotFI"
+                                                name="angebotFI"
+                                                [disabled]="!isSuperadmin()"
+                                                [(ngModel)]="
+                                                    stammdaten.gemeinde
+                                                        .angebotFI
+                                                "
+                                                (ngModelChange)="
+                                                    angeboteChanged(stammdaten)
+                                                "
+                                            >
+                                                {{
+                                                    'GEMEINDE_ANGEBOT_FERIENINSEL'
+                                                        | translate
+                                                }}</mat-checkbox
+                                            >
+                                        }
+                                        @if (stammdaten.gemeinde.angebotFI) {
+                                            <div
+                                                class="form-group inner-option"
+                                            >
+                                                <dv-date-picker-x
+                                                    id="fi_start_ID"
+                                                    [label]="'FI_START'"
+                                                    [minDate]="minDateTSFI"
+                                                    [(date)]="
+                                                        stammdaten.gemeinde
+                                                            .ferieninselanmeldungenStartdatum
+                                                    "
+                                                    [disabled]="!isSuperadmin()"
+                                                    [datePickerEnabled]="true"
+                                                ></dv-date-picker-x>
+                                            </div>
+                                        }
+                                        @if (showMessageKeinAngebotSelected) {
+                                            <div class="dv-error-messages">
+                                                <span>{{
+                                                    'GEMEINDE_ANGEBOT_EMPTY_SELECTION'
+                                                        | translate
+                                                }}</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
-                </div>
+                </fieldset>
             </div>
-        </fieldset>
-    </div>
-
-    <ng-template #viewModeTemplate>
-        <fieldset>
-            <div class="row">
-                <!-- Kontaktadresse -->
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <h3 translate>KONTAKTADRESSE</h3>
-                        <p>{{ stammdaten.adresse.organisation }}</p>
-                        <p>
-                            {{ stammdaten.adresse.strasse }}
-                            {{ stammdaten.adresse.hausnummer }}
-                        </p>
-                        <p>
-                            {{ stammdaten.adresse.plz }}
-                            {{ stammdaten.adresse.ort }}
-                        </p>
+        } @else {
+            <fieldset>
+                <div class="row">
+                    <!-- Kontaktadresse -->
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <h3 translate>KONTAKTADRESSE</h3>
+                            <p>{{ stammdaten.adresse.organisation }}</p>
+                            <p>
+                                {{ stammdaten.adresse.strasse }}
+                                {{ stammdaten.adresse.hausnummer }}
+                            </p>
+                            <p>
+                                {{ stammdaten.adresse.plz }}
+                                {{ stammdaten.adresse.ort }}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- E-Mail, Telefon -->
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <h3>&nbsp;</h3>
+                            <p>
+                                <a href="mailto:{{ stammdaten.mail }}">{{
+                                    stammdaten.mail
+                                }}</a>
+                            </p>
+                            <p>
+                                <a href="tel:{{ stammdaten.telefon }}">{{
+                                    stammdaten.telefon
+                                }}</a>
+                            </p>
+                            <p>
+                                <a
+                                    href="{{
+                                        ebeguUtil.formatHrefUrl(
+                                            stammdaten.webseite
+                                        )
+                                    }}"
+                                    target="tah"
+                                    >{{ stammdaten.webseite }}</a
+                                >
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Angebot -->
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <h3 translate>GEMEINDE_ANGEBOT</h3>
+                            @if (stammdaten.gemeinde.angebotBG) {
+                                <p translate>
+                                    GEMEINDE_ANGEBOT_BETREUUNGSGUTSCHEINE
+                                </p>
+                            }
+                            @if (stammdaten.gemeinde.angebotTS) {
+                                <p translate>GEMEINDE_ANGEBOT_TAGESSCHULE</p>
+                            }
+                            @if (stammdaten.gemeinde.angebotFI) {
+                                <p translate>GEMEINDE_ANGEBOT_FERIENINSEL</p>
+                            }
+                        </div>
                     </div>
                 </div>
-                <!-- E-Mail, Telefon -->
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <h3>&nbsp;</h3>
-                        <p>
-                            <a href="mailto:{{ stammdaten.mail }}">{{
-                                stammdaten.mail
-                            }}</a>
-                        </p>
-                        <p>
-                            <a href="tel:{{ stammdaten.telefon }}">{{
-                                stammdaten.telefon
-                            }}</a>
-                        </p>
-                        <p>
-                            <a
-                                href="{{
-                                    ebeguUtil.formatHrefUrl(stammdaten.webseite)
-                                }}"
-                                target="tah"
-                                >{{ stammdaten.webseite }}</a
-                            >
-                        </p>
-                    </div>
-                </div>
-                <!-- Angebot -->
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <h3 translate>GEMEINDE_ANGEBOT</h3>
-                        <p *ngIf="stammdaten.gemeinde.angebotBG" translate>
-                            GEMEINDE_ANGEBOT_BETREUUNGSGUTSCHEINE
-                        </p>
-                        <p *ngIf="stammdaten.gemeinde.angebotTS" translate>
-                            GEMEINDE_ANGEBOT_TAGESSCHULE
-                        </p>
-                        <p *ngIf="stammdaten.gemeinde.angebotFI" translate>
-                            GEMEINDE_ANGEBOT_FERIENINSEL
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <!-- Standardverantwortliche -->
-                <div *ngIf="stammdaten.defaultBenutzer" class="col-sm-6">
-                    <div class="form-group">
-                        <h3 translate>STANDARD_VERANTWORTLICHE</h3>
-                        <p>
-                            {{ stammdaten.defaultBenutzer.vorname }}
-                            {{ stammdaten.defaultBenutzer.nachname }}
-                        </p>
-                    </div>
-                    <div
-                        class="form-group"
-                        *ngIf="stammdaten.gemeinde.gueltigBis"
-                    >
-                        <h3 translate>GEMEINDE_GUELTIG_BIS</h3>
-                        <p>{{ stammdaten.gemeinde.gueltigBis | ebeguDate }}</p>
-                    </div>
-                </div>
-                <!-- Korrespondenzsprache -->
-                <div class="col-sm-6" *ngIf="frenchEnabled">
-                    <div class="row">
-                        <div class="col-sm-12">
+                <div class="row">
+                    <!-- Standardverantwortliche -->
+                    @if (stammdaten.defaultBenutzer) {
+                        <div class="col-sm-6">
                             <div class="form-group">
-                                <h3 translate>KORRESPONDENZSPRACHE</h3>
-                                <p>{{ korrespondenzsprache }}</p>
+                                <h3 translate>STANDARD_VERANTWORTLICHE</h3>
+                                <p>
+                                    {{ stammdaten.defaultBenutzer.vorname }}
+                                    {{ stammdaten.defaultBenutzer.nachname }}
+                                </p>
+                            </div>
+                            @if (stammdaten.gemeinde.gueltigBis) {
+                                <div class="form-group">
+                                    <h3 translate>GEMEINDE_GUELTIG_BIS</h3>
+                                    <p>
+                                        {{
+                                            stammdaten.gemeinde.gueltigBis
+                                                | ebeguDate
+                                        }}
+                                    </p>
+                                </div>
+                            }
+                        </div>
+                    }
+                    <!-- Korrespondenzsprache -->
+                    @if (frenchEnabled) {
+                        <div class="col-sm-6">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <h3 translate>KORRESPONDENZSPRACHE</h3>
+                                        <p>{{ korrespondenzsprache }}</p>
+                                    </div>
+                                </div>
+                                @if (stammdaten.hasZusatzTextFreigabequittung) {
+                                    <div class="col-sm-12">
+                                        <!-- Zusätzlicher Text auf der Freigabequittung -->
+                                        <h3>
+                                            {{
+                                                'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_JA'
+                                                    | translate
+                                            }}
+                                        </h3>
+                                        <p>
+                                            {{
+                                                stammdaten.zusatzTextFreigabequittung
+                                            }}
+                                        </p>
+                                    </div>
+                                }
                             </div>
                         </div>
-                        <div
-                            class="col-sm-12"
-                            *ngIf="stammdaten.hasZusatzTextFreigabequittung"
-                        >
-                            <!-- Zusätzlicher Text auf der Freigabequittung -->
-                            <h3>
-                                {{
-                                    'ZUSAETZLICHER_TEXT_FREIGABEQUITTUNG_JA'
-                                        | translate
-                                }}
-                            </h3>
-                            <p>{{ stammdaten.zusatzTextFreigabequittung }}</p>
+                    }
+                    @if (stammdaten.gemeinde.infomaZahlungen) {
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <h3>
+                                    {{ 'INFOMA_ZAHLUNGEN_JA' | translate }}
+                                </h3>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
-                <div
-                    class="col-sm-6"
-                    *ngIf="stammdaten.gemeinde.infomaZahlungen"
-                >
-                    <div class="form-group">
-                        <h3>
-                            {{ 'INFOMA_ZAHLUNGEN_JA' | translate }}
-                        </h3>
-                    </div>
-                </div>
-            </div>
-        </fieldset>
-    </ng-template>
-</div>
+            </fieldset>
+        }
+    </div>
+}

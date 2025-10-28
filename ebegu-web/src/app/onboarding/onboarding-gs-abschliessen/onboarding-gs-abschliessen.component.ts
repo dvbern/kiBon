@@ -15,7 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    inject
+} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {StateService, Transition} from '@uirouter/core';
 import {from, Observable} from 'rxjs';
@@ -43,20 +48,22 @@ const LOG = LogFactory.createLog('OnboardingGsAbschliessenComponent');
     standalone: false
 })
 export class OnboardingGsAbschliessenComponent implements OnInit {
+    private readonly transition = inject(Transition);
+    readonly authServiceRS = inject(AuthServiceRS);
+    readonly gemeindeRS = inject(GemeindeRS);
+    private readonly stateService = inject(StateService);
+    private readonly dossierRS = inject(DossierRS);
+    private readonly onboardingPlaceholderService = inject(
+        OnboardingPlaceholderService
+    );
+
     public user$: Observable<TSBenutzer>;
     public gemeindenAndVerbund$: Observable<TSGemeindeRegistrierung[]>;
 
     private readonly gemeindenTSIds: string; // Parameter aus URL
     private readonly gemeindeBGId: string;
 
-    public constructor(
-        private readonly transition: Transition,
-        public readonly authServiceRS: AuthServiceRS,
-        public readonly gemeindeRS: GemeindeRS,
-        private readonly stateService: StateService,
-        private readonly dossierRS: DossierRS,
-        private readonly onboardingPlaceholderService: OnboardingPlaceholderService
-    ) {
+    public constructor() {
         this.gemeindenTSIds = this.transition.params().gemeindenId;
         this.gemeindeBGId = this.transition.params().gemeindeBGId;
     }

@@ -56,17 +56,7 @@ ngServicesMock.$inject = ['$provide'];
 
 class GesuchGeneratorMock extends GesuchGenerator {
     public constructor() {
-        super(
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-        );
+        super();
     }
 
     public initGesuch(eingangsart: TSEingangsart): angular.IPromise<TSGesuch> {

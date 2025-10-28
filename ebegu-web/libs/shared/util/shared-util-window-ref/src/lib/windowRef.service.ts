@@ -16,7 +16,7 @@
  */
 
 import {isPlatformBrowser} from '@angular/common';
-import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
+import {Injectable, PLATFORM_ID, inject} from '@angular/core';
 
 export function getWindowObject(): Window {
     // return the global native browser window object
@@ -39,6 +39,8 @@ function getMockWindow(): any {
 
 @Injectable()
 export class WindowRef {
+    private readonly platformId = inject(PLATFORM_ID);
+
     private readonly isBrowser: boolean = false;
 
     public get nativeWindow(): Window {
@@ -52,7 +54,9 @@ export class WindowRef {
         return getWindowObject().localStorage;
     }
 
-    public constructor(@Inject(PLATFORM_ID) private readonly platformId: any) {
+    public constructor() {
+        const platformId = this.platformId;
+
         this.isBrowser = isPlatformBrowser(platformId);
     }
 }

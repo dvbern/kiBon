@@ -1,4 +1,3 @@
-import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {
     MeldungsfensterData,
@@ -9,7 +8,7 @@ import {SharedModule} from '../../../../../../../src/app/shared/shared.module';
 
 @Component({
     selector: 'lib-shared-ui-meldungsfenster',
-    imports: [CommonModule, SharedModule],
+    imports: [SharedModule],
     templateUrl: './shared-ui-meldungsfenster.component.html',
     styleUrl: './shared-ui-meldungsfenster.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush

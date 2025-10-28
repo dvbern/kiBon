@@ -23,7 +23,8 @@ import {
     Input,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {Subject} from 'rxjs';
@@ -50,6 +51,10 @@ const LOG = LogFactory.createLog('FkjvKinderabzugComponent');
 export class FkjvKinderabzugComponent
     implements OnInit, AfterViewInit, OnDestroy
 {
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly fkjvExchangeService = inject(KinderabzugExchangeService);
+
     @ViewChild(NgForm)
     public readonly form: NgForm;
 
@@ -58,12 +63,6 @@ export class FkjvKinderabzugComponent
 
     private readonly unsubscribe$: Subject<void> = new Subject<void>();
     private kindIsOrGetsVolljaehrig: boolean = false;
-
-    public constructor(
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly cd: ChangeDetectorRef,
-        private readonly fkjvExchangeService: KinderabzugExchangeService
-    ) {}
 
     public ngOnInit(): void {
         const gesuchsperiode = this.gesuchModelManager.getGesuchsperiode();

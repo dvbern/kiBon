@@ -2,9 +2,9 @@
     <thead>
         <tr>
             @if (isScolaris(modulTagesschuleGroups())) {
-                <th *ngIf="isScolaris(modulTagesschuleGroups())" translate>
-                    MODUL_NAME
-                </th>
+                @if (isScolaris(modulTagesschuleGroups())) {
+                    <th translate>MODUL_NAME</th>
+                }
             }
             <th translate>MODUL_BEZEICHNUNG</th>
             <th translate>MODUL_ZEITRAUM</th>

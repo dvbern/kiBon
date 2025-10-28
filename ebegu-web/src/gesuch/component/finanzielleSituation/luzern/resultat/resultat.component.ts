@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     Input,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSFinanzielleSituationResultateDTO} from '../../../../../models/dto/TSFinanzielleSituationResultateDTO';
@@ -37,6 +38,12 @@ const LOG = LogFactory.createLog('ResultatComponent');
     standalone: false
 })
 export class ResultatComponent implements OnInit {
+    protected ref = inject(ChangeDetectorRef);
+    private readonly finSitLuService = inject(
+        FinanzielleSituationLuzernService
+    );
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+
     @Input()
     public isGemeinsam: boolean;
 
@@ -47,12 +54,6 @@ export class ResultatComponent implements OnInit {
     public antragstellerNummer: number;
 
     public resultate?: TSFinanzielleSituationResultateDTO;
-
-    public constructor(
-        protected ref: ChangeDetectorRef,
-        private readonly finSitLuService: FinanzielleSituationLuzernService,
-        private readonly gesuchModelManager: GesuchModelManager
-    ) {}
 
     public ngOnInit(): void {
         this.setupCalculation();

@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -11,6 +11,8 @@ import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
     providedIn: 'root'
 })
 export class InternePendenzenRS {
+    private readonly $http = inject(HttpClient);
+
     public readonly serviceURL: string = `${CONSTANTS.REST_API}gesuch/internependenz`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
     // we create an object with gesuchIds as keys and a Subject as values.
@@ -18,8 +20,6 @@ export class InternePendenzenRS {
     // next() of the associated Subject.
     // this way, the subscriber knows, when to reload the internePendenzCount
     private internePendenzCountUpdates: any;
-
-    public constructor(private readonly $http: HttpClient) {}
 
     public getServiceName(): string {
         return 'InternePendenzenRS';

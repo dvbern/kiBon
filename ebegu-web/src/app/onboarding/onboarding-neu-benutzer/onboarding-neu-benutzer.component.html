@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2019 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2019 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 <div style="display: inline-block; max-width: 100%">
     <div class="onboarding-neubenutzer onboarding-container-info">
         <br />
@@ -35,158 +35,158 @@
                     >{{ 'ONBOARDING_BG_BEANTRAGEN' | translate }}</mat-checkbox
                 >
             </div>
-            <div
-                class="neu-ts-checkbox margin-top-10"
-                *ngIf="isTSAngebotEnabled"
-            >
-                <mat-checkbox
-                    id="tsBeantragen_id"
-                    name="tsBeantragen_id"
-                    (ngModelChange)="resetGemeindeListe()"
-                    [(ngModel)]="tsBeantragen"
-                    data-test="ts-beantragen"
-                    >{{ 'ONBOARDING_TS_BEANTRAGEN' | translate }}</mat-checkbox
-                >
-            </div>
-            <div
-                class="neu-besondere-volksschule-checkbox margin-top-10"
-                *ngIf="
-                    isTSAngebotEnabled &&
-                    tsBeantragen &&
-                    isNotNullAndNotEmpty(this.besondereVolksschulen$ | async)
-                "
-            >
-                <mat-checkbox
-                    id="besondereVolksschuleBeantragen_id"
-                    name="besondereVolksschuleBeantragen_id"
-                    (ngModelChange)="resetGemeindeListe()"
-                    [(ngModel)]="besondereVolksschuleBeantragen"
-                    >{{
-                        'ONBOARDING_BESONDERE_VOLKSSCHULE_BEANTRAGEN'
-                            | translate
-                    }}</mat-checkbox
-                >
-            </div>
+            @if (isTSAngebotEnabled) {
+                <div class="neu-ts-checkbox margin-top-10">
+                    <mat-checkbox
+                        id="tsBeantragen_id"
+                        name="tsBeantragen_id"
+                        (ngModelChange)="resetGemeindeListe()"
+                        [(ngModel)]="tsBeantragen"
+                        data-test="ts-beantragen"
+                        >{{
+                            'ONBOARDING_TS_BEANTRAGEN' | translate
+                        }}</mat-checkbox
+                    >
+                </div>
+            }
+            @if (
+                isTSAngebotEnabled &&
+                tsBeantragen &&
+                isNotNullAndNotEmpty(this.besondereVolksschulen$ | async)
+            ) {
+                <div class="neu-besondere-volksschule-checkbox margin-top-10">
+                    <mat-checkbox
+                        id="besondereVolksschuleBeantragen_id"
+                        name="besondereVolksschuleBeantragen_id"
+                        (ngModelChange)="resetGemeindeListe()"
+                        [(ngModel)]="besondereVolksschuleBeantragen"
+                        >{{
+                            'ONBOARDING_BESONDERE_VOLKSSCHULE_BEANTRAGEN'
+                                | translate
+                        }}</mat-checkbox
+                    >
+                </div>
+            }
             <div class="onboarding-nb-gemeinde-container">
                 <div class="onboarding-nb-gemeinde-input-container">
-                    <div
-                        class="onboarding-nb-gemeinde-search"
-                        *ngIf="betreuungsgutscheinBeantragen"
-                    >
-                        <p translate>ONBOARDING_MEIN_WOHNGEMEINDE</p>
-                        <div class="onboarding-nb-gemeinde-search-input">
+                    @if (betreuungsgutscheinBeantragen) {
+                        <div class="onboarding-nb-gemeinde-search">
+                            <p translate>ONBOARDING_MEIN_WOHNGEMEINDE</p>
+                            <div class="onboarding-nb-gemeinde-search-input">
+                                <div
+                                    class="dv-select-style dv-select-style-onboarding"
+                                >
+                                    <select
+                                        [(ngModel)]="gemeinde"
+                                        ngChange=""
+                                        name="gemeinde"
+                                        class="form-control"
+                                        id="gemeinde"
+                                        [required]="true"
+                                        data-test="gemeinde"
+                                    >
+                                        <option
+                                            [ngValue]="null"
+                                            selected="selected"
+                                        ></option>
+                                        @for (
+                                            gemeinde of gemeindenBG$ | async;
+                                            track gemeinde
+                                        ) {
+                                            <option
+                                                [ngValue]="gemeinde"
+                                                [attr.data-test]="
+                                                    'gemeinde.' + gemeinde.name
+                                                "
+                                            >
+                                                {{ gemeinde.name }}
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <dv-error-messages
+                                [errorObject]="form.controls.gemeinde?.errors"
+                                inputId="gemeinde"
+                                class="input-error"
+                            >
+                            </dv-error-messages>
+                        </div>
+                    }
+                </div>
+                <div class="onboarding-nb-gemeinde-input">
+                    @if (tsBeantragen && !besondereVolksschuleBeantragen) {
+                        <div class="onboarding-nb-gemeinde-search">
+                            <p translate>ONBOARDING_TS_GEMEINDE</p>
+                            <!-- Gemeinde(n) -->
+                            <dv-gemeinde-multiselect
+                                [selected]="gemeindeList"
+                                [disabled]="false"
+                                [required]="true"
+                                [showLabel]="false"
+                                [allowedInMap$]="gemeindenTS$"
+                            >
+                            </dv-gemeinde-multiselect>
+                        </div>
+                    }
+                </div>
+                <div class="onboarding-nb-gemeinde-input">
+                    @if (tsBeantragen && besondereVolksschuleBeantragen) {
+                        <div class="onboarding-nb-gemeinde-search">
+                            <p translate>BESONDERE_VOLKSSCHULE</p>
+                            <!-- Gemeinde(n) -->
                             <div
                                 class="dv-select-style dv-select-style-onboarding"
                             >
                                 <select
-                                    [(ngModel)]="gemeinde"
-                                    ngChange=""
-                                    name="gemeinde"
+                                    [(ngModel)]="besondereVolksschuleGemeinde"
+                                    name="besondereVolksschule"
                                     class="form-control"
-                                    id="gemeinde"
+                                    id="besondereVolksschule"
                                     [required]="true"
-                                    data-test="gemeinde"
                                 >
                                     <option
                                         [ngValue]="null"
                                         selected="selected"
                                     ></option>
-                                    <option
-                                        *ngFor="
-                                            let gemeinde of gemeindenBG$ | async
-                                        "
-                                        [ngValue]="gemeinde"
-                                        [attr.data-test]="
-                                            'gemeinde.' + gemeinde.name
-                                        "
-                                    >
-                                        {{ gemeinde.name }}
-                                    </option>
+                                    @for (
+                                        gemeinde of besondereVolksschulen$
+                                            | async;
+                                        track gemeinde
+                                    ) {
+                                        <option [ngValue]="gemeinde">
+                                            {{ gemeinde.name }}
+                                        </option>
+                                    }
                                 </select>
                             </div>
-                        </div>
-                        <dv-error-messages
-                            [errorObject]="form.controls.gemeinde?.errors"
-                            inputId="gemeinde"
-                            class="input-error"
-                        >
-                        </dv-error-messages>
-                    </div>
-                </div>
-                <div class="onboarding-nb-gemeinde-input">
-                    <div
-                        class="onboarding-nb-gemeinde-search"
-                        *ngIf="tsBeantragen && !besondereVolksschuleBeantragen"
-                    >
-                        <p translate>ONBOARDING_TS_GEMEINDE</p>
-                        <!-- Gemeinde(n) -->
-                        <dv-gemeinde-multiselect
-                            [selected]="gemeindeList"
-                            [disabled]="false"
-                            [required]="true"
-                            [showLabel]="false"
-                            [allowedInMap$]="gemeindenTS$"
-                        >
-                        </dv-gemeinde-multiselect>
-                    </div>
-                </div>
-                <div class="onboarding-nb-gemeinde-input">
-                    <div
-                        class="onboarding-nb-gemeinde-search"
-                        *ngIf="tsBeantragen && besondereVolksschuleBeantragen"
-                    >
-                        <p translate>BESONDERE_VOLKSSCHULE</p>
-                        <!-- Gemeinde(n) -->
-                        <div class="dv-select-style dv-select-style-onboarding">
-                            <select
-                                [(ngModel)]="besondereVolksschuleGemeinde"
-                                name="besondereVolksschule"
-                                class="form-control"
-                                id="besondereVolksschule"
-                                [required]="true"
+                            <dv-error-messages
+                                [errorObject]="
+                                    form.controls.besondereVolksschule?.errors
+                                "
+                                inputId="gemeinde"
+                                class="input-error"
                             >
-                                <option
-                                    [ngValue]="null"
-                                    selected="selected"
-                                ></option>
-                                <option
-                                    *ngFor="
-                                        let gemeinde of besondereVolksschulen$
-                                            | async
-                                    "
-                                    [ngValue]="gemeinde"
-                                >
-                                    {{ gemeinde.name }}
-                                </option>
-                            </select>
+                            </dv-error-messages>
                         </div>
-
-                        <dv-error-messages
-                            [errorObject]="
-                                form.controls.besondereVolksschule?.errors
-                            "
-                            inputId="gemeinde"
-                            class="input-error"
-                        >
-                        </dv-error-messages>
-                    </div>
+                    }
                 </div>
                 <div class="onboarding-nb-gemeinde-input-button">
-                    <div
-                        *ngIf="
-                            betreuungsgutscheinBeantragen ||
-                            tsBeantragen ||
-                            besondereVolksschuleBeantragen
-                        "
-                    >
-                        <button
-                            [type]="'submit'"
-                            class="dv-btn onboarding-big-red-button"
-                            data-test="registrieren"
-                        >
-                            <span translate>ONBOARDING_REGISTRIEREN</span>
-                        </button>
-                    </div>
+                    @if (
+                        betreuungsgutscheinBeantragen ||
+                        tsBeantragen ||
+                        besondereVolksschuleBeantragen
+                    ) {
+                        <div>
+                            <button
+                                [type]="'submit'"
+                                class="dv-btn onboarding-big-red-button"
+                                data-test="registrieren"
+                            >
+                                <span translate>ONBOARDING_REGISTRIEREN</span>
+                            </button>
+                        </div>
+                    }
                 </div>
             </div>
         </form>

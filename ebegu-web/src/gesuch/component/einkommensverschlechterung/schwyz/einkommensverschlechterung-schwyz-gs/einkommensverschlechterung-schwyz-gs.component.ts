@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {Transition} from '@uirouter/core';
 import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSFinanzModel} from '../../../../../models/TSFinanzModel';
@@ -14,18 +14,24 @@ import {AbstractGesuchViewX} from '../../../abstractGesuchViewX';
     standalone: false
 })
 export class EinkommensverschlechterungSchwyzGsComponent extends AbstractGesuchViewX<TSFinanzModel> {
+    protected readonly gesuchmodelManager: GesuchModelManager;
+    protected readonly wizardstepManager: WizardStepManager;
+    private readonly $transition$ = inject(Transition);
+
     public isFinSitVollstaendigAusgefuellt: boolean;
 
-    public constructor(
-        protected readonly gesuchmodelManager: GesuchModelManager,
-        protected readonly wizardstepManager: WizardStepManager,
-        private readonly $transition$: Transition
-    ) {
+    public constructor() {
+        const gesuchmodelManager = inject(GesuchModelManager);
+        const wizardstepManager = inject(WizardStepManager);
+
         super(
             gesuchmodelManager,
             wizardstepManager,
             TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG_SCHWYZ
         );
+        this.gesuchmodelManager = gesuchmodelManager;
+        this.wizardstepManager = wizardstepManager;
+
         this.initModel();
         this.wizardStepManager.updateCurrentWizardStepStatusSafe(
             TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG_SOLOTHURN,

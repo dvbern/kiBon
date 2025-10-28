@@ -20,7 +20,8 @@ import {
     Component,
     OnInit,
     QueryList,
-    ViewChildren
+    ViewChildren,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -43,6 +44,14 @@ import {SozialdienstRS} from '../../core/service/SozialdienstRS.rest';
     standalone: false
 })
 export class EditSozialdienstComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+    private readonly $state = inject(StateService);
+    private readonly sozialdienstRS = inject(SozialdienstRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly translate = inject(TranslateService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly errorService = inject(ErrorService);
+
     public readonly CONSTANTS: any = CONSTANTS;
 
     @ViewChildren(NgForm) public forms: QueryList<NgForm>;
@@ -51,16 +60,6 @@ export class EditSozialdienstComponent implements OnInit {
     public sozialdienstId: string;
     public editMode: boolean;
     public ebeguUtil = EbeguUtil;
-
-    public constructor(
-        private readonly $transition$: Transition,
-        private readonly $state: StateService,
-        private readonly sozialdienstRS: SozialdienstRS,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly translate: TranslateService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly errorService: ErrorService
-    ) {}
 
     public ngOnInit(): void {
         this.sozialdienstId = this.$transition$.params().sozialdienstId;

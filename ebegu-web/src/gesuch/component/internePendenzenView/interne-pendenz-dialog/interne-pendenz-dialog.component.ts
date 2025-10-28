@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject, ViewChild} from '@angular/core';
+import {Component, ViewChild, inject} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TSInternePendenz} from '../../../../models/TSInternePendenz';
@@ -28,15 +28,18 @@ import moment from 'moment';
     standalone: false
 })
 export class InternePendenzDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<InternePendenzDialogComponent>>(MatDialogRef);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     @ViewChild(NgForm, {static: true}) public form: NgForm;
 
     public internePendenz: TSInternePendenz;
     public readonlyMode = false;
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<InternePendenzDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         this.internePendenz = data.internePendenz;
         this.readonlyMode = !this.isNew();
     }

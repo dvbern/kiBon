@@ -20,7 +20,8 @@ import {
     Component,
     EventEmitter,
     Input,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
 import {MAT_DATE_FORMATS} from '@angular/material/core';
@@ -51,15 +52,15 @@ let nextId = 0;
     standalone: false
 })
 export class DvMonthPickerComponent {
+    readonly form = inject(NgForm);
+
     @Input() public date?: moment.Moment;
-    @Input() public readonly required: boolean = false;
+    @Input() public required: boolean = false;
 
     @Output()
     public readonly dateChange = new EventEmitter<moment.Moment | null>();
 
     public inputId = `dv-month-picker-${nextId++}`;
-
-    public constructor(public readonly form: NgForm) {}
 
     public chosenYearHandler(normalizedYear: moment.Moment): void {
         const control = this.form.controls[this.inputId];

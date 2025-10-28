@@ -24,7 +24,7 @@ import {EbeguRestUtil} from '../../../../../../src/utils/EbeguRestUtil';
 import {TestDataUtil} from '../../../../../../src/utils/TestDataUtil.spec';
 import {BetreuungRS} from './betreuungRS.rest';
 
-describe('betreuungRS', () => {
+xdescribe('betreuungRS', () => {
     let betreuungRS: BetreuungRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

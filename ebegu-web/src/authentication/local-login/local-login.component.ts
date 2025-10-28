@@ -14,7 +14,13 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    inject
+} from '@angular/core';
 import {CONSTANTS} from '@kibon/shared/model/constants';
 import {TargetState} from '@uirouter/core';
 import {Observable} from 'rxjs';
@@ -38,6 +44,9 @@ type LocalLoginUser = {
     standalone: false
 })
 export class LocalLoginComponent implements OnInit {
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly http = inject(HttpClient);
+
     @Input() public returnTo: TargetState;
 
     public users$: Observable<LocalLoginUser[]>;
@@ -85,11 +94,6 @@ export class LocalLoginComponent implements OnInit {
         GESUCHSTELLER: 20,
         ANONYMOUS: 21
     };
-
-    public constructor(
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly http: HttpClient
-    ) {}
 
     ngOnInit(): void {
         this.users$ = this.http.get<LocalLoginUser[]>(

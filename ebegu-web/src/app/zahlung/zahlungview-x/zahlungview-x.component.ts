@@ -5,7 +5,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -37,6 +38,19 @@ const LOG = LogFactory.createLog('ZahlungviewXComponent');
     standalone: false
 })
 export class ZahlungviewXComponent implements OnInit, AfterViewInit {
+    private readonly $state = inject(StateService);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly reportRS = inject(ReportRS);
+    private readonly zahlungRS = inject(ZahlungUtilZahlungService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly routerGlobals = inject(UIRouterGlobals);
+    private readonly translate = inject(TranslateService);
+    private readonly currency = inject(CurrencyPipe);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly errorService = inject(ErrorService);
+    private readonly transition = inject(TransitionService);
+    private readonly stateStore = inject(StateStoreService);
+
     @ViewChild(MatSort) public sort: MatSort;
 
     private zahlungen: TSZahlung[] = [];
@@ -49,21 +63,6 @@ export class ZahlungviewXComponent implements OnInit, AfterViewInit {
     public tableColumns: any[];
     private readonly SORT_STORE_KEY = 'zahlungview-x-sort';
     private principal: TSBenutzer;
-
-    public constructor(
-        private readonly $state: StateService,
-        private readonly downloadRS: DownloadRS,
-        private readonly reportRS: ReportRS,
-        private readonly zahlungRS: ZahlungUtilZahlungService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly routerGlobals: UIRouterGlobals,
-        private readonly translate: TranslateService,
-        private readonly currency: CurrencyPipe,
-        private readonly cd: ChangeDetectorRef,
-        private readonly errorService: ErrorService,
-        private readonly transition: TransitionService,
-        private readonly stateStore: StateStoreService
-    ) {}
 
     public ngOnInit(): void {
         if (this.routerGlobals.params.isMahlzeitenzahlungen) {

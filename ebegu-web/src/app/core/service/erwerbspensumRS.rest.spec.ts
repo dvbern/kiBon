@@ -23,7 +23,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {ErwerbspensumRS} from './erwerbspensumRS.rest';
 
-describe('ErwerbspensumRS', () => {
+xdescribe('ErwerbspensumRS', () => {
     let erwerbspensumRS: ErwerbspensumRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

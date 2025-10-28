@@ -16,7 +16,7 @@
  */
 
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {TSGemeinde, TSInstitution} from '@kibon/shared/model/entity';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -27,9 +27,9 @@ import {CONSTANTS} from '@kibon/shared/model/constants';
     providedIn: 'root'
 })
 export class ReportAsyncRS {
-    private readonly serviceURL = `${CONSTANTS.REST_API}reporting/async`;
+    http = inject(HttpClient);
 
-    public constructor(public http: HttpClient) {}
+    private readonly serviceURL = `${CONSTANTS.REST_API}reporting/async`;
 
     private static createParamsFromObject(paramsObj: object): HttpParams {
         let params = new HttpParams();

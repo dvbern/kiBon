@@ -20,7 +20,8 @@ import {
     Component,
     Input,
     OnChanges,
-    SimpleChanges
+    SimpleChanges,
+    inject
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {externalClientComparator} from '../../../../models/TSExternalClient';
@@ -33,11 +34,11 @@ import {TSExternalClientAssignment} from '../../../../models/TSExternalClientAss
     standalone: false
 })
 export class ExternalClientAssignmentComponent implements OnChanges {
+    private readonly translate = inject(TranslateService);
+
     @Input() public externalClients: TSExternalClientAssignment;
 
     public assignedClients: string;
-
-    public constructor(private readonly translate: TranslateService) {}
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.externalClients) {

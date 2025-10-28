@@ -21,7 +21,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -59,6 +60,18 @@ const LOG = LogFactory.createLog('BenutzerComponent');
     standalone: false
 })
 export class BenutzerComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly $state = inject(StateService);
+    private readonly translate = inject(TranslateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly dialog = inject(MatDialog);
+    private readonly errorService = inject(ErrorService);
+    private readonly adminUtilKeycloakAdminService = inject(
+        AdminUtilKeycloakAdminRsService
+    );
+
     @ViewChild(NgForm) private readonly form: NgForm;
 
     private readonly log: Log = LogFactory.createLog('BenutzerComponent');
@@ -76,18 +89,6 @@ export class BenutzerComponent implements OnInit {
     public isDisabled = true;
 
     berechtigungHistoryList: TSBerechtigungHistory[];
-
-    public constructor(
-        private readonly $transition$: Transition,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly $state: StateService,
-        private readonly translate: TranslateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly dialog: MatDialog,
-        private readonly errorService: ErrorService,
-        private readonly adminUtilKeycloakAdminService: AdminUtilKeycloakAdminRsService
-    ) {}
 
     // noinspection JSMethodCanBeStatic
     /**

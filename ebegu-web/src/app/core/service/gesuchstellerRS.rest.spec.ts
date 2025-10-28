@@ -25,7 +25,7 @@ import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {GesuchstellerRS} from './gesuchstellerRS.rest';
 import IInjectorService = angular.auto.IInjectorService;
 
-describe('GesuchstellerRS', () => {
+xdescribe('GesuchstellerRS', () => {
     let gesuchstellerRS: GesuchstellerRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

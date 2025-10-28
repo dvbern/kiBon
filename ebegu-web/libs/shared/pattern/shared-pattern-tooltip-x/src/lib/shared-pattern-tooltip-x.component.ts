@@ -16,13 +16,13 @@
  */
 
 import {Component, inject, input} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {MatDialog} from '@angular/material/dialog';
 import {TooltipTemplateComponent} from './tooltip-template.component';
 import {SharedModule} from '../../../../../../src/app/shared/shared.module';
 
 @Component({
-    imports: [CommonModule, SharedModule],
+    imports: [SharedModule],
     selector: 'tooltip-x',
     templateUrl: 'shared-pattern-tooltip-x.component.html',
     styles: `

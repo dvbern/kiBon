@@ -1,96 +1,107 @@
 <!doctype html>
 <!--
-  ~ Ki-Tax: System for the management of external childcare subsidies
-  ~ Copyright (C) 2017 City of Bern Switzerland
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
-  -->
+~ Ki-Tax: System for the management of external childcare subsidies
+~ Copyright (C) 2017 City of Bern Switzerland
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
 
 <!-- sozialhilfeBezueger -->
-<div class="row" *ngIf="showSozialhilfeQuestion()">
-    <div class="col-xs-12 dv-input-container-question">
-        <div class="form-group">
-            <span
-                class="ebegu-h1 required"
-                [innerHTML]="
-                    'FINANZIELLE_SITUATION_SOZIALHILFE_BEZUEGER'
-                        | translate
-                            : {basisjahr: gesuchModelManager.getBasisjahr()}
-                "
-            >
-            </span>
-            <dv-input-container-x [verticalAlign]="true">
+@if (showSozialhilfeQuestion()) {
+    <div class="row">
+        <div class="col-xs-12 dv-input-container-question">
+            <div class="form-group">
+                <span
+                    class="ebegu-h1 required"
+                    [innerHTML]="
+                        'FINANZIELLE_SITUATION_SOZIALHILFE_BEZUEGER'
+                            | translate
+                                : {basisjahr: gesuchModelManager.getBasisjahr()}
+                    "
+                >
+                </span>
+                <dv-input-container-x [verticalAlign]="true">
+                    <dv-radio-container-x>
+                        <dv-radio-input-x
+                            class="sozialhilfeBezueger"
+                            data-test="sozialhilfeBezueger"
+                            [(model)]="sozialhilfeBezueger"
+                            (modelChange)="updateSozialhilfeBezueger($event)"
+                            [dvBisherValue]="
+                                !disabled &&
+                                !isGesuchReadonly() &&
+                                !isKorrekturModusJugendamt()
+                            "
+                            [required]="true"
+                            [readonly]="disabled"
+                        >
+                        </dv-radio-input-x>
+                    </dv-radio-container-x>
+                </dv-input-container-x>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Finanzielle Situation deklarieren? -->
+@if (showFinanzielleSituationDeklarieren()) {
+    <div class="row">
+        <div class="col-xs-12 dv-input-container-question">
+            <div class="form-group">
+                <span class="ebegu-h1 required">
+                    @if (!gesuchModelManager.isFKJVTexte) {
+                        <span translate
+                            >FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT</span
+                        >
+                    }
+                    @if (gesuchModelManager.isFKJVTexte) {
+                        <span translate
+                            >FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_FKJV</span
+                        >
+                    }
+                    <dv-tooltip
+                        [inputId]="'verguenstigungGewuenscht'"
+                        [text]="
+                            'FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_HELP'
+                                | translate
+                                    : {
+                                          maxEinkommen:
+                                              getMaxMassgebendesEinkommen()
+                                      }
+                        "
+                    ></dv-tooltip>
+                </span>
                 <dv-radio-container-x>
                     <dv-radio-input-x
-                        class="sozialhilfeBezueger"
-                        data-test="sozialhilfeBezueger"
-                        [(model)]="sozialhilfeBezueger"
-                        (modelChange)="updateSozialhilfeBezueger($event)"
+                        [(model)]="verguenstigungGewuenscht"
+                        (modelChange)="updateVerguenstigungGewuenscht($event)"
                         [dvBisherValue]="
                             !disabled &&
                             !isGesuchReadonly() &&
                             !isKorrekturModusJugendamt()
                         "
+                        labelYes="
+                        FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_JA
+                    "
+                        labelNo="
+                        !gesuchModelManager.isFKJVTexte
+                            ? 'FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_NEIN'
+                            : 'FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_NEIN_FKJV'
+                    "
                         [required]="true"
                         [readonly]="disabled"
                     >
                     </dv-radio-input-x>
                 </dv-radio-container-x>
-            </dv-input-container-x>
+            </div>
         </div>
     </div>
-</div>
-
-<!-- Finanzielle Situation deklarieren? -->
-<div class="row" *ngIf="showFinanzielleSituationDeklarieren()">
-    <div class="col-xs-12 dv-input-container-question">
-        <div class="form-group">
-            <span class="ebegu-h1 required">
-                <span *ngIf="!gesuchModelManager.isFKJVTexte" translate
-                    >FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT</span
-                >
-                <span *ngIf="gesuchModelManager.isFKJVTexte" translate
-                    >FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_FKJV</span
-                >
-                <dv-tooltip
-                    [inputId]="'verguenstigungGewuenscht'"
-                    [text]="
-                        'FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_HELP'
-                            | translate
-                                : {maxEinkommen: getMaxMassgebendesEinkommen()}
-                    "
-                ></dv-tooltip>
-            </span>
-            <dv-radio-container-x>
-                <dv-radio-input-x
-                    [(model)]="verguenstigungGewuenscht"
-                    (modelChange)="updateVerguenstigungGewuenscht($event)"
-                    [dvBisherValue]="
-                        !disabled &&
-                        !isGesuchReadonly() &&
-                        !isKorrekturModusJugendamt()
-                    "
-                    labelYes="
-                        FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_JA
-                    "
-                    labelNo="
-                        !gesuchModelManager.isFKJVTexte
-                            ? 'FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_NEIN'
-                            : 'FINANZIELLE_SITUATION_VERGUENSTIGUNG_GEWUENSCHT_NEIN_FKJV'
-                    "
-                    [required]="true"
-                    [readonly]="disabled"
-                >
-                </dv-radio-input-x>
-            </dv-radio-container-x>
-        </div>
-    </div>
-</div>
+}

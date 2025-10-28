@@ -27,7 +27,8 @@ import {
     Output,
     SimpleChanges,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
@@ -93,6 +94,22 @@ const LOG = LogFactory.createLog('DVAntragListController');
 export class NewAntragListComponent
     implements OnInit, OnDestroy, OnChanges, AfterViewInit
 {
+    private readonly institutionRS = inject(InstitutionRS);
+    private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly searchRS = inject(SearchRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly translate = inject(TranslateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly transitionService = inject(TransitionService);
+    private readonly stateStore = inject(StateStoreService);
+    private readonly uiRouterGlobals = inject(UIRouterGlobals);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+
     @ViewChild(MatPaginator) public paginator: MatPaginator;
     @ViewChild(MatTable) private readonly table: MatTable<DVAntragListItem>;
     @ViewChild(MatSort) private readonly matSort: MatSort;
@@ -307,22 +324,6 @@ export class NewAntragListComponent
     private filterId: string;
     private tagesschulangebotEnabled: boolean;
     private angebotMittagstischEnabled: boolean;
-
-    public constructor(
-        private readonly institutionRS: InstitutionRS,
-        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly searchRS: SearchRS,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly translate: TranslateService,
-        private readonly errorService: ErrorService,
-        private readonly transitionService: TransitionService,
-        private readonly stateStore: StateStoreService,
-        private readonly uiRouterGlobals: UIRouterGlobals,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService
-    ) {}
 
     public ngOnInit(): void {
         this.updateInstitutionenList();

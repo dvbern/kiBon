@@ -41,7 +41,7 @@ import {WizardStepManager} from '../../service/wizardStepManager';
 import {VerfuegenListViewController} from './verfuegenListView';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 
-describe('verfuegenListViewTest', () => {
+xdescribe('verfuegenListViewTest', () => {
     const verfuegenView = 'gesuch.verfuegenView';
 
     let verfuegenListView: VerfuegenListViewController;

@@ -14,7 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    inject
+} from '@angular/core';
 import {StateService} from '@uirouter/core';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -32,6 +37,10 @@ import {DVEntitaetListItem} from '../../shared/interfaces/DVEntitaetListItem';
     standalone: false
 })
 export class ListSozialdienstComponent implements OnInit {
+    private readonly $state = inject(StateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly sozialdienstRS = inject(SozialdienstRS);
+
     public hiddenDVTableColumns = [
         'institutionCount',
         'type',
@@ -40,12 +49,6 @@ export class ListSozialdienstComponent implements OnInit {
     ];
 
     public antragList$: Observable<DVEntitaetListItem[]>;
-
-    public constructor(
-        private readonly $state: StateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly sozialdienstRS: SozialdienstRS
-    ) {}
 
     public ngOnInit(): void {
         this.loadData();

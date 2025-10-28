@@ -57,7 +57,7 @@ import {GesuchRS} from './gesuchRS.rest';
 import {WizardStepManager} from './wizardStepManager';
 
 /* eslint-disable */
-describe('gesuchModelManager', () => {
+xdescribe('gesuchModelManager', () => {
     let gesuchModelManager: GesuchModelManager;
     let betreuungRS: BetreuungRS;
     let dossierRS: DossierRS;

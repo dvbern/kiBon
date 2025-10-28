@@ -19,7 +19,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {BehaviorSubject, combineLatest} from 'rxjs';
@@ -44,6 +45,13 @@ const LOG = LogFactory.createLog('LastenausgleichTsBerechnungComponent');
     standalone: false
 })
 export class LastenausgleichTsBerechnungComponent implements OnInit {
+    private readonly translate = inject(TranslateService);
+    private readonly errorService = inject(ErrorService);
+    private readonly latsService = inject(LastenausgleichTSService);
+    private readonly authService = inject(AuthServiceRS);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly cd = inject(ChangeDetectorRef);
+
     private static readonly FILENAME_DE = 'Verfügung Tagesschulen kiBon';
     private static readonly FILENAME_FR = 'Décision EJC kiBon';
 
@@ -60,15 +68,6 @@ export class LastenausgleichTsBerechnungComponent implements OnInit {
     private principal: TSBenutzer | null;
     public betreuungsstundenPrognoseFromKiBon: number;
     public hasSavedBetreuungsstundenPrognose: boolean;
-
-    public constructor(
-        private readonly translate: TranslateService,
-        private readonly errorService: ErrorService,
-        private readonly latsService: LastenausgleichTSService,
-        private readonly authService: AuthServiceRS,
-        private readonly downloadRS: DownloadRS,
-        private readonly cd: ChangeDetectorRef
-    ) {}
 
     public ngOnInit(): void {
         combineLatest([

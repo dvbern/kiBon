@@ -16,7 +16,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {forkJoin, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -30,6 +30,8 @@ import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
     providedIn: 'root'
 })
 export class EinstellungRS {
+    readonly http = inject(HttpClient);
+
     public serviceURL: string;
     public readonly ebeguRestUtil: EbeguRestUtil = new EbeguRestUtil();
 
@@ -38,7 +40,7 @@ export class EinstellungRS {
         TSEinstellung[]
     >();
 
-    public constructor(public readonly http: HttpClient) {
+    public constructor() {
         this.serviceURL = `${CONSTANTS.REST_API}einstellung`;
     }
 

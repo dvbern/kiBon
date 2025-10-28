@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, inject} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -32,6 +32,10 @@ import {
     standalone: false
 })
 export class ModulTagesschuleDialogComponent implements OnInit {
+    private readonly dialogRef =
+        inject<MatDialogRef<ModulTagesschuleDialogComponent>>(MatDialogRef);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     @ViewChild(NgForm, {static: true}) public form: NgForm;
 
     public modulTagesschuleGroup: TSModulTagesschuleGroup;
@@ -39,10 +43,9 @@ export class ModulTagesschuleDialogComponent implements OnInit {
 
     public readonly CONSTANTS = CONSTANTS;
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<ModulTagesschuleDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         this.modulTagesschuleGroup = data.modulTagesschuleGroup;
     }
 

@@ -613,6 +613,12 @@ public final class EbeguRuleTestsHelper {
 			gesuchsperiode
 		);
 
+		einstellungenMap.addEinstellung(
+			BETREUUNG_COMPARATOR,
+			"DEFAULT",
+			gesuchsperiode
+		);
+
 		return einstellungenMap.getEinstellungen();
 	}
 

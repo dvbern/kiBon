@@ -21,7 +21,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -43,6 +44,13 @@ const LOG = LogFactory.createLog('FerienbetreuungKommantarComponent');
     standalone: false
 })
 export class FerienbetreuungKommantarComponent implements OnInit, OnDestroy {
+    private readonly ferienbetreuungService = inject(FerienbetreuungService);
+    private readonly ref = inject(ChangeDetectorRef);
+    private readonly errorService = inject(ErrorService);
+    private readonly translate = inject(TranslateService);
+    private readonly benutzerRS = inject(BenutzerRSX);
+    private readonly fb = inject(FormBuilder);
+
     public form = this.fb.group({
         kommentar: this.fb.control({
             value: <null | string>null,
@@ -54,15 +62,6 @@ export class FerienbetreuungKommantarComponent implements OnInit, OnDestroy {
     public ferienbetreuungContainer: TSFerienbetreuungAngabenContainer;
 
     public userList: Array<TSBenutzerNoDetails>;
-
-    public constructor(
-        private readonly ferienbetreuungService: FerienbetreuungService,
-        private readonly ref: ChangeDetectorRef,
-        private readonly errorService: ErrorService,
-        private readonly translate: TranslateService,
-        private readonly benutzerRS: BenutzerRSX,
-        private readonly fb: FormBuilder
-    ) {}
 
     public ngOnInit(): void {
         this.subscription = this.ferienbetreuungService

@@ -18,7 +18,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    Input
+    Input,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -46,6 +47,16 @@ import {OnboardingHelpDialogComponent} from '../onboarding-help-dialog/onboardin
     standalone: false
 })
 export class OnboardingNeuBenutzerComponent {
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly stateService = inject(StateService);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly dialog = inject(MatDialog);
+    private readonly translate = inject(TranslateService);
+
     @Input() public nextState: string = 'onboarding.be-login';
     public isTSAngebotEnabled: boolean;
 
@@ -61,15 +72,7 @@ export class OnboardingNeuBenutzerComponent {
     public tsBeantragen: boolean;
     public besondereVolksschuleBeantragen: boolean;
 
-    public constructor(
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly stateService: StateService,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly cd: ChangeDetectorRef,
-        private readonly dialog: MatDialog,
-        private readonly translate: TranslateService
-    ) {
+    public constructor() {
         this.gemeinden$ = from(
             this.gemeindeRS.getAktiveUndVonSchulverbundGemeinden()
         ).pipe(

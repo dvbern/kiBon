@@ -20,7 +20,8 @@ import {
     Directive,
     ElementRef,
     Input,
-    OnChanges
+    OnChanges,
+    inject
 } from '@angular/core';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSRole} from '@kibon/shared/model/enums';
@@ -41,16 +42,14 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     standalone: false
 })
 export class DvNgEnableElementDirective implements AfterViewInit, OnChanges {
+    private readonly elementRef = inject(ElementRef);
+    private readonly authServiceRS = inject(AuthServiceRS);
+
     @Input()
     private readonly dvEnableAllowedRoles: ReadonlyArray<TSRole>;
 
     @Input()
     private readonly dvEnabled: boolean;
-
-    public constructor(
-        private readonly elementRef: ElementRef,
-        private readonly authServiceRS: AuthServiceRS
-    ) {}
 
     public ngAfterViewInit(): void {
         this.handleElement();

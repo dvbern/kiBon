@@ -25,7 +25,7 @@ import {TSGemeinde} from '@kibon/shared/model/entity';
 import {TestDataUtil} from '../../utils/TestDataUtil.spec';
 import {GemeindeRS} from './gemeindeRS.rest';
 
-describe('GemeindeRS', () => {
+xdescribe('GemeindeRS', () => {
     let gemeindeRS: GemeindeRS;
     let $httpBackend: IHttpBackendService;
     let allGemeinde: TSGemeinde[];

@@ -7,7 +7,7 @@ import {
     OnDestroy,
     viewChild
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {NgForm} from '@angular/forms';
 import {PERMISSIONS_KIND} from '@kibon/kind/model/permissions';
 import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
@@ -18,7 +18,7 @@ import {TSKind} from '@kibon/kind/model/entity';
 
 @Component({
     selector: 'lib-betreuung-ui-kind-gueltigkeit-terminiert',
-    imports: [CommonModule, SharedModule],
+    imports: [SharedModule],
     templateUrl: './betreuung-ui-kind-gueltigkeit-terminiert.component.html',
     styleUrl: './betreuung-ui-kind-gueltigkeit-terminiert.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush

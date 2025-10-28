@@ -14,7 +14,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {firstValueFrom, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -28,11 +28,11 @@ import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
     providedIn: 'root'
 })
 export class UnterstuetzungsdienstFallService {
+    http = inject(HttpClient);
+
     public serviceURL: string =
         CONSTANTS.REST_API + 'unterstuetzungsdienstfall';
     private ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(public http: HttpClient) {}
 
     public removeVollmachtDokument(
         sozialdienstFallDokumentId: string

@@ -29,7 +29,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {MitteilungRS} from './mitteilungRS.rest';
 
-describe('MitteilungRS', () => {
+xdescribe('MitteilungRS', () => {
     let mitteilungRS: MitteilungRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

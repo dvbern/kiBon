@@ -22,7 +22,8 @@ import {
     OnChanges,
     OnInit,
     Output,
-    SimpleChanges
+    SimpleChanges,
+    inject
 } from '@angular/core';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {Moment} from 'moment';
@@ -47,6 +48,11 @@ export interface HTMLInputEvent extends Event {
 export class MultipleFileUploadComponent<T extends TSFile>
     implements OnChanges, OnInit
 {
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly errorService = inject(ErrorServiceX);
+
     @Input() public title: string;
     @Input() public readOnly: boolean;
     @Input() public readOnlyDelete: boolean;
@@ -62,11 +68,6 @@ export class MultipleFileUploadComponent<T extends TSFile>
     @Input() public files: TSUploadFile[];
 
     public allowedMimetypes: string = '';
-
-    public constructor(
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly errorService: ErrorServiceX
-    ) {}
 
     public ngOnInit(): void {
         this.applicationPropertyRS.getAllowedMimetypes().subscribe(response => {

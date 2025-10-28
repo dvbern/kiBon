@@ -16,7 +16,12 @@
  *
  */
 
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    signal,
+    inject
+} from '@angular/core';
 import {SharedModule} from '../../../../app/shared/shared.module';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
@@ -39,14 +44,17 @@ const STEP_NAME = TSWizardStepName.FREIGABE;
     imports: [SharedModule]
 })
 export class OnlineFreigabeComponent {
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly wizardStepManager = inject(WizardStepManager);
+    protected readonly freigabeService = inject(FreigabeService);
+
     public alreadyFreigegeben = signal<boolean>(null);
     public model: Model;
 
-    public constructor(
-        private readonly gesuchModelManager: GesuchModelManager,
-        private readonly wizardStepManager: WizardStepManager,
-        protected readonly freigabeService: FreigabeService
-    ) {
+    public constructor() {
+        const gesuchModelManager = this.gesuchModelManager;
+        const wizardStepManager = this.wizardStepManager;
+
         const unbesucht =
             wizardStepManager.getStepByName(STEP_NAME).wizardStepStatus ===
             TSWizardStepStatus.UNBESUCHT;

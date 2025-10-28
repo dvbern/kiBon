@@ -1,19 +1,19 @@
 <!--
-  ~ Copyright (C) 2021 DV Bern AG, Switzerland
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU Affero General Public License as
-  ~ published by the Free Software Foundation, either version 3 of the
-  ~ License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU Affero General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Affero General Public License
-  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
-  -->
+~ Copyright (C) 2021 DV Bern AG, Switzerland
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU Affero General Public License as
+~ published by the Free Software Foundation, either version 3 of the
+~ License, or (at your option) any later version.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+~ GNU Affero General Public License for more details.
+~
+~ You should have received a copy of the GNU Affero General Public License
+~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
 <div class="row">
     <div class="col-sm-12">
         <mat-divider class="margin-bottom-50"></mat-divider>
@@ -23,58 +23,64 @@
     </div>
 </div>
 <div class="form-group">
-    <div class="row" *ngIf="isGemeinsam">
-        <div class="col-sm-6">
-            <dv-input-label-field
-                [model]="resultate?.massgebendesEinkVorAbzFamGrGS1"
-                [labelMessageKey]=""
-                [labelMessageKeyArgs]=""
-                [inputDisabled]="true"
-                data-test="massgebendesEinkVorAbzFamGrGS1Gemeinsam"
-            >
-            </dv-input-label-field>
-        </div>
-    </div>
-
-    <div class="row" *ngIf="!isGemeinsam">
-        <!--        this should be visible on all pages-->
-        <div class="col-sm-6 margin-top-20">
-            <dv-input-label-field
-                [model]="resultate?.massgebendesEinkVorAbzFamGrGS1"
-                [labelMessageKey]="
-                    'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN_MIT_GS'
-                "
-                [labelMessageKeyArgs]="{namegs: getAntragsteller1Name()}"
-                [inputDisabled]="true"
-                data-test="massgebendesEinkVorAbzFamGrGS1NotGemeinsam"
-            >
-            </dv-input-label-field>
-        </div>
-        <!--    this should only be visible on second page. only in this case we have multiple antragsteller a calculation -->
-        <ng-container *ngIf="antragstellerNummer === 2">
-            <div class="col-sm-12">
+    @if (isGemeinsam) {
+        <div class="row">
+            <div class="col-sm-6">
                 <dv-input-label-field
-                    [model]="resultate?.massgebendesEinkVorAbzFamGrGS2"
+                    [model]="resultate?.massgebendesEinkVorAbzFamGrGS1"
+                    [labelMessageKey]=""
+                    [labelMessageKeyArgs]=""
+                    [inputDisabled]="true"
+                    data-test="massgebendesEinkVorAbzFamGrGS1Gemeinsam"
+                >
+                </dv-input-label-field>
+            </div>
+        </div>
+    }
+
+    @if (!isGemeinsam) {
+        <div class="row">
+            <!--        this should be visible on all pages-->
+            <div class="col-sm-6 margin-top-20">
+                <dv-input-label-field
+                    [model]="resultate?.massgebendesEinkVorAbzFamGrGS1"
                     [labelMessageKey]="
                         'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN_MIT_GS'
                     "
-                    [labelMessageKeyArgs]="{namegs: getAntragsteller2Name()}"
+                    [labelMessageKeyArgs]="{namegs: getAntragsteller1Name()}"
                     [inputDisabled]="true"
-                    data-test="massgebendesEinkVorAbzFamGrGS2"
+                    data-test="massgebendesEinkVorAbzFamGrGS1NotGemeinsam"
                 >
                 </dv-input-label-field>
             </div>
-            <div class="col-sm-12">
-                <dv-input-label-field
-                    [model]="resultate?.massgebendesEinkVorAbzFamGr"
-                    [labelMessageKey]="
-                        'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN'
-                    "
-                    [inputDisabled]="true"
-                    data-test="massgebendesEinkVorAbzFamGr"
-                >
-                </dv-input-label-field>
-            </div>
-        </ng-container>
-    </div>
+            <!--    this should only be visible on second page. only in this case we have multiple antragsteller a calculation -->
+            @if (antragstellerNummer === 2) {
+                <div class="col-sm-12">
+                    <dv-input-label-field
+                        [model]="resultate?.massgebendesEinkVorAbzFamGrGS2"
+                        [labelMessageKey]="
+                            'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN_MIT_GS'
+                        "
+                        [labelMessageKeyArgs]="{
+                            namegs: getAntragsteller2Name()
+                        }"
+                        [inputDisabled]="true"
+                        data-test="massgebendesEinkVorAbzFamGrGS2"
+                    >
+                    </dv-input-label-field>
+                </div>
+                <div class="col-sm-12">
+                    <dv-input-label-field
+                        [model]="resultate?.massgebendesEinkVorAbzFamGr"
+                        [labelMessageKey]="
+                            'FINANZIELLE_SITUATION_MASSGEBENDES_EINKOMMEN'
+                        "
+                        [inputDisabled]="true"
+                        data-test="massgebendesEinkVorAbzFamGr"
+                    >
+                    </dv-input-label-field>
+                </div>
+            }
+        </div>
+    }
 </div>

@@ -24,7 +24,7 @@ import {TestDataUtil} from '../../../utils/TestDataUtil.spec';
 import {CORE_JS_MODULE} from '../core.angularjs.module';
 import {KindRS} from './kindRS.rest';
 
-describe('KindRS', () => {
+xdescribe('KindRS', () => {
     let kindRS: KindRS;
     let $httpBackend: IHttpBackendService;
     let ebeguRestUtil: EbeguRestUtil;

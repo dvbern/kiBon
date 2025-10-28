@@ -34,7 +34,7 @@
  * - showBisher: Wenn das Flag auf false gesetzt wird, wird dv-bisher nie angezeigt
  */
 
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, inject} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import moment from 'moment';
 import {Moment} from 'moment';
@@ -50,6 +50,8 @@ import {CONSTANTS} from '@kibon/shared/model/constants';
     standalone: false
 })
 export class DvBisherXComponent {
+    private readonly $translate = inject(TranslateService);
+
     /**
      * erster Wert. Z.B. Gesuchsteller, Gemeinde, etc.
      */
@@ -82,8 +84,6 @@ export class DvBisherXComponent {
 
     public bisherText: Array<string>;
     public blockExisted: boolean;
-
-    public constructor(private readonly $translate: TranslateService) {}
 
     public getBisher(): Array<string> {
         // noinspection IfStatementWithTooManyBranchesJS

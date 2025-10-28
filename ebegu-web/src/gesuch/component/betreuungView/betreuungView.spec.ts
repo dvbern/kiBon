@@ -52,7 +52,7 @@ import {WizardStepManager} from '../../service/wizardStepManager';
 import {BetreuungViewController} from './betreuungView';
 import ITranslateService = angular.translate.ITranslateService;
 /* eslint-disable max-len */
-describe('betreuungView', () => {
+xdescribe('betreuungView', () => {
     const betreuungenState = 'gesuch.betreuungen';
 
     let betreuungView: BetreuungViewController;

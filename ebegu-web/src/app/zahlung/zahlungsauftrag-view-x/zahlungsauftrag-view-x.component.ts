@@ -22,7 +22,8 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
@@ -72,6 +73,23 @@ const LOG = LogFactory.createLog('ZahlungsauftragViewXComponent');
 export class ZahlungsauftragViewXComponent
     implements OnInit, AfterViewInit, OnDestroy
 {
+    private readonly zahlungRS = inject(ZahlungUtilZahlungService);
+    private readonly $state = inject(StateService);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly reportRS = inject(ReportRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly translate = inject(TranslateService);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly uiRouterGlobals = inject(UIRouterGlobals);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly dialog = inject(MatDialog);
+    private readonly transition = inject(TransitionService);
+    private readonly stateStore = inject(StateStoreService);
+    private readonly errorService = inject(ErrorService);
+
     @ViewChild(MatSort) public sort: MatSort;
     @ViewChild(MatPaginator) private readonly paginator: MatPaginator;
 
@@ -121,23 +139,6 @@ export class ZahlungsauftragViewXComponent
     };
     private readonly SORT_STORE_KEY = 'zahlungsauftrag-view-sort';
     private readonly FILTER_STORE_KEY = 'zahlungsauftrag-view-filter';
-
-    public constructor(
-        private readonly zahlungRS: ZahlungUtilZahlungService,
-        private readonly $state: StateService,
-        private readonly downloadRS: DownloadRS,
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly reportRS: ReportRS,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly translate: TranslateService,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly uiRouterGlobals: UIRouterGlobals,
-        private readonly cd: ChangeDetectorRef,
-        private readonly dialog: MatDialog,
-        private readonly transition: TransitionService,
-        private readonly stateStore: StateStoreService,
-        private readonly errorService: ErrorService
-    ) {}
 
     public ngOnInit(): void {
         const isMahlzeitenzahlungen = EbeguUtil.isNotNullAndTrue(

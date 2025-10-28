@@ -15,7 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    inject
+} from '@angular/core';
 import {Observable} from 'rxjs';
 import {TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
@@ -30,6 +36,8 @@ import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
     standalone: false
 })
 export class WizardSideNavComponent implements OnInit {
+    private readonly wizardStepXRS = inject(WizardStepXRS);
+
     @Input() public readonly id: string;
     @Input() public readonly wizardTyp: string;
     @Input() public readonly status: string;
@@ -38,8 +46,6 @@ export class WizardSideNavComponent implements OnInit {
     @Input() public readonly subHeader: string;
 
     public wizardSteps$: Observable<TSWizardStepX[]>;
-
-    public constructor(private readonly wizardStepXRS: WizardStepXRS) {}
 
     public ngOnInit(): void {
         this.wizardSteps$ = this.wizardStepXRS.getAllSteps();

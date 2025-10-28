@@ -13,7 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {DVErrorMessageCallback} from '../../../../models/DVErrorMessageCallback';
 import {TSMessageEvent} from '../../../../models/enums/TSErrorEvent';
 import {TSErrorLevel} from '../../../../models/enums/TSErrorLevel';
@@ -25,9 +25,9 @@ import {BroadcastService} from '../../service/broadcast.service';
     providedIn: 'root'
 })
 export class ErrorServiceX {
-    public errors: Array<TSExceptionReport> = [];
+    private readonly broadcastService = inject(BroadcastService);
 
-    public constructor(private readonly broadcastService: BroadcastService) {}
+    public errors: Array<TSExceptionReport> = [];
 
     public getErrors(): ReadonlyArray<TSExceptionReport> {
         return this.errors;

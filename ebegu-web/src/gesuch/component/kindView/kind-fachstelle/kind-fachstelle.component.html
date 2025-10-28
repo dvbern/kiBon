@@ -20,15 +20,19 @@
                             [(ngModel)]="pensumFachstelle.integrationTyp"
                             (ngModelChange)="loadEinstellungenForIntegration()"
                         >
-                            <mat-radio-button
-                                *ngFor="let integrationType of integrationTypes"
-                                [attr.data-test]="
-                                    'radio-value.' + integrationType
-                                "
-                                [value]="integrationType"
-                            >
-                                {{ integrationType | translate }}
-                            </mat-radio-button>
+                            @for (
+                                integrationType of integrationTypes;
+                                track integrationType
+                            ) {
+                                <mat-radio-button
+                                    [attr.data-test]="
+                                        'radio-value.' + integrationType
+                                    "
+                                    [value]="integrationType"
+                                >
+                                    {{ integrationType | translate }}
+                                </mat-radio-button>
+                            }
                         </mat-radio-group>
                     </dv-radio-container-x>
                 </dv-input-container-x>
@@ -41,126 +45,143 @@
     </div>
 
     <!--Gruende Zusatzleistung-->
-    <div *ngIf="gruendeZusatzleistungRequired()" class="row">
-        <div class="col-xs-12 dv-input-container-question">
-            <div class="form-group">
-                <label
-                    class="md-no-float required"
-                    id="gruendeZusatzleistung"
-                    translate
-                    >GRUENDE_ZUSATZLESITUNG</label
-                >
-                <dv-input-container-x [noMargin]="true" [verticalAlign]="true">
-                    <dv-radio-container-x>
-                        <mat-radio-group
-                            [name]="'grundZusatzleistung#' + index"
-                            [attr.data-test]="
-                                'container.grund-zusatzleistung#' + index
-                            "
-                            dvNgEnableElement
-                            #grundZusatzleistung="ngModel"
-                            [(ngModel)]="pensumFachstelle.gruendeZusatzleistung"
-                            [dvEnabled]="!isGesuchReadonly()"
-                            [required]="submitted || integration.touched"
-                            [dvEnableAllowedRoles]="allowedRoles"
-                        >
-                            <mat-radio-button
-                                *ngFor="
-                                    let grundZusatzleisung of gruendeZusatzleistung
-                                "
+    @if (gruendeZusatzleistungRequired()) {
+        <div class="row">
+            <div class="col-xs-12 dv-input-container-question">
+                <div class="form-group">
+                    <label
+                        class="md-no-float required"
+                        id="gruendeZusatzleistung"
+                        translate
+                        >GRUENDE_ZUSATZLESITUNG</label
+                    >
+                    <dv-input-container-x
+                        [noMargin]="true"
+                        [verticalAlign]="true"
+                    >
+                        <dv-radio-container-x>
+                            <mat-radio-group
+                                [name]="'grundZusatzleistung#' + index"
                                 [attr.data-test]="
-                                    'radio-value.' + grundZusatzleisung
+                                    'container.grund-zusatzleistung#' + index
                                 "
-                                [value]="grundZusatzleisung"
+                                dvNgEnableElement
+                                #grundZusatzleistung="ngModel"
+                                [(ngModel)]="
+                                    pensumFachstelle.gruendeZusatzleistung
+                                "
+                                [dvEnabled]="!isGesuchReadonly()"
+                                [required]="submitted || integration.touched"
+                                [dvEnableAllowedRoles]="allowedRoles"
                             >
-                                {{ grundZusatzleisung | translate }}
-                            </mat-radio-button>
-                        </mat-radio-group>
-                    </dv-radio-container-x>
-                </dv-input-container-x>
-                <dv-error-messages
-                    [inputId]="'gruendeZusatzleistung'"
-                    [errorObject]="grundZusatzleistung.errors"
-                ></dv-error-messages>
+                                @for (
+                                    grundZusatzleisung of gruendeZusatzleistung;
+                                    track grundZusatzleisung
+                                ) {
+                                    <mat-radio-button
+                                        [attr.data-test]="
+                                            'radio-value.' + grundZusatzleisung
+                                        "
+                                        [value]="grundZusatzleisung"
+                                    >
+                                        {{ grundZusatzleisung | translate }}
+                                    </mat-radio-button>
+                                }
+                            </mat-radio-group>
+                        </dv-radio-container-x>
+                    </dv-input-container-x>
+                    <dv-error-messages
+                        [inputId]="'gruendeZusatzleistung'"
+                        [errorObject]="grundZusatzleistung.errors"
+                    ></dv-error-messages>
+                </div>
             </div>
         </div>
-    </div>
+    }
 
     <!--fachstelle-->
-    <div class="row" *ngIf="(getFachstellenList$() | async).length">
-        <div class="col-sm-12 dv-input-container-medium form-group">
-            <label class="md-no-float required">
-                <span translate>FACHSTELLE</span>
-                <dv-tooltip
-                    [inputId]="'fachstelle'"
-                    [text]="'FACHSTELLE_HELP' | translate"
-                ></dv-tooltip>
-            </label>
-            <dv-input-container-x [noMargin]="true" [verticalAlign]="true">
-                <div class="dv-select-style">
-                    <select
-                        [name]="'fachstelle#' + index"
-                        [attr.data-test]="'fachstelle#' + index"
-                        [id]="'fachstelle#' + index"
-                        [(ngModel)]="pensumFachstelle.fachstelle"
-                        #fachstelle="ngModel"
-                        [required]="submitted || fachstelle.touched"
-                        [compareWith]="compareByID"
-                    >
-                        <option class="hidden" [ngValue]="null"></option>
-                        <option
-                            *ngFor="
-                                let fachstelle of getFachstellenList$() | async
-                            "
-                            [ngValue]="fachstelle"
+    @if ((getFachstellenList$() | async).length) {
+        <div class="row">
+            <div class="col-sm-12 dv-input-container-medium form-group">
+                <label class="md-no-float required">
+                    <span translate>FACHSTELLE</span>
+                    <dv-tooltip
+                        [inputId]="'fachstelle'"
+                        [text]="'FACHSTELLE_HELP' | translate"
+                    ></dv-tooltip>
+                </label>
+                <dv-input-container-x [noMargin]="true" [verticalAlign]="true">
+                    <div class="dv-select-style">
+                        <select
+                            [name]="'fachstelle#' + index"
+                            [attr.data-test]="'fachstelle#' + index"
+                            [id]="'fachstelle#' + index"
+                            [(ngModel)]="pensumFachstelle.fachstelle"
+                            #fachstelle="ngModel"
+                            [required]="submitted || fachstelle.touched"
+                            [compareWith]="compareByID"
                         >
-                            {{ fachstelle.name.toString() | translate }}
-                        </option>
-                    </select>
-                </div>
-                <dv-error-messages
-                    [inputId]="'fachstelle'"
-                    [errorObject]="fachstelle.errors"
-                    class="error"
-                ></dv-error-messages>
-            </dv-input-container-x>
+                            <option class="hidden" [ngValue]="null"></option>
+                            @for (
+                                fachstelle of getFachstellenList$() | async;
+                                track fachstelle
+                            ) {
+                                <option [ngValue]="fachstelle">
+                                    {{ fachstelle.name.toString() | translate }}
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <dv-error-messages
+                        [inputId]="'fachstelle'"
+                        [errorObject]="fachstelle.errors"
+                        class="error"
+                    ></dv-error-messages>
+                </dv-input-container-x>
+            </div>
         </div>
-    </div>
+    }
 
     <!--betreuungspensumFachstelle-->
-    <div *ngIf="!isFachstellenTypLuzern()" class="row">
-        <dv-input-container-x [noMargin]="true">
-            <div class="col-sm-12 dv-input-container-small">
-                <label
-                    class="md-no-float"
-                    for="betreuungspensumFachstelle"
-                    required
-                    translate
-                    >BETREUUNGSPENSUM_FACHSTELLE</label
-                >
-                <input
-                    aria-describedby="betreuungspensumFachstelle-error"
-                    id="betreuungspensumFachstelle"
-                    type="number"
-                    [name]="'betreuungspensum-fachstelle#' + index"
-                    [attr.data-test]="'betreuungspensum-fachstelle#' + index"
-                    [(ngModel)]="pensumFachstelle.pensum"
-                    #betreuungspensumFachstelle="ngModel"
-                    [min]="minValueAllowed"
-                    [max]="maxValueAllowed"
-                    [pattern]="PATTERN_PERCENTAGE"
-                    [required]="submitted || betreuungspensumFachstelle.touched"
-                    [disabled]="isOnlyOneValueAllowed()"
-                    [placeholder]="'PERCENTAGE_PLACEHOLDER' | translate"
-                    (change)="validatePensumOverlaps()"
-                />
-                <dv-error-messages
-                    [inputId]="'betreuungspensumFachstelle'"
-                    [errorObject]="betreuungspensumFachstelle.errors"
-                ></dv-error-messages>
-            </div>
-        </dv-input-container-x>
-    </div>
+    @if (!isFachstellenTypLuzern()) {
+        <div class="row">
+            <dv-input-container-x [noMargin]="true">
+                <div class="col-sm-12 dv-input-container-small">
+                    <label
+                        class="md-no-float"
+                        for="betreuungspensumFachstelle"
+                        required
+                        translate
+                        >BETREUUNGSPENSUM_FACHSTELLE</label
+                    >
+                    <input
+                        aria-describedby="betreuungspensumFachstelle-error"
+                        id="betreuungspensumFachstelle"
+                        type="number"
+                        [name]="'betreuungspensum-fachstelle#' + index"
+                        [attr.data-test]="
+                            'betreuungspensum-fachstelle#' + index
+                        "
+                        [(ngModel)]="pensumFachstelle.pensum"
+                        #betreuungspensumFachstelle="ngModel"
+                        [min]="minValueAllowed"
+                        [max]="maxValueAllowed"
+                        [pattern]="PATTERN_PERCENTAGE"
+                        [required]="
+                            submitted || betreuungspensumFachstelle.touched
+                        "
+                        [disabled]="isOnlyOneValueAllowed()"
+                        [placeholder]="'PERCENTAGE_PLACEHOLDER' | translate"
+                        (change)="validatePensumOverlaps()"
+                    />
+                    <dv-error-messages
+                        [inputId]="'betreuungspensumFachstelle'"
+                        [errorObject]="betreuungspensumFachstelle.errors"
+                    ></dv-error-messages>
+                </div>
+            </dv-input-container-x>
+        </div>
+    }
 
     <div class="row">
         <!-- gueltig ab / gueltig bis -->

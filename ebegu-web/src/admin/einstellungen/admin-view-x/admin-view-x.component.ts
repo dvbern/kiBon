@@ -4,7 +4,8 @@ import {
     Component,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -34,6 +35,19 @@ import {ConfigurableEinstellung} from '../EinstellungConfigurations';
     standalone: false
 })
 export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly reindexRS = inject(ReindexRS);
+    private readonly searchRS = inject(SearchRS);
+    private readonly dvDialog = inject(MatDialog);
+    private readonly cd = inject(ChangeDetectorRef);
+    private readonly errorService = inject(ErrorServiceX);
+    private readonly adminUtilKeycloakAdminService = inject(
+        AdminUtilKeycloakAdminRsService
+    );
+    public authServiceRS = inject(AuthServiceRS);
+
     @ViewChild(NgForm) public form: NgForm;
 
     @ViewChild(MatSort, {static: true}) public sort: MatSort;
@@ -46,17 +60,8 @@ export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
     public recreateAlleFaelleInProgress: boolean = false;
     public changedApplicationProperties: ConfigurableEinstellung[] = [];
 
-    public constructor(
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly reindexRS: ReindexRS,
-        private readonly searchRS: SearchRS,
-        private readonly dvDialog: MatDialog,
-        private readonly cd: ChangeDetectorRef,
-        authServiceRS: AuthServiceRS,
-        private readonly errorService: ErrorServiceX,
-        private readonly adminUtilKeycloakAdminService: AdminUtilKeycloakAdminRsService
-    ) {
-        super(authServiceRS);
+    public constructor() {
+        super();
     }
 
     public ngOnInit(): void {

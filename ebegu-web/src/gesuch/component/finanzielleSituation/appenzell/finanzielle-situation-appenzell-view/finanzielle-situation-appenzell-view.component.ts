@@ -18,7 +18,8 @@
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Component
+    Component,
+    inject
 } from '@angular/core';
 import {MatRadioChange} from '@angular/material/radio';
 import {TranslateService} from '@ngx-translate/core';
@@ -58,24 +59,34 @@ const LOG = LogFactory.createLog('FinanzielleSituationAppenzellViewComponent');
     standalone: false
 })
 export class FinanzielleSituationAppenzellViewComponent extends AbstractGesuchViewX<TSFinanzModel> {
+    protected ref = inject(ChangeDetectorRef);
+    protected readonly gesuchModelManager: GesuchModelManager;
+    protected readonly wizardStepManager: WizardStepManager;
+    private readonly $transition$ = inject(Transition);
+    private readonly finanzielleSituationService = inject(
+        FinanzielleSituationAppenzellService
+    );
+    private readonly translate = inject(TranslateService);
+    private readonly finSitRS = inject(FinanzielleSituationRS);
+    private readonly authService = inject(AuthServiceRS);
+    protected dvShowWarningAngabenVervollstaendigenService = inject(
+        SharedUtilDvShowWarningAngabenVervollstaendingenService
+    );
+
     private readonly gesuchstellerNumber: number;
 
-    public constructor(
-        protected ref: ChangeDetectorRef,
-        protected readonly gesuchModelManager: GesuchModelManager,
-        protected readonly wizardStepManager: WizardStepManager,
-        private readonly $transition$: Transition,
-        private readonly finanzielleSituationService: FinanzielleSituationAppenzellService,
-        private readonly translate: TranslateService,
-        private readonly finSitRS: FinanzielleSituationRS,
-        private readonly authService: AuthServiceRS,
-        protected dvShowWarningAngabenVervollstaendigenService: SharedUtilDvShowWarningAngabenVervollstaendingenService
-    ) {
+    public constructor() {
+        const gesuchModelManager = inject(GesuchModelManager);
+        const wizardStepManager = inject(WizardStepManager);
+
         super(
             gesuchModelManager,
             wizardStepManager,
             TSWizardStepName.FINANZIELLE_SITUATION_APPENZELL
         );
+        this.gesuchModelManager = gesuchModelManager;
+        this.wizardStepManager = wizardStepManager;
+
         this.gesuchstellerNumber = parseInt(
             this.$transition$.params().gesuchstellerNumber,
             10

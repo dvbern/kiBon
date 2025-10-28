@@ -20,7 +20,8 @@ import {
     Component,
     Input,
     OnInit,
-    ViewChild
+    ViewChild,
+    inject
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -56,6 +57,16 @@ import {FileUtil} from '@kibon/shared-util-fn-file';
     standalone: false
 })
 export class GemeindeTsKonfigComponent implements OnInit {
+    private readonly $transition$ = inject(Transition);
+    private readonly errorService = inject(ErrorService);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly downloadRS = inject(DownloadRS);
+    private readonly uploadRS = inject(UploadRS);
+    private readonly dialog = inject(MatDialog);
+    private readonly translate = inject(TranslateService);
+    private readonly gesuchsperiodeRS = inject(GesuchsperiodeRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+
     @ViewChild(NgForm) public form: NgForm;
     @Input() public konfigurationsListe: TSGemeindeKonfiguration[];
     @Input() public gemeindeStatus: TSGemeindeStatus;
@@ -72,18 +83,6 @@ export class GemeindeTsKonfigComponent implements OnInit {
         {};
     private readonly _vorlageMerkblattAnmeldungTSFR: {[key: string]: boolean} =
         {};
-
-    public constructor(
-        private readonly $transition$: Transition,
-        private readonly errorService: ErrorService,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly downloadRS: DownloadRS,
-        private readonly uploadRS: UploadRS,
-        private readonly dialog: MatDialog,
-        private readonly translate: TranslateService,
-        private readonly gesuchsperiodeRS: GesuchsperiodeRS,
-        private readonly authServiceRS: AuthServiceRS
-    ) {}
 
     public ngOnInit(): void {
         this.navigationDest = this.$transition$.to();

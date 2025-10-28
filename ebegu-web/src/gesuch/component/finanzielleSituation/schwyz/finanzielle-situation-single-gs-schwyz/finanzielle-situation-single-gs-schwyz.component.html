@@ -23,41 +23,41 @@
                 'LABEL_NEIN' | translate
             }}</mat-radio-button>
         </mat-radio-group>
-        <dv-error-messages
-            *ngIf="quellenbesteuert.touched"
-            [errorObject]="quellenbesteuert.errors"
-            inputId="quellenbesteuert_id"
-        >
-        </dv-error-messages>
+        @if (quellenbesteuert.touched) {
+            <dv-error-messages
+                [errorObject]="quellenbesteuert.errors"
+                inputId="quellenbesteuert_id"
+            >
+            </dv-error-messages>
+        }
     </dv-radio-container-x>
 </div>
 
-<ng-container *ngIf="isNotNullOrUndefined(getFinSitJA().quellenbesteuert)">
-    <ng-container
-        *ngIf="
-            getFinSitJA().quellenbesteuert;
-            then bruttolohnFragen;
-            else steuerveranlagFragen
-        "
-    ></ng-container>
-</ng-container>
-
-<ng-template #steuerveranlagFragen>
-    <dv-steuerveranlagt-schwyz
-        (valueChanged)="emitValueChanged()"
-        [finSitGS]="finanzModel.getFiSiConToWorkWith().finanzielleSituationGS"
-        [finSitJA]="finanzModel.getFiSiConToWorkWith().finanzielleSituationJA"
-        [readonly]="readonly"
-        [schwyzErweiterteFinSit]="schwyzErweiterteFinSit"
-    >
-    </dv-steuerveranlagt-schwyz>
-</ng-template>
-<ng-template #bruttolohnFragen>
-    <dv-bruttolohn-schwyz
-        (valueChanged)="emitValueChanged()"
-        [finSitGS]="finanzModel.getFiSiConToWorkWith().finanzielleSituationGS"
-        [finSitJA]="finanzModel.getFiSiConToWorkWith().finanzielleSituationJA"
-        [readonly]="readonly"
-    >
-    </dv-bruttolohn-schwyz>
-</ng-template>
+@if (isNotNullOrUndefined(getFinSitJA().quellenbesteuert)) {
+    @if (getFinSitJA().quellenbesteuert) {
+        <dv-bruttolohn-schwyz
+            (valueChanged)="emitValueChanged()"
+            [finSitGS]="
+                finanzModel.getFiSiConToWorkWith().finanzielleSituationGS
+            "
+            [finSitJA]="
+                finanzModel.getFiSiConToWorkWith().finanzielleSituationJA
+            "
+            [readonly]="readonly"
+        >
+        </dv-bruttolohn-schwyz>
+    } @else {
+        <dv-steuerveranlagt-schwyz
+            (valueChanged)="emitValueChanged()"
+            [finSitGS]="
+                finanzModel.getFiSiConToWorkWith().finanzielleSituationGS
+            "
+            [finSitJA]="
+                finanzModel.getFiSiConToWorkWith().finanzielleSituationJA
+            "
+            [readonly]="readonly"
+            [schwyzErweiterteFinSit]="schwyzErweiterteFinSit"
+        >
+        </dv-steuerveranlagt-schwyz>
+    }
+}

@@ -25,7 +25,8 @@ import {
     OnDestroy,
     OnInit,
     Output,
-    ViewEncapsulation
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TSRole} from '@kibon/shared/model/enums';
@@ -61,6 +62,14 @@ const LOG = LogFactory.createLog('SteuerabfrageResponseHintsComponent');
 export class SteuerabfrageResponseHintsComponent
     implements OnInit, OnDestroy, OnChanges
 {
+    readonly gesuchModelManager = inject(GesuchModelManager);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly dialog = inject(MatDialog);
+    private readonly finSitRS = inject(FinanzielleSituationRS);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly translate = inject(TranslateService);
+    private readonly errorService = inject(ErrorService);
+
     @Input()
     public readonly status: TSSteuerdatenAnfrageStatus;
 
@@ -84,16 +93,6 @@ export class SteuerabfrageResponseHintsComponent
 
     public geburtstagNotMatching$: BehaviorSubject<boolean> =
         new BehaviorSubject<boolean>(false);
-
-    public constructor(
-        public readonly gesuchModelManager: GesuchModelManager,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly dialog: MatDialog,
-        private readonly finSitRS: FinanzielleSituationRS,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly translate: TranslateService,
-        private readonly errorService: ErrorService
-    ) {}
 
     public ngOnChanges(): void {
         this.changeDetectorRef.markForCheck();

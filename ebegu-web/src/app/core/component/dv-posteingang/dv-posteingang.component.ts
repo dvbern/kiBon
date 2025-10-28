@@ -13,7 +13,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnDestroy,
+    inject
+} from '@angular/core';
 import {from, merge, Observable, of, Subject, timer} from 'rxjs';
 import {switchMap, takeUntil} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
@@ -30,16 +35,16 @@ import {MitteilungRS} from '../../service/mitteilungRS.rest';
     standalone: false
 })
 export class DvPosteingangComponent implements OnDestroy {
+    private readonly mitteilungRS = inject(MitteilungRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly posteingangService = inject(PosteingangService);
+
     private readonly log: Log = LogFactory.createLog('DvPosteingangComponent');
 
     private readonly unsubscribe$ = new Subject<void>();
     public mitteilungenCount$: Observable<number>;
 
-    public constructor(
-        private readonly mitteilungRS: MitteilungRS,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly posteingangService: PosteingangService
-    ) {
+    public constructor() {
         const posteingangeChanged$ = this.posteingangService
             .get$(TSPostEingangEvent.POSTEINGANG_MIGHT_HAVE_CHANGED)
             .pipe(switchMap(() => this.getMitteilungenCount$()));

@@ -20,7 +20,8 @@ import {
     ChangeDetectorRef,
     Component,
     OnDestroy,
-    OnInit
+    OnInit,
+    inject
 } from '@angular/core';
 import {
     FormBuilder,
@@ -81,6 +82,18 @@ export class FerienbetreuungStammdatenGemeindeComponent
     extends AbstractFerienbetreuungFormular
     implements OnInit, OnDestroy
 {
+    protected readonly errorService: ErrorService;
+    protected readonly translate: TranslateService;
+    protected readonly cd: ChangeDetectorRef;
+    protected readonly dialog: MatDialog;
+    protected readonly uiRouterGlobals: UIRouterGlobals;
+    protected readonly wizardRS: WizardStepXRS;
+    private readonly ferienbetreuungService = inject(FerienbetreuungService);
+    private readonly fb = inject(FormBuilder);
+    private readonly gemeindeRS = inject(GemeindeRS);
+    private readonly authServiceRS = inject(AuthServiceRS);
+    private readonly unsavedChangesService = inject(UnsavedChangesService);
+
     public bfsGemeinden: TSBfsGemeinde[];
 
     private stammdaten: TSFerienbetreuungAngabenStammdaten;
@@ -119,20 +132,22 @@ export class FerienbetreuungStammdatenGemeindeComponent
         })
     });
 
-    public constructor(
-        protected readonly errorService: ErrorService,
-        protected readonly translate: TranslateService,
-        protected readonly cd: ChangeDetectorRef,
-        protected readonly dialog: MatDialog,
-        protected readonly uiRouterGlobals: UIRouterGlobals,
-        protected readonly wizardRS: WizardStepXRS,
-        private readonly ferienbetreuungService: FerienbetreuungService,
-        private readonly fb: FormBuilder,
-        private readonly gemeindeRS: GemeindeRS,
-        private readonly authServiceRS: AuthServiceRS,
-        private readonly unsavedChangesService: UnsavedChangesService
-    ) {
+    public constructor() {
+        const errorService = inject(ErrorService);
+        const translate = inject(TranslateService);
+        const cd = inject(ChangeDetectorRef);
+        const dialog = inject(MatDialog);
+        const uiRouterGlobals = inject(UIRouterGlobals);
+        const wizardRS = inject(WizardStepXRS);
+
         super(errorService, translate, dialog, cd, wizardRS, uiRouterGlobals);
+
+        this.errorService = errorService;
+        this.translate = translate;
+        this.cd = cd;
+        this.dialog = dialog;
+        this.uiRouterGlobals = uiRouterGlobals;
+        this.wizardRS = wizardRS;
     }
 
     public ngOnInit(): void {

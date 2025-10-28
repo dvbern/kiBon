@@ -16,7 +16,7 @@
  */
 
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';
@@ -34,10 +34,10 @@ type lastenausgleichCreateDTO = {
     providedIn: 'root'
 })
 export class LastenausgleichRS {
+    http = inject(HttpClient);
+
     private readonly API_BASE_URL = `${CONSTANTS.REST_API}lastenausgleich`;
     private readonly ebeguRestUtil = new EbeguRestUtil();
-
-    public constructor(public http: HttpClient) {}
 
     public getAllLastenausgleiche(): Observable<TSLastenausgleich[]> {
         return this.http

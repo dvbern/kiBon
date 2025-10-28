@@ -21,7 +21,8 @@ import {
     Component,
     EventEmitter,
     Input,
-    Output
+    Output,
+    inject
 } from '@angular/core';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
@@ -36,6 +37,8 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     standalone: false
 })
 export class DvCheckboxXComponent {
+    private readonly gesuchModelManager = inject(GesuchModelManager);
+
     @Input()
     public label: string;
 
@@ -62,10 +65,6 @@ export class DvCheckboxXComponent {
         new EventEmitter<boolean>();
 
     public uniqueName: string = `checkbox_${EbeguUtil.generateRandomName(10)}`;
-
-    public constructor(
-        private readonly gesuchModelManager: GesuchModelManager
-    ) {}
 
     public change(): void {
         this.modelChange.emit(this.model);

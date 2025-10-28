@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
@@ -36,6 +36,17 @@ import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.se
     standalone: false
 })
 export class OnboardingComponent implements OnInit, OnDestroy {
+    private readonly applicationPropertyRS = inject(
+        SharedUtilApplicationPropertyRsService
+    );
+    private readonly onboardingPlaceholderService = inject(
+        OnboardingPlaceholderService
+    );
+    private readonly translate = inject(TranslateService);
+    private readonly dialog = inject(MatDialog);
+    private readonly mandantService = inject(MandantService);
+    private readonly sanitizer = inject(DomSanitizer);
+
     @Input() public showLogin: boolean = true;
 
     private readonly description1: string = 'ONBOARDING_MAIN_DESC1';
@@ -49,14 +60,7 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     private readonly unsubscribe$ = new Subject<void>();
     public youtubeLink$: Observable<SafeResourceUrl | null>;
 
-    public constructor(
-        private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
-        private readonly onboardingPlaceholderService: OnboardingPlaceholderService,
-        private readonly translate: TranslateService,
-        private readonly dialog: MatDialog,
-        private readonly mandantService: MandantService,
-        private readonly sanitizer: DomSanitizer
-    ) {
+    public constructor() {
         this.isDummyMode$ = this.applicationPropertyRS.isDummyMode();
 
         this.isMultimandantEnabled$ =

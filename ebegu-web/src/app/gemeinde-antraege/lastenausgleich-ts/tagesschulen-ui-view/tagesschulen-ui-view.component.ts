@@ -15,7 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    inject
+} from '@angular/core';
 import {StateService, TransitionService} from '@uirouter/core';
 
 @Component({
@@ -25,10 +30,8 @@ import {StateService, TransitionService} from '@uirouter/core';
     standalone: false
 })
 export class TagesschulenUiViewComponent implements OnInit {
-    public constructor(
-        private readonly $state: StateService,
-        private readonly $transition: TransitionService
-    ) {}
+    private readonly $state = inject(StateService);
+    private readonly $transition = inject(TransitionService);
 
     public ngOnInit(): void {
         this.$transition.onSuccess(

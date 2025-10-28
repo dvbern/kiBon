@@ -23,7 +23,7 @@ import {
     HttpRequest,
     HttpResponse
 } from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {TSHTTPEvent} from '../events/TSHTTPEvent';
@@ -34,7 +34,7 @@ import {BroadcastService} from '../service/broadcast.service';
  */
 @Injectable()
 export class HttpResponseInterceptorX implements HttpInterceptor {
-    public constructor(private readonly broadcastService: BroadcastService) {}
+    private readonly broadcastService = inject(BroadcastService);
 
     public intercept(
         req: HttpRequest<any>,

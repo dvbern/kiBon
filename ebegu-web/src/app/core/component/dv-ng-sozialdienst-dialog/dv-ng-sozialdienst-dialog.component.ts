@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
 
@@ -31,13 +31,16 @@ import {TSSozialdienst} from '../../../../models/sozialdienst/TSSozialdienst';
     standalone: false
 })
 export class DvNgSozialdienstDialogComponent {
+    private readonly dialogRef =
+        inject<MatDialogRef<DvNgSozialdienstDialogComponent>>(MatDialogRef);
+    private readonly data = inject(MAT_DIALOG_DATA);
+
     public selectedSozialdienst: TSSozialdienst;
     public sozialdienstList: TSSozialdienst[];
 
-    public constructor(
-        private readonly dialogRef: MatDialogRef<DvNgSozialdienstDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) private readonly data: any
-    ) {
+    public constructor() {
+        const data = this.data;
+
         this.sozialdienstList = data.sozialdienstList;
     }
 

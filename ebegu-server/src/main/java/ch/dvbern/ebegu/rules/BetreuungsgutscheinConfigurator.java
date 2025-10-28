@@ -50,6 +50,7 @@ import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANSPRUCH_AB_X_MONATEN;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANSPRUCH_MONATSWEISE;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANWESENHEITSTAGE_PRO_MONAT_AKTIVIERT;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.AUSSERORDENTLICHER_ANSPRUCH_RULE;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.BETREUUNG_COMPARATOR;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.DAUER_BABYTARIF;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.EINGEWOEHNUNG_TYP;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.ERWERBSPENSUM_ZUSCHLAG;
@@ -165,7 +166,8 @@ public class BetreuungsgutscheinConfigurator {
 			ANWESENHEITSTAGE_PRO_MONAT_AKTIVIERT,
 			SOZIALVERSICHERUNGSNUMMER_PERIODE,
 			HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT,
-			SOZIALABZUG_PRO_KIND
+			SOZIALABZUG_PRO_KIND,
+			BETREUUNG_COMPARATOR
 		);
 	}
 

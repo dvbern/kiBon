@@ -9,7 +9,8 @@ import {
     Input,
     OnDestroy,
     TemplateRef,
-    ViewContainerRef
+    ViewContainerRef,
+    inject
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
@@ -30,14 +31,12 @@ const config = {
     standalone: false
 })
 export class DvIfViewportSizeDirective implements OnDestroy {
-    private subscription = new Subscription();
+    private readonly observer = inject(BreakpointObserver);
+    private readonly vcRef = inject(ViewContainerRef);
+    private readonly templateRef = inject<TemplateRef<any>>(TemplateRef);
+    private readonly cd = inject(ChangeDetectorRef);
 
-    public constructor(
-        private readonly observer: BreakpointObserver,
-        private readonly vcRef: ViewContainerRef,
-        private readonly templateRef: TemplateRef<any>,
-        private readonly cd: ChangeDetectorRef
-    ) {}
+    private subscription = new Subscription();
 
     @Input()
     public set dvIfViewportSize(value: Size) {

@@ -243,6 +243,7 @@ UPDATE einstellung set value = 'KEINE' WHERE einstellung_key = 'FACHSTELLEN_TYP'
 UPDATE einstellung set value = 'KEINE' WHERE einstellung_key = 'AUSSERORDENTLICHER_ANSPRUCH_RULE' AND gesuchsperiode_id = @gesuchsperiode_24_25_id AND gemeinde_id is null;
 UPDATE einstellung set value = 'true' WHERE einstellung_key = 'ZEMIS_DISABLED' AND gesuchsperiode_id = @gesuchsperiode_24_25_id AND gemeinde_id is null;
 
+
 # Set Einstellungen Periode 25/26 (Kopieren aus Periode 24/25 und Änderungen updaten)
 INSERT IGNORE INTO einstellung(id, timestamp_erstellt, timestamp_mutiert, user_erstellt, user_mutiert, version, einstellung_key, value, gemeinde_id, gesuchsperiode_id, mandant_id, erklaerung)
 SELECT UUID(), now(), now(), 'ebegu:Kanton Schwyz', 'ebegu:Kanton Schwyz', 0, einstellung_key, value, gemeinde_id, @gesuchsperiode_25_26_id, mandant_id, erklaerung FROM einstellung WHERE gesuchsperiode_id = @gesuchsperiode_24_25_id;

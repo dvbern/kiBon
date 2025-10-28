@@ -22,7 +22,7 @@ import {
     HttpRequest,
     HttpResponse
 } from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {CONSTANTS} from '@kibon/shared/model/constants';
@@ -33,7 +33,7 @@ import {VersionService} from '../service/version/version.service';
  */
 @Injectable()
 export class HttpVersionInterceptorX implements HttpInterceptor {
-    public constructor(private readonly versionService: VersionService) {}
+    private readonly versionService = inject(VersionService);
 
     public intercept(
         req: HttpRequest<any>,
