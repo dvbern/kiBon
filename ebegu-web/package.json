@@ -135,8 +135,8 @@
     "xlsx": "^0.18.5"
   },
   "engines": {
-    "node": ">=18.20.4",
-    "npm": ">=10.7.0"
+    "node": ">=22.19.0",
+    "npm": ">=10.9.3"
   },
   "dependencies": {
     "@angular/animations": "20.3.6",

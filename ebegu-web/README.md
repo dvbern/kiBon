@@ -17,6 +17,13 @@ Welcome to DV kiBon frontend Workspace!
 Install global `nx` CLI with `npm i -g nx` as it will make running of some commands easier.
 Install the dependencies with `npm ci`
 
+-> When encountering problems with installing:
+
+1. Ensure you have the correct node and npm versions installed
+2. rm -rf node_modules package-lock.json
+3. npm cache clean --force
+4. npm i --force
+
 | Task  | All             |
 | ----- | --------------- |
 | Serve | `npm run start` |

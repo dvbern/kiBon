@@ -74,7 +74,7 @@
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../ebegu-server/target/site/jacoco-aggregate/jacoco.xml,${project.basedir}/../ebegu-testutils/target/site/jacoco-aggregate/jacoco.xml,${project.basedir}/../ebegu-rest/target/site/jacoco-aggregate/jacoco.xml,${project.basedir}/../ebegu-external-api/target/site/jacoco-aggregate/jacoco.xml,${project.basedir}/../ebegu-dbschema/target/site/jacoco-aggregate/jacoco.xml,${project.basedir}/../ebegu-ws/target/site/jacoco-aggregate/jacoco.xml,${project.basedir}/../ebegu-shared/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <maven-compiler-plugin.source>17</maven-compiler-plugin.source>
         <maven-compiler-plugin.target>17</maven-compiler-plugin.target>
-        <keycloak-admin-client.version>24.0.3</keycloak-admin-client.version>
+        <keycloak-admin-client.version>26.0.7</keycloak-admin-client.version>
         <argLine/> <!-- Do not remove or surefire plugin will break if coverage profile is not enabled -->
     </properties>
 
