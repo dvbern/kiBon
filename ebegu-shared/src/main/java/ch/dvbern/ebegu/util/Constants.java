@@ -67,7 +67,7 @@ public final class Constants {
 	public static final String REGEX_TELEFON_MOBILE =
 		"(0|\\+41|0041)[ ]*(74|75|76|77|78|79)[ ]*[\\d]{3}[ ]*[\\d]{2}[ ]*[\\d]{2}";
 	public static final String PATTERN_URL =
-		"^www\\.[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z]{2,}$";
+		"^www\\.[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z]{2,}(/[\\w\\-./?%&=]*)?$";
 	public static final String REGEX_ZEMIS = "^[0-9]{8}\\.[0-9]$";
 	public static final String PATTERN_DATE = "dd.MM.yyyy";
 	public static final String PATTERN_EMAIL =

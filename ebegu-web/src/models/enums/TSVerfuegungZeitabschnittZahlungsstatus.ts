@@ -20,6 +20,7 @@ export enum TSVerfuegungZeitabschnittZahlungsstatus {
     VERRECHNET_KORRIGIERT = 'VERRECHNET_KORRIGIERT',
     IGNORIERT = 'IGNORIERT',
     IGNORIEREND = 'IGNORIEREND',
+    IGNORIEREND_DEFINITIV = 'IGNORIEREND_DEFINITIV',
     VERRECHNEND = 'VERRECHNEND',
     IGNORIERT_KORRIGIERT = 'IGNORIERT_KORRIGIERT'
 }
@@ -38,6 +39,7 @@ export function getZahlungsstatusIgnorieren(): Array<TSVerfuegungZeitabschnittZa
     return [
         TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT,
         TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT_KORRIGIERT,
-        TSVerfuegungZeitabschnittZahlungsstatus.IGNORIEREND
+        TSVerfuegungZeitabschnittZahlungsstatus.IGNORIEREND,
+        TSVerfuegungZeitabschnittZahlungsstatus.IGNORIEREND_DEFINITIV
     ];
 }

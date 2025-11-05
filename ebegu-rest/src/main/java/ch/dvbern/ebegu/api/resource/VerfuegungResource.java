@@ -16,6 +16,8 @@
 package ch.dvbern.ebegu.api.resource;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -47,6 +49,7 @@ import ch.dvbern.ebegu.api.dtos.JaxBetreuung;
 import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxKindContainer;
 import ch.dvbern.ebegu.api.dtos.JaxVerfuegung;
+import ch.dvbern.ebegu.api.dtos.JaxVerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.api.resource.util.ResourceHelper;
 import ch.dvbern.ebegu.api.util.RestUtil;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
@@ -303,5 +306,38 @@ public class VerfuegungResource {
 				persistedBetreuung
 			);
 		}
+	}
+
+	@Operation(
+		summary = "Gibt die Zeitabschnitte der Vorgänger-Verfügung der Betreuung zurück")
+	@Nullable
+	@GET
+	@Path("/betreuung/{betreuungId}/vorgaenger-zeitabschnitte")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ SUPER_ADMIN, ADMIN_TRAEGERSCHAFT,
+		SACHBEARBEITER_TRAEGERSCHAFT, ADMIN_INSTITUTION,
+		SACHBEARBEITER_INSTITUTION, SACHBEARBEITER_TS, ADMIN_TS,
+		ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE })
+	public List<JaxVerfuegungZeitabschnitt> getBetreuungVorgaengerZeitabschnitte(
+		@Nonnull @NotNull @PathParam("betreuungId") String betreuungId
+	) {
+		Optional<Betreuung> betreuungOpt = betreuungService.findBetreuung(
+			betreuungId
+		);
+		if (betreuungOpt.isEmpty()) {
+			return Collections.emptyList();
+		}
+		Optional<Verfuegung> vorgaengerVerfuegung = verfuegungService
+			.findVorgaengerVerfuegung(
+				betreuungOpt.get()
+			);
+		return vorgaengerVerfuegung.map(Verfuegung::getZeitabschnitte)
+			.map(
+				zeitabschnitte -> converter.verfuegungZeitabschnitteListToJax(
+					zeitabschnitte
+				)
+			)
+			.orElse(Collections.emptyList());
 	}
 }

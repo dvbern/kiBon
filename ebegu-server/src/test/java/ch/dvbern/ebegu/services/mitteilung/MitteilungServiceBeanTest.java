@@ -10,9 +10,12 @@ import ch.dvbern.ebegu.entities.Dossier;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.KindContainer;
+import ch.dvbern.ebegu.entities.Verfuegung;
+import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.Eingangsart;
 import ch.dvbern.ebegu.enums.FinSitStatus;
+import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.GesuchService;
@@ -69,7 +72,7 @@ public class MitteilungServiceBeanTest extends EasyMockSupport {
 			AntragStatus.VERFUEGT
 		);
 		gesuch.setEingangsart(Eingangsart.ONLINE);
-		gesuch.setFinSitStatus(FinSitStatus.ABGELEHNT);
+		gesuch.setFinSitStatus(FinSitStatus.AKZEPTIERT);
 		Betreuungsmitteilung betreuungsmitteilung = new Betreuungsmitteilung();
 		betreuungsmitteilung.setBetreuung(new Betreuung());
 		betreuungsmitteilung.getBetreuung().setKind(new KindContainer());
@@ -88,6 +91,7 @@ public class MitteilungServiceBeanTest extends EasyMockSupport {
 		mitteilungServiceBean.applyBetreuungsmitteilungIfPossible(
 			betreuungsmitteilung
 		);
+		verifyAll();
 	}
 
 	@Test
@@ -120,6 +124,55 @@ public class MitteilungServiceBeanTest extends EasyMockSupport {
 		mitteilungServiceBean.applyBetreuungsmitteilungIfPossible(
 			betreuungsmitteilung
 		);
+		verifyAll();
+		Assertions.assertEquals(
+			AntragStatus.IN_BEARBEITUNG_JA,
+			mutation.getStatus()
+		);
+	}
+
+	@Test
+	public void testMutationNotVerfuegtWennZeitabschnittIgnorierend() {
+		Gesuchsperiode gesuchsperiode = TestDataUtil.createGesuchsperiodeXXYY(
+			2020,
+			2021
+		);
+		Dossier dossier = TestDataUtil.createDefaultDossier();
+		Gesuch gesuch = TestDataUtil.createGesuch(
+			dossier,
+			gesuchsperiode,
+			AntragStatus.VERFUEGT
+		);
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt =
+			new VerfuegungZeitabschnitt();
+		verfuegungZeitabschnitt.setZahlungsstatusInstitution(
+			VerfuegungsZeitabschnittZahlungsstatus.IGNORIEREND
+		);
+		Verfuegung verfuegung = new Verfuegung();
+		verfuegung.getZeitabschnitte().add(verfuegungZeitabschnitt);
+		Betreuung betreuung = new Betreuung();
+		betreuung.setVerfuegung(verfuegung);
+		KindContainer kindContainer = new KindContainer();
+		kindContainer.getBetreuungen().add(betreuung);
+		gesuch.addKindContainer(kindContainer);
+		gesuch.setEingangsart(Eingangsart.ONLINE);
+		Betreuungsmitteilung betreuungsmitteilung = new Betreuungsmitteilung();
+		betreuungsmitteilung.setBetreuung(new Betreuung());
+		betreuungsmitteilung.getBetreuung().setKind(new KindContainer());
+		betreuungsmitteilung.getBetreuung().getKind().setGesuch(gesuch);
+		Gesuch mutation = TestDataUtil.createGesuch(
+			dossier,
+			gesuchsperiode,
+			AntragStatus.IN_BEARBEITUNG_JA
+		);
+		mutation.setNewlyCreatedMutation(true);
+		mutation.setVorgaengerId("UUID");
+		expectDoApplyMitteilung(gesuch, mutation, betreuungsmitteilung);
+		replayAll();
+		mitteilungServiceBean.applyBetreuungsmitteilungIfPossible(
+			betreuungsmitteilung
+		);
+		verifyAll();
 		Assertions.assertEquals(
 			AntragStatus.IN_BEARBEITUNG_JA,
 			mutation.getStatus()
@@ -136,7 +189,6 @@ public class MitteilungServiceBeanTest extends EasyMockSupport {
 		expect(gesuchService.getNeustesGesuchFuerGesuch(gesuch)).andReturn(
 			Optional.of(gesuch)
 		);
-		authorizer.checkWriteAuthorization(gesuch);
 		expectLastCall();
 		expect(gesuchService.createGesuch(anyObject())).andReturn(mutation);
 		authorizer.checkWriteAuthorization(mutation);
@@ -145,9 +197,6 @@ public class MitteilungServiceBeanTest extends EasyMockSupport {
 		expectLastCall();
 		authorizer.checkReadAuthorizationMitteilung(mitteilung);
 		expectLastCall();
-		expect(gesuchService.updateGesuch(mutation, false, null)).andReturn(
-			mutation
-		);
 		expect(persistence.getEntityManager()).andReturn(entityManager);
 		entityManager.flush();
 		expectLastCall();

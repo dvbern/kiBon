@@ -29,7 +29,8 @@ export const CONSTANTS = {
     PATTERN_PERCENTAGE: '^[0-9][0-9]?$|^100$',
     PATTERN_PHONE:
         '(0|\\+41|0041)\\s?([\\d]{2})\\s?([\\d]{3})\\s?([\\d]{2})\\s?([\\d]{2})',
-    PATTERN_WEBSITE: '^www\\.[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z]{2,}$',
+    PATTERN_WEBSITE:
+        '^www\\.[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z]{2,}(/[\\w\\-./?%&=]*)?$',
     PATTERN_MOBILE:
         '(0|\\+41|0041)\\s?(74|75|76|77|78|79)\\s?([\\d]{3})\\s?([\\d]{2})\\s?([\\d]{2})',
     PATTERN_ZEMIS_NUMMER:

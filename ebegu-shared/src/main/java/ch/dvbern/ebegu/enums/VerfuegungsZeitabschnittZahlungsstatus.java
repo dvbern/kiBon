@@ -23,7 +23,8 @@ public enum VerfuegungsZeitabschnittZahlungsstatus {
 	NEU, VERRECHNEND, // Die Zahlung war schon ausbezahlt, wurde aber mit "uebernehmen" gekennzeichnet.
 	VERRECHNET, VERRECHNET_KEINE_BETREUUNG, // Die Zahlung wurde ausbezahlt, besitzt jedoch keine Betreuung (KIBON-2637)
 	VERRECHNET_KORRIGIERT, // Die Zahlung war schon ausbezahlt, wurde aber in einem späteren Zahlungslauf korrigiert
-	IGNORIEREND, 	// Zahlung ist markiert zum Ignorieren aber es wurde noch nicht "ausbezahlt" (d.h. im Excel mit ignoriert exportiert)
+	IGNORIEREND, 	// Zahlung ist markiert zum Ignorieren und wird bei der nächsten Zahlung als ignoriert markiert. Der Entscheid kann bis zur nächsten Zahlung in einer Folge-Mutation geändert werden
+	IGNORIEREND_DEFINITIV, // Zahlung ist markiert zum Ignorieren und wird bei der nächsten Zahlung als ignoriert markiert. Der Entscheid kann nicht mehr geändert werden
 	IGNORIERT, 		// Zahlung wurde bereits einmal ignoriert und muss daher auch künftig ignoriert werden
 	IGNORIERT_KORRIGIERT; // Die Zahlung war schon ignoriert, wurde aber in einem späteren Zahlungslauf korrigiert (und muss weiterhin ignoriert werden)
 
@@ -44,7 +45,7 @@ public enum VerfuegungsZeitabschnittZahlungsstatus {
 	}
 
 	public boolean isIgnorierend() {
-		return IGNORIEREND == this;
+		return IGNORIEREND == this || IGNORIEREND_DEFINITIV == this;
 	}
 
 	public boolean isIgnoriert() {

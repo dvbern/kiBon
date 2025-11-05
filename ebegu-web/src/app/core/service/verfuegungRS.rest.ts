@@ -19,6 +19,7 @@ import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSKindContainer} from '../../../models/TSKindContainer';
 import {TSVerfuegung} from '../../../models/TSVerfuegung';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
+import {TSVerfuegungZeitabschnitt} from '../../../models/TSVerfuegungZeitabschnitt';
 
 export class VerfuegungRS {
     public static $inject = [
@@ -130,6 +131,23 @@ export class VerfuegungRS {
                 this.ebeguRestUtil.parseBetreuung(
                     new TSBetreuung(),
                     response.data
+                )
+            );
+    }
+
+    public getVorgaengerZeitabschnitte(
+        betreuung: TSBetreuung
+    ): IPromise<TSVerfuegungZeitabschnitt[]> {
+        return this.http
+            .get<
+                any[]
+            >(`${this.serviceURL}/betreuung/${betreuung.id}/vorgaenger-zeitabschnitte`)
+            .then(res =>
+                res.data.map(restZeitabschnitt =>
+                    this.ebeguRestUtil.parseVerfuegungZeitabschnitt(
+                        new TSVerfuegungZeitabschnitt(),
+                        restZeitabschnitt
+                    )
                 )
             );
     }

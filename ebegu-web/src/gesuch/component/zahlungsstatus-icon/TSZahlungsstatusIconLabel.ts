@@ -27,8 +27,8 @@ export class TSZahlungsstatusIconLabel {
 
     public constructor(
         private readonly translateService: TranslateService,
-        private readonly zahlungsstatus: TSVerfuegungZeitabschnittZahlungsstatus,
-        private readonly isBetreuungGueltig: boolean
+        zahlungsstatus: TSVerfuegungZeitabschnittZahlungsstatus,
+        isBetreuungGueltig: boolean
     ) {
         this.initIconLabel(zahlungsstatus, isBetreuungGueltig);
     }
@@ -54,6 +54,7 @@ export class TSZahlungsstatusIconLabel {
                 break;
             case TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT:
             case TSVerfuegungZeitabschnittZahlungsstatus.IGNORIEREND:
+            case TSVerfuegungZeitabschnittZahlungsstatus.IGNORIEREND_DEFINITIV:
             case TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT_KORRIGIERT:
                 this.setIconLabelAusserhalb();
                 break;
@@ -81,6 +82,7 @@ export class TSZahlungsstatusIconLabel {
                 this.setIconLabelVerrechnet();
                 break;
             case TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT:
+            case TSVerfuegungZeitabschnittZahlungsstatus.IGNORIEREND_DEFINITIV:
             case TSVerfuegungZeitabschnittZahlungsstatus.IGNORIERT_KORRIGIERT:
                 this.setIconLabelAusserhalb();
                 break;

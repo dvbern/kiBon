@@ -563,10 +563,19 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 			// Wenn der Betrag und die Gueltigkeit gleich bleibt: Wir wurden gar nicht gefragt, ob wir
 			// ignorieren wollen -> wir lassen den letzten bekannten Status!
 			if (ignorieren) {
-				zahlungslaufHelper.setZahlungsstatus(
-					zeitabschnitt,
-					VerfuegungsZeitabschnittZahlungsstatus.IGNORIEREND
-				);
+				if (zeitabschnitt.getVerfuegung()
+					.getBetreuung()
+					.isFinSitRueckwirkendKorrigiertInThisMutation()) {
+					zahlungslaufHelper.setZahlungsstatus(
+						zeitabschnitt,
+						VerfuegungsZeitabschnittZahlungsstatus.IGNORIEREND_DEFINITIV
+					);
+				} else {
+					zahlungslaufHelper.setZahlungsstatus(
+						zeitabschnitt,
+						VerfuegungsZeitabschnittZahlungsstatus.IGNORIEREND
+					);
+				}
 			} else {
 				zahlungslaufHelper.setZahlungsstatus(
 					zeitabschnitt,
@@ -1300,7 +1309,8 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 	 * @return gibt die Verfuegung der vorherigen verfuegten Betreuung zurueck.
 	 */
 	@Nonnull
-	protected Optional<Verfuegung> findVorgaengerVerfuegung(
+	@Override
+	public Optional<Verfuegung> findVorgaengerVerfuegung(
 		@Nonnull AbstractPlatz abstractPlatz
 	) {
 		final Optional<AbstractPlatz> vorgaengerPlatz = findVorgaengerPlatz(

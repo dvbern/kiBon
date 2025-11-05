@@ -385,19 +385,19 @@ public class LastenausgleichBGZeitabschnitteExcelConverter implements
 		SXSSFSheet sheet = rowFiller.getSheet();
 		SXSSFRow targetRow = sheet.createRow(sheet.getLastRowNum() + 1);
 		CellStyle basicStyle = ExcelUtil.createBasicStyleSumRow(sheet);
-		CellStyle procentStyle = ExcelUtil.createProcentStyle(
-			sheet,
+		CellStyle rightBoundedStyle = ExcelUtil.createRightBoundedStyle(
 			basicStyle
 		);
 		CellStyle zahlStyle = ExcelUtil.createNumberStyle(sheet, basicStyle);
 
 		int firstRow = TITLE_ROW_NUMBER + 1;
 		int lastRow = nbrRow + TITLE_ROW_NUMBER;
+		// Berechnet die Summe aller jährlichen BG-Pensen und stellt das Ergebnis als Prozentzahl dar.
 		ExcelUtil.createCellWithFormula(
 			targetRow,
-			procentStyle,
+			rightBoundedStyle,
 			16,
-			"SUM(Q" + firstRow + ":Q" + lastRow + ")"
+			"TEXT(SUM(Q" + firstRow + ":Q" + lastRow + "),\"0.00%\")"
 		);
 		ExcelUtil.createCellWithFormula(
 			targetRow,

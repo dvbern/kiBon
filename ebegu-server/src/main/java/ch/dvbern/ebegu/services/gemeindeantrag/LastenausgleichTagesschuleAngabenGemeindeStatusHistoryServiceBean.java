@@ -139,7 +139,14 @@ public class LastenausgleichTagesschuleAngabenGemeindeStatusHistoryServiceBean
 			status
 		);
 
-		query.where(predicateContainer, predicateStatus);
+		query.where(predicateContainer, predicateStatus)
+			.orderBy(
+				cb.desc(
+					root.get(
+						LastenausgleichTagesschuleAngabenGemeindeStatusHistory_.timestampVon
+					)
+				)
+			);
 		try {
 			return Optional.of(
 				persistence.getEntityManager()

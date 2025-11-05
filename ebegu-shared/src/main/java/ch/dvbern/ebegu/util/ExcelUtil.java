@@ -23,6 +23,7 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
@@ -85,6 +86,20 @@ public abstract class ExcelUtil {
 		basicStyle.setDataFormat(
 			sheet.getWorkbook().createDataFormat().getFormat("0.00")
 		);
+		return basicStyle;
+	}
+
+	/**
+	 * Erweitert den gegeben Style um Rechtsbündigkeit für Zelleninhalte.
+	 *
+	 * @param basicStyle Der zu erweiternde Style.
+	 * @return Der um Rechtsbündigkeit erweiterte Style.
+	 */
+	public static CellStyle createRightBoundedStyle(
+		CellStyle basicStyle
+	) {
+		basicStyle.setAlignment(HorizontalAlignment.RIGHT);
+
 		return basicStyle;
 	}
 }

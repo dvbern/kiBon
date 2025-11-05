@@ -2890,6 +2890,28 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		return null;
 	}
 
+	private boolean areZeitabschnittIgnorierend(Gesuch gesuch) {
+		return gesuch.getKindContainers()
+			.stream()
+			.anyMatch(
+				kindContainer -> kindContainer.getBetreuungen()
+					.stream()
+					.anyMatch(
+						betreuung -> betreuung.getVerfuegung()
+							.getZeitabschnitte()
+							.stream()
+							.anyMatch(
+								verfuegungZeitabschnitt -> verfuegungZeitabschnitt
+									.getZahlungsstatusInstitution()
+									.isIgnorierend()
+									|| verfuegungZeitabschnitt
+										.getZahlungsstatusAntragsteller()
+										.isIgnorierend()
+							)
+					)
+			);
+	}
+
 	private boolean canGesuchBeAutomatischVerfuegt(Gesuch mutation) {
 		// wenn das Gesuch nicht neu erstellt wurde, darf es nie automatisch verfügt werden
 		if (!mutation.isNewlyCreatedMutation()) {
@@ -2900,6 +2922,9 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		Gesuch vorgaenger = gesuchService.findVorgaengerGesuchNotIgnoriert(
 			requireNonNull(mutation.getVorgaengerId())
 		);
+		if (areZeitabschnittIgnorierend(vorgaenger)) {
+			return false;
+		}
 		if (hasNichtEintretenBetreuung(vorgaenger)
 			|| (vorgaenger.getFinSitStatus() != null
 				&& vorgaenger.getFinSitStatus()

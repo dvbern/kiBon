@@ -48,7 +48,7 @@ class CheckWebseiteValidatorTest {
 	void isWebseiteWithSubDomainValid() {
 		assertThat(
 			checkWebseiteValidator.isValid("www.ostermundigen.ch/test", null),
-			is(false)
+			is(true)
 		);
 	}
 }

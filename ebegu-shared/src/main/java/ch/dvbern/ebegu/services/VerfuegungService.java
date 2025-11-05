@@ -23,6 +23,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.AnmeldungFerieninsel;
 import ch.dvbern.ebegu.entities.AnmeldungTagesschule;
 import ch.dvbern.ebegu.entities.Betreuung;
@@ -173,5 +174,9 @@ public interface VerfuegungService {
 	Verfuegung calculateFamGroessenVerfuegung(
 		@Nonnull Gesuch gesuch,
 		@Nonnull Sprache sprache
+	);
+
+	public Optional<Verfuegung> findVorgaengerVerfuegung(
+		AbstractPlatz abstractPlatz
 	);
 }

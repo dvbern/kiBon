@@ -54,7 +54,6 @@ public final class VerfuegungUtil {
 				letzteVerfuegung.getZeitabschnitte();
 
 			for (VerfuegungZeitabschnitt newZeitabschnitt : newZeitabschnitte) {
-				// todo imanol Dies sollte auch subzeitabschnitte vergleichen
 				Optional<VerfuegungZeitabschnitt> oldSameZeitabschnitt =
 					findZeitabschnittSameGueltigkeit(
 						letztVerfuegteZeitabschnitte,
@@ -243,7 +242,6 @@ public final class VerfuegungUtil {
 									oldZeitabschnitt.get()
 								);
 						}
-						//TODO what happens here ????
 						zahlungslaufHelper.setZahlungsstatus(
 							newZeitabschnitt,
 							statusOldZeitabchnitt

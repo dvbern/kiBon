@@ -78,11 +78,8 @@ public class JaxVerfuegungConverter extends AbstractBaseConverter {
 			verfuegung.getKorrekturAusbezahltInstitution()
 		);
 
-		List<JaxVerfuegungZeitabschnitt> zeitabschnitte = verfuegung
-			.getZeitabschnitte()
-			.stream()
-			.map(this::verfuegungZeitabschnittToJax)
-			.collect(Collectors.toList());
+		List<JaxVerfuegungZeitabschnitt> zeitabschnitte =
+			verfuegungZeitabschnitteListToJax(verfuegung.getZeitabschnitte());
 		jaxVerfuegung.setZeitabschnitte(zeitabschnitte);
 
 		return jaxVerfuegung;
@@ -96,6 +93,14 @@ public class JaxVerfuegungConverter extends AbstractBaseConverter {
 			"verfuegungToEntity",
 			ErrorCodeEnum.ERROR_OBJECT_IS_IMMUTABLE
 		);
+	}
+
+	public List<JaxVerfuegungZeitabschnitt> verfuegungZeitabschnitteListToJax(
+		List<VerfuegungZeitabschnitt> verfuegungZeitabschnitte
+	) {
+		return verfuegungZeitabschnitte.stream()
+			.map(this::verfuegungZeitabschnittToJax)
+			.collect(Collectors.toList());
 	}
 
 	@Nullable

@@ -855,7 +855,7 @@ public class LastenausgleichTagesschuleAngabenGemeindeServiceBean extends
 		Optional<LastenausgleichTagesschuleAngabenGemeindeStatusHistory> lastHistoryOfStatus =
 			historyService.findLastHistoryOfStatus(
 				container,
-				LastenausgleichTagesschuleAngabenGemeindeStatus.GEPRUEFT
+				LastenausgleichTagesschuleAngabenGemeindeStatus.ZWEITPRUEFUNG
 			);
 		if (lastHistoryOfStatus.isEmpty()
 			|| container.getStatus()

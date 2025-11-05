@@ -32,12 +32,12 @@ import {
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {
-    TSWizardStepName,
-    TSBetreuungsstatus,
-    TSRole,
-    TSDayOfWeek,
     getWeekdaysValues,
-    TSBrowserLanguage
+    TSBetreuungsstatus,
+    TSBrowserLanguage,
+    TSDayOfWeek,
+    TSRole,
+    TSWizardStepName
 } from '@kibon/shared/model/enums';
 import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
 import {MANDANTS} from '@kibon/shared-model-mandant';
@@ -79,6 +79,8 @@ import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {GesuchRS} from '../../service/gesuchRS.rest';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
+import {VerfuegungRS} from '../../../app/core/service/verfuegungRS.rest';
+import {TSVerfuegungZeitabschnittZahlungsstatus} from '../../../models/enums/TSVerfuegungZeitabschnittZahlungsstatus';
 import ITimeoutService = angular.ITimeoutService;
 import ITranslateService = angular.translate.ITranslateService;
 
@@ -118,7 +120,8 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         'EinstellungRS',
         'EbeguRestUtil',
         'DemoFeatureRS',
-        'GesuchRS'
+        'GesuchRS',
+        'VerfuegungRS'
     ];
 
     // this is the model...
@@ -175,7 +178,8 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         private readonly einstellungRS: EinstellungRS,
         private readonly ebeguRestUtil: EbeguRestUtil,
         private readonly demoFeatureRS: DemoFeatureRS,
-        private readonly gesuchRS: GesuchRS
+        private readonly gesuchRS: GesuchRS,
+        private readonly verfuegungRs: VerfuegungRS
     ) {
         super(
             gesuchModelManager,
@@ -724,12 +728,22 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
         );
     }
 
-    private askIfIgnorieren(
+    private async askIfIgnorieren(
         myZahlungslaufTyp: TSZahlungslaufTyp
-    ): IPromise<boolean> {
+    ): Promise<boolean> {
+        const vorgaengerZeitabschnitte =
+            await this.verfuegungRs.getVorgaengerZeitabschnitte(
+                this.getBetreuung()
+            );
+
         const zahlungDirektIgnorieren =
-            this.isFKJV() &&
-            this.getBetreuung().finSitRueckwirkendKorrigiertInThisMutation;
+            (this.isFKJV() &&
+                this.getBetreuung()
+                    .finSitRueckwirkendKorrigiertInThisMutation) ||
+            this.hasDefinitivIgnorierenZeitabschnitte(
+                myZahlungslaufTyp,
+                vorgaengerZeitabschnitte
+            );
 
         return this.dvDialog
             .showDialog(stepDialogTempl, StepDialogController, {
@@ -742,6 +756,21 @@ export class VerfuegenViewController extends AbstractGesuchViewController<any> {
                 this.isVerfuegenClicked = false;
                 return response === 2;
             });
+    }
+
+    hasDefinitivIgnorierenZeitabschnitte(
+        myZahlungslaufTyp: TSZahlungslaufTyp,
+        zeitabschnitte: TSVerfuegungZeitabschnitt[]
+    ): boolean {
+        return (
+            zeitabschnitte.findIndex(zeitabschnitt =>
+                myZahlungslaufTyp === TSZahlungslaufTyp.GEMEINDE_INSTITUTION
+                    ? zeitabschnitt.zahlungsstatusInstitution ===
+                      TSVerfuegungZeitabschnittZahlungsstatus.IGNORIEREND_DEFINITIV
+                    : zeitabschnitt.zahlungsstatusAntragsteller ===
+                      TSVerfuegungZeitabschnittZahlungsstatus.IGNORIEREND_DEFINITIV
+            ) >= 0
+        );
     }
 
     public verfuegungSchliessenOhenVerfuegen(): IPromise<void> {
