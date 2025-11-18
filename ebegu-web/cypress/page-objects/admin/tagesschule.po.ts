@@ -106,6 +106,10 @@ const getAddImportModuleButton = (moduleIndex: number) => {
     );
 };
 
+const getSendMailWennOffenePendenzen = () => {
+    return cy.getByData('sendMailWennOffenePendenzen');
+};
+
 // !! -- PAGE ACTIONS -- !!
 const editTagesschuleForm = (
     tagesschuleArt: 'dynamisch' | 'scolaris' | 'import',
@@ -118,6 +122,7 @@ const editTagesschuleForm = (
         getPlz().type(data[tagesschuleArt].plz);
         getOrt().type(data[tagesschuleArt].ort);
         getGueltigAb().clear().type(data[tagesschuleArt].gueltigAb);
+        getSendMailWennOffenePendenzen().click();
         cy.waitForRequest('GET', '**/externalclients', () => {
             getEditSaveButton().click();
         });
