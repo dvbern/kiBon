@@ -56,6 +56,7 @@ import ch.dvbern.ebegu.entities.Verfuegung;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.AntragStatus;
 import ch.dvbern.ebegu.enums.FinSitStatus;
+import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.enums.Sprache;
 import ch.dvbern.ebegu.enums.VerfuegungsZeitabschnittZahlungsstatus;
 import ch.dvbern.ebegu.enums.WizardStepName;
@@ -481,7 +482,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 	private void setZahlungsstatus(
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
 		@Nonnull Verfuegung verfuegung,
-		@Nonnull Verfuegung vorgaenger,
+		@Nonnull Verfuegung ausbezahlterVorgaenger,
 		boolean ignorieren
 	) {
 
@@ -492,7 +493,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 					zeitabschnitt,
 					findZeitabschnitteOnVerfuegung(
 						zeitabschnitt.getGueltigkeit(),
-						vorgaenger
+						ausbezahlterVorgaenger
 					),
 					ignorieren
 				)
@@ -502,7 +503,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 	private void setZahlungsstatus(
 		@Nonnull ZahlungslaufTyp zahlungslaufTyp,
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
-		@Nonnull List<VerfuegungZeitabschnitt> vorgaengerList,
+		@Nonnull List<VerfuegungZeitabschnitt> ausbezahlterVorgaengerList,
 		boolean ignorieren
 	) {
 
@@ -512,7 +513,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		Optional<VerfuegungZeitabschnitt> zeitabschnittSameGueltigkeitSameBetrag =
 			VerfuegungUtil.findZeitabschnittSameGueltigkeitSameBetrag(
 				zahlungslaufHelper,
-				vorgaengerList,
+				ausbezahlterVorgaengerList,
 				zeitabschnitt
 			);
 
@@ -522,20 +523,20 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		// Alles ausser NEU
 		boolean zeitraumBereitsVerrechnet = areAllZeitabschnitteVerrechnet(
 			zahlungslaufHelper,
-			vorgaengerList
+			ausbezahlterVorgaengerList
 		);
-		boolean voraengerIgnoriertUndAusbezahlt = isThereAnyIgnoriert(
+		boolean ausbezahlterVorgaengerIgnoriert = isThereAnyIgnoriert(
 			zahlungslaufHelper,
-			vorgaengerList
+			ausbezahlterVorgaengerList
 		);
 
 		LOG.debug(
 			"Verfüge {}, sameGueltigkeitSameBetrag={}, zeitraumBereitsVerrechnet={}, "
-				+ "voraengerIgnoriertUndAusbezahlt={}",
+				+ "ausbezahlterVorgaengerIgnoriert={}",
 			zeitabschnitt.getGueltigkeit().toRangeString(),
 			sameGueltigkeitSameBetrag,
 			zeitraumBereitsVerrechnet,
-			voraengerIgnoriertUndAusbezahlt
+			ausbezahlterVorgaengerIgnoriert
 		);
 
 		// Es gelten folgende Regeln:
@@ -549,7 +550,7 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		//     Wichtig ist, dass auf dieser Verfuegung (die noch nicht ausbezahlt war) nie ein "behandelter"
 		//     Status gesetzt wird da wir sonst bei einer weiteren Mutation die falsche Vorgängerverfügung
 		//     verwenden!
-		if (voraengerIgnoriertUndAusbezahlt) {
+		if (ausbezahlterVorgaengerIgnoriert) {
 			zahlungslaufHelper.setZahlungsstatus(
 				zeitabschnitt,
 				VerfuegungsZeitabschnittZahlungsstatus.IGNORIERT
@@ -563,9 +564,32 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 			// Wenn der Betrag und die Gueltigkeit gleich bleibt: Wir wurden gar nicht gefragt, ob wir
 			// ignorieren wollen -> wir lassen den letzten bekannten Status!
 			if (ignorieren) {
-				if (zeitabschnitt.getVerfuegung()
-					.getBetreuung()
-					.isFinSitRueckwirkendKorrigiertInThisMutation()) {
+				var vorgaenger = findVorgaengerVerfuegung(
+					zeitabschnitt.getVerfuegung().getPlatz()
+				);
+				var zeitabschnitteOnVerfueger = findZeitabschnitteOnVerfuegung(
+					zeitabschnitt.getGueltigkeit(),
+					vorgaenger.orElseThrow(
+						() -> new IllegalStateException(
+							"A vorgaenger must be present when ignoring Zeitabschnitte"
+						)
+					)
+				);
+
+				boolean zuletztVerfuegterVorgaengerIgnoriert =
+					isThereAnyIgnoriertDefinitiv(
+						zahlungslaufHelper,
+						zeitabschnitteOnVerfueger
+					);
+				if (zuletztVerfuegterVorgaengerIgnoriert
+					|| (zeitabschnitt.getVerfuegung()
+						.getBetreuung()
+						.isFinSitRueckwirkendKorrigiertInThisMutation()
+						&& zeitabschnitt.getVerfuegung()
+							.getBetreuung()
+							.extractGesuch()
+							.getFinSitTyp()
+							== FinanzielleSituationTyp.BERN_FKJV)) {
 					zahlungslaufHelper.setZahlungsstatus(
 						zeitabschnitt,
 						VerfuegungsZeitabschnittZahlungsstatus.IGNORIEREND_DEFINITIV
@@ -600,8 +624,8 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 		}
 
 		VerfuegungZeitabschnitt firstVorgaenger = CollectionUtils.isNotEmpty(
-			vorgaengerList
-		) ? vorgaengerList.get(0) : null;
+			ausbezahlterVorgaengerList
+		) ? ausbezahlterVorgaengerList.get(0) : null;
 
 		VerfuegungsZeitabschnittZahlungsstatus statusFirstVorgaenger =
 			firstVorgaenger != null ?
@@ -641,7 +665,21 @@ public class VerfuegungServiceBean extends AbstractBaseService implements
 			);
 	}
 
+	private boolean isThereAnyIgnoriertDefinitiv(
+		@Nonnull ZahlungslaufHelper helper,
+		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
+		return zeitabschnitte.stream()
+			.anyMatch(
+				verfuegungZeitabschnitt -> helper.getZahlungsstatus(
+					verfuegungZeitabschnitt
+				)
+					== VerfuegungsZeitabschnittZahlungsstatus.IGNORIEREND_DEFINITIV
+			);
+	}
+
 	private void setVerfuegungsKategorien(Verfuegung verfuegung) {
+
 		if (!verfuegung.isKategorieNichtEintreten()) {
 			for (VerfuegungZeitabschnitt zeitabschnitt : verfuegung
 				.getZeitabschnitte()) {
