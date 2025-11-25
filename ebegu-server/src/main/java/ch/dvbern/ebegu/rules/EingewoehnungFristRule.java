@@ -17,12 +17,15 @@
 
 package ch.dvbern.ebegu.rules;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
@@ -63,11 +66,10 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 	) {
 
 		Betreuung betreuung = (Betreuung) platz;
-
 		if (betreuung.isEingewoehnung() && eingewoehnungAktiviert) {
 			return handleEingewoehnung(
 				zeitabschnitte,
-				platz.extractGesuchsperiode()
+				betreuung
 			);
 		}
 
@@ -76,7 +78,7 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 
 	private List<VerfuegungZeitabschnitt> handleEingewoehnung(
 		@Nonnull List<VerfuegungZeitabschnitt> zeitabschnitte,
-		Gesuchsperiode gp
+		Betreuung betreuung
 	) {
 
 		EingewohenungAbschnittHelper eingewohenungAbschnittHelper =
@@ -90,9 +92,22 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 
 		VerfuegungZeitabschnitt eingewoehnung = createEingewoehnungAbschnitt(
 			eingewohenungAbschnittHelper,
-			gp
+			betreuung.extractGesuchsperiode()
 		);
-		zeitabschnitte.add(eingewoehnung);
+
+		// Eingewöhnung darf nur zu Beginn des Betreuungspensums gewährt werden. Eingewöhnungszeitabschnitte, sind nicht gültig
+		// und sollen nicht beachtet werden. wir stoppen hier.
+		if (!isEingewoehnungsZeitabschnittAtStartBetreuung(
+			eingewoehnung,
+			zeitabschnitte
+		)) {
+			return zeitabschnitte;
+		}
+
+		List<VerfuegungZeitabschnitt> gewaehrteEingewoehnungUmzugZeitabschnitte =
+			umzugDatumInEingewoehnung(eingewoehnung, zeitabschnitte);
+
+		zeitabschnitte.addAll(gewaehrteEingewoehnungUmzugZeitabschnitte);
 		Collections.sort(zeitabschnitte);
 
 		final List<VerfuegungZeitabschnitt> mergedZeitabschnitte =
@@ -119,6 +134,39 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 		}
 
 		return mergedZeitabschnitte;
+	}
+
+	private boolean isEingewoehnungsZeitabschnittAtStartBetreuung(
+		VerfuegungZeitabschnitt eingewoehnung,
+		List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
+		Optional<VerfuegungZeitabschnitt> firstZeitabschnittWithAnspruchBetreuung =
+			zeitabschnitte.stream()
+				.filter(
+					z -> z.getRelevantBgCalculationInput()
+						.getAnspruchspensumProzent()
+						> 0
+						&& z.getRelevantBgCalculationInput()
+							.getBetreuungspensumProzent()
+							.compareTo(
+								BigDecimal.ZERO
+							)
+							> 0
+				)
+				.sorted()
+				.findFirst();
+
+		if (firstZeitabschnittWithAnspruchBetreuung.isPresent()) {
+			return eingewoehnung.getGueltigkeit()
+				.getGueltigAb()
+				.isEqual(
+					firstZeitabschnittWithAnspruchBetreuung.get()
+						.getGueltigkeit()
+						.getGueltigAb()
+						.minusMonths(1)
+				);
+		}
+		return false;
 	}
 
 	private VerfuegungZeitabschnitt createEingewoehnungAbschnitt(
@@ -195,6 +243,49 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 	@Override
 	protected List<BetreuungsangebotTyp> getApplicableAngebotTypes() {
 		return List.of(KITA, TAGESFAMILIEN);
+	}
+
+	private List<VerfuegungZeitabschnitt> umzugDatumInEingewoehnung(
+		VerfuegungZeitabschnitt eingewoehnungsZeitabschnitt,
+		List<VerfuegungZeitabschnitt> zeitabschnitte
+	) {
+		var copy = new VerfuegungZeitabschnitt(eingewoehnungsZeitabschnitt);
+		List<VerfuegungZeitabschnitt> eingewoehnungsUeberscheidendeZeitabschnitte =
+			zeitabschnitte.stream()
+				.filter(
+					i -> eingewoehnungsZeitabschnitt.getGueltigkeit()
+						.intersects(i.getGueltigkeit())
+				)
+				.toList();
+		List<VerfuegungZeitabschnitt> gewaehrteEingewoehnungenGemeindeZeitabschnitte =
+			new ArrayList<>();
+
+		for (int i = 0;
+			 i < eingewoehnungsUeberscheidendeZeitabschnitte.size();
+			 i++) {
+			var isWohnsitzInGemeinde =
+				!eingewoehnungsUeberscheidendeZeitabschnitte.get(i)
+					.getRelevantBgCalculationInput()
+					.isWohnsitzNichtInGemeindeGS1();
+			var wegzugsDatum = eingewoehnungsUeberscheidendeZeitabschnitte
+				.get(i)
+				.getGueltigkeit()
+				.getGueltigBis();
+
+			if (isWohnsitzInGemeinde) {
+				VerfuegungZeitabschnitt eingewoehnungInGemeinde =
+					new VerfuegungZeitabschnitt(copy);
+				eingewoehnungInGemeinde.getGueltigkeit()
+					.setGueltigBis(wegzugsDatum);
+				copy.getGueltigkeit().setGueltigAb(wegzugsDatum.plusDays(1));
+				gewaehrteEingewoehnungenGemeindeZeitabschnitte.add(
+					eingewoehnungInGemeinde
+				);
+			} else {
+				copy.getGueltigkeit().setGueltigAb(wegzugsDatum.plusDays(1));
+			}
+		}
+		return gewaehrteEingewoehnungenGemeindeZeitabschnitte;
 	}
 
 	static class EingewohenungAbschnittHelper {

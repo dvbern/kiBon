@@ -58,7 +58,6 @@ import static java.time.Month.SEPTEMBER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.*;
 
 public class EingewoehnungFristRuleTest {
 
@@ -207,7 +206,7 @@ public class EingewoehnungFristRuleTest {
 
 		assertThat(result.size(), is(3));
 		new ZeitabschnittAssertionHelper(result.get(0))
-			.assertAnspruch(100)
+			.assertAnspruch(0)
 			.assertGueltigAb(START_PERIODE)
 			.assertGueltigBis(AUG_15.minusDays(1));
 
@@ -310,10 +309,8 @@ public class EingewoehnungFristRuleTest {
 			.addErwerbspensumContainer(
 				TestDataUtil
 					.createErwerbspensum(
-						START_PERIODE.plusMonths(
-							1
-						),
-						ENDE_PERIODE,
+						START_PERIODE,
+						AUGUST_31,
 						60,
 						Taetigkeit.FREIWILLIGENARBEIT
 					)
@@ -322,9 +319,7 @@ public class EingewoehnungFristRuleTest {
 			.addErwerbspensumContainer(
 				TestDataUtil
 					.createErwerbspensum(
-						START_PERIODE.plusMonths(
-							2
-						),
+						SEPTEMBER_1,
 						ENDE_PERIODE,
 						40
 					)
@@ -334,11 +329,20 @@ public class EingewoehnungFristRuleTest {
 			betreuung
 		);
 		// die Erwerbspensum 2 ist von einer Monat verlaengert anstatt die erste
-		assertThat(result.size(), is(3));
+		assertThat(result.size(), is(2));
+		new ZeitabschnittAssertionHelper(result.get(0))
+			.assertAnspruch(60)
+			.assertBetreuungspensum(80)
+			.assertMessageKeyExists(ERWERBSPENSUM_EINGEWOEHNUNG)
+			.assertGueltigAb(START_PERIODE)
+			.assertGueltigBis(AUGUST_31);
+
 		new ZeitabschnittAssertionHelper(result.get(1))
 			.assertAnspruch(60)
+			.assertBetreuungspensum(80)
+			.assertMessageKeyNotExists(ERWERBSPENSUM_EINGEWOEHNUNG)
 			.assertGueltigAb(SEPTEMBER_1)
-			.assertGueltigBis(SEPTEMBER_30);
+			.assertGueltigBis(ENDE_PERIODE);
 	}
 
 	@Test
@@ -453,9 +457,7 @@ public class EingewoehnungFristRuleTest {
 			.addErwerbspensumContainer(
 				TestDataUtil
 					.createErwerbspensum(
-						START_PERIODE.plusMonths(
-							1
-						),
+						SEPTEMBER_1,
 						ENDE_PERIODE,
 						100
 					)
@@ -465,9 +467,7 @@ public class EingewoehnungFristRuleTest {
 			.addErwerbspensumContainer(
 				TestDataUtil
 					.createErwerbspensum(
-						START_PERIODE.plusMonths(
-							2
-						),
+						OCTOBER_1,
 						ENDE_PERIODE,
 						40
 					)
@@ -568,7 +568,7 @@ public class EingewoehnungFristRuleTest {
 	}
 
 	@Test
-	void eingewoehungFristRuleEingagsdatumZuSpaet() {
+	void eingewoehungFristRuleEingagsdatumZuSpaet_keineEingewoehnungDaBetreuungsstartUberschritten() {
 		Betreuung betreuung = createGesuch(false, true);
 		Gesuch gesuch = betreuung.extractGesuch();
 		gesuch.setEingangsdatum(START_PERIODE.plusDays(1));
@@ -598,7 +598,7 @@ public class EingewoehnungFristRuleTest {
 			.assertGueltigBis(AUGUST_31);
 
 		new ZeitabschnittAssertionHelper(result.get(1))
-			.assertAnspruch(60)
+			.assertAnspruch(0)
 			.assertGueltigAb(SEPTEMBER_1)
 			.assertGueltigBis(SEP_06.minusDays(1));
 
@@ -608,6 +608,63 @@ public class EingewoehnungFristRuleTest {
 			.assertGueltigBis(SEPTEMBER_30);
 
 		new ZeitabschnittAssertionHelper(result.get(3))
+			.assertAnspruch(60)
+			.assertGueltigAb(OCTOBER_1)
+			.assertGueltigBis(ENDE_PERIODE);
+	}
+
+	@Test
+	void eingewoehungFristRuleEingagsdatumZuSpaetBetreuungsstartDanach_eingewoehnungGewaehrt() {
+		LocalDate AUG_06 = START_PERIODE.plusDays(5);
+		LocalDate SEP_06 = AUG_06.plusMonths(1);
+
+		Betreuung betreuung = createGesuchWithBetruungGueltigAb(
+			false,
+			true,
+			AUG_06
+		);
+		Gesuch gesuch = betreuung.extractGesuch();
+		gesuch.setEingangsdatum(START_PERIODE.plusDays(1));
+
+		assertThat(gesuch.getGesuchsteller1(), notNullValue());
+		gesuch.getGesuchsteller1()
+			.addErwerbspensumContainer(
+				TestDataUtil
+					.createErwerbspensum(
+						SEP_06,
+						ENDE_PERIODE,
+						40
+					)
+			);
+
+		List<VerfuegungZeitabschnitt> result = calculateMitEingewoehnung(
+			betreuung
+		);
+
+		assertThat(result.size(), is(5));
+
+		new ZeitabschnittAssertionHelper(result.get(0))
+			.assertAnspruch(0)
+			.assertGueltigAb(START_PERIODE)
+			.assertGueltigBis(AUG_06.minusDays(1));
+
+		new ZeitabschnittAssertionHelper(result.get(1))
+			.assertAnspruch(0)
+			.assertGueltigAb(AUG_06)
+			.assertGueltigBis(AUGUST_31);
+
+		new ZeitabschnittAssertionHelper(result.get(2))
+			.assertAnspruch(0)
+			.assertMessageKeyNotExists(ERWERBSPENSUM_EINGEWOEHNUNG)
+			.assertGueltigAb(SEPTEMBER_1)
+			.assertGueltigBis(SEP_06.minusDays(1));
+
+		new ZeitabschnittAssertionHelper(result.get(3))
+			.assertAnspruch(60)
+			.assertGueltigAb(SEP_06)
+			.assertGueltigBis(SEPTEMBER_30);
+
+		new ZeitabschnittAssertionHelper(result.get(4))
 			.assertAnspruch(60)
 			.assertGueltigAb(OCTOBER_1)
 			.assertGueltigBis(ENDE_PERIODE);
@@ -819,7 +876,7 @@ public class EingewoehnungFristRuleTest {
 		secondPensum
 			.getBetreuungspensumJA()
 			.getGueltigkeit()
-			.setGueltigAb(DECEMBER_15);
+			.setGueltigAb(NOV_15);
 
 		var betreuungsPensen = new HashSet<BetreuungspensumContainer>();
 		betreuungsPensen.add(firstPensum);
@@ -841,7 +898,7 @@ public class EingewoehnungFristRuleTest {
 			betreuung
 		);
 
-		assertThat(result.size(), is(5));
+		assertThat(result.size(), is(6));
 
 		//01.08-30.9, Betreuung 80, Anspruch 0
 		new ZeitabschnittAssertionHelper(result.get(0))
@@ -850,28 +907,39 @@ public class EingewoehnungFristRuleTest {
 			.assertGueltigAb(START_PERIODE)
 			.assertGueltigBis(SEPTEMBER_30);
 
-		//30.9 - 14.11., Betreuung 0, Anspruch 0
+		//01.10 - 14.11., Betreuung 0, Anspruch 0
 		new ZeitabschnittAssertionHelper(result.get(1))
 			.assertAnspruch(0)
 			.assertBetreuungspensum(0)
 			.assertGueltigAb(OCTOBER_1)
-			.assertGueltigBis(NOV_15.minusDays(1));
+			.assertGueltigBis(NOV_15.minusDays(1))
+			.assertMessageKeyNotExists(ERWERBSPENSUM_EINGEWOEHNUNG);
 
-		//15.11 - 14.12, Anspruch 60 Eingewöhnung, Betreuung 0
+		//15.11- 30.11., Betreuung 0, Anspruch 0
 		new ZeitabschnittAssertionHelper(result.get(2))
 			.assertAnspruch(60)
+			.assertBetreuungspensum(80)
 			.assertGueltigAb(NOV_15)
-			.assertGueltigBis(NOV_15.plusMonths(1).minusDays(1))
+			.assertGueltigBis(NOVEMBER_30)
+			.assertMessageKeyExists(ERWERBSPENSUM_EINGEWOEHNUNG);
+
+		new ZeitabschnittAssertionHelper(result.get(3))
+			.assertAnspruch(60)
+			.assertBetreuungspensum(80)
+			.assertGueltigAb(DECEMBER_1)
+			.assertGueltigBis(DECEMBER_15.minusDays(1))
 			.assertMessageKeyExists(ERWERBSPENSUM_EINGEWOEHNUNG);
 
 		//15.12- 31.12, Anspruch 60
-		new ZeitabschnittAssertionHelper(result.get(3))
+		new ZeitabschnittAssertionHelper(result.get(4))
+			.assertBetreuungspensum(80)
 			.assertAnspruch(60)
 			.assertGueltigAb(DECEMBER_15)
 			.assertGueltigBis(DECEMBER_31);
 
 		//01.1 - 31.07, Anspruch 60
-		new ZeitabschnittAssertionHelper(result.get(4))
+		new ZeitabschnittAssertionHelper(result.get(5))
+			.assertBetreuungspensum(80)
 			.assertAnspruch(60)
 			.assertGueltigAb(JANUAR_1)
 			.assertGueltigBis(ENDE_PERIODE);
@@ -1047,6 +1115,119 @@ public class EingewoehnungFristRuleTest {
 			.assertAnspruch(80)
 			.assertGueltigAb(JANUAR_1)
 			.assertGueltigBis(ENDE_PERIODE);
+	}
+
+	/*
+		Eingewöhnung darf nur zu Beginn des Betreuungspensums gewährt werden.
+	
+		Beispiel:
+		- Betreuungstart 01.09.
+		- Beschäfitungspensum  01.08.-31.10. & ab 01.12.
+		- Eingewöhnung im Dezember und Januar darf nicht gewährt werden
+	 */
+	@Test
+	void eingewoehungBeschaeftigungspensumUnterbrochen_keineEingewoehnungInMitteVonBetreuung() {
+		// Betreuung über die ganze Periode
+		Betreuung betreuung = createGesuchWithBetruungGueltigAb(
+			false,
+			true,
+			SEPTEMBER_1
+		);
+		Gesuch gesuch = betreuung.extractGesuch();
+
+		assertThat(gesuch.getGesuchsteller1(), notNullValue());
+
+		gesuch.getGesuchsteller1().getErwerbspensenContainers().clear();
+		//ewp 1.8. - 31.10.
+		ErwerbspensumContainer ewp = TestDataUtil.createErwerbspensum(
+			START_PERIODE,
+			OCTOBER_31,
+			40
+		);
+		gesuch.getGesuchsteller1().addErwerbspensumContainer(ewp);
+		//ewp ab 01.12
+		ErwerbspensumContainer ewp2 = TestDataUtil.createErwerbspensum(
+			DECEMBER_1,
+			ENDE_PERIODE,
+			40
+		);
+		gesuch.getGesuchsteller1().addErwerbspensumContainer(ewp2);
+
+		List<VerfuegungZeitabschnitt> result = calculateMitEingewoehnung(
+			betreuung
+		);
+
+		assertThat(result.size(), is(4));
+
+		//01.08- 31.10., Anspruch 60 (40 + 20 Zuschlag)
+		new ZeitabschnittAssertionHelper(result.get(0))
+			.assertAnspruch(60)
+			.assertGueltigAb(START_PERIODE)
+			.assertGueltigBis(AUGUST_31);
+
+		//01.08- 31.10., Anspruch 60 (40 + 20 Zuschlag)
+		new ZeitabschnittAssertionHelper(result.get(1))
+			.assertAnspruch(60)
+			.assertGueltigAb(SEPTEMBER_1)
+			.assertGueltigBis(OCTOBER_31);
+
+		//1.11. - 30.11  Anspruch 0, keine Eingewöhnung
+		new ZeitabschnittAssertionHelper(result.get(2))
+			.assertAnspruch(0)
+			.assertGueltigAb(NOVEMBER_1)
+			.assertGueltigBis(NOVEMBER_30)
+			.assertMessageKeyNotExists(ERWERBSPENSUM_EINGEWOEHNUNG);
+
+		// ab 01.12. Anspruch 40 (40 + 20 Zuschlag)
+		new ZeitabschnittAssertionHelper(result.get(3))
+			.assertAnspruch(60)
+			.assertGueltigAb(DECEMBER_1)
+			.assertGueltigBis(ENDE_PERIODE);
+	}
+
+	/*
+	Eingewöhnung darf nur zu Beginn des Betreuungspensums gewährt werden.
+	
+	Beispiel:
+	- Betreuungstart 01.08.
+	- Beschäfitungspensum  ab 01.11
+	- Eingewöhnung im Oktober darf nicht gewährt werden, da Betreuung bereits im August gestartet hat
+	*/
+	@Test
+	void eingewoehungBeschaeftigungspensumSpaeterAlsBetreuung_keineEingewoehnungInMitteVonBetreuung() {
+		// Betreuung über die ganze Periode
+		Betreuung betreuung = createGesuch(false, true);
+		Gesuch gesuch = betreuung.extractGesuch();
+
+		assertThat(gesuch.getGesuchsteller1(), notNullValue());
+
+		gesuch.getGesuchsteller1().getErwerbspensenContainers().clear();
+		//ewp ab 01.11
+		ErwerbspensumContainer ewp = TestDataUtil.createErwerbspensum(
+			NOVEMBER_1,
+			ENDE_PERIODE,
+			40
+		);
+		gesuch.getGesuchsteller1().addErwerbspensumContainer(ewp);
+
+		List<VerfuegungZeitabschnitt> result = calculateMitEingewoehnung(
+			betreuung
+		);
+
+		assertThat(result.size(), is(3));
+
+		//01.08- 31.09., Anspruch 60 (40 + 20 Zuschlag)
+		new ZeitabschnittAssertionHelper(result.get(0))
+			.assertAnspruch(0)
+			.assertGueltigAb(START_PERIODE)
+			.assertGueltigBis(SEPTEMBER_30)
+			.assertMessageKeyNotExists(ERWERBSPENSUM_EINGEWOEHNUNG);
+
+		//ab 01.10, Anspruch 60 (40 + 20 Zuschlag)
+		new ZeitabschnittAssertionHelper(result.get(1))
+			.assertAnspruch(60)
+			.assertGueltigAb(OCTOBER_1)
+			.assertGueltigBis(OCTOBER_31);
 	}
 
 	@Test

@@ -30,10 +30,12 @@
                                         stammdaten.gutscheinSelberAusgestellt
                                     "
                                 >
-                                    {{
-                                        'GUTSCHEIN_SELBER_AUSGESTELLT'
-                                            | translate
-                                    }}
+                                    <span>
+                                        {{
+                                            'GUTSCHEIN_SELBER_AUSGESTELLT'
+                                                | translate
+                                        }}
+                                    </span>
                                 </mat-checkbox>
                             </div>
                             @if (!stammdaten.gutscheinSelberAusgestellt) {
@@ -162,17 +164,19 @@
                                                 stammdaten.benachrichtigungBgEmailAuto
                                             "
                                         >
-                                            {{
-                                                'BENACHRICHTIGUNGEN_EMAIL_SENDEN'
-                                                    | translate
-                                            }}
-                                            <dv-tooltip
-                                                id="benachrichtigungBgEmailAuto-tooltip"
-                                                [text]="
-                                                    'BENACHRICHTIGUNGEN_EMAIL_SENDEN_HELP'
+                                            <span>
+                                                {{
+                                                    'BENACHRICHTIGUNGEN_EMAIL_SENDEN'
                                                         | translate
-                                                "
-                                            ></dv-tooltip>
+                                                }}
+                                                <dv-tooltip
+                                                    id="benachrichtigungBgEmailAuto-tooltip"
+                                                    [text]="
+                                                        'BENACHRICHTIGUNGEN_EMAIL_SENDEN_HELP'
+                                                            | translate
+                                                    "
+                                                ></dv-tooltip>
+                                            </span>
                                         </mat-checkbox>
                                     </div>
                                 </div>
@@ -188,20 +192,23 @@
                                                 stammdaten.standardDokSignature
                                             "
                                         >
-                                            <span
-                                                [innerHTML]="
-                                                    'STANDARD_DOK_SIGNATURE'
-                                                        | translate
-                                                "
-                                            ></span>
-                                            <dv-tooltip
-                                                id="standardDokSignature_tooltip"
-                                                class="tooltip-pd-8 align-start"
-                                                [text]="
-                                                    'STANDARD_DOK_SIGNATURE_HELP'
-                                                        | translate
-                                                "
-                                            ></dv-tooltip>
+                                            <span>
+                                                <span
+                                                    [innerHTML]="
+                                                        'STANDARD_DOK_SIGNATURE'
+                                                            | translate
+                                                    "
+                                                >
+                                                </span>
+                                                <dv-tooltip
+                                                    id="standardDokSignature_tooltip"
+                                                    class="tooltip-pd-8 align-start"
+                                                    [text]="
+                                                        'STANDARD_DOK_SIGNATURE_HELP'
+                                                            | translate
+                                                    "
+                                                ></dv-tooltip>
+                                            </span>
                                         </mat-checkbox>
                                     </div>
                                 </div>
@@ -369,18 +376,20 @@
                                                     stammdaten.tsVerantwortlicherNachVerfuegungBenachrichtigen
                                                 "
                                             >
-                                                {{
-                                                    'TS_VERANTWORTLICHER_NACH_VERFUEGUNG_BENACHRICHTIGEN'
-                                                        | translate
-                                                }}
-                                                <dv-tooltip
-                                                    id="verantwortlicherTSInformieren_tooltip"
-                                                    class="align-start"
-                                                    [text]="
-                                                        'TS_VERANTWORTLICHER_NACH_VERFUEGUNG_BENACHRICHTIGEN_HELP'
+                                                <span>
+                                                    {{
+                                                        'TS_VERANTWORTLICHER_NACH_VERFUEGUNG_BENACHRICHTIGEN'
                                                             | translate
-                                                    "
-                                                ></dv-tooltip>
+                                                    }}
+                                                    <dv-tooltip
+                                                        id="verantwortlicherTSInformieren_tooltip"
+                                                        class="align-start"
+                                                        [text]="
+                                                            'TS_VERANTWORTLICHER_NACH_VERFUEGUNG_BENACHRICHTIGEN_HELP'
+                                                                | translate
+                                                        "
+                                                    ></dv-tooltip>
+                                                </span>
                                             </mat-checkbox>
                                         </div>
                                     </div>
@@ -397,17 +406,19 @@
                                                 stammdaten.emailBeiGesuchsperiodeOeffnung
                                             "
                                         >
-                                            {{
-                                                'EMAIL_BEI_GESUCHSPERIODE_OEFFNUNG'
-                                                    | translate
-                                            }}
-                                            <dv-tooltip
-                                                id="emailBeiGesuchsperiodeOeffnung_tooltip"
-                                                [text]="
-                                                    'EMAIL_BEI_GESUCHSPERIODE_OEFFNUNG_HELP'
+                                            <span>
+                                                {{
+                                                    'EMAIL_BEI_GESUCHSPERIODE_OEFFNUNG'
                                                         | translate
-                                                "
-                                            ></dv-tooltip>
+                                                }}
+                                                <dv-tooltip
+                                                    id="emailBeiGesuchsperiodeOeffnung_tooltip"
+                                                    [text]="
+                                                        'EMAIL_BEI_GESUCHSPERIODE_OEFFNUNG_HELP'
+                                                            | translate
+                                                    "
+                                                ></dv-tooltip>
+                                            </span>
                                         </mat-checkbox>
                                     </div>
                                 </div>
@@ -428,17 +439,19 @@
                                                 )
                                             "
                                         >
-                                            {{
-                                                'ZUSAETZLICHER_TEXT_VERFUEGUNG_JA'
-                                                    | translate
-                                            }}
-                                            <dv-tooltip
-                                                id="zusatzText_tooltip"
-                                                [text]="
-                                                    'ZUSAETZLICHER_TEXT_VERFUEGUNG_HELP'
+                                            <span>
+                                                {{
+                                                    'ZUSAETZLICHER_TEXT_VERFUEGUNG_JA'
                                                         | translate
-                                                "
-                                            ></dv-tooltip>
+                                                }}
+                                                <dv-tooltip
+                                                    id="zusatzText_tooltip"
+                                                    [text]="
+                                                        'ZUSAETZLICHER_TEXT_VERFUEGUNG_HELP'
+                                                            | translate
+                                                    "
+                                                ></dv-tooltip>
+                                            </span>
                                         </mat-checkbox>
                                     </div>
                                 </div>
@@ -531,7 +544,12 @@
                                             altBGAdresseHasChange($event)
                                         "
                                     >
-                                        {{ 'ALTERNATIVE_ADRESSE' | translate }}
+                                        <span>
+                                            {{
+                                                'ALTERNATIVE_ADRESSE'
+                                                    | translate
+                                            }}
+                                        </span>
                                     </mat-checkbox>
                                 </div>
                                 @if (altBGAdresse) {
@@ -789,9 +807,11 @@
                                             "
                                             required
                                         >
-                                            <mat-radio-button [value]="true">{{
-                                                'STANDARD_TEXT' | translate
-                                            }}</mat-radio-button>
+                                            <mat-radio-button [value]="true"
+                                                >{{
+                                                    'STANDARD_TEXT' | translate
+                                                }}
+                                            </mat-radio-button>
                                             &nbsp;
                                             <mat-radio-button [value]="false"
                                                 >{{
@@ -897,11 +917,12 @@
                                                         $event
                                                     )
                                                 "
-                                            >
-                                                {{
-                                                    'BESCHWERDE_ADRESSE_IDENTISCH_KONTAKT'
-                                                        | translate
-                                                }}
+                                                ><span>
+                                                    {{
+                                                        'BESCHWERDE_ADRESSE_IDENTISCH_KONTAKT'
+                                                            | translate
+                                                    }}
+                                                </span>
                                             </mat-checkbox>
                                         </div>
                                     }
@@ -1223,11 +1244,13 @@
                                                                                 )
                                                                             "
                                                                         >
-                                                                            {{
-                                                                                'KONTINGENTIERUNG'
-                                                                                    | translate
-                                                                            }}</mat-checkbox
-                                                                        >
+                                                                            <span>
+                                                                                {{
+                                                                                    'KONTINGENTIERUNG'
+                                                                                        | translate
+                                                                                }}
+                                                                            </span>
+                                                                        </mat-checkbox>
                                                                     </div>
                                                                 }
                                                                 <!-- Keinen Gutschein für Sozialhilfeempfänger ausstellen -->
@@ -1263,11 +1286,13 @@
                                                                                 )
                                                                             "
                                                                         >
-                                                                            {{
-                                                                                'GEMEINDE_KEIN_GUTSCHEIN_FUER_SOZIALHILFE_EMPFAENGER'
-                                                                                    | translate
-                                                                            }}</mat-checkbox
-                                                                        >
+                                                                            <span>
+                                                                                {{
+                                                                                    'GEMEINDE_KEIN_GUTSCHEIN_FUER_SOZIALHILFE_EMPFAENGER'
+                                                                                        | translate
+                                                                                }}
+                                                                            </span>
+                                                                        </mat-checkbox>
                                                                     </div>
                                                                 }
                                                                 <!-- Custom Erwerbspensum Zuschlag -->

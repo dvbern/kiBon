@@ -91,6 +91,26 @@ public class DateRangeTest {
 	}
 
 	@Test
+	public void testIntersect_rangeShouldIntersectSubRange() {
+		DateRange sub2015 = new DateRange(
+			year2015.getGueltigAb().plusDays(1),
+			year2015.getGueltigBis().minusDays(1)
+		);
+		assertTrue(year2015.intersects(sub2015));
+
+	}
+
+	@Test
+	public void testIntersect_subRangeShouldIntersectRange() {
+		DateRange sub2015 = new DateRange(
+			year2015.getGueltigAb().plusDays(1),
+			year2015.getGueltigBis().minusDays(1)
+		);
+		assertTrue(sub2015.intersects(year2015));
+
+	}
+
+	@Test
 	public void testGetOverlap_shouldBeTheSubRange() {
 		DateRange subRange1 = new DateRange(
 			year2015.getGueltigAb(),

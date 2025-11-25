@@ -338,6 +338,16 @@ public class BetreuungsgutscheinConfigurator {
 			ruleParameterUtil
 		);
 
+		// Wohnsitz (Zuzug und Wegzug)
+		WohnsitzAbschnittRule wohnsitzAbschnittRule = new WohnsitzAbschnittRule(
+			defaultGueltigkeit,
+			locale
+		);
+		addToRuleSetIfRelevantForGemeinde(
+			wohnsitzAbschnittRule,
+			ruleParameterUtil
+		);
+
 		// Eingewoehnungkosten
 		EingewoehnungAbschnittRule eingewoehnungAbschnittRule =
 			new EingewoehnungAbschnittRule(defaultGueltigkeit, locale);
@@ -408,16 +418,6 @@ public class BetreuungsgutscheinConfigurator {
 			new EinkommenAbschnittRule(defaultGueltigkeit, locale);
 		addToRuleSetIfRelevantForGemeinde(
 			einkommenAbschnittRule,
-			ruleParameterUtil
-		);
-
-		// Wohnsitz (Zuzug und Wegzug)
-		WohnsitzAbschnittRule wohnsitzAbschnittRule = new WohnsitzAbschnittRule(
-			defaultGueltigkeit,
-			locale
-		);
-		addToRuleSetIfRelevantForGemeinde(
-			wohnsitzAbschnittRule,
 			ruleParameterUtil
 		);
 

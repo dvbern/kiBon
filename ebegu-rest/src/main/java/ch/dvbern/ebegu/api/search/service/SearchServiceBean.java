@@ -235,8 +235,11 @@ public class SearchServiceBean extends AbstractBaseService {
 				.map(
 					internePendenz -> internePendenz.getGesuch().getId()
 				)
-				.collect(Collectors.toList());
-			if (internePendenzGesuchIds.size() > 0) {
+				.toList();
+			if (!(role.isRoleSozialdienstabhaengig()
+				|| internePendenzGesuchIds.isEmpty())) {
+				// Verfügte Gesuche mit internen, abgelaufenen Pendenzen sind für Unterstützungsdienste nicht relevant.
+				// Darum schliessen wie sie hier aus.
 				Predicate extraStatus = root.get(Gesuch_.status)
 					.in(AntragStatus.VERFUEGT, AntragStatus.NUR_SCHULAMT);
 				Predicate gesuchsIds = root.get(AbstractEntity_.id)

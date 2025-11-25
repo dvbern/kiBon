@@ -75,11 +75,13 @@ import static ch.dvbern.ebegu.api.resource.util.ResourceConstants.DOCX_FILE_EXTE
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_SOZIALDIENST;
 import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TS;
 import static ch.dvbern.ebegu.enums.UserRoleName.GESUCHSTELLER;
 import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
 import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_GEMEINDE;
 import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_MANDANT;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_SOZIALDIENST;
 import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_TS;
 import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 import static java.util.Objects.requireNonNull;
@@ -400,7 +402,9 @@ public class GesuchsperiodeResource {
 	@RolesAllowed({ SUPER_ADMIN, ADMIN_BG, ADMIN_TS, ADMIN_GEMEINDE,
 		SACHBEARBEITER_BG, SACHBEARBEITER_TS,
 		SACHBEARBEITER_GEMEINDE, ADMIN_MANDANT, SACHBEARBEITER_MANDANT,
-		GESUCHSTELLER })
+		GESUCHSTELLER, SACHBEARBEITER_SOZIALDIENST, ADMIN_SOZIALDIENST
+
+	})
 	public boolean existDokument(
 		@Nonnull @PathParam("gesuchsperiodeId") String gesuchsperiodeId,
 		@Nonnull @PathParam("sprache") Sprache sprache,
