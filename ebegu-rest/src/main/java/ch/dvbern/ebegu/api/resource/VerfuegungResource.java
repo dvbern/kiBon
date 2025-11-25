@@ -318,6 +318,7 @@ public class VerfuegungResource {
 	@RolesAllowed({ SUPER_ADMIN, ADMIN_TRAEGERSCHAFT,
 		SACHBEARBEITER_TRAEGERSCHAFT, ADMIN_INSTITUTION,
 		SACHBEARBEITER_INSTITUTION, SACHBEARBEITER_TS, ADMIN_TS,
+		SACHBEARBEITER_BG, ADMIN_BG,
 		ADMIN_GEMEINDE, SACHBEARBEITER_GEMEINDE })
 	public List<JaxVerfuegungZeitabschnitt> getBetreuungVorgaengerZeitabschnitte(
 		@Nonnull @NotNull @PathParam("betreuungId") String betreuungId
