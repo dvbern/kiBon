@@ -45,6 +45,7 @@ import {ReportRS} from './service/reportRS.rest';
 import {TraegerschaftRS} from './service/traegerschaftRS.rest';
 import {UploadRS} from './service/uploadRS.rest';
 import IInjectorService = angular.auto.IInjectorService;
+import {DokumenteRS} from '../../gesuch/service/dokumenteRS.rest';
 
 /* eslint-disable */
 
@@ -387,6 +388,17 @@ export const betreuungRSProvider = {
     deps: ['$injector']
 };
 
+// DokumentRS
+export function dokumentRSFactory(i: IInjectorService): DokumenteRS {
+    return i.get('DokumenteRS');
+}
+
+export const dokumenteRSProvider = {
+    provide: DokumenteRS,
+    useFactory: dokumentRSFactory,
+    deps: ['$injector']
+};
+
 export const UPGRADED_PROVIDERS: Provider[] = [
     authServiceRSProvider,
     traegerschaftRSProvider,
@@ -414,5 +426,6 @@ export const UPGRADED_PROVIDERS: Provider[] = [
     globalCacheServiceProvider,
     ekvContainerRSServiceProvider,
     ekvInfoRSProvider,
-    betreuungRSProvider
+    betreuungRSProvider,
+    dokumenteRSProvider
 ];

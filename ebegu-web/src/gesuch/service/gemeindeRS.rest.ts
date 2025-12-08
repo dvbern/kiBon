@@ -29,7 +29,7 @@ import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {TSRole, TSSprache} from '@kibon/shared/model/enums';
 import {IEntityRS} from '../../app/core/service/iEntityRS.rest';
 import {AuthServiceRS} from '../../authentication/service/AuthServiceRS.rest';
-import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
+import {TSCacheTyp} from '@kibon/shared/model/enums';
 import {TSDokumentTyp} from '../../models/enums/TSDokumentTyp';
 import {TSMusterDokumentTyp} from '../../models/enums/TSMusterDokumentTyp';
 import {TSBenutzer} from '../../models/TSBenutzer';

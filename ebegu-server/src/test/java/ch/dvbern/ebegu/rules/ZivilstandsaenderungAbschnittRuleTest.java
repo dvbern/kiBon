@@ -18,6 +18,7 @@
 package ch.dvbern.ebegu.rules;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,6 +29,7 @@ import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
+import ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
@@ -57,31 +59,29 @@ class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
 	private Familiensituation mockFamiliensituation;
 	@Mock(MockType.NICE)
 	private Familiensituation mockFamiliensituationErstgesuch;
-	@Mock
-	private Gesuchsperiode mockGesuchsperiode;
 	@Mock(MockType.NICE)
 	private Mandant mockMandant;
 	@TestSubject
 	private ZivilstandsaenderungAbschnittRule zivilstandsaenderungAbschnittRule =
 		new ZivilstandsaenderungAbschnittRule(
 			Constants.DEFAULT_GUELTIGKEIT,
-			1,
+			2,
 			Locale.GERMAN
 		);
 
-	private LocalDate gesuchsperiodeBis;
-	private LocalDate stichtag;
+	private final LocalDate GESUCHSPERIODE_START = LocalDate.of(2025, 8, 1);
+	private final LocalDate GESUCHSPERIODE_END = LocalDate.of(2026, 7, 31);
 
 	@BeforeEach
 	void setUp() {
-		// define the Gueltigkeit dynamically
-		gesuchsperiodeBis = LocalDate.now().plusDays(30);
-		stichtag = LocalDate.now();
+
+		Gesuchsperiode gesuchsperiode = new Gesuchsperiode();
 		DateRange gueltigkeit = new DateRange();
 		gueltigkeit.setGueltigAb(
-			LocalDate.now().withDayOfMonth(1).minusMonths(1)
+			GESUCHSPERIODE_START
 		);
-		gueltigkeit.setGueltigBis(gesuchsperiodeBis);
+		gueltigkeit.setGueltigBis(GESUCHSPERIODE_END);
+		gesuchsperiode.setGueltigkeit(gueltigkeit);
 
 		// Setup common mock expectations
 		expect(mockPlatz.extractGesuch()).andReturn(mockGesuch).anyTimes();
@@ -91,19 +91,14 @@ class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
 		expect(mockGesuch.extractFamiliensituationErstgesuch()).andReturn(
 			mockFamiliensituationErstgesuch
 		).anyTimes();
-		expect(mockGesuch.getGesuchsperiode()).andReturn(mockGesuchsperiode)
-			.anyTimes();
-		expect(mockGesuchsperiode.getGueltigkeit()).andReturn(gueltigkeit)
+		expect(mockGesuch.getGesuchsperiode()).andReturn(gesuchsperiode)
 			.anyTimes();
 		expect(mockFamiliensituation.isSpezialFallAR()).andReturn(false)
 			.anyTimes();
 		expect(mockFamiliensituationErstgesuch.isSpezialFallAR()).andReturn(
 			false
 		).anyTimes();
-		expect(mockGesuch.extractMandant()).andReturn(mockMandant).anyTimes();
-		expect(mockMandant.getMandantIdentifier()).andReturn(
-			MandantIdentifier.BERN
-		).anyTimes();
+
 		expect(
 			mockFamiliensituation.hasSecondGesuchsteller(
 				gueltigkeit.getGueltigBis()
@@ -114,8 +109,6 @@ class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
 				gueltigkeit.getGueltigBis()
 			)
 		).andReturn(false).anyTimes();
-		expect(mockFamiliensituation.getAenderungPer()).andReturn(stichtag)
-			.anyTimes();
 	}
 
 	@ParameterizedTest
@@ -127,6 +120,13 @@ class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
 	void testCreateVerfuegungsZeitabschnitte_ChangeDetected(
 		EnumFamilienstatus enumFamilienstatus
 	) {
+		var stichtag = GESUCHSPERIODE_START.plusDays(30);
+		expect(mockFamiliensituation.getAenderungPer()).andReturn(stichtag)
+			.anyTimes();
+		expect(mockGesuch.extractMandant()).andReturn(mockMandant).anyTimes();
+		expect(mockMandant.getMandantIdentifier()).andReturn(
+			MandantIdentifier.BERN
+		).anyTimes();
 		expect(mockFamiliensituation.getFamilienstatus()).andReturn(
 			enumFamilienstatus
 		).once();
@@ -142,7 +142,104 @@ class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
 			is(
 				new DateRange(
 					stichtag.plusMonths(1).withDayOfMonth(1),
-					gesuchsperiodeBis
+					GESUCHSPERIODE_END
+				)
+			)
+		);
+
+		verifyAll();
+	}
+
+	@Test
+	void shouldCreateAbschnitte_WhenAnzahlGesuchstellendeChangesOnErstantrag() {
+		EnumGesuchstellerKardinalitaet antragKardinalitaetErstrantrag =
+			EnumGesuchstellerKardinalitaet.ALLEINE;
+		EnumFamilienstatus familienstatusErstantrag =
+			EnumFamilienstatus.KONKUBINAT_KEIN_KIND;
+		LocalDate konkubinatStartErstantrag = GESUCHSPERIODE_START.minusYears(2)
+			.plusMonths(2);
+		boolean geteilteObhutErstantrag = true;
+
+		var mutationDatum = LocalDate.of(GESUCHSPERIODE_END.getYear(), 2, 1);
+		var familiensituationAenderungPer = LocalDate.of(
+			GESUCHSPERIODE_END.getYear(),
+			2,
+			15
+		);
+		EnumFamilienstatus familienstatusMutation =
+			EnumFamilienstatus.ALLEINERZIEHEND;
+
+		expect(mockGesuch.extractMandant()).andReturn(mockMandant).anyTimes();
+		expect(mockMandant.getMandantIdentifier()).andReturn(
+			MandantIdentifier.BERN
+		).anyTimes();
+		expect(mockGesuch.getRegelStartDatum()).andReturn(mutationDatum)
+			.anyTimes();
+		expect(mockFamiliensituation.getFamilienstatus()).andReturn(
+			familienstatusMutation
+		).anyTimes();
+		expect(mockFamiliensituation.getAenderungPer()).andReturn(
+			familiensituationAenderungPer
+		).anyTimes();
+		expect(mockFamiliensituationErstgesuch.getFamilienstatus()).andReturn(
+			familienstatusErstantrag
+		).once();
+		expect(mockFamiliensituationErstgesuch.getStartKonkubinat()).andReturn(
+			konkubinatStartErstantrag
+		).anyTimes();
+		expect(mockFamiliensituationErstgesuch.getGeteilteObhut()).andReturn(
+			geteilteObhutErstantrag
+		).anyTimes();
+		expect(mockFamiliensituationErstgesuch.getGesuchstellerKardinalitaet())
+			.andReturn(antragKardinalitaetErstrantrag)
+			.anyTimes();
+
+		replayAll();
+
+		List<VerfuegungZeitabschnitt> result = zivilstandsaenderungAbschnittRule
+			.createVerfuegungsZeitabschnitte(mockPlatz);
+
+		// Assert that the new FamSit start the month after the AenderungPer Date until the end of the Gesuchsperiode
+		assertThat(
+			result.get(0).getGueltigkeit(),
+			is(
+				new DateRange(
+					GESUCHSPERIODE_START,
+					LocalDate.of(
+						GESUCHSPERIODE_START.getYear(),
+						konkubinatStartErstantrag.getMonth(),
+						konkubinatStartErstantrag.getDayOfMonth()
+					).with(TemporalAdjusters.lastDayOfMonth())
+				)
+			)
+		);
+
+		// Assert that the new FamSit start the month after the AenderungPer Date until the end of the Gesuchsperiode
+		assertThat(
+			result.get(1).getGueltigkeit(),
+			is(
+				new DateRange(
+					LocalDate.of(
+						GESUCHSPERIODE_START.getYear(),
+						konkubinatStartErstantrag.getMonth(),
+						konkubinatStartErstantrag.getDayOfMonth()
+					).with(TemporalAdjusters.firstDayOfNextMonth()),
+					familiensituationAenderungPer.with(
+						TemporalAdjusters.lastDayOfMonth()
+					)
+				)
+			)
+		);
+
+		// Assert that the new FamSit start the month after the AenderungPer Date until the end of the Gesuchsperiode
+		assertThat(
+			result.get(2).getGueltigkeit(),
+			is(
+				new DateRange(
+					familiensituationAenderungPer.with(
+						TemporalAdjusters.firstDayOfNextMonth()
+					),
+					GESUCHSPERIODE_END
 				)
 			)
 		);
@@ -152,11 +249,16 @@ class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
 
 	@Test
 	void testCreateVerfuegungsZeitabschnitte_Schwyz() {
+		var stichtag = GESUCHSPERIODE_START.plusDays(30);
+		expect(mockGesuch.extractMandant()).andReturn(mockMandant).anyTimes();
+		expect(mockMandant.getMandantIdentifier()).andReturn(
+			MandantIdentifier.SCHWYZ
+		).anyTimes();
 		expect(mockFamiliensituation.getFamilienstatus()).andReturn(
 			EnumFamilienstatus.SCHWYZ
 		).once();
 		expect(mockGesuch.getRegelStartDatum()).andReturn(
-			stichtag.minusMonths(2)
+			stichtag
 		).anyTimes();
 
 		replayAll();
@@ -166,8 +268,8 @@ class ZivilstandsaenderungAbschnittRuleTest extends EasyMockSupport {
 
 		// Assert that the new FamSit start at the beginning of the Gesuchsperiode until the end of the Gesuchsperiode
 		assertThat(
-			mockGesuchsperiode.getGueltigkeit(),
-			is(result.get(1).getGueltigkeit())
+			result.get(0).getGueltigkeit(),
+			is(new DateRange(GESUCHSPERIODE_START, GESUCHSPERIODE_END))
 		);
 
 		verifyAll();

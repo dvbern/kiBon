@@ -52,6 +52,7 @@ public class ErwerbspensumSchwyzCalcRule extends ErwerbspensumCalcRule {
 	) {
 		Kind kind = platz.getKind().getKindJA();
 		final boolean has2GsOnFamiliensituation = hasSecondGSForZeit(
+			inputData,
 			platz.extractGesuch(),
 			inputData.getParent().getGueltigkeit()
 		);

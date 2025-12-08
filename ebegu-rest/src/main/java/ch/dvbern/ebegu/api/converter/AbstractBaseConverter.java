@@ -378,6 +378,7 @@ public abstract class AbstractBaseConverter {
 	) {
 		requireNonNull(fileMetadata);
 		requireNonNull(jaxFile);
+		fileMetadata.setId(requireNonNull(jaxFile.getId()));
 		fileMetadata.setFilename(jaxFile.getFilename());
 		fileMetadata.setFilesize(jaxFile.getFilesize());
 		return fileMetadata;

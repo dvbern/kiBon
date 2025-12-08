@@ -23,7 +23,7 @@ import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {isAtLeastFreigegeben} from '../../../../models/enums/TSAntragStatus';
 import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
-import {getSchwyzFinSitTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
+import {getSchwyzFinSitTyp} from '@kibon/shared/model/enums';
 import {TSRole} from '@kibon/shared/model/enums';
 import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSEinkommensverschlechterungContainer} from '../../../../models/TSEinkommensverschlechterungContainer';

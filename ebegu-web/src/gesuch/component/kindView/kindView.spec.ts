@@ -22,8 +22,8 @@ import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
-import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
+import {TSAusserordentlicherAnspruchTyp} from '@kibon/shared/model/enums';
 import {TSEinschulungTyp} from '@kibon/shared/model/enums';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {
@@ -31,7 +31,7 @@ import {
     TSIntegrationTyp,
     TSPensumFachstelle
 } from '@kibon/shared/model/entity';
-import {TSKinderabzugTyp} from '../../../models/enums/TSKinderabzugTyp';
+import {TSKinderabzugTyp} from '@kibon/shared/model/enums';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGesuch} from '../../../models/TSGesuch';

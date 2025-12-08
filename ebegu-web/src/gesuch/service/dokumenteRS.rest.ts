@@ -15,7 +15,7 @@
 
 import {IHttpService} from 'angular';
 import {TSDokumenteDTO} from '../../models/dto/TSDokumenteDTO';
-import {TSDokumentGrundTyp} from '../../models/enums/TSDokumentGrundTyp';
+import {TSDokumentGrundTyp} from '@kibon/shared/model/enums';
 import {TSDokument} from '../../models/TSDokument';
 import {TSDokumentGrund} from '../../models/TSDokumentGrund';
 import {TSGesuch} from '../../models/TSGesuch';
@@ -23,11 +23,11 @@ import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import ICacheObject = angular.ICacheObject;
 import ILogService = angular.ILogService;
 import IPromise = angular.IPromise;
+import {from, Observable} from 'rxjs';
 
 export class DokumenteRS {
     public static $inject = ['$http', 'REST_API', 'EbeguRestUtil', '$log'];
     public serviceURL: string;
-
     public constructor(
         public http: IHttpService,
         REST_API: string,
@@ -36,7 +36,6 @@ export class DokumenteRS {
     ) {
         this.serviceURL = `${REST_API}dokumente`;
     }
-
     public getDokumente(gesuch: TSGesuch): IPromise<TSDokumenteDTO> {
         return this.http
             .get(`${this.serviceURL}/${encodeURIComponent(gesuch.id)}`)
@@ -82,4 +81,49 @@ export class DokumenteRS {
             );
         });
     }
+
+    getErneuerbareDokumentTyps(
+        gesuchId: string
+    ): Observable<DokumentErneuerung[]> {
+        return from(
+            this.http
+                .get<any[]>(
+                    `${this.serviceURL}/${encodeURIComponent(gesuchId)}/erneuerbar`
+                )
+                .then(res => res.data)
+                .then(data =>
+                    data.map(el => ({
+                        grund: this.ebeguRestUtil.parseDokumentGrund(
+                            new TSDokumentGrund(),
+                            el.grund
+                        ),
+                        dokument: el.dokument
+                    }))
+                )
+        );
+    }
+
+    dokumenteErneuern(
+        gesuchId: string,
+        dokumentErneuerungen: DokumentErneuerung[]
+    ) {
+        return this.http.post(`${this.serviceURL}/erneuern`, {
+            gesuchId: gesuchId,
+            dokumentErneuerungen: dokumentErneuerungen.map(erneuerung => ({
+                grund: this.ebeguRestUtil.dokumentGrundToRestObject(
+                    {},
+                    erneuerung.grund
+                ),
+                dokument: {
+                    id: erneuerung.dokument.id,
+                    filename: erneuerung.dokument.filename
+                }
+            }))
+        });
+    }
 }
+
+type DokumentErneuerung = {
+    grund: TSDokumentGrund;
+    dokument: TSDokument;
+};

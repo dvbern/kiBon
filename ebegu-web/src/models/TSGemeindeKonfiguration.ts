@@ -19,10 +19,10 @@ import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import moment from 'moment';
 import {CONSTANTS} from '@kibon/shared/model/constants';
 import {EbeguUtil} from '../utils/EbeguUtil';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from './enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
 import {TSEinschulungTyp} from '@kibon/shared/model/enums';
 import {TSEinstellungKey} from '../admin/einstellungen/TSEinstellungKey';
-import {TSGemeindeZusaetzlicherGutscheinTyp} from './gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
+import {TSGemeindeZusaetzlicherGutscheinTyp} from '@kibon/shared/model/enums';
 import {TSEinstellung} from '../admin/einstellungen/TSEinstellung';
 import {TSFerieninselStammdaten} from './TSFerieninselStammdaten';
 

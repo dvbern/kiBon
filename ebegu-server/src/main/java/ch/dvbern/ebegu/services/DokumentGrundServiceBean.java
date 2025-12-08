@@ -35,6 +35,7 @@ import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.DokumentGrund_;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
+import ch.dvbern.ebegu.enums.DokumentTyp;
 import ch.dvbern.ebegu.enums.UserRole;
 import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
@@ -158,7 +159,7 @@ public class DokumentGrundServiceBean extends AbstractBaseService implements
 
 	@Override
 	@Nonnull
-	public Collection<DokumentGrund> findAllDokumentGrundByGesuchAndDokumentType(
+	public Collection<DokumentGrund> findAllDokumentGrundByGesuchAndDokumentGrundType(
 		@Nonnull Gesuch gesuch,
 		@Nonnull DokumentGrundTyp dokumentGrundTyp
 	) {
@@ -182,6 +183,55 @@ public class DokumentGrundServiceBean extends AbstractBaseService implements
 		);
 
 		query.where(predicateGesuch, predicateDokumentGrundTyp);
+		List<DokumentGrund> dokumentGrunds = persistence.getCriteriaResults(
+			query
+		);
+		setSonstigeNeededFalse(dokumentGrunds);
+
+		return dokumentGrunds;
+	}
+
+	@Override
+	@Nonnull
+	public Collection<DokumentGrund> findAllDokumentGrundByGesuchDokumentTypeDokumentGrundTypeAndTag(
+		@Nonnull Gesuch gesuch,
+		@Nonnull DokumentGrundTyp dokumentGrundTyp,
+		@Nonnull DokumentTyp dokumentTyp,
+		@Nullable String tag
+	) {
+		Objects.requireNonNull(gesuch);
+
+		this.authorizer.checkReadAuthorization(gesuch);
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<DokumentGrund> query = cb.createQuery(
+			DokumentGrund.class
+		);
+
+		Root<DokumentGrund> root = query.from(DokumentGrund.class);
+
+		Predicate predicateGesuch = cb.equal(
+			root.get(DokumentGrund_.gesuch),
+			gesuch
+		);
+		Predicate predicateDokumentGrundTyp = cb.equal(
+			root.get(DokumentGrund_.dokumentGrundTyp),
+			dokumentGrundTyp
+		);
+		Predicate predicateDokumentTyp = cb.equal(
+			root.get(DokumentGrund_.dokumentTyp),
+			dokumentTyp
+		);
+		Predicate sameTag = cb.equal(
+			root.get(DokumentGrund_.tag),
+			tag
+		);
+
+		query.where(
+			predicateGesuch,
+			predicateDokumentGrundTyp,
+			predicateDokumentTyp,
+			sameTag
+		);
 		List<DokumentGrund> dokumentGrunds = persistence.getCriteriaResults(
 			query
 		);

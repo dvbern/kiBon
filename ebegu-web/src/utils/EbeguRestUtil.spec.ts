@@ -21,7 +21,7 @@ import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSBetreuungsstatus} from '@kibon/shared/model/enums';
 import {TSAdressetyp} from '@kibon/shared/model/enums';
 import {TSAntragTyp} from '../models/enums/TSAntragTyp';
-import {TSFinanzielleSituationTyp} from '../models/enums/TSFinanzielleSituationTyp';
+import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
 import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
 
 import {TSPensumUnits} from '../models/enums/TSPensumUnits';

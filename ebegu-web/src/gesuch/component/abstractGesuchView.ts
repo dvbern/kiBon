@@ -27,7 +27,7 @@ import {
     TSAntragStatus
 } from '../../models/enums/TSAntragStatus';
 import {TSMessageEvent} from '../../models/enums/TSErrorEvent';
-import {TSFinanzielleSituationTyp} from '../../models/enums/TSFinanzielleSituationTyp';
+import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
 import {TSBetreuung} from '../../models/TSBetreuung';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';

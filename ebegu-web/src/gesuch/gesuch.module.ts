@@ -103,6 +103,7 @@ import {UnterstuetzungsdienstFallService} from './service/unterstuetzungsdienst-
 import {abweichungenEnabledHook} from './state-hooks/abweichungen-enabled.hook';
 import {GemeindeKontaktdatenComponent} from './component/dossierToolbar/gemeinde-kontaktdaten/gemeinde-kontaktdaten.component';
 import {OpenTabellarischeMaskeButtonComponent} from '@kibon/betreuung-pattern-tabellarische-maske-kita';
+import {GesuchOpenDokumenteErneuernButtonComponent} from '@kibon/gesuch-open-dokumente-erneuern-button';
 
 export const GESUCH_JS_MODULE = angular
     .module('ebeguWeb.gesuch', [CORE_JS_MODULE.name])
@@ -389,6 +390,13 @@ export const GESUCH_JS_MODULE = angular
                 'formDirty',
                 'anwesenheitstageMonatActivated'
             ]
+        })
+    )
+    .directive(
+        'dvGesuchOpenDokumenteErneuernButton',
+        downgradeComponent({
+            component: GesuchOpenDokumenteErneuernButtonComponent,
+            outputs: ['dokumenteErneuert']
         })
     )
     .directive(

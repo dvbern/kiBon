@@ -11,13 +11,14 @@ public class FinanzielleSituationValidatorAR implements
 
 	@Override
 	public boolean doesFinSitRequireOneGS(Gesuch gesuch) {
-		return Boolean.TRUE.equals(
-			requireNonNull(
+		return !gesuch.hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode()
+			|| Boolean.TRUE.equals(
 				requireNonNull(
-					gesuch.getFamiliensituationContainer()
-				).getFamiliensituationJA()
-			).getGemeinsameSteuererklaerung()
-		);
+					requireNonNull(
+						gesuch.getFamiliensituationContainer()
+					).getFamiliensituationJA()
+				).getGemeinsameSteuererklaerung()
+			);
 	}
 
 	@Override

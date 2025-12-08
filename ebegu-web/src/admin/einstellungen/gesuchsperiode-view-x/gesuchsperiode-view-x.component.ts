@@ -18,8 +18,6 @@ import {
 } from '@kibon/shared/model/enums';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
-import {copy} from 'angular';
-import moment from 'moment';
 import {DvNgOkDialogComponent} from '../../../app/core/component/dv-ng-ok-dialog/dv-ng-ok-dialog.component';
 import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {MAX_FILE_SIZE} from '@kibon/shared/model/constants';
@@ -29,7 +27,7 @@ import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest'
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
-import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
+import {TSCacheTyp} from '@kibon/shared/model/enums';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {TSEinstellung} from '../TSEinstellung';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
@@ -71,8 +69,6 @@ export class GesuchsperiodeViewXComponent
 
     public gesuchsperiode: TSGesuchsperiode;
     public einstellungenGesuchsperiode: MatTableDataSource<TSEinstellung>;
-
-    public displayedColumns: string[] = ['key', 'value'];
 
     public initialStatus: TSGesuchsperiodeStatus;
 
@@ -136,8 +132,8 @@ export class GesuchsperiodeViewXComponent
     private readEinstellungenByGesuchsperiode(): void {
         this.einstellungenRS
             .getAllEinstellungenActiveForMandantBySystem(this.gesuchsperiode.id)
-            .subscribe(
-                (response: TSEinstellung[]) => {
+            .subscribe({
+                next: (response: TSEinstellung[]) => {
                     response.sort((a, b) =>
                         this.$translate
                             .instant(a.key.toString())
@@ -149,8 +145,8 @@ export class GesuchsperiodeViewXComponent
                         new MatTableDataSource<TSEinstellung>(response);
                     this.cd.markForCheck();
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     public cancelGesuchsperiode(): void {
@@ -181,14 +177,14 @@ export class GesuchsperiodeViewXComponent
                 }
             })
             .afterClosed()
-            .subscribe(
-                isOk => {
+            .subscribe({
+                next: isOk => {
                     if (isOk) {
                         this.doSave();
                     }
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
         return;
     }
 
@@ -234,22 +230,6 @@ export class GesuchsperiodeViewXComponent
         this.gesuchsperiode = undefined;
     }
 
-    public saveParameterByGesuchsperiode(): void {
-        this.einstellungenGesuchsperiode.data.forEach(param => {
-            if (param.value != 'null') {
-                this.einstellungenRS.saveEinstellung(param).subscribe(
-                    () => {},
-                    error => LOG.error(error)
-                );
-            }
-        });
-        this.globalCacheService
-            .getCache(TSCacheTyp.EBEGU_EINSTELLUNGEN)
-            .removeAll();
-        this.gesuchsperiodeRS.updateActiveGesuchsperiodenList();
-        this.gesuchsperiodeRS.updateNichtAbgeschlosseneGesuchsperiodenList();
-    }
-
     private getGesuchsperiodeSaveDialogText(hasStatusChanged: boolean): string {
         if (!hasStatusChanged) {
             return ''; // if the status didn't change no message is required
@@ -271,10 +251,6 @@ export class GesuchsperiodeViewXComponent
         return null;
     }
 
-    public periodenParamsEditable(): boolean {
-        return this.periodenParamsEditableForPeriode(this.gesuchsperiode);
-    }
-
     /**
      * Gibt true zurueck wenn der Status sich geaendert hat oder wenn der Status AKTIV ist, da in Status AKTIV, die
      * Parameter (Tagesschule) noch geaendert werden koennen.
@@ -285,13 +261,6 @@ export class GesuchsperiodeViewXComponent
             this.gesuchsperiode.status === TSGesuchsperiodeStatus.AKTIV
         );
     }
-
-    public getDatumFreischaltungMax(): moment.Moment {
-        const gueltigAb = copy(this.gesuchsperiode.gueltigkeit.gueltigAb);
-
-        return gueltigAb.subtract(1, 'days');
-    }
-
     public uploadGesuchsperiodeDokument(
         event: any,
         sprache: TSSprache,
@@ -594,12 +563,6 @@ export class GesuchsperiodeViewXComponent
             default:
                 return;
         }
-    }
-
-    public doFilter(value: string): void {
-        this.einstellungenGesuchsperiode.filter = value
-            .trim()
-            .toLocaleLowerCase();
     }
 
     protected readonly TSDokumentUploadTyp = TSDokumentUploadTyp;

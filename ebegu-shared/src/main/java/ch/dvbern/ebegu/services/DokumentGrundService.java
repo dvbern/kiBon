@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.enums.DokumentGrundTyp;
+import ch.dvbern.ebegu.enums.DokumentTyp;
 
 /**
  * Service zum Verwalten von Kindern
@@ -48,7 +49,7 @@ public interface DokumentGrundService {
 
 	/**
 	 * findet in der DB alle Dokumentgruende eines bestimmten Gesuchs (wenn der user dafuer berechtigt ist)
-	 * 
+	 *
 	 * @param gesuch gesuch dessen Dokumentgruende geladen werden sollen
 	 * @return Liste der Dokumentgruende
 	 */
@@ -59,7 +60,7 @@ public interface DokumentGrundService {
 
 	/**
 	 * findet in der DB alle Dokumentgreunde eines bestimmten Gesuches
-	 * 
+	 *
 	 * @param gesuch gesuch dessen Dokumentgruende geladen werden sollen
 	 * @param doAuthCheck flag zum disabeln des authorization checks fuer interne methoden
 	 * @return * @return Liste der Dokumentgruende
@@ -71,9 +72,17 @@ public interface DokumentGrundService {
 	);
 
 	@Nonnull
-	Collection<DokumentGrund> findAllDokumentGrundByGesuchAndDokumentType(
+	Collection<DokumentGrund> findAllDokumentGrundByGesuchAndDokumentGrundType(
 		@Nonnull Gesuch gesuch,
 		@Nonnull DokumentGrundTyp dokumentGrundTyp
+	);
+
+	@Nonnull
+	Collection<DokumentGrund> findAllDokumentGrundByGesuchDokumentTypeDokumentGrundTypeAndTag(
+		@Nonnull Gesuch gesuch,
+		@Nonnull DokumentGrundTyp dokumentGrundTyp,
+		@Nonnull DokumentTyp dokumentTyp,
+		@Nonnull String tag
 	);
 
 	/**

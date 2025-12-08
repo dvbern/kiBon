@@ -28,15 +28,17 @@ import {GesuchsperiodeListViewXComponent} from './component/gesuchsperiode-list-
 import {GesuchsperiodeViewXComponent} from './einstellungen/gesuchsperiode-view-x/gesuchsperiode-view-x.component';
 import {TestdatenViewComponent} from './component/testdatenView/testdatenView.component';
 import {UebersichtVersendeteMailsComponent} from './component/uebersichtVersendeteMails/uebersichtVersendeteMails.component';
-import {EditEinstellungComponent} from './einstellungen/edit-einstellung/edit-einstellung.component';
 import {NgAdminRoutingModule} from './ng-admin-routing.module';
+import {AdminGesuchsperiodenEinstellungenComponent} from '@kibon/admin-gesuchsperioden-einstellungen';
+import {EditEinstellungComponent} from '@kibon/admin-edit-einstellung';
 
 @NgModule({
     imports: [
         SharedModule,
         NgAdminRoutingModule,
         EditEinstellungComponent,
-        StringSqlDateToDisplayDatePipe
+        StringSqlDateToDisplayDatePipe,
+        AdminGesuchsperiodenEinstellungenComponent
     ],
     declarations: [
         TestdatenViewComponent,

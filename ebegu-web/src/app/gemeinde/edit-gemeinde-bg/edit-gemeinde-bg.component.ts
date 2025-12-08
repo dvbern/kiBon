@@ -35,7 +35,7 @@ import {Moment} from 'moment';
 import {Observable} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
 import {
     TSEinschulungTyp,
     TSGemeindeStatus,
@@ -46,7 +46,7 @@ import {
     getGemeindspezifischeBGConfigKeys,
     TSEinstellungKey
 } from '../../../admin/einstellungen/TSEinstellungKey';
-import {TSGemeindeZusaetzlicherGutscheinTyp} from '../../../models/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
+import {TSGemeindeZusaetzlicherGutscheinTyp} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSGemeindeKonfiguration} from '../../../models/TSGemeindeKonfiguration';

@@ -18,7 +18,7 @@
 import {Injectable, inject} from '@angular/core';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {map} from 'rxjs/operators';
-import {TSDemoFeature} from '../directive/dv-hide-feature/TSDemoFeature';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 
 @Injectable({
     providedIn: 'root'

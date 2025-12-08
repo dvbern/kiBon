@@ -19,7 +19,7 @@ import {AfterViewInit, Directive, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {isAtLeastFreigegeben} from '../../models/enums/TSAntragStatus';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
-import {TSFinanzielleSituationTyp} from '../../models/enums/TSFinanzielleSituationTyp';
+import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
 import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {TSAbstractFinanzielleSituation} from '../../models/TSAbstractFinanzielleSituation';
 import {TSGesuch} from '../../models/TSGesuch';

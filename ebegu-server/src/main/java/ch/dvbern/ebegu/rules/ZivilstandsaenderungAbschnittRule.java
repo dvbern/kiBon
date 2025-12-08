@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -32,6 +33,7 @@ import ch.dvbern.ebegu.entities.VerfuegungZeitabschnitt;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
 import ch.dvbern.ebegu.enums.MsgKey;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.rules.mutationsmerger.util.VerfuegungZeitabschnittSplitter;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.RuleUtil;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
@@ -75,14 +77,56 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 	) {
 
 		Gesuch gesuch = platz.extractGesuch();
-		final List<VerfuegungZeitabschnitt> zivilstandsaenderungAbschnitte =
-			new ArrayList<>();
 
 		// Ueberpruefen, ob die Gesuchsteller-Kardinalität geändert hat. Nur dann muss evt. anders berechnet werden!
 		Familiensituation familiensituation = gesuch.extractFamiliensituation();
 		Objects.requireNonNull(familiensituation);
 		Familiensituation familiensituationErstgesuch = gesuch
 			.extractFamiliensituationErstgesuch();
+
+		final List<VerfuegungZeitabschnitt> zivilstandsaenderungAbschnitte =
+			calculateZeitabschnitte(
+				platz,
+				familiensituation,
+				familiensituationErstgesuch,
+				gesuch
+			);
+		final List<VerfuegungZeitabschnitt> zeitabschnitteErstgesuch =
+			familiensituationErstgesuch == null ?
+				List.of() :
+				calculateZeitabschnitte(
+					platz,
+					familiensituationErstgesuch,
+					null,
+					gesuch
+				);
+		return zivilstandsaenderungAbschnitte.stream()
+			.flatMap(
+				verfuegungZeitabschnitt -> VerfuegungZeitabschnittSplitter
+					.splitOn(verfuegungZeitabschnitt, zeitabschnitteErstgesuch)
+					.stream()
+			)
+			.peek(verfuegungZeitabschnitt -> {
+				if (familiensituationErstgesuch != null) {
+					verfuegungZeitabschnitt.setErstgesuchAnzahlGesuchstellende(
+						familiensituationErstgesuch.hasSecondGesuchsteller(
+							verfuegungZeitabschnitt.getGueltigkeit()
+								.getGueltigBis()
+						) ? 2 : 1
+					);
+				}
+			})
+			.collect(Collectors.toList());
+	}
+
+	public List<VerfuegungZeitabschnitt> calculateZeitabschnitte(
+		AbstractPlatz platz,
+		Familiensituation familiensituation,
+		Familiensituation familiensituationErstgesuch,
+		Gesuch gesuch
+	) {
+		final List<VerfuegungZeitabschnitt> zivilstandsaenderungAbschnitte =
+			new ArrayList<>();
 
 		LocalDate gesuchsperiodeBis = platz.extractGesuch()
 			.getGesuchsperiode()

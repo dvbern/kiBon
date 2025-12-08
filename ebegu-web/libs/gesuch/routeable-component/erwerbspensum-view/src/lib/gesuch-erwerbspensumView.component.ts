@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, model} from '@angular/core';
 
-import {GesuchPageHeadingComponent} from '@kibon/gesuch-page-heading';
+import {GesuchPageHeadingComponent} from '@kibon/gesuch-heading';
 import {TranslateModule} from '@ngx-translate/core';
 import {SharedModule} from '../../../../../../src/app/shared/shared.module';
 import {GesuchPageLayoutComponent} from '@kibon/gesuch-page-layout';

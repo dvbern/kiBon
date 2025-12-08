@@ -18,7 +18,7 @@ import {StateService} from '@uirouter/angular';
 import {ErrorService} from '../../../../../app/core/errors/service/ErrorService';
 import {TSLand} from '../../../../../models/types/TSLand';
 import {Observable} from 'rxjs';
-import {TSFinanzielleSituationTyp} from '../../../../../models/enums/TSFinanzielleSituationTyp';
+import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
 import {AuthServiceRS} from '../../../../../authentication/service/AuthServiceRS.rest';
 
 const gesuchsperiodeSpy = jasmine.createSpyObj<TSGesuchsperiode>(

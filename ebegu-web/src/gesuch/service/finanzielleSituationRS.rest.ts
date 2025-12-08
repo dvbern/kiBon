@@ -24,7 +24,7 @@ import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
 import {TSFinanzielleSituationAufteilungDTO} from '../../models/dto/TSFinanzielleSituationAufteilungDTO';
 import {TSFinanzielleSituationResultateDTO} from '../../models/dto/TSFinanzielleSituationResultateDTO';
 import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';
-import {TSFinanzielleSituationTyp} from '../../models/enums/TSFinanzielleSituationTyp';
+import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
 import {TSEinstellung} from '../../admin/einstellungen/TSEinstellung';
 import {TSFinanzielleSituationContainer} from '../../models/TSFinanzielleSituationContainer';
 import {TSFinanzModel} from '../../models/TSFinanzModel';

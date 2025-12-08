@@ -192,12 +192,7 @@ export abstract class AbstractFinSitsolothurnView extends AbstractGesuchViewX<TS
                 async (
                     finanzielleSituationContainer: TSFinanzielleSituationContainer
                 ) => {
-                    if (
-                        !this.isGemeinsam() ||
-                        this.getAntragstellerNummer() === 2
-                    ) {
-                        await this.updateWizardStepStatus();
-                    }
+                    await this.wizardStepManager.selfUpdateFinSitStepStatus();
                     onResult(finanzielleSituationContainer);
                     return finanzielleSituationContainer;
                 }

@@ -22,7 +22,7 @@ import {
 import {IHttpService, ILogService, IPromise} from 'angular';
 import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
 import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
+import {TSCacheTyp} from '@kibon/shared/model/enums';
 import {
     TSEinstellungenTagesschule,
     TSInstitutionStammdaten

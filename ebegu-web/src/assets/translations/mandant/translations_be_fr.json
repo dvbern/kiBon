@@ -3,7 +3,7 @@
     "ERWERBSPENSEN_LIST_TITLE": "Activité",
     "ADD_TAETIGKEIT": "Ajouter une activité",
     "TAETIGKEIT": "Activité",
-    "DOK_ERWERBSPENSUM": "Activité",
+    "DOKUMENT_GRUND_TYP_ERWERBSPENSUM": "Activité",
     "DOK_TAETIGKEIT": "Activité",
     "PENSUM": "Taux d'activité",
     "ERWERBSPENSUM_HINT": "Veuillez saisir ici toutes les activités pour l’ensemble de la période couverte par le bon ({{gueltigAb}} - {{gueltigBis}}).",
@@ -47,5 +47,6 @@
     "ONBOARDING_INSTITUTION_DESC3": "<strong>Processus complet et entièrement automatisé</strong> pour toutes les instances (parents, crèche, porganisations d’accueil familial de jour, école à journée continue, commune, canton)",
     "ONBOARDING_INSTITUTION_DESC4": "<strong>Une demande</strong> pour les mêmes offres (crèche, école à journée continue et porganisations d’accueil familial de jour)",
     "AUSSERORDENTLICHER_ANSPRUCH_HINT": "Des exceptions sont possibles dans des cas particuliers justifiés, notamment lorsque les parents n'atteignent pas le taux d'activité minimal exigé mais ont néanmoins besoin rapidement d'une solution de garde (art. 37, al. 2 OEJF). Cette clause d'exception doit toutefois être appliquée avec la plus grande prudence.",
+    "DOKUMENT_GRUND_TYP_TAG_ERWERBSPENSUM": "Activité",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

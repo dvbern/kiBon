@@ -59,6 +59,7 @@ public class ErwerbspensumMinimumCalcRule extends
 	) {
 		Gesuch gesuch = platz.extractGesuch();
 		boolean has2Gs = hasSecondGSForZeit(
+			inputData,
 			gesuch,
 			inputData.getParent().getGueltigkeit()
 		);

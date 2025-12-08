@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.dto.BGCalculationInput;
 import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.enums.UnterhaltsvereinbarungAnswer;
@@ -29,6 +30,7 @@ public abstract class AbstractErwerbspensumCalcRule extends AbstractCalcRule {
 	 * Monat Rule, der GS2 ist nach aenderung die Famsit ab Anfang naechste Monat erst berucksichtig
 	 */
 	protected boolean hasSecondGSForZeit(
+		BGCalculationInput input,
 		@Nonnull Gesuch gesuch,
 		DateRange gueltigkeit
 	) {
@@ -50,9 +52,7 @@ public abstract class AbstractErwerbspensumCalcRule extends AbstractCalcRule {
 						familiensituationGueltigAb.plusMonths(1)
 							.withDayOfMonth(1)
 					)) {
-				return familiensituationErstGesuch.hasSecondGesuchsteller(
-					gueltigkeit.getGueltigBis()
-				)
+				return input.getErstgesuchAnzahlGesuchstellende() == 2
 					&& familiensituationErstGesuch.getUnterhaltsvereinbarung()
 						!= UnterhaltsvereinbarungAnswer.NEIN_UNTERHALTSVEREINBARUNG;
 			}

@@ -1,0 +1,13 @@
+{
+    "name": "gesuch-dokumente-erneuern-selection",
+    "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/gesuch/smart/dokumente-erneuern-selection/src",
+    "prefix": "lib",
+    "projectType": "library",
+    "tags": ["type:smart", "domain:gesuch"],
+    "targets": {
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

@@ -37,7 +37,8 @@ import {
     TSBrowserLanguage,
     TSDayOfWeek,
     TSRole,
-    TSWizardStepName
+    TSWizardStepName,
+    TSDemoFeature
 } from '@kibon/shared/model/enums';
 import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
 import {MANDANTS} from '@kibon/shared-model-mandant';
@@ -45,7 +46,6 @@ import {MandantService} from '@kibon/shared-util-mandant-service';
 import {TSZahlungslaufTyp} from '@kibon/zahlung/model/entity';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
 import {DemoFeatureRS} from '../../../app/core/service/demoFeatureRS.rest';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
@@ -57,8 +57,8 @@ import {
 } from '../../../models/enums/TSAbholungTagesschule';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
-import {TSGemeindeZusaetzlicherGutscheinTyp} from '../../../models/gemeindekonfiguration/TSGemeindeZusaetzlicherGutscheinTyp';
+import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
+import {TSGemeindeZusaetzlicherGutscheinTyp} from '@kibon/shared/model/enums';
 import {TSBelegungTagesschuleModulGroup} from '../../../models/TSBelegungTagesschuleModulGroup';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSDownloadFile} from '../../../models/TSDownloadFile';

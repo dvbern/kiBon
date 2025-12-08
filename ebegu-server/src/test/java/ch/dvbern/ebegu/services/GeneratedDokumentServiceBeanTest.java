@@ -27,6 +27,7 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 import ch.dvbern.ebegu.entities.GeneratedDokument;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.enums.GeneratedDokumentTyp;
+import ch.dvbern.ebegu.file.FileSaverService;
 import ch.dvbern.ebegu.util.UploadFileInfo;
 import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;

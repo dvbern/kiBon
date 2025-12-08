@@ -39,6 +39,7 @@ import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.enums.Taetigkeit;
 import ch.dvbern.ebegu.enums.betreuung.Bedarfsstufe;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
+import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.rules.RuleValidity;
 import ch.dvbern.ebegu.util.MathUtil;
 import lombok.Getter;
@@ -237,6 +238,10 @@ public class BGCalculationInput {
 	@Getter
 	private final Map<String, Kind> kinder = new HashMap<>();
 
+	@Getter
+	@Setter
+	private Integer erstgesuchAnzahlGesuchstellende = null;
+
 	public BGCalculationInput(
 		@Nonnull VerfuegungZeitabschnitt parent,
 		@Nonnull RuleValidity ruleValidity
@@ -333,6 +338,8 @@ public class BGCalculationInput {
 		this.familienCalculationInput =
 			toCopy.familienCalculationInput.copy();
 		this.kinder.putAll(toCopy.kinder);
+		this.erstgesuchAnzahlGesuchstellende =
+			toCopy.erstgesuchAnzahlGesuchstellende;
 	}
 
 	@Nonnull
@@ -1175,6 +1182,18 @@ public class BGCalculationInput {
 			other.familienCalculationInput
 		);
 		this.kinder.putAll(other.kinder);
+		if (this.erstgesuchAnzahlGesuchstellende != null
+			&& other.erstgesuchAnzahlGesuchstellende != null
+			&& !this.erstgesuchAnzahlGesuchstellende.equals(
+				other.erstgesuchAnzahlGesuchstellende
+			)) {
+			throw new EbeguRuntimeException(
+				"add",
+				"erstgesuchAnzahlGesuchstellende can only be set once"
+			);
+		}
+		this.erstgesuchAnzahlGesuchstellende =
+			other.erstgesuchAnzahlGesuchstellende;
 	}
 
 	/**
@@ -1617,6 +1636,10 @@ public class BGCalculationInput {
 			this.kindTerminiert == other.kindTerminiert
 			&& this.familienCalculationInput.isSame(
 				other.familienCalculationInput
+			)
+			&& Objects.equals(
+				this.erstgesuchAnzahlGesuchstellende,
+				other.erstgesuchAnzahlGesuchstellende
 			);
 	}
 

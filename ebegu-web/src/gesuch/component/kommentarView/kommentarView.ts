@@ -27,13 +27,13 @@ import {
 } from 'angular';
 import {forkJoin} from 'rxjs';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {UploadRS} from '../../../app/core/service/uploadRS.rest';
 import {TSDokumenteDTO} from '../../../models/dto/TSDokumenteDTO';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
-import {TSDokumentGrundTyp} from '../../../models/enums/TSDokumentGrundTyp';
+import {TSCacheTyp} from '@kibon/shared/model/enums';
+import {TSDokumentGrundTyp} from '@kibon/shared/model/enums';
 import {TSEingangsart} from '../../../models/enums/TSEingangsart';
 import {TSDokumentUploadTyp, TSRole} from '@kibon/shared/model/enums';
 import {TSDokument} from '../../../models/TSDokument';

@@ -17,7 +17,7 @@
 
 import {Directive, ElementRef, Input, OnInit, inject} from '@angular/core';
 import {DemoFeatureRS} from '../../service/demoFeatureRS.rest';
-import {TSDemoFeature} from './TSDemoFeature';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 
 // Directive decorator
 @Directive({

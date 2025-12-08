@@ -22,7 +22,7 @@ import {TSGesuchsperiodeStatus} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../../app/core/errors/service/ErrorService';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {TSFamilienstatus} from '../../../../models/enums/TSFamilienstatus';
-import {TSFinanzielleSituationTyp} from '../../../../models/enums/TSFinanzielleSituationTyp';
+import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
 import {TSFamiliensituation} from '../../../../models/TSFamiliensituation';
 import {TSFamiliensituationContainer} from '../../../../models/TSFamiliensituationContainer';
 import {TSFinanzielleSituation} from '../../../../models/TSFinanzielleSituation';

@@ -8,7 +8,7 @@ import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Mandant;
 import ch.dvbern.ebegu.enums.reporting.ReportVorlage;
-import ch.dvbern.ebegu.services.FileSaverService;
+import ch.dvbern.ebegu.file.FileSaverService;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.UploadFileInfo;
 import ch.dvbern.oss.lib.excelmerger.RowFiller;

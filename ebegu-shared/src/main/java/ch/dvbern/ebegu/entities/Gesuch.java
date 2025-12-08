@@ -1696,13 +1696,25 @@ public class Gesuch extends AbstractMutableEntity implements Searchable {
 	}
 
 	public boolean hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode() {
-		return hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode(
-			extractFamiliensituation()
-		)
-			||
+		// Wenn eine Kopie erstellt wird, ist das eingangsDatum null, weshalb hier der alte Check beibehalten wurde, wenn der Wert null ist.
+		// Wenn der Wert nicht null ist, soll überprüft werden, ob das eingangsDatum vor dem Periodenstart liegt.
+		boolean hasSecondGesuchstellerErstGesuch =
 			hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode(
 				extractFamiliensituationErstgesuch()
 			);
+		boolean hasSecondGesuchstellerCurrentGesuch =
+			hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode(
+				extractFamiliensituation()
+			);
+		if (getEingangsdatum() == null) {
+			return hasSecondGesuchstellerCurrentGesuch
+				|| hasSecondGesuchstellerErstGesuch;
+		}
+		return hasSecondGesuchstellerCurrentGesuch
+			|| (!getEingangsdatum().isBefore(
+				gesuchsperiode.getGueltigkeit().getGueltigAb()
+			)
+				&& hasSecondGesuchstellerErstGesuch);
 	}
 
 	private boolean hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode(

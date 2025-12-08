@@ -52,7 +52,7 @@ import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
-import {TSDemoFeature} from '../../core/directive/dv-hide-feature/TSDemoFeature';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BatchJobRS} from '../../core/service/batchRS.rest';
 import {DownloadRS} from '../../core/service/downloadRS.rest';

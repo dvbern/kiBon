@@ -28,7 +28,7 @@ import {
 import {isAtLeastFreigegeben, TSAntragStatus} from './enums/TSAntragStatus';
 import {TSAntragTyp} from './enums/TSAntragTyp';
 import {TSEingangsart} from './enums/TSEingangsart';
-import {TSFinanzielleSituationTyp} from './enums/TSFinanzielleSituationTyp';
+import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
 import {TSFinSitStatus} from './enums/TSFinSitStatus';
 import {TSGesuchBetreuungenStatus} from './enums/TSGesuchBetreuungenStatus';
 import {TSAbstractAntragEntity} from './TSAbstractAntragEntity';

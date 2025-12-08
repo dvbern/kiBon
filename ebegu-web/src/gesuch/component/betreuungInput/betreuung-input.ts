@@ -19,7 +19,7 @@ import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {IComponentOptions, IController} from 'angular';
 import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
 import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
+import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
 import {TSPensumUnits} from '../../../models/enums/TSPensumUnits';
 import {TSBetreuungspensumContainer} from '../../../models/TSBetreuungspensumContainer';
 import {EbeguUtil} from '../../../utils/EbeguUtil';

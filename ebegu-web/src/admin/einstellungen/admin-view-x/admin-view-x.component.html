@@ -62,7 +62,7 @@
                                     }}</span>
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let item">
-                                    <dv-edit-einstellung
+                                    <lib-dv-edit-einstellung
                                         [readOnly]="false"
                                         [einstellung]="{
                                             value: item.value,
@@ -71,7 +71,7 @@
                                         (einstellungChange)="
                                             updateApplicationProperty($event)
                                         "
-                                    ></dv-edit-einstellung>
+                                    ></lib-dv-edit-einstellung>
                                 </mat-cell>
                             </ng-container>
 

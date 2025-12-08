@@ -635,7 +635,10 @@ public enum EinstellungKey {
 	// Siehe KIBONBE-186
 	@EnumEinstellung(BetreuungComparator.class) BETREUUNG_COMPARATOR(
 		MandantIdentifier.getAll()
-	);
+	),
+
+	// Welche Dokumente können in die
+	@StringEinstellung() ERNEUERBARE_DOKUMENT_TYPS(MandantIdentifier.getAll());
 
 	private EinstellungTyp typ;
 	private List<MandantIdentifier> activeForMandant;

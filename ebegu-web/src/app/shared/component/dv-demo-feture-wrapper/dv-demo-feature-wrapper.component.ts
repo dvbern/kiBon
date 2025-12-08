@@ -16,7 +16,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {TSDemoFeature} from '../../../core/directive/dv-hide-feature/TSDemoFeature';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 
 @Component({
     selector: 'dv-dv-demo-feature-wrapper',

@@ -17,11 +17,10 @@ import {copy, IComponentOptions, ILogService} from 'angular';
 import {first} from 'rxjs/operators';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {TSDokumenteDTO} from '../../../models/dto/TSDokumenteDTO';
-import {TSCacheTyp} from '../../../models/enums/TSCacheTyp';
-import {TSDokumentGrundTyp} from '../../../models/enums/TSDokumentGrundTyp';
+import {getSchwyzFinSitTyp, TSCacheTyp} from '@kibon/shared/model/enums';
+import {TSDokumentGrundTyp} from '@kibon/shared/model/enums';
 import {TSDokumentTyp} from '../../../models/enums/TSDokumentTyp';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {getSchwyzFinSitTyp} from '../../../models/enums/TSFinanzielleSituationTyp';
 import {TSWizardStepName, TSWizardStepStatus} from '@kibon/shared/model/enums';
 import {TSDokument} from '../../../models/TSDokument';
 import {TSDokumentGrund} from '../../../models/TSDokumentGrund';
@@ -37,6 +36,12 @@ import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewController} from '../abstractGesuchView';
 import IScope = angular.IScope;
 import ITimeoutService = angular.ITimeoutService;
+import {
+    PermissionDokumente,
+    PERMISSIONS_DOKUMENTE
+} from './PermissionsDokumente';
+import {DokumenteUtil} from './DokumenteUtil';
+import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 
 export class DokumenteViewComponentConfig implements IComponentOptions {
     public transclude = false;
@@ -60,7 +65,8 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
         '$scope',
         '$timeout',
         'GesuchRS',
-        'EinstellungRS'
+        'EinstellungRS',
+        'AuthServiceRS'
     ];
     public parsedNum: number;
     public dokumenteEkv: TSDokumentGrund[] = [];
@@ -74,6 +80,9 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
     public dokumenteFreigabequittung: TSDokumentGrund[] = [];
     public massenversand: string[] = [];
     public isOnlineFreigabeAktiv: boolean = false;
+    public anyTypForErneuerungAllowed: boolean = false;
+    public rolesAllowedForErneuerung =
+        PERMISSIONS_DOKUMENTE[PermissionDokumente.DOKUMENTE_ERNEUERN];
 
     public constructor(
         $stateParams: IStammdatenStateParams,
@@ -86,7 +95,8 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
         $scope: IScope,
         $timeout: ITimeoutService,
         private readonly gesuchRS: GesuchRS,
-        private readonly einstellungRS: EinstellungRS
+        private readonly einstellungRS: EinstellungRS,
+        private readonly authServiceRS: AuthServiceRS
     ) {
         super(
             gesuchModelManager,
@@ -112,6 +122,17 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
             .subscribe((onlineFreigabe: TSEinstellung) => {
                 this.isOnlineFreigabeAktiv = onlineFreigabe.getValueAsBoolean();
             });
+
+        this.einstellungRS
+            .getEinstellung(
+                this.gesuchModelManager.getGesuch().gesuchsperiode.id,
+                TSEinstellungKey.ERNEUERBARE_DOKUMENT_TYPS
+            )
+            .pipe(first())
+            .subscribe((onlineFreigabe: TSEinstellung) => {
+                this.anyTypForErneuerungAllowed =
+                    onlineFreigabe.value.length > 0;
+            });
     }
 
     public calculate(): void {
@@ -120,6 +141,19 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
 
             return;
         }
+        this.loadDokumente();
+
+        this.gesuchRS
+            .getMassenversandTexteForGesuch(
+                this.gesuchModelManager.getGesuch().id
+            )
+            .then((response: any) => {
+                this.massenversand = response;
+            });
+    }
+
+    private loadDokumente() {
+        this.resetDokumentLists();
         this.berechnungsManager
             .getDokumente(this.gesuchModelManager.getGesuch())
             .then((alleDokumente: TSDokumenteDTO) => {
@@ -173,14 +207,18 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
                         dokumentGrund.dokumentTyp !== TSDokumentTyp.AUSWEIS_ID
                 );
             });
+    }
 
-        this.gesuchRS
-            .getMassenversandTexteForGesuch(
-                this.gesuchModelManager.getGesuch().id
-            )
-            .then((response: any) => {
-                this.massenversand = response;
-            });
+    private resetDokumentLists() {
+        this.dokumenteEkv = [];
+        this.dokumenteFinSit = [];
+        this.dokumenteFamSit = [];
+        this.dokumenteErwp = [];
+        this.dokumenteKinder = [];
+        this.dokumenteErwBetr = [];
+        this.dokumenteSonst = [];
+        this.dokumentePapiergesuch = [];
+        this.dokumenteFreigabequittung = [];
     }
 
     private searchDokumente(
@@ -256,43 +294,63 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
         this.dokumenteRS.removeDokument(dokument).then(response => {
             const returnedDG = copy(response);
 
-            if (returnedDG) {
-                // replace existing object in table with returned if returned not null
-                const idx = EbeguUtil.getIndexOfElementwithID(
-                    returnedDG,
-                    dokumente
-                );
-                if (idx > -1) {
-                    this.$log.debug('update dokumentGrund in dokumentList');
-                    dokumente[idx] = dokumentGrund;
+            if (
+                dokumentGrund.dokumente.length === 0 &&
+                this.isNotLastUnneededGrundInGroup(dokumentGrund, dokumente)
+            ) {
+                this.reloadDokumente();
+            } else {
+                if (returnedDG) {
+                    // replace existing object in table with returned if returned not null
+                    const idx = EbeguUtil.getIndexOfElementwithID(
+                        returnedDG,
+                        dokumente
+                    );
+                    if (idx > -1) {
+                        this.$log.debug('update dokumentGrund in dokumentList');
+                        dokumente[idx] = dokumentGrund;
 
-                    // Clear cached Papiergesuch on remove...
-                    if (
-                        dokumentGrund.dokumentGrundTyp ===
-                        TSDokumentGrundTyp.PAPIERGESUCH
-                    ) {
-                        this.globalCacheService
-                            .getCache(TSCacheTyp.EBEGU_DOCUMENT)
-                            .removeAll();
+                        // Clear cached Papiergesuch on remove...
+                        if (
+                            dokumentGrund.dokumentGrundTyp ===
+                            TSDokumentGrundTyp.PAPIERGESUCH
+                        ) {
+                            this.globalCacheService
+                                .getCache(TSCacheTyp.EBEGU_DOCUMENT)
+                                .removeAll();
+                        }
+                    }
+                } else {
+                    // delete object in table with sended if returned is null
+                    const idx = EbeguUtil.getIndexOfElementwithID(
+                        dokumentGrund,
+                        dokumente
+                    );
+                    if (idx > -1) {
+                        this.$log.debug('remove dokumentGrund in dokumentList');
+                        dokumente.splice(idx, 1);
                     }
                 }
-            } else {
-                // delete object in table with sended if returned is null
-                const idx = EbeguUtil.getIndexOfElementwithID(
-                    dokumentGrund,
-                    dokumente
-                );
-                if (idx > -1) {
-                    this.$log.debug('remove dokumentGrund in dokumentList');
-                    dokumente.splice(idx, 1);
-                }
             }
+
             this.wizardStepManager.findStepsFromGesuch(
                 this.gesuchModelManager.getGesuch().id
             );
         });
 
         EbeguUtil.handleSmarttablesUpdateBug(dokumente);
+    }
+
+    private isNotLastUnneededGrundInGroup(
+        dokumentGrund: TSDokumentGrund,
+        dokumente: TSDokumentGrund[]
+    ) {
+        if (dokumentGrund.needed) {
+            return false;
+        }
+        return dokumente
+            .filter(listGrund => listGrund !== dokumentGrund)
+            .some(grund => grund.needed);
     }
 
     public showDokumenteGeprueftButton(): boolean {
@@ -313,5 +371,16 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
             return null;
         }
         return 'DOK_JAHR';
+    }
+
+    public reloadDokumente() {
+        this.loadDokumente();
+    }
+
+    public isDokumenteUploadDisabled(): boolean {
+        return DokumenteUtil.isDokumenteUploadDisabled(
+            this.gesuchModelManager,
+            this.authServiceRS
+        );
     }
 }

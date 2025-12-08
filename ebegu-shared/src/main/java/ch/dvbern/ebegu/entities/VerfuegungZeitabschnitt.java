@@ -912,6 +912,19 @@ public class VerfuegungZeitabschnitt extends AbstractDateRangedEntity implements
 		this.getBgCalculationInputGemeinde().setKindTerminiert(kindTerminiert);
 	}
 
+	public void setErstgesuchAnzahlGesuchstellende(
+		int erstgesuchAnzahlGesuchstellende
+	) {
+		this.getBgCalculationInputAsiv()
+			.setErstgesuchAnzahlGesuchstellende(
+				erstgesuchAnzahlGesuchstellende
+			);
+		this.getBgCalculationInputGemeinde()
+			.setErstgesuchAnzahlGesuchstellende(
+				erstgesuchAnzahlGesuchstellende
+			);
+	}
+
 	public boolean hasBetreuungspensum() {
 		return !MathUtil.isZero(
 			this.getRelevantBgCalculationResult()

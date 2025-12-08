@@ -113,11 +113,27 @@ public class EingewoehnungFristRule extends AbstractAbschlussRule {
 		final List<VerfuegungZeitabschnitt> mergedZeitabschnitte =
 			mergeZeitabschnitte(zeitabschnitte);
 
+		// There is a possibility that we had anspruch prior to the first betreuung
+		// that now overlaps with the eingewoehnung.
+		// e.g. Anspruch 01.08-30.08. 80%, 15.09-30.09. 60%
+		// Betreuung with Eingewoehnung 01.09.-31.07.
+		// eingewoehnung zeitraum would now be 15.08.-14.09. but we previously had
+		// higher anspruch. We need to make sure that we keep this so we have
+		// the correct value in case of future mutations.
+		// check KIBON-3056 for more infos
 		for (VerfuegungZeitabschnitt merged : mergedZeitabschnitte) {
-			if (merged.getGueltigkeit()
-				.intersects(eingewoehnung.getGueltigkeit())) {
+			var gewaehrteEingewoehnungMatch =
+				gewaehrteEingewoehnungUmzugZeitabschnitte.stream()
+					.filter(
+						gewaehrteEingewoehnung -> gewaehrteEingewoehnung
+							.getGueltigkeit()
+							.intersects(merged.getGueltigkeit())
+					)
+					.findAny();
+			if (gewaehrteEingewoehnungMatch.isPresent()) {
 				final int eingewoehnungAnspruchspensumProzent =
-					eingewoehnung.getRelevantBgCalculationInput()
+					gewaehrteEingewoehnungMatch.get()
+						.getRelevantBgCalculationInput()
 						.getAnspruchspensumProzent();
 
 				int originalAnspruch = merged.getRelevantBgCalculationInput()

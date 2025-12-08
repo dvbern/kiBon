@@ -26,7 +26,7 @@ import {environment} from '../../environments/environment';
 import {GemeindeRS} from '../../gesuch/service/gemeindeRS.rest';
 import {GlobalCacheService} from '../../gesuch/service/globalCacheService';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
-import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
+import {TSCacheTyp} from '@kibon/shared/model/enums';
 import {MandantService} from '@kibon/shared-util-mandant-service';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {GesuchsperiodeRS} from './service/gesuchsperiodeRS.rest';

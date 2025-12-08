@@ -213,6 +213,7 @@ class ErwerbspensumSchwyzCalcRuleTest extends EasyMockSupport {
 							.minusDays(1)
 					)
 				);
+			bgCalculationInput.setErstgesuchAnzahlGesuchstellende(1);
 			return bgCalculationInput;
 		}
 

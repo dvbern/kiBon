@@ -153,7 +153,7 @@ export class FamiliensituationViewXComponent
     }
 
     protected async confirm(onResult: (arg: any) => void): Promise<void> {
-        if (this.isConfirmationRequired()) {
+        if (this.isGS2RemovalConfirmationRequired()) {
             const dialogResult = await firstValueFrom(
                 this.dialog
                     .open<
@@ -272,15 +272,15 @@ export class FamiliensituationViewXComponent
      * Confirmation is required when the GS2 already exists and the familiensituation changes from 2GS to 1GS. Or when
      * in a Mutation the GS2 is new and will be removed
      */
-    private isConfirmationRequired(): boolean {
+    private isGS2RemovalConfirmationRequired(): boolean {
+        if (EbeguUtil.isNullOrUndefined(this.getGesuch().gesuchsteller2)) {
+            return false;
+        }
         return (
-            (!this.isKorrekturModusJugendamt() ||
-                (this.isKorrekturModusJugendamt() &&
-                    this.getGesuch().gesuchsteller2)) &&
-            ((!this.isMutation() && this.checkChanged2To1GS()) ||
-                (this.isMutation() &&
-                    (this.isChanged1To2Reverted() ||
-                        this.checkChanged2To1GSMutation())))
+            (!this.isMutation() && this.checkChanged2To1GS()) ||
+            (this.isMutation() &&
+                (this.isChanged1To2Reverted() ||
+                    this.checkChanged2To1GSMutation()))
         );
     }
 
@@ -303,8 +303,6 @@ export class FamiliensituationViewXComponent
         const bis =
             this.gesuchModelManager.getGesuchsperiode().gueltigkeit.gueltigBis;
         return (
-            this.getGesuch().gesuchsteller2 &&
-            this.getGesuch().gesuchsteller2.id &&
             FamiliensituationUtil.isChangeFrom2GSTo1GS(
                 this.initialFamiliensituation,
                 this.getFamiliensituation(),

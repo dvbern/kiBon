@@ -68,7 +68,7 @@ import {
 } from '../../models/enums/TSAntragStatus';
 import {TSAntragTyp} from '../../models/enums/TSAntragTyp';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
-import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
+import {TSCacheTyp} from '@kibon/shared/model/enums';
 import {TSCreationAction} from '../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
 import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';

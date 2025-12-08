@@ -125,6 +125,7 @@ public abstract class ErwerbspensumCalcRule extends
 		final Gesuch gesuch = platz.extractGesuch();
 
 		if (!hasSecondGSForZeit(
+			inputData,
 			gesuch,
 			inputData.getParent().getGueltigkeit()
 		)) {

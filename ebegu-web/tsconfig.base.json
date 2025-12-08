@@ -29,8 +29,14 @@
             "@dv-e2e/tasks": ["./cypress/support/tasks.ts"],
             "@dv-e2e/types": ["./cypress/support/types.ts"],
             "@dv/tooling/nx-plugin": ["libs/tooling/nx-plugin/src/index.ts"],
+            "@kibon/admin-edit-einstellung": [
+                "libs/admin/ui/edit-einstellung/src/index.ts"
+            ],
             "@kibon/admin-feature-meldungsfenster": [
                 "libs/admin/feature/admin-feature-meldungsfenster/src/index.ts"
+            ],
+            "@kibon/admin-gesuchsperioden-einstellungen": [
+                "libs/admin/smart/gesuchsperioden-einstellungen/src/index.ts"
             ],
             "@kibon/admin-pattern-meldungsfenster-detail": [
                 "libs/admin/pattern/admin-pattern-meldungsfenster-detail/src/index.ts"
@@ -68,12 +74,16 @@
             "@kibon/betreuung/util/betreuung-rs": [
                 "libs/betreuung/util/betreuung-rs/src/index.ts"
             ],
+            "@kibon/gesuch-dokumente-erneuern-selection": [
+                "libs/gesuch/smart/dokumente-erneuern-selection/src/index.ts"
+            ],
             "@kibon/gesuch-erwerbspensumView": [
                 "libs/gesuch/routeable-component/erwerbspensum-view/src/index.ts"
             ],
-            "@kibon/gesuch-page-heading": [
-                "libs/gesuch/ui/page-heading/src/index.ts"
+            "@kibon/gesuch-open-dokumente-erneuern-button": [
+                "libs/gesuch/smart/open-dokumente-erneuern-button/src/index.ts"
             ],
+            "@kibon/gesuch-heading": ["libs/gesuch/ui/heading/src/index.ts"],
             "@kibon/gesuch-page-layout": [
                 "libs/gesuch/ui/page-layout/src/index.ts"
             ],

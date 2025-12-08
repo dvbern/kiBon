@@ -1231,7 +1231,7 @@ public class EingewoehnungFristRuleTest {
 	}
 
 	@Test
-	void wohnSitzNotInGemeinde_noEingewoehnungGewaehrt() {
+	void wohnSitzNotInGemeindeAfterWegzug_noEingewoehnungGewaehrt() {
 		Betreuung betreuung = createGesuch(false, true);
 		Gesuch gesuch = betreuung.extractGesuch();
 

@@ -24,7 +24,7 @@ import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest'
 import {SearchRS} from '../../../gesuch/service/searchRS.rest';
 import {AbstractAdminViewX} from '../../abstractAdminViewX';
 import {ReindexRS} from '../../service/reindexRS.rest';
-import {ConfigurableEinstellung} from '../EinstellungConfigurations';
+import {ConfigurableEinstellung} from '@kibon/admin-edit-einstellung';
 
 @Component({
     selector: 'dv-admin-view-x',

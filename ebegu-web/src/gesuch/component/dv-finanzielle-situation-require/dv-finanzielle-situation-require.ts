@@ -18,7 +18,7 @@ import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {EbeguNumberPipe} from '../../../app/shared/pipe/ebegu-number.pipe';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
-import {TSFinanzielleSituationTyp} from '../../../models/enums/TSFinanzielleSituationTyp';
+import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
 import {TSFinSitStatus} from '../../../models/enums/TSFinSitStatus';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {FinanzielleSituationRS} from '../../service/finanzielleSituationRS.rest';

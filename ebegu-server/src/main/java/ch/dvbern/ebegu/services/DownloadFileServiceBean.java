@@ -38,6 +38,7 @@ import ch.dvbern.ebegu.entities.DownloadFile;
 import ch.dvbern.ebegu.entities.DownloadFile_;
 import ch.dvbern.ebegu.entities.FileMetadata;
 import ch.dvbern.ebegu.enums.TokenLifespan;
+import ch.dvbern.ebegu.file.FileSaverService;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.Constants;

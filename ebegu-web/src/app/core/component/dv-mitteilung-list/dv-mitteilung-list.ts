@@ -38,7 +38,7 @@ import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {IMitteilungenStateParams} from '../../../mitteilungen/mitteilungen.route';
 import {PosteingangService} from '../../../posteingang/service/posteingang.service';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
-import {TSDemoFeature} from '../../directive/dv-hide-feature/TSDemoFeature';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
 import {InstitutionRS} from '../../service/institutionRS.rest';

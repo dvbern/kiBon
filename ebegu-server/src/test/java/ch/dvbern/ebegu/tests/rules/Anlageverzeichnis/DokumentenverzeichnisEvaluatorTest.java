@@ -28,6 +28,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import ch.dvbern.ebegu.dokumente.anlageverzeichnis.DokumentenverzeichnisEvaluator;
+import ch.dvbern.ebegu.dokumente.anlageverzeichnis.ErwerbspensumDokumente;
+import ch.dvbern.ebegu.dokumente.anlageverzeichnis.KindDokumente;
+import ch.dvbern.ebegu.dokumente.anlageverzeichnis.LuzernErwerbspensumDokumente;
+import ch.dvbern.ebegu.dokumente.anlageverzeichnis.LuzernKindDokumente;
 import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.einstellung.EinstellungService;
@@ -65,11 +70,6 @@ import ch.dvbern.ebegu.enums.IntegrationTyp;
 import ch.dvbern.ebegu.enums.Kinderabzug;
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
 import ch.dvbern.ebegu.enums.Taetigkeit;
-import ch.dvbern.ebegu.rules.anlageverzeichnis.DokumentenverzeichnisEvaluator;
-import ch.dvbern.ebegu.rules.anlageverzeichnis.ErwerbspensumDokumente;
-import ch.dvbern.ebegu.rules.anlageverzeichnis.KindDokumente;
-import ch.dvbern.ebegu.rules.anlageverzeichnis.LuzernErwerbspensumDokumente;
-import ch.dvbern.ebegu.rules.anlageverzeichnis.LuzernKindDokumente;
 import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.testfaelle.dataprovider.SchwyzTestfallDataProvider;
 import ch.dvbern.ebegu.types.DateRange;
@@ -152,6 +152,11 @@ class DokumentenverzeichnisEvaluatorTest extends EasyMockSupport {
 		gesuch.setKindContainers(new HashSet<>());
 		gesuch.setDossier(new Dossier());
 		gesuch.setFinSitTyp(finanzielleSituationTyp);
+		LocalDate eingangsDatum = gesuch.getGesuchsperiode()
+			.getGueltigkeit()
+			.getGueltigAb()
+			.minusDays(1);
+		gesuch.setEingangsdatum(eingangsDatum);
 
 		Fall fall = new Fall();
 		fall.setMandant(mandant);

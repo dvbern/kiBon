@@ -33,7 +33,7 @@ import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {MandantService} from '@kibon/shared-util-mandant-service';
 import {TSBetreuungspensumAbweichungStatus} from '../../../models/enums/betreuung/TSBetreuungspensumAbweichungStatus';
-import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
+import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSBetreuungsmitteilung} from '../../../models/TSBetreuungsmitteilung';
 import {TSBetreuungspensumAbweichung} from '../../../models/TSBetreuungspensumAbweichung';

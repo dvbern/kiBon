@@ -1,0 +1,13 @@
+{
+    "name": "gesuch-heading",
+    "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/gesuch/ui/heading/src",
+    "prefix": "lib",
+    "projectType": "library",
+    "tags": ["type:ui", "domain:gesuch"],
+    "targets": {
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

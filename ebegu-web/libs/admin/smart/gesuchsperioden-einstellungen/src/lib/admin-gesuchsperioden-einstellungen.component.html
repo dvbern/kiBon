@@ -1,0 +1,99 @@
+<!-- Liste der Parameter der Gesuchsperiode -->
+@if (gesuchsperiode() && !gesuchsperiode().isNew()) {
+    <div class="row margin-top-30">
+        <div class="col-md-12">
+            <div class="row view-title">
+                <div class="col-md-12">
+                    <h1>
+                        <span translate="PARAMETER_PRO_GESUCHSPERIODE"></span>
+                        <span>
+                            {{
+                                gesuchsperiode().gueltigkeit.gueltigAb?.toDate()
+                                    | date: 'dd.MM.yyyy'
+                            }}</span
+                        >
+                        <span> bis </span>
+                        <span>{{
+                            gesuchsperiode().gueltigkeit.gueltigBis.toDate()
+                                | date: 'dd.MM.yyyy'
+                        }}</span>
+                    </h1>
+                    <hr class="header" />
+                </div>
+            </div>
+
+            @if (erneuerbareDokuementeEinstellungEinstellung()) {
+                <lib-erneuerbare-dokumente-einstellung-group
+                    [einstellung]="
+                        erneuerbareDokuementeEinstellungEinstellung()!
+                    "
+                ></lib-erneuerbare-dokumente-einstellung-group>
+            }
+
+            <div class="w-[85%]">
+                <input
+                    class="filter"
+                    matInput
+                    [(ngModel)]="filter"
+                    type="text"
+                    placeholder="{{ 'SUCHBEGRIFF_EINGEBEN' | translate }}"
+                />
+            </div>
+
+            <mat-table [dataSource]="tableData()">
+                <ng-container matColumnDef="key">
+                    <td class="key w-[60%]" *matCellDef="let item">
+                        <label>
+                            {{ item.key | translate }}
+                            <dv-tooltip [text]="item.erklaerung"></dv-tooltip>
+                        </label>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="value">
+                    <td class="value w-[25%]" *matCellDef="let item">
+                        <lib-dv-edit-einstellung
+                            [einstellung]="{
+                                value: item.value,
+                                key: item.key
+                            }"
+                            (einstellungChange)="item.value = $event.value"
+                            [readOnly]="
+                                !periodenParamsEditableForPeriode(
+                                    gesuchsperiode()
+                                )
+                            "
+                        ></lib-dv-edit-einstellung>
+                    </td>
+                </ng-container>
+
+                <dv-error-messages
+                    for="form['propertyName_' + paramgp.name].$error"
+                    class="error"
+                ></dv-error-messages>
+
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                ></mat-row>
+            </mat-table>
+
+            <div
+                class="row"
+                *ngIf="!isReadonly() && tableData().data.length > 0"
+            >
+                <div class="col-md-12" *ngIf="gesuchsperiode">
+                    <dv-loading-button
+                        type="button"
+                        (buttonClick)="saveParameterByGesuchsperiode()"
+                        buttonClass="color-success"
+                    >
+                        <span>{{
+                            tableData().data[0].isNew()
+                                ? ('SAVE' | translate)
+                                : ('UPDATE' | translate)
+                        }}</span>
+                    </dv-loading-button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

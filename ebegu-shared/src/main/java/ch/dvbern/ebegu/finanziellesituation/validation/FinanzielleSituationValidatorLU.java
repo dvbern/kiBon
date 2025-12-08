@@ -17,7 +17,8 @@ public class FinanzielleSituationValidatorLU implements
 				.getFamiliensituationJA()
 		).getFamilienstatus();
 
-		return familienstatus == EnumFamilienstatus.VERHEIRATET;
+		return familienstatus == EnumFamilienstatus.VERHEIRATET
+			|| familienstatus == EnumFamilienstatus.ALLEINERZIEHEND;
 	}
 
 	@Override

@@ -26,14 +26,14 @@ import {CONSTANTS} from '@kibon/shared/model/constants';
 import {EinschulungTypesVisitor} from '../../../app/core/constants/EinschulungTypesVisitor';
 import {KindGeschlechtVisitor} from '../../../app/core/constants/KindGeschlechtVisitor';
 import {KiBonMandant} from '@kibon/shared-model-mandant';
-import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {MandantService} from '@kibon/shared-util-mandant-service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
-import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '../../../models/enums/TSAnspruchBeschaeftigungAbhaengigkeitTyp';
+import {TSAnspruchBeschaeftigungAbhaengigkeitTyp} from '@kibon/shared/model/enums';
 import {TSAntragStatus} from '../../../models/enums/TSAntragStatus';
-import {TSAusserordentlicherAnspruchTyp} from '../../../models/enums/TSAusserordentlicherAnspruchTyp';
+import {TSAusserordentlicherAnspruchTyp} from '@kibon/shared/model/enums';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {
     TSFachstellenTyp,
@@ -47,7 +47,7 @@ import {
 import {
     isKinderabzugTypFKJV,
     TSKinderabzugTyp
-} from '../../../models/enums/TSKinderabzugTyp';
+} from '@kibon/shared/model/enums';
 import {TSRole} from '@kibon/shared/model/enums';
 import {TSEinschulungTyp, TSWizardStepName} from '@kibon/shared/model/enums';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';

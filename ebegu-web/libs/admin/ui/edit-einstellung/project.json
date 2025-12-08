@@ -1,0 +1,13 @@
+{
+    "name": "admin-edit-einstellung",
+    "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/admin/ui/edit-einstellung/src",
+    "prefix": "lib",
+    "projectType": "library",
+    "tags": ["type:ui", "domain:admin"],
+    "targets": {
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

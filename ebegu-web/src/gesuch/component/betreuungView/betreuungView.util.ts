@@ -16,7 +16,7 @@
  */
 
 import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
-import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
+import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
 import {TSPensumUnits} from '../../../models/enums/TSPensumUnits';
 import {TSBetreuungspensum} from '../../../models/TSBetreuungspensum';
 import {

@@ -3,7 +3,7 @@
     "ERWERBSPENSEN_LIST_TITLE": "Beschäftigung",
     "ADD_TAETIGKEIT": "Beschäftigung hinzufügen",
     "TAETIGKEIT": "Beschäftigung",
-    "DOK_ERWERBSPENSUM": "Beschäftigung",
+    "DOKUMENT_GRUND_TYP_ERWERBSPENSUM": "Beschäftigung",
     "DOK_TAETIGKEIT": "Beschäftigung",
     "PENSUM": "Beschäftigungspensum",
     "ERWERBSPENSUM_HINT": "Bitte erfassen Sie hier alle Beschäftigungen für die ganze Gutscheinperiode ({{gueltigAb}} - {{gueltigBis}}).",
@@ -51,5 +51,6 @@
     "VERFUEGUNGEN": "Verfügungen & Anmeldungen",
     "AUSSERORDENTLICHER_ANSPRUCH_HINT": "Bei Eltern, die die geforderten Mindestpensen nicht erreichen, aber trotzdem dringendst auf eine familienergänzende Betreuung angewiesen sind, kann die Wohnsitzgemeinde in begründeten Einzelfällen vom erforderlichen Beschäftigungspensum abweichen (Art. 37 Abs. 2 FKJV). Diese Ausnahmeklausel ist mit grösster Zurückhaltung anzuwenden.",
     "KEIN_VERTRAG": "Ich nutze kiBon zum Testen, ob ich einen Anspruch auf Betreuungsgutscheine habe und gebe darum noch keine Institution an.",
+    "DOKUMENT_GRUND_TYP_TAG_ERWERBSPENSUM": "Beschäftigung",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

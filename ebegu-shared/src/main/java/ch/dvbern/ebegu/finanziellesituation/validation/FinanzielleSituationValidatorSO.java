@@ -9,7 +9,7 @@ public class FinanzielleSituationValidatorSO implements
 
 	@Override
 	public boolean doesFinSitRequireOneGS(Gesuch gesuch) {
-		return gesuch.hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode();
+		return !gesuch.hasSecondGesuchstellerAtAnyTimeOfGesuchsperiode();
 	}
 
 	@Override

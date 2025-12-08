@@ -38,7 +38,7 @@ import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
 import {
     getSchwyzFinSitTyp,
     TSFinanzielleSituationTyp
-} from '../../models/enums/TSFinanzielleSituationTyp';
+} from '@kibon/shared/model/enums';
 import {TSRole} from '@kibon/shared/model/enums';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';

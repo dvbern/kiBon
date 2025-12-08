@@ -58,7 +58,7 @@ import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
 import {DvNgMitteilungResultDialogComponent} from '../../core/component/dv-ng-mitteilung-result-dialog/dv-ng-mitteilung-result-dialog.component';
-import {TSDemoFeature} from '../../core/directive/dv-hide-feature/TSDemoFeature';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorServiceX} from '../../core/errors/service/ErrorServiceX';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
 import {DemoFeatureRS} from '../../core/service/demoFeatureRS.rest';

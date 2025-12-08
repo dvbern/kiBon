@@ -17,11 +17,13 @@ package ch.dvbern.ebegu.api.resource;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -29,15 +31,20 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 import ch.dvbern.ebegu.api.converter.JaxDokumentConverter;
+import ch.dvbern.ebegu.api.dtos.JaxDokumentErneuerung;
 import ch.dvbern.ebegu.api.dtos.JaxDokumentGrund;
 import ch.dvbern.ebegu.api.dtos.JaxDokumente;
+import ch.dvbern.ebegu.api.dtos.JaxGesuchDokumentErneuerungDTO;
 import ch.dvbern.ebegu.api.dtos.JaxId;
+import ch.dvbern.ebegu.dokumente.DokumentErneuerungsService;
+import ch.dvbern.ebegu.dokumente.anlageverzeichnis.DokumentenverzeichnisEvaluator;
 import ch.dvbern.ebegu.entities.Dokument;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.Gesuch;
@@ -45,13 +52,23 @@ import ch.dvbern.ebegu.enums.DokumentGrundTyp;
 import ch.dvbern.ebegu.enums.WizardStepName;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
-import ch.dvbern.ebegu.rules.anlageverzeichnis.DokumentenverzeichnisEvaluator;
 import ch.dvbern.ebegu.services.DokumentGrundService;
 import ch.dvbern.ebegu.services.DokumentService;
 import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.WizardStepService;
 import ch.dvbern.ebegu.util.DokumenteUtil;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_SOZIALDIENST;
+import static ch.dvbern.ebegu.enums.UserRoleName.ADMIN_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.GESUCHSTELLER;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_BG;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_GEMEINDE;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_SOZIALDIENST;
+import static ch.dvbern.ebegu.enums.UserRoleName.SACHBEARBEITER_TS;
+import static ch.dvbern.ebegu.enums.UserRoleName.SUPER_ADMIN;
 
 /**
  * REST Resource fuer Dokumente
@@ -61,7 +78,6 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 @PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
 public class DokumenteResource {
 
-	@SuppressWarnings("CdiInjectionPointsInspection")
 	@Inject
 	private JaxDokumentConverter converter;
 
@@ -79,6 +95,9 @@ public class DokumenteResource {
 
 	@Inject
 	private WizardStepService wizardStepService;
+
+	@Inject
+	private DokumentErneuerungsService dokumentErneuerungsService;
 
 	@Operation(
 		summary = "Gibt alle Dokumentgruende zurück, welche zum uebergebenen Gesuch vorhanden sind.")
@@ -117,6 +136,66 @@ public class DokumenteResource {
 	}
 
 	@Operation(
+		summary = "Gibt alle DokumentTyp zurück, welche für dieses Gesuch erneuerbar (aus der Vorgängerperiode kopierbar) sind.")
+	@Nullable
+	@GET
+	@Path("/{gesuchId}/erneuerbar")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ SUPER_ADMIN, GESUCHSTELLER, SACHBEARBEITER_BG, ADMIN_BG,
+		SACHBEARBEITER_TS, ADMIN_TS, SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE,
+		SACHBEARBEITER_SOZIALDIENST, ADMIN_SOZIALDIENST })
+	public List<JaxDokumentErneuerung> getErneuerbareDokumente(
+		@Nonnull @NotNull @Valid @PathParam("gesuchId") JaxId gesuchId
+	) {
+		Gesuch gesuch = gesuchService.findGesuch(gesuchId.getId())
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getDokumente",
+					gesuchId.getId()
+				)
+			);
+
+		return converter.dokumentErneuerungToJax(
+			dokumentErneuerungsService.getErneuerbareDokumente(gesuch)
+		);
+	}
+
+	@Operation(
+		summary = "Endpoint zur Erneuerung der Dokumente in das angegebene Gesuch")
+	@POST
+	@Path("/erneuern")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ SUPER_ADMIN, GESUCHSTELLER, SACHBEARBEITER_BG, ADMIN_BG,
+		SACHBEARBEITER_TS, ADMIN_TS, SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE,
+		SACHBEARBEITER_SOZIALDIENST, ADMIN_SOZIALDIENST })
+	public List<JaxDokumentErneuerung> dokumentErneuern(
+		@Valid JaxGesuchDokumentErneuerungDTO dokumentErneuerungDTO
+	) {
+		Gesuch gesuch = gesuchService.findGesuch(
+			dokumentErneuerungDTO.gesuchId().getId()
+		)
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getDokumente",
+					dokumentErneuerungDTO.gesuchId().getId()
+				)
+			);
+
+		var erneuerbareDokumente = converter.jaxDokumentErneuerungListToEntity(
+			dokumentErneuerungDTO.dokumentErneuerungen()
+		);
+
+		var erneuerteDokumente = dokumentErneuerungsService.dokumenteErneuern(
+			gesuch,
+			erneuerbareDokumente
+		);
+
+		return converter.dokumentErneuerungToJax(erneuerteDokumente);
+	}
+
+	@Operation(
 		summary = "Gibt alle Dokumentegruende eines bestimmten Typs zurück, die zu einem Gesuch vorhanden sind")
 	@Nullable
 	@GET
@@ -147,7 +226,7 @@ public class DokumenteResource {
 
 		Collection<DokumentGrund> persisted =
 			dokumentGrundService
-				.findAllDokumentGrundByGesuchAndDokumentType(
+				.findAllDokumentGrundByGesuchAndDokumentGrundType(
 					gesuch,
 					dokumentGrundTyp
 				);

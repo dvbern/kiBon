@@ -18,6 +18,7 @@
 package ch.dvbern.ebegu.api.converter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -25,9 +26,11 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.api.dtos.JaxDokument;
+import ch.dvbern.ebegu.api.dtos.JaxDokumentErneuerung;
 import ch.dvbern.ebegu.api.dtos.JaxDokumentGrund;
 import ch.dvbern.ebegu.api.dtos.JaxDokumente;
 import ch.dvbern.ebegu.api.dtos.JaxDownloadFile;
+import ch.dvbern.ebegu.dokumente.DokumentErneuerung;
 import ch.dvbern.ebegu.entities.Dokument;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.DownloadFile;
@@ -141,4 +144,35 @@ public class JaxDokumentConverter extends AbstractBaseConverter {
 		return jaxDownloadFile;
 	}
 
+	public List<JaxDokumentErneuerung> dokumentErneuerungToJax(
+		List<DokumentErneuerung> erneuerbareDokumente
+	) {
+		return erneuerbareDokumente.stream()
+			.map(
+				erneuerbaresDokument -> new JaxDokumentErneuerung(
+					dokumentGrundToJax(erneuerbaresDokument.grund()),
+					dokumentToJax(erneuerbaresDokument.dokument())
+				)
+			)
+			.toList();
+	}
+
+	public List<DokumentErneuerung> jaxDokumentErneuerungListToEntity(
+		List<JaxDokumentErneuerung> erneuerbareDokumente
+	) {
+		return erneuerbareDokumente.stream()
+			.map(
+				erneuerbaresDokument -> new DokumentErneuerung(
+					dokumentGrundToEntity(
+						erneuerbaresDokument.grund(),
+						new DokumentGrund()
+					),
+					(Dokument) convertFileToEnity(
+						erneuerbaresDokument.dokument(),
+						new Dokument()
+					)
+				)
+			)
+			.toList();
+	}
 }

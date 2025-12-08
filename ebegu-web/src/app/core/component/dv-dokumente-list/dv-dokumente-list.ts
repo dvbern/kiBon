@@ -29,7 +29,6 @@ import {OkHtmlDialogController} from '../../../../gesuch/dialog/OkHtmlDialogCont
 import {RemoveDialogController} from '../../../../gesuch/dialog/RemoveDialogController';
 import {GesuchModelManager} from '../../../../gesuch/service/gesuchModelManager';
 import {WizardStepManager} from '../../../../gesuch/service/wizardStepManager';
-import {isAnyStatusOfFreigegebenGeprueftVerfuegenVerfuegtOrAbgeschlossen} from '../../../../models/enums/TSAntragStatus';
 import {TSDokumentGrundPersonType} from '../../../../models/enums/TSDokumentGrundPersonType';
 import {TSDokumentTyp} from '../../../../models/enums/TSDokumentTyp';
 import {TSDokument} from '../../../../models/TSDokument';
@@ -37,12 +36,12 @@ import {TSDokumentGrund} from '../../../../models/TSDokumentGrund';
 import {TSDownloadFile} from '../../../../models/TSDownloadFile';
 import {TSGesuch} from '../../../../models/TSGesuch';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
-import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {DvDialog} from '../../directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../errors/service/ErrorService';
 import {DownloadRS} from '../../service/downloadRS.rest';
 import {UploadRS} from '../../service/uploadRS.rest';
 import ITranslateService = angular.translate.ITranslateService;
+import {DokumenteUtil} from '../../../../gesuch/component/DokumenteView/DokumenteUtil';
 
 const removeDialogTemplate = require('../../../../gesuch/dialog/removeDialogTemplate.html');
 const okHtmlDialogTempl = require('../../../../gesuch/dialog/okHtmlDialogTemplate.html');
@@ -300,21 +299,9 @@ export class DVDokumenteListController implements IController {
     }
 
     public isDokumenteUploadDisabled(): boolean {
-        // Dokument-Upload ist eigentlich in jedem Status möglich, aber nicht für alle Rollen. Also nicht
-        // gleichbedeutend mit readonly auf dem Gesuch
-        // Jedoch darf der Gesuchsteller und der Unterstützungsdienst nach der Verfuegung und
-        // in Bearbeitung Gemeinde/JA nichts mehr hochladen
-        const gsAndVerfuegt =
-            this.gesuchModelManager.getGesuch() &&
-            isAnyStatusOfFreigegebenGeprueftVerfuegenVerfuegtOrAbgeschlossen(
-                this.gesuchModelManager.getGesuch().status
-            ) &&
-            this.authServiceRS.isOneOfRoles(
-                TSRoleUtil.getGesuchstellerSozialdienstRolle()
-            );
-        return (
-            gsAndVerfuegt ||
-            this.authServiceRS.isOneOfRoles(TSRoleUtil.getReadOnlyRoles())
+        return DokumenteUtil.isDokumenteUploadDisabled(
+            this.gesuchModelManager,
+            this.authServiceRS
         );
     }
 

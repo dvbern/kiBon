@@ -20,6 +20,17 @@
             <h2 data-test="page-title" data-translate="DOKUMENTE"></h2>
             <hr class="header" />
             <p class="inline-hint" data-translate="DOK_HINT_DOKUMENTE"></p>
+            <dv-gesuch-open-dokumente-erneuern-button
+                dv-show-element
+                dv-show-expression="
+                    vm.gesuchModelManager.getGesuch().isFolgegesuch() &&
+                    !vm.isDokumenteUploadDisabled() &&
+                    vm.anyTypForErneuerungAllowed
+                "
+                dv-show-allowed-roles="vm.rolesAllowedForErneuerung"
+                (dokumente-erneuert)="vm.reloadDokumente()"
+                class="mb-6 mt-4 block"
+            ></dv-gesuch-open-dokumente-erneuern-button>
         </div>
     </div>
     <div class="row">
@@ -38,7 +49,7 @@
                     <dv-dokumente-list
                         dokumente="vm.dokumenteFamSit"
                         table-id="dokumenteFamSit"
-                        table-title="DOK_FAMILIENSITUATION"
+                        table-title="DOKUMENT_GRUND_TYP_FAMILIENSITUATION"
                         title-value=""
                         on-upload-done="
                             vm.addUploadedDokuments(
@@ -59,8 +70,8 @@
                     <dv-dokumente-list
                         dokumente="vm.dokumenteKinder"
                         table-id="dokumenteKinder"
-                        table-title="DOK_KINDER"
-                        tag="'ZEITRAUM'"
+                        table-title="DOKUMENT_GRUND_TYP_KINDER"
+                        tag="'DOKUMENT_GRUND_TYP_TAG_KINDER'"
                         on-upload-done="
                             vm.addUploadedDokuments(
                                 dokument,
@@ -80,7 +91,7 @@
                     <dv-dokumente-list
                         dokumente="vm.dokumenteErwBetr"
                         table-id="dokumenteErweiterteBetreuung"
-                        table-title="DOK_ERWEITERTE_BETREUUNG"
+                        table-title="DOKUMENT_GRUND_TYP_ERWEITERTE_BETREUUNG"
                         on-upload-done="
                             vm.addUploadedDokuments(
                                 dokument,
@@ -122,8 +133,8 @@
                     <dv-dokumente-list
                         dokumente="vm.dokumenteErwp"
                         table-id="dokumenteErwp"
-                        table-title="DOK_ERWERBSPENSUM"
-                        tag="'DOK_TAETIGKEIT'"
+                        table-title="DOKUMENT_GRUND_TYP_ERWERBSPENSUM"
+                        tag="'DOKUMENT_GRUND_TYP_TAG_ERWERBSPENSUM'"
                         on-upload-done="
                             vm.addUploadedDokuments(dokument, vm.dokumenteErwp)
                         "
@@ -140,7 +151,7 @@
                     <dv-dokumente-list
                         dokumente="vm.dokumenteEkv"
                         table-id="dokumenteEkv"
-                        table-title="EKVI_EINKOMMENSVERSCHLECHTERUNG"
+                        table-title="DOKUMENT_GRUND_TYP_EINKOMMENSVERSCHLECHTERUNG"
                         tag="vm.getTagAnhandFinanzielleSituationTyp()"
                         on-upload-done="
                             vm.addUploadedDokuments(dokument, vm.dokumenteEkv)
@@ -158,7 +169,7 @@
                     <dv-dokumente-list
                         dokumente="vm.dokumenteSonst"
                         table-id="dokumenteSonst"
-                        table-title="DOK_SONSTIGES"
+                        table-title="DOKUMENT_GRUND_TYP_SONSTIGES"
                         on-upload-done="
                             vm.addUploadedDokuments(dokument, vm.dokumenteSonst)
                         "
@@ -181,7 +192,7 @@
                     <dv-dokumente-list
                         dokumente="vm.dokumentePapiergesuch"
                         table-id="dokumentePapiergesuch"
-                        table-title="DOK_PAPIERGESUCH"
+                        table-title="DOKUMENT_GRUND_TYP_PAPIERGESUCH"
                         on-upload-done="
                             vm.addUploadedDokuments(
                                 dokument,
@@ -208,7 +219,7 @@
                         <dv-dokumente-list
                             dokumente="vm.dokumenteFreigabequittung"
                             table-id="dokumenteFreigabequittung"
-                            table-title="DOK_FREIGABEQUITTUNG"
+                            table-title="DOKUMENT_GRUND_TYP_FREIGABEQUITTUNG"
                             on-upload-done="
                                 vm.addUploadedDokuments(
                                     dokument,

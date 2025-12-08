@@ -15,7 +15,7 @@
 
 import ICacheFactoryService = angular.ICacheFactoryService;
 import ICacheObject = angular.ICacheObject;
-import {TSCacheTyp} from '../../models/enums/TSCacheTyp';
+import {TSCacheTyp} from '@kibon/shared/model/enums';
 
 /**
  * Class to store cache Global

@@ -50,7 +50,7 @@ import {UnknownMittagstischIdVisitor} from '../../../app/core/constants/UnknownM
 import {UnknownTagesschuleIdVisitor} from '../../../app/core/constants/UnknownTagesschuleIdVisitor';
 import {UnknownTFOIdVisitor} from '../../../app/core/constants/UnknownTFOIdVisitor';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {TSDemoFeature} from '../../../app/core/directive/dv-hide-feature/TSDemoFeature';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {MandantService} from '@kibon/shared-util-mandant-service';
@@ -66,8 +66,8 @@ import {
 import {
     stringEingewoehnungTyp,
     TSEingewoehnungTyp
-} from '../../../models/enums/TSEingewoehnungTyp';
-import {TSPensumAnzeigeTyp} from '../../../models/enums/TSPensumAnzeigeTyp';
+} from '@kibon/shared/model/enums';
+import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
 import {TSBelegungTagesschule} from '../../../models/TSBelegungTagesschule';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSBetreuungsmitteilung} from '../../../models/TSBetreuungsmitteilung';

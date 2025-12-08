@@ -3,12 +3,14 @@ package ch.dvbern.ebegu.einstellung.validation;
 import java.lang.annotation.Annotation;
 import java.text.MessageFormat;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 
 import jakarta.validation.ConstraintValidatorContext;
 
 import ch.dvbern.ebegu.einstellung.BooleanEinstellung;
 import ch.dvbern.ebegu.einstellung.DateEinstellung;
 import ch.dvbern.ebegu.einstellung.EnumEinstellung;
+import ch.dvbern.ebegu.einstellung.EnumMultiSelectionEinstellung;
 import ch.dvbern.ebegu.einstellung.NumberEinstellung;
 import ch.dvbern.ebegu.einstellung.StringEinstellung;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
@@ -51,6 +53,17 @@ public abstract class AbstractValueTypeConstraintValidator {
 			return valid;
 		}
 
+		if (annotation instanceof EnumMultiSelectionEinstellung) {
+			final boolean valid = isValueMultiSelectionOfEnum(
+				value,
+				(EnumMultiSelectionEinstellung) annotation
+			);
+			if (!valid) {
+				createConstraintViolation(value, keyName, context);
+			}
+			return valid;
+		}
+
 		if (annotation instanceof NumberEinstellung) {
 			final boolean valid = NumberUtils.isCreatable(value);
 			if (!valid) {
@@ -67,6 +80,16 @@ public abstract class AbstractValueTypeConstraintValidator {
 			"ValidValueTypeConstraintValidator.isValid",
 			"Unknown Annotation Type: " + annotation.getClass().getName()
 		);
+	}
+
+	private boolean isValueMultiSelectionOfEnum(
+		String value,
+		EnumMultiSelectionEinstellung annotation
+	) {
+		return Arrays.stream(value.split(annotation.separator()))
+			.allMatch(
+				substring -> isValueOfEnum(annotation.enumClass(), substring)
+			);
 	}
 
 	private static boolean isValidBoolean(String value) {
@@ -87,10 +110,17 @@ public abstract class AbstractValueTypeConstraintValidator {
 		String einstellung,
 		EnumEinstellung annotation
 	) {
+		return isValueOfEnum(annotation.value(), einstellung);
+	}
+
+	private static boolean isValueOfEnum(
+		Class<? extends Enum> enumClass,
+		String substring
+	) {
 		try {
 			Enum.valueOf(
-				annotation.value().asSubclass(Enum.class),
-				einstellung
+				enumClass.asSubclass(Enum.class),
+				substring
 			);
 			return true;
 		} catch (IllegalArgumentException e) {
