@@ -67,6 +67,7 @@ import ch.dvbern.ebegu.enums.ErrorCodeEnum;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
+import ch.dvbern.ebegu.lastenausgleich.LastenausgleichZeitabschnittKorrekturInput;
 import ch.dvbern.ebegu.lastenausgleich.LastenausgleichZeitabschnitteDTO;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
 import ch.dvbern.ebegu.persistence.Persistence;
@@ -300,13 +301,14 @@ public class LastenausgleichServiceBean extends AbstractBaseService {
 		return tq.getResultList();
 	}
 
-	public List<String> findVerfuegungZeitabschnittIdsFuerLastenausgleichDetail(
+	public List<LastenausgleichZeitabschnittKorrekturInput> findVerfuegungZeitabschnittIdsFuerLastenausgleichDetail(
 		@Nonnull LastenausgleichDetail lastenausgleichDetail
 	) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<String> query = cb.createQuery(
-			String.class
-		);
+		final CriteriaQuery<LastenausgleichZeitabschnittKorrekturInput> query =
+			cb.createQuery(
+				LastenausgleichZeitabschnittKorrekturInput.class
+			);
 		Root<LastenausgleichDetailZeitabschnitt> root = query.from(
 			LastenausgleichDetailZeitabschnitt.class
 		);
@@ -314,8 +316,11 @@ public class LastenausgleichServiceBean extends AbstractBaseService {
 		Join<LastenausgleichDetailZeitabschnitt, VerfuegungZeitabschnitt> verfuegungJoin =
 			root.join(LastenausgleichDetailZeitabschnitt_.zeitabschnitt);
 
-		query.select(
-			verfuegungJoin.get(VerfuegungZeitabschnitt_.id)
+		query.multiselect(
+			verfuegungJoin.get(VerfuegungZeitabschnitt_.id),
+			root.get(
+				LastenausgleichDetailZeitabschnitt_.keinSelbstbehaltGemeinde
+			)
 		);
 
 		Predicate predicateLastenausgleichDetail = cb.equal(
@@ -324,7 +329,8 @@ public class LastenausgleichServiceBean extends AbstractBaseService {
 		);
 		query.where(predicateLastenausgleichDetail);
 
-		TypedQuery<String> tq = persistence.getEntityManager()
+		TypedQuery<LastenausgleichZeitabschnittKorrekturInput> tq = persistence
+			.getEntityManager()
 			.createQuery(query);
 
 		return tq.getResultList();

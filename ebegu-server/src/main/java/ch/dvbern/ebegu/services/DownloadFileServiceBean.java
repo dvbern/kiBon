@@ -72,26 +72,21 @@ public class DownloadFileServiceBean implements DownloadFileService {
 	@Nonnull
 	@Override
 	public DownloadFile create(
-		@Nonnull FileMetadata fileMetadata,
-		@Nonnull String ip
+		@Nonnull FileMetadata fileMetadata
 	) {
 		requireNonNull(fileMetadata);
-		requireNonNull(ip);
-
-		return persistence.persist(new DownloadFile(fileMetadata, ip));
+		return persistence.persist(new DownloadFile(fileMetadata));
 	}
 
 	@Nonnull
 	@Override
 	public DownloadFile create(
 		@Nonnull UploadFileInfo fileInfo,
-		@Nonnull TokenLifespan lifespan,
-		@Nonnull String ip
+		@Nonnull TokenLifespan lifespan
 	) {
 		requireNonNull(fileInfo);
 		requireNonNull(lifespan);
-		requireNonNull(ip);
-		final DownloadFile downloadFile = new DownloadFile(fileInfo, ip);
+		final DownloadFile downloadFile = new DownloadFile(fileInfo);
 		downloadFile.setLifespan(lifespan);
 		return persistence.persist(downloadFile);
 	}
@@ -209,7 +204,6 @@ public class DownloadFileServiceBean implements DownloadFileService {
 			TokenLifespan.class,
 			"type"
 		);
-		root.get(DownloadFile_.ip);
 		Predicate lifespanPred = cb.equal(
 			root.get(DownloadFile_.lifespan),
 			lifespanParam

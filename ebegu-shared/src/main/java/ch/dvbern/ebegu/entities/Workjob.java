@@ -75,9 +75,6 @@ public class Workjob extends AbstractMutableEntity {
 	@Min(0)
 	private Long executionId;
 
-	@Column(length = 45, nullable = true, updatable = false)
-	private String triggeringIp;
-
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	@NotNull
@@ -169,14 +166,9 @@ public class Workjob extends AbstractMutableEntity {
 		if (!startinguser.equals(workjob.startinguser)) {
 			return false;
 		}
-		if (params != null ?
+		return params != null ?
 			!params.equals(workjob.params) :
-			workjob.params != null) {
-			return false;
-		}
-		return triggeringIp != null ?
-			triggeringIp.equals(workjob.triggeringIp) :
-			workjob.triggeringIp == null;
+			workjob.params != null;
 	}
 
 	@Override
@@ -186,8 +178,6 @@ public class Workjob extends AbstractMutableEntity {
 		result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
 		result = 31 * result + startinguser.hashCode();
 		result = 31 * result + (params != null ? params.hashCode() : 0);
-		result = 31 * result
-			+ (triggeringIp != null ? triggeringIp.hashCode() : 0);
 		return result;
 	}
 
@@ -207,20 +197,12 @@ public class Workjob extends AbstractMutableEntity {
 		return params;
 	}
 
-	public void setTriggeringIp(String triggeringIp) {
-		this.triggeringIp = triggeringIp;
-	}
-
 	public String getRequestURI() {
 		return requestURI;
 	}
 
 	public void setRequestURI(String requestURI) {
 		this.requestURI = requestURI;
-	}
-
-	public String getTriggeringIp() {
-		return triggeringIp;
 	}
 
 	public String getResultData() {
@@ -238,7 +220,6 @@ public class Workjob extends AbstractMutableEntity {
 		sb.append(", startinguser='").append(startinguser).append('\'');
 		sb.append(", params='").append(params).append('\'');
 		sb.append(", executionId=").append(executionId);
-		sb.append(", triggeringIp='").append(triggeringIp).append('\'');
 		sb.append(", status=").append(status);
 		sb.append('}');
 		return sb.toString();

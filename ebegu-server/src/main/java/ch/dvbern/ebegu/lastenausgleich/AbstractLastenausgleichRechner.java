@@ -92,15 +92,16 @@ public abstract class AbstractLastenausgleichRechner {
 		var detailZeitabschnitte = abschnitteProGemeindeUndJahr
 			.stream()
 			.map(
-				a -> {
+				detailDTO -> {
 					VerfuegungZeitabschnitt verfuegungZeitabschnitt =
 						new VerfuegungZeitabschnitt();
 					verfuegungZeitabschnitt.setId(
-						a.getVerfuegungZeitabschnittId()
+						detailDTO.getVerfuegungZeitabschnittId()
 					);
 					return new LastenausgleichDetailZeitabschnitt(
 						verfuegungZeitabschnitt,
-						detail
+						detail,
+						detailDTO.getKeinSelbstbehaltDurchGemeinde()
 					);
 				}
 			)

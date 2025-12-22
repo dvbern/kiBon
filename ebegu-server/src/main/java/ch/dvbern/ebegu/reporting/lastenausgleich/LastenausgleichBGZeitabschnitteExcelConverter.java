@@ -254,7 +254,8 @@ public class LastenausgleichBGZeitabschnitteExcelConverter implements
 			ServerMessageUtil.getMessage(
 				"Reports_keinSelbstbehaltDurchGemeindeTitle",
 				locale,
-				mandant
+				mandant,
+				lastenausgleichJahr.toString()
 			)
 		);
 		mergeFields.add(
@@ -401,15 +402,33 @@ public class LastenausgleichBGZeitabschnitteExcelConverter implements
 		);
 		ExcelUtil.createCellWithFormula(
 			targetRow,
+			rightBoundedStyle,
+			18,
+			"TEXT(SUM(S"
+				+ firstRow
+				+ ":S"
+				+ lastRow
+				+ "),\"CHF #’##0.00;\"\"-CHF \"\"#’##0.00\")"
+		);
+		ExcelUtil.createCellWithFormula(
+			targetRow,
 			zahlStyle,
 			20,
-			"SUM(U" + firstRow + ":U" + lastRow + ")"
+			"TEXT(SUM(U"
+				+ firstRow
+				+ ":U"
+				+ lastRow
+				+ "),\"CHF #’##0.00;\"\"-CHF \"\"#’##0.00\")"
 		);
 		ExcelUtil.createCellWithFormula(
 			targetRow,
 			zahlStyle,
 			21,
-			"SUM(V" + firstRow + ":V" + lastRow + ")"
+			"TEXT(SUM(V"
+				+ firstRow
+				+ ":V"
+				+ lastRow
+				+ "),\"CHF #’##0.00;\"\"-CHF \"\"#’##0.00\")"
 		);
 	}
 }

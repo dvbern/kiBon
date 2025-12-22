@@ -18,11 +18,14 @@
 package ch.dvbern.ebegu.entities;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
+
+import lombok.Getter;
 
 /**
  * Entitaet zum Verknüpfen eines LastenausgleichDetails mit den Zeitabschnitten
@@ -44,17 +47,26 @@ public class LastenausgleichDetailZeitabschnitt extends AbstractEntity {
 	@Nonnull
 	@NotNull
 	@JoinColumn(nullable = false)
+	@Getter
 	private VerfuegungZeitabschnitt zeitabschnitt;
+
+	@SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
+	// This field was added later with no possibility to set a default for existing db entries so there are null values possible
+	@Nullable
+	@Getter
+	private Boolean keinSelbstbehaltGemeinde;
 
 	public LastenausgleichDetailZeitabschnitt() {
 	}
 
 	public LastenausgleichDetailZeitabschnitt(
 		@Nonnull VerfuegungZeitabschnitt zeitabschnitt,
-		@Nonnull LastenausgleichDetail lastenausgleichDetail
+		@Nonnull LastenausgleichDetail lastenausgleichDetail,
+		@Nullable Boolean keinSelbstbehaltGemeinde
 	) {
 		this.zeitabschnitt = zeitabschnitt;
 		this.lastenausgleichDetail = lastenausgleichDetail;
+		this.keinSelbstbehaltGemeinde = keinSelbstbehaltGemeinde;
 	}
 
 	@Override

@@ -8,21 +8,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package ch.dvbern.ebegu.dto.statistik;
-
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class BaseDto {
-	private String sprache;
-	private String workjobId;
-}
+ALTER TABLE mitteilung ALTER schliessung_mitteilung SET DEFAULT FALSE;
+UPDATE mitteilung SET schliessung_mitteilung = FALSE WHERE schliessung_mitteilung IS NULL;

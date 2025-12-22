@@ -29,7 +29,7 @@ public interface DownloadFileService {
 	 * Erstellt ein neues DownloadFile
 	 */
 	@Nonnull
-	DownloadFile create(@Nonnull FileMetadata fileMetadata, @Nonnull String ip);
+	DownloadFile create(@Nonnull FileMetadata fileMetadata);
 
 	/**
 	 * Erstellt ein Downloadfile aus einem Uploadfile, Nuetzlich fuer die Statistik
@@ -37,8 +37,7 @@ public interface DownloadFileService {
 	@Nonnull
 	DownloadFile create(
 		@Nonnull UploadFileInfo fileInfo,
-		@Nonnull TokenLifespan lifespan,
-		@Nonnull String ip
+		@Nonnull TokenLifespan lifespan
 	);
 
 	/**

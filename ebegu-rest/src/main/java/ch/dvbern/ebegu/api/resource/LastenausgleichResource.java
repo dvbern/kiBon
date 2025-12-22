@@ -191,7 +191,6 @@ public class LastenausgleichResource {
 		RollbackException, IOException {
 
 		Objects.requireNonNull(jaxId);
-		String ip = downloadResource.getIP(request);
 		String lastenausgleichId = converter.toEntityId(jaxId);
 
 		try {
@@ -201,12 +200,10 @@ public class LastenausgleichResource {
 					LocaleThreadLocal.get()
 				);
 			DownloadFile downloadFileInfo = new DownloadFile(
-				uploadFileInfo,
-				ip
+				uploadFileInfo
 			);
 			return downloadResource.getFileDownloadResponse(
 				uriInfo,
-				ip,
 				downloadFileInfo
 			);
 		} catch (RollbackException rollbackException) {
@@ -237,16 +234,14 @@ public class LastenausgleichResource {
 		throws EbeguRuntimeException {
 
 		Objects.requireNonNull(jaxId);
-		String ip = downloadResource.getIP(request);
 		String lastenausgleichId = converter.toEntityId(jaxId);
 
 		UploadFileInfo uploadFileInfo = reportService
 			.generateCSVReportLastenausgleichKibon(lastenausgleichId);
-		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
+		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo);
 
 		return downloadResource.getFileDownloadResponse(
 			uriInfo,
-			ip,
 			downloadFileInfo
 		);
 	}
@@ -269,17 +264,15 @@ public class LastenausgleichResource {
 		throws ExcelMergeException, EbeguRuntimeException, IOException {
 
 		Objects.requireNonNull(lastenausgleichJahr);
-		String ip = downloadResource.getIP(request);
 
 		UploadFileInfo uploadFileInfo = zemisNummerService.generateZemisReport(
 			lastenausgleichJahr,
 			Locale.GERMAN
 		);
-		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
+		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo);
 
 		return downloadResource.getFileDownloadResponse(
 			uriInfo,
-			ip,
 			downloadFileInfo
 		);
 	}

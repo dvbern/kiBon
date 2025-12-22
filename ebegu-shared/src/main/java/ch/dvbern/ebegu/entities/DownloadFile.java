@@ -42,9 +42,6 @@ public class DownloadFile extends FileMetadata {
 	@Column(length = 36, nullable = false, updatable = false)
 	private final String accessToken;
 
-	@Column(length = 45, nullable = false, updatable = false)
-	private final String ip;
-
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, updatable = false)
@@ -57,28 +54,20 @@ public class DownloadFile extends FileMetadata {
 
 	public DownloadFile() {
 		this.accessToken = UUID.randomUUID().toString();
-		this.ip = "";
 	}
 
-	public DownloadFile(@Nonnull FileMetadata file, @Nonnull String ip) {
+	public DownloadFile(@Nonnull FileMetadata file) {
 		super(file);
 		this.accessToken = UUID.randomUUID().toString();
-		this.ip = ip;
-
 	}
 
-	public DownloadFile(UploadFileInfo uploadFileInfo, @Nonnull String ip) {
+	public DownloadFile(UploadFileInfo uploadFileInfo) {
 		super(uploadFileInfo);
 		this.accessToken = UUID.randomUUID().toString();
-		this.ip = ip;
 	}
 
 	public String getAccessToken() {
 		return accessToken;
-	}
-
-	public String getIp() {
-		return ip;
 	}
 
 	public TokenLifespan getLifespan() {

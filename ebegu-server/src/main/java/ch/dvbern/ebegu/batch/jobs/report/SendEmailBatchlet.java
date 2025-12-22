@@ -129,8 +129,7 @@ public class SendEmailBatchlet extends AbstractBatchlet {
 			// create an authorization token (downloadFile) for the generated document
 			return downloadFileService.create(
 				uploadFile,
-				TokenLifespan.LONG,
-				workJob.getTriggeringIp()
+				TokenLifespan.LONG
 			);
 		}
 		LOG.error(

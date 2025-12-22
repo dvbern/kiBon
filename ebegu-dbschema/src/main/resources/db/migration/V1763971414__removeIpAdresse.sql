@@ -8,21 +8,13 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.dvbern.ebegu.dto.statistik;
+ALTER TABLE workjob DROP COLUMN triggering_ip;
+ALTER TABLE download_file DROP COLUMN ip;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class BaseDto {
-	private String sprache;
-	private String workjobId;
-}

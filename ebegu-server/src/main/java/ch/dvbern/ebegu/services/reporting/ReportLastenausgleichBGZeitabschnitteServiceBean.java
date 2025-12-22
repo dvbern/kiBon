@@ -432,8 +432,8 @@ public class ReportLastenausgleichBGZeitabschnitteServiceBean extends
 					bgCalculationResultJoin.get(
 						BGCalculationResult_.anspruchspensumProzent
 					),
-					kindContainerBetreuungJoin.get(
-						KindContainer_.keinSelbstbehaltDurchGemeinde
+					lastenausgleichDetailZeitabschnitt.get(
+						LastenausgleichDetailZeitabschnitt_.keinSelbstbehaltGemeinde
 					),
 					bgCalculationResultJoin.get(
 						BGCalculationResult_.verguenstigung

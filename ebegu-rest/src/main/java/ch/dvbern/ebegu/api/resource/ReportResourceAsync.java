@@ -106,9 +106,6 @@ public class ReportResourceAsync {
 	private static final int EXCEL_LIMITER = 50;
 
 	@Inject
-	private DownloadResource downloadResource;
-
-	@Inject
 	private PrincipalBean principalBean;
 
 	@Inject
@@ -151,14 +148,12 @@ public class ReportResourceAsync {
 		@Context HttpServletRequest request,
 		@Context UriInfo uriInfo
 	) {
-
-		String ip = downloadResource.getIP(request);
 		Objects.requireNonNull(dateTimeStichtag);
 		LocalDate datumVon = DateUtil.parseStringToDateOrReturnNow(
 			dateTimeStichtag
 		);
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		String periodeId = gesuchPeriodIdParam != null ?
 			gesuchPeriodIdParam.getId() :
@@ -202,8 +197,6 @@ public class ReportResourceAsync {
 	)
 		throws EbeguRuntimeException {
 
-		String ip = downloadResource.getIP(request);
-
 		Objects.requireNonNull(dateTimeFromParam);
 		Objects.requireNonNull(dateTimeToParam);
 		Objects.requireNonNull(gesuchDatumTypParam);
@@ -224,7 +217,7 @@ public class ReportResourceAsync {
 			);
 		}
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		String periodeId = gesuchPeriodIdParam != null ?
 			gesuchPeriodIdParam.getId() :
@@ -267,8 +260,6 @@ public class ReportResourceAsync {
 	)
 		throws EbeguRuntimeException {
 
-		String ip = downloadResource.getIP(request);
-
 		Objects.requireNonNull(auswertungVon);
 		Objects.requireNonNull(auswertungBis);
 		LocalDate dateAuswertungVon = DateUtil.parseStringToDateOrReturnNow(
@@ -287,7 +278,7 @@ public class ReportResourceAsync {
 			);
 		}
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -321,8 +312,6 @@ public class ReportResourceAsync {
 	)
 		throws EbeguRuntimeException {
 
-		String ip = downloadResource.getIP(request);
-
 		Objects.requireNonNull(auswertungVon);
 		Objects.requireNonNull(auswertungBis);
 		LocalDate dateAuswertungVon = DateUtil.parseStringToDateOrReturnNow(
@@ -341,7 +330,7 @@ public class ReportResourceAsync {
 			);
 		}
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -368,10 +357,7 @@ public class ReportResourceAsync {
 		@Context HttpServletRequest request,
 		@Context UriInfo uriInfo
 	) {
-
-		String ip = downloadResource.getIP(request);
-
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -398,10 +384,7 @@ public class ReportResourceAsync {
 		@Context HttpServletRequest request,
 		@Context UriInfo uriInfo
 	) {
-
-		String ip = downloadResource.getIP(request);
-
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -436,9 +419,8 @@ public class ReportResourceAsync {
 		throws EbeguRuntimeException {
 
 		Objects.requireNonNull(gesuchPeriodIdParam);
-		String ip = downloadResource.getIP(request);
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		String periodeId = gesuchPeriodIdParam.getId();
 		workJob = workjobReportService.createNewReporting(
@@ -475,8 +457,6 @@ public class ReportResourceAsync {
 	)
 		throws EbeguRuntimeException {
 
-		String ip = downloadResource.getIP(request);
-
 		Objects.requireNonNull(auswertungVon);
 		Objects.requireNonNull(auswertungBis);
 		LocalDate dateFrom = DateUtil.parseStringToDateOrReturnNow(
@@ -493,7 +473,7 @@ public class ReportResourceAsync {
 			);
 		}
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		String periodeId = gesuchPeriodIdParam != null ?
 			gesuchPeriodIdParam.getId() :
@@ -532,8 +512,6 @@ public class ReportResourceAsync {
 	)
 		throws EbeguRuntimeException {
 
-		String ip = downloadResource.getIP(request);
-
 		Objects.requireNonNull(auswertungVon);
 		Objects.requireNonNull(auswertungBis);
 		LocalDate dateFrom = DateUtil.parseStringToDateOrReturnNow(
@@ -553,7 +531,7 @@ public class ReportResourceAsync {
 			);
 		}
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		if (applicationPropertyService.getActivatedDemoFeatures(
 			principalBean.getMandant()
@@ -567,7 +545,6 @@ public class ReportResourceAsync {
 			dto.setAuswertungBis(dateTo);
 			dto.setGesuchsperiodeId(periodeId);
 			dto.setSprache(LocaleThreadLocal.get().getLanguage());
-			dto.setIp(downloadResource.getIP(request));
 			dto.setWorkjobId(workJob.getId());
 			kafkaKinderStatistikProducer.sendKinderStatistik(dto);
 			workjobReportService.persistWorkjobForReport(workJob);
@@ -599,13 +576,10 @@ public class ReportResourceAsync {
 		@Context HttpServletRequest request,
 		@Context UriInfo uriInfo
 	) {
-
-		String ip = downloadResource.getIP(request);
-
 		Objects.requireNonNull(stichtag);
 		LocalDate date = DateUtil.parseStringToDateOrReturnNow(stichtag);
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -646,8 +620,6 @@ public class ReportResourceAsync {
 	)
 		throws EbeguRuntimeException {
 
-		String ip = downloadResource.getIP(request);
-
 		Validate.notNull(auswertungBis);
 
 		// auswertungVon might be null
@@ -685,7 +657,7 @@ public class ReportResourceAsync {
 				ErrorCodeEnum.ERROR_MASSENVERSAND_VERANTWORTLICHKEIT_FEHLT
 			);
 		}
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -723,14 +695,12 @@ public class ReportResourceAsync {
 		@Context UriInfo uriInfo
 	) {
 
-		String ip = downloadResource.getIP(request);
-
 		final boolean doSave = Boolean.parseBoolean(doSaveParam);
 		final BigDecimal betragProKind = betragProKindParam != null ?
 			betragProKindParam :
 			BigDecimal.ZERO;
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -765,8 +735,8 @@ public class ReportResourceAsync {
 		@Context HttpServletRequest request,
 		@Context UriInfo uriInfo
 	) throws EbeguException {
-		String ip = downloadResource.getIP(request);
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		// get ids for each institution
 		List<String> stammdatenIdList = Arrays.stream(stammdatenIds.split(","))
@@ -829,9 +799,7 @@ public class ReportResourceAsync {
 		@Context UriInfo uriInfo
 	) {
 
-		String ip = downloadResource.getIP(request);
-
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -865,8 +833,6 @@ public class ReportResourceAsync {
 	)
 		throws EbeguRuntimeException {
 
-		String ip = downloadResource.getIP(request);
-
 		Objects.requireNonNull(auswertungVon);
 		Objects.requireNonNull(auswertungBis);
 		Objects.requireNonNull(gemeindeId);
@@ -892,7 +858,7 @@ public class ReportResourceAsync {
 				)
 			);
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -927,9 +893,7 @@ public class ReportResourceAsync {
 	)
 		throws EbeguRuntimeException {
 
-		String ip = downloadResource.getIP(request);
-
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -964,9 +928,7 @@ public class ReportResourceAsync {
 		@Context UriInfo uriInfo
 	) {
 
-		String ip = downloadResource.getIP(request);
-
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -994,9 +956,7 @@ public class ReportResourceAsync {
 		@Context UriInfo uriInfo
 	) {
 
-		String ip = downloadResource.getIP(request);
-
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -1038,8 +998,6 @@ public class ReportResourceAsync {
 			);
 		}
 
-		String ip = downloadResource.getIP(request);
-
 		Gemeinde gemeinde = null;
 		LocalDate dateVon = null;
 		LocalDate dateBis = null;
@@ -1059,7 +1017,7 @@ public class ReportResourceAsync {
 			dateBis = DateUtil.parseStringToDateOrReturnNow(bis);
 		}
 
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
@@ -1102,9 +1060,7 @@ public class ReportResourceAsync {
 		@Context UriInfo uriInfo
 	) {
 
-		String ip = downloadResource.getIP(request);
-
-		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
+		Workjob workJob = createWorkjobForReport(request, uriInfo);
 
 		Gemeinde gemeinde = null;
 		Institution institution = null;
@@ -1169,13 +1125,11 @@ public class ReportResourceAsync {
 	@Nonnull
 	private Workjob createWorkjobForReport(
 		@Context HttpServletRequest request,
-		@Context UriInfo uriInfo,
-		String ip
+		@Context UriInfo uriInfo
 	) {
 		Workjob workJob = new Workjob();
 		workJob.setWorkJobType(WorkJobType.REPORT_GENERATION);
 		workJob.setStartinguser(principalBean.getPrincipal().getName());
-		workJob.setTriggeringIp(ip);
 		workJob.setRequestURI(uriInfo.getRequestUri().toString());
 		String param = StringUtils.substringAfterLast(
 			request.getRequestURI(),

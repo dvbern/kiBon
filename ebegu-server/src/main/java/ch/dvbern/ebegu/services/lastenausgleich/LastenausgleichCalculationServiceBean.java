@@ -23,6 +23,7 @@ import ch.dvbern.ebegu.lastenausgleich.AbstractLastenausgleichRechner;
 import ch.dvbern.ebegu.lastenausgleich.LastenausgleichCalculationService;
 import ch.dvbern.ebegu.lastenausgleich.LastenausgleichRechnerNew;
 import ch.dvbern.ebegu.lastenausgleich.LastenausgleichRechnerOld;
+import ch.dvbern.ebegu.lastenausgleich.LastenausgleichZeitabschnittKorrekturInput;
 import ch.dvbern.ebegu.lastenausgleich.LastenausgleichZeitabschnitteDTO;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.MathUtil;
@@ -282,26 +283,32 @@ public class LastenausgleichCalculationServiceBean implements
 				detailBereitsVerrechnet
 			);
 
-		List<String> verfuegungZeitabschnittIds =
+		List<LastenausgleichZeitabschnittKorrekturInput> lastenausgleichZeitabschnittKorrekturInputs =
 			lastenausgleichService
 				.findVerfuegungZeitabschnittIdsFuerLastenausgleichDetail(
 					relevantBereitsVerrechnetesDetail
 				);
-		verfuegungZeitabschnittIds.forEach(id -> {
-			VerfuegungZeitabschnitt verfuegungZeitabschnitt =
-				new VerfuegungZeitabschnitt();
-			verfuegungZeitabschnitt.setId(id);
-			var lastenausgleichDetailZeitabschnittForKorreketur =
-				new LastenausgleichDetailZeitabschnitt(
-					verfuegungZeitabschnitt,
-					detailBisherigeWerte
+		lastenausgleichZeitabschnittKorrekturInputs.forEach(
+			lastenausgleichZeitabschnittKorrekturInput -> {
+				VerfuegungZeitabschnitt verfuegungZeitabschnitt =
+					new VerfuegungZeitabschnitt();
+				verfuegungZeitabschnitt.setId(
+					lastenausgleichZeitabschnittKorrekturInput.zeitabschnittId()
 				);
-			detailBisherigeWerte
-				.getLastenausgleichDetailZeitabschnitte()
-				.add(
-					lastenausgleichDetailZeitabschnittForKorreketur
-				);
-		});
+				var lastenausgleichDetailZeitabschnittForKorreketur =
+					new LastenausgleichDetailZeitabschnitt(
+						verfuegungZeitabschnitt,
+						detailBisherigeWerte,
+						lastenausgleichZeitabschnittKorrekturInput
+							.keinSelbstbehaltDurchGemeinde()
+					);
+				detailBisherigeWerte
+					.getLastenausgleichDetailZeitabschnitte()
+					.add(
+						lastenausgleichDetailZeitabschnittForKorreketur
+					);
+			}
+		);
 	}
 
 	private LastenausgleichDetail getRelevantDetailForKorrekturZeitbaschnitteLinking(

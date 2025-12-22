@@ -104,17 +104,15 @@ public class ReportResource {
 		throws ExcelMergeException, EbeguRuntimeException, IOException {
 
 		Objects.requireNonNull(jaxId);
-		String ip = downloadResource.getIP(request);
 		String id = converter.toEntityId(jaxId);
 
 		UploadFileInfo uploadFileInfo = reportService
 			.generateExcelReportZahlungAuftrag(id, LocaleThreadLocal.get());
 
-		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
+		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo);
 
 		return downloadResource.getFileDownloadResponse(
 			uriInfo,
-			ip,
 			downloadFileInfo
 		);
 	}
@@ -141,17 +139,15 @@ public class ReportResource {
 		throws ExcelMergeException, EbeguRuntimeException, IOException {
 
 		Objects.requireNonNull(jaxId);
-		String ip = downloadResource.getIP(request);
 		String id = converter.toEntityId(jaxId);
 
 		UploadFileInfo uploadFileInfo = reportService
 			.generateExcelReportZahlung(id, LocaleThreadLocal.get());
 
-		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
+		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo);
 
 		return downloadResource.getFileDownloadResponse(
 			uriInfo,
-			ip,
 			downloadFileInfo
 		);
 	}

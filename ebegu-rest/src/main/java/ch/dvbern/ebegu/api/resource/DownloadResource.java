@@ -173,9 +173,6 @@ public class DownloadResource {
 		@DefaultValue("false") boolean attachment,
 		@Context HttpServletRequest request
 	) {
-
-		String ip = getIP(request);
-
 		DownloadFile downloadFile = downloadFileService
 			.getDownloadFileByAccessToken(blobAccessTokenParam);
 
@@ -185,18 +182,12 @@ public class DownloadResource {
 				.build();
 		}
 
-		if (!downloadFile.getIp().equals(ip)
-			|| principalBean.getPrincipal() == null
+		if (principalBean.getPrincipal() == null
 			|| !principalBean.getBenutzer()
 				.isSame(downloadFile.getBenutzer())) {
 			// Wir loggen noch ein bisschen, bis wir sicher sind, dass das Problem geloest ist
 			StringBuilder sb = new StringBuilder();
 			sb.append("Keine Berechtigung fuer Download");
-			if (!downloadFile.getIp().equals(ip)) {
-				sb.append("; downloadFile.getIp(): ")
-					.append(downloadFile.getIp());
-				sb.append("; ip").append(ip);
-			}
 			if (principalBean.getPrincipal() == null) {
 				sb.append("; principalBean.getPrincipal() is null");
 			} else if (!principalBean.getBenutzer()
@@ -234,9 +225,6 @@ public class DownloadResource {
 		@Context HttpServletRequest request,
 		@Context UriInfo uriInfo
 	) throws EbeguEntityNotFoundException {
-
-		String ip = getIP(request);
-
 		requireNonNull(jaxId.getId());
 		String id = converter.toEntityId(jaxId);
 
@@ -249,7 +237,7 @@ public class DownloadResource {
 				)
 			);
 
-		return getFileDownloadResponse(uriInfo, ip, dokument);
+		return getFileDownloadResponse(uriInfo, dokument);
 	}
 
 	/**
@@ -278,7 +266,6 @@ public class DownloadResource {
 		MergeDocException, MimeTypeParseException {
 
 		requireNonNull(jaxGesuchId.getId());
-		String ip = getIP(request);
 
 		final Optional<Gesuch> gesuch = gesuchService.findGesuch(
 			converter.toEntityId(jaxGesuchId)
@@ -289,7 +276,7 @@ public class DownloadResource {
 					gesuch.get(),
 					false
 				);
-			return getFileDownloadResponse(uriInfo, ip, generatedDokument);
+			return getFileDownloadResponse(uriInfo, generatedDokument);
 		}
 		throw new EbeguEntityNotFoundException(
 			"getFinSitDokumentAccessTokenGeneratedDokument",
@@ -324,7 +311,6 @@ public class DownloadResource {
 		MergeDocException, MimeTypeParseException {
 
 		requireNonNull(jaxGesuchId.getId());
-		String ip = getIP(request);
 
 		final Optional<Gesuch> gesuch = gesuchService.findGesuch(
 			converter.toEntityId(jaxGesuchId)
@@ -335,7 +321,7 @@ public class DownloadResource {
 					gesuch.get(),
 					false
 				);
-			return getFileDownloadResponse(uriInfo, ip, generatedDokument);
+			return getFileDownloadResponse(uriInfo, generatedDokument);
 		}
 		throw new EbeguEntityNotFoundException(
 			"getBegleitschreibenDokumentAccessTokenGeneratedDokument",
@@ -371,7 +357,6 @@ public class DownloadResource {
 		MergeDocException, MimeTypeParseException {
 
 		requireNonNull(jaxGesuchId.getId());
-		String ip = getIP(request);
 
 		final Optional<Gesuch> gesuch = gesuchService.findGesuch(
 			converter.toEntityId(jaxGesuchId)
@@ -381,7 +366,7 @@ public class DownloadResource {
 				generatedDokumentService.getKompletteKorrespondenz(
 					gesuch.get()
 				);
-			return getFileDownloadResponse(uriInfo, ip, generatedDokument);
+			return getFileDownloadResponse(uriInfo, generatedDokument);
 		}
 		throw new EbeguEntityNotFoundException(
 			"getKompletteKorrespondenzAccessTokenGeneratedDokument",
@@ -413,7 +398,6 @@ public class DownloadResource {
 		MergeDocException, MimeTypeParseException {
 
 		requireNonNull(jaxGesuchId.getId());
-		String ip = getIP(request);
 
 		final Optional<Gesuch> gesuchOpt = gesuchService.findGesuch(
 			converter.toEntityId(jaxGesuchId)
@@ -440,7 +424,7 @@ public class DownloadResource {
 				gesuch,
 				forceCreation
 			);
-		return getFileDownloadResponse(uriInfo, ip, generatedDokument);
+		return getFileDownloadResponse(uriInfo, generatedDokument);
 	}
 
 	@Operation(
@@ -465,7 +449,6 @@ public class DownloadResource {
 
 		requireNonNull(jaxGesuchId.getId());
 		requireNonNull(jaxBetreuungId.getId());
-		String ip = getIP(request);
 
 		if (!isUserAllowedToDownloadVerfuegungPdf()) {
 			throw new EbeguRuntimeException(
@@ -490,7 +473,7 @@ public class DownloadResource {
 					manuelleBemerkungen,
 					forceCreation
 				);
-			return getFileDownloadResponse(uriInfo, ip, persistedDokument);
+			return getFileDownloadResponse(uriInfo, persistedDokument);
 
 		}
 		throw new EbeguEntityNotFoundException(
@@ -526,7 +509,6 @@ public class DownloadResource {
 		IOException, MimeTypeParseException, MergeDocException {
 
 		requireNonNull(jaxMahnung);
-		String ip = getIP(request);
 
 		Mahnung mahnung = mahnungConverter.mahnungToEntity(
 			jaxMahnung,
@@ -537,7 +519,7 @@ public class DownloadResource {
 		WriteProtectedDokument persistedDokument = generatedDokumentService
 			.getMahnungDokumentAccessTokenGeneratedDokument(mahnung, false);
 
-		return getFileDownloadResponse(uriInfo, ip, persistedDokument);
+		return getFileDownloadResponse(uriInfo, persistedDokument);
 
 	}
 
@@ -559,7 +541,6 @@ public class DownloadResource {
 		IOException, MimeTypeParseException, MergeDocException {
 
 		requireNonNull(jaxBetreuungId);
-		String ip = getIP(request);
 
 		Betreuung betreuung = betreuungService.findBetreuung(
 			jaxBetreuungId.getId()
@@ -576,7 +557,7 @@ public class DownloadResource {
 				betreuung,
 				forceCreation
 			);
-		return getFileDownloadResponse(uriInfo, ip, persistedDokument);
+		return getFileDownloadResponse(uriInfo, persistedDokument);
 	}
 
 	/**
@@ -597,14 +578,13 @@ public class DownloadResource {
 		@Context UriInfo uriInfo
 	) throws EbeguEntityNotFoundException {
 		requireNonNull(jaxBetreuungId);
-		String ip = getIP(request);
 
 		UploadFileInfo uploadFileInfo =
 			exportService.exportVerfuegungOfBetreuungAsFile(
 				converter.toEntityId(jaxBetreuungId)
 			);
-		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo, ip);
-		return this.getFileDownloadResponse(uriInfo, ip, downloadFileInfo);
+		DownloadFile downloadFileInfo = new DownloadFile(uploadFileInfo);
+		return this.getFileDownloadResponse(uriInfo, downloadFileInfo);
 	}
 
 	@Operation(
@@ -625,7 +605,6 @@ public class DownloadResource {
 		MimeTypeParseException {
 
 		requireNonNull(jaxId.getId());
-		String ip = getIP(request);
 
 		final Optional<Zahlungsauftrag> zahlungsauftrag =
 			zahlungService.findZahlungsauftrag(converter.toEntityId(jaxId));
@@ -635,7 +614,7 @@ public class DownloadResource {
 				.getPain001DokumentAccessTokenGeneratedDokument(
 					zahlungsauftrag.get()
 				);
-			return getFileDownloadResponse(uriInfo, ip, persistedDokument);
+			return getFileDownloadResponse(uriInfo, persistedDokument);
 		}
 		throw new EbeguEntityNotFoundException(
 			"getPain001AccessTokenGeneratedDokument",
@@ -661,7 +640,6 @@ public class DownloadResource {
 	) throws EbeguEntityNotFoundException,
 		MimeTypeParseException {
 		requireNonNull(jaxId.getId());
-		String ip = getIP(request);
 
 		final Optional<Zahlungsauftrag> zahlungsauftrag =
 			zahlungService.findZahlungsauftrag(converter.toEntityId(jaxId));
@@ -670,7 +648,7 @@ public class DownloadResource {
 				.getInfomaDokumentAccessTokenGeneratedDokument(
 					zahlungsauftrag.get()
 				);
-			return getFileDownloadResponse(uriInfo, ip, persistedDokument);
+			return getFileDownloadResponse(uriInfo, persistedDokument);
 		}
 		throw new EbeguEntityNotFoundException(
 			"geInfomaAccessTokenGeneratedDokument",
@@ -682,15 +660,13 @@ public class DownloadResource {
 	@Nonnull
 	public Response getFileDownloadResponse(
 		UriInfo uriInfo,
-		String ip,
 		@Nonnull FileMetadata fileMetadata
 	) {
 
 		avClient.scan(fileMetadata);
 
 		final DownloadFile downloadFile = downloadFileService.create(
-			fileMetadata,
-			ip
+			fileMetadata
 		);
 
 		URI uri = createDownloadURIForDownloadFile(uriInfo, downloadFile);
@@ -711,19 +687,6 @@ public class DownloadResource {
 			.path("/blobdata")
 			.path('/' + downloadFile.getAccessToken())
 			.build();
-	}
-
-	public String getIP(HttpServletRequest request) {
-		String ipAddress = request.getHeader("X-FORWARDED-FOR");
-		if (ipAddress == null) {
-			ipAddress = request.getRemoteAddr();
-		}
-		if (ipAddress.contains(",")) {
-			String[] adresses = ipAddress.split(",");
-			return adresses[0];
-		} else {
-			return ipAddress;
-		}
 	}
 
 	@Operation(
@@ -754,7 +717,6 @@ public class DownloadResource {
 
 		requireNonNull(jaxGesuchId.getId());
 		requireNonNull(jaxAnmledungId.getId());
-		String ip = getIP(request);
 
 		Gesuch gesuch = gesuchService.findGesuch(
 			converter.toEntityId(jaxGesuchId)
@@ -786,7 +748,7 @@ public class DownloadResource {
 				mitTarif,
 				forceCreation
 			);
-		return getFileDownloadResponse(uriInfo, ip, persistedDokument);
+		return getFileDownloadResponse(uriInfo, persistedDokument);
 	}
 
 	@Operation(
@@ -802,8 +764,6 @@ public class DownloadResource {
 		@Context UriInfo uriInfo
 	) throws EbeguEntityNotFoundException {
 
-		String ip = getIP(request);
-
 		requireNonNull(jaxId.getId());
 		String id = converter.toEntityId(jaxId);
 
@@ -817,7 +777,7 @@ public class DownloadResource {
 				)
 			);
 
-		return getFileDownloadResponse(uriInfo, ip, dokument);
+		return getFileDownloadResponse(uriInfo, dokument);
 	}
 
 	@Operation(
@@ -832,9 +792,6 @@ public class DownloadResource {
 		@Context HttpServletRequest request,
 		@Context UriInfo uriInfo
 	) throws EbeguEntityNotFoundException {
-
-		String ip = getIP(request);
-
 		requireNonNull(jaxId.getId());
 		String id = converter.toEntityId(jaxId);
 
@@ -848,6 +805,6 @@ public class DownloadResource {
 				)
 			);
 
-		return getFileDownloadResponse(uriInfo, ip, dokument);
+		return getFileDownloadResponse(uriInfo, dokument);
 	}
 }
