@@ -67,6 +67,9 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 	implements
 	ReportGemeindenService {
 
+	private static final int EMAIL_TAGESCHULE_COL_INDEX = 12;
+	private static final int PHONE_TAGESCHULE_COL_INDEX = 13;
+
 	@Inject
 	private GemeindeService gemeindeService;
 
@@ -120,6 +123,9 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 				);
 			mergeData(sheet, excelMergerDTO, vorlage.getMergeFields());
 			mergeData(secondSheet, excelMergerDTO, vorlage.getMergeFields());
+
+			hideTagesschuleColumnsIfNotEnabled(sheet, aktiveGemeinden);
+
 			gemeindenExcelConverter.applyAutoSize(sheet);
 			gemeindenExcelConverter.applyAutoSize(secondSheet);
 
@@ -132,6 +138,28 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 				getContentTypeForExport()
 			);
 		}
+	}
+
+	private void hideTagesschuleColumnsIfNotEnabled(
+		Sheet sheet,
+		Collection<Gemeinde> aktiveGemeinden
+	) {
+		if (containsNoGemeindeWithTagesschule(aktiveGemeinden)) {
+			sheet.setColumnWidth(EMAIL_TAGESCHULE_COL_INDEX, 0);
+			sheet.setColumnWidth(PHONE_TAGESCHULE_COL_INDEX, 0);
+		}
+	}
+
+	/**
+	 * @return Ob keine der, in der Collection gegebenen Gemeiden ein TS-Angebot hat.
+	 */
+	private boolean containsNoGemeindeWithTagesschule(
+		Collection<Gemeinde> gemeinden
+	) {
+		return gemeinden.stream()
+			.filter(Gemeinde::isAngebotTS)
+			.collect(Collectors.toSet())
+			.isEmpty();
 	}
 
 	private List<GemeindenDataRow> getReportDataGemeinden(
@@ -157,13 +185,17 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 			.map(gemeinde -> {
 				GemeindenDataRow dataRow = new GemeindenDataRow();
 
+				final boolean angebotBG = gemeinde.isAngebotBG();
+				final boolean angebotTS = gemeinde.isAngebotTS();
+
 				dataRow.setNameGemeinde(gemeinde.getName());
 				dataRow.setBfsNummer(gemeinde.getBfsNummer());
-				dataRow.setAngebotBG(gemeinde.isAngebotBG());
-				dataRow.setAngebotTS(gemeinde.isAngebotTS());
+				dataRow.setAngebotBG(angebotBG);
+				dataRow.setAngebotTS(angebotTS);
 				dataRow.setStartdatumBG(
 					gemeinde.getBetreuungsgutscheineStartdatum()
 				);
+				dataRow.setGemeindeGueltigBis(gemeinde.getGueltigBis());
 
 				gemeindeService.getGemeindeStammdatenByGemeindeId(
 					gemeinde.getId()
@@ -189,6 +221,26 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 								gemeindeStammdaten
 									.getGemeindeAusgabestelle()
 									.getName()
+							);
+						}
+						dataRow.setEMailStammdaten(
+							gemeindeStammdaten.getMail()
+						);
+						dataRow.setPhoneStammdaten(
+							gemeindeStammdaten.getTelefon()
+						);
+						if (angebotBG) {
+							dataRow.setEMailBG(gemeindeStammdaten.getBgEmail());
+							dataRow.setPhoneBG(
+								gemeindeStammdaten.getBgTelefon()
+							);
+						}
+						if (angebotTS) {
+							dataRow.setEMailTSA(
+								gemeindeStammdaten.getTsEmail()
+							);
+							dataRow.setPhoneTSA(
+								gemeindeStammdaten.getTsTelefon()
 							);
 						}
 					});
@@ -240,6 +292,18 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 						gemeinde
 					);
 
+					// Kontingentierung aus den Periodeneinstellungen lesen:
+					Einstellung kontingentierungEinstellung =
+						einstellungService.findEinstellung(
+							EinstellungKey.GEMEINDE_KONTINGENTIERUNG_ENABLED,
+							gemeinde,
+							gesuchsperiode
+						);
+
+					gemeindenDatenDataRow.setKontingentierung(
+						kontingentierungEinstellung.getValueAsBoolean()
+					);
+
 					dataRow.getGemeindenDaten().add(gemeindenDatenDataRow);
 				});
 
@@ -276,9 +340,6 @@ public class ReportGemeindenServiceBean extends AbstractReportServiceBean
 			!= GemeindeKennzahlenStatus.ABGESCHLOSSEN) {
 			return;
 		}
-		gemeindenDatenDataRow.setKontingentierung(
-			gemeindeKennzahlen.getGemeindeKontingentiert()
-		);
 		gemeindenDatenDataRow.setNachfrageErfuellt(
 			gemeindeKennzahlen.getNachfrageErfuellt()
 		);

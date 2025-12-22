@@ -109,8 +109,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 		assertEquals(1, zeitabschnitts.size());
 		BGCalculationInput result =
 			zeitabschnitts.get(0).getBgCalculationInputAsiv();
-		assertEqualsNumberValue(3, result.getFamGroesse());
-		assertEqualsNumberValue(11400, result.getAbzugFamGroesse());
+		assertEqualsNumberValue(3, result.getFamGroesseTotal());
+		assertEqualsNumberValue(11400, result.getAbzugFamGroesseTotal());
 	}
 
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -150,8 +150,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(3, result.getFamGroesse());
-			assertEqualsNumberValue(11400, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(3, result.getFamGroesseTotal());
+			assertEqualsNumberValue(11400, result.getAbzugFamGroesseTotal());
 		}
 
 		@ParameterizedTest
@@ -179,8 +179,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2.5, result.getFamGroesse());
-			assertEqualsNumberValue(9500, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2.5, result.getFamGroesseTotal());
+			assertEqualsNumberValue(9500, result.getAbzugFamGroesseTotal());
 		}
 
 		@ParameterizedTest
@@ -204,8 +204,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2.5, result.getFamGroesse());
-			assertEqualsNumberValue(9500, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2.5, result.getFamGroesseTotal());
+			assertEqualsNumberValue(9500, result.getAbzugFamGroesseTotal());
 		}
 
 		@ParameterizedTest
@@ -231,8 +231,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(1.5, result.getFamGroesse());
-			assertEqualsNumberValue(0, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(1.5, result.getFamGroesseTotal());
+			assertEqualsNumberValue(0, result.getAbzugFamGroesseTotal());
 		}
 
 		@ParameterizedTest
@@ -259,8 +259,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(3, result.getFamGroesse());
-			assertEqualsNumberValue(11400, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(3, result.getFamGroesseTotal());
+			assertEqualsNumberValue(11400, result.getAbzugFamGroesseTotal());
 		}
 
 		@ParameterizedTest
@@ -287,8 +287,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2.5, result.getFamGroesse());
-			assertEqualsNumberValue(9500, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2.5, result.getFamGroesseTotal());
+			assertEqualsNumberValue(9500, result.getAbzugFamGroesseTotal());
 		}
 
 		private Stream<Arguments> familiensituation_obhutAlternirend_zweiGS_countsHalf() {
@@ -326,8 +326,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2, result.getFamGroesse());
-			assertEqualsNumberValue(0, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2, result.getFamGroesseTotal());
+			assertEqualsNumberValue(0, result.getAbzugFamGroesseTotal());
 		}
 
 		@Test
@@ -345,8 +345,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2, result.getFamGroesse());
-			assertEqualsNumberValue(7600, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2, result.getFamGroesseTotal());
+			assertEqualsNumberValue(7600, result.getAbzugFamGroesseTotal());
 		}
 
 		@ParameterizedTest
@@ -369,8 +369,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(3, result.getFamGroesse());
-			assertEqualsNumberValue(11400, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(3, result.getFamGroesseTotal());
+			assertEqualsNumberValue(11400, result.getAbzugFamGroesseTotal());
 		}
 
 		@Test
@@ -392,8 +392,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2, result.getFamGroesse());
-			assertEqualsNumberValue(0, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2, result.getFamGroesseTotal());
+			assertEqualsNumberValue(0, result.getAbzugFamGroesseTotal());
 		}
 
 		@Test
@@ -415,8 +415,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2, result.getFamGroesse());
-			assertEqualsNumberValue(0, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2, result.getFamGroesseTotal());
+			assertEqualsNumberValue(0, result.getAbzugFamGroesseTotal());
 		}
 
 		@Test
@@ -438,8 +438,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2, result.getFamGroesse());
-			assertEqualsNumberValue(0, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2, result.getFamGroesseTotal());
+			assertEqualsNumberValue(0, result.getAbzugFamGroesseTotal());
 		}
 
 		@Test
@@ -461,8 +461,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(3, result.getFamGroesse());
-			assertEqualsNumberValue(11400, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(3, result.getFamGroesseTotal());
+			assertEqualsNumberValue(11400, result.getAbzugFamGroesseTotal());
 		}
 
 		@Test
@@ -484,8 +484,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(3, result.getFamGroesse());
-			assertEqualsNumberValue(11400, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(3, result.getFamGroesseTotal());
+			assertEqualsNumberValue(11400, result.getAbzugFamGroesseTotal());
 		}
 
 		@Test
@@ -507,8 +507,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2, result.getFamGroesse());
-			assertEqualsNumberValue(0, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2, result.getFamGroesseTotal());
+			assertEqualsNumberValue(0, result.getAbzugFamGroesseTotal());
 		}
 
 		@ParameterizedTest
@@ -534,8 +534,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			assertEquals(1, zeitabschnitts.size());
 			BGCalculationInput result =
 				zeitabschnitts.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(3, result.getFamGroesse());
-			assertEqualsNumberValue(11400, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(3, result.getFamGroesseTotal());
+			assertEqualsNumberValue(11400, result.getAbzugFamGroesseTotal());
 		}
 
 		@ParameterizedTest
@@ -580,11 +580,12 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			);
 			assertEqualsNumberValue(
 				11400,
-				bisVolljaehrig.getBgCalculationInputAsiv().getAbzugFamGroesse()
+				bisVolljaehrig.getBgCalculationInputAsiv()
+					.getAbzugFamGroesseTotal()
 			);
 			assertEqualsNumberValue(
 				3,
-				bisVolljaehrig.getBgCalculationInputAsiv().getFamGroesse()
+				bisVolljaehrig.getBgCalculationInputAsiv().getFamGroesseTotal()
 			);
 			assertEquals(
 				START_PERIODE,
@@ -601,11 +602,12 @@ class FamilienabzugAbschnittRuleFKJVTest {
 			);
 			assertEqualsNumberValue(
 				0,
-				nachVolljaehrig.getBgCalculationInputAsiv().getAbzugFamGroesse()
+				nachVolljaehrig.getBgCalculationInputAsiv()
+					.getAbzugFamGroesseTotal()
 			);
 			assertEqualsNumberValue(
 				2,
-				nachVolljaehrig.getBgCalculationInputAsiv().getFamGroesse()
+				nachVolljaehrig.getBgCalculationInputAsiv().getFamGroesseTotal()
 			);
 			assertEquals(
 				geburtsdatumWith18.with(firstDayOfNextMonth()),
@@ -670,8 +672,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 
 			BGCalculationInput result =
 				zeitabschnittList.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2, result.getFamGroesse());
-			assertEqualsNumberValue(7600, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2, result.getFamGroesseTotal());
+			assertEqualsNumberValue(7600, result.getAbzugFamGroesseTotal());
 		}
 
 		@Test
@@ -690,8 +692,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 
 			BGCalculationInput result =
 				zeitabschnittList.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(2, result.getFamGroesse());
-			assertEqualsNumberValue(0, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(2, result.getFamGroesseTotal());
+			assertEqualsNumberValue(0, result.getAbzugFamGroesseTotal());
 		}
 
 		@ParameterizedTest
@@ -715,8 +717,8 @@ class FamilienabzugAbschnittRuleFKJVTest {
 
 			BGCalculationInput result =
 				zeitabschnittList.get(0).getBgCalculationInputAsiv();
-			assertEqualsNumberValue(3, result.getFamGroesse());
-			assertEqualsNumberValue(11400, result.getAbzugFamGroesse());
+			assertEqualsNumberValue(3, result.getFamGroesseTotal());
+			assertEqualsNumberValue(11400, result.getAbzugFamGroesseTotal());
 		}
 
 		private void setPflegeKind(

@@ -20,9 +20,9 @@ import {TSDatumTyp} from './enums/TSDatumTyp';
 import {
     TSAbstractMutableEntity,
     TSGemeinde,
-    TSInstitution,
-    TSInstitutionStammdaten
+    TSInstitution
 } from '@kibon/shared/model/entity';
+import {InstitutionNameStammdatenIdDto} from '@kibon/shared/model/dto';
 
 export class TSStatistikParameter extends TSAbstractMutableEntity {
     private _jahr: number;
@@ -37,7 +37,7 @@ export class TSStatistikParameter extends TSAbstractMutableEntity {
     private _ohneFolgegesuche: boolean;
     private _doSave: boolean;
     private _betragProKind: number;
-    private _tagesschuleAnmeldungen: TSInstitutionStammdaten;
+    private _selectedTagesschulen: InstitutionNameStammdatenIdDto[] = [];
     private _gemeindeMahlzeitenverguenstigungen: TSGemeinde;
     private _kantonSelbstbehalt: number;
     private _gemeinde: TSGemeinde;
@@ -153,12 +153,12 @@ export class TSStatistikParameter extends TSAbstractMutableEntity {
         this._jahr = value;
     }
 
-    public get tagesschuleAnmeldungen(): TSInstitutionStammdaten {
-        return this._tagesschuleAnmeldungen;
+    public get selectedTagesschulen(): InstitutionNameStammdatenIdDto[] {
+        return this._selectedTagesschulen;
     }
 
-    public set tagesschuleAnmeldungen(value: TSInstitutionStammdaten) {
-        this._tagesschuleAnmeldungen = value;
+    public set selectedTagesschulen(value: InstitutionNameStammdatenIdDto[]) {
+        this._selectedTagesschulen = value;
     }
 
     public get gemeindeMahlzeitenverguenstigungen(): TSGemeinde {

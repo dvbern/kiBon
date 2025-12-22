@@ -43,9 +43,11 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
+import ch.dvbern.ebegu.dto.filter.InstitutionNameStammdatenIdDto;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.entities.AbstractEntity;
+import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.GemeindeStammdaten;
@@ -669,7 +671,75 @@ public class InstitutionStammdatenServiceBean extends AbstractBaseService
 		query.where(institutionPredicate, predicateTypTagesschule);
 		TypedQuery<InstitutionStammdaten> q = persistence.getEntityManager()
 			.createQuery(query);
+
 		return q.getResultList();
+	}
+
+	@Override
+	public Collection<InstitutionNameStammdatenIdDto> getTagesschulenFilterListForCurrentBenutzer() {
+		Collection<Institution> institutionenForCurrentBenutzer =
+			institutionService.getInstitutionenReadableForCurrentBenutzer(
+				false
+			)
+				.stream()
+				.filter(
+					institution -> !institution.getStatus()
+						.equals(InstitutionStatus.NUR_LATS)
+				)
+				.toList();
+		if (institutionenForCurrentBenutzer.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<InstitutionNameStammdatenIdDto> query = cb
+			.createQuery(
+				InstitutionNameStammdatenIdDto.class
+			);
+		Root<InstitutionStammdaten> root = query.from(
+			InstitutionStammdaten.class
+		);
+		Join<InstitutionStammdaten, InstitutionStammdatenTagesschule> institutionStammdatenTagesschuleJoin =
+			root.join(
+				InstitutionStammdaten_.institutionStammdatenTagesschule
+			);
+
+		Predicate institutionPredicate = root.get(
+			InstitutionStammdaten_.institution
+		)
+			.in(institutionenForCurrentBenutzer);
+		Predicate predicateTypTagesschule =
+			cb.equal(
+				root.get(InstitutionStammdaten_.betreuungsangebotTyp),
+				BetreuungsangebotTyp.TAGESSCHULE
+			);
+
+		Predicate predicateEinstellungenNotEmpty =
+			cb.isNotEmpty(
+				institutionStammdatenTagesschuleJoin.get(
+					InstitutionStammdatenTagesschule_.einstellungenTagesschule
+				)
+			);
+
+		query.select(
+			cb.construct(
+				InstitutionNameStammdatenIdDto.class,
+				root.get(AbstractEntity_.id),
+				root.get(
+					InstitutionStammdaten_.institution
+				).get(Institution_.name)
+			)
+		);
+
+		query.where(
+			institutionPredicate,
+			predicateTypTagesschule,
+			predicateEinstellungenNotEmpty
+		);
+
+		return persistence.getCriteriaResults(
+			query
+		);
 	}
 
 	@Nonnull
@@ -832,14 +902,14 @@ public class InstitutionStammdatenServiceBean extends AbstractBaseService
 	}
 
 	@Override
-	public boolean isGueltigkeitDecrease(
+	public boolean isGueltigkeitChanged(
 		@Nonnull DateRange current,
 		@Nonnull DateRange change
 	) {
-		if (change.getGueltigAb().isAfter(current.getGueltigAb())) {
+		if (!change.getGueltigAb().isEqual(current.getGueltigAb())) {
 			return true;
 		}
-		return change.getGueltigBis().isBefore(current.getGueltigBis());
+		return !change.getGueltigBis().isEqual(current.getGueltigBis());
 	}
 
 }

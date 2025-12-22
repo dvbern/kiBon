@@ -19,7 +19,10 @@ import {AfterViewInit, Directive, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {isAtLeastFreigegeben} from '../../models/enums/TSAntragStatus';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
+import {
+    getBernFKJVFinSitTyp,
+    TSFinanzielleSituationTyp
+} from '@kibon/shared/model/enums';
 import {TSWizardStepName} from '@kibon/shared/model/enums';
 import {TSAbstractFinanzielleSituation} from '../../models/TSAbstractFinanzielleSituation';
 import {TSGesuch} from '../../models/TSGesuch';
@@ -121,7 +124,7 @@ export class AbstractGesuchViewX<T> implements AfterViewInit {
     public isFKJV(): boolean {
         return (
             EbeguUtil.isNotNullOrUndefined(this.getGesuch()) &&
-            this.getGesuch().finSitTyp === TSFinanzielleSituationTyp.BERN_FKJV
+            getBernFKJVFinSitTyp().includes(this.getGesuch().finSitTyp)
         );
     }
 

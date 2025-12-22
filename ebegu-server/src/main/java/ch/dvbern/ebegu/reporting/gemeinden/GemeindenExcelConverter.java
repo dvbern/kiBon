@@ -89,6 +89,35 @@ public class GemeindenExcelConverter implements ExcelConverter {
 				);
 			}
 
+			gemeindeInfoRegisterGroup.addValue(
+				MergeFieldGemeinden.gemeindeGueltigBis,
+				gemeindenDataRow.getGemeindeGueltigBis()
+			);
+			gemeindeInfoRegisterGroup.addValue(
+				MergeFieldGemeinden.eMailStammdaten,
+				gemeindenDataRow.getEMailStammdaten()
+			);
+			gemeindeInfoRegisterGroup.addValue(
+				MergeFieldGemeinden.phoneStammdaten,
+				gemeindenDataRow.getPhoneStammdaten()
+			);
+			gemeindeInfoRegisterGroup.addValue(
+				MergeFieldGemeinden.eMailBG,
+				gemeindenDataRow.getEMailBG()
+			);
+			gemeindeInfoRegisterGroup.addValue(
+				MergeFieldGemeinden.phoneBG,
+				gemeindenDataRow.getPhoneBG()
+			);
+			gemeindeInfoRegisterGroup.addValue(
+				MergeFieldGemeinden.eMailTSA,
+				gemeindenDataRow.getEMailTSA()
+			);
+			gemeindeInfoRegisterGroup.addValue(
+				MergeFieldGemeinden.phoneTSA,
+				gemeindenDataRow.getPhoneTSA()
+			);
+
 			gemeindenDataRow.getGemeindenDaten()
 				.forEach(gemeindenDatenDataRow -> {
 					ExcelMergerDTO gemeindeDatenRegisterGroup = excelMerger
@@ -302,6 +331,63 @@ public class GemeindenExcelConverter implements ExcelConverter {
 			MergeFieldGemeinden.limitierungtfoTitle,
 			ServerMessageUtil.getMessage(
 				"Reports_limitierungTfoTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldGemeinden.gemeindeGueltigBisTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_gemeindeGueltigBisTitle",
+				locale,
+				mandant
+			)
+		);
+		// ---
+		excelMerger.addValue(
+			MergeFieldGemeinden.eMailStammdatenTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_eMailStammdatenTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldGemeinden.phoneStammdatenTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_phoneStammdatenTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldGemeinden.eMailBGTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_eMailBGTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldGemeinden.phoneBGTitle,
+			ServerMessageUtil.getMessage(
+				"Reports_phoneBGTitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldGemeinden.eMailTSATitle,
+			ServerMessageUtil.getMessage(
+				"Reports_eMailTSATitle",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
+			MergeFieldGemeinden.phoneTSATitle,
+			ServerMessageUtil.getMessage(
+				"Reports_phoneTSATitle",
 				locale,
 				mandant
 			)

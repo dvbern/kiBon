@@ -140,7 +140,7 @@ public class InstitutionResourceTest {
 			.andReturn(false);
 
 		EasyMock.expect(
-			institutionStammdatenService.isGueltigkeitDecrease(
+			institutionStammdatenService.isGueltigkeitChanged(
 				EasyMock.anyObject(),
 				EasyMock.anyObject()
 			)

@@ -399,7 +399,7 @@ public class MutationsMergerFinSitAbgelehntTest {
 						massgebendesEinkommen
 					);
 				v.getBgCalculationInputAsiv()
-					.setAbzugFamGroesse(BigDecimal.ZERO);
+					.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 				v.getBgCalculationResultAsiv()
 					.setMassgebendesEinkommenVorAbzugFamgr(
 						massgebendesEinkommen

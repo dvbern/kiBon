@@ -590,6 +590,7 @@ public class WizardStepServiceBean extends AbstractBaseService implements
 		switch (gesuch.getFinSitTyp()) {
 		case BERN:
 		case BERN_FKJV:
+		case BERN_FKJV_FRISTEN:
 			return WizardStepName.FINANZIELLE_SITUATION;
 		case LUZERN:
 			return WizardStepName.FINANZIELLE_SITUATION_LUZERN;
@@ -615,6 +616,7 @@ public class WizardStepServiceBean extends AbstractBaseService implements
 		switch (gesuch.getFinSitTyp()) {
 		case BERN:
 		case BERN_FKJV:
+		case BERN_FKJV_FRISTEN:
 			return WizardStepName.EINKOMMENSVERSCHLECHTERUNG;
 		case LUZERN:
 			return WizardStepName.EINKOMMENSVERSCHLECHTERUNG_LUZERN;

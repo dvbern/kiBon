@@ -120,6 +120,7 @@
                             #fachstelle="ngModel"
                             [required]="submitted || fachstelle.touched"
                             [compareWith]="compareByID"
+                            (change)="clearPensumFachstelleDescription()"
                         >
                             <option class="hidden" [ngValue]="null"></option>
                             @for (
@@ -140,6 +141,41 @@
                 </dv-input-container-x>
             </div>
         </div>
+
+        @if (isFeatureEnabled() && isGemeindeBezeichneteFachstelleSelected()) {
+            <div class="row">
+                <dv-input-container-x [noMargin]="true" [verticalAlign]="true">
+                    <div class="col-sm-12 dv-input-container-medium form-group">
+                        <label class="md-no-float required">
+                            <span translate>FACHSTELLE_DESCRIPTION</span>
+                            <dv-tooltip
+                                [inputId]="'nameFachstelle'"
+                                [text]="
+                                    'FACHSTELLE_DESCRIPTION_HELP' | translate
+                                "
+                            ></dv-tooltip>
+                        </label>
+                        <input
+                            aria-describedby="nameFachstelle-error"
+                            id="nameFachstelle"
+                            type="text"
+                            [name]="'name-fachstelle#' + index"
+                            [attr.data-test]="'name-fachstelle#' + index"
+                            [(ngModel)]="pensumFachstelle.description"
+                            #nameFachstelle="ngModel"
+                            [required]="submitted || nameFachstelle.touched"
+                            [placeholder]="
+                                'FACHSTELLE_DESCRIPTION_PLACEHOLDER' | translate
+                            "
+                        />
+                        <dv-error-messages
+                            [inputId]="'nameFachstelle'"
+                            [errorObject]="nameFachstelle.errors"
+                        ></dv-error-messages>
+                    </div>
+                </dv-input-container-x>
+            </div>
+        }
     }
 
     <!--betreuungspensumFachstelle-->

@@ -28,4 +28,6 @@ public interface BetreuungAndPensumContainer extends
 
 	@Nonnull
 	Optional<Betreuung> findBetreuung();
+
+	boolean isMarkedForDeletion();
 }

@@ -67,6 +67,21 @@ public final class DateUtil {
 		return date;
 	}
 
+	/**
+	 * Parset den gegebenen String als LocalDate mit dem Format "yyy-MM-dd"
+	 * Sollte der gegebene String null oder leer sein, wird null zurueckgegeben
+	 */
+	@Nullable
+	public static LocalDate parseStringToDateOrReturnNull(
+		@Nullable String stringDate
+	) {
+		LocalDate date = null;
+		if (stringDate != null && !stringDate.isEmpty()) {
+			date = LocalDate.parse(stringDate, Constants.SQL_DATE_FORMAT);
+		}
+		return date;
+	}
+
 	public static boolean isWeekend(@Nonnull LocalDate date) {
 		return date.getDayOfWeek() == DayOfWeek.SATURDAY
 			|| date.getDayOfWeek() == DayOfWeek.SUNDAY;

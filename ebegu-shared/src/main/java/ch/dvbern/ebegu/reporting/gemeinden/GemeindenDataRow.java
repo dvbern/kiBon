@@ -46,6 +46,27 @@ public class GemeindenDataRow {
 	@Nullable
 	private LocalDate startdatumBG;
 
+	@Nullable
+	private LocalDate gemeindeGueltigBis;
+
+	@Nullable
+	private String eMailStammdaten;
+
+	@Nullable
+	private String phoneStammdaten;
+
+	@Nullable
+	private String eMailBG;
+
+	@Nullable
+	private String phoneBG;
+
+	@Nullable
+	private String eMailTSA;
+
+	@Nullable
+	private String phoneTSA;
+
 	private Set<GemeindenDatenDataRow> gemeindenDaten = new HashSet<>();
 
 	@Nullable
@@ -113,6 +134,69 @@ public class GemeindenDataRow {
 
 	public void setStartdatumBG(@Nullable LocalDate startdatumBG) {
 		this.startdatumBG = startdatumBG;
+	}
+
+	@Nullable
+	public LocalDate getGemeindeGueltigBis() {
+		return gemeindeGueltigBis;
+	}
+
+	public void setGemeindeGueltigBis(@Nullable LocalDate gemeindeGueltigBis) {
+		this.gemeindeGueltigBis = gemeindeGueltigBis;
+	}
+
+	@Nullable
+	public String getEMailStammdaten() {
+		return eMailStammdaten;
+	}
+
+	public void setEMailStammdaten(@Nullable String eMailStammdaten) {
+		this.eMailStammdaten = eMailStammdaten;
+	}
+
+	@Nullable
+	public String getPhoneStammdaten() {
+		return phoneStammdaten;
+	}
+
+	public void setPhoneStammdaten(@Nullable String phoneStammdaten) {
+		this.phoneStammdaten = phoneStammdaten;
+	}
+
+	@Nullable
+	public String getEMailBG() {
+		return eMailBG;
+	}
+
+	public void setEMailBG(@Nullable String eMailBG) {
+		this.eMailBG = eMailBG;
+	}
+
+	@Nullable
+	public String getPhoneBG() {
+		return phoneBG;
+	}
+
+	public void setPhoneBG(@Nullable String phoneBG) {
+		this.phoneBG = phoneBG;
+	}
+
+	@Nullable
+	public String getEMailTSA() {
+		return eMailTSA;
+	}
+
+	public void setEMailTSA(@Nullable String eMailTSA) {
+		this.eMailTSA = eMailTSA;
+	}
+
+	@Nullable
+	public String getPhoneTSA() {
+		return phoneTSA;
+	}
+
+	public void setPhoneTSA(@Nullable String phoneTSA) {
+		this.phoneTSA = phoneTSA;
 	}
 
 	public Set<GemeindenDatenDataRow> getGemeindenDaten() {

@@ -34,4 +34,6 @@ public interface FinanzielleSituationTypVisitor<T> {
 	T visitFinSitSchwyz();
 
 	T visitFinSitSchwyzErweitert();
+
+	T visitFinSitBernFKJVFristen();
 }

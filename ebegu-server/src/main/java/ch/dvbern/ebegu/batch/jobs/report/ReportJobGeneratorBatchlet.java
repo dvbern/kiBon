@@ -331,12 +331,12 @@ public class ReportJobGeneratorBatchlet extends AbstractBatchlet {
 		}
 		case VORLAGE_REPORT_TAGESSCHULE_ANMELDUNGEN: {
 			Objects.requireNonNull(gesuchPeriodeId);
-			final String stammdatenId = getParameters().getProperty(
+			final String stammdatenIds = getParameters().getProperty(
 				WorkJobConstants.STAMMDATEN_ID_PARAM
 			);
 			return this.reportTagesschuleService
 				.generateExcelReportTagesschuleAnmeldungen(
-					stammdatenId,
+					stammdatenIds,
 					gesuchPeriodeId,
 					locale
 				);
@@ -420,6 +420,12 @@ public class ReportJobGeneratorBatchlet extends AbstractBatchlet {
 		}
 		case VORLAGE_REPORT_ZAHLUNGEN_DE:
 		case VORLAGE_REPORT_ZAHLUNGEN_FR: {
+			final String von = getParameters().getProperty(
+				WorkJobConstants.DATE_FROM_PARAM
+			);
+			final String bis = getParameters().getProperty(
+				WorkJobConstants.DATE_TO_PARAM
+			);
 			final String gesuchsperiodeId = getParameters().getProperty(
 				WorkJobConstants.GESUCH_PERIODE_ID_PARAM
 			);
@@ -434,7 +440,9 @@ public class ReportJobGeneratorBatchlet extends AbstractBatchlet {
 				locale,
 				gesuchsperiodeId,
 				gemeindeId,
-				institutionId
+				institutionId,
+				von,
+				bis
 			);
 		}
 		}

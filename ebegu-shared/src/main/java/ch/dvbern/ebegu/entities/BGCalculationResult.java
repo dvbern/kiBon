@@ -160,6 +160,11 @@ public class BGCalculationResult extends AbstractEntity {
 	@Column(nullable = false)
 	private BigDecimal massgebendesEinkommenVorAbzugFamgr = BigDecimal.ZERO;
 
+	@NotNull
+	@Nonnull
+	@Column(nullable = false)
+	private BigDecimal anzahlGesuchsteller = BigDecimal.ZERO;
+
 	@Column(nullable = false)
 	private boolean zuSpaetEingereicht;
 
@@ -312,6 +317,7 @@ public class BGCalculationResult extends AbstractEntity {
 		this.bedarfsstufe = toCopy.bedarfsstufe;
 		this.anzahlGeschwisterFuerBonusSchwyz =
 			toCopy.anzahlGeschwisterFuerBonusSchwyz;
+		this.anzahlGesuchsteller = toCopy.anzahlGesuchsteller;
 	}
 
 	public boolean isCloseTo(@Nonnull BGCalculationResult that) {
@@ -467,7 +473,7 @@ public class BGCalculationResult extends AbstractEntity {
 				"massgebendesEinkommenVorAbzugFamgr",
 				massgebendesEinkommenVorAbzugFamgr
 			)
-			.add("abzugFamGroesse", abzugFamGroesse)
+			.add("abzugFamGroesseTotal", abzugFamGroesse)
 			.add("auszahlungAnEltern", auszahlungAnEltern)
 			.add("babyTarif", babyTarif)
 			.add("verguensigungGewuenscht", verguenstigungGewuenscht)
@@ -478,6 +484,7 @@ public class BGCalculationResult extends AbstractEntity {
 				zusaetzlicherGutscheinGemeindeBetrag
 			)
 			.add("hoehererBeitrag", hoehererBeitrag)
+			.add("anzhalGesuchsteller", anzahlGesuchsteller)
 			.toString();
 	}
 
@@ -807,6 +814,11 @@ public class BGCalculationResult extends AbstractEntity {
 					MathUtil.isSame(
 						thisEntity.hoehererBeitrag,
 						otherEntity.hoehererBeitrag
+					)
+					&&
+					MathUtil.isSame(
+						thisEntity.anzahlGesuchsteller,
+						otherEntity.anzahlGesuchsteller
 					)));
 	}
 
@@ -1277,6 +1289,17 @@ public class BGCalculationResult extends AbstractEntity {
 		@NotNull boolean kategorieMaxEinkommen
 	) {
 		this.kategorieMaxEinkommen = kategorieMaxEinkommen;
+	}
+
+	@Nonnull
+	public BigDecimal getAnzahlGesuchsteller() {
+		return anzahlGesuchsteller;
+	}
+
+	public void setAnzahlGesuchsteller(
+		@Nonnull BigDecimal anzahlGesuchsteller
+	) {
+		this.anzahlGesuchsteller = anzahlGesuchsteller;
 	}
 
 	// changes in mutationen can be ignored, as long as nothing except FinSit data changes

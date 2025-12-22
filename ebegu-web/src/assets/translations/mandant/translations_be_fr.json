@@ -28,7 +28,7 @@
     "ZUSAETZLICHER_GUTSCHEIN_TFO_BIS_UND_MIT": "Proposer un bon supplémentaire par organisation d’accueil familial de jour jusqu'à et avec",
     "ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO": "Bon maximal supplémentaire en CHF par heure par organisation d’accueil familial de jour",
     "ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO_READONLY": "Bon maximal supplémentaire par heure par organisation d’accueil familial de jour: {{value}} CHF",
-    "GEMEINDE_KENNZAHLEN_LIMITIERUNG_TFO": "Jusqu’à quel âge votre commune accorde-t-elle des bons pour la prise en charge chez des organisation d’accueil familial de jour ?",
+    "GEMEINDE_KENNZAHLEN_LIMITIERUNG_TFO": "Jusqu’à quel degré scolaire votre commune accorde-t-elle des bons pour la prise en charge en milieu familial de jour ?",
     "INSTITUTION_ANZAHL_PLAETZE": "Nombre de places accordées",
     "INSTITUTION_ANZAHL_PLAETZE_PARAM": "Nombre de {{anzahlPlaetze}} places accordées",
     "INSTITUTION_GRUND_SCHLIESSUNG": "Raison de l'annulation de l'autorisation",

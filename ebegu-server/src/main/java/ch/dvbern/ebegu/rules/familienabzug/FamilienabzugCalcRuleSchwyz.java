@@ -57,7 +57,7 @@ public class FamilienabzugCalcRuleSchwyz extends AbstractFamilienabzugCalcRule {
 				inputData.getFamilienCalculationInput()
 			)
 		);
-		inputData.setAbzugFamGroesse(
+		inputData.setAbzugFamGroesseTotal(
 			MathUtil.GANZZAHL.from(
 				anzahlKinder.multiply(
 					sozialabzugProKind

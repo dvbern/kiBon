@@ -38,7 +38,7 @@
     "MIN_VERGUENSTIGUNG_PRO_STD": "Minimaler Elternbeitrag pro Stunde (Tagesfamilienorganisation)",
     "MIN_VERGUENSTIGUNG_PRO_STD_READONLY": "Minimaler Elternbeitrag pro Stunde (Tagesfamilienorganisation): {{value}} CHF",
     "MIN_ELTERNBEITRAG_HELP": "Die Eltern müssen einen minimalen Elternbeitrag leisten. Falls dies noch nicht der Fall ist, weil die Kosten vollständig oder fast vollständig durch den Betreuungsgutschein gedeckt werden, muss die Kita oder Tagesfamilienorganisation den Eltern den (fehlenden) minimalen Elternbeitrag in Rechnung stellen. Der minimale Elternbeitrag beträgt {{elternbeitragTag}} Franken pro Betreuungstag (20% Pensum pro Woche) in einer Kita und {{elternbeitragStunde}} Rappen pro Betreuungsstunde bei Tagesfamilienorganisation.",
-    "GEMEINDE_KENNZAHLEN_LIMITIERUNG_TFO": "Bis zu welchem Alter gibt Ihre Gemeinde Gutscheine für die Betreuung in Tagesfamilienorganisation aus?",
+    "GEMEINDE_KENNZAHLEN_LIMITIERUNG_TFO": "Bis zu welcher Klasse gibt Ihre Gemeinde Gutscheine für die Betreuung in Tagesfamilien aus?",
     "GEMEINDE_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO": "Betrag in CHF pro Stunde (Tagesfamilienorganisation)",
     "GEMEINDE_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO_AB_PRIMARSCHULE": "Betrag in CHF pro Stunde ab Primarschule (Tagesfamilienorganisation)",
     "GEMEINDE_HOHE_EINKOMMENSKLASSEN_BETRAG_TFO_VALUE_READONLY": "Betrag pro Stunde: {{value}} CHF (Tagesfamilienorganisation)",

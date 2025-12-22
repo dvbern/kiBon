@@ -237,11 +237,11 @@ export class ReportAsyncRS {
     }
 
     public getTagesschuleAnmeldungenReportExcel(
-        stammdatenId: string,
+        stammdatenIds: string,
         gesuchsperiodeId: string
     ): Observable<{workjobId: string}> {
         const reportParams = ReportAsyncRS.createParamsFromObject({
-            stammdatenId,
+            stammdatenIds,
             gesuchsperiodeId
         });
         return this.http.get<{workjobId: string}>(
@@ -321,11 +321,15 @@ export class ReportAsyncRS {
     }
 
     public getZahlungenReportExcel(
+        von: string,
+        bis: string,
         gesuchsperiodeId: string,
         gemeinde: TSGemeinde,
         institution: TSInstitution
     ): Observable<{workjobId: string}> {
         const reportParams = ReportAsyncRS.createParamsFromObject({
+            von,
+            bis,
             gesuchsperiodeId,
             gemeindeId: gemeinde?.id,
             institutionId: institution?.id

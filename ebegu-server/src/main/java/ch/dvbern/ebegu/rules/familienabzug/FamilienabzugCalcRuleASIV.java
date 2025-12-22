@@ -61,7 +61,7 @@ public class FamilienabzugCalcRuleASIV extends
 			inputData.getFamilienCalculationInput()
 		);
 
-		inputData.setAbzugFamGroesse(
+		inputData.setAbzugFamGroesseTotal(
 			calculateAbzugAufgrundFamiliengroesse(
 				famGrBeruecksichtigungAbzug,
 				countAnzahlPersonen(
@@ -70,7 +70,7 @@ public class FamilienabzugCalcRuleASIV extends
 			)
 		);
 
-		inputData.setFamGroesse(
+		inputData.setFamGroesseTotal(
 			BigDecimal.valueOf(famGrBeruecksichtigungAbzug)
 		);
 	}

@@ -70,8 +70,10 @@ public class MutationsMergerFinanzielleSituationBernFKJV extends
 		BGCalculationInput inputData,
 		BGCalculationResult resultVorgaenger
 	) {
-		inputData.setFamGroesse(resultVorgaenger.getFamGroesse());
-		inputData.setAbzugFamGroesse(resultVorgaenger.getAbzugFamGroesse());
+		inputData.setFamGroesseTotal(resultVorgaenger.getFamGroesse());
+		inputData.setAbzugFamGroesseTotal(
+			resultVorgaenger.getAbzugFamGroesse()
+		);
 	}
 
 	private void handleFinanzielleSituationRueckwirkendAnpassen(
@@ -112,7 +114,7 @@ public class MutationsMergerFinanzielleSituationBernFKJV extends
 		}
 	}
 
-	private boolean isFinSitRueckwirkendAnzupassen(
+	protected boolean isFinSitRueckwirkendAnzupassen(
 		BGCalculationInput input,
 		BigDecimal massgebendesEinkommenFinSit,
 		BGCalculationResult resultVorgaenger,
@@ -148,7 +150,7 @@ public class MutationsMergerFinanzielleSituationBernFKJV extends
 			&& !resultVorgaenger.isVerguenstigungGewuenscht();
 	}
 
-	private void finsitRueckwirkendAnpassen(
+	protected void finsitRueckwirkendAnpassen(
 		BGCalculationInput inputData,
 		BigDecimal massgebendesEinkommenFinSit,
 		AbstractPlatz platz
@@ -177,7 +179,7 @@ public class MutationsMergerFinanzielleSituationBernFKJV extends
 		}
 	}
 
-	private boolean hasMassgebendesEinkommenVorAbzugFamgrChanged(
+	protected boolean hasMassgebendesEinkommenVorAbzugFamgrChanged(
 		@Nonnull BigDecimal massgebendesEinkommenAktuell,
 		@Nonnull BGCalculationResult resultVorangehenderAbschnitt
 	) {
@@ -190,7 +192,7 @@ public class MutationsMergerFinanzielleSituationBernFKJV extends
 		) != 0;
 	}
 
-	private BigDecimal getMassgebendesEinkommenFromFinSit(
+	protected BigDecimal getMassgebendesEinkommenFromFinSit(
 		BGCalculationInput inputAktuel,
 		AbstractPlatz platz
 	) {

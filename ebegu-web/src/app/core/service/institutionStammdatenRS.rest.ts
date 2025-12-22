@@ -19,7 +19,7 @@ import {
     AdminModelEinstellungTagesschuleHasAnmeldung,
     TSModulTagesschuleGroupHasAnmeldung
 } from '@kibon/admin/model/institution-tagesschule-einstellungen';
-import {IHttpService, ILogService, IPromise} from 'angular';
+import {IHttpPromise, IHttpService, ILogService, IPromise} from 'angular';
 import {GlobalCacheService} from '../../../gesuch/service/globalCacheService';
 import {TSBetreuungsangebotTyp} from '@kibon/shared/model/enums';
 import {TSCacheTyp} from '@kibon/shared/model/enums';
@@ -28,6 +28,7 @@ import {
     TSInstitutionStammdaten
 } from '@kibon/shared/model/entity';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
+import {InstitutionNameStammdatenIdDto} from '@kibon/shared/model/dto';
 
 export class InstitutionStammdatenRS {
     public static $inject = [
@@ -156,6 +157,14 @@ export class InstitutionStammdatenRS {
                     response.data
                 )
             );
+    }
+
+    public getTagesschulenFilterListForCurrentBenutzer(): IHttpPromise<
+        InstitutionNameStammdatenIdDto[]
+    > {
+        return this.$http.get<InstitutionNameStammdatenIdDto[]>(
+            `${this.serviceURL}/filter/tagesschulen/currentuser`
+        );
     }
 
     public getEinstellungenTagesschuleAngemeldet(

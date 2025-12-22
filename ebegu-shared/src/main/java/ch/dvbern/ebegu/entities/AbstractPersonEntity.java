@@ -24,8 +24,8 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import ch.dvbern.ebegu.dto.suchfilter.lucene.KibonElasticsearchAnalyzerConfigurer;
-import ch.dvbern.ebegu.dto.suchfilter.lucene.LocalDateToStringBridge;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.KibonElasticsearchAnalyzerConfigurer;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.LocalDateToStringBridge;
 import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.Geschlecht;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

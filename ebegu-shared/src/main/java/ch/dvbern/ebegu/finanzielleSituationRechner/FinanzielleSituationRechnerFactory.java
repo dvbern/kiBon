@@ -33,7 +33,7 @@ public final class FinanzielleSituationRechnerFactory {
 		if (gesuch.getFinSitTyp() == FinanzielleSituationTyp.LUZERN) {
 			return new FinanzielleSituationLuzernRechner();
 		}
-		if (gesuch.getFinSitTyp() == FinanzielleSituationTyp.BERN_FKJV) {
+		if (gesuch.getFinSitTyp().isFKJVFinSituationTyp()) {
 			return new FinanzielleSituationFKJVRechner();
 		}
 		if (gesuch.getFinSitTyp() == FinanzielleSituationTyp.SOLOTHURN) {

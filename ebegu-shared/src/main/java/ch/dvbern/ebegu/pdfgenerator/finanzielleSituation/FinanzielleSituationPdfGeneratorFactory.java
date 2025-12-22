@@ -38,6 +38,7 @@ public final class FinanzielleSituationPdfGeneratorFactory {
 		@Nonnull LocalDate erstesEinreichungsdatum
 	) {
 		switch (gesuch.getFinSitTyp()) {
+		case BERN_FKJV_FRISTEN:
 		case BERN_FKJV:
 		case BERN:
 			return new FinanzielleSituationPdfGeneratorBern(

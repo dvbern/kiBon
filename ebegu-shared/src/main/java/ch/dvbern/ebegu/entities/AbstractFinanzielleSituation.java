@@ -739,6 +739,7 @@ public abstract class AbstractFinanzielleSituation extends
 				&& this.getFinSitZusatzangabenAppenzell().isVollstaendig();
 		case SOLOTHURN:
 		case BERN_FKJV:
+		case BERN_FKJV_FRISTEN:
 		case BERN:
 		default:
 			return isVollstaendingBern();

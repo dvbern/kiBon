@@ -18,6 +18,7 @@ package ch.dvbern.ebegu.services.reporting;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -87,6 +88,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 
+import static ch.dvbern.ebegu.services.reporting.ReportUtil.copySheet;
+import static ch.dvbern.ebegu.services.reporting.ReportUtil.createUniqueSheetName;
 import static ch.dvbern.ebegu.services.reporting.ReportUtil.createWorkbook;
 import static ch.dvbern.ebegu.services.reporting.ReportUtil.getContentTypeForExport;
 import static java.util.Objects.requireNonNull;
@@ -130,14 +133,14 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@Nonnull
 	public UploadFileInfo generateExcelReportTagesschuleAnmeldungen(
-		@Nonnull String stammdatenID,
+		@Nonnull String stammdatenIDs,
 		@Nonnull String gesuchsperiodeID,
 		@Nonnull Locale locale
 	) throws ExcelMergeException, IOException {
 
 		requireNonNull(
-			stammdatenID,
-			"stammdatenID" + VALIDIERUNG_DARF_NICHT_NULL_SEIN
+			stammdatenIDs,
+			"stammdatenIDs" + VALIDIERUNG_DARF_NICHT_NULL_SEIN
 		);
 		requireNonNull(
 			gesuchsperiodeID,
@@ -147,88 +150,145 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean
 		ReportVorlage reportVorlage =
 			ReportVorlage.VORLAGE_REPORT_TAGESSCHULE_ANMELDUNGEN;
 
-		try (
-			Workbook workbook = createWorkbook(reportVorlage);
-		) {
-			Sheet sheet = workbook.getSheet(reportVorlage.getDataSheetName());
+		try (Workbook workbook = createWorkbook(reportVorlage)) {
 
-			Gesuchsperiode gesuchsperiode = gesuchsperiodeService
-				.findGesuchsperiode(gesuchsperiodeID)
-				.orElseThrow(
-					() -> new EbeguEntityNotFoundException(
-						"generateExcelReportTagesschuleAnmeldungen",
-						ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-						gesuchsperiodeID
-					)
-				);
-
-			InstitutionStammdaten institutionStammdaten =
-				institutionStammdatenService.findInstitutionStammdaten(
-					stammdatenID
-				)
+			Gesuchsperiode gesuchsperiode =
+				gesuchsperiodeService.findGesuchsperiode(gesuchsperiodeID)
 					.orElseThrow(
-						() -> new EbeguRuntimeException(
+						() -> new EbeguEntityNotFoundException(
 							"generateExcelReportTagesschuleAnmeldungen",
-							NO_STAMMDATEN_FOUND
+							ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+							gesuchsperiodeID
 						)
 					);
 
-			EinstellungenTagesschule einstellungenTagesschule =
-				findEinstellungenTagesschuleByPeriode(
-					institutionStammdaten,
-					gesuchsperiode.getId()
-				);
-			requireNonNull(
-				einstellungenTagesschule,
-				"EinstellungenTagesschule"
-					+ VALIDIERUNG_DARF_NICHT_NULL_SEIN
+			Sheet templateSheet = workbook.getSheet(
+				reportVorlage.getDataSheetName()
 			);
 
-			List<TagesschuleAnmeldungenDataRow> reportData =
-				getReportDataTagesschuleAnmeldungen(
-					stammdatenID,
-					gesuchsperiodeID
-				);
+			// get ids of all institutions
+			List<String> ids = Arrays.stream(stammdatenIDs.split(","))
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.toList();
 
-			ExcelMergerDTO excelMergerDTO =
-				tagesschuleAnmeldungenExcelConverter.toExcelMergerDTO(
-					reportData,
+			// decide filename
+			String fileName;
+			if (ids.size() > 1) {
+				fileName = getFileName(
+					reportVorlage,
 					locale,
-					gesuchsperiode,
-					einstellungenTagesschule,
-					institutionStammdaten.getInstitution().getName()
+					""
 				);
+			} else {
+				// Only one ID, fetch its institution name
+				InstitutionStammdaten institutionStammdaten =
+					institutionStammdatenService.findInstitutionStammdaten(
+						ids.get(0)
+					)
+						.orElseThrow(
+							() -> new EbeguRuntimeException(
+								"generateExcelReportTagesschuleAnmeldungen",
+								NO_STAMMDATEN_FOUND
+							)
+						);
 
-			mergeData(sheet, excelMergerDTO, reportVorlage.getMergeFields());
-			tagesschuleAnmeldungenExcelConverter.applyAutoSize(sheet);
-
-			if (institutionStammdaten.getInstitutionStammdatenTagesschule()
-				!= null) {
-				Einstellung einstellungExtraTagesschuleFelder =
-					einstellungService.findEinstellung(
-						EinstellungKey.GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG,
-						institutionStammdaten
-							.getInstitutionStammdatenTagesschule()
-							.getGemeinde(),
-						gesuchsperiode
-					);
-
-				tagesschuleAnmeldungenExcelConverter
-					.hideExtraFieldsColumnsIfNecessary(
-						sheet,
-						einstellungExtraTagesschuleFelder
-							.getValueAsBoolean()
-					);
-			}
-			byte[] bytes = createWorkbook(workbook);
-
-			return fileSaverService.save(
-				bytes,
-				getFileName(
+				fileName = getFileName(
 					reportVorlage,
 					locale,
 					institutionStammdaten.getInstitution().getName()
-				),
+				);
+			}
+
+			for (String id : ids) {
+				// get institution PER sheet
+				InstitutionStammdaten institutionStammdaten =
+					institutionStammdatenService.findInstitutionStammdaten(id)
+						.orElseThrow(
+							() -> new EbeguRuntimeException(
+								"generateExcelReportTagesschuleAnmeldungen",
+								NO_STAMMDATEN_FOUND
+							)
+						);
+
+				EinstellungenTagesschule einstellungenTagesschule =
+					findEinstellungenTagesschuleByPeriode(
+						institutionStammdaten,
+						gesuchsperiode.getId()
+					);
+
+				requireNonNull(
+					einstellungenTagesschule,
+					"EinstellungenTagesschule"
+						+ VALIDIERUNG_DARF_NICHT_NULL_SEIN
+				);
+
+				// Create new sheet name and copy template
+				String baseName = institutionStammdaten.getInstitution()
+					.getName();
+				String sheetName = createUniqueSheetName(workbook, baseName);
+				Sheet newSheet = workbook.createSheet(sheetName);
+
+				copySheet(workbook, templateSheet, newSheet);
+
+				// Load data for THIS institution
+				List<TagesschuleAnmeldungenDataRow> reportData =
+					getReportDataTagesschuleAnmeldungen(id, gesuchsperiodeID);
+
+				// Build DTO for THIS sheet
+				ExcelMergerDTO excelMergerDTO =
+					tagesschuleAnmeldungenExcelConverter.toExcelMergerDTO(
+						reportData,
+						locale,
+						gesuchsperiode,
+						einstellungenTagesschule,
+						sheetName
+					);
+
+				mergeData(
+					newSheet,
+					excelMergerDTO,
+					reportVorlage.getMergeFields()
+				);
+				tagesschuleAnmeldungenExcelConverter.applyAutoSize(newSheet);
+
+				if (institutionStammdaten.getInstitutionStammdatenTagesschule()
+					!= null) {
+
+					Einstellung einstellungExtraTagesschuleFelder =
+						einstellungService.findEinstellung(
+							EinstellungKey.GEMEINDE_TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG,
+							institutionStammdaten
+								.getInstitutionStammdatenTagesschule()
+								.getGemeinde(),
+							gesuchsperiode
+						);
+
+					tagesschuleAnmeldungenExcelConverter
+						.hideExtraFieldsColumnsIfNecessary(
+							newSheet,
+							einstellungExtraTagesschuleFelder
+								.getValueAsBoolean()
+						);
+				}
+			}
+
+			// we need to hide the template sheet because of formula references
+			workbook.setSheetHidden(
+				workbook.getSheetIndex(templateSheet),
+				true
+			);
+
+			// set first cloned sheet as active
+			if (workbook.getNumberOfSheets() > 0) {
+				workbook.setActiveSheet(1);
+				workbook.setSelectedTab(1);
+			}
+
+			byte[] bytes = createWorkbook(workbook);
+			return fileSaverService.save(
+				bytes,
+				fileName,
 				Constants.TEMP_REPORT_FOLDERNAME,
 				getContentTypeForExport()
 			);
@@ -444,7 +504,7 @@ public class ReportTagesschuleServiceBean extends AbstractReportServiceBean
 			locale,
 			requireNonNull(principalBean.getMandant()),
 			args
-		) + ".xlsx";
+		).trim() + ".xlsx";
 	}
 
 	@Override

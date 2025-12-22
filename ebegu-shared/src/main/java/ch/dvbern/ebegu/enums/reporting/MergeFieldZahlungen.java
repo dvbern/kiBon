@@ -39,6 +39,10 @@ public enum MergeFieldZahlungen implements MergeFieldProvider {
 		new SimpleMergeField<>("institutionParam", STRING_CONVERTER)
 	), timestampParam(
 		new SimpleMergeField<>("timestampParam", DATETIME_CONVERTER)
+	), vonParam(
+		new SimpleMergeField<>("vonParam", DATE_CONVERTER)
+	), bisParam(
+		new SimpleMergeField<>("bisParam", DATE_CONVERTER)
 	),
 
 	repeatRow(new RepeatRowMergeField("repeatRow")), zahlungslaufTitle(

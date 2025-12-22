@@ -312,7 +312,7 @@ class KitaTagestrukturenSchwyzNeuerElternbeitragRechnerTest {
 		input.setBetreuungspensumProzent(new BigDecimal(80));
 		input.setAnspruchspensumProzent(100);
 		input.setMassgebendesEinkommenVorAbzugFamgr(new BigDecimal(50_000));
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setMonatlicheBetreuungskosten(new BigDecimal(20 * 200));
 	}
 

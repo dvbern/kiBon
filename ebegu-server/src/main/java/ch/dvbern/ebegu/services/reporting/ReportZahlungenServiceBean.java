@@ -19,7 +19,9 @@ package ch.dvbern.ebegu.services.reporting;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -77,7 +79,9 @@ import ch.dvbern.ebegu.services.Authorizer;
 import ch.dvbern.ebegu.services.GemeindeService;
 import ch.dvbern.ebegu.services.GesuchsperiodeService;
 import ch.dvbern.ebegu.services.InstitutionService;
+import ch.dvbern.ebegu.types.DateRange_;
 import ch.dvbern.ebegu.util.Constants;
+import ch.dvbern.ebegu.util.DateUtil;
 import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
 import ch.dvbern.ebegu.util.UploadFileInfo;
@@ -131,7 +135,9 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 		@Nonnull Locale locale,
 		@Nonnull String gesuchsperiodeId,
 		@Nullable String gemeindeId,
-		@Nullable String institutionId
+		@Nullable String institutionId,
+		@Nullable String von,
+		@Nullable String bis
 	) throws ExcelMergeException, IOException {
 
 		try (
@@ -174,21 +180,27 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 						)
 					);
 			}
+			LocalDate dateVon = DateUtil.parseStringToDateOrReturnNull(von);
+			LocalDate dateBis = DateUtil.parseStringToDateOrReturnNull(bis);
 
 			sheet = zahlungenConverter.mergeHeaders(
 				sheet,
 				periode,
 				gemeinde,
-				institution
+				institution,
+				dateVon,
+				dateBis
 			);
 
 			var zahlungsauftrage =
 				findZahlungsauftrageWithAuszahlungsTypInstitution(
 					periode,
 					gemeinde,
-					institution
+					institution,
+					dateVon,
+					dateBis
 				);
-			var reportData = filterZahlungenAndConvertToDataRows(
+			var reportData = filterAndSortZahlungenAndConvertToDataRows(
 				zahlungsauftrage,
 				institutionId
 			);
@@ -197,6 +209,8 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 				sheet,
 				reportData
 			);
+
+			workbook.setActiveSheet(1);
 
 			byte[] bytes = createWorkbook(rowFiller.getSheet().getWorkbook());
 			rowFiller.getSheet().getWorkbook().dispose();
@@ -234,7 +248,9 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 	private List<ReportZahlungspositionDTO> findZahlungsauftrageWithAuszahlungsTypInstitution(
 		@Nonnull Gesuchsperiode periode,
 		@Nullable Gemeinde gemeinde,
-		@Nullable Institution institution
+		@Nullable Institution institution,
+		@Nullable LocalDate datumVon,
+		@Nullable LocalDate datumBis
 	) {
 		final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		final CriteriaQuery<ReportZahlungspositionDTO> query = cb.createQuery(
@@ -279,6 +295,22 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 		var joinZeitabschnitt = joinZahlungsposition.join(
 			Zahlungsposition_.verfuegungZeitabschnitt
 		);
+		if (datumVon != null) {
+			Predicate predicateVon = cb.greaterThanOrEqualTo(
+				joinZeitabschnitt.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigAb),
+				datumVon
+			);
+			predicates.add(predicateVon);
+		}
+		if (datumBis != null) {
+			Predicate predicateBis = cb.lessThanOrEqualTo(
+				joinZeitabschnitt.get(AbstractDateRangedEntity_.gueltigkeit)
+					.get(DateRange_.gueltigBis),
+				datumBis
+			);
+			predicates.add(predicateBis);
+		}
 		var joinClculationResult = joinZeitabschnitt
 			.join(VerfuegungZeitabschnitt_.bgCalculationResultAsiv);
 		var joinBetreuung = joinZeitabschnitt
@@ -330,7 +362,7 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 		return entityManager.createQuery(query).getResultList();
 	}
 
-	private List<ZahlungenDataRow> filterZahlungenAndConvertToDataRows(
+	private List<ZahlungenDataRow> filterAndSortZahlungenAndConvertToDataRows(
 		@Nonnull List<ReportZahlungspositionDTO> zahlungsauftrage,
 		@Nullable String institutionId
 	) {
@@ -338,6 +370,16 @@ public class ReportZahlungenServiceBean extends AbstractReportServiceBean
 			filterZahlungenByInstitution(zahlungsauftrage, institutionId);
 
 		return filteredReportData.stream()
+			.sorted(
+				Comparator.comparing(
+					ReportZahlungspositionDTO::getReferenzNummer
+				)
+					.thenComparing(
+						reportZahlungspositionDTO -> reportZahlungspositionDTO
+							.getZeitabschnittGueltigkeit()
+							.getGueltigAb()
+					)
+			)
 			.map(reportZahlungspositionDTO -> {
 				authorizer.checkReadAuthorizationZahlung(
 					reportZahlungspositionDTO

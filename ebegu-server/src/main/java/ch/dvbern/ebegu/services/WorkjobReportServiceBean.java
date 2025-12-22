@@ -386,7 +386,7 @@ public class WorkjobReportServiceBean extends AbstractBaseService implements
 	public Workjob createNewReporting(
 		@Nonnull Workjob workJob,
 		@Nonnull ReportVorlage vorlage,
-		@Nonnull String stammdatenId,
+		@Nonnull String stammdatenIds,
 		@Nonnull String gesuchsperiodeId,
 		@Nonnull Locale locale
 	) {
@@ -397,7 +397,7 @@ public class WorkjobReportServiceBean extends AbstractBaseService implements
 			null,
 			null,
 			gesuchsperiodeId,
-			stammdatenId,
+			stammdatenIds,
 			false,
 			false,
 			false,

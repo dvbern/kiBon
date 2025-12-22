@@ -1107,7 +1107,7 @@ class VerfuegungZeitabschnittSplitterTest {
 		bgCalculationInputAsiv.setAnzahlNebenmahlzeiten(BigDecimal.valueOf(4));
 		bgCalculationInputAsiv.setTarifHauptmahlzeit(BigDecimal.valueOf(4));
 		bgCalculationInputAsiv.setTarifNebenmahlzeit(BigDecimal.valueOf(4));
-		bgCalculationInputAsiv.setAbzugFamGroesse(BigDecimal.valueOf(4));
+		bgCalculationInputAsiv.setAbzugFamGroesseTotal(BigDecimal.valueOf(4));
 	}
 
 	private List<VerfuegungZeitabschnitt> createZeitabschnittListToSplitOn(

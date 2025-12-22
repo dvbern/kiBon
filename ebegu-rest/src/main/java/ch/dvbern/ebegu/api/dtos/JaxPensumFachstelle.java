@@ -42,6 +42,12 @@ public class JaxPensumFachstelle extends JaxAbstractIntegerPensumDTO {
 	@Nullable
 	private GruendeZusatzleistung gruendeZusatzleistung;
 
+	/**
+	 * Von der Gemeinde bezeichnete Fachstelle.
+	 */
+	@Nullable
+	private String description = null;
+
 	@Nullable
 	public JaxFachstelle getFachstelle() {
 		return fachstelle;
@@ -68,5 +74,14 @@ public class JaxPensumFachstelle extends JaxAbstractIntegerPensumDTO {
 		@Nullable GruendeZusatzleistung gruendeZusatzleistung
 	) {
 		this.gruendeZusatzleistung = gruendeZusatzleistung;
+	}
+
+	@Nullable
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(@Nullable String description) {
+		this.description = description;
 	}
 }

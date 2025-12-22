@@ -328,8 +328,7 @@ public final class MutationsMerger extends AbstractAbschlussRule {
 		new MutationsMergerAnspruchHandlerDefaultVisitor(locale)
 			.getAnspruchHandler(
 				platz.extractGesuch()
-					.extractMandant()
-					.getMandantIdentifier()
+					.getFinSitTyp()
 			)
 			.handleAnpassungAnspruch(
 				inputAktuel,

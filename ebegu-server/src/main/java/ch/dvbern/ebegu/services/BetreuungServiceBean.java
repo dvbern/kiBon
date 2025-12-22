@@ -1231,7 +1231,7 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 		Objects.requireNonNull(betreuung);
 		authorizer.checkWriteAuthorization(betreuung);
 		final Gesuch gesuch = betreuung.extractGesuch();
-
+		betreuung.setMarkedForDeletion(true);
 		persistence.remove(betreuung);
 
 		// the betreuung needs to be removed from the object as well

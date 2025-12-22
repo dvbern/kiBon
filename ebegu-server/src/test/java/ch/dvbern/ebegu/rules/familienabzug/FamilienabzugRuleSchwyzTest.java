@@ -66,7 +66,7 @@ class FamilienabzugRuleSchwyzTest {
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
 		Assertions.assertEquals(
 			SOZIALABZUG_PRO_KIND,
-			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesse()
+			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 	}
 
@@ -85,7 +85,7 @@ class FamilienabzugRuleSchwyzTest {
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
 		Assertions.assertEquals(
 			HALBER_SOZIALABZUG_PRO_KIND,
-			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesse()
+			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 	}
 
@@ -105,7 +105,7 @@ class FamilienabzugRuleSchwyzTest {
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
 		Assertions.assertEquals(
 			SOZIALABZUG_PRO_KIND,
-			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesse()
+			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 	}
 
@@ -124,7 +124,7 @@ class FamilienabzugRuleSchwyzTest {
 		VerfuegungZeitabschnitt zeitabschnitt = result.get(0);
 		Assertions.assertEquals(
 			HALBER_SOZIALABZUG_PRO_KIND,
-			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesse()
+			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 	}
 
@@ -152,7 +152,7 @@ class FamilienabzugRuleSchwyzTest {
 			.add(SOZIALABZUG_PRO_KIND);
 		Assertions.assertEquals(
 			expectedResult,
-			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesse()
+			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 	}
 
@@ -180,7 +180,7 @@ class FamilienabzugRuleSchwyzTest {
 			.add(SOZIALABZUG_PRO_KIND);
 		Assertions.assertEquals(
 			expectedResult,
-			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesse()
+			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 	}
 
@@ -208,7 +208,7 @@ class FamilienabzugRuleSchwyzTest {
 			.add(SOZIALABZUG_PRO_KIND);
 		Assertions.assertEquals(
 			expectedResult,
-			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesse()
+			zeitabschnitt.getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 	}
 

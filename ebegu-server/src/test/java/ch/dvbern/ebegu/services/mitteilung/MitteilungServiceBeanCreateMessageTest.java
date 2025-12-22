@@ -19,12 +19,14 @@ package ch.dvbern.ebegu.services.mitteilung;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
 
 import ch.dvbern.ebegu.betreuung.BetreuungEinstellungen;
 import ch.dvbern.ebegu.betreuung.BetreuungEinstellungenService;
+import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
 import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.Betreuung;
@@ -33,6 +35,7 @@ import ch.dvbern.ebegu.entities.BetreuungsmitteilungPensum;
 import ch.dvbern.ebegu.entities.Eingewoehnung;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.containers.PensumUtil;
+import ch.dvbern.ebegu.enums.DemoFeatureTyp;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
 import ch.dvbern.ebegu.enums.PensumUnits;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
@@ -73,9 +76,12 @@ class MitteilungServiceBeanCreateMessageTest extends EasyMockSupport {
 	@Mock
 	private BetreuungEinstellungenService betreuungEinstellungenService;
 
+	@Mock
+	private ApplicationPropertyService applicationPropertyService;
+
 	@TestSubject
-	private final MitteilungServiceBean mitteilungServiceBean =
-		new MitteilungServiceBean();
+	private final MitteilungSharedServiceBean mitteilungSharedServiceBean =
+		new MitteilungSharedServiceBean();
 
 	@Test
 	void emptyWhenNoPensen() {
@@ -448,6 +454,14 @@ class MitteilungServiceBeanCreateMessageTest extends EasyMockSupport {
 	) {
 		Betreuung betreuung = requireNonNull(mitteilung.getBetreuung());
 
+		expect(
+			applicationPropertyService.getActivatedDemoFeatures(
+				betreuung.extractGesuch().extractMandant()
+			)
+		).andReturn(
+			List.of(DemoFeatureTyp.INSTITUTIONSSCHLIESSUNG_MUTATIONSMELDUNG)
+		);
+
 		expect(betreuungEinstellungenService.getEinstellungen(betreuung))
 			.andReturn(einstellungen)
 			.anyTimes();
@@ -496,7 +510,7 @@ class MitteilungServiceBeanCreateMessageTest extends EasyMockSupport {
 
 		replayAll();
 
-		String result = mitteilungServiceBean
+		String result = mitteilungSharedServiceBean
 			.createNachrichtForMutationsmeldung(
 				mitteilung,
 				Set.of(pensen),

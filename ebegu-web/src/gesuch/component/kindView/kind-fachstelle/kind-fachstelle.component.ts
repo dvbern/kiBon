@@ -3,37 +3,38 @@ import {
     ChangeDetectionStrategy,
     Component,
     EventEmitter,
+    inject,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
     Output,
     SimpleChanges,
-    ViewChild,
-    inject
+    ViewChild
 } from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
 import {CONSTANTS} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
 import {
+    TSFachstelle,
     TSFachstelleName,
     TSFachstellenTyp,
     TSGruendeZusatzleistung,
     TSIntegrationTyp,
-    TSPensumFachstelle,
-    TSFachstelle
+    TSPensumFachstelle
 } from '@kibon/shared/model/entity';
 import {TSRole} from '@kibon/shared/model/enums';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
+import {TSEinstellungKey} from '../../../../admin/einstellungen/TSEinstellungKey';
+import {EinstellungRS} from '../../../../admin/service/einstellungRS.rest';
+import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
 import {EbeguRestUtil} from '../../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {EnumEx} from '../../../../utils/EnumEx';
+import {isNotNullOrUndefined} from '../../../../utils/rxjs-operators';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
 
@@ -289,6 +290,29 @@ export class KindFachstelleComponent
         }
 
         return null;
+    }
+
+    public isFeatureEnabled(): boolean {
+        return this.fachstellenTyp === TSFachstellenTyp.BERN_FACHSTELLE_NAME;
+    }
+
+    public clearPensumFachstelleDescription(): void {
+        this.pensumFachstelle.description = null;
+    }
+
+    /**
+     * @return Ob im Select "Fachstelle" der Wert "Von Gemeinde bezeichnete Fachstelle" ausgewählt ist.
+     */
+    public isGemeindeBezeichneteFachstelleSelected(): boolean {
+        if (isNotNullOrUndefined(this.pensumFachstelle.fachstelle)) {
+            const name = this.pensumFachstelle.fachstelle.name.toString();
+            if ('GEMEINDE_FACHSTELLE' === name) {
+                return true;
+            }
+            console.log(name);
+        }
+
+        return false;
     }
 
     protected readonly onblur = onblur;

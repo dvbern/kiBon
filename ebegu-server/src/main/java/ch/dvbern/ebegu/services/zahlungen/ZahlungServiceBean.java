@@ -49,7 +49,6 @@ import jakarta.persistence.criteria.Root;
 import jakarta.ws.rs.BadRequestException;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.config.EbeguConfiguration;
 import ch.dvbern.ebegu.dto.ZahlungenSearchParamsDTO;
 import ch.dvbern.ebegu.einstellung.ApplicationProperty;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
@@ -165,9 +164,6 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 	private FileSaverService fileSaverService;
 
 	@Inject
-	private EbeguConfiguration ebeguConfiguration;
-
-	@Inject
 	private GeneratedDokumentService generatedDokumentService;
 
 	@Inject
@@ -263,17 +259,6 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		zahlungsauftrag.setGemeinde(gemeinde);
 		zahlungsauftrag.setMandant(mandant);
 
-		// Alle aktuellen (d.h. der letzte Antrag jedes Falles) Verfuegungen suchen, welche ein Kita-Angebot haben
-		// Wir brauchen folgende Daten:
-		// - Zeitraum, welcher fuer die (normale) Auszahlung gilt: Immer ganzer Monat, mindestens der Monat des
-		// DatumFaellig,
-		// 		jedoch seit Ende Monat des letzten Auftrags -> 1 oder mehrere ganze Monate
-		// - Zeitraum, welcher fuer die Berechnung der rueckwirkenden Korrekturen gilt: Zeitpunkt der letzten
-		// Zahlungserstellung bis aktueller Zeitpunkt
-		// 		(Achtung: Es ist *nicht* das Faelligkeitsdatum relevant, sondern das Erstellungsdatum des letzten
-		// 		Auftrags!)
-		// Den letzten Zahlungsauftrag lesen
-		LocalDateTime lastZahlungErstellt = Constants.START_OF_DATETIME; // Default, falls dies der erste Auftrag ist
 		// Auf dem Front End gibt es z.B. bei Luzern eine Checkbox, die definiert, ob der Folgemonat auch ausbezahlt werden soll.
 		// Falls die Checkbox aktiv ist, wird der Folgemonat auch ausbezahlt. z.B. ausloesen am 15.8. ergibt eine
 		// Zahlung bis 30.09.
@@ -295,7 +280,6 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 		if (lastZahlungsauftragOptional.isPresent()) {
 			final Zahlungsauftrag lastZahlungsauftrag =
 				lastZahlungsauftragOptional.get();
-			lastZahlungErstellt = lastZahlungsauftrag.getDatumGeneriert();
 			zeitabschnittVon = ZahlungslaufUtil.ermittleZahlungslaufGueltigVon(
 				zeitabschnittBis,
 				lastZahlungsauftrag
@@ -359,19 +343,9 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 				zeitabschnittBis :
 				zeitabschnittBis.minusMonths(1)
 					.with(TemporalAdjusters.lastDayOfMonth());
-		// Die Korrekturzahlungen werden seit dem letzten Zahlungsauftrag beruecksichtigt. Falls wir im TEST-Mode sind
-		// und ein fiktives "DatumGeneriert" gewaehlt haben, nehmen wir als Datum des letzten Auftrags das
-		// timestampErstellt
-		// und nicht das (eventuell ebenfalls fiktive) datumGeneriert.
-		boolean isTestMode = ebeguConfiguration.getIsZahlungenTestMode();
-		if (isTestMode) {
-			lastZahlungErstellt = Constants.START_OF_DATETIME;
-		}
 		Collection<VerfuegungZeitabschnitt> verfuegungsZeitabschnitte =
 			getVerfuegungsZeitabschnitteFuerLetzteGueltigeBetreuung(
 				gemeinde,
-				lastZahlungErstellt,
-				zahlungsauftrag.getDatumGeneriert(),
 				stichtagKorrekturen
 			);
 		for (VerfuegungZeitabschnitt zeitabschnitt : verfuegungsZeitabschnitte) {
@@ -533,23 +507,14 @@ public class ZahlungServiceBean extends AbstractBaseService implements
 	@Nonnull
 	private Collection<VerfuegungZeitabschnitt> getVerfuegungsZeitabschnitteFuerLetzteGueltigeBetreuung(
 		@Nonnull Gemeinde gemeinde,
-		@Nonnull LocalDateTime datumVerfuegtVon,
-		@Nonnull LocalDateTime datumVerfuegtBis,
 		@Nonnull LocalDate zeitabschnittBis
 	) {
-		requireNonNull(datumVerfuegtVon, "datumVerfuegtVon muss gesetzt sein");
-		requireNonNull(datumVerfuegtBis, "datumVerfuegtBis muss gesetzt sein");
 		requireNonNull(zeitabschnittBis, "zeitabschnittBis muss gesetzt sein");
 
 		LOGGER.info("Ermittle Korrekturzahlungen:");
 		LOGGER.info(
 			"Zeitabschnitt endet vor: {}",
 			Constants.DATE_FORMATTER.format(zeitabschnittBis)
-		);
-		LOGGER.info(
-			"Gesuch verfuegt zwischen: {} - {}",
-			Constants.DATE_FORMATTER.format(datumVerfuegtVon),
-			Constants.DATE_FORMATTER.format(datumVerfuegtBis)
 		);
 
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();

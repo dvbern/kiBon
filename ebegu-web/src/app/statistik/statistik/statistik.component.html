@@ -1473,7 +1473,7 @@
                                             )
                                         "
                                     >
-                                        <div class="row">
+                                        <div class="row tagesschuleAnmeldungen">
                                             <div class="col-xs-3">
                                                 <div class="form-group">
                                                     <label
@@ -1482,36 +1482,73 @@
                                                         translate
                                                         >TAGESSCHULE</label
                                                     >
-                                                    <div
-                                                        class="dv-select-style"
-                                                    >
-                                                        <select
-                                                            name="tagesschuleAnmeldungenSelect_name"
-                                                            id="tagesschuleAnmeldungenSelect"
+                                                    <div class="select-wrapper">
+                                                        <mat-select
                                                             [(ngModel)]="
-                                                                statistikParameter.tagesschuleAnmeldungen
+                                                                statistikParameter.selectedTagesschulen
                                                             "
+                                                            (ngModelChange)="
+                                                                onTagesschulenSelectChange(
+                                                                    tagesschulen
+                                                                )
+                                                            "
+                                                            multiple
+                                                            id="tagesschuleAnmeldungenSelect"
+                                                            name="tagesschuleAnmeldungenSelect_name"
+                                                            class="form-control"
+                                                            data-test="tagesschuleAnmeldungenSelect"
                                                             #tagesschulen="ngModel"
                                                             required
-                                                            class="form-control"
                                                         >
+                                                            <mat-select-trigger>
+                                                                {{
+                                                                    ((statistikParameter
+                                                                        .selectedTagesschulen
+                                                                        ?.length ??
+                                                                        0) > 1
+                                                                        ? 'FILTER_SET_MULTI'
+                                                                        : 'FILTER_SET'
+                                                                    )
+                                                                        | translate
+                                                                            : {
+                                                                                  amount:
+                                                                                      statistikParameter
+                                                                                          .selectedTagesschulen
+                                                                                          ?.length ??
+                                                                                      0
+                                                                              }
+                                                                }}
+                                                            </mat-select-trigger>
+
                                                             @for (
-                                                                institutionStammdaten of tagesschulenStammdatenList;
+                                                                institutionStammdaten of tagesschulenStammdatenFilterList;
                                                                 track institutionStammdaten
                                                             ) {
-                                                                <option
-                                                                    [ngValue]="
+                                                                <mat-option
+                                                                    [value]="
                                                                         institutionStammdaten
                                                                     "
                                                                 >
                                                                     {{
-                                                                        institutionStammdaten
-                                                                            .institution
-                                                                            .name
+                                                                        institutionStammdaten.name
                                                                     }}
-                                                                </option>
+                                                                </mat-option>
                                                             }
-                                                        </select>
+                                                        </mat-select>
+
+                                                        @if (
+                                                            tagesschulen.hasError(
+                                                                'maxLimit'
+                                                            )
+                                                        ) {
+                                                            <mat-error>
+                                                                {{
+                                                                    'ERROR_TOO_MANY_SELECTED_TS_ANMELDUNGEN_STATISTIK'
+                                                                        | translate
+                                                                }}
+                                                            </mat-error>
+                                                        }
+
                                                         <dv-error-messages
                                                             [errorObject]="
                                                                 tagesschulen.errors
@@ -1521,72 +1558,90 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            @if (
-                                                statistikParameter.tagesschuleAnmeldungen
-                                            ) {
-                                                <div class="col-xs-3">
-                                                    <div class="form-group">
-                                                        <label
-                                                            class="md-no-float required"
-                                                            for="tagesschuleAnmeldungen_gp"
-                                                            translate
-                                                            >GESUCHSPERIODEN</label
+
+                                            <div
+                                                class="col-xs-1 statistik-button-toggle-all"
+                                            >
+                                                <button
+                                                    (click)="
+                                                        unselectAllTagesschulen()
+                                                    "
+                                                    class="dv-btn cancel-button"
+                                                    type="button"
+                                                    translate
+                                                    [disabled]="
+                                                        statistikParameter
+                                                            .selectedTagesschulen
+                                                            .length === 0
+                                                    "
+                                                >
+                                                    ALLE_ABWAEHLEN
+                                                </button>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <div class="form-group">
+                                                    <label
+                                                        class="md-no-float required"
+                                                        for="tagesschuleAnmeldungen_gp"
+                                                        translate
+                                                        >GESUCHSPERIODEN</label
+                                                    >
+                                                    <div
+                                                        class="dv-select-style"
+                                                    >
+                                                        <select
+                                                            name="tagesschuleAnmeldungen_gp_name"
+                                                            id="tagesschuleAnmeldungen_gp"
+                                                            [(ngModel)]="
+                                                                statistikParameter.gesuchsperiode
+                                                            "
+                                                            #gesuchZeitraumGP="ngModel"
+                                                            required
+                                                            class="form-control"
                                                         >
-                                                        <div
-                                                            class="dv-select-style"
-                                                        >
-                                                            <select
-                                                                name="tagesschuleAnmeldungen_gp_name"
-                                                                id="tagesschuleAnmeldungen_gp"
-                                                                [(ngModel)]="
-                                                                    statistikParameter.gesuchsperiode
+                                                            <option
+                                                                [ngValue]="
+                                                                    undefined
                                                                 "
-                                                                #gesuchZeitraumGP="ngModel"
-                                                                required
-                                                                class="form-control"
                                                             >
+                                                                {{
+                                                                    'KEINE'
+                                                                        | translate
+                                                                }}
+                                                            </option>
+
+                                                            @for (
+                                                                gesuchsperiode of gesuchsperioden;
+                                                                track gesuchsperiode
+                                                            ) {
                                                                 <option
-                                                                    [ngValue]="
-                                                                        undefined
+                                                                    [value]="
+                                                                        gesuchsperiode.id
                                                                     "
                                                                 >
                                                                     {{
-                                                                        'KEINE'
-                                                                            | translate
+                                                                        gesuchsperiode.gesuchsperiodeString
                                                                     }}
                                                                 </option>
-                                                                @for (
-                                                                    gesuchsperiode of getGesuchsperiodenForTagesschule(
-                                                                        statistikParameter.tagesschuleAnmeldungen
-                                                                    );
-                                                                    track gesuchsperiode
-                                                                ) {
-                                                                    <option
-                                                                        [value]="
-                                                                            gesuchsperiode.id
-                                                                        "
-                                                                    >
-                                                                        {{
-                                                                            gesuchsperiode.gesuchsperiodeString
-                                                                        }}
-                                                                    </option>
-                                                                }
-                                                            </select>
-                                                            <dv-error-messages
-                                                                [errorObject]="
-                                                                    gesuchZeitraumGP.errors
-                                                                "
-                                                                class="error"
-                                                            ></dv-error-messages>
-                                                        </div>
+                                                            }
+                                                        </select>
+                                                        <dv-error-messages
+                                                            [errorObject]="
+                                                                gesuchZeitraumGP.errors
+                                                            "
+                                                            class="error"
+                                                        ></dv-error-messages>
                                                     </div>
                                                 </div>
-                                            }
+                                            </div>
                                             <div
                                                 class="col-xs-3 statistik-button statistik-no-fields"
                                             >
                                                 <dv-loading-button
                                                     type="submit"
+                                                    [buttonDisabled]="
+                                                        disableTagesschuleAnmeldungenStatistikGenerierenButton()
+                                                    "
                                                 >
                                                     <span
                                                         class="uppercase"
@@ -2210,6 +2265,33 @@
                                         "
                                     >
                                         <div class="row">
+                                            <div class="col-xs-3">
+                                                <dv-date-picker-x
+                                                    label="VON"
+                                                    [minDate]="minDate"
+                                                    [maxDate]="maxDate"
+                                                    [(date)]="
+                                                        statistikParameter.von
+                                                    "
+                                                    [required]="false"
+                                                >
+                                                </dv-date-picker-x>
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <dv-date-picker-x
+                                                    label="BIS"
+                                                    [minDate]="
+                                                        statistikParameter.von ||
+                                                        minDate
+                                                    "
+                                                    [maxDate]="maxDate"
+                                                    [(date)]="
+                                                        statistikParameter.bis
+                                                    "
+                                                    [required]="false"
+                                                >
+                                                </dv-date-picker-x>
+                                            </div>
                                             <div class="col-xs-3">
                                                 <div class="form-group">
                                                     <label

@@ -78,4 +78,9 @@ public class MutationsMergerFinanzielleSituationVisitor implements
 	public AbstractMutationsMergerFinanzielleSituation visitFinSitSchwyzErweitert() {
 		return new MutationsMergerFinanzielleSituationSchwyz(locale);
 	}
+
+	@Override
+	public AbstractMutationsMergerFinanzielleSituation visitFinSitBernFKJVFristen() {
+		return new MutationsMergerFinanzielleSituationBernFKJVFristen(locale);
+	}
 }

@@ -34,7 +34,7 @@ import {
 } from '@kibon/shared/util-fn/betreuungsangebot-typ';
 import {TranslateService} from '@ngx-translate/core';
 import {StateService, Transition} from '@uirouter/core';
-import moment from 'moment';
+import moment, {Moment} from 'moment';
 import {firstValueFrom, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
@@ -63,6 +63,7 @@ import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {Permission} from '../../authorisation/Permission';
 import {PERMISSIONS} from '../../authorisation/Permissions';
 import {DvNgConfirmDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
+import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {InstitutionStammdatenRS} from '../../core/service/institutionStammdatenRS.rest';
@@ -96,6 +97,8 @@ export class EditInstitutionComponent implements OnInit {
     @ViewChildren(NgForm) public forms: QueryList<NgForm>;
     public readonly tomorrow: moment.Moment = MomentUtil.today().add(1, 'days');
 
+    public readonly demoFeatureInstitutionsschliessungMutationsmeldung =
+        TSDemoFeature.INSTITUTIONSSCHLIESSUNG_MUTATIONSMELDUNG;
     public traegerschaftenList: TSTraegerschaft[];
     public stammdaten: TSInstitutionStammdaten;
     public externalClients?: TSInstitutionExternalClientAssignment;
@@ -116,6 +119,7 @@ export class EditInstitutionComponent implements OnInit {
     private initiallyAssignedClients: TSInstitutionExternalClient[];
     public ebeguUtil = EbeguUtil;
     public allPossibleClients: TSExternalClient[];
+    public currentBisDatum: Moment;
 
     private preEditGueltigkeit: TSDateRange;
 
@@ -239,6 +243,7 @@ export class EditInstitutionComponent implements OnInit {
     }
 
     private initModel(stammdaten: TSInstitutionStammdaten): void {
+        this.currentBisDatum = moment(stammdaten.gueltigkeit.gueltigBis);
         this.stammdaten = stammdaten;
         this.editMode =
             stammdaten.institution.status === TSInstitutionStatus.EINGELADEN ||
@@ -399,9 +404,7 @@ export class EditInstitutionComponent implements OnInit {
         ) {
             const dialogConfig = new MatDialogConfig();
             dialogConfig.data = {
-                frage: this.translate.instant(
-                    'INSTITUTION_GUELTIGKEIT_DECREASED_WARNUNG'
-                )
+                frage: 'INSTITUTION_GUELTIGKEIT_DECREASED_WARNUNG'
             };
             if (
                 (await firstValueFrom(
@@ -826,5 +829,10 @@ export class EditInstitutionComponent implements OnInit {
             return false;
         }
         return !this.authServiceRS.isOneOfRoles(TSRoleUtil.getMandantRoles());
+    }
+
+    public isDateChanged() {
+        const newBisDatum = this.stammdaten.gueltigkeit.gueltigBis;
+        return !this.currentBisDatum.isSame(newBisDatum);
     }
 }

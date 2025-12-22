@@ -232,7 +232,7 @@ public class MahlzeitenverguenstigungBGRechnerRuleTest {
 		VerfuegungZeitabschnitt abschnitt = new VerfuegungZeitabschnitt();
 		BGCalculationInput input = abschnitt.getBgCalculationInputAsiv();
 		input.setMassgebendesEinkommenVorAbzugFamgr(einkommen);
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setAnzahlHauptmahlzeiten(
 			MathUtil.DEFAULT.from(anzahlHauptmahlzeiten)
 		);

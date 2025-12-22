@@ -279,7 +279,7 @@ public class TraegerschaftServiceBean extends AbstractBaseService implements
 		);
 		Traegerschaft traegerschaft = traegerschaftOptional.orElseThrow(
 			() -> new EbeguEntityNotFoundException(
-				"setInactive",
+				"getAllAngeboteFromTraegerschaft:findTraegerschaft",
 				ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
 				traegerschaftId
 			)

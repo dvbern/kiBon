@@ -162,7 +162,7 @@ public enum MergeFieldTagesschuleRechnungsstellung implements
 			BIGDECIMAL_CONVERTER
 		)
 	), famGroesse(
-		new SimpleMergeField<>("famGroesse", BIGDECIMAL_CONVERTER)
+		new SimpleMergeField<>("famGroesseTotal", BIGDECIMAL_CONVERTER)
 	), massgebendesEinkommenNachFamAbzug(
 		new SimpleMergeField<>(
 			"massgebendesEinkommenNachFamAbzug",

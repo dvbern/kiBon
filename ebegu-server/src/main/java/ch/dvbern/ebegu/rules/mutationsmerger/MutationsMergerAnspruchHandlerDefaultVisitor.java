@@ -19,12 +19,12 @@ package ch.dvbern.ebegu.rules.mutationsmerger;
 
 import java.util.Locale;
 
-import ch.dvbern.ebegu.util.mandant.AbstractMandantDefaultVisitor;
-import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
+import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
+import ch.dvbern.ebegu.util.FinanzielleSituationTypVisitor;
 import com.sun.istack.NotNull;
 
-public class MutationsMergerAnspruchHandlerDefaultVisitor extends
-	AbstractMandantDefaultVisitor<AbstractMutationsMergerAnspruchHandler> {
+public class MutationsMergerAnspruchHandlerDefaultVisitor implements
+	FinanzielleSituationTypVisitor<AbstractMutationsMergerAnspruchHandler> {
 
 	private final Locale locale;
 
@@ -33,23 +33,53 @@ public class MutationsMergerAnspruchHandlerDefaultVisitor extends
 	}
 
 	public AbstractMutationsMergerAnspruchHandler getAnspruchHandler(
-		@NotNull MandantIdentifier mandant
+		@NotNull FinanzielleSituationTyp finanzielleSituationTyp
 	) {
-		return mandant.accept(this);
+		return finanzielleSituationTyp.accept(this);
 	}
 
 	@Override
-	protected AbstractMutationsMergerAnspruchHandler visitDefault() {
+	public AbstractMutationsMergerAnspruchHandler visitFinSitBern() {
 		return new MutationsMergerAnspruchHandler(locale);
 	}
 
 	@Override
-	public AbstractMutationsMergerAnspruchHandler visitLuzern() {
+	public AbstractMutationsMergerAnspruchHandler visitFinSitBernFKJV() {
+		return visitFinSitBern();
+	}
+
+	@Override
+	public AbstractMutationsMergerAnspruchHandler visitFinSitLuzern() {
 		return new MutationsMergerAnspruchHandlerLuzern(locale);
 	}
 
 	@Override
-	public AbstractMutationsMergerAnspruchHandler visitSchwyz() {
+	public AbstractMutationsMergerAnspruchHandler visitFinSitSolothurn() {
+		return visitFinSitBern();
+	}
+
+	@Override
+	public AbstractMutationsMergerAnspruchHandler visitFinSitAppenzell() {
+		return visitFinSitBern();
+	}
+
+	@Override
+	public AbstractMutationsMergerAnspruchHandler visitFinSitAppenzellFolgemonat() {
+		return visitFinSitBern();
+	}
+
+	@Override
+	public AbstractMutationsMergerAnspruchHandler visitFinSitSchwyz() {
 		return new MutationsMergerAnspruchHandlerSchwyz(locale);
+	}
+
+	@Override
+	public AbstractMutationsMergerAnspruchHandler visitFinSitSchwyzErweitert() {
+		return new MutationsMergerAnspruchHandlerSchwyz(locale);
+	}
+
+	@Override
+	public AbstractMutationsMergerAnspruchHandler visitFinSitBernFKJVFristen() {
+		return new MutationsMergerAnspruchHandlerFKJVFristen(locale);
 	}
 }

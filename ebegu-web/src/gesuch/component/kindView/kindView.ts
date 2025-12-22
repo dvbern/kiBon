@@ -61,6 +61,7 @@ import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {EnumEx} from '../../../utils/EnumEx';
+import {isNotNullOrUndefined} from '../../../utils/rxjs-operators';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {IKindStateParams} from '../../gesuch.route';
 import {BerechnungsManager} from '../../service/berechnungsManager';
@@ -894,8 +895,41 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
                         `Unhandled TSIntegrationTyp ${pensumFachstelle.integrationTyp}`
                     );
             }
+            if (
+                this.isFeatureFachstellennameEnabled() &&
+                !this.isGemeindeBezeichneteFachstelleRequiredAndGiven(
+                    pensumFachstelle
+                )
+            ) {
+                errors.push({
+                    pensumFachstelle,
+                    error: this.$translate.instant(
+                        'PENSUM_FACHSTELLE_INVALID_DESCRIPTION'
+                    )
+                });
+            }
         }
         return errors;
+    }
+
+    private isFeatureFachstellennameEnabled(): boolean {
+        return this.fachstellenTyp === TSFachstellenTyp.BERN_FACHSTELLE_NAME;
+    }
+
+    private isGemeindeBezeichneteFachstelleRequiredAndGiven(
+        pensumFachstelle: TSPensumFachstelle
+    ): boolean {
+        if (isNotNullOrUndefined(pensumFachstelle.fachstelle)) {
+            const name = pensumFachstelle.fachstelle.name.toString();
+            if ('GEMEINDE_FACHSTELLE' === name) {
+                // Wenn im Select "Von Gemeinde bezeichnete Fachstelle" ausgewählt ist, muss die Bezeichnung auch angegeben werden.
+                return pensumFachstelle.hasDescription();
+            } else {
+                return true;
+            }
+        }
+        // nicht "required", wenn keine Fachstelle definiert ist.
+        return true;
     }
 
     public showHoehereBetraegeBeeintraechtigung(): boolean {

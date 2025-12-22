@@ -33,7 +33,7 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-import ch.dvbern.ebegu.dto.suchfilter.lucene.LongToStringBridge;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.LongToStringBridge;
 import ch.dvbern.ebegu.entities.sozialdienst.SozialdienstFall;
 import ch.dvbern.ebegu.util.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

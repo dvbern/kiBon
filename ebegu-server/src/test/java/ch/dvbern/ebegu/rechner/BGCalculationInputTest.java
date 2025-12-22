@@ -790,7 +790,7 @@ class BGCalculationInputTest {
 			new VerfuegungZeitabschnitt(),
 			RuleValidity.ASIV
 		);
-		input.setAbzugFamGroesse(BigDecimal.TEN);
+		input.setAbzugFamGroesseTotal(BigDecimal.TEN);
 		input.setMassgebendesEinkommenVorAbzugFamgr(BigDecimal.ONE);
 
 		assertThat(input.getMassgebendesEinkommen(), is(BigDecimal.ZERO));
@@ -802,7 +802,7 @@ class BGCalculationInputTest {
 			new VerfuegungZeitabschnitt(),
 			RuleValidity.ASIV
 		);
-		input.setAbzugFamGroesse(BigDecimal.ONE);
+		input.setAbzugFamGroesseTotal(BigDecimal.ONE);
 		input.setMassgebendesEinkommenVorAbzugFamgr(BigDecimal.TEN);
 
 		assertThat(

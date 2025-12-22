@@ -559,7 +559,7 @@ public class FinanzielleSituationPdfGeneratorBern extends
 			geschaftsgewinn
 		);
 
-		if (finSitTyp == FinanzielleSituationTyp.BERN_FKJV) {
+		if (isFKJVFinSitTyp(finSitTyp)) {
 			createEinkommenFKJVRow(gs1, gs2, gs1Urspruenglich, gs2Urspruenglich)
 				.forEach(tableEinkommen::addRow);
 		}
@@ -779,7 +779,7 @@ public class FinanzielleSituationPdfGeneratorBern extends
 		table.addRow(abzuegeTitle);
 		table.addRow(unterhaltsbeitraege);
 
-		if (finSitTyp == FinanzielleSituationTyp.BERN_FKJV) {
+		if (isFKJVFinSitTyp(finSitTyp)) {
 			addAbzuegeFKJVRow(
 				table,
 				gs1,
@@ -895,7 +895,7 @@ public class FinanzielleSituationPdfGeneratorBern extends
 
 	private void createFusszeile(@Nonnull PdfContentByte dirPdfContentByte)
 		throws DocumentException {
-		if (finSitTyp == FinanzielleSituationTyp.BERN_FKJV) {
+		if (isFKJVFinSitTyp(finSitTyp)) {
 			return;
 		}
 		createFusszeile(
@@ -966,5 +966,11 @@ public class FinanzielleSituationPdfGeneratorBern extends
 			);
 		}
 		return row;
+	}
+
+	private boolean isFKJVFinSitTyp(
+		@Nullable FinanzielleSituationTyp finSitTyp
+	) {
+		return finSitTyp != null && finSitTyp.isFKJVFinSituationTyp();
 	}
 }

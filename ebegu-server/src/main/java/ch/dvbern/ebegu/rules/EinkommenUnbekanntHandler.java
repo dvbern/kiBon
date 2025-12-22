@@ -108,7 +108,7 @@ public class EinkommenUnbekanntHandler extends AbstractEinkommenHandler {
 		BGCalculationInput inputData,
 		AbstractPlatz platz
 	) {
-		inputData.setAbzugFamGroesse(BigDecimal.ZERO);
+		inputData.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		inputData.setEinkommensjahr(
 			platz.extractGesuchsperiode().getBasisJahr()
 		);

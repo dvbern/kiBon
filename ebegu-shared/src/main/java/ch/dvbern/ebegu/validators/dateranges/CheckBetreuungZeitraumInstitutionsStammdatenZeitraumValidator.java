@@ -47,6 +47,9 @@ public class CheckBetreuungZeitraumInstitutionsStammdatenZeitraumValidator
 		BetreuungAndPensumContainer container,
 		ConstraintValidatorContext context
 	) {
+		if (container.isMarkedForDeletion()) {
+			return true;
+		}
 		return container.findBetreuung()
 			.map(betreuung -> {
 				if (hasPensenGueltigkeitWithinInstitutionStammdatenGueltigkeit(

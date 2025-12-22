@@ -65,7 +65,7 @@ class TagesfamilienSchwyzRechnerTest {
 		input.setBetreuungspensumProzent(new BigDecimal(40));
 		input.setAnspruchspensumProzent(60);
 		input.setMassgebendesEinkommenVorAbzugFamgr(new BigDecimal(27_000));
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setMonatlicheBetreuungskosten(new BigDecimal(1_500));
 
 		// when
@@ -131,7 +131,7 @@ class TagesfamilienSchwyzRechnerTest {
 		input.setBetreuungspensumProzent(new BigDecimal(40));
 		input.setAnspruchspensumProzent(60);
 		input.setMassgebendesEinkommenVorAbzugFamgr(new BigDecimal(27_000));
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setMonatlicheBetreuungskosten(new BigDecimal(1_500));
 
 		// when
@@ -191,7 +191,7 @@ class TagesfamilienSchwyzRechnerTest {
 		input.setBetreuungspensumProzent(new BigDecimal(40));
 		input.setAnspruchspensumProzent(20);
 		input.setMassgebendesEinkommenVorAbzugFamgr(new BigDecimal(50_000));
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setMonatlicheBetreuungskosten(new BigDecimal(1_230));
 
 		// when
@@ -251,7 +251,7 @@ class TagesfamilienSchwyzRechnerTest {
 		input.setBetreuungspensumProzent(new BigDecimal(20));
 		input.setAnspruchspensumProzent(40);
 		input.setMassgebendesEinkommenVorAbzugFamgr(new BigDecimal(50_000));
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setMonatlicheBetreuungskosten(new BigDecimal(2_000));
 
 		// when
@@ -311,7 +311,7 @@ class TagesfamilienSchwyzRechnerTest {
 		input.setBetreuungspensumProzent(new BigDecimal(20));
 		input.setAnspruchspensumProzent(40);
 		input.setMassgebendesEinkommenVorAbzugFamgr(new BigDecimal(153_115));
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setMonatlicheBetreuungskosten(new BigDecimal(2_000));
 
 		// when
@@ -371,7 +371,7 @@ class TagesfamilienSchwyzRechnerTest {
 		input.setBetreuungspensumProzent(new BigDecimal(60));
 		input.setAnspruchspensumProzent(40);
 		input.setMassgebendesEinkommenVorAbzugFamgr(new BigDecimal(47_195));
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setMonatlicheBetreuungskosten(new BigDecimal(2_000));
 
 		// when
@@ -439,7 +439,7 @@ class TagesfamilienSchwyzRechnerTest {
 		input.setMassgebendesEinkommenVorAbzugFamgr(
 			BigDecimal.valueOf(144_301)
 		);
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setAnzahlGeschwister(0);
 
 		// when
@@ -1078,7 +1078,7 @@ class TagesfamilienSchwyzRechnerTest {
 		input.setBetreuungspensumProzent(new BigDecimal(40));
 		input.setAnspruchspensumProzent(60);
 		input.setMassgebendesEinkommenVorAbzugFamgr(new BigDecimal(27_000));
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setMonatlicheBetreuungskosten(new BigDecimal(1_500));
 		return input;
 	}

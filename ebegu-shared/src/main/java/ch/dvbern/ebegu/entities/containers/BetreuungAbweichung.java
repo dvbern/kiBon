@@ -22,9 +22,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import jakarta.persistence.Transient;
 
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.BetreuungspensumAbweichung;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 
 @Value
@@ -32,6 +35,11 @@ public class BetreuungAbweichung implements BetreuungAndPensumContainer {
 
 	private final Betreuung betreuung;
 	private final Set<BetreuungspensumAbweichung> abweichungen;
+
+	@Transient
+	@Getter
+	@Setter
+	private boolean markedForDeletion = false;
 
 	@Nonnull
 	@Override

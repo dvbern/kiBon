@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import jakarta.validation.Valid;
 
-import ch.dvbern.ebegu.dto.suchfilter.smarttable.MitteilungTableFilterDTO;
+import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.MitteilungTableFilterDTO;
 import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Betreuung;
 import ch.dvbern.ebegu.entities.Betreuungsmitteilung;
@@ -39,7 +39,6 @@ import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.Mitteilung;
 import ch.dvbern.ebegu.entities.NeueVeranlagungsMitteilung;
-import ch.dvbern.ebegu.types.DateRange;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
@@ -276,11 +275,6 @@ public interface MitteilungService {
 	);
 
 	boolean hasInstitutionOffeneMitteilungen(Institution institution);
-
-	void adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(
-		@Nonnull Institution institution,
-		@Nonnull DateRange gueltigkeit
-	);
 
 	boolean isBetreuungGueltigForMutation(Betreuung betreuung);
 

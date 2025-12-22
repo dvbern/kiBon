@@ -43,7 +43,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.authentication.ExternalUUIDUtil;
-import ch.dvbern.ebegu.dto.suchfilter.lucene.KibonElasticsearchAnalyzerConfigurer;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.KibonElasticsearchAnalyzerConfigurer;
 import ch.dvbern.ebegu.entities.sozialdienst.Sozialdienst;
 import ch.dvbern.ebegu.enums.BenutzerStatus;
 import ch.dvbern.ebegu.enums.RollenAbhaengigkeit;

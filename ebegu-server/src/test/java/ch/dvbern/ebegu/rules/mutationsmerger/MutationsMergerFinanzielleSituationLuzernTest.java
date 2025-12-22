@@ -268,8 +268,8 @@ class MutationsMergerFinanzielleSituationLuzernTest {
 		);
 		input.setMassgebendesEinkommenVorAbzugFamgr(massgegebendeseinkommen);
 		input.setEinkommensjahr(2018);
-		input.setFamGroesse(BigDecimal.ZERO);
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setFamGroesseTotal(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setSozialhilfeempfaenger(false);
 		return input;
 	}

@@ -19,6 +19,8 @@ package ch.dvbern.ebegu.api.resource;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +50,6 @@ import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
 import ch.dvbern.ebegu.dto.statistik.KinderStatistikParameterDto;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyService;
-import ch.dvbern.ebegu.entities.EinstellungenTagesschule;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Institution;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
@@ -58,6 +59,7 @@ import ch.dvbern.ebegu.enums.WorkJobType;
 import ch.dvbern.ebegu.enums.reporting.DatumTyp;
 import ch.dvbern.ebegu.enums.reporting.ReportVorlage;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
+import ch.dvbern.ebegu.errors.EbeguException;
 import ch.dvbern.ebegu.errors.EbeguRuntimeException;
 import ch.dvbern.ebegu.errors.KibonLogLevel;
 import ch.dvbern.ebegu.i18n.LocaleThreadLocal;
@@ -101,6 +103,7 @@ public class ReportResourceAsync {
 	public static final String DAS_VON_DATUM_MUSS_VOR_DEM_BIS_DATUM_SEIN =
 		"Das von-Datum muss vor dem bis-Datum sein.";
 	public static final String URL_PART_EXCEL = "excel/";
+	private static final int EXCEL_LIMITER = 50;
 
 	@Inject
 	private DownloadResource downloadResource;
@@ -741,7 +744,11 @@ public class ReportResourceAsync {
 	}
 
 	@Operation(
-		summary = "Erstellt ein Excel mit der Statistik 'Tagesschule kiBon'")
+		summary = "Erstellt ein Excel mit der Statistik 'Tagesschule kiBon'"
+			+ "Neu seit KIBONBE-191 kann eine Statistik nicht nur "
+			+ "mit einer Tagesschul Institution, sondern mit mehreren erstellt werden."
+			+ "Dazu wird jede einzelne Tagesschul Institution als eigene Excel "
+			+ "Mappe in der Excel Datei erstellt")
 	@Nonnull
 	@GET
 	@Path("/excel/tagesschuleAnmeldungen")
@@ -753,42 +760,52 @@ public class ReportResourceAsync {
 		SACHBEARBEITER_INSTITUTION, ADMIN_TRAEGERSCHAFT,
 		SACHBEARBEITER_TRAEGERSCHAFT })
 	public Response getTagesschuleAnmeldungenReportExcel(
-		@QueryParam("stammdatenId") @Nonnull String stammdatenId,
+		@QueryParam("stammdatenIds") @Nonnull String stammdatenIds,
 		@QueryParam("gesuchsperiodeId") @Nonnull String gesuchsperiodeId,
 		@Context HttpServletRequest request,
 		@Context UriInfo uriInfo
-	) {
-
+	) throws EbeguException {
 		String ip = downloadResource.getIP(request);
-
 		Workjob workJob = createWorkjobForReport(request, uriInfo, ip);
 
-		InstitutionStammdaten stammdaten = institutionStammdatenService
-			.findInstitutionStammdaten(stammdatenId)
-			.orElseThrow(
-				() -> new EbeguEntityNotFoundException(
-					"getTagesschuleAnmeldungenReportExcel",
-					ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
-					stammdatenId
-				)
-			);
-		authorizer.checkReadAuthorizationInstitutionStammdaten(stammdaten);
+		// get ids for each institution
+		List<String> stammdatenIdList = Arrays.stream(stammdatenIds.split(","))
+			.map(String::trim)
+			.map(String::valueOf)
+			.toList();
 
-		if (checkMaxTagesschulModuleExceeded(stammdaten, gesuchsperiodeId)) {
-			throw new EbeguRuntimeException(
+		// send error when more than 50 TS received
+		if (stammdatenIdList.size() > EXCEL_LIMITER) {
+			throw new EbeguException(
 				"getTagesschuleAnmeldungenReportExcel",
-				"Für diese Tagesschule gibt es zu "
-					+ "viele Module. Mehr als "
-					+ Constants.MAX_MODULGROUPS_TAGESSCHULE
-					+ " können im Excel nicht "
-					+ "angezeigt werden"
+				ErrorCodeEnum.ERROR_TOO_MANY_SELECTED_TS_ANMELDUNGEN_STATISTIK,
+				"Too many IDs: " + stammdatenIdList.size()
 			);
+		}
+
+		List<InstitutionStammdaten> stammdatenEntities = stammdatenIdList
+			.stream()
+			.map(
+				id -> institutionStammdatenService.findInstitutionStammdaten(id)
+					.orElseThrow(
+						() -> new EbeguEntityNotFoundException(
+							"getTagesschuleAnmeldungenReportExcel",
+							ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND,
+							id
+						)
+					)
+			)
+			.toList();
+
+		// loop over the list to check read authorization
+		for (InstitutionStammdaten stammdaten : stammdatenEntities) {
+			authorizer.checkReadAuthorizationInstitutionStammdaten(stammdaten);
 		}
 
 		workJob = workjobReportService.createNewReporting(
 			workJob,
 			ReportVorlage.VORLAGE_REPORT_TAGESSCHULE_ANMELDUNGEN,
-			stammdatenId,
+			stammdatenIds,
 			gesuchsperiodeId,
 			LocaleThreadLocal.get()
 		);
@@ -1076,6 +1093,8 @@ public class ReportResourceAsync {
 		SACHBEARBEITER_INSTITUTION, ADMIN_TRAEGERSCHAFT,
 		SACHBEARBEITER_TRAEGERSCHAFT })
 	public Response getZahlungenExcelReport(
+		@QueryParam("von") String von,
+		@QueryParam("bis") String bis,
 		@Nullable @QueryParam("gesuchsperiodeId") String gesuchsperiodeId,
 		@Nullable @QueryParam("gemeindeId") String gemeindeId,
 		@Nullable @QueryParam("institutionId") String institutionId,
@@ -1089,6 +1108,8 @@ public class ReportResourceAsync {
 
 		Gemeinde gemeinde = null;
 		Institution institution = null;
+		LocalDate dateVon = null;
+		LocalDate dateBis = null;
 
 		if (gemeindeId != null) {
 			gemeinde = gemeindeService.findGemeinde(gemeindeId)
@@ -1112,6 +1133,14 @@ public class ReportResourceAsync {
 				);
 		}
 
+		if (von != null) {
+			dateVon = DateUtil.parseStringToDateOrReturnNow(von);
+		}
+
+		if (bis != null) {
+			dateBis = DateUtil.parseStringToDateOrReturnNow(bis);
+		}
+
 		final ReportVorlage reportVorlage = LocaleThreadLocal.get()
 			.equals(Locale.FRENCH) ?
 				ReportVorlage.VORLAGE_REPORT_ZAHLUNGEN_FR :
@@ -1120,8 +1149,8 @@ public class ReportResourceAsync {
 		workJob = workjobReportService.createNewReporting(
 			workJob,
 			reportVorlage,
-			null,
-			null,
+			dateVon,
+			dateBis,
 			gesuchsperiodeId,
 			false,
 			false,
@@ -1135,27 +1164,6 @@ public class ReportResourceAsync {
 		);
 
 		return createWorkjobResponse(workJob);
-	}
-
-	/**
-	 * Überprüft, ob für eine bestimmte Gesuchsperiode die Anzahl Module über dem maximalen Wert liegt.
-	 * Dieser maximale Wert ist durch das Exceltemplate gegeben
-	 */
-	private boolean checkMaxTagesschulModuleExceeded(
-		@Nonnull InstitutionStammdaten stammdaten,
-		@Nonnull String gesuchsperiodeId
-	) {
-		if (stammdaten.getInstitutionStammdatenTagesschule() != null) {
-			for (EinstellungenTagesschule e : stammdaten
-				.getInstitutionStammdatenTagesschule()
-				.getEinstellungenTagesschule()) {
-				if (e.getGesuchsperiode().getId().equals(gesuchsperiodeId)) {
-					return e.getModulTagesschuleGroups().size()
-						> Constants.MAX_MODULGROUPS_TAGESSCHULE;
-				}
-			}
-		}
-		return false;
 	}
 
 	@Nonnull

@@ -45,6 +45,12 @@ public enum FinanzielleSituationTyp {
 			return visitor.visitFinSitBernFKJV();
 		}
 	},
+	BERN_FKJV_FRISTEN {
+		@Override
+		public <T> T accept(FinanzielleSituationTypVisitor<T> visitor) {
+			return visitor.visitFinSitBernFKJVFristen();
+		}
+	},
 	APPENZELL {
 		@Override
 		public <T> T accept(FinanzielleSituationTypVisitor<T> visitor) {
@@ -74,5 +80,9 @@ public enum FinanzielleSituationTyp {
 
 	public boolean isSchwyzFinSituationTyp() {
 		return this == SCHWYZ || this == SCHWYZ_ERWEITERT;
+	}
+
+	public boolean isFKJVFinSituationTyp() {
+		return this == BERN_FKJV || this == BERN_FKJV_FRISTEN;
 	}
 }

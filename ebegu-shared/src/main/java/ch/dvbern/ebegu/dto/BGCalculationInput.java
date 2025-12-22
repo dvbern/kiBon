@@ -140,6 +140,8 @@ public class BGCalculationInput {
 	@Nonnull
 	private BigDecimal massgebendesEinkommenVorAbzugFamgr = BigDecimal.ZERO;
 
+	@Setter
+	@Getter
 	private boolean besondereBeduerfnisseBestaetigt;
 
 	@Nullable
@@ -149,8 +151,12 @@ public class BGCalculationInput {
 	@Nonnull
 	private Integer einkommensjahr;
 
+	@Setter
+	@Getter
 	private boolean zuSpaetEingereicht;
 
+	@Setter
+	@Getter
 	private boolean minimalesEwpUnterschritten;
 
 	private boolean kitaPlusZuschlag = false;
@@ -664,29 +670,19 @@ public class BGCalculationInput {
 			massgebendesEinkommenVorAbzugFamgr;
 	}
 
-	public boolean isBesondereBeduerfnisseBestaetigt() {
-		return besondereBeduerfnisseBestaetigt;
-	}
-
-	public void setBesondereBeduerfnisseBestaetigt(
-		boolean besondereBeduerfnisseBestaetigt
-	) {
-		this.besondereBeduerfnisseBestaetigt = besondereBeduerfnisseBestaetigt;
-	}
-
 	@Nullable
-	public BigDecimal getAbzugFamGroesse() {
+	public BigDecimal getAbzugFamGroesseTotal() {
 		return this.familienCalculationInput.getAbzugFamGroesse();
 	}
 
 	@Nonnull
-	public BigDecimal getAbzugFamGroesseNonNull() {
-		return getAbzugFamGroesse() != null ?
-			getAbzugFamGroesse() :
+	public BigDecimal getAbzugFamGroesseTotalNonNull() {
+		return getAbzugFamGroesseTotal() != null ?
+			getAbzugFamGroesseTotal() :
 			MathUtil.DEFAULT.from(0);
 	}
 
-	public void setAbzugFamGroesse(@Nullable BigDecimal abzugFamGroesse) {
+	public void setAbzugFamGroesseTotal(@Nullable BigDecimal abzugFamGroesse) {
 		this.familienCalculationInput.setAbzugFamGroesse(abzugFamGroesse);
 	}
 
@@ -699,37 +695,19 @@ public class BGCalculationInput {
 		this.einkommensjahr = einkommensjahr;
 	}
 
-	public boolean isZuSpaetEingereicht() {
-		return zuSpaetEingereicht;
-	}
-
-	public void setZuSpaetEingereicht(boolean zuSpaetEingereicht) {
-		this.zuSpaetEingereicht = zuSpaetEingereicht;
-	}
-
-	public boolean isMinimalesEwpUnterschritten() {
-		return minimalesEwpUnterschritten;
-	}
-
-	public void setMinimalesEwpUnterschritten(
-		boolean minimalesEwpUnterschritten
-	) {
-		this.minimalesEwpUnterschritten = minimalesEwpUnterschritten;
-	}
-
 	@Nullable
-	public BigDecimal getFamGroesse() {
+	public BigDecimal getFamGroesseTotal() {
 		return this.familienCalculationInput.getFamGroesse();
 	}
 
 	@Nonnull
-	public BigDecimal getFamGroesseNonNull() {
-		return getFamGroesse() != null ?
-			getFamGroesse() :
+	public BigDecimal getFamGroesseTotalNonNull() {
+		return getFamGroesseTotal() != null ?
+			getFamGroesseTotal() :
 			MathUtil.DEFAULT.from(0);
 	}
 
-	public void setFamGroesse(@Nullable BigDecimal famGroesse) {
+	public void setFamGroesseTotal(@Nullable BigDecimal famGroesse) {
 		this.familienCalculationInput.setFamGroesse(famGroesse);
 	}
 

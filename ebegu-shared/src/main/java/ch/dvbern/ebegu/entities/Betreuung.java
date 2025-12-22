@@ -69,6 +69,8 @@ import ch.dvbern.ebegu.validators.dateranges.CheckBetreuungPensumContainerZeitra
 import ch.dvbern.ebegu.validators.dateranges.CheckBetreuungZeitraumInstitutionsStammdatenZeitraum;
 import ch.dvbern.ebegu.validators.dateranges.CheckGueltigkeiten;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
@@ -127,6 +129,11 @@ public class Betreuung extends AbstractPlatz implements
 	@Transient
 	@Nullable
 	private Verfuegung verfuegungPreview;
+
+	@Transient
+	@Getter
+	@Setter
+	private boolean markedForDeletion = false;
 
 	@OneToMany(cascade = CascadeType.ALL,
 		orphanRemoval = true,

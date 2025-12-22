@@ -51,7 +51,7 @@ public class FamilienabzugCalcRuleFKJV2 extends
 				inputData.getFamilienCalculationInput()
 			);
 
-		inputData.setAbzugFamGroesse(
+		inputData.setAbzugFamGroesseTotal(
 			calculateAbzugAufgrundFamiliengroesse(
 				familiengroesse,
 				countAnzahlPersonen(
@@ -60,6 +60,6 @@ public class FamilienabzugCalcRuleFKJV2 extends
 			)
 		);
 
-		inputData.setFamGroesse(BigDecimal.valueOf(familiengroesse));
+		inputData.setFamGroesseTotal(BigDecimal.valueOf(familiengroesse));
 	}
 }

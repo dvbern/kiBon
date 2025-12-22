@@ -2,13 +2,18 @@
     <lib-gesuch-popup-heading>{{
         'DOKUMENTE_ERNEUERN' | translate
     }}</lib-gesuch-popup-heading>
-    @if (
+
+    @if (erneuerbareDokumenteRes.isLoading()) {
+        <div class="flex justify-center items-center">
+            <mat-spinner diameter="40"></mat-spinner>
+        </div>
+    } @else if (
         groupedErneuerbareDokumentTyps() === undefined ||
-        groupedErneuerbareDokumentTyps().length === 0
+        groupedErneuerbareDokumentTyps()?.length === 0
     ) {
-        <span class="mb-4">{{
-            'KEINE_ERNEUERBAREN_DOKUMENTE' | translate
-        }}</span>
+        <span class="mb-4">
+            {{ 'KEINE_ERNEUERBAREN_DOKUMENTE' | translate }}
+        </span>
     } @else {
         <p translate>DOKUMENTE_ERNEUERN_HELPTEXT</p>
         <p class="mb-4"><b translate>DOKUMENTE_ERNEUERN_WARNUNG</b></p>

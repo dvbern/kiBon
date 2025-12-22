@@ -193,7 +193,7 @@ public abstract class AbstractKinderabzugAbschnittRule extends
 			.isBefore(kindJA.getGueltigkeitTerminiertPer());
 	}
 
-	private VerfuegungZeitabschnitt createZeitabschnittWithKinderAbzug(
+	protected VerfuegungZeitabschnitt createZeitabschnittWithKinderAbzug(
 		KindContainer kindContainer,
 		DateRange gueltigkeit
 	) {

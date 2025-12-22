@@ -23,7 +23,7 @@ import {
     OnInit,
     inject
 } from '@angular/core';
-import {NgForm} from '@angular/forms';
+import {NgForm, NgModel} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
@@ -40,11 +40,7 @@ import {
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {
-    TSBetreuungsangebotTyp,
-    TSInstitutionStatus,
-    TSRole
-} from '@kibon/shared/model/enums';
+import {TSBetreuungsangebotTyp, TSRole} from '@kibon/shared/model/enums';
 import {TSStatistikParameterType} from '../../../models/enums/TSStatistikParameterType';
 import {TSStatistikParameter} from '../../../models/TSStatistikParameter';
 import {TSWorkJob} from '../../../models/TSWorkJob';
@@ -61,6 +57,7 @@ import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {InstitutionStammdatenRS} from '../../core/service/institutionStammdatenRS.rest';
 import {ReportAsyncRS} from '../../core/service/reportAsyncRS.rest';
 import {LastenausgleichRS} from '../../lastenausgleich/services/lastenausgleichRS.rest';
+import {InstitutionNameStammdatenIdDto} from '@kibon/shared/model/dto';
 
 const LOG = LogFactory.createLog('StatistikComponent');
 
@@ -98,6 +95,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
     public statistikParameter: TSStatistikParameter;
     public gesuchsperioden: Array<TSGesuchsperiode>;
     private readonly DATE_PARAM_FORMAT: string = 'YYYY-MM-DD';
+    private readonly TS_ANMELDUNGEN_STATISTIK_MAX_AMOUNT = 50;
     // Statistiken sind nur moeglich ab Beginn der fruehesten Periode bis Ende der letzten Periode
     public maxDate: moment.Moment;
     public minDate: moment.Moment;
@@ -112,7 +110,8 @@ export class StatistikComponent implements OnInit, OnDestroy {
     ];
     public allJobs: Array<TSWorkJob>;
     public years: number[];
-    public tagesschulenStammdatenList: TSInstitutionStammdaten[];
+    public tagesschulenStammdatenFilterList: InstitutionNameStammdatenIdDto[] =
+        [];
     public bgInstitutionen: TSInstitution[];
     public gemeinden: TSGemeinde[];
     public gemeindenMahlzeitenverguenstigungen: TSGemeinde[];
@@ -125,11 +124,9 @@ export class StatistikComponent implements OnInit, OnDestroy {
     public lastenausgleichYears: number[] = [];
 
     private static sortInstitutions(
-        stammdaten: TSInstitutionStammdaten[]
-    ): TSInstitutionStammdaten[] {
-        return stammdaten.sort((a, b) =>
-            a.institution.name.localeCompare(b.institution.name)
-        );
+        stammdaten: InstitutionNameStammdatenIdDto[]
+    ): InstitutionNameStammdatenIdDto[] {
+        return stammdaten.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     private static handleError(err: Error): void {
@@ -149,22 +146,13 @@ export class StatistikComponent implements OnInit, OnDestroy {
         });
 
         this.institutionStammdatenRS
-            .getAllTagesschulenForCurrentBenutzer()
-            .then((tagesschulenStammdatenList: TSInstitutionStammdaten[]) => {
-                this.tagesschulenStammdatenList = tagesschulenStammdatenList
-                    .filter(
-                        t =>
-                            t.institution.status !==
-                            TSInstitutionStatus.NUR_LATS
-                    )
-                    .filter(
-                        t =>
-                            t.institutionStammdatenTagesschule
-                                ?.einstellungenTagesschule
-                    );
-                this.tagesschulenStammdatenList =
+            .getTagesschulenFilterListForCurrentBenutzer()
+            .then(institutionNameStammdatenIdList => {
+                this.tagesschulenStammdatenFilterList =
+                    institutionNameStammdatenIdList.data;
+                this.tagesschulenStammdatenFilterList =
                     StatistikComponent.sortInstitutions(
-                        this.tagesschulenStammdatenList
+                        this.tagesschulenStammdatenFilterList
                     );
                 this.cd.markForCheck();
             });
@@ -406,7 +394,12 @@ export class StatistikComponent implements OnInit, OnDestroy {
             case TSStatistikParameterType.TAGESSCHULE_ANMELDUNGEN:
                 this.reportAsyncRS
                     .getTagesschuleAnmeldungenReportExcel(
-                        this.statistikParameter.tagesschuleAnmeldungen.id,
+                        this.statistikParameter.selectedTagesschulen
+                            .map(
+                                institutionNameStammdatenID =>
+                                    institutionNameStammdatenID.stammdatenId
+                            )
+                            .join(','),
                         this.statistikParameter.gesuchsperiode
                     )
                     .subscribe((res: {workjobId: string}) => {
@@ -491,6 +484,16 @@ export class StatistikComponent implements OnInit, OnDestroy {
                 }
                 this.reportAsyncRS
                     .getZahlungenReportExcel(
+                        EbeguUtil.isNullOrUndefined(this.statistikParameter.von)
+                            ? ''
+                            : this.statistikParameter.von.format(
+                                  this.DATE_PARAM_FORMAT
+                              ),
+                        EbeguUtil.isNullOrUndefined(this.statistikParameter.bis)
+                            ? ''
+                            : this.statistikParameter.bis.format(
+                                  this.DATE_PARAM_FORMAT
+                              ),
                         this.statistikParameter.gesuchsperiode,
                         this.statistikParameter.gemeinde,
                         this.statistikParameter.institution
@@ -623,6 +626,13 @@ export class StatistikComponent implements OnInit, OnDestroy {
         this.years.sort();
     }
 
+    /**
+     * this function is called from the html template and it selects the
+     * gesuchsperiode for statistik. since KIBONBE-191 there is a
+     * new multi-select for institutionen, so we can safely use the list of
+     * institutionen [0] to specify the gesuchsperiode
+     * @param stammdaten
+     */
     public getGesuchsperiodenForTagesschule(
         stammdaten: TSInstitutionStammdaten
     ): TSGesuchsperiode[] {
@@ -862,7 +872,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
 
     public showTagesschuleAnmeldungenStatistik(): boolean {
         return (
-            this.tagesschulenStammdatenList?.length &&
+            this.tagesschulenStammdatenFilterList?.length &&
             this.authServiceRS.isOneOfRoles([
                 TSRole.SUPER_ADMIN,
                 TSRole.ADMIN_MANDANT,
@@ -954,6 +964,55 @@ export class StatistikComponent implements OnInit, OnDestroy {
 
     public getActiveGesuchsperioden(): TSGesuchsperiode[] {
         return this.gesuchsperioden?.filter(gp => gp.isAktiv());
+    }
+
+    public unselectAllTagesschulen() {
+        this.statistikParameter.selectedTagesschulen = [];
+    }
+
+    /**
+     * toggle dis- and enabled state for the "generieren" button
+     */
+    public disableTagesschuleAnmeldungenStatistikGenerierenButton(): boolean {
+        return (
+            !this.isTagesschulenSelectionInRange() ||
+            EbeguUtil.isEmptyStringNullOrUndefined(
+                this.statistikParameter.gesuchsperiode
+            )
+        );
+    }
+
+    /**
+     * this method checks if the selected amount of tagesschulen institutionen
+     * does not surpass 50 for excel statistik memory limitations
+     * @private
+     */
+    private isTagesschulenSelectionInRange() {
+        const count = this.statistikParameter.selectedTagesschulen.length;
+        return count > 0 && count <= this.TS_ANMELDUNGEN_STATISTIK_MAX_AMOUNT;
+    }
+
+    /**
+     * checks everytime the selection of tagesschulen changes in dropdown
+     * of "Tagesschulen Anmeldungen" if maxLimit has been reached and sets
+     * an error accordingly or removes the error.
+     */
+    public onTagesschulenSelectChange(model: NgModel) {
+        const selected =
+            this.statistikParameter.selectedTagesschulen?.length ?? 0;
+
+        if (selected > this.TS_ANMELDUNGEN_STATISTIK_MAX_AMOUNT) {
+            model.control.setErrors({maxLimit: true});
+        } else {
+            // Remove error if user goes back under limit
+            if (model.control.hasError('maxLimit')) {
+                model.control.updateValueAndValidity({
+                    onlySelf: true,
+                    emitEvent: false
+                });
+                model.control.setErrors(null);
+            }
+        }
     }
 
     protected readonly SharedUtilApplicationPropertyRsService =

@@ -435,6 +435,30 @@
                                         </div>
                                     </dv-input-container-x>
                                 </div>
+                                @if (
+                                    stammdaten.gueltigkeit.gueltigBis &&
+                                    isDateChanged()
+                                ) {
+                                    <div
+                                        class="col-xs-12"
+                                        [dvDemoFeature]="
+                                            demoFeatureInstitutionsschliessungMutationsmeldung
+                                        "
+                                    >
+                                        <div
+                                            class="well well-status-warten minus-margin"
+                                        >
+                                            <i
+                                                class="fa fa-exclamation-triangle"
+                                                style="padding-bottom: 0"
+                                                aria-hidden="true"
+                                            ></i>
+                                            <span translate
+                                                >INSTITUTIONSSTAMMDATEN_ENDDATUM_WARNING</span
+                                            >
+                                        </div>
+                                    </div>
+                                }
                                 @if (stammdaten.gueltigkeit.gueltigBis) {
                                     <div class="row">
                                         <div class="col-sm-12">

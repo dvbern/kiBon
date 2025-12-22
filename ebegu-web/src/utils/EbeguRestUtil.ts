@@ -3609,6 +3609,7 @@ export class EbeguRestUtil {
         restPensumFachstelle.integrationTyp = pensumFachstelle.integrationTyp;
         restPensumFachstelle.gruendeZusatzleistung =
             pensumFachstelle.gruendeZusatzleistung;
+        restPensumFachstelle.description = pensumFachstelle.description;
         if (pensumFachstelle.fachstelle) {
             restPensumFachstelle.fachstelle = this.fachstelleToRestObject(
                 {},
@@ -3645,6 +3646,8 @@ export class EbeguRestUtil {
                 pensumFachstelleFromServer.integrationTyp;
             pensumFachstelleTS.gruendeZusatzleistung =
                 pensumFachstelleFromServer.gruendeZusatzleistung;
+            pensumFachstelleTS.description =
+                pensumFachstelleFromServer.description;
             if (pensumFachstelleFromServer.fachstelle) {
                 pensumFachstelleTS.fachstelle = this.parseFachstelle(
                     new TSFachstelle(),

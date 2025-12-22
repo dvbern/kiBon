@@ -36,6 +36,7 @@ import {
 import {TSAntragTyp} from '../../models/enums/TSAntragTyp';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
 import {
+    getBernFKJVFinSitTyp,
     getSchwyzFinSitTyp,
     TSFinanzielleSituationTyp
 } from '@kibon/shared/model/enums';
@@ -716,7 +717,7 @@ export class WizardStepManager {
         // show just one step if gesuch.finSitTyp is empty (on gesuch creation)
         if (
             gesuch.finSitTyp === TSFinanzielleSituationTyp.BERN ||
-            gesuch.finSitTyp === TSFinanzielleSituationTyp.BERN_FKJV ||
+            getBernFKJVFinSitTyp().includes(gesuch.finSitTyp) ||
             !gesuch.finSitTyp
         ) {
             this.unhideStep(TSWizardStepName.FINANZIELLE_SITUATION);
@@ -746,7 +747,7 @@ export class WizardStepManager {
         // show just one step if gesuch.finSitTyp is empty (on gesuch creation)
         if (
             gesuch.finSitTyp === TSFinanzielleSituationTyp.BERN ||
-            gesuch.finSitTyp === TSFinanzielleSituationTyp.BERN_FKJV ||
+            getBernFKJVFinSitTyp().includes(gesuch.finSitTyp) ||
             !gesuch.finSitTyp
         ) {
             this.unhideStep(TSWizardStepName.EINKOMMENSVERSCHLECHTERUNG);

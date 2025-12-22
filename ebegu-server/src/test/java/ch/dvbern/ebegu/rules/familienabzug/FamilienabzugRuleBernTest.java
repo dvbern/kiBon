@@ -306,11 +306,11 @@ class FamilienabzugRuleBernTest {
 		);
 		assertEqualsNumberValue(
 			familiengroesseErstgesuch,
-			result.get(0).getBgCalculationInputAsiv().getFamGroesse()
+			result.get(0).getBgCalculationInputAsiv().getFamGroesseTotal()
 		);
 		assertEqualsNumberValue(
 			familienabzugErstgesuch,
-			result.get(0).getBgCalculationInputAsiv().getAbzugFamGroesse()
+			result.get(0).getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 
 		assertEquals(
@@ -323,11 +323,11 @@ class FamilienabzugRuleBernTest {
 		);
 		assertEqualsNumberValue(
 			familiengroesseAktuell,
-			result.get(1).getBgCalculationInputAsiv().getFamGroesse()
+			result.get(1).getBgCalculationInputAsiv().getFamGroesseTotal()
 		);
 		assertEqualsNumberValue(
 			familienabzugAktuell,
-			result.get(1).getBgCalculationInputAsiv().getAbzugFamGroesse()
+			result.get(1).getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 	}
 
@@ -355,11 +355,11 @@ class FamilienabzugRuleBernTest {
 
 		assertEqualsNumberValue(
 			2,
-			result.get(0).getBgCalculationInputAsiv().getFamGroesse()
+			result.get(0).getBgCalculationInputAsiv().getFamGroesseTotal()
 		);
 		assertEqualsNumberValue(
 			0,
-			result.get(0).getBgCalculationInputAsiv().getAbzugFamGroesse()
+			result.get(0).getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 	}
 
@@ -387,11 +387,11 @@ class FamilienabzugRuleBernTest {
 
 		assertEqualsNumberValue(
 			3,
-			result.get(0).getBgCalculationInputAsiv().getFamGroesse()
+			result.get(0).getBgCalculationInputAsiv().getFamGroesseTotal()
 		);
 		assertEqualsNumberValue(
 			11400,
-			result.get(0).getBgCalculationInputAsiv().getAbzugFamGroesse()
+			result.get(0).getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		); //3 x 3'800
 	}
 
@@ -427,11 +427,11 @@ class FamilienabzugRuleBernTest {
 		);
 		assertEqualsNumberValue(
 			2,
-			result.get(0).getBgCalculationInputAsiv().getFamGroesse()
+			result.get(0).getBgCalculationInputAsiv().getFamGroesseTotal()
 		);
 		assertEqualsNumberValue(
 			0,
-			result.get(0).getBgCalculationInputAsiv().getAbzugFamGroesse()
+			result.get(0).getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		);
 
 		assertEquals(
@@ -444,11 +444,11 @@ class FamilienabzugRuleBernTest {
 		);
 		assertEqualsNumberValue(
 			3,
-			result.get(1).getBgCalculationInputAsiv().getFamGroesse()
+			result.get(1).getBgCalculationInputAsiv().getFamGroesseTotal()
 		);
 		assertEqualsNumberValue(
 			11400,
-			result.get(1).getBgCalculationInputAsiv().getAbzugFamGroesse()
+			result.get(1).getBgCalculationInputAsiv().getAbzugFamGroesseTotal()
 		); //3 x 3'800
 	}
 

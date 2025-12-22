@@ -35,7 +35,9 @@ public interface ReportZahlungenService {
 		@Nonnull Locale locale,
 		@Nonnull String gesuchsperiodeId,
 		@Nullable String gemeindeId,
-		@Nullable String institutionId
+		@Nullable String institutionId,
+		@Nullable String von,
+		@Nullable String bis
 	) throws ExcelMergeException, IOException;
 
 }

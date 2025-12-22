@@ -32,6 +32,7 @@ import ch.dvbern.ebegu.einstellung.Einstellung;
 import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.enums.EinschulungTyp;
+import ch.dvbern.ebegu.enums.FachstellenTyp;
 import ch.dvbern.ebegu.enums.KinderabzugTyp;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.rules.familienabzug.AbstractFamilienabzugCalcRule;
@@ -640,9 +641,15 @@ public class BetreuungsgutscheinConfigurator {
 		// - Fachstelle: Muss zwingend nach Erwerbspensum und Betreuungspensum durchgefuehrt werden
 		Einstellung sprachefoerderungBestaetigen = ruleParameterUtil
 			.getEinstellung(SPRACHFOERDERUNG_BESTAETIGEN);
+		Einstellung einstellungFachstelleName = ruleParameterUtil
+			.getEinstellung(FACHSTELLEN_TYP);
+		boolean fachstellenNameAktiviert = FachstellenTyp.BERN_FACHSTELLE_NAME
+			.name()
+			.equals(einstellungFachstelleName.getValue());
 		FachstelleBernCalcRule fachstelleBernCalcRule =
 			new FachstelleBernCalcRule(
 				sprachefoerderungBestaetigen.getValueAsBoolean(),
+				fachstellenNameAktiviert,
 				defaultGueltigkeit,
 				locale
 			);

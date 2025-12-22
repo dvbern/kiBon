@@ -342,8 +342,7 @@ public class FinanzielleSituationResource {
 		Boolean verguenstigungGewuenscht = familiensituation
 			.getVerguenstigungGewuenscht();
 		if (gesuchJAXP.getFinSitTyp() == FinanzielleSituationTyp.BERN
-			|| gesuchJAXP.getFinSitTyp()
-				== FinanzielleSituationTyp.BERN_FKJV
+			|| gesuchJAXP.getFinSitTyp().isFKJVFinSituationTyp()
 			|| gesuchJAXP.getFinSitTyp()
 				== FinanzielleSituationTyp.SOLOTHURN) {
 

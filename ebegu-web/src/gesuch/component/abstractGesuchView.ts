@@ -27,7 +27,7 @@ import {
     TSAntragStatus
 } from '../../models/enums/TSAntragStatus';
 import {TSMessageEvent} from '../../models/enums/TSErrorEvent';
-import {TSFinanzielleSituationTyp} from '@kibon/shared/model/enums';
+import {getBernFKJVFinSitTyp} from '@kibon/shared/model/enums';
 import {TSBetreuung} from '../../models/TSBetreuung';
 import {TSGesuch} from '../../models/TSGesuch';
 import {EbeguUtil} from '../../utils/EbeguUtil';
@@ -238,7 +238,7 @@ export class AbstractGesuchViewController<T> implements IController {
     public isFKJV(): boolean {
         return (
             EbeguUtil.isNotNullOrUndefined(this.getGesuch()) &&
-            this.getGesuch().finSitTyp === TSFinanzielleSituationTyp.BERN_FKJV
+            getBernFKJVFinSitTyp().includes(this.getGesuch().finSitTyp)
         );
     }
 

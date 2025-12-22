@@ -16,6 +16,7 @@
  */
 package ch.dvbern.ebegu.reporting.zahlungen;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +122,9 @@ public class ReportZahlungenExcelConverter implements ExcelConverter {
 		@Nonnull XSSFSheet sheet,
 		@Nonnull Gesuchsperiode periode,
 		@Nullable Gemeinde gemeinde,
-		@Nullable Institution institution
+		@Nullable Institution institution,
+		@Nullable LocalDate datumVon,
+		@Nullable LocalDate datumBis
 	) throws ExcelMergeException {
 
 		ExcelMergerDTO excelMergerDTO = new ExcelMergerDTO();
@@ -146,6 +149,18 @@ public class ReportZahlungenExcelConverter implements ExcelConverter {
 		excelMergerDTO.addValue(
 			MergeFieldZahlungen.timestampParam,
 			LocalDateTime.now()
+		);
+
+		mergeFields.add(MergeFieldZahlungen.vonParam.getMergeField());
+		excelMergerDTO.addValue(
+			MergeFieldZahlungen.vonParam,
+			datumVon
+		);
+
+		mergeFields.add(MergeFieldZahlungen.bisParam.getMergeField());
+		excelMergerDTO.addValue(
+			MergeFieldZahlungen.bisParam,
+			datumBis
 		);
 
 		ExcelMerger.mergeData(sheet, mergeFields, excelMergerDTO);

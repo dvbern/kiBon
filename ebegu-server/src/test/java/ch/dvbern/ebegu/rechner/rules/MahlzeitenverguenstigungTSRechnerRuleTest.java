@@ -37,7 +37,7 @@ class MahlzeitenverguenstigungTSRechnerRuleTest {
 	public void init() {
 		input.setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESSCHULE);
 		input.setVerguenstigungMahlzeitenBeantragt(true);
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 
 		MahlzeitenverguenstigungParameter mzvParameter =
 			new MahlzeitenverguenstigungParameter(

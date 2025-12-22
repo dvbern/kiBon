@@ -287,9 +287,9 @@ public class EinkommenBekanntHandler extends AbstractEinkommenHandler {
 			return false;
 		}
 		// abzug is null if familienAbzugAbschnittRule not active. In this case, there is no familienabzug
-		var abzug = (inputData.getAbzugFamGroesse() == null) ?
+		var abzug = (inputData.getAbzugFamGroesseTotal() == null) ?
 			BigDecimal.ZERO :
-			inputData.getAbzugFamGroesse();
+			inputData.getAbzugFamGroesseTotal();
 		return finanzDatenDTO.getMassgebendesEinkBjVorAbzFamGr()
 			.subtract(abzug)
 			.compareTo(getMaxEinkommenEKV())

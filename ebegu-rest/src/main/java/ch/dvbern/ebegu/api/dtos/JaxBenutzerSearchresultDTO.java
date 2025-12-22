@@ -22,7 +22,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-import ch.dvbern.ebegu.dto.suchfilter.smarttable.PaginationDTO;
+import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.PaginationDTO;
 
 /**
  * Bei der Table mit Pagination muss die Totalanzahl Resultate vom Server mit zuruckgegeben werden im Resultat

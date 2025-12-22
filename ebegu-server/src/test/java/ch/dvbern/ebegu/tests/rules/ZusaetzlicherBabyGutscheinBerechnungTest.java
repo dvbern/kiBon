@@ -289,9 +289,9 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 		abschnitt.getBgCalculationInputGemeinde()
 			.setMassgebendesEinkommenVorAbzugFamgr(BigDecimal.ZERO);
 		abschnitt.getBgCalculationInputAsiv()
-			.setAbzugFamGroesse(BigDecimal.ZERO);
+			.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		abschnitt.getBgCalculationInputGemeinde()
-			.setAbzugFamGroesse(BigDecimal.ZERO);
+			.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		return abschnitt;
 	}
 

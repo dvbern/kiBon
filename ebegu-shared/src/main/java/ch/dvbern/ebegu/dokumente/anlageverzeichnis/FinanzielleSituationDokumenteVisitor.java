@@ -71,4 +71,9 @@ public class FinanzielleSituationDokumenteVisitor implements
 	public AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> visitFinSitSchwyzErweitert() {
 		return new SchwyzFinanzielleSituationDokumente();
 	}
+
+	@Override
+	public AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> visitFinSitBernFKJVFristen() {
+		return visitFinSitBernFKJV();
+	}
 }

@@ -71,4 +71,9 @@ public class EinkommenVerschlechterungDokumenteVisitor implements
 	public AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> visitFinSitSchwyzErweitert() {
 		return new SchwyzEinkommensverschlechterungDokumente();
 	}
+
+	@Override
+	public AbstractDokumente<AbstractFinanzielleSituation, Familiensituation> visitFinSitBernFKJVFristen() {
+		return visitFinSitBernFKJV();
+	}
 }

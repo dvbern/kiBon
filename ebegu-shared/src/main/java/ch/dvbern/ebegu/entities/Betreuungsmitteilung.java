@@ -35,6 +35,8 @@ import ch.dvbern.ebegu.validators.dateranges.CheckBetreuungPensumContainerZeitra
 import ch.dvbern.ebegu.validators.dateranges.CheckBetreuungZeitraumInstitutionsStammdatenZeitraum;
 import ch.dvbern.ebegu.validators.dateranges.CheckGueltigkeiten;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 /**
@@ -51,6 +53,11 @@ public class Betreuungsmitteilung extends Mitteilung implements
 
 	private static final long serialVersionUID = 489324250868016126L;
 
+	@Transient
+	@Getter
+	@Setter
+	private boolean markedForDeletion = false;
+
 	@Valid
 	@OneToMany(cascade = CascadeType.ALL,
 		orphanRemoval = true,
@@ -64,6 +71,10 @@ public class Betreuungsmitteilung extends Mitteilung implements
 	private String errorMessage;
 
 	private boolean betreuungStornieren = false;
+
+	@Getter
+	@Setter
+	private boolean schliessungMitteilung = false;
 
 	@Nonnull
 	@Override

@@ -36,7 +36,23 @@ public enum MergeFieldGemeinden implements MergeFieldProvider {
 		new SimpleMergeField<>("gemeindenTitle", STRING_CONVERTER)
 	), gemeindenPeriodenTitle(
 		new SimpleMergeField<>("gemeindenPeriodenTitle", STRING_CONVERTER)
-	), mandant(new SimpleMergeField<>("mandant", STRING_CONVERTER)),
+	), gemeindeGueltigBisTitle(
+		new SimpleMergeField<>("gemeindeGueltigBisTitle", STRING_CONVERTER)
+	), eMailStammdatenTitle(
+		new SimpleMergeField<>("eMailStammdatenTitle", STRING_CONVERTER)
+	), phoneStammdatenTitle(
+		new SimpleMergeField<>("phoneStammdatenTitle", STRING_CONVERTER)
+	), eMailBGTitle(
+		new SimpleMergeField<>("eMailBGTitle", STRING_CONVERTER)
+	), phoneBGTitle(
+		new SimpleMergeField<>("phoneBGTitle", STRING_CONVERTER)
+	), eMailTSATitle(
+		new SimpleMergeField<>("eMailTSATitle", STRING_CONVERTER)
+	), phoneTSATitle(
+		new SimpleMergeField<>("phoneTSATitle", STRING_CONVERTER)
+	), mandant(
+		new SimpleMergeField<>("mandant", STRING_CONVERTER)
+	),
 
 	rowGemeindeInfoRepeat(
 		new RepeatRowMergeField("rowGemeindeInfoRepeat")
@@ -107,7 +123,23 @@ public enum MergeFieldGemeinden implements MergeFieldProvider {
 		new SimpleMergeField<>("angebotBG", BOOLEAN_X_CONVERTER)
 	), angebotTS(
 		new SimpleMergeField<>("angebotTS", BOOLEAN_X_CONVERTER)
-	), startdatumBG(new SimpleMergeField<>("startdatumBG", DATE_CONVERTER)),
+	), startdatumBG(
+		new SimpleMergeField<>("startdatumBG", DATE_CONVERTER)
+	), gemeindeGueltigBis(
+		new SimpleMergeField<>("gemeindeGueltigBis", DATE_CONVERTER)
+	), eMailStammdaten(
+		new SimpleMergeField<>("eMailStammdaten", STRING_CONVERTER)
+	), phoneStammdaten(
+		new SimpleMergeField<>("phoneStammdaten", STRING_CONVERTER)
+	), eMailBG(
+		new SimpleMergeField<>("eMailBG", STRING_CONVERTER)
+	), phoneBG(
+		new SimpleMergeField<>("phoneBG", STRING_CONVERTER)
+	), eMailTSA(
+		new SimpleMergeField<>("eMailTSA", STRING_CONVERTER)
+	), phoneTSA(
+		new SimpleMergeField<>("phoneTSA", STRING_CONVERTER)
+	),
 
 	gesuchsperiode(
 		new SimpleMergeField<>("gesuchsperiode", STRING_CONVERTER)

@@ -769,21 +769,6 @@ public class VerfuegungZeitabschnitt extends AbstractDateRangedEntity implements
 		this.getBgCalculationInputGemeinde().setEinkommensjahr(einkommensjahr);
 	}
 
-	public void setAbzugFamGroesseForAsivAndGemeinde(
-		@Nullable BigDecimal abzugFamGroesse
-	) {
-		this.getBgCalculationInputAsiv().setAbzugFamGroesse(abzugFamGroesse);
-		this.getBgCalculationInputGemeinde()
-			.setAbzugFamGroesse(abzugFamGroesse);
-	}
-
-	public void setFamGroesseForAsivAndGemeinde(
-		@Nullable BigDecimal famGroesse
-	) {
-		this.getBgCalculationInputAsiv().setFamGroesse(famGroesse);
-		this.getBgCalculationInputGemeinde().setFamGroesse(famGroesse);
-	}
-
 	public void setSameVerfuegteVerfuegungsrelevanteDatenForAsivAndGemeinde(
 		boolean sameVerfuegteVerfuegungsrelevanteDaten
 	) {
@@ -1307,13 +1292,13 @@ public class VerfuegungZeitabschnitt extends AbstractDateRangedEntity implements
 		result.setBesondereBeduerfnisseBestaetigt(
 			input.isBesondereBeduerfnisseBestaetigt()
 		);
-		result.setAbzugFamGroesse(input.getAbzugFamGroesseNonNull());
+		result.setAbzugFamGroesse(input.getAbzugFamGroesseTotalNonNull());
 		result.setEinkommensjahr(input.getEinkommensjahr());
 		result.setZuSpaetEingereicht(input.isZuSpaetEingereicht());
 		result.setMinimalesEwpUnterschritten(
 			input.isMinimalesEwpUnterschritten()
 		);
-		result.setFamGroesse(input.getFamGroesseNonNull());
+		result.setFamGroesse(input.getFamGroesseTotalNonNull());
 		result.setAuszahlungAnEltern(input.isAuszahlungAnEltern());
 		result.setVerguenstigungGewuenscht(input.isVerguenstigungGewuenscht());
 		result.setSozialhilfeAkzeptiert(
@@ -1327,6 +1312,14 @@ public class VerfuegungZeitabschnitt extends AbstractDateRangedEntity implements
 			input.getAnzahlGeschwister()
 		);
 		result.setKategorieMaxEinkommen(input.isKategorieMaxEinkommen());
+		if (input.getFamilienCalculationInput().getAnzahlGesuchsteller()
+			!= null) {
+			result.setAnzahlGesuchsteller(
+				BigDecimal.valueOf(
+					input.getFamilienCalculationInput().getAnzahlGesuchsteller()
+				)
+			);
+		}
 	}
 
 	public boolean isSameMZV(VerfuegungZeitabschnitt other) {

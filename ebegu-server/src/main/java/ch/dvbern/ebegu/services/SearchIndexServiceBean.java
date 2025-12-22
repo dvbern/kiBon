@@ -25,12 +25,12 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.dto.suchfilter.lucene.IndexedEBEGUFieldName;
-import ch.dvbern.ebegu.dto.suchfilter.lucene.QuickSearchResultDTO;
-import ch.dvbern.ebegu.dto.suchfilter.lucene.SearchEntityType;
-import ch.dvbern.ebegu.dto.suchfilter.lucene.SearchFilter;
-import ch.dvbern.ebegu.dto.suchfilter.lucene.SearchResultEntryDTO;
-import ch.dvbern.ebegu.dto.suchfilter.lucene.Searchable;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.IndexedEBEGUFieldName;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.QuickSearchResultDTO;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.SearchEntityType;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.SearchFilter;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.SearchResultEntryDTO;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.Searchable;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.util.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +39,9 @@ import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.mapper.orm.Search;
 
-import static ch.dvbern.ebegu.dto.suchfilter.lucene.IndexedEBEGUFieldName.DOSSIER_FALL_MANDANT;
-import static ch.dvbern.ebegu.dto.suchfilter.lucene.IndexedEBEGUFieldName.GESUCH_FALL_MANDANT;
-import static ch.dvbern.ebegu.dto.suchfilter.lucene.IndexedEBEGUFieldName.KIND_FALL_MANDANT;
+import static ch.dvbern.ebegu.dto.filter.suchfilter.lucene.IndexedEBEGUFieldName.DOSSIER_FALL_MANDANT;
+import static ch.dvbern.ebegu.dto.filter.suchfilter.lucene.IndexedEBEGUFieldName.GESUCH_FALL_MANDANT;
+import static ch.dvbern.ebegu.dto.filter.suchfilter.lucene.IndexedEBEGUFieldName.KIND_FALL_MANDANT;
 
 @Slf4j
 @Stateless

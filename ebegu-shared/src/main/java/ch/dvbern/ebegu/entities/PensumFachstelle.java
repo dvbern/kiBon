@@ -65,6 +65,13 @@ public class PensumFachstelle extends AbstractIntegerPensum implements
 	@JoinColumn(foreignKey = @ForeignKey(name = "FK_pensum_fachstelle_kind_id"))
 	private Kind kind;
 
+	/**
+	 * Von der Gemeinde bezeichnete Fachstelle.
+	 */
+	@Nullable
+	@Column(nullable = true)
+	private String description;
+
 	public PensumFachstelle() {
 	}
 
@@ -154,5 +161,14 @@ public class PensumFachstelle extends AbstractIntegerPensum implements
 		);
 		builder.append(this.getId(), o.getId());
 		return builder.toComparison();
+	}
+
+	@Nullable
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(@Nullable String description) {
+		this.description = description;
 	}
 }

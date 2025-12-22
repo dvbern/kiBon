@@ -262,17 +262,6 @@ public class InstitutionStammdaten extends AbstractDateRangedEntity implements
 		return getGueltigkeit().contains(LocalDate.now());
 	}
 
-	/**
-	 * If the Institutionstammdaten isActive() it sets the Institutionstammdaten.gueltigkeit.bis to the day of
-	 * yesterday.
-	 * If it is already inactive there is no need to set it inactive again.
-	 */
-	public void setInactive() {
-		if (isActive()) {
-			getGueltigkeit().setGueltigBis(LocalDate.now().minusDays(1));
-		}
-	}
-
 	@Override
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 	@SuppressFBWarnings("BC_UNCONFIRMED_CAST")

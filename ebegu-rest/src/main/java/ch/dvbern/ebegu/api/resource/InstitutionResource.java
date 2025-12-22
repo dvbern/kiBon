@@ -90,6 +90,7 @@ import ch.dvbern.ebegu.services.InstitutionStammdatenInitalizerService;
 import ch.dvbern.ebegu.services.InstitutionStammdatenService;
 import ch.dvbern.ebegu.services.InstitutionUpdateMailService;
 import ch.dvbern.ebegu.services.MandantService;
+import ch.dvbern.ebegu.services.MitteilungGueltigkeitChangeService;
 import ch.dvbern.ebegu.services.MitteilungService;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
@@ -162,6 +163,9 @@ public class InstitutionResource {
 
 	@Inject
 	private CreateBenutzerService createBenutzerService;
+
+	@Inject
+	private MitteilungGueltigkeitChangeService mitteilungGueltigkeitChangeService;
 
 	@Operation(summary = "Creates a new Institution in the database.")
 	@Nullable
@@ -425,11 +429,11 @@ public class InstitutionResource {
 				stammdaten
 			);
 
-		if (institutionStammdatenService.isGueltigkeitDecrease(
+		if (institutionStammdatenService.isGueltigkeitChanged(
 			oldGueltigkeit,
 			stammdaten.getGueltigkeit()
 		)) {
-			mitteilungService
+			mitteilungGueltigkeitChangeService
 				.adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(
 					stammdaten.getInstitution(),
 					stammdaten.getGueltigkeit()

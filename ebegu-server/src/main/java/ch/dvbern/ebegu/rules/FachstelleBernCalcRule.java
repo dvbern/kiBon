@@ -48,8 +48,14 @@ import ch.dvbern.ebegu.util.MathUtil;
 public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
 	private boolean sprachefoerderungBestaetigenAktiviert;
 
+	/**
+	 * Ob die Periodeneinstellung für das Anzeigen der von der Gemeinde bezeichneten Fachstelle aktiv ist.
+	 */
+	private final boolean featureFachstellennameAktiviert;
+
 	public FachstelleBernCalcRule(
 		boolean sprachefoerderungBestaetigenAktiviert,
+		boolean featureFachstellennameAktiviert,
 		@Nonnull DateRange validityPeriod,
 		@Nonnull Locale locale
 	) {
@@ -60,6 +66,7 @@ public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
 			validityPeriod,
 			locale
 		);
+		this.featureFachstellennameAktiviert = featureFachstellennameAktiviert;
 		this.sprachefoerderungBestaetigenAktiviert =
 			sprachefoerderungBestaetigenAktiviert;
 	}
@@ -109,11 +116,22 @@ public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
 							betreuung.getKind().getKindJA(),
 							inputData.getParent().getGueltigkeit()
 						);
+					String fachstelleName = null;
+					if (featureFachstellennameAktiviert) {
+						fachstelleName = pensumFachstelle.getDescription();
+					}
+					// pensumFachstelle.getDescription() kann null oder leer sein, obwohl das Feature "Fachstellenname"
+					// aktiviert ist. Darum benutzen wir die ursprüngliche Implementierung auch als Fallback.
+					if ((null == fachstelleName || fachstelleName.isEmpty())) {
+						fachstelleName = getFachstelleName(
+							pensumFachstelle.getFachstelle()
+						);
+					}
 					inputData.addBemerkung(
 						MsgKey.FACHSTELLE_MSG,
 						getLocale(),
 						getIndikationName(pensumFachstelle, betreuung),
-						getFachstelleName(pensumFachstelle.getFachstelle())
+						fachstelleName
 					);
 				} else {
 					handlePensumTooLow(
@@ -169,7 +187,9 @@ public class FachstelleBernCalcRule extends AbstractFachstellenCalcRule {
 		@Nonnull Map<EinstellungKey, Einstellung> einstellungMap
 	) {
 		return super.getFachstellenTypFromEinstellungen(einstellungMap)
-			== FachstellenTyp.BERN;
+			== FachstellenTyp.BERN
+			|| super.getFachstellenTypFromEinstellungen(einstellungMap)
+				== FachstellenTyp.BERN_FACHSTELLE_NAME;
 	}
 
 	private boolean showFachstelleSprachlicheIntegrationNichtBestaetigtBemerkung(

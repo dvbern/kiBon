@@ -122,8 +122,8 @@ public abstract class AbstractMutationsMergerFinanzielleSituation {
 			result.getMassgebendesEinkommenVorAbzugFamgr()
 		);
 		input.setEinkommensjahr(result.getEinkommensjahr());
-		input.setFamGroesse(result.getFamGroesse());
-		input.setAbzugFamGroesse(result.getAbzugFamGroesse());
+		input.setFamGroesseTotal(result.getFamGroesse());
+		input.setAbzugFamGroesseTotal(result.getAbzugFamGroesse());
 		input.setSozialhilfeempfaenger(result.isSozialhilfeAkzeptiert());
 		input.setVerguenstigungGewuenscht(result.isVerguenstigungGewuenscht());
 

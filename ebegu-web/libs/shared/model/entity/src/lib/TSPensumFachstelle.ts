@@ -25,6 +25,11 @@ export class TSPensumFachstelle extends TSAbstractIntegerPensumEntity {
     private _integrationTyp: TSIntegrationTyp;
     private _gruendeZusatzleistung: TSGruendeZusatzleistung;
 
+    /**
+     * Von der Gemeinde bezeichnete Fachstelle.
+     */
+    private _description: string;
+
     public constructor() {
         super();
     }
@@ -53,6 +58,14 @@ export class TSPensumFachstelle extends TSAbstractIntegerPensumEntity {
         this._gruendeZusatzleistung = value;
     }
 
+    public get description(): string {
+        return this._description;
+    }
+
+    public set description(value: string) {
+        this._description = value;
+    }
+
     public isComplete(fachstellenTyp: TSFachstellenTyp): boolean {
         if (fachstellenTyp === TSFachstellenTyp.LUZERN) {
             return (
@@ -74,6 +87,17 @@ export class TSPensumFachstelle extends TSAbstractIntegerPensumEntity {
             EbeguUtil.isNotNullOrUndefined(this.integrationTyp) &&
             EbeguUtil.isNotNullOrUndefined(this.gueltigkeit.gueltigAb) &&
             EbeguUtil.isNotNullOrUndefined(this.pensum)
+        );
+    }
+
+    /**
+     * @return Ob das Attribut "description" einen nicht leeren Text enthält.
+     */
+    public hasDescription() {
+        return (
+            null !== this.description &&
+            undefined !== this.description &&
+            0 < this.description.length
         );
     }
 }

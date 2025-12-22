@@ -42,6 +42,7 @@ import ch.dvbern.ebegu.api.dtos.JaxId;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdaten;
 import ch.dvbern.ebegu.api.dtos.JaxInstitutionStammdatenSummary;
 import ch.dvbern.ebegu.api.dtos.admin.institution.JaxModuleGroupAnmeldungDTO;
+import ch.dvbern.ebegu.dto.filter.InstitutionNameStammdatenIdDto;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
 import ch.dvbern.ebegu.entities.ModulTagesschuleGroup;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
@@ -217,6 +218,21 @@ public class InstitutionStammdatenResource {
 					)
 			)
 			.collect(Collectors.toList());
+	}
+
+	@Operation(
+		summary = "Findet alle TagesschuleinstitutionenStammdaten Id und Institution Name für den momentan eingeloggten Benutzer."
+			+ "Nur die Tagesschulen, die nicht nur für LATS Aktiv sind und Module anbieten, sind enthalten.")
+	@Nonnull
+	@GET
+	@Path("/filter/tagesschulen/currentuser")
+	@Consumes(MediaType.WILDCARD)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<InstitutionNameStammdatenIdDto> getTagesschulenFilterListForCurrentBenutzer() {
+		return institutionStammdatenService
+			.getTagesschulenFilterListForCurrentBenutzer()
+			.stream()
+			.toList();
 	}
 
 	@Operation(

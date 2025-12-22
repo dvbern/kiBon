@@ -52,4 +52,9 @@ public class FinanzielleSituationValidatorVisitor implements
 		return new FinanzielleSituationValidatorSZErweitert();
 	}
 
+	@Override
+	public FinanzielleSituationValidator visitFinSitBernFKJVFristen() {
+		return visitFinSitBernFKJV();
+	}
+
 }

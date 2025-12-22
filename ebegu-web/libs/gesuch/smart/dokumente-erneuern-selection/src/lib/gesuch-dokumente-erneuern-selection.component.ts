@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import {rxResource} from '@angular/core/rxjs-interop';
 import {CommonModule} from '@angular/common';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {DokumenteRS} from '../../../../../../src/gesuch/service/dokumenteRS.rest';
 import {GesuchModelManager} from '../../../../../../src/gesuch/service/gesuchModelManager';
 import {SharedModule} from '../../../../../../src/app/shared/shared.module';
@@ -20,7 +21,12 @@ import {GesuchPopupHeadingComponent} from '@kibon/gesuch-heading';
 
 @Component({
     selector: 'lib-gesuch-dokumente-erneuern-selection',
-    imports: [CommonModule, SharedModule, GesuchPopupHeadingComponent],
+    imports: [
+        CommonModule,
+        SharedModule,
+        GesuchPopupHeadingComponent,
+        MatProgressSpinnerModule
+    ],
     templateUrl: './gesuch-dokumente-erneuern-selection.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })

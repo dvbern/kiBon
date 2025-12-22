@@ -104,6 +104,8 @@ public class JaxFachstelleConverter extends AbstractBaseConverter {
 		jaxPensumFachstelle.setGruendeZusatzleistung(
 			pensumFachstelle.getGruendeZusatzleistung()
 		);
+		jaxPensumFachstelle.setDescription(pensumFachstelle.getDescription());
+
 		return jaxPensumFachstelle;
 	}
 
@@ -140,6 +142,7 @@ public class JaxFachstelleConverter extends AbstractBaseConverter {
 		pensumFachstelle.setGruendeZusatzleistung(
 			pensumFachstelleJAXP.getGruendeZusatzleistung()
 		);
+		pensumFachstelle.setDescription(pensumFachstelleJAXP.getDescription());
 
 		return pensumFachstelle;
 	}

@@ -21,6 +21,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import ch.dvbern.ebegu.dto.filter.InstitutionNameStammdatenIdDto;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionStammdaten;
@@ -116,6 +117,13 @@ public interface InstitutionStammdatenService {
 	 */
 	Collection<InstitutionStammdaten> getTagesschulenForCurrentBenutzer();
 
+	/**
+	 * Gibt alle Tagesschulen Name und Stammdaten Id für den momentan eingeloggten Benutzer zurück. Für Administratoren
+	 * werden alle
+	 * Tagesschulen zurückgegeben. Die NUR_LATS Tagesschulen und die ohne noch definierte Module sind weggefiltert.
+	 */
+	Collection<InstitutionNameStammdatenIdDto> getTagesschulenFilterListForCurrentBenutzer();
+
 	Collection<InstitutionStammdaten> getAllInstitutionStammdatenForTraegerschaft(
 		@Nonnull Traegerschaft trageschaft
 	);
@@ -143,7 +151,7 @@ public interface InstitutionStammdatenService {
 		@Nonnull Gemeinde gemeinde
 	);
 
-	boolean isGueltigkeitDecrease(
+	boolean isGueltigkeitChanged(
 		@Nonnull DateRange current,
 		@Nonnull DateRange change
 	);

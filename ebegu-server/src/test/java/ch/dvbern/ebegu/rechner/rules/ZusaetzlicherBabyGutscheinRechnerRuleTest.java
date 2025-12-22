@@ -185,7 +185,7 @@ public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 		input.setMassgebendesEinkommenVorAbzugFamgr(
 			MathUtil.DEFAULT.from(159999)
 		);
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		return input;
 	}
 }

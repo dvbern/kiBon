@@ -24,12 +24,20 @@ export enum TSFinanzielleSituationTyp {
 
     APPENZELL_FOLGEMONAT = 'APPENZELL_FOLGEMONAT',
     SCHWYZ = 'SCHWYZ',
-    SCHWYZ_ERWEITERT = 'SCHWYZ_ERWEITERT'
+    SCHWYZ_ERWEITERT = 'SCHWYZ_ERWEITERT',
+    BERN_FKJV_FRISTEN = 'BERN_FKJV_FRISTEN'
 }
 
 export function getSchwyzFinSitTyp(): Array<TSFinanzielleSituationTyp> {
     return [
         TSFinanzielleSituationTyp.SCHWYZ,
         TSFinanzielleSituationTyp.SCHWYZ_ERWEITERT
+    ];
+}
+
+export function getBernFKJVFinSitTyp(): Array<TSFinanzielleSituationTyp> {
+    return [
+        TSFinanzielleSituationTyp.BERN_FKJV,
+        TSFinanzielleSituationTyp.BERN_FKJV_FRISTEN
     ];
 }

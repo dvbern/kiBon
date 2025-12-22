@@ -52,7 +52,7 @@ class StaedtischerZuschlagLinearRechnerTest {
 		);
 		input.setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESFAMILIEN);
 		input.setMassgebendesEinkommenVorAbzugFamgr(new BigDecimal(50000));
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setAnspruchspensumProzent(80);
 		input.setBetreuungspensumProzent(new BigDecimal("80"));
 
@@ -99,7 +99,7 @@ class StaedtischerZuschlagLinearRechnerTest {
 		);
 		input.setBetreuungsangebotTyp(BetreuungsangebotTyp.TAGESFAMILIEN);
 		input.setMassgebendesEinkommenVorAbzugFamgr(massgebendesEinkommen);
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setAnspruchspensumProzent(80);
 		input.setBetreuungspensumProzent(new BigDecimal("80"));
 
@@ -148,7 +148,7 @@ class StaedtischerZuschlagLinearRechnerTest {
 		);
 		input.setBetreuungsangebotTyp(BetreuungsangebotTyp.KITA);
 		input.setMassgebendesEinkommenVorAbzugFamgr(massgebendesEinkommen);
-		input.setAbzugFamGroesse(BigDecimal.ZERO);
+		input.setAbzugFamGroesseTotal(BigDecimal.ZERO);
 		input.setAnspruchspensumProzent(80);
 		input.setBetreuungspensumProzent(new BigDecimal("80"));
 

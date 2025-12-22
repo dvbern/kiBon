@@ -66,6 +66,7 @@ import org.slf4j.LoggerFactory;
 
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.ANSPRUCH_MONATSWEISE;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.EINGEWOEHNUNG_TYP;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.FACHSTELLEN_TYP;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.FKJV_PAUSCHALE_RUECKWIRKEND;
 
 /**
@@ -461,7 +462,8 @@ public class BetreuungsgutscheinEvaluator {
 		return EnumSet.of(
 			FKJV_PAUSCHALE_RUECKWIRKEND,
 			EINGEWOEHNUNG_TYP,
-			ANSPRUCH_MONATSWEISE
+			ANSPRUCH_MONATSWEISE,
+			FACHSTELLEN_TYP
 		);
 	}
 

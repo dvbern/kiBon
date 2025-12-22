@@ -29,7 +29,6 @@ import ch.dvbern.ebegu.entities.Familiensituation;
 import ch.dvbern.ebegu.entities.FamiliensituationContainer;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.enums.EnumFamilienstatus;
-import ch.dvbern.ebegu.enums.FinanzielleSituationTyp;
 import ch.dvbern.ebegu.services.GesuchstellerService;
 import ch.dvbern.ebegu.util.EbeguUtil;
 
@@ -117,7 +116,7 @@ public class SharedFamSitChangeDefaultHandler implements FamSitChangeHandler {
 		@Nullable Familiensituation familiensituationErstgesuch,
 		Familiensituation newFamiliensituation
 	) {
-		return gesuch.getFinSitTyp() == FinanzielleSituationTyp.BERN_FKJV
+		return gesuch.getFinSitTyp().isFKJVFinSituationTyp()
 			&&
 			familiensituationErstgesuch != null
 			&&

@@ -27,7 +27,6 @@ import jakarta.validation.constraints.Size;
 
 import ch.dvbern.ebegu.enums.WorkJobType;
 import ch.dvbern.ebegu.enums.reporting.BatchJobStatus;
-import ch.dvbern.ebegu.util.Constants;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static ch.dvbern.ebegu.util.Constants.DB_DEFAULT_MAX_LENGTH;
@@ -68,7 +67,6 @@ public class Workjob extends AbstractMutableEntity {
 	@NotNull
 	private String params;
 
-	@Size(min = 1, max = Constants.DB_TEXTAREA_LENGTH)
 	@Column(nullable = false)
 	@NotNull
 	private String requestURI;

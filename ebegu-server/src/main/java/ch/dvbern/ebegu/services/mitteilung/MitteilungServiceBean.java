@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,13 +61,9 @@ import jakarta.validation.Validator;
 
 import ch.dvbern.ebegu.abweichungen.AbweichungInitializingUtil;
 import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.betreuung.BetreuungEinstellungen;
-import ch.dvbern.ebegu.betreuung.BetreuungEinstellungenService;
+import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.MitteilungPredicateObjectDTO;
+import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.MitteilungTableFilterDTO;
 import ch.dvbern.ebegu.dto.neskovanp.Veranlagungsstand;
-import ch.dvbern.ebegu.dto.suchfilter.smarttable.MitteilungPredicateObjectDTO;
-import ch.dvbern.ebegu.dto.suchfilter.smarttable.MitteilungTableFilterDTO;
-import ch.dvbern.ebegu.einstellung.Einstellung;
-import ch.dvbern.ebegu.einstellung.EinstellungKey;
 import ch.dvbern.ebegu.einstellung.EinstellungService;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
@@ -90,12 +85,9 @@ import ch.dvbern.ebegu.entities.Dossier_;
 import ch.dvbern.ebegu.entities.Fall;
 import ch.dvbern.ebegu.entities.Fall_;
 import ch.dvbern.ebegu.entities.Gemeinde;
-import ch.dvbern.ebegu.entities.GemeindeStammdaten;
 import ch.dvbern.ebegu.entities.Gemeinde_;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Institution;
-import ch.dvbern.ebegu.entities.InstitutionStammdaten;
-import ch.dvbern.ebegu.entities.InstitutionStammdaten_;
 import ch.dvbern.ebegu.entities.Institution_;
 import ch.dvbern.ebegu.entities.KindContainer;
 import ch.dvbern.ebegu.entities.KindContainer_;
@@ -118,10 +110,8 @@ import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
 import ch.dvbern.ebegu.enums.SearchMode;
 import ch.dvbern.ebegu.enums.SteuerdatenAnfrageStatus;
 import ch.dvbern.ebegu.enums.UserRole;
-import ch.dvbern.ebegu.enums.UserRoleName;
 import ch.dvbern.ebegu.enums.Verantwortung;
 import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAbweichungStatus;
-import ch.dvbern.ebegu.enums.betreuung.BetreuungspensumAnzeigeTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.errors.EbeguEntityNotFoundException;
 import ch.dvbern.ebegu.errors.EbeguException;
@@ -146,37 +136,20 @@ import ch.dvbern.ebegu.services.MailService;
 import ch.dvbern.ebegu.services.MitteilungService;
 import ch.dvbern.ebegu.services.VerfuegungService;
 import ch.dvbern.ebegu.services.util.SearchUtil;
-import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.types.DateRange_;
-import ch.dvbern.ebegu.util.BetreuungUtil;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.EbeguUtil;
-import ch.dvbern.ebegu.util.Gueltigkeit;
-import ch.dvbern.ebegu.util.MathUtil;
 import ch.dvbern.ebegu.util.MitteilungUtil;
 import ch.dvbern.ebegu.util.ServerMessageUtil;
-import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.AnwesenheitstageMessageFactory;
-import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.BetreuungsmitteilungPensumMessageFactory;
-import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.DefaultMessageFactory;
-import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.EingewoehnungMessageFactory;
-import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.KostenMessageFactory;
-import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.MahlzeitenKostenMessageFactory;
-import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.MittagstischMessageFactory;
-import ch.dvbern.ebegu.util.betreuungsmitteilung.messages.SchulergaenzendeBetreuungMessageFactory;
 import ch.dvbern.ebegu.util.mandant.MandantIdentifier;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSSTUNDEN_TFO;
-import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_KITA;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_MITTAGSTISCH;
-import static ch.dvbern.ebegu.einstellung.EinstellungKey.OEFFNUNGSTAGE_TFO;
 import static ch.dvbern.ebegu.enums.ErrorCodeEnum.ERROR_ENTITY_NOT_FOUND;
-import static ch.dvbern.ebegu.util.betreuungsmitteilung.messages.BetreuungsmitteilungPensumMessageFactory.combine;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -232,7 +205,7 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 	private FinanzielleSituationService finanzielleSituationService;
 
 	@Inject
-	private BetreuungEinstellungenService betreuungEinstellungenService;
+	MitteilungSharedServiceBean mitteilungSharedServiceBean;
 
 	@Override
 	@Nonnull
@@ -250,7 +223,9 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		mitteilung.setMitteilungStatus(MitteilungStatus.NEU);
 		mitteilung.setSentDatum(LocalDateTime.now());
 
-		setSenderAndEmpfaengerAndCheckAuthorization(mitteilung);
+		mitteilungSharedServiceBean.setSenderAndEmpfaengerAndCheckAuthorization(
+			mitteilung
+		);
 
 		// Falls die Mitteilung an einen Gesuchsteller geht, muss dieser benachrichtigt werden. Es muss zuerst
 		// geprueft werden, dass
@@ -304,165 +279,6 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 				);
 			}
 		}
-	}
-
-	private void setSenderAndEmpfaengerAndCheckAuthorization(
-		@Nonnull Mitteilung mitteilung
-	) {
-		Optional<Benutzer> currentBenutzer = benutzerService
-			.getCurrentBenutzer();
-		//wenn man direkt aus Kafka Event liest sind man nicht eingeloggt, aber man hat der Rolle SUPER_ADMIN
-		if (currentBenutzer.isEmpty()
-			&& !principalBean.isCallerInRole(UserRoleName.SUPER_ADMIN)) {
-			throw new IllegalStateException("Benutzer ist nicht eingeloggt!");
-		}
-		if (currentBenutzer.isEmpty()
-			&& principalBean.isCallerInRole(UserRoleName.SUPER_ADMIN)) {
-			mitteilung.setEmpfaenger(
-				getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-			);
-		} else if (currentBenutzer.isPresent()) {
-			switch (currentBenutzer.get().getRole()) {
-			case GESUCHSTELLER: {
-				mitteilung.setEmpfaenger(
-					getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-				);
-				mitteilung.setEmpfaengerTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.GESUCHSTELLER);
-				break;
-			}
-			case ADMIN_INSTITUTION:
-			case SACHBEARBEITER_INSTITUTION:
-			case ADMIN_TRAEGERSCHAFT:
-			case SACHBEARBEITER_TRAEGERSCHAFT: {
-				mitteilung.setEmpfaenger(
-					getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-				);
-				mitteilung.setEmpfaengerTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.INSTITUTION);
-				break;
-			}
-			case ADMIN_BG:
-			case ADMIN_GEMEINDE:
-				if (mitteilung instanceof Betreuungsmitteilung) {
-					mitteilung.setEmpfaenger(
-						getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-					);
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.JUGENDAMT
-					);
-					mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-					break;
-				}
-			case SACHBEARBEITER_TS:
-			case SACHBEARBEITER_BG:
-			case SACHBEARBEITER_GEMEINDE:
-			case ADMIN_TS: {
-				if (mitteilung.getInstitution() != null) {
-					//Bei Institution Mitteilungen sollen schon der Institution ID Bestimmt sein
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.INSTITUTION
-					);
-				} else if (mitteilung.getFall().getSozialdienstFall() != null) {
-					// Sozialdienst hat kein Empfanger
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.SOZIALDIENST
-					);
-				} else {
-					mitteilung.setEmpfaenger(
-						mitteilung.getFall().getBesitzer()
-					);
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.GESUCHSTELLER
-					);
-				}
-				mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				break;
-			}
-			case ADMIN_SOZIALDIENST:
-			case SACHBEARBEITER_SOZIALDIENST: {
-				mitteilung.setEmpfaenger(
-					getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-				);
-				mitteilung.setEmpfaengerTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.SOZIALDIENST);
-				break;
-			}
-			case SUPER_ADMIN: {
-				// Superadmin kann als verschiedene Rollen Mitteilungen schicken
-				if (mitteilung instanceof Betreuungsmitteilung) {
-					mitteilung.setEmpfaenger(
-						getEmpfaengerBeiMitteilungAnGemeinde(mitteilung)
-					);
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.JUGENDAMT
-					);
-					mitteilung.setSenderTyp(
-						MitteilungTeilnehmerTyp.INSTITUTION
-					);
-				} else if (mitteilung.getBetreuung() != null) {
-					//Die Betreuung ist gesetzt bei Mitteilungen an die Gemeinde, so ruckwirkend wird auch sein
-					//es gibt keine Benutzer als empfanger
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.INSTITUTION
-					);
-				} else if (mitteilung.getInstitution() != null) {
-					//Bei Institution Mitteilungen sollen schon der Institution ID Bestimmt sein
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.INSTITUTION
-					);
-					mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				} else if (mitteilung.getFall().getSozialdienstFall() != null) {
-					// Sozialdienst hat kein Empfanger
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.SOZIALDIENST
-					);
-					mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				} else {
-					mitteilung.setEmpfaenger(
-						mitteilung.getFall().getBesitzer()
-					);
-					mitteilung.setEmpfaengerTyp(
-						MitteilungTeilnehmerTyp.GESUCHSTELLER
-					);
-					mitteilung.setSenderTyp(MitteilungTeilnehmerTyp.JUGENDAMT);
-				}
-			}
-			}
-			authorizer.checkWriteAuthorizationMitteilung(mitteilung);
-			// Der Sender darf erst nach dem CHECK gesetzt werden! Sonst kann eine Mitteilung gekaptert werden
-			mitteilung.setSender(currentBenutzer.get());
-		}
-	}
-
-	private Benutzer getEmpfaengerBeiMitteilungAnGemeinde(
-		@Nonnull Mitteilung mitteilung
-	) {
-		Benutzer empfaenger = mitteilung.getDossier().getVerantwortlicherBG();
-		if (empfaenger == null) {
-			empfaenger = mitteilung.getDossier().getVerantwortlicherTS();
-		}
-		if (empfaenger == null) {
-			String gemeindeId = mitteilung.getDossier().getGemeinde().getId();
-			Optional<GemeindeStammdaten> stammdatenOptional =
-				gemeindeService.getGemeindeStammdatenByGemeindeId(
-					gemeindeId
-				);
-			if (stammdatenOptional.isPresent()) {
-				// Wir kontrollieren bei den Mitteilungen explizit nicht, ob die Rolle stimmt!
-				// Wir nehmen den Allgemeinen Default, weil wir auf der Mitteilung kein Gesuch haben
-				// und daher nicht wissen, ob es ein reines BG- oder TS-Gesuch ist
-				empfaenger = stammdatenOptional.get().getDefaultBenutzer();
-			}
-		}
-		if (empfaenger == null) {
-			throw new EbeguRuntimeException(
-				"getEmpfaengerBeiMitteilungAnGemeinde",
-				ErrorCodeEnum.ERROR_VERANTWORTLICHER_NOT_FOUND,
-				mitteilung.getId()
-			);
-		}
-		return empfaenger;
 	}
 
 	@Nonnull
@@ -1140,7 +956,9 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		betreuungsmitteilung.setMitteilungStatus(MitteilungStatus.NEU); // vorsichtshalber
 		betreuungsmitteilung.setSentDatum(LocalDateTime.now());
 
-		setSenderAndEmpfaengerAndCheckAuthorization(betreuungsmitteilung);
+		mitteilungSharedServiceBean.setSenderAndEmpfaengerAndCheckAuthorization(
+			betreuungsmitteilung
+		);
 
 		// A Betreuungsmitteilung is created and sent, therefore persist and not merge
 		return persistence.persist(betreuungsmitteilung);
@@ -1547,43 +1365,6 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		return !result.isEmpty();
 	}
 
-	@Override
-	public void adaptOffeneMutationsmitteilungenToInstiGueltigkeitChange(
-		@Nonnull Institution institution,
-		@Nonnull DateRange gueltigkeit
-	) {
-		Collection<Betreuungsmitteilung> offeneMutationsmitteilungenForInstitution =
-			findAllBetreuungsMitteilungenForInstitution(institution);
-
-		offeneMutationsmitteilungenForInstitution.forEach(mitteilung -> {
-			Set<BetreuungsmitteilungPensum> betreuungspensen = betreuungService
-				.capBetreuungspensenToGueltigkeit(
-					mitteilung.getBetreuungspensen(),
-					gueltigkeit
-				);
-			mitteilung.setBetreuungspensen(betreuungspensen);
-
-			if (betreuungspensen.isEmpty()) {
-				persistence.remove(mitteilung);
-			} else {
-				Objects.requireNonNull(mitteilung.getBetreuung());
-				final Locale locale =
-					EbeguUtil.extractKorrespondenzsprache(
-						mitteilung.getBetreuung().extractGesuch(),
-						gemeindeService
-					).getLocale();
-				mitteilung.setMessage(
-					createNachrichtForMutationsmeldung(
-						mitteilung,
-						betreuungspensen,
-						locale
-					)
-				);
-				persistence.merge(mitteilung);
-			}
-		});
-	}
-
 	/**
 	 * Betreuung war nicht storniert -> ok
 	 * Betreuung storniert aber keine andere fuer dasselbe Kind und Institution -> ok
@@ -1682,7 +1463,9 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		neueVeranlagungsMitteilung.setMitteilungStatus(MitteilungStatus.NEU);
 		neueVeranlagungsMitteilung.setSentDatum(LocalDateTime.now());
 		neueVeranlagungsMitteilung.setEmpfaenger(
-			getEmpfaengerBeiMitteilungAnGemeinde(neueVeranlagungsMitteilung)
+			mitteilungSharedServiceBean.getEmpfaengerBeiMitteilungAnGemeinde(
+				neueVeranlagungsMitteilung
+			)
 		);
 
 		return persistence.merge(neueVeranlagungsMitteilung);
@@ -1713,163 +1496,11 @@ public class MitteilungServiceBean extends AbstractBaseService implements
 		@Nonnull Set<BetreuungsmitteilungPensum> changedBetreuungen,
 		@Nonnull Locale locale
 	) {
-
-		List<BetreuungsmitteilungPensum> sorted = changedBetreuungen.stream()
-			.sorted(Gueltigkeit.GUELTIG_AB_COMPARATOR)
-			.collect(Collectors.toList());
-
-		BetreuungsmitteilungPensumMessageFactory factory = messageFactory(
+		return mitteilungSharedServiceBean.createNachrichtForMutationsmeldung(
 			mitteilung,
+			changedBetreuungen,
 			locale
 		);
-
-		return IntStream.rangeClosed(1, sorted.size())
-			.mapToObj(
-				index -> factory.messageForPensum(
-					index,
-					sorted.get(index - 1)
-				)
-			)
-			.collect(Collectors.joining(StringUtils.LF));
-	}
-
-	private BetreuungsmitteilungPensumMessageFactory messageFactory(
-		@Nonnull Betreuungsmitteilung mitteilung,
-		@Nonnull Locale locale
-	) {
-		Betreuung betreuung = requireNonNull(mitteilung.getBetreuung());
-		Mandant mandant = betreuung.extractGesuch().extractMandant();
-
-		if (betreuung.isAngebotMittagstisch()) {
-			return new MittagstischMessageFactory(mandant, locale);
-		}
-
-		BetreuungEinstellungen einstellungen = betreuungEinstellungenService
-			.getEinstellungen(betreuung);
-		Einstellung einstellungAnzeigeTyp = einstellungService.findEinstellung(
-			EinstellungKey.PENSUM_ANZEIGE_TYP,
-			betreuung
-		);
-		BetreuungspensumAnzeigeTyp betreuungspensumAnzeigeTyp =
-			getBetreuungspensumAnzeigeTyp(einstellungAnzeigeTyp);
-		BigDecimal multiplier = getMultiplierForMutationsMitteilung(
-			mitteilung,
-			betreuungspensumAnzeigeTyp
-		);
-
-		var pensumFactory = new DefaultMessageFactory(
-			mandant,
-			locale,
-			betreuungspensumAnzeigeTyp,
-			multiplier
-		);
-
-		var kostenFactory = einstellungen.isMahlzeitenVerguenstigungEnabled() ?
-			new MahlzeitenKostenMessageFactory(mandant, locale) :
-			new KostenMessageFactory(mandant, locale);
-
-		var anwesenheitstageProMonatFactory = einstellungen
-			.isBetreuteTageEnabled() ?
-				new AnwesenheitstageMessageFactory(mandant, locale) :
-				BetreuungsmitteilungPensumMessageFactory.empty();
-
-		var schulergaenzendeBetreuungFactory = einstellungen
-			.isSchulergaenzendeBetreuungEnabled() ?
-				new SchulergaenzendeBetreuungMessageFactory(
-					mandant,
-					locale
-				) :
-				BetreuungsmitteilungPensumMessageFactory.empty();
-
-		return combine(
-			" ",
-			combine(
-				", ",
-				pensumFactory,
-				anwesenheitstageProMonatFactory,
-				kostenFactory,
-				new EingewoehnungMessageFactory(mandant, locale)
-			),
-			schulergaenzendeBetreuungFactory
-		);
-	}
-
-	@Nonnull
-	private BetreuungspensumAnzeigeTyp getBetreuungspensumAnzeigeTyp(
-		Einstellung einstellungAnzeigeTyp
-	) {
-		return BetreuungspensumAnzeigeTyp.valueOf(
-			einstellungAnzeigeTyp.getValue()
-		);
-	}
-
-	private BigDecimal getMultiplierForMutationsMitteilung(
-		@Nonnull Betreuungsmitteilung mitteilung,
-		@Nonnull BetreuungspensumAnzeigeTyp betreuungspensumAnzeigeTyp
-	) {
-		if (betreuungspensumAnzeigeTyp
-			!= BetreuungspensumAnzeigeTyp.NUR_STUNDEN) {
-			return BigDecimal.ONE;
-		}
-
-		Betreuung betreuung = requireNonNull(mitteilung.getBetreuung());
-		if (betreuung.isAngebotKita()) {
-			BigDecimal oeffnungstageKita = einstellungService
-				.getEinstellungAsBigDecimal(OEFFNUNGSTAGE_KITA, betreuung);
-
-			return BetreuungUtil.calculateOeffnungszeitPerMonthProcentual(
-				MathUtil.EXACT.multiply(
-					oeffnungstageKita,
-					BetreuungUtil.ANZAHL_STUNDEN_PRO_TAG_KITA
-				)
-			);
-		}
-
-		BigDecimal oeffnungstageTFO = einstellungService
-			.getEinstellungAsBigDecimal(OEFFNUNGSTAGE_TFO, betreuung);
-		BigDecimal oeffnungsstundenTFO = einstellungService
-			.getEinstellungAsBigDecimal(OEFFNUNGSSTUNDEN_TFO, betreuung);
-
-		return MathUtil.DEFAULT.divide(
-			MathUtil.DEFAULT.divide(
-				MathUtil.DEFAULT.multiply(
-					oeffnungstageTFO,
-					oeffnungsstundenTFO
-				),
-				new BigDecimal(12)
-			),
-			new BigDecimal(100)
-		);
-	}
-
-	private Collection<Betreuungsmitteilung> findAllBetreuungsMitteilungenForInstitution(
-		Institution institution
-	) {
-		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
-		final CriteriaQuery<Betreuungsmitteilung> query = cb.createQuery(
-			Betreuungsmitteilung.class
-		);
-		Root<Betreuungsmitteilung> root = query.from(
-			Betreuungsmitteilung.class
-		);
-
-		Join<Betreuungsmitteilung, Betreuung> betreuungJoin = root.join(
-			Mitteilung_.betreuung
-		);
-		Join<Betreuung, InstitutionStammdaten> stammdatenJoin =
-			betreuungJoin.join(AbstractPlatz_.institutionStammdaten);
-
-		Predicate predicateInstitution = cb.equal(
-			stammdatenJoin.get(InstitutionStammdaten_.institution),
-			institution
-		);
-		Predicate notApplied = cb.notEqual(
-			root.get(Betreuungsmitteilung_.APPLIED),
-			true
-		);
-
-		query.where(predicateInstitution, notApplied);
-		return persistence.getCriteriaResults(query);
 	}
 
 	@Nonnull

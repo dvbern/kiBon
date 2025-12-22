@@ -19,8 +19,8 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.dto.suchfilter.lucene.QuickSearchResultDTO;
-import ch.dvbern.ebegu.dto.suchfilter.lucene.SearchFilter;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.QuickSearchResultDTO;
+import ch.dvbern.ebegu.dto.filter.suchfilter.lucene.SearchFilter;
 
 /**
  * Service to perform a search in the search index (hibernate-search, lucene)

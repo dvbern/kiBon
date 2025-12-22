@@ -42,8 +42,8 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 
 import ch.dvbern.ebegu.authentication.PrincipalBean;
-import ch.dvbern.ebegu.dto.suchfilter.smarttable.AntragPredicateObjectDTO;
-import ch.dvbern.ebegu.dto.suchfilter.smarttable.AntragTableFilterDTO;
+import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.AntragPredicateObjectDTO;
+import ch.dvbern.ebegu.dto.filter.suchfilter.smarttable.AntragTableFilterDTO;
 import ch.dvbern.ebegu.entities.AbstractDateRangedEntity_;
 import ch.dvbern.ebegu.entities.AbstractEntity_;
 import ch.dvbern.ebegu.entities.AbstractPersonEntity_;

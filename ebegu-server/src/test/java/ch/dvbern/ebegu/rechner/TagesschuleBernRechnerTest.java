@@ -108,7 +108,7 @@ public class TagesschuleBernRechnerTest {
 		inputAsiv.setMassgebendesEinkommenVorAbzugFamgr(
 			MathUtil.DEFAULT.fromNullSafe(einkommen)
 		);
-		inputAsiv.setAbzugFamGroesse(abzugFamiliengroesse);
+		inputAsiv.setAbzugFamGroesseTotal(abzugFamiliengroesse);
 		inputAsiv.setAnspruchspensumProzent(100);
 		if (paedagogischBetreut) {
 			verfuegungZeitabschnitt
