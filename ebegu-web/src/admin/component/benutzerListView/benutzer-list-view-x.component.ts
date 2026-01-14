@@ -41,7 +41,7 @@ export class BenutzerListViewXComponent {
     private readonly authServiceRS = inject(AuthServiceRS);
 
     @HostBinding('class') public class = 'overflow-scroll';
-    @HostBinding('flex') public flex = 'auto';
+    @HostBinding('style.flex') public flex = 'auto';
 
     /**
      * Fuer Benutzer mit der Rolle SACHBEARBEITER_INSTITUTION oder SACHBEARBEITER_TRAEGERSCHAFT oeffnet es das Gesuch

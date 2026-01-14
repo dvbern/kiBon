@@ -16,13 +16,10 @@
             "executor": "@nx/eslint:lint"
         },
         "test": {
-            "executor": "@angular-builders/custom-webpack:karma",
+            "executor": "@angular-devkit/build-angular:karma",
             "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
             "options": {
                 "main": "./src/test.ts",
-                "customWebpackConfig": {
-                    "path": "./extra-webpack.config.js"
-                },
                 "karmaConfig": "./karma.conf.js",
                 "polyfills": "./src/polyfills.ts",
                 "tsConfig": "{projectRoot}/tsconfig.spec.json",

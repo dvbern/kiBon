@@ -10,7 +10,7 @@
             >
                 <fieldset [disabled]="isReadonly()">
                     <!-- Gesuchsperiode Detail -->
-                    <div *ngIf="gesuchsperiode">
+                    @if (gesuchsperiode) {
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <div class="row">
@@ -82,14 +82,14 @@
                                             [disabled]="gesuchsperiode.isNew()"
                                             required
                                         >
-                                            <option
-                                                *ngFor="
-                                                    let gpstatus of getTSGesuchsperiodeStatusValues()
-                                                "
-                                                [ngValue]="gpstatus"
-                                            >
-                                                {{ gpstatus | translate }}
-                                            </option>
+                                            @for (
+                                                gpstatus of getTSGesuchsperiodeStatusValues();
+                                                track gpstatus
+                                            ) {
+                                                <option [ngValue]="gpstatus">
+                                                    {{ gpstatus | translate }}
+                                                </option>
+                                            }
                                         </select>
                                     </div>
                                 </div>
@@ -102,400 +102,406 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <!-- Gesuchsperiode Buttons -->
+                        @if (!isReadonly()) {
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <dv-loading-button
+                                        type="button"
+                                        (buttonClick)="saveGesuchsperiode()"
+                                        buttonClass="color-success"
+                                    >
+                                        <span>{{
+                                            gesuchsperiode.isNew()
+                                                ? ('SAVE' | translate)
+                                                : ('UPDATE' | translate)
+                                        }}</span>
+                                    </dv-loading-button>
+                                </div>
+                                <div class="col-md-2">
+                                    <a
+                                        href="#"
+                                        id="cancelLink"
+                                        class="dv-btn"
+                                        unsaved-warning-clear
+                                        (click)="
+                                            cancelGesuchsperiode();
+                                            form.form.markAsPristine();
+                                            form.form.markAsUntouched();
+                                            $event.preventDefault()
+                                        "
+                                    >
+                                        <span translate="CANCEL"></span>
+                                    </a>
+                                </div>
+                            </div>
+                        }
 
-                    <!-- Gesuchsperiode Buttons -->
-                    <div class="row" *ngIf="!isReadonly()">
-                        <div class="col-md-2" *ngIf="gesuchsperiode">
-                            <dv-loading-button
-                                type="button"
-                                (buttonClick)="saveGesuchsperiode()"
-                                buttonClass="color-success"
-                            >
-                                <span>{{
-                                    gesuchsperiode.isNew()
-                                        ? ('SAVE' | translate)
-                                        : ('UPDATE' | translate)
-                                }}</span>
-                            </dv-loading-button>
-                        </div>
-                        <div class="col-md-2" *ngIf="gesuchsperiode">
-                            <a
-                                href="#"
-                                id="cancelLink"
-                                class="dv-btn"
-                                unsaved-warning-clear
-                                (click)="
-                                    cancelGesuchsperiode();
-                                    form.form.markAsPristine();
-                                    form.form.markAsUntouched();
-                                    $event.preventDefault()
-                                "
-                            >
-                                <span translate="CANCEL"></span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!--Erläuterungen zur Verfügung-->
-                    <div
-                        class="row view-title margin-top-30"
-                        *ngIf="gesuchsperiode && !gesuchsperiode.isNew()"
-                    >
-                        <div class="col-md-12">
-                            <h1>
-                                <span
-                                    translate="ERLAEUTERUNG_VERFUEGUNG"
-                                ></span>
-                            </h1>
-                            <hr class="header" />
-                            <table class="table table-striped" width="100%">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <dv-single-file-upload
-                                                [title]="
-                                                    'ERLAEUTERUNG_VERFUEGUNG_DE'
-                                                "
-                                                (download)="
-                                                    downloadGesuchsperiodeDokument(
-                                                        DEUTSCH,
-                                                        ERLAUTERUNG_ZUR_VERFUEGUNG
-                                                    )
-                                                "
-                                                (delete)="
-                                                    removeGesuchsperiodeDokument(
-                                                        DEUTSCH,
-                                                        ERLAUTERUNG_ZUR_VERFUEGUNG
-                                                    )
-                                                "
-                                                (uploadFile)="
-                                                    uploadGesuchsperiodeDokument(
-                                                        $event,
-                                                        DEUTSCH,
-                                                        ERLAUTERUNG_ZUR_VERFUEGUNG,
-                                                        TSDokumentUploadTyp.PDF
-                                                    )
-                                                "
-                                                [allowedMimetypes]="
-                                                    'application/pdf'
-                                                "
-                                                [hasFile]="isErlaeuterungDE"
-                                            >
-                                            </dv-single-file-upload>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <dv-single-file-upload
-                                                [title]="
-                                                    'ERLAEUTERUNG_VERFUEGUNG_FR'
-                                                "
-                                                (download)="
-                                                    downloadGesuchsperiodeDokument(
-                                                        FRANZOESISCH,
-                                                        ERLAUTERUNG_ZUR_VERFUEGUNG
-                                                    )
-                                                "
-                                                (delete)="
-                                                    removeGesuchsperiodeDokument(
-                                                        FRANZOESISCH,
-                                                        ERLAUTERUNG_ZUR_VERFUEGUNG
-                                                    )
-                                                "
-                                                (uploadFile)="
-                                                    uploadGesuchsperiodeDokument(
-                                                        $event,
-                                                        FRANZOESISCH,
-                                                        ERLAUTERUNG_ZUR_VERFUEGUNG,
-                                                        TSDokumentUploadTyp.PDF
-                                                    )
-                                                "
-                                                [allowedMimetypes]="
-                                                    'application/pdf'
-                                                "
-                                                [hasFile]="isErlaeuterungFR"
-                                            >
-                                            </dv-single-file-upload>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!--Merkblatt Anmeldung Tagesschule-->
-                    <div
-                        class="row view-title margin-top-30"
-                        *ngIf="gesuchsperiode && !gesuchsperiode.isNew()"
-                    >
-                        <div class="col-md-12">
-                            <h1>
-                                <span
-                                    translate="MERKBLATT_ANMELDUNG_TAGESSCHULE"
-                                ></span>
-                            </h1>
-                            <hr class="header" />
-                            <table class="table table-striped" width="100%">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <dv-single-file-upload
-                                                [title]="
-                                                    'VORLAGE_MERKBLATT_ANMELDUNG_TAGESSCHULE_DE'
-                                                "
-                                                (download)="
-                                                    downloadGesuchsperiodeDokument(
-                                                        DEUTSCH,
-                                                        VORLAGE_MERKBLATT_TS
-                                                    )
-                                                "
-                                                (delete)="
-                                                    removeGesuchsperiodeDokument(
-                                                        DEUTSCH,
-                                                        VORLAGE_MERKBLATT_TS
-                                                    )
-                                                "
-                                                (uploadFile)="
-                                                    uploadGesuchsperiodeDokument(
-                                                        $event,
-                                                        DEUTSCH,
-                                                        VORLAGE_MERKBLATT_TS,
-                                                        TSDokumentUploadTyp.WORD
-                                                    )
-                                                "
-                                                [allowedMimetypes]="
-                                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                                                "
-                                                [hasFile]="isVorlageMerkblattDE"
-                                            >
-                                            </dv-single-file-upload>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <dv-single-file-upload
-                                                [title]="
-                                                    'VORLAGE_MERKBLATT_ANMELDUNG_TAGESSCHULE_FR'
-                                                "
-                                                (download)="
-                                                    downloadGesuchsperiodeDokument(
-                                                        FRANZOESISCH,
-                                                        VORLAGE_MERKBLATT_TS
-                                                    )
-                                                "
-                                                (delete)="
-                                                    removeGesuchsperiodeDokument(
-                                                        FRANZOESISCH,
-                                                        VORLAGE_MERKBLATT_TS
-                                                    )
-                                                "
-                                                (uploadFile)="
-                                                    uploadGesuchsperiodeDokument(
-                                                        $event,
-                                                        FRANZOESISCH,
-                                                        VORLAGE_MERKBLATT_TS,
-                                                        TSDokumentUploadTyp.WORD
-                                                    )
-                                                "
-                                                [allowedMimetypes]="
-                                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                                                "
-                                                [hasFile]="isVorlageMerkblattFR"
-                                            >
-                                            </dv-single-file-upload>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!--Vorlage Verfügung Lastenausgleich Tagesschulen -->
-                    <div
-                        class="row view-title margin-top-30"
-                        *ngIf="gesuchsperiode && !gesuchsperiode.isNew()"
-                    >
-                        <div class="col-md-12">
-                            <h1>
-                                <span
-                                    translate="VORLAGE_VERFUEGUNG_LATS"
-                                ></span>
-                            </h1>
-                            <hr class="header" />
-                            <table class="table table-striped" width="100%">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <dv-single-file-upload
-                                                [title]="
-                                                    'VORLAGE_VERFUEGUNG_LATS_DE'
-                                                "
-                                                (download)="
-                                                    downloadGesuchsperiodeDokument(
-                                                        DEUTSCH,
-                                                        VORLAGE_VERFUEGUNG_LATS
-                                                    )
-                                                "
-                                                (delete)="
-                                                    removeGesuchsperiodeDokument(
-                                                        DEUTSCH,
-                                                        VORLAGE_VERFUEGUNG_LATS
-                                                    )
-                                                "
-                                                (uploadFile)="
-                                                    uploadGesuchsperiodeDokument(
-                                                        $event,
-                                                        DEUTSCH,
-                                                        VORLAGE_VERFUEGUNG_LATS,
-                                                        TSDokumentUploadTyp.WORD
-                                                    )
-                                                "
-                                                [allowedMimetypes]="
-                                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                                                "
-                                                [hasFile]="
-                                                    isVorlageVerfuegungLatsDE
-                                                "
-                                            >
-                                            </dv-single-file-upload>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <dv-single-file-upload
-                                                [title]="
-                                                    'VORLAGE_VERFUEGUNG_LATS_FR'
-                                                "
-                                                (download)="
-                                                    downloadGesuchsperiodeDokument(
-                                                        FRANZOESISCH,
-                                                        VORLAGE_VERFUEGUNG_LATS
-                                                    )
-                                                "
-                                                (delete)="
-                                                    removeGesuchsperiodeDokument(
-                                                        FRANZOESISCH,
-                                                        VORLAGE_VERFUEGUNG_LATS
-                                                    )
-                                                "
-                                                (uploadFile)="
-                                                    uploadGesuchsperiodeDokument(
-                                                        $event,
-                                                        FRANZOESISCH,
-                                                        VORLAGE_VERFUEGUNG_LATS,
-                                                        TSDokumentUploadTyp.WORD
-                                                    )
-                                                "
-                                                [allowedMimetypes]="
-                                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                                                "
-                                                [hasFile]="
-                                                    isVorlageVerfuegungLatsFR
-                                                "
-                                            >
-                                            </dv-single-file-upload>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!--Vorlage Verfügung Ferienbetreuung -->
-                    <div
-                        class="row view-title margin-top-30"
-                        *ngIf="gesuchsperiode && !gesuchsperiode.isNew()"
-                    >
-                        <div class="col-md-12">
-                            <h1>
-                                <span
-                                    translate="VORLAGE_VERFUEGUNG_FERIENBETREUUNG"
-                                ></span>
-                            </h1>
-                            <hr class="header" />
-                            <table class="table table-striped" width="100%">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <dv-single-file-upload
-                                                [title]="
-                                                    'VORLAGE_VERFUEGUNG_FERIENBETREUUNG_DE'
-                                                "
-                                                (download)="
-                                                    downloadGesuchsperiodeDokument(
-                                                        DEUTSCH,
-                                                        VORLAGE_VERFUEGUNG_FERIENBETREUUNG
-                                                    )
-                                                "
-                                                (delete)="
-                                                    removeGesuchsperiodeDokument(
-                                                        DEUTSCH,
-                                                        VORLAGE_VERFUEGUNG_FERIENBETREUUNG
-                                                    )
-                                                "
-                                                (uploadFile)="
-                                                    uploadGesuchsperiodeDokument(
-                                                        $event,
-                                                        DEUTSCH,
-                                                        VORLAGE_VERFUEGUNG_FERIENBETREUUNG,
-                                                        TSDokumentUploadTyp.WORD
-                                                    )
-                                                "
-                                                [allowedMimetypes]="
-                                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                                                "
-                                                [hasFile]="
-                                                    isVorlageVerfuegungFerienbetreuungDE
-                                                "
-                                            >
-                                            </dv-single-file-upload>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <dv-single-file-upload
-                                                [title]="
-                                                    'VORLAGE_VERFUEGUNG_FERIENBETREUUNG_FR'
-                                                "
-                                                (download)="
-                                                    downloadGesuchsperiodeDokument(
-                                                        FRANZOESISCH,
-                                                        VORLAGE_VERFUEGUNG_FERIENBETREUUNG
-                                                    )
-                                                "
-                                                (delete)="
-                                                    removeGesuchsperiodeDokument(
-                                                        FRANZOESISCH,
-                                                        VORLAGE_VERFUEGUNG_FERIENBETREUUNG
-                                                    )
-                                                "
-                                                (uploadFile)="
-                                                    uploadGesuchsperiodeDokument(
-                                                        $event,
-                                                        FRANZOESISCH,
-                                                        VORLAGE_VERFUEGUNG_FERIENBETREUUNG,
-                                                        TSDokumentUploadTyp.WORD
-                                                    )
-                                                "
-                                                [allowedMimetypes]="
-                                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                                                "
-                                                [hasFile]="
-                                                    isVorlageVerfuegungFerienbetreuungFR
-                                                "
-                                            >
-                                            </dv-single-file-upload>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    @if (gesuchsperiode && !gesuchsperiode.isNew()) {
-                        <lib-admin-gesuchsperioden-einstellungen
-                            [gesuchsperiode]="gesuchsperiode"
-                        ></lib-admin-gesuchsperioden-einstellungen>
+                        @if (!gesuchsperiode.isNew()) {
+                            <!--Erläuterungen zur Verfügung-->
+                            <div class="row view-title margin-top-30">
+                                <div class="col-md-12">
+                                    <h1>
+                                        <span
+                                            translate="ERLAEUTERUNG_VERFUEGUNG"
+                                        ></span>
+                                    </h1>
+                                    <hr class="header" />
+                                    <table
+                                        class="table table-striped"
+                                        width="100%"
+                                    >
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <dv-single-file-upload
+                                                        [title]="
+                                                            'ERLAEUTERUNG_VERFUEGUNG_DE'
+                                                        "
+                                                        (download)="
+                                                            downloadGesuchsperiodeDokument(
+                                                                DEUTSCH,
+                                                                ERLAUTERUNG_ZUR_VERFUEGUNG
+                                                            )
+                                                        "
+                                                        (delete)="
+                                                            removeGesuchsperiodeDokument(
+                                                                DEUTSCH,
+                                                                ERLAUTERUNG_ZUR_VERFUEGUNG
+                                                            )
+                                                        "
+                                                        (uploadFile)="
+                                                            uploadGesuchsperiodeDokument(
+                                                                $event,
+                                                                DEUTSCH,
+                                                                ERLAUTERUNG_ZUR_VERFUEGUNG,
+                                                                TSDokumentUploadTyp.PDF
+                                                            )
+                                                        "
+                                                        [allowedMimetypes]="
+                                                            'application/pdf'
+                                                        "
+                                                        [hasFile]="
+                                                            isErlaeuterungDE
+                                                        "
+                                                    >
+                                                    </dv-single-file-upload>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <dv-single-file-upload
+                                                        [title]="
+                                                            'ERLAEUTERUNG_VERFUEGUNG_FR'
+                                                        "
+                                                        (download)="
+                                                            downloadGesuchsperiodeDokument(
+                                                                FRANZOESISCH,
+                                                                ERLAUTERUNG_ZUR_VERFUEGUNG
+                                                            )
+                                                        "
+                                                        (delete)="
+                                                            removeGesuchsperiodeDokument(
+                                                                FRANZOESISCH,
+                                                                ERLAUTERUNG_ZUR_VERFUEGUNG
+                                                            )
+                                                        "
+                                                        (uploadFile)="
+                                                            uploadGesuchsperiodeDokument(
+                                                                $event,
+                                                                FRANZOESISCH,
+                                                                ERLAUTERUNG_ZUR_VERFUEGUNG,
+                                                                TSDokumentUploadTyp.PDF
+                                                            )
+                                                        "
+                                                        [allowedMimetypes]="
+                                                            'application/pdf'
+                                                        "
+                                                        [hasFile]="
+                                                            isErlaeuterungFR
+                                                        "
+                                                    >
+                                                    </dv-single-file-upload>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--Merkblatt Anmeldung Tagesschule-->
+                            <div class="row view-title margin-top-30">
+                                <div class="col-md-12">
+                                    <h1>
+                                        <span
+                                            translate="MERKBLATT_ANMELDUNG_TAGESSCHULE"
+                                        ></span>
+                                    </h1>
+                                    <hr class="header" />
+                                    <table
+                                        class="table table-striped"
+                                        width="100%"
+                                    >
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <dv-single-file-upload
+                                                        [title]="
+                                                            'VORLAGE_MERKBLATT_ANMELDUNG_TAGESSCHULE_DE'
+                                                        "
+                                                        (download)="
+                                                            downloadGesuchsperiodeDokument(
+                                                                DEUTSCH,
+                                                                VORLAGE_MERKBLATT_TS
+                                                            )
+                                                        "
+                                                        (delete)="
+                                                            removeGesuchsperiodeDokument(
+                                                                DEUTSCH,
+                                                                VORLAGE_MERKBLATT_TS
+                                                            )
+                                                        "
+                                                        (uploadFile)="
+                                                            uploadGesuchsperiodeDokument(
+                                                                $event,
+                                                                DEUTSCH,
+                                                                VORLAGE_MERKBLATT_TS,
+                                                                TSDokumentUploadTyp.WORD
+                                                            )
+                                                        "
+                                                        [allowedMimetypes]="
+                                                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                                                        "
+                                                        [hasFile]="
+                                                            isVorlageMerkblattDE
+                                                        "
+                                                    >
+                                                    </dv-single-file-upload>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <dv-single-file-upload
+                                                        [title]="
+                                                            'VORLAGE_MERKBLATT_ANMELDUNG_TAGESSCHULE_FR'
+                                                        "
+                                                        (download)="
+                                                            downloadGesuchsperiodeDokument(
+                                                                FRANZOESISCH,
+                                                                VORLAGE_MERKBLATT_TS
+                                                            )
+                                                        "
+                                                        (delete)="
+                                                            removeGesuchsperiodeDokument(
+                                                                FRANZOESISCH,
+                                                                VORLAGE_MERKBLATT_TS
+                                                            )
+                                                        "
+                                                        (uploadFile)="
+                                                            uploadGesuchsperiodeDokument(
+                                                                $event,
+                                                                FRANZOESISCH,
+                                                                VORLAGE_MERKBLATT_TS,
+                                                                TSDokumentUploadTyp.WORD
+                                                            )
+                                                        "
+                                                        [allowedMimetypes]="
+                                                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                                                        "
+                                                        [hasFile]="
+                                                            isVorlageMerkblattFR
+                                                        "
+                                                    >
+                                                    </dv-single-file-upload>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--Vorlage Verfügung Lastenausgleich Tagesschulen -->
+                            <div class="row view-title margin-top-30">
+                                <div class="col-md-12">
+                                    <h1>
+                                        <span
+                                            translate="VORLAGE_VERFUEGUNG_LATS"
+                                        ></span>
+                                    </h1>
+                                    <hr class="header" />
+                                    <table
+                                        class="table table-striped"
+                                        width="100%"
+                                    >
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <dv-single-file-upload
+                                                        [title]="
+                                                            'VORLAGE_VERFUEGUNG_LATS_DE'
+                                                        "
+                                                        (download)="
+                                                            downloadGesuchsperiodeDokument(
+                                                                DEUTSCH,
+                                                                VORLAGE_VERFUEGUNG_LATS
+                                                            )
+                                                        "
+                                                        (delete)="
+                                                            removeGesuchsperiodeDokument(
+                                                                DEUTSCH,
+                                                                VORLAGE_VERFUEGUNG_LATS
+                                                            )
+                                                        "
+                                                        (uploadFile)="
+                                                            uploadGesuchsperiodeDokument(
+                                                                $event,
+                                                                DEUTSCH,
+                                                                VORLAGE_VERFUEGUNG_LATS,
+                                                                TSDokumentUploadTyp.WORD
+                                                            )
+                                                        "
+                                                        [allowedMimetypes]="
+                                                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                                                        "
+                                                        [hasFile]="
+                                                            isVorlageVerfuegungLatsDE
+                                                        "
+                                                    >
+                                                    </dv-single-file-upload>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <dv-single-file-upload
+                                                        [title]="
+                                                            'VORLAGE_VERFUEGUNG_LATS_FR'
+                                                        "
+                                                        (download)="
+                                                            downloadGesuchsperiodeDokument(
+                                                                FRANZOESISCH,
+                                                                VORLAGE_VERFUEGUNG_LATS
+                                                            )
+                                                        "
+                                                        (delete)="
+                                                            removeGesuchsperiodeDokument(
+                                                                FRANZOESISCH,
+                                                                VORLAGE_VERFUEGUNG_LATS
+                                                            )
+                                                        "
+                                                        (uploadFile)="
+                                                            uploadGesuchsperiodeDokument(
+                                                                $event,
+                                                                FRANZOESISCH,
+                                                                VORLAGE_VERFUEGUNG_LATS,
+                                                                TSDokumentUploadTyp.WORD
+                                                            )
+                                                        "
+                                                        [allowedMimetypes]="
+                                                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                                                        "
+                                                        [hasFile]="
+                                                            isVorlageVerfuegungLatsFR
+                                                        "
+                                                    >
+                                                    </dv-single-file-upload>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--Vorlage Verfügung Ferienbetreuung -->
+                            <div class="row view-title margin-top-30">
+                                <div class="col-md-12">
+                                    <h1>
+                                        <span
+                                            translate="VORLAGE_VERFUEGUNG_FERIENBETREUUNG"
+                                        ></span>
+                                    </h1>
+                                    <hr class="header" />
+                                    <table
+                                        class="table table-striped"
+                                        width="100%"
+                                    >
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <dv-single-file-upload
+                                                        [title]="
+                                                            'VORLAGE_VERFUEGUNG_FERIENBETREUUNG_DE'
+                                                        "
+                                                        (download)="
+                                                            downloadGesuchsperiodeDokument(
+                                                                DEUTSCH,
+                                                                VORLAGE_VERFUEGUNG_FERIENBETREUUNG
+                                                            )
+                                                        "
+                                                        (delete)="
+                                                            removeGesuchsperiodeDokument(
+                                                                DEUTSCH,
+                                                                VORLAGE_VERFUEGUNG_FERIENBETREUUNG
+                                                            )
+                                                        "
+                                                        (uploadFile)="
+                                                            uploadGesuchsperiodeDokument(
+                                                                $event,
+                                                                DEUTSCH,
+                                                                VORLAGE_VERFUEGUNG_FERIENBETREUUNG,
+                                                                TSDokumentUploadTyp.WORD
+                                                            )
+                                                        "
+                                                        [allowedMimetypes]="
+                                                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                                                        "
+                                                        [hasFile]="
+                                                            isVorlageVerfuegungFerienbetreuungDE
+                                                        "
+                                                    >
+                                                    </dv-single-file-upload>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <dv-single-file-upload
+                                                        [title]="
+                                                            'VORLAGE_VERFUEGUNG_FERIENBETREUUNG_FR'
+                                                        "
+                                                        (download)="
+                                                            downloadGesuchsperiodeDokument(
+                                                                FRANZOESISCH,
+                                                                VORLAGE_VERFUEGUNG_FERIENBETREUUNG
+                                                            )
+                                                        "
+                                                        (delete)="
+                                                            removeGesuchsperiodeDokument(
+                                                                FRANZOESISCH,
+                                                                VORLAGE_VERFUEGUNG_FERIENBETREUUNG
+                                                            )
+                                                        "
+                                                        (uploadFile)="
+                                                            uploadGesuchsperiodeDokument(
+                                                                $event,
+                                                                FRANZOESISCH,
+                                                                VORLAGE_VERFUEGUNG_FERIENBETREUUNG,
+                                                                TSDokumentUploadTyp.WORD
+                                                            )
+                                                        "
+                                                        [allowedMimetypes]="
+                                                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                                                        "
+                                                        [hasFile]="
+                                                            isVorlageVerfuegungFerienbetreuungFR
+                                                        "
+                                                    >
+                                                    </dv-single-file-upload>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <lib-admin-gesuchsperioden-einstellungen
+                                [gesuchsperiode]="gesuchsperiode"
+                            ></lib-admin-gesuchsperioden-einstellungen>
+                        }
                     }
                 </fieldset>
             </form>

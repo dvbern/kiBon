@@ -187,11 +187,8 @@ export function configureKarmaTarget(
         ...config.targets,
 
         test: {
-            executor: '@angular-builders/custom-webpack:karma',
+            executor: '@angular-devkit/build-angular:karma',
             options: {
-                customWebpackConfig: {
-                    path: './extra-webpack.config.js'
-                },
                 karmaConfig: './karma.conf.js',
                 polyfills: './src/polyfills.ts',
                 tsConfig: projectRoot + '/tsconfig.spec.json'

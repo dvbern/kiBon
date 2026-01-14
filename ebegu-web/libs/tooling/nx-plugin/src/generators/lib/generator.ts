@@ -99,9 +99,6 @@ export default async function (tree: Tree, options: LibGeneratorSchema) {
                     executor: '@angular-builders/custom-webpack:karma',
                     options: {
                         main: './src/test.ts',
-                        customWebpackConfig: {
-                            path: './extra-webpack.config.js'
-                        },
                         karmaConfig: './karma.conf.js',
                         polyfills: './src/polyfills.ts',
                         tsConfig: '{projectRoot}/tsconfig.spec.json',

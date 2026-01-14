@@ -23,7 +23,7 @@ import {SharedModule} from '../../../../../../src/app/shared/shared.module';
 
 @Component({
     imports: [SharedModule],
-    selector: 'tooltip-x',
+    selector: 'lib-tooltip-x',
     templateUrl: 'shared-pattern-tooltip-x.component.html',
     styles: `
         .tooltip-spacing {

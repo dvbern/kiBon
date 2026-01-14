@@ -26,10 +26,10 @@
             (ngModelChange)="change()"
         >
             <span [innerHTML]="label | translate"></span>
-            @if (tooltip) {
-                <dv-tooltip [text]="tooltip | translate"></dv-tooltip>
-            }
         </mat-checkbox>
+        @if (tooltip) {
+            <dv-tooltip [text]="tooltip | translate"></dv-tooltip>
+        }
     </div>
     <!--    The element should not occupy any DOM space when it is hidden.-->
     @if (showBisher()) {

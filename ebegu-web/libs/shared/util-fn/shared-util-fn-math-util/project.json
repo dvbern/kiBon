@@ -15,11 +15,8 @@
             "executor": "@nx/eslint:lint"
         },
         "test": {
-            "executor": "@angular-builders/custom-webpack:karma",
+            "executor": "@angular-devkit/build-angular:karma",
             "options": {
-                "customWebpackConfig": {
-                    "path": "./extra-webpack.config.js"
-                },
                 "karmaConfig": "./karma.conf.js",
                 "tsConfig": "{projectRoot}/tsconfig.spec.json"
             }

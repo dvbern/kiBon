@@ -76,24 +76,25 @@
                 ></mat-row>
             </mat-table>
 
-            <div
-                class="row"
-                *ngIf="!isReadonly() && tableData().data.length > 0"
-            >
-                <div class="col-md-12" *ngIf="gesuchsperiode">
-                    <dv-loading-button
-                        type="button"
-                        (buttonClick)="saveParameterByGesuchsperiode()"
-                        buttonClass="color-success"
-                    >
-                        <span>{{
-                            tableData().data[0].isNew()
-                                ? ('SAVE' | translate)
-                                : ('UPDATE' | translate)
-                        }}</span>
-                    </dv-loading-button>
+            @if (!isReadonly() && tableData().data.length > 0) {
+                <div class="row">
+                    @if (gesuchsperiode) {
+                        <div class="col-md-12">
+                            <dv-loading-button
+                                type="button"
+                                (buttonClick)="saveParameterByGesuchsperiode()"
+                                buttonClass="color-success"
+                            >
+                                <span>{{
+                                    tableData().data[0].isNew()
+                                        ? ('SAVE' | translate)
+                                        : ('UPDATE' | translate)
+                                }}</span>
+                            </dv-loading-button>
+                        </div>
+                    }
                 </div>
-            </div>
+            }
         </div>
     </div>
 }

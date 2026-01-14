@@ -205,6 +205,11 @@ public interface EbeguConfiguration {
 	 */
 	boolean isKafkaConsumerEnabled();
 
+	/**
+	 * @return TRUE, falls Daten an Kafka schicken werden dürfen.
+	 */
+	boolean isKafkaProducerEnabled();
+
 	@Nonnull
 	Optional<String> getKafkaStatistikURL();
 

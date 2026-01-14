@@ -8,7 +8,7 @@
         "importHelpers": true,
         "lib": ["dom", "es2017", "es2018.promise"],
         "module": "es2020",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "newLine": "lf",
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,

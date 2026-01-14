@@ -15,11 +15,12 @@
 
 'use strict';
 const path = require('path');
+const webpackConfig = require('./extra-webpack.config.js');
 
 module.exports = function (config) {
     config.set({
         basePath: '',
-        frameworks: ['jasmine', '@angular-devkit/build-angular'],
+        frameworks: ['jasmine'],
         plugins: [
             require('karma-jasmine'),
             require('karma-chrome-launcher'),
@@ -27,12 +28,15 @@ module.exports = function (config) {
             require('karma-junit-reporter'),
             require('karma-mocha-reporter'),
             require('karma-coverage-istanbul-reporter'),
-            require('@angular-devkit/build-angular/plugins/karma'),
-            require('karma-sonarqube-reporter')
+            require('karma-sonarqube-reporter'),
+            require('karma-webpack')
         ],
         // list of files / patterns to load in the browser
         // we are building the test environment in ./spec-bundle.ts
-        files: [{pattern: 'src/assets/**', included: false, serve: true}],
+        files: [
+            {pattern: 'src/assets/**', included: false, serve: true},
+            'src/test.ts'
+        ],
         client: {
             clearContext: false // leave Jasmine Spec Runner output visible in browser
         },
@@ -143,6 +147,13 @@ module.exports = function (config) {
         browserDisconnectTimeout: 30000,
         browserNoActivityTimeout: 120000,
         failOnEmptyTestSuite: false,
+        preprocessors: {
+            'src/test.ts': ['webpack']
+        },
+        webpack: webpackConfig,
+        webpackMiddleware: {
+            stats: 'errors-only'
+        },
 
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: false

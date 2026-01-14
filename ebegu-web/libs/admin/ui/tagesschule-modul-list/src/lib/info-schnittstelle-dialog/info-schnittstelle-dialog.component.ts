@@ -23,7 +23,7 @@ import {TSModulTagesschuleGroup} from '@kibon/shared/model/entity';
 import {SharedModule} from '../../../../../../../src/app/shared/shared.module';
 
 @Component({
-    selector: 'modul-tagesschule-dialog',
+    selector: 'lib-modul-tagesschule-dialog',
     templateUrl: './info-schnittstelle-dialog.template.html',
     styleUrls: ['./info-schnittstelle-dialog.component.less'],
     imports: [SharedModule]

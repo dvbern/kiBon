@@ -239,7 +239,9 @@
                 "@typescript-eslint/no-var-requires": "off",
                 "@typescript-eslint/no-require-imports": "off",
                 "@angular-eslint/prefer-standalone": "off",
-                "@angular-eslint/prefer-inject": "off" // enable constructor DI
+                "@angular-eslint/prefer-inject": "off", // enable constructor DI
+                "@angular-eslint/component-selector": "off", // this rule only affects gesuch components, new components in lib overwrite this rule
+                "@angular-eslint/directive-selector": "off" // // this rule only affects gesuch directives
             }
         },
         {

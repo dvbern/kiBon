@@ -1,13 +1,24 @@
+const webpack = require('webpack');
+
 module.exports = {
+    resolve: {
+        fallback: {
+            process: require.resolve('process/browser')
+        }
+    },
+    plugins: [
+        new webpack.ProvidePlugin({
+            process: 'process/browser'
+        })
+    ],
     module: {
         rules: [
             {
-                test: /\.html$/i,
-                exclude: /\.(component|template)\.html$/,
+                test: /\.html$/,
                 loader: 'html-loader',
                 options: {
-                    //TODO: Remove once dv-userselect directive is angular 2+
-                    minimize: false
+                    attributes: false,
+                    esModule: false
                 }
             }
         ]

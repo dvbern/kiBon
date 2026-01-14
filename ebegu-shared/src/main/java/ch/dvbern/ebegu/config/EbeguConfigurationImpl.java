@@ -128,6 +128,8 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements
 		"kibon.exchange.tagesschuleanmeldung.enabled";
 	private static final String KIBON_KAFKA_CONSUMER_ENABLED =
 		"kibon.kafka.consumer.enabled";
+	private static final String KIBON_KAFKA_PRODUCER_ENABLED =
+		"kibon.kafka.producer.enabled";
 	private static final String KIBON_KAFKA_CONSUMER_GROUP_ID =
 		"kibon.kafka.consumer.group.id";
 
@@ -349,6 +351,11 @@ public class EbeguConfigurationImpl extends SystemConfiguration implements
 	@Override
 	public boolean isKafkaConsumerEnabled() {
 		return getBoolean(KIBON_KAFKA_CONSUMER_ENABLED, false);
+	}
+
+	@Override
+	public boolean isKafkaProducerEnabled() {
+		return getBoolean(KIBON_KAFKA_PRODUCER_ENABLED, false);
 	}
 
 	@Nonnull

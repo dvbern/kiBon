@@ -5,7 +5,7 @@
     "projectType": "application",
     "targets": {
         "build": {
-            "executor": "@angular-builders/custom-webpack:browser",
+            "executor": "@nx/angular:webpack-browser",
             "options": {
                 "outputPath": "dist",
                 "index": "src/index.html",
@@ -35,7 +35,8 @@
                     "lodash",
                     "iban",
                     "angular",
-                    "randomcolor"
+                    "randomcolor",
+                    "localforage"
                 ]
             },
             "configurations": {
@@ -93,7 +94,7 @@
             "outputs": ["{options.outputPath}"]
         },
         "serve": {
-            "executor": "@angular-builders/custom-webpack:dev-server",
+            "executor": "@nx/angular:dev-server",
             "options": {
                 "buildTarget": "ebegu:build",
                 "proxyConfig": "src/proxy.conf.mjs",
@@ -118,12 +119,9 @@
             }
         },
         "test": {
-            "executor": "@angular-builders/custom-webpack:karma",
+            "executor": "@angular-devkit/build-angular:karma",
             "options": {
                 "main": "src/test.ts",
-                "customWebpackConfig": {
-                    "path": "./extra-webpack.config.js"
-                },
                 "karmaConfig": "./karma.conf.js",
                 "polyfills": "src/polyfills.ts",
                 "tsConfig": "src/tsconfig.spec.json",

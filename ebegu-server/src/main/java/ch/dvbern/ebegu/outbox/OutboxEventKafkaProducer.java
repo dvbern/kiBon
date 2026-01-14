@@ -84,6 +84,7 @@ public class OutboxEventKafkaProducer {
 		persistent = true)
 	public void publishEvents() {
 		if (ebeguConfiguration.getKafkaURL().isEmpty()
+			|| !ebeguConfiguration.isKafkaProducerEnabled()
 			|| (ebeguConfiguration.getKafkaURL().isPresent()
 				&& StringUtils.isEmpty(
 					ebeguConfiguration.getKafkaURL().get()
