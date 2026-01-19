@@ -67,6 +67,7 @@ import {
 import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
 import {ErrorServiceX} from '../../core/errors/service/ErrorServiceX';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {DVAntragListColumns} from '../../core/new-antrag-list/new-antrag-list.types';
 import {GesuchsperiodeRS} from '../../core/service/gesuchsperiodeRS.rest';
 import {WizardStepXRS} from '../../core/service/wizardStepXRS.rest';
 import {DVAntragListFilter} from '../../shared/interfaces/DVAntragListFilter';
@@ -102,7 +103,7 @@ export class GemeindeAntraegeComponent implements OnInit {
 
     @ViewChild(NgForm) public form: NgForm;
 
-    public hiddenDVTableColumns = [
+    public hiddenDVTableColumns: DVAntragListColumns[] = [
         'fallNummer',
         'familienName',
         'kinder',
@@ -111,7 +112,8 @@ export class GemeindeAntraegeComponent implements OnInit {
         'institutionen',
         'verantwortlicheTS',
         'verantwortlicheBG',
-        'internePendenz'
+        'internePendenz',
+        'eingangsdatumSTV'
     ];
 
     public antragList$: Observable<DVAntragListItem[]>;

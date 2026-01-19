@@ -31,29 +31,32 @@
                     </div>
                 }
 
-                @if (initialFilter.verantwortlicherGemeinde) {
-                    <dv-new-antrag-list
-                        [data$]="data$"
-                        [stateStoreId]="'pendenzen-list-view'"
-                        [title]="'PENDENZEN_LIST' | translate"
-                        [initialFilter]="initialFilter"
-                        [page]="calculatePage()"
-                        [totalItems]="pagination.totalItemCount"
-                        [pendenz]="true"
-                        [hiddenColumns]="[
-                            'verantwortlicherGemeindeantraege',
-                            'gemeindeAntragFirstEinreichedatum',
-                            'eingangsdatumSTV'
-                        ]"
-                        (sortChange)="onSort($event)"
-                        (filterChange)="onFilterChange($event)"
-                        (paginationEvent)="onPagination($event)"
-                        (rowClicked)="
-                            editpendenzJA($event.antrag, $event.event)
-                        "
-                    >
-                    </dv-new-antrag-list>
-                }
+                <dv-new-antrag-list
+                    [data$]="data$"
+                    [stateStoreId]="'steueramt-pendenzen-list-view'"
+                    [title]="'PENDENZEN_LIST' | translate"
+                    [initialFilter]="initialFilter"
+                    [page]="calculatePage()"
+                    [totalItems]="pagination.totalItemCount"
+                    [hiddenColumns]="[
+                        'verantwortlicherGemeindeantraege',
+                        'gemeindeAntragFirstEinreichedatum',
+                        'institutionen',
+                        'angebote',
+                        'internePendenz',
+                        'dokumenteHochgeladen',
+                        'aenderungsdatum',
+                        'kinder',
+                        'verantwortlicheTS',
+                        'verantwortlicheBG',
+                        'verantwortlicheGemeinde'
+                    ]"
+                    (sortChange)="onSort($event)"
+                    (filterChange)="onFilterChange($event)"
+                    (paginationEvent)="onPagination($event)"
+                    (rowClicked)="editpendenzJA($event.antrag, $event.event)"
+                >
+                </dv-new-antrag-list>
             </div>
         </div>
     </div>

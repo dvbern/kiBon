@@ -79,6 +79,7 @@ import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {BenutzerRSX} from '../service/benutzerRSX.rest';
 import {GesuchsperiodeRS} from '../service/gesuchsperiodeRS.rest';
 import {InstitutionRS} from '../service/institutionRS.rest';
+import {DVAntragListColumns} from './new-antrag-list.types';
 
 const LOG = LogFactory.createLog('DVAntragListController');
 
@@ -144,7 +145,7 @@ export class NewAntragListComponent
      *
      * Hides the column in the table
      */
-    @Input() public hiddenColumns: string[] = [];
+    @Input() public hiddenColumns: DVAntragListColumns[] = [];
 
     /**
      * Inits the filter values. Does not trigger the EventEmitter
@@ -266,10 +267,11 @@ export class NewAntragListComponent
         'verantwortlicheTS-filter',
         'verantwortlicheBG-filter',
         'verantwortlicheGemeinde-filter',
-        'verantwortlicherGemeindeantraege-filter'
+        'verantwortlicherGemeindeantraege-filter',
+        'eingangsdatumSTV-filter'
     ];
 
-    private readonly allColumns = [
+    private readonly allColumns: DVAntragListColumns[] = [
         'fallNummer',
         'gemeinde',
         'familienName',
@@ -278,6 +280,7 @@ export class NewAntragListComponent
         'periode',
         'aenderungsdatum',
         'gemeindeAntragFirstEinreichedatum',
+        'eingangsdatumSTV',
         'status',
         'internePendenz',
         'dokumenteHochgeladen',
@@ -715,6 +718,11 @@ export class NewAntragListComponent
 
     public filterGeaendert(query: string): void {
         this.filterPredicate.aenderungsdatum = query.length > 0 ? query : null;
+        this.applyFilter();
+    }
+
+    public filterEingangSTV(query: string): void {
+        this.filterPredicate.eingangsdatumSTV = query.length > 0 ? query : null;
         this.applyFilter();
     }
 

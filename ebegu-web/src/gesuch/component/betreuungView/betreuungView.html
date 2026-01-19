@@ -1221,7 +1221,9 @@
                                 </p>
 
                                 <span
-                                    ng-if="
+                                    dv-show-element
+                                    dv-show-allowed-roles="vm.getRolesForTabellarischeMaske()"
+                                    dv-show-expression="
                                         vm.isTabellarischeMaskeOpenable &&
                                         vm.hasAtLeastOneBetreuungspensum(
                                             vm.model

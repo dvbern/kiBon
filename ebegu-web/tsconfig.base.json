@@ -196,6 +196,9 @@
             ],
             "@kibon/zahlung/util/zahlung-service": [
                 "libs/zahlung/util/zahlung-service/src/index.ts"
+            ],
+            "@kibon/betreuung-permission-betreuung": [
+                "libs/betreuung/model/permission-betreuung/src/index.ts"
             ]
         }
     },

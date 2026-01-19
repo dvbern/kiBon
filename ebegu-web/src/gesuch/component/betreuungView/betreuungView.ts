@@ -41,6 +41,7 @@ import {copy, IComponentOptions} from 'angular';
 import $ from 'jquery';
 import moment from 'moment';
 import {first, map, tap} from 'rxjs/operators';
+import {PERMISSIONS_BETREUUNG} from '@kibon/betreuung-permission-betreuung';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
@@ -2927,5 +2928,9 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
             this.getBetreuungModel().vertrag === false &&
             !this.getBetreuungModel().isNew()
         );
+    }
+
+    public getRolesForTabellarischeMaske() {
+        return PERMISSIONS_BETREUUNG['TABELLARISCHE_BETREUUNG_MASKE'];
     }
 }

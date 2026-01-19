@@ -35,7 +35,7 @@ const ng1States: Ng1StateDeclaration[] = [
     {
         name: 'pendenzenSteueramt.list-view',
         template:
-            '<pendenzen-steueramt-list-view flex="auto" class="overflow-scroll">',
+            '<steueramt-pendenzen-list-view flex="auto" class="overflow-scroll">',
         url: '/pendenzenSteueramt'
     }
 ];

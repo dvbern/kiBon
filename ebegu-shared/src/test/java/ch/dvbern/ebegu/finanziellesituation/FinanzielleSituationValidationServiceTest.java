@@ -830,7 +830,7 @@ class FinanzielleSituationValidationServiceTest extends EasyMockSupport {
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 			finSitGS1.setFinanzielleSituationJA(initFinSitBern());
-			Assertions.assertFalse(
+			Assertions.assertTrue(
 				service.isFinanzielleSituationIntroducedAndComplete(gesuch)
 			);
 

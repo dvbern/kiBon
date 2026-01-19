@@ -89,8 +89,8 @@ public class FinanzielleSituationValidationService {
 		if (validator.doesFinSitRequireOneGS(gesuch)) {
 			return true;
 		}
-		return gesuch.getGesuchsteller2() != null
-			&&
+		return gesuch.getGesuchsteller2() == null
+			||
 			(gesuch.getGesuchsteller2()
 				.getFinanzielleSituationContainer()
 				!= null

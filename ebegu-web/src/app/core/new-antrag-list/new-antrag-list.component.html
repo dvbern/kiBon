@@ -167,6 +167,22 @@
                 >
             </ng-container>
 
+            <ng-container matColumnDef="eingangsdatumSTV">
+                <mat-header-cell
+                    mat-sort-header="eingangsdatumSTV"
+                    *matHeaderCellDef
+                    ><span translate>EINGANG</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <span
+                        [title]="element.eingangsdatumSTV?.format('DD.MM.YYYY')"
+                        >{{
+                            element.eingangsdatumSTV?.format('DD.MM.YYYY')
+                        }}</span
+                    ></mat-cell
+                >
+            </ng-container>
+
             <ng-container matColumnDef="gemeindeAntragFirstEinreichedatum">
                 <mat-header-cell
                     mat-sort-header="gemeindeAntragFirstEinreichedatum"
@@ -594,6 +610,18 @@
                             [value]="filterPredicate.aenderungsdatum || null"
                             matInput
                             (keyup)="filterGeaendert($event.target.value)"
+                        />
+                    </mat-form-field>
+                </mat-header-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="eingangsdatumSTV-filter">
+                <mat-header-cell *matHeaderCellDef="let column">
+                    <mat-form-field class="dv-faelle-mat-form-field">
+                        <input
+                            [value]="filterPredicate.eingangsdatumSTV || null"
+                            matInput
+                            (keyup)="filterEingangSTV($event.target.value)"
                         />
                     </mat-form-field>
                 </mat-header-cell>

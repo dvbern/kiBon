@@ -15,13 +15,14 @@
 
 import angular from 'angular';
 import {CORE_JS_MODULE} from '../../core/core.angularjs.module';
-import {PendenzenSteueramtListViewComponentConfig} from './component/pendenzenSteueramtListView/pendenzenSteueramtListView';
 import {pendenzRun} from './pendenzenSteueramt.route';
+import {SteueramtPendenzenListViewComponent} from './component/pendenzenSteueramtListView/steueramt-pendenzen-list-view.component';
+import {downgradeComponent} from '@angular/upgrade/static';
 
 export const PENDENZEN_STEUERAMT_JS_MODULE = angular
     .module('ebeguWeb.pendenzenSteueramt', [CORE_JS_MODULE.name])
     .run(pendenzRun)
-    .component(
-        'pendenzenSteueramtListView',
-        new PendenzenSteueramtListViewComponentConfig()
+    .directive(
+        'steueramtPendenzenListView',
+        downgradeComponent({component: SteueramtPendenzenListViewComponent})
     );

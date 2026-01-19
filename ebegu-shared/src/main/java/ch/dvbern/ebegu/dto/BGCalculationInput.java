@@ -1171,7 +1171,9 @@ public class BGCalculationInput {
 			);
 		}
 		this.erstgesuchAnzahlGesuchstellende =
-			other.erstgesuchAnzahlGesuchstellende;
+			other.erstgesuchAnzahlGesuchstellende == null ?
+				this.erstgesuchAnzahlGesuchstellende :
+				other.erstgesuchAnzahlGesuchstellende;
 	}
 
 	/**

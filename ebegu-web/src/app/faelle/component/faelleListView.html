@@ -22,7 +22,8 @@
                 <dv-new-antrag-list
                     [hidden-columns]="[
                         'verantwortlicherGemeindeantraege',
-                        'gemeindeAntragFirstEinreichedatum'
+                        'gemeindeAntragFirstEinreichedatum',
+                        'eingangsdatumSTV'
                     ]"
                     (row-clicked)="vm.editFall($event.antrag, $event.event)"
                     [state-store-id]="'alle-faelle-asdf'"

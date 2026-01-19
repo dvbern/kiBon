@@ -79,7 +79,6 @@ import {MandantService} from '@kibon/shared-util-mandant-service';
 import {DvAccordionComponentConfig} from './component/dv-accordion/dv-accordion';
 import {DvAccordionTabComponentConfig} from './component/dv-accordion/dv-accordion-tab/dv-accordion-tab';
 import {AdresseComponentConfig} from './component/dv-adresse/dv-adresse';
-import {DVAntragListConfig} from './component/dv-antrag-list/dv-antrag-list';
 import {DvBenutzerEntryComponent} from './component/dv-benutzer-entry/dv-benutzer-entry.component';
 import {DvBisherComponentConfig} from './component/dv-bisher/dv-bisher';
 import {DvCountdownComponentConfig} from './component/dv-countdown/dv-countdown';
@@ -120,7 +119,6 @@ import {DVLoading} from './directive/dv-loading/dv-loading';
 import {DVMaxLength} from './directive/dv-max-length';
 import {DVNavigation} from './directive/dv-navigation/dv-navigation';
 import {DVShowElement} from './directive/dv-show-element/dv-show-element';
-import {DVSTPersistAntraege} from './directive/dv-st-persist-antraege/dv-st-persist-antraege';
 import {DVSTPersistPendenzen} from './directive/dv-st-persist-quicksearch/d-v-s-t-persist-pendenzen';
 import {DVSTResetSearch} from './directive/dv-st-reset-search/dv-st-reset-search';
 import {DVSuppressFormSubmitOnEnter} from './directive/dv-suppress-form-submit-on-enter/dv-suppress-form-submit-on-enter';
@@ -308,7 +306,6 @@ export const CORE_JS_MODULE = angular
     .directive('dvVerantwortlicherselect', DvVerantwortlicherselect.factory())
     .component('dvNavigation', new DVNavigation())
     .directive('dvLoading', DVLoading.factory())
-    .directive('dvStPersistAntraege', DVSTPersistAntraege.factory())
     .directive('dvStPersistPendenzen', DVSTPersistPendenzen.factory())
     .directive('dvStResetSearch', DVSTResetSearch.factory())
     .directive('dvShowElement', DVShowElement.factory())
@@ -355,7 +352,6 @@ export const CORE_JS_MODULE = angular
     .component('dvUserselect', new DvUserSelectConfig())
     .component('dvBisher', new DvBisherComponentConfig())
     .component('dvDokumenteList', new DVDokumenteListConfig())
-    .component('dvAntragList', new DVAntragListConfig())
     .component('dvQuicksearchbox', new DvQuicksearchboxComponentConfig())
     .component('dvSearchResultIcon', new DvSearchResultIconComponentConfig())
     .component('dvMitteilungList', new DVMitteilungListConfig())

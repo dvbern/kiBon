@@ -26,6 +26,16 @@
     .align-start {
         align-items: start;
     }
+
+    ::ng-deep
+        .mat-button-toggle-group-appearance-standard
+        .mat-pseudo-checkbox {
+        background-color: rgb(66, 66, 66);
+        ::ng-deep
+            &.mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
+            color: white;
+        }
+    }
 }
 
 ::ng-deep dv-accordion {
