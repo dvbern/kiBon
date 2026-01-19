@@ -22,7 +22,7 @@ import {
 } from '@kibon/shared/model/enums';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {StateService} from '@uirouter/core';
-import {copy, IComponentOptions} from 'angular';
+import angular, {copy, IComponentOptions} from 'angular';
 import {forkJoin} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
@@ -306,9 +306,9 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
         }
     }
 
-    public save(): void {
+    public save(showDialog: boolean): angular.IPromise<void> {
         if (!this.isGesuchValid()) {
-            return;
+            return Promise.resolve();
         }
 
         // die felder sind not null und müssen auf 0 gesetzt werden, damit die validierung nicht fehlschlägt falls
@@ -327,15 +327,17 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
             });
         }
 
-        this.betreuungRS.saveAbweichungen(this.model).then(result => {
+        return this.betreuungRS.saveAbweichungen(this.model).then(result => {
             this.model.betreuungspensumAbweichungen = result;
-            this.dvDialog.showDialog(
-                okHtmlDialogTempl,
-                OkHtmlDialogController,
-                {
-                    title: 'SPEICHERN_ERFOLGREICH'
-                }
-            );
+            if (showDialog) {
+                this.dvDialog.showDialog(
+                    okHtmlDialogTempl,
+                    OkHtmlDialogController,
+                    {
+                        title: 'SPEICHERN_ERFOLGREICH'
+                    }
+                );
+            }
         });
     }
 
@@ -361,27 +363,29 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
             return;
         }
 
-        if (!this.hasNotAppliedMutationsmeldung()) {
-            this.freigeben();
-            return;
-        }
-
-        this.dvDialog
-            .showRemoveDialog(
-                removeDialogTemplate,
-                this.form,
-                RemoveDialogController,
-                {
-                    title: 'MUTATIONSMELDUNG_OVERRIDE_EXISTING_TITLE',
-                    deleteText: 'MUTATIONSMELDUNG_OVERRIDE_EXISTING_BODY',
-                    parentController: undefined,
-                    elementID: undefined
-                }
-            )
-            .then(() => {
-                // User confirmed removal
+        this.save(false).then(() => {
+            if (!this.hasNotAppliedMutationsmeldung()) {
                 this.freigeben();
-            });
+                return;
+            }
+
+            this.dvDialog
+                .showRemoveDialog(
+                    removeDialogTemplate,
+                    this.form,
+                    RemoveDialogController,
+                    {
+                        title: 'MUTATIONSMELDUNG_OVERRIDE_EXISTING_TITLE',
+                        deleteText: 'MUTATIONSMELDUNG_OVERRIDE_EXISTING_BODY',
+                        parentController: undefined,
+                        elementID: undefined
+                    }
+                )
+                .then(() => {
+                    // User confirmed removal
+                    this.freigeben();
+                });
+        });
     }
 
     public freigeben(): void {
