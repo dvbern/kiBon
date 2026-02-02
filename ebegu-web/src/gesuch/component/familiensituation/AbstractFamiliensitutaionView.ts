@@ -82,7 +82,17 @@ export abstract class AbstractFamiliensitutaionView extends AbstractGesuchViewX<
         );
     }
 
+    /**
+     * In confirmAndSave(), there is a !this.form.dirty check.
+     * Because onDatumBlur is executed on DvDatePickerXAngularjswrapperComponent
+     * which the components template has its own form, the !this.form.dirty
+     * never gets triggered and then no date can be saved
+     */
     public onDatumBlur(): void {
+        if (this.form) {
+            this.form.form?.markAsDirty(); // NgForm.form is FormGroup
+        }
+
         if (this.hasEmptyAenderungPer()) {
             this.resetFamsit();
         }

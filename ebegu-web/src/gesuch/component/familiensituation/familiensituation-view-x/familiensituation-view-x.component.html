@@ -103,7 +103,7 @@
                                                 (dateChange)="
                                                     aenderungPerChanged()
                                                 "
-                                                [datePickerEnabled]="false"
+                                                [datePickerEnabled]="true"
                                                 [disabled]="isGesuchReadonly()"
                                             >
                                             </dv-date-picker-x>
@@ -214,8 +214,8 @@
                                     <div
                                         class="dv-input-container-medium-label"
                                     >
-                                        <dv-date-picker-x
-                                            [inputId]="'startKonkubinat_ID'"
+                                        <dv-date-picker-angularjs-xx
+                                            inputId="'startKonkubinat_ID'"
                                             [(date)]="
                                                 getFamiliensituation()
                                                     .startKonkubinat
@@ -225,12 +225,12 @@
                                             [noFutureDate]="true"
                                             (dateChange)="onDatumBlur()"
                                             data-test="container.konkubinat-start"
-                                            [datePickerEnabled]="false"
+                                            [datePickerEnabled]="true"
                                             [disabled]="
                                                 isStartKonkubinatDisabled()
                                             "
                                         >
-                                        </dv-date-picker-x>
+                                        </dv-date-picker-angularjs-xx>
                                         <dv-bisher-x
                                             [showBisher]="showBisher()"
                                             [deklaration]="

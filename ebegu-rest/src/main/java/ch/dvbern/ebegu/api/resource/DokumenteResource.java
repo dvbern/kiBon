@@ -38,12 +38,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 import ch.dvbern.ebegu.api.converter.JaxDokumentConverter;
-import ch.dvbern.ebegu.api.dtos.JaxDokumentErneuerung;
 import ch.dvbern.ebegu.api.dtos.JaxDokumentGrund;
+import ch.dvbern.ebegu.api.dtos.JaxDokumentZuUebernehmen;
 import ch.dvbern.ebegu.api.dtos.JaxDokumente;
-import ch.dvbern.ebegu.api.dtos.JaxGesuchDokumentErneuerungDTO;
+import ch.dvbern.ebegu.api.dtos.JaxGesuchDokumentZuUebernehmenDTO;
 import ch.dvbern.ebegu.api.dtos.JaxId;
-import ch.dvbern.ebegu.dokumente.DokumentErneuerungsService;
+import ch.dvbern.ebegu.dokumente.DokumentUebernehmenService;
 import ch.dvbern.ebegu.dokumente.anlageverzeichnis.DokumentenverzeichnisEvaluator;
 import ch.dvbern.ebegu.entities.Dokument;
 import ch.dvbern.ebegu.entities.DokumentGrund;
@@ -97,7 +97,7 @@ public class DokumenteResource {
 	private WizardStepService wizardStepService;
 
 	@Inject
-	private DokumentErneuerungsService dokumentErneuerungsService;
+	private DokumentUebernehmenService dokumentUebernehmenService;
 
 	@Operation(
 		summary = "Gibt alle Dokumentgruende zurück, welche zum uebergebenen Gesuch vorhanden sind.")
@@ -136,63 +136,87 @@ public class DokumenteResource {
 	}
 
 	@Operation(
-		summary = "Gibt alle DokumentTyp zurück, welche für dieses Gesuch erneuerbar (aus der Vorgängerperiode kopierbar) sind.")
+		summary = "Kontrolliert ob andere Gesuch schon verfügt sind in andere Dossier innerhalb dasselbe oder bei kleinere Gesuchsperioden.")
 	@Nullable
 	@GET
-	@Path("/{gesuchId}/erneuerbar")
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/{gesuchId}/uebernahme-moeglich")
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({ SUPER_ADMIN, GESUCHSTELLER, SACHBEARBEITER_BG, ADMIN_BG,
 		SACHBEARBEITER_TS, ADMIN_TS, SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE,
 		SACHBEARBEITER_SOZIALDIENST, ADMIN_SOZIALDIENST })
-	public List<JaxDokumentErneuerung> getErneuerbareDokumente(
+	public boolean isDokumentUebernahmeMoeglich(
 		@Nonnull @NotNull @Valid @PathParam("gesuchId") JaxId gesuchId
 	) {
 		Gesuch gesuch = gesuchService.findGesuch(gesuchId.getId())
 			.orElseThrow(
 				() -> new EbeguEntityNotFoundException(
-					"getDokumente",
+					"isDokumentUebernahmeMoeglich",
+					gesuchId.getId()
+				)
+			);
+		return dokumentUebernehmenService
+			.findVerfugtesGesuchMitDokumentZuUebernehmen(gesuch)
+			.isPresent();
+	}
+
+	@Operation(
+		summary = "Gibt alle DokumentTyp zurück, welche für dieses Gesuch übernehmbar (aus der Vorgängerperiode kopierbar oder andere Dossier) sind.")
+	@Nullable
+	@GET
+	@Path("/{gesuchId}/zu-uebernehmen")
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ SUPER_ADMIN, GESUCHSTELLER, SACHBEARBEITER_BG, ADMIN_BG,
+		SACHBEARBEITER_TS, ADMIN_TS, SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE,
+		SACHBEARBEITER_SOZIALDIENST, ADMIN_SOZIALDIENST })
+	public List<JaxDokumentZuUebernehmen> getDokumenteZuUebernehmen(
+		@Nonnull @NotNull @Valid @PathParam("gesuchId") JaxId gesuchId
+	) {
+		Gesuch gesuch = gesuchService.findGesuch(gesuchId.getId())
+			.orElseThrow(
+				() -> new EbeguEntityNotFoundException(
+					"getDokumenteZuUebernehmen",
 					gesuchId.getId()
 				)
 			);
 
 		return converter.dokumentErneuerungToJax(
-			dokumentErneuerungsService.getErneuerbareDokumente(gesuch)
+			dokumentUebernehmenService.getDokumenteZuUebernehmen(gesuch)
 		);
 	}
 
 	@Operation(
 		summary = "Endpoint zur Erneuerung der Dokumente in das angegebene Gesuch")
 	@POST
-	@Path("/erneuern")
+	@Path("/uebernehmen")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({ SUPER_ADMIN, GESUCHSTELLER, SACHBEARBEITER_BG, ADMIN_BG,
 		SACHBEARBEITER_TS, ADMIN_TS, SACHBEARBEITER_GEMEINDE, ADMIN_GEMEINDE,
 		SACHBEARBEITER_SOZIALDIENST, ADMIN_SOZIALDIENST })
-	public List<JaxDokumentErneuerung> dokumentErneuern(
-		@Valid JaxGesuchDokumentErneuerungDTO dokumentErneuerungDTO
+	public List<JaxDokumentZuUebernehmen> dokumenteUebernehmen(
+		@Valid JaxGesuchDokumentZuUebernehmenDTO dokumentZuUebernehmenDTO
 	) {
 		Gesuch gesuch = gesuchService.findGesuch(
-			dokumentErneuerungDTO.gesuchId().getId()
+			dokumentZuUebernehmenDTO.gesuchId().getId()
 		)
 			.orElseThrow(
 				() -> new EbeguEntityNotFoundException(
-					"getDokumente",
-					dokumentErneuerungDTO.gesuchId().getId()
+					"dokumenteUebernehmen",
+					dokumentZuUebernehmenDTO.gesuchId().getId()
 				)
 			);
 
-		var erneuerbareDokumente = converter.jaxDokumentErneuerungListToEntity(
-			dokumentErneuerungDTO.dokumentErneuerungen()
-		);
+		var dokumenteZuUebernehmen = converter
+			.jaxDokumentZuUebernehmenListToEntity(
+				dokumentZuUebernehmenDTO.dokumentZuUebernehmen()
+			);
 
-		var erneuerteDokumente = dokumentErneuerungsService.dokumenteErneuern(
-			gesuch,
-			erneuerbareDokumente
+		return converter.dokumentErneuerungToJax(
+			dokumentUebernehmenService.dokumenteUebernehmen(
+				gesuch,
+				dokumenteZuUebernehmen
+			)
 		);
-
-		return converter.dokumentErneuerungToJax(erneuerteDokumente);
 	}
 
 	@Operation(

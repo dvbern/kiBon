@@ -33,10 +33,24 @@ input.ng-touched.ng-invalid {
     background-color: @background-error-color;
 }
 
-input.dv-mat-datepicker {
+.dv-date-picker-x > .form-group input.dv-mat-datepicker {
     width: calc(100% - 4rem);
 }
 
 &.dv-mat-datepicker-wide {
     width: 100%;
+}
+
+.dv-date-picker-x {
+    &.disabled mat-datepicker-toggle .mat-mdc-button-persistent-ripple::before {
+        background: none !important;
+    }
+
+    @media screen and (min-width: 1921px) {
+        .mat-datepicker-toggle {
+            .mdc-icon-button {
+                line-height: 0;
+            }
+        }
+    }
 }

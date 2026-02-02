@@ -43,5 +43,9 @@ export class HybridFormBridgeService {
         }
     }
 
+    public hasAnyDirtyForm(): boolean {
+        return this._forms.some(f => f.dirty);
+    }
+
     private readonly _forms: NgForm[] = [];
 }

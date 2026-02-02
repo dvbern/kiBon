@@ -103,7 +103,8 @@ import {UnterstuetzungsdienstFallService} from './service/unterstuetzungsdienst-
 import {abweichungenEnabledHook} from './state-hooks/abweichungen-enabled.hook';
 import {GemeindeKontaktdatenComponent} from './component/dossierToolbar/gemeinde-kontaktdaten/gemeinde-kontaktdaten.component';
 import {OpenTabellarischeMaskeButtonComponent} from '@kibon/betreuung-pattern-tabellarische-maske-kita';
-import {GesuchOpenDokumenteErneuernButtonComponent} from '@kibon/gesuch-open-dokumente-erneuern-button';
+import {GesuchOpenDokumenteUebernehmenButtonComponent} from '@kibon/gesuch-open-dokumente-uebernehmen-button';
+import {DvDatePickerXAngularjswrapperComponent} from '../app/shared/component/dv-date-picker/dv-date-picker-x.angularjswrapper.component';
 
 export const GESUCH_JS_MODULE = angular
     .module('ebeguWeb.gesuch', [CORE_JS_MODULE.name])
@@ -337,6 +338,25 @@ export const GESUCH_JS_MODULE = angular
             outputs: ['download', 'delete', 'uploadFile']
         })
     )
+    .directive(
+        'dvDatePickerAngularjsXx',
+        downgradeComponent({
+            component: DvDatePickerXAngularjswrapperComponent,
+            inputs: [
+                'label',
+                'tooltip',
+                'date',
+                'minDate',
+                'maxDate',
+                'disabled',
+                'required',
+                'gesuchsperiode',
+                'noFutureDate',
+                'inputId'
+            ],
+            outputs: ['dateChange']
+        })
+    )
     .component(
         'sozialdienstFallCreationView',
         new SozialdienstFallCreationViewComponentConfig()
@@ -393,10 +413,10 @@ export const GESUCH_JS_MODULE = angular
         })
     )
     .directive(
-        'dvGesuchOpenDokumenteErneuernButton',
+        'dvGesuchOpenDokumenteUebernehmenButton',
         downgradeComponent({
-            component: GesuchOpenDokumenteErneuernButtonComponent,
-            outputs: ['dokumenteErneuert']
+            component: GesuchOpenDokumenteUebernehmenButtonComponent,
+            outputs: ['dokumenteUebernehmen']
         })
     )
     .directive(

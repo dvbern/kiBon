@@ -14,6 +14,7 @@
  */
 
 import {isBgInstitutionenBetreuungsangebot} from '@kibon/shared/util-fn/betreuungsangebot-typ';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {IComponentOptions, IPromise} from 'angular';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
@@ -78,7 +79,8 @@ export class AbwesenheitViewController extends AbstractGesuchViewController<
         'ErrorService',
         '$scope',
         '$timeout',
-        'EinstellungRS'
+        'EinstellungRS',
+        'HybridFormBridgeService'
     ];
 
     public betreuungList: Array<KindBetreuungUI>;
@@ -96,7 +98,8 @@ export class AbwesenheitViewController extends AbstractGesuchViewController<
         private readonly errorService: ErrorService,
         $scope: IScope,
         $timeout: ITimeoutService,
-        private readonly einstellungRS: EinstellungRS
+        private readonly einstellungRS: EinstellungRS,
+        protected readonly hybridFormBridgeService: HybridFormBridgeService
     ) {
         super(
             gesuchModelManager,
@@ -174,6 +177,10 @@ export class AbwesenheitViewController extends AbstractGesuchViewController<
     }
 
     public save(): IPromise<Array<TSBetreuung>> {
+        this.hybridFormBridgeService.triggerFormValidation();
+        if (this.hybridFormBridgeService.hasAnyInvalidForm()) {
+            return undefined;
+        }
         if (!this.isGesuchValid()) {
             return undefined;
         }

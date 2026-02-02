@@ -14,6 +14,7 @@
  */
 
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {StateService} from '@uirouter/core';
 import {IComponentOptions} from 'angular';
 import moment from 'moment';
@@ -124,7 +125,8 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         'GemeindeRS',
         'I18nServiceRSRest',
         'MandantService',
-        'EbeguRestUtil'
+        'EbeguRestUtil',
+        'HybridFormBridgeService'
     ];
 
     public gemeindeTSZusaetzlicheAngabenZurAnmeldungEnabled: boolean;
@@ -169,7 +171,8 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         private readonly gemeindeRS: GemeindeRS,
         private readonly i18nServiceRS: I18nServiceRSRest,
         mandantService: MandantService,
-        ebeguRestUtil: EbeguRestUtil
+        ebeguRestUtil: EbeguRestUtil,
+        hybridFormBridgeService: HybridFormBridgeService
     ) {
         super(
             $state,
@@ -190,7 +193,8 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
             $translate,
             applicationPropertyRS,
             mandantService,
-            ebeguRestUtil
+            ebeguRestUtil,
+            hybridFormBridgeService
         );
 
         this.$scope.$watch(

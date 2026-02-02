@@ -53,24 +53,28 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float required"
                                     data-translate="AB"
                                     for="sozialhilfeZeitraumAbID"
                                 >
                                 </label>
-                                <dv-datepicker
-                                    input-id="sozialhilfeZeitraumAbID"
+                                <dv-date-picker-angularjs-xx
+                                    inputId="sozialhilfeZeitraumAbID"
                                     name="sozialhilfeZeitraumAb"
-                                    ng-model="vm.model.sozialhilfeZeitraumJA.gueltigkeit.gueltigAb"
-                                    ng-required="true"
+                                    [(date)]="
+                                        vm.model.sozialhilfeZeitraumJA
+                                            .gueltigkeit.gueltigAb
+                                    "
+                                    ng-model="vm.model.sozialhilfeZeitraumJA
+                                            .gueltigkeit.gueltigAb"
+                                    required
                                     class="input-element"
-                                    placeholder=""
-                                    ng-disabled="vm.sozialhilfeZeitraumDisabled()"
-                                    ng-attr-placeholder="{{
-                                        'DATE_PLACEHOLDER' | translate
-                                    }}"
+                                    [disabled]="
+                                        vm.sozialhilfeZeitraumDisabled() ||
+                                        vm.isGesuchReadonly()
+                                    "
                                 >
-                                </dv-datepicker>
+                                </dv-date-picker-angularjs-xx>
                                 <dv-bisher
                                     gs="vm.model.sozialhilfeZeitraumGS.gueltigkeit.gueltigAb"
                                     ja="vm.model.sozialhilfeZeitraumJA.gueltigkeit.gueltigAb"
@@ -78,7 +82,7 @@
                                 ></dv-bisher>
                                 <dv-error-messages
                                     input-id="sozialhilfeZeitraumAbID"
-                                    for="vm.form.sozialhilfeZeitraumAb.$error"
+                                    for="vm.dateError()"
                                     class="error"
                                 ></dv-error-messages>
                             </dv-input-container>
@@ -91,17 +95,18 @@
                                     for="sozialhilfeZeitraumBisID"
                                 >
                                 </label>
-                                <dv-datepicker
-                                    input-id="sozialhilfeZeitraumBisID"
+                                <dv-date-picker-angularjs-xx
+                                    inputId="sozialhilfeZeitraumBisID"
                                     name="sozialhilfeZeitraumBis"
-                                    ng-model="vm.model.sozialhilfeZeitraumJA.gueltigkeit.gueltigBis"
-                                    ng-required="false"
+                                    [(date)]="
+                                        vm.model.sozialhilfeZeitraumJA
+                                            .gueltigkeit.gueltigBis
+                                    "
+                                    [required]="false"
                                     class="input-element"
-                                    ng-attr-placeholder="{{
-                                        'DATE_PLACEHOLDER' | translate
-                                    }}"
+                                    [disabled]="vm.isGesuchReadonly()"
                                 >
-                                </dv-datepicker>
+                                </dv-date-picker-angularjs-xx>
                                 <dv-bisher
                                     gs="vm.model.sozialhilfeZeitraumGS.gueltigkeit.gueltigBis"
                                     ja="vm.model.sozialhilfeZeitraumJA.gueltigkeit.gueltigBis"

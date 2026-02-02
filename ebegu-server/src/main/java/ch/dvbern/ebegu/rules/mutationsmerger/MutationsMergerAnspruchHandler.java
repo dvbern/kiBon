@@ -17,6 +17,7 @@
 
 package ch.dvbern.ebegu.rules.mutationsmerger;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Locale;
 
@@ -62,9 +63,16 @@ public class MutationsMergerAnspruchHandler extends
 			inputData.setAnspruchspensumProzent(
 				anspruchAufVorgaengerVerfuegung
 			);
-			inputData.setRueckwirkendReduziertesPensumRest(
-				anspruchberechtigtesPensum - anspruchAufVorgaengerVerfuegung
-			);
+
+			if (!isBetreuungAnspruchErhoeht(
+				inputData,
+				resultVorangehenderAbschnitt
+			)) {
+				inputData.setRueckwirkendReduziertesPensumRest(
+					anspruchberechtigtesPensum - anspruchAufVorgaengerVerfuegung
+				);
+			}
+
 			//Wenn der Anspruch auf dem Vorgänger 0 ist, weil das Erstgesuch zu spät eingereicht wurde
 			//soll die Bemerkung bezüglich der Erhöhung nicht angezeigt werden, da es sich um keine Erhöhung handelt
 			if (!isAnspruchZeroBecauseVorgaengerZuSpaet(
@@ -84,6 +92,27 @@ public class MutationsMergerAnspruchHandler extends
 				locale
 			);
 		}
+	}
+
+	/**
+	 * compare the current Betreuungspensum to Betreuungspensum from vorgaengerVerfuegung
+	 * this check fixes a bug when there is more Anspruch in a mutation and at the same time the betreuungspensum is
+	 * increased
+	 */
+	private boolean isBetreuungAnspruchErhoeht(
+		@Nonnull BGCalculationInput inputData,
+		@Nullable BGCalculationResult resultVorangehenderAbschnitt
+	) {
+
+		if (resultVorangehenderAbschnitt == null) {
+			return false;
+		}
+
+		BigDecimal a = inputData.getBetreuungspensumProzent();
+		BigDecimal b = resultVorangehenderAbschnitt
+			.getBetreuungspensumProzent();
+
+		return a.compareTo(b) > 0;
 	}
 
 	private boolean isAnspruchZeroBecauseVorgaengerZuSpaet(

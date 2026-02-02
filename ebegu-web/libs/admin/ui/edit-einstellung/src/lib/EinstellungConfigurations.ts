@@ -171,6 +171,8 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
         createConfiguration(Boolean),
     GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_MAXPROZENT:
         createConfiguration(Number),
+    GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD:
+        createConfiguration(Number),
     GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA: createConfiguration(Number),
     GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO: createConfiguration(Number),
     GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED: createConfiguration(Boolean),
@@ -284,7 +286,7 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
     SOZIALABZUG_PRO_KIND: createConfiguration(Number),
     ABGELOESTE_VIEW: createConfiguration(Boolean),
     GEMEINDE_KENNZAHLEN_REMINDER_ACTIVATED: createConfiguration(Boolean),
-    ERNEUERBARE_DOKUMENT_TYPS: createConfiguration(TSDokumentTyp)
+    DOKUMENT_ZU_UEBERNEHMEN_TYPS: createConfiguration(TSDokumentTyp)
 };
 
 type ConfigurableEnums = (typeof configEnums)[number];

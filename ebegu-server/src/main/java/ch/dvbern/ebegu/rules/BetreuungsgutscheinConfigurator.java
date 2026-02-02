@@ -38,6 +38,11 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.rules.familienabzug.AbstractFamilienabzugCalcRule;
 import ch.dvbern.ebegu.rules.familienabzug.FamilienabzugAbschnittRuleVisitor;
 import ch.dvbern.ebegu.rules.familienabzug.FamilienabzugCalcRuleVisitor;
+import ch.dvbern.ebegu.rules.kind.KindAnspruchCalcRule;
+import ch.dvbern.ebegu.rules.kind.KindTarifAbschnittRule;
+import ch.dvbern.ebegu.rules.kind.KindTarifGemeindeAbschnittRule;
+import ch.dvbern.ebegu.rules.kind.KindTerminiertAbschnittRule;
+import ch.dvbern.ebegu.rules.kind.KindTerminiertCalcRule;
 import ch.dvbern.ebegu.types.DateRange;
 import ch.dvbern.ebegu.util.Constants;
 import ch.dvbern.ebegu.util.KitaxUebergangsloesungParameter;
@@ -75,6 +80,8 @@ import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MIN_ERWERBSPEN
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_MIN_ERWERBSPENSUM_NICHT_EINGESCHULT;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_ENABLED;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_ANSPRUCH_FREIWILLIGENARBEIT_MAXPROZENT;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED;
+import static ch.dvbern.ebegu.einstellung.EinstellungKey.GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.GESCHWISTERNBONUS_TYP;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.GESUCH_BEENDEN_BEI_TAUSCH_GS2;
 import static ch.dvbern.ebegu.einstellung.EinstellungKey.HOEHERE_BEITRAEGE_BEEINTRAECHTIGUNG_AKTIVIERT;
@@ -143,6 +150,7 @@ public class BetreuungsgutscheinConfigurator {
 			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_2_VERGUENSTIGUNG_MAHLZEIT,
 			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_EINKOMMENSSTUFE_3_VERGUENSTIGUNG_MAHLZEIT,
 			GEMEINDE_MAHLZEITENVERGUENSTIGUNG_MINIMALER_ELTERNBEITRAG_MAHLZEIT,
+			GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD,
 			FKJV_MAX_DIFFERENZ_BESCHAEFTIGUNGSPENSUM,
 			FKJV_PAUSCHALE_BEI_ANSPRUCH,
 			FKJV_PAUSCHALE_RUECKWIRKEND,
@@ -155,6 +163,7 @@ public class BetreuungsgutscheinConfigurator {
 			GESCHWISTERNBONUS_TYP,
 			AUSSERORDENTLICHER_ANSPRUCH_RULE,
 			DAUER_BABYTARIF,
+			GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED,
 			KINDERABZUG_TYP,
 			FKJV_TEXTE,
 			FACHSTELLEN_TYP,
@@ -293,18 +302,38 @@ public class BetreuungsgutscheinConfigurator {
 			ruleParameterUtil
 		);
 
-		// - KindTarif
-		Einstellung param_dauerBabyTarif = ruleParameterUtil.getEinstellung(
-			DAUER_BABYTARIF
-		);
-		KindTarifAbschnittRule kindTarifAbschnittRule =
+		// - KindTarif - Es gibt zwei Tarife, die jeweils unabhängig voneinander betrachtet werden
+		// müssen. Es gibt einerseits einen Zuschlag vom Kanton und andererseits einen Zuschlag
+		// der Gemeinde. Beide Tarife sind optional und können über die Einstellungen aktiviert und
+		// definiert werden.
+		Einstellung paramDauerBabyTarifKanton = ruleParameterUtil
+			.getEinstellung(
+				DAUER_BABYTARIF
+			);
+		KindTarifAbschnittRule kindTarifKantonAbschnittRule =
 			new KindTarifAbschnittRule(
 				defaultGueltigkeit,
 				locale,
-				param_dauerBabyTarif.getValueAsInteger()
+				paramDauerBabyTarifKanton.getValueAsInteger()
 			);
 		addToRuleSetIfRelevantForGemeinde(
-			kindTarifAbschnittRule,
+			kindTarifKantonAbschnittRule,
+			ruleParameterUtil
+		);
+
+		Einstellung paramDauerBabyTarifGemeinde = ruleParameterUtil
+			.getEinstellung(
+				GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD
+			);
+
+		KindTarifGemeindeAbschnittRule kindTarifGemeindeAbschnittRule =
+			new KindTarifGemeindeAbschnittRule(
+				defaultGueltigkeit,
+				locale,
+				paramDauerBabyTarifGemeinde.getValueAsInteger()
+			);
+		addToRuleSetIfRelevantForGemeinde(
+			kindTarifGemeindeAbschnittRule,
 			ruleParameterUtil
 		);
 

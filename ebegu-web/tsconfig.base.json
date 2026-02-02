@@ -74,14 +74,14 @@
             "@kibon/betreuung/util/betreuung-rs": [
                 "libs/betreuung/util/betreuung-rs/src/index.ts"
             ],
-            "@kibon/gesuch-dokumente-erneuern-selection": [
-                "libs/gesuch/smart/dokumente-erneuern-selection/src/index.ts"
+            "@kibon/gesuch-dokumente-uebernehmen-selection": [
+                "libs/gesuch/smart/dokumente-uebernehmen-selection/src/index.ts"
             ],
             "@kibon/gesuch-erwerbspensumView": [
                 "libs/gesuch/routeable-component/erwerbspensum-view/src/index.ts"
             ],
-            "@kibon/gesuch-open-dokumente-erneuern-button": [
-                "libs/gesuch/smart/open-dokumente-erneuern-button/src/index.ts"
+            "@kibon/gesuch-open-dokumente-uebernehmen-button": [
+                "libs/gesuch/smart/open-dokumente-uebernehmen-button/src/index.ts"
             ],
             "@kibon/gesuch-heading": ["libs/gesuch/ui/heading/src/index.ts"],
             "@kibon/gesuch-page-layout": [

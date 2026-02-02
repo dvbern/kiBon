@@ -13,6 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {StateService} from '@uirouter/core';
 import {IComponentOptions, IFormController, IPromise} from 'angular';
 import {
@@ -91,7 +92,8 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         'SharedUtilApplicationPropertyRsService',
         'FerieninselStammdatenRS',
         'MandantService',
-        'EbeguRestUtil'
+        'EbeguRestUtil',
+        'HybridFormBridgeService'
     ];
 
     public betreuung: TSBetreuung;
@@ -124,7 +126,8 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly ferieninselStammdatenRS: FerieninselStammdatenRS,
         mandantService: MandantService,
-        ebeguRestUtil: EbeguRestUtil
+        ebeguRestUtil: EbeguRestUtil,
+        hybridFormBridgeService: HybridFormBridgeService
     ) {
         super(
             $state,
@@ -145,7 +148,8 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
             $translate,
             applicationPropertyRS,
             mandantService,
-            ebeguRestUtil
+            ebeguRestUtil,
+            hybridFormBridgeService
         );
     }
 

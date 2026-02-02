@@ -308,25 +308,27 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float ignore-danger-font-color"
+                                    class="md-no-float ignore-danger-font-color required"
                                     data-translate="AB"
                                     for="taetigkeitAbID"
                                 >
                                 </label>
-                                <dv-datepicker
-                                    input-id="taetigkeitAbID"
-                                    name="taetigkeitAb"
+                                <dv-date-picker-angularjs-xx
                                     data-test="taetigkeit-ab"
-                                    ng-model="vm.model.erwerbspensumJA.gueltigkeit.gueltigAb"
-                                    ng-required="true"
+                                    name="taetigkeitAb"
+                                    [inputId]="taetigkeitAbID"
                                     class="input-element"
-                                    placeholder=""
-                                    ng-disabled="vm.erwerbspensumDisabled()"
-                                    ng-attr-placeholder="{{
-                                        'DATE_PLACEHOLDER' | translate
-                                    }}"
+                                    [disabled]="
+                                        vm.erwerbspensumDisabled() ||
+                                        vm.isGesuchReadonly()
+                                    "
+                                    [required]="true"
+                                    [(date)]="
+                                        vm.model.erwerbspensumJA.gueltigkeit
+                                            .gueltigAb
+                                    "
                                 >
-                                </dv-datepicker>
+                                </dv-date-picker-angularjs-xx>
                                 <dv-bisher
                                     gs="vm.model.erwerbspensumGS.gueltigkeit.gueltigAb"
                                     ja="vm.model.erwerbspensumJA.gueltigkeit.gueltigAb"
@@ -347,18 +349,22 @@
                                     for="taetigkeitBisID"
                                 >
                                 </label>
-                                <dv-datepicker
-                                    input-id="taetigkeitBisID"
+                                <dv-date-picker-angularjs-xx
+                                    inputId="taetigkeitBisID"
                                     name="taetigkeitBis"
                                     data-test="taetigkeit-bis"
-                                    ng-model="vm.model.erwerbspensumJA.gueltigkeit.gueltigBis"
-                                    ng-required="false"
                                     class="input-element"
-                                    ng-attr-placeholder="{{
-                                        'DATE_PLACEHOLDER' | translate
-                                    }}"
+                                    [disabled]="
+                                        vm.erwerbspensumDisabled() ||
+                                        vm.isGesuchReadonly()
+                                    "
+                                    [required]="false"
+                                    [(date)]="
+                                        vm.model.erwerbspensumJA.gueltigkeit
+                                            .gueltigBis
+                                    "
                                 >
-                                </dv-datepicker>
+                                </dv-date-picker-angularjs-xx>
                                 <dv-bisher
                                     gs="vm.model.erwerbspensumGS.gueltigkeit.gueltigBis"
                                     ja="vm.model.erwerbspensumJA.gueltigkeit.gueltigBis"
@@ -418,23 +424,27 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float ignore-danger-font-color"
+                                    class="md-no-float ignore-danger-font-color required"
                                     data-translate="VON"
                                     for="urlaubDatumAb"
                                 ></label>
-                                <dv-datepicker
-                                    input-id="urlaubDatumAb"
+                                <dv-date-picker-angularjs-xx
+                                    inputId="urlaubDatumAb"
                                     name="urlaubDatumAb"
                                     data-test="urlaub-datum-ab"
+                                    [required]="vm.hasUnbezahlterUrlaub"
                                     class="input-element"
-                                    ng-model="vm.model.erwerbspensumJA.unbezahlterUrlaub.gueltigkeit.gueltigAb"
-                                    ng-required="vm.hasUnbezahlterUrlaub"
-                                    ng-attr-placeholder="{{
-                                        'DATE_PLACEHOLDER' | translate
-                                    }}"
-                                    ng-disabled="vm.isUnbezahlterUrlaubDisabled()"
-                                >
-                                </dv-datepicker>
+                                    [disabled]="
+                                        vm.isUnbezahlterUrlaubDisabled() ||
+                                        vm.isGesuchReadonly()
+                                    "
+                                    [(date)]="
+                                        vm.model.erwerbspensumJA
+                                            .unbezahlterUrlaub.gueltigkeit
+                                            .gueltigAb
+                                    "
+                                ></dv-date-picker-angularjs-xx>
+
                                 <dv-bisher
                                     gs="vm.model.erwerbspensumGS.unbezahlterUrlaub.gueltigkeit.gueltigAb"
                                     ja="vm.model.erwerbspensumJA.unbezahlterUrlaub.gueltigkeit.gueltigAb"
@@ -455,19 +465,22 @@
                                     data-translate="BIS"
                                     for="urlaubDatumBis"
                                 ></label>
-                                <dv-datepicker
-                                    input-id="urlaubDatumBis"
+                                <dv-date-picker-angularjs-xx
+                                    inputId="urlaubDatumBis"
                                     name="urlaubDatumBis"
                                     data-test="urlaub-datum-bis"
+                                    [required]="false"
                                     class="input-element"
-                                    ng-model="vm.model.erwerbspensumJA.unbezahlterUrlaub.gueltigkeit.gueltigBis"
-                                    ng-required="false"
-                                    ng-attr-placeholder="{{
-                                        'DATE_PLACEHOLDER' | translate
-                                    }}"
-                                    ng-disabled="vm.isUnbezahlterUrlaubDisabled()"
-                                >
-                                </dv-datepicker>
+                                    [disabled]="
+                                        vm.isUnbezahlterUrlaubDisabled() ||
+                                        vm.isGesuchReadonly()
+                                    "
+                                    [(date)]="
+                                        vm.model.erwerbspensumJA
+                                            .unbezahlterUrlaub.gueltigkeit
+                                            .gueltigBis
+                                    "
+                                ></dv-date-picker-angularjs-xx>
                                 <dv-bisher
                                     gs="vm.model.erwerbspensumGS.unbezahlterUrlaub.gueltigkeit.gueltigBis"
                                     ja="vm.model.erwerbspensumJA.unbezahlterUrlaub.gueltigkeit.gueltigBis"

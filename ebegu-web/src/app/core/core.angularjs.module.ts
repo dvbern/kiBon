@@ -109,7 +109,6 @@ import {customTranslateLoader} from './MultiMandantHttpLoader';
 import {DvAhvCheck} from './directive/dv-ahv-check';
 import {DvAhvGesuchstellerCheck} from './directive/dv-ahv-gesuchsteller-check';
 import {DVBarcodeListener} from './directive/dv-barcode-listener';
-import {DVDatepicker} from './directive/dv-datepicker/dv-datepicker';
 import {DvDialog} from './directive/dv-dialog/dv-dialog';
 import {DVDisplayElement} from './directive/dv-display-element/dv-display-element';
 import {DVEnableElement} from './directive/dv-enable-element/dv-enable-element';
@@ -300,7 +299,6 @@ export const CORE_JS_MODULE = angular
     .directive('dvMaxLength', DVMaxLength.factory())
     .directive('dvIsNotQrIban', DvIsNotQrIban.factory())
     .directive('dvIban', DvIbanValidator.factory())
-    .directive('dvDatepicker', DVDatepicker.factory())
     .directive('dvTimepicker', DVTimepicker.factory())
     .directive('dvValueinput', DVValueinput.factory())
     .directive('dvVerantwortlicherselect', DvVerantwortlicherselect.factory())

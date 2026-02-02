@@ -57,6 +57,26 @@ This project is packed with a private docker image. You can build it and run it 
 - There is a maven plugin that is used to format our java code, you can run it with the maven goal: spotless:apply
 - There is a frontend library to format the angular and html code, you can run it with: npm run fmt
 
+## Code Guidelines
+1. Frontend: the team primarily follows the Angular Style Guide. Any aspects that do not fit will be discussed within the team and defined specifically for kiBon.
+1. Prefer clarity over cleverness.
+   - Goal: Code should be immediately understandable to any developer without requiring external (technical or personal) assistance.
+   - The use of frameworks or language features to simplify code is still allowed and encouraged when it makes sense.
+1. Keep methods and classes small and focused (Single Responsibility Principle).
+1. Use descriptive, intention‑revealing names for classes, methods, and variables.
+   - A method/class/variable should be understandable solely from its name.
+   - If this is not the case (e.g., the naming is too complicated), reconsider whether the name is appropriate. If not, adjust it.
+   - If the method/class/variable is too complex to be named clearly, revisit the Single Responsibility Principle.
+   - In general: communicate within the team to clarify uncertainties.
+1. Naming Conventions
+   - Classes: PascalCase
+   - Variables & Methods: camelCase
+   - Constants: UPPER_SNAKE_CASE
+1. Avoid duplication; follow DRY and KISS.
+1. Write clear, focused tests for all non‑trivial logic.
+1. Public methods (class APIs) are documented using the Java Dock standard. Inside methods: comment only "why" when necessary.
+1. Handle errors explicitly: recover, translate, or propagate
+
 ## Further documentation
 
 * [Mailing](./docs/mailing.md)

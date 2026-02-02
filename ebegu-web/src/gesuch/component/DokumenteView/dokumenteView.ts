@@ -80,9 +80,10 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
     public dokumenteFreigabequittung: TSDokumentGrund[] = [];
     public massenversand: string[] = [];
     public isOnlineFreigabeAktiv: boolean = false;
-    public anyTypForErneuerungAllowed: boolean = false;
-    public rolesAllowedForErneuerung =
-        PERMISSIONS_DOKUMENTE[PermissionDokumente.DOKUMENTE_ERNEUERN];
+    public anyTypForUebernahmeAllowed: boolean = false;
+    public anyGesuchForUebernahmePresent: boolean = false;
+    public rolesAllowedForUebernahme =
+        PERMISSIONS_DOKUMENTE[PermissionDokumente.DOKUMENTE_UEBERNEHMEN];
 
     public constructor(
         $stateParams: IStammdatenStateParams,
@@ -126,13 +127,22 @@ export class DokumenteViewController extends AbstractGesuchViewController<any> {
         this.einstellungRS
             .getEinstellung(
                 this.gesuchModelManager.getGesuch().gesuchsperiode.id,
-                TSEinstellungKey.ERNEUERBARE_DOKUMENT_TYPS
+                TSEinstellungKey.DOKUMENT_ZU_UEBERNEHMEN_TYPS
             )
             .pipe(first())
             .subscribe((onlineFreigabe: TSEinstellung) => {
-                this.anyTypForErneuerungAllowed =
+                this.anyTypForUebernahmeAllowed =
                     onlineFreigabe.value.length > 0;
             });
+        this.dokumenteRS
+            .isDokumentUebernahmeMoeglich(
+                this.gesuchModelManager.getGesuch().id
+            )
+            .subscribe(
+                (dokumentUebernahmeMoeglich: boolean) =>
+                    (this.anyGesuchForUebernahmePresent =
+                        dokumentUebernahmeMoeglich)
+            );
     }
 
     public calculate(): void {

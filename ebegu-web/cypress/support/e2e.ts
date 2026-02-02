@@ -46,7 +46,6 @@ const rootInteractionElements = [
     'md-radio-button',
     'dv-accordion-tab',
     'dv-checkbox-x',
-    'dv-datepicker',
     'dv-date-picker-x',
     'dv-input-label-field',
     'dv-valueinput',
@@ -57,7 +56,6 @@ const elementsWithSuffixSelector: [
     string
 ][] = [
     ['dv-checkbox-x', '[data-test="checkbox"]'],
-    ['dv-datepicker', 'input'],
     ['dv-date-picker-x', 'input'],
     ['dv-input-label-field', 'input'],
     ['dv-valueinput', 'input'],

@@ -13,6 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import angular from 'angular';
 import {of} from 'rxjs';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
@@ -46,6 +47,7 @@ xdescribe('abwesenheitView', () => {
     let $scope: angular.IScope;
     let $timeout: angular.ITimeoutService;
     let einstellungRS: EinstellungRS;
+    let hybridFormBridgeService: HybridFormBridgeService;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
 
@@ -86,7 +88,8 @@ xdescribe('abwesenheitView', () => {
             errorService,
             $scope,
             $timeout,
-            einstellungRS
+            einstellungRS,
+            hybridFormBridgeService
         );
     });
 

@@ -17,7 +17,6 @@
 
 package ch.dvbern.ebegu.inbox.handler;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -26,19 +25,12 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
-import ch.dvbern.ebegu.entities.Benutzer;
 import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.Betreuungsmitteilung;
-import ch.dvbern.ebegu.entities.Betreuungspensum;
-import ch.dvbern.ebegu.entities.Dossier;
-import ch.dvbern.ebegu.entities.ErweiterteBetreuung;
 import ch.dvbern.ebegu.entities.Gemeinde;
 import ch.dvbern.ebegu.entities.Gesuch;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.entities.InstitutionExternalClient;
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
-import ch.dvbern.ebegu.enums.MitteilungStatus;
-import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
 import ch.dvbern.ebegu.inbox.services.BetreuungEventHelper;
 import ch.dvbern.ebegu.services.BetreuungMonitoringService;
@@ -49,8 +41,6 @@ import ch.dvbern.ebegu.test.TestDataUtil;
 import ch.dvbern.ebegu.test.util.TestDataInstitutionStammdatenBuilder;
 import ch.dvbern.ebegu.testfaelle.Testfall01_WaeltiDagmar;
 import ch.dvbern.ebegu.types.DateRange;
-import ch.dvbern.ebegu.util.Constants;
-import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
@@ -67,20 +57,11 @@ import org.junit.jupiter.params.provider.EnumSource.Mode;
 
 import static ch.dvbern.ebegu.inbox.handler.PlatzbestaetigungTestUtil.REF_NUMMER;
 import static ch.dvbern.ebegu.inbox.handler.PlatzbestaetigungTestUtil.failed;
-import static ch.dvbern.ebegu.inbox.handler.PlatzbestaetigungTestUtil.getSingleContainer;
-import static com.spotify.hamcrest.pojo.IsPojo.pojo;
-import static java.util.Objects.requireNonNull;
-import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.newCapture;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.Matchers.stringContainsInOrder;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(EasyMockExtension.class)
 public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
@@ -246,213 +227,12 @@ public class BetreuungStornierenEventHandlerTest extends EasyMockSupport {
 			);
 		}
 
-		@ParameterizedTest
-		@EnumSource(value = Betreuungsstatus.class,
-			names = { "WARTEN", "BESTAETIGT", "VERFUEGT",
-				"GESCHLOSSEN_OHNE_VERFUEGUNG" },
-			mode = Mode.EXCLUDE)
-		void ignoreWhenInvalidBetreuungStatus(
-			@Nonnull Betreuungsstatus status
-		) {
-			Betreuung betreuung = betreuungWithSingleContainer();
-			betreuung.setBetreuungsstatus(status);
-
-			expectBetreuungFound(betreuung);
-			mockClient(Constants.DEFAULT_GUELTIGKEIT);
-
-			replayAll();
-
-			Processing result = handler.attemptProcessing(eventMonitor);
-			assertThat(
-				result,
-				failed(
-					stringContainsInOrder(
-						"Die Betreuung befindet sich in einen Status in dem eine Stornierung nicht erlaubt ist."
-					)
-				)
-			);
-			verifyAll();
-		}
-
 		private void testIgnored(@Nonnull String message) {
 			replayAll();
 
 			Processing result = handler.attemptProcessing(eventMonitor);
 			assertThat(result, failed(message));
 			verifyAll();
-		}
-	}
-
-	@Nested
-	class BetreuungStornierenTest {
-		private Betreuung betreuung = null;
-		private DateRange clientGueltigkeit = Constants.DEFAULT_GUELTIGKEIT;
-
-		/**
-		 * The default setup yields an Mutationsmeldung
-		 */
-		@BeforeEach
-		void setUp() {
-			betreuung = betreuungWithSingleContainer();
-			betreuung.setBetreuungsstatus(Betreuungsstatus.VERFUEGT);
-			Betreuungspensum betreuungspensum = getSingleContainer(betreuung);
-			// set a pensum different of default zeitabschnitt DTO, otherwiese pensen will be merged, making validation
-			// of gueltigkeiten harder
-			betreuungspensum.setPensum(BigDecimal.valueOf(50));
-			ErweiterteBetreuung erweiterteBetreuung =
-				requireNonNull(
-					betreuung.getErweiterteBetreuungContainer()
-						.getErweiterteBetreuungJA()
-				);
-			// the default test data already sets TRUE, but the actual default is NULL...
-			erweiterteBetreuung.setBetreuungInGemeinde(null);
-
-			clientGueltigkeit = Constants.DEFAULT_GUELTIGKEIT;
-		}
-
-		@Test
-		void createsNewBetreuungstornierenmeldungWhenNoneExists() {
-			Capture<Betreuungsmitteilung> capture = expectNewMitteilung();
-			expectMutationsmeldung();
-			testProcessingSuccess();
-
-			Dossier dossier = gesuch_1GS.getDossier();
-
-			assertThat(
-				capture.getValue(),
-				pojo(Betreuungsmitteilung.class)
-					.where(
-						Betreuungsmitteilung::getDossier,
-						sameInstance(dossier)
-					)
-					.where(
-						Betreuungsmitteilung::getSenderTyp,
-						is(MitteilungTeilnehmerTyp.INSTITUTION)
-					)
-					.where(
-						Betreuungsmitteilung::getSender,
-						notNullValue()
-					)
-					.where(
-						Betreuungsmitteilung::getEmpfaengerTyp,
-						is(MitteilungTeilnehmerTyp.JUGENDAMT)
-					)
-					.where(
-						Betreuungsmitteilung::getEmpfaenger,
-						sameInstance(
-							dossier.getFall().getBesitzer()
-						)
-					)
-					.where(
-						Betreuungsmitteilung::getMitteilungStatus,
-						is(MitteilungStatus.NEU)
-					)
-					.where(
-						Betreuungsmitteilung::getSubject,
-						is("Mutationstornierungmeldung")
-					)
-					.where(
-						Betreuungsmitteilung::isBetreuungStornieren,
-						is(true)
-					)
-					.where(
-						Betreuungsmitteilung::getBetreuung,
-						sameInstance(betreuung)
-					)
-			);
-		}
-
-		@Test
-		void createsDefaultMessage() {
-			Capture<Betreuungsmitteilung> capture = expectNewMitteilung();
-
-			expectMutationsmeldung();
-
-			testProcessingSuccess();
-
-			// ignoring the dates, because their formatting is not platform independent
-			assertThat(
-				capture.getValue().getMessage(),
-				stringContainsInOrder(
-					"Die Betreuung ",
-					" wird storniert"
-				)
-			);
-		}
-
-		@Test
-		void betreuungDirektStornieren() {
-			betreuung.setVorgaengerId("SIMULATED-MUTATION");
-			betreuung.setBetreuungsstatus(Betreuungsstatus.WARTEN);
-
-			expectDirektStornierung();
-
-			testProcessingSuccess();
-
-			assertEquals(
-				betreuung.getBetreuungsstatus(),
-				Betreuungsstatus.STORNIERT
-			);
-		}
-
-		private void testProcessingSuccess() {
-
-			replayAll();
-
-			Processing result = handler.attemptProcessing(eventMonitor);
-			assertThat(result.isProcessingSuccess(), is(true));
-			verifyAll();
-		}
-
-		private void expectDirektStornierung() {
-			expectBetreuungFound(betreuung);
-
-			mockClient(clientGueltigkeit);
-
-			expect(
-				betreuungService.saveBetreuung(
-					betreuung,
-					false,
-					CLIENT_NAME
-				)
-			)
-				.andReturn(betreuung);
-		}
-
-		private void expectMutationsmeldung() {
-			expectBetreuungFound(betreuung);
-
-			mockClient(clientGueltigkeit);
-
-			expect(betreuungEventHelper.getMutationsmeldungBenutzer(betreuung))
-				.andReturn(new Benutzer());
-
-			expect(
-				gemeindeService.getGemeindeStammdatenByGemeindeId(
-					gemeinde.getId()
-				)
-			)
-				.andReturn(
-					Optional.of(
-						TestDataUtil.createGemeindeStammdaten(
-							gemeinde
-						)
-					)
-				);
-		}
-
-		@Nonnull
-		private Capture<Betreuungsmitteilung> expectNewMitteilung() {
-			Capture<Betreuungsmitteilung> captured = newCapture();
-			//noinspection ConstantConditions
-			mitteilungService
-				.replaceOffeneBetreungsmitteilungenWithSameReferenzNummer(
-					capture(captured),
-					eq(REF_NUMMER)
-				);
-			expectLastCall();
-
-			return captured;
 		}
 	}
 

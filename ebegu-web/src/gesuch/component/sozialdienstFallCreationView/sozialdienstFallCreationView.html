@@ -122,20 +122,23 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float ignore-danger-font-color"
+                                    class="md-no-float ignore-danger-font-color required"
                                     data-translate="GEBURTSDATUM"
                                     for="geburtsdatum_ID"
                                 >
                                 </label>
-                                <dv-datepicker
-                                    no-future="true"
-                                    input-id="geburtsdatum_ID"
+                                <dv-date-picker-angularjs-xx
+                                    [no-future-date]="true"
+                                    inputId="geburtsdatum_ID"
                                     name="geburtsdatum"
-                                    ng-model="vm.getSozialdienstFall().geburtsdatum"
-                                    ng-required="true"
+                                    [(date)]="
+                                        vm.getSozialdienstFall().geburtsdatum
+                                    "
+                                    [required]="true"
                                     class="input-element"
+                                    [disabled]="vm.isSozialdienstFallReadOnly()"
                                 >
-                                </dv-datepicker>
+                                </dv-date-picker-angularjs-xx>
                                 <dv-error-messages
                                     input-id="geburtsdatum_ID"
                                     for="vm.form.geburtsdatum.$error"
@@ -341,19 +344,23 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float ignore-danger-font-color"
+                                    class="md-no-float ignore-danger-font-color required"
                                     data-translate="GEBURTSDATUM"
                                     for="geburtsdatumGs2_ID"
                                 >
                                 </label>
-                                <dv-datepicker
-                                    no-future="true"
-                                    input-id="geburtsdatumGs2_ID"
+                                <dv-date-picker-angularjs-xx
+                                    [no-future-date]="true"
+                                    inputId="geburtsdatumGs2_ID"
                                     name="geburtsdatumGs2"
-                                    ng-model="vm.getSozialdienstFall().geburtsdatumGs2"
+                                    [(date)]="
+                                        vm.getSozialdienstFall().geburtsdatumGs2
+                                    "
                                     class="input-element"
+                                    [required]="true"
+                                    [disabled]="vm.isSozialdienstFallReadOnly()"
                                 >
-                                </dv-datepicker>
+                                </dv-date-picker-angularjs-xx>
                                 <dv-error-messages
                                     input-id="geburtsdatumGs2_ID"
                                     for="vm.form.geburtsdatumGs2.$error"

@@ -276,6 +276,7 @@ public class ZusaetzlicherBabyGutscheinBerechnungTest extends
 			BetreuungsangebotTyp.KITA
 		);
 		abschnitt.setBabyTarifForAsivAndGemeinde(true);
+		abschnitt.setZusaetzlicherBabyGutscheinForAsivAndGemeinde(true);
 		abschnitt.setSozialhilfeempfaengerForAsivAndGemeinde(false);
 		abschnitt.setBetreuungspensumProzentForAsivAndGemeinde(
 			MathUtil.DEFAULT.from(100)

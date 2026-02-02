@@ -26,11 +26,11 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.api.dtos.JaxDokument;
-import ch.dvbern.ebegu.api.dtos.JaxDokumentErneuerung;
 import ch.dvbern.ebegu.api.dtos.JaxDokumentGrund;
+import ch.dvbern.ebegu.api.dtos.JaxDokumentZuUebernehmen;
 import ch.dvbern.ebegu.api.dtos.JaxDokumente;
 import ch.dvbern.ebegu.api.dtos.JaxDownloadFile;
-import ch.dvbern.ebegu.dokumente.DokumentErneuerung;
+import ch.dvbern.ebegu.dokumente.DokumentZuUebernehmen;
 import ch.dvbern.ebegu.entities.Dokument;
 import ch.dvbern.ebegu.entities.DokumentGrund;
 import ch.dvbern.ebegu.entities.DownloadFile;
@@ -144,31 +144,31 @@ public class JaxDokumentConverter extends AbstractBaseConverter {
 		return jaxDownloadFile;
 	}
 
-	public List<JaxDokumentErneuerung> dokumentErneuerungToJax(
-		List<DokumentErneuerung> erneuerbareDokumente
+	public List<JaxDokumentZuUebernehmen> dokumentErneuerungToJax(
+		List<DokumentZuUebernehmen> dokumenteZuUebernehmen
 	) {
-		return erneuerbareDokumente.stream()
+		return dokumenteZuUebernehmen.stream()
 			.map(
-				erneuerbaresDokument -> new JaxDokumentErneuerung(
-					dokumentGrundToJax(erneuerbaresDokument.grund()),
-					dokumentToJax(erneuerbaresDokument.dokument())
+				dokumentZuUebernehmen -> new JaxDokumentZuUebernehmen(
+					dokumentGrundToJax(dokumentZuUebernehmen.grund()),
+					dokumentToJax(dokumentZuUebernehmen.dokument())
 				)
 			)
 			.toList();
 	}
 
-	public List<DokumentErneuerung> jaxDokumentErneuerungListToEntity(
-		List<JaxDokumentErneuerung> erneuerbareDokumente
+	public List<DokumentZuUebernehmen> jaxDokumentZuUebernehmenListToEntity(
+		List<JaxDokumentZuUebernehmen> dokumenteZuUebernehmen
 	) {
-		return erneuerbareDokumente.stream()
+		return dokumenteZuUebernehmen.stream()
 			.map(
-				erneuerbaresDokument -> new DokumentErneuerung(
+				dokumentZuUebernehmen -> new DokumentZuUebernehmen(
 					dokumentGrundToEntity(
-						erneuerbaresDokument.grund(),
+						dokumentZuUebernehmen.grund(),
 						new DokumentGrund()
 					),
 					(Dokument) convertFileToEnity(
-						erneuerbaresDokument.dokument(),
+						dokumentZuUebernehmen.dokument(),
 						new Dokument()
 					)
 				)

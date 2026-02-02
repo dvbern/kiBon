@@ -23,7 +23,7 @@ import {GlobalCacheService} from '../../../../../../src/gesuch/service/globalCac
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {EditEinstellungComponent} from '@kibon/admin-edit-einstellung';
 import {TSEinstellungKey} from '../../../../../../src/admin/einstellungen/TSEinstellungKey';
-import {ErneuerbareDokumenteEinstellungGroupComponent} from './erneuerbare-dokumente-einstellung-group/erneuerbare-dokumente-einstellung-group.component';
+import {DokumenteZuUebernehmenEinstellungGroupComponent} from './dokumente-zu-uebernehmen-einstellung-group/dokumente-zu-uebernehmen-einstellung-group.component';
 
 const LOG = LogFactory.createLog('GesuchsperiodeViewXComponent');
 
@@ -33,7 +33,7 @@ const LOG = LogFactory.createLog('GesuchsperiodeViewXComponent');
         CommonModule,
         SharedModule,
         EditEinstellungComponent,
-        ErneuerbareDokumenteEinstellungGroupComponent
+        DokumenteZuUebernehmenEinstellungGroupComponent
     ],
     templateUrl: './admin-gesuchsperioden-einstellungen.component.html',
     styleUrl: './admin-gesuchsperioden-einstellungen.component.less',
@@ -46,7 +46,7 @@ export class AdminGesuchsperiodenEinstellungenComponent {
     private readonly gesuchsperiodenService = inject(GesuchsperiodeRS);
     private readonly globalCacheService = inject(GlobalCacheService);
     private readonly groupedEinstellungen = [
-        TSEinstellungKey.ERNEUERBARE_DOKUMENT_TYPS
+        TSEinstellungKey.DOKUMENT_ZU_UEBERNEHMEN_TYPS
     ];
 
     gesuchsperiode = input.required<TSGesuchsperiode>();
@@ -77,13 +77,13 @@ export class AdminGesuchsperiodenEinstellungenComponent {
         return new MatTableDataSource<TSEinstellung>(tableEinstellungen);
     });
 
-    erneuerbareDokuementeEinstellungEinstellung = computed(() => {
+    dokumenteZuUebernehmenEinstellung = computed(() => {
         return this.einstellungenRes
             .value()
             ?.find(
                 einstellung =>
                     einstellung.key ===
-                    TSEinstellungKey.ERNEUERBARE_DOKUMENT_TYPS
+                    TSEinstellungKey.DOKUMENT_ZU_UEBERNEHMEN_TYPS
             );
     });
 
@@ -117,7 +117,7 @@ export class AdminGesuchsperiodenEinstellungenComponent {
 
     public saveParameterByGesuchsperiode(): void {
         const allEinstellungen = this.tableData().data.concat(
-            this.erneuerbareDokuementeEinstellungEinstellung() ?? []
+            this.dokumenteZuUebernehmenEinstellung() ?? []
         );
         allEinstellungen.forEach((param: TSEinstellung) => {
             if (param.value != 'null') {

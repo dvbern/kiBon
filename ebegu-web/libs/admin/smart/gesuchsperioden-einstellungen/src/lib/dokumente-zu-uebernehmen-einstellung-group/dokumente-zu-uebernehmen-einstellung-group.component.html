@@ -1,0 +1,42 @@
+<div class="mb-10">
+    <mat-accordion>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title
+                    ><span class="mr-2">{{
+                        einstellung().key | translate
+                    }}</span>
+                    <dv-tooltip [text]="einstellung().erklaerung"></dv-tooltip>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-accordion displayMode="flat">
+                @for (group of groups; track group) {
+                    @let typsOfGroup = GS_DOKUMENT_ZU_UEBERNEHMEN_GROUPS[group];
+                    @if (typsOfGroup.length > 0) {
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>{{
+                                    'DOKUMENT_GRUND_TYP_' + group | translate
+                                }}</mat-panel-title>
+                            </mat-expansion-panel-header>
+                            @for (
+                                dokumentTyp of typsOfGroup;
+                                track dokumentTyp
+                            ) {
+                                <mat-checkbox
+                                    [(ngModel)]="
+                                        einstellungModel()[dokumentTyp]
+                                    "
+                                    (ngModelChange)="emitSelection()"
+                                    >{{ dokumentTyp }}: ({{
+                                        group + '_' + dokumentTyp | translate
+                                    }})
+                                </mat-checkbox>
+                            }
+                        </mat-expansion-panel>
+                    }
+                }
+            </mat-accordion>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>

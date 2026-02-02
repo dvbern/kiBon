@@ -14,6 +14,7 @@
  */
 
 import {TSIntegrationTyp, TSPensumFachstelle} from '@kibon/shared/model/entity';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {StateService} from '@uirouter/core';
 import angular from 'angular';
 import {of} from 'rxjs';
@@ -73,6 +74,7 @@ xdescribe('betreuungView', () => {
     let mandantService: MandantService;
     let ebeguRestUtil: EbeguRestUtil;
     let $translateMock: jasmine.SpyObj<ITranslateService>;
+    let hybridFormBridgeService: HybridFormBridgeService;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
 
@@ -93,6 +95,7 @@ xdescribe('betreuungView', () => {
             institutionStammdatenRS = $injector.get('InstitutionStammdatenRS');
             mandantService = $injector.get('MandantService');
             ebeguRestUtil = $injector.get('EbeguRestUtil');
+            hybridFormBridgeService = $injector.get('HybridFormBridgeService');
             // they always need to be mocked
             TestDataUtil.mockDefaultGesuchModelManagerHttpCalls($httpBackend);
             TestDataUtil.mockDefaultGesuchModelManagerHttpCalls($httpBackend);
@@ -196,7 +199,8 @@ xdescribe('betreuungView', () => {
                 $translateMock,
                 $injector.get('SharedUtilApplicationPropertyRsService'),
                 mandantService,
-                ebeguRestUtil
+                ebeguRestUtil,
+                hybridFormBridgeService
             );
         })
     );
@@ -241,7 +245,8 @@ xdescribe('betreuungView', () => {
                     undefined,
                     undefined,
                     mandantService,
-                    ebeguRestUtil
+                    ebeguRestUtil,
+                    hybridFormBridgeService
                 );
                 myBetreuungView.model = betreuung;
                 expect(myBetreuungView.getBetreuungspensen()).toBeDefined();

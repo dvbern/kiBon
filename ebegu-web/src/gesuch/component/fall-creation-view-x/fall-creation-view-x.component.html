@@ -54,7 +54,7 @@
 
                     <!--Willkommnstext bei Erstgesuch-->
                     @if (gesuchModelManager.isGesuch()) {
-                        <div>
+                        <div class="erst-gesuch-text margin-bottom-20">
                             @if (isTagesschuleEnabledForMandant) {
                                 <p>
                                     {{
@@ -84,7 +84,7 @@
 
                     <!--Mutationelemente auswaehlen. Nur fuer Mutationen-->
                     @if (!gesuchModelManager.isGesuch()) {
-                        <div class="margin-bottom-20">
+                        <div class="margin-bottom-20 gesuch-bearbeiten">
                             <h3 class="ebegu-h2" translate>
                                 MUTATION_AUSWAHL_TEXT_1
                             </h3>
@@ -106,7 +106,7 @@
 
                     <!--Eingangsdatum-->
                     <div
-                        class="row margin-top-30"
+                        class="row margin-top-30 eingangs-datum"
                         *dvNgShowElement="
                             true;
                             roles: getAllRolesButGesuchstellerSozialdienst()
@@ -137,9 +137,12 @@
                                         [inputId]="'eingangsdatum'"
                                         id="eingangsdatum"
                                         data-test="fall-creation-eingangsdatum"
-                                        [datePickerEnabled]="false"
+                                        [datePickerEnabled]="true"
                                         [(date)]="
                                             getGesuchModel().eingangsdatum
+                                        "
+                                        [disabled]="
+                                            gesuchModelManager.isGesuchReadonly()
                                         "
                                     ></dv-date-picker-x>
                                 </div>
@@ -149,7 +152,7 @@
 
                     <!-- Regeln gueltig ab (Datum) -->
                     <div
-                        class="row"
+                        class="row alternativ-datum"
                         *dvNgShowElement="
                             true;
                             roles: getAllRolesButGesuchstellerSozialdienst()
@@ -180,8 +183,10 @@
                                         [inputId]="'alternativDatum'"
                                         data-test="fall-creation-alternativDatum"
                                         id="alternativDatum"
-                                        [datePickerEnabled]="false"
                                         class="input-element"
+                                        [disabled]="
+                                            gesuchModelManager.isGesuchReadonly()
+                                        "
                                     >
                                     </dv-date-picker-x>
                                 </div>
@@ -191,7 +196,7 @@
 
                     <!-- Mutationsbegruendung -->
                     @if (isShowInputBegruendungMutation()) {
-                        <div class="row margin-bottom-20">
+                        <div class="row margin-bottom-20 mutation-begruendung">
                             <dv-input-container class="form-group">
                                 <div class="col-sm-12">
                                     <label
@@ -225,12 +230,23 @@
                     <div
                         *dvNgShowElement="
                             canChangeGesuchsperiode();
-                            roles: getAllRolesButGesuchstellerSozialdienst()
+                            roles: getAllRolesButGesuchsteller()
                         "
+                        class="change-gesuchsperiode"
                     >
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label
+                                        class="md-no-float"
+                                        for="gesuchsperioden"
+                                    >
+                                        <span
+                                            [translate]="
+                                                'ERNEUERUNGSGESUCH_PERIODEN_SELECT'
+                                            "
+                                        ></span>
+                                    </label>
                                     <div class="dv-radio-container">
                                         <dv-radio-container-x>
                                             <mat-radio-group

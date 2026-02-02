@@ -97,18 +97,21 @@
                             data-translate="EINTRITTSDATUM"
                             for="eintrittsdatum_ID"
                         ></label>
-                        <dv-datepicker
-                            input-id="eintrittsdatum_ID"
+                        <dv-date-picker-angularjs-xx
+                            inputId="eintrittsdatum_ID"
                             name="eintrittsdatum"
                             data-test="eintrittsdatum"
-                            ng-model="vm.betreuung.belegungTagesschule.eintrittsdatum"
-                            ng-required="true"
+                            [required]="true"
                             class="input-element"
-                            dv-gesuchsperiode-min-date="vm.getMinDateInCurrentPeriode()"
-                            dv-gesuchsperiode-max-date="vm.getMaxDateInCurrentPeriode()"
+                            [min-date]="vm.getMinDateInCurrentPeriode()"
+                            [max-date]="vm.getMaxDateInCurrentPeriode()"
                             data-test="betreuung.tagesschule.eintrittsdatum"
+                            [gesuchsperiode]="vm.getGesuch().gesuchsperiode"
+                            [(date)]="
+                                vm.betreuung.belegungTagesschule.eintrittsdatum
+                            "
                         >
-                        </dv-datepicker>
+                        </dv-date-picker-angularjs-xx>
                         <dv-error-messages
                             class="date"
                             input-id="eintrittsdatum_ID"

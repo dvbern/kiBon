@@ -22,12 +22,10 @@
                 </div>
             </div>
 
-            @if (erneuerbareDokuementeEinstellungEinstellung()) {
-                <lib-erneuerbare-dokumente-einstellung-group
-                    [einstellung]="
-                        erneuerbareDokuementeEinstellungEinstellung()!
-                    "
-                ></lib-erneuerbare-dokumente-einstellung-group>
+            @if (dokumenteZuUebernehmenEinstellung()) {
+                <lib-dokumente-zu-uebernehmen-einstellung-group
+                    [einstellung]="dokumenteZuUebernehmenEinstellung()!"
+                ></lib-dokumente-zu-uebernehmen-einstellung-group>
             }
 
             <div class="w-[85%]">

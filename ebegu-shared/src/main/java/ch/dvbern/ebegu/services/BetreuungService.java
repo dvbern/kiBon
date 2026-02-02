@@ -92,6 +92,20 @@ public interface BetreuungService {
 	);
 
 	/**
+	 * Setzt die Betreuungsplatzanfrage auf ABGEWIESEN und sendet dem Gesuchsteller eine E-Mail.
+	 * 
+	 * @param betreuung Referenz auf die abzuweisende Betreuung.
+	 * @param externalClient Referenz auf die externe Applikation, welche die Abweisung ausgelöst hat.
+	 * @param begruendung Die Begrüngung der Abweisung.
+	 * @return Referenz auf die Betreuung mit den gespeicherten Änderungen.
+	 */
+	Betreuung betreuungPlatzAbweisen(
+		@Valid @Nonnull Betreuung betreuung,
+		@Nullable String externalClient,
+		@Nonnull String begruendung
+	);
+
+	/**
 	 * Setzt die Betreuungsplatzanfrage auf BESTAETIGT und sendet dem Gesuchsteller eine E-Mail,
 	 * falls damit alle Betreuungen des Gesuchs bestaetigt sind.
 	 */

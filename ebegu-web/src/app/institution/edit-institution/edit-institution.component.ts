@@ -400,7 +400,8 @@ export class EditInstitutionComponent implements OnInit {
             EditInstitutionComponent.hasGueltigkeitDecreased(
                 this.preEditGueltigkeit,
                 this.stammdaten.gueltigkeit
-            )
+            ) &&
+            this.isBetreuungsgutschein()
         ) {
             const dialogConfig = new MatDialogConfig();
             dialogConfig.data = {

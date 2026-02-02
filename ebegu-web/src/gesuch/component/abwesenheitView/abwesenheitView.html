@@ -109,23 +109,27 @@
                             <div class="col-sm-12 dv-input-container-small">
                                 <dv-input-container class="form-group">
                                     <label
-                                        class="md-no-float"
+                                        class="md-no-float required"
                                         data-translate="VON"
                                         for="datumAb-{{ $index }}"
                                     >
                                     </label>
-                                    <dv-datepicker
+                                    <dv-date-picker-angularjs-xx
                                         input-id="datumAb-{{ $index }}"
                                         name="datumAb-{{ $index }}"
                                         class="input-element"
                                         data-test="abwesenheit-von"
-                                        ng-model="abwesenheitInstance.abwesenheit.abwesenheitJA.gueltigkeit.gueltigAb"
-                                        ng-required="true"
-                                        ng-attr-placeholder="{{
-                                            'DATE_PLACEHOLDER' | translate
-                                        }}"
+                                        [required]="true"
+                                        [(date)]="
+                                            abwesenheitInstance.abwesenheit
+                                                .abwesenheitJA.gueltigkeit
+                                                .gueltigAb
+                                        "
+                                        [gesuchsperiode]="
+                                            vm.getGesuch().getGesuchsperiode()
+                                        "
                                     >
-                                    </dv-datepicker>
+                                    </dv-date-picker-angularjs-xx>
                                     <dv-bisher
                                         gs="abwesenheitInstance.abwesenheit.abwesenheitGS.gueltigkeit.gueltigAb"
                                         ja="abwesenheitInstance.abwesenheit.abwesenheitJA.gueltigkeit.gueltigAb"
@@ -142,23 +146,27 @@
                             <div class="col-sm-12 dv-input-container-small">
                                 <dv-input-container class="form-group">
                                     <label
-                                        class="md-no-float"
+                                        class="md-no-float required"
                                         data-translate="BIS"
                                         for="datumBis-{{ $index }}"
                                     >
                                     </label>
-                                    <dv-datepicker
+                                    <dv-date-picker-angularjs-xx
                                         input-id="datumBis-{{ $index }}"
                                         name="datumBis-{{ $index }}"
                                         class="input-element"
                                         data-test="abwesenheit-bis"
-                                        ng-model="abwesenheitInstance.abwesenheit.abwesenheitJA.gueltigkeit.gueltigBis"
-                                        ng-required="true"
-                                        ng-attr-placeholder="{{
-                                            'DATE_PLACEHOLDER' | translate
-                                        }}"
+                                        [required]="true"
+                                        [(date)]="
+                                            abwesenheitInstance.abwesenheit
+                                                .abwesenheitJA.gueltigkeit
+                                                .gueltigBis
+                                        "
+                                        [gesuchsperiode]="
+                                            vm.getGesuch().getGesuchsperiode()
+                                        "
                                     >
-                                    </dv-datepicker>
+                                    </dv-date-picker-angularjs-xx>
                                     <dv-bisher
                                         gs="abwesenheitInstance.abwesenheit.abwesenheitGS.gueltigkeit.gueltigBis"
                                         ja="abwesenheitInstance.abwesenheit.abwesenheitJA.gueltigkeit.gueltigBis"

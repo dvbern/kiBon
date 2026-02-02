@@ -13,6 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {IComponentOptions, IPromise} from 'angular';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
@@ -54,7 +55,8 @@ export class UmzugViewController extends AbstractGesuchViewController<
         'DvDialog',
         '$q',
         '$scope',
-        '$timeout'
+        '$timeout',
+        'HybridFormBridgeService'
     ];
 
     public dirty = false;
@@ -68,7 +70,8 @@ export class UmzugViewController extends AbstractGesuchViewController<
         private readonly dvDialog: DvDialog,
         private readonly $q: IQService,
         $scope: IScope,
-        $timeout: ITimeoutService
+        $timeout: ITimeoutService,
+        protected readonly hybridFormBridgeService: HybridFormBridgeService
     ) {
         super(
             gesuchModelManager,
@@ -95,6 +98,10 @@ export class UmzugViewController extends AbstractGesuchViewController<
     }
 
     public save(): IPromise<TSGesuchstellerContainer> {
+        this.hybridFormBridgeService.triggerFormValidation();
+        if (this.hybridFormBridgeService.hasAnyInvalidForm()) {
+            return undefined;
+        }
         if (!this.isGesuchValid()) {
             return undefined;
         }

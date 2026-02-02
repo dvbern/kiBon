@@ -13,6 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import angular, {
     IHttpBackendService,
     IQService,
@@ -45,6 +46,7 @@ xdescribe('umzugView', () => {
     let $rootScope: IRootScopeService;
     let $httpBackend: IHttpBackendService;
     let $timeout: ITimeoutService;
+    let hybridFormBridgeService: HybridFormBridgeService;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
 
@@ -80,7 +82,8 @@ xdescribe('umzugView', () => {
                 dialog,
                 $q,
                 $rootScope,
-                $timeout
+                $timeout,
+                hybridFormBridgeService
             );
 
             expect(umzugController.getUmzugAdressenList().length).toBe(0);
@@ -112,7 +115,8 @@ xdescribe('umzugView', () => {
                 dialog,
                 $q,
                 $rootScope,
-                $timeout
+                $timeout,
+                hybridFormBridgeService
             );
 
             expect(umzugController.getUmzugAdressenList().length).toBe(1);
@@ -148,7 +152,8 @@ xdescribe('umzugView', () => {
                 dialog,
                 $q,
                 $rootScope,
-                $timeout
+                $timeout,
+                hybridFormBridgeService
             );
 
             expect(umzugController.getUmzugAdressenList().length).toBe(1);
@@ -194,7 +199,8 @@ xdescribe('umzugView', () => {
                 dialog,
                 $q,
                 $rootScope,
-                $timeout
+                $timeout,
+                hybridFormBridgeService
             );
 
             expect(umzugController.getUmzugAdressenList().length).toBe(1);

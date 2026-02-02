@@ -622,6 +622,15 @@ public class VerfuegungZeitabschnitt extends AbstractDateRangedEntity implements
 		this.getBgCalculationInputGemeinde().setBabyTarif(babyTarif);
 	}
 
+	public void setZusaetzlicherBabyGutscheinForAsivAndGemeinde(
+		boolean zusaetzlicherBabyGutschein
+	) {
+		this.getBgCalculationInputAsiv()
+			.setZusaetzlicherBabyGutschein(zusaetzlicherBabyGutschein);
+		this.getBgCalculationInputGemeinde()
+			.setZusaetzlicherBabyGutschein(zusaetzlicherBabyGutschein);
+	}
+
 	public void setEinschulungTypForAsivAndGemeinde(
 		@Nonnull EinschulungTyp einschulungTyp
 	) {

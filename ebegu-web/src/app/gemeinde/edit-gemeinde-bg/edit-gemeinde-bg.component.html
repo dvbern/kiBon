@@ -2334,7 +2334,8 @@
                                                                             </mat-checkbox>
                                                                         </div>
                                                                     }
-                                                                    <!-- Zusätzlicher maximaler Gutschein in CHF pro Tag bei Kitas-->
+                                                                    <!-- Zusätzlicher maximaler Gutschein in CHF pro Tag bei
+                                                                    Kitas und maximales Alter des beitragsberechtigten Kindes -->
                                                                     @if (
                                                                         !isUndefined(
                                                                             konfigurationsListe[
@@ -2347,6 +2348,55 @@
                                                                         ]
                                                                             .konfigZusaetzlicherBabybeitragEnabled
                                                                     ) {
+                                                                        <div
+                                                                            class="form-group"
+                                                                        >
+                                                                            <label
+                                                                                for="zusaetzlicher_gutschein_max_age_of_child_id_{{
+                                                                                    i
+                                                                                }}"
+                                                                                class="required"
+                                                                                translate
+                                                                                >ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD</label
+                                                                            >
+                                                                            <input
+                                                                                id="zusaetzlicher_gutschein_max_age_of_child_id_{{
+                                                                                    i
+                                                                                }}"
+                                                                                name="zusaetzlicher_gutschein_max_age_of_child_id_{{
+                                                                                    i
+                                                                                }}"
+                                                                                class="form-control"
+                                                                                type="number"
+                                                                                #zusaetzlicher_babybeitrag_max_age_of_child="ngModel"
+                                                                                required
+                                                                                [min]="
+                                                                                    1
+                                                                                "
+                                                                                [(ngModel)]="
+                                                                                    konfigurationsListe[
+                                                                                        i
+                                                                                    ]
+                                                                                        .konfigZusaetzlicherBabybeitragMaxAgeOfChild
+                                                                                "
+                                                                                (change)="
+                                                                                    changeZusaetzlicherBabybeitragMaxAgeOfChild(
+                                                                                        konfigurationsListe[
+                                                                                            i
+                                                                                        ]
+                                                                                    )
+                                                                                "
+                                                                            />
+                                                                            <dv-error-messages
+                                                                                inputId="zusaetzlicher_gutschein_max_age_of_child_id_{{
+                                                                                    i
+                                                                                }}"
+                                                                                [errorObject]="
+                                                                                    zusaetzlicher_babybeitrag_max_age_of_child.errors
+                                                                                "
+                                                                            >
+                                                                            </dv-error-messages>
+                                                                        </div>
                                                                         <div
                                                                             class="form-group"
                                                                         >

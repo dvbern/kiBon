@@ -222,12 +222,19 @@
     <div class="row">
         <!-- gueltig ab / gueltig bis -->
         <div class="col-sm-12 dv-input-container-small">
+            <label
+                class="md-no-float ignore-danger-font-color required"
+                translate="VON"
+            >
+            </label>
             <dv-date-picker-x
-                [label]="'VON'"
+                name="gueltigkeitAb"
+                class="input-element"
                 [attr.data-test]="'pensum-gueltig-ab#' + index"
                 [(date)]="pensumFachstelle.gueltigkeit.gueltigAb"
                 [required]="submitted"
                 (dateChange)="validatePensumOverlaps()"
+                [disabled]="isGesuchReadonly()"
             >
             </dv-date-picker-x>
         </div>
@@ -238,6 +245,7 @@
                 [attr.data-test]="'pensum-gueltig-bis#' + index"
                 [(date)]="pensumFachstelle.gueltigkeit.gueltigBis"
                 (dateChange)="validatePensumOverlaps()"
+                [disabled]="isGesuchReadonly()"
             ></dv-date-picker-x>
         </div>
     </div>

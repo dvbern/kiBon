@@ -123,7 +123,12 @@ public class MitteilungGueltigkeitServiceBean implements
 			if (!hasPensenInInstitutionGueltigkeit(
 				mitteilung.getBetreuungspensen(),
 				gueltigkeit
-			)) {
+			)
+				&& mitteilung.getBetreuung() != null
+				&& mitteilung.getBetreuung()
+					.extractGesuchsperiode()
+					.getGueltigkeit()
+					.intersects(gueltigkeit)) {
 				mitteilung.setMarkedForDeletion(true);
 				persistence.remove(mitteilung);
 			} else {
@@ -192,18 +197,24 @@ public class MitteilungGueltigkeitServiceBean implements
 			);
 		//dann schauen wir welche noch keine Mutationsmitteilung haben und erstellen wir eine
 		betreuungen.forEach(betreuung -> {
-			if (!offeneMutationsmitteilungenForInstitution.stream()
-				.anyMatch(
-					betreuungsmitteilung -> betreuung.equals(
-						betreuungsmitteilung.getBetreuung()
-					)
-				)) {
+			if (
+				betreuung.extractGesuchsperiode()
+					.getGueltigkeit()
+					.intersects(gueltigkeit)
+					&& !offeneMutationsmitteilungenForInstitution.stream()
+						.anyMatch(
+							betreuungsmitteilung -> betreuung.equals(
+								betreuungsmitteilung.getBetreuung()
+							)
+						)) {
+
 				Betreuungsmitteilung betreuungsmitteilung =
 					copyBetreuungToBetreuungsSchliessungMitteilung(
 						betreuung,
 						gueltigkeit
 					);
 				persistence.persist(betreuungsmitteilung);
+
 			}
 		});
 	}

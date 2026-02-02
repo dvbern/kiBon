@@ -317,19 +317,34 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
             this.model.initFinSit();
         }
 
-        this.model.finanzielleSituationContainerGS1.finanzielleSituationJA.steuerdatenZugriff =
-            undefined;
-        this.model.finanzielleSituationContainerGS2.finanzielleSituationJA.steuerdatenZugriff =
-            undefined;
-        this.model.finanzielleSituationContainerGS1.finanzielleSituationJA.automatischePruefungErlaubt =
-            undefined;
-        this.model.finanzielleSituationContainerGS2.finanzielleSituationJA.automatischePruefungErlaubt =
-            undefined;
-        this.getModel().finanzielleSituationJA.steuerdatenZugriff = undefined;
-        this.getModel().finanzielleSituationJA.automatischePruefungErlaubt =
-            undefined;
+        this.checkFieldsInitFromGemeindeMutation();
+
         // first, reset local properties before sending request
         this.resetKiBonAnfrageFinSit();
+    }
+
+    // Mutation as Gemeinde User should init the newly shown questions already answered with "no",
+    // where they dont have permissions to answer
+    public checkFieldsInitFromGemeindeMutation() {
+        if (this.authServiceRS.isOneOfRoles(TSRoleUtil.getAmtRole())) {
+            this.model.finanzielleSituationContainerGS1.finanzielleSituationJA.automatischePruefungErlaubt =
+                false;
+            this.model.finanzielleSituationContainerGS2.finanzielleSituationJA.automatischePruefungErlaubt =
+                false;
+            this.model.finanzielleSituationContainerGS1.finanzielleSituationJA.steuerdatenZugriff =
+                false;
+            this.model.finanzielleSituationContainerGS2.finanzielleSituationJA.steuerdatenZugriff =
+                true;
+        } else {
+            this.model.finanzielleSituationContainerGS1.finanzielleSituationJA.steuerdatenZugriff =
+                undefined;
+            this.model.finanzielleSituationContainerGS2.finanzielleSituationJA.steuerdatenZugriff =
+                undefined;
+            this.model.finanzielleSituationContainerGS1.finanzielleSituationJA.automatischePruefungErlaubt =
+                undefined;
+            this.model.finanzielleSituationContainerGS2.finanzielleSituationJA.automatischePruefungErlaubt =
+                undefined;
+        }
     }
 
     /**
@@ -515,7 +530,7 @@ export class FinanzielleSituationStartViewController extends AbstractFinSitBernV
                 )
             )
             .then(() => {
-                this.wizardStepManager.updateCurrentWizardStepStatusSafe(
+                this.wizardStepManager?.updateCurrentWizardStepStatusSafe(
                     TSWizardStepName.FINANZIELLE_SITUATION,
                     TSWizardStepStatus.NOK
                 );

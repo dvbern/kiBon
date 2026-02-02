@@ -58,8 +58,8 @@ public class ZusaetzlicherBabyGutscheinRechnerRule implements RechnerRule {
 			.isAngebotJugendamtKleinkind()) {
 			return false;
 		}
-		// (2) Nur Kinder bis 12 Monate
-		if (!inputGemeinde.isBabyTarif()) {
+		// (2) Nur Kinder bis X Monate
+		if (!inputGemeinde.isZusaetzlicherBabyGutschein()) {
 			return false;
 		}
 		// (2) Sozialhilfe

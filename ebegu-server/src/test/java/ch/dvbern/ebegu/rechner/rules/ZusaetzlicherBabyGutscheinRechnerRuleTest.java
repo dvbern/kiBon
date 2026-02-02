@@ -181,7 +181,7 @@ public class ZusaetzlicherBabyGutscheinRechnerRuleTest {
 		input.setAnspruchspensumProzent(100);
 		input.setBetreuungspensumProzent(BigDecimal.valueOf(100));
 		input.setBetreuungInGemeinde(true);
-		input.setBabyTarif(isBaby);
+		input.setZusaetzlicherBabyGutschein(isBaby);
 		input.setMassgebendesEinkommenVorAbzugFamgr(
 			MathUtil.DEFAULT.from(159999)
 		);

@@ -2010,28 +2010,38 @@
                                                 class="form-group"
                                             >
                                                 <label
-                                                    class="md-no-float ignore-danger-font-color"
+                                                    class="md-no-float ignore-danger-font-color required"
                                                     data-translate="VON_BETREUUNG"
                                                     for="datumAb-{{ $index }}"
                                                 >
                                                 </label>
-                                                <dv-datepicker
-                                                    input-id="datumAb-{{
+                                                <dv-date-picker-angularjs-xx
+                                                    inputId="datumAb-{{
                                                         $index
                                                     }}"
                                                     name="datumAb-{{ $index }}"
                                                     class="input-element"
-                                                    ng-model="vm.getBetreuungspensum($index).betreuungspensumJA.gueltigkeit.gueltigAb"
-                                                    ng-required="true"
+                                                    [required]="true"
+                                                    [(date)]="
+                                                        vm.getBetreuungspensum(
+                                                            $index
+                                                        ).betreuungspensumJA
+                                                            .gueltigkeit
+                                                            .gueltigAb
+                                                    "
                                                     ng-attr-data-test="betreuung-datum-ab#{{
                                                         $index
                                                     }}"
-                                                    ng-attr-placeholder="{{
-                                                        'DATE_PLACEHOLDER'
-                                                            | translate
-                                                    }}"
+                                                    [gesuchsperiode]="
+                                                        vm
+                                                            .getGesuch()
+                                                            .getGesuchsperiode()
+                                                    "
+                                                    [disabled]="
+                                                        vm.isBetreuungReadonly()
+                                                    "
                                                 >
-                                                </dv-datepicker>
+                                                </dv-date-picker-angularjs-xx>
                                                 <dv-error-messages
                                                     input-id="datumAb-{{
                                                         $index
@@ -2053,23 +2063,33 @@
                                                     for="datumBis-{{ $index }}"
                                                 >
                                                 </label>
-                                                <dv-datepicker
-                                                    input-id="datumBis-{{
+                                                <dv-date-picker-angularjs-xx
+                                                    inputId="datumBis-{{
                                                         $index
                                                     }}"
                                                     name="datumBis-{{ $index }}"
                                                     class="input-element"
-                                                    ng-model="vm.getBetreuungspensum($index).betreuungspensumJA.gueltigkeit.gueltigBis"
-                                                    ng-required="false"
+                                                    [required]="false"
+                                                    [(date)]="
+                                                        vm.getBetreuungspensum(
+                                                            $index
+                                                        ).betreuungspensumJA
+                                                            .gueltigkeit
+                                                            .gueltigBis
+                                                    "
                                                     ng-attr-data-test="betreuung-datum-bis#{{
                                                         $index
                                                     }}"
-                                                    ng-attr-placeholder="{{
-                                                        'DATE_PLACEHOLDER'
-                                                            | translate
-                                                    }}"
+                                                    [gesuchsperiode]="
+                                                        vm
+                                                            .getGesuch()
+                                                            .getGesuchsperiode()
+                                                    "
+                                                    [disabled]="
+                                                        vm.isBetreuungReadonly()
+                                                    "
                                                 >
-                                                </dv-datepicker>
+                                                </dv-date-picker-angularjs-xx>
                                                 <dv-error-messages
                                                     input-id="datumBis-{{
                                                         $index
@@ -2185,29 +2205,41 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float ignore-danger-font-color"
+                                                            class="md-no-float ignore-danger-font-color required"
                                                             data-translate="VON_BETREUUNG"
                                                             for="eingewoehnungDatumAb-{{
                                                                 $index
                                                             }}"
                                                         >
                                                         </label>
-                                                        <dv-datepicker
-                                                            input-id="eingewoehnungDatumAb-{{
+                                                        <dv-date-picker-angularjs-xx
+                                                            inputId="eingewoehnungDatumAb-{{
                                                                 $index
                                                             }}"
                                                             name="eingewoehnungDatumAb-{{
                                                                 $index
                                                             }}"
                                                             class="input-element"
-                                                            ng-required="true"
-                                                            ng-model="vm.getBetreuungspensum($index).betreuungspensumJA.eingewoehnung.gueltigkeit.gueltigAb"
-                                                            ng-attr-placeholder="{{
-                                                                'DATE_PLACEHOLDER'
-                                                                    | translate
-                                                            }}"
+                                                            [required]="true"
+                                                            [(date)]="
+                                                                vm.getBetreuungspensum(
+                                                                    $index
+                                                                )
+                                                                    .betreuungspensumJA
+                                                                    .eingewoehnung
+                                                                    .gueltigkeit
+                                                                    .gueltigAb
+                                                            "
+                                                            [gesuchsperiode]="
+                                                                vm
+                                                                    .getGesuch()
+                                                                    .getGesuchsperiode()
+                                                            "
+                                                            [disabled]="
+                                                                vm.isGesuchReadonly()
+                                                            "
                                                         >
-                                                        </dv-datepicker>
+                                                        </dv-date-picker-angularjs-xx>
                                                         <dv-error-messages
                                                             input-id="eingewoehnungDatumAb-{{
                                                                 $index
@@ -2224,29 +2256,41 @@
                                                         class="form-group"
                                                     >
                                                         <label
-                                                            class="md-no-float ignore-danger-font-color"
+                                                            class="md-no-float ignore-danger-font-color required"
                                                             data-translate="BIS_BETREUUNG"
                                                             for="eingewoehnungDatumBis-{{
                                                                 $index
                                                             }}"
                                                         >
                                                         </label>
-                                                        <dv-datepicker
-                                                            input-id="eingewoehnungDatumBis-{{
+                                                        <dv-date-picker-angularjs-xx
+                                                            inputId="eingewoehnungDatumBis-{{
                                                                 $index
                                                             }}"
                                                             name="eingewoehnungDatumBis-{{
                                                                 $index
                                                             }}"
                                                             class="input-element"
-                                                            ng-required="true"
-                                                            ng-model="vm.getBetreuungspensum($index).betreuungspensumJA.eingewoehnung.gueltigkeit.gueltigBis"
-                                                            ng-attr-placeholder="{{
-                                                                'DATE_PLACEHOLDER'
-                                                                    | translate
-                                                            }}"
+                                                            [required]="true"
+                                                            [(date)]="
+                                                                vm.getBetreuungspensum(
+                                                                    $index
+                                                                )
+                                                                    .betreuungspensumJA
+                                                                    .eingewoehnung
+                                                                    .gueltigkeit
+                                                                    .gueltigBis
+                                                            "
+                                                            [gesuchsperiode]="
+                                                                vm
+                                                                    .getGesuch()
+                                                                    .getGesuchsperiode()
+                                                            "
+                                                            [disabled]="
+                                                                vm.isGesuchReadonly()
+                                                            "
                                                         >
-                                                        </dv-datepicker>
+                                                        </dv-date-picker-angularjs-xx>
                                                         <dv-error-messages
                                                             input-id="eingewoehnungDatumBis-{{
                                                                 $index

@@ -363,7 +363,7 @@
                 <dv-input-container class="form-group">
                     <!--suppress XmlInvalidId -->
                     <label
-                        class="md-no-float ignore-danger-font-color"
+                        class="md-no-float ignore-danger-font-color required"
                         for="{{ vm.prefix }}-gueltigAb"
                         id="umzug-label"
                     >
@@ -385,19 +385,14 @@
                             ></dv-tooltip>
                         </span>
                     </label>
-                    <dv-datepicker
-                        input-id="{{ vm.prefix }}-gueltigAb"
-                        input-name="gueltigAb"
+                    <dv-date-picker-angularjs-xx
+                        inputId="{{ vm.prefix }}-gueltigAb"
                         name="gueltigAb"
                         data-test="gueltigAb"
-                        ng-model="vm.getModel().adresseJA.gueltigkeit.gueltigAb"
+                        [required]="true"
                         class="input-element"
-                        ng-required="true"
-                        ng-attr-placeholder="{{
-                            'DATE_PLACEHOLDER' | translate
-                        }}"
-                    >
-                    </dv-datepicker>
+                        [(date)]="vm.getModel().adresseJA.gueltigkeit.gueltigAb"
+                    ></dv-date-picker-angularjs-xx>
                     <dv-bisher
                         gs="vm.getModel().adresseGS.gueltigkeit.gueltigAb"
                         ja="vm.getModel().adresseJA.gueltigkeit.gueltigAb"
@@ -421,20 +416,21 @@
                 >
                     <!--suppress XmlInvalidId -->
                     <label
-                        class="md-no-float ignore-danger-font-color"
+                        class="md-no-float ignore-danger-font-color required"
                         data-translate="ADRESSE_GUELTIGBIS"
                         for="{{ vm.prefix }}-gueltigBis"
                     >
                     </label>
-                    <dv-datepicker
-                        input-id="{{ vm.prefix }}-gueltigBis"
-                        input-name="gueltigBis"
+                    <dv-date-picker-angularjs-xx
+                        inputId="{{ vm.prefix }}-gueltigBis"
                         name="gueltigBis"
                         data-test="gueltigBis"
-                        ng-model="vm.getModel().adresseJA.gueltigkeit.gueltigBis"
-                        ng-required="true"
+                        [(date)]="
+                            vm.getModel().adresseJA.gueltigkeit.gueltigBis
+                        "
+                        [required]="true"
                     >
-                    </dv-datepicker>
+                    </dv-date-picker-angularjs-xx>
                     <dv-bisher
                         gs="vm.getModel().adresseGS.gueltigkeit.gueltigBis"
                         ja="vm.getModel().adresseJA.gueltigkeit.gueltigBis"

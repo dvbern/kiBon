@@ -359,7 +359,7 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
             this.getModel().familienErgaenzendeBetreuung &&
             (this.showAusserordentlicherAnspruch ||
                 this.authServiceRS.isOneOfRoles(
-                    TSRoleUtil.getAdministratorOrAmtRole()
+                    TSRoleUtil.getMandantOrAmtRole()
                 ))
         );
     }

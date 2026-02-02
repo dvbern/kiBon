@@ -1265,6 +1265,34 @@ public class GesuchServiceBean extends AbstractBaseService implements
 
 	@Override
 	@Nonnull
+	public List<Gesuch> getAllGesuchsForFall(String fallId) {
+		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
+		final CriteriaQuery<Gesuch> query = cb.createQuery(Gesuch.class);
+		Root<Gesuch> root = query.from(Gesuch.class);
+
+		query.select(root);
+
+		ParameterExpression<String> fallIdParam = cb.parameter(
+			String.class,
+			"fallId"
+		);
+
+		Path<Fall> fallPath = root.get(Gesuch_.dossier).get(Dossier_.fall);
+		Predicate fallPredicate = cb.equal(
+			fallPath.get(AbstractEntity_.id),
+			fallIdParam
+		);
+		query.where(fallPredicate);
+		query.orderBy(cb.desc(root.get(Gesuch_.laufnummer)));
+		TypedQuery<Gesuch> q = persistence.getEntityManager()
+			.createQuery(query);
+		q.setParameter(fallIdParam, fallId);
+
+		return q.getResultList();
+	}
+
+	@Override
+	@Nonnull
 	public List<String> getAllGesuchIDsForDossier(@Nonnull String dossierId) {
 		final CriteriaBuilder cb = persistence.getCriteriaBuilder();
 		final CriteriaQuery<String> query = cb.createQuery(String.class);

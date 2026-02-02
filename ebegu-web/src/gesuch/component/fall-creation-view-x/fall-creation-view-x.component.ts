@@ -19,37 +19,37 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    OnInit,
-    inject
+    inject,
+    OnInit
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {TranslateService} from '@ngx-translate/core';
 import {GesuchUiMutationDialogComponent} from '@kibon/gesuch/ui/mutation-dialog';
-import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
-import {
-    TSWizardStepName,
-    TSWizardStepStatus,
-    TSRole,
-    TSGesuchsperiodeStatus
-} from '@kibon/shared/model/enums';
 import {TSGemeinde, TSGesuchsperiode} from '@kibon/shared/model/entity';
+import {
+    TSGesuchsperiodeStatus,
+    TSRole,
+    TSWizardStepName,
+    TSWizardStepStatus
+} from '@kibon/shared/model/enums';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {TranslateService} from '@ngx-translate/core';
 import {StateService, UIRouterGlobals} from '@uirouter/core';
+import {firstValueFrom} from 'rxjs';
+import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {GesuchsperiodeRS} from '../../../app/core/service/gesuchsperiodeRS.rest';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAntragTyp} from '../../../models/enums/TSAntragTyp';
-import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {TSGesuch} from '../../../models/TSGesuch';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {GesuchModelManager} from '../../service/gesuchModelManager';
 import {GesuchRS} from '../../service/gesuchRS.rest';
 import {WizardStepManager} from '../../service/wizardStepManager';
 import {AbstractGesuchViewX} from '../abstractGesuchViewX';
-import {firstValueFrom} from 'rxjs';
 
 const LOG = LogFactory.createLog('FallCreationViewXComponent');
 
@@ -266,7 +266,19 @@ export class FallCreationViewXComponent
         return this.gesuchModelManager.getGesuch();
     }
 
+    /**
+     * get only gesuchsperioden with status AKTIV -
+     * needed for unterstuetzungsdienst,
+     * gemeinden still need to use all gesuchsperioden / the unfiltered liste
+     */
     public getAllActiveGesuchsperioden(): Array<TSGesuchsperiode> {
+        if (
+            this.authServiceRS.isOneOfRoles(TSRoleUtil.getSozialdienstRolle())
+        ) {
+            return this.yetUnusedGesuchsperiodenListe?.filter(
+                active => active.status === TSGesuchsperiodeStatus.AKTIV
+            );
+        }
         return this.yetUnusedGesuchsperiodenListe;
     }
 
@@ -410,6 +422,10 @@ export class FallCreationViewXComponent
 
     public getAllRolesButGesuchstellerSozialdienst(): ReadonlyArray<TSRole> {
         return TSRoleUtil.getAllRolesButGesuchstellerSozialdienst();
+    }
+
+    public getAllRolesButGesuchsteller(): ReadonlyArray<TSRole> {
+        return TSRoleUtil.getAllRolesButGesuchsteller();
     }
 
     public getGesuchstellerOnlyRoles(): ReadonlyArray<TSRole> {

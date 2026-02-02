@@ -15,6 +15,7 @@
 
 import {waitForAsync} from '@angular/core/testing';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import angular, {IQService, IScope, ITimeoutService} from 'angular';
 import moment from 'moment/moment';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
@@ -61,6 +62,7 @@ xdescribe('stammdatenView', () => {
     let mandantService: MandantService;
     let demoFeatureRS: DemoFeatureRS;
     let $translateMock: jasmine.SpyObj<ITranslateService>;
+    let hybridFormBridgeService: HybridFormBridgeService;
 
     beforeEach(angular.mock.module(GESUCH_JS_MODULE.name));
 
@@ -117,7 +119,8 @@ xdescribe('stammdatenView', () => {
                 applicationPropertyRS,
                 dokumentRS,
                 mandantService,
-                demoFeatureRS
+                demoFeatureRS,
+                hybridFormBridgeService
             );
             stammdatenViewController.demoFeature2754 = true;
         })

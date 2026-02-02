@@ -15,7 +15,7 @@
 ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<div class="dv-date-picker-x">
+<div class="dv-date-picker-x" [ngClass]="{disabled: disabled}">
     <dv-input-container-x class="form-group">
         @if (label) {
             <label
@@ -39,6 +39,8 @@
             #dateRef="ngModel"
             [(ngModel)]="date"
             [noFutureDate]="noFutureDate"
+            dateInPeriode
+            [gesuchsperiode]="gesuchsperiode"
             (dateChange)="emit()"
             [min]="minDate"
             [max]="maxDate"
@@ -62,6 +64,7 @@
             <dv-error-messages
                 [errorObject]="dateRef.errors"
                 class="error"
+                [errorMessageOverrides]="errorMessageOverrides"
             ></dv-error-messages>
         }
     </dv-input-container-x>

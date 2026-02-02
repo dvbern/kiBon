@@ -588,6 +588,16 @@ export class EditGemeindeBGComponent implements OnInit {
         );
     }
 
+    public changeZusaetzlicherBabybeitragMaxAgeOfChild(
+        gk: TSGemeindeKonfiguration
+    ): void {
+        this.changeKonfig(
+            TSEinstellungKey.GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD,
+            gk.konfigZusaetzlicherBabybeitragMaxAgeOfChild,
+            gk
+        );
+    }
+
     public changeZusaetzlicherBabybeitragKita(
         gk: TSGemeindeKonfiguration
     ): void {

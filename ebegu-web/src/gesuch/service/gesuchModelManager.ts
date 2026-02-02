@@ -17,8 +17,25 @@
 
 import {BetreuungUtilAnmeldungRestService} from '@kibon/betreuung/util/anmeldung-rest';
 import {BetreuungRS} from '@kibon/betreuung/util/betreuung-rs';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {
+    TSAdresse,
+    TSFachstelle,
+    TSGemeinde,
+    TSGesuchsperiode,
+    TSInstitutionStammdaten
+} from '@kibon/shared/model/entity';
+import {
+    TSAdressetyp,
+    TSBetreuungsstatus,
+    TSGesuchsperiodeStatus,
+    TSRole,
+    TSWizardStepName,
+    TSWizardStepStatus
+} from '@kibon/shared/model/enums';
 import {isSchulamt} from '@kibon/shared/util-fn/betreuungsangebot-typ';
-import {ILogService, IPromise, IQService, copy} from 'angular';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {copy, ILogService, IPromise, IQService} from 'angular';
 import moment from 'moment';
 import {
     BehaviorSubject,
@@ -29,23 +46,7 @@ import {
     Subscription
 } from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import {
-    TSBetreuungsstatus,
-    TSWizardStepName,
-    TSWizardStepStatus,
-    TSGesuchsperiodeStatus,
-    TSRole,
-    TSAdressetyp
-} from '@kibon/shared/model/enums';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {
-    TSGesuchsperiode,
-    TSInstitutionStammdaten,
-    TSGemeinde,
-    TSAdresse,
-    TSFachstelle
-} from '@kibon/shared/model/entity';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
+import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../admin/service/einstellungRS.rest';
 import {ErrorService} from '../../app/core/errors/service/ErrorService';
 import {AntragStatusHistoryRS} from '../../app/core/service/antragStatusHistoryRS.rest';
@@ -71,7 +72,6 @@ import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
 import {TSCacheTyp} from '@kibon/shared/model/enums';
 import {TSCreationAction} from '../../models/enums/TSCreationAction';
 import {TSEingangsart} from '../../models/enums/TSEingangsart';
-import {TSEinstellungKey} from '../../admin/einstellungen/TSEinstellungKey';
 import {TSErrorLevel} from '../../models/enums/TSErrorLevel';
 import {TSErrorType} from '../../models/enums/TSErrorType';
 import {TSFamilienstatus} from '../../models/enums/TSFamilienstatus';
@@ -836,9 +836,9 @@ export class GesuchModelManager {
             });
     }
 
-    public resetKiBonAnfrageFinSit(
+    public async resetKiBonAnfrageFinSit(
         isGemeinsam: boolean
-    ): IPromise<TSFinanzielleSituationContainer> {
+    ): Promise<TSFinanzielleSituationContainer> {
         if (
             !this.authServiceRS.isOneOfRoles([
                 TSRole.GESUCHSTELLER,
@@ -847,18 +847,13 @@ export class GesuchModelManager {
         ) {
             return undefined;
         }
-        return this.finanzielleSituationRS
-            .resetKiBonAnfrageFinSit(
+        this.getStammdatenToWorkWith().finanzielleSituationContainer =
+            await this.finanzielleSituationRS.resetKiBonAnfrageFinSit(
                 this.gesuch.id,
                 this.getStammdatenToWorkWith(),
                 isGemeinsam
-            )
-            .then((finSitContRespo: TSFinanzielleSituationContainer) => {
-                this.getStammdatenToWorkWith().finanzielleSituationContainer =
-                    finSitContRespo;
-                return this.getStammdatenToWorkWith()
-                    .finanzielleSituationContainer;
-            });
+            );
+        return this.getStammdatenToWorkWith().finanzielleSituationContainer;
     }
 
     public removeFinanzielleSitautionFromGesuchsteller2(): IPromise<TSGesuchstellerContainer> {

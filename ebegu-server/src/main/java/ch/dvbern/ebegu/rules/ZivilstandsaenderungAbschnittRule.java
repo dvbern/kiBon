@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import ch.dvbern.ebegu.entities.AbstractPlatz;
 import ch.dvbern.ebegu.entities.Familiensituation;
@@ -115,6 +116,11 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 						) ? 2 : 1
 					);
 				}
+				setHasSecondGesuchstellerForFinSit(
+					verfuegungZeitabschnitt,
+					familiensituation,
+					familiensituationErstgesuch
+				);
 			})
 			.collect(Collectors.toList());
 	}
@@ -122,7 +128,7 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 	public List<VerfuegungZeitabschnitt> calculateZeitabschnitte(
 		AbstractPlatz platz,
 		Familiensituation familiensituation,
-		Familiensituation familiensituationErstgesuch,
+		@Nullable Familiensituation familiensituationErstgesuch,
 		Gesuch gesuch
 	) {
 		final List<VerfuegungZeitabschnitt> zivilstandsaenderungAbschnitte =
@@ -149,7 +155,7 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 				)
 			);
 			// Bemerkung erstellen
-			MsgKey msgKey = null;
+			MsgKey msgKey;
 			if (familiensituation.hasSecondGesuchsteller(gesuchsperiodeBis)) {
 				// Heirat
 				msgKey = MsgKey.FAMILIENSITUATION_HEIRAT_MSG;
@@ -160,7 +166,6 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 
 			zivilstandsaenderungAbschnitte.add(
 				createVerfuegungZeitabschnittForZivilstand(
-					familiensituationErstgesuch,
 					gesuch.getGesuchsperiode()
 						.getGueltigkeit()
 						.getGueltigAb(),
@@ -170,7 +175,6 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 
 			VerfuegungZeitabschnitt abschnittNachMutation =
 				createVerfuegungZeitabschnittForZivilstand(
-					familiensituation,
 					stichtag,
 					gesuch.getGesuchsperiode()
 						.getGueltigkeit()
@@ -202,7 +206,6 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 
 			zivilstandsaenderungAbschnitte.add(
 				createVerfuegungZeitabschnittForZivilstand(
-					familiensituation,
 					gesuch.getGesuchsperiode()
 						.getGueltigkeit()
 						.getGueltigAb(),
@@ -212,7 +215,6 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 
 			final VerfuegungZeitabschnitt abschnittKonkubinat2GS =
 				createVerfuegungZeitabschnittForZivilstand(
-					familiensituation,
 					startKonkubinatPlusXJahre,
 					gesuch.getGesuchsperiode()
 						.getGueltigkeit()
@@ -228,7 +230,6 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 		} else {
 			zivilstandsaenderungAbschnitte.add(
 				createVerfuegungZeitabschnittForZivilstand(
-					familiensituation,
 					gesuch.getGesuchsperiode()
 						.getGueltigkeit()
 						.getGueltigAb(),
@@ -243,24 +244,35 @@ public class ZivilstandsaenderungAbschnittRule extends AbstractAbschnittRule {
 
 	@Nonnull
 	private VerfuegungZeitabschnitt createVerfuegungZeitabschnittForZivilstand(
-		@Nonnull Familiensituation familiensituation,
 		@Nonnull LocalDate dateAb,
 		@Nonnull LocalDate dateBis
 	) {
-		VerfuegungZeitabschnitt abschnitt =
-			createZeitabschnittWithinValidityPeriodOfRule(
-				new DateRange(dateAb, dateBis)
-			);
-		abschnitt
+		return createZeitabschnittWithinValidityPeriodOfRule(
+			new DateRange(dateAb, dateBis)
+		);
+	}
+
+	private static void setHasSecondGesuchstellerForFinSit(
+		VerfuegungZeitabschnitt verfuegungZeitabschnitt,
+		Familiensituation familiensituation,
+		@Nullable Familiensituation familiensituationErstgesuch
+	) {
+		var relatedFamiliensituation = familiensituation.getAenderungPer()
+			!= null
+			&& verfuegungZeitabschnitt.getGueltigkeit()
+				.getGueltigAb()
+				.isBefore(familiensituation.getAenderungPer()) ?
+					Objects.requireNonNull(familiensituationErstgesuch) :
+					familiensituation;
+		verfuegungZeitabschnitt
 			.setHasSecondGesuchstellerForFinanzielleSituationForAsivAndGemeinde(
-				familiensituation.hasSecondGesuchsteller(
+				relatedFamiliensituation.hasSecondGesuchsteller(
 					// it must be checked at the end of the zeitabschnitt
-					abschnitt.getGueltigkeit().getGueltigBis()
+					verfuegungZeitabschnitt.getGueltigkeit().getGueltigBis()
 				)
 					// beim Spezialfall in Appenzell gibt es nur einen Antragsteller aber zwei finanzielle Situationen.
-					|| familiensituation.isSpezialFallAR()
+					|| relatedFamiliensituation.isSpezialFallAR()
 			);
-		return abschnitt;
 	}
 
 	@Override

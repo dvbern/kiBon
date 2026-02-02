@@ -20,17 +20,17 @@
             <h2 data-test="page-title" data-translate="DOKUMENTE"></h2>
             <hr class="header" />
             <p class="inline-hint" data-translate="DOK_HINT_DOKUMENTE"></p>
-            <dv-gesuch-open-dokumente-erneuern-button
+            <dv-gesuch-open-dokumente-uebernehmen-button
                 dv-show-element
                 dv-show-expression="
-                    vm.gesuchModelManager.getGesuch().isFolgegesuch() &&
+                    vm.anyGesuchForUebernahmePresent &&
                     !vm.isDokumenteUploadDisabled() &&
-                    vm.anyTypForErneuerungAllowed
+                    vm.anyTypForUebernahmeAllowed
                 "
-                dv-show-allowed-roles="vm.rolesAllowedForErneuerung"
-                (dokumente-erneuert)="vm.reloadDokumente()"
+                dv-show-allowed-roles="vm.rolesAllowedForUebernahme"
+                (dokumente-uebernehmen)="vm.reloadDokumente()"
                 class="mb-6 mt-4 block"
-            ></dv-gesuch-open-dokumente-erneuern-button>
+            ></dv-gesuch-open-dokumente-uebernehmen-button>
         </div>
     </div>
     <div class="row">

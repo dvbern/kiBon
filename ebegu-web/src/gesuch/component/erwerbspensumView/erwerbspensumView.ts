@@ -13,6 +13,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {
     copy,
     IComponentOptions,
@@ -70,7 +71,8 @@ export class ErwerbspensumViewController extends AbstractGesuchViewController<TS
         '$translate',
         'MandantService',
         '$timeout',
-        'EinstellungRS'
+        'EinstellungRS',
+        'HybridFormBridgeService'
     ];
 
     public gesuchsteller: TSGesuchstellerContainer;
@@ -94,7 +96,8 @@ export class ErwerbspensumViewController extends AbstractGesuchViewController<TS
         private readonly $translate: ITranslateService,
         private readonly mandantService: MandantService,
         $timeout: ITimeoutService,
-        private readonly einstellungRS: EinstellungRS
+        private readonly einstellungRS: EinstellungRS,
+        protected readonly hybridFormBridgeService: HybridFormBridgeService
     ) {
         super(
             gesuchModelManager,
@@ -153,11 +156,18 @@ export class ErwerbspensumViewController extends AbstractGesuchViewController<TS
     }
 
     public save(): IPromise<any> {
+        this.hybridFormBridgeService.triggerFormValidation();
+        if (this.hybridFormBridgeService.hasAnyInvalidForm()) {
+            return undefined;
+        }
         if (!this.isGesuchValid()) {
             return undefined;
         }
 
-        if (!this.form.$dirty) {
+        if (
+            !this.form.$dirty &&
+            !this.hybridFormBridgeService.hasAnyDirtyForm()
+        ) {
             // If there are no changes in form we don't need anything to update on Server and we could return the
             // promise immediately
             return this.$q.when(this.model);

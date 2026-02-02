@@ -484,8 +484,21 @@ public class BetreuungServiceBean extends AbstractBaseService implements
 		@Valid @Nonnull Betreuung betreuung,
 		@Nullable String externalClient
 	) {
+		return betreuungPlatzAbweisen(betreuung, externalClient, null);
+	}
+
+	@Override
+	@Nonnull
+	public Betreuung betreuungPlatzAbweisen(
+		@Valid @Nonnull Betreuung betreuung,
+		@Nullable String externalClient,
+		@Nullable String begruendung
+	) {
 		Objects.requireNonNull(betreuung, BETREUUNG_DARF_NICHT_NULL_SEIN);
 		betreuung.setBetreuungsstatus(Betreuungsstatus.ABGEWIESEN);
+		if (null != begruendung) {
+			betreuung.setGrundAblehnung(begruendung);
+		}
 		Betreuung persistedBetreuung = saveBetreuung(
 			betreuung,
 			false,

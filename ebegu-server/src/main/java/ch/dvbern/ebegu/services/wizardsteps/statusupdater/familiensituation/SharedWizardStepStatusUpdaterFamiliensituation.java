@@ -48,6 +48,7 @@ import ch.dvbern.ebegu.services.wizardsteps.statusupdater.finanziellesituation.W
 import ch.dvbern.ebegu.services.wizardsteps.statusupdater.gesuchsteller.WizardStepStatusUpdaterGesuchsteller;
 import ch.dvbern.ebegu.util.EbeguUtil;
 
+import static ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet.ZU_ZWEIT;
 import static ch.dvbern.ebegu.services.util.ErwerbspensumHelper.isErwerbespensumContainerEmpty;
 import static ch.dvbern.ebegu.services.util.ErwerbspensumHelper.isErwerbspensumRequiredForGS2;
 
@@ -119,7 +120,8 @@ public class SharedWizardStepStatusUpdaterFamiliensituation extends
 			oldFamiliensituation,
 			newFamiliensituation,
 			bis
-		)) {
+		)
+			|| gs2Resetet(wizardStep, newFamiliensituation)) {
 			updateStatusFromOneGSToTwoGS(wizardStep);
 		} else if (!oldFamiliensituation.isSpezialFallAR()
 			&& newFamiliensituation.isSpezialFallAR()) {
@@ -162,6 +164,15 @@ public class SharedWizardStepStatusUpdaterFamiliensituation extends
 
 	protected WizardStepStatusUpdaterEinkommensverschlechterung getWizardStepStatusUpdaterEinkommensverschlechterung() {
 		return wizardStepStatusUpdaterEinkommensverschlechterung;
+	}
+
+	private boolean gs2Resetet(
+		@Nonnull WizardStep wizardStep,
+		Familiensituation newFamiliensituation
+	) {
+		return ZU_ZWEIT.equals(
+			newFamiliensituation.getGesuchstellerKardinalitaet()
+		) && wizardStep.getGesuch().getGesuchsteller2() == null;
 	}
 
 	private List<KindContainer> findAllKinderFromGesuch(WizardStep wizardStep) {

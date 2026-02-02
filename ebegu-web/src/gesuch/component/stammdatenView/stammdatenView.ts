@@ -30,6 +30,7 @@ import {
 } from '@kibon/shared/model/enums';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {copy, IComponentOptions} from 'angular';
 import {map} from 'rxjs/operators';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
@@ -105,7 +106,8 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         'SharedUtilApplicationPropertyRsService',
         'DokumenteRS',
         'MandantService',
-        'DemoFeatureRS'
+        'DemoFeatureRS',
+        'HybridFormBridgeService'
     ];
 
     public filesTooBig: File[];
@@ -154,7 +156,8 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly dokumenteRS: DokumenteRS,
         private readonly mandantService: MandantService,
-        private readonly demoFeatureRS: DemoFeatureRS
+        private readonly demoFeatureRS: DemoFeatureRS,
+        protected readonly hybridFormBridgeService: HybridFormBridgeService
     ) {
         super(
             gesuchModelManager,
@@ -490,6 +493,10 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
     }
 
     public save(): IPromise<TSGesuchstellerContainer> {
+        this.hybridFormBridgeService.triggerFormValidation();
+        if (this.hybridFormBridgeService.hasAnyInvalidForm()) {
+            return undefined;
+        }
         if (!this.isGesuchValid()) {
             return undefined;
         }
@@ -706,22 +713,19 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         if (EbeguUtil.isNullOrUndefined(event?.target?.files?.length)) {
             return;
         }
-        const files = Array.from(event.target.files);
-
+        const files = event.target.files;
         if (this.checkFilesLength(files as File[])) {
             return;
         }
-
         if (EbeguUtil.isNullOrUndefined(this.dokumentGrund)) {
             this.dokumentGrund = new TSDokumentGrund();
             this.dokumentGrund.dokumentTyp = TSDokumentTyp.AUSWEIS_ID;
             this.dokumentGrund.dokumentGrundTyp =
                 TSDokumentGrundTyp.FAMILIENSITUATION;
         }
-
         this.uploadRS
             .uploadFile(
-                files as File[],
+                files,
                 this.dokumentGrund,
                 this.gesuchModelManager.getGesuch().id
             )

@@ -303,6 +303,37 @@ public class FinanzielleSituationServiceBean extends AbstractBaseService
 				);
 			}
 		}
+
+		boolean finSitStartgemeinsameSteuererklaerungFalse =
+			Boolean.FALSE.equals(
+				finSitStartDTO.getGemeinsameSteuererklaerung()
+			);
+
+		boolean familiensituationPresent =
+			gesuch.getFamiliensituationContainer() != null
+				&& gesuch.getFamiliensituationContainer()
+					.getFamiliensituationJA()
+					!= null;
+
+		boolean hasRequiredRole =
+			principalBean.isCallerInAnyOfRole(
+				UserRole.getTsBgAndGemeindeRoles()
+			);
+
+		boolean gemeinsameSteuererklaerungFalseBeforeDTOSave =
+			familiensituationPresent
+				&& Boolean.FALSE.equals(
+					gesuch.getFamiliensituationContainer()
+						.getFamiliensituationJA()
+						.getGemeinsameSteuererklaerung()
+				);
+
+		if (finSitStartgemeinsameSteuererklaerungFalse
+			&& hasRequiredRole
+			&& gemeinsameSteuererklaerungFalseBeforeDTOSave) {
+			handleFinSitStartGemeinsameSteuererklaerungResets(gesuch);
+		}
+
 		handleEKVDataResetsOnFinSitStartSave(gesuch, finanzielleSituation);
 	}
 
@@ -389,6 +420,46 @@ public class FinanzielleSituationServiceBean extends AbstractBaseService
 				gesuchsteller.getEinkommensverschlechterungContainer(),
 				gesuch
 			);
+	}
+
+	/**
+	 * FinSit Start Reset of Question "Sind Sie einverstanden, dass die Angaben zu den finanziellen Verhältnissen aus
+	 * den Steuerdaten abgerufen werden?" and "Sind Sie damit einverstanden, dass Ihre Angaben automatisch anhand der
+	 * Steuerdaten überprüft werden?" if a gemeinde opens a mutation and changes the question
+	 * "Haben Sie eine gemeinsame Steuererklärung 20xx mit xx erhalten?"
+	 *
+	 * @param gesuch
+	 */
+	private void handleFinSitStartGemeinsameSteuererklaerungResets(
+		Gesuch gesuch
+	) {
+		resetGesuchstellerSteuerdatenZugriffPruefung(
+			gesuch.getGesuchsteller1()
+		);
+		resetGesuchstellerSteuerdatenZugriffPruefung(
+			gesuch.getGesuchsteller2()
+		);
+	}
+
+	private void resetGesuchstellerSteuerdatenZugriffPruefung(
+		GesuchstellerContainer gs
+	) {
+		if (gs == null) {
+			return;
+		}
+
+		var fsContainer = gs.getFinanzielleSituationContainer();
+		if (fsContainer == null) {
+			return;
+		}
+
+		var fsJA = fsContainer.getFinanzielleSituationJA();
+		if (fsJA == null) {
+			return;
+		}
+
+		fsJA.setSteuerdatenZugriff(false);
+		fsJA.setAutomatischePruefungErlaubt(false);
 	}
 
 	private void handleEKVDataResetsOnFinSitStartSave(

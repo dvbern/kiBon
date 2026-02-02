@@ -241,6 +241,18 @@ export class GesuchRouteController implements IController {
         const isUserSTV = this.authServiceRS.isOneOfRoles(
             TSRoleUtil.getSteueramtOnlyRoles()
         );
+        const isSozialdienst = this.authServiceRS.isOneOfRoles(
+            TSRoleUtil.getSozialdienstRolle()
+        );
+
+        if (
+            toTranslate === TSAntragStatus.IN_BEARBEITUNG_GS &&
+            isSozialdienst
+        ) {
+            return this.ebeguUtil.translateString(
+                TSAntragStatus[TSAntragStatus.IN_BEARBEITUNG_SOZIALDIENST]
+            );
+        }
 
         if (
             toTranslate === TSAntragStatus.IN_BEARBEITUNG_GS &&

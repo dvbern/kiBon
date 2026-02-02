@@ -108,7 +108,11 @@ public final class DokumenteUtil {
 			neededDok.getDokumentTyp()
 		);
 		if (persistedDok.getTag() != null && neededDok.getTag() != null) {
-			builder.append(persistedDok.getTag(), neededDok.getTag());
+			builder.append(
+				persistedDok.getTag(),
+				neededDok.getTag(),
+				String.CASE_INSENSITIVE_ORDER
+			);
 		}
 		if (persistedDok.getPersonType() != null
 			&& neededDok.getPersonType() != null) {

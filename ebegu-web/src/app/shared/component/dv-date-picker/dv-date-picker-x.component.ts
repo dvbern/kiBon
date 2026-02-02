@@ -24,6 +24,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
+import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import moment from 'moment';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 
@@ -61,6 +62,9 @@ export class DvDatePickerXComponent {
     @Input()
     public placeholderFirstOfMonth: boolean = false;
 
+    @Input()
+    public errorMessageOverrides: Record<string, string> = {};
+
     /**
      * Whether the mat-toggle for opening the calender is enabled. Defaults to true
      */
@@ -83,6 +87,9 @@ export class DvDatePickerXComponent {
 
     @Input()
     public required: boolean;
+
+    @Input()
+    public gesuchsperiode: TSGesuchsperiode;
 
     public randId = EbeguUtil.generateRandomName(10);
 

@@ -1,3 +1,4 @@
+import {CommonModule} from '@angular/common';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -11,14 +12,21 @@ import {
 import {NgForm} from '@angular/forms';
 import {PERMISSIONS_KIND} from '@kibon/kind/model/permissions';
 import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
+/* eslint-disable @nx/enforce-module-boundaries */
+import {DvDatePickerXAngularjswrapperComponent} from '../../../../../../../src/app/shared/component/dv-date-picker/dv-date-picker-x.angularjswrapper.component';
 import {SharedModule} from '../../../../../../../src/app/shared/shared.module';
 import {AuthServiceRS} from '../../../../../../../src/authentication/service/AuthServiceRS.rest';
 import {GesuchModelManager} from '../../../../../../../src/gesuch/service/gesuchModelManager';
+/* eslint-enable @nx/enforce-module-boundaries */
 import {TSKind} from '@kibon/kind/model/entity';
 
 @Component({
     selector: 'lib-betreuung-ui-kind-gueltigkeit-terminiert',
-    imports: [SharedModule],
+    imports: [
+        CommonModule,
+        SharedModule,
+        DvDatePickerXAngularjswrapperComponent
+    ],
     templateUrl: './betreuung-ui-kind-gueltigkeit-terminiert.component.html',
     styleUrl: './betreuung-ui-kind-gueltigkeit-terminiert.component.less',
     changeDetection: ChangeDetectionStrategy.OnPush

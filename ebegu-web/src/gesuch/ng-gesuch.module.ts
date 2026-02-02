@@ -21,6 +21,7 @@ import {UpgradeModule} from '@angular/upgrade/static';
 import {IbanDirective} from 'ngx-iban';
 import {EwkAdresseComponent} from '../app/ewk-adresse/ewk-adresse.component';
 import {PersonensucheComponent} from '../app/personensuche/personensuche.component';
+import {DvDatePickerXAngularjswrapperComponent} from '../app/shared/component/dv-date-picker/dv-date-picker-x.angularjswrapper.component';
 import {WarningComponent} from '../app/shared/component/warning/warning.component';
 import {SharedModule} from '../app/shared/shared.module';
 import {FinSitFelderAppenzellComponent} from './component/abstractFinanzielleSituation/appenzell/fin-sit-zusatzfelder-appenzell/fin-sit-felder-appenzell.component';
@@ -75,7 +76,8 @@ import {ZahlungsstatusIconComponent} from './component/zahlungsstatus-icon/zahlu
         FinanzielleSituationSchwyzModule,
         FamiliensituationModule,
         WarningComponent,
-        IbanDirective
+        IbanDirective,
+        DvDatePickerXAngularjswrapperComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     declarations: [

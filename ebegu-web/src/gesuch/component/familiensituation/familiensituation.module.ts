@@ -17,6 +17,7 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {DvDatePickerXAngularjswrapperComponent} from '../../../app/shared/component/dv-date-picker/dv-date-picker-x.angularjswrapper.component';
 import {WarningComponent} from '../../../app/shared/component/warning/warning.component';
 import {SharedModule} from '../../../app/shared/shared.module';
 import {DvNgGsRemovalConfirmationDialogComponent} from './dv-ng-gs-removal-confirmation-dialog/dv-ng-gs-removal-confirmation-dialog.component';
@@ -33,6 +34,11 @@ import {FamiliensituationViewXComponent} from './familiensituation-view-x/famili
         FamiliensituationAppenzellViewXComponent,
         FamiliensituationSchwyzComponent
     ],
-    imports: [CommonModule, SharedModule, WarningComponent]
+    imports: [
+        CommonModule,
+        SharedModule,
+        WarningComponent,
+        DvDatePickerXAngularjswrapperComponent
+    ]
 })
 export class FamiliensituationModule {}

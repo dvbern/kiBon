@@ -137,6 +137,14 @@ public enum EinstellungKey {
 		EinstellungTyp.GEMEINDE
 	),
 
+	// Alter des Kindes in Monaten, für welches der zusätzliche Babybeitrag maximal gewährleistet wird.
+	// Wenn dieser Wert nicht in den Gemeinde-Periodeneinstellungen gesetzt ist, wird standardmässig der
+	// Wert DAUER_BABYTARIF aus den Periodeneinstellungen des Mandanten verwendet.
+	@NumberEinstellung GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD(
+		MandantIdentifier.getAll(),
+		EinstellungTyp.GEMEINDE
+	),
+
 	// Betrag des zusätzlichen Gutscheins für Babies
 	@NumberEinstellung GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA(
 		MandantIdentifier.getAll(),
@@ -638,7 +646,9 @@ public enum EinstellungKey {
 	),
 
 	// Welche Dokumente können in die
-	@StringEinstellung() ERNEUERBARE_DOKUMENT_TYPS(MandantIdentifier.getAll());
+	@StringEinstellung() DOKUMENT_ZU_UEBERNEHMEN_TYPS(
+		MandantIdentifier.getAll()
+	);
 
 	private EinstellungTyp typ;
 	private List<MandantIdentifier> activeForMandant;

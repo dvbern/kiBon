@@ -17,39 +17,24 @@
 
 package ch.dvbern.ebegu.inbox.handler;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import ch.dvbern.ebegu.entities.Betreuung;
-import ch.dvbern.ebegu.entities.Betreuungsmitteilung;
-import ch.dvbern.ebegu.entities.BetreuungsmitteilungPensum;
-import ch.dvbern.ebegu.entities.BetreuungspensumContainer;
-import ch.dvbern.ebegu.entities.Gesuch;
-import ch.dvbern.ebegu.entities.Mandant;
-import ch.dvbern.ebegu.enums.AntragCopyType;
 import ch.dvbern.ebegu.enums.GesuchsperiodeStatus;
-import ch.dvbern.ebegu.enums.MitteilungStatus;
-import ch.dvbern.ebegu.enums.MitteilungTeilnehmerTyp;
 import ch.dvbern.ebegu.enums.betreuung.Betreuungsstatus;
+import ch.dvbern.ebegu.inbox.consumer.betreuung.event.BetreuungEvent;
+import ch.dvbern.ebegu.inbox.consumer.betreuung.stornieren.BetreuungStornierenDecisionTree;
 import ch.dvbern.ebegu.inbox.services.BetreuungEventHelper;
 import ch.dvbern.ebegu.kafka.BaseEventHandler;
 import ch.dvbern.ebegu.kafka.EventType;
 import ch.dvbern.ebegu.services.BetreuungMonitoringService;
 import ch.dvbern.ebegu.services.BetreuungService;
-import ch.dvbern.ebegu.services.GemeindeService;
-import ch.dvbern.ebegu.services.MitteilungService;
 import ch.dvbern.ebegu.types.DateRange;
-import ch.dvbern.ebegu.util.EbeguUtil;
-import ch.dvbern.ebegu.util.ServerMessageUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,25 +44,18 @@ public class BetreuungStornierenEventHandler extends BaseEventHandler<String> {
 	private static final Logger LOG = LoggerFactory.getLogger(
 		BetreuungStornierenEventHandler.class
 	);
-	private static final String BETREFF_KEY =
-		"mutationsmeldung_stornieren_betreff";
-	private static final String MESSAGE_KEY =
-		"mutationsmeldung_stornieren_message";
 
 	@Inject
 	private BetreuungService betreuungService;
 
 	@Inject
-	private MitteilungService mitteilungService;
-
-	@Inject
 	private BetreuungEventHelper betreuungEventHelper;
 
 	@Inject
-	private GemeindeService gemeindeService;
+	private BetreuungMonitoringService betreuungMonitoringService;
 
 	@Inject
-	private BetreuungMonitoringService betreuungMonitoringService;
+	private BetreuungStornierenDecisionTree betreuungStornierenDecisionTree;
 
 	@Override
 	protected void processEvent(
@@ -183,155 +161,13 @@ public class BetreuungStornierenEventHandler extends BaseEventHandler<String> {
 			);
 		}
 
-		//Betreuung in Status Warten, entweder stornieren oder abweisen:
-		if (betreuung.getBetreuungsstatus() == Betreuungsstatus.WARTEN) {
-			return handleStatusAenderung(eventMonitor, betreuung);
-		}
-
-		if (isMutationsMitteilungStatus(betreuung.getBetreuungsstatus())) {
-			String refnr = eventMonitor.getRefnr();
-			//Betreuung schon Bestaetigt => MutationMitteilung mit Storniereung erfassen
-			Betreuungsmitteilung betreuungsmitteilung =
-				createBetreuungsStornierenMitteilung(betreuung, refnr);
-			mitteilungService
-				.replaceOffeneBetreungsmitteilungenWithSameReferenzNummer(
-					betreuungsmitteilung,
-					refnr
-				);
-			LOG.info(
-				"Mutationsmeldung zum Stornieren der Betreuung erstellt mit RefNr: {}",
-				refnr
-			);
-			eventMonitor.record(
-				"Mutationsmeldung zum Stornieren der Betreuung erstellt"
-			);
-
-			return Processing.success();
-		}
-		return Processing.failure(
-			"Die Betreuung befindet sich in einen Status in dem eine Stornierung nicht erlaubt ist."
+		BetreuungEvent betreuungEvent = new BetreuungEvent(
+			betreuung,
+			eventMonitor
 		);
-	}
+		betreuungStornierenDecisionTree.evaluate(betreuungEvent);
 
-	@Nonnull
-	private Processing handleStatusAenderung(
-		@Nonnull EventMonitor eventMonitor,
-		@Nonnull Betreuung betreuung
-	) {
-		// Mutation => stornieren, sonst abweisen
-		if (betreuung.getVorgaengerId() != null) {
-			betreuung.setDatumBestaetigung(LocalDate.now());
-			betreuung.getBetreuungspensumContainers()
-				.forEach(betreuungspensumContainer -> {
-					betreuungspensumContainer.getBetreuungspensumJA()
-						.setPensum(BigDecimal.ZERO);
-					betreuungspensumContainer.getBetreuungspensumJA()
-						.setNichtEingetreten(true);
-				}
-				);
-			betreuung.setBetreuungsstatus(Betreuungsstatus.STORNIERT);
-			//noinspection ResultOfMethodCallIgnored
-			betreuungService.saveBetreuung(
-				betreuung,
-				false,
-				eventMonitor.getClientName()
-			);
-			LOG.info(
-				"Betreuung mit RefNr: {} wurde automatisch storniert",
-				eventMonitor.getRefnr()
-			);
-			eventMonitor.record("Betreuung wurde automatisch storniert");
-		} else {
-			// TODO: um einen Platz zu abweisen braucht man einen Grund geben
-			// betreuung.setGrundAblehnung(??????);
-			//this.betreuungService.betreuungPlatzAbweisen(betreuung);
-			//LOG.info("Betreuung mit RefNr: {} automatisch abgewiesen", refNummer);
-			LOG.info(
-				"Die Betreuung befindet sich in einen Status wo es sollte abgewiesen sein. Dieser Use-case ist noch "
-					+ "nicht gedeckt."
-			);
-			return Processing.failure(
-				"Die Betreuung befindet sich in einen Status wo es sollte abgewiesen sein. Dieser Use-case ist noch "
-					+ "nicht gedeckt."
-			);
-		}
 		return Processing.success();
-	}
-
-	@Nonnull
-	private Betreuungsmitteilung createBetreuungsStornierenMitteilung(
-		@Nonnull Betreuung betreuung,
-		@Nonnull String referenzNummer
-	) {
-
-		Gesuch gesuch = betreuung.extractGesuch();
-		Locale locale = EbeguUtil.extractKorrespondenzsprache(
-			gesuch,
-			gemeindeService
-		).getLocale();
-		Mandant mandant = betreuung.extractGemeinde().getMandant();
-
-		Betreuungsmitteilung betreuungsmitteilung = new Betreuungsmitteilung();
-		betreuungsmitteilung.setDossier(gesuch.getDossier());
-		betreuungsmitteilung.setSenderTyp(MitteilungTeilnehmerTyp.INSTITUTION);
-		betreuungsmitteilung.setSender(
-			betreuungEventHelper.getMutationsmeldungBenutzer(betreuung)
-		);
-		betreuungsmitteilung.setEmpfaengerTyp(
-			MitteilungTeilnehmerTyp.JUGENDAMT
-		);
-		betreuungsmitteilung.setEmpfaenger(
-			gesuch.getDossier().getFall().getBesitzer()
-		);
-		betreuungsmitteilung.setMitteilungStatus(MitteilungStatus.NEU);
-		betreuungsmitteilung.setSubject(
-			ServerMessageUtil.getMessage(
-				BETREFF_KEY,
-				locale,
-				mandant,
-				gesuch.extractGemeinde()
-			)
-		);
-		betreuungsmitteilung.setBetreuung(betreuung);
-		betreuungsmitteilung.setBetreuungStornieren(true);
-
-		List<BetreuungsmitteilungPensum> betreuungsMitteilungPensen = betreuung
-			.getBetreuungspensumContainers()
-			.stream()
-			.map(
-				BetreuungStornierenEventHandler::fromBetreuungspensumContainerToZero
-			)
-			.collect(Collectors.toList());
-		betreuungsmitteilung.getBetreuungspensen()
-			.addAll(betreuungsMitteilungPensen);
-		betreuungsmitteilung.getBetreuungspensen()
-			.forEach(p -> p.setBetreuungsmitteilung(betreuungsmitteilung));
-		betreuungsmitteilung.setMessage(
-			ServerMessageUtil.getMessage(
-				MESSAGE_KEY,
-				locale,
-				mandant,
-				referenzNummer
-			)
-		);
-
-		return betreuungsmitteilung;
-	}
-
-	@Nonnull
-	private static BetreuungsmitteilungPensum fromBetreuungspensumContainerToZero(
-		@Nonnull BetreuungspensumContainer container
-	) {
-		BetreuungsmitteilungPensum pensum = new BetreuungsmitteilungPensum();
-
-		container.getBetreuungspensumJA()
-			.copyAbstractBetreuungspensumMahlzeitenEntity(
-				pensum,
-				AntragCopyType.MUTATION
-			);
-		pensum.setPensum(BigDecimal.ZERO);
-
-		return pensum;
 	}
 
 	protected boolean isMutationsMitteilungStatus(

@@ -124,6 +124,8 @@ public class BGCalculationInput {
 
 	private boolean babyTarif;
 
+	private boolean zusaetzlicherBabyGutschein;
+
 	@Nullable
 	private EinschulungTyp einschulungTyp;
 
@@ -296,6 +298,7 @@ public class BGCalculationInput {
 		this.abschnittLiegtNachBEGUStartdatum =
 			toCopy.abschnittLiegtNachBEGUStartdatum;
 		this.babyTarif = toCopy.babyTarif;
+		this.zusaetzlicherBabyGutschein = toCopy.zusaetzlicherBabyGutschein;
 		this.einschulungTyp = toCopy.einschulungTyp;
 		this.betreuungsangebotTyp = toCopy.betreuungsangebotTyp;
 		this.betreuungspensumProzent = toCopy.betreuungspensumProzent;
@@ -611,6 +614,16 @@ public class BGCalculationInput {
 
 	public void setBabyTarif(boolean babyTarif) {
 		this.babyTarif = babyTarif;
+	}
+
+	public boolean isZusaetzlicherBabyGutschein() {
+		return zusaetzlicherBabyGutschein;
+	}
+
+	public void setZusaetzlicherBabyGutschein(
+		boolean zusaetzlicherBabyGutschein
+	) {
+		this.zusaetzlicherBabyGutschein = zusaetzlicherBabyGutschein;
 	}
 
 	@Nullable
@@ -1016,6 +1029,9 @@ public class BGCalculationInput {
 		);
 
 		this.setBabyTarif(this.babyTarif || other.babyTarif);
+		this.setZusaetzlicherBabyGutschein(
+			this.zusaetzlicherBabyGutschein || other.zusaetzlicherBabyGutschein
+		);
 		this.einschulungTyp = this.einschulungTyp != null ?
 			this.einschulungTyp :
 			other.einschulungTyp;
@@ -1499,6 +1515,8 @@ public class BGCalculationInput {
 			&&
 			babyTarif == other.babyTarif
 			&&
+			zusaetzlicherBabyGutschein == other.zusaetzlicherBabyGutschein
+			&&
 			einschulungTyp == other.einschulungTyp
 			&&
 			betreuungsangebotTyp == other.betreuungsangebotTyp
@@ -1643,6 +1661,8 @@ public class BGCalculationInput {
 			return true;
 		}
 		return babyTarif == that.babyTarif
+			&&
+			zusaetzlicherBabyGutschein == that.zusaetzlicherBabyGutschein
 			&&
 			einschulungTyp == that.einschulungTyp
 			&&

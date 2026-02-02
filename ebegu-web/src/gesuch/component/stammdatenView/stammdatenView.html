@@ -156,21 +156,21 @@
                         <div class="col-sm-12 dv-input-container-small">
                             <dv-input-container class="form-group">
                                 <label
-                                    class="md-no-float ignore-danger-font-color"
+                                    class="md-no-float ignore-danger-font-color required"
                                     data-translate="GEBURTSDATUM"
                                     for="geburtsdatum_ID"
                                 >
                                 </label>
-                                <dv-datepicker
-                                    no-future="true"
+                                <dv-date-picker-angularjs-xx
+                                    no-future-date="true"
                                     data-test="geburtsdatum"
-                                    input-id="geburtsdatum_ID"
+                                    inputId="geburtsdatum_ID"
                                     name="geburtsdatum"
-                                    ng-model="vm.getModelJA().geburtsdatum"
-                                    ng-required="true"
+                                    [required]="true"
                                     class="input-element"
-                                >
-                                </dv-datepicker>
+                                    [(date)]="vm.getModelJA().geburtsdatum"
+                                    [disabled]="vm.isGesuchReadonly()"
+                                ></dv-date-picker-angularjs-xx>
                                 <dv-bisher
                                     gs="vm.getModel().gesuchstellerGS.geburtsdatum"
                                     ja="vm.getModel().gesuchstellerJA.geburtsdatum"

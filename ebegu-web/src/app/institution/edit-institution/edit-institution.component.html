@@ -385,9 +385,7 @@
                                     }}
                                 </label>
                                 <div class="row">
-                                    <dv-input-container-x
-                                        id="containerVonBisPickers_id"
-                                    >
+                                    <div id="containerVonBisPickers_id">
                                         <div class="col-sm-6">
                                             <dv-date-picker-x
                                                 id="begu_start_id"
@@ -415,6 +413,10 @@
                                                     isDateStartEndDisabled()
                                                 "
                                                 [minDate]="getMinByRole()"
+                                                [errorMessageOverrides]="{
+                                                    matDatepickerMin:
+                                                        'ERROR_MIN_DATE_INSTITUTION_SCHLIESSEN'
+                                                }"
                                                 data-test="institution.edit.gueltigBis"
                                             ></dv-date-picker-x>
                                             <div class="custom-errors">
@@ -433,11 +435,12 @@
                                                 }
                                             </div>
                                         </div>
-                                    </dv-input-container-x>
+                                    </div>
                                 </div>
                                 @if (
                                     stammdaten.gueltigkeit.gueltigBis &&
-                                    isDateChanged()
+                                    isDateChanged() &&
+                                    isBetreuungsgutschein()
                                 ) {
                                     <div
                                         class="col-xs-12"

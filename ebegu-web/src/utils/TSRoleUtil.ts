@@ -875,4 +875,8 @@ export class TSRoleUtil {
     public static getZahlungslaufElternRoles(): ReadonlyArray<TSRole> {
         return PERMISSIONS[Permission.ZAHLUNG_AN_ELTERN_READ];
     }
+
+    public static getMandantOrAmtRole(): ReadonlyArray<TSRole> {
+        return this.getAmtRole().concat(this.getMandantRoles());
+    }
 }

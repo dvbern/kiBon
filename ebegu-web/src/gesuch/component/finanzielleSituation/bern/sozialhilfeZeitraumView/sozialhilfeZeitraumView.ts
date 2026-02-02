@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {
     copy,
     IComponentOptions,
@@ -68,7 +69,8 @@ export class SozialhilfeZeitraumViewController extends AbstractGesuchViewControl
         '$translate',
         '$timeout',
         'SozialhilfeZeitraumRS',
-        'MandantService'
+        'MandantService',
+        'HybridFormBridgeService'
     ];
 
     public familiensituation: TSFamiliensituationContainer;
@@ -86,7 +88,8 @@ export class SozialhilfeZeitraumViewController extends AbstractGesuchViewControl
         private readonly $translate: ITranslateService,
         $timeout: ITimeoutService,
         private readonly sozialhilfeZeitraumRS: SozialhilfeZeitraumRS,
-        private readonly mandantService: MandantService
+        private readonly mandantService: MandantService,
+        private readonly hybridFormBridgeService: HybridFormBridgeService
     ) {
         super(
             gesuchModelManager,
@@ -130,7 +133,10 @@ export class SozialhilfeZeitraumViewController extends AbstractGesuchViewControl
             return undefined;
         }
 
-        if (!this.form.$dirty) {
+        if (
+            !this.form.$dirty &&
+            !this.hybridFormBridgeService.hasAnyDirtyForm()
+        ) {
             // If there are no changes in form we don't need anything to update on Server and we could return the
             // promise immediately
             return this.$q.when(this.model);
@@ -195,5 +201,13 @@ export class SozialhilfeZeitraumViewController extends AbstractGesuchViewControl
             );
         }
         return false;
+    }
+
+    get dateError(): any {
+        const errors = this.form.sozialhilfeZeitraumAb.$error;
+        if (errors.required) {
+            return {required: true};
+        }
+        return {};
     }
 }

@@ -82,13 +82,13 @@ export class DokumenteRS {
         });
     }
 
-    getErneuerbareDokumentTyps(
+    getDokumentZuUebernehmenTyps(
         gesuchId: string
-    ): Observable<DokumentErneuerung[]> {
+    ): Observable<DokumentZuUebernehmen[]> {
         return from(
             this.http
                 .get<any[]>(
-                    `${this.serviceURL}/${encodeURIComponent(gesuchId)}/erneuerbar`
+                    `${this.serviceURL}/${encodeURIComponent(gesuchId)}/zu-uebernehmen`
                 )
                 .then(res => res.data)
                 .then(data =>
@@ -103,27 +103,39 @@ export class DokumenteRS {
         );
     }
 
-    dokumenteErneuern(
+    dokumenteUebernehmen(
         gesuchId: string,
-        dokumentErneuerungen: DokumentErneuerung[]
+        dokumenteZuUebernehmen: DokumentZuUebernehmen[]
     ) {
-        return this.http.post(`${this.serviceURL}/erneuern`, {
+        return this.http.post(`${this.serviceURL}/uebernehmen`, {
             gesuchId: gesuchId,
-            dokumentErneuerungen: dokumentErneuerungen.map(erneuerung => ({
-                grund: this.ebeguRestUtil.dokumentGrundToRestObject(
-                    {},
-                    erneuerung.grund
-                ),
-                dokument: {
-                    id: erneuerung.dokument.id,
-                    filename: erneuerung.dokument.filename
-                }
-            }))
+            dokumentZuUebernehmen: dokumenteZuUebernehmen.map(
+                dokumentZuUebernehmen => ({
+                    grund: this.ebeguRestUtil.dokumentGrundToRestObject(
+                        {},
+                        dokumentZuUebernehmen.grund
+                    ),
+                    dokument: {
+                        id: dokumentZuUebernehmen.dokument.id,
+                        filename: dokumentZuUebernehmen.dokument.filename
+                    }
+                })
+            )
         });
+    }
+
+    isDokumentUebernahmeMoeglich(gesuchId: string): Observable<boolean> {
+        return from(
+            this.http
+                .get<boolean>(
+                    `${this.serviceURL}/${encodeURIComponent(gesuchId)}/uebernahme-moeglich`
+                )
+                .then(response => response.data)
+        );
     }
 }
 
-type DokumentErneuerung = {
+type DokumentZuUebernehmen = {
     grund: TSDokumentGrund;
     dokument: TSDokument;
 };

@@ -428,6 +428,11 @@ public final class EbeguRuleTestsHelper {
 			gesuchsperiode
 		);
 		einstellungenMap.addEinstellung(DAUER_BABYTARIF, "12", gesuchsperiode);
+		einstellungenMap.addEinstellung(
+			GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_ENABLED,
+			"false",
+			gesuchsperiode
+		);
 		// Gemaess ASIV: Wir nehmen eben den ASIV Wert!
 		einstellungenMap.addEinstellung(
 			GEMEINDE_MIN_ERWERBSPENSUM_EINGESCHULT,
@@ -616,6 +621,12 @@ public final class EbeguRuleTestsHelper {
 		einstellungenMap.addEinstellung(
 			BETREUUNG_COMPARATOR,
 			"DEFAULT",
+			gesuchsperiode
+		);
+
+		einstellungenMap.addEinstellung(
+			GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD,
+			"12",
 			gesuchsperiode
 		);
 

@@ -47,6 +47,12 @@ export class TSGemeindeKonfiguration {
     public konfigZusaetzlicherGutscheinBisUndMitSchulstufeTfo: TSEinschulungTyp; // only on client
     public konfigZusaetzlicherBabybeitragEnabled: boolean; // only on client
     public konfigZusaetzlicherBabybeitragBetragKita: number; // only on client
+    /**
+     * Alter des Kindes in Monaten, für welches der zusätzliche Babybeitrag maximal gewährleistet wird.
+     * Wenn dieser Wert nicht in den Gemeinde-Periodeneinstellungen gesetzt ist, wird standardmässig der
+     * Wert DAUER_BABYTARIF aus den Periodeneinstellungen des Mandanten verwendet.
+     */
+    public konfigZusaetzlicherBabybeitragMaxAgeOfChild: number; // only on client
     public konfigZusaetzlicherBabybeitragBetragTfo: number; // only on client
     public konfigZusaetzlicherAnspruchFreiwilligenarbeitEnabled: boolean; // only on client
     public konfigZusaetzlicherAnspruchFreiwilligenarbeitMaxprozent: number; // only on client
@@ -263,6 +269,12 @@ export class TSGemeindeKonfiguration {
                 }
                 case TSEinstellungKey.GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA: {
                     this.konfigZusaetzlicherBabybeitragBetragKita = Number(
+                        property.value
+                    );
+                    break;
+                }
+                case TSEinstellungKey.GEMEINDE_ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD: {
+                    this.konfigZusaetzlicherBabybeitragMaxAgeOfChild = Number(
                         property.value
                     );
                     break;

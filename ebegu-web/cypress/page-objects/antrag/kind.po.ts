@@ -141,7 +141,7 @@ const fillKindForm = (dataset: keyof typeof FixtureKind) => {
         getGeschlecht(kind1.geschlecht).click();
         getVorname().type(kind1.vorname);
         getNachname().type(kind1.nachname);
-        getGeburtsdatum().find('input').type(kind1.geburtsdatum);
+        getGeburtsdatum().find('input').type(kind1.geburtsdatum).blur();
         getObhutAlternierend('ja').find('label').click();
         getFamErgaenzendeBetreuungAnmelden('ja').find('label').click();
         getSprichtAmtsprache('ja').click();

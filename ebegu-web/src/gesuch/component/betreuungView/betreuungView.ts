@@ -36,6 +36,7 @@ import {
 } from '@kibon/shared/util-fn/betreuungsangebot-typ';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
+import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
 import {StateService} from '@uirouter/core';
 import {copy, IComponentOptions} from 'angular';
 import $ from 'jquery';
@@ -135,7 +136,8 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         '$translate',
         'SharedUtilApplicationPropertyRsService',
         'MandantService',
-        'EbeguRestUtil'
+        'EbeguRestUtil',
+        'HybridFormBridgeService'
     ];
     public bedarfsstufe: TSBedarfsstufe = null;
     public bedarfsstufeValues: TSBedarfsstufe[] = [
@@ -231,7 +233,8 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         $translate: ITranslateService,
         private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly mandantService: MandantService,
-        private readonly ebeguRestUtil: EbeguRestUtil
+        private readonly ebeguRestUtil: EbeguRestUtil,
+        protected readonly hybridFormBridgeService: HybridFormBridgeService
     ) {
         super(
             gesuchModelManager,
@@ -686,6 +689,10 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         nextStep?: string,
         params?: any
     ): void {
+        this.hybridFormBridgeService.triggerFormValidation();
+        if (this.hybridFormBridgeService.hasAnyInvalidForm()) {
+            return undefined;
+        }
         this.isSavingData = true;
         const oldStatus = this.model.betreuungsstatus;
         if (this.getBetreuungModel() && this.isSchulamt()) {
@@ -1580,6 +1587,41 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         );
     }
 
+    public isBetreuungReadonly() {
+        if (this.isGesuchReadonly()) {
+            return true;
+        }
+
+        if (
+            this.authServiceRS.isOneOfRoles(
+                [TSRole.GESUCHSTELLER].concat(TSRoleUtil.getSozialdienstRolle())
+            ) &&
+            this.checkRelevantBetreuungsStati()
+        ) {
+            return true;
+        } else if (
+            this.isBetreuungsstatusBestaetigtOrVerfuegt() ||
+            this.isBetreuungsstatusNichtEingetreten() ||
+            this.isBetreuungsstatusAbgewiesen() ||
+            this.isBetreuungsstatusStorniert()
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private checkRelevantBetreuungsStati() {
+        return (
+            this.isBetreuungsstatusWarten() ||
+            this.isBetreuungsstatusAusstehend() ||
+            this.isBetreuungsstatusBestaetigtOrVerfuegt() ||
+            this.isBetreuungsstatusNichtEingetreten() ||
+            this.isBetreuungsstatusAbgewiesen() ||
+            this.isBetreuungsstatusStorniert()
+        );
+    }
+
     public isBetreuungsstatusAusstehend(): boolean {
         return this.isBetreuungsstatus(TSBetreuungsstatus.AUSSTEHEND);
     }
@@ -1644,10 +1686,10 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
     public showErweiterteBeduerfnisse(): boolean {
         const showErweiterteBeduerfnisse =
             this.authServiceRS.isOneOfRoles(
-                TSRoleUtil.getTraegerschaftInstitutionRoles()
-            ) ||
-            this.authServiceRS.isOneOfRoles(
-                TSRoleUtil.getAdminJaSchulamtSozialdienstGesuchstellerRoles()
+                TSRoleUtil.getTraegerschaftInstitutionRoles().concat(
+                    TSRoleUtil.getMandantRoles(),
+                    TSRoleUtil.getAdminJaSchulamtSozialdienstGesuchstellerRoles()
+                )
             ) ||
             (this.getBetreuungModel().erweiterteBetreuungContainer
                 .erweiterteBetreuungJA &&
