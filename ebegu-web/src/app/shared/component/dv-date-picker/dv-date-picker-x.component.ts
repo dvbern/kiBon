@@ -16,6 +16,7 @@
  */
 
 import {
+    booleanAttribute,
     ChangeDetectionStrategy,
     Component,
     EventEmitter,
@@ -68,7 +69,7 @@ export class DvDatePickerXComponent {
     /**
      * Whether the mat-toggle for opening the calender is enabled. Defaults to true
      */
-    @Input()
+    @Input({transform: booleanAttribute})
     public datePickerEnabled: boolean = true;
 
     /**

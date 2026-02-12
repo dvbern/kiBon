@@ -69,9 +69,6 @@ export class ErrorMessagesComponent implements OnChanges, OnDestroy {
     }
 
     private getErrorMessage(errorKey: string, errorValue?: any): string {
-        console.log('error cmp', this.errorMessageOverrides);
-        console.log('errorkey', errorKey);
-
         if (this.errorMessageOverrides?.[errorKey]) {
             return this.translate.instant(this.errorMessageOverrides[errorKey]);
         }
@@ -137,8 +134,8 @@ export class ErrorMessagesComponent implements OnChanges, OnDestroy {
                 return this.translate.instant('ERROR_REQUIRED_ONE_OF_THEM');
             case 'dvGesuchsperiodeIsInDateRange':
                 return this.translate.instant('ERROR_GP_DATE', {
-                    startgp: errorValue?.dvGesuchsperiodeIsInDateRange?.startGp,
-                    endgp: errorValue?.dvGesuchsperiodeIsInDateRange?.endGp
+                    startgp: errorValue?.startGp,
+                    endgp: errorValue?.endGp
                 });
             default:
                 return this.translate.instant('ERROR_UNKNOWN');

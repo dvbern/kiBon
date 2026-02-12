@@ -1587,41 +1587,6 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         );
     }
 
-    public isBetreuungReadonly() {
-        if (this.isGesuchReadonly()) {
-            return true;
-        }
-
-        if (
-            this.authServiceRS.isOneOfRoles(
-                [TSRole.GESUCHSTELLER].concat(TSRoleUtil.getSozialdienstRolle())
-            ) &&
-            this.checkRelevantBetreuungsStati()
-        ) {
-            return true;
-        } else if (
-            this.isBetreuungsstatusBestaetigtOrVerfuegt() ||
-            this.isBetreuungsstatusNichtEingetreten() ||
-            this.isBetreuungsstatusAbgewiesen() ||
-            this.isBetreuungsstatusStorniert()
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private checkRelevantBetreuungsStati() {
-        return (
-            this.isBetreuungsstatusWarten() ||
-            this.isBetreuungsstatusAusstehend() ||
-            this.isBetreuungsstatusBestaetigtOrVerfuegt() ||
-            this.isBetreuungsstatusNichtEingetreten() ||
-            this.isBetreuungsstatusAbgewiesen() ||
-            this.isBetreuungsstatusStorniert()
-        );
-    }
-
     public isBetreuungsstatusAusstehend(): boolean {
         return this.isBetreuungsstatus(TSBetreuungsstatus.AUSSTEHEND);
     }

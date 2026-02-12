@@ -80,12 +80,16 @@
                                 for="eintrittsdatum_ID"
                             ></label>
                             <dv-date-picker-angularjs-xx
-                                input-id="eintrittsdatum_ID"
+                                inputId="eintrittsdatum_ID"
                                 name="eintrittsdatum"
-                                ng-model="vm.getBetreuung().belegungTagesschule.eintrittsdatum"
-                                ng-required="true"
+                                [(date)]="
+                                    vm.getBetreuung().belegungTagesschule
+                                        .eintrittsdatum
+                                "
+                                [required]="true"
+                                date-picker-enabled="false"
                                 class="input-element"
-                                ng-disabled="true"
+                                disabled="true"
                             >
                             </dv-date-picker-angularjs-xx>
                         </div>

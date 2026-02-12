@@ -192,4 +192,8 @@ export class DvAdresseController {
             )
         );
     }
+
+    public onDateChanged() {
+        this.parentForm.$setDirty();
+    }
 }

@@ -104,7 +104,10 @@
                                                     aenderungPerChanged()
                                                 "
                                                 [datePickerEnabled]="true"
-                                                [disabled]="isGesuchReadonly()"
+                                                [disabled]="
+                                                    isGesuchReadonly() ||
+                                                    isMutationInstitution()
+                                                "
                                             >
                                             </dv-date-picker-x>
                                             <dv-bisher-x

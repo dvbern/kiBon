@@ -2095,6 +2095,15 @@ export class GesuchModelManager {
         );
     }
 
+    public isMutationInstitution(): boolean {
+        return (
+            this.gesuch.isMutation() &&
+            this.authServiceRS.isOneOfRoles(
+                TSRoleUtil.getInstitutionOnlyRoles()
+            )
+        );
+    }
+
     /**
      * checks if the gesuch is readonly for a given role based on its state
      */

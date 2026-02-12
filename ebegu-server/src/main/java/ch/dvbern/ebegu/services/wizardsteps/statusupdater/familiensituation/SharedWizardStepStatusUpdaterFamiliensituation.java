@@ -48,7 +48,6 @@ import ch.dvbern.ebegu.services.wizardsteps.statusupdater.finanziellesituation.W
 import ch.dvbern.ebegu.services.wizardsteps.statusupdater.gesuchsteller.WizardStepStatusUpdaterGesuchsteller;
 import ch.dvbern.ebegu.util.EbeguUtil;
 
-import static ch.dvbern.ebegu.enums.EnumGesuchstellerKardinalitaet.ZU_ZWEIT;
 import static ch.dvbern.ebegu.services.util.ErwerbspensumHelper.isErwerbespensumContainerEmpty;
 import static ch.dvbern.ebegu.services.util.ErwerbspensumHelper.isErwerbspensumRequiredForGS2;
 
@@ -170,9 +169,13 @@ public class SharedWizardStepStatusUpdaterFamiliensituation extends
 		@Nonnull WizardStep wizardStep,
 		Familiensituation newFamiliensituation
 	) {
-		return ZU_ZWEIT.equals(
-			newFamiliensituation.getGesuchstellerKardinalitaet()
-		) && wizardStep.getGesuch().getGesuchsteller2() == null;
+		return newFamiliensituation.hasSecondGesuchsteller(
+			wizardStep.getGesuch()
+				.getGesuchsperiode()
+				.getGueltigkeit()
+				.getGueltigBis()
+		)
+			&& wizardStep.getGesuch().getGesuchsteller2() == null;
 	}
 
 	private List<KindContainer> findAllKinderFromGesuch(WizardStep wizardStep) {
@@ -240,6 +243,10 @@ public class SharedWizardStepStatusUpdaterFamiliensituation extends
 		}
 	}
 
+	/**
+	 *
+	 * @param wizardStep
+	 */
 	private void updateStepGesuchstellerFromOneGSTOTwoGS(
 		WizardStep wizardStep
 	) {

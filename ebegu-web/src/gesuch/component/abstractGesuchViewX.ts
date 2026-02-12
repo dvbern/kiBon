@@ -148,6 +148,10 @@ export class AbstractGesuchViewX<T> implements AfterViewInit {
         return this.gesuchModelManager.isGesuchReadonly();
     }
 
+    public isMutationInstitution(): boolean {
+        return this.gesuchModelManager.isMutationInstitution();
+    }
+
     /**
      * Diese Methode prueft, ob die Form valid ist. Sollte sie nicht valid sein wird das erste fehlende Element gesucht
      * und fokusiert, damit der Benutzer nicht scrollen muss, um den Fehler zu finden.

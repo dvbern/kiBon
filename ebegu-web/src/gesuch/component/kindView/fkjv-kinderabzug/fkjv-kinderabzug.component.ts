@@ -69,26 +69,27 @@ export class FkjvKinderabzugComponent
         this.fkjvExchangeService
             .getFormValidationTriggered$()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     this.cd.markForCheck();
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
         this.fkjvExchangeService
             .getGeburtsdatumChanged$()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                date => {
+            .subscribe({
+                next: date => {
                     this.kindIsOrGetsVolljaehrig =
                         EbeguUtil.calculateKindIsOrGetsVolljaehrig(
                             date,
                             gesuchsperiode
                         );
                     this.change();
+                    this.cd.markForCheck();
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
         this.kindIsOrGetsVolljaehrig =
             EbeguUtil.calculateKindIsOrGetsVolljaehrig(
                 this.kindContainer?.kindJA.geburtsdatum,

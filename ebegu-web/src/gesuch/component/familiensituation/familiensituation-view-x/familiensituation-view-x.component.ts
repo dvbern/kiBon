@@ -41,6 +41,7 @@ import {
 import {TSEinstellung} from '../../../../admin/einstellungen/TSEinstellung';
 import {TSFamiliensituation} from '../../../../models/TSFamiliensituation';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
 import {BerechnungsManager} from '../../../service/berechnungsManager';
 import {FamiliensituationRS} from '../../../service/familiensituationRS.service';
 import {GesuchModelManager} from '../../../service/gesuchModelManager';
@@ -115,8 +116,8 @@ export class FamiliensituationViewXComponent
             .getAllEinstellungenBySystemCached(
                 this.gesuchModelManager.getGesuchsperiode().id
             )
-            .subscribe(
-                (response: TSEinstellung[]) => {
+            .subscribe({
+                next: (response: TSEinstellung[]) => {
                     response
                         .filter(
                             r =>
@@ -127,6 +128,7 @@ export class FamiliensituationViewXComponent
                             this.getFamiliensituation().fkjvFamSit =
                                 value.getValueAsBoolean();
                         });
+
                     response
                         .filter(
                             r =>
@@ -137,6 +139,7 @@ export class FamiliensituationViewXComponent
                             this.getFamiliensituation().minDauerKonkubinat =
                                 Number(value.value);
                         });
+
                     response
                         .filter(
                             r =>
@@ -148,8 +151,8 @@ export class FamiliensituationViewXComponent
                                 value.getValueAsBoolean();
                         });
                 },
-                error => LOG.error(error)
-            );
+                error: error => LOG.error(error)
+            });
     }
 
     protected async confirm(onResult: (arg: any) => void): Promise<void> {
@@ -325,7 +328,8 @@ export class FamiliensituationViewXComponent
     public isStartKonkubinatDisabled(): boolean {
         return (
             this.isMutation() ||
-            (this.isGesuchReadonly() && !this.isKorrekturModusJugendamt())
+            (this.isGesuchReadonly() && !this.isKorrekturModusJugendamt()) ||
+            this.authService.isOneOfRoles(TSRoleUtil.getInstitutionOnlyRoles())
         );
     }
 

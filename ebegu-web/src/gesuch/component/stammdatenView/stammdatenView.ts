@@ -492,12 +492,24 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
         );
     }
 
+    public get geburtsdatum(): moment.Moment {
+        return this.getModelJA().geburtsdatum;
+    }
+
+    public set geburtsdatum(value: moment.Moment) {
+        this.getModelJA().geburtsdatum = value;
+        // if next line gets removed, there will be no saves anymore because
+        // !this.form.$dirty never triggers which skips saving date changes
+        this.form?.$setDirty(); // must do! because of angularjs shenanigans
+    }
+
     public save(): IPromise<TSGesuchstellerContainer> {
         this.hybridFormBridgeService.triggerFormValidation();
         if (this.hybridFormBridgeService.hasAnyInvalidForm()) {
             return undefined;
         }
         if (!this.isGesuchValid()) {
+            this.form.form.markAllAsTouched();
             return undefined;
         }
 

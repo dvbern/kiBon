@@ -166,6 +166,7 @@
                                     class="input-element"
                                     [(date)]="vm.getModel().geburtsdatum"
                                     [disabled]="vm.isGesuchReadonly()"
+                                    (date-change)="vm.geburtsdatumChanged()"
                                 ></dv-date-picker-angularjs-xx>
                                 <dv-bisher
                                     gs="vm.getContainer().kindGS.geburtsdatum"

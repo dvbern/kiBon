@@ -16,11 +16,13 @@
  */
 
 import {
+    booleanAttribute,
     ChangeDetectionStrategy,
     Component,
     EventEmitter,
     inject,
     Input,
+    NgZone,
     OnInit,
     Output,
     viewChild
@@ -28,7 +30,7 @@ import {
 import {FormsModule, NgForm} from '@angular/forms';
 import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
-import moment, {Moment} from 'moment';
+import moment from 'moment';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
 import {SharedModule} from '../../shared.module';
 
@@ -45,6 +47,7 @@ import {SharedModule} from '../../shared.module';
             [minDate]="minDate"
             [maxDate]="maxDate"
             [gesuchsperiode]="gesuchsperiode"
+            [datePickerEnabled]="datePickerEnabled"
         ></dv-date-picker-x>
     </form>`,
     changeDetection: ChangeDetectionStrategy.Default,
@@ -53,6 +56,7 @@ import {SharedModule} from '../../shared.module';
 })
 export class DvDatePickerXAngularjswrapperComponent implements OnInit {
     private hybridBridge = inject(HybridFormBridgeService);
+    private ngZone = inject(NgZone);
 
     private form = viewChild(NgForm);
 
@@ -83,7 +87,7 @@ export class DvDatePickerXAngularjswrapperComponent implements OnInit {
     /**
      * Whether the mat-toggle for opening the calender is enabled. Defaults to true
      */
-    @Input()
+    @Input({transform: booleanAttribute})
     public datePickerEnabled: boolean = true;
 
     /**
@@ -108,8 +112,10 @@ export class DvDatePickerXAngularjswrapperComponent implements OnInit {
 
     public randId = EbeguUtil.generateRandomName(10);
 
-    public emit(event: Moment): void {
-        this.dateChange.emit(event);
+    public emit(event: moment.Moment): void {
+        this.ngZone.run(() => {
+            this.dateChange.emit(event.clone());
+        });
     }
 
     public ngOnInit(): void {

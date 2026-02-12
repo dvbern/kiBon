@@ -191,13 +191,13 @@ export class KindViewController extends AbstractGesuchViewController<TSKindConta
         // TODO: Replace with angularX async template pipe during ablösung
         this.mandantService.mandant$
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                mandant => {
+            .subscribe({
+                next: mandant => {
                     this.mandant = mandant;
                     this.initViewModel();
                 },
-                err => LOG.error(err)
-            );
+                error: err => LOG.error(err)
+            });
     }
 
     public $onDestroy(): void {

@@ -523,17 +523,17 @@
                                 class="col-sm-12 form-group dv-input-container-small"
                             >
                                 <label
-                                    class="md-no-float"
+                                    class="md-no-float required"
                                     data-translate="MAHNUNG_FRISTABLAUF"
                                     for="datumFristablaufID"
                                 ></label>
                                 <dv-date-picker-angularjs-xx
                                     class="input-element-small"
                                     data-test="fristablauf-mahnung"
-                                    input-id="datumFristablaufID"
+                                    inputId="datumFristablaufID"
                                     name="datumFristablauf"
-                                    ng-model="vm.mahnung.datumFristablauf"
-                                    ng-required="true"
+                                    [(date)]="vm.mahnung.datumFristablauf"
+                                    [required]="true"
                                 >
                                 </dv-date-picker-angularjs-xx>
                                 <dv-error-messages

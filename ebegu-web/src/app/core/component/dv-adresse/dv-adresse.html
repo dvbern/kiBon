@@ -392,6 +392,7 @@
                         [required]="true"
                         class="input-element"
                         [(date)]="vm.getModel().adresseJA.gueltigkeit.gueltigAb"
+                        (date-change)="vm.onDateChanged()"
                     ></dv-date-picker-angularjs-xx>
                     <dv-bisher
                         gs="vm.getModel().adresseGS.gueltigkeit.gueltigAb"
@@ -429,6 +430,7 @@
                             vm.getModel().adresseJA.gueltigkeit.gueltigBis
                         "
                         [required]="true"
+                        (date-change)="vm.onDateChanged()"
                     >
                     </dv-date-picker-angularjs-xx>
                     <dv-bisher

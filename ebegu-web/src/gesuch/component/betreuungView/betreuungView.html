@@ -348,6 +348,7 @@
                                 betreuungsangebot-typ="vm.betreuungsangebot.key"
                                 betreuung-input-switch-typ="vm.getBetreuungspensumAnzeigeTyp()"
                                 multiplier-kita="vm.getMultiplierKita()"
+                                multiplier-tfo="vm.getMultiplierTFO()"
                                 vertrag="vm.getBetreuungModel().vertrag"
                                 mandant="vm.mandant"
                                 texteSz25Enabled="vm.texteSz25Enabled"
@@ -2037,9 +2038,6 @@
                                                             .getGesuch()
                                                             .getGesuchsperiode()
                                                     "
-                                                    [disabled]="
-                                                        vm.isBetreuungReadonly()
-                                                    "
                                                 >
                                                 </dv-date-picker-angularjs-xx>
                                                 <dv-error-messages
@@ -2084,9 +2082,6 @@
                                                         vm
                                                             .getGesuch()
                                                             .getGesuchsperiode()
-                                                    "
-                                                    [disabled]="
-                                                        vm.isBetreuungReadonly()
                                                     "
                                                 >
                                                 </dv-date-picker-angularjs-xx>
