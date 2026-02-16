@@ -115,7 +115,7 @@
             >{{ 'MANDANT_SWITCH' | translate }}</dv-pulldown-user-menu-button
         >
     }
-    <dv-pulldown-user-menu-button (buttonClick)="logout()">{{
+    <dv-pulldown-user-menu-button (buttonClick)="logout($event)">{{
         'AUSLOGGEN' | translate
     }}</dv-pulldown-user-menu-button>
 

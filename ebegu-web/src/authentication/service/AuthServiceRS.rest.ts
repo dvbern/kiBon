@@ -13,26 +13,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {TSRole} from '@kibon/shared/model/enums';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import * as Sentry from '@sentry/browser';
+import {StateService, TargetState} from '@uirouter/core';
 import * as angular from 'angular';
 
 import {Observable, ReplaySubject} from 'rxjs';
 import {Permission} from '../../app/authorisation/Permission';
 import {PERMISSIONS} from '../../app/authorisation/Permissions';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TSAuthEvent} from '../../models/enums/TSAuthEvent';
-import {TSRole} from '@kibon/shared/model/enums';
 import {TSBenutzer} from '../../models/TSBenutzer';
 import {EbeguRestUtil} from '../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../utils/TSRoleUtil';
 import {AuthLifeCycleService} from './authLifeCycle.service';
+import {LogoutResponse} from './LogoutResponse';
 import IHttpService = angular.IHttpService;
 import IPromise = angular.IPromise;
 import IQService = angular.IQService;
-import {StateService, TargetState} from '@uirouter/core';
 
 const LOG = LogFactory.createLog('AuthServiceRS');
 
@@ -199,18 +200,53 @@ export class AuthServiceRS {
         if (email) {
             queryParams.append('login_hint', email);
         }
-        const endpoint = this.isLoggedIn() ? 'logout' : 'login';
+
         const url = new URL(
-            `${CONSTANTS.REST_API}auth/${endpoint}?${queryParams}`,
+            `${CONSTANTS.REST_API}auth/login?${queryParams}`,
             window.location.origin
         );
         window.location.assign(url);
     }
 
-    public initLogout() {
-        window.location.assign(
-            new URL(`${CONSTANTS.REST_API}auth/logout`, window.location.origin)
+    public async initLogout(): Promise<LogoutResponse> {
+        const logoutApiUrl = new URL(
+            `${CONSTANTS.REST_API}auth/logout`,
+            window.location.origin
         );
+
+        try {
+            const resp = await this.$http.get<LogoutResponse>(
+                logoutApiUrl.href,
+                {
+                    withCredentials: true,
+                    headers: {Accept: 'application/json'}
+                }
+            );
+
+            const logoutSuccess: boolean = resp.data?.logoutSuccess ?? false;
+            const useDefaultLogoutRedirect: boolean =
+                resp.data?.useDefaultLogoutRedirect ?? false;
+            const logoutRedirect =
+                resp.data?.logoutRedirect ?? window.location.origin;
+
+            if (logoutSuccess) {
+                if (useDefaultLogoutRedirect) {
+                    window.location.assign(window.location.origin);
+                } else {
+                    window.location.assign(logoutRedirect);
+                }
+            }
+
+            return resp.data;
+        } catch (err: any) {
+            console.error('Logout failed', err);
+
+            const message =
+                `The logout request failed because of an error. ` +
+                `The error message was: ${err?.message}`;
+
+            return new LogoutResponse('', false, message);
+        }
     }
 
     public isLoggedIn(): boolean {

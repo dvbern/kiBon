@@ -45,6 +45,7 @@ export class BenutzerRolleComponent implements OnInit {
     @Input() public readonly required: boolean = false;
     @Input() public readonly disabled: boolean = false;
     @Input() public readonly excludedRoles: TSRole[] = [];
+    @Input() public needToShowRequired = false;
 
     @Output() public readonly benutzerRolleChange = new EventEmitter<TSRole>();
 
@@ -64,6 +65,8 @@ export class BenutzerRolleComponent implements OnInit {
                     ),
                 new Map<TSRole, string>()
             );
+
+        console.log(this.needToShowRequired);
     }
 
     @Input()

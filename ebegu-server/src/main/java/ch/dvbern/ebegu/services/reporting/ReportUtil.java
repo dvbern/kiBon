@@ -191,7 +191,11 @@ public final class ReportUtil {
 					destCell.setCellValue(srcCell.getBooleanCellValue());
 					break;
 				case FORMULA:
-					destCell.setCellFormula(srcCell.getCellFormula());
+					try {
+						destCell.setCellFormula(srcCell.getCellFormula());
+					} catch (RuntimeException e) {
+						throw new IllegalStateException(e);
+					}
 					break;
 				case BLANK:
 				case ERROR:

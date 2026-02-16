@@ -50,6 +50,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @ExtendWith(EasyMockExtension.class)
 class AuthResourceTest extends EasyMockSupport {
@@ -122,14 +124,20 @@ class AuthResourceTest extends EasyMockSupport {
 			assertThat(
 				response.getStatusInfo().getStatusCode(),
 				Is.is(
-					Status.TEMPORARY_REDIRECT.getStatusCode()
+					Status.OK.getStatusCode()
 				)
 			);
-			assertThat(
-				response.getLocation().toString(),
-				Is.is(
-					"https://somehost.com/context/api/v1/auth/login?login_hint=some%40mail.com"
-				)
+
+			LogoutResponse logoutResponse = (LogoutResponse) response
+				.getEntity();
+
+			assertTrue(
+				logoutResponse.isLogoutSuccess()
+			);
+
+			assertEquals(
+				"https://somehost.com/context/api/v1/auth/login?login_hint=some%40mail.com",
+				logoutResponse.getLogoutRedirect()
 			);
 		}
 
@@ -178,14 +186,20 @@ class AuthResourceTest extends EasyMockSupport {
 			assertThat(
 				response.getStatusInfo().getStatusCode(),
 				Is.is(
-					Status.TEMPORARY_REDIRECT.getStatusCode()
+					Status.OK.getStatusCode()
 				)
 			);
-			assertThat(
-				response.getLocation().toString(),
-				Is.is(
-					"https://somehost.com/belogin/logout"
-				)
+
+			LogoutResponse logoutResponse = (LogoutResponse) response
+				.getEntity();
+
+			assertTrue(
+				logoutResponse.isLogoutSuccess()
+			);
+
+			assertEquals(
+				"https://somehost.com/belogin/logout",
+				logoutResponse.getLogoutRedirect()
 			);
 		}
 
@@ -215,14 +229,20 @@ class AuthResourceTest extends EasyMockSupport {
 			assertThat(
 				response.getStatusInfo().getStatusCode(),
 				Is.is(
-					Status.TEMPORARY_REDIRECT.getStatusCode()
+					Status.OK.getStatusCode()
 				)
 			);
-			assertThat(
-				response.getLocation().toString(),
-				Is.is(
-					"https://somehost.com/context/api/v1/auth/login?login_hint=some%40mail.com"
-				)
+
+			LogoutResponse logoutResponse = (LogoutResponse) response
+				.getEntity();
+
+			assertTrue(
+				logoutResponse.isLogoutSuccess()
+			);
+
+			assertEquals(
+				"https://somehost.com/context/api/v1/auth/login?login_hint=some%40mail.com",
+				logoutResponse.getLogoutRedirect()
 			);
 		}
 
@@ -252,12 +272,17 @@ class AuthResourceTest extends EasyMockSupport {
 			assertThat(
 				response.getStatusInfo().getStatusCode(),
 				Is.is(
-					Status.TEMPORARY_REDIRECT.getStatusCode()
+					Status.OK.getStatusCode()
 				)
 			);
-			assertThat(
-				response.getLocation().toString(),
-				Is.is("https://somehost.com#")
+			LogoutResponse logoutResponse = (LogoutResponse) response
+				.getEntity();
+
+			assertTrue(
+				logoutResponse.isLogoutSuccess()
+			);
+			assertTrue(
+				logoutResponse.isUseDefaultLogoutRedirect()
 			);
 		}
 	}

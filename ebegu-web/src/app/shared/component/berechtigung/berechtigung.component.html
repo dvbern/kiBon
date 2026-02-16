@@ -27,6 +27,7 @@
                     [disabled]="disabled"
                     [excludedRoles]="excludedRoles"
                     [(benutzerRolle)]="berechtigung.role"
+                    [needToShowRequired]="needToShowRequired"
                 >
                 </dv-benutzer-rolle>
             </div>
@@ -38,6 +39,7 @@
                     [selected]="berechtigung.gemeindeList"
                     [disabled]="disabled"
                     [required]="true"
+                    [needToShowRequired]="needToShowRequired"
                 >
                 </dv-gemeinde-multiselect>
             </div>
@@ -46,7 +48,9 @@
         @if (berechtigung.hasInstitutionRole()) {
             <div [class]="displayClass">
                 <div class="form-group">
-                    <label translate [for]="institutionId">INSTITUTION</label>
+                    <label class="required" translate [for]="institutionId"
+                        >INSTITUTION</label
+                    >
                     <div class="dv-select-style">
                         <select
                             [attr.aria-describedby]="institutionId + '-error'"
@@ -80,7 +84,7 @@
         @if (berechtigung.hasTraegerschaftRole()) {
             <div [class]="displayClass">
                 <div class="form-group">
-                    <label translate [for]="traegerschaftId"
+                    <label class="required" translate [for]="traegerschaftId"
                         >TRAEGERSCHAFT</label
                     >
                     <div class="dv-select-style">
@@ -118,7 +122,7 @@
         @if (berechtigung.hasSozialdienstRole()) {
             <div [class]="displayClass">
                 <div class="form-group">
-                    <label translate [for]="sozialdienstId"
+                    <label class="required" translate [for]="sozialdienstId"
                         >SOZIALDIENST_TITLE</label
                     >
                     <div class="dv-select-style">

@@ -35,6 +35,7 @@ import {I18nServiceRSRest} from '../app/i18n/services/i18nServiceRS.rest';
 import {GemeindeService} from '../app/shared/services/gemeinde.service';
 import {AuthLifeCycleService} from '../authentication/service/authLifeCycle.service';
 import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
+import {LogoutResponse} from '../authentication/service/LogoutResponse';
 import {InternePendenzenRS} from '../gesuch/component/internePendenzenView/internePendenzenRS.rest';
 import {KinderabzugExchangeService} from '../gesuch/component/kindView/service/kinderabzug-exchange.service';
 import {FamiliensituationRS} from '../gesuch/service/familiensituationRS.service';
@@ -166,8 +167,8 @@ class AuthServiceRSMock extends AuthServiceRS {
         // NOP
     }
 
-    public initLogout(): void {
-        // NOP
+    public async initLogout(): Promise<LogoutResponse> {
+        return new LogoutResponse();
     }
 }
 

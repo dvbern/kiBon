@@ -18,7 +18,12 @@
 @if (allowedMap$ | async; as allowedGemeinden) {
     <div [ngClass]="{'form-group': true, 'ie-workaround': isIE()}">
         @if (showLabel) {
-            <label [for]="inputId" translate>GEMEINDEN</label>
+            <label
+                [class.required]="needToShowRequired"
+                [for]="inputId"
+                translate
+                >GEMEINDEN</label
+            >
         }
         <mat-select
             class="form-control"

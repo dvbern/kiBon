@@ -638,6 +638,26 @@ export class GemeindeAngabenComponent implements OnInit, OnDestroy {
                     )
             });
 
+        this.angabenForm.controls.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal.setValidators(
+            [Validators.required]
+        );
+        this.angabenForm.controls.mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal.valueChanges
+            .pipe(takeUntil(this.reloadUnsubscribe))
+            .subscribe({
+                next: value => {
+                    this.setValidatorRequiredIfFalse(
+                        'mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonalBemerkung',
+                        value
+                    );
+                },
+                error: () =>
+                    this.errorService.addMesageAsError(
+                        this.translateService.instant(
+                            'mindestens50ProzentBetreuungszeitDurchAusgebildetesPersonal ValueChanges error'
+                        )
+                    )
+            });
+
         this.angabenForm.controls.ausbildungenMitarbeitendeBelegt.setValidators(
             [Validators.required]
         );

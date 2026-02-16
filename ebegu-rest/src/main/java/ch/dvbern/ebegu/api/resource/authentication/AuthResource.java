@@ -225,13 +225,16 @@ public class AuthResource {
 		return redirectToLogoutTarget(request, loginHint);
 	}
 
-	private static Response redirectToLogoutTarget(
+	private Response redirectToLogoutTarget(
 		HttpServletRequest request,
 		String loginHint
 	) {
 		// zur kiBon Startsetite navigieren
 		if (Strings.isNullOrEmpty(loginHint)) {
-			return redirectToFrontend(request, "").build();
+			return new LogoutResponseBuilder().withStatus(200)
+				.withLogoutSuccess(true)
+				.withUseDefaultLogoutRedirect()
+				.build();
 		}
 		URI loginWithHint = UriBuilder.fromUri(
 			URI.create(request.getRequestURL().toString())
@@ -243,9 +246,10 @@ public class AuthResource {
 			.scheme("https")
 			.build();
 
-		return Response.temporaryRedirect(
-			loginWithHint
-		).build();
+		return new LogoutResponseBuilder().withStatus(200)
+			.withLogoutSuccess(true)
+			.withLogoutRedirect(loginWithHint.toString())
+			.build();
 	}
 
 	private Response redirectToBeLoginLogout() {
@@ -256,11 +260,11 @@ public class AuthResource {
 			MandantIdentifier.BERN.getRealmName(),
 			"keycloak-oidc"
 		);
-		// Logout URL auslesen
-		URI logoutUri = UriBuilder.fromUri(logoutURL)
+
+		return new LogoutResponseBuilder().withStatus(200)
+			.withLogoutSuccess(true)
+			.withLogoutRedirect(logoutURL)
 			.build();
-		// Redirect auf Lougout URL machen
-		return Response.temporaryRedirect(logoutUri).build();
 	}
 
 	private boolean isUserOfRealmBern() {
@@ -432,16 +436,16 @@ public class AuthResource {
 		}
 	}
 
-	private static String getGeuchstellerIdFromReturnPath(String returnPath) {
+	private String getGeuchstellerIdFromReturnPath(String returnPath) {
 		return returnPath.substring(returnPath.lastIndexOf('/') + 1);
 	}
 
-	private static void invalidateSession(HttpServletRequest request) {
+	private void invalidateSession(HttpServletRequest request) {
 		Optional.ofNullable(request.getSession(false))
 			.ifPresent(HttpSession::invalidate);
 	}
 
-	private static boolean isRequestZpvLinking(@Nullable String returnPath) {
+	private boolean isRequestZpvLinking(@Nullable String returnPath) {
 		if (returnPath == null) {
 			return false;
 		}
@@ -449,7 +453,7 @@ public class AuthResource {
 		return returnPath.contains(Constants.ZPV_LINK_SUCCESSS_PATH);
 	}
 
-	private static ResponseBuilder redirectToFrontend(
+	private ResponseBuilder redirectToFrontend(
 		HttpServletRequest request,
 		String frontendPath
 	) {

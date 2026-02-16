@@ -53,6 +53,7 @@ export class BerechtigungComponent {
     @Input() public readonly excludedRoles: TSRole[] = [];
     @Input() public readonly displayClass: string = 'col-sm-12';
     @Input() public readonly useInputComponents: boolean = true;
+    @Input() public needToShowRequired = false;
 
     public readonly inputId = `berechtigung-${nextId++}`;
     public readonly rolleId: string;
@@ -79,6 +80,8 @@ export class BerechtigungComponent {
         this.traegerschaften$ = this.traegerschaftenForPrincipal$();
 
         this.sozialdienste$ = this.sozialdienstenForPrincipal$();
+
+        console.log(this.needToShowRequired);
     }
 
     private static sortByName<T extends Displayable>(arr: T[]): T[] {

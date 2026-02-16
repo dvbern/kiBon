@@ -44,7 +44,6 @@ import ch.dvbern.ebegu.enums.betreuung.BetreuungsangebotTyp;
 import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -556,7 +555,6 @@ public class AdministrationServiceBean extends AbstractBaseService implements
 	private String readString(Row row, int columnIndex) {
 		Cell cell = row.getCell(columnIndex);
 		if (cell != null) {
-			cell.setCellType(CellType.STRING);
 			return cell.getStringCellValue();
 		}
 		return null;
@@ -573,9 +571,11 @@ public class AdministrationServiceBean extends AbstractBaseService implements
 	private PrintWriter getPrintWriter() {
 		if (printWriter == null) {
 			File output = new File(OUTPUT_FILE);
-			try (FileOutputStream fos = new FileOutputStream(
-				output.getAbsolutePath()
-			)) {
+			try (
+				FileOutputStream fos = new FileOutputStream(
+					output.getAbsolutePath()
+				)
+			) {
 				printWriter = new PrintWriter(
 					fos,
 					false,

@@ -73,10 +73,6 @@ export class LoginController implements IController {
         });
     }
 
-    public singlelogout(): void {
-        this.authService.initLogout();
-    }
-
     public isLoggedId(): boolean {
         return this.authService.isLoggedIn();
     }

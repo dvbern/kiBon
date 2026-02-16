@@ -15,7 +15,9 @@
 ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<label translate [for]="inputId">ROLLE</label>
+<label [class.required]="needToShowRequired" translate [for]="inputId"
+    >ROLLE</label
+>
 <div class="dv-select-style">
     <!--suppress HtmlFormInputWithoutLabel -->
     <select

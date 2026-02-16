@@ -54,6 +54,7 @@ export class GemeindeMultiselectComponent implements OnInit {
     @Input() public disabled: boolean = false;
     @Input() public allowedInMap$: Observable<TSGemeinde[]>;
     @Input() public showLabel: boolean = true;
+    @Input() public needToShowRequired = false;
 
     public allowedMap$: Observable<Map<TSGemeinde, boolean>>; // Die Gemeinden, die zur Auswahl stehen sollen
     public inputId = `gemeinde-select-${nextId++}`;

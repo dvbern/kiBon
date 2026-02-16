@@ -18,17 +18,18 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    inject,
     OnInit,
-    ViewEncapsulation,
-    inject
+    ViewEncapsulation
 } from '@angular/core';
+import {TSRole} from '@kibon/shared/model/enums';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {StateService} from '@uirouter/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AuthServiceRS} from '../../../../authentication/service/AuthServiceRS.rest';
-import {TSRole} from '@kibon/shared/model/enums';
 import {TSRoleUtil} from '../../../../utils/TSRoleUtil';
+import {ErrorService} from '../../errors/service/ErrorService';
 
 @Component({
     selector: 'dv-pulldown-user-menu',
@@ -44,6 +45,7 @@ export class PulldownUserMenuComponent implements OnInit {
         SharedUtilApplicationPropertyRsService
     );
     private readonly state = inject(StateService);
+    private readonly errorService = inject(ErrorService);
 
     public multimandantAktiv: boolean;
     public frenchEnabled: boolean;
@@ -113,7 +115,15 @@ export class PulldownUserMenuComponent implements OnInit {
         return this.applicationPropertyRS.isDevMode();
     }
 
-    public logout(): void {
-        this.authService.initLogout();
+    public logout(event: Event): void {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.authService.initLogout().then(logoutResponse => {
+            if (!logoutResponse.logoutSuccess) {
+                // Fehler anzeigen, dass der Logout nicht funktionert hat.
+                this.errorService.addMesageAsError(logoutResponse.message);
+            }
+        });
     }
 }

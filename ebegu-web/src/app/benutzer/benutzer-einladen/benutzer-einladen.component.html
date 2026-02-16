@@ -44,7 +44,9 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <!-- Name -->
-                        <label translate for="nachname_ID">NAME</label>
+                        <label class="required" translate for="nachname_ID"
+                            >NAME</label
+                        >
                         <input
                             id="nachname_ID"
                             type="text"
@@ -63,7 +65,9 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <!-- Vorname -->
-                        <label translate for="vorname_ID">VORNAME</label>
+                        <label class="required" translate for="vorname_ID"
+                            >VORNAME</label
+                        >
                         <input
                             id="vorname_ID"
                             type="text"
@@ -85,7 +89,9 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <!-- E-Mail -->
-                        <label translate for="email_ID">EMAIL</label>
+                        <label class="required" translate for="email_ID"
+                            >EMAIL</label
+                        >
                         <input
                             id="email_ID"
                             type="email"
@@ -109,6 +115,7 @@
                     displayClass="col-sm-6"
                     [berechtigung]="benutzer.currentBerechtigung"
                     [excludedRoles]="excludedRoles"
+                    [needToShowRequired]="true"
                 >
                 </dv-berechtigung>
             } @else {
@@ -116,6 +123,7 @@
                     displayClass="col-sm-6"
                     [berechtigung]="benutzer.currentBerechtigung"
                     [excludedRoles]="exludedTSRoles"
+                    [needToShowRequired]="true"
                 >
                 </dv-berechtigung>
             }
