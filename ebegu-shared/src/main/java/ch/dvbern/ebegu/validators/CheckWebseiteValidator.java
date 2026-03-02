@@ -19,7 +19,7 @@ public class CheckWebseiteValidator implements
 		String webseite,
 		ConstraintValidatorContext constraintValidatorContext
 	) {
-		if (webseite == null) {
+		if (webseite == null || webseite.trim().isEmpty()) {
 			return true;
 		}
 

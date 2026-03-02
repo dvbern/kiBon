@@ -42,6 +42,12 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
     const startdatum = '01.04.2025';
     const enddatum = '30.06.2025';
     let fallnummer: string;
+    const dateRegex = (date: string) => {
+        const [day, month, year] = date.split('.');
+        const d = day.replace(/^0/, '');
+        const m = month.replace(/^0/, '');
+        return new RegExp(`^0?${d}\\.0?${m}\\.${year}$`);
+    };
 
     before(() => {
         cy.changeMandant(MANDANTS.BERN);
@@ -129,9 +135,11 @@ describe('Kibon - generate Testfälle [Gemeinde Sachbearbeiter]', () => {
         );
         AntragBetreuungPO.getBetreuungspensumAb(0)
             .find('input')
-            .should('have.value', startdatum);
+            .invoke('val')
+            .should('match', dateRegex(startdatum));
         AntragBetreuungPO.getBetreuungspensumBis(0)
             .find('input')
-            .should('have.value', enddatum);
+            .invoke('val')
+            .should('match', dateRegex(enddatum));
     });
 });

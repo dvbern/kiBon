@@ -398,7 +398,11 @@ export class DossierToolbarController implements IDVFocusableController {
             html += `
                 <span>${stammdaten.adresse.strasse} ${stammdaten.adresse.hausnummer}</span>
                 <span>${stammdaten.adresse.plz} ${stammdaten.adresse.ort}</span>
-                ${!stammdaten.tsEmail || !stammdaten.bgEmail ? `<a href="mailto:${stammdaten.mail}">${stammdaten.mail}</a>` : ``}`;
+                ${
+                    !stammdaten.tsEmail || !stammdaten.bgEmail
+                        ? `<a href="mailto:${stammdaten.mail}">${stammdaten.mail}</a>`
+                        : ``
+                }`;
             if (!stammdaten.bgTelefon || !stammdaten.tsTelefon) {
                 html += `<a href="tel:${stammdaten.telefon}">${stammdaten.telefon}</a>`;
             }
@@ -620,8 +624,9 @@ export class DossierToolbarController implements IDVFocusableController {
             }
             // der Button soll für den Gesuchsteller ausgeblendet werden,
             if (
-                !this.gesuchModelManager.isNeuestesGesuch() &&
-                this.authServiceRS.isRole(TSRole.GESUCHSTELLER)
+                this.authServiceRS.isRole(TSRole.GESUCHSTELLER) &&
+                (!this.gesuchModelManager.isNeuestesGesuch() ||
+                    !this.gesuchModelManager.getGesuch().isOnlineGesuch()) // GS must not mutate "Papieranträge"
             ) {
                 return false;
             }

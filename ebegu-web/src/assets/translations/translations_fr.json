@@ -2148,6 +2148,7 @@
     "ZUSAETZLICHER_GUTSCHEIN_TFO_BIS_UND_MIT": "Proposer un bon supplémentaire par parents de jour jusqu'à et avec",
     "ZUSAETZLICHER_BABYBEITRAG_GEMEINDE": "Réduction supplémentaire accordée par la commune pour les enfants en bas âge",
     "ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD": "Jusqu'à quel âge (en mois) le tarif bébé est-il accordé?",
+    "ZUSAETZLICHER_BABYBEITRAG_MAX_AGE_OF_CHILD_GEMEINDE": "Jusqu'à quel âge (en mois) le tarif bébé est-il accordé: {{value}} mois",
     "ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA": "Bon maximal supplémentaire en CHF par jour à la crèche",
     "ZUSAETZLICHER_BABYBEITRAG_BETRAG_KITA_READONLY": "Bon maximal supplémentaire par jour à la crèche: {{value}} CHF",
     "ZUSAETZLICHER_BABYBEITRAG_BETRAG_TFO": "Bon maximal supplémentaire en CHF par heure par parents de jour",
@@ -3141,6 +3142,6 @@
     "DOKUMENT_GRUND_TYP_TAG_PAPIERGESUCH": "",
     "DOKUMENT_GRUND_TYP_TAG_FREIGABEQUITTUNG": "",
     "DOKUMENT_GRUND_TYP_TAG_ERWEITERTE_BETREUUNG": "",
-    "ERROR_TOO_MANY_SELECTED_TS_ANMELDUNGEN_STATISTIK": "Vous pouvez sélectionner au maximum 50 écoles à horaire continu. Vous avez dépassé le nombre maximal.",
+    "ERROR_TOO_MANY_SELECTED_TS_ANMELDUNGEN_STATISTIK": "Vous pouvez sélectionner au maximum 50 écoles à jounrée continu. Vous avez dépassé le nombre maximal.",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

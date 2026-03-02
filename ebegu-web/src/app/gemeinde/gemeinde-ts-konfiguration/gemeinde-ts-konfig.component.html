@@ -203,17 +203,19 @@
                                                         )
                                                     "
                                                 >
-                                                    {{
-                                                        'TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG'
-                                                            | translate
-                                                    }}
-                                                    <dv-tooltip
-                                                        input-id="planKlasse"
-                                                        [text]="
-                                                            'ZUSAETZLICHE_FELDER_TAGESSCHULANMELDUNG'
+                                                    <span>
+                                                        {{
+                                                            'TAGESSCHULE_ZUSAETZLICHE_ANGABEN_ZUR_ANMELDUNG'
                                                                 | translate
-                                                        "
-                                                    ></dv-tooltip>
+                                                        }}
+                                                        <dv-tooltip
+                                                            input-id="planKlasse"
+                                                            [text]="
+                                                                'ZUSAETZLICHE_FELDER_TAGESSCHULANMELDUNG'
+                                                                    | translate
+                                                            "
+                                                        ></dv-tooltip>
+                                                    </span>
                                                 </mat-checkbox>
                                             </div>
                                             <dv-date-picker-x

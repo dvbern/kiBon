@@ -36,9 +36,11 @@ import ch.dvbern.ebegu.persistence.CriteriaQueryHelper;
 import ch.dvbern.ebegu.persistence.Persistence;
 import ch.dvbern.ebegu.services.DossierService;
 import ch.dvbern.ebegu.services.FallService;
+import ch.dvbern.ebegu.services.GesuchService;
 import ch.dvbern.ebegu.services.GesuchServiceBean;
 import ch.dvbern.ebegu.services.SuperAdminService;
 import ch.dvbern.ebegu.test.TestDataUtil;
+import org.easymock.EasyMock;
 import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
@@ -52,6 +54,7 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
 
 @ExtendWith(EasyMockExtension.class)
 class GesuchServiceBeanTest extends EasyMockSupport {
@@ -226,6 +229,52 @@ class GesuchServiceBeanTest extends EasyMockSupport {
 		replayAll();
 
 		gesuchService.removeAntrag(papierErstgesuch);
+	}
+
+	@Test
+	void isFirstGesuchOnline_true() {
+		GesuchService gesuchServicePartialMock =
+			EasyMock.partialMockBuilder(GesuchServiceBean.class)
+				.addMockedMethod("findErstgesuchForGesuch")
+				.createMock();
+
+		Gesuch onlineErstgesuch = TestDataUtil.createDefaultGesuch();
+		onlineErstgesuch.setEingangsart(Eingangsart.ONLINE);
+
+		Gesuch papierGesuch = TestDataUtil.createDefaultGesuch();
+		papierGesuch.setEingangsart(Eingangsart.PAPIER);
+
+		expect(gesuchServicePartialMock.findErstgesuchForGesuch(papierGesuch))
+			.andReturn(onlineErstgesuch);
+		replay(gesuchServicePartialMock);
+
+		Assertions.assertEquals(
+			gesuchServicePartialMock.isFirstGesuchOnline(papierGesuch),
+			true
+		);
+	}
+
+	@Test
+	void isFirstGesuchOnline_false() {
+		GesuchService gesuchServicePartialMock =
+			EasyMock.partialMockBuilder(GesuchServiceBean.class)
+				.addMockedMethod("findErstgesuchForGesuch")
+				.createMock();
+
+		Gesuch papierErstgesuch = TestDataUtil.createDefaultGesuch();
+		papierErstgesuch.setEingangsart(Eingangsart.PAPIER);
+
+		Gesuch papierGesuch = TestDataUtil.createDefaultGesuch();
+		papierGesuch.setEingangsart(Eingangsart.PAPIER);
+
+		expect(gesuchServicePartialMock.findErstgesuchForGesuch(papierGesuch))
+			.andReturn(papierErstgesuch);
+		replay(gesuchServicePartialMock);
+
+		Assertions.assertEquals(
+			gesuchServicePartialMock.isFirstGesuchOnline(papierGesuch),
+			false
+		);
 	}
 
 	private void loginAs(UserRole role) {

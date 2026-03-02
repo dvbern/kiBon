@@ -505,6 +505,14 @@ public class TagesschuleAnmeldungenExcelConverter implements ExcelConverter {
 		);
 
 		excelMerger.addValue(
+			MergeFieldTagesschuleAnmeldungen.woche,
+			ServerMessageUtil.getMessage(
+				"Reports_woche",
+				locale,
+				mandant
+			)
+		);
+		excelMerger.addValue(
 			MergeFieldTagesschuleAnmeldungen.summeStundenTitle,
 			ServerMessageUtil.getMessage(
 				"Reports_summeStundenTitle",

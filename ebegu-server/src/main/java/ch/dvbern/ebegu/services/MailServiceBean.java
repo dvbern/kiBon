@@ -107,6 +107,9 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	@Inject
 	private EbeguConfiguration ebeguConfiguration;
 
+	@Inject
+	private GesuchService gesuchService;
+
 	@Override
 	public void sendInfoBetreuungenBestaetigt(@Nonnull Gesuch gesuch) {
 		final Sprache sprache = EbeguUtil.extractKorrespondenzsprache(
@@ -304,6 +307,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 				adr,
 				sprache
 			),
+			true,
 			AntragStatus.values()
 		);
 	}
@@ -807,7 +811,24 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 		@Nonnull BiFunction<Gesuchsteller, String, String> messageProvider,
 		@Nonnull AntragStatus... statusInWhichToSendMail
 	) {
-		if (!doSendMail(gesuch)) {
+		sendMail(
+			gesuch,
+			mailTemplate,
+			messageProvider,
+			false,
+			statusInWhichToSendMail
+		);
+	}
+
+	private void sendMail(
+		@Nonnull Gesuch gesuch,
+		@Nonnull String mailTemplate,
+		@Nonnull BiFunction<Gesuchsteller, String, String> messageProvider,
+		boolean useErstgesuchAsFallback,
+		@Nonnull AntragStatus... statusInWhichToSendMail
+	) {
+
+		if (!doSendMail(gesuch, useErstgesuchAsFallback)) {
 			return;
 		}
 		// Gewisse Mails sollen nur in bestimmten Status gesendet werden.
@@ -821,6 +842,7 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 
 		Optional<Gesuchsteller> gesuchsteller = gesuch.extractGesuchsteller1();
 		Optional<String> emailAddress = findEMailAddress(gesuch);
+
 		Mandant mandant = gesuch.extractMandant();
 
 		if (gesuchsteller.isPresent() && emailAddress.isPresent()) {
@@ -862,11 +884,21 @@ public class MailServiceBean extends AbstractMailServiceBean implements
 	/**
 	 * Hier wird an einer Stelle definiert, an welche Benutzergruppen ein Mail geschickt werden soll.
 	 */
-	private boolean doSendMail(@Nonnull Gesuch gesuch) {
+	private boolean doSendMail(
+		@Nonnull Gesuch gesuch,
+		boolean useErstgesuchAsFallback
+	) {
 		// Mail nur schicken, wenn es der Fall einen Besitzer hat UND (das aktuelle Gesuch bzw. Mutation online
 		// eingereicht wurde ODER die Papiermutation bereits verfügt wurde)
+
+		// wenn das aktuelle Gesuch kein Onlinegesuch ist, können wir den Vorgänger betrachten, wenn erlaubt
+		// (useVorgaengerGesuchAsFallback == true).
+		boolean onlineGesuch = gesuch.getEingangsart().isOnlineGesuch()
+			|| (useErstgesuchAsFallback
+				&& gesuchService.isFirstGesuchOnline(gesuch));
+
 		return doSendMail(gesuch.getFall())
-			&& (gesuch.getEingangsart().isOnlineGesuch()
+			&& (onlineGesuch
 				|| gesuch.getStatus()
 					.isAnyStatusOfVerfuegt());
 	}

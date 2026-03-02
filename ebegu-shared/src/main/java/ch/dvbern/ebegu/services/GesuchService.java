@@ -348,9 +348,6 @@ public interface GesuchService {
 	/**
 	 * Löscht eine Gesuche mit eine neue Transaction
 	 * Achtung es muss durch einen anderen EJB angerufen werden, sonst die Transaction parameter ist ignoriert!
-	 *
-	 * @param gesuch
-	 * @param typ
 	 */
 	void removeGesuchAndPersist(Gesuch gesuch, GesuchDeletionCause typ);
 
@@ -550,4 +547,13 @@ public interface GesuchService {
 	Optional<Gesuch> findGesuchForFinSit(@Nonnull String finSitId);
 
 	void validate(@Valid Gesuch gesuch);
+
+	/**
+	 * Prüft, ob das Erstgesuch des gegebenen Gesuchs ein Onlineantrag ist. Wenn das gegebene Gesuch das Erstgesuch ist,
+	 * dann wird natürlich dieses überprüft.
+	 *
+	 * @param gesuch Das Gesuch das, bzw. dessen Erstgesuch zu prüfen ist.
+	 * @return Ob das Erstgesuch des gegebenen Gesuchs ein Onlineantrag ist.
+	 */
+	boolean isFirstGesuchOnline(@Nonnull Gesuch gesuch);
 }

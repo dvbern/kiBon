@@ -92,6 +92,8 @@ public enum MergeFieldTagesschuleAnmeldungen implements MergeFieldProvider {
 		new SimpleMergeField<>("wochentagDo", STRING_CONVERTER)
 	), wochentagFr(
 		new SimpleMergeField<>("wochentagFr", STRING_CONVERTER)
+	), woche(
+		new SimpleMergeField<>("woche", STRING_CONVERTER)
 	), summeStundenTitle(
 		new SimpleMergeField<>("summeStundenTitle", STRING_CONVERTER)
 	), summeVerpflegungTitle(

@@ -507,6 +507,7 @@ const platzBestaetigen = () => {
 const platzAbweisen = (grundAbweisung: string) => {
     getGrundAblehnung().click().type(grundAbweisung);
     getGrundAblehnung().should('have.value', grundAbweisung);
+    getPlatzAbweisenButton().click(); // trigger faulty form validation first
     cy.waitForRequest('PUT', '**/betreuungen/abweisen', () => {
         getPlatzAbweisenButton().click();
     });

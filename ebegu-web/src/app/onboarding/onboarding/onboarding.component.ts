@@ -17,15 +17,12 @@
 
 import {Component, Input, OnDestroy, OnInit, inject} from '@angular/core';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {DomSanitizer} from '@angular/platform-browser';
 import {TranslateService} from '@ngx-translate/core';
-import {map, takeUntil} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {MANDANTS} from '@kibon/shared-model-mandant';
 import {MandantService} from '@kibon/shared-util-mandant-service';
-import {EbeguUtil} from '../../../utils/EbeguUtil';
-import {YoutubeLinkVisitor} from '../../core/constants/YoutubeLinkVisitor';
 import {OnboardingHelpDialogComponent} from '../onboarding-help-dialog/onboarding-help-dialog.component';
 import {OnboardingPlaceholderService} from '../service/onboarding-placeholder.service';
 
@@ -58,7 +55,6 @@ export class OnboardingComponent implements OnInit, OnDestroy {
     public isMultimandantEnabled$: Observable<boolean>;
     public isLuzern$: Observable<boolean>;
     private readonly unsubscribe$ = new Subject<void>();
-    public youtubeLink$: Observable<SafeResourceUrl | null>;
 
     public constructor() {
         this.isDummyMode$ = this.applicationPropertyRS.isDummyMode();
@@ -82,15 +78,14 @@ export class OnboardingComponent implements OnInit, OnDestroy {
         );
 
         this.currentLangDe$ = new BehaviorSubject(this.currLangIsGerman());
-        this.translate.onLangChange.subscribe(
-            () => {
+        this.translate.onLangChange.subscribe({
+            next: () => {
                 this.currentLangDe$.next(this.currLangIsGerman());
             },
-            (err: any) => {
+            error: (err: any) => {
                 console.error(err);
             }
-        );
-        this.initYoutubeLink();
+        });
     }
 
     public ngOnDestroy(): void {
@@ -120,21 +115,5 @@ export class OnboardingComponent implements OnInit, OnDestroy {
         $event.preventDefault();
         const dialogConfig = new MatDialogConfig();
         this.dialog.open(OnboardingHelpDialogComponent, dialogConfig);
-    }
-
-    private initYoutubeLink(): void {
-        const mandant$ = this.mandantService.mandant$.pipe(
-            takeUntil(this.unsubscribe$)
-        );
-        const isGerman$ = this.isGerman$().pipe(takeUntil(this.unsubscribe$));
-        this.youtubeLink$ = combineLatest([mandant$, isGerman$]).pipe(
-            map(([mandant, isGerman]) => {
-                const url = new YoutubeLinkVisitor(isGerman).process(mandant);
-                if (EbeguUtil.isNullOrUndefined(url)) {
-                    return null;
-                }
-                return this.sanitizer.bypassSecurityTrustResourceUrl(url);
-            })
-        );
     }
 }

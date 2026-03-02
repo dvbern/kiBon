@@ -79,20 +79,6 @@
                     >ONBOARDING_LOCAL_LOGIN</a
                 >
             }
-            @if (this.youtubeLink$ | async; as link) {
-                <div class="onboarding-iframe-tutorial">
-                    <iframe
-                        [src]="link"
-                        frameborder="0"
-                        allow="accelerometer;
-                    encrypted-media;
-                    gyroscope;
-                    picture-in-picture"
-                        allowfullscreen
-                    >
-                    </iframe>
-                </div>
-            }
         </div>
     }
 </div>

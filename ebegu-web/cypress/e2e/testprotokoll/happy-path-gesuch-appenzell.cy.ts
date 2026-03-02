@@ -471,7 +471,7 @@ function bestaetigePlatzAsKita(
     });
 
     AntragBetreuungPO.platzAbweisen(
-        'Ein sehr legitimer Grund der hier nicht weiter aufgeführt wird.'
+        'Ein sehr legitimer Grund, der hier nicht weiter aufgeführt wird.'
     );
     goToBetreuungen();
 

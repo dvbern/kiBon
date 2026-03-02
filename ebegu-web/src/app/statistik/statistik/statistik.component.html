@@ -75,8 +75,8 @@
                                                     translate
                                                     >GESUCHSPERIODEN</label
                                                 >
-                                                <div class="dv-select-style">
-                                                    <select
+                                                <div class="select-wrapper">
+                                                    <mat-select
                                                         name="periode_gesuch_stichtag"
                                                         id="periode_gesuch_stichtag"
                                                         [(ngModel)]="
@@ -86,21 +86,19 @@
                                                         ng-options="gesuchsperiode.id as gesuchsperiode.gesuchsperiodeString for gesuchsperiode in gesuchsperioden | orderBy: 'name'"
                                                         class="form-control"
                                                     >
-                                                        <option
-                                                            [ngValue]="
-                                                                undefined
-                                                            "
+                                                        <mat-option
+                                                            [value]="undefined"
                                                         >
                                                             {{
                                                                 'KEINE'
                                                                     | translate
                                                             }}
-                                                        </option>
+                                                        </mat-option>
                                                         @for (
                                                             gesuchsperiode of gesuchsperioden;
                                                             track gesuchsperiode
                                                         ) {
-                                                            <option
+                                                            <mat-option
                                                                 [value]="
                                                                     gesuchsperiode.id
                                                                 "
@@ -108,9 +106,9 @@
                                                                 {{
                                                                     gesuchsperiode.gesuchsperiodeString
                                                                 }}
-                                                            </option>
+                                                            </mat-option>
                                                         }
-                                                    </select>
+                                                    </mat-select>
                                                     <dv-error-messages
                                                         [errorObject]="
                                                             periodeGesuchStichtagForm.errors
@@ -211,8 +209,8 @@
                                                     translate
                                                     >GESUCHSPERIODEN</label
                                                 >
-                                                <div class="dv-select-style">
-                                                    <select
+                                                <div class="select-wrapper">
+                                                    <mat-select
                                                         name="periode_gesuch_zeitraum"
                                                         id="periode_gesuch_zeitraum"
                                                         [(ngModel)]="
@@ -221,21 +219,19 @@
                                                         #gesuchZeitraumGP="ngModel"
                                                         class="form-control"
                                                     >
-                                                        <option
-                                                            [ngValue]="
-                                                                undefined
-                                                            "
+                                                        <mat-option
+                                                            [value]="undefined"
                                                         >
                                                             {{
                                                                 'KEINE'
                                                                     | translate
                                                             }}
-                                                        </option>
+                                                        </mat-option>
                                                         @for (
                                                             gesuchsperiode of gesuchsperioden;
                                                             track gesuchsperiode
                                                         ) {
-                                                            <option
+                                                            <mat-option
                                                                 [value]="
                                                                     gesuchsperiode.id
                                                                 "
@@ -243,9 +239,9 @@
                                                                 {{
                                                                     gesuchsperiode.gesuchsperiodeString
                                                                 }}
-                                                            </option>
+                                                            </mat-option>
                                                         }
-                                                    </select>
+                                                    </mat-select>
                                                     <dv-error-messages
                                                         [errorObject]="
                                                             gesuchZeitraumGP.errors
@@ -349,8 +345,8 @@
                                                     translate
                                                     >GESUCHSPERIODEN</label
                                                 >
-                                                <div class="dv-select-style">
-                                                    <select
+                                                <div class="select-wrapper">
+                                                    <mat-select
                                                         name="zahlungen_periode_gp_name"
                                                         id="zahlungen_periode_gp"
                                                         [(ngModel)]="
@@ -360,21 +356,19 @@
                                                         required
                                                         class="form-control"
                                                     >
-                                                        <option
-                                                            [ngValue]="
-                                                                undefined
-                                                            "
+                                                        <mat-option
+                                                            [value]="undefined"
                                                         >
                                                             {{
                                                                 'KEINE'
                                                                     | translate
                                                             }}
-                                                        </option>
+                                                        </mat-option>
                                                         @for (
                                                             gesuchsperiode of gesuchsperioden;
                                                             track gesuchsperiode
                                                         ) {
-                                                            <option
+                                                            <mat-option
                                                                 [value]="
                                                                     gesuchsperiode.id
                                                                 "
@@ -382,9 +376,9 @@
                                                                 {{
                                                                     gesuchsperiode.gesuchsperiodeString
                                                                 }}
-                                                            </option>
+                                                            </mat-option>
                                                         }
-                                                    </select>
+                                                    </mat-select>
                                                     <dv-error-messages
                                                         [errorObject]="
                                                             gesuchZeitraumGP.errors
@@ -482,8 +476,8 @@
                                                     translate
                                                     >GESUCHSPERIODEN</label
                                                 >
-                                                <div class="dv-select-style">
-                                                    <select
+                                                <div class="select-wrapper">
+                                                    <mat-select
                                                         name="kinder_gp_name"
                                                         id="kinder_gp_id"
                                                         [(ngModel)]="
@@ -492,21 +486,19 @@
                                                         #gesuchZeitraumGP="ngModel"
                                                         class="form-control"
                                                     >
-                                                        <option
-                                                            [ngValue]="
-                                                                undefined
-                                                            "
+                                                        <mat-option
+                                                            [value]="undefined"
                                                         >
                                                             {{
                                                                 'KEINE'
                                                                     | translate
                                                             }}
-                                                        </option>
+                                                        </mat-option>
                                                         @for (
                                                             gesuchsperiode of gesuchsperioden;
                                                             track gesuchsperiode
                                                         ) {
-                                                            <option
+                                                            <mat-option
                                                                 [value]="
                                                                     gesuchsperiode.id
                                                                 "
@@ -514,9 +506,9 @@
                                                                 {{
                                                                     gesuchsperiode.gesuchsperiodeString
                                                                 }}
-                                                            </option>
+                                                            </mat-option>
                                                         }
-                                                    </select>
+                                                    </mat-select>
                                                     <dv-error-messages
                                                         [errorObject]="
                                                             gesuchZeitraumGP.errors
@@ -914,8 +906,8 @@
                                                     translate
                                                     >GESUCHSPERIODEN</label
                                                 >
-                                                <div class="dv-select-style">
-                                                    <select
+                                                <div class="select-wrapper">
+                                                    <mat-select
                                                         name="betreuung_gp_name"
                                                         id="betreuung_gp"
                                                         [(ngModel)]="
@@ -925,21 +917,19 @@
                                                         data-test="gesuchsperiode"
                                                         class="form-control"
                                                     >
-                                                        <option
-                                                            [ngValue]="
-                                                                undefined
-                                                            "
+                                                        <mat-option
+                                                            [value]="undefined"
                                                         >
                                                             {{
                                                                 'KEINE'
                                                                     | translate
                                                             }}
-                                                        </option>
+                                                        </mat-option>
                                                         @for (
                                                             gesuchsperiode of gesuchsperioden;
                                                             track gesuchsperiode
                                                         ) {
-                                                            <option
+                                                            <mat-option
                                                                 [value]="
                                                                     gesuchsperiode.id
                                                                 "
@@ -951,9 +941,9 @@
                                                                 {{
                                                                     gesuchsperiode.gesuchsperiodeString
                                                                 }}
-                                                            </option>
+                                                            </mat-option>
                                                         }
-                                                    </select>
+                                                    </mat-select>
                                                     <dv-error-messages
                                                         [errorObject]="
                                                             gesuchZeitraumGP.errors
@@ -1051,8 +1041,8 @@
                                                     translate
                                                     >GESUCHSPERIODEN</label
                                                 >
-                                                <div class="dv-select-style">
-                                                    <select
+                                                <div class="select-wrapper">
+                                                    <mat-select
                                                         name="massenversand_gp_name"
                                                         id="massenversand_gp"
                                                         [(ngModel)]="
@@ -1062,21 +1052,19 @@
                                                         required
                                                         class="form-control"
                                                     >
-                                                        <option
-                                                            [ngValue]="
-                                                                undefined
-                                                            "
+                                                        <mat-option
+                                                            [value]="undefined"
                                                         >
                                                             {{
                                                                 'KEINE'
                                                                     | translate
                                                             }}
-                                                        </option>
+                                                        </mat-option>
                                                         @for (
                                                             gesuchsperiode of gesuchsperioden;
                                                             track gesuchsperiode
                                                         ) {
-                                                            <option
+                                                            <mat-option
                                                                 [value]="
                                                                     gesuchsperiode.id
                                                                 "
@@ -1084,9 +1072,9 @@
                                                                 {{
                                                                     gesuchsperiode.gesuchsperiodeString
                                                                 }}
-                                                            </option>
+                                                            </mat-option>
                                                         }
-                                                    </select>
+                                                    </mat-select>
                                                     <dv-error-messages
                                                         [errorObject]="
                                                             gesuchZeitraumGP.errors
@@ -1560,7 +1548,7 @@
                                             </div>
 
                                             <div
-                                                class="col-xs-1 statistik-button-toggle-all"
+                                                class="statistik-button statistik-no-fields col-xs-12 col-md-3"
                                             >
                                                 <button
                                                     (click)="
@@ -1578,7 +1566,7 @@
                                                     ALLE_ABWAEHLEN
                                                 </button>
                                             </div>
-                                            <div class="col-xs-3">
+                                            <div class="col-xs-12 col-md-3">
                                                 <div class="form-group">
                                                     <label
                                                         class="md-no-float required"
@@ -1586,10 +1574,8 @@
                                                         translate
                                                         >GESUCHSPERIODEN</label
                                                     >
-                                                    <div
-                                                        class="dv-select-style"
-                                                    >
-                                                        <select
+                                                    <div class="select-wrapper">
+                                                        <mat-select
                                                             name="tagesschuleAnmeldungen_gp_name"
                                                             id="tagesschuleAnmeldungen_gp"
                                                             [(ngModel)]="
@@ -1599,8 +1585,8 @@
                                                             required
                                                             class="form-control"
                                                         >
-                                                            <option
-                                                                [ngValue]="
+                                                            <mat-option
+                                                                [value]="
                                                                     undefined
                                                                 "
                                                             >
@@ -1608,13 +1594,13 @@
                                                                     'KEINE'
                                                                         | translate
                                                                 }}
-                                                            </option>
+                                                            </mat-option>
 
                                                             @for (
                                                                 gesuchsperiode of gesuchsperioden;
                                                                 track gesuchsperiode
                                                             ) {
-                                                                <option
+                                                                <mat-option
                                                                     [value]="
                                                                         gesuchsperiode.id
                                                                     "
@@ -1622,9 +1608,9 @@
                                                                     {{
                                                                         gesuchsperiode.gesuchsperiodeString
                                                                     }}
-                                                                </option>
+                                                                </mat-option>
                                                             }
-                                                        </select>
+                                                        </mat-select>
                                                         <dv-error-messages
                                                             [errorObject]="
                                                                 gesuchZeitraumGP.errors
@@ -1635,7 +1621,7 @@
                                                 </div>
                                             </div>
                                             <div
-                                                class="col-xs-3 statistik-button statistik-no-fields"
+                                                class="col-xs-12 col-md-3 statistik-button statistik-no-fields"
                                             >
                                                 <dv-loading-button
                                                     type="submit"
@@ -1702,8 +1688,8 @@
                                                 translate
                                                 >GESUCHSPERIODEN</label
                                             >
-                                            <div class="dv-select-style">
-                                                <select
+                                            <div class="select-wrapper">
+                                                <mat-select
                                                     name="tagesschuleRechnungsstellung_gp_name"
                                                     id="tagesschuleRechnungsstellung_gp"
                                                     [(ngModel)]="
@@ -1717,7 +1703,7 @@
                                                         gesuchsperiode of getActiveGesuchsperioden();
                                                         track gesuchsperiode
                                                     ) {
-                                                        <option
+                                                        <mat-option
                                                             [value]="
                                                                 gesuchsperiode.id
                                                             "
@@ -1725,9 +1711,9 @@
                                                             {{
                                                                 gesuchsperiode.gesuchsperiodeString
                                                             }}
-                                                        </option>
+                                                        </mat-option>
                                                     }
-                                                </select>
+                                                </mat-select>
                                                 <dv-error-messages
                                                     [errorObject]="
                                                         gesuchZeitraumTSGP.errors
@@ -1821,10 +1807,8 @@
                                                         translate
                                                         >GEMEINDE</label
                                                     >
-                                                    <div
-                                                        class="dv-select-style"
-                                                    >
-                                                        <select
+                                                    <div class="select-wrapper">
+                                                        <mat-select
                                                             name="gemeinden_mahlzeitenverguenstigung"
                                                             id="gemeinden_mahlzeitenverguenstigung"
                                                             [(ngModel)]="
@@ -1834,27 +1818,29 @@
                                                             class="form-control"
                                                             required
                                                         >
-                                                            <option value="">
+                                                            <mat-option
+                                                                value=""
+                                                            >
                                                                 {{
                                                                     'KEINE'
                                                                         | translate
                                                                 }}
-                                                            </option>
+                                                            </mat-option>
                                                             @for (
                                                                 gemeinde of gemeindenMahlzeitenverguenstigungen;
                                                                 track gemeinde
                                                             ) {
-                                                                <option
-                                                                    [ngValue]="
+                                                                <mat-option
+                                                                    [value]="
                                                                         gemeinde
                                                                     "
                                                                 >
                                                                     {{
                                                                         gemeinde.name
                                                                     }}
-                                                                </option>
+                                                                </mat-option>
                                                             }
-                                                        </select>
+                                                        </mat-select>
                                                         <dv-error-messages
                                                             [errorObject]="
                                                                 gemeindeMahlzeitenRef.errors
@@ -1989,8 +1975,8 @@
                                                 translate
                                                 >GESUCHSPERIODEN</label
                                             >
-                                            <div class="dv-select-style">
-                                                <select
+                                            <div class="select-wrapper">
+                                                <mat-select
                                                     name="lats_gp_name"
                                                     id="lats_gp_name"
                                                     [(ngModel)]="
@@ -1999,18 +1985,18 @@
                                                     #latsGP="ngModel"
                                                     class="form-control"
                                                 >
-                                                    <option
-                                                        [ngValue]="undefined"
+                                                    <mat-option
+                                                        [value]="undefined"
                                                     >
                                                         {{
                                                             'KEINE' | translate
                                                         }}
-                                                    </option>
+                                                    </mat-option>
                                                     @for (
                                                         gesuchsperiode of gesuchsperioden;
                                                         track gesuchsperiode
                                                     ) {
-                                                        <option
+                                                        <mat-option
                                                             [value]="
                                                                 gesuchsperiode.id
                                                             "
@@ -2018,9 +2004,9 @@
                                                             {{
                                                                 gesuchsperiode.gesuchsperiodeString
                                                             }}
-                                                        </option>
+                                                        </mat-option>
                                                     }
-                                                </select>
+                                                </mat-select>
                                                 <dv-error-messages
                                                     [errorObject]="
                                                         latsGP.errors
@@ -2090,10 +2076,8 @@
                                                         translate
                                                         >PARAMETER_JAHR</label
                                                     >
-                                                    <div
-                                                        class="dv-select-style"
-                                                    >
-                                                        <select
+                                                    <div class="select-wrapper">
+                                                        <mat-select
                                                             name="jahr_lastenausgleich"
                                                             id="year_lastenausgleich_bg"
                                                             [(ngModel)]="
@@ -2107,15 +2091,15 @@
                                                                 year of lastenausgleichYears;
                                                                 track year
                                                             ) {
-                                                                <option
+                                                                <mat-option
                                                                     [value]="
                                                                         year
                                                                     "
                                                                 >
                                                                     {{ year }}
-                                                                </option>
+                                                                </mat-option>
                                                             }
-                                                        </select>
+                                                        </mat-select>
                                                         <dv-error-messages
                                                             [errorObject]="
                                                                 yearLastenausgleichBG.errors
@@ -2167,9 +2151,9 @@
                                                             >GEMEINDE</label
                                                         >
                                                         <div
-                                                            class="dv-select-style"
+                                                            class="select-wrapper"
                                                         >
-                                                            <select
+                                                            <mat-select
                                                                 name="gemeinden"
                                                                 id="gemeinden"
                                                                 [(ngModel)]="
@@ -2185,17 +2169,17 @@
                                                                     gemeinde of gemeinden;
                                                                     track gemeinde
                                                                 ) {
-                                                                    <option
-                                                                        [ngValue]="
+                                                                    <mat-option
+                                                                        [value]="
                                                                             gemeinde
                                                                         "
                                                                     >
                                                                         {{
                                                                             gemeinde.name
                                                                         }}
-                                                                    </option>
+                                                                    </mat-option>
                                                                 }
-                                                            </select>
+                                                            </mat-select>
                                                             <dv-error-messages
                                                                 [errorObject]="
                                                                     gemeindeRef.errors
@@ -2300,10 +2284,8 @@
                                                         translate
                                                         >GESUCHSPERIODEN</label
                                                     >
-                                                    <div
-                                                        class="dv-select-style"
-                                                    >
-                                                        <select
+                                                    <div class="select-wrapper">
+                                                        <mat-select
                                                             name="zahlungen_periode"
                                                             id="zahlungen_periode"
                                                             [(ngModel)]="
@@ -2317,7 +2299,7 @@
                                                                 gesuchsperiode of gesuchsperioden;
                                                                 track gesuchsperiode
                                                             ) {
-                                                                <option
+                                                                <mat-option
                                                                     [value]="
                                                                         gesuchsperiode.id
                                                                     "
@@ -2325,9 +2307,9 @@
                                                                     {{
                                                                         gesuchsperiode.gesuchsperiodeString
                                                                     }}
-                                                                </option>
+                                                                </mat-option>
                                                             }
-                                                        </select>
+                                                        </mat-select>
                                                         <dv-error-messages
                                                             [errorObject]="
                                                                 periodeGesuchStichtagForm.errors
@@ -2352,9 +2334,9 @@
                                                             >GEMEINDE</label
                                                         >
                                                         <div
-                                                            class="dv-select-style"
+                                                            class="select-wrapper"
                                                         >
-                                                            <select
+                                                            <mat-select
                                                                 name="zahlungen_gemeinden"
                                                                 id="zahlungen_gemeinden"
                                                                 [(ngModel)]="
@@ -2366,8 +2348,8 @@
                                                                 "
                                                                 class="form-control"
                                                             >
-                                                                <option
-                                                                    [ngValue]="
+                                                                <mat-option
+                                                                    [value]="
                                                                         undefined
                                                                     "
                                                                 >
@@ -2375,22 +2357,22 @@
                                                                         'ALLE'
                                                                             | translate
                                                                     }}
-                                                                </option>
+                                                                </mat-option>
                                                                 @for (
                                                                     gemeinde of gemeinden;
                                                                     track gemeinde
                                                                 ) {
-                                                                    <option
-                                                                        [ngValue]="
+                                                                    <mat-option
+                                                                        [value]="
                                                                             gemeinde
                                                                         "
                                                                     >
                                                                         {{
                                                                             gemeinde.name
                                                                         }}
-                                                                    </option>
+                                                                    </mat-option>
                                                                 }
-                                                            </select>
+                                                            </mat-select>
                                                             <dv-error-messages
                                                                 [errorObject]="
                                                                     gemeindeRef.errors
@@ -2416,9 +2398,9 @@
                                                             >INSTITUTION</label
                                                         >
                                                         <div
-                                                            class="dv-select-style"
+                                                            class="select-wrapper"
                                                         >
-                                                            <select
+                                                            <mat-select
                                                                 name="zahlungen_institutionen"
                                                                 id="zahlungen_institutionen"
                                                                 [(ngModel)]="
@@ -2430,8 +2412,8 @@
                                                                     requiredIfAlleGemeinden()
                                                                 "
                                                             >
-                                                                <option
-                                                                    [ngValue]="
+                                                                <mat-option
+                                                                    [value]="
                                                                         undefined
                                                                     "
                                                                 >
@@ -2439,22 +2421,22 @@
                                                                         'ALLE'
                                                                             | translate
                                                                     }}
-                                                                </option>
+                                                                </mat-option>
                                                                 @for (
                                                                     institution of bgInstitutionen;
                                                                     track institution
                                                                 ) {
-                                                                    <option
-                                                                        [ngValue]="
+                                                                    <mat-option
+                                                                        [value]="
                                                                             institution
                                                                         "
                                                                     >
                                                                         {{
                                                                             institution.name
                                                                         }}
-                                                                    </option>
+                                                                    </mat-option>
                                                                 }
-                                                            </select>
+                                                            </mat-select>
                                                             <dv-error-messages
                                                                 [errorObject]="
                                                                     institutionenRef.errors

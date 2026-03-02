@@ -45,11 +45,11 @@
         & > * {
             margin-left: auto;
             margin-right: auto;
-            width: 13rem;
+            width: auto;
         }
     }
     .statistik-no-fields {
-        margin-bottom: 4rem;
+        margin-bottom: 3rem;
     }
     ::ng-deep dv-accordion {
         overflow: hidden;
@@ -143,10 +143,14 @@
         flex-basis: 100%;
         min-width: 0;
     }
+}
 
-    .statistik-button-toggle-all {
-        margin-top: 3rem;
-        padding-left: 0;
-        margin-right: 16px;
+.tagesschuleAnmeldungen div {
+    min-width: fit-content;
+}
+
+@media screen and (max-width: 991px) {
+    .tagesschuleAnmeldungen div {
+        margin-top: 0 !important;
     }
 }

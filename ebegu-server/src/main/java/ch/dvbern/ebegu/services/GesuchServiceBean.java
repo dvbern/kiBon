@@ -3714,4 +3714,9 @@ public class GesuchServiceBean extends AbstractBaseService implements
 		// Validate via @Valid
 	}
 
+	@Override
+	public boolean isFirstGesuchOnline(@Nonnull Gesuch gesuch) {
+		Gesuch erstgesuch = findErstgesuchForGesuch(gesuch);
+		return Eingangsart.ONLINE == erstgesuch.getEingangsart();
+	}
 }

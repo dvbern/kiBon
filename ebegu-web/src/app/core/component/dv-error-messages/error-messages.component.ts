@@ -100,11 +100,11 @@ export class ErrorMessagesComponent implements OnChanges, OnDestroy {
                 return this.translate.instant('ERROR_DATE');
             case 'min':
                 return this.translate.instant('ERROR_MIN', {
-                    value: errorValue?.min?.min
+                    value: errorValue?.min
                 });
             case 'max':
                 return this.translate.instant('ERROR_MAX', {
-                    value: errorValue?.max?.max
+                    value: errorValue?.max
                 });
             case 'valueinput':
                 return this.translate.instant('ERROR_VALUE');

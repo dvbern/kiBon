@@ -1410,12 +1410,9 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         if (this.isBetreuungsstatusAusstehend()) {
             return false;
         }
-        if (this.isBetreuungsstatusWarten()) {
-            return this.authServiceRS.isOneOfRoles(
-                TSRoleUtil.getRolesForBetreuungenView()
-            );
-        }
-        return true;
+        return this.authServiceRS.isOneOfRoles(
+            TSRoleUtil.getRolesForBetreuungenView()
+        );
     }
 
     public isSprachfoerderungBestaetigenEnabled(): boolean {

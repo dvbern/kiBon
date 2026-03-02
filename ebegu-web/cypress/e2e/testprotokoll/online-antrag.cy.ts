@@ -399,7 +399,7 @@ describe('Kibon - generate Testfälle [Online-Antrag]', () => {
         });
 
         AntragBetreuungPO.platzAbweisen(
-            'Ein sehr legitimer Grund der hier nicht weiter aufgeführt wird.'
+            'Ein sehr legitimer Grund, der hier nicht weiter aufgeführt wird.'
         );
 
         cy.changeLogin(userGS);
