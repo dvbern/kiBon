@@ -124,6 +124,27 @@ public class FinanzielleSituationServiceBean extends AbstractBaseService
 			gesuch = persistence.merge(gesuch);
 		}
 
+		if (principalBean.isCallerInAnyOfRole(
+			UserRole.getTsBgAndGemeindeRoles()
+		)
+			&& gesuch.getFamiliensituationContainer() != null
+			&& gesuch.getFamiliensituationContainer().getFamiliensituationJA()
+				!= null
+			&& gesuch.getFamiliensituationContainer()
+				.getFamiliensituationJA()
+				.getGemeinsameSteuererklaerung()
+				!= null
+			&& finSitStartDTO.getGemeinsameSteuererklaerung() != null
+			&&
+			!finSitStartDTO.getGemeinsameSteuererklaerung()
+				.equals(
+					gesuch.getFamiliensituationContainer()
+						.getFamiliensituationJA()
+						.getGemeinsameSteuererklaerung()
+				)) {
+			handleFinSitStartGemeinsameSteuererklaerungResets(gesuch);
+		}
+
 		// Die zwei Felder "sozialhilfebezueger" und "gemeinsameSteuererklaerung" befinden sich nicht auf der FinanziellenSituation, sondern auf der
 		// FamilienSituation -> Das Gesuch muss hier aus der DB geladen werden, damit nichts überschrieben wird!
 		gesuch = saveFinanzielleSituationFelderAufGesuch(
@@ -302,36 +323,6 @@ public class FinanzielleSituationServiceBean extends AbstractBaseService
 					gesuch
 				);
 			}
-		}
-
-		boolean finSitStartgemeinsameSteuererklaerungFalse =
-			Boolean.FALSE.equals(
-				finSitStartDTO.getGemeinsameSteuererklaerung()
-			);
-
-		boolean familiensituationPresent =
-			gesuch.getFamiliensituationContainer() != null
-				&& gesuch.getFamiliensituationContainer()
-					.getFamiliensituationJA()
-					!= null;
-
-		boolean hasRequiredRole =
-			principalBean.isCallerInAnyOfRole(
-				UserRole.getTsBgAndGemeindeRoles()
-			);
-
-		boolean gemeinsameSteuererklaerungFalseBeforeDTOSave =
-			familiensituationPresent
-				&& Boolean.FALSE.equals(
-					gesuch.getFamiliensituationContainer()
-						.getFamiliensituationJA()
-						.getGemeinsameSteuererklaerung()
-				);
-
-		if (finSitStartgemeinsameSteuererklaerungFalse
-			&& hasRequiredRole
-			&& gemeinsameSteuererklaerungFalseBeforeDTOSave) {
-			handleFinSitStartGemeinsameSteuererklaerungResets(gesuch);
 		}
 
 		handleEKVDataResetsOnFinSitStartSave(gesuch, finanzielleSituation);
