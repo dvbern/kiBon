@@ -53,9 +53,9 @@
                     class="col-md-2 text-right closed-mitteilungen dv-table-resultCombo"
                 >
                     <dv-checkbox-x
-                        [model]="includeClosed"
                         [marginClass]="'no-margin-bottom'"
-                        (modelChange)="clickedIncludeClosed($event)"
+                        [model]="includeClosed()"
+                        (modelChange)="checkbox($event)"
                         [label]="'POSTEINGANG_INCLUDE_CLOSED' | translate"
                         [displayBisher]="false"
                     >
@@ -323,9 +323,9 @@
                         <mat-header-cell *matHeaderCellDef="let column">
                             <mat-form-field class="dv-table-mat-form-field">
                                 <input
-                                    [value]="filterPredicate.sender || null"
+                                    [(ngModel)]="sender"
                                     matInput
-                                    (keyup)="filterSender($event.target.value)"
+                                    name="sender"
                                 />
                             </mat-form-field>
                         </mat-header-cell>
@@ -339,10 +339,7 @@
                                 floatLabel="never"
                             >
                                 <mat-select
-                                    [value]="filterPredicate.gemeinde"
-                                    (selectionChange)="
-                                        filterGemeinde($event.value)
-                                    "
+                                    [(value)]="gemeinde"
                                     panelClass="mat-select-panel1"
                                     [placeholder]="'ALLE' | translate"
                                 >
@@ -350,7 +347,7 @@
                                         ><span translate>ALLE</span></mat-option
                                     >
                                     @for (
-                                        gemeinde of gemeindenList;
+                                        gemeinde of sortedGemeindenList();
                                         track gemeinde
                                     ) {
                                         <mat-option [value]="gemeinde.name">{{
@@ -369,9 +366,9 @@
                                 data-test="fall-nummer-filter"
                             >
                                 <input
-                                    [value]="filterPredicate.fallNummer || null"
+                                    [(ngModel)]="fallNummer"
                                     matInput
-                                    (keyup)="filterFall($event.target.value)"
+                                    name="fallNummer"
                                 />
                             </mat-form-field>
                         </mat-header-cell>
@@ -382,13 +379,9 @@
                         <mat-header-cell *matHeaderCellDef="let column">
                             <mat-form-field class="dv-table-mat-form-field">
                                 <input
-                                    [value]="
-                                        filterPredicate.familienName || null
-                                    "
+                                    [(ngModel)]="familienName"
                                     matInput
-                                    (keyup)="
-                                        filterFamilieName($event.target.value)
-                                    "
+                                    name="familienName"
                                 />
                             </mat-form-field>
                         </mat-header-cell>
@@ -399,9 +392,9 @@
                         <mat-header-cell *matHeaderCellDef="let column">
                             <mat-form-field class="dv-table-mat-form-field">
                                 <input
-                                    [value]="filterPredicate.subject || null"
+                                    [(ngModel)]="subject"
                                     matInput
-                                    (keyup)="filterSubject($event.target.value)"
+                                    name="subject"
                                 />
                             </mat-form-field>
                         </mat-header-cell>
@@ -412,11 +405,9 @@
                         <mat-header-cell *matHeaderCellDef="let column">
                             <mat-form-field class="dv-table-mat-form-field">
                                 <input
-                                    [value]="filterPredicate.sentDatum || null"
+                                    [(ngModel)]="sentDatum"
                                     matInput
-                                    (keyup)="
-                                        filterSentDatum($event.target.value)
-                                    "
+                                    name="sentDatum"
                                 />
                             </mat-form-field>
                         </mat-header-cell>
@@ -457,12 +448,7 @@
                                     floatLabel="never"
                                 >
                                     <mat-select
-                                        [value]="
-                                            filterPredicate.empfaengerVerantwortung
-                                        "
-                                        (selectionChange)="
-                                            filterVerantwortung($event.value)
-                                        "
+                                        [(value)]="empfaengerVerantwortung"
                                         panelClass="mat-select-panel1"
                                         [placeholder]="'ALLE' | translate"
                                     >
@@ -496,10 +482,7 @@
                                 floatLabel="never"
                             >
                                 <mat-select
-                                    [value]="filterPredicate.mitteilungStatus"
-                                    (selectionChange)="
-                                        filterMitteilungStatus($event.value)
-                                    "
+                                    [(value)]="mitteilungStatus"
                                     panelClass="mat-select-panel1"
                                     [placeholder]="'ALLE' | translate"
                                 >
@@ -555,7 +538,7 @@
                     <nav>
                         <ul class="pagination">
                             @for (index of paginationItems; track index) {
-                                <li [ngClass]="{active: index - 1 === page}">
+                                <li [ngClass]="{active: index - 1 === page()}">
                                     <a
                                         (click)="
                                             handlePagination({

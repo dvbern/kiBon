@@ -22,20 +22,17 @@
     @if (canCreateAntrag() | async) {
         <form
             role="form"
-            class=""
+            class="gemeinde-antraege-form"
             unsaved-warning-form=""
             novalidate
             dv-show-element
             [formGroup]="formGroup"
         >
             <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div
-                        class="row gemeinde-antraege-form layout-row"
-                        layout="row"
-                    >
+                <div class="col-md-12">
+                    <div class="row gemeinde-antraege-form-row">
                         <!-- Jahr -->
-                        <div class="col-md-3">
+                        <div class="col-xs-12 col-sm-12 col-md-4">
                             <label
                                 class="md-no-float required ignore-danger-font-color"
                                 for="gemeindeantragperiode"
@@ -73,12 +70,7 @@
                             </div>
                         </div>
                         <!-- Gemeindeantragtyp -->
-                        <div
-                            [ngClass]="{
-                                'col-md-3': ferienBetreuungSelected(),
-                                'col-md-5': !ferienBetreuungSelected()
-                            }"
-                        >
+                        <div class="col-xs-12 col-sm-12 col-md-4">
                             <div>
                                 <label
                                     class="md-no-float required ignore-danger-font-color"
@@ -117,7 +109,7 @@
                         </div>
                         <!--                        Gemeinde-->
                         @if (ferienBetreuungSelected()) {
-                            <div class="col-md-3">
+                            <div class="col-xs-12 col-sm-12 col-md-3">
                                 <div>
                                     <label
                                         class="md-no-float ignore-danger-font-color"
@@ -162,63 +154,65 @@
                                 </div>
                             </div>
                         }
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-12 pb-12 gemeinde-antraege-form-actions">
+                <div class="col-xs-12 col-sm-12">
+                    <div class="pl-9">
+                        <!-- Create LATS Antraege Button -->
                         @if (
                             !ferienBetreuungSelected() && isMandant() | async
                         ) {
                             <div
-                                class="col-md-3 layout-align-center-center layout-row flex actions"
-                                flex
-                                layout="row"
-                                layout-align="center center"
+                                dvLoadingButtonX
+                                [ariaLabel]="
+                                    'LATS_ANTRAEGE_ERSTELLEN' | translate
+                                "
+                                type="submit"
+                                (buttonClick)="createAllAntraege()"
+                                data-test="gemeindeantraege-antraege-erstellen"
+                                class="gemeindeantraege-antraege"
                             >
-                                <div
-                                    dvLoadingButtonX
-                                    [ariaLabel]="
-                                        'LATS_ANTRAEGE_ERSTELLEN' | translate
-                                    "
-                                    type="submit"
-                                    (buttonClick)="createAllAntraege()"
-                                    data-test="gemeindeantraege-antraege-erstellen"
+                                <span class="uppercase" translate
+                                    >LATS_ANTRAEGE_ERSTELLEN</span
                                 >
-                                    <span class="uppercase" translate
-                                        >LATS_ANTRAEGE_ERSTELLEN</span
-                                    >
-                                </div>
-                                @if (latsDeletePossible$ | async) {
-                                    <button
-                                        type="button"
-                                        class="dv-btn cancel-button margin-left-5"
-                                        (click)="deleteAllLatsAntraege()"
-                                        data-test="gemeindeantraege-antraege-loeschen"
-                                    >
-                                        <span class="uppercase" translate
-                                            >LATS_ANTRAEGE_LOESCHEN</span
-                                        >
-                                    </button>
-                                }
                             </div>
                         }
+
+                        <!-- Gemeinde Antrag Button -->
                         @if (ferienBetreuungSelected()) {
                             <div
-                                class="col-md-3 layout-align-center-center layout-row flex actions"
-                                flex
-                                layout="row"
-                                layout-align="center center"
+                                dvLoadingButtonX
+                                [ariaLabel]="
+                                    'GEMEINDE_ANTRAEGE_ANTRAG_ERSTELLEN'
+                                        | translate
+                                "
+                                type="submit"
+                                (buttonClick)="createAntrag()"
+                                class="gemeindeantraege-antraege"
                             >
-                                <div
-                                    dvLoadingButtonX
-                                    [ariaLabel]="
-                                        'GEMEINDE_ANTRAEGE_ANTRAG_ERSTELLEN'
-                                            | translate
-                                    "
-                                    type="submit"
-                                    (buttonClick)="createAntrag()"
+                                <span class="uppercase" translate
+                                    >GEMEINDE_ANTRAEGE_ANTRAG_ERSTELLEN</span
                                 >
-                                    <span class="uppercase" translate
-                                        >GEMEINDE_ANTRAEGE_ANTRAG_ERSTELLEN</span
-                                    >
-                                </div>
                             </div>
+                        }
+
+                        <!-- Delete LATS Button -->
+                        @if (
+                            !ferienBetreuungSelected() && latsDeletePossible$
+                                | async
+                        ) {
+                            <button
+                                type="button"
+                                class="dv-btn cancel-button ml-8"
+                                (click)="deleteAllLatsAntraege()"
+                                data-test="gemeindeantraege-antraege-loeschen"
+                            >
+                                <span class="uppercase" translate
+                                    >LATS_ANTRAEGE_LOESCHEN</span
+                                >
+                            </button>
                         }
                     </div>
                 </div>

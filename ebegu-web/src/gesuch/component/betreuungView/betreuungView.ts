@@ -15,6 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {PERMISSIONS_BETREUUNG} from '@kibon/betreuung-permission-betreuung';
+import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
 import {TSPublicAppConfig} from '@kibon/shared/model/einstellung';
 import {
     TSFachstelle,
@@ -23,10 +25,14 @@ import {
     TSInstitutionStammdatenSummary
 } from '@kibon/shared/model/entity';
 import {
+    stringEingewoehnungTyp,
     TSBetreuungsangebotTyp,
     TSBetreuungsstatus,
+    TSDemoFeature,
+    TSEingewoehnungTyp,
     TSEinschulungTyp,
     TSInstitutionStatus,
+    TSPensumAnzeigeTyp,
     TSRole,
     TSWizardStepName
 } from '@kibon/shared/model/enums';
@@ -34,6 +40,7 @@ import {
     getTSBetreuungsangebotTypValuesForMandantIfTagesschulanmeldungen,
     isJugendamt
 } from '@kibon/shared/util-fn/betreuungsangebot-typ';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {HybridFormBridgeService} from '@kibon/shared/util/hybrid-form-bridge';
@@ -42,20 +49,18 @@ import {copy, IComponentOptions} from 'angular';
 import $ from 'jquery';
 import moment from 'moment';
 import {first, map, tap} from 'rxjs/operators';
-import {PERMISSIONS_BETREUUNG} from '@kibon/betreuung-permission-betreuung';
 import {TSEinstellung} from '../../../admin/einstellungen/TSEinstellung';
 import {TSEinstellungKey} from '../../../admin/einstellungen/TSEinstellungKey';
 import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
-import {KiBonMandant, MANDANTS} from '@kibon/shared-model-mandant';
 import {UnknownKitaIdVisitor} from '../../../app/core/constants/UnknownKitaIdVisitor';
 import {UnknownMittagstischIdVisitor} from '../../../app/core/constants/UnknownMittagstischIdVisitor';
 import {UnknownTagesschuleIdVisitor} from '../../../app/core/constants/UnknownTagesschuleIdVisitor';
 import {UnknownTFOIdVisitor} from '../../../app/core/constants/UnknownTFOIdVisitor';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
-import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {MandantService} from '@kibon/shared-util-mandant-service';
+import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSBedarfsstufe} from '../../../models/enums/betreuung/TSBedarfsstufe';
 import {TSAnmeldungMutationZustand} from '../../../models/enums/TSAnmeldungMutationZustand';
@@ -65,11 +70,6 @@ import {
     isVerfuegtOrSTV,
     TSAntragStatus
 } from '../../../models/enums/TSAntragStatus';
-import {
-    stringEingewoehnungTyp,
-    TSEingewoehnungTyp
-} from '@kibon/shared/model/enums';
-import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
 import {TSBelegungTagesschule} from '../../../models/TSBelegungTagesschule';
 import {TSBetreuung} from '../../../models/TSBetreuung';
 import {TSBetreuungsmitteilung} from '../../../models/TSBetreuungsmitteilung';
@@ -80,7 +80,6 @@ import {TSErweiterteBetreuung} from '../../../models/TSErweiterteBetreuung';
 import {TSErweiterteBetreuungContainer} from '../../../models/TSErweiterteBetreuungContainer';
 import {TSExceptionReport} from '../../../models/TSExceptionReport';
 import {TSKindContainer} from '../../../models/TSKindContainer';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguRestUtil} from '../../../utils/EbeguRestUtil';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
@@ -137,7 +136,8 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         'SharedUtilApplicationPropertyRsService',
         'MandantService',
         'EbeguRestUtil',
-        'HybridFormBridgeService'
+        'HybridFormBridgeService',
+        'PosteingangService'
     ];
     public bedarfsstufe: TSBedarfsstufe = null;
     public bedarfsstufeValues: TSBedarfsstufe[] = [
@@ -234,7 +234,8 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         private readonly applicationPropertyRS: SharedUtilApplicationPropertyRsService,
         private readonly mandantService: MandantService,
         private readonly ebeguRestUtil: EbeguRestUtil,
-        protected readonly hybridFormBridgeService: HybridFormBridgeService
+        protected readonly hybridFormBridgeService: HybridFormBridgeService,
+        private readonly posteingangService: PosteingangService
     ) {
         super(
             gesuchModelManager,
@@ -690,7 +691,10 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         params?: any
     ): void {
         this.hybridFormBridgeService.triggerFormValidation();
-        if (this.hybridFormBridgeService.hasAnyInvalidForm()) {
+        if (
+            this.hybridFormBridgeService.hasAnyInvalidForm() &&
+            newStatus != TSBetreuungsstatus.ABGEWIESEN
+        ) {
             return undefined;
         }
         this.isSavingData = true;
@@ -1772,6 +1776,7 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
                 this.$state.go(GESUCH_BETREUUNGEN, {
                     gesuchId: this.getGesuchId()
                 });
+                this.posteingangService.posteingangChanged();
             })
             .catch(err => {
                 const outsideInstiGueltigkeitError = err.find(

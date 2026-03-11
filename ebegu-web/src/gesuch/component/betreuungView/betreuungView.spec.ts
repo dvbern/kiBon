@@ -22,6 +22,7 @@ import {EinstellungRS} from '../../../admin/service/einstellungRS.rest';
 import {CORE_JS_MODULE} from '../../../app/core/core.angularjs.module';
 import {InstitutionStammdatenRS} from '../../../app/core/service/institutionStammdatenRS.rest';
 import {MandantService} from '@kibon/shared-util-mandant-service';
+import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {ngServicesMock} from '../../../hybridTools/ngServicesMocks';
 import {translationsMock} from '../../../hybridTools/translationsMock';
@@ -75,6 +76,7 @@ xdescribe('betreuungView', () => {
     let ebeguRestUtil: EbeguRestUtil;
     let $translateMock: jasmine.SpyObj<ITranslateService>;
     let hybridFormBridgeService: HybridFormBridgeService;
+    let posteingangService: PosteingangService;
 
     beforeEach(angular.mock.module(CORE_JS_MODULE.name));
 
@@ -200,7 +202,8 @@ xdescribe('betreuungView', () => {
                 $injector.get('SharedUtilApplicationPropertyRsService'),
                 mandantService,
                 ebeguRestUtil,
-                hybridFormBridgeService
+                hybridFormBridgeService,
+                posteingangService
             );
         })
     );
@@ -246,7 +249,8 @@ xdescribe('betreuungView', () => {
                     undefined,
                     mandantService,
                     ebeguRestUtil,
-                    hybridFormBridgeService
+                    hybridFormBridgeService,
+                    posteingangService
                 );
                 myBetreuungView.model = betreuung;
                 expect(myBetreuungView.getBetreuungspensen()).toBeDefined();

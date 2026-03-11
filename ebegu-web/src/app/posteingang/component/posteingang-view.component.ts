@@ -23,20 +23,22 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    inject
+    inject,
+    signal,
+    computed,
+    effect,
+    linkedSignal
 } from '@angular/core';
+import {rxResource, toSignal} from '@angular/core/rxjs-interop';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {TSGemeinde} from '@kibon/shared/model/entity';
 import {TSRole} from '@kibon/shared/model/enums';
-import {Log, LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {TranslateService} from '@ngx-translate/core';
-import {TransitionService} from '@uirouter/angular';
-import {StateService, UIRouterGlobals} from '@uirouter/core';
-import {from, Observable, of, Subject} from 'rxjs';
-import {map, mergeMap, takeUntil} from 'rxjs/operators';
+import {StateService} from '@uirouter/core';
+import {from, Subject} from 'rxjs';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
 import {TSPagination} from '../../../models/dto/TSPagination';
@@ -48,12 +50,10 @@ import {
 import {TSMitteilungTyp} from '../../../models/enums/TSMitteilungTyp';
 import {TSMitteilungTypes} from '../../../models/enums/TSMitteilungTypes';
 import {TSVerantwortung} from '../../../models/enums/TSVerantwortung';
-import {TSBenutzer} from '../../../models/TSBenutzer';
 import {TSBenutzerNoDetails} from '../../../models/TSBenutzerNoDetails';
 import {TSBetreuungsmitteilung} from '../../../models/TSBetreuungsmitteilung';
 
 import {TSMitteilung} from '../../../models/TSMitteilung';
-import {TSMtteilungSearchresultDTO} from '../../../models/TSMitteilungSearchresultDTO';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
 import {DvNgConfirmDialogComponent} from '../../core/component/dv-ng-confirm-dialog/dv-ng-confirm-dialog.component';
@@ -61,13 +61,10 @@ import {DvNgMitteilungResultDialogComponent} from '../../core/component/dv-ng-mi
 import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorServiceX} from '../../core/errors/service/ErrorServiceX';
 import {BenutzerRSX} from '../../core/service/benutzerRSX.rest';
-import {DemoFeatureRS} from '../../core/service/demoFeatureRS.rest';
 import {MitteilungRS} from '../../core/service/mitteilungRS.rest';
 import {DVPosteingangFilter} from '../../shared/interfaces/DVPosteingangFilter';
 import {StateStoreService} from '../../shared/services/state-store.service';
 import {PosteingangService} from '../service/posteingang.service';
-
-const LOG = LogFactory.createLog('PosteingangViewComponent');
 
 @Component({
     selector: 'posteingang-view',
@@ -83,28 +80,110 @@ export class PosteingangViewComponent
     private readonly $state = inject(StateService);
     private readonly authServiceRS = inject(AuthServiceRS);
     private readonly gemeindeRS = inject(GemeindeRS);
-    private readonly transitionService = inject(TransitionService);
     private readonly stateStore = inject(StateStoreService);
-    private readonly uiRouterGlobals = inject(UIRouterGlobals);
     private readonly benutzerRS = inject(BenutzerRSX);
     private readonly changeDetectorRef = inject(ChangeDetectorRef);
     private readonly posteingangService = inject(PosteingangService);
     private readonly dialog = inject(MatDialog);
     private readonly translate = inject(TranslateService);
     private readonly errorService = inject(ErrorServiceX);
-    private readonly demoFeatureRS = inject(DemoFeatureRS);
 
     @ViewChild(MatSort) private readonly matSort: MatSort;
 
-    private readonly log: Log = LogFactory.createLog(
-        'PosteingangViewComponent'
+    private readonly unsubscribe$ = new Subject<void>();
+    public page = signal(0);
+    public pageSize = signal(20);
+
+    public sender = signal(null);
+    public gemeinde = signal(null);
+    public fallNummer = signal(null);
+    public familienName = signal(null);
+    public subject = signal(null);
+    public sentDatum = signal(null);
+    public empfaenger = signal(null);
+    public empfaengerVerantwortung = signal(null);
+    public mitteilungStatus = signal(null);
+
+    public filterPredicate = linkedSignal<DVPosteingangFilter>(() => ({
+        messageTypes: [
+            TSMitteilungTypes.BETREUUNGSMITTEILUNG,
+            TSMitteilungTypes.MITTEILUNG,
+            TSMitteilungTypes.NEUEVERANLAGUNGMITTEILUNG
+        ],
+        sender: this.sender(),
+        gemeinde: this.gemeinde(),
+        fallNummer: this.fallNummer(),
+        familienName: this.familienName(),
+        subject: this.subject(),
+        sentDatum: this.sentDatum(),
+        empfaenger: this.empfaenger(),
+        empfaengerVerantwortung: this.empfaengerVerantwortung(),
+        mitteilungStatus: this.mitteilungStatus()
+    }));
+    public includeClosed = signal(false);
+    public displayedCollection: MatTableDataSource<TSMitteilung>;
+
+    private mitteilungenParams = computed(() => ({
+        pagination: {
+            number: this.pageSize(),
+            start: this.page() * this.pageSize()
+        },
+        search: {predicateObject: this.filterPredicate()},
+        sort: this.sort()
+    }));
+
+    mitteilungen = rxResource({
+        params: () => ({
+            mitteilung: this.mitteilungenParams(),
+            include: this.includeClosed(),
+            filter: this.filterPredicate()
+        }),
+        stream: ({params}) =>
+            from(
+                this.mitteilungRS.searchMitteilungen(
+                    {
+                        ...params.mitteilung,
+                        search: {predicateObject: params.filter}
+                    },
+                    params.include
+                )
+            )
+    });
+
+    private principal = toSignal(this.authServiceRS.principal$, {
+        initialValue: null
+    });
+
+    resetEmpfaengerFilter(): void {
+        const principal = this.principal();
+        if (!principal) {
+            return;
+        }
+
+        if (principal.hasOneOfRoles([TSRole.SUPER_ADMIN])) {
+            return;
+        }
+
+        this.empfaenger.set(principal.getFullName());
+    }
+
+    private debouncedFilter = signal<DVPosteingangFilter>(
+        this.filterPredicate()
+    );
+    private filterDebounceTimeout: any;
+
+    public gemeindenList = toSignal(
+        this.gemeindeRS.getGemeindenForPrincipal$(),
+        {initialValue: [] as TSGemeinde[]}
     );
 
-    private readonly unsubscribe$ = new Subject<void>();
+    public sortedGemeindenList = computed(() => {
+        return [...this.gemeindenList()].sort((a, b) =>
+            a.name.localeCompare(b.name)
+        );
+    });
 
-    private keyupTimeout: NodeJS.Timeout;
     private readonly timeoutMS = 700;
-
     public readonly allColumns = [
         'sender',
         'gemeinde',
@@ -140,29 +219,13 @@ export class PosteingangViewComponent
 
     // Liste die im Gui angezeigt wird
     public displayedColumns: string[];
-    public displayedCollection: MatTableDataSource<TSMitteilung>;
     public pagination: TSPagination = new TSPagination();
-    public page: number = 0;
-    public pageSize: any = 20;
-    public totalItem: number = 0;
-    public totalResultCount: number = 0;
-    // Muss hier gespeichert werden, damit es fuer den Aufruf ab "Inkl.Erledigt"-Checkbox vorhanden ist
-    public myTableFilterState: any;
 
-    public itemsByPage: number = 20;
+    public totalResultCount: number = 0;
+
     public numberOfPages: number = 1;
-    public selectedVerantwortung: string;
-    public includeClosed: boolean = false;
-    public gemeindenList: Array<TSGemeinde> = [];
     public paginationItems: number[];
     public initialEmpfaenger: TSBenutzerNoDetails;
-    public filterPredicate: DVPosteingangFilter = {
-        messageTypes: [
-            TSMitteilungTypes.BETREUUNGSMITTEILUNG,
-            TSMitteilungTypes.MITTEILUNG,
-            TSMitteilungTypes.NEUEVERANLAGUNGMITTEILUNG
-        ]
-    };
 
     // StateStore Properties
     public initialFilter: DVPosteingangFilter = {
@@ -172,37 +235,52 @@ export class PosteingangViewComponent
             TSMitteilungTypes.NEUEVERANLAGUNGMITTEILUNG
         ]
     };
-    public readonly stateStoreId: string = 'posteingangId';
     private readonly sortId = 'posteingangId-sort';
     private readonly filterId = 'posteingangId-filter';
-    private readonly sort: {
-        predicate?: string;
-        reverse?: boolean;
-    } = {};
+    private sort = signal<{predicate?: string; reverse?: boolean}>({});
 
     public readonly mutationsMeldungDemoFeature =
         TSDemoFeature.ALLE_MUTATIONSMELDUNGEN_VERFUEGEN;
 
+    constructor() {
+        effect(() => {
+            const filter = this.filterPredicate();
+
+            this.benutzerRS.getAllBenutzerBgTsOrGemeinde().then(response => {
+                this.initialEmpfaenger = EbeguUtil.findUserByNameInList(
+                    filter?.empfaenger,
+                    response
+                );
+                this.changeDetectorRef.markForCheck();
+            });
+        });
+
+        effect(() => {
+            const filter = this.filterPredicate();
+
+            clearTimeout(this.filterDebounceTimeout);
+            this.filterDebounceTimeout = setTimeout(() => {
+                this.debouncedFilter.set(filter);
+            }, this.timeoutMS);
+        });
+
+        effect(() => {
+            const result = this.mitteilungen.value();
+            if (!this.mitteilungen) {
+                return;
+            }
+            if (!this.displayedCollection) {
+                return;
+            }
+            this.displayedCollection.data = result?.mitteilungen ?? [];
+        });
+    }
+
     public ngOnInit(): void {
-        this.updateGemeindenList();
         this.initDisplayedColumns();
         this.initSort();
-        this.initFilter().subscribe({
-            next: filter => {
-                this.filterPredicate = filter;
-                this.benutzerRS
-                    .getAllBenutzerBgTsOrGemeinde()
-                    .then(response => {
-                        this.initialEmpfaenger = EbeguUtil.findUserByNameInList(
-                            filter?.empfaenger,
-                            response
-                        );
-                        this.changeDetectorRef.markForCheck();
-                    });
-                this.passFilterToServer();
-            },
-            error: err => LOG.error(err)
-        });
+        this.initFilter();
+        this.resetEmpfaengerFilter();
     }
 
     public ngAfterViewInit(): void {
@@ -233,21 +311,6 @@ export class PosteingangViewComponent
         });
     }
 
-    private updateGemeindenList(): void {
-        this.gemeindeRS
-            .getGemeindenForPrincipal$()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe({
-                next: gemeinden => {
-                    this.gemeindenList = gemeinden;
-                    this.gemeindenList.sort((a, b) =>
-                        a.name.localeCompare(b.name)
-                    );
-                },
-                error: err => this.log.error(err)
-            });
-    }
-
     public getVerantwortungList(): Array<string> {
         return [
             TSVerantwortung.VERANTWORTUNG_BG,
@@ -257,45 +320,6 @@ export class PosteingangViewComponent
 
     public getMitteilungsStatus(): Array<TSMitteilungStatus> {
         return getTSMitteilungsStatusForFilter();
-    }
-
-    public clickedIncludeClosed(includeClosed: boolean): void {
-        this.includeClosed = includeClosed;
-        this.passFilterToServer();
-    }
-
-    private passFilterToServer(): void {
-        const body = {
-            pagination: {
-                number: this.pageSize,
-                start: this.page * this.pageSize
-            },
-            search: {
-                predicateObject: this.filterPredicate
-            },
-            sort: this.sort
-        };
-        const dataToLoad$ = from(
-            this.mitteilungRS.searchMitteilungen(body, this.includeClosed)
-        ).pipe(map((result: TSMtteilungSearchresultDTO) => result));
-
-        dataToLoad$.subscribe(
-            (result: TSMtteilungSearchresultDTO) => {
-                this.setResult(result);
-            },
-            err => this.log.error(err)
-        );
-    }
-
-    private setResult(result: TSMtteilungSearchresultDTO): void {
-        if (!result) {
-            return;
-        }
-        this.displayedCollection.data = [].concat(result.mitteilungen);
-        this.totalItem = result.totalResultSize ? result.totalResultSize : 0;
-        this.totalResultCount = this.totalItem;
-        this.updatePagination();
-        this.changeDetectorRef.markForCheck();
     }
 
     public isSuperAdmin(): boolean {
@@ -323,128 +347,60 @@ export class PosteingangViewComponent
         );
     }
 
-    private applyFilter(): void {
-        clearTimeout(this.keyupTimeout);
-        this.keyupTimeout = setTimeout(() => {
-            this.passFilterToServer();
-        }, this.timeoutMS);
-    }
-
-    public filterSender(sender: string): void {
-        this.filterPredicate.sender = sender;
-        this.applyFilter();
-    }
-
-    public filterGemeinde(gemeinde: string): void {
-        this.filterPredicate.gemeinde = gemeinde;
-        this.applyFilter();
-    }
-
-    public filterFall(query: string): void {
-        this.filterPredicate.fallNummer = query.length > 0 ? query : null;
-        this.applyFilter();
-    }
-
-    public filterFamilieName(familienName: string): void {
-        this.filterPredicate.familienName = familienName;
-        this.applyFilter();
-    }
-
-    public filterSubject(subject: string): void {
-        this.filterPredicate.subject = subject;
-        this.applyFilter();
-    }
-
-    public filterSentDatum(query: string): void {
-        this.filterPredicate.sentDatum = query.length > 0 ? query : null;
-        this.applyFilter();
-    }
-
-    public filterEmpfaenger(empfaenger: TSBenutzerNoDetails): void {
-        this.filterPredicate.empfaenger = empfaenger
-            ? empfaenger.getFullName()
-            : null;
-        this.applyFilter();
-    }
-
-    public filterVerantwortung(empfaengerVerantwortung: string): void {
-        this.filterPredicate.empfaengerVerantwortung = empfaengerVerantwortung;
-        this.applyFilter();
-    }
-
-    public filterMitteilungStatus(mitteilungStatus: string): void {
-        this.filterPredicate.mitteilungStatus = mitteilungStatus;
-        this.applyFilter();
-    }
-
-    public handlePagination(pageEvent: Partial<PageEvent>): void {
-        this.page = pageEvent.pageIndex;
-        this.pageSize = pageEvent.pageSize;
-        this.pagination.number = pageEvent.pageSize;
-        this.pagination.start = this.page * pageEvent.pageSize;
-        this.passFilterToServer();
-    }
-
-    public sortData(sortEvent: Sort): void {
-        this.sort.predicate =
-            sortEvent.direction.length > 0 ? sortEvent.active : null;
-        this.sort.reverse = sortEvent.direction === 'asc';
-        this.passFilterToServer();
-    }
-
-    private updatePagination(): void {
-        this.paginationItems = [];
-        for (
-            let i = Math.max(1, this.page - 4);
-            i <=
-            Math.min(Math.ceil(this.totalItem / this.pageSize), this.page + 5);
-            i++
-        ) {
-            this.paginationItems.push(i);
+    public filterEmpfaenger(empfaenger: TSBenutzerNoDetails | null): void {
+        if (empfaenger != null) {
+            this.empfaenger.set(empfaenger.getFullName());
+        } else {
+            this.empfaenger.set(null);
         }
     }
 
-    private initFilter(): Observable<DVPosteingangFilter> {
+    public checkbox($event: boolean): void {
+        this.includeClosed.set($event);
+    }
+
+    public handlePagination(pageEvent: Partial<PageEvent>): void {
+        this.page.set(pageEvent.pageIndex);
+        this.pageSize.set(pageEvent.pageSize);
+        this.pagination.number = pageEvent.pageSize;
+        this.pagination.start = this.page() * pageEvent.pageSize;
+    }
+
+    public sortData(sortEvent: Sort): void {
+        const predicate =
+            sortEvent.direction.length > 0 ? sortEvent.active : null;
+        const reverse = sortEvent.direction === 'asc';
+
+        this.sort.set({predicate, reverse});
+    }
+
+    private initFilter(): void {
         const initial =
             this.filterId && this.stateStore.has(this.filterId)
                 ? (this.stateStore.get(this.filterId) as DVPosteingangFilter)
                 : {...this.initialFilter};
 
-        return of(initial).pipe(
-            mergeMap(filter => this.adaptFilterForPrincipal(filter))
-        );
-    }
-
-    private adaptFilterForPrincipal(
-        filter: DVPosteingangFilter
-    ): Observable<DVPosteingangFilter> {
-        return this.authServiceRS.principal$.pipe(
-            map(principal => {
-                if (principal.hasOneOfRoles([TSRole.SUPER_ADMIN])) {
-                    return filter;
-                }
-                return this.addEmpfaengerToFilter(filter, principal);
-            })
-        );
-    }
-
-    private addEmpfaengerToFilter(
-        filter: DVPosteingangFilter,
-        user: TSBenutzer
-    ): DVPosteingangFilter {
-        filter.empfaenger = user.getFullName();
-        return filter;
+        this.sender.set(initial.sender);
+        this.gemeinde.set(initial.gemeinde);
+        this.fallNummer.set(initial.fallNummer);
+        this.familienName.set(initial.familienName);
+        this.subject.set(initial.subject);
+        this.sentDatum.set(initial.sentDatum);
+        this.empfaenger.set(initial.empfaenger);
+        this.empfaengerVerantwortung.set(initial.empfaengerVerantwortung);
+        this.mitteilungStatus.set(initial.mitteilungStatus);
+        // this.filterPredicate.set(initial);
     }
 
     private storeFilterSortStates() {
-        if (this.sort.predicate) {
-            this.stateStore.store(this.sortId, this.sort);
+        if (this.sort().predicate) {
+            this.stateStore.store(this.sortId, this.sort());
         } else {
             this.stateStore.delete(this.sortId);
             this.stateStore.delete(this.filterId);
         }
 
-        this.stateStore.store(this.filterId, this.filterPredicate);
+        this.stateStore.store(this.filterId, this.filterPredicate());
     }
 
     private initSort(): void {
@@ -453,14 +409,18 @@ export class PosteingangViewComponent
                 predicate?: string;
                 reverse?: boolean;
             };
-            this.sort.predicate = stored.predicate;
-            this.sort.reverse = stored.reverse;
+            this.sort.set({
+                predicate: stored.predicate,
+                reverse: stored.reverse
+            });
         }
     }
 
     private initMatSort(): void {
-        this.matSort.active = this.sort.predicate;
-        this.matSort.direction = this.sort.reverse ? 'asc' : 'desc';
+        const currentSort = this.sort();
+
+        this.matSort.active = currentSort.predicate ?? '';
+        this.matSort.direction = currentSort.reverse ? 'asc' : 'desc';
     }
 
     private initDisplayedColumns(): void {
@@ -482,17 +442,23 @@ export class PosteingangViewComponent
     }
 
     public resetFilter(): void {
-        this.filterPredicate = this.initialFilter;
-        this.initFilter().subscribe(filter => {
-            this.adaptFilterForPrincipal(filter);
-            this.applyFilter();
-        });
+        this.sender.set(null);
+        this.gemeinde.set(null);
+        this.fallNummer.set(null);
+        this.familienName.set(null);
+        this.subject.set(null);
+        this.sentDatum.set(null);
+        this.empfaengerVerantwortung.set(null);
+        this.mitteilungStatus.set(null);
+        this.page.set(0);
+        this.sort.set({predicate: null, reverse: false});
+        this.resetEmpfaengerFilter();
+        this.mitteilungen.reload();
     }
 
     public setUngelesen(mitteilung: TSMitteilung): void {
         this.resetMitteilungRevertInfo();
         this.mitteilungRS.setMitteilungUngelesen(mitteilung.id).then(() => {
-            this.passFilterToServer();
             this.getMitteilungenCount();
         });
     }
@@ -502,7 +468,6 @@ export class PosteingangViewComponent
         this.mitteilungRS
             .setMitteilungIgnoriert(mitteilung.id)
             .then(() => {
-                this.passFilterToServer();
                 this.getMitteilungenCount();
             })
             .then(() => {
@@ -524,7 +489,6 @@ export class PosteingangViewComponent
     public setGelesen(mitteilung: TSMitteilung): void {
         this.resetMitteilungRevertInfo();
         this.mitteilungRS.setMitteilungGelesen(mitteilung.id).then(() => {
-            this.passFilterToServer();
             this.getMitteilungenCount();
         });
     }
@@ -557,7 +521,6 @@ export class PosteingangViewComponent
                     .afterClosed()
                     .subscribe(
                         () => {
-                            this.passFilterToServer();
                             this.getMitteilungenCount();
                         },
                         () => {}
@@ -574,14 +537,6 @@ export class PosteingangViewComponent
                     mitteilung.mitteilungStatus !== TSMitteilungStatus.ERLEDIGT
             )
             .map(mitteilung => mitteilung as TSBetreuungsmitteilung);
-    }
-
-    public canSeeMutationsmeldungenAutomatischBearbeiten() {
-        //TS-Roles can't see Mutationsmeldungen
-        return (
-            !this.isSozialdienstOrInstitution() &&
-            !this.authServiceRS.isOneOfRoles(TSRoleUtil.getGemeindeTSRoles())
-        );
     }
 
     public canBeIgnored(mitteilung: TSMitteilung): boolean {

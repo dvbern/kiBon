@@ -103,13 +103,6 @@ export class PendenzenBetreuungenListViewController implements IController {
         this.unsubscribe$.complete();
     }
 
-    public getTotalResultCount(): number {
-        if (this.pendenzenList && this.pendenzenList.length) {
-            return this.pendenzenList.length;
-        }
-        return 0;
-    }
-
     private updatePendenzenList(): void {
         this.pendenzBetreuungenRS
             .getPendenzenBetreuungenList()

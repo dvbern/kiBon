@@ -2217,7 +2217,10 @@
                 }
 
                 <!--                betreuungsgutscheine: zahlungen-->
-                @if (showZahlungenStatistik()) {
+                @if (
+                    showZahlungenStatistik() &&
+                    showZahlungenStatistikAllowedForRoles
+                ) {
                     <div [dvDemoFeature]="demoFeature">
                         <div>
                             <dv-accordion-tab [tabid]="'zahlungen'">
@@ -2377,6 +2380,10 @@
                                                                 [errorObject]="
                                                                     gemeindeRef.errors
                                                                 "
+                                                                [errorMessageOverrides]="{
+                                                                    required:
+                                                                        'ERROR_GEMEINDE_INSTITUTION_REQUIRED'
+                                                                }"
                                                                 class="error"
                                                             ></dv-error-messages>
                                                         </div>
@@ -2441,6 +2448,10 @@
                                                                 [errorObject]="
                                                                     institutionenRef.errors
                                                                 "
+                                                                [errorMessageOverrides]="{
+                                                                    required:
+                                                                        'ERROR_GEMEINDE_INSTITUTION_REQUIRED'
+                                                                }"
                                                                 class="error"
                                                             ></dv-error-messages>
                                                         </div>

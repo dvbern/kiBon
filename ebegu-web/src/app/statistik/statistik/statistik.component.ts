@@ -19,36 +19,40 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    inject,
     OnDestroy,
-    OnInit,
-    inject
+    OnInit
 } from '@angular/core';
 import {NgForm, NgModel} from '@angular/forms';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {MatTableDataSource} from '@angular/material/table';
+import {CONSTANTS} from '@kibon/shared/model/constants';
+import {InstitutionNameStammdatenIdDto} from '@kibon/shared/model/dto';
+import {
+    TSGemeinde,
+    TSGesuchsperiode,
+    TSInstitution,
+    TSInstitutionStammdaten
+} from '@kibon/shared/model/entity';
+import {
+    TSBetreuungsangebotTyp,
+    TSDemoFeature,
+    TSRole
+} from '@kibon/shared/model/enums';
+import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
+import {MomentUtil} from '@kibon/shared/util-fn/date';
+import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {SharedUtilApplicationPropertyRsService} from '@kibon/shared/util/application-property-rs';
 import {TranslateService} from '@ngx-translate/core';
 import moment from 'moment';
 import {Observable} from 'rxjs';
-import {CONSTANTS} from '@kibon/shared/model/constants';
-import {
-    TSGemeinde,
-    TSGesuchsperiode,
-    TSInstitutionStammdaten,
-    TSInstitution
-} from '@kibon/shared/model/entity';
-import {LogFactory} from '@kibon/shared/util-fn/log-factory';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {GemeindeRS} from '../../../gesuch/service/gemeindeRS.rest';
-import {TSBetreuungsangebotTyp, TSRole} from '@kibon/shared/model/enums';
 import {TSStatistikParameterType} from '../../../models/enums/TSStatistikParameterType';
 import {TSStatistikParameter} from '../../../models/TSStatistikParameter';
 import {TSWorkJob} from '../../../models/TSWorkJob';
-import {MomentUtil} from '@kibon/shared/util-fn/date';
 import {EbeguUtil} from '../../../utils/EbeguUtil';
 import {TSRoleUtil} from '../../../utils/TSRoleUtil';
-import {DvNgRemoveDialogComponent} from '@kibon/shared/ui/remove-dialog';
-import {TSDemoFeature} from '@kibon/shared/model/enums';
 import {ErrorService} from '../../core/errors/service/ErrorService';
 import {BatchJobRS} from '../../core/service/batchRS.rest';
 import {DownloadRS} from '../../core/service/downloadRS.rest';
@@ -57,7 +61,6 @@ import {InstitutionRS} from '../../core/service/institutionRS.rest';
 import {InstitutionStammdatenRS} from '../../core/service/institutionStammdatenRS.rest';
 import {ReportAsyncRS} from '../../core/service/reportAsyncRS.rest';
 import {LastenausgleichRS} from '../../lastenausgleich/services/lastenausgleichRS.rest';
-import {InstitutionNameStammdatenIdDto} from '@kibon/shared/model/dto';
 
 const LOG = LogFactory.createLog('StatistikComponent');
 
@@ -123,10 +126,8 @@ export class StatistikComponent implements OnInit, OnDestroy {
     public tagesschulenActive = false;
     public lastenausgleichYears: number[] = [];
 
-    private static sortInstitutions(
-        stammdaten: InstitutionNameStammdatenIdDto[]
-    ): InstitutionNameStammdatenIdDto[] {
-        return stammdaten.sort((a, b) => a.name.localeCompare(b.name));
+    private static sortByName<T extends {name: string}>(items: T[]): T[] {
+        return items.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     private static handleError(err: Error): void {
@@ -151,7 +152,7 @@ export class StatistikComponent implements OnInit, OnDestroy {
                 this.tagesschulenStammdatenFilterList =
                     institutionNameStammdatenIdList.data;
                 this.tagesschulenStammdatenFilterList =
-                    StatistikComponent.sortInstitutions(
+                    StatistikComponent.sortByName(
                         this.tagesschulenStammdatenFilterList
                     );
                 this.cd.markForCheck();
@@ -562,17 +563,19 @@ export class StatistikComponent implements OnInit, OnDestroy {
             )
         ) {
             this.institutionRS
-                .getInstitutionenEditableForCurrentBenutzer()
+                .getAllBgInstitutionenEditableForCurrentBenutzer()
                 .subscribe(institutionen => {
-                    this.bgInstitutionen = institutionen;
+                    this.bgInstitutionen =
+                        StatistikComponent.sortByName(institutionen);
                 });
             return;
         }
         // mandanten und gemeinden sollen grundsätzlich alle Institutionen sehen.
         this.institutionRS
-            .getInstitutionenReadableForCurrentBenutzer()
+            .getAllBgInstitutionenReadableForCurrentBenutzer()
             .subscribe(institutionen => {
-                this.bgInstitutionen = institutionen;
+                this.bgInstitutionen =
+                    StatistikComponent.sortByName(institutionen);
             });
     }
 
@@ -942,9 +945,17 @@ export class StatistikComponent implements OnInit, OnDestroy {
         );
     }
 
+    public showZahlungenStatistikAllowedForRoles() {
+        return this.authServiceRS.isOneOfRoles(
+            TSRoleUtil.getGemeindeRoles()
+                .concat(TSRoleUtil.getTraegerschaftInstitutionOnlyRoles())
+                .concat(TSRoleUtil.getMandantOnlyRoles())
+        );
+    }
+
     public gemeindenVisibleZahlungenStatistik(): boolean {
         return !this.authServiceRS.isOneOfRoles(
-            TSRoleUtil.getTraegerschaftInstitutionOnlyRoles()
+            TSRoleUtil.getInstitutionOnlyRoles()
         );
     }
 

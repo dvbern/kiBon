@@ -12,6 +12,8 @@
     "AKTION": "Aktion",
     "BEARBEITER": "Bearbeiter",
     "UPDATE": "Aktualisieren",
+    "UPDATE_STATUS": "Status aktualisieren",
+    "UPDATE_EINSTELLUNGEN": "Einstellungen aktualisieren",
     "APP_TITLE": "ebegu",
     "ADMIN": "Einstellungen",
     "DEBUGGING": "Debug",
@@ -1432,7 +1434,7 @@
     "STATISTIK_LASTENAUSGLEICH_BG": "Betreuungsgutscheine: Details Lastenausgleich Soziales",
     "STATISTIK_LASTENAUSGLEICH_BG_HINT": "Zeigt alle Zeitabschnitte, die in die Berechnung des Lastenausgleichs für die Betreuungsgutscheine einfliessen. Diese Daten sind erst ab dem Lastenausgleichjahr 2022 vorhanden. <b>Zahlen zu früheren Lastenausgleichen und Korrekturen können nicht angezeigt werden.</b><br><br>Wichtiger Hinweis für SuperUser: Wenn ein von/bis Datum eingegeben wird, dann werden nur diejenigen Daten (inkl. Korrekturen) in diesem Zeitraum berücksichtigt. Davorliegende Zahlen werden <b>nicht</b> mitberücksichtigt.",
     "STATISTIK_ZAHLUNGEN": "Betreuungsgutscheine: Zahlungen",
-    "STATISTIK_ZAHLUNGEN_HINT": "<p>Die Statistik zeigt eine Übersicht über alle ausbezahlten Betreuungsgutscheine (Zahlungslauf erstellt) pro Monat, Kind und Gemeinde und bildet den effektiven Geldfluss ab. Die Gutscheinbeträge, welche für die Rechnungsstellung an die Antragstellenden relevant sind, sind separat ausgewiesen.</p><p><b>Auswahlfeld Periode:</b></p><p>Das Feld <i>Periode</i> ist ein Pflichtfeld. Wird eine Periode ausgewählt, werden in der Statistik alle Zeitabschnitte der Verfügung angezeigt, deren Auszahlung in diese Periode fällt.</p><p><b>Eingabefelder von uns bis:</b></p><p>Diese Felder sind optional. Wird ein Zeitraum definiert, berücksichtigt die Statistik ausschliesslich jene Zeitabschnitte der Verfügung, die innerhalb dieses Zeitraums liegen.</p><p> Weitere Informationen finden Sie im Blogbeitrag <a target='_blank' href='https://blog.kibon.ch/be/docs/zahlungen-fuer-institutionen'>Zahlungen für Institutionen</a></p>",
+    "STATISTIK_ZAHLUNGEN_HINT": "<p>Die Statistik zeigt eine Übersicht über alle ausbezahlten Betreuungsgutscheine (Zahlungslauf erstellt) pro Monat, Kind und Gemeinde und bildet den effektiven Geldfluss ab. Die Gutscheinbeträge, welche für die Rechnungsstellung an die Antragstellenden relevant sind, sind separat ausgewiesen.</p><p></br><b>Auswahlfeld Periode:</b></p><p>Das Feld <i>Periode</i> ist ein Pflichtfeld. Wird eine Periode ausgewählt, werden in der Statistik alle Zeitabschnitte der Verfügung angezeigt, deren Auszahlung in diese Periode fällt.</p><p><b>Eingabefelder von und bis:</b></p><p>Diese Felder sind optional. Wird ein Zeitraum definiert, berücksichtigt die Statistik ausschliesslich jene Zeitabschnitte der Verfügung, die innerhalb dieses Zeitraums liegen.</p></br><p> Weitere Informationen finden Sie im Blogbeitrag <a target='_blank' href='https://blog.kibon.ch/be/docs/zahlungen-fuer-institutionen'>Zahlungen für Institutionen</a></p>",
     "GESUCHE_NACH_STICHTAG": "Betreuungsgutscheine: Anträge nach Stichtag",
     "GESUCHE_NACH_ZEITRAUM": "Betreuungsgutscheine: Verfügte Anträge und Mutationen nach Zeitraum",
     "KANTON": "Kanton",
@@ -3012,7 +3014,7 @@
     "SUPPORT_MAIL": "support@kibon.ch",
     "ONBOARDING_HILFE": "Benötigen Sie Hilfe?",
     "ONBOARDING_HELP_DIALOG_CONTENT": "<b>Benötigen Sie Hilfe?</b><br><br>Haben Sie Fragen oder benötigen Sie Hilfe? Als Antragsteller/in oder Unterstützungsdienst melden Sie sich bitte bei der Gemeinde, bei der Sie Ihren Antrag einreichen möchten. Der Support für Antragsteller/innen und Unterstützungsdienste wird von der zuständigen Gemeinde durchgeführt.<br>",
-    "LATS_ONLY_WARNUNG": "Achtung: Für Ihre Gemeinde ist die Funktion «Tagesschule» nicht ativiert. Diese Tagesschule wird im Status NUR_LASTENAUSGLEICH erstellt und kann nur für die Abrechnung des Lastenausgleichs verwendet werden.",
+    "LATS_ONLY_WARNUNG": "Achtung: Für Ihre Gemeinde ist die Funktion «Tagesschule» nicht aktiviert. Diese Tagesschule wird im Status NUR_LASTENAUSGLEICH erstellt und kann nur für die Abrechnung des Lastenausgleichs verwendet werden.",
     "KORRESPONDENZ_SENDER_ADDRESS": "Platzierung der Senderadresse",
     "KORRESPONDENZ_SENDER_ADDRESS_SPACING_LEFT": "Abstand Senderadresse links",
     "KORRESPONDENZ_SENDER_ADDRESS_SPACING_TOP": "Abstand Senderadresse oben",
@@ -3303,5 +3305,6 @@
     "DOKUMENT_GRUND_TYP_TAG_FREIGABEQUITTUNG": "",
     "DOKUMENT_GRUND_TYP_TAG_ERWEITERTE_BETREUUNG": "",
     "ERROR_TOO_MANY_SELECTED_TS_ANMELDUNGEN_STATISTIK": "Es können maximal 50 Tagesschulen ausgewählt werden. Sie haben die maximale Anzahl überschritten.",
+    "ERROR_GEMEINDE_INSTITUTION_REQUIRED": "„Alle Gemeinden“ und „Alle Institutionen“ können nicht gleichzeitig ausgewählt werden.\nBitte wählen Sie entweder eine Institution oder eine Gemeinde aus.",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

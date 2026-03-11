@@ -52,13 +52,13 @@ public class MutationsMergerFinanzielleSituationBernFKJV extends
 			return;
 		}
 
-		handleFamiliengroesse(inputAktuel, resultVorgaenger);
 		handleVerminderungEinkommen(
 			inputAktuel,
 			resultVorgaenger,
 			platz,
 			mutationsEingansdatum
 		);
+		handleFamiliengroesse(inputAktuel, resultVorgaenger);
 		handleFinanzielleSituationRueckwirkendAnpassen(
 			inputAktuel,
 			resultVorgaenger,
@@ -209,14 +209,5 @@ public class MutationsMergerFinanzielleSituationBernFKJV extends
 		}
 
 		return finanzDatenDTO.getMassgebendesEinkBjVorAbzFamGr();
-	}
-
-	@Override
-	protected void handleRueckwirkendAnspruchaenderungMsg(
-		BGCalculationInput inputData,
-		BigDecimal massgebendesEinkommen,
-		BigDecimal massgebendesEinkommenVorher
-	) {
-		// we don't want any msg for FKJV
 	}
 }

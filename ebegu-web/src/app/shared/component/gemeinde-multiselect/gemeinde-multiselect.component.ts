@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {KeyValue} from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -99,4 +100,13 @@ export class GemeindeMultiselectComponent implements OnInit {
         /* MSIE used to detect old browsers and Trident used to newer ones*/
         return ua.indexOf('MSIE ') > -1 || ua.indexOf('Trident/') > -1;
     }
+
+    public sortByName = (
+        a: KeyValue<any, any>,
+        b: KeyValue<any, any>
+    ): number => {
+        const nameA = a.key?.name?.toLowerCase() ?? '';
+        const nameB = b.key?.name?.toLowerCase() ?? '';
+        return nameA.localeCompare(nameB);
+    };
 }

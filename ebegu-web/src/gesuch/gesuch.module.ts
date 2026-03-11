@@ -25,6 +25,7 @@ import * as angular from 'angular';
 import {EinstellungRS} from '../admin/service/einstellungRS.rest';
 import {CORE_JS_MODULE} from '../app/core/core.angularjs.module';
 import {PersonensucheComponent} from '../app/personensuche/personensuche.component';
+import {PosteingangService} from '../app/posteingang/service/posteingang.service';
 import {MultipleFileUploadComponent} from '../app/shared/component/multpile-file-upload/multiple-file-upload.component';
 import {GemeindeService} from '../app/shared/services/gemeinde.service';
 import {AuthServiceRS} from '../authentication/service/AuthServiceRS.rest';
@@ -462,6 +463,7 @@ export const GESUCH_JS_MODULE = angular
         'BetreuungUtilAnmeldungRestService',
         downgradeInjectable(BetreuungUtilAnmeldungRestService)
     )
+    .factory('PosteingangService', downgradeInjectable(PosteingangService))
     .directive(
         'dvBetreuungUiKindGueltigkeitTerminiertAngularJSWrapper',
         downgradeComponent({

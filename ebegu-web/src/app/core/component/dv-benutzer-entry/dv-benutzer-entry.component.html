@@ -16,7 +16,7 @@
 -->
 @if (!noIcons) {
     <span>
-        @for (icon of getVerantwortungClasses(); track icon) {
+        @for (icon of getVerantwortungClasses(); track icon[0]) {
             <i
                 class="{{ icon[0] }}"
                 [title]="icon[1] | translate"

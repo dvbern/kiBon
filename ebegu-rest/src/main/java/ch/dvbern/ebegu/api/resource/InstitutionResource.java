@@ -621,6 +621,32 @@ public class InstitutionResource {
 	}
 
 	@Operation(
+		summary = "Find and return a list of all editable BgInstitutionen of the currently logged in Benutzer. "
+			+ "Returns all for admins")
+	@Nonnull
+	@GET
+	@Path("/editable/currentuser/bg")
+	@Consumes(MediaType.WILDCARD)
+	@Produces(MediaType.APPLICATION_JSON)
+	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
+	public List<JaxInstitutionListDTO> getAllBgInstitutionenEditableForCurrentBenutzer() {
+		Map<Institution, InstitutionStammdaten> institutionInstitutionStammdatenMap =
+			institutionService
+				.getInstitutionenInstitutionStammdatenEditableForCurrentBenutzer(
+					true
+				);
+
+		return institutionInstitutionStammdatenMap.entrySet()
+			.stream()
+			.filter(
+				i -> BetreuungsangebotTyp.getBetreuungsgutscheinTypes()
+					.contains(i.getValue().getBetreuungsangebotTyp())
+			)
+			.map(map -> institutionConverter.institutionListDTOToJAX(map))
+			.collect(Collectors.toList());
+	}
+
+	@Operation(
 		summary = "Find and return a list of all readable Institutionen of the currently logged in Benutzer. "
 			+ "Returns all for admins")
 	@Nonnull
@@ -634,6 +660,35 @@ public class InstitutionResource {
 			false
 		)
 			.stream()
+			.map(inst -> institutionStammdatenConverter.institutionToJAX(inst))
+			.collect(Collectors.toList());
+	}
+
+	@Operation(
+		summary = "Find and return a list of all readable BgInstitutionen of the currently logged in Benutzer. "
+			+ "Returns all for admins")
+	@Nonnull
+	@GET
+	@Path("/readable/currentuser/bg")
+	@Consumes(MediaType.WILDCARD)
+	@Produces(MediaType.APPLICATION_JSON)
+	@PermitAll // Grundsaetzliche fuer alle Rollen: Datenabhaengig. -> Authorizer
+	public List<JaxInstitution> getAllBgInstitutionenReadableForCurrentBenutzer() {
+		return institutionService.getInstitutionenReadableForCurrentBenutzer(
+			false
+		)
+			.stream()
+			.filter(
+				i -> BetreuungsangebotTyp.getBetreuungsgutscheinTypes()
+					.contains(
+						institutionStammdatenService
+							.fetchInstitutionStammdatenByInstitution(
+								i.getId(),
+								false
+							)
+							.getBetreuungsangebotTyp()
+					)
+			)
 			.map(inst -> institutionStammdatenConverter.institutionToJAX(inst))
 			.collect(Collectors.toList());
 	}

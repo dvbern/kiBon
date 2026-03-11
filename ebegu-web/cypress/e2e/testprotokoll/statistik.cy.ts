@@ -18,7 +18,7 @@ describe('Kibon - generate Statistiken', () => {
         TestFaellePO.createPapierTestfall({
             testFall: 'testfall-2',
             gemeinde: 'Paris',
-            periode: '2022/23',
+            periode: '2024/25',
             betreuungsstatus: 'verfuegt'
         });
     });
@@ -34,9 +34,10 @@ describe('Kibon - generate Statistiken', () => {
     it('should correctly create the Betreuungsgutscheine: Antragsstellende-Kinder-Betreuung statistik', () => {
         StatistikPO.getGesuchstellendeKinderBetreuungTab().click();
 
-        StatistikPO.getVon().find('input').type('01.07.2023');
-        StatistikPO.getBis().find('input').type('31.07.2023');
-        StatistikPO.getGesuchsperiode().select('2022/23');
+        StatistikPO.getVon().find('input').type('01.07.2025');
+        StatistikPO.getBis().find('input').type('31.07.2025');
+        StatistikPO.getGesuchsperiode().click();
+        cy.get('mat-option').contains('2024/25').click();
 
         cy.waitForRequest('GET', '**/admin/batch/userjobs/**', () => {
             StatistikPO.getGenerierenButton().click();
@@ -213,8 +214,8 @@ function checkValuesOfTwoLastVerfuegteBetreuung(data: any): void {
     expect(data[last][1]).to.eq('Kita');
 
     // Check Gesuchsperiode same as last created Fall
-    expect(data[last - 1][2]).to.eq('2022/2023');
-    expect(data[last][2]).to.eq('2022/2023');
+    expect(data[last - 1][2]).to.eq('2024/2025');
+    expect(data[last][2]).to.eq('2024/2025');
 
     // Check Eingangsdatum and Verfuegungdatum
     expect(data[last - 1][3]).to.match(/[0-9]+/);
@@ -383,8 +384,8 @@ function checkValuesOfTwoLastVerfuegteBetreuung(data: any): void {
     expect(data[last][46]).to.eq(89842);
 
     // Check Einkommensjahr
-    expect(data[last - 1][47]).to.eq(2021);
-    expect(data[last][47]).to.eq(2021);
+    expect(data[last - 1][47]).to.eq(2023);
+    expect(data[last][47]).to.eq(2023);
 
     // Check Einkommensverschlechterung (Einkommensjahr +1)
     expect(data[last - 1][48]).to.empty;
@@ -447,12 +448,12 @@ function checkValuesOfTwoLastVerfuegteBetreuung(data: any): void {
     expect(data[last][63]).to.eq('Vorschulalter');
 
     // Check Von
-    expect(data[last - 1][68]).to.eq(45108);
-    expect(data[last][68]).to.eq(45108);
+    expect(data[last - 1][68]).to.eq(45839);
+    expect(data[last][68]).to.eq(45839);
 
     // Check Bis
-    expect(data[last - 1][69]).to.eq(45138);
-    expect(data[last][69]).to.eq(45138);
+    expect(data[last - 1][69]).to.eq(45869);
+    expect(data[last][69]).to.eq(45869);
 
     // Check Status
     expect(data[last - 1][72]).to.eq('Verfügt');

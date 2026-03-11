@@ -168,11 +168,35 @@ export class InstitutionRS {
             );
     }
 
+    public getAllBgInstitutionenEditableForCurrentBenutzer(): Observable<
+        TSInstitution[]
+    > {
+        return this.$http
+            .get(`${this.serviceURL}/editable/currentuser/bg`)
+            .pipe(
+                map((response: any) =>
+                    this.ebeguRestUtil.parseInstitutionen(response)
+                )
+            );
+    }
+
     public getInstitutionenReadableForCurrentBenutzer(): Observable<
         TSInstitution[]
     > {
         return this.$http
             .get(`${this.serviceURL}/readable/currentuser`)
+            .pipe(
+                map((response: any) =>
+                    this.ebeguRestUtil.parseInstitutionen(response)
+                )
+            );
+    }
+
+    public getAllBgInstitutionenReadableForCurrentBenutzer(): Observable<
+        TSInstitution[]
+    > {
+        return this.$http
+            .get(`${this.serviceURL}/readable/currentuser/bg`)
             .pipe(
                 map((response: any) =>
                     this.ebeguRestUtil.parseInstitutionen(response)

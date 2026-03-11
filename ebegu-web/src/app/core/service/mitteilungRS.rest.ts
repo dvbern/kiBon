@@ -267,7 +267,7 @@ export class MitteilungRS {
     public searchMitteilungen(
         antragSearch: any,
         includeClosed: boolean
-    ): IPromise<TSMtteilungSearchresultDTO> {
+    ): Promise<TSMtteilungSearchresultDTO> {
         return this.$http
             .post(`${this.serviceURL}/search/${includeClosed}`, antragSearch)
             .then((response: any) => {
@@ -281,7 +281,7 @@ export class MitteilungRS {
                     ),
                     response.data.paginationDTO.totalItemCount
                 );
-            });
+            }) as Promise<TSMtteilungSearchresultDTO>;
     }
 
     private createBetreuungsmitteilung(

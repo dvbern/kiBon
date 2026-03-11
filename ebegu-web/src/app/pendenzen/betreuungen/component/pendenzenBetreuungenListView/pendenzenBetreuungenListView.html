@@ -43,9 +43,9 @@
                     ></h2>
                     <h2
                         style="display: inline-block"
-                        ng-if="vm.getTotalResultCount() > 0"
+                        ng-if="displayedCollection.length > 0"
                     >
-                        ({{ vm.getTotalResultCount() }})
+                        ({{ displayedCollection.length }})
                     </h2>
                 </div>
             </div>

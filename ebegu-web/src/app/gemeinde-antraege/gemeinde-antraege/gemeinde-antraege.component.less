@@ -35,33 +35,21 @@ select {
 .gemeinde-antraege-view {
     padding: 3rem;
 
-    .gemeinde-antraege-form {
-        align-items: flex-end;
+    form.gemeinde-antraege-form {
         background: @contrast-light;
-        display: flex;
-        justify-content: space-evenly;
-        margin-bottom: 4rem;
-        padding: 4rem 2rem 1rem;
 
-        > div {
-            margin: 0 1rem;
+        .gemeinde-antraege-form-row {
+            padding: 4rem 2rem 0;
         }
 
-        .actions {
-            display: flex;
-            margin-bottom: 3rem;
-        }
+        .gemeinde-antraege-form-actions {
+            .gemeindeantraege-antraege {
+                display: inline;
 
-        .mat-column-periode,
-        .mat-column-periode-filter {
-            flex: 0 0 16rem !important;
-            min-width: 0 !important;
-        }
-
-        .mat-column-aenderungsdatum,
-        .mat-column-aenderungsdatum-filter {
-            flex: 0 0 16rem !important;
-            min-width: 0 !important;
+                .dvb-loading-button {
+                    display: inline;
+                }
+            }
         }
     }
 }

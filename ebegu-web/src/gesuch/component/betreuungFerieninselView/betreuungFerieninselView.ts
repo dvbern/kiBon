@@ -30,6 +30,7 @@ import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {ErrorService} from '../../../app/core/errors/service/ErrorService';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {MandantService} from '@kibon/shared-util-mandant-service';
+import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {TSAnmeldungMutationZustand} from '../../../models/enums/TSAnmeldungMutationZustand';
 import {TSBelegungFerieninsel} from '../../../models/TSBelegungFerieninsel';
@@ -93,7 +94,8 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         'FerieninselStammdatenRS',
         'MandantService',
         'EbeguRestUtil',
-        'HybridFormBridgeService'
+        'HybridFormBridgeService',
+        'PosteingangService'
     ];
 
     public betreuung: TSBetreuung;
@@ -127,7 +129,8 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
         private readonly ferieninselStammdatenRS: FerieninselStammdatenRS,
         mandantService: MandantService,
         ebeguRestUtil: EbeguRestUtil,
-        hybridFormBridgeService: HybridFormBridgeService
+        hybridFormBridgeService: HybridFormBridgeService,
+        posteingangService: PosteingangService
     ) {
         super(
             $state,
@@ -149,7 +152,8 @@ export class BetreuungFerieninselViewController extends BetreuungViewController 
             applicationPropertyRS,
             mandantService,
             ebeguRestUtil,
-            hybridFormBridgeService
+            hybridFormBridgeService,
+            posteingangService
         );
     }
 

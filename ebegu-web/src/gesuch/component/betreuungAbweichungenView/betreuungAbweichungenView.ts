@@ -32,6 +32,7 @@ import {MANDANTS} from '@kibon/shared-model-mandant';
 import {DvDialog} from '../../../app/core/directive/dv-dialog/dv-dialog';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {MandantService} from '@kibon/shared-util-mandant-service';
+import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {TSBetreuungspensumAbweichungStatus} from '../../../models/enums/betreuung/TSBetreuungspensumAbweichungStatus';
 import {TSPensumAnzeigeTyp} from '@kibon/shared/model/enums';
 import {TSBetreuung} from '../../../models/TSBetreuung';
@@ -84,7 +85,8 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
         '$translate',
         'DvDialog',
         'MandantService',
-        'EbeguRestUtil'
+        'EbeguRestUtil',
+        'PosteingangService'
     ];
 
     public $translate: ITranslateService;
@@ -117,7 +119,8 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
         $translate: ITranslateService,
         dvDialog: DvDialog,
         private readonly mandantService: MandantService,
-        private readonly ebeguRestUtil: EbeguRestUtil
+        private readonly ebeguRestUtil: EbeguRestUtil,
+        private readonly posteingangService: PosteingangService
     ) {
         super(
             gesuchModelManager,
@@ -396,6 +399,7 @@ export class BetreuungAbweichungenViewController extends AbstractGesuchViewContr
             )
             .then(result => {
                 this.model.betreuungspensumAbweichungen = result;
+                this.posteingangService.posteingangChanged();
             });
     }
 

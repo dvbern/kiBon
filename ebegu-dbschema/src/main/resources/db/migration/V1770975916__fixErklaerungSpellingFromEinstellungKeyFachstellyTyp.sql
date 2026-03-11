@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 DV Bern AG, Switzerland
+ * Copyright (C) 2026 DV Bern AG, Switzerland
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -8,24 +8,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-.no-margin {
-    margin: 0 !important;
-}
 
-dv-eingabe-hint {
-    height: 4rem;
-    margin-left: 1rem;
-    position: absolute;
-    width: 100%;
-}
-
-.ekv-selbststaendig {
-    margin-right: 0 !important;
-}
+UPDATE einstellung
+SET erklaerung = REPLACE(erklaerung, 'ativiert', 'aktiviert')
+WHERE einstellung_key = 'FACHSTELLEN_TYP'
+	AND erklaerung LIKE '%ativiert%';

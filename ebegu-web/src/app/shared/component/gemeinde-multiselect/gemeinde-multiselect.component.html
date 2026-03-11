@@ -34,7 +34,7 @@
             [required]="required"
             [multiple]="true"
         >
-            @for (item of allowedGemeinden | keyvalue; track item) {
+            @for (item of allowedGemeinden | keyvalue: sortByName; track item) {
                 <mat-option
                     (onSelectionChange)="onSelectionChange($event)"
                     [value]="item.key"

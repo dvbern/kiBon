@@ -39,6 +39,7 @@ import {DownloadRS} from '../../../app/core/service/downloadRS.rest';
 import {MitteilungRS} from '../../../app/core/service/mitteilungRS.rest';
 import {I18nServiceRSRest} from '../../../app/i18n/services/i18nServiceRS.rest';
 import {MandantService} from '@kibon/shared-util-mandant-service';
+import {PosteingangService} from '../../../app/posteingang/service/posteingang.service';
 import {AuthServiceRS} from '../../../authentication/service/AuthServiceRS.rest';
 import {
     getTSAbholungTagesschuleValues,
@@ -126,7 +127,8 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         'I18nServiceRSRest',
         'MandantService',
         'EbeguRestUtil',
-        'HybridFormBridgeService'
+        'HybridFormBridgeService',
+        'PosteingangService'
     ];
 
     public gemeindeTSZusaetzlicheAngabenZurAnmeldungEnabled: boolean;
@@ -172,7 +174,8 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         private readonly i18nServiceRS: I18nServiceRSRest,
         mandantService: MandantService,
         ebeguRestUtil: EbeguRestUtil,
-        hybridFormBridgeService: HybridFormBridgeService
+        hybridFormBridgeService: HybridFormBridgeService,
+        posteingangService: PosteingangService
     ) {
         super(
             $state,
@@ -194,7 +197,8 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
             applicationPropertyRS,
             mandantService,
             ebeguRestUtil,
-            hybridFormBridgeService
+            hybridFormBridgeService,
+            posteingangService
         );
 
         this.$scope.$watch(
