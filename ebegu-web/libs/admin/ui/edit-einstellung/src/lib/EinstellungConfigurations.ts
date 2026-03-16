@@ -284,9 +284,25 @@ const EINSTELLUNG_CONFIGURATIONS: EinstellungConfigurable = {
         TSAnspruchBeschaeftigungAbhaengigkeitTyp
     ),
     SOZIALABZUG_PRO_KIND: createConfiguration(Number),
-    ABGELOESTE_VIEW: createConfiguration(Boolean),
     GEMEINDE_KENNZAHLEN_REMINDER_ACTIVATED: createConfiguration(Boolean),
-    DOKUMENT_ZU_UEBERNEHMEN_TYPS: createConfiguration(TSDokumentTyp)
+    DOKUMENT_ZU_UEBERNEHMEN_TYPS: createConfiguration(TSDokumentTyp),
+    ABGELOESTE_VIEW_ANTRAGSTELLER: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_FAMILIENSITUATION: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_KINDER_LIST: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_KINDER_SINGLE: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_BETREUUNG_LIST: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_BETREUUNG_SINGLE: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_ERWERBSPENSUM_LIST: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_ERWERBSPENSUM_SINGLE: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_FINSIT_START: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_FINSIT_GS: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_FINSIT_RESULTATE: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_EKV_START: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_EKV_GS: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_EKV_RESULTATE: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_FREIGABE: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_VERFUEGUNG_LIST: createConfiguration(Boolean),
+    ABGELOESTE_VIEW_VERFUEGUNG_SINGLE: createConfiguration(Boolean)
 };
 
 type ConfigurableEnums = (typeof configEnums)[number];

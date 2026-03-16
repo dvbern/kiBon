@@ -1541,6 +1541,14 @@ export class BetreuungViewController extends AbstractGesuchViewController<TSBetr
         );
     }
 
+    public isPensumEditableForRole() {
+        return (
+            this.authServiceRS.isOneOfRoles(
+                this.getMutationAbweichungAktiviertRoles()
+            ) && this.isPensumEditable()
+        );
+    }
+
     /**
      * checks for gemeinde einstellung adminMutationAbweichungMeldungEnabled and returns appropriate roles depending on the
      * einstellung

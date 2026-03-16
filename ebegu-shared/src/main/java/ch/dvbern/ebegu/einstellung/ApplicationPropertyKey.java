@@ -15,8 +15,15 @@
 
 package ch.dvbern.ebegu.einstellung;
 
+import java.util.Optional;
+
 /**
  * Keys fuer die Application Properties die wir in der DB speichern
+ *
+ * We can set a group and a subgroup for every key:
+ *
+ * The group key (KeyGroup) and subkey (SubKeyGroup) allow us to group property Keys on the frontend
+ *
  */
 public enum ApplicationPropertyKey {
 
@@ -255,14 +262,63 @@ public enum ApplicationPropertyKey {
 
 	/**
 	 * Default = false
-	 * Wenn dies aktiviert ist, wird auf die neue Gesuch Komponenten geroutet
-	 * (Ablösung AngularJS - https://support.dvbern.ch/browse/KIBON-3736)
-	 */
-	@BooleanEinstellung ABGELOESTE_VIEW,
-
-	/**
-	 * Default = false
 	 * Wenn dies aktiviert ist, werden jährlich in einem Batchjob Erinnerungsmails für die Gemeinde-Kennzahlen ausgelöst
 	 */
-	@BooleanEinstellung GEMEINDE_KENNZAHLEN_REMINDER_ACTIVATED
+	@BooleanEinstellung GEMEINDE_KENNZAHLEN_REMINDER_ACTIVATED,
+
+	/**
+	 * We can switch for everysteps to the new angular non javascript implemention:
+	 * True => new version when provided
+	 * False => old version
+	 */
+	@BooleanEinstellung ABGELOESTE_VIEW_ANTRAGSTELLER(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW)
+	), @BooleanEinstellung ABGELOESTE_VIEW_FAMILIENSITUATION(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW)
+	), @BooleanEinstellung ABGELOESTE_VIEW_KINDER_LIST(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.KINDER)
+	), @BooleanEinstellung ABGELOESTE_VIEW_KINDER_SINGLE(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.KINDER)
+	), @BooleanEinstellung ABGELOESTE_VIEW_BETREUUNG_LIST(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.BETREUUNG)
+	), @BooleanEinstellung ABGELOESTE_VIEW_BETREUUNG_SINGLE(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.BETREUUNG)
+	), @BooleanEinstellung ABGELOESTE_VIEW_ERWERBSPENSUM_LIST(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.ERWERBSPENSUM)
+	), @BooleanEinstellung ABGELOESTE_VIEW_ERWERBSPENSUM_SINGLE(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.ERWERBSPENSUM)
+	), @BooleanEinstellung ABGELOESTE_VIEW_FINSIT_START(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.FINSIT)
+	), @BooleanEinstellung ABGELOESTE_VIEW_FINSIT_GS(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.FINSIT)
+	), @BooleanEinstellung ABGELOESTE_VIEW_FINSIT_RESULTATE(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.FINSIT)
+	), @BooleanEinstellung ABGELOESTE_VIEW_EKV_START(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.EKV)
+	), @BooleanEinstellung ABGELOESTE_VIEW_EKV_GS(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.EKV)
+	), @BooleanEinstellung ABGELOESTE_VIEW_EKV_RESULTATE(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.EKV)
+	), @BooleanEinstellung ABGELOESTE_VIEW_FREIGABE(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW)
+	), @BooleanEinstellung ABGELOESTE_VIEW_VERFUEGUNG_LIST(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.VERFUEGUNG)
+	), @BooleanEinstellung ABGELOESTE_VIEW_VERFUEGUNG_SINGLE(
+		KeyGrouping.of(KeyGroup.ABGELOESTE_VIEW, SubKeyGroup.VERFUEGUNG)
+	);
+
+	private final KeyGrouping keyGrouping;
+
+	ApplicationPropertyKey() {
+		this.keyGrouping = null;
+	}
+
+	ApplicationPropertyKey(KeyGrouping keyGrouping) {
+		this.keyGrouping = keyGrouping;
+	}
+
+	public Optional<KeyGrouping> getKeyGrouping() {
+		return Optional.ofNullable(keyGrouping);
+	}
+
 }

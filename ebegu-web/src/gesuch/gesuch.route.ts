@@ -481,7 +481,7 @@ export class EbeguErwerbspensumState implements Ng1StateDeclaration {
                 'SharedUtilApplicationPropertyRsService',
                 async (applicationService: any) => {
                     const isEnabled = await firstValueFrom(
-                        applicationService.isAbgeloesteViewEnabled()
+                        applicationService.isAbgeloesteViewBeschaeftigungSingleEnabled()
                     );
                     return isEnabled
                         ? '<dv-gesuch-erwerbspensum-view>'

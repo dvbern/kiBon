@@ -42,6 +42,12 @@ public class JaxApplicationProperties extends JaxAbstractDTO {
 	@Nullable
 	private String erklaerung;
 
+	@Nullable
+	private String keyGroup;
+
+	@Nullable
+	private String subKeyGroup;
+
 	public String getValue() {
 		return value;
 	}
@@ -65,5 +71,23 @@ public class JaxApplicationProperties extends JaxAbstractDTO {
 
 	public void setErklaerung(@Nullable final String erklaerung) {
 		this.erklaerung = erklaerung;
+	}
+
+	@Nullable
+	public String getSubKeyGroup() {
+		return subKeyGroup;
+	}
+
+	public void setSubKeyGroup(@Nullable String subKeyGroup) {
+		this.subKeyGroup = subKeyGroup;
+	}
+
+	@Nullable
+	public String getKeyGroup() {
+		return keyGroup;
+	}
+
+	public void setKeyGroup(@Nullable String keyGroup) {
+		this.keyGroup = keyGroup;
 	}
 }

@@ -31,6 +31,7 @@ import {UebersichtVersendeteMailsComponent} from './component/uebersichtVersende
 import {NgAdminRoutingModule} from './ng-admin-routing.module';
 import {AdminGesuchsperiodenEinstellungenComponent} from '@kibon/admin-gesuchsperioden-einstellungen';
 import {EditEinstellungComponent} from '@kibon/admin-edit-einstellung';
+import {ApplicationPropertyGroupComponent} from './einstellungen/application-property-group/application-property-group.component';
 
 @NgModule({
     imports: [
@@ -38,7 +39,8 @@ import {EditEinstellungComponent} from '@kibon/admin-edit-einstellung';
         NgAdminRoutingModule,
         EditEinstellungComponent,
         StringSqlDateToDisplayDatePipe,
-        AdminGesuchsperiodenEinstellungenComponent
+        AdminGesuchsperiodenEinstellungenComponent,
+        ApplicationPropertyGroupComponent
     ],
     declarations: [
         TestdatenViewComponent,

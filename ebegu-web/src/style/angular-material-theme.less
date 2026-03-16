@@ -1419,7 +1419,7 @@ input.mat-input-element {
 }
 
 .mat-calendar-body-selected {
-    background-color: #d50000;
+    background-color: var(--primary-color) !important;
     color: white;
 }
 
@@ -1442,6 +1442,16 @@ input.mat-input-element {
 
 .mat-datepicker-toggle-active {
     color: #d50000;
+}
+
+.mat-datepicker-toggle {
+    button {
+        color: grey !important;
+    }
+}
+
+--mat-datepicker-toggle-icon-color {
+    color: grey;
 }
 
 .mat-mdc-dialog-container {

@@ -847,4 +847,8 @@ export class StammdatenViewController extends AbstractGesuchViewController<TSGes
                 error => LOG.error(error)
             );
     }
+
+    public allowChangeGeburtsdatum() {
+        return this.authServiceRS.isOneOfRoles(this.allowedRoles);
+    }
 }

@@ -20,14 +20,19 @@ import {
     ChangeDetectionStrategy,
     Component,
     EventEmitter,
+    inject,
     Input,
+    OnInit,
     Output,
     ViewEncapsulation
 } from '@angular/core';
 import {ControlContainer, NgForm} from '@angular/forms';
+import {DateAdapter} from '@angular/material/core';
 import {TSGesuchsperiode} from '@kibon/shared/model/entity';
 import moment from 'moment';
+import {distinctUntilChanged} from 'rxjs/operators';
 import {EbeguUtil} from '../../../../utils/EbeguUtil';
+import {I18nServiceRSRest} from '../../../i18n/services/i18nServiceRS.rest';
 
 @Component({
     selector: 'dv-date-picker-x',
@@ -38,7 +43,10 @@ import {EbeguUtil} from '../../../../utils/EbeguUtil';
     viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
     standalone: false
 })
-export class DvDatePickerXComponent {
+export class DvDatePickerXComponent implements OnInit {
+    private dateAdapter = inject(DateAdapter<any>);
+    private i18nServiceRSRest = inject(I18nServiceRSRest);
+
     @Input()
     public label: string;
 
@@ -96,5 +104,15 @@ export class DvDatePickerXComponent {
 
     public emit(): void {
         this.dateChange.emit(this.date);
+    }
+
+    ngOnInit() {
+        this.dateAdapter.setLocale(this.i18nServiceRSRest.currentLanguage());
+
+        this.i18nServiceRSRest.languageChanges$
+            .pipe(distinctUntilChanged())
+            .subscribe(lang => {
+                this.dateAdapter.setLocale(lang);
+            });
     }
 }

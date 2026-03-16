@@ -116,10 +116,8 @@
                                                 getGesuch()
                                                     .finSitAenderungGueltigAbDatum
                                             "
-                                            [datePickerEnabled]="false"
-                                            [disabled]="
-                                                !isRoleGemeindeOrSuperAdmin()
-                                            "
+                                            [datePickerEnabled]="true"
+                                            [disabled]="isGesuchReadonly()"
                                             [inputId]="'finSitGueltigAbDatum'"
                                             class="input-element"
                                             id="finSitGueltigAbDatum"

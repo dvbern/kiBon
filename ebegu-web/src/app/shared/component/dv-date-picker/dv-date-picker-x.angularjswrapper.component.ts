@@ -101,8 +101,8 @@ export class DvDatePickerXAngularjswrapperComponent implements OnInit {
     public disabled: boolean = false;
 
     @Output()
-    public readonly dateChange: EventEmitter<moment.Moment> =
-        new EventEmitter<moment.Moment>();
+    public readonly dateChange: EventEmitter<moment.Moment | null> =
+        new EventEmitter<moment.Moment | null>();
 
     @Input()
     public required: boolean;
@@ -112,9 +112,9 @@ export class DvDatePickerXAngularjswrapperComponent implements OnInit {
 
     public randId = EbeguUtil.generateRandomName(10);
 
-    public emit(event: moment.Moment): void {
+    public emit(event: moment.Moment | null): void {
         this.ngZone.run(() => {
-            this.dateChange.emit(event.clone());
+            this.dateChange.emit(event ? event.clone() : null);
         });
     }
 

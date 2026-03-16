@@ -74,7 +74,7 @@ public class ApplicationPropertyContext {
 	ApplicationProperty angebotMittagstischEnabled;
 	ApplicationProperty angebotTFOEnabled;
 	ApplicationProperty gemeindeVereinfachteKonfigAktiv;
-	ApplicationProperty abgeloesteViewEnabled;
+	ApplicationProperty abgeloesteViewBeschaeftigungSingleEnabled;
 	ApplicationProperty gemeindeKennzahlenReminderActivated;
 	String nodeName = "";
 	BigDecimal lastenausgleichTagesschulenAnteilZweitpruefungDeConverted;
@@ -179,8 +179,10 @@ public class ApplicationPropertyContext {
 				stringToBool(gemeindeVereinfachteKonfigAktiv.getValue())
 			)
 			.testfaelleEnabled(testfaelleEnabled)
-			.abgeloesteViewEnabled(
-				stringToBool(abgeloesteViewEnabled.getValue())
+			.abgeloesteViewBeschaeftigungSingleEnabled(
+				stringToBool(
+					abgeloesteViewBeschaeftigungSingleEnabled.getValue()
+				)
 			)
 			.gemeindeKennzahlenReminderActivated(
 				stringToBool(gemeindeKennzahlenReminderActivated.getValue())

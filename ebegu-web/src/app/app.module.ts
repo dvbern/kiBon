@@ -15,6 +15,11 @@
 
 import {HttpClient} from '@angular/common/http';
 import {DoBootstrap, NgModule, inject} from '@angular/core';
+import {MatMomentDateModule} from '@angular/material-moment-adapter';
+import {
+    MatDatepickerIntl,
+    MatDatepickerModule
+} from '@angular/material/datepicker';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {UpgradeModule} from '@angular/upgrade/static';
@@ -34,6 +39,7 @@ import {CoreModule} from './core/core.module';
 import {EinladungModule} from './einladung/einladung.module';
 import {GemeindeAntraegeModule} from './gemeinde-antraege/gemeinde-antraege.module';
 import {GemeindeModule} from './gemeinde/gemeinde.module';
+import {DvDatePickerI18nOverwrite} from './i18n/dvDatepickerI18nOverwrite/dvDatepickerI18nOverwrite';
 import {MultiMandantHttpLoaderX} from './i18n/MultiMandantHttpLoader-x';
 import {I18nServiceRSRest} from './i18n/services/i18nServiceRS.rest';
 import {InstitutionModule} from './institution/institution.module';
@@ -71,6 +77,11 @@ export function createTranslateLoader(http: HttpClient): TranslateLoader {
         CoreModule.forRoot(),
         SharedModule,
 
+        // Angular Material datepicker & moment
+        MatDatepickerModule,
+        MatMomentDateModule, // <-- PROVIDES DateAdapter globally
+        // must have for angularjs usage! cant use as module import, it has to be explicitly imported
+
         AppRoutingModule,
         BenutzerModule,
         EinladungModule,
@@ -92,6 +103,9 @@ export function createTranslateLoader(http: HttpClient): TranslateLoader {
         PendenzenXModule,
         VerlaufModule,
         StatistikModule
+    ],
+    providers: [
+        {provide: MatDatepickerIntl, useClass: DvDatePickerI18nOverwrite}
     ]
 })
 export class AppModule implements DoBootstrap {

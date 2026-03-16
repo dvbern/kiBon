@@ -393,6 +393,7 @@
                         class="input-element"
                         [(date)]="vm.getModel().adresseJA.gueltigkeit.gueltigAb"
                         (date-change)="vm.onDateChanged()"
+                        [disabled]="vm.isGesuchReadonly()"
                     ></dv-date-picker-angularjs-xx>
                     <dv-bisher
                         gs="vm.getModel().adresseGS.gueltigkeit.gueltigAb"

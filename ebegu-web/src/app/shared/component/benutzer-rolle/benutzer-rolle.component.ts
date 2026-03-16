@@ -65,8 +65,6 @@ export class BenutzerRolleComponent implements OnInit {
                     ),
                 new Map<TSRole, string>()
             );
-
-        console.log(this.needToShowRequired);
     }
 
     @Input()

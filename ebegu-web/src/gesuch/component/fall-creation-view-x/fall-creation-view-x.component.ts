@@ -81,7 +81,6 @@ export class FallCreationViewXComponent
     private readonly dialog = inject(MatDialog);
 
     public gesuchsperiodeId: string;
-    // @ViewChild(NgForm) protected readonly form: NgForm;
 
     private yetUnusedGesuchsperiodenListe: Array<TSGesuchsperiode>;
 
@@ -104,8 +103,6 @@ export class FallCreationViewXComponent
     }
 
     public async ngOnInit(): Promise<void> {
-        // TODO: do we need super.onInit? See abstractGesuchView.$onInit
-
         await this.readStateParams();
         this.initViewModel();
     }

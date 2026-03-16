@@ -125,7 +125,6 @@ export class OnboardingNeuBenutzerComponent {
                 listIds.push(gemeinde.key);
             }
         });
-        console.log(this.nextState);
         if (this.authServiceRS.isLoggedIn()) {
             this.stateService.go(this.nextState, {
                 gemeindeBGId:

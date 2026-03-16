@@ -80,8 +80,6 @@ export class BerechtigungComponent {
         this.traegerschaften$ = this.traegerschaftenForPrincipal$();
 
         this.sozialdienste$ = this.sozialdienstenForPrincipal$();
-
-        console.log(this.needToShowRequired);
     }
 
     private static sortByName<T extends Displayable>(arr: T[]): T[] {

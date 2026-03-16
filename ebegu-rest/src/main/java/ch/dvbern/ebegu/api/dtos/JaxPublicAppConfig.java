@@ -53,6 +53,6 @@ public class JaxPublicAppConfig {
 	private boolean abweichungenEnabled;
 	private boolean gemeindeVereinfachteKonfigAktiv;
 	private boolean testfaelleEnabled;
-	private boolean abgeloesteViewEnabled;
+	private boolean abgeloesteViewBeschaeftigungSingleEnabled;
 	private boolean gemeindeKennzahlenReminderActivated;
 }

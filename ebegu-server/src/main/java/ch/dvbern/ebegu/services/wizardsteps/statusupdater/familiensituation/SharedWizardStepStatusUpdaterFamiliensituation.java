@@ -128,8 +128,29 @@ public class SharedWizardStepStatusUpdaterFamiliensituation extends
 			//kann man effektiv sagen dass bei nur einem GS niemals Rote Schritte FinanzielleSituation und EVK
 			// gibt
 		} else if (!newFamiliensituation.hasSecondGesuchsteller(bis)
-			&& wizardStep.getGesuch().getGesuchsteller1() != null) { // nur 1 GS
+			&& wizardStep.getGesuch().getGesuchsteller1() != null
+			&& newFamiliensituation.getAenderungPer() != null
+			&& newFamiliensituation.getAenderungPer()
+				.isBefore(
+					wizardStep.getGesuch()
+						.getGesuchsperiode()
+						.getGueltigkeit()
+						.getGueltigAb()
+				)) { // nur 1 GS nicht unbedingt es ist abhängig von die FamSit datum
+			// diese DAtum hat man hier nicht, weil Aleinziehende ab mitte Gesuch bedeutet nicth 1 GS
 			updateStatusOnlyOneGS(wizardStep);
+		} else if (!newFamiliensituation.hasSecondGesuchsteller(bis)
+			&& wizardStep.getGesuch().getGesuchsteller1() != null
+			&& newFamiliensituation.getAenderungPer() != null
+			&& wizardStep.getGesuch().getGesuchsteller2() == null
+			&& newFamiliensituation.getAenderungPer()
+				.isAfter(
+					wizardStep.getGesuch()
+						.getGesuchsperiode()
+						.getGueltigkeit()
+						.getGueltigAb()
+				)) {
+			updateStatusFromOneGSToTwoGS(wizardStep);
 		}
 	}
 

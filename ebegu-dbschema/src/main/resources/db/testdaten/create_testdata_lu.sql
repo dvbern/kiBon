@@ -90,7 +90,6 @@ UPDATE application_property SET value = 'false' WHERE name = 'LASTENAUSGLEICH_AK
 UPDATE application_property SET value = 'true' WHERE name = 'AUSZAHLUNGEN_AN_ELTERN' AND mandant_id = @mandant_id_luzern;
 UPDATE application_property SET value = 'true' WHERE name = 'ABWEICHUNGEN_ENABLED' AND mandant_id = @mandant_id_luzern;
 UPDATE application_property SET value = 'true' WHERE name = 'ERLAUBEN_INSTITUTIONEN_ZU_WAEHLEN' AND mandant_id = @mandant_id_luzern;
-UPDATE application_property SET value = 'false' WHERE name = 'ABGELOESTE_VIEW' AND mandant_id = @mandant_id_luzern;
 
 # Gesuchsperiode
 UPDATE gesuchsperiode SET status = 'AKTIV' WHERE id = @gesuchsperiode_22_23_lu_id;

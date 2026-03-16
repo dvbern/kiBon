@@ -30,6 +30,22 @@
                             />
                         </div>
 
+                        <!-- Grouped-Parameter-Lists -->
+                        @for (
+                            group of displayedGroupedCollection;
+                            track group
+                        ) {
+                            <dv-application-property-group
+                                [groupName]="group.groupName"
+                                [applicationProperties]="
+                                    group.applicationProperties
+                                "
+                                (applicationPropertyChange)="
+                                    updateApplicationProperty($event)
+                                "
+                            />
+                        }
+
                         <!-- Parameter-Liste (repeater) -->
                         <mat-table matSort [dataSource]="displayedCollection">
                             <ng-container matColumnDef="name">

@@ -54,5 +54,5 @@ export class TSPublicAppConfig {
     public abweichungenEnabled: boolean;
     public gemeindeVereinfachteKonfigAktiv: boolean;
     public testfaelleEnabled: boolean;
-    public abgeloesteViewEnabled: boolean;
+    public abgeloesteViewBeschaeftigungSingleEnabled: boolean;
 }

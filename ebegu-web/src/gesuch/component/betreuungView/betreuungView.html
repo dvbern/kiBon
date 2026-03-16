@@ -2038,6 +2038,9 @@
                                                             .getGesuch()
                                                             .getGesuchsperiode()
                                                     "
+                                                    [disabled]="
+                                                        !vm.isPensumEditableForRole()
+                                                    "
                                                 >
                                                 </dv-date-picker-angularjs-xx>
                                                 <dv-error-messages
@@ -2082,6 +2085,9 @@
                                                         vm
                                                             .getGesuch()
                                                             .getGesuchsperiode()
+                                                    "
+                                                    [disabled]="
+                                                        !vm.isPensumEditableForRole()
                                                     "
                                                 >
                                                 </dv-date-picker-angularjs-xx>
@@ -2230,9 +2236,6 @@
                                                                     .getGesuch()
                                                                     .getGesuchsperiode()
                                                             "
-                                                            [disabled]="
-                                                                vm.isGesuchReadonly()
-                                                            "
                                                         >
                                                         </dv-date-picker-angularjs-xx>
                                                         <dv-error-messages
@@ -2282,7 +2285,7 @@
                                                                     .getGesuchsperiode()
                                                             "
                                                             [disabled]="
-                                                                vm.isGesuchReadonly()
+                                                                vm.getMutationAbweichungAktiviertRoles()
                                                             "
                                                         >
                                                         </dv-date-picker-angularjs-xx>

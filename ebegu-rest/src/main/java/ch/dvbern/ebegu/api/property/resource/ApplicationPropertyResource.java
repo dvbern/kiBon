@@ -540,17 +540,17 @@ public class ApplicationPropertyResource {
 			)
 		);
 
-		applicationPropertyContext.setAbgeloesteViewEnabled(
-			getApplicationProperty(
-				mandant,
-				ApplicationPropertyKey.ABGELOESTE_VIEW
-			)
-		);
-
 		applicationPropertyContext.setGemeindeKennzahlenReminderActivated(
 			getApplicationProperty(
 				mandant,
 				ApplicationPropertyKey.GEMEINDE_KENNZAHLEN_REMINDER_ACTIVATED
+			)
+		);
+
+		applicationPropertyContext.setAbgeloesteViewBeschaeftigungSingleEnabled(
+			getApplicationProperty(
+				mandant,
+				ApplicationPropertyKey.ABGELOESTE_VIEW_ERWERBSPENSUM_SINGLE
 			)
 		);
 

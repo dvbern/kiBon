@@ -209,9 +209,12 @@ export class SharedUtilApplicationPropertyRsService {
         );
     }
 
-    public isAbgeloesteViewEnabled(): Observable<boolean> {
+    public isAbgeloesteViewBeschaeftigungSingleEnabled(): Observable<boolean> {
         return this.getPublicPropertiesCached().pipe(
-            map((response: TSPublicAppConfig) => response.abgeloesteViewEnabled)
+            map(
+                (response: TSPublicAppConfig) =>
+                    response.abgeloesteViewBeschaeftigungSingleEnabled
+            )
         );
     }
 }

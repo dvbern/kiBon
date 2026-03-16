@@ -48,5 +48,9 @@
     "ONBOARDING_INSTITUTION_DESC4": "<strong>Une demande</strong> pour les mêmes offres (crèche, école à journée continue et porganisations d’accueil familial de jour)",
     "AUSSERORDENTLICHER_ANSPRUCH_HINT": "Des exceptions sont possibles dans des cas particuliers justifiés, notamment lorsque les parents n'atteignent pas le taux d'activité minimal exigé mais ont néanmoins besoin rapidement d'une solution de garde (art. 37, al. 2 OEJF). Cette clause d'exception doit toutefois être appliquée avec la plus grande prudence.",
     "DOKUMENT_GRUND_TYP_TAG_ERWERBSPENSUM": "Activité",
+    "FINANZIELLE_SITUATION_STEK_GEMEINSAM": "Remplissez-vous la déclaration d'impôts {{basisjahr}} conjointement avec {{namegs2}} ?",
+    "FINANZIELLE_SITUATION_EINKOMMEN_VEREINFACHTEM_VERFAHREN": "Avez-vous perçu un revenu ayant été décompté dans le cadre de la procédure simplifiée (Impôt à la source) ?",
+    "FINANZIELLE_SITUATION_EINKOMMEN_VEREINFACHTEM_VERFAHREN_TOOLTIP": "Il s’agit du revenu provenant d’une procédure de décompte simplifiée qui a été imposé à la source (p. ex. travaux de nettoyage). Le revenu est inscrit au chiffre 2.25 du formulaire 2 de la déclaration d’impôt (revenus non imposables). Veuillez ne pas inscrire dans ce champ les autres revenus exonérés de l’impôt (aide sociale, prestations complémentaires, bourses, etc.).",
+    "DEUTSCH_ODER_FRANZOESISCH": "allemand et/ou français",
     "THE_END": "Diesen Key immer zuunterst lassen wegen Mergeproblemen!"
 }

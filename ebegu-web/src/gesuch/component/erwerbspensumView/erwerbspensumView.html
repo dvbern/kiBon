@@ -359,6 +359,10 @@
                                         vm.model.erwerbspensumJA.gueltigkeit
                                             .gueltigBis
                                     "
+                                    [disabled]="
+                                        vm.erwerbspensumDisabled() ||
+                                        vm.isGesuchReadonly()
+                                    "
                                 >
                                 </dv-date-picker-angularjs-xx>
                                 <dv-bisher

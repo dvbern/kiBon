@@ -56,6 +56,8 @@ export class I18nServiceRSRest implements OnDestroy {
     private readonly unsubscribe$ = new Subject<void>();
     private readonly selectedLanguage$ = new ReplaySubject<string>(1);
 
+    public readonly languageChanges$ = this.selectedLanguage$.asObservable();
+
     public constructor() {
         this.serviceURL = `${CONSTANTS.REST_API}i18n`;
         this.selectedLanguage$.next(this.extractPreferredLanguage());

@@ -25,6 +25,10 @@ import {SearchRS} from '../../../gesuch/service/searchRS.rest';
 import {AbstractAdminViewX} from '../../abstractAdminViewX';
 import {ReindexRS} from '../../service/reindexRS.rest';
 import {ConfigurableEinstellung} from '@kibon/admin-edit-einstellung';
+export interface DisplayedGroup {
+    groupName: string;
+    applicationProperties: TSApplicationProperty[];
+}
 
 @Component({
     selector: 'dv-admin-view-x',
@@ -54,6 +58,7 @@ export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
 
     protected readonly Date = Date;
     public displayedCollection: MatTableDataSource<TSApplicationProperty>;
+    public displayedGroupedCollection: DisplayedGroup[] = [];
     public displayedColumns: string[] = ['name', 'value', 'timestampErstellt'];
     public reindexInProgress: boolean = false;
     public mitarbeiterRechteErstellenInProgress: boolean = false;
@@ -110,9 +115,40 @@ export class AdminViewXComponent extends AbstractAdminViewX implements OnInit {
         this.applicationPropertyRS
             .getAllApplicationProperties()
             .subscribe(response => {
+                const grouped = response.reduce(
+                    (groups, prop) => {
+                        if (!prop.keyGroup) {
+                            groups.ungrouped.push(prop);
+                            return groups;
+                        }
+
+                        if (!groups.groupMap.has(prop.keyGroup)) {
+                            groups.groupMap.set(prop.keyGroup, []);
+                        }
+
+                        groups.groupMap.get(prop.keyGroup)!.push(prop);
+
+                        return groups;
+                    },
+                    {
+                        ungrouped: [] as TSApplicationProperty[],
+                        groupMap: new Map<string, TSApplicationProperty[]>()
+                    }
+                );
+
                 this.displayedCollection =
-                    new MatTableDataSource<TSApplicationProperty>(response);
+                    new MatTableDataSource<TSApplicationProperty>(
+                        grouped.ungrouped
+                    );
+
                 this.displayedCollection.sort = this.sort;
+
+                this.displayedGroupedCollection = Array.from(
+                    grouped.groupMap.entries()
+                ).map(([groupName, applicationProperties]) => ({
+                    groupName,
+                    applicationProperties
+                }));
                 this.cd.markForCheck();
             });
     }

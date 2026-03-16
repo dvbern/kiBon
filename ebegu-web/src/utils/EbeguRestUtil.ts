@@ -225,6 +225,8 @@ export class EbeguRestUtil {
         parsedAppProperty.name = receivedAppProperty.name;
         parsedAppProperty.value = receivedAppProperty.value;
         parsedAppProperty.erklaerung = receivedAppProperty.erklaerung;
+        parsedAppProperty.keyGroup = receivedAppProperty.keyGroup;
+        parsedAppProperty.subKeyGroup = receivedAppProperty.subKeyGroup;
         return parsedAppProperty;
     }
 

@@ -110,6 +110,7 @@
                             [(date)]="
                                 vm.betreuung.belegungTagesschule.eintrittsdatum
                             "
+                            [disabled]="vm.isGesuchReadonly()"
                         >
                         </dv-date-picker-angularjs-xx>
                         <dv-error-messages

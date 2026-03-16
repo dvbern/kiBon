@@ -1,0 +1,99 @@
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<div class="mb-10">
+    <mat-accordion>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title
+                    ><span class="mr-2">{{ groupName() | translate }}</span>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-accordion displayMode="flat">
+                @for (
+                    subGroup of groupedSubGroups | keyvalue;
+                    track subGroup.key
+                ) {
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                {{ subGroup.key | translate }}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        @for (prop of subGroup.value; track prop) {
+                            <div
+                                class="grid grid-cols-12 gap-2 items-center py-2"
+                            >
+                                <div class="col-span-5">
+                                    {{ prop.name | translate }}
+                                    <dv-tooltip
+                                        [text]="prop.erklaerung"
+                                    ></dv-tooltip>
+                                </div>
+
+                                <div class="col-span-5">
+                                    <lib-dv-edit-einstellung
+                                        [readOnly]="false"
+                                        [einstellung]="{
+                                            value: prop.value,
+                                            key: prop.name
+                                        }"
+                                        (einstellungChange)="
+                                            emitSelection($event)
+                                        "
+                                    ></lib-dv-edit-einstellung>
+                                </div>
+                                <div class="col-span-2 text-right">
+                                    {{
+                                        prop.timestampErstellt.format(
+                                            'DD.MM.YYYY'
+                                        )
+                                    }}
+                                </div>
+                            </div>
+                        }
+                    </mat-expansion-panel>
+                }
+                @for (prop of noSubGroup; track prop) {
+                    <div
+                        class="grid grid-cols-12 gap-2 items-center py-2 px-12"
+                    >
+                        <div class="col-span-5">
+                            {{ prop.name | translate }}
+                            <dv-tooltip [text]="prop.erklaerung"></dv-tooltip>
+                        </div>
+
+                        <div class="col-span-5">
+                            <lib-dv-edit-einstellung
+                                [readOnly]="false"
+                                [einstellung]="{
+                                    value: prop.value,
+                                    key: prop.name
+                                }"
+                                (einstellungChange)="emitSelection($event)"
+                            ></lib-dv-edit-einstellung>
+                        </div>
+                        <div class="col-span-2 text-right">
+                            {{ prop.timestampErstellt.format('DD.MM.YYYY') }}
+                        </div>
+                    </div>
+                }
+            </mat-accordion>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>

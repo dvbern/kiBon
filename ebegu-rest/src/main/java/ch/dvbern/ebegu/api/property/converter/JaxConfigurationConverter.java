@@ -30,6 +30,7 @@ import ch.dvbern.ebegu.api.property.dto.JaxApplicationProperties;
 import ch.dvbern.ebegu.einstellung.ApplicationProperty;
 import ch.dvbern.ebegu.einstellung.ApplicationPropertyKey;
 import ch.dvbern.ebegu.einstellung.Einstellung;
+import ch.dvbern.ebegu.einstellung.KeyGrouping;
 import ch.dvbern.ebegu.entities.AbstractEntity;
 import ch.dvbern.ebegu.entities.Gesuchsperiode;
 import ch.dvbern.ebegu.enums.ErrorCodeEnum;
@@ -60,6 +61,17 @@ public class JaxConfigurationConverter extends AbstractBaseConverter {
 		jaxProperty.setName(applicationProperty.getName().toString());
 		jaxProperty.setValue(applicationProperty.getValue());
 		jaxProperty.setErklaerung(applicationProperty.getErklaerung());
+		if (applicationProperty.getName().getKeyGrouping().isPresent()) {
+			KeyGrouping keyGrouping = applicationProperty.getName()
+				.getKeyGrouping()
+				.get();
+			jaxProperty.setKeyGroup(keyGrouping.keyGroup().toString());
+			jaxProperty.setSubKeyGroup(
+				keyGrouping.subKeyGroup() != null ?
+					keyGrouping.subKeyGroup().toString() :
+					null
+			);
+		}
 
 		return jaxProperty;
 	}
