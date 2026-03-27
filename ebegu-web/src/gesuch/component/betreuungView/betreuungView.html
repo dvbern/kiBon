@@ -2236,6 +2236,9 @@
                                                                     .getGesuch()
                                                                     .getGesuchsperiode()
                                                             "
+                                                            [disabled]="
+                                                                !vm.isPensumEditableForRole()
+                                                            "
                                                         >
                                                         </dv-date-picker-angularjs-xx>
                                                         <dv-error-messages
@@ -2285,7 +2288,7 @@
                                                                     .getGesuchsperiode()
                                                             "
                                                             [disabled]="
-                                                                vm.getMutationAbweichungAktiviertRoles()
+                                                                !vm.isPensumEditableForRole()
                                                             "
                                                         >
                                                         </dv-date-picker-angularjs-xx>

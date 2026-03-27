@@ -161,6 +161,7 @@ export class PosteingangViewComponent
         }
 
         if (principal.hasOneOfRoles([TSRole.SUPER_ADMIN])) {
+            this.empfaenger.set(null);
             return;
         }
 

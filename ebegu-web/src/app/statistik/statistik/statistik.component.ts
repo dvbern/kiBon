@@ -738,8 +738,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
             TSRole.ADMIN_GEMEINDE,
             TSRole.SUPER_ADMIN,
             TSRole.REVISOR,
-            TSRole.ADMIN_TS,
-            TSRole.SACHBEARBEITER_TS,
             TSRole.ADMIN_MANDANT,
             TSRole.SACHBEARBEITER_MANDANT
         ]);
@@ -758,8 +756,6 @@ export class StatistikComponent implements OnInit, OnDestroy {
             TSRole.ADMIN_BG,
             TSRole.SUPER_ADMIN,
             TSRole.REVISOR,
-            TSRole.ADMIN_TS,
-            TSRole.SACHBEARBEITER_TS,
             TSRole.ADMIN_MANDANT,
             TSRole.SACHBEARBEITER_MANDANT
         ]);
