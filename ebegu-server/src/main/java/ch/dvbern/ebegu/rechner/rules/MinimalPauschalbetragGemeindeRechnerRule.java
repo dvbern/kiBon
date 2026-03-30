@@ -66,7 +66,8 @@ public class MinimalPauschalbetragGemeindeRechnerRule implements RechnerRule {
 			return false;
 		}
 
-		if (inputGemeinde.isBezahltKompletteVollkosten()) {
+		if (inputGemeinde.isBezahltKompletteVollkosten()
+			|| inputGemeinde.isKategorieMaxEinkommen()) {
 			return false;
 		}
 

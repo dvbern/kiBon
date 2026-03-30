@@ -755,7 +755,10 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
         if (this.isDuplicated) {
             return true;
         }
-        if (!this.gesuchModelManager.getGesuch() || !this.isEditableOrNew()) {
+        if (
+            !this.gesuchModelManager.getGesuch() ||
+            !this.isAnmeldungTSEditable()
+        ) {
             return false;
         }
         const gesuchsteller = this.authServiceRS.isOneOfRoles(
@@ -765,17 +768,6 @@ export class BetreuungTagesschuleViewController extends BetreuungViewController 
             TSRoleUtil.getAdministratorOrAmtOrSozialdienstRolle()
         );
         return !this.isSavingData && (gesuchsteller || gemeindeUser);
-    }
-
-    private isEditableOrNew(): boolean {
-        // alle Status die Bearbeitung erlauben ausser "AUSSTEHEND"
-        return (
-            this.isAnmeldungTSEditable() ||
-            // neue Anmeldungen haben Status AUSSTEHEND
-            this.getBetreuungModel().isBetreuungsstatus(
-                TSBetreuungsstatus.AUSSTEHEND
-            )
-        );
     }
 
     public getMinDateInCurrentPeriode(): moment.Moment {
